@@ -32,6 +32,9 @@ enum TILE_TYPE {
 
 const float DEFAULT_SPACING = 32.0;
 
+const int CEIL_SLANT_INDEX = 192;
+const int FLOOR_SLANT_INDEX = 208;
+
 struct Tile {
     
     Tile() {};
@@ -61,6 +64,8 @@ public:
     
     void initialize();
     void update();
+    
+    void init_shape_vertices();
     
     void setSpacing(float spc);
     

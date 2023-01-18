@@ -10,6 +10,7 @@
 #include <SFML/Graphics.hpp>
 #include <cstdio>
 #include <memory>
+#include <chrono>
 #include "../level/Map.hpp"
 #include "../components/PhysicsComponent.hpp"
 #include "../utils/Camera.hpp"
@@ -36,6 +37,8 @@ class GameState {
     
 public:
     
+    using Time = std::chrono::duration<float>;
+    
     GameState() = default;
     GameState(int id) {
         
@@ -49,7 +52,7 @@ public:
     virtual void handle_events(sf::Event event) {
         
     };
-    virtual void logic() {};
+    virtual void logic(Time dt) {};
     virtual void render(sf::RenderWindow& win) {
         
         
@@ -71,6 +74,8 @@ namespace flstates {
 
 class MainMenu : public automa::GameState {
 public:
+    
+    
     MainMenu() {
         state = automa::STATE::STATE_MENU;
     };
@@ -85,7 +90,7 @@ public:
         
     }
     
-    void logic() {}
+    void logic(Time dt) {}
     
     void render(sf::RenderWindow& win) {
 
@@ -132,11 +137,11 @@ public:
         }
     }
     
-    void logic() {
+    void logic(Time dt) {
         map.update();
         svc::cameraLocator.get().center(svc::playerLocator.get().physics.position);
         svc::cameraLocator.get().update();
-        svc::playerLocator.get().update();
+        svc::playerLocator.get().update(dt);
     }
     
     void render(sf::RenderWindow& win) {
@@ -146,22 +151,18 @@ public:
                     if(map.layers.at(i).grid.cells.at(j).value > 0) {
                         tileset.at(map.layers.at(i).grid.cells.at(j).value).setPosition(map.layers.at(i).grid.cells.at(j).bounding_box.shape_x - svc::cameraLocator.get().physics.position.x, map.layers.at(i).grid.cells.at(j).bounding_box.shape_y - svc::cameraLocator.get().physics.position.y);
                         win.draw(tileset.at(map.layers.at(i).grid.cells.at(j).value));
-                        sf::RectangleShape box{};
+//
                         if(map.layers.at(i).grid.cells.at(j).collision_check) {
-                            box.setFillColor(FL_Periwinkle);
+                            sf::RectangleShape box{};
+                            box.setFillColor(sf::Color(255, 255, 255, 50));
                             box.setOutlineColor(FL_White);
-                        } else {
-                            box.setFillColor(FL_DarkFucshia);
-                            box.setOutlineColor(FL_Red);
+                            box.setOutlineThickness(-1);
+                            box.setPosition(map.layers.at(i).grid.cells.at(j).bounding_box.shape_x - svc::cameraLocator.get().physics.position.x, map.layers.at(i).grid.cells.at(j).bounding_box.shape_y - svc::cameraLocator.get().physics.position.y);
+                            box.setSize({32, 32});
+                            win.draw(box);
                         }
-                        
-                        box.setOutlineThickness(-1);
-                        box.setPosition(map.layers.at(i).grid.cells.at(j).bounding_box.shape_x - svc::cameraLocator.get().physics.position.x, map.layers.at(i).grid.cells.at(j).bounding_box.shape_y - svc::cameraLocator.get().physics.position.y);
-                        box.setSize({32, 32});
-                        win.draw(box);
                     }
                 }
-                
             }
         }
         sf::Vector2<float> player_pos = svc::playerLocator.get().physics.position - svc::cameraLocator.get().physics.position;
@@ -173,8 +174,25 @@ public:
         plr.setOutlineThickness(-1);
         plr.setSize({PLAYER_WIDTH, PLAYER_HEIGHT});
         
-        win.draw(plr);
-//        win.draw(svc::assetLocator.get().s_nani_idle);
+//        win.draw(plr);
+        
+        sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
+        sf::RectangleShape jbx{};
+        jbx.setPosition(jumpbox_pos.x, jumpbox_pos.y);
+        jbx.setFillColor(FL_Fucshia);
+        jbx.setOutlineColor(sf::Color(235, 232, 249, 80));
+        jbx.setOutlineThickness(-1);
+        jbx.setSize({(float)svc::playerLocator.get().jumpbox.shape_w, (float)svc::playerLocator.get().jumpbox.shape_h});
+        win.draw(jbx);
+        
+        sf::Vector2<float> hurtbox_pos = sf::operator-(svc::playerLocator.get().hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
+        sf::RectangleShape hbx{};
+        hbx.setPosition(hurtbox_pos.x, hurtbox_pos.y);
+        hbx.setFillColor(sf::Color(215, 53,  180, 150));
+        hbx.setOutlineColor(FL_White);
+        hbx.setOutlineThickness(-1);
+        hbx.setSize({(float)svc::playerLocator.get().hurtbox.shape_w, (float)svc::playerLocator.get().hurtbox.shape_h});
+        win.draw(hbx);
     }
     
     world::Map map{};

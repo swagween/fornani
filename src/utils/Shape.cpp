@@ -110,7 +110,7 @@ Shape::Vec Shape::get_center() {
     return result;
 }
 
-static const float NORMAL_TOLERANCE = 0.0001f;
+static const float NORMAL_TOLERANCE = 0.001f;
 
 float Shape::getLength(const Vec v)
 {
@@ -269,7 +269,7 @@ Shape::Vec Shape::testCollisionGetMTV(const Shape& obb1, const Shape& obb2)
         Vec proj2 = projectOnAxis(vertices2, axis);
 
         float overlap = getOverlapLength(proj1, proj2);
-        if (overlap == 0.f) { // shapes are not overlapping
+        if (overlap < NORMAL_TOLERANCE) { // shapes are not overlapping
             return Vec(0, 0);
         } else {
             if (overlap < minOverlap) {
@@ -284,7 +284,7 @@ Shape::Vec Shape::testCollisionGetMTV(const Shape& obb1, const Shape& obb2)
         Vec proj2 = projectOnAxis(vertices2, axis);
 
         float overlap = getOverlapLength(proj1, proj2);
-        if (overlap == 0.f) { // shapes are not overlapping
+        if (overlap < NORMAL_TOLERANCE) { // shapes are not overlapping
             return Vec(0, 0);
         } else {
             if (overlap < minOverlap) {
