@@ -43,18 +43,11 @@ public:
     }
     
     void update_euler(Time dt) {
-        float multiplier = 60;
-        auto dv = 0.0f;
-        if(dt.count()*multiplier > 0.9f) {
-            dv = dt.count()*multiplier;
-        } else {
-            dv = 0.9f;
-        }
-        sf::operator*=(acceleration, friction);
-        sf::operator*=(acceleration, dv);
+//        sf::operator*=(acceleration, friction);
+//        sf::operator*=(acceleration, (1 + dt.count()));
         sf::operator+=(velocity, acceleration);
-//        sf::operator*=(velocity, friction);
-        sf::operator*=(velocity, dv);
+        sf::operator*=(velocity, friction);
+//        sf::operator*=(velocity, (1 + dt.count()));
         sf::operator+=(position, velocity);
         acceleration = {0.0f, 0.0f};
     }

@@ -26,7 +26,7 @@ public:
     
     Camera() {
         physics = components::PhysicsComponent(CAM_FRICTION, CAM_MASS);
-        bounding_box = sf::Rect<float>({0.0f, 0.0f}, {960, 540});
+        bounding_box = sf::Rect<float>({0.0f, 0.0f}, {960*2, 540*2});
     }
     
     void move(sf::Vector2<float> new_position) {

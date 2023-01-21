@@ -64,17 +64,6 @@ void Map::update() {
                 if(cell.value > 0) {
                     is_any_colllision = true;
                     sf::operator+=(svc::playerLocator.get().mtv, svc::playerLocator.get().hurtbox.testCollisionGetMTV(svc::playerLocator.get().hurtbox, cell.bounding_box));
-//                    svc::playerLocator.get().mtv = svc::playerLocator.get().hurtbox.testCollisionGetMTV(svc::playerLocator.get().hurtbox, cell.bounding_box);
-                    
-//                    if(abs(svc::playerLocator.get().mtv.y) > 0.01f) {
-//                        svc::playerLocator.get().physics.velocity.y = 0.0f;
-//                    }
-//                    if(abs(svc::playerLocator.get().mtv.x) > 0.01f) {
-//                        svc::playerLocator.get().physics.velocity.x = 0.0f;
-//                    }
-//                    sf::operator+=(svc::playerLocator.get().physics.velocity, {svc::playerLocator.get().mtv.x * 0.1f, svc::playerLocator.get().mtv.y * 0.1f});
-//                    svc::playerLocator.get().physics.acceleration = {0.0f, 0.0f};
-//                    if(abs(svc::playerLocator.get().mtv.y) < 0.1f) { svc::playerLocator.get().mtv =  {0.0f, 0.0f}; }
                     svc::playerLocator.get().just_collided = true;
                     svc::playerLocator.get().is_colliding_with_level = true;
                 }

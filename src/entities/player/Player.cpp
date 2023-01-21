@@ -10,7 +10,7 @@
 
 Player::Player() {
     
-    physics = components::PhysicsComponent(PLAYER_FRIC, PLAYER_MASS);
+    physics = components::PhysicsComponent(stats.PLAYER_HORIZ_FRIC, stats.PLAYER_MASS);
     
     hurtbox.init();
     jumpbox.init();
@@ -48,13 +48,15 @@ void Player::handle_events(sf::Event event) {
         if (event.key.code == sf::Keyboard::Z) {
             if(grounded) {
                 jump_hold = true;
+                just_jumped = true;
+                jump_height_counter = 0;
             }
         }
     }
     if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == sf::Keyboard::Z) {
             jump_hold = false;
-            jump_height_counter = 0;
+            
         }
     }
 }
@@ -71,40 +73,22 @@ void Player::update(Time dt) {
     
     //check keystate
     if(move_left) {
-        if(grounded) {
-            physics.apply_force({-X_ACC, 0.0f});
-        } else {
-            physics.apply_force({-AIR_X_ACC, 0.0f});
-       }
+        physics.apply_force({-stats.X_ACC, 0.0f});
     }
     if(move_right) {
-        if(grounded) {
-            physics.apply_force({X_ACC, 0.0f});
-        } else {
-            physics.apply_force({AIR_X_ACC, 0.0f});
-        }
+        physics.apply_force({stats.X_ACC, 0.0f});
     }
-    if(jump_hold) {
-        if(jump_height_counter < JUMP_TIME) {
-            physics.apply_force({0.0f, -JUMP_MAX});
-//            physics.velocity.y = -JUMP_MAX;
-            physics.acceleration.y *= PLAYER_VERT_FRIC;
-            physics.velocity.y *= PLAYER_VERT_FRIC;
-        }
+    if(jump_height_counter < stats.JUMP_TIME) {
+        physics.apply_force({0.0f, -stats.JUMP_MAX});
+        just_jumped = false;
         ++jump_height_counter;
-    }
-    if(grounded) {
-        physics.friction = PLAYER_FRIC;
-    } else {
-        physics.friction = PLAYER_AIR_FRIC;
-        
     }
     
     sf::operator+=(physics.position, mtv);
     sf::operator+=(physics.acceleration, mtv);
     //gravity (off for now)
     if(grav && !grounded) {
-        physics.apply_force({0.0f, PLAYER_GRAV});
+        physics.apply_force({0.0f, stats.PLAYER_GRAV});
     }
     mtv = {0.0f, 0.0f};
     just_collided = false;
@@ -113,17 +97,17 @@ void Player::update(Time dt) {
 //        physics.velocity.y = 0.0f;
 //    }
     //impose physics limitations
-    if(physics.velocity.x > PLAYER_MAX_XVEL) {
-        physics.velocity.x = PLAYER_MAX_XVEL;
+    if(physics.velocity.x > stats.PLAYER_MAX_XVEL) {
+        physics.velocity.x = stats.PLAYER_MAX_XVEL;
     }
-    if(physics.velocity.x < -PLAYER_MAX_XVEL) {
-        physics.velocity.x = -PLAYER_MAX_XVEL;
+    if(physics.velocity.x < -stats.PLAYER_MAX_XVEL) {
+        physics.velocity.x = -stats.PLAYER_MAX_XVEL;
     }
-    if(physics.velocity.y > PLAYER_MAX_YVEL) {
-        physics.velocity.y = PLAYER_MAX_YVEL;
+    if(physics.velocity.y > stats.PLAYER_MAX_YVEL) {
+        physics.velocity.y = stats.PLAYER_MAX_YVEL;
     }
-    if(physics.velocity.y < -PLAYER_MAX_YVEL) {
-        physics.velocity.y = -PLAYER_MAX_YVEL;
+    if(physics.velocity.y < -stats.PLAYER_MAX_YVEL) {
+        physics.velocity.y = -stats.PLAYER_MAX_YVEL;
     }
     
     physics.update_euler(dt);

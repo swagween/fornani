@@ -10,6 +10,7 @@
 #define AssetManager_hpp
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <unistd.h>
 #include <stdio.h>
 #include <string>
@@ -75,6 +76,11 @@ public:
         //assign all the other sprites...
     }
     
+    bool load_audio() {
+        click_buffer.loadFromFile(resource_path + "/audio/sfx/click.wav");
+        click.setBuffer(click_buffer);
+    }
+    
     void setResourcePath(char** argv) {
         resource_path = find_resources(argv[0]);
     }
@@ -112,6 +118,9 @@ public:
     std::vector<sf::Sprite> sp_tileset;
     
     std::string resource_path = "";
+    
+    sf::SoundBuffer click_buffer{};
+    sf::Sound click;
     
     
 };
