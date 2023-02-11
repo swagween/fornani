@@ -18,22 +18,22 @@ const float JUMPBOX_HEIGHT = 1.0f;
 
 struct PhysicsStats {
     
-    float PLAYER_MAX_XVEL = 5.8f;
-    float PLAYER_MAX_YVEL = 8.0f;
+    float PLAYER_MAX_XVEL = 2.380f;
+    float PLAYER_MAX_YVEL = 0.0f;
     
-    float PLAYER_GRAV = 0.696f;
+    float PLAYER_GRAV = 0.247f;
 
-    float PLAYER_FRIC = 0.694f;
-    float PLAYER_VERT_FRIC = 0.443f;
-    float PLAYER_HORIZ_FRIC = 0.83;
+    float PLAYER_FRIC = 0.994f;
+    float PLAYER_VERT_FRIC = 0.943f;
+    float PLAYER_HORIZ_FRIC = 0.93;
     float PLAYER_MASS = 1.0f;
 
-    float X_ACC = 0.412f;
-    float Y_ACC = 3.9f;
+    float X_ACC = 0.794f;
+    float Y_ACC = 0.794f;
     
     float JUMP_ACC = 0.8f;
-    float JUMP_MAX = 4.443f;
-    int JUMP_TIME = 150;
+    float JUMP_MAX = 8.814f;
+    int JUMP_TIME = 2;
     
     void load_from_json(std::string path) {
         
@@ -67,7 +67,6 @@ public:
     
     components::PhysicsComponent physics{};
     PhysicsStats stats{};
-    sf::Vector2<float> mtv{};
     
     bool move_left{};
     bool move_right{};

@@ -25,7 +25,7 @@ class Camera {
 public:
     
     Camera() {
-        physics = components::PhysicsComponent(CAM_FRICTION, CAM_MASS);
+        physics = components::PhysicsComponent({CAM_FRICTION, CAM_FRICTION}, CAM_MASS);
         bounding_box = sf::Rect<float>({0.0f, 0.0f}, {960*2, 540*2});
     }
     

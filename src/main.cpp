@@ -27,7 +27,7 @@ auto SM = automa::StateManager{};
 auto window = sf::RenderWindow{sf::VideoMode{screen_dimensions.x, screen_dimensions.y}, "For Nani (beta v1.0)"};
 
 const int NUM_TIMESTEPS = 64;
-int TIME_STEP_MILLI = 500;
+int TIME_STEP_MILLI = 0;
 int frame{};
 using Clock = std::chrono::steady_clock;
 using Time = std::chrono::duration<float>;
@@ -35,6 +35,9 @@ auto elapsed_time = Time{};
 auto elapsed_marker = Time{};
 float time_markers[NUM_TIMESTEPS]{};
 auto time_step = Time{std::chrono::milliseconds(TIME_STEP_MILLI)}; //FPS
+float seconds = 0.0;
+int FPS_counter = 0;
+float FPS = 0.0;
 
 
 
@@ -43,7 +46,7 @@ static void show_overlay(bool* debug) {
     const float PAD = 10.0f;
     static int corner = 0;
     ImGuiIO& io = ImGui::GetIO();
-    io.FontGlobalScale = 2.0;
+    io.FontGlobalScale = 1.0;
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
     if (corner != -1) {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -73,6 +76,8 @@ static void show_overlay(bool* debug) {
                     ImGui::Separator();
                     ImGui::Text("Time");
                     ImGui::TextUnformatted(std::to_string(time_markers[frame % NUM_TIMESTEPS]).c_str());
+                    ImGui::Text("Time (seconds): %.1f", seconds);
+                    ImGui::Text("FPS: %.3f", FPS);
                     ImGui::SliderInt("Time Step (in milliseconds)", &TIME_STEP_MILLI, 0, 500);
                     ImGui::Separator();
                     ImGui::EndTabItem();
@@ -90,10 +95,11 @@ static void show_overlay(bool* debug) {
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Player Pos: (%.8f,%.8f)", svc::playerLocator.get().physics.position.x, svc::playerLocator.get().physics.position.y);
-                    ImGui::Text("Player Vel: (%.8f,%.8f)", svc::playerLocator.get().physics.velocity.x, svc::playerLocator.get().physics.velocity.y);
-                    ImGui::Text("Player Acc: (%.8f,%.8f)", svc::playerLocator.get().physics.acceleration.x, svc::playerLocator.get().physics.acceleration.y);
-                    ImGui::Text("Player MTV: (%.8f,%.8f)", svc::playerLocator.get().mtv.x, svc::playerLocator.get().mtv.y);
+                    ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().physics.position.x, svc::playerLocator.get().physics.position.y);
+                    ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().physics.velocity.x, svc::playerLocator.get().physics.velocity.y);
+                    ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().physics.acceleration.x, svc::playerLocator.get().physics.acceleration.y);
+                    ImGui::Text("Player Fric: (%.4f,%.4f)", svc::playerLocator.get().physics.friction.x, svc::playerLocator.get().physics.friction.y);
+                    ImGui::Text("Player MTV: (%.4f,%.4f)", svc::playerLocator.get().physics.mtv.x, svc::playerLocator.get().physics.mtv.y);
                     ImGui::Separator();
                     
                     if(ImGui::Button("Player Gravity")) {
@@ -141,7 +147,6 @@ static void show_overlay(bool* debug) {
         ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
         if (ImGui::Begin("Parameters", debug, window_flags)) {
             ImGui::Text("Parameter Adjustments\n");
-            
         }
         ImGui::End();
     }
@@ -167,7 +172,7 @@ void run(char** argv) {
     
     //some SFML variables for drawing a basic window + background
     auto window = sf::RenderWindow{sf::VideoMode{screen_dimensions.x, screen_dimensions.y}, "For Nani (beta v1.0)"};
-//    window.setVerticalSyncEnabled(true);
+    window.setVerticalSyncEnabled(true);
     
     window.setKeyRepeatEnabled(false);
     ImGui::SFML::Init(window);
@@ -192,6 +197,9 @@ void run(char** argv) {
         elapsed_time += frame_time;
         elapsed_marker = elapsed_time;
         time_markers[frame%NUM_TIMESTEPS] = frame_time.count();
+        seconds += elapsed_time.count();
+        FPS_counter++;
+        FPS = FPS_counter / seconds;
         
         //SFML event variable
         auto event = sf::Event{};
@@ -228,7 +236,7 @@ void run(char** argv) {
         
 //        elapsed_time = Time::zero();
         if(elapsed_time.count() > time_step.count()) {
-            SM.get_current_state().logic(Time::zero());
+            SM.get_current_state().logic(elapsed_time);
             elapsed_time = Time::zero();
         }
         //ImGui update

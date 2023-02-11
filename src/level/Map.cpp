@@ -63,7 +63,7 @@ void Map::update() {
             if(svc::playerLocator.get().hurtbox.SAT(cell.bounding_box)) {
                 if(cell.value > 0) {
                     is_any_colllision = true;
-                    sf::operator+=(svc::playerLocator.get().mtv, svc::playerLocator.get().hurtbox.testCollisionGetMTV(svc::playerLocator.get().hurtbox, cell.bounding_box));
+                    sf::operator+=(svc::playerLocator.get().physics.mtv, svc::playerLocator.get().hurtbox.testCollisionGetMTV(svc::playerLocator.get().hurtbox, cell.bounding_box));
                     svc::playerLocator.get().just_collided = true;
                     svc::playerLocator.get().is_colliding_with_level = true;
                 }
