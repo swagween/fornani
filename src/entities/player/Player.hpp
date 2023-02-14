@@ -82,6 +82,8 @@ public:
     bool grav = true;
     bool just_collided = false;
     bool is_colliding_with_level{};
+    bool has_left_collision{};
+    bool has_right_collision{};
     bool grounded = false;
     bool jump_hold = false;
     bool can_jump{};

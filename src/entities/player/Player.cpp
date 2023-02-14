@@ -45,15 +45,16 @@ void Player::handle_events(sf::Event event) {
     if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == sf::Keyboard::Left) {
             move_left = false;
+            has_left_collision = false;
         }
         if (event.key.code == sf::Keyboard::Right) {
             move_right = false;
+            has_right_collision = false;
         }
     }
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Z) {
             jump_request = JUMP_BUFFER_TIME;
-            
         }
     }
     if (event.type == sf::Event::KeyReleased) {
@@ -76,19 +77,21 @@ void Player::update(Time dt) {
     
     
     //check keystate
-    if(move_left) {
+    if(move_left && !has_left_collision) {
         if(grounded) {
             physics.acceleration.x = -stats.X_ACC;
         } else {
             physics.acceleration.x = -stats.X_ACC/stats.AIR_MULTIPLIER;
         }
+        has_right_collision = false;
     }
-    if(move_right) {
+    if(move_right && !has_right_collision) {
         if(grounded) {
             physics.acceleration.x = stats.X_ACC;
         } else {
             physics.acceleration.x = stats.X_ACC/stats.AIR_MULTIPLIER;
         }
+        has_left_collision = false;
     }
     //zero the player's horizontal acceleration if movement was not requested
     if((!move_left && !move_right)) {
@@ -138,7 +141,6 @@ void Player::update(Time dt) {
     
     
     physics.update_euler(dt);
-    
     
     
     sync_components();

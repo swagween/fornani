@@ -84,16 +84,26 @@ void Map::update() {
                         svc::playerLocator.get().physics.velocity.y = 0.0f;
                         svc::playerLocator.get().physics.acceleration.y = 0.0f;
                     }
-//                    if(cell.type != squid::TILE_RAMP) {
+                    if(abs(svc::playerLocator.get().physics.mtv.x) > 0.01f && cell.type != squid::TILE_RAMP) {
                         svc::playerLocator.get().physics.position.x += svc::playerLocator.get().physics.mtv.x;
-//                    }
+                        svc::playerLocator.get().physics.velocity.x = 0.0f;
+                        svc::playerLocator.get().physics.acceleration.x = 0.0f;
+                        if(svc::playerLocator.get().physics.mtv.x > 0.0f) {
+                            svc::playerLocator.get().has_left_collision = true;
+                        }
+                        if(svc::playerLocator.get().physics.mtv.x < 0.0f) {
+                            svc::playerLocator.get().has_right_collision = true;
+                        }
+                    }
+                    if(svc::playerLocator.get().physics.mtv.x < 0.1f) {
+                        svc::playerLocator.get().has_left_collision = false;
+                    }
+                    if(svc::playerLocator.get().physics.mtv.x > -0.0f) {
+                        svc::playerLocator.get().has_right_collision = false;
+                    }
+                    
                     svc::playerLocator.get().sync_components();
                     
-                    //we don't want to displace player's X when moving up a ramp
-//                    if(cell.type != squid::TILE_RAMP && svc::playerLocator.get().physics.velocity.y > -0.01f) {
-//                        svc::playerLocator.get().physics.acceleration.x = 0.0f;
-//                        svc::playerLocator.get().physics.velocity.x = 0.0f;
-//                    }
                     //only for landing
                     if(svc::playerLocator.get().physics.velocity.y > 0.0f) {
                         svc::playerLocator.get().physics.acceleration.y = 0.0f;
@@ -118,7 +128,6 @@ void Map::update() {
                     is_any_jump_colllision = true;
                 }
             }
-//            if(is_any_colllision) { break; }
         }
     }
     if(is_any_jump_colllision) {

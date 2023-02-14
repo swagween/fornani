@@ -95,6 +95,12 @@ static void show_overlay(bool* debug) {
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Has Right Collision: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Has Left Collision: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().physics.position.x, svc::playerLocator.get().physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().physics.velocity.x, svc::playerLocator.get().physics.velocity.y);
                     ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().physics.acceleration.x, svc::playerLocator.get().physics.acceleration.y);
