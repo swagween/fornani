@@ -179,20 +179,31 @@ public:
         sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
         sf::RectangleShape jbx{};
         jbx.setPosition(jumpbox_pos.x, jumpbox_pos.y);
-        jbx.setFillColor(FL_Fucshia);
+        jbx.setFillColor(sf::Color(110, 98,  173, 40));
         jbx.setOutlineColor(sf::Color(235, 232, 249, 80));
         jbx.setOutlineThickness(-1);
         jbx.setSize({(float)svc::playerLocator.get().jumpbox.shape_w, (float)svc::playerLocator.get().jumpbox.shape_h});
         win.draw(jbx);
         
+        sf::Vector2<float> predictive_hurtbox_pos = sf::operator-(svc::playerLocator.get().predictive_hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
+        sf::RectangleShape predictive_hbx{};
+        predictive_hbx.setPosition(predictive_hurtbox_pos.x, predictive_hurtbox_pos.y);
+        predictive_hbx.setFillColor(sf::Color(215, 53,  180, 10));
+        predictive_hbx.setOutlineColor(FL_Fucshia);
+        predictive_hbx.setOutlineThickness(-1);
+        predictive_hbx.setSize({(float)svc::playerLocator.get().predictive_hurtbox.shape_w, (float)svc::playerLocator.get().predictive_hurtbox.shape_h});
+        win.draw(predictive_hbx);
+        
         sf::Vector2<float> hurtbox_pos = sf::operator-(svc::playerLocator.get().hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
         sf::RectangleShape hbx{};
         hbx.setPosition(hurtbox_pos.x, hurtbox_pos.y);
-        hbx.setFillColor(sf::Color(215, 53,  180, 150));
+        hbx.setFillColor(sf::Color(159, 138, 247, 200));
         hbx.setOutlineColor(FL_White);
         hbx.setOutlineThickness(-1);
         hbx.setSize({(float)svc::playerLocator.get().hurtbox.shape_w, (float)svc::playerLocator.get().hurtbox.shape_h});
         win.draw(hbx);
+        
+        
     }
     
     world::Map map{};

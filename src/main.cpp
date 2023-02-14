@@ -21,7 +21,7 @@
 namespace {
 
 const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
-const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 2, aspect_ratio.y / 2 };
+const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 3, aspect_ratio.y / 3 };
 
 auto SM = automa::StateManager{};
 auto window = sf::RenderWindow{sf::VideoMode{screen_dimensions.x, screen_dimensions.y}, "For Nani (beta v1.0)"};
@@ -171,7 +171,6 @@ void run(char** argv) {
     //init clock
     
     //some SFML variables for drawing a basic window + background
-    auto window = sf::RenderWindow{sf::VideoMode{screen_dimensions.x, screen_dimensions.y}, "For Nani (beta v1.0)"};
     window.setVerticalSyncEnabled(true);
     
     window.setKeyRepeatEnabled(false);
@@ -199,7 +198,7 @@ void run(char** argv) {
         time_markers[frame%NUM_TIMESTEPS] = frame_time.count();
         seconds += elapsed_time.count();
         FPS_counter++;
-        FPS = FPS_counter / seconds;
+        
         
         //SFML event variable
         auto event = sf::Event{};
@@ -237,6 +236,7 @@ void run(char** argv) {
 //        elapsed_time = Time::zero();
         if(elapsed_time.count() > time_step.count()) {
             SM.get_current_state().logic(elapsed_time);
+            FPS = FPS_counter / seconds;
             elapsed_time = Time::zero();
         }
         //ImGui update

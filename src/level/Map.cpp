@@ -54,18 +54,62 @@ void Map::update() {
     bool is_any_jump_colllision = false;
     bool is_any_colllision = false;
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().hurtbox.shape_x) > PLAYER_WIDTH*1.5f ||
+        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().hurtbox.shape_x) > PLAYER_WIDTH*1.0f ||
            abs(cell.bounding_box.shape_y - svc::playerLocator.get().hurtbox.shape_y) > PLAYER_HEIGHT*1.5f) {
             cell.collision_check = false;
             continue;
         } else {
             cell.collision_check = true;
-            if(svc::playerLocator.get().hurtbox.SAT(cell.bounding_box)) {
+            if(svc::playerLocator.get().predictive_hurtbox.SAT(cell.bounding_box)) {
                 if(cell.value > 0) {
                     is_any_colllision = true;
-                    sf::operator+=(svc::playerLocator.get().physics.mtv, svc::playerLocator.get().hurtbox.testCollisionGetMTV(svc::playerLocator.get().hurtbox, cell.bounding_box));
+                    svc::playerLocator.get().physics.mtv = svc::playerLocator.get().predictive_hurtbox.testCollisionGetMTV(svc::playerLocator.get().predictive_hurtbox, cell.bounding_box);
+                    
+                    
+                    if(svc::playerLocator.get().physics.velocity.y > 3.0f) {
+                        svc::playerLocator.get().physics.mtv.x = 0.0f;
+                    }
+                    //here, we can do MTV again with the player's predicted position based on velocity
+                    
+                    
+                    //resolve the collision here to prevent 1-frame clipping
+                    //all of this stuff is necessary
+                    
+                    //calculate how much we need to move the player once there's an overlap with predictive_hurtbox
+                    //get distance
+                    if(svc::playerLocator.get().physics.velocity.y > -0.01f) {
+                        float ydist = svc::playerLocator.get().predictive_hurtbox.shape_y - svc::playerLocator.get().physics.position.y;
+                        float correction = ydist + svc::playerLocator.get().physics.mtv.y;
+                        svc::playerLocator.get().physics.position.y += correction;
+                        svc::playerLocator.get().physics.velocity.y = 0.0f;
+                        svc::playerLocator.get().physics.acceleration.y = 0.0f;
+                    }
+//                    if(cell.type != squid::TILE_RAMP) {
+                        svc::playerLocator.get().physics.position.x += svc::playerLocator.get().physics.mtv.x;
+//                    }
+                    svc::playerLocator.get().sync_components();
+                    
+                    //we don't want to displace player's X when moving up a ramp
+//                    if(cell.type != squid::TILE_RAMP && svc::playerLocator.get().physics.velocity.y > -0.01f) {
+//                        svc::playerLocator.get().physics.acceleration.x = 0.0f;
+//                        svc::playerLocator.get().physics.velocity.x = 0.0f;
+//                    }
+                    //only for landing
+                    if(svc::playerLocator.get().physics.velocity.y > 0.0f) {
+                        svc::playerLocator.get().physics.acceleration.y = 0.0f;
+                        svc::playerLocator.get().physics.velocity.y = 0.0f;
+                    }
+                    //player hits the ceiling
+                    if(svc::playerLocator.get().physics.velocity.y < -0.01f) {
+                        svc::playerLocator.get().physics.acceleration.y = 0.0f;
+                        svc::playerLocator.get().physics.velocity.y *= -1;
+                        svc::playerLocator.get().physics.mtv.y *= -1;
+                        svc::playerLocator.get().jump_hold = false;
+                    }
+                    svc::playerLocator.get().physics.mtv = {0.0f, 0.0f};
                     svc::playerLocator.get().just_collided = true;
                     svc::playerLocator.get().is_colliding_with_level = true;
+                    
                 }
                 
             }
@@ -74,6 +118,7 @@ void Map::update() {
                     is_any_jump_colllision = true;
                 }
             }
+//            if(is_any_colllision) { break; }
         }
     }
     if(is_any_jump_colllision) {

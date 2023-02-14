@@ -46,7 +46,11 @@ public:
         sf::operator+=(velocity, acceleration);
         velocity.x *= friction.x;
         velocity.y *= friction.y;
-        sf::operator+=(position, velocity);
+        if(abs(mtv.y) < 0.0001) {
+            sf::operator+=(position, velocity);
+        } else {
+            position.y += mtv.y;
+        }
     }
     
     void update() {
