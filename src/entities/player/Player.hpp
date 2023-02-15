@@ -15,6 +15,9 @@ const float PLAYER_HEIGHT = 32.0f;
 const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
 const float JUMPBOX_HEIGHT = 2.0f;
+const float DETECTOR_WIDTH = 4.0f;
+const float DETECTOR_HEIGHT = 24.0f;
+const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 6;
 
 struct PhysicsStats {
@@ -70,6 +73,8 @@ public:
     Shape hurtbox{};
     Shape predictive_hurtbox{};
     Shape jumpbox{};
+    Shape left_detector{};
+    Shape right_detector{};
     
     components::PhysicsComponent physics{};
     PhysicsStats stats{};

@@ -53,13 +53,31 @@ void Map::load(const std::string& path) {
 void Map::update() {
     bool is_any_jump_colllision = false;
     bool is_any_colllision = false;
+    int left_aabb_counter = 0;
+    int right_aabb_counter = 0;
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().hurtbox.shape_x) > PLAYER_WIDTH*1.0f ||
+        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().hurtbox.shape_x) > PLAYER_WIDTH*1.5f ||
            abs(cell.bounding_box.shape_y - svc::playerLocator.get().hurtbox.shape_y) > PLAYER_HEIGHT*1.5f) {
             cell.collision_check = false;
             continue;
         } else {
             cell.collision_check = true;
+            if(cell.value > 0) {
+//                if(svc::playerLocator.get().hurtbox.AABB_is_left_collision(cell.bounding_box)) {
+                if(svc::playerLocator.get().left_detector.SAT(cell.bounding_box) && svc::playerLocator.get().physics.velocity.x < 0.01f) {
+                    svc::playerLocator.get().has_left_collision = true;
+                    svc::playerLocator.get().physics.acceleration.x = 0.0f;
+                    svc::playerLocator.get().physics.velocity.x = 0.0f;
+                    left_aabb_counter++;
+                }
+//                if(svc::playerLwocator.get().hurtbox.AABB_is_right_collision(cell.bounding_box)) {
+                if(svc::playerLocator.get().right_detector.SAT(cell.bounding_box) && svc::playerLocator.get().physics.velocity.x > -0.01f) {
+                    svc::playerLocator.get().has_right_collision = true;
+                    svc::playerLocator.get().physics.acceleration.x = 0.0f;
+                    svc::playerLocator.get().physics.velocity.x = 0.0f;
+                    right_aabb_counter++;
+                }
+            }
             if(svc::playerLocator.get().predictive_hurtbox.SAT(cell.bounding_box)) {
                 if(cell.value > 0) {
                     is_any_colllision = true;
@@ -84,33 +102,27 @@ void Map::update() {
                         svc::playerLocator.get().physics.velocity.y = 0.0f;
                         svc::playerLocator.get().physics.acceleration.y = 0.0f;
                     }
-                    if(abs(svc::playerLocator.get().physics.mtv.x) > 0.01f && cell.type != squid::TILE_RAMP) {
-                        svc::playerLocator.get().physics.position.x += svc::playerLocator.get().physics.mtv.x;
-                        svc::playerLocator.get().physics.velocity.x = 0.0f;
-                        svc::playerLocator.get().physics.acceleration.x = 0.0f;
-                        if(svc::playerLocator.get().physics.mtv.x > 0.0f) {
-                            svc::playerLocator.get().has_left_collision = true;
-                        }
-                        if(svc::playerLocator.get().physics.mtv.x < 0.0f) {
-                            svc::playerLocator.get().has_right_collision = true;
-                        }
-                    }
-                    if(svc::playerLocator.get().physics.mtv.x < 0.1f) {
-                        svc::playerLocator.get().has_left_collision = false;
-                    }
-                    if(svc::playerLocator.get().physics.mtv.x > -0.0f) {
-                        svc::playerLocator.get().has_right_collision = false;
-                    }
+//                    if(abs(svc::playerLocator.get().physics.mtv.x) > 0.01f && cell.type != squid::TILE_RAMP) {
+//                        svc::playerLocator.get().physics.position.x += svc::playerLocator.get().physics.mtv.x;
+//                        svc::playerLocator.get().physics.velocity.x = 0.0f;
+//                        svc::playerLocator.get().physics.acceleration.x = 0.0f;
+////                        if(svc::playerLocator.get().physics.mtv.x > 0.0f) {
+////                            svc::playerLocator.get().has_left_collision = true;
+////                        }
+////                        if(svc::playerLocator.get().physics.mtv.x < 0.0f) {
+////                            svc::playerLocator.get().has_right_collision = true;
+////                        }
+//                    }
                     
                     svc::playerLocator.get().sync_components();
                     
                     //only for landing
-                    if(svc::playerLocator.get().physics.velocity.y > 0.0f) {
+                    if(svc::playerLocator.get().physics.velocity.y > 0.0f && !svc::playerLocator.get().has_left_collision && !svc::playerLocator.get().has_right_collision) {
                         svc::playerLocator.get().physics.acceleration.y = 0.0f;
                         svc::playerLocator.get().physics.velocity.y = 0.0f;
                     }
                     //player hits the ceiling
-                    if(svc::playerLocator.get().physics.velocity.y < -0.01f) {
+                    if(svc::playerLocator.get().physics.velocity.y < -0.01f && abs(svc::playerLocator.get().physics.mtv.x) < abs(svc::playerLocator.get().physics.mtv.y)) {
                         svc::playerLocator.get().physics.acceleration.y = 0.0f;
                         svc::playerLocator.get().physics.velocity.y *= -1;
                         svc::playerLocator.get().physics.mtv.y *= -1;
@@ -121,7 +133,6 @@ void Map::update() {
                     svc::playerLocator.get().is_colliding_with_level = true;
                     
                 }
-                
             }
             if(svc::playerLocator.get().jumpbox.SAT(cell.bounding_box)) {
                 if(cell.value > 0) {
@@ -129,6 +140,13 @@ void Map::update() {
                 }
             }
         }
+    }
+    //update player flags
+    if(left_aabb_counter == 0) {
+        svc::playerLocator.get().has_left_collision = false;
+    }
+    if(right_aabb_counter == 0) {
+        svc::playerLocator.get().has_right_collision = false;
     }
     if(is_any_jump_colllision) {
         svc::playerLocator.get().grounded = true;

@@ -66,12 +66,12 @@ void Shape::update(double _x, double _y, double _w, double _h) {
     if(vertices.size() >= 4) {
         vertices[0].x = _x;
         vertices[0].y = _y;
-        vertices[1].x = _x + shape_w;
+        vertices[1].x = _x + _w;
         vertices[1].y = _y;
-        vertices[2].x = _x + shape_w;
-        vertices[2].y = _y + shape_h;
+        vertices[2].x = _x + _w;
+        vertices[2].y = _y + _h;
         vertices[3].x = _x;
-        vertices[3].y = _y + shape_h;
+        vertices[3].y = _y + _h;
     }
     for(int i = 0; i < vertices.size(); i++) {
         edges[i].x = vertices[(i + 1)%vertices.size()].x - vertices[i].x;
@@ -396,12 +396,13 @@ bool Shape::AABB_handle_right_collision_static(const Shape &immovable) {
 }
 
 const float small_value = 4.0;
+const float epsilon = 0.5f;
 
 bool Shape::AABB_is_left_collision(const Shape& immovable) {
     if(immovable.vertices.size() < 4) {
         return false;
     } else {
-        return (shape_x < immovable.vertices[1].x &&
+        return (shape_x - epsilon < immovable.vertices[1].x &&
                 (shape_y + shape_h) > vertices[1].y + small_value &&
                 shape_y < vertices[2].y - small_value &&
                 shape_x + shape_w > immovable.vertices[1].x);
@@ -412,9 +413,9 @@ bool Shape::AABB_is_right_collision(const Shape& immovable) {
     if(vertices.size() < 4) {
         return false;
     } else {
-        return (shape_x + shape_w > immovable.vertices[0].x &&
-                (shape_y + shape_h) > vertices[0].y + small_value &&
-                shape_y < vertices[3].y - small_value &&
-                shape_x < vertices[0].x);
+        return (shape_x + shape_w + epsilon > immovable.vertices[0].x &&
+                (shape_y + shape_h) > vertices[1].y + small_value &&
+                shape_y < vertices[2].y - small_value &&
+                shape_x < immovable.vertices[0].x);
     }
 }

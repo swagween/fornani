@@ -31,6 +31,16 @@ Player::Player() {
     jumpbox.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH, PLAYER_START_Y + PLAYER_HEIGHT + JUMPBOX_HEIGHT);
     jumpbox.vertices[3] = sf::Vector2<float>(PLAYER_START_X,  PLAYER_START_Y + PLAYER_HEIGHT + JUMPBOX_HEIGHT);
     
+    left_detector.vertices[0] = sf::Vector2<float>(PLAYER_START_X - DETECTOR_WIDTH,  PLAYER_START_Y + DETECTOR_BUFFER);
+    left_detector.vertices[1] = sf::Vector2<float>(PLAYER_START_X, PLAYER_START_Y + DETECTOR_BUFFER);
+    left_detector.vertices[2] = sf::Vector2<float>(PLAYER_START_X, PLAYER_START_Y + DETECTOR_HEIGHT);
+    left_detector.vertices[3] = sf::Vector2<float>(PLAYER_START_X - DETECTOR_WIDTH,  PLAYER_START_Y + DETECTOR_HEIGHT);
+    
+    right_detector.vertices[0] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH,  PLAYER_START_Y + DETECTOR_BUFFER);
+    right_detector.vertices[1] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH, PLAYER_START_Y + DETECTOR_BUFFER);
+    right_detector.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH, PLAYER_START_Y + DETECTOR_HEIGHT);
+    right_detector.vertices[3] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH,  PLAYER_START_Y + DETECTOR_HEIGHT);
+    
 }
 
 void Player::handle_events(sf::Event event) {
@@ -83,7 +93,6 @@ void Player::update(Time dt) {
         } else {
             physics.acceleration.x = -stats.X_ACC/stats.AIR_MULTIPLIER;
         }
-        has_right_collision = false;
     }
     if(move_right && !has_right_collision) {
         if(grounded) {
@@ -91,7 +100,6 @@ void Player::update(Time dt) {
         } else {
             physics.acceleration.x = stats.X_ACC/stats.AIR_MULTIPLIER;
         }
-        has_left_collision = false;
     }
     //zero the player's horizontal acceleration if movement was not requested
     if((!move_left && !move_right)) {
@@ -99,7 +107,7 @@ void Player::update(Time dt) {
     }
     
     //gravity and stats corrections
-    if(!grounded && !is_colliding_with_level) {
+    if(!grounded) {
         physics.acceleration.y += stats.PLAYER_GRAV;
     }
     
@@ -165,6 +173,8 @@ void Player::sync_components() {
     hurtbox.update(physics.position.x, physics.position.y, PLAYER_WIDTH, PLAYER_HEIGHT);
     predictive_hurtbox.update(physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y, PLAYER_WIDTH, PLAYER_HEIGHT);
     jumpbox.update(physics.position.x, physics.position.y + PLAYER_HEIGHT, PLAYER_WIDTH, JUMPBOX_HEIGHT);
+    left_detector.update(physics.position.x - DETECTOR_WIDTH, physics.position.y + DETECTOR_BUFFER, DETECTOR_WIDTH, DETECTOR_HEIGHT);
+    right_detector.update(physics.position.x + PLAYER_WIDTH, physics.position.y + DETECTOR_BUFFER, DETECTOR_WIDTH, DETECTOR_HEIGHT);
 }
 
 void Player::set_position(sf::Vector2<float> new_pos) {
