@@ -11,6 +11,8 @@
 Player::Player() {
     
     physics = components::PhysicsComponent({stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC}, stats.PLAYER_MASS);
+    anchor_point = {physics.position.x + PLAYER_WIDTH/2, physics.position.y + PLAYER_HEIGHT/2};
+    behavior.current_state = std::move(behavior.player_state.idle);
     
     hurtbox.init();
     predictive_hurtbox.init();
@@ -51,6 +53,12 @@ void Player::handle_events(sf::Event event) {
         if (event.key.code == sf::Keyboard::Right) {
             move_right = true;
         }
+        if (event.key.code == sf::Keyboard::Up) {
+            look_up = true;
+        }
+        if (event.key.code == sf::Keyboard::Down) {
+            look_down = true;
+        }
     }
     if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == sf::Keyboard::Left) {
@@ -60,6 +68,12 @@ void Player::handle_events(sf::Event event) {
         if (event.key.code == sf::Keyboard::Right) {
             move_right = false;
             has_right_collision = false;
+        }
+        if (event.key.code == sf::Keyboard::Up) {
+            look_up = false;
+        }
+        if (event.key.code == sf::Keyboard::Down) {
+            look_down = false;
         }
     }
     if (event.type == sf::Event::KeyPressed) {
@@ -101,6 +115,9 @@ void Player::update(Time dt) {
             physics.acceleration.x = stats.X_ACC/stats.AIR_MULTIPLIER;
         }
     }
+    if(move_left && move_right) {
+        physics.acceleration.x = 0.0f;
+    }
     //zero the player's horizontal acceleration if movement was not requested
     if((!move_left && !move_right)) {
         physics.acceleration.x = 0.0f;
@@ -110,15 +127,6 @@ void Player::update(Time dt) {
     if(!grounded) {
         physics.acceleration.y += stats.PLAYER_GRAV;
     }
-    
-    
-//    if(abs(physics.mtv.y) > 0.01) {
-//        physics.acceleration.y = 0.0f;
-//    }
-//    if(grounded) {
-//        physics.acceleration.y = 0.0f;
-//        physics.velocity.y = 0.0f;
-//    }
     
     
     //impose physics limitations
@@ -163,6 +171,8 @@ void Player::update(Time dt) {
         physics.mtv = {0.0f, 0.0f};
     }
     just_collided = false;
+    
+    update_behavior();
 }
 
 void Player::render() {
@@ -175,9 +185,130 @@ void Player::sync_components() {
     jumpbox.update(physics.position.x, physics.position.y + PLAYER_HEIGHT, PLAYER_WIDTH, JUMPBOX_HEIGHT);
     left_detector.update(physics.position.x - DETECTOR_WIDTH, physics.position.y + DETECTOR_BUFFER, DETECTOR_WIDTH, DETECTOR_HEIGHT);
     right_detector.update(physics.position.x + PLAYER_WIDTH, physics.position.y + DETECTOR_BUFFER, DETECTOR_WIDTH, DETECTOR_HEIGHT);
+    anchor_point = {physics.position.x + PLAYER_WIDTH/2, physics.position.y + PLAYER_HEIGHT/2};
+}
+
+void Player::update_behavior() {
+    update_direction();
 }
 
 void Player::set_position(sf::Vector2<float> new_pos) {
     physics.position = new_pos;
     sync_components();
+}
+
+void Player::update_direction() {
+    facing = behavior::DIR::NEUTRAL;
+    if(move_right) {
+        facing = behavior::DIR::RIGHT;
+        if(look_up) {
+            facing = behavior::DIR::UP_RIGHT;
+        }
+        if(look_down) {
+            facing = behavior::DIR::DOWN_RIGHT;
+        }
+    }
+    if(move_left) {
+        facing = behavior::DIR::LEFT;
+        if(look_up) {
+            facing = behavior::DIR::UP_LEFT;
+        }
+        if(look_down) {
+            facing = behavior::DIR::DOWN_LEFT;
+        }
+    }
+    if(!move_left && !move_right && look_up) {
+        facing = behavior::DIR::UP;
+    }
+    if(!move_left && !move_right && look_down) {
+        facing = behavior::DIR::DOWN;
+    }
+}
+
+void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
+    
+    if(left_detector.SAT(cell) && physics.velocity.x < 0.01f && !is_ramp) {
+        has_left_collision = true;
+        physics.acceleration.x = 0.0f;
+        physics.velocity.x = 0.0f;
+        left_aabb_counter++;
+    }
+    if(right_detector.SAT(cell) && physics.velocity.x > -0.01f && !is_ramp) {
+        has_right_collision = true;
+        physics.acceleration.x = 0.0f;
+        physics.velocity.x = 0.0f;
+        right_aabb_counter++;
+    }
+    if(predictive_hurtbox.SAT(cell)) {
+        is_any_colllision = true;
+        //set mtv
+        physics.mtv = predictive_hurtbox.testCollisionGetMTV(predictive_hurtbox, cell);
+        
+        
+        if(physics.velocity.y > 3.0f) {
+            physics.mtv.x = 0.0f;
+        }
+        //here, we can do MTV again with the player's predicted position based on velocity
+        if(physics.velocity.y > -0.01f) {
+            float ydist = predictive_hurtbox.shape_y - physics.position.y;
+            float correction = ydist + physics.mtv.y;
+            physics.position.y += correction;
+            physics.velocity.y = 0.0f;
+            physics.acceleration.y = 0.0f;
+        }
+        
+        sync_components();
+        
+        //only for landing
+        if(physics.velocity.y > 0.0f && !has_left_collision && !has_right_collision) {
+            physics.acceleration.y = 0.0f;
+            physics.velocity.y = 0.0f;
+        }
+        //player hits the ceiling
+        if(physics.velocity.y < -0.01f && abs(physics.mtv.x) < abs(physics.mtv.y)) {
+            physics.acceleration.y = 0.0f;
+            physics.velocity.y *= -1;
+            physics.mtv.y *= -1;
+            jump_hold = false;
+        }
+        physics.mtv = {0.0f, 0.0f};
+        just_collided = true;
+        is_colliding_with_level = true;
+        
+    }
+    if(jumpbox.SAT(cell)) {
+        is_any_jump_colllision = true;
+    }
+}
+
+std::string Player::print_direction() {
+    switch(facing) {
+        case behavior::DIR::NEUTRAL:
+            return "NEUTRAL";
+            break;
+        case behavior::DIR::LEFT:
+            return "LEFT";
+            break;
+        case behavior::DIR::RIGHT:
+            return "RIGHT";
+            break;
+        case behavior::DIR::UP:
+            return "UP";
+            break;
+        case behavior::DIR::DOWN:
+            return "DOWN";
+            break;
+        case behavior::DIR::UP_RIGHT:
+            return "UP RIGHT";
+            break;
+        case behavior::DIR::UP_LEFT:
+            return "UP LEFT";
+            break;
+        case behavior::DIR::DOWN_RIGHT:
+            return "DOWN RIGHT";
+            break;
+        case behavior::DIR::DOWN_LEFT:
+            return "DOWN LEFT";
+            break;
+    }
 }

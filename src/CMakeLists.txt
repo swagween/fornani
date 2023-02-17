@@ -13,15 +13,20 @@ target_sources(${PROJECT_NAME} PRIVATE
         particle/ObjectPool.hpp
         particle/Particle.hpp
         components/PhysicsComponent.hpp
+	components/BehaviorComponent.hpp
 	utils/Grid.hpp
 	utils/Grid.cpp
 	utils/Shape.hpp
 	utils/Shape.cpp
 	utils/Camera.hpp
+	utils/StateMachine.hpp
+	utils/AdjacencyList.hpp
 	setup/AssetManager.hpp
 	setup/ServiceLocator.hpp
 	entities/player/Player.hpp
 	entities/player/Player.cpp
+    entities/behavior/Behavior.hpp
+    entities/behavior/PlayerBehavior.hpp
 	level/Map.hpp
 	level/Map.cpp
 	automa/GameState.hpp

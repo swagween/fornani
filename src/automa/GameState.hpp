@@ -125,7 +125,7 @@ public:
         map.load(load_path);
     }
     void setTilesetTexture(std::vector<sf::Sprite>& tile_sprites) {
-        tileset = svc::assetLocator.get().sp_tileset;
+        tileset = svc::assetLocator.get().sp_tileset_provisional;
     }
     void handle_events(sf::Event event) {
         svc::playerLocator.get().handle_events(event);
@@ -139,7 +139,7 @@ public:
     
     void logic(Time dt) {
         map.update();
-        svc::cameraLocator.get().center(svc::playerLocator.get().physics.position);
+        svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
         svc::cameraLocator.get().update();
         svc::playerLocator.get().update(dt);
     }
@@ -166,15 +166,10 @@ public:
             }
         }
         sf::Vector2<float> player_pos = svc::playerLocator.get().physics.position - svc::cameraLocator.get().physics.position;
-//        svc::assetLocator.get().s_nani_idle.setPosition(player_pos);
-        sf::RectangleShape plr{};
-        plr.setPosition(player_pos.x, player_pos.y);
-        plr.setFillColor(FL_Goldenrod);
-        plr.setOutlineColor(FL_White);
-        plr.setOutlineThickness(-1);
-        plr.setSize({PLAYER_WIDTH, PLAYER_HEIGHT});
+        svc::playerLocator.get().current_sprite = svc::assetLocator.get().sp_nani.at(svc::playerLocator.get().behavior.current_state->lookup_value);
+        svc::playerLocator.get().current_sprite.setPosition(player_pos.x - (48 - PLAYER_WIDTH)/2, player_pos.y - (48 - PLAYER_HEIGHT));
         
-//        win.draw(plr);
+        win.draw(svc::playerLocator.get().current_sprite);
         
         sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
         sf::RectangleShape jbx{};
@@ -220,6 +215,11 @@ public:
         hbx.setOutlineThickness(-1);
         hbx.setSize({(float)svc::playerLocator.get().hurtbox.shape_w, (float)svc::playerLocator.get().hurtbox.shape_h});
         win.draw(hbx);
+        
+        svc::assetLocator.get().sp_hud.setPosition(20, 20);
+        svc::assetLocator.get().sp_hud2x.setPosition(20, 20);
+        win.draw(svc::assetLocator.get().sp_hud);
+//        win.draw(svc::assetLocator.get().s_hud2x);
         
         
     }

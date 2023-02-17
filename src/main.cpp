@@ -4,7 +4,7 @@
 //
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
+//#include <SFML/Audio.hpp>
 #include <cmath>
 #include <iostream>
 //#include "utils/Camera.hpp"
@@ -19,9 +19,6 @@
 #include <random>
 
 namespace {
-
-const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
-const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 3, aspect_ratio.y / 3 };
 
 auto SM = automa::StateManager{};
 auto window = sf::RenderWindow{sf::VideoMode{screen_dimensions.x, screen_dimensions.y}, "For Nani (beta v1.0)"};
@@ -42,9 +39,10 @@ float FPS = 0.0;
 
 
 
-static void show_overlay(bool* debug) {
+static void show_overlay() {
+    bool* debug{};
     const float PAD = 10.0f;
-    static int corner = 0;
+    static int corner = 1;
     ImGuiIO& io = ImGui::GetIO();
     io.FontGlobalScale = 1.0;
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -89,6 +87,9 @@ static void show_overlay(bool* debug) {
                     if(!svc::playerLocator.get().hurtbox.vertices.empty()) {
                         ImGui::Text("Player Hurtbox Pos: (%.1f,%.1f)", svc::playerLocator.get().hurtbox.vertices.at(0).x, svc::playerLocator.get().hurtbox.vertices.at(0).y);
                     }
+                    ImGui::Text("Player Facing: ");
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(svc::playerLocator.get().print_direction().c_str());
                     ImGui::Text("Colliding with Level: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -108,14 +109,12 @@ static void show_overlay(bool* debug) {
                     ImGui::Text("Player MTV: (%.4f,%.4f)", svc::playerLocator.get().physics.mtv.x, svc::playerLocator.get().physics.mtv.y);
                     ImGui::Separator();
                     
-                    if(ImGui::Button("Player Gravity")) {
-                        svc::playerLocator.get().grav = !svc::playerLocator.get().grav;
-                    }
                     ImGui::SliderFloat("GRAV", &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 2.0f);
+                    ImGui::SliderFloat("AIR MULTIPLIER", &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
                     ImGui::SliderFloat("PLAYER MAX XVEL", &svc::playerLocator.get().stats.PLAYER_MAX_XVEL, 0.1f, 8.0f);
                     ImGui::SliderFloat("PLAYER MAX YVEL", &svc::playerLocator.get().stats.PLAYER_MAX_YVEL, 0.1f, 8.0f);
-                    ImGui::SliderFloat("PLAYER HORIZ FRIC", &svc::playerLocator.get().stats.PLAYER_HORIZ_FRIC, 0.1f, 1.0f);
-                    ImGui::SliderFloat("PLAYER VERT FRIC", &svc::playerLocator.get().stats.PLAYER_VERT_FRIC, 0.1f, 1.0f);
+                    ImGui::SliderFloat("PLAYER FRIC", &svc::playerLocator.get().stats.PLAYER_HORIZ_FRIC, 0.1f, 1.0f);
+                    ImGui::SliderFloat("PLAYER AIR FRIC", &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.1f, 1.0f);
                     ImGui::SliderFloat("X ACC", &svc::playerLocator.get().stats.X_ACC, 0.0f, 1.0f);
                     ImGui::SliderFloat("Y ACC", &svc::playerLocator.get().stats.Y_ACC, 0.0f, 1.0f);
                     ImGui::SliderFloat("JUMP MAX", &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 10.0f);
@@ -135,7 +134,7 @@ static void show_overlay(bool* debug) {
                     ImGui::SameLine();
                     ImGui::TextUnformatted(SM.get_current_state_string().c_str());
                     if(ImGui::Button("Menu")) {
-                        svc::assetLocator.get().click.play();
+//                        svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());
                     }
                     ImGui::EndTabItem();
@@ -146,14 +145,6 @@ static void show_overlay(bool* debug) {
             
         }
         ImVec2 prev_size = ImGui::GetWindowSize();
-        ImGui::End();
-        //next window
-        window_pos.y = work_pos.y + prev_size.y + 2 * PAD;
-        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-        ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-        if (ImGui::Begin("Parameters", debug, window_flags)) {
-            ImGui::Text("Parameter Adjustments\n");
-        }
         ImGui::End();
     }
 }
@@ -173,7 +164,7 @@ void run(char** argv) {
     SM.set_current_state(std::make_unique<automa::GameState>());
     
     
-    bool debug_mode = false;
+    bool debug_mode = true;
     //init clock
     
     //some SFML variables for drawing a basic window + background
@@ -228,7 +219,7 @@ void run(char** argv) {
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/DOJO");
-                        SM.get_current_state().setTilesetTexture(svc::assetLocator.get().sp_tileset);
+                        SM.get_current_state().setTilesetTexture(svc::assetLocator.get().sp_tileset_provisional);
                     }
                     break;
                 default:
@@ -239,7 +230,7 @@ void run(char** argv) {
         
         //game logic and rendering
         
-//        elapsed_time = Time::zero();
+        //        elapsed_time = Time::zero();
         if(elapsed_time.count() > time_step.count()) {
             SM.get_current_state().logic(elapsed_time);
             FPS = FPS_counter / seconds;
@@ -247,10 +238,12 @@ void run(char** argv) {
         }
         //ImGui update
         ImGui::SFML::Update(window, deltaClock.restart());
-        ImGui::ShowDemoWindow();
+//        ImGui::ShowDemoWindow();
         
         //ImGui stuff
-        show_overlay(&debug_mode);
+        if(debug_mode) {
+            show_overlay();
+        }
         
         //my renders
         window.clear();

@@ -20,13 +20,16 @@ const float CAM_GRAV = 0.003f;
 const int CX_OFFSET = 60;
 const int CY_OFFSET = 60;
 
+const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
+const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 5, aspect_ratio.y / 5 };
+
 
 class Camera {
 public:
     
     Camera() {
         physics = components::PhysicsComponent({CAM_FRICTION, CAM_FRICTION}, CAM_MASS);
-        bounding_box = sf::Rect<float>({0.0f, 0.0f}, {960, 540});
+        bounding_box = sf::Rect<float>({0.0f, 0.0f}, {(float)screen_dimensions.x, (float)screen_dimensions.y});
     }
     
     void move(sf::Vector2<float> new_position) {

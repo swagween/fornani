@@ -9,38 +9,39 @@
 
 #include "../../utils/Shape.hpp"
 #include "../../components/PhysicsComponent.hpp"
+#include "../../components/BehaviorComponent.hpp"
 
-const float PLAYER_WIDTH = 32.0f;
-const float PLAYER_HEIGHT = 32.0f;
+const float PLAYER_WIDTH = 24.0f;
+const float PLAYER_HEIGHT = 28.0f;
 const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
 const float JUMPBOX_HEIGHT = 2.0f;
 const float DETECTOR_WIDTH = 4.0f;
-const float DETECTOR_HEIGHT = 24.0f;
+const float DETECTOR_HEIGHT = 26.0f;
 const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 6;
 
 struct PhysicsStats {
     
     float PLAYER_MAX_XVEL = 2.380f;
-    float PLAYER_MAX_YVEL = 0.0f;
+    float PLAYER_MAX_YVEL = 0.426f;
     
     float AIR_MULTIPLIER = 3.6f;
     
-    float PLAYER_GRAV = 0.347f;
+    float PLAYER_GRAV = 0.423f;
 
-    float PLAYER_FRIC = 0.994f;
+    float PLAYER_FRIC = 0.768f;
     float PLAYER_VERT_FRIC = 0.77f;
     float PLAYER_HORIZ_FRIC = 0.77;
-    float PLAYER_VERT_AIR_FRIC = 0.973f;
-    float PLAYER_HORIZ_AIR_FRIC = 0.973f;
+    float PLAYER_VERT_AIR_FRIC = 0.940f;
+    float PLAYER_HORIZ_AIR_FRIC = 0.940f;
     float PLAYER_MASS = 1.0f;
 
     float X_ACC = 0.794f;
     float Y_ACC = 0.794f;
     
     float JUMP_ACC = 0.8f;
-    float JUMP_MAX = 5.674f;
+    float JUMP_MAX = 5.309f;
     int   JUMP_TIME = 20;
     
     void load_from_json(std::string path) {
@@ -66,7 +67,15 @@ public:
     void render();
     
     void sync_components();
+    void update_behavior();
     void set_position(sf::Vector2<float> new_pos);
+    void update_direction();
+    
+    //collision
+    void handle_map_collision(const Shape& cell, bool is_ramp);
+    
+    //for debug mode
+    std::string print_direction();
     
     
     //member vars
@@ -77,12 +86,17 @@ public:
     Shape right_detector{};
     
     components::PhysicsComponent physics{};
+    components::PlayerBehaviorComponent behavior{};
+    behavior::DIR facing{};
     PhysicsStats stats{};
+    
+    sf::Sprite current_sprite{};
+    sf::Vector2<float> anchor_point{};
     
     bool move_left{};
     bool move_right{};
-    bool move_up{};
-    bool move_down{};
+    bool look_up{};
+    bool look_down{};
     
     bool grav = true;
     bool just_collided = false;
@@ -94,6 +108,11 @@ public:
     bool can_jump{};
     bool just_jumped{};
     int jump_request{};
+    
+    bool is_any_jump_colllision = false;
+    bool is_any_colllision = false;
+    int left_aabb_counter = 0;
+    int right_aabb_counter = 0;
     
     int jump_height_counter{};
     
