@@ -87,6 +87,13 @@ static void show_overlay() {
                     if(!svc::playerLocator.get().hurtbox.vertices.empty()) {
                         ImGui::Text("Player Hurtbox Pos: (%.1f,%.1f)", svc::playerLocator.get().hurtbox.vertices.at(0).x, svc::playerLocator.get().hurtbox.vertices.at(0).y);
                     }
+                    ImGui::Text("Player Behavior: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().behavior.current_state.get()) {
+                        ImGui::TextUnformatted(svc::playerLocator.get().behavior.current_state.get()->params.behavior_id.c_str());
+                    } else {
+                        ImGui::Text("nullptr");
+                    }
                     ImGui::Text("Player Facing: ");
                     ImGui::SameLine();
                     ImGui::TextUnformatted(svc::playerLocator.get().print_direction().c_str());

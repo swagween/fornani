@@ -12,7 +12,7 @@ Player::Player() {
     
     physics = components::PhysicsComponent({stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC}, stats.PLAYER_MASS);
     anchor_point = {physics.position.x + PLAYER_WIDTH/2, physics.position.y + PLAYER_HEIGHT/2};
-    behavior.current_state = std::move(behavior.player_state.idle);
+    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
     
     hurtbox.init();
     predictive_hurtbox.init();
@@ -64,10 +64,14 @@ void Player::handle_events(sf::Event event) {
         if (event.key.code == sf::Keyboard::Left) {
             move_left = false;
             has_left_collision = false;
+            stopping = true;
+            last_dir = behavior::DIR::LEFT;
         }
         if (event.key.code == sf::Keyboard::Right) {
             move_right = false;
             has_right_collision = false;
+            stopping = true;
+            last_dir = behavior::DIR::RIGHT;
         }
         if (event.key.code == sf::Keyboard::Up) {
             look_up = false;
@@ -115,9 +119,7 @@ void Player::update(Time dt) {
             physics.acceleration.x = stats.X_ACC/stats.AIR_MULTIPLIER;
         }
     }
-    if(move_left && move_right) {
-        physics.acceleration.x = 0.0f;
-    }
+    
     //zero the player's horizontal acceleration if movement was not requested
     if((!move_left && !move_right)) {
         physics.acceleration.x = 0.0f;
@@ -145,6 +147,7 @@ void Player::update(Time dt) {
     
     //now jump after all the y corrections
     if(jump_height_counter < stats.JUMP_TIME && jump_hold) {
+        
         physics.acceleration.y = -stats.JUMP_MAX;
         just_jumped = false;
         ++jump_height_counter;
@@ -155,6 +158,9 @@ void Player::update(Time dt) {
         jump_request--;
     }
     
+    if(move_left && move_right) {
+        physics.acceleration.x = 0.0f;
+    }
     
     physics.update_euler(dt);
     
@@ -189,7 +195,75 @@ void Player::sync_components() {
 }
 
 void Player::update_behavior() {
+    
+    if(!(behavior.current_state.get()->params.transitional && !behavior.current_state.get()->params.complete)) {
+        
+        if(just_jumped) {
+            behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::jumpsquat));
+        }
+        
+        if(move_left || move_right) {
+            switch(facing) {
+                case behavior::DIR::UP_RIGHT:
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running_up));
+                    break;
+                case behavior::DIR::DOWN_RIGHT:
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running_down));
+                    break;
+                case behavior::DIR::UP_LEFT:
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running_up));
+                    break;
+                case behavior::DIR::DOWN_LEFT:
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running_down));
+                    break;
+                default:
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running));
+                    break;
+            }
+        }
+        
+        if(!grounded) {
+            if(physics.velocity.y < 4.0f) {
+                behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::rising));
+            } else if(physics.velocity.y > 4.0f) {
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::falling));
+            } else {
+                behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::suspended));
+            }
+        }
+        
+        if(grounded && stopping) {
+            switch(facing) {
+                case behavior::DIR::UP_RIGHT:
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_up));
+                    break;
+                case behavior::DIR::DOWN_RIGHT:
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_down));
+                    break;
+                default:
+                    behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop));
+                    break;
+            }
+        }
+        
+        if(facing == behavior::DIR::LEFT || facing == behavior::DIR::UP_LEFT || facing == behavior::DIR::DOWN_LEFT) {
+            int lookup = behavior.current_state.get()->params.lookup_value;
+            behavior.current_state.get()->params.lookup_value = 210 + (lookup % 10) - (lookup - (lookup % 10));
+        }
+    }
+    
+    if(behavior.current_state) {
+        behavior.current_state->update(anim_frame);
+    }
+    
+    if(behavior.current_state.get()->params.complete) {
+        behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
+    }
+    
+    anim_frame++;
     update_direction();
+    
+    stopping = false;
 }
 
 void Player::set_position(sf::Vector2<float> new_pos) {
@@ -198,7 +272,7 @@ void Player::set_position(sf::Vector2<float> new_pos) {
 }
 
 void Player::update_direction() {
-    facing = behavior::DIR::NEUTRAL;
+    facing = last_dir;
     if(move_right) {
         facing = behavior::DIR::RIGHT;
         if(look_up) {

@@ -165,11 +165,7 @@ public:
                 }
             }
         }
-        sf::Vector2<float> player_pos = svc::playerLocator.get().physics.position - svc::cameraLocator.get().physics.position;
-        svc::playerLocator.get().current_sprite = svc::assetLocator.get().sp_nani.at(svc::playerLocator.get().behavior.current_state->lookup_value);
-        svc::playerLocator.get().current_sprite.setPosition(player_pos.x - (48 - PLAYER_WIDTH)/2, player_pos.y - (48 - PLAYER_HEIGHT));
         
-        win.draw(svc::playerLocator.get().current_sprite);
         
         sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
         sf::RectangleShape jbx{};
@@ -215,6 +211,12 @@ public:
         hbx.setOutlineThickness(-1);
         hbx.setSize({(float)svc::playerLocator.get().hurtbox.shape_w, (float)svc::playerLocator.get().hurtbox.shape_h});
         win.draw(hbx);
+        
+        sf::Vector2<float> player_pos = svc::playerLocator.get().physics.position - svc::cameraLocator.get().physics.position;
+        svc::playerLocator.get().current_sprite = svc::assetLocator.get().sp_nani.at(svc::playerLocator.get().behavior.current_state->params.lookup_value + svc::playerLocator.get().behavior.current_state->params.current_frame);
+        svc::playerLocator.get().current_sprite.setPosition(player_pos.x - (48 - PLAYER_WIDTH)/2, player_pos.y - (48 - PLAYER_HEIGHT));
+        
+        win.draw(svc::playerLocator.get().current_sprite);
         
         svc::assetLocator.get().sp_hud.setPosition(20, 20);
         svc::assetLocator.get().sp_hud2x.setPosition(20, 20);

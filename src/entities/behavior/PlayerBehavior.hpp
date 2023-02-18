@@ -22,30 +22,24 @@ enum class DIR {
     DOWN_LEFT
 };
 
+static BehaviorParameters idle = BehaviorParameters("idle", 8, false, 20);
+static BehaviorParameters idle_up = BehaviorParameters("idle_up", 8, false, 0);
+static BehaviorParameters idle_down = BehaviorParameters("idle_down", 8, false, 10);
+static BehaviorParameters jumpsquat = BehaviorParameters("jumpsquat", 2, true, 60);
+static BehaviorParameters rising = BehaviorParameters("rising", 2, true, 54);
+static BehaviorParameters suspended = BehaviorParameters("suspended", 3, false, 30);
+static BehaviorParameters falling = BehaviorParameters("falling", 4, false, 62);
+static BehaviorParameters running_up = BehaviorParameters("running_up", 4, false, 40);
+static BehaviorParameters running_down = BehaviorParameters("running_down", 4, false, 50);
+static BehaviorParameters running = BehaviorParameters("running", 4, false, 44);
+static BehaviorParameters landing = BehaviorParameters("landing", 2, true, 56);
+static BehaviorParameters stop = BehaviorParameters("stop", 2, true, 74);
+static BehaviorParameters stop_up = BehaviorParameters("stop_up", 2, true, 70);
+static BehaviorParameters stop_down = BehaviorParameters("stop_down", 2, true, 72);
+
+
 struct PlayerBehavior {
-    
-    std::unique_ptr<Behavior> idle = std::make_unique<Behavior>();
-    
-//    Behavior running =                  Behavior(BEHAVIOR::RUNNING,                 {BEHAVIOR::TURNING, BEHAVIOR::RUNNING, BEHAVIOR::IDLE, BEHAVIOR::JUMPSQUAT},                    44);
-//    Behavior jumpsquat =                Behavior(BEHAVIOR::JUMPSQUAT,               {BEHAVIOR::JUMPING_FORWARDS, BEHAVIOR::JUMPING_BACKWARDS},                                      60);
-//    Behavior jumping_forwards =         Behavior(BEHAVIOR::JUMPING_FORWARDS,        {BEHAVIOR::DOUBLE_JUMPING_FORWARDS, BEHAVIOR::DOUBLE_JUMPING_BACKWARDS, BEHAVIOR::SUSPENDED},   54);
-//    Behavior jumping_backwards =        Behavior(BEHAVIOR::JUMPING_BACKWARDS,       {BEHAVIOR::DOUBLE_JUMPING_FORWARDS, BEHAVIOR::DOUBLE_JUMPING_BACKWARDS, BEHAVIOR::SUSPENDED},   0);//todo
-//    Behavior susppended =               Behavior(BEHAVIOR::SUSPENDED,               {BEHAVIOR::FALLING}, 30);
-//    Behavior falling =                  Behavior(BEHAVIOR::FALLING,                 {BEHAVIOR::LANDING}, 62);
-//    Behavior landing =                  Behavior(BEHAVIOR::LANDING,                 {BEHAVIOR::IDLE}, 56);
-//    Behavior inspecting =               Behavior(BEHAVIOR::INSPECTING,              {BEHAVIOR::IDLE}, 0);//todo
-//    Behavior turning =                  Behavior(BEHAVIOR::TURNING,                 {BEHAVIOR::IDLE}, 0);//todo
-//    Behavior stopping =                 Behavior(BEHAVIOR::STOPPING,                {BEHAVIOR::IDLE}, 70);
-//    Behavior hurt =                     Behavior(BEHAVIOR::HURT,                    {BEHAVIOR::NONE}, 0);//todo
-//    Behavior dashing =                  Behavior(BEHAVIOR::DASHING,                 {BEHAVIOR::NONE}, 0);//todo
-//    Behavior double_jumping_forwards =  Behavior(BEHAVIOR::DOUBLE_JUMPING_FORWARDS, {BEHAVIOR::NONE}, 0);//todo
-//    Behavior double_jumping_backwards = Behavior(BEHAVIOR::DOUBLE_JUMPING_BACKWARDS,{BEHAVIOR::NONE}, 0);//todo
-//    Behavior yawning =                  Behavior(BEHAVIOR::YAWNING,                 {BEHAVIOR::NONE}, 0);//todo
-//    Behavior fidgeting =                Behavior(BEHAVIOR::FIDGETING,               {BEHAVIOR::NONE}, 0);//todo
-//    Behavior sleeping =                 Behavior(BEHAVIOR::SLEEPING,                {BEHAVIOR::NONE}, 0);//todo
-//    Behavior dying =                    Behavior(BEHAVIOR::DYING,                   {BEHAVIOR::NONE}, 0);//todo
-    
-    
+    PlayerBehavior() {}
 };
 
 

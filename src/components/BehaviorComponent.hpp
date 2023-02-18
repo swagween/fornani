@@ -17,39 +17,27 @@
 
 namespace components {
 
-enum class BEHAVIOR_TYPE {
-    PLAYER_BEHAVIOR
-};
-
 class BehaviorComponent {
 public:
     
-    BehaviorComponent() {};
-    BehaviorComponent(int num) : num_behaviors(num) {};
+    BehaviorComponent() = default;
+    ~BehaviorComponent() { current_state.reset(); }
+
+    virtual void update() {};
     
-    virtual void instantiate_behaviors() {};
-    
-//    StateMachine<behavior::Behavior> machine{};
-    
-    int num_behaviors{};
-    BEHAVIOR_TYPE type;
+    std::unique_ptr<behavior::Behavior> current_state = std::make_unique<behavior::Behavior>();
     
 };
 
 class PlayerBehaviorComponent : public BehaviorComponent {
 public:
     
-    PlayerBehaviorComponent() {};
-    PlayerBehaviorComponent(const PlayerBehaviorComponent& PBC) {
-        
-    }
-    
-    void instantiate_behaviors() {
-        
+    void update(int frame) {
+        assert(current_state);
+        current_state.get()->update(frame);
     }
     
     behavior::PlayerBehavior player_state{};
-    std::unique_ptr<behavior::Behavior> current_state = std::make_unique<behavior::Behavior>();
     
 };
 

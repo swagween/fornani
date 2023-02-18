@@ -88,6 +88,7 @@ public:
     components::PhysicsComponent physics{};
     components::PlayerBehaviorComponent behavior{};
     behavior::DIR facing{};
+    behavior::DIR last_dir{};
     PhysicsStats stats{};
     
     sf::Sprite current_sprite{};
@@ -107,12 +108,14 @@ public:
     bool jump_hold = false;
     bool can_jump{};
     bool just_jumped{};
+    bool stopping{};
     int jump_request{};
     
     bool is_any_jump_colllision = false;
     bool is_any_colllision = false;
     int left_aabb_counter = 0;
     int right_aabb_counter = 0;
+    int anim_frame{};
     
     int jump_height_counter{};
     
