@@ -19,7 +19,8 @@ const float JUMPBOX_HEIGHT = 2.0f;
 const float DETECTOR_WIDTH = 4.0f;
 const float DETECTOR_HEIGHT = 26.0f;
 const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
-const int JUMP_BUFFER_TIME = 6;
+const int JUMP_BUFFER_TIME = 12;
+const int ANCHOR_BUFFER = 50;
 
 struct PhysicsStats {
     
@@ -28,9 +29,9 @@ struct PhysicsStats {
     
     float AIR_MULTIPLIER = 3.6f;
     
-    float PLAYER_GRAV = 0.423f;
+    float PLAYER_GRAV = 0.247f;
 
-    float PLAYER_FRIC = 0.768f;
+    float PLAYER_FRIC = 0.763f;
     float PLAYER_VERT_FRIC = 0.77f;
     float PLAYER_HORIZ_FRIC = 0.77;
     float PLAYER_VERT_AIR_FRIC = 0.940f;
@@ -41,7 +42,7 @@ struct PhysicsStats {
     float Y_ACC = 0.794f;
     
     float JUMP_ACC = 0.8f;
-    float JUMP_MAX = 5.309f;
+    float JUMP_MAX = 4.948f;
     int   JUMP_TIME = 20;
     
     void load_from_json(std::string path) {
@@ -65,6 +66,7 @@ public:
     void handle_events(sf::Event event);
     void update(Time dt);
     void render();
+    void update_animation();
     
     void sync_components();
     void update_behavior();
@@ -87,7 +89,6 @@ public:
     
     components::PhysicsComponent physics{};
     components::PlayerBehaviorComponent behavior{};
-    behavior::DIR facing{};
     behavior::DIR last_dir{};
     PhysicsStats stats{};
     
@@ -106,16 +107,25 @@ public:
     bool has_right_collision{};
     bool grounded = false;
     bool jump_hold = false;
+    bool jump_trigger = false;
     bool can_jump{};
     bool just_jumped{};
+    bool is_jump_pressed{};
     bool stopping{};
+    bool just_landed{};
+    bool started_moving{};
     int jump_request{};
+    
+    bool suspended_trigger{};
+    bool fall_trigger{};
+    bool landed_trigger{};
+    bool entered_freefall{};
+    bool freefalling{};
     
     bool is_any_jump_colllision = false;
     bool is_any_colllision = false;
     int left_aabb_counter = 0;
     int right_aabb_counter = 0;
-    int anim_frame{};
     
     int jump_height_counter{};
     

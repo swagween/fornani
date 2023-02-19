@@ -36,6 +36,7 @@ float seconds = 0.0;
 int FPS_counter = 0;
 float FPS = 0.0;
 
+int shake_counter = 0;
 
 
 
@@ -94,6 +95,15 @@ static void show_overlay() {
                     } else {
                         ImGui::Text("nullptr");
                     }
+                    ImGui::Text("Behavior Restricted: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().behavior.current_state.get()) {
+                        if(svc::playerLocator.get().behavior.restricted()) {
+                            ImGui::TextUnformatted("Yes");
+                        } else {
+                            ImGui::TextUnformatted("No");
+                        }
+                    }
                     ImGui::Text("Player Facing: ");
                     ImGui::SameLine();
                     ImGui::TextUnformatted(svc::playerLocator.get().print_direction().c_str());
@@ -103,6 +113,24 @@ static void show_overlay() {
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Jump Request: ");
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_request).c_str());
+                    ImGui::Text("Jump Height Counter: ");
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_height_counter).c_str());
+                    ImGui::Text("Jump Hold: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().jump_hold) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Just Jumped: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().just_jumped) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Anim Frame: ");
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.current_frame).c_str());
+                    ImGui::Text("Real Frame: ");
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
                     ImGui::Text("Has Right Collision: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -242,8 +270,13 @@ void run(char** argv) {
             SM.get_current_state().logic(elapsed_time);
             FPS = FPS_counter / seconds;
             elapsed_time = Time::zero();
+            if((int)floor(seconds) % 8 == 0) {
+//                svc::cameraLocator.get().begin_shake();
+            }
         }
-        //ImGui update
+        
+        
+            
         ImGui::SFML::Update(window, deltaClock.restart());
 //        ImGui::ShowDemoWindow();
         

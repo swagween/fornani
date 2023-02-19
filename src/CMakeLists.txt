@@ -21,6 +21,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	utils/Camera.hpp
 	utils/StateMachine.hpp
 	utils/AdjacencyList.hpp
+	utils/Random.hpp
 	setup/AssetManager.hpp
 	setup/ServiceLocator.hpp
 	entities/player/Player.hpp

@@ -70,6 +70,9 @@ public:
     int shape_w;
     int shape_h;
     
+    float left_offset{};
+    float right_offset{};
+    
     int num_sides;
     
 };

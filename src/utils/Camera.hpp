@@ -10,6 +10,7 @@
 #include <vector>
 #include <cmath>
 #include "../components/PhysicsComponent.hpp"
+#include "../utils/Random.hpp"
 
 namespace {
 
@@ -20,8 +21,12 @@ const float CAM_GRAV = 0.003f;
 const int CX_OFFSET = 60;
 const int CY_OFFSET = 60;
 
+const int SHAKE_FACTOR = 8;
+const int SHAKE_VOLATILITY = 12;
+const int SHAKE_DURATION = 100;
+
 const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
-const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 5, aspect_ratio.y / 5 };
+const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 4, aspect_ratio.y / 4 };
 
 
 class Camera {
@@ -49,6 +54,16 @@ public:
             bounding_box.left = 0.0f;
             physics.position.x = 0.0f;
         }
+        if(shaking) {
+            if(shake_counter % SHAKE_VOLATILITY == 0) {
+                shake();
+            }
+            shake_counter++;
+            if(shake_counter > SHAKE_DURATION) {
+                shake_counter = 0;
+                shaking = false;
+            }
+        }
     }
     
     void set_position(sf::Vector2<float> new_pos) {
@@ -71,8 +86,24 @@ public:
         update();
     }
     
+    void begin_shake() {
+        shaking = true;
+    }
+    
+    void shake() {
+        float nudge_x = rand.random_range(-SHAKE_FACTOR, SHAKE_FACTOR);
+        float nudge_y = rand.random_range(-SHAKE_FACTOR, SHAKE_FACTOR);
+        physics.velocity.x = nudge_x*0.1;
+        physics.velocity.y = nudge_y*0.1;
+    }
+    
     sf::Rect<float> bounding_box{};
     components::PhysicsComponent physics{};
+    
+    int shake_counter{};
+    bool shaking = false;
+    
+    util::Random rand{};
     
 };
 

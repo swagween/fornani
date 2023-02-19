@@ -68,9 +68,9 @@ void Shape::update(double _x, double _y, double _w, double _h) {
         vertices[0].y = _y;
         vertices[1].x = _x + _w;
         vertices[1].y = _y;
-        vertices[2].x = _x + _w;
+        vertices[2].x = _x + _w - right_offset;
         vertices[2].y = _y + _h;
-        vertices[3].x = _x;
+        vertices[3].x = _x + left_offset;
         vertices[3].y = _y + _h;
     }
     for(int i = 0; i < vertices.size(); i++) {
