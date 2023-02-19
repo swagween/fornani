@@ -159,7 +159,7 @@ public:
                             box.setOutlineThickness(-1);
                             box.setPosition(map.layers.at(i).grid.cells.at(j).bounding_box.shape_x - svc::cameraLocator.get().physics.position.x, map.layers.at(i).grid.cells.at(j).bounding_box.shape_y - svc::cameraLocator.get().physics.position.y);
                             box.setSize({32, 32});
-                            win.draw(box);
+//                            win.draw(box);
                         }
                     }
                 }
@@ -230,7 +230,7 @@ public:
     
     world::Map map{};
     std::vector<sf::Sprite> tileset{};
-    bool show_colliders = true;
+    bool show_colliders = false;
     
 };
 

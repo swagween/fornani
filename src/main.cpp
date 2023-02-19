@@ -21,7 +21,7 @@
 namespace {
 
 auto SM = automa::StateManager{};
-auto window = sf::RenderWindow{sf::VideoMode{screen_dimensions.x, screen_dimensions.y}, "For Nani (beta v1.0)"};
+auto window = sf::RenderWindow();;
 
 const int NUM_TIMESTEPS = 64;
 int TIME_STEP_MILLI = 0;
@@ -61,6 +61,12 @@ static void show_overlay() {
         ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
         if (ImGui::Begin("Debug Mode", debug, window_flags)) {
             ImGui::Text("Debug Window\n" "For Nani (beta version 1.0.0)");
+            ImGui::Text("Window Focused: ");
+            ImGui::SameLine();
+            if(window.hasFocus()) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+            if(!window.hasFocus()) {
+                window.RenderTarget::setActive();
+            }
             ImGui::Separator();
             if (ImGui::IsMousePosValid()) {
                 ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
@@ -113,6 +119,12 @@ static void show_overlay() {
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Is Wall Sliding: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().is_wall_sliding) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Wall Slide Trigger: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().wall_slide_trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Jump Request: ");
                     ImGui::SameLine();
                     ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_request).c_str());
@@ -131,6 +143,9 @@ static void show_overlay() {
                     ImGui::Text("Real Frame: ");
                     ImGui::SameLine();
                     ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
+                    ImGui::Text("Trigger: ");
+                    ImGui::SameLine();
+                    if(behavior::trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Has Right Collision: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -198,6 +213,7 @@ void run(char** argv) {
     //state manager
     SM.set_current_state(std::make_unique<automa::GameState>());
     
+    window.create(sf::VideoMode(screen_dimensions.x, screen_dimensions.y), "For Nani (beta v1.0)");
     
     bool debug_mode = true;
     //init clock
@@ -206,7 +222,9 @@ void run(char** argv) {
     window.setVerticalSyncEnabled(true);
     
     window.setKeyRepeatEnabled(false);
+    
     ImGui::SFML::Init(window);
+    window.requestFocus();
     
     
     sf::RectangleShape background{};

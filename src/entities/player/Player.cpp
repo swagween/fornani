@@ -34,8 +34,8 @@ Player::Player() {
     jumpbox.vertices[3] = sf::Vector2<float>(PLAYER_START_X,  PLAYER_START_Y + PLAYER_HEIGHT + JUMPBOX_HEIGHT);
     
     
-    left_detector.left_offset = 2.0;
-    right_detector.right_offset = 2.0;
+    left_detector.left_offset = DETECTOR_WIDTH - 0.0001;
+    right_detector.right_offset = DETECTOR_WIDTH - 0.0001;
     
     left_detector.vertices[0] = sf::Vector2<float>(PLAYER_START_X - DETECTOR_WIDTH,  PLAYER_START_Y + DETECTOR_BUFFER);
     left_detector.vertices[1] = sf::Vector2<float>(PLAYER_START_X, PLAYER_START_Y + DETECTOR_BUFFER);
@@ -57,11 +57,15 @@ void Player::handle_events(sf::Event event) {
             if(grounded) {
                 if(behavior.facing == behavior::DIR::RIGHT) {
                     behavior.turn();
+                    behavior.facing = behavior::DIR::LEFT;
+                    behavior.flip_left();
                 } else {
                     behavior.run();
                 }
             } else {
-                behavior.air(physics.velocity.y);
+                if(!is_wall_sliding) {
+                    behavior.air(physics.velocity.y);
+                }
             }
             behavior.facing = behavior::DIR::LEFT;
         }
@@ -74,7 +78,9 @@ void Player::handle_events(sf::Event event) {
                     behavior.run();
                 }
             } else {
-                behavior.air(physics.velocity.y);
+                if(!is_wall_sliding) {
+                    behavior.air(physics.velocity.y);
+                }
             }
             behavior.facing = behavior::DIR::RIGHT;
         }
@@ -89,15 +95,18 @@ void Player::handle_events(sf::Event event) {
         if (event.key.code == sf::Keyboard::Left) {
             move_left = false;
             has_left_collision = false;
+            if(!has_right_collision) {
+                is_wall_sliding = false;
+            }
             stopping = true;
             last_dir = behavior::DIR::LEFT;
-            started_moving = true;
+            left_released = true;
             if(grounded) {
                 if(!move_right && !behavior.restricted()) {
                     behavior.reset();
                 }
             } else {
-                if(!behavior.restricted()) {
+                if(!behavior.restricted() && !is_wall_sliding) {
                     behavior.air(physics.velocity.y);
                 }
             }
@@ -105,15 +114,18 @@ void Player::handle_events(sf::Event event) {
         if (event.key.code == sf::Keyboard::Right) {
             move_right = false;
             has_right_collision = false;
+            if(!has_left_collision) {
+                is_wall_sliding = false;
+            }
             stopping = true;
             last_dir = behavior::DIR::RIGHT;
-            started_moving = true;
+            right_released = true;
             if(grounded) {
                 if(!behavior.restricted()) {
                     behavior.reset();
                 }
             } else {
-                if(!behavior.restricted()) {
+                if(!behavior.restricted() && !is_wall_sliding) {
                     behavior.air(physics.velocity.y);
                 }
             }
@@ -145,6 +157,7 @@ void Player::handle_events(sf::Event event) {
 }
 
 void Player::update(Time dt) {
+    if(behavior::trigger) { behavior.reset(); }
     update_animation();
     //check if player requested jump
     if(grounded && jump_request > 0) {
@@ -192,6 +205,7 @@ void Player::update(Time dt) {
     }
     
     
+    
     //impose physics limitations
     if(!behavior.restricted()) {
         if(physics.velocity.x > stats.PLAYER_MAX_XVEL) {
@@ -206,6 +220,12 @@ void Player::update(Time dt) {
         if(physics.velocity.y < -stats.PLAYER_MAX_YVEL) {
             physics.velocity.y = -stats.PLAYER_MAX_YVEL;
         }
+    }
+    
+    
+    if(is_wall_sliding) {
+        physics.acceleration.y = 0.0f;
+        physics.velocity.y = stats.WALL_SLIDE_SPEED;
     }
     
     //now jump after all the y corrections
@@ -275,15 +295,10 @@ void Player::sync_components() {
 }
 
 void Player::update_behavior() {
-    if(just_jumped) {
+    
+    if(just_jumped && !is_wall_sliding) {
         behavior.air(physics.velocity.y);
         just_jumped = false;
-    }
-    
-    if(!move_right && physics.velocity.x < 0.3 && physics.velocity.x > 0.1f && grounded) {
-        if(!behavior.restricted() && behavior.current_state->params.behavior_id == "idle") {
-//            behavior.stop();
-        }
     }
     
     if(behavior.current_state.get()->params.complete) {
@@ -307,7 +322,7 @@ void Player::update_behavior() {
     if(physics.velocity.y > behavior.suspension_threshold && !freefalling) {
         entered_freefall = true;
     }
-    if(entered_freefall && !freefalling) {
+    if(entered_freefall && !freefalling && !is_wall_sliding) {
         behavior.fall();
         freefalling = true;
         entered_freefall = false;
@@ -319,19 +334,34 @@ void Player::update_behavior() {
         }
     }
     
+    if(wall_slide_trigger) {
+        behavior.wall_slide();
+    }
+    
     
     if(just_landed) {
         behavior.land();
         freefalling = false;
     }
-    
    
     
     behavior.flip_left();
-    update_direction();
+    behavior::trigger = false;
+    
+    
+    
+    if(wall_slide_trigger) { is_wall_sliding = true; }
     
     stopping = false;
     just_landed = false;
+    left_released = false;
+    right_released = false;
+    wall_slide_trigger = false;
+    
+    if(grounded || (!has_left_collision && !has_right_collision)) {
+        is_wall_sliding = false;
+    }
+    update_direction();
     
 }
 
@@ -375,12 +405,18 @@ void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
         physics.acceleration.x = 0.0f;
         physics.velocity.x = 0.0f;
         left_aabb_counter++;
+        if(!grounded && physics.velocity.y > stats.WALL_SLIDE_THRESHOLD && move_left && !is_wall_sliding) {
+            wall_slide_trigger = true;
+        }
     }
     if(right_detector.SAT(cell) && physics.velocity.x > -0.01f && !is_ramp) {
         has_right_collision = true;
         physics.acceleration.x = 0.0f;
         physics.velocity.x = 0.0f;
         right_aabb_counter++;
+        if(!grounded && physics.velocity.y > stats.WALL_SLIDE_THRESHOLD && move_right && !is_wall_sliding) {
+            wall_slide_trigger = true;
+        }
     }
     if(predictive_hurtbox.SAT(cell)) {
         is_any_colllision = true;
@@ -393,7 +429,7 @@ void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
         }
         //here, we can do MTV again with the player's predicted position based on velocity
         if(physics.velocity.y > -0.01f) {
-            if(physics.velocity.y > 3.0) {
+            if(physics.velocity.y > stats.LANDED_THRESHOLD) {
                 just_landed = true;
             }
             float ydist = predictive_hurtbox.shape_y - physics.position.y;

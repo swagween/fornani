@@ -10,6 +10,7 @@
 #include "../../utils/Shape.hpp"
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
+#include "../../weapon/Arsenal.hpp"
 
 const float PLAYER_WIDTH = 24.0f;
 const float PLAYER_HEIGHT = 28.0f;
@@ -17,10 +18,11 @@ const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
 const float JUMPBOX_HEIGHT = 2.0f;
 const float DETECTOR_WIDTH = 4.0f;
-const float DETECTOR_HEIGHT = 26.0f;
+const float DETECTOR_HEIGHT = 24.0f;
 const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 12;
 const int ANCHOR_BUFFER = 50;
+
 
 struct PhysicsStats {
     
@@ -44,6 +46,11 @@ struct PhysicsStats {
     float JUMP_ACC = 0.8f;
     float JUMP_MAX = 4.948f;
     int   JUMP_TIME = 20;
+    
+    float WALL_SLIDE_THRESHOLD = -1.0f;
+    float WALL_SLIDE_SPEED = 1.31f;
+    
+    float LANDED_THRESHOLD = 3.0f;
     
     void load_from_json(std::string path) {
         
@@ -91,6 +98,7 @@ public:
     components::PlayerBehaviorComponent behavior{};
     behavior::DIR last_dir{};
     PhysicsStats stats{};
+    arms::Arsenal loadout{};
     
     sf::Sprite current_sprite{};
     sf::Vector2<float> anchor_point{};
@@ -113,12 +121,15 @@ public:
     bool is_jump_pressed{};
     bool stopping{};
     bool just_landed{};
-    bool started_moving{};
+    bool left_released{};
+    bool right_released{};
+    bool is_wall_sliding{};
     int jump_request{};
     
     bool suspended_trigger{};
     bool fall_trigger{};
     bool landed_trigger{};
+    bool wall_slide_trigger{};
     bool entered_freefall{};
     bool freefalling{};
     

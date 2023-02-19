@@ -28,12 +28,16 @@ target_sources(${PROJECT_NAME} PRIVATE
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp
     entities/behavior/PlayerBehavior.hpp
+	weapon/Weapon.hpp
+	weapon/Arsenal.hpp
+	weapon/Projectile.hpp
 	level/Map.hpp
 	level/Map.cpp
 	automa/GameState.hpp
 	automa/GameState.cpp
 	automa/StateManager.hpp
 	automa/StateManager.cpp
+    gui/HUD.hpp
 	service/Service.hpp
 
 )

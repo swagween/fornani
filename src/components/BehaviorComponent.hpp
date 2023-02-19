@@ -34,21 +34,32 @@ public:
     
     void update() {
         if(current_state.get()->params.complete && current_state.get()->params.no_loop) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
-            flip_left();
+            reset();
         }
     }
     
     void end_loop() {
         if(current_state.get()->params.complete && current_state.get()->params.no_loop) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
-            flip_left();
+            reset();
         }
     }
     
     void reset() {
         if(ready()) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
+            switch(facing) {
+                case behavior::DIR::UP:
+                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle_up));
+                    flip_left();
+                    break;
+                case behavior::DIR::DOWN:
+                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle_up));
+                    flip_left();
+                    break;
+                default:
+                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
+                    flip_left();
+                    break;
+            }
             flip_left();
         }
     }
@@ -110,7 +121,6 @@ public:
     void turn() {
         if(ready()) {
             current_state = std::move(std::make_unique<behavior::Behavior>(behavior::turning));
-            flip_left();
         }
     }
     
@@ -157,6 +167,13 @@ public:
                 fall();
                 flip_left();
             }
+        }
+    }
+    
+    void wall_slide() {
+        if(ready()) {
+            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::wall_sliding));
+            flip_left();
         }
     }
     
