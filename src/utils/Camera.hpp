@@ -43,7 +43,7 @@ public:
     }
     
     void update() {
-        physics.update();
+        physics.update_dampen();
         bounding_box.left = physics.position.x;
         bounding_box.top = physics.position.y;
         if(bounding_box.top < 0) {

@@ -24,6 +24,11 @@ public:
         return std::uniform_int_distribution<int>{lo, hi}(engine);
     }
     
+    float random_range_float(float lo, float hi) {
+        static auto engine = std::default_random_engine{std::random_device{}()};
+        return std::uniform_real_distribution<float>{lo, hi}(engine);
+    }
+    
 }; // End Random
 
 }

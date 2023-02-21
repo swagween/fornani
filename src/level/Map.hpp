@@ -9,10 +9,12 @@
 
 #include "../utils/Grid.hpp"
 #include "../utils/Shape.hpp"
+#include "../utils/Random.hpp"
 //#include "../components/PhysicsComponent.hpp"
 #include <string>
 #include <vector>
 #include <fstream>
+#include "../weapon/Projectile.hpp"
 
 const int NUM_LAYERS = 8;
 
@@ -54,9 +56,15 @@ public:
     void update();
     squid::Tile* tile_at(const uint8_t i, const uint8_t j);
     Shape* shape_at(const uint8_t i, const uint8_t j);
+    void spawn_projectile_at(sf::Vector2<float> pos);
+    void manage_projectiles();
     
     //layers
     std::vector<Layer> layers;
+    
+    //entities
+    std::vector<arms::Projectile> active_projectiles{};
+    std::vector<vfx::Emitter> active_emitters{};
     
 };
 

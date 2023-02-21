@@ -125,27 +125,24 @@ static void show_overlay() {
                     ImGui::Text("Wall Slide Trigger: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().wall_slide_trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Jump Request: ");
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_request).c_str());
-                    ImGui::Text("Jump Height Counter: ");
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_height_counter).c_str());
-                    ImGui::Text("Jump Hold: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().jump_hold) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Just Jumped: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().just_jumped) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    //                    ImGui::Text("Jump Request: ");
+                    //                    ImGui::SameLine();
+                    //                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_request).c_str());
+                    //                    ImGui::Text("Jump Height Counter: ");
+                    //                    ImGui::SameLine();
+                    //                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_height_counter).c_str());
+                    //                    ImGui::Text("Jump Hold: ");
+                    //                    ImGui::SameLine();
+                    //                    if(svc::playerLocator.get().jump_hold) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    //                    ImGui::Text("Just Jumped: ");
+                    //                    ImGui::SameLine();
+                    //                    if(svc::playerLocator.get().just_jumped) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Anim Frame: ");
                     ImGui::SameLine();
                     ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.current_frame).c_str());
                     ImGui::Text("Real Frame: ");
                     ImGui::SameLine();
                     ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
-                    ImGui::Text("Trigger: ");
-                    ImGui::SameLine();
-                    if(behavior::trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Has Right Collision: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -155,21 +152,47 @@ static void show_overlay() {
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().physics.position.x, svc::playerLocator.get().physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().physics.velocity.x, svc::playerLocator.get().physics.velocity.y);
                     ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().physics.acceleration.x, svc::playerLocator.get().physics.acceleration.y);
-                    ImGui::Text("Player Fric: (%.4f,%.4f)", svc::playerLocator.get().physics.friction.x, svc::playerLocator.get().physics.friction.y);
-                    ImGui::Text("Player MTV: (%.4f,%.4f)", svc::playerLocator.get().physics.mtv.x, svc::playerLocator.get().physics.mtv.y);
-                    ImGui::Separator();
                     
-                    ImGui::SliderFloat("GRAV", &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 2.0f);
-                    ImGui::SliderFloat("AIR MULTIPLIER", &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
-                    ImGui::SliderFloat("PLAYER MAX XVEL", &svc::playerLocator.get().stats.PLAYER_MAX_XVEL, 0.1f, 8.0f);
-                    ImGui::SliderFloat("PLAYER MAX YVEL", &svc::playerLocator.get().stats.PLAYER_MAX_YVEL, 0.1f, 8.0f);
-                    ImGui::SliderFloat("PLAYER FRIC", &svc::playerLocator.get().stats.PLAYER_HORIZ_FRIC, 0.1f, 1.0f);
-                    ImGui::SliderFloat("PLAYER AIR FRIC", &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.1f, 1.0f);
-                    ImGui::SliderFloat("X ACC", &svc::playerLocator.get().stats.X_ACC, 0.0f, 1.0f);
-                    ImGui::SliderFloat("Y ACC", &svc::playerLocator.get().stats.Y_ACC, 0.0f, 1.0f);
-                    ImGui::SliderFloat("JUMP MAX", &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 10.0f);
-                    ImGui::SliderInt("JUMP TIME", &svc::playerLocator.get().stats.JUMP_TIME, 0, 200);
+                    ImGui::SliderFloat("GRAV",              &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 2.0f);
+                    ImGui::SliderFloat("AIR MULTIPLIER",    &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
+                    ImGui::SliderFloat("PLAYER MAX XVEL",   &svc::playerLocator.get().stats.PLAYER_MAX_XVEL, 0.1f, 8.0f);
+                    ImGui::SliderFloat("PLAYER MAX YVEL",   &svc::playerLocator.get().stats.PLAYER_MAX_YVEL, 0.1f, 8.0f);
+                    ImGui::SliderFloat("PLAYER FRIC",       &svc::playerLocator.get().stats.PLAYER_HORIZ_FRIC, 0.1f, 1.0f);
+                    ImGui::SliderFloat("PLAYER AIR FRIC",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.1f, 1.0f);
+                    ImGui::SliderFloat("X ACC",             &svc::playerLocator.get().stats.X_ACC, 0.0f, 1.0f);
+                    ImGui::SliderFloat("Y ACC",             &svc::playerLocator.get().stats.Y_ACC, 0.0f, 1.0f);
+                    ImGui::SliderFloat("JUMP MAX",          &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 10.0f);
+                    ImGui::SliderInt("JUMP TIME",           &svc::playerLocator.get().stats.JUMP_TIME, 0, 200);
                     ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem("Weapon"))
+                {
+                    ImGui::Separator();
+                    ImGui::Text("Equipped Weapon: ");
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(svc::playerLocator.get().loadout.get_equipped_weapon().label.c_str());
+                    ImGui::Text("Weapon Fired: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().weapon_fired) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Separator();
+                    ImGui::Text("Weapon Stats: ");
+                    ImGui::Indent();
+                    ImGui::Text("Rate: (%i)",     svc::playerLocator.get().loadout.get_equipped_weapon().attributes.rate);
+                    ImGui::Text("Cooldown: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().attributes.cooldown_time);
+                    ImGui::Text("Recoil: (%.2f)", svc::playerLocator.get().loadout.get_equipped_weapon().attributes.recoil);
+                    ImGui::Separator();
+                    ImGui::Unindent();
+                    ImGui::Text("Projectile Stats: ");
+                    ImGui::Indent();
+                    ImGui::Text("Damage: (%i)",   svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.damage);
+                    ImGui::Text("Lifespan: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.lifespan);
+                    ImGui::Text("Speed: (%.2f)",  svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.speed);
+                    ImGui::Text("Velocity: (%.4f,%.4f)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.velocity.x,
+                                svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.velocity.y);
+                    ImGui::Text("Position: (%.4f,%.4f)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.position.x,
+                                svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.position.y);
+                    ImGui::EndTabItem();
+                    
                 }
                 if (ImGui::BeginTabItem("Camera"))
                 {

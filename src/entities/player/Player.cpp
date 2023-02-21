@@ -47,6 +47,12 @@ Player::Player() {
     right_detector.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH - right_detector.right_offset, PLAYER_START_Y + DETECTOR_HEIGHT);
     right_detector.vertices[3] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH,  PLAYER_START_Y + DETECTOR_HEIGHT);
     
+    weapons_hotbar = {
+        arms::WEAPON_TYPE::BRYNS_GUN,
+        arms::WEAPON_TYPE::PLASMER,
+        arms::WEAPON_TYPE::CLOVER
+    };
+    loadout.equipped_weapon = weapons_hotbar.at(0);
     
 }
 
@@ -59,6 +65,7 @@ void Player::handle_events(sf::Event event) {
                     behavior.turn();
                     behavior.facing = behavior::DIR::LEFT;
                     behavior.flip_left();
+                    is_wall_sliding = false;
                 } else {
                     behavior.run();
                 }
@@ -74,6 +81,7 @@ void Player::handle_events(sf::Event event) {
             if(grounded) {
                 if(behavior.facing == behavior::DIR::LEFT) {
                     behavior.turn();
+                    is_wall_sliding = false;
                 } else {
                     behavior.run();
                 }
@@ -136,6 +144,9 @@ void Player::handle_events(sf::Event event) {
         if (event.key.code == sf::Keyboard::Down) {
             look_down = false;
         }
+        if (event.key.code == sf::Keyboard::X) {
+            weapon_fired = false;
+        }
     }
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Z) {
@@ -151,6 +162,29 @@ void Player::handle_events(sf::Event event) {
             jump_hold = false;
             if(!behavior.restricted()) {
                 can_jump = true;
+            }
+        }
+    }
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::X) {
+            weapon_fired = true;
+        }
+    }
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::A) {
+            if(!weapons_hotbar.empty()) {
+                current_weapon--;
+                if(current_weapon < 0) { current_weapon = (int)weapons_hotbar.size() - 1; }
+                loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+            }
+        }
+    }
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::S) {
+            if(!weapons_hotbar.empty()) {
+                current_weapon++;
+                if(current_weapon > weapons_hotbar.size() - 1) { current_weapon = 0; }
+                loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
             }
         }
     }
@@ -204,7 +238,19 @@ void Player::update(Time dt) {
         physics.acceleration.y += stats.PLAYER_GRAV;
     }
     
-    
+    //weapon physics
+    if(weapon_fired) {
+        if(behavior.facing == behavior::DIR::LEFT) {
+            if(!has_right_collision) {
+                physics.apply_force({loadout.get_equipped_weapon().attributes.recoil, 0.0f});
+            }
+        }
+        if(behavior.facing == behavior::DIR::RIGHT) {
+            if(!has_left_collision) {
+                physics.apply_force({-loadout.get_equipped_weapon().attributes.recoil, 0.0f});
+            }
+        }
+    }
     
     //impose physics limitations
     if(!behavior.restricted()) {
@@ -351,17 +397,30 @@ void Player::update_behavior() {
     
     
     if(wall_slide_trigger) { is_wall_sliding = true; }
+    if(weapon_fired) { start_cooldown = true; }
     
     stopping = false;
     just_landed = false;
     left_released = false;
     right_released = false;
     wall_slide_trigger = false;
+    if(!loadout.get_equipped_weapon().attributes.automatic) {
+        weapon_fired = false;
+    }
+    
+    if(start_cooldown) {
+        loadout.get_equipped_weapon().current_cooldown--;
+        if(loadout.get_equipped_weapon().current_cooldown < 0) {
+            loadout.get_equipped_weapon().current_cooldown = loadout.get_equipped_weapon().attributes.cooldown_time;
+            start_cooldown = false;
+        }
+    }
     
     if(grounded || (!has_left_collision && !has_right_collision)) {
         is_wall_sliding = false;
     }
     update_direction();
+    update_weapon_direction();
     
 }
 
@@ -396,6 +455,46 @@ void Player::update_direction() {
     if(!move_left && !move_right && look_down) {
         behavior.facing = behavior::DIR::DOWN;
     }
+}
+
+void Player::update_weapon_direction() {
+    switch(behavior.facing) {
+        case behavior::DIR::NEUTRAL:
+            break;
+        case behavior::DIR::LEFT:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::LEFT;
+            physics.dir = components::DIRECTION::LEFT;
+            break;
+        case behavior::DIR::RIGHT:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::RIGHT;
+            physics.dir = components::DIRECTION::RIGHT;
+            break;
+        case behavior::DIR::UP:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
+            physics.dir = components::DIRECTION::UP;
+            break;
+        case behavior::DIR::DOWN:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_LEFT;
+            physics.dir = components::DIRECTION::DOWN;
+            break;
+        case behavior::DIR::UP_RIGHT:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_RIGHT;
+            physics.dir = components::DIRECTION::UP;
+            break;
+        case behavior::DIR::UP_LEFT:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
+            physics.dir = components::DIRECTION::UP;
+            break;
+        case behavior::DIR::DOWN_RIGHT:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_RIGHT;
+            physics.dir = components::DIRECTION::DOWN;
+            break;
+        case behavior::DIR::DOWN_LEFT:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_LEFT;
+            physics.dir = components::DIRECTION::DOWN;
+            break;
+    }
+    loadout.get_equipped_weapon().set_orientation();
 }
 
 void Player::handle_map_collision(const Shape &cell, bool is_ramp) {

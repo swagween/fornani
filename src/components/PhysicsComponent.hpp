@@ -13,6 +13,13 @@
 
 namespace components {
 
+enum class DIRECTION {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+};
+
 const sf::Vector2<float> FRICTION_DEFAULT = {0.9f, 0.9f};
 const float MASS_DEFAULT = 1.0f;
 
@@ -32,6 +39,7 @@ public:
     sf::Vector2<float> mtv{};
     
     float mass{};
+    DIRECTION dir{};
     
     void apply_force(sf::Vector2<float> force) {
         sf::operator+= (acceleration, force);
@@ -51,6 +59,7 @@ public:
         } else {
             position.y += mtv.y;
         }
+        update_direction();
     }
     
     void update() {
@@ -58,7 +67,23 @@ public:
         velocity.x *= friction.x;
         velocity.y *= friction.y;
         sf::operator+=(position, velocity);
+        update_direction();
+    }
+    
+    void update_dampen() {
+        sf::operator+=(velocity, acceleration);
+        velocity.x *= friction.x;
+        velocity.y *= friction.y;
+        sf::operator+=(position, velocity);
         acceleration = {0.0f, 0.0f};
+        update_direction();
+    }
+    
+    void update_direction() {
+//        if(abs(velocity.y) > abs(velocity.x)) { dir = DIRECTION::DOWN; }
+//        if(abs(velocity.y) < abs(velocity.x)) { dir = DIRECTION::RIGHT; }
+//        if(abs(velocity.y) > abs(velocity.x) && velocity.y < 0.0f) { dir = DIRECTION::UP; }
+//        if(abs(velocity.y) < abs(velocity.x) && velocity.x < 0.0f) { dir = DIRECTION::LEFT; }
     }
     
     int random_range(int lo, int hi) {

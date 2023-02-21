@@ -1,6 +1,6 @@
 //
 //  Emitter.hpp
-//  Gems
+//  fornani
 //
 //  Created by Alex Frasca on 01/05/2023.
 //
@@ -8,18 +8,19 @@
 
 #include "ObjectPool.hpp"
 #include "Particle.hpp"
+#include "../components/PhysicsComponent.hpp"
 #include <vector>
 
-namespace gen {
+namespace vfx {
 
 const uint32_t default_size = 64;
 using Time = std::chrono::duration<float>;
 
-enum class EmitterType {
-    et_infinite,
-    et_burst,
-    et_fadeout,
-    et_fadein
+enum class EMMITER_TYPE {
+    ET_INFINITE,
+    ET_BURST,
+    ET_FADEOUT,
+    ET_FADEIN
 };
 
 struct ElementBehavior {
@@ -28,6 +29,17 @@ struct ElementBehavior {
     float expulsion_force{};
     float expulsion_variance{};
     float cone{}; //angle in radians of element dispersal
+    float grav{};
+    float grav_variance{};
+    float x_friction{};
+    float y_friction{};
+};
+
+struct EmitterStats {
+    int lifespan{};
+    int lifespan_variance{};
+    int particle_lifespan{};
+    int particle_lifespan_variance{};
 };
 
 class Emitter {
@@ -35,28 +47,33 @@ class Emitter {
 public:
     
     Emitter() = default;
-    Emitter(ElementBehavior b) : behavior(b) { }
+    Emitter(ElementBehavior b, EmitterStats s) : behavior(b), stats(s) {
+        util::Random r{};
+        int var = r.random_range(-stats.lifespan_variance, stats.lifespan_variance);
+        stats.lifespan += var;
+    }
+    ~Emitter() { particles.clear(); }
     
-    void update(Time dt) { //this will tick every element and the generator itself
-        elapsed += dt;
+    void update() { //this will tick every element and the generator itself
         physics.update();
-        if(elapsed > static_cast<Time>(behavior.rate)) { //make a particle at a certain rate
-            elements.push(Particle());
-            particles.push_back(Particle());
-            particles.back().lifespan = lifespan;
-            particles.back().physics = physics; //initialize the particles with emitter's physics
-            elapsed = Time::zero();
+        if(stats.lifespan > 0) { //make a particle at a certain rate
+            particles.push_back(Particle(physics, behavior.expulsion_force, {behavior.x_friction, behavior.y_friction}));
+            particles.back().physics.dir = physics.dir;
+            util::Random r{};
+            int var = r.random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
+            particles.back().lifespan = stats.particle_lifespan + var;
         }
         for(int i = static_cast<int>(particles.size()) - 1; i >= 0; --i) {
-            particles.at(i).update(dt, behavior.expulsion_force);
+            particles.at(i).update(behavior.expulsion_force, behavior.grav, behavior.grav_variance);
             if(particles.at(i).lifespan < 0) {
                 particles.erase(particles.begin() + i); //this is bad. I want to delete the element at that spot
             }
         }
+        --stats.lifespan;
     }
     
     void set_size(uint32_t sz);
-    void set_type(EmitterType t);
+    void set_type(EMMITER_TYPE t);
     
     void set_position(float x, float y) {
         physics.position.x = x;
@@ -83,38 +100,33 @@ public:
         }
     }
     
-    components::PhysicsComponent& get_physics() {
-        return physics;
-    }
+    components::PhysicsComponent& get_physics() { return physics; }
+    ElementBehavior& get_behavior() { return behavior; }
     
     void set_rate(float r) { behavior.rate = r; }
     void set_expulsion_force(float f) { behavior.expulsion_force = f; }
-    void set_friction(float f) { physics.friction = f; }
-    void set_lifespan(int l) { lifespan = l; }
+    void set_friction(float f) { physics.friction = {f, f}; }
+    void set_lifespan(int l) { stats.lifespan = l; }
+    void set_direction(components::DIRECTION d) { physics.dir = d; }
     
     std::vector<Particle>& get_particles() {
         return particles;
     }
     
-    int num_particles () {
-        return (int)particles.size();
-    }
+    int get_lifespan() { return stats.lifespan; }
+    int num_particles () { return (int)particles.size(); }
     
     
     
 private:
     
-    ObjectPool<Particle> elements{};
     std::vector<Particle> particles{};
     ElementBehavior behavior{};
+    EmitterStats stats{};
     components::PhysicsComponent physics{};
     
-    EmitterType type = EmitterType::et_infinite;
+    EMMITER_TYPE type = EMMITER_TYPE::ET_BURST;
     uint32_t max_size = default_size;
-    
-    Time elapsed{};
-    
-    int lifespan{};
     
 };
 

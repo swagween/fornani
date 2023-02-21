@@ -202,6 +202,22 @@ public:
         return facing == behavior::DIR::RIGHT || facing == behavior::DIR::UP_RIGHT || facing == behavior::DIR::DOWN_RIGHT;
     }
     
+    bool facing_up() {
+        return facing == behavior::DIR::UP_LEFT || facing == behavior::DIR::UP || facing == behavior::DIR::UP_RIGHT;
+    }
+    
+    bool facing_down() {
+        return facing == behavior::DIR::DOWN_LEFT || facing == behavior::DIR::DOWN || facing == behavior::DIR::DOWN_RIGHT;
+    }
+    
+    bool facing_strictly_left() {
+        return facing == behavior::DIR::LEFT;
+    }
+    
+    bool facing_strictly_right() {
+        return facing == behavior::DIR::RIGHT;
+    }
+    
     const float suspension_threshold = 3.0f;
     behavior::DIR facing{};
     

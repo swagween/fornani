@@ -145,6 +145,27 @@ public:
     }
     
     void render(sf::RenderWindow& win) {
+        
+        for(auto& proj : map.active_projectiles) {
+            sf::RectangleShape box{};
+            box.setFillColor(sf::Color(255, 255, 255, 50));
+            box.setOutlineColor(FL_White);
+            box.setOutlineThickness(-1);
+            svc::assetLocator.get().sp_bryns_gun_projectile.at(0).setPosition( {proj.bounding_box.shape_x - svc::cameraLocator.get().physics.position.x, proj.bounding_box.shape_y - svc::cameraLocator.get().physics.position.y} );
+//            box.setSize({((float)svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.lifespan - proj.stats.lifespan), (float)proj.bounding_box.shape_h});
+            win.draw(svc::assetLocator.get().sp_bryns_gun_projectile.at(0));
+        }
+        
+        for(auto& emitter : map.active_emitters) {
+            for(auto& particle : emitter.get_particles()) {
+                sf::RectangleShape dot{};
+                dot.setFillColor(FL_Periwinkle);
+                dot.setSize({3.0f, 3.0f});
+                dot.setPosition(particle.physics.position.x - svc::cameraLocator.get().physics.position.x, particle.physics.position.y - svc::cameraLocator.get().physics.position.y);
+                win.draw(dot);
+            }
+        }
+        
         for(int i = 0; i < map.layers.size(); ++i) {
             for(int j = 0; j < map.layers.at(i).grid.cells.size(); ++j) {
                 if(map.layers.at(i).collidable) {
@@ -159,18 +180,20 @@ public:
                             box.setOutlineThickness(-1);
                             box.setPosition(map.layers.at(i).grid.cells.at(j).bounding_box.shape_x - svc::cameraLocator.get().physics.position.x, map.layers.at(i).grid.cells.at(j).bounding_box.shape_y - svc::cameraLocator.get().physics.position.y);
                             box.setSize({32, 32});
-//                            win.draw(box);
+                            win.draw(box);
                         }
                     }
                 }
             }
         }
         
+        
+        
         if(show_colliders) {
             sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape jbx{};
             jbx.setPosition(jumpbox_pos.x, jumpbox_pos.y);
-            jbx.setFillColor(sf::Color(110, 98,  173, 40));
+            jbx.setFillColor(sf::Color::Transparent);
             jbx.setOutlineColor(sf::Color(235, 232, 249, 80));
             jbx.setOutlineThickness(-1);
             jbx.setSize({(float)svc::playerLocator.get().jumpbox.shape_w, (float)svc::playerLocator.get().jumpbox.shape_h});
@@ -179,7 +202,7 @@ public:
             sf::Vector2<float> leftbox_pos = sf::operator-(svc::playerLocator.get().left_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape leftbox{};
             leftbox.setPosition(leftbox_pos.x, leftbox_pos.y);
-            leftbox.setFillColor(sf::Color(110, 98,  173, 40));
+            leftbox.setFillColor(sf::Color::Transparent);
             leftbox.setOutlineColor(sf::Color(235, 232, 249, 80));
             leftbox.setOutlineThickness(-1);
             leftbox.setSize({(float)svc::playerLocator.get().left_detector.shape_w, (float)svc::playerLocator.get().left_detector.shape_h});
@@ -188,7 +211,7 @@ public:
             sf::Vector2<float> rightbox_pos = sf::operator-(svc::playerLocator.get().right_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape rightbox{};
             rightbox.setPosition(rightbox_pos.x, rightbox_pos.y);
-            rightbox.setFillColor(sf::Color(110, 98,  173, 40));
+            rightbox.setFillColor(sf::Color::Transparent);
             rightbox.setOutlineColor(sf::Color(235, 232, 249, 80));
             rightbox.setOutlineThickness(-1);
             rightbox.setSize({(float)svc::playerLocator.get().right_detector.shape_w, (float)svc::playerLocator.get().right_detector.shape_h});
@@ -197,7 +220,7 @@ public:
             sf::Vector2<float> predictive_hurtbox_pos = sf::operator-(svc::playerLocator.get().predictive_hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape predictive_hbx{};
             predictive_hbx.setPosition(predictive_hurtbox_pos.x, predictive_hurtbox_pos.y);
-            predictive_hbx.setFillColor(sf::Color(215, 53,  180, 10));
+            predictive_hbx.setFillColor(sf::Color::Transparent);
             predictive_hbx.setOutlineColor(FL_Fucshia);
             predictive_hbx.setOutlineThickness(-1);
             predictive_hbx.setSize({(float)svc::playerLocator.get().predictive_hurtbox.shape_w, (float)svc::playerLocator.get().predictive_hurtbox.shape_h});
@@ -206,7 +229,7 @@ public:
             sf::Vector2<float> hurtbox_pos = sf::operator-(svc::playerLocator.get().hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape hbx{};
             hbx.setPosition(hurtbox_pos.x, hurtbox_pos.y);
-            hbx.setFillColor(sf::Color(159, 138, 247, 200));
+            hbx.setFillColor(sf::Color::Transparent);
             hbx.setOutlineColor(FL_White);
             hbx.setOutlineThickness(-1);
             hbx.setSize({(float)svc::playerLocator.get().hurtbox.shape_w, (float)svc::playerLocator.get().hurtbox.shape_h});
@@ -216,7 +239,7 @@ public:
         sf::Vector2<float> player_pos = svc::playerLocator.get().physics.position - svc::cameraLocator.get().physics.position;
         svc::playerLocator.get().current_sprite = svc::assetLocator.get().sp_nani.at(svc::playerLocator.get().behavior.current_state->params.lookup_value + svc::playerLocator.get().behavior.current_state->params.current_frame);
         svc::playerLocator.get().current_sprite.setPosition(player_pos.x - (48 - PLAYER_WIDTH)/2, player_pos.y - (48 - PLAYER_HEIGHT));
-        win.draw(svc::playerLocator.get().current_sprite);
+//        win.draw(svc::playerLocator.get().current_sprite);
         
         svc::assetLocator.get().sp_hud.setPosition(20, 20);
         svc::assetLocator.get().sp_hud2x.setPosition(20, 20);
@@ -230,7 +253,7 @@ public:
     
     world::Map map{};
     std::vector<sf::Sprite> tileset{};
-    bool show_colliders = false;
+    bool show_colliders = true;
     
 };
 

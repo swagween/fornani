@@ -10,7 +10,7 @@
 #define AssetManager_hpp
 
 #include <SFML/Graphics.hpp>
-//#include <SFML/Audio.hpp>
+#include <SFML/Audio.hpp>
 #include <unistd.h>
 #include <stdio.h>
 #include <string>
@@ -63,6 +63,14 @@ public:
         t_tiles_shadow.loadFromFile(resource_path + "/image/tile/shadow_tiles.png");
         t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
         t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
+        
+        //guns and bullets!
+        t_bryns_gun.loadFromFile(resource_path + "/image/weapon/bryns_gun.png");
+        t_plasmer.loadFromFile(resource_path + "/image/weapon/plasmer.png");
+        t_clover.loadFromFile(resource_path + "/image/weapon/clover.png");
+        t_bryns_gun_projectile.loadFromFile(resource_path + "/image/weapon/bryns_gun_proj.png");
+        t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer.png");
+        t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover.png");
         //load all the other textures...
     }
     
@@ -91,6 +99,49 @@ public:
                 sp_nani.back().setTextureRect(sf::IntRect({i * NANI_SPRITE_WIDTH, j * NANI_SPRITE_WIDTH}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
             }
         }
+        
+        //guns and bullets!! (gotta do these all by hand)
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({0,  0}, {8,  3 })));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({0,  4}, {4,  12})));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({4,  4}, {7,  12})));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({9,  0}, {17, 3 })));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({14, 4}, {17, 12})));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({10, 4}, {13, 12})));
+        
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({0,  0}, {10, 4 })));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({0,  5}, {5,  15})));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({5,  5}, {9,  15})));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({11, 0}, {21, 5 })));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({17, 5}, {21, 15})));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({12, 5}, {16, 15})));
+        
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({0,  0}, {8,  4 })));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({0,  5}, {4,  13})));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({5,  5}, {9,  13})));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({11, 0}, {19, 4 })));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({15, 5}, {19, 13})));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({10, 5}, {14, 13})));
+        
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({0, 0}, {3*2, 5*2})));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({4*2, 0}, {9*2, 3*2})));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({0, 6*2}, {5*2, 9*2})));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({6*2, 5*2}, {9*2, 9*2})));
+        
+        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({0, 0}, {2, 4})));
+        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({3, 0}, {7, 2})));
+        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({0, 5}, {4, 7})));
+        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({5, 4}, {7, 7})));
+        
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, 0}, {2,  2})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({3, 0}, {6,  2})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({7, 0}, {10, 3})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, 3}, {6,  8})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({7, 4}, {10, 8})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0+9, 0}, {2+9,  2})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({3+9, 0}, {6+9,  2})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({7+9, 0}, {10+9, 3})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0+9, 3}, {6+9,  8})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({7+9, 4}, {10+9, 8})));
         
         //assign all the other sprites...
     }
@@ -140,6 +191,20 @@ public:
     sf::Texture t_tiles_hoarder{};
     sf::Texture t_tiles_abandoned{};
     
+    //load the guns and bullets!
+    sf::Texture t_bryns_gun{};
+    sf::Texture t_bryns_gun_projectile{};
+    sf::Texture t_plasmer{};
+    sf::Texture t_plasmer_projectile{};
+    sf::Texture t_clover{};
+    sf::Texture t_clover_projectile{};
+    std::vector<sf::Sprite> sp_bryns_gun{};
+    std::vector<sf::Sprite> sp_bryns_gun_projectile{};
+    std::vector<sf::Sprite> sp_plasmer{};
+    std::vector<sf::Sprite> sp_plasmer_projectile{};
+    std::vector<sf::Sprite> sp_clover{};
+    std::vector<sf::Sprite> sp_clover_projectile{};
+    
     //condense these into a 2d vector later
     std::vector<sf::Sprite> sp_tileset_provisional{};
     std::vector<sf::Sprite> sp_tileset_shadow{};
@@ -149,7 +214,6 @@ public:
     
 //    sf::SoundBuffer click_buffer{};
 //    sf::Sound click;
-    
     
 };
 

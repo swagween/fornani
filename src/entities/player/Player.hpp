@@ -79,6 +79,7 @@ public:
     void update_behavior();
     void set_position(sf::Vector2<float> new_pos);
     void update_direction();
+    void update_weapon_direction();
     
     //collision
     void handle_map_collision(const Shape& cell, bool is_ramp);
@@ -99,6 +100,8 @@ public:
     behavior::DIR last_dir{};
     PhysicsStats stats{};
     arms::Arsenal loadout{};
+    std::vector<arms::WEAPON_TYPE> weapons_hotbar{};
+    int current_weapon{};
     
     sf::Sprite current_sprite{};
     sf::Vector2<float> anchor_point{};
@@ -132,6 +135,9 @@ public:
     bool wall_slide_trigger{};
     bool entered_freefall{};
     bool freefalling{};
+    
+    bool weapon_fired{};
+    bool start_cooldown{};
     
     bool is_any_jump_colllision = false;
     bool is_any_colllision = false;
