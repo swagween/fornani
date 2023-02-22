@@ -129,9 +129,61 @@ void Map::update() {
     
 }
 
+void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
+    std::vector<sf::Sprite>& tiles = svc::assetLocator.get().sp_tileset_provisional;
+    for(auto& proj : active_projectiles) {
+        sf::Sprite proj_sprite;
+        int curr_frame = proj.sprite_id + proj.anim.num_sprites*proj.anim_frame;
+        svc::assetLocator.get().sp_clover_projectile.at(curr_frame).setPosition( {proj.bounding_box.shape_x - cam.x, proj.bounding_box.shape_y - cam.y - proj.bounding_box.shape_h/2} );
+        arms::Weapon& curr_weapon = lookup::type_to_weapon.at(proj.type);
+        std::vector<sf::Sprite>& curr_proj_sprites = lookup::projectile_sprites.at(curr_weapon.type);
+        
+        
+        if(curr_weapon.type == arms::WEAPON_TYPE::CLOVER) {
+            win.draw(svc::assetLocator.get().sp_clover_projectile.at(curr_frame));
+        } else if(!curr_proj_sprites.empty()) {
+            proj_sprite = curr_proj_sprites.at(arms::ProjDirLookup.at(proj.dir));
+            proj_sprite.setPosition({proj.bounding_box.shape_x - cam.x, proj.bounding_box.shape_y - cam.y - proj.bounding_box.shape_h/2} );
+            win.draw(proj_sprite);
+        }
+    }
+    
+    for(auto& emitter : active_emitters) {
+        for(auto& particle : emitter.get_particles()) {
+            sf::RectangleShape dot{};
+            dot.setFillColor(emitter.color);
+            dot.setSize({3.0f, 3.0f});
+            dot.setPosition(particle.physics.position.x - cam.x, particle.physics.position.y - cam.y);
+            win.draw(dot);
+        }
+    }
+    
+    for(int i = 0; i < layers.size(); ++i) {
+        for(int j = 0; j < layers.at(i).grid.cells.size(); ++j) {
+            if(layers.at(i).collidable) {
+                if(layers.at(i).grid.cells.at(j).value > 0) {
+                    tiles.at(layers.at(i).grid.cells.at(j).value).setPosition(layers.at(i).grid.cells.at(j).bounding_box.shape_x - cam.x, layers.at(i).grid.cells.at(j).bounding_box.shape_y - cam.y);
+                    win.draw(tiles.at(layers.at(i).grid.cells.at(j).value));
+//
+                    if(layers.at(i).grid.cells.at(j).collision_check) {
+                        sf::RectangleShape box{};
+                        box.setFillColor(sf::Color(255, 255, 255, 50));
+                        box.setOutlineColor(flcolor::white);
+                        box.setOutlineThickness(-1);
+                        box.setPosition(layers.at(i).grid.cells.at(j).bounding_box.shape_x - cam.x, layers.at(i).grid.cells.at(j).bounding_box.shape_y - cam.y);
+                        box.setSize({32, 32});
+//                        win.draw(box);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void Map::spawn_projectile_at(sf::Vector2<float> pos) {
     if(active_projectiles.size() < svc::playerLocator.get().loadout.get_equipped_weapon().attributes.rate) {
         active_projectiles.push_back(svc::playerLocator.get().loadout.get_equipped_weapon().projectile);
+        active_projectiles.back().set_sprite();
         active_projectiles.back().physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
         active_projectiles.back().physics.position = pos;
         active_projectiles.back().seed();
@@ -176,7 +228,7 @@ void Map::manage_projectiles() {
     }
     
     if(svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
-        spawn_projectile_at(svc::playerLocator.get().physics.position);
+        spawn_projectile_at(svc::playerLocator.get().get_fire_point());
     }
 }
 

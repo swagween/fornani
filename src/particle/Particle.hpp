@@ -19,30 +19,32 @@ class Particle {
 public:
     
     Particle() = default;
-    Particle(components::PhysicsComponent p, float f, sf::Vector2<float> fric) : physics(p), init_force(f) {
+    Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric) : physics(p), init_force(f), force_variance(v), angle_range(a) {
         physics.friction = fric;
         util::Random r{};
         float randx{};
         float randy{};
         switch(physics.dir) {
             case components::DIRECTION::LEFT:
-                randx = r.random_range_float(-1.0, -0.4);
-                randy = r.random_range_float(-1.5, 1.5);
+                randx = r.random_range_float(init_force - force_variance, init_force + force_variance) * -1;
+                randy = r.random_range_float(-angle_range, angle_range);
                 break;
             case components::DIRECTION::RIGHT:
-                randx = r.random_range_float(0.4, 1.0);
-                randy = r.random_range_float(-1.5, 1.5);
+                randx = r.random_range_float(init_force - force_variance, init_force + force_variance);
+                randy = r.random_range_float(-angle_range, angle_range);
                 break;
             case components::DIRECTION::UP:
-                randx = r.random_range_float(-1.5, 1.5);
-                randy = r.random_range_float(-1.0, -0.4);
+                randx = r.random_range_float(-angle_range, angle_range);
+                randy = r.random_range_float(init_force - force_variance, init_force + force_variance) * -1;
                 break;
             case components::DIRECTION::DOWN:
-                randx = r.random_range_float(-1.5, 1.5);
-                randy = r.random_range_float(0.4, 1.0);
+                randx = r.random_range_float(-angle_range, angle_range);
+                randy = r.random_range_float(init_force - force_variance, init_force + force_variance);
                 break;
         }
-        physics.apply_force({(float)(randx)*init_force, init_force*randy});
+        physics.velocity.x = randx*init_force;
+        physics.velocity.y = randy*init_force;
+//        physics.apply_force({randx*init_force, randy*init_force});
     }
     void update(float initial_force, float grav, float grav_variance) {
         util::Random r{};
@@ -55,6 +57,8 @@ public:
     components::PhysicsComponent physics{};
     float lifespan = physics.random_range(default_lifespan, 100);
     float init_force{};
+    float force_variance{};
+    float angle_range{};
     Shape bounding_box{};
     
 };

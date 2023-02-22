@@ -10,12 +10,35 @@
 #include <cstdio>
 #include <memory>
 #include <list>
+#include <unordered_map>
 #include "../components/PhysicsComponent.hpp"
 #include "../utils/Shape.hpp"
 #include "../utils/Random.hpp"
 #include "../particle/Emitter.hpp"
+#include "../graphics/FLColor.hpp"
 
 namespace arms {
+
+enum class WEAPON_TYPE {
+    BRYNS_GUN,
+    PLASMER,
+    WASP,
+    BLIZZARD,
+    BISMUTH,
+    UNDERDOG,
+    ELECTRON,
+    CLOVER,
+    TRITON,
+    WILLET_585,
+    QUASAR,
+    NOVA,
+    VENOM,
+    TWIN,
+    CARISE,
+    STINGER,
+    TUSK,
+    TOMAHAWK
+};
 
 enum class WEAPON_DIR {
     LEFT,
@@ -33,8 +56,7 @@ enum class FIRING_DIRECTION {
     DOWN
 };
 
-const sf::Vector2<float> DEFAULT_DIMENSIONS{16.0, 16.0};
-const int LIFESPAN_VARIANCE = 3;
+const sf::Vector2<float> DEFAULT_DIMENSIONS{8.0, 8.0};
 
 struct ProjectileStats {
     
@@ -49,6 +71,14 @@ struct ProjectileStats {
     bool persistent{};
     bool spray{};
     
+    int lifespan_variance{};
+    
+};
+
+struct ProjectileAnimation {
+    int num_sprites{};
+    int num_frames{};
+    int framerate{};
 };
 
 class Projectile {
@@ -60,9 +90,10 @@ public:
         physics.velocity.x = stats.speed;
         seed();
     };
-    Projectile(ProjectileStats s, components::PhysicsComponent p) : stats(s), physics(p) {
+    Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t) : stats(s), physics(p), anim(a), type(t) {
         physics.velocity.x = stats.speed;
         seed();
+        set_sprite();
     }
     ~Projectile() {}
     
@@ -74,6 +105,13 @@ public:
         bounding_box.vertices[3] = sf::Vector2<float>(physics.position.x,  physics.position.y + DEFAULT_DIMENSIONS.y);
         bounding_box.update(physics.position.x, physics.position.y, DEFAULT_DIMENSIONS.x, DEFAULT_DIMENSIONS.y);
         stats.lifespan--;
+        
+        //animation
+        if(curr_frame % anim.framerate == 0) {
+            anim_frame++;
+        }
+        if(anim_frame >= anim.num_frames) { anim_frame = 0; }
+        curr_frame++;
     }
     
     void destroy() {
@@ -82,7 +120,7 @@ public:
     
     void seed() {
         util::Random r{};
-        stats.lifespan += r.random_range(-LIFESPAN_VARIANCE, LIFESPAN_VARIANCE);
+        stats.lifespan += r.random_range(-stats.lifespan_variance, stats.lifespan_variance);
         float var = r.random_range_float(-stats.variance, stats.variance);
         switch(dir) {
             case FIRING_DIRECTION::LEFT:
@@ -100,10 +138,22 @@ public:
         }
     }
     
+    void set_sprite() {
+        if(anim.num_sprites < 2) { sprite_id = 0; return; }
+        util::Random r{};
+        sprite_id = r.random_range(0, anim.num_sprites - 1 );
+    }
+    
     FIRING_DIRECTION dir{};
     Shape bounding_box{};
     components::PhysicsComponent physics{};
     ProjectileStats stats{};
+    ProjectileAnimation anim{};
+    WEAPON_TYPE type{};
+    
+    int sprite_id{};
+    int curr_frame{};
+    int anim_frame{};
     
 }; // End Projectile
 

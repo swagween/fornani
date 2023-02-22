@@ -313,6 +313,8 @@ void Player::update(Time dt) {
     
     
     update_behavior();
+    apparent_position.x = physics.position.x - (48 - PLAYER_WIDTH)/2;
+    apparent_position.y = physics.position.y - (48 - PLAYER_HEIGHT);
 }
 
 void Player::render() {
@@ -450,10 +452,18 @@ void Player::update_direction() {
         }
     }
     if(!move_left && !move_right && look_up) {
-        behavior.facing = behavior::DIR::UP;
+        if(behavior.facing_strictly_left()) {
+            behavior.facing = behavior::DIR::UP_LEFT;
+        } else {
+            behavior.facing = behavior::DIR::UP_RIGHT;
+        }
     }
     if(!move_left && !move_right && look_down) {
-        behavior.facing = behavior::DIR::DOWN;
+        if(behavior.facing_strictly_left()) {
+            behavior.facing = behavior::DIR::DOWN_LEFT;
+        } else {
+            behavior.facing = behavior::DIR::DOWN_RIGHT;
+        }
     }
 }
 
@@ -495,6 +505,11 @@ void Player::update_weapon_direction() {
             break;
     }
     loadout.get_equipped_weapon().set_orientation();
+    if(behavior.facing_right()) {
+        hand_position = {28, 36};
+    } else {
+        hand_position = {20, 36};
+    }
 }
 
 void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
@@ -560,6 +575,18 @@ void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
     }
     if(jumpbox.SAT(cell)) {
         is_any_jump_colllision = true;
+    }
+}
+
+sf::Vector2<float> Player::get_fire_point() {
+    if(behavior.facing_strictly_left()) {
+        return apparent_position + hand_position + sf::Vector2<float>{static_cast<float>(-loadout.get_equipped_weapon().sprite_dimensions.x), 0.0f};
+    } else if(behavior.facing_strictly_right()) {
+        return apparent_position + hand_position + sf::Vector2<float>{static_cast<float>(loadout.get_equipped_weapon().sprite_dimensions.x), 0.0f};;
+    } else if(behavior.facing_up()) {
+        return apparent_position + sf::Vector2<float>{PLAYER_WIDTH/2, 0.0f};
+    } else {
+        return apparent_position + sf::Vector2<float>{PLAYER_WIDTH/2, PLAYER_HEIGHT};
     }
 }
 

@@ -84,6 +84,9 @@ public:
     //collision
     void handle_map_collision(const Shape& cell, bool is_ramp);
     
+    //firing
+    sf::Vector2<float> get_fire_point();
+    
     //for debug mode
     std::string print_direction();
     
@@ -103,8 +106,10 @@ public:
     std::vector<arms::WEAPON_TYPE> weapons_hotbar{};
     int current_weapon{};
     
+    sf::Vector2<float> apparent_position{};
     sf::Sprite current_sprite{};
     sf::Vector2<float> anchor_point{};
+    sf::Vector2<float> hand_position{};
     
     bool move_left{};
     bool move_right{};

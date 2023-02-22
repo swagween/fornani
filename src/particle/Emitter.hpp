@@ -47,7 +47,7 @@ class Emitter {
 public:
     
     Emitter() = default;
-    Emitter(ElementBehavior b, EmitterStats s) : behavior(b), stats(s) {
+    Emitter(ElementBehavior b, EmitterStats s, sf::Color c = sf::Color{255, 255, 255}) : behavior(b), stats(s), color(c) {
         util::Random r{};
         int var = r.random_range(-stats.lifespan_variance, stats.lifespan_variance);
         stats.lifespan += var;
@@ -57,7 +57,7 @@ public:
     void update() { //this will tick every element and the generator itself
         physics.update();
         if(stats.lifespan > 0) { //make a particle at a certain rate
-            particles.push_back(Particle(physics, behavior.expulsion_force, {behavior.x_friction, behavior.y_friction}));
+            particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}));
             particles.back().physics.dir = physics.dir;
             util::Random r{};
             int var = r.random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
@@ -116,6 +116,7 @@ public:
     int get_lifespan() { return stats.lifespan; }
     int num_particles () { return (int)particles.size(); }
     
+    sf::Color color{};
     
     
 private:

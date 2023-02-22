@@ -45,6 +45,8 @@
 
 #include <filesystem>
 
+#include "../graphics/FLColor.hpp"
+
 namespace fs = std::filesystem;
 
 const uint8_t TILE_WIDTH = 32;
@@ -69,8 +71,8 @@ public:
         t_plasmer.loadFromFile(resource_path + "/image/weapon/plasmer.png");
         t_clover.loadFromFile(resource_path + "/image/weapon/clover.png");
         t_bryns_gun_projectile.loadFromFile(resource_path + "/image/weapon/bryns_gun_proj.png");
-        t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer.png");
-        t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover.png");
+        t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer_proj.png");
+        t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover_proj.png");
         //load all the other textures...
     }
     
@@ -100,48 +102,70 @@ public:
             }
         }
         
+        //gun sprite order convention:          right : left : up_right : down_right : down_left : up_left
+        //projectile sprite order convention:   right : left : up : down
+        
         //guns and bullets!! (gotta do these all by hand)
-        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({0,  0}, {8,  3 })));
-        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({0,  4}, {4,  12})));
-        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({4,  4}, {7,  12})));
-        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({9,  0}, {17, 3 })));
-        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({14, 4}, {17, 12})));
-        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({10, 4}, {13, 12})));
+        int bg_w = 18; int bg_h = 8; int bg_total_w = 36;
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({0,  0},                         {bg_w,  bg_h})));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({bg_total_w - bg_w,  0},         {bg_w,  bg_h})));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({0,  bg_h},                      {bg_h,  bg_w})));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({bg_h, bg_h},                    {bg_h,  bg_w})));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({bg_total_w - bg_h * 2, bg_h},   {bg_h,  bg_w})));
+        sp_bryns_gun.push_back(sf::Sprite(t_bryns_gun, sf::IntRect({bg_total_w - bg_h, bg_h},       {bg_h,  bg_w})));
         
-        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({0,  0}, {10, 4 })));
-        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({0,  5}, {5,  15})));
-        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({5,  5}, {9,  15})));
-        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({11, 0}, {21, 5 })));
-        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({17, 5}, {21, 15})));
-        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({12, 5}, {16, 15})));
+        int plas_w = 22; int plas_h = 10; int plas_total_w = 44;
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({0,  0},                               {plas_w,  plas_h})));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({plas_total_w - plas_w,  0},           {plas_w,  plas_h})));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({0,  plas_h},                          {plas_h,  plas_w})));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({plas_h, plas_h},                      {plas_h,  plas_w})));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({plas_total_w - plas_h * 2, plas_h},   {plas_h,  plas_w})));
+        sp_plasmer.push_back(sf::Sprite(t_plasmer, sf::IntRect({plas_total_w - plas_h, plas_h},       {plas_h,  plas_w})));
         
-        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({0,  0}, {8,  4 })));
-        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({0,  5}, {4,  13})));
-        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({5,  5}, {9,  13})));
-        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({11, 0}, {19, 4 })));
-        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({15, 5}, {19, 13})));
-        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({10, 5}, {14, 13})));
+        //clover
+        int clov_w = 18; int clov_h = 10; int clov_total_w = 40;
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({0,  0},                               {clov_w,  clov_h})));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({clov_total_w - clov_w,  0},           {clov_w,  clov_h})));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({0,  clov_h},                          {clov_h,  clov_w})));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({clov_h, clov_h},                      {clov_h,  clov_w})));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({clov_total_w - clov_h * 2, clov_h},   {clov_h,  clov_w})));
+        sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({clov_total_w - clov_h, clov_h},       {clov_h,  clov_w})));
         
-        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({0, 0}, {3*2, 5*2})));
-        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({4*2, 0}, {9*2, 3*2})));
-        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({0, 6*2}, {5*2, 9*2})));
-        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({6*2, 5*2}, {9*2, 9*2})));
+        int bg_proj_w = 22; int bg_proj_h = 12;
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({0, 0},                        {bg_proj_w, bg_proj_h})));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({0, bg_proj_h},                {bg_proj_w, bg_proj_h})));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({bg_proj_w, 0},                {bg_proj_h, bg_proj_w})));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({bg_proj_w + bg_proj_w, 0},    {bg_proj_h, bg_proj_w})));
         
-        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({0, 0}, {2, 4})));
-        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({3, 0}, {7, 2})));
-        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({0, 5}, {4, 7})));
-        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({5, 4}, {7, 7})));
+        int plas_proj_w = 20; int plas_proj_h = 10;
+        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({0, 0},                            {plas_proj_w, plas_proj_h})));
+        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({0, plas_proj_h},                  {plas_proj_w, plas_proj_h})));
+        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({plas_proj_w, 0},                  {plas_proj_h, plas_proj_w})));
+        sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({plas_proj_w + plas_proj_w, 0},    {plas_proj_h, plas_proj_w})));
         
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, 0}, {2,  2})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({3, 0}, {6,  2})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({7, 0}, {10, 3})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, 3}, {6,  8})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({7, 4}, {10, 8})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0+9, 0}, {2+9,  2})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({3+9, 0}, {6+9,  2})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({7+9, 0}, {10+9, 3})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0+9, 3}, {6+9,  8})));
-        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({7+9, 4}, {10+9, 8})));
+        int cproj1_w = 6; int cproj1_h = 6; int cproj2_w = 8; int cproj2_h = 6; int cproj3_w = 8; int cproj3_h = 8;
+        int cproj4_w = 14; int cproj4_h = 12; int cproj5_w = 8; int cproj5_h = 10; int cproj_total_height = 18;
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, 0},                                      {cproj1_w, cproj1_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj1_w, 0},                               {cproj2_w, cproj1_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj1_w + cproj2_w, 0},                    {cproj3_w, cproj3_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, cproj1_h},                               {cproj4_w, cproj4_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj4_w, cproj3_h},                        {cproj5_w, cproj5_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, cproj_total_height},                     {cproj1_w, cproj1_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj1_w, cproj_total_height},              {cproj2_w, cproj2_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj1_w + cproj2_w, cproj_total_height},   {cproj3_w, cproj3_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, cproj1_h + cproj_total_height},          {cproj4_w, cproj4_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj4_w, cproj3_h + cproj_total_height},   {cproj5_w, cproj5_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, 0},                                      {cproj1_w, cproj1_h})));
+        
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj1_w, cproj_total_height*2},            {cproj2_w, cproj1_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj1_w + cproj2_w, cproj_total_height*2}, {cproj3_w, cproj3_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, cproj1_h + cproj_total_height*2},        {cproj4_w, cproj4_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj4_w, cproj3_h + cproj_total_height*2}, {cproj5_w, cproj5_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, cproj_total_height*3},                   {cproj1_w, cproj1_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj1_w, cproj_total_height*3},            {cproj2_w, cproj2_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj1_w + cproj2_w, cproj_total_height*3}, {cproj3_w, cproj3_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({0, cproj1_h + cproj_total_height*3},        {cproj4_w, cproj4_h})));
+        sp_clover_projectile.push_back(sf::Sprite(t_clover_projectile, sf::IntRect({cproj4_w, cproj3_h + cproj_total_height*3}, {cproj5_w, cproj5_h})));
         
         //assign all the other sprites...
     }

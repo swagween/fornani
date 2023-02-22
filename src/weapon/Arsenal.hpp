@@ -18,13 +18,13 @@ namespace arms {
 using Key = WEAPON_TYPE;
 
 inline Weapon bryns_gun  =  Weapon("Bryn's Gun"    , Key::BRYNS_GUN      , bryns_gun_attributes,   bryns_gun_stats );
-inline Weapon plasmer    =  Weapon("Plasmer"       , Key::PLASMER        , plasmer_attributes,     plasmer_stats   );
+inline Weapon plasmer    =  Weapon("Plasmer"       , Key::PLASMER        , plasmer_attributes,     plasmer_stats   , heavy_gun_spray);
 inline Weapon wasp       =  Weapon("Wasp"          , Key::WASP           , wasp_attributes,        wasp_stats      );
 inline Weapon blizzard   =  Weapon("Blizzard"      , Key::BLIZZARD       , blizzard_attributes,    blizzard_stats  );
 inline Weapon bismuth    =  Weapon("Bismuth"       , Key::BISMUTH        , bismuth_attributes,     bismuth_stats   );
 inline Weapon underdog   =  Weapon("Underdog"      , Key::UNDERDOG       , underdog_attributes,    underdog_stats  );
 inline Weapon electron   =  Weapon("Electron"      , Key::ELECTRON       , electron_attributes,    electron_stats  );
-inline Weapon clover     =  Weapon("Clover"        , Key::CLOVER         , clover_attributes,      clover_stats    );
+inline Weapon clover     =  Weapon("Clover"        , Key::CLOVER         , clover_attributes,      clover_stats    , bubble_spray, clover_anim, {18, 10});
 inline Weapon triton     =  Weapon("Triton"        , Key::TRITON         , triton_attributes,      triton_stats    );
 inline Weapon willet_585 =  Weapon("Willet 585"    , Key::WILLET_585     , willet_585_attributes,  willet_585_stats);
 inline Weapon quasar     =  Weapon("Quasar"        , Key::QUASAR         , quasar_attributes,      quasar_stats    );
@@ -61,7 +61,6 @@ struct Armory {
     std::unordered_map<Key, Weapon> weapons{};
     
 };
-    
 
 
 class Arsenal {

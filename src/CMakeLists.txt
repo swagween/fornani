@@ -24,6 +24,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	utils/Random.hpp
 	setup/AssetManager.hpp
 	setup/ServiceLocator.hpp
+    setup/LookupTables.hpp
 	entities/player/Player.hpp
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp
@@ -39,6 +40,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	automa/StateManager.cpp
     gui/HUD.hpp
 	service/Service.hpp
+    graphics/FLColor.hpp
 
 )
 
