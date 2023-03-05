@@ -25,6 +25,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	setup/AssetManager.hpp
 	setup/ServiceLocator.hpp
     setup/LookupTables.hpp
+        setup/EnumLookups.hpp
 	entities/player/Player.hpp
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp

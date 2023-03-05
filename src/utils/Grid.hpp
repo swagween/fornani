@@ -67,13 +67,13 @@ public:
     
     void init_shape_vertices();
     
-    void setSpacing(float spc);
+    void set_spacing(float spc);
     
-    void pushCells(int i);
+    void push_cells(int i);
     
 };
 
-TILE_TYPE lookupType(int idx);
+TILE_TYPE lookup_type(int idx);
 
 } // end squid
 

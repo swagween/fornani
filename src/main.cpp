@@ -21,10 +21,10 @@
 namespace {
 
 auto SM = automa::StateManager{};
-auto window = sf::RenderWindow();;
+auto window = sf::RenderWindow();
 
 const int NUM_TIMESTEPS = 64;
-int TIME_STEP_MILLI = 0;
+int TIME_STEP_MILLI = 8;
 int frame{};
 using Clock = std::chrono::steady_clock;
 using Time = std::chrono::duration<float>;
@@ -199,6 +199,13 @@ static void show_overlay() {
                     ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().physics.position.x, svc::cameraLocator.get().physics.position.y);
                     ImGui::EndTabItem();
                 }
+                if (ImGui::BeginTabItem("Resources"))
+                {
+                    ImGui::Text("Size of Asset Manager (Bytes): %lu", sizeof(svc::assetLocator.get()));
+                    ImGui::Text("Size of Camera (Bytes): %lu", sizeof(svc::cameraLocator.get()));
+                    ImGui::Text("Size of Player (Bytes): %lu", sizeof(svc::playerLocator.get()));
+                    ImGui::EndTabItem();
+                }
                 if (ImGui::BeginTabItem("State"))
                 {
                     ImGui::Separator();
@@ -253,7 +260,7 @@ void run(char** argv) {
     sf::RectangleShape background{};
     background.setSize(static_cast<sf::Vector2<float> >(screen_dimensions));
     background.setPosition(0, 0);
-    background.setFillColor(sf::Color(20, 20, 30));
+    background.setFillColor(sf::Color(50, 60, 70));
     
     
     //game loop
@@ -280,6 +287,7 @@ void run(char** argv) {
             ImGui::SFML::ProcessEvent(event);
             switch(event.type) {
                 case sf::Event::Closed:
+                    
                     return;
                 case sf::Event::KeyPressed:
                     //player can refresh grid by pressing 'Z'
@@ -294,8 +302,7 @@ void run(char** argv) {
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/DOJO");
-                        SM.get_current_state().setTilesetTexture(svc::assetLocator.get().sp_tileset_provisional);
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FROZEN_WAREHOUSE_01");
                     }
                     break;
                 default:

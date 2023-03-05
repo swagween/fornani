@@ -19,6 +19,7 @@ const float PLAYER_START_Y = 100.0f;
 const float JUMPBOX_HEIGHT = 2.0f;
 const float DETECTOR_WIDTH = 4.0f;
 const float DETECTOR_HEIGHT = 24.0f;
+const float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
 const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 12;
 const int ANCHOR_BUFFER = 50;
@@ -44,7 +45,7 @@ struct PhysicsStats {
     float Y_ACC = 0.794f;
     
     float JUMP_ACC = 0.8f;
-    float JUMP_MAX = 4.948f;
+    float JUMP_MAX = 4.648f;
     int   JUMP_TIME = 20;
     
     float WALL_SLIDE_THRESHOLD = -1.0f;
@@ -70,7 +71,7 @@ public:
     Player();
     
     //member functions
-    void handle_events(sf::Event event);
+    void handle_events(sf::Event& event);
     void update(Time dt);
     void render();
     void update_animation();
@@ -97,6 +98,7 @@ public:
     Shape jumpbox{};
     Shape left_detector{};
     Shape right_detector{};
+    Shape wall_slide_detector{};
     
     components::PhysicsComponent physics{};
     components::PlayerBehaviorComponent behavior{};
@@ -138,6 +140,7 @@ public:
     bool fall_trigger{};
     bool landed_trigger{};
     bool wall_slide_trigger{};
+    bool release_wallslide{};
     bool entered_freefall{};
     bool freefalling{};
     
@@ -148,6 +151,7 @@ public:
     bool is_any_colllision = false;
     int left_aabb_counter = 0;
     int right_aabb_counter = 0;
+    int wall_slide_ctr{0};
     
     int jump_height_counter{};
     

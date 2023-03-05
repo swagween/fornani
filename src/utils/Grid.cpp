@@ -54,13 +54,13 @@ void squid::Grid::update() {
     
     for(int i = 0; i < dimensions.x * dimensions.y; i++) {
         
-        pushCells(i);
+        push_cells(i);
         
     }
     
 }
 
-void squid::Grid::setSpacing(float spc) {
+void squid::Grid::set_spacing(float spc) {
     
     spacing = spc;
     for(int i = 0; i < dimensions.x * dimensions.y; i++) {
@@ -71,7 +71,7 @@ void squid::Grid::setSpacing(float spc) {
     
 }
 
-void squid::Grid::pushCells(int i) {
+void squid::Grid::push_cells(int i) {
     // calculate index values
     uint32_t xidx = std::floor(i%dimensions.x);
     uint32_t yidx = std::floor(i/dimensions.x);
@@ -97,7 +97,7 @@ void squid::Grid::pushCells(int i) {
     cells.at(i).bounding_box.update(xpos, ypos, spacing, spacing);
 }
 
-squid::TILE_TYPE squid::lookupType(int idx) {
+squid::TILE_TYPE squid::lookup_type(int idx) {
     if(idx < 1) {
         return TILE_NULL;
     }

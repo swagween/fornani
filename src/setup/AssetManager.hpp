@@ -46,6 +46,7 @@
 #include <filesystem>
 
 #include "../graphics/FLColor.hpp"
+#include "../setup/EnumLookups.hpp"
 
 namespace fs = std::filesystem;
 
@@ -53,6 +54,7 @@ const uint8_t TILE_WIDTH = 32;
 const int NANI_SPRITESHEET_WIDTH = 22;
 const int NANI_SPRITESHEET_HEIGHT = 10;
 const uint8_t NANI_SPRITE_WIDTH = 48;
+inline const char* styles[lookup::NUM_STYLES];
 
 class AssetManager {
 public:
@@ -63,6 +65,9 @@ public:
         t_nani_spritesheet.loadFromFile(resource_path + "/image/character/nani_spritesheet.png");
         t_tiles_provisional.loadFromFile(resource_path + "/image/tile/provisional_tiles.png");
         t_tiles_shadow.loadFromFile(resource_path + "/image/tile/shadow_tiles.png");
+        t_tiles_toxic.loadFromFile(resource_path + "/image/tile/toxic_tiles.png");
+        t_tiles_abandoned.loadFromFile(resource_path + "/image/tile/abandoned_tiles.png");
+        
         t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
         t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
         
@@ -74,6 +79,17 @@ public:
         t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer_proj.png");
         t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover_proj.png");
         //load all the other textures...
+        
+        //load tylesets programatically (filenames had better be right...)
+        for(int i = 0; i < lookup::NUM_STYLES; ++i) {
+            const char* next = lookup::get_style_string.at(lookup::get_style.at(i));
+            styles[i] = next;
+        }
+        for(int i = 0; i < lookup::NUM_STYLES; ++i) {
+            tilesets.push_back(sf::Texture());
+            std::string style = lookup::get_style_string.at(lookup::get_style.at(i));
+            tilesets.back().loadFromFile(resource_path + "/image/tile/" + style + "_tiles.png");
+        }
     }
     
     bool assignSprites() {
@@ -214,6 +230,9 @@ public:
     sf::Texture t_tiles_shadow{};
     sf::Texture t_tiles_hoarder{};
     sf::Texture t_tiles_abandoned{};
+    sf::Texture t_tiles_toxic{};
+    
+    std::vector<sf::Texture> tilesets{};
     
     //load the guns and bullets!
     sf::Texture t_bryns_gun{};

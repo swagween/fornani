@@ -17,7 +17,9 @@
 #include "../weapon/Projectile.hpp"
 #include "../setup/LookupTables.hpp"
 
-const int NUM_LAYERS = 8;
+const int NUM_LAYERS{8};
+const int CHUNK_SIZE{16};
+const int CELL_SIZE{32};
 
 namespace world {
 
@@ -35,12 +37,13 @@ class Layer {
 public:
     
     Layer() = default;
-    Layer(uint8_t o, bool c) : render_order(o), collidable(c) {
-        grid = squid::Grid({48, 32});
+    Layer(uint8_t o, bool c, sf::Vector2<uint16_t> dim) : render_order(o), collidable(c), dimensions(dim) {
+        grid = squid::Grid({dim.x, dim.y});
     }
     squid::Grid grid{};
     uint8_t render_order{};
     bool collidable{};
+    sf::Vector2<uint16_t> dimensions{};
     
 };
 
@@ -57,6 +60,7 @@ public:
     void load(const std::string& path);
     void update();
     void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
+    void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
     squid::Tile* tile_at(const uint8_t i, const uint8_t j);
     Shape* shape_at(const uint8_t i, const uint8_t j);
     void spawn_projectile_at(sf::Vector2<float> pos);
@@ -64,10 +68,18 @@ public:
     
     //layers
     std::vector<Layer> layers;
+    sf::Vector2<float> real_dimensions{}; // pixel dimensions (maybe useless)
+    sf::Vector2<uint16_t> dimensions{}; // points on the 32x32-unit grid
+    sf::Vector2<uint16_t> chunk_dimensions{}; // how many chunks (16x16 squares) in the room
     
     //entities
     std::vector<arms::Projectile> active_projectiles{};
     std::vector<vfx::Emitter> active_emitters{};
+    
+    lookup::STYLE style{}; // which tileset to render
+    lookup::BACKDROP bg{}; // which background to render
+    
+    uint16_t room_id{}; // should be assigned to its constituent chunks
     
 };
 

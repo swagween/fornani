@@ -47,6 +47,11 @@ Player::Player() {
     right_detector.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH - right_detector.right_offset, PLAYER_START_Y + DETECTOR_HEIGHT);
     right_detector.vertices[3] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH,  PLAYER_START_Y + DETECTOR_HEIGHT);
     
+    wall_slide_detector.vertices[0] = sf::Vector2<float>(PLAYER_START_X - DETECTOR_WIDTH,  PLAYER_START_Y + DETECTOR_BUFFER + WALL_SLIDE_DETECTOR_OFFSET);
+    wall_slide_detector.vertices[1] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH, PLAYER_START_Y + DETECTOR_BUFFER + WALL_SLIDE_DETECTOR_OFFSET);
+    wall_slide_detector.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH - right_detector.right_offset, PLAYER_START_Y + DETECTOR_HEIGHT/4);
+    wall_slide_detector.vertices[3] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH,  PLAYER_START_Y + DETECTOR_HEIGHT/4);
+    
     weapons_hotbar = {
         arms::WEAPON_TYPE::BRYNS_GUN,
         arms::WEAPON_TYPE::PLASMER,
@@ -56,7 +61,7 @@ Player::Player() {
     
 }
 
-void Player::handle_events(sf::Event event) {
+void Player::handle_events(sf::Event& event) {
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Left) {
             move_left = true;
@@ -334,6 +339,7 @@ void Player::sync_components() {
     jumpbox.update(physics.position.x, physics.position.y + PLAYER_HEIGHT, PLAYER_WIDTH, JUMPBOX_HEIGHT);
     left_detector.update(physics.position.x - DETECTOR_WIDTH, physics.position.y + DETECTOR_BUFFER, DETECTOR_WIDTH, DETECTOR_HEIGHT);
     right_detector.update(physics.position.x + PLAYER_WIDTH, physics.position.y + DETECTOR_BUFFER, DETECTOR_WIDTH, DETECTOR_HEIGHT);
+    wall_slide_detector.update(physics.position.x - DETECTOR_WIDTH, physics.position.y + DETECTOR_BUFFER + WALL_SLIDE_DETECTOR_OFFSET, PLAYER_WIDTH + DETECTOR_WIDTH*2, DETECTOR_HEIGHT/4);
     if(behavior.facing_left()) {
         anchor_point = {physics.position.x + PLAYER_WIDTH/2 - ANCHOR_BUFFER, physics.position.y + PLAYER_HEIGHT/2};
     }
@@ -343,6 +349,14 @@ void Player::sync_components() {
 }
 
 void Player::update_behavior() {
+    
+    if(wall_slide_trigger) {
+        behavior.wall_slide();
+    } else if(release_wallslide && behavior.current_state->params.behavior_id == "wall_sliding") {
+        behavior.reset();
+    }
+    
+    
     
     if(just_jumped && !is_wall_sliding) {
         behavior.air(physics.velocity.y);
@@ -382,10 +396,6 @@ void Player::update_behavior() {
         }
     }
     
-    if(wall_slide_trigger) {
-        behavior.wall_slide();
-    }
-    
     
     if(just_landed) {
         behavior.land();
@@ -406,6 +416,7 @@ void Player::update_behavior() {
     left_released = false;
     right_released = false;
     wall_slide_trigger = false;
+    release_wallslide = false;
     if(!loadout.get_equipped_weapon().attributes.automatic) {
         weapon_fired = false;
     }
@@ -418,7 +429,7 @@ void Player::update_behavior() {
         }
     }
     
-    if(grounded || (!has_left_collision && !has_right_collision)) {
+    if(grounded || (!has_left_collision && !has_right_collision) || abs(physics.velocity.x) > 0.001f) {
         is_wall_sliding = false;
     }
     update_direction();
@@ -513,7 +524,6 @@ void Player::update_weapon_direction() {
 }
 
 void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
-    
     if(left_detector.SAT(cell) && physics.velocity.x < 0.01f && !is_ramp) {
         has_left_collision = true;
         physics.acceleration.x = 0.0f;
@@ -532,6 +542,9 @@ void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
             wall_slide_trigger = true;
         }
     }
+    
+    if(wall_slide_trigger && !wall_slide_detector.SAT(cell)) { release_wallslide = true; }
+    
     if(predictive_hurtbox.SAT(cell)) {
         is_any_colllision = true;
         //set mtv

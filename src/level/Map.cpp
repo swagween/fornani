@@ -12,28 +12,53 @@
 namespace world {
 
 Map::Map() {
-    for(int i = 0; i < NUM_LAYERS; ++i) {
-        layers.push_back(Layer( i, (i == MIDDLEGROUND) ));
-        layers.back().grid.initialize();
-    }
+    
 }
 
 void Map::load(const std::string& path) {
-    for(int i = 0; i < NUM_LAYERS; ++i) {
-        layers.push_back(Layer( i, (i == MIDDLEGROUND) ));
-        layers.back().grid.initialize();
-    }
     
-    //get data from text files
+    std::string filepath = path + "/map_data.txt";
+    
     int value{};
     int counter = 0;
     std::ifstream input{};
+    input.open(filepath);
+    if (!input.is_open()) {
+        printf("Failed to open file.\n");
+        return;
+    }
+    
+    //dimensions and layers
+    input >> value; room_id = value; input.ignore();
+    input >> value; dimensions.x = value; input.ignore();
+    input >> value; dimensions.y = value; input.ignore();
+    input >> value; chunk_dimensions.x = value; input.ignore();
+    input >> value; chunk_dimensions.y = value; input.ignore();
+    if((dimensions.x / chunk_dimensions.x != CHUNK_SIZE) ||
+       (dimensions.y / chunk_dimensions.y != CHUNK_SIZE)) { printf("File is corrupted: Invalid dimensions.\n"); return; }
+    real_dimensions = {(float)dimensions.x * CELL_SIZE, (float)dimensions.y * CELL_SIZE};
+    for(int i = 0; i < NUM_LAYERS; ++i) {
+        layers.push_back(Layer( i, (i == MIDDLEGROUND), dimensions ));
+        layers.back().grid.initialize();
+    }
+    //style
+    input >> value; input.ignore();
+    if(value >= lookup::get_style.size()) { printf("File is corrupted: Invalid style.\n"); return; } else {
+        style = lookup::get_style.at(value);
+    }
+    //bg;
+    input >> value; input.ignore();
+    if(value >= lookup::get_backdrop.size()) { printf("File is corrupted: Invalid backdrop.\n"); return; } else {
+        bg = lookup::get_backdrop.at(value);
+    }
+    input.close();
+    
+    //get map tiles from text files
     for(auto& layer : layers) {
-        //open map_tiles_[i].txt
         input.open(path + "/map_tiles_" + std::to_string(counter) + ".txt");
         for(auto& cell : layer.grid.cells) {
             input >> value;
-            squid::TILE_TYPE typ = squid::lookupType(value);
+            squid::TILE_TYPE typ = squid::lookup_type(value);
             cell.value = value;
             cell.type = typ;
             
@@ -130,7 +155,6 @@ void Map::update() {
 }
 
 void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
-    std::vector<sf::Sprite>& tiles = svc::assetLocator.get().sp_tileset_provisional;
     for(auto& proj : active_projectiles) {
         sf::Sprite proj_sprite;
         int curr_frame = proj.sprite_id + proj.anim.num_sprites*proj.anim_frame;
@@ -157,23 +181,29 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
             win.draw(dot);
         }
     }
-    
-    for(int i = 0; i < layers.size(); ++i) {
-        for(int j = 0; j < layers.at(i).grid.cells.size(); ++j) {
-            if(layers.at(i).collidable) {
-                if(layers.at(i).grid.cells.at(j).value > 0) {
-                    tiles.at(layers.at(i).grid.cells.at(j).value).setPosition(layers.at(i).grid.cells.at(j).bounding_box.shape_x - cam.x, layers.at(i).grid.cells.at(j).bounding_box.shape_y - cam.y);
-                    win.draw(tiles.at(layers.at(i).grid.cells.at(j).value));
-//
-                    if(layers.at(i).grid.cells.at(j).collision_check) {
-                        sf::RectangleShape box{};
-                        box.setFillColor(sf::Color(255, 255, 255, 50));
-                        box.setOutlineColor(flcolor::white);
-                        box.setOutlineThickness(-1);
-                        box.setPosition(layers.at(i).grid.cells.at(j).bounding_box.shape_x - cam.x, layers.at(i).grid.cells.at(j).bounding_box.shape_y - cam.y);
-                        box.setSize({32, 32});
-//                        win.draw(box);
-                    }
+    for(auto& layer : layers) {
+        if(layer.render_order >= 4) {
+            for(auto& cell : layer.grid.cells) {
+                if(cell.value > 0) {
+                    int cell_x = cell.bounding_box.shape_x - cam.x;
+                    int cell_y = cell.bounding_box.shape_y - cam.y;
+                    tileset.at(cell.value).setPosition(cell_x, cell_y);
+                    win.draw(tileset.at(cell.value));
+                }
+            }
+        }
+    }
+}
+
+void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
+    for(auto& layer : layers) {
+        if(layer.render_order < 4) {
+            for(auto& cell : layer.grid.cells) {
+                if(cell.value > 0) {
+                    int cell_x = cell.bounding_box.shape_x - cam.x;
+                    int cell_y = cell.bounding_box.shape_y - cam.y;
+                    tileset.at(cell.value).setPosition(cell_x, cell_y);
+                    win.draw(tileset.at(cell.value));
                 }
             }
         }

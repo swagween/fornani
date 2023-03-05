@@ -48,8 +48,8 @@ public:
     template<typename T> class StateID;
     
     virtual void init(const std::string& load_path) {};
-    virtual void setTilesetTexture(std::vector<sf::Sprite>& tile_sprites) {};
-    virtual void handle_events(sf::Event event) {
+    virtual void setTilesetTexture(sf::Texture& t) {};
+    virtual void handle_events(sf::Event& event) {
         
     };
     virtual void logic(Time dt) {};
@@ -81,9 +81,9 @@ public:
     };
     void init(const std::string& load_path) {
     }
-    void setTilesetTexture(std::vector<sf::Sprite>& tile_sprites) {
+    void setTilesetTexture(sf::Texture& t) {
     }
-    void handle_events(sf::Event event) {
+    void handle_events(sf::Event& event) {
         
         if (event.type == sf::Event::EventType::KeyPressed) {
         }
@@ -108,17 +108,22 @@ public:
     
     Dojo() {
         state = automa::STATE::STATE_DOJO;
-        svc::cameraLocator.get().set_position({0, 0});
-        svc::playerLocator.get().set_position({400, 300});
-    };
+        svc::cameraLocator.get().set_position({1, 1});
+        svc::playerLocator.get().set_position({360, 500});
+    }
     void init(const std::string& load_path) {
         map.load(load_path);
         svc::playerLocator.get().behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
+        tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
+        for(int i = 0; i < 16; ++i) {
+            for(int j = 0; j < 16; ++j) {
+                tileset_sprites.push_back(sf::Sprite());
+                tileset_sprites.back().setTexture(tileset);
+                tileset_sprites.back().setTextureRect(sf::IntRect({j * TILE_WIDTH, i * TILE_WIDTH}, {TILE_WIDTH, TILE_WIDTH}));
+            }
+        }
     }
-    void setTilesetTexture(std::vector<sf::Sprite>& tile_sprites) {
-        tileset = svc::assetLocator.get().sp_tileset_provisional;
-    }
-    void handle_events(sf::Event event) {
+    void handle_events(sf::Event& event) {
         svc::playerLocator.get().handle_events(event);
         if (event.type == sf::Event::EventType::KeyPressed) {
             if (event.key.code == sf::Keyboard::H) {
@@ -135,6 +140,8 @@ public:
     }
     
     void render(sf::RenderWindow& win) {
+        
+        map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         
         if(show_colliders) {
             sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
@@ -164,6 +171,15 @@ public:
             rightbox.setSize({(float)svc::playerLocator.get().right_detector.shape_w, (float)svc::playerLocator.get().right_detector.shape_h});
             win.draw(rightbox);
             
+            sf::Vector2<float> wallbox_pos = sf::operator-(svc::playerLocator.get().wall_slide_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::RectangleShape wallbox{};
+            wallbox.setPosition(wallbox_pos.x, wallbox_pos.y);
+            wallbox.setFillColor(sf::Color::Transparent);
+            wallbox.setOutlineColor(sf::Color(23, 232, 249, 80));
+            wallbox.setOutlineThickness(-1);
+            wallbox.setSize({(float)svc::playerLocator.get().wall_slide_detector.shape_w, (float)svc::playerLocator.get().wall_slide_detector.shape_h});
+            win.draw(wallbox);
+            
             sf::Vector2<float> predictive_hurtbox_pos = sf::operator-(svc::playerLocator.get().predictive_hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape predictive_hbx{};
             predictive_hbx.setPosition(predictive_hurtbox_pos.x, predictive_hurtbox_pos.y);
@@ -183,7 +199,6 @@ public:
             win.draw(hbx);
         }
         
-        
         //player
         sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
         svc::playerLocator.get().current_sprite = svc::assetLocator.get().sp_nani.at(svc::playerLocator.get().behavior.current_state->params.lookup_value + svc::playerLocator.get().behavior.current_state->params.current_frame);
@@ -197,14 +212,13 @@ public:
         if(!curr_weapon_sprites.empty()) {
             weap_sprite = curr_weapon_sprites.at(arms::WeaponDirLookup.at(curr_weapon.sprite_orientation));
         }
-//        sf::Sprite weap_sprite = lookup::weapon_sprites.at(curr_weapon.type).at(arms::WeaponDirLookup.at(curr_weapon.sprite_orientation));
-//        sf::Sprite weap_sprite = svc::assetLocator.get().sp_clover.at(arms::WeaponDirLookup.at(svc::playerLocator.get().loadout.get_equipped_weapon().sprite_orientation));
+        
         sf::Vector2<float> anchor = svc::playerLocator.get().hand_position;
         sf::Vector2<int> offset = svc::playerLocator.get().loadout.get_equipped_weapon().sprite_offset;
         weap_sprite.setPosition(player_pos.x + anchor.x + offset.x, player_pos.y + anchor.y + offset.y);
         win.draw(weap_sprite);
         
-        map.render(win, tileset, svc::cameraLocator.get().physics.position);
+        map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         
         //HUD
         svc::assetLocator.get().sp_hud.setPosition(20, 20);
@@ -215,8 +229,9 @@ public:
     }
     
     world::Map map{};
-    std::vector<sf::Sprite> tileset{};
-    bool show_colliders = false;
+    sf::Texture tileset{};
+    std::vector<sf::Sprite> tileset_sprites{};
+    bool show_colliders = true;
     
 };
 
