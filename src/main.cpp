@@ -260,7 +260,7 @@ void run(char** argv) {
     sf::RectangleShape background{};
     background.setSize(static_cast<sf::Vector2<float> >(screen_dimensions));
     background.setPosition(0, 0);
-    background.setFillColor(sf::Color(50, 60, 70));
+    background.setFillColor(sf::Color(10, 10, 20));
     
     
     //game loop
@@ -302,7 +302,7 @@ void run(char** argv) {
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FROZEN_WAREHOUSE_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
                     }
                     break;
                 default:

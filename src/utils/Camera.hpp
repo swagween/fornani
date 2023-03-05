@@ -66,6 +66,17 @@ public:
         }
     }
     
+    void restrict_movement(sf::Vector2<float>& bounds) {
+        if(bounding_box.top + bounding_box.height > bounds.y) {
+            bounding_box.top = bounds.y - bounding_box.height;
+            physics.position.y = bounds.y - bounding_box.height;
+        }
+        if(bounding_box.left + bounding_box.width > bounds.x) {
+            bounding_box.left = bounds.x - bounding_box.width;
+            physics.position.x = bounds.x - bounding_box.width;
+        }
+    }
+    
     void set_position(sf::Vector2<float> new_pos) {
         physics.position = new_pos;
     }

@@ -136,6 +136,7 @@ public:
         map.update();
         svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
         svc::cameraLocator.get().update();
+        svc::cameraLocator.get().restrict_movement(map.real_dimensions);
         svc::playerLocator.get().update(dt);
     }
     
@@ -231,7 +232,7 @@ public:
     world::Map map{};
     sf::Texture tileset{};
     std::vector<sf::Sprite> tileset_sprites{};
-    bool show_colliders = true;
+    bool show_colliders = false;
     
 };
 

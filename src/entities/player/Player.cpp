@@ -275,8 +275,8 @@ void Player::update(Time dt) {
     
     
     if(is_wall_sliding) {
-        physics.acceleration.y = 0.0f;
-        physics.velocity.y = stats.WALL_SLIDE_SPEED;
+//        physics.acceleration.y = 0.0f;
+//        physics.velocity.y = stats.WALL_SLIDE_SPEED;
     }
     
     //now jump after all the y corrections
@@ -350,11 +350,11 @@ void Player::sync_components() {
 
 void Player::update_behavior() {
     
-    if(wall_slide_trigger) {
-        behavior.wall_slide();
-    } else if(release_wallslide && behavior.current_state->params.behavior_id == "wall_sliding") {
-        behavior.reset();
-    }
+//    if(wall_slide_trigger) {
+//        behavior.wall_slide();
+//    } else if(release_wallslide && behavior.current_state->params.behavior_id == "wall_sliding") {
+//        behavior.reset();
+//    }
     
     
     
