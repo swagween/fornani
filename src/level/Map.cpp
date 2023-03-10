@@ -224,6 +224,8 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
         active_emitters.back().set_position(pos.x, pos.y);
         active_emitters.back().set_direction(svc::playerLocator.get().physics.dir);
         active_emitters.back().update();
+        
+        svc::assetLocator.get().plasmer_shot.play();
     }
 }
 

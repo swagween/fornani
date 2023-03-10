@@ -63,10 +63,6 @@ public:
     bool importTextures() {
         test_tex.loadFromFile(resource_path + "/test/nani_idle.png");
         t_nani_spritesheet.loadFromFile(resource_path + "/image/character/nani_spritesheet.png");
-        t_tiles_provisional.loadFromFile(resource_path + "/image/tile/provisional_tiles.png");
-        t_tiles_shadow.loadFromFile(resource_path + "/image/tile/shadow_tiles.png");
-        t_tiles_toxic.loadFromFile(resource_path + "/image/tile/toxic_tiles.png");
-        t_tiles_abandoned.loadFromFile(resource_path + "/image/tile/abandoned_tiles.png");
         
         t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
         t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
@@ -78,9 +74,13 @@ public:
         t_bryns_gun_projectile.loadFromFile(resource_path + "/image/weapon/bryns_gun_proj.png");
         t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer_proj.png");
         t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover_proj.png");
+        
+        t_hud_elements.loadFromFile(resource_path + "/image/gui/hud_elements.png");
+        t_alphabet.loadFromFile(resource_path + "/image/gui/alphabet.png");
+        
         //load all the other textures...
         
-        //load tylesets programatically (filenames had better be right...)
+        //load tilesets programatically (filenames had better be right...)
         for(int i = 0; i < lookup::NUM_STYLES; ++i) {
             const char* next = lookup::get_style_string.at(lookup::get_style.at(i));
             styles[i] = next;
@@ -96,18 +96,6 @@ public:
         sprite_test.setTexture(test_tex);
         sp_hud.setTexture(t_hud);
         sp_hud2x.setTexture(t_hud2x);
-//        s_nani_idle.setTextureRect(sf::IntRect({ 0, 0 }, { 48, 48 }));
-        for(int i = 0; i < 16; ++i) {
-            for(int j = 0; j < 16; ++j) {
-                sp_tileset_provisional.push_back(sf::Sprite());
-                sp_tileset_shadow.push_back(sf::Sprite());
-                //do all tilesets in this loop
-                sp_tileset_provisional.back().setTexture(t_tiles_provisional);
-                sp_tileset_shadow.back().setTexture(t_tiles_shadow);
-                sp_tileset_provisional.back().setTextureRect(sf::IntRect({j * TILE_WIDTH, i * TILE_WIDTH}, {TILE_WIDTH, TILE_WIDTH}));
-                sp_tileset_shadow.back().setTextureRect(sf::IntRect({j * TILE_WIDTH, i * TILE_WIDTH}, {TILE_WIDTH, TILE_WIDTH}));
-            }
-        }
         
         for(int i = 0; i < NANI_SPRITESHEET_WIDTH; ++i) {
             for(int j = 0; j < NANI_SPRITESHEET_HEIGHT; ++j) {
@@ -115,6 +103,22 @@ public:
                 sp_nani.back().setTexture(t_nani_spritesheet);
                 sp_nani.back().setTextureRect(sf::IntRect({i * NANI_SPRITE_WIDTH, j * NANI_SPRITE_WIDTH}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
                 sp_nani.back().setTextureRect(sf::IntRect({i * NANI_SPRITE_WIDTH, j * NANI_SPRITE_WIDTH}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
+            }
+        }
+        
+        //gui
+        for(int i = 0; i < 4; ++i) {
+            sp_hud_elements.push_back(sf::Sprite());
+            sp_hud_elements.back().setTexture(t_hud_elements);
+        }
+        sp_hud_elements.at(0).setTextureRect(sf::IntRect({0, 0}, {2, 18}));
+        sp_hud_elements.at(1).setTextureRect(sf::IntRect({2, 0}, {8, 18}));
+        sp_hud_elements.at(2).setTextureRect(sf::IntRect({10, 0}, {8, 18}));
+        sp_hud_elements.at(3).setTextureRect(sf::IntRect({18, 0}, {14, 18}));
+        
+        for(int j = 0; j < 2; ++j) {
+            for(int i = 0; i < 26; ++i) {
+                sp_alphabet.push_back(sf::Sprite(t_alphabet, sf::IntRect({i * 12, j * 12}, {12, 12})));
             }
         }
         
@@ -187,8 +191,19 @@ public:
     }
     
     bool load_audio() {
-//        click_buffer.loadFromFile(resource_path + "/audio/sfx/click.wav");
-//        click.setBuffer(click_buffer);
+        click_buffer.loadFromFile(resource_path + "/audio/sfx/click.wav");
+        click.setBuffer(click_buffer);
+        arms_switch_buffer.loadFromFile(resource_path + "/audio/sfx/low_switch.wav");
+        arms_switch.setBuffer(arms_switch_buffer);
+        bg_shot_buffer.loadFromFile(resource_path + "/audio/sfx/bg_shot.wav");
+        bg_shot.setBuffer(bg_shot_buffer);
+        plasmer_shot_buffer.loadFromFile(resource_path + "/audio/sfx/plasmer_shot.wav");
+        plasmer_shot.setBuffer(plasmer_shot_buffer);
+        jump_buffer.loadFromFile(resource_path + "/audio/sfx/jump.wav");
+        jump.setBuffer(jump_buffer);
+        
+        clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");
+        abandoned.openFromFile(resource_path + "/audio/songs/abandoned.wav");
     }
     
     void setResourcePath(char** argv) {
@@ -223,14 +238,11 @@ public:
     sf::Sprite sp_hud{};
     sf::Sprite sp_hud2x{};
     
-    //load the tilesets!
-    sf::Texture t_tiles_provisional{};
-    sf::Texture t_tiles_overturned{};
-    sf::Texture t_tiles_ash{};
-    sf::Texture t_tiles_shadow{};
-    sf::Texture t_tiles_hoarder{};
-    sf::Texture t_tiles_abandoned{};
-    sf::Texture t_tiles_toxic{};
+    sf::Texture t_hud_elements{};
+    std::vector<sf::Sprite> sp_hud_elements{};
+    
+    sf::Texture t_alphabet{};
+    std::vector<sf::Sprite> sp_alphabet{};
     
     std::vector<sf::Texture> tilesets{};
     
@@ -250,13 +262,28 @@ public:
     
     //condense these into a 2d vector later
     std::vector<sf::Sprite> sp_tileset_provisional{};
-    std::vector<sf::Sprite> sp_tileset_shadow{};
-    std::vector<sf::Sprite> sp_tileset_abandoned{};
     
     std::string resource_path = "";
     
-//    sf::SoundBuffer click_buffer{};
-//    sf::Sound click;
+    
+    //sound effects!
+    sf::SoundBuffer click_buffer{};
+    sf::Sound click;
+    
+    sf::SoundBuffer arms_switch_buffer{};
+    sf::Sound arms_switch;
+    sf::SoundBuffer bg_shot_buffer{};
+    sf::Sound bg_shot;
+    sf::SoundBuffer plasmer_shot_buffer{};
+    sf::Sound plasmer_shot;
+    
+    sf::SoundBuffer jump_buffer{};
+    sf::Sound jump;
+    
+    //songs!
+    sf::Music clay_statue{};
+    sf::Music abandoned{};
+    
     
 };
 

@@ -49,6 +49,13 @@ enum class STYLE {
     MANSION
 };
 
+enum class ALPHABET {
+    A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
+    ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, ZERO, APOSTROPHE, PERIOD,
+    EXCLAM, PERCENT, OPEN_ANGLED_BRACKET, CLOSED_ANGLED_BRACKET, QUESTION_MARK, COLON,
+    DASH, UNDESRCORE, HYPHEN, OPEN_PARENTHESIS, CLOSED_PARENTHESIS, HASH, PLUS, SQUARE
+};
+
 inline std::unordered_map<int, STYLE> get_style {
     {0,     STYLE::FIRSTWIND    },
     {1,     STYLE::OVERTURNED   },
@@ -134,6 +141,46 @@ inline std::unordered_map<STYLE, const char*> get_style_string {
     {STYLE::SHADOW,     "shadow"        },
     {STYLE::HOARDER,    "hoarder"       },
     {STYLE::MANSION,    "mansion"       }
+};
+
+inline std::unordered_map<char, int> get_character {
+    {'a', 0},
+    {'b', 1},
+    {'c', 2},
+    {'d', 3},
+    {'e', 4},
+    {'f', 5},
+    {'g', 6},
+    {'h', 7},
+    {'i', 8},
+    {'j', 9},
+    {'k', 10},
+    {'l', 11},
+    {'m', 12},
+    {'n', 13},
+    {'o', 14},
+    {'p', 15},
+    {'q', 16},
+    {'r', 17},
+    {'s', 18},
+    {'t', 19},
+    {'u', 20},
+    {'v', 21},
+    {'w', 22},
+    {'x', 23},
+    {'y', 24},
+    {'z', 25},
+    {'1', 26},
+    {'2', 27},
+    {'3', 28},
+    {'4', 29},
+    {'5', 30},
+    {'6', 31},
+    {'7', 32},
+    {'8', 33},
+    {'9', 34},
+    {'0', 35},
+    {'\'', 36}
 };
 
 }

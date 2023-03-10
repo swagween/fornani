@@ -25,8 +25,8 @@ const int SHAKE_FACTOR = 8;
 const int SHAKE_VOLATILITY = 12;
 const int SHAKE_DURATION = 100;
 
-const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
-const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 4, aspect_ratio.y / 4 };
+inline const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
+inline const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 4, aspect_ratio.y / 4 };
 
 
 class Camera {

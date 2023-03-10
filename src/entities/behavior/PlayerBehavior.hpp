@@ -38,7 +38,7 @@ static BehaviorParameters landing =         BehaviorParameters("landing", 2, 8, 
 static BehaviorParameters stop =            BehaviorParameters("stop", 2, DEFAULT_FRAMERATE, false, false, true, 74);
 static BehaviorParameters stop_up =         BehaviorParameters("stop_up", 2, DEFAULT_FRAMERATE, false, false, true, 70);
 static BehaviorParameters stop_down =       BehaviorParameters("stop_down", 2, DEFAULT_FRAMERATE, false, false, true, 72);
-static BehaviorParameters turning =         BehaviorParameters("turning", 2, 4, true, true, true, 33);
+static BehaviorParameters turning =         BehaviorParameters("turning", 2, 6, true, true, true, 33);
 static BehaviorParameters wall_sliding =    BehaviorParameters("wall_sliding", 4, DEFAULT_FRAMERATE, false, false, false, 66);
 
 

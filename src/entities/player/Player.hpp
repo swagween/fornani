@@ -24,6 +24,29 @@ const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 12;
 const int ANCHOR_BUFFER = 50;
 
+struct PlayerStats {
+    
+    int health{};
+    int max_health{};
+    int orbs{};
+    int max_orbs{};
+    
+};
+
+struct PlayerInventoryStats {
+    
+    uint16_t gem_spinel{};
+    uint16_t gem_topaz{};
+    uint16_t gem_tourmaline{};
+    uint16_t gem_peridot{};
+    
+    uint16_t flower_lavender{};
+    uint16_t flower_daffodil{};
+    uint16_t flower_hibiscus{};
+    uint16_t flower_orchid{};
+    
+};
+
 
 struct PhysicsStats {
     
@@ -112,6 +135,9 @@ public:
     sf::Sprite current_sprite{};
     sf::Vector2<float> anchor_point{};
     sf::Vector2<float> hand_position{};
+    
+    PlayerStats player_stats{3, 3, 0, 100};
+    PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
     
     bool move_left{};
     bool move_right{};

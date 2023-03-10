@@ -16,6 +16,7 @@
 #include "../utils/Camera.hpp"
 #include "../entities/player/Player.hpp"
 #include "../setup/LookupTables.hpp"
+#include "../gui/HUD.hpp"
 
 namespace automa {
 
@@ -122,6 +123,8 @@ public:
                 tileset_sprites.back().setTextureRect(sf::IntRect({j * TILE_WIDTH, i * TILE_WIDTH}, {TILE_WIDTH, TILE_WIDTH}));
             }
         }
+        svc::assetLocator.get().abandoned.play();
+        svc::assetLocator.get().abandoned.setLoop(true);
     }
     void handle_events(sf::Event& event) {
         svc::playerLocator.get().handle_events(event);
@@ -134,10 +137,12 @@ public:
     
     void logic(Time dt) {
         map.update();
+        hud.update();
         svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
         svc::cameraLocator.get().update();
         svc::cameraLocator.get().restrict_movement(map.real_dimensions);
         svc::playerLocator.get().update(dt);
+        if(svc::playerLocator.get().jump_trigger) { svc::assetLocator.get().jump.play(); }
     }
     
     void render(sf::RenderWindow& win) {
@@ -220,11 +225,7 @@ public:
         win.draw(weap_sprite);
         
         map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
-        
-        //HUD
-        svc::assetLocator.get().sp_hud.setPosition(20, 20);
-        svc::assetLocator.get().sp_hud2x.setPosition(20, 20);
-        win.draw(svc::assetLocator.get().sp_hud);
+        hud.render(win);
         
         
     }
@@ -233,6 +234,8 @@ public:
     sf::Texture tileset{};
     std::vector<sf::Sprite> tileset_sprites{};
     bool show_colliders = false;
+    
+    gui::HUD hud{{20, 20}};
     
 };
 

@@ -247,12 +247,12 @@ void Player::update(Time dt) {
     if(weapon_fired) {
         if(behavior.facing == behavior::DIR::LEFT) {
             if(!has_right_collision) {
-                physics.apply_force({loadout.get_equipped_weapon().attributes.recoil, 0.0f});
+                physics.apply_force({loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
             }
         }
         if(behavior.facing == behavior::DIR::RIGHT) {
             if(!has_left_collision) {
-                physics.apply_force({-loadout.get_equipped_weapon().attributes.recoil, 0.0f});
+                physics.apply_force({-loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
             }
         }
     }

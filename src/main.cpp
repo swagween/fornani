@@ -24,7 +24,7 @@ auto SM = automa::StateManager{};
 auto window = sf::RenderWindow();
 
 const int NUM_TIMESTEPS = 64;
-int TIME_STEP_MILLI = 8;
+int TIME_STEP_MILLI = 0;
 int frame{};
 using Clock = std::chrono::steady_clock;
 using Time = std::chrono::duration<float>;
@@ -37,6 +37,10 @@ int FPS_counter = 0;
 float FPS = 0.0;
 
 int shake_counter = 0;
+
+sf::Vector2<uint> win_size{};
+float height_ratio{};
+float width_ratio{};
 
 
 
@@ -68,6 +72,14 @@ static void show_overlay() {
                 window.RenderTarget::setActive();
             }
             ImGui::Separator();
+            ImGui::Text("Window Width: %u", window.getSize().x);
+            ImGui::Text("Window Height: %u", window.getSize().y);
+            ImGui::Text("Window X Delta: %u", win_size.x);
+            ImGui::Text("Window Y Delta: %u", win_size.y);
+            ImGui::Text("Width Ratio: %f", width_ratio);
+            ImGui::Text("Height Ratio: %f", height_ratio);
+            ImGui::Text("Screen Dimensions X: %u", screen_dimensions.x);
+            ImGui::Text("Screen Dimensions Y: %u", screen_dimensions.y);
             if (ImGui::IsMousePosValid()) {
                 ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
             } else {
@@ -91,6 +103,10 @@ static void show_overlay() {
                 if (ImGui::BeginTabItem("Player"))
                 {
                     ImGui::Text("Player Stats");
+                    ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 64);
+                    ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 64);
+                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 999);
+                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
                     if(!svc::playerLocator.get().hurtbox.vertices.empty()) {
                         ImGui::Text("Player Hurtbox Pos: (%.1f,%.1f)", svc::playerLocator.get().hurtbox.vertices.at(0).x, svc::playerLocator.get().hurtbox.vertices.at(0).y);
                     }
@@ -214,7 +230,7 @@ static void show_overlay() {
                     ImGui::SameLine();
                     ImGui::TextUnformatted(SM.get_current_state_string().c_str());
                     if(ImGui::Button("Menu")) {
-//                        svc::assetLocator.get().click.play();
+                        svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());
                     }
                     ImGui::EndTabItem();
@@ -250,7 +266,7 @@ void run(char** argv) {
     
     //some SFML variables for drawing a basic window + background
     window.setVerticalSyncEnabled(true);
-    
+//    window.setFramerateLimit(80);
     window.setKeyRepeatEnabled(false);
     
     ImGui::SFML::Init(window);
@@ -261,6 +277,9 @@ void run(char** argv) {
     background.setSize(static_cast<sf::Vector2<float> >(screen_dimensions));
     background.setPosition(0, 0);
     background.setFillColor(sf::Color(10, 10, 20));
+
+    width_ratio = (float)screen_dimensions.x / (float)screen_dimensions.y;
+    height_ratio = (float)screen_dimensions.y / (float)screen_dimensions.x;
     
     
     //game loop
@@ -278,6 +297,8 @@ void run(char** argv) {
         time_markers[frame%NUM_TIMESTEPS] = frame_time.count();
         seconds += elapsed_time.count();
         FPS_counter++;
+        win_size.x = window.getSize().x;
+        win_size.y = window.getSize().y;
         
         
         //SFML event variable
@@ -287,8 +308,17 @@ void run(char** argv) {
             ImGui::SFML::ProcessEvent(event);
             switch(event.type) {
                 case sf::Event::Closed:
-                    
                     return;
+                case sf::Event::Resized:
+                    win_size.x = window.getSize().x;
+                    win_size.y = window.getSize().y;
+                    if(win_size.y * width_ratio <= win_size.x) {
+                        win_size.x = win_size.y * width_ratio;
+                    } else if(win_size.x * height_ratio <= win_size.y) {
+                        win_size.y = win_size.x * height_ratio;
+                    }
+                    window.setSize(sf::Vector2u{win_size.x, win_size.y});
+                    break;
                 case sf::Event::KeyPressed:
                     //player can refresh grid by pressing 'Z'
                     if(event.key.code == sf::Keyboard::Escape) {
@@ -296,13 +326,15 @@ void run(char** argv) {
                     }
                     if(event.key.code == sf::Keyboard::D) {
                         debug_mode = !debug_mode;
+                        svc::assetLocator.get().click.play();
                     }
                     if (event.key.code == sf::Keyboard::Q) {
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
+//                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_PASSAGE_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
                     }
                     break;
                 default:

@@ -17,24 +17,24 @@ namespace arms {
 
 using Key = WEAPON_TYPE;
 
-inline Weapon bryns_gun  =  Weapon("Bryn's Gun"    , Key::BRYNS_GUN      , bryns_gun_attributes,   bryns_gun_stats );
-inline Weapon plasmer    =  Weapon("Plasmer"       , Key::PLASMER        , plasmer_attributes,     plasmer_stats   , heavy_gun_spray);
-inline Weapon wasp       =  Weapon("Wasp"          , Key::WASP           , wasp_attributes,        wasp_stats      );
-inline Weapon blizzard   =  Weapon("Blizzard"      , Key::BLIZZARD       , blizzard_attributes,    blizzard_stats  );
-inline Weapon bismuth    =  Weapon("Bismuth"       , Key::BISMUTH        , bismuth_attributes,     bismuth_stats   );
-inline Weapon underdog   =  Weapon("Underdog"      , Key::UNDERDOG       , underdog_attributes,    underdog_stats  );
-inline Weapon electron   =  Weapon("Electron"      , Key::ELECTRON       , electron_attributes,    electron_stats  );
-inline Weapon clover     =  Weapon("Clover"        , Key::CLOVER         , clover_attributes,      clover_stats    , bubble_spray, clover_anim, {18, 10});
-inline Weapon triton     =  Weapon("Triton"        , Key::TRITON         , triton_attributes,      triton_stats    );
-inline Weapon willet_585 =  Weapon("Willet 585"    , Key::WILLET_585     , willet_585_attributes,  willet_585_stats);
-inline Weapon quasar     =  Weapon("Quasar"        , Key::QUASAR         , quasar_attributes,      quasar_stats    );
-inline Weapon nova       =  Weapon("Nova"          , Key::NOVA           , nova_attributes,        nova_stats      );
-inline Weapon venom      =  Weapon("Venom"         , Key::VENOM          , venom_attributes,       venom_stats     );
-inline Weapon twin       =  Weapon("Twin"          , Key::TWIN           , twin_attributes,        twin_stats      );
-inline Weapon carise     =  Weapon("Carise"        , Key::CARISE         , carise_attributes,      carise_stats    );
-inline Weapon stinger    =  Weapon("Stinger"       , Key::STINGER        , stinger_attributes,     stinger_stats   );
-inline Weapon tusk       =  Weapon("Tusk"          , Key::TUSK           , tusk_attributes,        tusk_stats      );
-inline Weapon tomahawk   =  Weapon("Tomahawk"      , Key::TOMAHAWK       , tomahawk_attributes,    tomahawk_stats  );
+inline Weapon bryns_gun  =  Weapon("bryn's gun"    , Key::BRYNS_GUN      , bryns_gun_attributes,   bryns_gun_stats );
+inline Weapon plasmer    =  Weapon("plasmer"       , Key::PLASMER        , plasmer_attributes,     plasmer_stats   , heavy_gun_spray);
+inline Weapon wasp       =  Weapon("wasp"          , Key::WASP           , wasp_attributes,        wasp_stats      );
+inline Weapon blizzard   =  Weapon("blizzard"      , Key::BLIZZARD       , blizzard_attributes,    blizzard_stats  );
+inline Weapon bismuth    =  Weapon("bismuth"       , Key::BISMUTH        , bismuth_attributes,     bismuth_stats   );
+inline Weapon underdog   =  Weapon("underdog"      , Key::UNDERDOG       , underdog_attributes,    underdog_stats  );
+inline Weapon electron   =  Weapon("electron"      , Key::ELECTRON       , electron_attributes,    electron_stats  );
+inline Weapon clover     =  Weapon("clover"        , Key::CLOVER         , clover_attributes,      clover_stats    , bubble_spray, clover_anim, {18, 10});
+inline Weapon triton     =  Weapon("triton"        , Key::TRITON         , triton_attributes,      triton_stats    );
+inline Weapon willet_585 =  Weapon("willet 585"    , Key::WILLET_585     , willet_585_attributes,  willet_585_stats);
+inline Weapon quasar     =  Weapon("quasar"        , Key::QUASAR         , quasar_attributes,      quasar_stats    );
+inline Weapon nova       =  Weapon("nova"          , Key::NOVA           , nova_attributes,        nova_stats      );
+inline Weapon venom      =  Weapon("venom"         , Key::VENOM          , venom_attributes,       venom_stats     );
+inline Weapon twin       =  Weapon("twin"          , Key::TWIN           , twin_attributes,        twin_stats      );
+inline Weapon carise     =  Weapon("carise"        , Key::CARISE         , carise_attributes,      carise_stats    );
+inline Weapon stinger    =  Weapon("stinger"       , Key::STINGER        , stinger_attributes,     stinger_stats   );
+inline Weapon tusk       =  Weapon("tusk"          , Key::TUSK           , tusk_attributes,        tusk_stats      );
+inline Weapon tomahawk   =  Weapon("tomahawk"      , Key::TOMAHAWK       , tomahawk_attributes,    tomahawk_stats  );
 
 struct Armory {
     
