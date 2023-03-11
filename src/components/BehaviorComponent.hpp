@@ -70,6 +70,7 @@ public:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running));
                     break;
             }
+            flip_left();
         }
     }
     

@@ -242,7 +242,7 @@ void run(char** argv) {
     
     window.create(sf::VideoMode(screen_dimensions.x, screen_dimensions.y), "For Nani (beta v1.0)");
     
-    bool debug_mode = true;
+    bool debug_mode = false;
     //init clock
     
     //some SFML variables for drawing a basic window + background

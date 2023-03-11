@@ -228,9 +228,16 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
         //temp, I should do this somewhere else
         if(svc::playerLocator.get().loadout.get_equipped_weapon().type == arms::WEAPON_TYPE::PLASMER) {
             svc::assetLocator.get().plasmer_shot.play();
-        } else {
+        } else if(svc::playerLocator.get().loadout.get_equipped_weapon().type == arms::WEAPON_TYPE::BRYNS_GUN) {
             svc::assetLocator.get().bg_shot.play();
-        }    }
+        } else {
+            util::Random r{};
+            float randp = r.random_range_float(-0.3, 0.3);
+            svc::assetLocator.get().pop_mid.setPitch(1 + randp);
+            svc::assetLocator.get().pop_mid.play();
+        }
+        
+    }
 }
 
 void Map::manage_projectiles() {

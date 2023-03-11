@@ -213,14 +213,12 @@ void Player::update(Time dt) {
         physics.velocity.y = 0.0f;
         if(!behavior.restricted()) {
             jump_height_counter = 0;
-            
         }
         if(just_jumped) {
             behavior.jump();
             jump_hold = true;
         }
         if(is_jump_pressed) {
-            behavior.rise();
         }
     }
     if(!is_jump_pressed) { jump_hold = false; }
@@ -298,10 +296,6 @@ void Player::update(Time dt) {
 //        physics.velocity.y = stats.WALL_SLIDE_SPEED;
     }
     
-    if(jump_request > -1) {
-        
-    }
-    
     //now jump after all the y corrections
     if(jump_height_counter < stats.JUMP_TIME && (is_jump_pressed && jump_hold)) {
         if(!behavior.restricted()) {
@@ -309,6 +303,7 @@ void Player::update(Time dt) {
             ++jump_height_counter;
             can_jump = false;
             jump_trigger = false;
+            behavior.rise();
         }
     }
     
@@ -322,6 +317,7 @@ void Player::update(Time dt) {
                 can_jump = false;
                 jump_trigger = false;
                 jump_request = -1;
+                behavior.rise();
             }
         }
     }

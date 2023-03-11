@@ -199,6 +199,8 @@ public:
         bg_shot.setBuffer(bg_shot_buffer);
         plasmer_shot_buffer.loadFromFile(resource_path + "/audio/sfx/plasmer_shot.wav");
         plasmer_shot.setBuffer(plasmer_shot_buffer);
+        pop_mid_buffer.loadFromFile(resource_path + "/audio/sfx/pop_mid.wav");
+        pop_mid.setBuffer(pop_mid_buffer);
         jump_buffer.loadFromFile(resource_path + "/audio/sfx/jump.wav");
         jump.setBuffer(jump_buffer);
         step_buffer.loadFromFile(resource_path + "/audio/sfx/steps.wav");
@@ -280,6 +282,8 @@ public:
     sf::Sound bg_shot;
     sf::SoundBuffer plasmer_shot_buffer{};
     sf::Sound plasmer_shot;
+    sf::SoundBuffer pop_mid_buffer{};
+    sf::Sound pop_mid;
     
     sf::SoundBuffer jump_buffer{};
     sf::Sound jump;
