@@ -22,6 +22,10 @@ enum class DIR {
     DOWN_LEFT
 };
 
+enum class DIR_LR {
+    LEFT, RIGHT
+};
+
 /* BehaviorParameters(id, duration, framerate, transitional, restrictive, lookup) */
 
 static BehaviorParameters idle =            BehaviorParameters("idle", 8, DEFAULT_FRAMERATE, false, false, false, 20);

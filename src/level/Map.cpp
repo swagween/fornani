@@ -225,8 +225,12 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
         active_emitters.back().set_direction(svc::playerLocator.get().physics.dir);
         active_emitters.back().update();
         
-        svc::assetLocator.get().plasmer_shot.play();
-    }
+        //temp, I should do this somewhere else
+        if(svc::playerLocator.get().loadout.get_equipped_weapon().type == arms::WEAPON_TYPE::PLASMER) {
+            svc::assetLocator.get().plasmer_shot.play();
+        } else {
+            svc::assetLocator.get().bg_shot.play();
+        }    }
 }
 
 void Map::manage_projectiles() {

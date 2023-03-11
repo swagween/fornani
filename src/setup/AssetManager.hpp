@@ -201,6 +201,10 @@ public:
         plasmer_shot.setBuffer(plasmer_shot_buffer);
         jump_buffer.loadFromFile(resource_path + "/audio/sfx/jump.wav");
         jump.setBuffer(jump_buffer);
+        step_buffer.loadFromFile(resource_path + "/audio/sfx/steps.wav");
+        step.setBuffer(step_buffer);
+        landed_buffer.loadFromFile(resource_path + "/audio/sfx/landed.wav");
+        landed.setBuffer(step_buffer);
         
         clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");
         abandoned.openFromFile(resource_path + "/audio/songs/abandoned.wav");
@@ -279,6 +283,10 @@ public:
     
     sf::SoundBuffer jump_buffer{};
     sf::Sound jump;
+    sf::SoundBuffer step_buffer{};
+    sf::Sound step;
+    sf::SoundBuffer landed_buffer{};
+    sf::Sound landed;
     
     //songs!
     sf::Music clay_statue{};

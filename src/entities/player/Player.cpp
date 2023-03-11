@@ -7,12 +7,14 @@
 //
 
 #include "Player.hpp"
+#include "../../setup/ServiceLocator.hpp"
 
 Player::Player() {
     
     physics = components::PhysicsComponent({stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC}, stats.PLAYER_MASS);
     anchor_point = {physics.position.x + PLAYER_WIDTH/2, physics.position.y + PLAYER_HEIGHT/2};
     behavior.current_state = std::make_unique<behavior::Behavior>(behavior::idle);
+    behavior.facing_lr = behavior::DIR_LR::RIGHT;
     
     hurtbox.init();
     predictive_hurtbox.init();
@@ -69,7 +71,6 @@ void Player::handle_events(sf::Event& event) {
                 if(behavior.facing == behavior::DIR::RIGHT) {
                     behavior.turn();
                     behavior.facing = behavior::DIR::LEFT;
-                    behavior.flip_left();
                     is_wall_sliding = false;
                 } else {
                     behavior.run();
@@ -80,6 +81,7 @@ void Player::handle_events(sf::Event& event) {
                 }
             }
             behavior.facing = behavior::DIR::LEFT;
+            behavior.facing_lr = behavior::DIR_LR::LEFT;
         }
         if (event.key.code == sf::Keyboard::Right) {
             move_right = true;
@@ -96,6 +98,7 @@ void Player::handle_events(sf::Event& event) {
                 }
             }
             behavior.facing = behavior::DIR::RIGHT;
+            behavior.facing_lr = behavior::DIR_LR::RIGHT;
         }
         if (event.key.code == sf::Keyboard::Up) {
             look_up = true;
@@ -123,6 +126,7 @@ void Player::handle_events(sf::Event& event) {
                     behavior.air(physics.velocity.y);
                 }
             }
+            if(move_right) { behavior.facing_lr = behavior::DIR_LR::RIGHT; }
         }
         if (event.key.code == sf::Keyboard::Right) {
             move_right = false;
@@ -142,6 +146,7 @@ void Player::handle_events(sf::Event& event) {
                     behavior.air(physics.velocity.y);
                 }
             }
+            if(move_left) { behavior.facing_lr = behavior::DIR_LR::LEFT; }
         }
         if (event.key.code == sf::Keyboard::Up) {
             look_up = false;
@@ -159,6 +164,9 @@ void Player::handle_events(sf::Event& event) {
             jump_request = JUMP_BUFFER_TIME;
             just_jumped = true;
             jump_trigger = true;
+            if(grounded) {
+                soundboard_flags.jump = true;
+            }
         }
     }
     if (event.type == sf::Event::KeyReleased) {
@@ -181,6 +189,7 @@ void Player::handle_events(sf::Event& event) {
                 current_weapon--;
                 if(current_weapon < 0) { current_weapon = (int)weapons_hotbar.size() - 1; }
                 loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+                soundboard_flags.weapon_swap = true;
             }
         }
     }
@@ -190,6 +199,7 @@ void Player::handle_events(sf::Event& event) {
                 current_weapon++;
                 if(current_weapon > weapons_hotbar.size() - 1) { current_weapon = 0; }
                 loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+                soundboard_flags.weapon_swap = true;
             }
         }
     }
@@ -230,6 +240,15 @@ void Player::update(Time dt) {
             } else {
                 physics.acceleration.x = stats.X_ACC/stats.AIR_MULTIPLIER;
             }
+        }
+        if((move_left || move_right) && grounded && abs(physics.velocity.x) > stats.PLAYER_MAX_XVEL) {
+//                    svc::assetLocator.get().step.play();
+                    // I should do this:
+                    //                svc::soundboardLocator.get().play(sb::sfx::STEP);
+                    // or this (definitely this):
+                    soundboard_flags.step = true;
+                
+            
         }
     }
     
@@ -279,9 +298,12 @@ void Player::update(Time dt) {
 //        physics.velocity.y = stats.WALL_SLIDE_SPEED;
     }
     
+    if(jump_request > -1) {
+        
+    }
+    
     //now jump after all the y corrections
     if(jump_height_counter < stats.JUMP_TIME && (is_jump_pressed && jump_hold)) {
-        
         if(!behavior.restricted()) {
             physics.acceleration.y = -stats.JUMP_MAX;
             ++jump_height_counter;
@@ -293,6 +315,14 @@ void Player::update(Time dt) {
     if(jump_request > -1) {
         if(!behavior.restricted()) {
             jump_request--;
+            //still jump for quick presses
+            if(!is_jump_pressed && grounded) {
+                physics.acceleration.y = -stats.JUMP_MAX;
+                ++jump_height_counter;
+                can_jump = false;
+                jump_trigger = false;
+                jump_request = -1;
+            }
         }
     }
     
@@ -320,6 +350,7 @@ void Player::update(Time dt) {
     update_behavior();
     apparent_position.x = physics.position.x - (48 - PLAYER_WIDTH)/2;
     apparent_position.y = physics.position.y - (48 - PLAYER_HEIGHT);
+    play_sounds();
 }
 
 void Player::render() {
@@ -342,9 +373,10 @@ void Player::sync_components() {
     wall_slide_detector.update(physics.position.x - DETECTOR_WIDTH, physics.position.y + DETECTOR_BUFFER + WALL_SLIDE_DETECTOR_OFFSET, PLAYER_WIDTH + DETECTOR_WIDTH*2, DETECTOR_HEIGHT/4);
     if(behavior.facing_left()) {
         anchor_point = {physics.position.x + PLAYER_WIDTH/2 - ANCHOR_BUFFER, physics.position.y + PLAYER_HEIGHT/2};
-    }
-    if(behavior.facing_right()) {
+    } else if(behavior.facing_right()) {
         anchor_point = {physics.position.x + PLAYER_WIDTH/2 + ANCHOR_BUFFER, physics.position.y + PLAYER_HEIGHT/2};
+    } else {
+        anchor_point = {physics.position.x + PLAYER_WIDTH/2, physics.position.y + PLAYER_HEIGHT/2};
     }
 }
 
@@ -399,11 +431,10 @@ void Player::update_behavior() {
     
     if(just_landed) {
         behavior.land();
+        soundboard_flags.land = true;
         freefalling = false;
     }
-   
     
-    behavior.flip_left();
     behavior::trigger = false;
     
     
@@ -434,6 +465,7 @@ void Player::update_behavior() {
     }
     update_direction();
     update_weapon_direction();
+    behavior.flip_left();
     
 }
 
@@ -444,7 +476,7 @@ void Player::set_position(sf::Vector2<float> new_pos) {
 
 void Player::update_direction() {
     behavior.facing = last_dir;
-    if(move_right) {
+    if(behavior.facing_right()) {
         behavior.facing = behavior::DIR::RIGHT;
         if(look_up) {
             behavior.facing = behavior::DIR::UP_RIGHT;
@@ -453,7 +485,7 @@ void Player::update_direction() {
             behavior.facing = behavior::DIR::DOWN_RIGHT;
         }
     }
-    if(move_left) {
+    if(behavior.facing_left()) {
         behavior.facing = behavior::DIR::LEFT;
         if(look_up) {
             behavior.facing = behavior::DIR::UP_LEFT;
@@ -479,16 +511,22 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon_direction() {
+    switch(behavior.facing_lr) {
+        case behavior::DIR_LR::LEFT:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::LEFT;
+            physics.dir = components::DIRECTION::LEFT;
+            break;
+        case behavior::DIR_LR::RIGHT:
+            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::RIGHT;
+            physics.dir = components::DIRECTION::RIGHT;
+            break;
+    }
     switch(behavior.facing) {
         case behavior::DIR::NEUTRAL:
             break;
         case behavior::DIR::LEFT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::LEFT;
-            physics.dir = components::DIRECTION::LEFT;
             break;
         case behavior::DIR::RIGHT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::RIGHT;
-            physics.dir = components::DIRECTION::RIGHT;
             break;
         case behavior::DIR::UP:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
@@ -603,7 +641,29 @@ sf::Vector2<float> Player::get_fire_point() {
     }
 }
 
-std::string Player::print_direction() {
+void Player::play_sounds() {
+    if(soundboard_flags.jump) { svc::assetLocator.get().jump.play(); }
+    if(soundboard_flags.step) {
+        if(!(svc::assetLocator.get().step.getStatus() == sf::Sound::Status::Playing) && !(svc::assetLocator.get().landed.getStatus() == sf::Sound::Status::Playing)) {
+            svc::assetLocator.get().step.play();
+        }
+    }
+    if(soundboard_flags.land) { svc::assetLocator.get().landed.play(); }
+    if(soundboard_flags.weapon_swap) { svc::assetLocator.get().arms_switch.play(); }
+    soundboard_flags = SoundboardFlags{false, false, false, false};
+}
+
+std::string Player::print_direction(bool lr) {
+    if(lr) {
+        switch(behavior.facing_lr) {
+            case behavior::DIR_LR::LEFT:
+                return "LEFT";
+                break;
+            case behavior::DIR_LR::RIGHT:
+                return "RIGHT";
+                break;
+        }
+    }
     switch(behavior.facing) {
         case behavior::DIR::NEUTRAL:
             return "NEUTRAL";

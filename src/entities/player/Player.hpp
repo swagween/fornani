@@ -86,6 +86,13 @@ struct PhysicsStats {
     
 };
 
+struct SoundboardFlags {
+    bool jump{};
+    bool step{};
+    bool land{};
+    bool weapon_swap{};
+};
+
 class Player {
 public:
     
@@ -111,8 +118,11 @@ public:
     //firing
     sf::Vector2<float> get_fire_point();
     
+    //sound
+    void play_sounds();
+    
     //for debug mode
-    std::string print_direction();
+    std::string print_direction(bool lr);
     
     
     //member vars
@@ -138,6 +148,8 @@ public:
     
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
+    
+    SoundboardFlags soundboard_flags{};
     
     bool move_left{};
     bool move_right{};

@@ -123,8 +123,9 @@ public:
                 tileset_sprites.back().setTextureRect(sf::IntRect({j * TILE_WIDTH, i * TILE_WIDTH}, {TILE_WIDTH, TILE_WIDTH}));
             }
         }
-        svc::assetLocator.get().abandoned.play();
-        svc::assetLocator.get().abandoned.setLoop(true);
+//        svc::assetLocator.get().abandoned.setVolume(50);
+//        svc::assetLocator.get().abandoned.play();
+//        svc::assetLocator.get().abandoned.setLoop(true);
     }
     void handle_events(sf::Event& event) {
         svc::playerLocator.get().handle_events(event);
@@ -142,7 +143,6 @@ public:
         svc::cameraLocator.get().update();
         svc::cameraLocator.get().restrict_movement(map.real_dimensions);
         svc::playerLocator.get().update(dt);
-        if(svc::playerLocator.get().jump_trigger) { svc::assetLocator.get().jump.play(); }
     }
     
     void render(sf::RenderWindow& win) {

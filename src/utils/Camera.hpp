@@ -25,6 +25,8 @@ const int SHAKE_FACTOR = 8;
 const int SHAKE_VOLATILITY = 12;
 const int SHAKE_DURATION = 100;
 
+const float TINY_VALUE = 0.000001f;
+
 inline const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
 inline const sf::Vector2<uint32_t> screen_dimensions { aspect_ratio.x / 4, aspect_ratio.y / 4 };
 
@@ -46,11 +48,11 @@ public:
         physics.update_dampen();
         bounding_box.left = physics.position.x;
         bounding_box.top = physics.position.y;
-        if(bounding_box.top < 0) {
+        if(bounding_box.top < 0.0f) {
             bounding_box.top = 0.0f;
             physics.position.y = 0.0f;
         }
-        if(bounding_box.left < 0) {
+        if(bounding_box.left < 0.0f) {
             bounding_box.left = 0.0f;
             physics.position.x = 0.0f;
         }

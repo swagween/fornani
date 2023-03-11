@@ -72,12 +72,6 @@ static void show_overlay() {
                 window.RenderTarget::setActive();
             }
             ImGui::Separator();
-            ImGui::Text("Window Width: %u", window.getSize().x);
-            ImGui::Text("Window Height: %u", window.getSize().y);
-            ImGui::Text("Window X Delta: %u", win_size.x);
-            ImGui::Text("Window Y Delta: %u", win_size.y);
-            ImGui::Text("Width Ratio: %f", width_ratio);
-            ImGui::Text("Height Ratio: %f", height_ratio);
             ImGui::Text("Screen Dimensions X: %u", screen_dimensions.x);
             ImGui::Text("Screen Dimensions Y: %u", screen_dimensions.y);
             if (ImGui::IsMousePosValid()) {
@@ -126,44 +120,31 @@ static void show_overlay() {
                             ImGui::TextUnformatted("No");
                         }
                     }
-                    ImGui::Text("Player Facing: ");
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted(svc::playerLocator.get().print_direction().c_str());
-                    ImGui::Text("Colliding with Level: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Grounded: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Is Wall Sliding: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().is_wall_sliding) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Wall Slide Trigger: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().wall_slide_trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    //                    ImGui::Text("Jump Request: ");
-                    //                    ImGui::SameLine();
-                    //                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_request).c_str());
-                    //                    ImGui::Text("Jump Height Counter: ");
-                    //                    ImGui::SameLine();
-                    //                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().jump_height_counter).c_str());
-                    //                    ImGui::Text("Jump Hold: ");
-                    //                    ImGui::SameLine();
-                    //                    if(svc::playerLocator.get().jump_hold) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    //                    ImGui::Text("Just Jumped: ");
-                    //                    ImGui::SameLine();
-                    //                    if(svc::playerLocator.get().just_jumped) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Anim Frame: ");
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.current_frame).c_str());
-                    ImGui::Text("Real Frame: ");
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
-                    ImGui::Text("Has Right Collision: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Has Left Collision: ");
-                    ImGui::SameLine();
+                    ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
+                    ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
+//                    ImGui::Text("Colliding with Level: ");
+//                    ImGui::SameLine();
+//                    if(svc::playerLocator.get().is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+//                    ImGui::Text("Grounded: ");
+//                    ImGui::SameLine();
+//                    if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+//                    ImGui::Text("Is Wall Sliding: ");
+//                    ImGui::SameLine();
+//                    if(svc::playerLocator.get().is_wall_sliding) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+//                    ImGui::Text("Wall Slide Trigger: ");
+//                    ImGui::SameLine();
+//                    if(svc::playerLocator.get().wall_slide_trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+//                    ImGui::Text("Anim Frame: ");
+//                    ImGui::SameLine();
+//                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.current_frame).c_str());
+//                    ImGui::Text("Real Frame: ");
+//                    ImGui::SameLine();
+//                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
+//                    ImGui::Text("Has Right Collision: ");
+//                    ImGui::SameLine();
+//                    if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+//                    ImGui::Text("Has Left Collision: ");
+//                    ImGui::SameLine();
                     if(svc::playerLocator.get().has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().physics.position.x, svc::playerLocator.get().physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().physics.velocity.x, svc::playerLocator.get().physics.velocity.y);

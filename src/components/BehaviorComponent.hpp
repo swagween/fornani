@@ -49,43 +49,25 @@ public:
             switch(facing) {
                 case behavior::DIR::UP:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle_up));
-                    flip_left();
                     break;
                 case behavior::DIR::DOWN:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle_up));
-                    flip_left();
                     break;
                 default:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
-                    flip_left();
                     break;
             }
-            flip_left();
         }
     }
     
     void run() {
         if(ready()) {
-            switch(facing) {
-                case behavior::DIR::UP_RIGHT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running_up));
-                    flip_left();
-                    break;
-                case behavior::DIR::DOWN_RIGHT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running_down));
-                    flip_left();
-                    break;
-                case behavior::DIR::UP_LEFT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running_up));
-                    flip_left();
-                    break;
-                case behavior::DIR::DOWN_LEFT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running_down));
-                    flip_left();
-                    break;
-                default:
+            switch(facing_lr) {
+                case behavior::DIR_LR::LEFT:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running));
-                    flip_left();
+                    break;
+                case behavior::DIR_LR::RIGHT:
+                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running));
                     break;
             }
         }
@@ -96,23 +78,18 @@ public:
             switch(facing) {
                 case behavior::DIR::UP_RIGHT:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_up));
-                    flip_left();
                     break;
                 case behavior::DIR::DOWN_RIGHT:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_down));
-                    flip_left();
                     break;
                 case behavior::DIR::UP_LEFT:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_up));
-                    flip_left();
                     break;
                 case behavior::DIR::DOWN_LEFT:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_down));
-                    flip_left();
                     break;
                 default:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop));
-                    flip_left();
                     break;
             }
         }
@@ -127,32 +104,27 @@ public:
     void jump() {
         if(ready()) {
             current_state = std::move(std::make_unique<behavior::Behavior>(behavior::jumpsquat));
-            flip_left();
         }
     }
     void rise() {
         if(ready()) {
             current_state = std::move(std::make_unique<behavior::Behavior>(behavior::rising));
-            flip_left();
         }
     }
     void suspend() {
         if(ready()) {
             current_state = std::move(std::make_unique<behavior::Behavior>(behavior::suspended));
-            flip_left();
         }
     }
     void fall() {
         if(ready()) {
             current_state = std::move(std::make_unique<behavior::Behavior>(behavior::falling));
-            flip_left();
         }
     }
     
     void land() {
         if(ready()) {
             current_state = std::move(std::make_unique<behavior::Behavior>(behavior::landing));
-            flip_left();
         }
     }
     
@@ -160,12 +132,10 @@ public:
         if(ready()) {
             if(velocity < -suspension_threshold*2) {
                 rise();
-                flip_left();
             } else if (velocity < suspension_threshold) {
                 suspend();
             } else {
                 fall();
-                flip_left();
             }
         }
     }
@@ -173,7 +143,6 @@ public:
     void wall_slide() {
         if(ready()) {
             current_state = std::move(std::make_unique<behavior::Behavior>(behavior::wall_sliding));
-            flip_left();
         }
     }
     
@@ -182,6 +151,11 @@ public:
             int lookup = current_state->params.lookup_value;
             if(lookup < 110) {
                 current_state->params.lookup_value = 210 + (lookup % 10) - (lookup - (lookup % 10));
+            }
+        } else {
+            int lookup = current_state->params.lookup_value;
+            if(lookup >= 110) {
+                current_state->params.lookup_value = 0 + (lookup % 10) + (210 - lookup + (lookup % 10));
             }
         }
     }
@@ -195,11 +169,11 @@ public:
     }
     
     bool facing_left() {
-        return facing == behavior::DIR::LEFT || facing == behavior::DIR::UP_LEFT || facing == behavior::DIR::DOWN_LEFT;
+        return facing_lr == behavior::DIR_LR::LEFT;
     }
     
     bool facing_right() {
-        return facing == behavior::DIR::RIGHT || facing == behavior::DIR::UP_RIGHT || facing == behavior::DIR::DOWN_RIGHT;
+        return facing_lr == behavior::DIR_LR::RIGHT;
     }
     
     bool facing_up() {
@@ -220,6 +194,7 @@ public:
     
     const float suspension_threshold = 3.0f;
     behavior::DIR facing{};
+    behavior::DIR_LR facing_lr{};
     
 };
 
