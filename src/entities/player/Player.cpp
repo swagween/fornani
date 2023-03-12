@@ -173,6 +173,7 @@ void Player::handle_events(sf::Event& event) {
         if (event.key.code == sf::Keyboard::Z) {
             is_jump_pressed = false;
             jump_hold = false;
+            if(!grounded) { jump_request = -1; }
             if(!behavior.restricted()) {
                 can_jump = true;
             }
@@ -209,14 +210,14 @@ void Player::update(Time dt) {
     if(behavior::trigger) { behavior.reset(); }
     update_animation();
     //check if player requested jump
-    if(grounded && jump_request > 0) {
+    if(grounded && jump_request > -1) {
         physics.velocity.y = 0.0f;
         if(!behavior.restricted()) {
             jump_height_counter = 0;
         }
+        jump_hold = true;
         if(just_jumped) {
             behavior.jump();
-            jump_hold = true;
         }
         if(is_jump_pressed) {
         }
@@ -256,7 +257,7 @@ void Player::update(Time dt) {
     }
     
     //gravity and stats corrections
-    if(!grounded) {
+    if(!grounded && physics.velocity.y < stats.TERMINAL_VELOCITY) {
         physics.acceleration.y += stats.PLAYER_GRAV;
     }
     
@@ -311,7 +312,7 @@ void Player::update(Time dt) {
         if(!behavior.restricted()) {
             jump_request--;
             //still jump for quick presses
-            if(!is_jump_pressed && grounded) {
+            if(grounded) {
                 physics.acceleration.y = -stats.JUMP_MAX;
                 ++jump_height_counter;
                 can_jump = false;
@@ -613,7 +614,6 @@ void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
             physics.acceleration.y = 0.0f;
             physics.velocity.y *= -1;
             physics.mtv.y *= -1;
-            jump_hold = false;
         }
         physics.mtv = {0.0f, 0.0f};
         just_collided = true;

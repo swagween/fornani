@@ -82,12 +82,12 @@ void Map::update() {
     svc::playerLocator.get().right_aabb_counter = 0;
     
     manage_projectiles();
-    
+    auto barrier = 3.0f;
     //someday, I will have a for(auto& entity : entities) loop and the player will be included in that
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         cell.collision_check = false;
-        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().hurtbox.shape_x) > PLAYER_WIDTH*1.5f ||
-           abs(cell.bounding_box.shape_y - svc::playerLocator.get().hurtbox.shape_y) > PLAYER_HEIGHT*1.5f) {
+        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().hurtbox.shape_x) > PLAYER_WIDTH*barrier ||
+           abs(cell.bounding_box.shape_y - svc::playerLocator.get().hurtbox.shape_y) > PLAYER_HEIGHT*barrier) {
             continue;
         } else {
             cell.collision_check = true;
@@ -99,8 +99,8 @@ void Map::update() {
     }
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& proj : active_projectiles) {
-            if(abs(cell.bounding_box.shape_x - proj.bounding_box.shape_x) > PLAYER_WIDTH*1.5f ||
-               abs(cell.bounding_box.shape_y - proj.bounding_box.shape_y) > PLAYER_HEIGHT*1.5f) {
+            if(abs(cell.bounding_box.shape_x - proj.bounding_box.shape_x) > PLAYER_WIDTH*barrier ||
+               abs(cell.bounding_box.shape_y - proj.bounding_box.shape_y) > PLAYER_HEIGHT*barrier) {
                 continue;
             } else {
                 cell.collision_check = true;
@@ -113,8 +113,8 @@ void Map::update() {
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& emitter : active_emitters) {
             for(auto& particle : emitter.get_particles()) {
-                if(abs(cell.bounding_box.shape_x - particle.bounding_box.shape_x) > PLAYER_WIDTH*1.5f ||
-                   abs(cell.bounding_box.shape_y - particle.bounding_box.shape_y) > PLAYER_HEIGHT*1.5f) {
+                if(abs(cell.bounding_box.shape_x - particle.bounding_box.shape_x) > PLAYER_WIDTH*barrier ||
+                   abs(cell.bounding_box.shape_y - particle.bounding_box.shape_y) > PLAYER_HEIGHT*barrier) {
                     continue;
                 } else {
                     cell.collision_check = true;
@@ -189,6 +189,15 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
                     int cell_y = cell.bounding_box.shape_y - cam.y;
                     tileset.at(cell.value).setPosition(cell_x, cell_y);
                     win.draw(tileset.at(cell.value));
+                    if(cell.collision_check) {
+                        sf::RectangleShape box{};
+                        box.setPosition(cell.position.x - cam.x, cell.position.y - cam.y);
+                        box.setFillColor(sf::Color{100, 100, 130, 80});
+                        box.setOutlineColor(sf::Color(235, 232, 249, 180));
+                        box.setOutlineThickness(-2);
+                        box.setSize(sf::Vector2<float>{(float)cell.bounding_box.shape_w, (float)cell.bounding_box.shape_h});
+                        win.draw(box);
+                    }
                 }
             }
         }

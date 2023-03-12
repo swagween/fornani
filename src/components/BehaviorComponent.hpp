@@ -57,6 +57,7 @@ public:
                     current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
                     break;
             }
+            flip_left();
         }
     }
     
@@ -99,6 +100,7 @@ public:
     void turn() {
         if(ready()) {
             current_state = std::move(std::make_unique<behavior::Behavior>(behavior::turning));
+            flip_left();
         }
     }
     

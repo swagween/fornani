@@ -12,7 +12,7 @@
 #include "../../components/BehaviorComponent.hpp"
 #include "../../weapon/Arsenal.hpp"
 
-const float PLAYER_WIDTH = 24.0f;
+const float PLAYER_WIDTH = 14.0f;
 const float PLAYER_HEIGHT = 28.0f;
 const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
@@ -55,13 +55,14 @@ struct PhysicsStats {
     
     float AIR_MULTIPLIER = 3.6f;
     
-    float PLAYER_GRAV = 0.207f;
+    float PLAYER_GRAV = 0.289f;
+    
+    float TERMINAL_VELOCITY = 8.0f;
 
-    float PLAYER_FRIC = 0.698f;
-    float PLAYER_VERT_FRIC = 0.77f;
-    float PLAYER_HORIZ_FRIC = 0.77;
-    float PLAYER_VERT_AIR_FRIC = 0.898f;
-    float PLAYER_HORIZ_AIR_FRIC = 0.898f;
+    float PLAYER_VERT_FRIC = 0.712f;
+    float PLAYER_HORIZ_FRIC = 0.712;
+    float PLAYER_VERT_AIR_FRIC = 0.912f;
+    float PLAYER_HORIZ_AIR_FRIC = 0.912f;
     float PLAYER_MASS = 1.0f;
 
     float X_ACC = 0.794f;

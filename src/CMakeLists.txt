@@ -42,6 +42,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     gui/HUD.hpp
 	service/Service.hpp
     graphics/FLColor.hpp
+    graphics/Background.hpp
+    graphics/Background.cpp
 
 )
 

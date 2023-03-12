@@ -62,7 +62,7 @@ static void show_overlay() {
         window_pos_pivot.y = (corner & 2) ? 1.0f : 0.0f;
         ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
         window_flags |= ImGuiWindowFlags_NoMove;
-        ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+        ImGui::SetNextWindowBgAlpha(0.65f); // Transparent background
         if (ImGui::Begin("Debug Mode", debug, window_flags)) {
             ImGui::Text("Debug Window\n" "For Nani (beta version 1.0.0)");
             ImGui::Text("Window Focused: ");
@@ -97,13 +97,13 @@ static void show_overlay() {
                 if (ImGui::BeginTabItem("Player"))
                 {
                     ImGui::Text("Player Stats");
-                    ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 64);
-                    ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 64);
-                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 999);
-                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
-                    if(!svc::playerLocator.get().hurtbox.vertices.empty()) {
-                        ImGui::Text("Player Hurtbox Pos: (%.1f,%.1f)", svc::playerLocator.get().hurtbox.vertices.at(0).x, svc::playerLocator.get().hurtbox.vertices.at(0).y);
-                    }
+//                    ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 64);
+//                    ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 64);
+//                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 999);
+//                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
+//                    if(!svc::playerLocator.get().hurtbox.vertices.empty()) {
+//                        ImGui::Text("Player Hurtbox Pos: (%.1f,%.1f)", svc::playerLocator.get().hurtbox.vertices.at(0).x, svc::playerLocator.get().hurtbox.vertices.at(0).y);
+//                    }
                     ImGui::Text("Player Behavior: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().behavior.current_state.get()) {
@@ -122,12 +122,15 @@ static void show_overlay() {
                     }
                     ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
                     ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
-//                    ImGui::Text("Colliding with Level: ");
-//                    ImGui::SameLine();
-//                    if(svc::playerLocator.get().is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-//                    ImGui::Text("Grounded: ");
-//                    ImGui::SameLine();
-//                    if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Colliding with Level: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Grounded: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Jump Request: %i", svc::playerLocator.get().jump_request);
+                    if(svc::playerLocator.get().is_jump_pressed) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if(svc::playerLocator.get().jump_hold) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
 //                    ImGui::Text("Is Wall Sliding: ");
 //                    ImGui::SameLine();
 //                    if(svc::playerLocator.get().is_wall_sliding) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -140,11 +143,11 @@ static void show_overlay() {
 //                    ImGui::Text("Real Frame: ");
 //                    ImGui::SameLine();
 //                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
-//                    ImGui::Text("Has Right Collision: ");
-//                    ImGui::SameLine();
-//                    if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-//                    ImGui::Text("Has Left Collision: ");
-//                    ImGui::SameLine();
+                    ImGui::Text("Has Right Collision: ");
+                    ImGui::SameLine();
+                    if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Has Left Collision: ");
+                    ImGui::SameLine();
                     if(svc::playerLocator.get().has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().physics.position.x, svc::playerLocator.get().physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().physics.velocity.x, svc::playerLocator.get().physics.velocity.y);
@@ -315,7 +318,8 @@ void run(char** argv) {
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
 //                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_PASSAGE_01");
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
+//                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
                     }
                     break;
                 default:
