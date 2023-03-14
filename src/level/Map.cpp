@@ -196,7 +196,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
                         box.setOutlineColor(sf::Color(235, 232, 249, 180));
                         box.setOutlineThickness(-2);
                         box.setSize(sf::Vector2<float>{(float)cell.bounding_box.shape_w, (float)cell.bounding_box.shape_h});
-                        win.draw(box);
+//                        win.draw(box);
                     }
                 }
             }

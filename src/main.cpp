@@ -213,9 +213,20 @@ static void show_overlay() {
                     ImGui::Text("Current State: ");
                     ImGui::SameLine();
                     ImGui::TextUnformatted(SM.get_current_state_string().c_str());
-                    if(ImGui::Button("Menu")) {
+                    if(ImGui::Button("Under")) {
                         svc::assetLocator.get().click.play();
-                        SM.set_current_state(std::make_unique<flstates::MainMenu>());
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_LEDGE_01");
+                    }
+                    if(ImGui::Button("Hoarder")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
+                    }
+                    if(ImGui::Button("Lab")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
                     }
                     ImGui::EndTabItem();
                 }
@@ -319,7 +330,9 @@ void run(char** argv) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
 //                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_PASSAGE_01");
 //                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
+//                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
+//                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_LEDGE_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
                     }
                     break;
                 default:

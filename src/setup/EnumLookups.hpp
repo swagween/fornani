@@ -8,8 +8,6 @@
 
 
 #include <SFML/Graphics.hpp>
-#include <unistd.h>
-#include <stdio.h>
 #include <string>
 #include <unordered_map>
 

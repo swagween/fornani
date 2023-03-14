@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string>
+#include <array>
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -77,6 +78,14 @@ public:
         
         t_hud_elements.loadFromFile(resource_path + "/image/gui/hud_elements.png");
         t_alphabet.loadFromFile(resource_path + "/image/gui/alphabet.png");
+        
+        t_bg_dusk.loadFromFile(resource_path + "/image/background/dusk.png");
+        t_bg_opensky.loadFromFile(resource_path + "/image/background/opensky.png");
+        t_bg_overcast.loadFromFile(resource_path + "/image/background/overcast.png");
+        t_bg_night.loadFromFile(resource_path + "/image/background/night.png");
+        t_bg_dawn.loadFromFile(resource_path + "/image/background/dawn.png");
+        t_bg_sunrise.loadFromFile(resource_path + "/image/background/sunrise.png");
+        t_bg_rosyhaze.loadFromFile(resource_path + "/image/background/rosyhaze.png");
         
         //load all the other textures...
         
@@ -193,7 +202,7 @@ public:
     bool load_audio() {
         click_buffer.loadFromFile(resource_path + "/audio/sfx/click.wav");
         click.setBuffer(click_buffer);
-        arms_switch_buffer.loadFromFile(resource_path + "/audio/sfx/low_switch.wav");
+        arms_switch_buffer.loadFromFile(resource_path + "/audio/sfx/arms_switch.wav");
         arms_switch.setBuffer(arms_switch_buffer);
         bg_shot_buffer.loadFromFile(resource_path + "/audio/sfx/bg_shot.wav");
         bg_shot.setBuffer(bg_shot_buffer);
@@ -251,6 +260,15 @@ public:
     std::vector<sf::Sprite> sp_alphabet{};
     
     std::vector<sf::Texture> tilesets{};
+    
+    //load scrollingbackground sheets
+    sf::Texture t_bg_opensky{};
+    sf::Texture t_bg_overcast{};
+    sf::Texture t_bg_dusk{};
+    sf::Texture t_bg_night{};
+    sf::Texture t_bg_dawn{};
+    sf::Texture t_bg_sunrise{};
+    sf::Texture t_bg_rosyhaze{};
     
     //load the guns and bullets!
     sf::Texture t_bryns_gun{};

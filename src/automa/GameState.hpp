@@ -17,6 +17,7 @@
 #include "../entities/player/Player.hpp"
 #include "../setup/LookupTables.hpp"
 #include "../gui/HUD.hpp"
+#include "../graphics/Background.hpp"
 
 namespace automa {
 
@@ -143,9 +144,12 @@ public:
         svc::cameraLocator.get().update();
         svc::cameraLocator.get().restrict_movement(map.real_dimensions);
         svc::playerLocator.get().update(dt);
+        bg.update();
     }
     
     void render(sf::RenderWindow& win) {
+        
+        bg.render(win);
         
         map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         
@@ -236,6 +240,7 @@ public:
     bool show_colliders = false;
     
     gui::HUD hud{{20, 20}};
+    bg::Background bg{5, 0.1};
     
 };
 
