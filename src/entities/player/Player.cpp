@@ -600,21 +600,23 @@ void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
             physics.velocity.y = 0.0f;
             physics.acceleration.y = 0.0f;
         }
-        
-        sync_components();
+        //player hits the ceiling
+        if(physics.velocity.y < -0.01f) {
+            float ydist = physics.position.y - predictive_hurtbox.shape_y;
+            float correction = ydist + physics.mtv.y;
+            physics.position.y += correction;
+            physics.acceleration.y = 0.0f;
+            physics.velocity.y *= -1;
+            jump_hold = false;
+        }
         
         //only for landing
         if(physics.velocity.y > 0.0f && !has_left_collision && !has_right_collision) {
             physics.acceleration.y = 0.0f;
             physics.velocity.y = 0.0f;
-//            just_landed = true;
         }
-        //player hits the ceiling
-        if(physics.velocity.y < -0.01f && abs(physics.mtv.x) < abs(physics.mtv.y)) {
-            physics.acceleration.y = 0.0f;
-            physics.velocity.y *= -1;
-            physics.mtv.y *= -1;
-        }
+        sync_components();
+        
         physics.mtv = {0.0f, 0.0f};
         just_collided = true;
         is_colliding_with_level = true;

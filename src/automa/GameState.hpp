@@ -214,7 +214,7 @@ public:
         svc::playerLocator.get().current_sprite = svc::assetLocator.get().sp_nani.at(svc::playerLocator.get().behavior.current_state->params.lookup_value + svc::playerLocator.get().behavior.current_state->params.current_frame);
         
         svc::playerLocator.get().current_sprite.setPosition(player_pos.x, player_pos.y);
-        win.draw(svc::playerLocator.get().current_sprite);
+//        win.draw(svc::playerLocator.get().current_sprite);
         
         arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
         std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);
@@ -237,7 +237,7 @@ public:
     world::Map map{};
     sf::Texture tileset{};
     std::vector<sf::Sprite> tileset_sprites{};
-    bool show_colliders = false;
+    bool show_colliders = true;
     
     gui::HUD hud{{20, 20}};
     bg::Background bg{5, 0.1};
