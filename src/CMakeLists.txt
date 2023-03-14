@@ -13,22 +13,37 @@ target_sources(${PROJECT_NAME} PRIVATE
         particle/ObjectPool.hpp
         particle/Particle.hpp
         components/PhysicsComponent.hpp
+	components/BehaviorComponent.hpp
 	utils/Grid.hpp
 	utils/Grid.cpp
 	utils/Shape.hpp
 	utils/Shape.cpp
 	utils/Camera.hpp
+	utils/StateMachine.hpp
+	utils/AdjacencyList.hpp
+	utils/Random.hpp
 	setup/AssetManager.hpp
 	setup/ServiceLocator.hpp
+    setup/LookupTables.hpp
+        setup/EnumLookups.hpp
 	entities/player/Player.hpp
 	entities/player/Player.cpp
+    entities/behavior/Behavior.hpp
+    entities/behavior/PlayerBehavior.hpp
+	weapon/Weapon.hpp
+	weapon/Arsenal.hpp
+	weapon/Projectile.hpp
 	level/Map.hpp
 	level/Map.cpp
 	automa/GameState.hpp
 	automa/GameState.cpp
 	automa/StateManager.hpp
 	automa/StateManager.cpp
+    gui/HUD.hpp
 	service/Service.hpp
+    graphics/FLColor.hpp
+    graphics/Background.hpp
+    graphics/Background.cpp
 
 )
 
@@ -39,6 +54,7 @@ if(WIN32)
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
           $<TARGET_FILE:ImGui-SFML::ImGui-SFML>
           $<TARGET_FILE:sfml-graphics>
+	      $<TARGET_FILE:sfml-audio>
           $<TARGET_FILE:sfml-window>
           $<TARGET_FILE:sfml-system>
           $<TARGET_FILE_DIR:${PROJECT_NAME}>)

@@ -10,11 +10,14 @@
 #include <SFML/Graphics.hpp>
 #include <cstdio>
 #include <memory>
+#include <chrono>
 #include "../level/Map.hpp"
 #include "../components/PhysicsComponent.hpp"
 #include "../utils/Camera.hpp"
 #include "../entities/player/Player.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../setup/LookupTables.hpp"
+#include "../gui/HUD.hpp"
+#include "../graphics/Background.hpp"
 
 namespace automa {
 
@@ -36,6 +39,8 @@ class GameState {
     
 public:
     
+    using Time = std::chrono::duration<float>;
+    
     GameState() = default;
     GameState(int id) {
         
@@ -45,11 +50,11 @@ public:
     template<typename T> class StateID;
     
     virtual void init(const std::string& load_path) {};
-    virtual void setTilesetTexture(std::vector<sf::Sprite>& tile_sprites) {};
-    virtual void handle_events(sf::Event event) {
+    virtual void setTilesetTexture(sf::Texture& t) {};
+    virtual void handle_events(sf::Event& event) {
         
     };
-    virtual void logic() {};
+    virtual void logic(Time dt) {};
     virtual void render(sf::RenderWindow& win) {
         
         
@@ -71,21 +76,23 @@ namespace flstates {
 
 class MainMenu : public automa::GameState {
 public:
+    
+    
     MainMenu() {
         state = automa::STATE::STATE_MENU;
     };
     void init(const std::string& load_path) {
     }
-    void setTilesetTexture(std::vector<sf::Sprite>& tile_sprites) {
+    void setTilesetTexture(sf::Texture& t) {
     }
-    void handle_events(sf::Event event) {
+    void handle_events(sf::Event& event) {
         
         if (event.type == sf::Event::EventType::KeyPressed) {
         }
         
     }
     
-    void logic() {}
+    void logic(Time dt) {}
     
     void render(sf::RenderWindow& win) {
 
@@ -100,85 +107,140 @@ public:
 
 class Dojo : public automa::GameState {
 public:
-    sf::Color FL_White          = sf::Color(235, 232, 249);
-    sf::Color FL_Red            = sf::Color(236, 63,  95 );
-    sf::Color FL_Fucshia        = sf::Color(215, 53,  180);
-    sf::Color FL_Blue           = sf::Color(110, 98,  173);
-    sf::Color FL_NavyBlue       = sf::Color(25,  35,  65 );
-    sf::Color FL_DarkFucshia    = sf::Color(148, 40,  84 );
-    sf::Color FL_Goldenrod      = sf::Color(247, 199, 74 );
-    sf::Color FL_Orange         = sf::Color(226, 93,  11 );
-    sf::Color FL_Black          = sf::Color(55,  49,  64 );
-    sf::Color FL_Periwinkle     = sf::Color(159, 138, 247);
-    sf::Color FL_Green          = sf::Color(81,  186, 155);
+    
     Dojo() {
         state = automa::STATE::STATE_DOJO;
-        svc::cameraLocator.get().set_position({0, 0});
-        svc::playerLocator.get().set_position({400, 300});
-    };
+        svc::cameraLocator.get().set_position({1, 1});
+        svc::playerLocator.get().set_position({360, 500});
+    }
     void init(const std::string& load_path) {
         map.load(load_path);
+        svc::playerLocator.get().behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
+        tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
+        for(int i = 0; i < 16; ++i) {
+            for(int j = 0; j < 16; ++j) {
+                tileset_sprites.push_back(sf::Sprite());
+                tileset_sprites.back().setTexture(tileset);
+                tileset_sprites.back().setTextureRect(sf::IntRect({j * TILE_WIDTH, i * TILE_WIDTH}, {TILE_WIDTH, TILE_WIDTH}));
+            }
+        }
+//        svc::assetLocator.get().abandoned.setVolume(50);
+//        svc::assetLocator.get().abandoned.play();
+//        svc::assetLocator.get().abandoned.setLoop(true);
     }
-    void setTilesetTexture(std::vector<sf::Sprite>& tile_sprites) {
-        tileset = svc::assetLocator.get().sp_tileset;
-    }
-    void handle_events(sf::Event event) {
+    void handle_events(sf::Event& event) {
         svc::playerLocator.get().handle_events(event);
         if (event.type == sf::Event::EventType::KeyPressed) {
-            if (event.key.code == sf::Keyboard::Left) {
-            }
-            if (event.key.code == sf::Keyboard::Right) {
+            if (event.key.code == sf::Keyboard::H) {
+                show_colliders = !show_colliders;
             }
         }
     }
     
-    void logic() {
+    void logic(Time dt) {
         map.update();
-        svc::cameraLocator.get().center(svc::playerLocator.get().physics.position);
+        hud.update();
+        svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
         svc::cameraLocator.get().update();
-        svc::playerLocator.get().update();
+        svc::cameraLocator.get().restrict_movement(map.real_dimensions);
+        svc::playerLocator.get().update(dt);
+        bg.update();
     }
     
     void render(sf::RenderWindow& win) {
-        for(int i = 0; i < map.layers.size(); ++i) {
-            for(int j = 0; j < map.layers.at(i).grid.cells.size(); ++j) {
-                if(map.layers.at(i).collidable) {
-                    if(map.layers.at(i).grid.cells.at(j).value > 0) {
-                        tileset.at(map.layers.at(i).grid.cells.at(j).value).setPosition(map.layers.at(i).grid.cells.at(j).bounding_box.shape_x - svc::cameraLocator.get().physics.position.x, map.layers.at(i).grid.cells.at(j).bounding_box.shape_y - svc::cameraLocator.get().physics.position.y);
-                        win.draw(tileset.at(map.layers.at(i).grid.cells.at(j).value));
-                        sf::RectangleShape box{};
-                        if(map.layers.at(i).grid.cells.at(j).collision_check) {
-                            box.setFillColor(FL_Periwinkle);
-                            box.setOutlineColor(FL_White);
-                        } else {
-                            box.setFillColor(FL_DarkFucshia);
-                            box.setOutlineColor(FL_Red);
-                        }
-                        
-                        box.setOutlineThickness(-1);
-                        box.setPosition(map.layers.at(i).grid.cells.at(j).bounding_box.shape_x - svc::cameraLocator.get().physics.position.x, map.layers.at(i).grid.cells.at(j).bounding_box.shape_y - svc::cameraLocator.get().physics.position.y);
-                        box.setSize({32, 32});
-                        win.draw(box);
-                    }
-                }
-                
-            }
-        }
-        sf::Vector2<float> player_pos = svc::playerLocator.get().physics.position - svc::cameraLocator.get().physics.position;
-//        svc::assetLocator.get().s_nani_idle.setPosition(player_pos);
-        sf::RectangleShape plr{};
-        plr.setPosition(player_pos.x, player_pos.y);
-        plr.setFillColor(FL_Goldenrod);
-        plr.setOutlineColor(FL_White);
-        plr.setOutlineThickness(-1);
-        plr.setSize({PLAYER_WIDTH, PLAYER_HEIGHT});
         
-        win.draw(plr);
-//        win.draw(svc::assetLocator.get().s_nani_idle);
+        bg.render(win);
+        
+        map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
+        
+        if(show_colliders) {
+            sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::RectangleShape jbx{};
+            jbx.setPosition(jumpbox_pos.x, jumpbox_pos.y);
+            jbx.setFillColor(sf::Color::Transparent);
+            jbx.setOutlineColor(sf::Color(235, 232, 249, 80));
+            jbx.setOutlineThickness(-1);
+            jbx.setSize({(float)svc::playerLocator.get().jumpbox.shape_w, (float)svc::playerLocator.get().jumpbox.shape_h});
+            win.draw(jbx);
+            
+            sf::Vector2<float> leftbox_pos = sf::operator-(svc::playerLocator.get().left_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::RectangleShape leftbox{};
+            leftbox.setPosition(leftbox_pos.x, leftbox_pos.y);
+            leftbox.setFillColor(sf::Color::Transparent);
+            leftbox.setOutlineColor(sf::Color(235, 232, 249, 80));
+            leftbox.setOutlineThickness(-1);
+            leftbox.setSize({(float)svc::playerLocator.get().left_detector.shape_w, (float)svc::playerLocator.get().left_detector.shape_h});
+            win.draw(leftbox);
+            
+            sf::Vector2<float> rightbox_pos = sf::operator-(svc::playerLocator.get().right_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::RectangleShape rightbox{};
+            rightbox.setPosition(rightbox_pos.x, rightbox_pos.y);
+            rightbox.setFillColor(sf::Color::Transparent);
+            rightbox.setOutlineColor(sf::Color(235, 232, 249, 80));
+            rightbox.setOutlineThickness(-1);
+            rightbox.setSize({(float)svc::playerLocator.get().right_detector.shape_w, (float)svc::playerLocator.get().right_detector.shape_h});
+            win.draw(rightbox);
+            
+            sf::Vector2<float> wallbox_pos = sf::operator-(svc::playerLocator.get().wall_slide_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::RectangleShape wallbox{};
+            wallbox.setPosition(wallbox_pos.x, wallbox_pos.y);
+            wallbox.setFillColor(sf::Color::Transparent);
+            wallbox.setOutlineColor(sf::Color(23, 232, 249, 80));
+            wallbox.setOutlineThickness(-1);
+            wallbox.setSize({(float)svc::playerLocator.get().wall_slide_detector.shape_w, (float)svc::playerLocator.get().wall_slide_detector.shape_h});
+            win.draw(wallbox);
+            
+            sf::Vector2<float> predictive_hurtbox_pos = sf::operator-(svc::playerLocator.get().predictive_hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::RectangleShape predictive_hbx{};
+            predictive_hbx.setPosition(predictive_hurtbox_pos.x, predictive_hurtbox_pos.y);
+            predictive_hbx.setFillColor(sf::Color::Transparent);
+            predictive_hbx.setOutlineColor(flcolor::fucshia);
+            predictive_hbx.setOutlineThickness(-1);
+            predictive_hbx.setSize({(float)svc::playerLocator.get().predictive_hurtbox.shape_w, (float)svc::playerLocator.get().predictive_hurtbox.shape_h});
+            win.draw(predictive_hbx);
+            
+            sf::Vector2<float> hurtbox_pos = sf::operator-(svc::playerLocator.get().hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::RectangleShape hbx{};
+            hbx.setPosition(hurtbox_pos.x, hurtbox_pos.y);
+            hbx.setFillColor(sf::Color::Transparent);
+            hbx.setOutlineColor(flcolor::white);
+            hbx.setOutlineThickness(-1);
+            hbx.setSize({(float)svc::playerLocator.get().hurtbox.shape_w, (float)svc::playerLocator.get().hurtbox.shape_h});
+            win.draw(hbx);
+        }
+        
+        //player
+        sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
+        svc::playerLocator.get().current_sprite = svc::assetLocator.get().sp_nani.at(svc::playerLocator.get().behavior.current_state->params.lookup_value + svc::playerLocator.get().behavior.current_state->params.current_frame);
+        
+        svc::playerLocator.get().current_sprite.setPosition(player_pos.x, player_pos.y);
+        win.draw(svc::playerLocator.get().current_sprite);
+        
+        arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
+        std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);
+        sf::Sprite weap_sprite;
+        if(!curr_weapon_sprites.empty()) {
+            weap_sprite = curr_weapon_sprites.at(arms::WeaponDirLookup.at(curr_weapon.sprite_orientation));
+        }
+        
+        sf::Vector2<float> anchor = svc::playerLocator.get().hand_position;
+        sf::Vector2<int> offset = svc::playerLocator.get().loadout.get_equipped_weapon().sprite_offset;
+        weap_sprite.setPosition(player_pos.x + anchor.x + offset.x, player_pos.y + anchor.y + offset.y);
+        win.draw(weap_sprite);
+        
+        map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
+        hud.render(win);
+        
+        
     }
     
     world::Map map{};
-    std::vector<sf::Sprite> tileset{};
+    sf::Texture tileset{};
+    std::vector<sf::Sprite> tileset_sprites{};
+    bool show_colliders = false;
+    
+    gui::HUD hud{{20, 20}};
+    bg::Background bg{5, 0.1};
     
 };
 
