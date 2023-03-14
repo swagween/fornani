@@ -166,7 +166,7 @@ public:
     }
     
     bool load_audio() {
-        click_buffer.loadFromFile(resource_path + "/audio/sfx/click.wav");
+        click_buffer.loadFromFile(resource_path + "/audio/sfx/heavy_click.wav");
         click.setBuffer(click_buffer);
         arms_switch_buffer.loadFromFile(resource_path + "/audio/sfx/arms_switch.wav");
         arms_switch.setBuffer(arms_switch_buffer);
@@ -174,7 +174,7 @@ public:
         bg_shot.setBuffer(bg_shot_buffer);
         plasmer_shot_buffer.loadFromFile(resource_path + "/audio/sfx/plasmer_shot.wav");
         plasmer_shot.setBuffer(plasmer_shot_buffer);
-        pop_mid_buffer.loadFromFile(resource_path + "/audio/sfx/pop_mid.wav");
+        pop_mid_buffer.loadFromFile(resource_path + "/audio/sfx/clover.wav");
         pop_mid.setBuffer(pop_mid_buffer);
         jump_buffer.loadFromFile(resource_path + "/audio/sfx/jump.wav");
         jump.setBuffer(jump_buffer);

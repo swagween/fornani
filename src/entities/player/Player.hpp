@@ -12,7 +12,7 @@
 #include "../../components/BehaviorComponent.hpp"
 #include "../../weapon/Arsenal.hpp"
 
-const float PLAYER_WIDTH = 14.0f;
+const float PLAYER_WIDTH = 16.0f;
 const float PLAYER_HEIGHT = 28.0f;
 const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
