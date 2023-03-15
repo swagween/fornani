@@ -38,7 +38,7 @@ float FPS = 0.0;
 
 int shake_counter = 0;
 
-sf::Vector2<uint> win_size{};
+sf::Vector2<uint16_t> win_size{};
 float height_ratio{};
 float width_ratio{};
 

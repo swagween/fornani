@@ -10,6 +10,7 @@
 #include <vector>
 #include <cmath>
 #include <random>
+#include <chrono>
 
 namespace components {
 

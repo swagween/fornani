@@ -27,7 +27,7 @@ class AssetManager {
 public:
     AssetManager() {};
     
-    bool importTextures() {
+    void importTextures() {
         test_tex.loadFromFile(resource_path + "/test/nani_idle.png");
         t_nani_spritesheet.loadFromFile(resource_path + "/image/character/nani_spritesheet.png");
         
@@ -67,7 +67,7 @@ public:
         }
     }
     
-    bool assignSprites() {
+    void assignSprites() {
         sprite_test.setTexture(test_tex);
         sp_hud.setTexture(t_hud);
         sp_hud2x.setTexture(t_hud2x);
@@ -165,7 +165,7 @@ public:
         //assign all the other sprites...
     }
     
-    bool load_audio() {
+    void load_audio() {
         click_buffer.loadFromFile(resource_path + "/audio/sfx/heavy_click.wav");
         click.setBuffer(click_buffer);
         arms_switch_buffer.loadFromFile(resource_path + "/audio/sfx/arms_switch.wav");
@@ -188,7 +188,7 @@ public:
     }
     
     void setResourcePath(char** argv) {
-        resource_path = find_resources(argv[0]);
+        resource_path = find_resources(argv[0]).string();
     }
     
     fs::path find_resources(fs::path exe) {
