@@ -10,11 +10,11 @@
 
 namespace bg {
 
-Background::Background(int lr, float spd, int bg_id) : used_layers(lr), scroll_speed(spd), id(bg_id) {
+Background::Background(int lr, float spd, int bg_id) : used_layers(lr), scroll_speed(spd) {
     int idx = 0;
     for(auto& sprite : sprites) {
         sprite.setTextureRect(sf::IntRect({0, 540 * idx}, {3840, 540}));
-        sprite.setTexture(get_backdrop_texture.at(id));
+        sprite.setTexture(get_backdrop_texture.at(bg_id));
         ++idx;
     }
 }

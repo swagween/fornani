@@ -51,7 +51,6 @@ public:
     std::array<sf::Sprite, num_layers> sprites{};
     float scroll_speed{};
     int used_layers{};
-    int id{};
     
     std::array<int, num_layers> frames{};
 };
