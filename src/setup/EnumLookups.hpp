@@ -15,15 +15,6 @@ namespace lookup {
 
 inline const int NUM_STYLES{20};
 
-enum class BACKDROP {
-    BG_NULL,
-    BG_SUNSET,
-    BG_SUNRISE,
-    BG_OPEN_SKY,
-    BG_RED_SKY,
-    BG_BLACK
-};
-
 enum class STYLE {
     FIRSTWIND,
     OVERTURNED,
@@ -77,15 +68,6 @@ inline std::unordered_map<int, STYLE> get_style {
     {19,    STYLE::MANSION      }
 };
 
-inline std::unordered_map<int, BACKDROP> get_backdrop {
-    {-1,    BACKDROP::BG_NULL       },
-    {0,     BACKDROP::BG_SUNSET     },
-    {1,     BACKDROP::BG_SUNRISE    },
-    {2,     BACKDROP::BG_OPEN_SKY   },
-    {3,     BACKDROP::BG_RED_SKY    },
-    {4,     BACKDROP::BG_BLACK      }
-};
-
 inline std::unordered_map<STYLE, int> get_style_id {
     {STYLE::FIRSTWIND, 0    },
     {STYLE::OVERTURNED, 1   },
@@ -107,15 +89,6 @@ inline std::unordered_map<STYLE, int> get_style_id {
     {STYLE::SHADOW, 17      },
     {STYLE::HOARDER, 18     },
     {STYLE::MANSION, 19     }
-};
-
-inline std::unordered_map<BACKDROP, int> get_backdrop_id {
-    {BACKDROP::BG_NULL, -1      },
-    {BACKDROP::BG_SUNSET, 0     },
-    {BACKDROP::BG_SUNRISE, 1    },
-    {BACKDROP::BG_OPEN_SKY, 2   },
-    {BACKDROP::BG_RED_SKY, 3    },
-    {BACKDROP::BG_BLACK, 4      }
 };
 
 inline std::unordered_map<STYLE, const char*> get_style_string {

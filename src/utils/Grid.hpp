@@ -5,8 +5,6 @@
 //  Created by Alex Frasca on 12/26/22.
 //
 #pragma once
-#ifndef Grid_hpp
-#define Grid_hpp
 
 #include "../utils/Shape.hpp"
 #include <stdio.h>
@@ -77,4 +75,4 @@ TILE_TYPE lookup_type(int idx);
 
 } // end squid
 
-#endif /* Grid_hpp */
+/* Grid_hpp */

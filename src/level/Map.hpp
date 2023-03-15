@@ -16,6 +16,7 @@
 #include <fstream>
 #include "../weapon/Projectile.hpp"
 #include "../setup/LookupTables.hpp"
+#include "../graphics/Background.hpp"
 
 const int NUM_LAYERS{8};
 const int CHUNK_SIZE{16};
@@ -75,9 +76,10 @@ public:
     //entities
     std::vector<arms::Projectile> active_projectiles{};
     std::vector<vfx::Emitter> active_emitters{};
+    std::unique_ptr<bg::Background> background{};
     
     lookup::STYLE style{}; // which tileset to render
-    lookup::BACKDROP bg{}; // which background to render
+    int bg{}; // which background to render
     
     uint16_t room_id{}; // should be assigned to its constituent chunks
     

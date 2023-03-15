@@ -6,15 +6,15 @@
 //
 
 #include "Background.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../setup/EnumLookups.hpp"
 
 namespace bg {
 
-Background::Background(int lr, float spd) : used_layers(lr), scroll_speed(spd) {
+Background::Background(int lr, float spd, int bg_id) : used_layers(lr), scroll_speed(spd), id(bg_id) {
     int idx = 0;
     for(auto& sprite : sprites) {
         sprite.setTextureRect(sf::IntRect({0, 540 * idx}, {3840, 540}));
-        sprite.setTexture(svc::assetLocator.get().t_bg_rosyhaze);
+        sprite.setTexture(get_backdrop_texture.at(id));
         ++idx;
     }
 }

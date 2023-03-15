@@ -6,8 +6,6 @@
 //  Copyright © 2019 Western Forest Studios. All rights reserved.
 //
 #pragma once
-#ifndef Shape_hpp
-#define Shape_hpp
 
 #include <SFML/Graphics.hpp>
 #include <stdio.h>
@@ -77,4 +75,4 @@ public:
     
 };
 
-#endif /* Shape_hpp */
+/* Shape_hpp */

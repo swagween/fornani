@@ -116,6 +116,7 @@ public:
     void init(const std::string& load_path) {
         map.load(load_path);
         svc::playerLocator.get().behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
+        printf("%i", map.bg);
         tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
         for(int i = 0; i < 16; ++i) {
             for(int j = 0; j < 16; ++j) {
@@ -144,12 +145,9 @@ public:
         svc::cameraLocator.get().update();
         svc::cameraLocator.get().restrict_movement(map.real_dimensions);
         svc::playerLocator.get().update(dt);
-        bg.update();
     }
     
     void render(sf::RenderWindow& win) {
-        
-        bg.render(win);
         
         map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         
@@ -240,7 +238,6 @@ public:
     bool show_colliders = false;
     
     gui::HUD hud{{20, 20}};
-    bg::Background bg{5, 0.1};
     
 };
 

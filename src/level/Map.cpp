@@ -47,10 +47,9 @@ void Map::load(const std::string& path) {
         style = lookup::get_style.at(value);
     }
     //bg;
-    input >> value; input.ignore();
-    if(value >= lookup::get_backdrop.size()) { printf("File is corrupted: Invalid backdrop.\n"); return; } else {
-        bg = lookup::get_backdrop.at(value);
-    }
+    input >> value;
+    bg = value;
+    background = std::make_unique<bg::Background>(5, 0.1, bg);
     input.close();
     
     //get map tiles from text files
@@ -76,6 +75,7 @@ void Map::load(const std::string& path) {
 }
 
 void Map::update() {
+    background->update();
     svc::playerLocator.get().is_any_jump_colllision = false;
     svc::playerLocator.get().is_any_colllision = false;
     svc::playerLocator.get().left_aabb_counter = 0;
@@ -205,6 +205,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 }
 
 void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
+    background->render(win);
     for(auto& layer : layers) {
         if(layer.render_order < 4) {
             for(auto& cell : layer.grid.cells) {
