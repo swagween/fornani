@@ -94,6 +94,13 @@ static void show_overlay() {
                     ImGui::EndTabItem();
                     ImGui::PlotHistogram("Frame Times", time_markers, NUM_TIMESTEPS, 0, NULL, 0.0f, 0.02f, ImVec2(0, 80.0f));
                 }
+                if (ImGui::BeginTabItem("Audio"))
+                {
+                    ImGui::Separator();
+                    ImGui::Text("Music Volume");
+                    ImGui::SliderInt("##musvol", &svc::assetLocator.get().music_vol, 0, 100);
+                    ImGui::EndTabItem();
+                }
                 if (ImGui::BeginTabItem("Player"))
                 {
                     ImGui::Text("Player Stats");
@@ -217,6 +224,11 @@ static void show_overlay() {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_LEDGE_01");
+                    }
+                    if(ImGui::Button("Shadow")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SHADOW_PLAT_01");
                     }
                     if(ImGui::Button("Hoarder")) {
                         svc::assetLocator.get().click.play();

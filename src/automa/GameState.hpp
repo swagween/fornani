@@ -128,6 +128,13 @@ public:
 //        svc::assetLocator.get().abandoned.setVolume(50);
 //        svc::assetLocator.get().abandoned.play();
 //        svc::assetLocator.get().abandoned.setLoop(true);
+        
+        svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
+        svc::assetLocator.get().three_pipes.play();
+        svc::assetLocator.get().three_pipes.setLoop(true);
+        svc::assetLocator.get().brown_noise.setVolume(20);
+        svc::assetLocator.get().brown_noise.play();
+        svc::assetLocator.get().brown_noise.setLoop(true);
     }
     void handle_events(sf::Event& event) {
         svc::playerLocator.get().handle_events(event);
@@ -145,6 +152,7 @@ public:
         svc::cameraLocator.get().update();
         svc::cameraLocator.get().restrict_movement(map.real_dimensions);
         svc::playerLocator.get().update(dt);
+        svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
     }
     
     void render(sf::RenderWindow& win) {

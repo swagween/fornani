@@ -183,8 +183,10 @@ public:
         landed_buffer.loadFromFile(resource_path + "/audio/sfx/landed.wav");
         landed.setBuffer(step_buffer);
         
+        brown_noise.openFromFile(resource_path + "/audio/songs/brown_noise.wav");
         clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");
         abandoned.openFromFile(resource_path + "/audio/songs/abandoned.wav");
+        three_pipes.openFromFile(resource_path + "/audio/songs/three_pipes.wav");
     }
     
     void setResourcePath(char** argv) {
@@ -277,8 +279,13 @@ public:
     sf::Sound landed;
     
     //songs!
+    sf::Music brown_noise{};
     sf::Music clay_statue{};
     sf::Music abandoned{};
+    sf::Music three_pipes{};
+    
+    //other members
+    int music_vol{24};
     
     
 };

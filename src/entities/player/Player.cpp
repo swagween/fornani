@@ -335,7 +335,6 @@ void Player::update(Time dt) {
     }
     just_collided = false;
     
-    
     update_behavior();
     apparent_position.x = physics.position.x - (48 - PLAYER_WIDTH)/2;
     apparent_position.y = physics.position.y - (48 - PLAYER_HEIGHT);
@@ -598,7 +597,7 @@ void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
             float correction = ydist + physics.mtv.y;
             physics.position.y += correction;
             physics.acceleration.y = 0.0f;
-            physics.velocity.y *= -1;
+            physics.velocity.y *= -0.5;
             jump_hold = false;
         }
         
