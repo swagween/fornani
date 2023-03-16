@@ -164,9 +164,6 @@ void Player::handle_events(sf::Event& event) {
             jump_request = JUMP_BUFFER_TIME;
             just_jumped = true;
             jump_trigger = true;
-            if(grounded) {
-                soundboard_flags.jump = true;
-            }
         }
     }
     if (event.type == sf::Event::KeyReleased) {
@@ -241,13 +238,7 @@ void Player::update(Time dt) {
             }
         }
         if((move_left || move_right) && grounded && abs(physics.velocity.x) > stats.PLAYER_MAX_XVEL) {
-//                    svc::assetLocator.get().step.play();
-                    // I should do this:
-                    //                svc::soundboardLocator.get().play(sb::sfx::STEP);
-                    // or this (definitely this):
-                    soundboard_flags.step = true;
-                
-            
+                soundboard_flags.step = true;
         }
     }
     
@@ -319,6 +310,7 @@ void Player::update(Time dt) {
                 jump_trigger = false;
                 jump_request = -1;
                 behavior.rise();
+                if(!jump_trigger) { soundboard_flags.jump = true; }
             }
         }
     }
