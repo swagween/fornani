@@ -28,8 +28,9 @@ public:
     AssetManager() {};
     
     void importTextures() {
-        test_tex.loadFromFile(resource_path + "/test/nani_idle.png");
-        t_nani_spritesheet.loadFromFile(resource_path + "/image/character/nani_spritesheet.png");
+        t_nani.loadFromFile(resource_path + "/image/character/nani.png");
+        t_nani_dark.loadFromFile(resource_path + "/image/character/nani_dark.png");
+        t_nani_red.loadFromFile(resource_path + "/image/character/nani_red.png");
         
         t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
         t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
@@ -52,6 +53,8 @@ public:
         t_bg_dawn.loadFromFile(resource_path + "/image/background/dawn.png");
         t_bg_sunrise.loadFromFile(resource_path + "/image/background/sunrise.png");
         t_bg_rosyhaze.loadFromFile(resource_path + "/image/background/rosyhaze.png");
+        t_bg_slime.loadFromFile(resource_path + "/image/background/slime.png");
+        t_bg_dirt.loadFromFile(resource_path + "/image/background/dirt.png");
         
         //load all the other textures...
         
@@ -68,18 +71,8 @@ public:
     }
     
     void assignSprites() {
-        sprite_test.setTexture(test_tex);
         sp_hud.setTexture(t_hud);
         sp_hud2x.setTexture(t_hud2x);
-        
-        for(int i = 0; i < NANI_SPRITESHEET_WIDTH; ++i) {
-            for(int j = 0; j < NANI_SPRITESHEET_HEIGHT; ++j) {
-                sp_nani.push_back(sf::Sprite());
-                sp_nani.back().setTexture(t_nani_spritesheet);
-                sp_nani.back().setTextureRect(sf::IntRect({i * NANI_SPRITE_WIDTH, j * NANI_SPRITE_WIDTH}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
-                sp_nani.back().setTextureRect(sf::IntRect({i * NANI_SPRITE_WIDTH, j * NANI_SPRITE_WIDTH}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
-            }
-        }
         
         //gui
         for(int i = 0; i < 4; ++i) {
@@ -209,11 +202,10 @@ public:
     }
     
     //declare all the textures and sprites as members of the AssetManager
-    sf::Texture test_tex{};
-    sf::Sprite sprite_test{};
     
-    sf::Texture t_nani_spritesheet{};
-    std::vector<sf::Sprite> sp_nani{};
+    sf::Texture t_nani{};
+    sf::Texture t_nani_dark{};
+    sf::Texture t_nani_red{};
     
     //gui
     sf::Texture t_hud{};
@@ -237,6 +229,17 @@ public:
     sf::Texture t_bg_dawn{};
     sf::Texture t_bg_sunrise{};
     sf::Texture t_bg_rosyhaze{};
+    sf::Texture t_bg_slime{};
+    sf::Texture t_bg_black{};
+    sf::Texture t_bg_navy{};
+    sf::Texture t_bg_dirt{};
+    sf::Texture t_bg_gear{};
+    sf::Texture t_bg_library{};
+    sf::Texture t_bg_granite{};
+    sf::Texture t_bg_ruins{};
+    sf::Texture t_bg_crevasse{};
+    sf::Texture t_bg_deep{};
+    sf::Texture t_bg_grove{};
     
     //load the guns and bullets!
     sf::Texture t_bryns_gun{};

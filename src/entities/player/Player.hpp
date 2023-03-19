@@ -11,6 +11,8 @@
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
 #include "../../weapon/Arsenal.hpp"
+#include <array>
+#include <memory>
 
 const float PLAYER_WIDTH = 16.0f;
 const float PLAYER_HEIGHT = 28.0f;
@@ -23,6 +25,7 @@ const float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
 const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 12;
 const int ANCHOR_BUFFER = 50;
+const int num_sprites{220};
 
 struct PlayerStats {
     
@@ -96,7 +99,8 @@ public:
     //member functions
     void handle_events(sf::Event& event);
     void update(Time dt);
-    void render();
+    void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+    void assign_texture(sf::Texture& tex);
     void update_animation();
     
     void sync_components();
@@ -142,6 +146,10 @@ public:
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
     
+    //sprites
+    std::vector<sf::Sprite> player_sprites{};
+    sf::Sprite sprite{};
+    
     SoundboardFlags soundboard_flags{};
     
     bool move_left{};
@@ -174,6 +182,7 @@ public:
     bool release_wallslide{};
     bool entered_freefall{};
     bool freefalling{};
+    bool sprite_flip{};
     
     bool weapon_fired{};
     bool start_cooldown{};

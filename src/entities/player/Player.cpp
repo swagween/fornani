@@ -61,6 +61,10 @@ Player::Player() {
     };
     loadout.equipped_weapon = weapons_hotbar.at(0);
     
+    //sprites
+    assign_texture(svc::assetLocator.get().t_nani);
+    sprite.setTexture(svc::assetLocator.get().t_nani_red);
+    
 }
 
 void Player::handle_events(sf::Event& event) {
@@ -336,13 +340,37 @@ void Player::update(Time dt) {
     just_collided = false;
     
     update_behavior();
-    apparent_position.x = physics.position.x - (48 - PLAYER_WIDTH)/2;
-    apparent_position.y = physics.position.y - (48 - PLAYER_HEIGHT);
+    apparent_position.x = physics.position.x - (48 - PLAYER_WIDTH)/2 + NANI_SPRITE_WIDTH/2;
+    apparent_position.y = physics.position.y - (48 - PLAYER_HEIGHT) + NANI_SPRITE_WIDTH/2;
     play_sounds();
 }
 
-void Player::render() {
+void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
     
+    sf::Vector2<float> player_pos = apparent_position - campos;
+    
+    //get UV coords
+    int u = (int)(behavior.get_frame() / NANI_SPRITESHEET_HEIGHT) * NANI_SPRITE_WIDTH;
+    int v = (int)(behavior.get_frame() % NANI_SPRITESHEET_HEIGHT) * NANI_SPRITE_WIDTH;
+    sprite.setTextureRect(sf::IntRect({u, v}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
+    sprite.setOrigin(NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2);
+    sprite.setPosition(player_pos.x, player_pos.y);
+    
+    //flip the sprite based on the player's direction
+    sf::Vector2<float> right_scale = {1.0f, 1.0f};
+    sf::Vector2<float> left_scale = {-1.0f, 1.0f};
+    if(behavior.facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) {
+        sprite.scale(-1.0f, 1.0f);
+    }
+    if(behavior.facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale) {
+        sprite.scale(-1.0f, 1.0f);
+    }
+    win.draw(sprite);
+    
+}
+
+void Player::assign_texture(sf::Texture& tex) {
+    sprite.setTexture(tex);
 }
 
 void Player::update_animation() {
@@ -620,13 +648,13 @@ void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
 
 sf::Vector2<float> Player::get_fire_point() {
     if(behavior.facing_strictly_left()) {
-        return apparent_position + hand_position + sf::Vector2<float>{static_cast<float>(-loadout.get_equipped_weapon().sprite_dimensions.x), 0.0f};
+        return apparent_position + hand_position + sf::Vector2<float>{static_cast<float>(-loadout.get_equipped_weapon().sprite_dimensions.x), 0.0f} - sf::Vector2<float>{NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2};
     } else if(behavior.facing_strictly_right()) {
-        return apparent_position + hand_position + sf::Vector2<float>{static_cast<float>(loadout.get_equipped_weapon().sprite_dimensions.x), 0.0f};;
+        return apparent_position + hand_position + sf::Vector2<float>{static_cast<float>(loadout.get_equipped_weapon().sprite_dimensions.x), 0.0f} - sf::Vector2<float>{NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2};
     } else if(behavior.facing_up()) {
-        return apparent_position + sf::Vector2<float>{PLAYER_WIDTH/2, 0.0f};
+        return apparent_position + sf::Vector2<float>{PLAYER_WIDTH/2, 0.0f} - sf::Vector2<float>{NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2};
     } else {
-        return apparent_position + sf::Vector2<float>{PLAYER_WIDTH/2, PLAYER_HEIGHT};
+        return apparent_position + sf::Vector2<float>{PLAYER_WIDTH/2, PLAYER_HEIGHT} - sf::Vector2<float>{NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2};
     }
 }
 

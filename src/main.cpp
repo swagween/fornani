@@ -146,7 +146,7 @@ static void show_overlay() {
 //                    if(svc::playerLocator.get().wall_slide_trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
 //                    ImGui::Text("Anim Frame: ");
 //                    ImGui::SameLine();
-//                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.current_frame).c_str());
+                    ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.get()->params.lookup_value);
 //                    ImGui::Text("Real Frame: ");
 //                    ImGui::SameLine();
 //                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
@@ -225,6 +225,13 @@ static void show_overlay() {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_LEDGE_01");
                     }
+                    if(ImGui::Button("House")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_HUT_01");
+                        
+                        svc::playerLocator.get().set_position({100, 160});
+                    }
                     if(ImGui::Button("Shadow")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
@@ -239,6 +246,32 @@ static void show_overlay() {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
+                    }
+                    if(ImGui::Button("Toxic")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_ARENA_01");
+                        svc::playerLocator.get().set_position({34, 484});
+                    }
+                    if(ImGui::Button("Grub")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/GRUB_TUNNEL_01");
+                        svc::playerLocator.get().set_position({224, 290});
+                    }
+                    if(ImGui::Button("Night")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/NIGHT_CRANE_01");
+                        svc::playerLocator.get().set_position({50, 50});
+                        svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani_dark);
+                    }
+                    if(ImGui::Button("Night 2")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/NIGHT_CATWALK_01");
+                        svc::playerLocator.get().set_position({50, 50});
+                        svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani_dark);
                     }
                     ImGui::EndTabItem();
                 }

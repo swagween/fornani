@@ -62,6 +62,8 @@ public:
         refresh();
     }
     
+    int get_frame() { return params.lookup_value + params.current_frame; }
+    
     BehaviorParameters params{};
 };
 

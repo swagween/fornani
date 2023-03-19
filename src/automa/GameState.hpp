@@ -116,7 +116,6 @@ public:
     void init(const std::string& load_path) {
         map.load(load_path);
         svc::playerLocator.get().behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
-        printf("%i", map.bg);
         tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
         for(int i = 0; i < 16; ++i) {
             for(int j = 0; j < 16; ++j) {
@@ -129,9 +128,10 @@ public:
 //        svc::assetLocator.get().abandoned.play();
 //        svc::assetLocator.get().abandoned.setLoop(true);
         
-        svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
-        svc::assetLocator.get().three_pipes.play();
-        svc::assetLocator.get().three_pipes.setLoop(true);
+//        svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
+//        svc::assetLocator.get().three_pipes.play();
+//        svc::assetLocator.get().three_pipes.setLoop(true);
+        
         svc::assetLocator.get().brown_noise.setVolume(20);
         svc::assetLocator.get().brown_noise.play();
         svc::assetLocator.get().brown_noise.setLoop(true);
@@ -217,25 +217,34 @@ public:
         
         //player
         sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
-        svc::playerLocator.get().current_sprite = svc::assetLocator.get().sp_nani.at(svc::playerLocator.get().behavior.current_state->params.lookup_value + svc::playerLocator.get().behavior.current_state->params.current_frame);
-        
-        svc::playerLocator.get().current_sprite.setPosition(player_pos.x, player_pos.y);
-        win.draw(svc::playerLocator.get().current_sprite);
+        svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
         
         arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
         std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);
         sf::Sprite weap_sprite;
         if(!curr_weapon_sprites.empty()) {
             weap_sprite = curr_weapon_sprites.at(arms::WeaponDirLookup.at(curr_weapon.sprite_orientation));
+            weap_sprite.setOrigin(NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2);
         }
         
         sf::Vector2<float> anchor = svc::playerLocator.get().hand_position;
         sf::Vector2<int> offset = svc::playerLocator.get().loadout.get_equipped_weapon().sprite_offset;
         weap_sprite.setPosition(player_pos.x + anchor.x + offset.x, player_pos.y + anchor.y + offset.y);
+        if(map.style == lookup::STYLE::NIGHT) {
+            weap_sprite.setColor(flcolor::night);
+        }
         win.draw(weap_sprite);
         
         map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         hud.render(win);
+        
+        sf::RectangleShape hbx{};
+        hbx.setPosition(20, screen_dimensions.y - 276);
+        hbx.setFillColor(flcolor::goldenrod);
+        hbx.setOutlineColor(flcolor::white);
+        hbx.setOutlineThickness(-1);
+        hbx.setSize({128, 256});
+        win.draw(hbx);
         
         
     }

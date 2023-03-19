@@ -30,6 +30,9 @@ target_sources(${PROJECT_NAME} PRIVATE
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp
     entities/behavior/PlayerBehavior.hpp
+    entities/critter/Critter.hpp
+    entities/critter/Critter.cpp
+    entities/critter/CritterTables.hpp
 	weapon/Weapon.hpp
 	weapon/Arsenal.hpp
 	weapon/Projectile.hpp

@@ -49,7 +49,7 @@ void Map::load(const std::string& path) {
     //bg;
     input >> value;
     bg = value;
-    background = std::make_unique<bg::Background>(5, 0.1, bg);
+    background = std::make_unique<bg::Background>(bg::bg_behavior_lookup.at(bg), bg);
     input.close();
     
     //get map tiles from text files
@@ -205,7 +205,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 }
 
 void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
-    background->render(win);
+    background->render(win, cam, real_dimensions);
     for(auto& layer : layers) {
         if(layer.render_order < 4) {
             for(auto& cell : layer.grid.cells) {

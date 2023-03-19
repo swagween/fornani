@@ -150,17 +150,17 @@ public:
     }
     
     void flip_left() {
-        if(facing_left()) {
-            int lookup = current_state->params.lookup_value;
-            if(lookup < 110) {
-                current_state->params.lookup_value = 210 + (lookup % 10) - (lookup - (lookup % 10));
-            }
-        } else {
-            int lookup = current_state->params.lookup_value;
-            if(lookup >= 110) {
-                current_state->params.lookup_value = 0 + (lookup % 10) + (210 - lookup + (lookup % 10));
-            }
-        }
+//        if(facing_left()) {
+//            int lookup = current_state->params.lookup_value;
+//            if(lookup < 110) {
+//                current_state->params.lookup_value = 210 + (lookup % 10) - (lookup - (lookup % 10));
+//            }
+//        } else {
+//            int lookup = current_state->params.lookup_value;
+//            if(lookup >= 110) {
+//                current_state->params.lookup_value = 0 + (lookup % 10) + (210 - lookup + (lookup % 10));
+//            }
+//        }
     }
     
     bool ready() {
@@ -195,9 +195,20 @@ public:
         return facing == behavior::DIR::RIGHT;
     }
     
+    int get_frame() { return current_state->get_frame(); }
+    
     const float suspension_threshold = 3.0f;
     behavior::DIR facing{};
     behavior::DIR_LR facing_lr{};
+    
+};
+
+
+class CritterBehaviorComponent : public BehaviorComponent {
+    
+    void update() {}
+    
+    
     
 };
 
