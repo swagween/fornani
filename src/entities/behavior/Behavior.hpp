@@ -24,10 +24,10 @@ struct BehaviorParameters {
     BehaviorParameters(std::string id, int d, int f, bool t, bool r, bool nl, int lookup) : behavior_id(id), duration(d), framerate(f), transitional(t), restrictive(r), no_loop(nl), lookup_value(lookup) { set_params(); }
     ~BehaviorParameters() { trigger = true; }
     void set_params() {current_frame = 0; anim_frame = framerate - 1; complete = false;}
-    const int framerate{};
+    int framerate{};
     int current_frame{};
     int anim_frame{};
-    const int duration{};
+    int duration{};
     int lookup_value{};
     bool no_loop{};
     bool restrictive{};
@@ -40,9 +40,6 @@ class Behavior {
 public:
     Behavior() = default;
     Behavior(BehaviorParameters p) : params(p) { update(); }
-    Behavior(const Behavior& b) {}
-    Behavior& operator=(Behavior&&) = delete;
-    Behavior(Behavior&&) = default;
     
     void refresh() {
         if(params.current_frame >= params.duration) {

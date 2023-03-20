@@ -72,6 +72,9 @@ void Map::load(const std::string& path) {
         ++counter;
     }
     
+    critters.push_back(bestiary.get_critter_at(0));
+    critters.back().set_position({104, 464});
+    
 }
 
 void Map::update() {
@@ -99,8 +102,8 @@ void Map::update() {
     }
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& proj : active_projectiles) {
-            if(abs(cell.bounding_box.shape_x - proj.bounding_box.shape_x) > PLAYER_WIDTH*barrier ||
-               abs(cell.bounding_box.shape_y - proj.bounding_box.shape_y) > PLAYER_HEIGHT*barrier) {
+            if(abs(cell.bounding_box.shape_x - proj.bounding_box.shape_x) > PLAYER_WIDTH * barrier ||
+               abs(cell.bounding_box.shape_y - proj.bounding_box.shape_y) > PLAYER_HEIGHT * barrier) {
                 continue;
             } else {
                 cell.collision_check = true;
@@ -113,8 +116,8 @@ void Map::update() {
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& emitter : active_emitters) {
             for(auto& particle : emitter.get_particles()) {
-                if(abs(cell.bounding_box.shape_x - particle.bounding_box.shape_x) > PLAYER_WIDTH*barrier ||
-                   abs(cell.bounding_box.shape_y - particle.bounding_box.shape_y) > PLAYER_HEIGHT*barrier) {
+                if(abs(cell.bounding_box.shape_x - particle.bounding_box.shape_x) > PLAYER_WIDTH * barrier ||
+                   abs(cell.bounding_box.shape_y - particle.bounding_box.shape_y) > PLAYER_HEIGHT * barrier) {
                     continue;
                 } else {
                     cell.collision_check = true;
@@ -133,6 +136,26 @@ void Map::update() {
                 }
             }
         }
+    }
+    
+    for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+        for(auto& critter : critters) {
+            if(abs(cell.bounding_box.shape_x - critter.bounding_box.shape_x) > critter.dimensions.x * barrier ||
+               abs(cell.bounding_box.shape_y - critter.bounding_box.shape_y) > critter.dimensions.y * barrier) {
+                continue;
+            } else {
+                cell.collision_check = true;
+                if(critter.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
+                    critter.handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
+                }
+            }
+        }
+    }
+    
+    for(auto& critter : critters) {
+        critter.update();
+        critter.behavior.facing_lr = (svc::playerLocator.get().physics.position.x < critter.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
+        
     }
     //update player flags
     if(svc::playerLocator.get().left_aabb_counter == 0) {
@@ -181,6 +204,11 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
             win.draw(dot);
         }
     }
+    
+    for(auto& critter : critters) {
+        critter.render(win, cam);
+    }
+    
     for(auto& layer : layers) {
         if(layer.render_order >= 4) {
             for(auto& cell : layer.grid.cells) {

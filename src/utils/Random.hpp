@@ -13,6 +13,8 @@
 
 namespace util {
 
+static inline auto engine = std::default_random_engine{std::random_device{}()};
+
 class Random {
     
 public:
@@ -20,12 +22,10 @@ public:
     Random() = default;
     
     int random_range(int lo, int hi) {
-        static auto engine = std::default_random_engine{std::random_device{}()};
         return std::uniform_int_distribution<int>{lo, hi}(engine);
     }
     
     float random_range_float(float lo, float hi) {
-        static auto engine = std::default_random_engine{std::random_device{}()};
         return std::uniform_real_distribution<float>{lo, hi}(engine);
     }
     

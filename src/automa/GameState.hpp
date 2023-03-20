@@ -115,7 +115,7 @@ public:
     }
     void init(const std::string& load_path) {
         map.load(load_path);
-        svc::playerLocator.get().behavior.current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
+        svc::playerLocator.get().behavior.current_state = behavior::Behavior(behavior::idle);
         tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
         for(int i = 0; i < 16; ++i) {
             for(int j = 0; j < 16; ++j) {
@@ -238,13 +238,13 @@ public:
         map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         hud.render(win);
         
-        sf::RectangleShape hbx{};
-        hbx.setPosition(20, screen_dimensions.y - 276);
-        hbx.setFillColor(flcolor::goldenrod);
-        hbx.setOutlineColor(flcolor::white);
-        hbx.setOutlineThickness(-1);
-        hbx.setSize({128, 256});
-        win.draw(hbx);
+//        sf::RectangleShape hbx{};
+//        hbx.setPosition(20, screen_dimensions.y - 276);
+//        hbx.setFillColor(flcolor::goldenrod);
+//        hbx.setOutlineColor(flcolor::white);
+//        hbx.setOutlineThickness(-1);
+//        hbx.setSize({128, 256});
+//        win.draw(hbx);
         
         
     }

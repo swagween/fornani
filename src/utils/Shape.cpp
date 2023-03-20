@@ -8,7 +8,6 @@
 
 
 #include "Shape.hpp"
-//#include "../service/Service.hpp"
 
 Shape::Vec Shape::perp(Vec edg) {
     Vec temp = Vec(-edg.y, edg.x);
@@ -48,6 +47,21 @@ Shape::Shape(std::vector<Vec> verts, std::vector<Vec> edg) {
     shape_x = vertices[0].x;
     shape_y = vertices[0].y;
     num_sides = (int)verts.size();
+}
+
+Shape::Shape(Vec dim) {
+    for(int i = 0; i < 4; i++) {
+        edges.push_back(Vec(0, 0));
+        normals.push_back(Vec(0, 0));
+    }
+    vertices.push_back(Vec(0,     0     ));
+    vertices.push_back(Vec(dim.x, 0     ));
+    vertices.push_back(Vec(dim.x, dim.y ));
+    vertices.push_back(Vec(0,     dim.y ));
+    shape_x = 0;
+    shape_y = 0;
+    num_sides = 4;
+    init();
 }
 
 void Shape::init() {

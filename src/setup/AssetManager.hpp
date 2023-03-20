@@ -32,6 +32,8 @@ public:
         t_nani_dark.loadFromFile(resource_path + "/image/character/nani_dark.png");
         t_nani_red.loadFromFile(resource_path + "/image/character/nani_red.png");
         
+        t_frdog.loadFromFile(resource_path + "/image/critter/frdog.png");
+        
         t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
         t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
         
@@ -203,9 +205,13 @@ public:
     
     //declare all the textures and sprites as members of the AssetManager
     
+    //player and NPCs!
     sf::Texture t_nani{};
     sf::Texture t_nani_dark{};
     sf::Texture t_nani_red{};
+    
+    //critters and bosses!
+    sf::Texture t_frdog{};
     
     //gui
     sf::Texture t_hud{};
@@ -219,6 +225,7 @@ public:
     sf::Texture t_alphabet{};
     std::vector<sf::Sprite> sp_alphabet{};
     
+    //tiles!
     std::vector<sf::Texture> tilesets{};
     
     //load scrollingbackground sheets

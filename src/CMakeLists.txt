@@ -8,11 +8,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
 
 target_sources(${PROJECT_NAME} PRIVATE
 
-        main.cpp
-        particle/Emitter.hpp
-        particle/ObjectPool.hpp
-        particle/Particle.hpp
-        components/PhysicsComponent.hpp
+    main.cpp
+    particle/Emitter.hpp
+    particle/ObjectPool.hpp
+    particle/Particle.hpp
+    components/PhysicsComponent.hpp
 	components/BehaviorComponent.hpp
 	utils/Grid.hpp
 	utils/Grid.cpp
@@ -22,17 +22,20 @@ target_sources(${PROJECT_NAME} PRIVATE
 	utils/StateMachine.hpp
 	utils/AdjacencyList.hpp
 	utils/Random.hpp
+    utils/Clock.hpp
 	setup/AssetManager.hpp
 	setup/ServiceLocator.hpp
     setup/LookupTables.hpp
-        setup/EnumLookups.hpp
+    setup/EnumLookups.hpp
 	entities/player/Player.hpp
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp
-    entities/behavior/PlayerBehavior.hpp
+    entities/behavior/EntityBehavior.hpp
     entities/critter/Critter.hpp
     entities/critter/Critter.cpp
     entities/critter/CritterTables.hpp
+    entities/critter/CritterActions.cpp
+    entities/critter/Bestiary.hpp
 	weapon/Weapon.hpp
 	weapon/Arsenal.hpp
 	weapon/Projectile.hpp

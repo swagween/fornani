@@ -139,7 +139,6 @@ public:
     int current_weapon{};
     
     sf::Vector2<float> apparent_position{};
-    sf::Sprite current_sprite{};
     sf::Vector2<float> anchor_point{};
     sf::Vector2<float> hand_position{};
     
@@ -147,7 +146,6 @@ public:
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
     
     //sprites
-    std::vector<sf::Sprite> player_sprites{};
     sf::Sprite sprite{};
     
     SoundboardFlags soundboard_flags{};

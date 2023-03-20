@@ -9,7 +9,7 @@
 #include <SFML/Graphics.hpp>
 #include "../utils/StateMachine.hpp"
 #include "../utils/AdjacencyList.hpp"
-#include "../entities/behavior/PlayerBehavior.hpp"
+#include "../entities/behavior/EntityBehavior.hpp"
 #include <vector>
 #include <cmath>
 #include <random>
@@ -21,25 +21,25 @@ class BehaviorComponent {
 public:
     
     BehaviorComponent() = default;
-    ~BehaviorComponent() { current_state.reset(); }
+    ~BehaviorComponent() {}
 
-    virtual void update() {};
-    
-    std::unique_ptr<behavior::Behavior> current_state = std::make_unique<behavior::Behavior>();
+    void update() {};
     
 };
 
-class PlayerBehaviorComponent : public BehaviorComponent {
+class PlayerBehaviorComponent {
 public:
     
+    PlayerBehaviorComponent() { current_state = behavior::Behavior(); }
+    
     void update() {
-        if(current_state.get()->params.complete && current_state.get()->params.no_loop) {
+        if(current_state.params.complete && current_state.params.no_loop) {
             reset();
         }
     }
     
     void end_loop() {
-        if(current_state.get()->params.complete && current_state.get()->params.no_loop) {
+        if(current_state.params.complete && current_state.params.no_loop) {
             reset();
         }
     }
@@ -48,16 +48,15 @@ public:
         if(ready()) {
             switch(facing) {
                 case behavior::DIR::UP:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle_up));
+                    current_state = behavior::Behavior(behavior::idle_up);
                     break;
                 case behavior::DIR::DOWN:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle_up));
+                    current_state = behavior::Behavior(behavior::idle_up);
                     break;
                 default:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::idle));
+                    current_state = behavior::Behavior(behavior::idle);
                     break;
             }
-            flip_left();
         }
     }
     
@@ -65,13 +64,12 @@ public:
         if(ready()) {
             switch(facing_lr) {
                 case behavior::DIR_LR::LEFT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running));
+                    current_state = behavior::Behavior(behavior::running);
                     break;
                 case behavior::DIR_LR::RIGHT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::running));
+                    current_state = behavior::Behavior(behavior::running);
                     break;
             }
-            flip_left();
         }
     }
     
@@ -79,19 +77,19 @@ public:
         if(ready()) {
             switch(facing) {
                 case behavior::DIR::UP_RIGHT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_up));
+                    current_state = behavior::Behavior(behavior::stop_up);
                     break;
                 case behavior::DIR::DOWN_RIGHT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_down));
+                    current_state = behavior::Behavior(behavior::stop_down);
                     break;
                 case behavior::DIR::UP_LEFT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_up));
+                    current_state = behavior::Behavior(behavior::stop_up);
                     break;
                 case behavior::DIR::DOWN_LEFT:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop_down));
+                    current_state = behavior::Behavior(behavior::stop_down);
                     break;
                 default:
-                    current_state = std::move(std::make_unique<behavior::Behavior>(behavior::stop));
+                    current_state = behavior::Behavior(behavior::stop);
                     break;
             }
         }
@@ -99,35 +97,34 @@ public:
     
     void turn() {
         if(ready()) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::turning));
-            flip_left();
+            current_state = behavior::Behavior(behavior::turning);
         }
     }
     
     void jump() {
         if(ready()) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::jumpsquat));
+            current_state = behavior::Behavior(behavior::jumpsquat);
         }
     }
     void rise() {
         if(ready()) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::rising));
+            current_state = behavior::Behavior(behavior::rising);
         }
     }
     void suspend() {
         if(ready()) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::suspended));
+            current_state = behavior::Behavior(behavior::suspended);
         }
     }
     void fall() {
         if(ready()) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::falling));
+            current_state = behavior::Behavior(behavior::falling);
         }
     }
     
     void land() {
         if(ready()) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::landing));
+            current_state = behavior::Behavior(behavior::landing);
         }
     }
     
@@ -145,30 +142,16 @@ public:
     
     void wall_slide() {
         if(ready()) {
-            current_state = std::move(std::make_unique<behavior::Behavior>(behavior::wall_sliding));
+            current_state = behavior::Behavior(behavior::wall_sliding);
         }
     }
     
-    void flip_left() {
-//        if(facing_left()) {
-//            int lookup = current_state->params.lookup_value;
-//            if(lookup < 110) {
-//                current_state->params.lookup_value = 210 + (lookup % 10) - (lookup - (lookup % 10));
-//            }
-//        } else {
-//            int lookup = current_state->params.lookup_value;
-//            if(lookup >= 110) {
-//                current_state->params.lookup_value = 0 + (lookup % 10) + (210 - lookup + (lookup % 10));
-//            }
-//        }
-    }
-    
     bool ready() {
-        return !current_state->params.transitional || current_state->params.complete;
+        return !current_state.params.transitional || current_state.params.complete;
     }
     
     bool restricted() {
-        return current_state->params.restrictive && !current_state->params.complete;
+        return current_state.params.restrictive && !current_state.params.complete;
     }
     
     bool facing_left() {
@@ -195,20 +178,103 @@ public:
         return facing == behavior::DIR::RIGHT;
     }
     
-    int get_frame() { return current_state->get_frame(); }
+    int get_frame() { return current_state.get_frame(); }
     
     const float suspension_threshold = 3.0f;
     behavior::DIR facing{};
     behavior::DIR_LR facing_lr{};
     
+    behavior::Behavior current_state;
+    
 };
 
 
-class CritterBehaviorComponent : public BehaviorComponent {
+class CritterBehaviorComponent {
+public:
+    CritterBehaviorComponent() { current_state = behavior::Behavior(behavior::frdog_idle); };
     
-    void update() {}
+    void update() {
+        if(current_state.params.complete && current_state.params.no_loop) {
+            idle();
+        }
+        current_state.update();
+    }
+
+    void idle() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_idle);
+        }
+    }
+
+    void awaken() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_awakened);
+        }
+    }
+
+    void bark() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_bark);
+        }
+    }
+
+    void charge() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_charging);
+        }
+    }
+
+    void bite() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_bite);
+        }
+    }
+
+    void hurt() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_hurt);
+        }
+    }
+
+    void turn() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_turn);
+        }
+    }
+
+    void run() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_run);
+        }
+    }
+
+    void sleep() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_asleep);
+        }
+    }
     
+    bool ready() {
+        return !current_state.params.transitional || current_state.params.complete;
+    }
     
+    bool restricted() {
+        return current_state.params.restrictive && !current_state.params.complete;
+    }
+    
+    bool facing_left() {
+        return facing_lr == behavior::DIR_LR::LEFT;
+    }
+    
+    bool facing_right() {
+        return facing_lr == behavior::DIR_LR::RIGHT;
+    }
+    
+    int get_frame() { return current_state.get_frame(); }
+    
+    behavior::DIR_LR facing_lr{};
+    
+    behavior::Behavior current_state;
     
 };
 

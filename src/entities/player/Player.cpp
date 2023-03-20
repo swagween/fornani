@@ -13,7 +13,7 @@ Player::Player() {
     
     physics = components::PhysicsComponent({stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC}, stats.PLAYER_MASS);
     anchor_point = {physics.position.x + PLAYER_WIDTH/2, physics.position.y + PLAYER_HEIGHT/2};
-    behavior.current_state = std::make_unique<behavior::Behavior>(behavior::idle);
+    behavior.current_state = behavior::Behavior(behavior::idle);
     behavior.facing_lr = behavior::DIR_LR::RIGHT;
     
     hurtbox.init();
@@ -374,10 +374,8 @@ void Player::assign_texture(sf::Texture& tex) {
 }
 
 void Player::update_animation() {
-    if(behavior.current_state) {
-        behavior.end_loop();
-        behavior.current_state->update();
-    }
+    behavior.end_loop();
+    behavior.current_state.update();
 }
 
 void Player::sync_components() {
@@ -411,7 +409,7 @@ void Player::update_behavior() {
         just_jumped = false;
     }
     
-    if(behavior.current_state.get()->params.complete) {
+    if(behavior.current_state.params.complete) {
         if(grounded) {
            
             behavior.reset();
@@ -421,7 +419,7 @@ void Player::update_behavior() {
         }
     }
     
-    if((move_left || move_right) && behavior.current_state->params.behavior_id == "idle") {
+    if((move_left || move_right) && behavior.current_state.params.behavior_id == "idle") {
         if(grounded) {
             behavior.run();
         } else {
@@ -438,7 +436,7 @@ void Player::update_behavior() {
         entered_freefall = false;
     }
     
-    if(behavior.current_state->params.behavior_id == "suspended") {
+    if(behavior.current_state.params.behavior_id == "suspended") {
         if(grounded) {
             behavior.reset();
         }
@@ -481,7 +479,6 @@ void Player::update_behavior() {
     }
     update_direction();
     update_weapon_direction();
-    behavior.flip_left();
     
 }
 

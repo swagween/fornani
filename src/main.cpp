@@ -13,6 +13,7 @@
 #include "automa/StateManager.hpp"
 #include "utils/Grid.hpp"
 #include "utils/Shape.hpp"
+#include "utils/Clock.hpp"
 
 #include <imgui-SFML.h>
 #include <imgui.h>
@@ -109,23 +110,17 @@ static void show_overlay() {
 //                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 999);
 //                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
 //                    if(!svc::playerLocator.get().hurtbox.vertices.empty()) {
-//                        ImGui::Text("Player Hurtbox Pos: (%.1f,%.1f)", svc::playerLocator.get().hurtbox.vertices.at(0).x, svc::playerLocator.get().hurtbox.vertices.at(0).y);
-//                    }
+                    //                        ImGui::Text("Player Hurtbox Pos: (%.1f,%.1f)", svc::playerLocator.get().hurtbox.vertices.at(0).x, svc::playerLocator.get().hurtbox.vertices.at(0).y);
+                    //                    }
                     ImGui::Text("Player Behavior: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().behavior.current_state.get()) {
-                        ImGui::TextUnformatted(svc::playerLocator.get().behavior.current_state.get()->params.behavior_id.c_str());
-                    } else {
-                        ImGui::Text("nullptr");
-                    }
+                    ImGui::TextUnformatted(svc::playerLocator.get().behavior.current_state.params.behavior_id.c_str());
                     ImGui::Text("Behavior Restricted: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().behavior.current_state.get()) {
-                        if(svc::playerLocator.get().behavior.restricted()) {
-                            ImGui::TextUnformatted("Yes");
-                        } else {
-                            ImGui::TextUnformatted("No");
-                        }
+                    if(svc::playerLocator.get().behavior.restricted()) {
+                        ImGui::TextUnformatted("Yes");
+                    } else {
+                        ImGui::TextUnformatted("No");
                     }
                     ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
                     ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
@@ -146,7 +141,7 @@ static void show_overlay() {
 //                    if(svc::playerLocator.get().wall_slide_trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
 //                    ImGui::Text("Anim Frame: ");
 //                    ImGui::SameLine();
-                    ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.get()->params.lookup_value);
+                    ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.params.lookup_value);
 //                    ImGui::Text("Real Frame: ");
 //                    ImGui::SameLine();
 //                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
@@ -377,7 +372,7 @@ void run(char** argv) {
 //                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
 //                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
 //                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_LEDGE_01");
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_ARENA_01");
                     }
                     break;
                 default:

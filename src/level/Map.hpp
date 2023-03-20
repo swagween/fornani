@@ -17,6 +17,7 @@
 #include "../weapon/Projectile.hpp"
 #include "../setup/LookupTables.hpp"
 #include "../graphics/Background.hpp"
+#include "../entities/critter/Bestiary.hpp"
 
 const int NUM_LAYERS{8};
 const int CHUNK_SIZE{16};
@@ -76,7 +77,11 @@ public:
     //entities
     std::vector<arms::Projectile> active_projectiles{};
     std::vector<vfx::Emitter> active_emitters{};
+    std::vector<critter::Critter> critters{};
+    
     std::unique_ptr<bg::Background> background{};
+    
+    critter::Bestiary bestiary{};
     
     lookup::STYLE style{}; // which tileset to render
     int bg{}; // which background to render

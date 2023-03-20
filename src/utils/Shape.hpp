@@ -26,6 +26,7 @@ public:
     Shape();
     ~Shape() {};
     Shape(std::vector<Vec> verts, std::vector<Vec> edg);
+    Shape(Vec dim);
     
     void init();
     void update(double _x, double _y, double _w, double _h);

@@ -73,7 +73,7 @@ constexpr inline ProjectileStats blizzard_stats{     8 , 30, 20.0, 0.0, 1.0, 0.0
 constexpr inline ProjectileStats bismuth_stats{      8 , 24, 12.0, 0.2, 0.0, 0.0, false, true , 0};
 constexpr inline ProjectileStats underdog_stats{     6 , 42, 24.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats electron_stats{     9 , 33, 16.0, 0.0, 1.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats clover_stats{       4 , 44, 4.0 , 0.5, 0.0, 0.0, false, false, 4};
+constexpr inline ProjectileStats clover_stats{       4 , 44, 7.0 , 0.5, 0.0, 0.0, false, false, 4};
 constexpr inline ProjectileStats triton_stats{       10, 36, 4.0 , 0.0, 0.0, 0.0, true , false, 0};
 constexpr inline ProjectileStats willet_585_stats{   9 , 24, 24.0, 0.0, 0.0, 3.0, false, false, 0};
 constexpr inline ProjectileStats quasar_stats{       16, 36, 8.0 , 0.0, 0.0, 0.0, false, true , 0};
