@@ -299,7 +299,7 @@ void Map::manage_projectiles() {
         for (std::vector<arms::Projectile>::iterator it = active_projectiles.begin(); it != active_projectiles.end();)
         {
             if(it->stats.lifespan < 0) {
-                active_projectiles.erase(it);
+                it = active_projectiles.erase(it);
             } else {
                 ++it;
             }
@@ -310,7 +310,7 @@ void Map::manage_projectiles() {
         for (std::vector<vfx::Emitter>::iterator it = active_emitters.begin(); it != active_emitters.end();)
         {
             if(it->get_particles().empty()) {
-                active_emitters.erase(it);
+                it = active_emitters.erase(it);
             } else {
                 ++it;
             }
