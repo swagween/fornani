@@ -132,9 +132,9 @@ public:
 //        svc::assetLocator.get().abandoned.play();
 //        svc::assetLocator.get().abandoned.setLoop(true);
         
-//        svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
-//        svc::assetLocator.get().three_pipes.play();
-//        svc::assetLocator.get().three_pipes.setLoop(true);
+        svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
+        svc::assetLocator.get().three_pipes.play();
+        svc::assetLocator.get().three_pipes.setLoop(true);
         
 //        svc::assetLocator.get().brown_noise.setVolume(20);
 //        svc::assetLocator.get().brown_noise.play();

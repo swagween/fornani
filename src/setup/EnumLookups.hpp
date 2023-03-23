@@ -15,6 +15,21 @@ namespace lookup {
 
 inline const int NUM_STYLES{20};
 
+enum class CONTROLS {
+    JUMP,
+    SHOOT,
+    DASH,
+    MOVE_LEFT,
+	MOVE_RIGHT,
+	LOOK_UP,
+	LOOK_DOWN,
+    ARMS_SWITCH_LEFT,
+    ARMS_SWITCH_RIGHT,
+    INSPECT,
+    SELECT,
+    PAUSE
+};
+
 enum class STYLE {
     FIRSTWIND,
     OVERTURNED,
@@ -152,6 +167,23 @@ inline std::unordered_map<char, int> get_character {
     {'9', 34},
     {'0', 35},
     {'\'', 36}
+};
+
+
+inline std::unordered_map<CONTROLS, sf::Keyboard::Key> controls_mapping {
+    {CONTROLS::JUMP, sf::Keyboard::Z},
+    {CONTROLS::SHOOT, sf::Keyboard::X},
+      {CONTROLS::DASH, sf::Keyboard::C},
+	{CONTROLS::MOVE_LEFT, sf::Keyboard::C},
+	{CONTROLS::MOVE_RIGHT, sf::Keyboard::C},
+	{CONTROLS::LOOK_UP, sf::Keyboard::C},
+	{CONTROLS::LOOK_DOWN, sf::Keyboard::C},
+      {CONTROLS::ARMS_SWITCH_LEFT, sf::Keyboard::C},
+	  {CONTROLS::ARMS_SWITCH_RIGHT, sf::Keyboard::C},
+	{CONTROLS::INSPECT, sf::Keyboard::C},
+	{CONTROLS::SELECT, sf::Keyboard::C},
+    {CONTROLS::PAUSE, sf::Keyboard::C}
+
 };
 
 }

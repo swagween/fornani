@@ -74,6 +74,10 @@ public:
     
     void set_size(uint32_t sz);
     void set_type(EMMITER_TYPE t);
+
+    bool empty() {
+        return particles.empty();
+    }
     
     void set_position(float x, float y) {
         physics.position.x = x;
@@ -109,7 +113,7 @@ public:
     void set_lifespan(int l) { stats.lifespan = l; }
     void set_direction(components::DIRECTION d) { physics.dir = d; }
     
-    std::vector<Particle>& get_particles() {
+    std::vector<Particle>& const get_particles() {
         return particles;
     }
     
@@ -117,9 +121,6 @@ public:
     int num_particles () { return (int)particles.size(); }
     
     sf::Color color{};
-    
-    
-private:
     
     std::vector<Particle> particles{};
     ElementBehavior behavior{};

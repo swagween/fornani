@@ -295,27 +295,8 @@ void Map::manage_projectiles() {
         spray.update();
     }
     
-    if(!active_projectiles.empty()) {
-        for (std::vector<arms::Projectile>::iterator it = active_projectiles.begin(); it != active_projectiles.end();)
-        {
-            if(it->stats.lifespan < 0) {
-                it = active_projectiles.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    }
-    
-    if(!active_emitters.empty()) {
-        for (std::vector<vfx::Emitter>::iterator it = active_emitters.begin(); it != active_emitters.end();)
-        {
-            if(it->get_particles().empty()) {
-                it = active_emitters.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    }
+    std::erase_if(active_projectiles,   [](auto const& p) { return p.stats.lifespan < 0;    });
+    std::erase_if(active_emitters, [](auto const& p) { return p.particles.empty();          });
     
     if(svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
         spawn_projectile_at(svc::playerLocator.get().get_fire_point());
