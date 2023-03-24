@@ -19,6 +19,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	utils/Grid.cpp
 	utils/Shape.hpp
 	utils/Shape.cpp
+	utils/Collider.hpp
+	utils/Collider.cpp
 	utils/Camera.hpp
 	utils/StateMachine.hpp
 	utils/AdjacencyList.hpp

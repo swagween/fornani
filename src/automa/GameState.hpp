@@ -173,58 +173,40 @@ public:
         map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         
         if(show_colliders) {
-            sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().collider.jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape jbx{};
             jbx.setPosition(jumpbox_pos.x, jumpbox_pos.y);
             jbx.setFillColor(sf::Color::Transparent);
             jbx.setOutlineColor(sf::Color(235, 232, 249, 80));
             jbx.setOutlineThickness(-1);
-            jbx.setSize({(float)svc::playerLocator.get().jumpbox.shape_w, (float)svc::playerLocator.get().jumpbox.shape_h});
+            jbx.setSize({(float)svc::playerLocator.get().collider.jumpbox.shape_w, (float)svc::playerLocator.get().collider.jumpbox.shape_h});
             win.draw(jbx);
             
-            sf::Vector2<float> leftbox_pos = sf::operator-(svc::playerLocator.get().left_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::Vector2<float> leftbox_pos = sf::operator-(svc::playerLocator.get().collider.left_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape leftbox{};
             leftbox.setPosition(leftbox_pos.x, leftbox_pos.y);
             leftbox.setFillColor(sf::Color::Transparent);
             leftbox.setOutlineColor(sf::Color(235, 232, 249, 80));
             leftbox.setOutlineThickness(-1);
-            leftbox.setSize({(float)svc::playerLocator.get().left_detector.shape_w, (float)svc::playerLocator.get().left_detector.shape_h});
+            leftbox.setSize({(float)svc::playerLocator.get().collider.left_detector.shape_w, (float)svc::playerLocator.get().collider.left_detector.shape_h});
             win.draw(leftbox);
             
-            sf::Vector2<float> rightbox_pos = sf::operator-(svc::playerLocator.get().right_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::Vector2<float> rightbox_pos = sf::operator-(svc::playerLocator.get().collider.right_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape rightbox{};
             rightbox.setPosition(rightbox_pos.x, rightbox_pos.y);
             rightbox.setFillColor(sf::Color::Transparent);
             rightbox.setOutlineColor(sf::Color(235, 232, 249, 80));
             rightbox.setOutlineThickness(-1);
-            rightbox.setSize({(float)svc::playerLocator.get().right_detector.shape_w, (float)svc::playerLocator.get().right_detector.shape_h});
+            rightbox.setSize({(float)svc::playerLocator.get().collider.right_detector.shape_w, (float)svc::playerLocator.get().collider.right_detector.shape_h});
             win.draw(rightbox);
             
-            sf::Vector2<float> wallbox_pos = sf::operator-(svc::playerLocator.get().wall_slide_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
-            sf::RectangleShape wallbox{};
-            wallbox.setPosition(wallbox_pos.x, wallbox_pos.y);
-            wallbox.setFillColor(sf::Color::Transparent);
-            wallbox.setOutlineColor(sf::Color(23, 232, 249, 80));
-            wallbox.setOutlineThickness(-1);
-            wallbox.setSize({(float)svc::playerLocator.get().wall_slide_detector.shape_w, (float)svc::playerLocator.get().wall_slide_detector.shape_h});
-            win.draw(wallbox);
-            
-            sf::Vector2<float> predictive_hurtbox_pos = sf::operator-(svc::playerLocator.get().predictive_hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
-            sf::RectangleShape predictive_hbx{};
-            predictive_hbx.setPosition(predictive_hurtbox_pos.x, predictive_hurtbox_pos.y);
-            predictive_hbx.setFillColor(sf::Color::Transparent);
-            predictive_hbx.setOutlineColor(flcolor::fucshia);
-            predictive_hbx.setOutlineThickness(-1);
-            predictive_hbx.setSize({(float)svc::playerLocator.get().predictive_hurtbox.shape_w, (float)svc::playerLocator.get().predictive_hurtbox.shape_h});
-            win.draw(predictive_hbx);
-            
-            sf::Vector2<float> hurtbox_pos = sf::operator-(svc::playerLocator.get().hurtbox.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::Vector2<float> hbx_pos = sf::operator-(svc::playerLocator.get().collider.bounding_box.vertices.at(0), svc::cameraLocator.get().physics.position);
             sf::RectangleShape hbx{};
-            hbx.setPosition(hurtbox_pos.x, hurtbox_pos.y);
+            hbx.setPosition(hbx_pos.x, hbx_pos.y);
             hbx.setFillColor(sf::Color::Transparent);
             hbx.setOutlineColor(flcolor::white);
             hbx.setOutlineThickness(-1);
-            hbx.setSize({(float)svc::playerLocator.get().hurtbox.shape_w, (float)svc::playerLocator.get().hurtbox.shape_h});
+            hbx.setSize({(float)svc::playerLocator.get().collider.bounding_box.shape_w, (float)svc::playerLocator.get().collider.bounding_box.shape_h});
             win.draw(hbx);
         }
         

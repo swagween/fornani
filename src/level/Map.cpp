@@ -79,24 +79,39 @@ void Map::load(const std::string& path) {
 
 void Map::update() {
     background->update();
-    svc::playerLocator.get().is_any_jump_colllision = false;
-    svc::playerLocator.get().is_any_colllision = false;
-    svc::playerLocator.get().left_aabb_counter = 0;
-    svc::playerLocator.get().right_aabb_counter = 0;
+    svc::playerLocator.get().collider.is_any_jump_colllision = false;
+    svc::playerLocator.get().collider.is_any_colllision = false;
+    svc::playerLocator.get().collider.left_aabb_counter = 0;
+    svc::playerLocator.get().collider.right_aabb_counter = 0;
     
     manage_projectiles();
     auto barrier = 3.0f;
     //someday, I will have a for(auto& entity : entities) loop and the player will be included in that
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         cell.collision_check = false;
-        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().hurtbox.shape_x) > PLAYER_WIDTH*barrier ||
-           abs(cell.bounding_box.shape_y - svc::playerLocator.get().hurtbox.shape_y) > PLAYER_HEIGHT*barrier) {
+        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().collider.bounding_box.shape_x) > PLAYER_WIDTH*barrier ||
+           abs(cell.bounding_box.shape_y - svc::playerLocator.get().collider.bounding_box.shape_y) > PLAYER_HEIGHT*barrier) {
             continue;
         } else {
             cell.collision_check = true;
             
             if(cell.value > 0) {
-                svc::playerLocator.get().handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
+                svc::playerLocator.get().collider.handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
+            }
+        }
+    }
+
+    for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+        for (auto& critter : critters) {
+            if (abs(cell.bounding_box.shape_x - critter.collider.bounding_box.shape_x) > critter.dimensions.x * barrier ||
+                abs(cell.bounding_box.shape_y - critter.collider.bounding_box.shape_y) > critter.dimensions.y * barrier) {
+                continue;
+            }
+            else {
+                cell.collision_check = true;
+                if (cell.value > 0) {
+                    critter.collider.handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
+                }
             }
         }
     }
@@ -138,27 +153,13 @@ void Map::update() {
         }
     }
     
-    for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-        for(auto& critter : critters) {
-            if(abs(cell.bounding_box.shape_x - critter.bounding_box.shape_x) > critter.dimensions.x * barrier ||
-               abs(cell.bounding_box.shape_y - critter.bounding_box.shape_y) > critter.dimensions.y * barrier) {
-                continue;
-            } else {
-                cell.collision_check = true;
-                if(critter.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
-                    critter.handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
-                }
-            }
-        }
-    }
-    
     for(auto& critter : critters) {
 //        critter.random_walk(sf::Vector2<int>(120, 180));
-        critter.current_target = svc::playerLocator.get().physics.position;
+        critter.current_target = svc::playerLocator.get().collider.physics.position;
         critter.seek_current_target();
         critter.update();
         
-        critter.behavior.facing_lr = (svc::playerLocator.get().physics.position.x < critter.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
+        critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
         critter.random_idle_action();
         while(!critter.idle_action_queue.empty()) {
             critter.behavior.bark();
@@ -167,21 +168,21 @@ void Map::update() {
         
     }
     //update player flags
-    if(svc::playerLocator.get().left_aabb_counter == 0) {
-        svc::playerLocator.get().has_left_collision = false;
+    if(svc::playerLocator.get().collider.left_aabb_counter == 0) {
+        svc::playerLocator.get().collider.has_left_collision = false;
     }
-    if(svc::playerLocator.get().right_aabb_counter == 0) {
-        svc::playerLocator.get().has_right_collision = false;
+    if(svc::playerLocator.get().collider.right_aabb_counter == 0) {
+        svc::playerLocator.get().collider.has_right_collision = false;
     }
-    if(svc::playerLocator.get().is_any_jump_colllision) {
+    if(svc::playerLocator.get().collider.is_any_jump_colllision) {
         svc::playerLocator.get().grounded = true;
     } else {
         svc::playerLocator.get().grounded = false;
     }
-    if(svc::playerLocator.get().is_any_colllision) {
-        svc::playerLocator.get().is_colliding_with_level = true;
+    if(svc::playerLocator.get().collider.is_any_colllision) {
+        svc::playerLocator.get().collider.is_colliding_with_level = true;
     } else {
-        svc::playerLocator.get().is_colliding_with_level = false;
+        svc::playerLocator.get().collider.is_colliding_with_level = false;
     }
     
 }
@@ -267,9 +268,9 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
         active_projectiles.back().update();
         
         active_emitters.push_back(svc::playerLocator.get().loadout.get_equipped_weapon().spray);
-        active_emitters.back().get_physics().acceleration = svc::playerLocator.get().physics.acceleration;
+        active_emitters.back().get_physics().acceleration = svc::playerLocator.get().collider.physics.acceleration;
         active_emitters.back().set_position(pos.x, pos.y);
-        active_emitters.back().set_direction(svc::playerLocator.get().physics.dir);
+        active_emitters.back().set_direction(svc::playerLocator.get().collider.physics.dir);
         active_emitters.back().update();
         
         //temp, I should do this somewhere else

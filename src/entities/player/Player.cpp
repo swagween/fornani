@@ -11,48 +11,11 @@
 
 Player::Player() {
     
-    physics = components::PhysicsComponent({stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC}, stats.PLAYER_MASS);
-    anchor_point = {physics.position.x + PLAYER_WIDTH/2, physics.position.y + PLAYER_HEIGHT/2};
+    collider = shape::Collider();
+    collider.physics = components::PhysicsComponent({ stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC }, stats.PLAYER_MASS);
+    anchor_point = { collider.physics.position.x + PLAYER_WIDTH/2, collider.physics.position.y + PLAYER_HEIGHT/2};
     behavior.current_state = behavior::Behavior(behavior::idle);
     behavior.facing_lr = behavior::DIR_LR::RIGHT;
-    
-    hurtbox.init();
-    predictive_hurtbox.init();
-    jumpbox.init();
-    
-    hurtbox.vertices[0] = sf::Vector2<float>(PLAYER_START_X,  PLAYER_START_Y);
-    hurtbox.vertices[1] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH, PLAYER_START_Y);
-    hurtbox.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH, PLAYER_START_Y + PLAYER_HEIGHT);
-    hurtbox.vertices[3] = sf::Vector2<float>(PLAYER_START_X,  PLAYER_START_Y + PLAYER_HEIGHT);
-    
-    predictive_hurtbox.vertices[0] = sf::Vector2<float>(PLAYER_START_X,  PLAYER_START_Y);
-    predictive_hurtbox.vertices[1] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH, PLAYER_START_Y);
-    predictive_hurtbox.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH, PLAYER_START_Y + PLAYER_HEIGHT);
-    predictive_hurtbox.vertices[3] = sf::Vector2<float>(PLAYER_START_X,  PLAYER_START_Y + PLAYER_HEIGHT);
-    
-    jumpbox.vertices[0] = sf::Vector2<float>(PLAYER_START_X,  PLAYER_START_Y + PLAYER_HEIGHT - JUMPBOX_HEIGHT);
-    jumpbox.vertices[1] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH, PLAYER_START_Y + PLAYER_HEIGHT - JUMPBOX_HEIGHT);
-    jumpbox.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH, PLAYER_START_Y + PLAYER_HEIGHT + JUMPBOX_HEIGHT);
-    jumpbox.vertices[3] = sf::Vector2<float>(PLAYER_START_X,  PLAYER_START_Y + PLAYER_HEIGHT + JUMPBOX_HEIGHT);
-    
-    
-    left_detector.left_offset = DETECTOR_WIDTH - 0.0001;
-    right_detector.right_offset = DETECTOR_WIDTH - 0.0001;
-    
-    left_detector.vertices[0] = sf::Vector2<float>(PLAYER_START_X - DETECTOR_WIDTH,  PLAYER_START_Y + DETECTOR_BUFFER);
-    left_detector.vertices[1] = sf::Vector2<float>(PLAYER_START_X, PLAYER_START_Y + DETECTOR_BUFFER);
-    left_detector.vertices[2] = sf::Vector2<float>(PLAYER_START_X, PLAYER_START_Y + DETECTOR_HEIGHT);
-    left_detector.vertices[3] = sf::Vector2<float>(PLAYER_START_X + left_detector.left_offset - DETECTOR_WIDTH,  PLAYER_START_Y + DETECTOR_HEIGHT);
-    
-    right_detector.vertices[0] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH,  PLAYER_START_Y + DETECTOR_BUFFER);
-    right_detector.vertices[1] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH, PLAYER_START_Y + DETECTOR_BUFFER);
-    right_detector.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH - right_detector.right_offset, PLAYER_START_Y + DETECTOR_HEIGHT);
-    right_detector.vertices[3] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH,  PLAYER_START_Y + DETECTOR_HEIGHT);
-    
-    wall_slide_detector.vertices[0] = sf::Vector2<float>(PLAYER_START_X - DETECTOR_WIDTH,  PLAYER_START_Y + DETECTOR_BUFFER + WALL_SLIDE_DETECTOR_OFFSET);
-    wall_slide_detector.vertices[1] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH, PLAYER_START_Y + DETECTOR_BUFFER + WALL_SLIDE_DETECTOR_OFFSET);
-    wall_slide_detector.vertices[2] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH + DETECTOR_WIDTH - right_detector.right_offset, PLAYER_START_Y + DETECTOR_HEIGHT/4);
-    wall_slide_detector.vertices[3] = sf::Vector2<float>(PLAYER_START_X + PLAYER_WIDTH,  PLAYER_START_Y + DETECTOR_HEIGHT/4);
     
     weapons_hotbar = {
         arms::WEAPON_TYPE::BRYNS_GUN,
@@ -81,7 +44,7 @@ void Player::handle_events(sf::Event& event) {
                 }
             } else {
                 if(!is_wall_sliding) {
-                    behavior.air(physics.velocity.y);
+                    behavior.air(collider.physics.velocity.y);
                 }
             }
             behavior.facing = behavior::DIR::LEFT;
@@ -98,7 +61,7 @@ void Player::handle_events(sf::Event& event) {
                 }
             } else {
                 if(!is_wall_sliding) {
-                    behavior.air(physics.velocity.y);
+                    behavior.air(collider.physics.velocity.y);
                 }
             }
             behavior.facing = behavior::DIR::RIGHT;
@@ -114,8 +77,8 @@ void Player::handle_events(sf::Event& event) {
     if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == sf::Keyboard::Left) {
             move_left = false;
-            has_left_collision = false;
-            if(!has_right_collision) {
+            collider.has_left_collision = false;
+            if(!collider.has_right_collision) {
                 is_wall_sliding = false;
             }
             stopping = true;
@@ -127,15 +90,15 @@ void Player::handle_events(sf::Event& event) {
                 }
             } else {
                 if(!behavior.restricted() && !is_wall_sliding) {
-                    behavior.air(physics.velocity.y);
+                    behavior.air(collider.physics.velocity.y);
                 }
             }
             if(move_right) { behavior.facing_lr = behavior::DIR_LR::RIGHT; }
         }
         if (event.key.code == sf::Keyboard::Right) {
             move_right = false;
-            has_right_collision = false;
-            if(!has_left_collision) {
+            collider.has_right_collision = false;
+            if(!collider.has_left_collision) {
                 is_wall_sliding = false;
             }
             stopping = true;
@@ -147,7 +110,7 @@ void Player::handle_events(sf::Event& event) {
                 }
             } else {
                 if(!behavior.restricted() && !is_wall_sliding) {
-                    behavior.air(physics.velocity.y);
+                    behavior.air(collider.physics.velocity.y);
                 }
             }
             if(move_left) { behavior.facing_lr = behavior::DIR_LR::LEFT; }
@@ -212,7 +175,7 @@ void Player::update(Time dt) {
     update_animation();
     //check if player requested jump
     if(grounded && jump_request > -1) {
-        physics.velocity.y = 0.0f;
+        collider.physics.velocity.y = 0.0f;
         if(!behavior.restricted()) {
             jump_height_counter = 0;
         }
@@ -227,62 +190,62 @@ void Player::update(Time dt) {
     
     //check keystate
     if(!behavior.restricted()) {
-        if(move_left && !has_left_collision) {
+        if(move_left && !collider.has_left_collision) {
             if(grounded) {
-                physics.acceleration.x = -stats.X_ACC;
+                collider.physics.acceleration.x = -stats.X_ACC;
             } else {
-                physics.acceleration.x = -stats.X_ACC/stats.AIR_MULTIPLIER;
+                collider.physics.acceleration.x = -stats.X_ACC/stats.AIR_MULTIPLIER;
             }
         }
-        if(move_right && !has_right_collision) {
+        if(move_right && !collider.has_right_collision) {
             if(grounded) {
-                physics.acceleration.x = stats.X_ACC;
+                collider.physics.acceleration.x = stats.X_ACC;
             } else {
-                physics.acceleration.x = stats.X_ACC/stats.AIR_MULTIPLIER;
+                collider.physics.acceleration.x = stats.X_ACC/stats.AIR_MULTIPLIER;
             }
         }
-        if((move_left || move_right) && grounded && abs(physics.velocity.x) > stats.PLAYER_MAX_XVEL) {
+        if((move_left || move_right) && grounded && abs(collider.physics.velocity.x) > stats.PLAYER_MAX_XVEL) {
                 soundboard_flags.step = true;
         }
     }
     
     //zero the player's horizontal acceleration if movement was not requested
     if((!move_left && !move_right)) {
-        physics.acceleration.x = 0.0f;
+        collider.physics.acceleration.x = 0.0f;
     }
     
     //gravity and stats corrections
-    if(!grounded && physics.velocity.y < stats.TERMINAL_VELOCITY) {
-        physics.acceleration.y += stats.PLAYER_GRAV;
+    if(!grounded && collider.physics.velocity.y < stats.TERMINAL_VELOCITY) {
+        collider.physics.acceleration.y += stats.PLAYER_GRAV;
     }
     
     //weapon physics
     if(weapon_fired) {
         if(behavior.facing == behavior::DIR::LEFT) {
-            if(!has_right_collision) {
-                physics.apply_force({loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
+            if(!collider.has_right_collision) {
+                collider.physics.apply_force({loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
             }
         }
         if(behavior.facing == behavior::DIR::RIGHT) {
-            if(!has_left_collision) {
-                physics.apply_force({-loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
+            if(!collider.has_left_collision) {
+                collider.physics.apply_force({-loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
             }
         }
     }
     
     //impose physics limitations
     if(!behavior.restricted()) {
-        if(physics.velocity.x > stats.PLAYER_MAX_XVEL) {
-            physics.velocity.x = stats.PLAYER_MAX_XVEL;
+        if(collider.physics.velocity.x > stats.PLAYER_MAX_XVEL) {
+            collider.physics.velocity.x = stats.PLAYER_MAX_XVEL;
         }
-        if(physics.velocity.x < -stats.PLAYER_MAX_XVEL) {
-            physics.velocity.x = -stats.PLAYER_MAX_XVEL;
+        if(collider.physics.velocity.x < -stats.PLAYER_MAX_XVEL) {
+            collider.physics.velocity.x = -stats.PLAYER_MAX_XVEL;
         }
-        if(physics.velocity.y > stats.PLAYER_MAX_YVEL) {
-            physics.velocity.y = stats.PLAYER_MAX_YVEL;
+        if(collider.physics.velocity.y > stats.PLAYER_MAX_YVEL) {
+            collider.physics.velocity.y = stats.PLAYER_MAX_YVEL;
         }
-        if(physics.velocity.y < -stats.PLAYER_MAX_YVEL) {
-            physics.velocity.y = -stats.PLAYER_MAX_YVEL;
+        if(collider.physics.velocity.y < -stats.PLAYER_MAX_YVEL) {
+            collider.physics.velocity.y = -stats.PLAYER_MAX_YVEL;
         }
     }
     
@@ -295,7 +258,7 @@ void Player::update(Time dt) {
     //now jump after all the y corrections
     if(jump_height_counter < stats.JUMP_TIME && (is_jump_pressed && jump_hold)) {
         if(!behavior.restricted()) {
-            physics.acceleration.y = -stats.JUMP_MAX;
+            collider.physics.acceleration.y = -stats.JUMP_MAX;
             ++jump_height_counter;
             can_jump = false;
             jump_trigger = false;
@@ -308,7 +271,7 @@ void Player::update(Time dt) {
             jump_request--;
             //still jump for quick presses
             if(grounded) {
-                physics.acceleration.y = -stats.JUMP_MAX;
+                collider.physics.acceleration.y = -stats.JUMP_MAX;
                 ++jump_height_counter;
                 can_jump = false;
                 jump_trigger = false;
@@ -320,28 +283,28 @@ void Player::update(Time dt) {
     }
     
     if(move_left && move_right) {
-        physics.acceleration.x = 0.0f;
+        collider.physics.acceleration.x = 0.0f;
     }
     
-    physics.update_euler(dt);
+    collider.physics.update_euler(dt);
     
     
-    sync_components();
+    collider.sync_components();
     
     //for parameter tweaking, remove later
     if(grounded) {
-        physics.friction = {stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC};
+        collider.physics.friction = {stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC};
     } else {
-        physics.friction = {stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC};
+        collider.physics.friction = {stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC};
     }
-    if(!is_colliding_with_level) {
-        physics.mtv = {0.0f, 0.0f};
+    if(!collider.is_colliding_with_level) {
+        collider.physics.mtv = {0.0f, 0.0f};
     }
-    just_collided = false;
+    collider.just_collided = false;
     
     update_behavior();
-    apparent_position.x = physics.position.x - (48 - PLAYER_WIDTH)/2 + NANI_SPRITE_WIDTH/2;
-    apparent_position.y = physics.position.y - (48 - PLAYER_HEIGHT) + NANI_SPRITE_WIDTH/2;
+    apparent_position.x = collider.physics.position.x - (48 - PLAYER_WIDTH)/2 + NANI_SPRITE_WIDTH/2;
+    apparent_position.y = collider.physics.position.y - (48 - PLAYER_HEIGHT) + NANI_SPRITE_WIDTH/2;
     play_sounds();
 }
 
@@ -378,22 +341,6 @@ void Player::update_animation() {
     behavior.current_state.update();
 }
 
-void Player::sync_components() {
-    hurtbox.update(physics.position.x, physics.position.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-    predictive_hurtbox.update(physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-    jumpbox.update(physics.position.x, physics.position.y + PLAYER_HEIGHT, PLAYER_WIDTH, JUMPBOX_HEIGHT);
-    left_detector.update(physics.position.x - DETECTOR_WIDTH, physics.position.y + DETECTOR_BUFFER, DETECTOR_WIDTH, DETECTOR_HEIGHT);
-    right_detector.update(physics.position.x + PLAYER_WIDTH, physics.position.y + DETECTOR_BUFFER, DETECTOR_WIDTH, DETECTOR_HEIGHT);
-    wall_slide_detector.update(physics.position.x - DETECTOR_WIDTH, physics.position.y + DETECTOR_BUFFER + WALL_SLIDE_DETECTOR_OFFSET, PLAYER_WIDTH + DETECTOR_WIDTH*2, DETECTOR_HEIGHT/4);
-    if(behavior.facing_left()) {
-        anchor_point = {physics.position.x + PLAYER_WIDTH/2 - ANCHOR_BUFFER, physics.position.y + PLAYER_HEIGHT/2};
-    } else if(behavior.facing_right()) {
-        anchor_point = {physics.position.x + PLAYER_WIDTH/2 + ANCHOR_BUFFER, physics.position.y + PLAYER_HEIGHT/2};
-    } else {
-        anchor_point = {physics.position.x + PLAYER_WIDTH/2, physics.position.y + PLAYER_HEIGHT/2};
-    }
-}
-
 void Player::update_behavior() {
     
 //    if(wall_slide_trigger) {
@@ -405,7 +352,7 @@ void Player::update_behavior() {
     
     
     if(just_jumped && !is_wall_sliding) {
-        behavior.air(physics.velocity.y);
+        behavior.air(collider.physics.velocity.y);
         just_jumped = false;
     }
     
@@ -415,7 +362,7 @@ void Player::update_behavior() {
             behavior.reset();
             
         } else {
-            behavior.air(physics.velocity.y);
+            behavior.air(collider.physics.velocity.y);
         }
     }
     
@@ -423,11 +370,11 @@ void Player::update_behavior() {
         if(grounded) {
             behavior.run();
         } else {
-            behavior.air(physics.velocity.y);
+            behavior.air(collider.physics.velocity.y);
         }
     }
     
-    if(physics.velocity.y > behavior.suspension_threshold && !freefalling) {
+    if(collider.physics.velocity.y > behavior.suspension_threshold && !freefalling) {
         entered_freefall = true;
     }
     if(entered_freefall && !freefalling && !is_wall_sliding) {
@@ -443,7 +390,7 @@ void Player::update_behavior() {
     }
     
     
-    if(just_landed) {
+    if(collider.just_landed) {
         behavior.land();
         soundboard_flags.land = true;
         freefalling = false;
@@ -457,7 +404,7 @@ void Player::update_behavior() {
     if(weapon_fired) { start_cooldown = true; }
     
     stopping = false;
-    just_landed = false;
+    collider.just_landed = false;
     left_released = false;
     right_released = false;
     wall_slide_trigger = false;
@@ -474,7 +421,7 @@ void Player::update_behavior() {
         }
     }
     
-    if(grounded || (!has_left_collision && !has_right_collision) || abs(physics.velocity.x) > 0.001f) {
+    if(grounded || (!collider.has_left_collision && !collider.has_right_collision) || abs(collider.physics.velocity.x) > 0.001f) {
         is_wall_sliding = false;
     }
     update_direction();
@@ -483,8 +430,8 @@ void Player::update_behavior() {
 }
 
 void Player::set_position(sf::Vector2<float> new_pos) {
-    physics.position = new_pos;
-    sync_components();
+    collider.physics.position = new_pos;
+    collider.sync_components();
 }
 
 void Player::update_direction() {
@@ -521,17 +468,26 @@ void Player::update_direction() {
             behavior.facing = behavior::DIR::DOWN_RIGHT;
         }
     }
+    if (behavior.facing_left()) {
+        anchor_point = { collider.physics.position.x + collider.bounding_box.shape_w / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.shape_h / 2 };
+    }
+    else if (behavior.facing_right()) {
+        anchor_point = { collider.physics.position.x + collider.bounding_box.shape_w / 2 + ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.shape_h / 2 };
+    }
+    else {
+        anchor_point = { collider.physics.position.x + collider.bounding_box.shape_w / 2, collider.physics.position.y + collider.bounding_box.shape_h / 2 };
+    }
 }
 
 void Player::update_weapon_direction() {
     switch(behavior.facing_lr) {
         case behavior::DIR_LR::LEFT:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::LEFT;
-            physics.dir = components::DIRECTION::LEFT;
+            collider.physics.dir = components::DIRECTION::LEFT;
             break;
         case behavior::DIR_LR::RIGHT:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::RIGHT;
-            physics.dir = components::DIRECTION::RIGHT;
+            collider.physics.dir = components::DIRECTION::RIGHT;
             break;
     }
     switch(behavior.facing) {
@@ -543,27 +499,27 @@ void Player::update_weapon_direction() {
             break;
         case behavior::DIR::UP:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
-            physics.dir = components::DIRECTION::UP;
+            collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::DOWN:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_LEFT;
-            physics.dir = components::DIRECTION::DOWN;
+            collider.physics.dir = components::DIRECTION::DOWN;
             break;
         case behavior::DIR::UP_RIGHT:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_RIGHT;
-            physics.dir = components::DIRECTION::UP;
+            collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::UP_LEFT:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
-            physics.dir = components::DIRECTION::UP;
+            collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::DOWN_RIGHT:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_RIGHT;
-            physics.dir = components::DIRECTION::DOWN;
+            collider.physics.dir = components::DIRECTION::DOWN;
             break;
         case behavior::DIR::DOWN_LEFT:
             loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_LEFT;
-            physics.dir = components::DIRECTION::DOWN;
+            collider.physics.dir = components::DIRECTION::DOWN;
             break;
     }
     loadout.get_equipped_weapon().set_orientation();
@@ -571,75 +527,6 @@ void Player::update_weapon_direction() {
         hand_position = {28, 36};
     } else {
         hand_position = {20, 36};
-    }
-}
-
-void Player::handle_map_collision(const Shape &cell, bool is_ramp) {
-    if(left_detector.SAT(cell) && physics.velocity.x < 0.01f && !is_ramp) {
-        has_left_collision = true;
-        physics.acceleration.x = 0.0f;
-        physics.velocity.x = 0.0f;
-        left_aabb_counter++;
-        if(!grounded && physics.velocity.y > stats.WALL_SLIDE_THRESHOLD && move_left && !is_wall_sliding) {
-            wall_slide_trigger = true;
-        }
-    }
-    if(right_detector.SAT(cell) && physics.velocity.x > -0.01f && !is_ramp) {
-        has_right_collision = true;
-        physics.acceleration.x = 0.0f;
-        physics.velocity.x = 0.0f;
-        right_aabb_counter++;
-        if(!grounded && physics.velocity.y > stats.WALL_SLIDE_THRESHOLD && move_right && !is_wall_sliding) {
-            wall_slide_trigger = true;
-        }
-    }
-    
-    if(wall_slide_trigger && !wall_slide_detector.SAT(cell)) { release_wallslide = true; }
-    
-    if(predictive_hurtbox.SAT(cell)) {
-        is_any_colllision = true;
-        //set mtv
-        physics.mtv = predictive_hurtbox.testCollisionGetMTV(predictive_hurtbox, cell);
-        
-        
-        if(physics.velocity.y > 3.0f) {
-            physics.mtv.x = 0.0f;
-        }
-        //here, we can do MTV again with the player's predicted position based on velocity
-        if(physics.velocity.y > -0.01f) {
-            if(physics.velocity.y > stats.LANDED_THRESHOLD) {
-                just_landed = true;
-            }
-            float ydist = predictive_hurtbox.shape_y - physics.position.y;
-            float correction = ydist + physics.mtv.y;
-            physics.position.y += correction;
-            physics.velocity.y = 0.0f;
-            physics.acceleration.y = 0.0f;
-        }
-        //player hits the ceiling
-        if(physics.velocity.y < -0.01f) {
-            float ydist = physics.position.y - predictive_hurtbox.shape_y;
-            float correction = ydist + physics.mtv.y;
-            physics.position.y += correction;
-            physics.acceleration.y = 0.0f;
-            physics.velocity.y *= -0.5;
-            jump_hold = false;
-        }
-        
-        //only for landing
-        if(physics.velocity.y > 0.0f && !has_left_collision && !has_right_collision) {
-            physics.acceleration.y = 0.0f;
-            physics.velocity.y = 0.0f;
-        }
-        sync_components();
-        
-        physics.mtv = {0.0f, 0.0f};
-        just_collided = true;
-        is_colliding_with_level = true;
-        
-    }
-    if(jumpbox.SAT(cell)) {
-        is_any_jump_colllision = true;
     }
 }
 

@@ -15,7 +15,7 @@
 #include "../../setup/ServiceLocator.hpp"
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
-#include "../../utils/Shape.hpp"
+#include "../../utils/Collider.hpp"
 
 namespace critter {
 
@@ -56,15 +56,14 @@ class Critter {
 public:
     Critter() = default;
     Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim) : metadata(m), stats(s), sprite_dimensions(sprite_dim), spritesheet_dimensions(spritesheet_dim), dimensions(dim) {
-        bounding_box = Shape{dim};
+        collider = shape::Collider(); 
         set_sprite();
-        physics = components::PhysicsComponent(sf::Vector2<float>{0.6f, 0.98f}, 1.0f);
+        collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.6f, 0.98f}, 1.0f);
     }
     ~Critter() {}
     
     void update();
     void render(sf::RenderWindow& win, sf::Vector2<float> campos);
-    void handle_map_collision(const Shape& cell, bool is_ramp);
     void set_sprite();
     void set_position(sf::Vector2<int> pos);
     void seek_current_target();
@@ -88,9 +87,7 @@ public:
     CritterFlags flags{};
     
     components::CritterBehaviorComponent behavior{};
-    components::PhysicsComponent physics{};
-    
-    Shape bounding_box{};
+    shape::Collider collider{};
     
     sf::Vector2<int> sprite_dimensions{};
     sf::Vector2<int> spritesheet_dimensions{};

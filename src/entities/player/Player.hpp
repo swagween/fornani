@@ -7,7 +7,7 @@
 //
 #pragma once
 
-#include "../../utils/Shape.hpp"
+#include "../../utils/Collider.hpp"
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
 #include "../../weapon/Arsenal.hpp"
@@ -58,27 +58,25 @@ struct PhysicsStats {
     
     float AIR_MULTIPLIER = 3.6f;
     
-    float PLAYER_GRAV = 0.289f;
+    float PLAYER_GRAV = 0.206f;
     
     float TERMINAL_VELOCITY = 8.0f;
 
     float PLAYER_VERT_FRIC = 0.712f;
-    float PLAYER_HORIZ_FRIC = 0.712;
+    float PLAYER_HORIZ_FRIC = 0.712f;
     float PLAYER_VERT_AIR_FRIC = 0.912f;
     float PLAYER_HORIZ_AIR_FRIC = 0.912f;
     float PLAYER_MASS = 1.0f;
 
-    float X_ACC = 0.794f;
-    float Y_ACC = 0.794f;
+    float X_ACC = 0.655f;
+    float Y_ACC = 0.655f;
     
     float JUMP_ACC = 0.8f;
-    float JUMP_MAX = 4.387;
+    float JUMP_MAX = 3.66f;
     int   JUMP_TIME = 20;
     
     float WALL_SLIDE_THRESHOLD = -1.0f;
     float WALL_SLIDE_SPEED = 1.31f;
-    
-    float LANDED_THRESHOLD = 3.0f;
     
 };
 
@@ -103,14 +101,10 @@ public:
     void assign_texture(sf::Texture& tex);
     void update_animation();
     
-    void sync_components();
     void update_behavior();
     void set_position(sf::Vector2<float> new_pos);
     void update_direction();
     void update_weapon_direction();
-    
-    //collision
-    void handle_map_collision(const Shape& cell, bool is_ramp);
     
     //firing
     sf::Vector2<float> get_fire_point();
@@ -120,17 +114,8 @@ public:
     
     //for debug mode
     std::string print_direction(bool lr);
-    
-    
-    //member vars
-    Shape hurtbox{};
-    Shape predictive_hurtbox{};
-    Shape jumpbox{};
-    Shape left_detector{};
-    Shape right_detector{};
-    Shape wall_slide_detector{};
-    
-    components::PhysicsComponent physics{};
+
+    shape::Collider collider{ {PLAYER_WIDTH, PLAYER_HEIGHT}, {PLAYER_START_X, PLAYER_START_Y} };
     components::PlayerBehaviorComponent behavior{};
     behavior::DIR last_dir{};
     PhysicsStats stats{};
@@ -156,10 +141,7 @@ public:
     bool look_down{};
     
     bool grav = true;
-    bool just_collided = false;
-    bool is_colliding_with_level{};
-    bool has_left_collision{};
-    bool has_right_collision{};
+
     bool grounded = false;
     bool jump_hold = false;
     bool jump_trigger = false;
@@ -167,7 +149,6 @@ public:
     bool just_jumped{};
     bool is_jump_pressed{};
     bool stopping{};
-    bool just_landed{};
     bool left_released{};
     bool right_released{};
     bool is_wall_sliding{};
@@ -185,10 +166,6 @@ public:
     bool weapon_fired{};
     bool start_cooldown{};
     
-    bool is_any_jump_colllision = false;
-    bool is_any_colllision = false;
-    int left_aabb_counter = 0;
-    int right_aabb_counter = 0;
     int wall_slide_ctr{0};
     
     int jump_height_counter{};

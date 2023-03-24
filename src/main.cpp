@@ -4,10 +4,8 @@
 //
 
 #include <SFML/Graphics.hpp>
-//#include <SFML/Audio.hpp>
 #include <cmath>
 #include <iostream>
-//#include "utils/Camera.hpp"
 //all services and providers included first
 #include "setup/ServiceLocator.hpp"
 #include "automa/StateManager.hpp"
@@ -109,8 +107,8 @@ static void show_overlay() {
 //                    ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 64);
 //                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 999);
 //                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
-//                    if(!svc::playerLocator.get().hurtbox.vertices.empty()) {
-                    //                        ImGui::Text("Player Hurtbox Pos: (%.1f,%.1f)", svc::playerLocator.get().hurtbox.vertices.at(0).x, svc::playerLocator.get().hurtbox.vertices.at(0).y);
+//                    if(!svc::playerLocator.get().collider.bounding_box.vertices.empty()) {
+                    //                        ImGui::Text("Player collider.bounding_box Pos: (%.1f,%.1f)", svc::playerLocator.get().collider.bounding_box.vertices.at(0).x, svc::playerLocator.get().collider.bounding_box.vertices.at(0).y);
                     //                    }
                     ImGui::Text("Player Behavior: ");
                     ImGui::SameLine();
@@ -126,7 +124,7 @@ static void show_overlay() {
                     ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
                     ImGui::Text("Colliding with Level: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if(svc::playerLocator.get().collider.is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -147,13 +145,13 @@ static void show_overlay() {
 //                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
                     ImGui::Text("Has Right Collision: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if(svc::playerLocator.get().collider.has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Has Left Collision: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().physics.position.x, svc::playerLocator.get().physics.position.y);
-                    ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().physics.velocity.x, svc::playerLocator.get().physics.velocity.y);
-                    ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().physics.acceleration.x, svc::playerLocator.get().physics.acceleration.y);
+                    if(svc::playerLocator.get().collider.has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
+                    ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
+                    ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
                     
                     ImGui::SliderFloat("GRAV",              &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 2.0f);
                     ImGui::SliderFloat("AIR MULTIPLIER",    &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
@@ -301,7 +299,6 @@ void run(char** argv) {
     
     //some SFML variables for drawing a basic window + background
     window.setVerticalSyncEnabled(true);
-//    window.setFramerateLimit(80);
     window.setKeyRepeatEnabled(false);
     
     ImGui::SFML::Init(window);
@@ -355,7 +352,6 @@ void run(char** argv) {
                     window.setSize(sf::Vector2u{win_size.x, win_size.y});
                     break;
                 case sf::Event::KeyPressed:
-                    //player can refresh grid by pressing 'Z'
                     if(event.key.code == sf::Keyboard::Escape) {
                         return;
                     }
@@ -368,10 +364,6 @@ void run(char** argv) {
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-//                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_PASSAGE_01");
-//                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
-//                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
-//                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_LEDGE_01");
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_ARENA_01");
                     }
                     break;
@@ -383,14 +375,10 @@ void run(char** argv) {
         
         //game logic and rendering
         
-        //        elapsed_time = Time::zero();
         if(elapsed_time.count() > time_step.count()) {
             SM.get_current_state().logic(elapsed_time);
             FPS = FPS_counter / seconds;
             elapsed_time = Time::zero();
-            if((int)floor(seconds) % 8 == 0) {
-//                svc::cameraLocator.get().begin_shake();
-            }
         }
         
         svc::clockLocator.get().tick();
@@ -398,7 +386,6 @@ void run(char** argv) {
         
             
         ImGui::SFML::Update(window, deltaClock.restart());
-//        ImGui::ShowDemoWindow();
         
         //ImGui stuff
         if(debug_mode) {
