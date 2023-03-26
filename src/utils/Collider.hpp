@@ -16,7 +16,7 @@ namespace shape {
 
 	const float default_jumpbox_height = 2.0f;
 	const float default_detector_width = 8.0f;
-	const float default_detector_height = 24.0f;
+	const float default_detector_height = 22.0f;
 	const float default_detector_buffer = (default_dim - default_detector_height) / 2;
 
 	class Collider {

@@ -12,7 +12,7 @@
 Player::Player() {
     
     collider = shape::Collider();
-    collider.physics = components::PhysicsComponent({ stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC }, stats.PLAYER_MASS);
+    collider.physics = components::PhysicsComponent({ stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC }, stats.PLAYER_MASS);
     anchor_point = { collider.physics.position.x + PLAYER_WIDTH/2, collider.physics.position.y + PLAYER_HEIGHT/2};
     behavior.current_state = behavior::Behavior(behavior::idle);
     behavior.facing_lr = behavior::DIR_LR::RIGHT;
@@ -175,15 +175,12 @@ void Player::update(Time dt) {
     update_animation();
     //check if player requested jump
     if(grounded && jump_request > -1) {
-        collider.physics.velocity.y = 0.0f;
         if(!behavior.restricted()) {
             jump_height_counter = 0;
         }
         jump_hold = true;
         if(just_jumped) {
             behavior.jump();
-        }
-        if(is_jump_pressed) {
         }
     }
     if(!is_jump_pressed) { jump_hold = false; }
@@ -194,14 +191,14 @@ void Player::update(Time dt) {
             if(grounded) {
                 collider.physics.acceleration.x = -stats.X_ACC;
             } else {
-                collider.physics.acceleration.x = -stats.X_ACC/stats.AIR_MULTIPLIER;
+                collider.physics.acceleration.x = -stats.X_ACC_AIR/stats.AIR_MULTIPLIER;
             }
         }
         if(move_right && !collider.has_right_collision) {
             if(grounded) {
                 collider.physics.acceleration.x = stats.X_ACC;
             } else {
-                collider.physics.acceleration.x = stats.X_ACC/stats.AIR_MULTIPLIER;
+                collider.physics.acceleration.x = stats.X_ACC_AIR/stats.AIR_MULTIPLIER;
             }
         }
         if((move_left || move_right) && grounded && abs(collider.physics.velocity.x) > stats.PLAYER_MAX_XVEL) {
@@ -216,7 +213,9 @@ void Player::update(Time dt) {
     
     //gravity and stats corrections
     if(!grounded && collider.physics.velocity.y < stats.TERMINAL_VELOCITY) {
-        collider.physics.acceleration.y += stats.PLAYER_GRAV;
+        collider.physics.gravity = stats.PLAYER_GRAV;
+    } else {
+        collider.physics.gravity = 0.0f;
     }
     
     //weapon physics
@@ -231,28 +230,6 @@ void Player::update(Time dt) {
                 collider.physics.apply_force({-loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
             }
         }
-    }
-    
-    //impose physics limitations
-    if(!behavior.restricted()) {
-        if(collider.physics.velocity.x > stats.PLAYER_MAX_XVEL) {
-            collider.physics.velocity.x = stats.PLAYER_MAX_XVEL;
-        }
-        if(collider.physics.velocity.x < -stats.PLAYER_MAX_XVEL) {
-            collider.physics.velocity.x = -stats.PLAYER_MAX_XVEL;
-        }
-        if(collider.physics.velocity.y > stats.PLAYER_MAX_YVEL) {
-            collider.physics.velocity.y = stats.PLAYER_MAX_YVEL;
-        }
-        if(collider.physics.velocity.y < -stats.PLAYER_MAX_YVEL) {
-            collider.physics.velocity.y = -stats.PLAYER_MAX_YVEL;
-        }
-    }
-    
-    
-    if(is_wall_sliding) {
-//        physics.acceleration.y = 0.0f;
-//        physics.velocity.y = stats.WALL_SLIDE_SPEED;
     }
     
     //now jump after all the y corrections
@@ -271,7 +248,7 @@ void Player::update(Time dt) {
             jump_request--;
             //still jump for quick presses
             if(grounded) {
-                collider.physics.acceleration.y = -stats.JUMP_MAX;
+                collider.physics.acceleration.y = -stats.JUMP_MAX / 1.3f;
                 ++jump_height_counter;
                 can_jump = false;
                 jump_trigger = false;
@@ -281,21 +258,22 @@ void Player::update(Time dt) {
             }
         }
     }
+
     
     if(move_left && move_right) {
         collider.physics.acceleration.x = 0.0f;
     }
     
-    collider.physics.update_euler(dt);
+    collider.physics.update_euler();
     
     
     collider.sync_components();
     
     //for parameter tweaking, remove later
     if(grounded) {
-        collider.physics.friction = {stats.PLAYER_HORIZ_FRIC, stats.PLAYER_VERT_FRIC};
+        collider.physics.friction = {stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC};
     } else {
-        collider.physics.friction = {stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC};
+        collider.physics.friction = {stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC };
     }
     if(!collider.is_colliding_with_level) {
         collider.physics.mtv = {0.0f, 0.0f};
@@ -343,13 +321,6 @@ void Player::update_animation() {
 
 void Player::update_behavior() {
     
-//    if(wall_slide_trigger) {
-//        behavior.wall_slide();
-//    } else if(release_wallslide && behavior.current_state->params.behavior_id == "wall_sliding") {
-//        behavior.reset();
-//    }
-    
-    
     
     if(just_jumped && !is_wall_sliding) {
         behavior.air(collider.physics.velocity.y);
@@ -395,10 +366,6 @@ void Player::update_behavior() {
         soundboard_flags.land = true;
         freefalling = false;
     }
-    
-//    behavior::trigger = false;
-    
-    
     
     if(wall_slide_trigger) { is_wall_sliding = true; }
     if(weapon_fired) { start_cooldown = true; }

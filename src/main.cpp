@@ -85,10 +85,13 @@ static void show_overlay() {
                     ImGui::Separator();
                     ImGui::Text("Time");
                     ImGui::TextUnformatted(std::to_string(time_markers[frame % NUM_TIMESTEPS]).c_str());
+                    ImGui::Text("Timer Elapsed Time: %.5f", svc::clockLocator.get().elapsed_time.count());
                     ImGui::Text("Main Time (seconds): %.1f", seconds);
                     ImGui::Text("Timer Time (seconds): %.1f", svc::clockLocator.get().seconds);
                     ImGui::Text("FPS: %.3f", FPS);
-                    ImGui::SliderInt("Time Step (in milliseconds)", &TIME_STEP_MILLI, 0, 500);
+                    ImGui::SliderInt("Time Step (in milliseconds)", &TIME_STEP_MILLI, 0, 60);
+
+                    ImGui::SliderFloat("Tick Rate: ", &svc::clockLocator.get().tick_rate, 0.002, 0.01);
                     ImGui::Separator();
                     ImGui::EndTabItem();
                     ImGui::PlotHistogram("Frame Times", time_markers, NUM_TIMESTEPS, 0, NULL, 0.0f, 0.02f, ImVec2(0, 80.0f));
@@ -153,16 +156,21 @@ static void show_overlay() {
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
                     ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
                     
-                    ImGui::SliderFloat("GRAV",              &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 2.0f);
-                    ImGui::SliderFloat("AIR MULTIPLIER",    &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
-                    ImGui::SliderFloat("PLAYER MAX XVEL",   &svc::playerLocator.get().stats.PLAYER_MAX_XVEL, 0.1f, 8.0f);
-                    ImGui::SliderFloat("PLAYER MAX YVEL",   &svc::playerLocator.get().stats.PLAYER_MAX_YVEL, 0.1f, 8.0f);
-                    ImGui::SliderFloat("PLAYER FRIC",       &svc::playerLocator.get().stats.PLAYER_HORIZ_FRIC, 0.1f, 1.0f);
-                    ImGui::SliderFloat("PLAYER AIR FRIC",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.1f, 1.0f);
-                    ImGui::SliderFloat("X ACC",             &svc::playerLocator.get().stats.X_ACC, 0.0f, 1.0f);
-                    ImGui::SliderFloat("Y ACC",             &svc::playerLocator.get().stats.Y_ACC, 0.0f, 1.0f);
-                    ImGui::SliderFloat("JUMP MAX",          &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 10.0f);
-                    ImGui::SliderInt("JUMP TIME",           &svc::playerLocator.get().stats.JUMP_TIME, 0, 200);
+                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 32.0f);
+                    ImGui::SliderFloat("PLAYER MASS",               &svc::playerLocator.get().stats.PLAYER_MASS, 0.1f, 2.0f);
+                    ImGui::SliderFloat("AIR MANEUVERABILITY",       &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
+                    ImGui::SliderFloat("TERMINAL VELOCITY",         &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 32.0f);
+
+                    ImGui::Text("Friction Multipliers");
+                    ImGui::SliderFloat("GROUND FRICTION",           &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.0f, 1.0f);
+                    ImGui::SliderFloat("HORIZONTAL AIR FRICTION",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.8f, 1.0f);
+                    ImGui::SliderFloat("VERTICAL AIR FRICTION",     &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.8f, 1.0f);
+                    ImGui::NewLine();
+
+                    ImGui::SliderFloat("GROUND SPEED",              &svc::playerLocator.get().stats.X_ACC, 0.0f, 5.0f);
+                    ImGui::SliderFloat("AIR SPEED",                 &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 5.0f);
+                    ImGui::SliderFloat("JUMP HEIGHT",               &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 10.0f);
+                    ImGui::SliderInt("JUMP TIME",                   &svc::playerLocator.get().stats.JUMP_TIME, 0, 50);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Weapon"))
@@ -217,6 +225,7 @@ static void show_overlay() {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_LEDGE_01");
+                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                     }
                     if(ImGui::Button("House")) {
                         svc::assetLocator.get().click.play();
@@ -229,21 +238,26 @@ static void show_overlay() {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SHADOW_PLAT_01");
+                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                     }
                     if(ImGui::Button("Hoarder")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
+                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                     }
                     if(ImGui::Button("Lab")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
+                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                     }
                     if(ImGui::Button("Toxic")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_ARENA_01");
+                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
+                        svc::playerLocator.get().collider.physics.zero();
                         svc::playerLocator.get().set_position({34, 484});
                     }
                     if(ImGui::Button("Grub")) {
@@ -319,6 +333,7 @@ void run(char** argv) {
     auto current_time = Clock::now();
     
     while (window.isOpen()) {
+        svc::clockLocator.get().tick();
         time_step = Time{std::chrono::milliseconds(TIME_STEP_MILLI)};
         frame++;
         auto new_time = Clock::now();
@@ -380,8 +395,6 @@ void run(char** argv) {
             FPS = FPS_counter / seconds;
             elapsed_time = Time::zero();
         }
-        
-        svc::clockLocator.get().tick();
         
         
             

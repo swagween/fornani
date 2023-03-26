@@ -12,15 +12,17 @@ namespace critter {
 inline util::Random r{};
 
 void Critter::update() {
+
+    collider.physics.update_euler();
+    behavior.update();
+    collider.bounding_box.update(collider.physics.position.x, collider.physics.position.y, dimensions.x, dimensions.y);
+
     if(metadata.gravity) {
-        collider.physics.acceleration.y = 0.3f;
+        collider.physics.gravity = 0.33f;
     }
     if (collider.is_any_jump_colllision) {
         collider.physics.acceleration.y = 0.0f;
     }
-    collider.physics.update_dampen();
-    behavior.update();
-    collider.bounding_box.update(collider.physics.position.x, collider.physics.position.y, dimensions.x, dimensions.y);
     
     if(abs(collider.physics.velocity.x) > 0.2f && !behavior.restricted()) {
         behavior.run();
@@ -33,7 +35,10 @@ void Critter::update() {
     if(flags.seeking) {
         seek_current_target();
     }
-    if(abs(collider.physics.position.x - current_target.x) < 4 && abs(collider.physics.position.y - current_target.y) < 4) { flags.seeking = false; }
+    if(abs(collider.physics.position.x - current_target.x) < 16.0f && abs(collider.physics.position.y - current_target.y) < 16.0f) { flags.seeking = false; }
+
+    if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.facing_lr = behavior::DIR_LR::LEFT; }
+    if (collider.physics.acceleration.x > 0.0f && collider.physics.velocity.x < 0.0f) { behavior.facing_lr = behavior::DIR_LR::RIGHT; }
 
     collider.sync_components();
 }
@@ -94,7 +99,8 @@ void Critter::seek_current_target() {
     sf::Vector2<float> steering = desired - collider.physics.velocity;
 //    if(steering.x > 0.1) { steering.x = 0.1; }
 //    if(steering.x < -0.1) { steering.x = -0.1; }
-    collider.physics.apply_force(steering);
+    //collider.physics.apply_force(steering);
+    collider.physics.acceleration.x = steering.x;
 }
                                                   
 

@@ -23,75 +23,46 @@ enum class DIRECTION {
 
 const sf::Vector2<float> FRICTION_DEFAULT = {0.9f, 0.9f};
 const float MASS_DEFAULT = 1.0f;
+const float UNIVERSAL_MAX_SPEED = 64.0f;
 
 class PhysicsComponent {
 public:
-    
+
+    using Clock = std::chrono::steady_clock;
     using Time = std::chrono::duration<float>;
     
     PhysicsComponent() : friction(FRICTION_DEFAULT), mass(MASS_DEFAULT) {};
-    PhysicsComponent(sf::Vector2<float> fric, float ma) : friction(fric), mass(ma) {};
+    PhysicsComponent(sf::Vector2<float> fric, float ma, sf::Vector2<float> max_vel = sf::Vector2<float>{ UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED }, float grav = 0.0f) : friction(fric), mass(ma), maximum_velocity(max_vel), gravity(grav) {};
 
     //basic physics variables
-    sf::Vector2<float> acceleration{};
-    sf::Vector2<float> velocity{};
-    sf::Vector2<float> position{};
-    sf::Vector2<float> friction{};
-    sf::Vector2<float> mtv{};
+    sf::Vector2<float> acceleration{0.0f, 0.0f};
+    sf::Vector2<float> velocity{ 0.0f, 0.0f };
+    sf::Vector2<float> position{ 0.0f, 0.0f };
+    sf::Vector2<float> friction{ 0.0f, 0.0f };
+    sf::Vector2<float> mtv{ 0.0f, 0.0f };
+
+    sf::Vector2<float> previous_acceleration{ 0.0f, 0.0f };
+    sf::Vector2<float> previous_velocity{ 0.0f, 0.0f };
+    sf::Vector2<float> previous_position{ 0.0f, 0.0f };
     
-    float mass{};
+    //properties
+    float mass{1.0f};
+    float gravity{0.0f};
+    sf::Vector2<float> maximum_velocity{ UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED };
     DIRECTION dir{};
     
-    void apply_force(sf::Vector2<float> force) {
-        sf::operator+= (acceleration, force);
-    }
-    
-    void apply_force_at_angle(float magnitude, float angle) {
-        acceleration.x += (magnitude * cos(angle)) / mass;
-        acceleration.y += (magnitude * sin(angle)) / mass;
-    }
-    
-    void update_euler(Time dt) {
-        sf::operator+=(velocity, acceleration);
-        velocity.x *= friction.x;
-        velocity.y *= friction.y;
-        if(abs(mtv.y) < 0.0001) {
-            sf::operator+=(position, velocity);
-        } else {
-            position.y += mtv.y;
-        }
-        update_direction();
-    }
-    
-    void update() {
-        sf::operator+=(velocity, acceleration);
-        velocity.x *= friction.x;
-        velocity.y *= friction.y;
-        sf::operator+=(position, velocity);
-        update_direction();
-    }
-    
-    void update_dampen() {
-        sf::operator+=(velocity, acceleration);
-        velocity.x *= friction.x;
-        velocity.y *= friction.y;
-        sf::operator+=(position, velocity);
-        acceleration = {0.0f, 0.0f};
-        update_direction();
-    }
-    
-    void update_direction() {
-//        if(abs(velocity.y) > abs(velocity.x)) { dir = DIRECTION::DOWN; }
-//        if(abs(velocity.y) < abs(velocity.x)) { dir = DIRECTION::RIGHT; }
-//        if(abs(velocity.y) > abs(velocity.x) && velocity.y < 0.0f) { dir = DIRECTION::UP; }
-//        if(abs(velocity.y) < abs(velocity.x) && velocity.x < 0.0f) { dir = DIRECTION::LEFT; }
-    }
-    
-    int random_range(int lo, int hi) {
-        static auto engine = std::default_random_engine{std::random_device{}()};
-        return std::uniform_int_distribution<int>{lo, hi}(engine);
-    }
-    
+    void apply_force(sf::Vector2<float> force);
+    void apply_force_at_angle(float magnitude, float angle);
+    void update_euler();
+    void integrate(float ndt);
+    void update();
+    void update_dampen();
+    void zero();
+
+    //fixed physics time step variables
+    float dt{ 0.005f };
+    Clock::time_point current_time = Clock::now();
+    float accumulator{ 0.0f };
 };
 
 } // end components

@@ -135,7 +135,7 @@ namespace shape {
                 physics.acceleration.y = 0.0f;
             }
             //player hits the ceiling
-            if (physics.velocity.y < -0.01f) {
+            if (physics.velocity.y < -0.01f && abs(physics.mtv.y) > 0.001f) {
                 float ydist = physics.position.y - predictive_bounding_box.shape_y;
                 float correction = ydist + physics.mtv.y;
                 physics.position.y += correction;

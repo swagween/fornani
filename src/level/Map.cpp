@@ -74,6 +74,7 @@ void Map::load(const std::string& path) {
     
     critters.push_back(bestiary.get_critter_at(0));
     critters.back().set_position({104, 464});
+    critters.back().collider.physics.zero();
     
 }
 
@@ -154,12 +155,12 @@ void Map::update() {
     }
     
     for(auto& critter : critters) {
-//        critter.random_walk(sf::Vector2<int>(120, 180));
-        critter.current_target = svc::playerLocator.get().collider.physics.position;
-        critter.seek_current_target();
+        critter.random_walk(sf::Vector2<int>(120, 180));
+        //critter.current_target = svc::playerLocator.get().collider.physics.position;
+        //critter.seek_current_target();
+        //critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
         critter.update();
         
-        critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
         critter.random_idle_action();
         while(!critter.idle_action_queue.empty()) {
             critter.behavior.bark();

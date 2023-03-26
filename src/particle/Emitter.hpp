@@ -63,12 +63,13 @@ public:
             int var = r.random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
             particles.back().lifespan = stats.particle_lifespan + var;
         }
-        for(int i = static_cast<int>(particles.size()) - 1; i >= 0; --i) {
-            particles.at(i).update(behavior.expulsion_force, behavior.grav, behavior.grav_variance);
-            if(particles.at(i).lifespan < 0) {
-                particles.erase(particles.begin() + i); //this is bad. I want to delete the element at that spot
-            }
+
+        for (auto& particle : particles) {
+            particle.update(behavior.expulsion_force, behavior.grav, behavior.grav_variance);
         }
+
+        std::erase_if(particles, [](auto const& p) { return p.lifespan < 0; });
+
         --stats.lifespan;
     }
     
