@@ -14,6 +14,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     particle/ObjectPool.hpp
     particle/Particle.hpp
     components/PhysicsComponent.hpp
+    components/PhysicsComponent.cpp
 	components/BehaviorComponent.hpp
 	utils/Grid.hpp
 	utils/Grid.cpp

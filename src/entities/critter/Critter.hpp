@@ -58,7 +58,7 @@ public:
     Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim) : metadata(m), stats(s), sprite_dimensions(sprite_dim), spritesheet_dimensions(spritesheet_dim), dimensions(dim) {
         collider = shape::Collider(); 
         set_sprite();
-        collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.6f, 0.98f}, 1.0f);
+        collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.91f, 0.91f}, 1.0f);
     }
     ~Critter() {}
     

@@ -21,7 +21,6 @@ public:
     Particle() = default;
     Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric) : physics(p), init_force(f), force_variance(v), angle_range(a) {
         physics.friction = fric;
-        util::Random r{};
         float randx{};
         float randy{};
         switch(physics.dir) {
@@ -47,7 +46,6 @@ public:
 //        physics.apply_force({randx*init_force, randy*init_force});
     }
     void update(float initial_force, float grav, float grav_variance) {
-        util::Random r{};
         float var = r.random_range_float(-grav_variance, grav_variance);
         physics.acceleration.y = grav + var;
         physics.update_dampen();
@@ -55,12 +53,12 @@ public:
         --lifespan;
     }
     components::PhysicsComponent physics{};
-    float lifespan = physics.random_range(default_lifespan, 100);
+    float lifespan = r.random_range(default_lifespan, 100);
     float init_force{};
     float force_variance{};
     float angle_range{};
     Shape bounding_box{};
-    
+    util::Random r{};
 };
 
 } // end namespace
