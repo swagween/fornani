@@ -155,10 +155,10 @@ void Map::update() {
     }
     
     for(auto& critter : critters) {
-        critter.random_walk(sf::Vector2<int>(120, 180));
-        //critter.current_target = svc::playerLocator.get().collider.physics.position;
-        //critter.seek_current_target();
-        //critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
+        //critter.random_walk(sf::Vector2<int>(120, 180));
+        critter.current_target = svc::playerLocator.get().collider.physics.position;
+        critter.seek_current_target();
+        critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
         critter.update();
         
         critter.random_idle_action();
@@ -269,7 +269,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
         active_projectiles.back().update();
         
         active_emitters.push_back(svc::playerLocator.get().loadout.get_equipped_weapon().spray);
-        active_emitters.back().get_physics().acceleration = svc::playerLocator.get().collider.physics.acceleration;
+        active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
         active_emitters.back().set_position(pos.x, pos.y);
         active_emitters.back().set_direction(svc::playerLocator.get().collider.physics.dir);
         active_emitters.back().update();

@@ -232,17 +232,6 @@ void Player::update(Time dt) {
         }
     }
     
-    //now jump after all the y corrections
-    if(jump_height_counter < stats.JUMP_TIME && (is_jump_pressed && jump_hold)) {
-        if(!behavior.restricted()) {
-            collider.physics.acceleration.y = -stats.JUMP_MAX;
-            ++jump_height_counter;
-            can_jump = false;
-            jump_trigger = false;
-            behavior.rise();
-        }
-    }
-    
     if(jump_request > -1) {
         if(!behavior.restricted()) {
             jump_request--;
@@ -252,7 +241,6 @@ void Player::update(Time dt) {
                 ++jump_height_counter;
                 can_jump = false;
                 jump_trigger = false;
-                jump_request = -1;
                 behavior.rise();
                 if(!jump_trigger) { soundboard_flags.jump = true; }
             }
@@ -281,8 +269,8 @@ void Player::update(Time dt) {
     collider.just_collided = false;
     
     update_behavior();
-    apparent_position.x = collider.physics.position.x - (48 - PLAYER_WIDTH)/2 + NANI_SPRITE_WIDTH/2;
-    apparent_position.y = collider.physics.position.y - (48 - PLAYER_HEIGHT) + NANI_SPRITE_WIDTH/2;
+    apparent_position.x = collider.physics.position.x + PLAYER_WIDTH/2;
+    apparent_position.y = collider.physics.position.y;
     play_sounds();
 }
 

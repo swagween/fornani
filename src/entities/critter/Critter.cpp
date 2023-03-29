@@ -18,15 +18,18 @@ void Critter::update() {
     collider.bounding_box.update(collider.physics.position.x, collider.physics.position.y, dimensions.x, dimensions.y);
 
     if(metadata.gravity) {
-        collider.physics.gravity = 0.33f;
+        collider.physics.gravity = 0.003f;
     }
     if (collider.is_any_jump_colllision) {
         collider.physics.acceleration.y = 0.0f;
     }
     
-    if(abs(collider.physics.velocity.x) > 0.2f && !behavior.restricted()) {
+    if(abs(collider.physics.velocity.x) > 0.02f && !behavior.restricted()) {
         behavior.run();
     }
+
+    if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.turn(); }
+    if (collider.physics.acceleration.x > 0.0f && collider.physics.velocity.x < 0.0f) { behavior.turn(); }
     
     if(collider.physics.velocity.x < 0.1 && !behavior.restricted()) {
         behavior.idle();
@@ -37,14 +40,11 @@ void Critter::update() {
     }
     if(abs(collider.physics.position.x - current_target.x) < 16.0f && abs(collider.physics.position.y - current_target.y) < 16.0f) { flags.seeking = false; }
 
-    if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.facing_lr = behavior::DIR_LR::LEFT; }
-    if (collider.physics.acceleration.x > 0.0f && collider.physics.velocity.x < 0.0f) { behavior.facing_lr = behavior::DIR_LR::RIGHT; }
-
     collider.sync_components();
 }
 
 void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
-    sprite.setPosition(collider.physics.position.x - campos.x + dimensions.x / 2, collider.physics.position.y - campos.y);
+    sprite.setPosition(collider.physics.position.x - campos.x + dimensions.x / 2, collider.physics.position.y - 8 - campos.y);
     
     //get UV coords
     int u = (int)(behavior.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
@@ -61,7 +61,7 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     hurtbox.setOutlineColor(flcolor::white);
     hurtbox.setOutlineThickness(-1);
     win.draw(sprite);
-    win.draw(hurtbox);
+    //win.draw(hurtbox);
     
     //do this after drawing to avoid 1-frame stuttering
     if(behavior.facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) {
@@ -100,6 +100,7 @@ void Critter::seek_current_target() {
 //    if(steering.x > 0.1) { steering.x = 0.1; }
 //    if(steering.x < -0.1) { steering.x = -0.1; }
     //collider.physics.apply_force(steering);
+    steering *= 0.08f;
     collider.physics.acceleration.x = steering.x;
 }
                                                   

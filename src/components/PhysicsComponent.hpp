@@ -60,9 +60,9 @@ public:
     void zero();
 
     //fixed physics time step variables
-    float dt{ 0.005f };
+    Time dt{ 0.001f };
     Clock::time_point current_time = Clock::now();
-    float accumulator{ 0.0f };
+    Time accumulator{ 0.0f };
 };
 
 } // end components

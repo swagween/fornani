@@ -86,12 +86,12 @@ static void show_overlay() {
                     ImGui::Text("Time");
                     ImGui::TextUnformatted(std::to_string(time_markers[frame % NUM_TIMESTEPS]).c_str());
                     ImGui::Text("Timer Elapsed Time: %.5f", svc::clockLocator.get().elapsed_time.count());
-                    ImGui::Text("Main Time (seconds): %.1f", seconds);
                     ImGui::Text("Timer Time (seconds): %.1f", svc::clockLocator.get().seconds);
-                    ImGui::Text("FPS: %.3f", FPS);
-                    ImGui::SliderInt("Time Step (in milliseconds)", &TIME_STEP_MILLI, 0, 60);
+                    ImGui::Text("Time Step (milliseconds): %.1f", svc::clockLocator.get().time_step.count());
+                    ImGui::Text("Accumulator: %.1f", svc::clockLocator.get().accumulator);
+                    ImGui::Text("FPS: %.1f", svc::clockLocator.get().FPS);
 
-                    ImGui::SliderFloat("Tick Rate: ", &svc::clockLocator.get().tick_rate, 0.002, 0.01);
+                    ImGui::SliderFloat("Tick Rate: ", &svc::clockLocator.get().rate, 0.00050f, 0.0080f, "%.8f");
                     ImGui::Separator();
                     ImGui::EndTabItem();
                     ImGui::PlotHistogram("Frame Times", time_markers, NUM_TIMESTEPS, 0, NULL, 0.0f, 0.02f, ImVec2(0, 80.0f));
@@ -156,21 +156,20 @@ static void show_overlay() {
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
                     ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
                     
-                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 32.0f);
+                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 0.01f);
                     ImGui::SliderFloat("PLAYER MASS",               &svc::playerLocator.get().stats.PLAYER_MASS, 0.1f, 2.0f);
                     ImGui::SliderFloat("AIR MANEUVERABILITY",       &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
                     ImGui::SliderFloat("TERMINAL VELOCITY",         &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 32.0f);
 
                     ImGui::Text("Friction Multipliers");
-                    ImGui::SliderFloat("GROUND FRICTION",           &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.0f, 1.0f);
-                    ImGui::SliderFloat("HORIZONTAL AIR FRICTION",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.8f, 1.0f);
-                    ImGui::SliderFloat("VERTICAL AIR FRICTION",     &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.8f, 1.0f);
+                    ImGui::SliderFloat("GROUND FRICTION",           &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.9f, 1.0f);
+                    ImGui::SliderFloat("HORIZONTAL AIR FRICTION",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.9f, 1.0f);
+                    ImGui::SliderFloat("VERTICAL AIR FRICTION",     &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.9f, 1.0f);
                     ImGui::NewLine();
 
-                    ImGui::SliderFloat("GROUND SPEED",              &svc::playerLocator.get().stats.X_ACC, 0.0f, 5.0f);
-                    ImGui::SliderFloat("AIR SPEED",                 &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 5.0f);
-                    ImGui::SliderFloat("JUMP HEIGHT",               &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 10.0f);
-                    ImGui::SliderInt("JUMP TIME",                   &svc::playerLocator.get().stats.JUMP_TIME, 0, 50);
+                    ImGui::SliderFloat("GROUND SPEED",              &svc::playerLocator.get().stats.X_ACC, 0.0f, 0.2f);
+                    ImGui::SliderFloat("AIR SPEED",                 &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 0.2f);
+                    ImGui::SliderFloat("JUMP HEIGHT",               &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 1.0f);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Weapon"))
@@ -309,10 +308,10 @@ void run(char** argv) {
     window.create(sf::VideoMode(screen_dimensions.x, screen_dimensions.y), "For Nani (beta v1.0)");
     
     bool debug_mode = false;
-    //init clock
     
     //some SFML variables for drawing a basic window + background
     window.setVerticalSyncEnabled(true);
+    //window.setFramerateLimit(20);
     window.setKeyRepeatEnabled(false);
     
     ImGui::SFML::Init(window);
@@ -330,23 +329,12 @@ void run(char** argv) {
     
     //game loop
     sf::Clock deltaClock{};
-    auto current_time = Clock::now();
     
     while (window.isOpen()) {
+
         svc::clockLocator.get().tick();
-        time_step = Time{std::chrono::milliseconds(TIME_STEP_MILLI)};
-        frame++;
-        auto new_time = Clock::now();
-        auto frame_time = Time{new_time - current_time};
-        current_time = new_time;
-        elapsed_time += frame_time;
-        elapsed_marker = elapsed_time;
-        time_markers[frame%NUM_TIMESTEPS] = frame_time.count();
-        seconds += elapsed_time.count();
-        FPS_counter++;
         win_size.x = window.getSize().x;
         win_size.y = window.getSize().y;
-        
         
         //SFML event variable
         auto event = sf::Event{};
@@ -390,11 +378,7 @@ void run(char** argv) {
         
         //game logic and rendering
         
-        if(elapsed_time.count() > time_step.count()) {
-            SM.get_current_state().logic(elapsed_time);
-            FPS = FPS_counter / seconds;
-            elapsed_time = Time::zero();
-        }
+        SM.get_current_state().logic();
         
         
             

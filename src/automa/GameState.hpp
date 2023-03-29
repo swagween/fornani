@@ -21,8 +21,6 @@
 
 namespace automa {
 
-//auto camera = Camera();
-
 //globals
 
 enum class STATE {
@@ -54,7 +52,7 @@ public:
     virtual void handle_events(sf::Event& event) {
         
     };
-    virtual void logic(Time dt) {};
+    virtual void logic() {};
     virtual void render(sf::RenderWindow& win) {
         
         
@@ -92,7 +90,7 @@ public:
         
     }
     
-    void logic(Time dt) {}
+    void logic() {}
     
     void render(sf::RenderWindow& win) {
 
@@ -154,12 +152,11 @@ public:
                 x++;
                 if(x % 4 == 0) {x = 0;}
                 svc::assetLocator.get().sp_bryn_test.setTextureRect(sf::IntRect({x*128, 0}, {128, 256}));
-                show_colliders = !show_colliders;
             }
         }
     }
     
-    void logic(Time dt) {
+    void logic() {
         map.update();
         hud.update();
         svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
