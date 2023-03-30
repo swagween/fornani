@@ -58,7 +58,9 @@ public:
     Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim) : metadata(m), stats(s), sprite_dimensions(sprite_dim), spritesheet_dimensions(spritesheet_dim), dimensions(dim) {
         collider = shape::Collider(); 
         set_sprite();
-        collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.99f, 0.98f}, 1.0f);
+        collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
+        collider.physics.maximum_velocity = sf::Vector2<float>(stats.speed, stats.speed*4);
+        if (metadata.gravity) { collider.physics.gravity = 0.03f; }
     }
     ~Critter() {}
     

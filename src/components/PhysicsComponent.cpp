@@ -42,7 +42,7 @@ namespace components {
             previous_acceleration = acceleration;
             previous_velocity = velocity;
             previous_position = position;
-            integrate(svc::clockLocator.get().tick_constant());
+            integrate(svc::clockLocator.get().tick_multiplier);
 
             accumulator -= dt;
             ++integrations;
@@ -76,7 +76,7 @@ namespace components {
     }
     
     void PhysicsComponent::update_dampen() {
-        acceleration /= svc::clockLocator.get().tick_constant();
+        acceleration /= svc::clockLocator.get().tick_multiplier;
         update_euler();
         acceleration = {0.0f, 0.0f};
     }

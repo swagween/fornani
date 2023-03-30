@@ -31,7 +31,7 @@ public:
         elapsed_time += frame_time;
         seconds += elapsed_time.count();
         
-        if(elapsed_time.count() > time_step.count()) {
+        if(elapsed_time.count() > dt.count()) {
             elapsed_time = Time::zero();
         }
 
@@ -55,21 +55,18 @@ public:
     }
     
     int seconds_int() { return static_cast<int>(std::floor(seconds)); }
-    float tick_constant() { return dt.count() * (tick_multiplier / dt.count()); }
     
     Time elapsed_time{};
     Tpt current_time = Clk::now();
     float seconds{0.0f};
-    Time time_step{0.001f};
     int frame{0};
 
-    float t{ 0.0f };
     Time dt{ 0.001f };
     float accumulator{ 0.0f };
 
     Time tick_rate{ 0.001f };
-    float tick_multiplier{ 0.25f };
-    float frame_limit{ 0.032f };
+    const float tick_multiplier{ 0.25f };
+    const float frame_limit{ 0.032f };
 
     float FPS{ 60.0f }; //assume 60 to begin with
     float rate{ 0.001f };

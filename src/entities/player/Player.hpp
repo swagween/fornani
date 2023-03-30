@@ -14,13 +14,13 @@
 #include <array>
 #include <memory>
 
-const float PLAYER_WIDTH = 16.0f;
-const float PLAYER_HEIGHT = 28.0f;
+const float PLAYER_WIDTH = 24.0f;
+const float PLAYER_HEIGHT = 24.0f;
 const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
-const float JUMPBOX_HEIGHT = 2.0f;
+const float JUMPBOX_HEIGHT = 8.0f;
 const float DETECTOR_WIDTH = 8.0f;
-const float DETECTOR_HEIGHT = 24.0f;
+const float DETECTOR_HEIGHT = 22.0f;
 const float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
 const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 12;

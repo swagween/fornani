@@ -87,7 +87,7 @@ static void show_overlay() {
                     ImGui::TextUnformatted(std::to_string(time_markers[frame % NUM_TIMESTEPS]).c_str());
                     ImGui::Text("Timer Elapsed Time: %.5f", svc::clockLocator.get().elapsed_time.count());
                     ImGui::Text("Timer Time (seconds): %.1f", svc::clockLocator.get().seconds);
-                    ImGui::Text("Time Step (milliseconds): %.1f", svc::clockLocator.get().time_step.count());
+                    ImGui::Text("Time Step (milliseconds): %.1f", svc::clockLocator.get().dt.count());
                     ImGui::Text("Accumulator: %.1f", svc::clockLocator.get().accumulator);
                     ImGui::Text("FPS: %.1f", svc::clockLocator.get().FPS);
 

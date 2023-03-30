@@ -101,13 +101,16 @@ namespace shape {
     }
 
     void Collider::handle_map_collision(const Shape& cell, bool is_ramp) {
-        if (left_detector.SAT(cell) && physics.velocity.x < 0.01f && !is_ramp) {
+        float y_dist = cell.vertices[0].y - left_detector.vertices[2].y;
+        sf::Vector2<float> detector_mtv = left_detector.testCollisionGetMTV(left_detector, cell);
+        if (left_detector.SAT(cell) && physics.velocity.x < 0.01f && !is_ramp && abs(detector_mtv.x) > abs(detector_mtv.y)) {
             has_left_collision = true;
             physics.acceleration.x = 0.0f;
             physics.velocity.x = 0.0f;
             left_aabb_counter++;
         }
-        if (right_detector.SAT(cell) && physics.velocity.x > -0.01f && !is_ramp) {
+        detector_mtv = right_detector.testCollisionGetMTV(right_detector, cell);
+        if (right_detector.SAT(cell) && physics.velocity.x > -0.01f && !is_ramp && abs(detector_mtv.x) > abs(detector_mtv.y)) {
             has_right_collision = true;
             physics.acceleration.x = 0.0f;
             physics.velocity.x = 0.0f;

@@ -17,27 +17,28 @@ void Critter::update() {
     behavior.update();
     collider.bounding_box.update(collider.physics.position.x, collider.physics.position.y, dimensions.x, dimensions.y);
 
-    if(metadata.gravity) {
-        collider.physics.gravity = 0.003f;
+
+    if (collider.physics.velocity.x < 0.1 && !behavior.restricted()) {
+        behavior.idle();
     }
+    
     if (collider.is_any_jump_colllision) {
         collider.physics.acceleration.y = 0.0f;
+        collider.is_any_jump_colllision = false;
     }
     
     if(abs(collider.physics.velocity.x) > 0.02f && !behavior.restricted()) {
         behavior.run();
     }
 
-    if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.turn(); }
-    if (collider.physics.acceleration.x > 0.0f && collider.physics.velocity.x < 0.0f) { behavior.turn(); }
+    if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.turn(); behavior.facing_lr = behavior::DIR_LR::LEFT; }
+    if (collider.physics.acceleration.x > 0.0f && collider.physics.velocity.x < 0.0f) { behavior.turn(); behavior.facing_lr = behavior::DIR_LR::RIGHT; }
     
-    if(collider.physics.velocity.x < 0.1 && !behavior.restricted()) {
-        behavior.idle();
-    }
     
     if(flags.seeking) {
         seek_current_target();
     }
+    if (collider.is_any_jump_colllision) { collider.physics.acceleration.y = 0.0f; }
     if(abs(collider.physics.position.x - current_target.x) < 16.0f && abs(collider.physics.position.y - current_target.y) < 16.0f) { flags.seeking = false; }
 
     collider.sync_components();
@@ -97,11 +98,16 @@ void Critter::seek_current_target() {
     sf::Vector2<float> desired = current_target - collider.physics.position;
     desired *= stats.speed;
     sf::Vector2<float> steering = desired - collider.physics.velocity;
-//    if(steering.x > 0.1) { steering.x = 0.1; }
-//    if(steering.x < -0.1) { steering.x = -0.1; }
-    //collider.physics.apply_force(steering);
+    //    if(steering.x > 0.1) { steering.x = 0.1; }
+    //    if(steering.x < -0.1) { steering.x = -0.1; }
+        //collider.physics.apply_force(steering);
+    if (abs(steering.x) < 0.5) { collider.physics.acceleration.x = 0.0f; return; }
     steering *= 0.08f;
+    //don't steer through walls
+    if (collider.has_right_collision && steering.x > 0.0f) { return; }
+    if (collider.has_left_collision  && steering.x < 0.0f) { return; }
     collider.physics.acceleration.x = steering.x;
+
 }
                                                   
 

@@ -34,6 +34,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	entities/player/Player.hpp
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp
+    entities/behavior/Behavior.cpp
     entities/behavior/EntityBehavior.hpp
     entities/critter/Critter.hpp
     entities/critter/Critter.cpp

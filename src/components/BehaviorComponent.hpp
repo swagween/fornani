@@ -244,7 +244,7 @@ public:
 
     void run() {
         if(ready()) {
-            current_state = behavior::Behavior(behavior::frdog_run);
+            current_state = behavior::Behavior(behavior::frdog_run); 
         }
     }
 

@@ -14,7 +14,7 @@
 
 namespace {
 
-const float CAM_FRICTION = 0.9f;
+const float CAM_FRICTION = 0.75f;
 const float CAM_MASS = 1.0f;
 const float CAM_GRAV = 0.003f;
 
