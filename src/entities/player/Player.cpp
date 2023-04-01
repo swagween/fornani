@@ -201,8 +201,9 @@ void Player::update(Time dt) {
                 collider.physics.acceleration.x = stats.X_ACC_AIR/stats.AIR_MULTIPLIER;
             }
         }
-        if((move_left || move_right) && grounded && abs(collider.physics.velocity.x) > stats.PLAYER_MAX_XVEL) {
-                soundboard_flags.step = true;
+
+        if (behavior.current_state.get_frame() == 44 || behavior.current_state.get_frame() == 46) {
+            soundboard_flags.step = true;
         }
     }
     
@@ -498,13 +499,19 @@ sf::Vector2<float> Player::get_fire_point() {
 }
 
 void Player::play_sounds() {
+
+    if (soundboard_flags.land) { svc::assetLocator.get().landed.play(); }
     if(soundboard_flags.jump) { svc::assetLocator.get().jump.play(); }
     if(soundboard_flags.step) {
-        if(!(svc::assetLocator.get().step.getStatus() == sf::Sound::Status::Playing) && !(svc::assetLocator.get().landed.getStatus() == sf::Sound::Status::Playing)) {
-//            svc::assetLocator.get().step.play();
+        if(!(svc::assetLocator.get().step.getStatus() == sf::Sound::Status::Playing)) {
+            util::Random r{};
+            float randp = r.random_range_float(0.0f, 0.1f);
+            svc::assetLocator.get().step.setPitch(1.0f + randp);
+
+            svc::assetLocator.get().step.setVolume(60);
+            svc::assetLocator.get().step.play();
         }
     }
-    if(soundboard_flags.land) { svc::assetLocator.get().landed.play(); }
     if(soundboard_flags.weapon_swap) { svc::assetLocator.get().arms_switch.play(); }
     soundboard_flags = SoundboardFlags{false, false, false, false};
 }

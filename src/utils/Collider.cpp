@@ -13,10 +13,6 @@ namespace shape {
 
         physics = components::PhysicsComponent({ 0.9, 0.9 }, 1);
 
-        bounding_box.init();
-        predictive_bounding_box.init();
-        jumpbox.init();
-
         dimensions = sf::Vector2<float>{ default_dim, default_dim };
 
 
@@ -54,10 +50,6 @@ namespace shape {
     Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimensions(dim) {
 
         physics = components::PhysicsComponent({ 0.9, 0.9 }, 1);
-
-        bounding_box.init();
-        predictive_bounding_box.init();
-        jumpbox.init();
 
         bounding_box.vertices[0] = sf::Vector2<float>(start_pos.x, start_pos.y);
         bounding_box.vertices[1] = sf::Vector2<float>(start_pos.x + dim.x, start_pos.y);

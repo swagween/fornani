@@ -182,7 +182,7 @@ public:
         step_buffer.loadFromFile(resource_path + "/audio/sfx/steps.wav");
         step.setBuffer(step_buffer);
         landed_buffer.loadFromFile(resource_path + "/audio/sfx/landed.wav");
-        landed.setBuffer(step_buffer);
+        landed.setBuffer(landed_buffer);
         
         brown_noise.openFromFile(resource_path + "/audio/songs/brown_noise.wav");
         clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");

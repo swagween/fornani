@@ -34,6 +34,7 @@ Shape::Shape() {
         normals.push_back(Vec(0, 0));
     }
     num_sides = 4;
+    init();
 }
 
 Shape::Shape(std::vector<Vec> verts, std::vector<Vec> edg) {
@@ -47,6 +48,7 @@ Shape::Shape(std::vector<Vec> verts, std::vector<Vec> edg) {
     shape_x = vertices[0].x;
     shape_y = vertices[0].y;
     num_sides = (int)verts.size();
+    init();
 }
 
 Shape::Shape(Vec dim) {

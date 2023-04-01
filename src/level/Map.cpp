@@ -281,7 +281,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
             svc::assetLocator.get().bg_shot.play();
         } else {
             util::Random r{};
-            float randp = r.random_range_float(-0.3, 0.3);
+            float randp = r.random_range_float(-0.3f, 0.3f);
             svc::assetLocator.get().pop_mid.setPitch(1 + randp);
             svc::assetLocator.get().pop_mid.play();
         }

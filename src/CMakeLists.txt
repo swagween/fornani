@@ -41,6 +41,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     entities/critter/CritterTables.hpp
     entities/critter/CritterActions.cpp
     entities/critter/Bestiary.hpp
+    entities/world/Portal.hpp
+    entities/world/Portal.cpp
 	weapon/Weapon.hpp
 	weapon/Arsenal.hpp
 	weapon/Projectile.hpp

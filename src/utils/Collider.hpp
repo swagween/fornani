@@ -45,7 +45,7 @@ namespace shape {
 		bool just_landed{};
 		bool ceiling_collision{ false };
 
-		float landed_threshold{ 3.0f };
+		float landed_threshold{ 1.0f };
 
 		//prob not needed or used...
 		int left_aabb_counter{ 0 };

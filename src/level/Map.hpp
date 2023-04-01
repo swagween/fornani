@@ -18,6 +18,7 @@
 #include "../setup/LookupTables.hpp"
 #include "../graphics/Background.hpp"
 #include "../entities/critter/Bestiary.hpp"
+#include "../entities/world/Portal.hpp"
 
 const int NUM_LAYERS{8};
 const int CHUNK_SIZE{16};
