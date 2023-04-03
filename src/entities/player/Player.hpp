@@ -105,6 +105,9 @@ public:
     
     //firing
     sf::Vector2<float> get_fire_point();
+
+    //level events
+    void handle_spike_collision();
     
     //sound
     void play_sounds();
@@ -150,6 +153,7 @@ public:
     bool right_released{};
     bool is_wall_sliding{};
     int jump_request{};
+    bool inspecting{};
     
     bool suspended_trigger{};
     bool fall_trigger{};
@@ -166,6 +170,8 @@ public:
     int wall_slide_ctr{0};
     
     int jump_height_counter{};
+
+    int room_id{};
     
 };
  /* Player_hpp */

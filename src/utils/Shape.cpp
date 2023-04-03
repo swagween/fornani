@@ -286,7 +286,7 @@ Shape::Vec Shape::testCollisionGetMTV(const Shape& obb1, const Shape& obb2)
 
         float overlap = getOverlapLength(proj1, proj2);
         if (overlap < NORMAL_TOLERANCE) { // shapes are not overlapping
-            return Vec(0, 0);
+            return Vec(0.0f, 0.0f);
         } else {
             if (overlap < minOverlap) {
                 minOverlap = overlap;
@@ -301,7 +301,7 @@ Shape::Vec Shape::testCollisionGetMTV(const Shape& obb1, const Shape& obb2)
 
         float overlap = getOverlapLength(proj1, proj2);
         if (overlap < NORMAL_TOLERANCE) { // shapes are not overlapping
-            return Vec(0, 0);
+            return Vec(0.0f, 0.0f);
         } else {
             if (overlap < minOverlap) {
                 minOverlap = overlap;
@@ -314,7 +314,7 @@ Shape::Vec Shape::testCollisionGetMTV(const Shape& obb1, const Shape& obb2)
     }
 
     // need to reverse MTV if center offset and overlap are not pointing in the same direction
-    bool notPointingInTheSameDirection = dotProduct(getCenter(obb1) - getCenter(obb2), t_mtv) < 0;
+    bool notPointingInTheSameDirection = dotProduct(getCenter(obb1) - getCenter(obb2), t_mtv) < 0.0f;
     if (notPointingInTheSameDirection) {
         t_mtv.x = -t_mtv.x;
         t_mtv.y = -t_mtv.y;
@@ -323,7 +323,7 @@ Shape::Vec Shape::testCollisionGetMTV(const Shape& obb1, const Shape& obb2)
 }
 
 bool Shape::SAT(const Shape& other) {
-    Vec t_mtv = Vec(0, 0);
+    Vec t_mtv = Vec(0.0f, 0.0f);
     std::vector<Vec> vertices1 = getVertices(*this);
     std::vector<Vec> vertices2 = getVertices(other);
     
@@ -411,7 +411,7 @@ bool Shape::AABB_handle_right_collision_static(const Shape &immovable) {
     return colliding;
 }
 
-const float small_value = 4.0;
+const float small_value = 4.0f;
 const float epsilon = 0.5f;
 
 bool Shape::AABB_is_left_collision(const Shape& immovable) {

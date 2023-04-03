@@ -16,13 +16,15 @@
 #include "../utils/Camera.hpp"
 #include "../service/Service.hpp"
 #include "../utils/Clock.hpp"
+#include "../automa/StateController.hpp"
 
 namespace svc {
 
-inline auto assetLocator = forloop::Service<AssetManager>::Instance{};
-inline auto playerLocator = forloop::Service<Player>::Instance{};
-inline auto cameraLocator = forloop::Service<Camera>::Instance{};
-inline auto clockLocator = forloop::Service<util::Clock>::Instance{};
+inline auto assetLocator =				forloop::Service<AssetManager>::Instance{};
+inline auto playerLocator =				forloop::Service<Player>::Instance{};
+inline auto cameraLocator =				forloop::Service<Camera>::Instance{};
+inline auto clockLocator =				forloop::Service<util::Clock>::Instance{};
+inline auto stateControllerLocator =	forloop::Service<automa::StateController>::Instance{};
 
 }
 

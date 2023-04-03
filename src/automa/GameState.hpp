@@ -127,6 +127,14 @@ public:
             }
         }
         svc::playerLocator.get().collider.physics.zero();
+        for(auto& portal : map.portals) {
+            if(portal.destination_map_id == svc::stateControllerLocator.get().source_id) {
+                sf::Vector2<float> spawn_position{ portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - PLAYER_HEIGHT};
+                svc::playerLocator.get().set_position(spawn_position);
+                svc::cameraLocator.get().center(spawn_position);
+            }
+        }
+
 //        svc::assetLocator.get().abandoned.setVolume(50);
 //        svc::assetLocator.get().abandoned.play();
 //        svc::assetLocator.get().abandoned.setLoop(true);

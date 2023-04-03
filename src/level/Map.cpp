@@ -57,7 +57,7 @@ void Map::load(const std::string& path) {
         input.open(path + "/map_tiles_" + std::to_string(counter) + ".txt");
         for(auto& cell : layer.grid.cells) {
             input >> value;
-            squid::TILE_TYPE typ = squid::lookup_type(value);
+            lookup::TILE_TYPE typ = lookup::tile_lookup.at(value);
             cell.value = value;
             cell.type = typ;
             
@@ -70,6 +70,27 @@ void Map::load(const std::string& path) {
         //close the current file
         input.close();
         ++counter;
+    }
+
+    //get portal data
+    input.open(path + "/map_portals.txt");
+    if (input.is_open()) {
+        while (!input.eof()) {
+            entity::Portal p{};
+            input >> p.scaled_dimensions.x; input.ignore();
+            input >> p.scaled_dimensions.y; input.ignore();
+            input >> value; p.activate_on_contact = (bool)value; input.ignore();
+            input >> p.source_map_id; input.ignore();
+            input >> p.destination_map_id; input.ignore();
+            input >> p.scaled_position.x; input.ignore();
+            input >> p.scaled_position.y; input.ignore();
+            p.update();
+            if (p.dimensions.x != 0) { //only push if one was read, otherwise we reached the end of the file
+                portals.push_back(p);
+                portals.back().update();
+            }
+        }
+        input.close();
     }
     
     critters.push_back(bestiary.get_critter_at(0));
@@ -97,7 +118,7 @@ void Map::update() {
             cell.collision_check = true;
             
             if(cell.value > 0) {
-                svc::playerLocator.get().collider.handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
+                svc::playerLocator.get().collider.handle_map_collision(cell.bounding_box, cell.type);
             }
         }
     }
@@ -111,7 +132,7 @@ void Map::update() {
             else {
                 cell.collision_check = true;
                 if (cell.value > 0) {
-                    critter.collider.handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
+                    critter.collider.handle_map_collision(cell.bounding_box, cell.type);
                 }
             }
         }
@@ -185,6 +206,24 @@ void Map::update() {
     } else {
         svc::playerLocator.get().collider.is_colliding_with_level = false;
     }
+
+    for (auto& portal : portals) {
+        portal.update();
+        if (svc::playerLocator.get().inspecting && portal.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+            portal.activated = true;
+        } else {
+            portal.activated = false;
+        }
+        if (portal.activated) {
+            try {
+                svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(portal.destination_map_id);
+            } catch (std::out_of_range) {
+                svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
+            }
+            svc::stateControllerLocator.get().trigger = true;
+            svc::stateControllerLocator.get().source_id = portal.source_map_id;
+        }
+    }
     
 }
 
@@ -240,6 +279,9 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
                 }
             }
         }
+    }
+    for (auto& portal : portals) {
+        portal.render(win, cam);
     }
 }
 
@@ -303,6 +345,15 @@ void Map::manage_projectiles() {
     if(svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
         spawn_projectile_at(svc::playerLocator.get().get_fire_point());
     }
+}
+
+sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
+    for (auto& portal : portals) {
+        if (portal.source_map_id == portal_source_map_id) {
+            return(portal.position);
+        }
+    }
+    return Vec(300.f, 390.f);
 }
 
 squid::Tile* Map::tile_at(const uint8_t i, const uint8_t j) {

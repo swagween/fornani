@@ -16,6 +16,7 @@
 #include <fstream>
 #include "../weapon/Projectile.hpp"
 #include "../setup/LookupTables.hpp"
+#include "../setup/MapLookups.hpp"
 #include "../graphics/Background.hpp"
 #include "../entities/critter/Bestiary.hpp"
 #include "../entities/world/Portal.hpp"
@@ -57,6 +58,8 @@ class Map {
 public:
     
     class Camera;
+    using Vec = sf::Vector2<float>;
+    using Vecu16 = sf::Vector2<uint16_t>;
     
     Map();
     //methods
@@ -68,17 +71,19 @@ public:
     Shape* shape_at(const uint8_t i, const uint8_t j);
     void spawn_projectile_at(sf::Vector2<float> pos);
     void manage_projectiles();
+    Vec get_spawn_position(int portal_source_map_id);
     
     //layers
     std::vector<Layer> layers;
-    sf::Vector2<float> real_dimensions{}; // pixel dimensions (maybe useless)
-    sf::Vector2<uint16_t> dimensions{}; // points on the 32x32-unit grid
-    sf::Vector2<uint16_t> chunk_dimensions{}; // how many chunks (16x16 squares) in the room
+    Vec real_dimensions{}; // pixel dimensions (maybe useless)
+    Vecu16 dimensions{}; // points on the 32x32-unit grid
+    Vecu16 chunk_dimensions{}; // how many chunks (16x16 squares) in the room
     
     //entities
     std::vector<arms::Projectile> active_projectiles{};
     std::vector<vfx::Emitter> active_emitters{};
     std::vector<critter::Critter> critters{};
+    std::vector<entity::Portal> portals{};
     
     std::unique_ptr<bg::Background> background{};
     
@@ -87,7 +92,7 @@ public:
     lookup::STYLE style{}; // which tileset to render
     int bg{}; // which background to render
     
-    uint16_t room_id{}; // should be assigned to its constituent chunks
+    int room_id{}; // should be assigned to its constituent chunks
     
 };
 

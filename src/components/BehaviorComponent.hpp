@@ -101,6 +101,12 @@ public:
         }
     }
 
+    void hurt() {
+        if (ready()) {
+            current_state = behavior::Behavior(behavior::hurt);
+        }
+    }
+
     void jump() {
         if (ready()) {
             current_state = behavior::Behavior(behavior::jumpsquat);

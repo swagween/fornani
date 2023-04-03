@@ -44,6 +44,7 @@ inline BehaviorParameters stop_up =         BehaviorParameters("stop_up", 2, DEF
 inline BehaviorParameters stop_down =       BehaviorParameters("stop_down", 2, DEFAULT_FRAMERATE, false, false, true, 72);
 inline BehaviorParameters turning =         BehaviorParameters("turning", 2, 6, true, true, true, 33);
 inline BehaviorParameters wall_sliding =    BehaviorParameters("wall_sliding", 4, DEFAULT_FRAMERATE, false, false, false, 66);
+inline BehaviorParameters hurt =            BehaviorParameters("hurt", 4, DEFAULT_FRAMERATE, false, true, true, 76);
 
 inline BehaviorParameters frdog_idle =      BehaviorParameters("frdog_idle", 2, 12, false, false, false, 0);
 inline BehaviorParameters frdog_asleep =    BehaviorParameters("frdog_asleep", 2, 64, false, false, false, 11);

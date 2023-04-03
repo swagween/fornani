@@ -9,6 +9,7 @@
 
 #include "Shape.hpp"
 #include "../components/PhysicsComponent.hpp"
+#include "../setup/EnumLookups.hpp"
 
 namespace shape {
 
@@ -26,7 +27,7 @@ namespace shape {
 		Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos);
 
 		void sync_components();
-		void handle_map_collision(const Shape& cell, bool is_ramp);
+		void handle_map_collision(const Shape& cell, lookup::TILE_TYPE tile_type);
 
 		Shape bounding_box{};
 		Shape predictive_bounding_box{};

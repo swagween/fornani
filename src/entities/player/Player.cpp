@@ -168,6 +168,16 @@ void Player::handle_events(sf::Event& event) {
             }
         }
     }
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::Space) {
+            inspecting = true;
+        }
+    }
+    if (event.type == sf::Event::KeyReleased) {
+        if (event.key.code == sf::Keyboard::Space) {
+            inspecting = false;
+        }
+    }
 }
 
 void Player::update(Time dt) {

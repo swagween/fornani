@@ -10,24 +10,35 @@
 
 namespace entity {
 
+	const uint16_t CELL_SIZE = 32;
+
 	class Portal {
 
 	public:
 
 		using Vec = sf::Vector2<float>;
+		using Vecu16 = sf::Vector2<uint16_t>;
 
 		Portal() = default;
-		Portal(Vec dim, Vec pos) : dimensions(dim), position(pos) { bounding_box = Shape(dim); }
+		Portal(Vecu16 dim, Vecu16 pos) : scaled_dimensions(dim), scaled_position(pos) {
+			dimensions = static_cast<Vec>(dim * CELL_SIZE);
+			position = static_cast<Vec>(pos * CELL_SIZE);
+			bounding_box = Shape(dimensions);
+		}
+		void update();
 		void render(sf::RenderWindow& win, Vec campos); //for debugging
 
 		Vec dimensions{};
 		Vec position{};
+		Vecu16 scaled_dimensions{};
+		Vecu16 scaled_position{};
 		Shape bounding_box{};
 
 		int destination_map_id{}; //where to send the player
-		int destination_portal_id{}; //where to place the player once they arrive
+		int source_map_id{}; //where to place the player once they arrive (check all portals in the destination until you match)
 
 		bool activated{};
+		bool activate_on_contact{};
 
 	};
 

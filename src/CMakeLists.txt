@@ -31,6 +31,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	setup/ServiceLocator.hpp
     setup/LookupTables.hpp
     setup/EnumLookups.hpp
+    setup/MapLookups.hpp
 	entities/player/Player.hpp
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp
@@ -52,6 +53,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	automa/GameState.cpp
 	automa/StateManager.hpp
 	automa/StateManager.cpp
+    automa/StateController.hpp
     gui/HUD.hpp
 	service/Service.hpp
     graphics/FLColor.hpp

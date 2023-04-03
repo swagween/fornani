@@ -9,6 +9,7 @@
 //all services and providers included first
 #include "setup/ServiceLocator.hpp"
 #include "automa/StateManager.hpp"
+#include "setup/EnumLookups.hpp"
 #include "utils/Grid.hpp"
 #include "utils/Shape.hpp"
 
@@ -317,6 +318,8 @@ void run(char** argv) {
     ImGui::SFML::Init(window);
     window.requestFocus();
     
+    //lookups
+    lookup::populate_lookup();
     
     sf::RectangleShape background{};
     background.setSize(static_cast<sf::Vector2<float> >(screen_dimensions));
@@ -367,7 +370,8 @@ void run(char** argv) {
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_ARENA_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_PRISON_01");
+                        svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
                     }
                     break;
                 default:
@@ -379,7 +383,13 @@ void run(char** argv) {
         //game logic and rendering
         
         SM.get_current_state().logic();
-        
+
+        //switch states
+        if (svc::stateControllerLocator.get().trigger) {
+            SM.set_current_state(std::make_unique<flstates::Dojo>());
+            SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/" + svc::stateControllerLocator.get().next_state);
+            svc::stateControllerLocator.get().trigger = false;
+        }
         
             
         ImGui::SFML::Update(window, deltaClock.restart());

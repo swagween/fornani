@@ -92,17 +92,19 @@ namespace shape {
 
     }
 
-    void Collider::handle_map_collision(const Shape& cell, bool is_ramp) {
+    void Collider::handle_map_collision(const Shape& cell, lookup::TILE_TYPE tile_type) {
         float y_dist = cell.vertices[0].y - left_detector.vertices[2].y;
         sf::Vector2<float> detector_mtv = left_detector.testCollisionGetMTV(left_detector, cell);
-        if (left_detector.SAT(cell) && physics.velocity.x < 0.01f && !is_ramp && abs(detector_mtv.x) > abs(detector_mtv.y)) {
+        bool is_ramp = tile_type == lookup::TILE_TYPE::TILE_RAMP;
+        bool is_plat = tile_type == lookup::TILE_TYPE::TILE_PLATFORM;
+        if (left_detector.SAT(cell) && physics.velocity.x < 0.01f && !is_ramp && abs(detector_mtv.x) > abs(detector_mtv.y) && !is_plat) {
             has_left_collision = true;
             physics.acceleration.x = 0.0f;
             physics.velocity.x = 0.0f;
             left_aabb_counter++;
         }
         detector_mtv = right_detector.testCollisionGetMTV(right_detector, cell);
-        if (right_detector.SAT(cell) && physics.velocity.x > -0.01f && !is_ramp && abs(detector_mtv.x) > abs(detector_mtv.y)) {
+        if (right_detector.SAT(cell) && physics.velocity.x > -0.01f && !is_ramp && abs(detector_mtv.x) > abs(detector_mtv.y) && !is_plat) {
             has_right_collision = true;
             physics.acceleration.x = 0.0f;
             physics.velocity.x = 0.0f;
@@ -113,7 +115,6 @@ namespace shape {
             is_any_colllision = true;
             //set mtv
             physics.mtv = predictive_bounding_box.testCollisionGetMTV(predictive_bounding_box, cell);
-
 
             if (physics.velocity.y > 3.0f) {
                 physics.mtv.x = 0.0f;
@@ -130,7 +131,7 @@ namespace shape {
                 physics.acceleration.y = 0.0f;
             }
             //player hits the ceiling
-            if (physics.velocity.y < -0.01f && abs(physics.mtv.y) > 0.001f) {
+            if (physics.velocity.y < -0.01f && abs(physics.mtv.y) > 0.001f && !is_plat) {
                 float ydist = physics.position.y - predictive_bounding_box.shape_y;
                 float correction = ydist + physics.mtv.y;
                 physics.position.y += correction;
