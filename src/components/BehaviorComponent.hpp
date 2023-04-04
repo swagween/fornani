@@ -201,11 +201,16 @@ class CritterBehaviorComponent {
 public:
     CritterBehaviorComponent() { current_state = behavior::Behavior(behavior::frdog_idle); };
     
-    void update() {
-        if(current_state.params.complete) {
-            idle();
+    void reset() {
+        if(ready()) {
+            current_state = behavior::Behavior(behavior::frdog_idle);
         }
-        current_state.update();
+    }
+
+    void update() {
+        if(current_state.params.complete && current_state.params.no_loop) {
+            reset();
+        }
     }
 
     void idle() {

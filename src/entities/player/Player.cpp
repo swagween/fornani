@@ -194,6 +194,11 @@ void Player::update(Time dt) {
         }
     }
     if(!is_jump_pressed) { jump_hold = false; }
+
+    //hurt
+
+    if (collider.spike_trigger) { just_hurt = true; } else { just_hurt = false; }
+    if (just_hurt && !invincible) { collider.physics.acceleration.y = -0.2f; collider.spike_trigger = false; }
     
     //check keystate
     if(!behavior.restricted()) {
@@ -364,6 +369,10 @@ void Player::update_behavior() {
         behavior.land();
         soundboard_flags.land = true;
         freefalling = false;
+    }
+
+    if(just_hurt) {
+        behavior.hurt();
     }
     
     if(wall_slide_trigger) { is_wall_sliding = true; }

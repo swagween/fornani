@@ -67,8 +67,8 @@ public:
     void update();
     void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
     void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
-    squid::Tile* tile_at(const uint8_t i, const uint8_t j);
-    Shape* shape_at(const uint8_t i, const uint8_t j);
+    squid::Tile& tile_at(const uint8_t i, const uint8_t j);
+    Shape& shape_at(const uint8_t i, const uint8_t j);
     void spawn_projectile_at(sf::Vector2<float> pos);
     void manage_projectiles();
     Vec get_spawn_position(int portal_source_map_id);

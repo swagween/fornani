@@ -54,6 +54,8 @@ namespace shape {
 
 		sf::Vector2<float>dimensions{};
 
+		bool spike_trigger{};
+
 	};
 
 }

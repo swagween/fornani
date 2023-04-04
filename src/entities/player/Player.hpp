@@ -154,6 +154,8 @@ public:
     bool is_wall_sliding{};
     int jump_request{};
     bool inspecting{};
+    bool just_hurt{};
+    bool invincible{};
     
     bool suspended_trigger{};
     bool fall_trigger{};

@@ -94,7 +94,7 @@ void Map::load(const std::string& path) {
     }
     
     critters.push_back(bestiary.get_critter_at(0));
-    critters.back().set_position({104, 464});
+    critters.back().set_position({404, 494});
     critters.back().collider.physics.zero();
     
 }
@@ -177,10 +177,17 @@ void Map::update() {
     
     for(auto& critter : critters) {
         //critter.random_walk(sf::Vector2<int>(120, 180));
-        critter.current_target = svc::playerLocator.get().collider.physics.position;
         critter.seek_current_target();
         critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
         critter.update();
+        if (svc::playerLocator.get().collider.bounding_box.SAT(critter.hostile_range)) {
+            critter.current_target = svc::playerLocator.get().collider.physics.position;
+            critter.awake();
+        } else if (svc::playerLocator.get().collider.bounding_box.SAT(critter.alert_range)) {
+            critter.wake_up();
+        } else {
+            critter.sleep();
+        }
         
         critter.random_idle_action();
         while(!critter.idle_action_queue.empty()) {
@@ -356,17 +363,17 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
     return Vec(300.f, 390.f);
 }
 
-squid::Tile* Map::tile_at(const uint8_t i, const uint8_t j) {
+squid::Tile& Map::tile_at(const uint8_t i, const uint8_t j) {
     //for checking tile value
     if(i * j < layers.at(MIDDLEGROUND).grid.cells.size()) {
-        return &layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x);
+        return layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x);
     }
 }
 
-Shape* Map::shape_at(const uint8_t i, const uint8_t j) {
+Shape& Map::shape_at(const uint8_t i, const uint8_t j) {
     //for testing collision
     if(i * j < layers.at(MIDDLEGROUND).grid.cells.size()) {
-        return &layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x).bounding_box;
+        return layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x).bounding_box;
     }
 }
 

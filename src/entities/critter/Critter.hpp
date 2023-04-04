@@ -36,14 +36,17 @@ struct CritterStats {
     int base_hp{};
     float speed{};
     float loot_multiplier{};
-    
     int energy{};
+    int vision{};
     
 };
 
 struct CritterFlags {
     bool alive{};
     bool seeking{};
+    bool awake{};
+    bool awakened{};
+    bool asleep{};
 };
 
 struct FrameTracker {
@@ -61,6 +64,12 @@ public:
         collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
         collider.physics.maximum_velocity = sf::Vector2<float>(stats.speed, stats.speed*4);
         if (metadata.gravity) { collider.physics.gravity = 0.03f; }
+
+        alert_range = Shape( { (float)s.vision * 1.5f, (float)s.vision * 1.5f } );
+        hostile_range = Shape( { (float)s.vision, (float)s.vision } );
+
+        ar.setSize( { (float)(s.vision * 1.5), (float)(s.vision * 1.5) });
+        hr.setSize( { (float)s.vision, (float)s.vision } );
     }
     ~Critter() {}
     
@@ -69,6 +78,10 @@ public:
     void set_sprite();
     void set_position(sf::Vector2<int> pos);
     void seek_current_target();
+    void wake_up();
+    void sleep();
+    void awake();
+
     
     //general critter methods, to be called dependent on critter type
 //    void stop();
@@ -90,6 +103,8 @@ public:
     
     components::CritterBehaviorComponent behavior{};
     shape::Collider collider{};
+    Shape alert_range{};
+    Shape hostile_range{};
     
     sf::Vector2<int> sprite_dimensions{};
     sf::Vector2<int> spritesheet_dimensions{};
@@ -97,6 +112,8 @@ public:
     
     sf::Sprite sprite{};
     sf::RectangleShape hurtbox{}; // for debugging
+    sf::RectangleShape ar{};
+    sf::RectangleShape hr{};
     
     std::queue<int> idle_action_queue{};
     

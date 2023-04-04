@@ -62,6 +62,8 @@ Shape::Shape(Vec dim) {
     vertices.push_back(Vec(0,     dim.y ));
     shape_x = 0;
     shape_y = 0;
+    shape_w = dim.x;
+    shape_h = dim.y;
     num_sides = 4;
     init();
 }

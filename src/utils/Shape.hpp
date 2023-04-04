@@ -30,12 +30,11 @@ public:
     Shape(Vec dim);
     
     void init();
+    void update();
     void update(double _x, double _y, double _w, double _h);
     void move(double x_, double y_);
     void draw(int camx, int camy);
     Vec get_center();
-    
-    void handle_collision();
     
     Vec perp(Vec edg);
     
