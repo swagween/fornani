@@ -214,7 +214,7 @@ public:
     }
 
     void idle() {
-        if(ready()) {
+        if(ready() && complete()) {
             current_state = behavior::Behavior(behavior::frdog_idle);
         }
     }
@@ -273,6 +273,10 @@ public:
     
     bool restricted() {
         return current_state.params.restrictive && !current_state.params.complete;
+    }
+
+    bool complete() {
+        return current_state.params.complete;
     }
     
     bool facing_left() {

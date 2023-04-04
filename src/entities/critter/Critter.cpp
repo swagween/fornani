@@ -19,8 +19,8 @@ void Critter::update() {
     hostile_range.update(collider.physics.position.x - hostile_range.shape_w / 2, collider.physics.position.y - hostile_range.shape_h / 2, hostile_range.shape_w, hostile_range.shape_h);
     ar.setFillColor(sf::Color{ 80, 80, 20, 60 });
     hr.setFillColor(sf::Color{ 80, 40, 20, 60 });
-    ar.setOutlineColor(sf::Color{ 80, 80, 80});
-    hr.setOutlineColor(sf::Color{ 80, 80, 80});
+    ar.setOutlineColor(sf::Color{ 180, 180, 180});
+    hr.setOutlineColor(sf::Color{ 180, 180, 180});
     ar.setOutlineThickness(-1);
     hr.setOutlineThickness(-1);
     collider.bounding_box.update(collider.physics.position.x, collider.physics.position.y, dimensions.x, dimensions.y);
@@ -40,8 +40,8 @@ void Critter::update() {
         collider.is_any_jump_colllision = false;
     }
 
-    if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.facing_lr = behavior::DIR_LR::LEFT; }
-    if (collider.physics.acceleration.x > 0.0f && collider.physics.velocity.x < 0.0f) { behavior.facing_lr = behavior::DIR_LR::RIGHT; }
+    if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.turn(); behavior.facing_lr = behavior::DIR_LR::LEFT; }
+    if (collider.physics.acceleration.x > 0.0f && collider.physics.velocity.x < 0.0f) { behavior.turn(); behavior.facing_lr = behavior::DIR_LR::RIGHT; }
 
 
     if (abs(collider.physics.velocity.x) > 0.02f && behavior.current_state.params.behavior_id == "frdog_idle") {

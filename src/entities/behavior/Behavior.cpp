@@ -13,7 +13,7 @@ namespace behavior {
         if (params.current_frame == 0) { params.complete = false; }
         if(params.current_frame >= params.duration) {
             params.current_frame = 0;
-            if (params.transitional || params.restrictive) { params.complete = true; }
+            params.complete = true;
         }
     }
     

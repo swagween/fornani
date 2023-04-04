@@ -54,7 +54,7 @@ inline BehaviorParameters frdog_hurt =      BehaviorParameters("frdog_hurt", 2, 
 inline BehaviorParameters frdog_awakened =  BehaviorParameters("frdog_awakened", 2, 12, true, false, true, 2);
 inline BehaviorParameters frdog_bark =      BehaviorParameters("frdog_bark", 1, 16, true, false, true, 15);
 inline BehaviorParameters frdog_turn =      BehaviorParameters("frdog_turn", 1, 12, true , true, true, 13);
-inline BehaviorParameters frdog_run =       BehaviorParameters("frdog_run", 4, DEFAULT_FRAMERATE, true, false, false, 16);
+inline BehaviorParameters frdog_run =       BehaviorParameters("frdog_run", 4, DEFAULT_FRAMERATE, false, false, false, 16);
 
 
 
