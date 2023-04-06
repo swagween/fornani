@@ -21,6 +21,7 @@ inline std::unordered_map<int, std::string> get_map_label {
     {105,     "FIRSTWIND_ATRIUM_02"     },
     {102,     "FIRSTWIND_CORRIDOR_01"   },
     {103,     "FIRSTWIND_CORRIDOR_02"   },
+    {106,     "FIRSTWIND_CARGO_01"   },
     {800,     "SHADOW_PASSAGE_01"       },
     {801,     "SHADOW_PASSAGE_02"       },
     {802,     "SHADOW_CORRIDOR_01"      },

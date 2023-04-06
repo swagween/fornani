@@ -7,6 +7,7 @@
 //
 
 #include "Map.hpp"
+#include "../setup/EnumLookups.hpp"
 #include "../setup/ServiceLocator.hpp"
 
 namespace world {
@@ -145,6 +146,9 @@ void Map::update() {
             } else {
                 cell.collision_check = true;
                 if(proj.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
+                    if(cell.type == lookup::TILE_TYPE::TILE_BREAKABLE) {
+                        cell.value = 0;
+                    }
                     proj.destroy();
                 }
             }
@@ -277,11 +281,11 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
                     if(cell.collision_check) {
                         sf::RectangleShape box{};
                         box.setPosition(cell.position.x - cam.x, cell.position.y - cam.y);
-                        box.setFillColor(sf::Color{100, 100, 130, 80});
-                        box.setOutlineColor(sf::Color(235, 232, 249, 180));
-                        box.setOutlineThickness(-2);
+                        box.setFillColor(sf::Color{100, 100, 130, 20});
+                        box.setOutlineColor(sf::Color(235, 232, 249, 80));
+                        box.setOutlineThickness(-1);
                         box.setSize(sf::Vector2<float>{(float)cell.bounding_box.shape_w, (float)cell.bounding_box.shape_h});
-//                        win.draw(box);
+                        //win.draw(box);
                     }
                 }
             }

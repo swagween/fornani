@@ -127,6 +127,10 @@ namespace shape {
                     if (physics.mtv.x > 0.0f) { physics.mtv.x = 0.0f; }
                 }
 
+                if (is_ramp && abs(physics.velocity.y) < 0.0001f) {
+                    physics.position.y += physics.mtv.y;
+                }
+
                 if (physics.velocity.y > 3.0f) {
                     physics.mtv.x = 0.0f;
                 }
