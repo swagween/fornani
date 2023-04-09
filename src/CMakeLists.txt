@@ -59,6 +59,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     graphics/FLColor.hpp
     graphics/Background.hpp
     graphics/Background.cpp
+    graphics/Transition.hpp
+    graphics/Transition.cpp
 
 )
 

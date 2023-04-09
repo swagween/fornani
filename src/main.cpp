@@ -132,9 +132,11 @@ static void show_overlay() {
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Jump Request: %i", svc::playerLocator.get().jump_request);
-                    if(svc::playerLocator.get().is_jump_pressed) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    if(svc::playerLocator.get().jump_hold) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Jump Request : %i", svc::playerLocator.get().jump_request);
+                    ImGui::Text("Jump Pressed : %s", svc::playerLocator.get().jump_flags.is_jump_pressed ? "Yes" : "No");
+                    ImGui::Text("Jump Hold    : %s", svc::playerLocator.get().jump_flags.jump_hold ? "Yes" : "No");
+                    ImGui::Text("Jump Released: %s", svc::playerLocator.get().jump_flags.jump_released ? "Yes" : "No");
+                    ImGui::Text("Jumping      : %s", svc::playerLocator.get().jump_flags.jumping ? "Yes" : "No");
 //                    ImGui::Text("Is Wall Sliding: ");
 //                    ImGui::SameLine();
 //                    if(svc::playerLocator.get().is_wall_sliding) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -240,11 +242,10 @@ static void show_overlay() {
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SHADOW_PLAT_01");
                         svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                     }
-                    if(ImGui::Button("Hoarder")) {
+                    if(ImGui::Button("Cargo")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
-                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CARGO_01");
                     }
                     if(ImGui::Button("Lab")) {
                         svc::assetLocator.get().click.play();
@@ -372,6 +373,10 @@ void run(char** argv) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_PRISON_01");
                         svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
+                        svc::assetLocator.get().dusken_cove.setVolume(svc::assetLocator.get().music_vol);
+                        svc::assetLocator.get().dusken_cove.play();
+                        svc::assetLocator.get().dusken_cove.setLoop(true);
+
                     }
                     break;
                 default:

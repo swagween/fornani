@@ -179,6 +179,8 @@ public:
         pop_mid.setBuffer(pop_mid_buffer);
         jump_buffer.loadFromFile(resource_path + "/audio/sfx/jump.wav");
         jump.setBuffer(jump_buffer);
+        shatter_buffer.loadFromFile(resource_path + "/audio/sfx/shatter.wav");
+        shatter.setBuffer(shatter_buffer);
         step_buffer.loadFromFile(resource_path + "/audio/sfx/steps.wav");
         step.setBuffer(step_buffer);
         landed_buffer.loadFromFile(resource_path + "/audio/sfx/landed.wav");
@@ -188,6 +190,7 @@ public:
         clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");
         abandoned.openFromFile(resource_path + "/audio/songs/abandoned.wav");
         three_pipes.openFromFile(resource_path + "/audio/songs/three_pipes.wav");
+        dusken_cove.openFromFile(resource_path + "/audio/songs/dusken_cove.wav");
     }
     
     void setResourcePath(char** argv) {
@@ -295,6 +298,8 @@ public:
     
     sf::SoundBuffer jump_buffer{};
     sf::Sound jump;
+    sf::SoundBuffer shatter_buffer{};
+    sf::Sound shatter;
     sf::SoundBuffer step_buffer{};
     sf::Sound step;
     sf::SoundBuffer landed_buffer{};
@@ -305,6 +310,7 @@ public:
     sf::Music clay_statue{};
     sf::Music abandoned{};
     sf::Music three_pipes{};
+    sf::Music dusken_cove{};
     
     //other members
     int music_vol{24};

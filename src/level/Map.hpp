@@ -18,6 +18,7 @@
 #include "../setup/LookupTables.hpp"
 #include "../setup/MapLookups.hpp"
 #include "../graphics/Background.hpp"
+#include "../graphics/Transition.hpp"
 #include "../entities/critter/Bestiary.hpp"
 #include "../entities/world/Portal.hpp"
 
@@ -26,6 +27,12 @@ const int CHUNK_SIZE{16};
 const int CELL_SIZE{32};
 
 namespace world {
+
+    /*ElementBehavior {rate, rate_variance, expulsion_force, expulsion_variance, cone, grav, grav_variance, x_friction, y_friction }; */
+    //map emitters!
+    constexpr inline vfx::ElementBehavior breakable_spray{ 3.2, 2.0, 1.5, 0.8, 0.8, 0.01, 0.005, 0.99, 0.99 };
+    constexpr inline vfx::EmitterStats breakable_stats{ 10, 0, 80, 60, 5.0f };
+    inline auto breakable_debris = vfx::Emitter(breakable_spray, breakable_stats, flcolor::goldenrod);
 
 enum LAYER_ORDER {
     BACKGROUND = 0,
@@ -86,6 +93,7 @@ public:
     std::vector<entity::Portal> portals{};
     
     std::unique_ptr<bg::Background> background{};
+    flfx::Transition transition{255};
     
     critter::Bestiary bestiary{};
     

@@ -19,7 +19,7 @@ class Particle {
 public:
     
     Particle() = default;
-    Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric) : physics(p), init_force(f), force_variance(v), angle_range(a) {
+    Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric, float sz = 3.0f) : physics(p), init_force(f), force_variance(v), angle_range(a), size(sz) {
         physics.friction = fric;
         float randx{};
         float randy{};
@@ -57,6 +57,7 @@ public:
     float init_force{};
     float force_variance{};
     float angle_range{};
+    float size{};
     Shape bounding_box{};
     util::Random r{};
 };

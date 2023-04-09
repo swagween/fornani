@@ -125,15 +125,19 @@ public:
         switch(dir) {
             case FIRING_DIRECTION::LEFT:
                 physics.velocity = {-stats.speed + (var/2), var};
+                physics.dir = components::DIRECTION::LEFT;
                 break;
             case FIRING_DIRECTION::RIGHT:
                 physics.velocity = {stats.speed + (var/2), var};
+                physics.dir = components::DIRECTION::RIGHT;
                 break;
             case FIRING_DIRECTION::UP:
                 physics.velocity = {var, -stats.speed + (var/2)};
+                physics.dir = components::DIRECTION::UP;
                 break;
             case FIRING_DIRECTION::DOWN:
                 physics.velocity = {var, stats.speed + (var/2)};
+                physics.dir = components::DIRECTION::DOWN;
                 break;
         }
     }

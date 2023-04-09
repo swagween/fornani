@@ -94,9 +94,12 @@ void Map::load(const std::string& path) {
         input.close();
     }
     
-    critters.push_back(bestiary.get_critter_at(0));
+    /*critters.push_back(bestiary.get_critter_at(0));
     critters.back().set_position({404, 494});
-    critters.back().collider.physics.zero();
+    critters.back().collider.physics.zero();*/
+
+    transition.fade_in = true;
+    svc::playerLocator.get().unrestrict_inputs();
     
 }
 
@@ -148,6 +151,12 @@ void Map::update() {
                 if(proj.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
                     if(cell.type == lookup::TILE_TYPE::TILE_BREAKABLE) {
                         cell.value = 0;
+                        active_emitters.push_back(breakable_debris);
+                        active_emitters.back().get_physics().acceleration += proj.physics.acceleration;
+                        active_emitters.back().set_position(cell.position.x + CELL_SIZE/2, cell.position.y + CELL_SIZE/2);
+                        active_emitters.back().set_direction(proj.physics.dir);
+                        active_emitters.back().update();
+                        svc::assetLocator.get().shatter.play();
                     }
                     proj.destroy();
                 }
@@ -222,19 +231,27 @@ void Map::update() {
         portal.update();
         if (svc::playerLocator.get().inspecting && portal.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
             portal.activated = true;
-        } else {
-            portal.activated = false;
+            svc::playerLocator.get().restrict_inputs();
         }
         if (portal.activated) {
-            try {
-                svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(portal.destination_map_id);
-            } catch (std::out_of_range) {
-                svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
+            transition.fade_out = true;
+            if (transition.done) {
+                try {
+                    svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(portal.destination_map_id);
+                }
+                catch (std::out_of_range) {
+                    svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
+                }
+                svc::stateControllerLocator.get().trigger = true;
+                svc::stateControllerLocator.get().source_id = portal.source_map_id;
             }
-            svc::stateControllerLocator.get().trigger = true;
-            svc::stateControllerLocator.get().source_id = portal.source_map_id;
         }
     }
+    if (svc::clockLocator.get().every_x_frames(1)) {
+        transition.update();
+    }
+
+    
     
 }
 
@@ -260,8 +277,8 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
         for(auto& particle : emitter.get_particles()) {
             sf::RectangleShape dot{};
             dot.setFillColor(emitter.color);
-            dot.setSize({3.0f, 3.0f});
-            dot.setPosition(particle.physics.position.x - cam.x, particle.physics.position.y - cam.y);
+            dot.setSize({particle.size, particle.size});
+            dot.setPosition(particle.physics.position.x - cam.x - particle.size, particle.physics.position.y - cam.y - particle.size);
             win.draw(dot);
         }
     }

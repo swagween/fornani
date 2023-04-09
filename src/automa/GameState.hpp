@@ -146,9 +146,12 @@ public:
 //        svc::assetLocator.get().brown_noise.setVolume(20);
 //        svc::assetLocator.get().brown_noise.play();
 //        svc::assetLocator.get().brown_noise.setLoop(true);
+        
     }
     void handle_events(sf::Event& event) {
-        svc::playerLocator.get().handle_events(event);
+        if (!svc::playerLocator.get().input_flags.restricted) {
+            svc::playerLocator.get().handle_events(event);
+        }
         if (event.type == sf::Event::EventType::KeyPressed) {
             if (event.key.code == sf::Keyboard::H) {
                 show_colliders = !show_colliders;
@@ -251,6 +254,7 @@ public:
 //        win.draw(svc::assetLocator.get().sp_ui_test);
 //        win.draw(svc::assetLocator.get().sp_bryn_test);
         
+        map.transition.render(win);
         
     }
     

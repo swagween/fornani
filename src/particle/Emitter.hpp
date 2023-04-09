@@ -40,6 +40,7 @@ struct EmitterStats {
     int lifespan_variance{};
     int particle_lifespan{};
     int particle_lifespan_variance{};
+    float part_size = 3.0f;
 };
 
 class Emitter {
@@ -57,7 +58,7 @@ public:
     void update() { //this will tick every element and the generator itself
         physics.update();
         if(stats.lifespan > 0) { //make a particle at a certain rate
-            particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}));
+            particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}, stats.part_size));
             particles.back().physics.dir = physics.dir;
             util::Random r{};
             int var = r.random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);

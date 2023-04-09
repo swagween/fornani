@@ -127,19 +127,22 @@ void Player::handle_events(sf::Event& event) {
     }
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Z) {
-            is_jump_pressed = true;
+            jump_flags.is_jump_pressed = true;
             jump_request = JUMP_BUFFER_TIME;
-            just_jumped = true;
-            jump_trigger = true;
+            jump_flags.just_jumped = true;
+            jump_flags.jump_trigger = true;
         }
     }
     if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == sf::Keyboard::Z) {
-            is_jump_pressed = false;
-            jump_hold = false;
+            if (jump_flags.just_jumped || jump_flags.jump_hold || jump_flags.jumping || jump_request > -1) {
+                jump_flags.jump_released = true;
+            }
+            jump_flags.is_jump_pressed = false;
+            jump_flags.jump_hold = false;
             if(!grounded) { jump_request = -1; }
             if(!behavior.restricted()) {
-                can_jump = true;
+                jump_flags.can_jump = true;
             }
         }
     }
@@ -181,24 +184,45 @@ void Player::handle_events(sf::Event& event) {
 }
 
 void Player::update(Time dt) {
-//    if(behavior::trigger) { behavior.reset(); }
+
     update_animation();
+
     //check if player requested jump
     if(grounded && jump_request > -1) {
-        if(!behavior.restricted()) {
-            jump_height_counter = 0;
-        }
-        jump_hold = true;
-        if(just_jumped) {
+        jump_flags.jump_hold = true;
+        if(jump_flags.just_jumped) {
             behavior.jump();
         }
     }
-    if(!is_jump_pressed) { jump_hold = false; }
+
+    //preset flags
+    if (grounded) { jump_flags.jumping = false; } //do this before jumping, otherwise it will trigger on the same frame
+
+    //jump!
+    if (jump_request > -1) {
+        if (!behavior.restricted()) { //once jumpsquat is over
+            jump_request--;
+            if (grounded) {
+                collider.physics.acceleration.y = -stats.JUMP_MAX / 1.3f;
+                jump_flags.jumping = true;
+                jump_flags.can_jump = false;
+                jump_flags.jump_trigger = false;
+                behavior.rise();
+                if (!jump_flags.jump_trigger) { soundboard_flags.jump = true; }
+            }
+        }
+    }
+
+    //reset jump flags
+    if (!jump_flags.is_jump_pressed) { jump_flags.jump_hold = false; }
+    if (grounded && jump_request == -1) { jump_flags.jump_released = false; }
+    if (jump_flags.jump_released && jump_flags.jumping) { collider.physics.acceleration.y *= stats.JUMP_RELEASE_MULTIPLIER; jump_flags.jumping = false; } //player lets go
+    if (jump_flags.jump_released && !grounded) { jump_flags.jump_released = false; }
 
     //hurt
 
     if (collider.spike_trigger) { just_hurt = true; } else { just_hurt = false; }
-    if (just_hurt && !invincible) { collider.physics.acceleration.y = -0.2f; collider.spike_trigger = false; }
+    if (just_hurt && !invincible) { collider.physics.acceleration.y *= 0.1f; collider.spike_trigger = false; }
     
     //check keystate
     if(!behavior.restricted()) {
@@ -248,28 +272,11 @@ void Player::update(Time dt) {
         }
     }
     
-    if(jump_request > -1) {
-        if(!behavior.restricted()) {
-            jump_request--;
-            //still jump for quick presses
-            if(grounded) {
-                collider.physics.acceleration.y = -stats.JUMP_MAX / 1.3f;
-                ++jump_height_counter;
-                can_jump = false;
-                jump_trigger = false;
-                behavior.rise();
-                if(!jump_trigger) { soundboard_flags.jump = true; }
-            }
-        }
-    }
-
-    
     if(move_left && move_right) {
         collider.physics.acceleration.x = 0.0f;
     }
     
     collider.physics.update_euler();
-    
     
     collider.sync_components();
     
@@ -326,9 +333,9 @@ void Player::update_animation() {
 void Player::update_behavior() {
     
     
-    if(just_jumped && !is_wall_sliding) {
+    if(jump_flags.just_jumped && !is_wall_sliding) {
         behavior.air(collider.physics.velocity.y);
-        just_jumped = false;
+        jump_flags.just_jumped = false;
     }
     
     if(behavior.current_state.params.complete) {
@@ -365,7 +372,7 @@ void Player::update_behavior() {
     }
     
     
-    if(collider.just_landed) {
+    if(collider.just_landed && jump_request == -1) {
         behavior.land();
         soundboard_flags.land = true;
         freefalling = false;
@@ -503,6 +510,21 @@ void Player::update_weapon_direction() {
     } else {
         hand_position = {20, 36};
     }
+}
+
+void Player::restrict_inputs() {
+
+    input_flags.restricted = true;
+    move_left = false;
+    move_right = false;
+    inspecting = false;
+    weapon_fired = false;
+
+    behavior.reset();
+}
+
+void Player::unrestrict_inputs() {
+    input_flags.restricted = false;
 }
 
 sf::Vector2<float> Player::get_fire_point() {

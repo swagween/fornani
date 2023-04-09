@@ -109,4 +109,4 @@ public:
 }
 
 
-/* FLColor_hpp */
+/* Background_hpp */

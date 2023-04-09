@@ -74,6 +74,8 @@ struct PhysicsStats {
     float WALL_SLIDE_THRESHOLD = -1.0f;
     float WALL_SLIDE_SPEED = 1.31f;
     float PLAYER_MASS = 1.0f;
+
+    float JUMP_RELEASE_MULTIPLIER = 0.65f;
     
 };
 
@@ -82,6 +84,20 @@ struct SoundboardFlags {
     bool step{};
     bool land{};
     bool weapon_swap{};
+};
+
+struct JumpFlags {
+    bool jump_hold{ false }; //true if jump is pressed and permanently false once released, until player touches the ground again
+    bool jump_trigger{ false }; //true for one frame if jump is pressed and the player is grounded
+    bool can_jump{}; //true if the player is grounded
+    bool just_jumped{}; //used for updating animation
+    bool is_jump_pressed{}; //true if the jump button is pressed, false if not. independent of player's state.
+    bool jump_released{}; //true if jump released midair, reset upon landing
+    bool jumping{}; //true if jumpsquat is over, falce once player lands
+};
+
+struct InputFlags {
+    bool restricted{ false };
 };
 
 class Player {
@@ -102,6 +118,9 @@ public:
     void set_position(sf::Vector2<float> new_pos);
     void update_direction();
     void update_weapon_direction();
+
+    void restrict_inputs();
+    void unrestrict_inputs();
     
     //firing
     sf::Vector2<float> get_fire_point();
@@ -134,6 +153,8 @@ public:
     sf::Sprite sprite{};
     
     SoundboardFlags soundboard_flags{};
+    JumpFlags jump_flags{};
+    InputFlags input_flags{};
     
     bool move_left{};
     bool move_right{};
@@ -143,11 +164,6 @@ public:
     bool grav = true;
 
     bool grounded = false;
-    bool jump_hold = false;
-    bool jump_trigger = false;
-    bool can_jump{};
-    bool just_jumped{};
-    bool is_jump_pressed{};
     bool stopping{};
     bool left_released{};
     bool right_released{};
@@ -170,10 +186,6 @@ public:
     bool start_cooldown{};
     
     int wall_slide_ctr{0};
-    
-    int jump_height_counter{};
-
-    int room_id{};
     
 };
  /* Player_hpp */
