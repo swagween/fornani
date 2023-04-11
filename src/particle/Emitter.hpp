@@ -24,8 +24,8 @@ enum class EMMITER_TYPE {
 };
 
 struct ElementBehavior {
-    float rate{}; //expulsion rate
-    float rate_variance{}; //variance in expulsion rate
+    int rate{}; //expulsion rate
+    int rate_variance{}; //variance in expulsion rate
     float expulsion_force{};
     float expulsion_variance{};
     float cone{}; //angle in radians of element dispersal
@@ -58,11 +58,13 @@ public:
     void update() { //this will tick every element and the generator itself
         physics.update();
         if(stats.lifespan > 0) { //make a particle at a certain rate
-            particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}, stats.part_size));
-            particles.back().physics.dir = physics.dir;
-            util::Random r{};
-            int var = r.random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
-            particles.back().lifespan = stats.particle_lifespan + var;
+            for (int i = 0; i < behavior.rate; ++i) {
+                particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, { behavior.x_friction, behavior.y_friction }, stats.part_size));
+                particles.back().physics.dir = physics.dir;
+                util::Random r{};
+                int var = r.random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
+                particles.back().lifespan = stats.particle_lifespan + var;
+            }
         }
 
         for (auto& particle : particles) {
@@ -73,9 +75,6 @@ public:
 
         --stats.lifespan;
     }
-    
-    void set_size(uint32_t sz);
-    void set_type(EMMITER_TYPE t);
 
     bool empty() {
         return particles.empty();

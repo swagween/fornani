@@ -30,9 +30,12 @@ namespace world {
 
     /*ElementBehavior {rate, rate_variance, expulsion_force, expulsion_variance, cone, grav, grav_variance, x_friction, y_friction }; */
     //map emitters!
-    constexpr inline vfx::ElementBehavior breakable_spray{ 3.2, 2.0, 1.5, 0.8, 0.8, 0.01, 0.005, 0.99, 0.99 };
-    constexpr inline vfx::EmitterStats breakable_stats{ 10, 0, 80, 60, 5.0f };
+    constexpr inline vfx::ElementBehavior breakable_spray{ 2, 1, 1.5, 0.8, 0.8, 0.01, 0.005, 0.99, 0.99 };
+    constexpr inline vfx::EmitterStats breakable_stats{ 10, 0, 80, 60, 3.0f };
     inline auto breakable_debris = vfx::Emitter(breakable_spray, breakable_stats, flcolor::goldenrod);
+    constexpr inline vfx::ElementBehavior player_death_spray{ 10, 2, 1.8, 1.7, 0.8, 0.005, 0.001, 0.99, 0.99 };
+    constexpr inline vfx::EmitterStats player_death_stats{ 4, 0, 80, 60, 4.0f };
+    inline auto player_death = vfx::Emitter(player_death_spray, player_death_stats, flcolor::white);
 
 enum LAYER_ORDER {
     BACKGROUND = 0,
@@ -101,6 +104,7 @@ public:
     int bg{}; // which background to render
     
     int room_id{}; // should be assigned to its constituent chunks
+    bool game_over{ false };
     
 };
 

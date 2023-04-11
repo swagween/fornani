@@ -75,23 +75,7 @@ public:
 
     void stop() {
         if (ready()) {
-            switch (facing) {
-            case behavior::DIR::UP_RIGHT:
-                current_state = behavior::Behavior(behavior::stop_up);
-                break;
-            case behavior::DIR::DOWN_RIGHT:
-                current_state = behavior::Behavior(behavior::stop_down);
-                break;
-            case behavior::DIR::UP_LEFT:
-                current_state = behavior::Behavior(behavior::stop_up);
-                break;
-            case behavior::DIR::DOWN_LEFT:
-                current_state = behavior::Behavior(behavior::stop_down);
-                break;
-            default:
-                current_state = behavior::Behavior(behavior::stop);
-                break;
-            }
+            current_state = behavior::Behavior(behavior::stop);
         }
     }
 
@@ -112,6 +96,13 @@ public:
             current_state = behavior::Behavior(behavior::jumpsquat);
         }
     }
+
+    void inspect() {
+        if (ready()) {
+            current_state = behavior::Behavior(behavior::inspecting);
+        }
+    }
+
     void rise() {
         if (ready()) {
             current_state = behavior::Behavior(behavior::rising);
@@ -200,10 +191,14 @@ public:
 class CritterBehaviorComponent {
 public:
     CritterBehaviorComponent() { current_state = behavior::Behavior(behavior::frdog_idle); };
+    CritterBehaviorComponent(int pid) : id(pid) {}
     
     void reset() {
         if(ready()) {
-            current_state = behavior::Behavior(behavior::frdog_idle);
+            switch (id) {
+            case 0: current_state = behavior::Behavior(behavior::frdog_idle); break;
+            case 1: current_state = behavior::Behavior(behavior::hulmet_idle); break;
+            }
         }
     }
 
@@ -215,7 +210,10 @@ public:
 
     void idle() {
         if(ready() && complete()) {
-            current_state = behavior::Behavior(behavior::frdog_idle);
+            switch (id) {
+            case 0: current_state = behavior::Behavior(behavior::frdog_idle); break;
+            case 1: current_state = behavior::Behavior(behavior::hulmet_idle); break;
+            }
         }
     }
 
@@ -251,13 +249,19 @@ public:
 
     void turn() {
         if(ready()) {
-            current_state = behavior::Behavior(behavior::frdog_turn);
+            switch (id) {
+            case 0: current_state = behavior::Behavior(behavior::frdog_turn); break;
+            case 1: current_state = behavior::Behavior(behavior::hulmet_turn); break;
+            }
         }
     }
 
     void run() {
         if(ready()) {
-            current_state = behavior::Behavior(behavior::frdog_run); 
+            switch (id) {
+            case 0: current_state = behavior::Behavior(behavior::frdog_run); break;
+            case 1: current_state = behavior::Behavior(behavior::hulmet_run); break;
+            }
         }
     }
 
@@ -292,6 +296,8 @@ public:
     behavior::DIR_LR facing_lr{};
     
     behavior::Behavior current_state;
+
+    int id{};
     
 };
 

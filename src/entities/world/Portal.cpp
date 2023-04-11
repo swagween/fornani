@@ -23,7 +23,7 @@ namespace entity {
 		box.setOutlineThickness(-1);
 		box.setPosition(Vec(bounding_box.shape_x, bounding_box.shape_y) - campos);
 		box.setSize(dimensions);
-		win.draw(box);
+		//win.draw(box);
 	}
 } // end entity
 

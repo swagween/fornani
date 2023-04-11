@@ -124,6 +124,14 @@ static void show_overlay() {
                     } else {
                         ImGui::TextUnformatted("No");
                     }
+                    ImGui::Text("Behavior Current Frame: %i", svc::playerLocator.get().behavior.current_state.params.current_frame);
+                    ImGui::Text("Behavior Complete? %s", svc::playerLocator.get().behavior.current_state.params.complete ? "Yes" : "No");
+                    ImGui::Text("Behavior No Loop? %s", svc::playerLocator.get().behavior.current_state.params.no_loop ? "Yes" : "No");
+                    ImGui::Text("Invincibility Counter: %i", svc::playerLocator.get().counters.invincibility);
+                    ImGui::Text("Spike Trigger: %s", svc::playerLocator.get().collider.spike_trigger ? "True" : "False");
+
+                    ImGui::Text("Inspecting? %s", svc::playerLocator.get().inspecting ? "Yes" : "No");
+
                     ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
                     ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
                     ImGui::Text("Colliding with Level: ");
@@ -366,6 +374,9 @@ void run(char** argv) {
                         debug_mode = !debug_mode;
                         svc::assetLocator.get().click.play();
                     }
+                    if (event.key.code == sf::Keyboard::K) {
+                        svc::playerLocator.get().kill();
+                    }
                     if (event.key.code == sf::Keyboard::Q) {
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());
                     }
@@ -374,8 +385,9 @@ void run(char** argv) {
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_PRISON_01");
                         svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
                         svc::assetLocator.get().dusken_cove.setVolume(svc::assetLocator.get().music_vol);
-                        svc::assetLocator.get().dusken_cove.play();
+                        //svc::assetLocator.get().dusken_cove.play();
                         svc::assetLocator.get().dusken_cove.setLoop(true);
+                        svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani);
 
                     }
                     break;

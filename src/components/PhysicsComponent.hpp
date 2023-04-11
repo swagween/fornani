@@ -18,7 +18,8 @@ enum class DIRECTION {
     LEFT,
     RIGHT,
     UP,
-    DOWN
+    DOWN,
+    NONE
 };
 
 const sf::Vector2<float> FRICTION_DEFAULT = {0.9f, 0.9f};

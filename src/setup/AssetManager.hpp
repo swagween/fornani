@@ -36,6 +36,7 @@ public:
         t_ui_test.loadFromFile(resource_path + "/image/gui/ui_test.png");
         
         t_frdog.loadFromFile(resource_path + "/image/critter/frdog.png");
+        t_hulmet.loadFromFile(resource_path + "/image/critter/hulmet.png");
         
         t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
         t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
@@ -185,6 +186,10 @@ public:
         step.setBuffer(step_buffer);
         landed_buffer.loadFromFile(resource_path + "/audio/sfx/landed.wav");
         landed.setBuffer(landed_buffer);
+        hurt_buffer.loadFromFile(resource_path + "/audio/sfx/hurt.wav");
+        hurt.setBuffer(hurt_buffer);
+        player_death_buffer.loadFromFile(resource_path + "/audio/sfx/player_death.wav");
+        player_death.setBuffer(player_death_buffer);
         
         brown_noise.openFromFile(resource_path + "/audio/songs/brown_noise.wav");
         clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");
@@ -227,6 +232,7 @@ public:
     
     //critters and bosses!
     sf::Texture t_frdog{};
+    sf::Texture t_hulmet{};
     
     //gui
     sf::Texture t_hud{};
@@ -304,6 +310,10 @@ public:
     sf::Sound step;
     sf::SoundBuffer landed_buffer{};
     sf::Sound landed;
+    sf::SoundBuffer hurt_buffer{};
+    sf::Sound hurt;
+    sf::SoundBuffer player_death_buffer{};
+    sf::Sound player_death;
     
     //songs!
     sf::Music brown_noise{};

@@ -172,13 +172,10 @@ void Player::handle_events(sf::Event& event) {
         }
     }
     if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::Space) {
-            inspecting = true;
-        }
-    }
-    if (event.type == sf::Event::KeyReleased) {
-        if (event.key.code == sf::Keyboard::Space) {
-            inspecting = false;
+        if (event.key.code == sf::Keyboard::Down) {
+            if (grounded) {
+                inspecting_trigger = true;
+            }
         }
     }
 }
@@ -186,6 +183,15 @@ void Player::handle_events(sf::Event& event) {
 void Player::update(Time dt) {
 
     update_animation();
+
+    if(move_left || move_right || look_up || jump_request > -1) {
+        inspecting = false;
+        inspecting_trigger = false;
+    }
+
+    if(inspecting_trigger && behavior.current_state.params.behavior_id == "inspecting" && behavior.current_state.params.done) {
+        inspecting = true;
+    }
 
     //check if player requested jump
     if(grounded && jump_request > -1) {
@@ -220,9 +226,11 @@ void Player::update(Time dt) {
     if (jump_flags.jump_released && !grounded) { jump_flags.jump_released = false; }
 
     //hurt
-
-    if (collider.spike_trigger) { just_hurt = true; } else { just_hurt = false; }
-    if (just_hurt && !invincible) { collider.physics.acceleration.y *= 0.1f; collider.spike_trigger = false; }
+    if (is_invincible()) { collider.spike_trigger = false; flash_sprite(); } else { sprite.setColor(sf::Color::White); }
+    just_hurt = collider.spike_trigger;
+    if (collider.spike_trigger && !is_invincible()) { collider.physics.acceleration.y = -stats.HURT_ACC; collider.spike_trigger = false; make_invincible(); soundboard_flags.hurt = true; --player_stats.health; }
+    update_invincibility();
+    if (player_stats.health <= 0) { kill(); }
     
     //check keystate
     if(!behavior.restricted()) {
@@ -249,6 +257,7 @@ void Player::update(Time dt) {
     //zero the player's horizontal acceleration if movement was not requested
     if((!move_left && !move_right)) {
         collider.physics.acceleration.x = 0.0f;
+        if (abs(collider.physics.velocity.x) > 0.4f && grounded) { movement_flags.just_stopped = true; }
     }
     
     //gravity and stats corrections
@@ -330,6 +339,11 @@ void Player::update_animation() {
     behavior.current_state.update();
 }
 
+void Player::flash_sprite() {
+    if ((counters.invincibility / 10) % 2 == 0) { sprite.setColor(flcolor::red); }
+    else { sprite.setColor(flcolor::blue); }
+}
+
 void Player::update_behavior() {
     
     
@@ -354,6 +368,13 @@ void Player::update_behavior() {
         } else {
             behavior.air(collider.physics.velocity.y);
         }
+    }
+    if(movement_flags.just_stopped) {
+        behavior.stop();
+    }
+
+    if(inspecting_trigger && !(behavior.current_state.params.behavior_id == "inspecting")) {
+        behavior.inspect();
     }
     
     if(collider.physics.velocity.y > behavior.suspension_threshold && !freefalling) {
@@ -386,6 +407,7 @@ void Player::update_behavior() {
     if(weapon_fired) { start_cooldown = true; }
     
     stopping = false;
+    movement_flags.just_stopped = false;
     collider.just_landed = false;
     left_released = false;
     right_released = false;
@@ -423,7 +445,7 @@ void Player::update_direction() {
         if(look_up) {
             behavior.facing = behavior::DIR::UP_RIGHT;
         }
-        if(look_down) {
+        if(look_down && !grounded) {
             behavior.facing = behavior::DIR::DOWN_RIGHT;
         }
     }
@@ -432,7 +454,7 @@ void Player::update_direction() {
         if(look_up) {
             behavior.facing = behavior::DIR::UP_LEFT;
         }
-        if(look_down) {
+        if(look_down && !grounded) {
             behavior.facing = behavior::DIR::DOWN_LEFT;
         }
     }
@@ -443,7 +465,7 @@ void Player::update_direction() {
             behavior.facing = behavior::DIR::UP_RIGHT;
         }
     }
-    if(!move_left && !move_right && look_down) {
+    if(!move_left && !move_right && look_down && !grounded) {
         if(behavior.facing_strictly_left()) {
             behavior.facing = behavior::DIR::DOWN_LEFT;
         } else {
@@ -517,10 +539,14 @@ void Player::restrict_inputs() {
     input_flags.restricted = true;
     move_left = false;
     move_right = false;
-    inspecting = false;
+    inspecting_trigger = false;
     weapon_fired = false;
+    look_down = false;
+    look_up = false;
+    if (!inspecting) {
+        behavior.reset();
+    }
 
-    behavior.reset();
 }
 
 void Player::unrestrict_inputs() {
@@ -539,6 +565,46 @@ sf::Vector2<float> Player::get_fire_point() {
     }
 }
 
+void Player::make_invincible() {
+    counters.invincibility = INVINCIBILITY_TIME;
+}
+
+void Player::update_invincibility() {
+    dt = svc::clockLocator.get().tick_rate;
+
+    auto new_time = Clock::now();
+    Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
+
+    if (frame_time.count() > svc::clockLocator.get().frame_limit) {
+        frame_time = Time{ svc::clockLocator.get().frame_limit };
+    }
+    current_time = new_time;
+    accumulator += frame_time;
+
+    int integrations = 0;
+    if (accumulator >= dt) {
+
+        --counters.invincibility;
+        if (counters.invincibility < 0) { counters.invincibility = 0; }
+
+        accumulator = Time::zero();
+        ++integrations;
+    }
+}
+
+bool Player::is_invincible() {
+    return counters.invincibility > 0;
+}
+
+void Player::kill() {
+    state_flags.alive = false;
+}
+
+void Player::start_over() {
+    player_stats.health = player_stats.max_health;
+    state_flags.alive = true;
+}
+
 void Player::play_sounds() {
 
     if (soundboard_flags.land) { svc::assetLocator.get().landed.play(); }
@@ -554,7 +620,8 @@ void Player::play_sounds() {
         }
     }
     if(soundboard_flags.weapon_swap) { svc::assetLocator.get().arms_switch.play(); }
-    soundboard_flags = SoundboardFlags{false, false, false, false};
+    if(soundboard_flags.hurt) { svc::assetLocator.get().hurt.play(); }
+    soundboard_flags = SoundboardFlags{false, false, false, false, false};
 }
 
 std::string Player::print_direction(bool lr) {

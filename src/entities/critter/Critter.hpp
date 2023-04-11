@@ -19,13 +19,21 @@
 
 namespace critter {
 
+    enum class VARIANT {
+        BEAST,
+        SOLDIER,
+        GRUB,
+        GHOST
+    };
+
 inline std::unordered_map<int, sf::Texture&> get_critter_texture {
-    {0, svc::assetLocator.get().t_frdog}
+    {0, svc::assetLocator.get().t_frdog},
+    {1, svc::assetLocator.get().t_hulmet}
 };
 
 struct CritterMetadata {
     int id{};
-    int variant{};
+    VARIANT variant{};
     bool hostile{};
     bool hurt_on_contact{};
     bool gravity{};
@@ -62,14 +70,16 @@ public:
         collider = shape::Collider(); 
         set_sprite();
         collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
-        collider.physics.maximum_velocity = sf::Vector2<float>(stats.speed, stats.speed*4);
-        if (metadata.gravity) { collider.physics.gravity = 0.03f; }
+        collider.physics.maximum_velocity = sf::Vector2<float>(s.speed, s.speed*4);
+        if (m.gravity) { collider.physics.gravity = 0.03f; }
 
         alert_range = Shape( { (float)s.vision * 1.5f, (float)s.vision * 1.5f } );
         hostile_range = Shape( { (float)s.vision, (float)s.vision } );
 
         ar.setSize( { (float)(s.vision * 1.5), (float)(s.vision * 1.5) });
         hr.setSize( { (float)s.vision, (float)s.vision } );
+
+        behavior = components::CritterBehaviorComponent(m.id);
     }
     ~Critter() {}
     

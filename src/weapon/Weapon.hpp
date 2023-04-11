@@ -123,9 +123,9 @@ struct EmitterStats {
     int particle_lifespan{};
     int particle_lifespan_variance{};
 };*/
-constexpr inline vfx::ElementBehavior heavy_gun_spray{0.8, 2.0, 1.0, 0.8, 0.8, 0.005, 0.001, 0.99, 0.99};
-constexpr inline vfx::ElementBehavior light_gun_spray{0.8, 0.0, 1.9, 0.8, 0.4, 0.0, 0.0, 0.99, 0.99};
-constexpr inline vfx::ElementBehavior bubble_spray{0.4, 0.0, 1.3, 1.5, 3.4, -0.01, 0.001, 0.92, 0.92};
+constexpr inline vfx::ElementBehavior heavy_gun_spray{2, 1, 1.0, 0.8, 0.8, 0.005, 0.001, 0.99, 0.99};
+constexpr inline vfx::ElementBehavior light_gun_spray{2, 3, 1.9, 0.8, 0.4, 0.0, 0.0, 0.99, 0.99};
+constexpr inline vfx::ElementBehavior bubble_spray{1, 0, 1.3, 1.5, 3.4, -0.01, 0.001, 0.92, 0.92};
 constexpr inline vfx::EmitterStats burst{6, 0, 40, 30};
 
 class Weapon {

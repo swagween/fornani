@@ -33,7 +33,7 @@ public:
     bool done{ false };
     bool fade_out{ false };
     bool fade_in{ false };
-    int rate{ 8 };
+    int rate{ 4 };
 
     sf::RectangleShape box{};
 

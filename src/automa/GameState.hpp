@@ -114,6 +114,7 @@ public:
     void init(const std::string& load_path) {
         map.load(load_path);
         svc::playerLocator.get().behavior.current_state = behavior::Behavior(behavior::idle);
+        svc::playerLocator.get().inspecting = false;
         tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
         for(int i = 0; i < 16; ++i) {
             for(int j = 0; j < 16; ++j) {
@@ -127,12 +128,18 @@ public:
             }
         }
         svc::playerLocator.get().collider.physics.zero();
+        bool found_one = false;
         for(auto& portal : map.portals) {
             if(portal.destination_map_id == svc::stateControllerLocator.get().source_id) {
+                found_one = true;
                 sf::Vector2<float> spawn_position{ portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - PLAYER_HEIGHT};
                 svc::playerLocator.get().set_position(spawn_position);
                 svc::cameraLocator.get().center(spawn_position);
+                svc::cameraLocator.get().physics.position = spawn_position - sf::Vector2<float>(svc::cameraLocator.get().bounding_box.width/2, svc::cameraLocator.get().bounding_box.height/2);
             }
+        }
+        if (!found_one) {
+            svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
         }
 
 //        svc::assetLocator.get().abandoned.setVolume(50);
@@ -221,7 +228,9 @@ public:
         
         //player
         sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
-        svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
+        if (svc::playerLocator.get().state_flags.alive && !map.game_over) {
+            svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
+        }
         
         arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
         std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);

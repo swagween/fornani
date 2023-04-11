@@ -33,6 +33,7 @@ struct BehaviorParameters {
     bool restrictive{};
     bool transitional{};
     bool complete = false;
+    bool done = false;
     std::string behavior_id{};
 };
 

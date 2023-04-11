@@ -24,6 +24,7 @@ const float DETECTOR_HEIGHT = 22.0f;
 const float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
 const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 12;
+const int INVINCIBILITY_TIME = 200;
 const int ANCHOR_BUFFER = 50;
 const int num_sprites{220};
 
@@ -76,7 +77,13 @@ struct PhysicsStats {
     float PLAYER_MASS = 1.0f;
 
     float JUMP_RELEASE_MULTIPLIER = 0.65f;
+
+    float HURT_ACC = 0.15f;
     
+};
+
+struct Counters {
+    int invincibility{};
 };
 
 struct SoundboardFlags {
@@ -84,6 +91,7 @@ struct SoundboardFlags {
     bool step{};
     bool land{};
     bool weapon_swap{};
+    bool hurt{};
 };
 
 struct JumpFlags {
@@ -96,13 +104,23 @@ struct JumpFlags {
     bool jumping{}; //true if jumpsquat is over, falce once player lands
 };
 
+struct MovementFlags {
+    bool just_stopped{};
+};
+
 struct InputFlags {
     bool restricted{ false };
 };
 
+struct StateFlags {
+    bool alive{ true };
+    bool invincible{};
+};
+
 class Player {
 public:
-    
+
+    using Clock = std::chrono::steady_clock;
     using Time = std::chrono::duration<float>;
     
     Player();
@@ -113,6 +131,7 @@ public:
     void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
     void assign_texture(sf::Texture& tex);
     void update_animation();
+    void flash_sprite();
     
     void update_behavior();
     void set_position(sf::Vector2<float> new_pos);
@@ -126,7 +145,11 @@ public:
     sf::Vector2<float> get_fire_point();
 
     //level events
-    void handle_spike_collision();
+    void make_invincible();
+    void update_invincibility();
+    bool is_invincible();
+    void kill();
+    void start_over();
     
     //sound
     void play_sounds();
@@ -137,7 +160,6 @@ public:
     shape::Collider collider{ {PLAYER_WIDTH, PLAYER_HEIGHT}, {PLAYER_START_X, PLAYER_START_Y} };
     components::PlayerBehaviorComponent behavior{};
     behavior::DIR last_dir{};
-    PhysicsStats stats{};
     arms::Arsenal loadout{};
     std::vector<arms::WEAPON_TYPE> weapons_hotbar{};
     int current_weapon{};
@@ -148,13 +170,22 @@ public:
     
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
-    
-    //sprites
-    sf::Sprite sprite{};
+    PhysicsStats stats{};
     
     SoundboardFlags soundboard_flags{};
     JumpFlags jump_flags{};
     InputFlags input_flags{};
+    MovementFlags movement_flags{};
+    StateFlags state_flags{};
+    Counters counters{};
+
+    //fixed animation time step variables
+    Time dt{ 0.001f };
+    Clock::time_point current_time = Clock::now();
+    Time accumulator{ 0.0f };
+
+    //sprites
+    sf::Sprite sprite{};
     
     bool move_left{};
     bool move_right{};
@@ -170,8 +201,8 @@ public:
     bool is_wall_sliding{};
     int jump_request{};
     bool inspecting{};
+    bool inspecting_trigger{};
     bool just_hurt{};
-    bool invincible{};
     
     bool suspended_trigger{};
     bool fall_trigger{};

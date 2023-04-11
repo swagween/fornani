@@ -11,9 +11,12 @@ namespace behavior {
     
     void Behavior::refresh() {
         if (params.current_frame == 0) { params.complete = false; }
-        if(params.current_frame >= params.duration) {
-            params.current_frame = 0;
+        if (params.current_frame >= params.duration && (!params.no_loop || params.transitional)) {
+            params.current_frame = params.no_loop ? (params.duration - 1) : 0;
             params.complete = true;
+        } else if (params.current_frame >= params.duration && params.no_loop && !params.transitional) {
+            params.current_frame = params.duration - 1;
+            params.done = true;
         }
     }
     
