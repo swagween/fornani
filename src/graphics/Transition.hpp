@@ -20,7 +20,7 @@ public:
 
     Transition(int d) : duration(d) {
         box.setPosition(0, 0);
-        box.setSize(sf::Vector2<float>(screen_dimensions.x, screen_dimensions.y));
+        box.setSize(sf::Vector2<float>(cam::screen_dimensions.x, cam::screen_dimensions.y));
         current_frame = 0;
     }
     

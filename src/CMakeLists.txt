@@ -27,6 +27,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	utils/AdjacencyList.hpp
 	utils/Random.hpp
     utils/Clock.hpp
+    utils/BitFlags.hpp
 	setup/AssetManager.hpp
 	setup/ServiceLocator.hpp
     setup/LookupTables.hpp

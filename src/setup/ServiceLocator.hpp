@@ -22,7 +22,7 @@ namespace svc {
 
 inline auto assetLocator =				forloop::Service<AssetManager>::Instance{};
 inline auto playerLocator =				forloop::Service<Player>::Instance{};
-inline auto cameraLocator =				forloop::Service<Camera>::Instance{};
+inline auto cameraLocator =				forloop::Service<cam::Camera>::Instance{};
 inline auto clockLocator =				forloop::Service<util::Clock>::Instance{};
 inline auto stateControllerLocator =	forloop::Service<automa::StateController>::Instance{};
 

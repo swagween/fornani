@@ -71,8 +71,8 @@ static void show_overlay() {
                 window.RenderTarget::setActive();
             }
             ImGui::Separator();
-            ImGui::Text("Screen Dimensions X: %u", screen_dimensions.x);
-            ImGui::Text("Screen Dimensions Y: %u", screen_dimensions.y);
+            ImGui::Text("Screen Dimensions X: %u", cam::screen_dimensions.x);
+            ImGui::Text("Screen Dimensions Y: %u", cam::screen_dimensions.y);
             if (ImGui::IsMousePosValid()) {
                 ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
             } else {
@@ -113,17 +113,10 @@ static void show_overlay() {
 //                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
 //                    if(!svc::playerLocator.get().collider.bounding_box.vertices.empty()) {
                     //                        ImGui::Text("Player collider.bounding_box Pos: (%.1f,%.1f)", svc::playerLocator.get().collider.bounding_box.vertices.at(0).x, svc::playerLocator.get().collider.bounding_box.vertices.at(0).y);
-                    //                    }
-                    ImGui::Text("Player Behavior: ");
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted(svc::playerLocator.get().behavior.current_state.params.behavior_id.c_str());
-                    ImGui::Text("Behavior Restricted: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().behavior.restricted()) {
-                        ImGui::TextUnformatted("Yes");
-                    } else {
-                        ImGui::TextUnformatted("No");
-                    }
+                    //             
+                ImGui::Text("Alive? %s", svc::playerLocator.get().flags.state.test(State::alive) ? "Yes" : "No");
+                    ImGui::Text("Player Behavior: %s", svc::playerLocator.get().behavior.current_state.params.behavior_id);
+                    ImGui::Text("Behavior Restricted? %s", svc::playerLocator.get().behavior.restricted() ? "Yes" : "No");
                     ImGui::Text("Behavior Current Frame: %i", svc::playerLocator.get().behavior.current_state.params.current_frame);
                     ImGui::Text("Behavior Complete? %s", svc::playerLocator.get().behavior.current_state.params.complete ? "Yes" : "No");
                     ImGui::Text("Behavior No Loop? %s", svc::playerLocator.get().behavior.current_state.params.no_loop ? "Yes" : "No");
@@ -139,24 +132,13 @@ static void show_overlay() {
                     if(svc::playerLocator.get().collider.is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if(svc::playerLocator.get().grounded()) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Jump Request : %i", svc::playerLocator.get().jump_request);
-                    ImGui::Text("Jump Pressed : %s", svc::playerLocator.get().jump_flags.is_jump_pressed ? "Yes" : "No");
-                    ImGui::Text("Jump Hold    : %s", svc::playerLocator.get().jump_flags.jump_hold ? "Yes" : "No");
-                    ImGui::Text("Jump Released: %s", svc::playerLocator.get().jump_flags.jump_released ? "Yes" : "No");
-                    ImGui::Text("Jumping      : %s", svc::playerLocator.get().jump_flags.jumping ? "Yes" : "No");
-//                    ImGui::Text("Is Wall Sliding: ");
-//                    ImGui::SameLine();
-//                    if(svc::playerLocator.get().is_wall_sliding) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-//                    ImGui::Text("Wall Slide Trigger: ");
-//                    ImGui::SameLine();
-//                    if(svc::playerLocator.get().wall_slide_trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-//                    ImGui::Text("Anim Frame: ");
-//                    ImGui::SameLine();
+                    ImGui::Text("Jump Pressed : %s", svc::playerLocator.get().flags.jump.test(Jump::is_pressed) ? "Yes" : "No");
+                    ImGui::Text("Jump Hold    : %s", svc::playerLocator.get().flags.jump.test(Jump::hold) ? "Yes" : "No");
+                    ImGui::Text("Jump Released: %s", svc::playerLocator.get().flags.jump.test(Jump::is_released) ? "Yes" : "No");
+                    ImGui::Text("Jumping      : %s", svc::playerLocator.get().flags.jump.test(Jump::jumping) ? "Yes" : "No");
                     ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.params.lookup_value);
-//                    ImGui::Text("Real Frame: ");
-//                    ImGui::SameLine();
-//                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
                     ImGui::Text("Has Right Collision: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().collider.has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -315,7 +297,7 @@ void run(char** argv) {
     //state manager
     SM.set_current_state(std::make_unique<automa::GameState>());
     
-    window.create(sf::VideoMode(screen_dimensions.x, screen_dimensions.y), "For Nani (beta v1.0)");
+    window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "For Nani (beta v1.0)");
     
     bool debug_mode = false;
     
@@ -331,12 +313,12 @@ void run(char** argv) {
     lookup::populate_lookup();
     
     sf::RectangleShape background{};
-    background.setSize(static_cast<sf::Vector2<float> >(screen_dimensions));
+    background.setSize(static_cast<sf::Vector2<float> >(cam::screen_dimensions));
     background.setPosition(0, 0);
     background.setFillColor(sf::Color(10, 10, 20));
 
-    width_ratio = (float)screen_dimensions.x / (float)screen_dimensions.y;
-    height_ratio = (float)screen_dimensions.y / (float)screen_dimensions.x;
+    width_ratio = (float)cam::screen_dimensions.x / (float)cam::screen_dimensions.y;
+    height_ratio = (float)cam::screen_dimensions.y / (float)cam::screen_dimensions.x;
     
     
     //game loop

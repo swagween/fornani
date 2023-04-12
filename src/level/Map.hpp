@@ -33,7 +33,7 @@ namespace world {
     constexpr inline vfx::ElementBehavior breakable_spray{ 2, 1, 1.5, 0.8, 0.8, 0.01, 0.005, 0.99, 0.99 };
     constexpr inline vfx::EmitterStats breakable_stats{ 10, 0, 80, 60, 3.0f };
     inline auto breakable_debris = vfx::Emitter(breakable_spray, breakable_stats, flcolor::goldenrod);
-    constexpr inline vfx::ElementBehavior player_death_spray{ 10, 2, 1.8, 1.7, 0.8, 0.005, 0.001, 0.99, 0.99 };
+    constexpr inline vfx::ElementBehavior player_death_spray{ 10, 2, 1.8, 1.7, 0.8, 0.008, 0.001, 0.99, 0.99 };
     constexpr inline vfx::EmitterStats player_death_stats{ 4, 0, 80, 60, 4.0f };
     inline auto player_death = vfx::Emitter(player_death_spray, player_death_stats, flcolor::white);
 
@@ -67,7 +67,6 @@ class Map {
     
 public:
     
-    class Camera;
     using Vec = sf::Vector2<float>;
     using Vecu16 = sf::Vector2<uint16_t>;
     

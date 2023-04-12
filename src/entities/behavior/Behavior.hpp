@@ -34,6 +34,7 @@ struct BehaviorParameters {
     bool transitional{};
     bool complete = false;
     bool done = false;
+    bool frame_trigger{};
     std::string behavior_id{};
 };
 

@@ -28,16 +28,16 @@ enum class DIR_LR {
 
 /* BehaviorParameters(id, duration, framerate, transitional, restrictive, no_loop, lookup) */
 
-inline BehaviorParameters idle =            BehaviorParameters("idle", 8, 12, false, false, false, 20);
+inline BehaviorParameters idle =            BehaviorParameters("idle", 8, 14, false, false, false, 20);
 inline BehaviorParameters idle_up =         BehaviorParameters("idle_up", 8, DEFAULT_FRAMERATE, false, false, false, 0);
 inline BehaviorParameters idle_down =       BehaviorParameters("idle_down", 8, DEFAULT_FRAMERATE, false, false, false, 10);
 inline BehaviorParameters jumpsquat =       BehaviorParameters("jumpsquat", 2, 4, true, true, true, 60);
 inline BehaviorParameters rising =          BehaviorParameters("rising", 2, DEFAULT_FRAMERATE, true, false, false, 54);
-inline BehaviorParameters suspended =       BehaviorParameters("suspended", 3, DEFAULT_FRAMERATE, false, false, false, 30);
-inline BehaviorParameters falling =         BehaviorParameters("falling", 4, DEFAULT_FRAMERATE, false, false, false, 62);
-inline BehaviorParameters running_up =      BehaviorParameters("running_up", 4, DEFAULT_FRAMERATE, false, false, false, 40);
-inline BehaviorParameters running_down =    BehaviorParameters("running_down", 4, DEFAULT_FRAMERATE, false, false, false, 50);
-inline BehaviorParameters running =         BehaviorParameters("running", 4, DEFAULT_FRAMERATE, false, false, false, 44);
+inline BehaviorParameters suspended =       BehaviorParameters("suspended", 3, 10, false, false, false, 30);
+inline BehaviorParameters falling =         BehaviorParameters("falling", 4, 10, false, false, false, 62);
+inline BehaviorParameters running_up =      BehaviorParameters("running_up", 4, 10, false, false, false, 40);
+inline BehaviorParameters running_down =    BehaviorParameters("running_down", 4, 10, false, false, false, 50);
+inline BehaviorParameters running =         BehaviorParameters("running", 4, 10, false, false, false, 44);
 inline BehaviorParameters landing =         BehaviorParameters("landing", 2, 8, true, false, true, 56);
 inline BehaviorParameters stop =            BehaviorParameters("stop", 1, 12, true, false, true, 75);
 inline BehaviorParameters stop_up =         BehaviorParameters("stop_up", 2, DEFAULT_FRAMERATE, false, false, true, 70);

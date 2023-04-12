@@ -22,6 +22,8 @@ namespace behavior {
     
     void Behavior::update() {
 
+        params.frame_trigger = false;
+
         dt = svc::clockLocator.get().tick_rate;
         dt *= svc::clockLocator.get().tick_multiplier * animation_multiplier;
 
@@ -43,6 +45,7 @@ namespace behavior {
             }
             if (params.anim_frame == 0) {
                 params.current_frame++;
+                params.frame_trigger = true;
             }
             refresh();
 

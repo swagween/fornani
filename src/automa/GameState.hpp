@@ -13,7 +13,6 @@
 #include <chrono>
 #include "../level/Map.hpp"
 #include "../components/PhysicsComponent.hpp"
-#include "../utils/Camera.hpp"
 #include "../entities/player/Player.hpp"
 #include "../setup/LookupTables.hpp"
 #include "../gui/HUD.hpp"
@@ -128,6 +127,7 @@ public:
             }
         }
         svc::playerLocator.get().collider.physics.zero();
+        svc::playerLocator.get().flags.state.set(State::alive);
         bool found_one = false;
         for(auto& portal : map.portals) {
             if(portal.destination_map_id == svc::stateControllerLocator.get().source_id) {
@@ -150,13 +150,13 @@ public:
         svc::assetLocator.get().three_pipes.play();
         svc::assetLocator.get().three_pipes.setLoop(true);
         */
-//        svc::assetLocator.get().brown_noise.setVolume(20);
-//        svc::assetLocator.get().brown_noise.play();
-//        svc::assetLocator.get().brown_noise.setLoop(true);
+        svc::assetLocator.get().brown_noise.setVolume(20);
+        svc::assetLocator.get().brown_noise.play();
+        svc::assetLocator.get().brown_noise.setLoop(true);
         
     }
     void handle_events(sf::Event& event) {
-        if (!svc::playerLocator.get().input_flags.restricted) {
+        if (!svc::playerLocator.get().flags.input.test(Input::restricted)) {
             svc::playerLocator.get().handle_events(event);
         }
         if (event.type == sf::Event::EventType::KeyPressed) {
@@ -185,7 +185,8 @@ public:
     }
     
     void render(sf::RenderWindow& win) {
-        
+        sf::Vector2<float> camvel = svc::cameraLocator.get().physics.velocity;
+        sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
         map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         
         if(show_colliders) {
@@ -228,9 +229,7 @@ public:
         
         //player
         sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
-        if (svc::playerLocator.get().state_flags.alive && !map.game_over) {
-            svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
-        }
+        svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
         
         arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
         std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);
@@ -246,7 +245,9 @@ public:
         if(map.style == lookup::STYLE::NIGHT) {
             weap_sprite.setColor(flcolor::night);
         }
-        win.draw(weap_sprite);
+        if (svc::playerLocator.get().flags.state.test(State::alive)) {
+            win.draw(weap_sprite);
+        }
         
         map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         hud.render(win);
@@ -258,8 +259,8 @@ public:
 //        hbx.setOutlineThickness(-1);
 //        hbx.setSize({128, 256});
 //        win.draw(hbx);
-        svc::assetLocator.get().sp_ui_test.setPosition(20, screen_dimensions.y - 148);
-        svc::assetLocator.get().sp_bryn_test.setPosition(20, screen_dimensions.y - 276);
+        svc::assetLocator.get().sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
+        svc::assetLocator.get().sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);
 //        win.draw(svc::assetLocator.get().sp_ui_test);
 //        win.draw(svc::assetLocator.get().sp_bryn_test);
         

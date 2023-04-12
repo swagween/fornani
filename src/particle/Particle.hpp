@@ -43,7 +43,6 @@ public:
         }
         physics.velocity.x = randx*init_force;
         physics.velocity.y = randy*init_force;
-//        physics.apply_force({randx*init_force, randy*init_force});
     }
     void update(float initial_force, float grav, float grav_variance) {
         float var = r.random_range_float(-grav_variance, grav_variance);

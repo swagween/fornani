@@ -12,7 +12,7 @@
 #include "../components/PhysicsComponent.hpp"
 #include "../utils/Random.hpp"
 
-namespace {
+namespace cam {
 
 const float CAM_FRICTION = 0.75f;
 const float CAM_MASS = 1.0f;

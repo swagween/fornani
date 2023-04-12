@@ -11,6 +11,7 @@
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
 #include "../../weapon/Arsenal.hpp"
+#include "../../utils/BitFlags.hpp"
 #include <array>
 #include <memory>
 
@@ -61,14 +62,14 @@ struct PhysicsStats {
 
     float PLAYER_GRAV = 0.003f;
 
-    float TERMINAL_VELOCITY = 8.0f;
+    float TERMINAL_VELOCITY = 2.1f;
 
     float PLAYER_GROUND_FRIC = 0.979f;
     float PLAYER_HORIZ_AIR_FRIC = 0.990f;
     float PLAYER_VERT_AIR_FRIC = 0.956f;
 
-    float X_ACC = 0.064f;
-    float X_ACC_AIR = 0.064f;
+    float X_ACC = 0.056f;
+    float X_ACC_AIR = 0.056f;
 
     float JUMP_MAX = 0.418f;
     
@@ -86,35 +87,61 @@ struct Counters {
     int invincibility{};
 };
 
-struct SoundboardFlags {
-    bool jump{};
-    bool step{};
-    bool land{};
-    bool weapon_swap{};
-    bool hurt{};
+enum class Soundboard {
+    jump,
+    step,
+    land,
+    weapon_swap,
+    hurt,
 };
 
-struct JumpFlags {
-    bool jump_hold{ false }; //true if jump is pressed and permanently false once released, until player touches the ground again
-    bool jump_trigger{ false }; //true for one frame if jump is pressed and the player is grounded
-    bool can_jump{}; //true if the player is grounded
-    bool just_jumped{}; //used for updating animation
-    bool is_jump_pressed{}; //true if the jump button is pressed, false if not. independent of player's state.
-    bool jump_released{}; //true if jump released midair, reset upon landing
-    bool jumping{}; //true if jumpsquat is over, falce once player lands
+enum class Jump {
+    hold, //true if jump is pressed and permanently false once released, until player touches the ground again
+    trigger, //true for one frame if jump is pressed and the player is grounded
+    can_jump, //true if the player is grounded
+    just_jumped, //used for updating animation
+    is_pressed, //true if the jump button is pressed, false if not. independent of player's state.
+    is_released, //true if jump released midair, reset upon landing
+    jumping, //true if jumpsquat is over, falce once player lands
 };
 
-struct MovementFlags {
-    bool just_stopped{};
+enum class Movement {
+
+	move_left,
+	move_right,
+	look_up,
+	look_down,
+	left_released,
+	right_released,
+
+	grounded,
+	stopping,
+	just_stopped,
+	suspended_trigger,
+	fall_trigger,
+	landed_trigger,
+	entered_freefall,
+	freefalling,
+
+	is_wall_sliding,
+	wall_slide_trigger,
+	release_wallslide,
 };
 
-struct InputFlags {
-    bool restricted{ false };
+enum class Input {
+    restricted
 };
 
-struct StateFlags {
-    bool alive{ true };
-    bool invincible{};
+enum class State {
+    alive
+};
+
+struct PlayerFlags {
+    util::BitFlags<Soundboard> sounds{};
+    util::BitFlags<Jump> jump{};
+    util::BitFlags<Movement> movement{};
+    util::BitFlags<Input> input{};
+    util::BitFlags<State> state{};
 };
 
 class Player {
@@ -140,6 +167,9 @@ public:
 
     void restrict_inputs();
     void unrestrict_inputs();
+
+    bool grounded();
+    bool moving();
     
     //firing
     sf::Vector2<float> get_fire_point();
@@ -171,12 +201,8 @@ public:
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
     PhysicsStats stats{};
+    PlayerFlags flags{};
     
-    SoundboardFlags soundboard_flags{};
-    JumpFlags jump_flags{};
-    InputFlags input_flags{};
-    MovementFlags movement_flags{};
-    StateFlags state_flags{};
     Counters counters{};
 
     //fixed animation time step variables
@@ -187,35 +213,20 @@ public:
     //sprites
     sf::Sprite sprite{};
     
-    bool move_left{};
-    bool move_right{};
-    bool look_up{};
-    bool look_down{};
-    
     bool grav = true;
 
-    bool grounded = false;
-    bool stopping{};
-    bool left_released{};
-    bool right_released{};
-    bool is_wall_sliding{};
+    
     int jump_request{};
+
     bool inspecting{};
     bool inspecting_trigger{};
     bool just_hurt{};
     
-    bool suspended_trigger{};
-    bool fall_trigger{};
-    bool landed_trigger{};
-    bool wall_slide_trigger{};
-    bool release_wallslide{};
-    bool entered_freefall{};
-    bool freefalling{};
-    bool sprite_flip{};
-    
     bool weapon_fired{};
     bool start_cooldown{};
-    
+
+    bool sprite_flip{};
+
     int wall_slide_ctr{0};
     
 };

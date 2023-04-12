@@ -220,9 +220,9 @@ void Map::update() {
         svc::playerLocator.get().collider.has_right_collision = false;
     }
     if(svc::playerLocator.get().collider.is_any_jump_colllision) {
-        svc::playerLocator.get().grounded = true;
+        svc::playerLocator.get().flags.movement.set(Movement::grounded);
     } else {
-        svc::playerLocator.get().grounded = false;
+        svc::playerLocator.get().flags.movement.reset(Movement::grounded);
     }
     if(svc::playerLocator.get().collider.is_any_colllision) {
         svc::playerLocator.get().collider.is_colliding_with_level = true;
@@ -252,10 +252,11 @@ void Map::update() {
     }
 
     //check if player died
-    if(!svc::playerLocator.get().state_flags.alive) {
+    if(!svc::playerLocator.get().flags.state.test(State::alive) && !game_over) {
         active_emitters.push_back(player_death);
+        active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
         active_emitters.back().set_position(svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
-        active_emitters.back().set_direction(components::DIRECTION::NONE);
+        active_emitters.back().set_direction(components::DIRECTION::DOWN);
         active_emitters.back().update();
         svc::assetLocator.get().player_death.play();
         game_over = true;
@@ -263,8 +264,8 @@ void Map::update() {
 
     if(game_over) {
         transition.fade_out = true;
-        svc::playerLocator.get().start_over();
         if (transition.done) {
+            svc::playerLocator.get().start_over();
             svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101); //temporary. later, we will load the last save
             svc::stateControllerLocator.get().trigger = true;
             svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
