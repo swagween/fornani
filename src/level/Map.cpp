@@ -104,6 +104,9 @@ void Map::load(const std::string& path) {
 }
 
 void Map::update() {
+
+    svc::consoleLocator.get().update();
+
     background->update();
     svc::playerLocator.get().collider.is_any_jump_colllision = false;
     svc::playerLocator.get().collider.is_any_colllision = false;
@@ -336,6 +339,11 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
     for (auto& portal : portals) {
         portal.render(win, cam);
     }
+
+    if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
+        svc::consoleLocator.get().render(win);
+    }
+
 }
 
 void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {

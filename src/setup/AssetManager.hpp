@@ -40,6 +40,7 @@ public:
         
         t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
         t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
+        t_ui.loadFromFile(resource_path + "/image/gui/ui.png");
         
         //guns and bullets!
         t_bryns_gun.loadFromFile(resource_path + "/image/weapon/bryns_gun.png");
@@ -239,6 +240,7 @@ public:
     sf::Texture t_hud2x{};
     sf::Sprite sp_hud{};
     sf::Sprite sp_hud2x{};
+    sf::Texture t_ui{};
     
     sf::Texture t_hud_elements{};
     std::vector<sf::Sprite> sp_hud_elements{};

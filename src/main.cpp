@@ -194,9 +194,11 @@ static void show_overlay() {
                     ImGui::EndTabItem();
                     
                 }
-                if (ImGui::BeginTabItem("Camera"))
+                if (ImGui::BeginTabItem("General"))
                 {
                     ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().physics.position.x, svc::cameraLocator.get().physics.position.y);
+                    ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
+
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Resources"))
@@ -358,6 +360,10 @@ void run(char** argv) {
                     }
                     if (event.key.code == sf::Keyboard::K) {
                         svc::playerLocator.get().kill();
+                    }
+                    if (event.key.code == sf::Keyboard::T) {
+                        svc::consoleLocator.get().begin("Hello");
+                        svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
                     }
                     if (event.key.code == sf::Keyboard::Q) {
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());

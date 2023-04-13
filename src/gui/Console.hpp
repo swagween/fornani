@@ -1,0 +1,59 @@
+//
+//  Console.hpp
+//  fornani
+//
+//  Created by Alex Frasca on 12/26/22.
+//
+
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include <string>
+#include <array>
+#include "../utils/BitFlags.hpp"
+#include "../utils/Camera.hpp"
+
+namespace gui {
+
+    const int corner_factor{ 22 };
+    const int edge_factor{ 4 };
+
+const float pad{ 32.0f };
+inline const sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad}; // bottom left corner
+
+enum class ConsoleFlags {
+active,
+finished
+};
+
+class Console {
+    
+public:
+    
+    Console();
+
+    void begin(std::string_view message);
+    void update();
+    void render(sf::RenderWindow& win);
+
+    void write(std::string_view message);
+    void write_speech(std::string_view message);
+    void end();
+
+    void nine_slice(int corner_dim, int edge_dim);
+
+    
+    sf::Vector2<float> position{};
+    sf::Vector2<float> dimensions{};
+    util::BitFlags<ConsoleFlags> flags{};
+
+    std::array<sf::Sprite, 9> sprites{};
+
+    int extent{};
+    int speed{ 64 };
+    
+}; // end Console
+
+} // end gui
+
+ /* HUD_hpp */

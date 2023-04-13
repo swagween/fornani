@@ -17,6 +17,7 @@
 #include "../service/Service.hpp"
 #include "../utils/Clock.hpp"
 #include "../automa/StateController.hpp"
+#include "../gui/Console.hpp"
 
 namespace svc {
 
@@ -25,6 +26,7 @@ inline auto playerLocator =				forloop::Service<Player>::Instance{};
 inline auto cameraLocator =				forloop::Service<cam::Camera>::Instance{};
 inline auto clockLocator =				forloop::Service<util::Clock>::Instance{};
 inline auto stateControllerLocator =	forloop::Service<automa::StateController>::Instance{};
+inline auto consoleLocator =			forloop::Service<gui::Console>::Instance{};
 
 }
 

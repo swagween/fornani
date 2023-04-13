@@ -56,6 +56,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	automa/StateManager.cpp
     automa/StateController.hpp
     gui/HUD.hpp
+    gui/Console.hpp
+    gui/Console.cpp
 	service/Service.hpp
     graphics/FLColor.hpp
     graphics/Background.hpp
