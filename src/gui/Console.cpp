@@ -25,21 +25,21 @@ namespace gui {
 		sprites.at(7).setTextureRect(sf::IntRect{ {corner_factor, corner_factor + edge_factor}, {edge_factor, corner_factor} });
 		sprites.at(8).setTextureRect(sf::IntRect{ {corner_factor + edge_factor, corner_factor + edge_factor}, {corner_factor, corner_factor} });
 
-		dimensions = sf::Vector2<float>{ (float)cam::screen_dimensions.x - 2 * pad, (float)cam::screen_dimensions.y / 3 };
+		dimensions = sf::Vector2<float>{ (float)cam::screen_dimensions.x - 2 * pad, (float)cam::screen_dimensions.y / height_factor };
 		position = sf::Vector2<float>{ origin.x, origin.y - dimensions.y };
 		text_origin = sf::Vector2<float>{ 20.0f, 20.0f };
 	}
 
 	void Console::begin() {
-		dimensions.x = corner_factor * 2;
+		dimensions.y = corner_factor * 2;
 	}
 
 	void Console::update() {
 		if (flags.test(ConsoleFlags::active)) { extent += speed; }
-		if(extent < (float)cam::screen_dimensions.x - 2 * pad) {
-			dimensions.x = extent;
+		if(extent < (float)cam::screen_dimensions.y / height_factor) {
+			dimensions.y = extent;
 		} else {
-			dimensions.x = (float)cam::screen_dimensions.x - 2 * pad;
+			dimensions.y = (float)cam::screen_dimensions.y / height_factor;
 		}
 		nine_slice(corner_factor, edge_factor);
 		
@@ -76,6 +76,7 @@ namespace gui {
 
 	void Console::end() {
 		extent = 0;
+		flags.reset(ConsoleFlags::active);
 	}
 
 	void Console::nine_slice(int corner_dim, int edge_dim) {

@@ -93,6 +93,7 @@ static void show_overlay() {
                     ImGui::Text("FPS: %.1f", svc::clockLocator.get().FPS);
 
                     ImGui::SliderFloat("Tick Rate: ", &svc::clockLocator.get().rate, 0.00050f, 0.0080f, "%.8f");
+                    if (ImGui::Button("Reset")) { svc::clockLocator.get().rate = 0.001; }
                     ImGui::Separator();
                     ImGui::EndTabItem();
                     ImGui::PlotHistogram("Frame Times", time_markers, NUM_TIMESTEPS, 0, NULL, 0.0f, 0.02f, ImVec2(0, 80.0f));
@@ -123,7 +124,7 @@ static void show_overlay() {
                     ImGui::Text("Invincibility Counter: %i", svc::playerLocator.get().counters.invincibility);
                     ImGui::Text("Spike Trigger: %s", svc::playerLocator.get().collider.spike_trigger ? "True" : "False");
 
-                    ImGui::Text("Inspecting? %s", svc::playerLocator.get().inspecting ? "Yes" : "No");
+                    ImGui::Text("Inspecting? %s", svc::playerLocator.get().flags.input.test(Input::inspecting) ? "Yes" : "No");
 
                     ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
                     ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
@@ -167,6 +168,19 @@ static void show_overlay() {
                 }
                 if (ImGui::BeginTabItem("Weapon"))
                 {
+					if (ImGui::Button("Toggle Weapons")) {
+                        if (svc::playerLocator.get().weapons_hotbar.empty()) {
+                            svc::playerLocator.get().weapons_hotbar = {
+                                arms::WEAPON_TYPE::BRYNS_GUN,
+                                arms::WEAPON_TYPE::PLASMER,
+                                arms::WEAPON_TYPE::CLOVER
+                            };
+                            svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
+                        } else {
+                            svc::playerLocator.get().weapons_hotbar.clear();
+                        }
+					}
+                    
                     ImGui::Separator();
                     ImGui::Text("Equipped Weapon: ");
                     ImGui::SameLine();

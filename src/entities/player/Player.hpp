@@ -129,7 +129,10 @@ enum class Movement {
 };
 
 enum class Input {
-    restricted
+    restricted,
+    exit_request,
+    inspecting,
+    inspecting_trigger
 };
 
 enum class State {
@@ -158,6 +161,7 @@ public:
     void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
     void assign_texture(sf::Texture& tex);
     void update_animation();
+    void update_sprite();
     void flash_sprite();
     
     void update_behavior();
@@ -218,8 +222,6 @@ public:
     
     int jump_request{};
 
-    bool inspecting{};
-    bool inspecting_trigger{};
     bool just_hurt{};
     
     bool weapon_fired{};

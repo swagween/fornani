@@ -113,7 +113,7 @@ public:
     void init(const std::string& load_path) {
         map.load(load_path);
         svc::playerLocator.get().behavior.current_state = behavior::Behavior(behavior::idle);
-        svc::playerLocator.get().inspecting = false;
+        svc::playerLocator.get().flags.input.reset(Input::inspecting);
         tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
         for(int i = 0; i < 16; ++i) {
             for(int j = 0; j < 16; ++j) {
@@ -158,6 +158,19 @@ public:
     void handle_events(sf::Event& event) {
         if (!svc::playerLocator.get().flags.input.test(Input::restricted)) {
             svc::playerLocator.get().handle_events(event);
+        }
+        if (event.type == sf::Event::EventType::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Z) {
+                svc::playerLocator.get().flags.input.set(Input::exit_request);
+            }
+        }
+        if (event.type == sf::Event::EventType::KeyReleased) {
+            if (event.key.code == sf::Keyboard::Z) {
+                svc::playerLocator.get().flags.input.reset(Input::exit_request);
+                svc::playerLocator.get().unrestrict_inputs();
+                svc::playerLocator.get().flags.input.reset(Input::inspecting);
+                svc::playerLocator.get().flags.input.reset(Input::inspecting_trigger);
+            }
         }
         if (event.type == sf::Event::EventType::KeyPressed) {
             if (event.key.code == sf::Keyboard::H) {
@@ -225,28 +238,40 @@ public:
             hbx.setOutlineThickness(-1);
             hbx.setSize({(float)svc::playerLocator.get().collider.bounding_box.shape_w, (float)svc::playerLocator.get().collider.bounding_box.shape_h});
             win.draw(hbx);
+
+            sf::Vector2<float> phbx_pos = sf::operator-(svc::playerLocator.get().collider.predictive_bounding_box.vertices.at(0), svc::cameraLocator.get().physics.position);
+            sf::RectangleShape phbx{};
+            phbx.setPosition(phbx_pos.x, phbx_pos.y);
+            phbx.setFillColor(sf::Color{220, 40, 100, 20});
+            phbx.setOutlineColor(sf::Color(235, 20, 80, 140));
+            phbx.setOutlineThickness(-1);
+            phbx.setSize({ (float)svc::playerLocator.get().collider.predictive_bounding_box.shape_w, (float)svc::playerLocator.get().collider.predictive_bounding_box.shape_h });
+            win.draw(phbx);
         }
-        
-        //player
-        sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
-        svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
-        
-        arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
-        std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);
-        sf::Sprite weap_sprite;
-        if(!curr_weapon_sprites.empty()) {
-            weap_sprite = curr_weapon_sprites.at(arms::WeaponDirLookup.at(curr_weapon.sprite_orientation));
-            weap_sprite.setOrigin(NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2);
-        }
-        
-        sf::Vector2<float> anchor = svc::playerLocator.get().hand_position;
-        sf::Vector2<int> offset = svc::playerLocator.get().loadout.get_equipped_weapon().sprite_offset;
-        weap_sprite.setPosition(player_pos.x + anchor.x + offset.x, player_pos.y + anchor.y + offset.y);
-        if(map.style == lookup::STYLE::NIGHT) {
-            weap_sprite.setColor(flcolor::night);
-        }
-        if (svc::playerLocator.get().flags.state.test(State::alive)) {
-            win.draw(weap_sprite);
+        if (!show_colliders) {
+            //player
+            sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
+            svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
+
+            if (!svc::playerLocator.get().weapons_hotbar.empty()) {
+                arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
+                std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);
+                sf::Sprite weap_sprite;
+                if (!curr_weapon_sprites.empty()) {
+                    weap_sprite = curr_weapon_sprites.at(arms::WeaponDirLookup.at(curr_weapon.sprite_orientation));
+                    weap_sprite.setOrigin(NANI_SPRITE_WIDTH / 2, NANI_SPRITE_WIDTH / 2);
+                }
+
+                sf::Vector2<float> anchor = svc::playerLocator.get().hand_position;
+                sf::Vector2<int> offset = svc::playerLocator.get().loadout.get_equipped_weapon().sprite_offset;
+                weap_sprite.setPosition(player_pos.x + anchor.x + offset.x, player_pos.y + anchor.y + offset.y);
+                if (map.style == lookup::STYLE::NIGHT) {
+                    weap_sprite.setColor(flcolor::night);
+                }
+                if (svc::playerLocator.get().flags.state.test(State::alive)) {
+                    win.draw(weap_sprite);
+                }
+            }
         }
         
         map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);

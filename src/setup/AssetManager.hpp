@@ -29,6 +29,7 @@ public:
     
     void importTextures() {
         t_nani.loadFromFile(resource_path + "/image/character/nani.png");
+        t_nani_unarmed.loadFromFile(resource_path + "/image/character/nani_unarmed.png");
         t_nani_dark.loadFromFile(resource_path + "/image/character/nani_dark.png");
         t_nani_red.loadFromFile(resource_path + "/image/character/nani_red.png");
         
@@ -222,6 +223,7 @@ public:
     
     //player and NPCs!
     sf::Texture t_nani{};
+    sf::Texture t_nani_unarmed{};
     sf::Texture t_nani_dark{};
     sf::Texture t_nani_red{};
     

@@ -102,7 +102,7 @@ void Map::load(const std::string& path) {
             input >> p.scaled_dimensions.x; input.ignore();
             input >> p.scaled_dimensions.y; input.ignore();
             input >> value; p.activate_on_contact = (bool)value; input.ignore(); input.ignore();
-            std::getline(input, p.message, '\n');
+            std::getline(input, p.message, '#');
             input >> p.scaled_position.x; input.ignore();
             input >> p.scaled_position.y; input.ignore();
             p.update();
@@ -114,9 +114,9 @@ void Map::load(const std::string& path) {
         input.close();
     }
     
-    critters.push_back(bestiary.get_critter_at(1));
+    /*critters.push_back(bestiary.get_critter_at(1));
     critters.back().set_position({404, 494});
-    critters.back().collider.physics.zero();
+    critters.back().collider.physics.zero();*/
 
     transition.fade_in = true;
     svc::playerLocator.get().unrestrict_inputs();
@@ -255,7 +255,7 @@ void Map::update() {
 
     for (auto& portal : portals) {
         portal.update();
-        if (svc::playerLocator.get().inspecting && portal.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+        if (svc::playerLocator.get().flags.input.test(Input::inspecting) && portal.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
             portal.activated = true;
             svc::playerLocator.get().restrict_inputs();
         }
@@ -275,13 +275,17 @@ void Map::update() {
     }
 
     for (auto& inspectable : inspectables) {
-        if (svc::playerLocator.get().inspecting && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+        if (svc::playerLocator.get().flags.input.test(Input::inspecting) && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
             inspectable.activated = true;
             svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
-            //svc::playerLocator.get().restrict_inputs();
+            svc::playerLocator.get().restrict_inputs();
         }
-        if(inspectable.activated) {
-            //svc::consoleLocator.get().begin();
+        if(inspectable.activated && svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
+            svc::consoleLocator.get().begin();
+            if(svc::playerLocator.get().flags.input.test(Input::exit_request)) {
+                inspectable.activated = false;
+                svc::consoleLocator.get().end();
+            }
         }
     }
 
@@ -443,8 +447,10 @@ void Map::manage_projectiles() {
     std::erase_if(active_projectiles,   [](auto const& p) { return p.stats.lifespan < 0;    });
     std::erase_if(active_emitters, [](auto const& p) { return p.particles.empty();          });
     
-    if(svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
-        spawn_projectile_at(svc::playerLocator.get().get_fire_point());
+    if (!svc::playerLocator.get().weapons_hotbar.empty()) {
+        if (svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
+            spawn_projectile_at(svc::playerLocator.get().get_fire_point());
+        }
     }
 }
 

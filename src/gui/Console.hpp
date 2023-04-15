@@ -17,6 +17,7 @@ namespace gui {
 
     const int corner_factor{ 22 };
     const int edge_factor{ 4 };
+    const float height_factor{ 4.0f };
 
 const float pad{ 32.0f };
 const float text_pad{ 8.0f };
@@ -52,7 +53,7 @@ public:
     std::array<sf::Sprite, 9> sprites{};
 
     int extent{};
-    int speed{ 64 };
+    int speed{ 16 };
     
 }; // end Console
 

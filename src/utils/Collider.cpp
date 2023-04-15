@@ -32,8 +32,8 @@ namespace shape {
         jumpbox.vertices[3] = sf::Vector2<float>(0, 0 + default_dim + default_jumpbox_height);
 
 
-        left_detector.left_offset = default_detector_width - 0.0001;
-        right_detector.right_offset = default_detector_width - 0.0001;
+        left_detector.left_offset = 0.0f;
+        right_detector.right_offset = 0.0f;
 
         left_detector.vertices[0] = sf::Vector2<float>(0 - default_detector_width, 0 + default_detector_buffer);
         left_detector.vertices[1] = sf::Vector2<float>(0, 0 + default_detector_buffer);
@@ -101,20 +101,6 @@ namespace shape {
         bool is_plat = tile_type == lookup::TILE_TYPE::TILE_PLATFORM;
         bool is_spike = tile_type == lookup::TILE_TYPE::TILE_SPIKES;
 
-        if (left_detector.SAT(cell) && physics.velocity.x < 0.01f && abs(detector_mtv.x) > abs(detector_mtv.y) && !is_plat && !is_spike && !is_ramp) {
-            has_left_collision = true;
-            physics.acceleration.x = 0.0f;
-            physics.velocity.x = 0.0f;
-            left_aabb_counter++;
-        }
-        detector_mtv = right_detector.testCollisionGetMTV(right_detector, cell);
-        if (right_detector.SAT(cell) && physics.velocity.x > -0.01f && abs(detector_mtv.x) > abs(detector_mtv.y) && !is_plat && !is_spike && !is_ramp) {
-            has_right_collision = true;
-            physics.acceleration.x = 0.0f;
-            physics.velocity.x = 0.0f;
-            right_aabb_counter++;
-        }
-
         if (predictive_bounding_box.SAT(cell)) {
             if (!is_spike) {
                 if (!is_plat) {
@@ -173,6 +159,29 @@ namespace shape {
 
 
         }
+
+		if (left_detector.SAT(cell) && !is_plat && !is_spike && !is_ramp) {
+			if (!ceiling_collision && !just_landed) {
+                has_left_collision = true;
+				physics.acceleration.x = 0.0f;
+				physics.velocity.x = 0.0f;
+				physics.position.x += detector_mtv.x;
+			}
+			left_aabb_counter++;
+		}
+		detector_mtv = right_detector.testCollisionGetMTV(right_detector, cell);
+		if (right_detector.SAT(cell) && !is_plat && !is_spike && !is_ramp) {
+			if (!ceiling_collision && !just_landed) {
+                has_right_collision = true;
+				physics.acceleration.x = 0.0f;
+				physics.velocity.x = 0.0f;
+				physics.position.x += detector_mtv.x;
+			}
+            right_aabb_counter++;
+        }
+
+        ceiling_collision = false;
+
         if (jumpbox.SAT(cell) && !is_spike) {
             is_any_jump_colllision = !(is_plat && physics.velocity.y < 0.0f);
         }

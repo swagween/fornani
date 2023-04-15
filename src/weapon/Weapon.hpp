@@ -88,7 +88,7 @@ constexpr inline ProjectileStats tomahawk_stats{     1 , 20, 2.0 , 0.0, 0.0, 0.0
 
 /* WeaponAttributes(bool aut, bool bmr, int rat, int cldn, float recl) */
 constexpr inline WeaponAttributes bryns_gun_attributes{  false, false, 4 , 1,  0.0f};
-constexpr inline WeaponAttributes plasmer_attributes{    false, false, 3 , 2 , 0.05f};
+constexpr inline WeaponAttributes plasmer_attributes{    false, false, 3 , 2 , 0.1f};
 constexpr inline WeaponAttributes wasp_attributes{       false, false, 4 , 1 , 0.0f};
 constexpr inline WeaponAttributes blizzard_attributes{   false, false, 2 , 3 , 0.0f};
 constexpr inline WeaponAttributes bismuth_attributes{    false, false, 3 , 2 , 2.0f};

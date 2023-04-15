@@ -17,12 +17,12 @@ Player::Player() {
     behavior.current_state = behavior::Behavior(behavior::idle);
     behavior.facing_lr = behavior::DIR_LR::RIGHT;
     
-    weapons_hotbar = {
+    /*weapons_hotbar = {
         arms::WEAPON_TYPE::BRYNS_GUN,
         arms::WEAPON_TYPE::PLASMER,
         arms::WEAPON_TYPE::CLOVER
     };
-    loadout.equipped_weapon = weapons_hotbar.at(0);
+    loadout.equipped_weapon = weapons_hotbar.at(0);*/
     
     //sprites
     assign_texture(svc::assetLocator.get().t_nani);
@@ -174,7 +174,7 @@ void Player::handle_events(sf::Event& event) {
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Down) {
             if (grounded()) {
-                inspecting_trigger = true;
+                flags.input.set(Input::inspecting_trigger);
             }
         }
     }
@@ -183,14 +183,15 @@ void Player::handle_events(sf::Event& event) {
 void Player::update(Time dt) {
 
     update_animation();
+    update_sprite();
 
     if(moving() || flags.movement.test(Movement::look_up) || jump_request > -1) {
-        inspecting = false;
-        inspecting_trigger = false;
+        flags.input.reset(Input::inspecting);
+        flags.input.reset(Input::inspecting_trigger);
     }
 
-    if(inspecting_trigger && behavior.current_state.params.behavior_id == "inspecting" && behavior.current_state.params.done) {
-        inspecting = true;
+    if(flags.input.test(Input::inspecting_trigger) && behavior.current_state.params.behavior_id == "inspecting" && behavior.current_state.params.done) {
+        flags.input.set(Input::inspecting);
     }
 
     //check if player requested jump
@@ -272,16 +273,22 @@ void Player::update(Time dt) {
     }
     
     //weapon physics
-    if(weapon_fired) {
-        if(behavior.facing == behavior::DIR::LEFT) {
+    if(weapon_fired && !weapons_hotbar.empty()) {
+        if(behavior.facing_strictly_right()) {
             if(!collider.has_right_collision) {
-                collider.physics.apply_force({loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
+                collider.physics.acceleration.x += -loadout.get_equipped_weapon().attributes.recoil;
             }
         }
-        if(behavior.facing == behavior::DIR::RIGHT) {
+        if(behavior.facing_strictly_left()) {
             if(!collider.has_left_collision) {
-                collider.physics.apply_force({-loadout.get_equipped_weapon().attributes.recoil, -loadout.get_equipped_weapon().attributes.recoil/4});
+                collider.physics.acceleration.x += loadout.get_equipped_weapon().attributes.recoil;
             }
+        }
+        if(behavior.facing_down()) {
+            collider.physics.acceleration.y += -loadout.get_equipped_weapon().attributes.recoil/8;
+        }
+        if (behavior.facing_up()) {
+            collider.physics.acceleration.y += loadout.get_equipped_weapon().attributes.recoil;
         }
     }
     
@@ -345,6 +352,12 @@ void Player::update_animation() {
     behavior.current_state.update();
 }
 
+void Player::update_sprite() {
+    if(weapons_hotbar.empty()) {
+        sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
+    }
+}
+
 void Player::flash_sprite() {
     if ((counters.invincibility / 10) % 2 == 0) { sprite.setColor(flcolor::red); }
     else { sprite.setColor(flcolor::blue); }
@@ -379,7 +392,7 @@ void Player::update_behavior() {
         behavior.stop();
     }
 
-    if(inspecting_trigger && !(behavior.current_state.params.behavior_id == "inspecting")) {
+    if(flags.input.test(Input::inspecting_trigger) && !(behavior.current_state.params.behavior_id == "inspecting")) {
         behavior.inspect();
     }
     
@@ -420,15 +433,16 @@ void Player::update_behavior() {
     flags.movement.reset(Movement::right_released);
     flags.movement.reset(Movement::wall_slide_trigger);
     flags.movement.reset(Movement::release_wallslide);
-    if(!loadout.get_equipped_weapon().attributes.automatic) {
-        weapon_fired = false;
-    }
-    
-    if(start_cooldown) {
-        loadout.get_equipped_weapon().current_cooldown--;
-        if(loadout.get_equipped_weapon().current_cooldown < 0) {
-            loadout.get_equipped_weapon().current_cooldown = loadout.get_equipped_weapon().attributes.cooldown_time;
-            start_cooldown = false;
+    if (!weapons_hotbar.empty()) {
+        if (!loadout.get_equipped_weapon().attributes.automatic) {
+            weapon_fired = false;
+        }
+        if (start_cooldown) {
+            loadout.get_equipped_weapon().current_cooldown--;
+            if (loadout.get_equipped_weapon().current_cooldown < 0) {
+                loadout.get_equipped_weapon().current_cooldown = loadout.get_equipped_weapon().attributes.cooldown_time;
+                start_cooldown = false;
+            }
         }
     }
     
@@ -436,7 +450,9 @@ void Player::update_behavior() {
         flags.movement.reset(Movement::is_wall_sliding);
     }
     update_direction();
-    update_weapon_direction();
+    if (!weapons_hotbar.empty()) {
+        update_weapon_direction();
+    }
     
 }
 
@@ -548,9 +564,9 @@ void Player::restrict_inputs() {
     flags.movement.reset(Movement::move_right);
     flags.movement.reset(Movement::look_down);
     flags.movement.reset(Movement::look_up);
-    inspecting_trigger = false;
+    flags.input.reset(Input::inspecting_trigger);
     weapon_fired = false;
-    if (!inspecting) {
+    if (!flags.input.test(Input::inspecting)) {
         behavior.reset();
     }
 
