@@ -362,7 +362,7 @@ void run(char** argv) {
                         svc::playerLocator.get().kill();
                     }
                     if (event.key.code == sf::Keyboard::T) {
-                        svc::consoleLocator.get().begin("Hello");
+                        svc::consoleLocator.get().begin();
                         svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
                     }
                     if (event.key.code == sf::Keyboard::Q) {

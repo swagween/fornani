@@ -178,7 +178,22 @@ inline std::unordered_map<char, int> get_character {
     {'8', 33},
     {'9', 34},
     {'0', 35},
-    {'\'', 36}
+    {'\'',36},
+    {'.', 37},
+    {'!', 38},
+    {'%', 39},
+    {'<', 40},
+    {'>', 41},
+    {'?', 42},
+    {':', 43},
+    {'—', 44},
+    {'_', 45},
+    {'-', 46},
+    {'(', 47},
+    {')', 48},
+    {'#', 49},
+    {'+', 50},
+    {'`', 51}
 };
 
 
@@ -202,7 +217,7 @@ inline std::unordered_map<int, TILE_TYPE> tile_lookup{};
 
 static void populate_lookup() {
 	for (int i = 0; i < 256; ++i) {
-		if (i < 192 && i >= 0) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
+		if (i < 192 && i >= 0)   { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
 		if (i < 224 && i >= 192) { tile_lookup.insert({ i, TILE_TYPE::TILE_RAMP });         }
 		if (i < 228 && i >= 224) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
 		if (i < 232 && i >= 228) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }

@@ -20,6 +20,7 @@
 #include "../graphics/Transition.hpp"
 #include "../entities/critter/Bestiary.hpp"
 #include "../entities/world/Portal.hpp"
+#include "../entities/world/Inspectable.hpp"
 
 const int NUM_LAYERS{8};
 const int CHUNK_SIZE{16};
@@ -92,6 +93,7 @@ public:
     std::vector<vfx::Emitter> active_emitters{};
     std::vector<critter::Critter> critters{};
     std::vector<entity::Portal> portals{};
+    std::vector<entity::Inspectable> inspectables{};
     
     std::unique_ptr<bg::Background> background{};
     flfx::Transition transition{255};

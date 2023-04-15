@@ -93,6 +93,26 @@ void Map::load(const std::string& path) {
         }
         input.close();
     }
+
+    //get inspectable data
+    input.open(path + "/map_inspectables.txt");
+    if (input.is_open()) {
+        while (!input.eof()) {
+            entity::Inspectable p{};
+            input >> p.scaled_dimensions.x; input.ignore();
+            input >> p.scaled_dimensions.y; input.ignore();
+            input >> value; p.activate_on_contact = (bool)value; input.ignore(); input.ignore();
+            std::getline(input, p.message, '\n');
+            input >> p.scaled_position.x; input.ignore();
+            input >> p.scaled_position.y; input.ignore();
+            p.update();
+            if (p.dimensions.x != 0) { //only push if one was read, otherwise we reached the end of the file
+                inspectables.push_back(p);
+                inspectables.back().update();
+            }
+        }
+        input.close();
+    }
     
     critters.push_back(bestiary.get_critter_at(1));
     critters.back().set_position({404, 494});
@@ -254,6 +274,17 @@ void Map::update() {
         }
     }
 
+    for (auto& inspectable : inspectables) {
+        if (svc::playerLocator.get().inspecting && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+            inspectable.activated = true;
+            svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
+            //svc::playerLocator.get().restrict_inputs();
+        }
+        if(inspectable.activated) {
+            //svc::consoleLocator.get().begin();
+        }
+    }
+
     //check if player died
     if(!svc::playerLocator.get().flags.state.test(State::alive) && !game_over) {
         active_emitters.push_back(player_death);
@@ -339,9 +370,18 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
     for (auto& portal : portals) {
         portal.render(win, cam);
     }
+    for (auto& inspectable : inspectables) {
+        inspectable.render(win, cam); //for debug
+    }
 
     if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
         svc::consoleLocator.get().render(win);
+        for (auto& inspectable : inspectables) {
+            if (inspectable.activated) {
+                svc::consoleLocator.get().write(win, inspectable.message);
+                //svc::consoleLocator.get().write(win, "ab?:-_()#`");
+            }
+        }
     }
 
 }

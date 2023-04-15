@@ -27,9 +27,10 @@ namespace gui {
 
 		dimensions = sf::Vector2<float>{ (float)cam::screen_dimensions.x - 2 * pad, (float)cam::screen_dimensions.y / 3 };
 		position = sf::Vector2<float>{ origin.x, origin.y - dimensions.y };
+		text_origin = sf::Vector2<float>{ 20.0f, 20.0f };
 	}
 
-	void Console::begin(std::string_view message) {
+	void Console::begin() {
 		dimensions.x = corner_factor * 2;
 	}
 
@@ -50,10 +51,27 @@ namespace gui {
 		}
 	}
 
-	void Console::write(std::string_view message) {
+	void Console::write(sf::RenderWindow& win, std::string_view message) {
+		int ctr{ 0 };
+		for (auto& letter : message) {
+			if (!std::isspace(letter)) {
+				try {
+					if (auto search = lookup::get_character.find(letter); search != lookup::get_character.end()) {
+						svc::assetLocator.get().sp_alphabet.at(lookup::get_character.at(letter)).setPosition(position.x + text_origin.x + (12 * ctr) + 2, position.y + text_origin.y);
+						win.draw(svc::assetLocator.get().sp_alphabet.at(lookup::get_character.at(letter)));
+					} else {
+						printf("Error: %c is not in the map.\n", letter);
+					}
+				} catch (std::out_of_range) {
+					printf("Error: %c is out of range.\n", letter);
+				}
+			}
+			ctr++;
+		}
 	}
 
-	void Console::write_speech(std::string_view message) {
+	void Console::write_speech(sf::RenderWindow& win, std::string_view message) {
+
 	}
 
 	void Console::end() {
