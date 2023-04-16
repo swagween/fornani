@@ -21,6 +21,7 @@ namespace {
 
 auto SM = automa::StateManager{};
 auto window = sf::RenderWindow();
+auto minimap = sf::View();
 
 const int NUM_TIMESTEPS = 64;
 int TIME_STEP_MILLI = 0;
@@ -253,6 +254,16 @@ static void show_overlay() {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CARGO_01");
                     }
+                    if (ImGui::Button("Shaft")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_SHAFT_01");
+                    }
+                    if (ImGui::Button("Atrium")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_ATRIUM_01");
+                    }
                     if(ImGui::Button("Lab")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
@@ -365,13 +376,13 @@ void run(char** argv) {
                     window.setSize(sf::Vector2u{win_size.x, win_size.y});
                     break;
                 case sf::Event::KeyPressed:
-                    if(event.key.code == sf::Keyboard::Escape) {
-                        return;
-                    }
-                    if(event.key.code == sf::Keyboard::D) {
-                        debug_mode = !debug_mode;
-                        svc::assetLocator.get().click.play();
-                    }
+					if (event.key.code == sf::Keyboard::Escape) {
+						return;
+					}
+					if (event.key.code == sf::Keyboard::D) {
+						debug_mode = !debug_mode;
+						svc::assetLocator.get().click.play();
+					}
                     if (event.key.code == sf::Keyboard::K) {
                         svc::playerLocator.get().kill();
                     }

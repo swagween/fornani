@@ -53,7 +53,7 @@ public:
     std::array<sf::Sprite, 9> sprites{};
 
     int extent{};
-    int speed{ 16 };
+    int speed{ 8 };
     
 }; // end Console
 

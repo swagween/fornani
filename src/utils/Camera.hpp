@@ -78,6 +78,16 @@ public:
             physics.position.x = bounds.x - bounding_box.width;
         }
     }
+
+    void fix_horizontally(sf::Vector2<float> map_dim) { 
+        bounding_box.top = (map_dim.y - screen_dimensions.y) / 2;
+        physics.position.y = bounding_box.top;
+    }
+
+    void fix_vertically(sf::Vector2<float> map_dim) {
+        bounding_box.left = (map_dim.x - screen_dimensions.x) / 2;
+        physics.position.x = bounding_box.left;
+    }
     
     void set_position(sf::Vector2<float> new_pos) {
         physics.position = new_pos;

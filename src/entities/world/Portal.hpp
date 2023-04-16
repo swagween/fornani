@@ -39,6 +39,7 @@ namespace entity {
 
 		bool activated{};
 		bool activate_on_contact{};
+		bool ready{}; //starts false, made true once player isn't intesecting it. to prevent auto-portal for activat-on-contact portals
 
 	};
 

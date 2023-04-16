@@ -14,7 +14,7 @@ namespace entity {
 	}
 	void Portal::render(sf::RenderWindow& win, Vec campos) {
 		sf::RectangleShape box{};
-		if (activated) {
+		if (ready) {
 			box.setFillColor(sf::Color{ 80, 180, 120, 100 });
 		} else {
 			box.setFillColor(sf::Color{ 180, 120, 80, 100 });
@@ -23,7 +23,7 @@ namespace entity {
 		box.setOutlineThickness(-1);
 		box.setPosition(Vec(bounding_box.shape_x, bounding_box.shape_y) - campos);
 		box.setSize(dimensions);
-		//win.draw(box);
+		win.draw(box);
 	}
 } // end entity
 

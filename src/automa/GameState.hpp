@@ -156,9 +156,7 @@ public:
         
     }
     void handle_events(sf::Event& event) {
-        if (!svc::playerLocator.get().flags.input.test(Input::restricted)) {
-            svc::playerLocator.get().handle_events(event);
-        }
+        svc::playerLocator.get().handle_events(event);
         if (event.type == sf::Event::EventType::KeyPressed) {
             if (event.key.code == sf::Keyboard::Z) {
                 svc::playerLocator.get().flags.input.set(Input::exit_request);
@@ -177,7 +175,11 @@ public:
                 show_colliders = !show_colliders;
             }
         }
-        
+        if (event.type == sf::Event::EventType::KeyPressed) {
+            if (event.key.code == sf::Keyboard::LControl) {
+                map.show_minimap = !map.show_minimap;
+            }
+        }
         if (event.type == sf::Event::EventType::KeyPressed) {
             if (event.key.code == sf::Keyboard::B) {
                 x++;
@@ -193,6 +195,8 @@ public:
         svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
         svc::cameraLocator.get().update();
         svc::cameraLocator.get().restrict_movement(map.real_dimensions);
+        if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
+        if (map.real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(map.real_dimensions); }
         svc::playerLocator.get().update(svc::clockLocator.get().elapsed_time);
         svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
     }

@@ -28,6 +28,8 @@ namespace gui {
 		dimensions = sf::Vector2<float>{ (float)cam::screen_dimensions.x - 2 * pad, (float)cam::screen_dimensions.y / height_factor };
 		position = sf::Vector2<float>{ origin.x, origin.y - dimensions.y };
 		text_origin = sf::Vector2<float>{ 20.0f, 20.0f };
+
+		extent = corner_factor * 2;
 	}
 
 	void Console::begin() {
@@ -75,7 +77,7 @@ namespace gui {
 	}
 
 	void Console::end() {
-		extent = 0;
+		extent = dimensions.y = corner_factor * 2;
 		flags.reset(ConsoleFlags::active);
 	}
 
