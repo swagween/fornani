@@ -38,7 +38,7 @@ float FPS = 0.0;
 
 int shake_counter = 0;
 
-sf::Vector2<uint16_t> win_size{};
+sf::Vector2<uint32_t> win_size{};
 float height_ratio{};
 float width_ratio{};
 
@@ -146,7 +146,9 @@ static void show_overlay() {
                     if(svc::playerLocator.get().collider.has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Has Left Collision: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().collider.has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if (svc::playerLocator.get().collider.has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if (svc::playerLocator.get().collider.is_any_jump_colllision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
                     ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
@@ -258,17 +260,29 @@ static void show_overlay() {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_SHAFT_01");
+                        svc::playerLocator.get().set_position({ 3 * 32, 8 * 32 });
                     }
                     if (ImGui::Button("Atrium")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_ATRIUM_01");
                     }
+                    if (ImGui::Button("Hangar")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_HANGAR_01");
+                        svc::playerLocator.get().set_position({ 3080, 790 });
+                    }
+                    if (ImGui::Button("Corridor 3")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CORRIDOR_03");
+                        svc::playerLocator.get().set_position({ 2327, 360 });
+                    }
                     if(ImGui::Button("Lab")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
-                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                     }
                     if(ImGui::Button("Toxic")) {
                         svc::assetLocator.get().click.play();

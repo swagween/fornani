@@ -11,14 +11,14 @@
 
 namespace entity {
 
-	const uint16_t UNIT_SIZE = 32;
+	const uint32_t UNIT_SIZE = 32;
 
 	class Inspectable {
 
 	public:
 
 		using Vec = sf::Vector2<float>;
-		using Vecu16 = sf::Vector2<uint16_t>;
+		using Vecu16 = sf::Vector2<uint32_t>;
 
 		Inspectable() = default;
 		Inspectable(Vecu16 dim, Vecu16 pos) : scaled_dimensions(dim), scaled_position(pos) {

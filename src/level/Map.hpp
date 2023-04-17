@@ -51,13 +51,13 @@ class Layer {
 public:
     
     Layer() = default;
-    Layer(uint8_t o, bool c, sf::Vector2<uint16_t> dim) : render_order(o), collidable(c), dimensions(dim) {
+    Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim) : render_order(o), collidable(c), dimensions(dim) {
         grid = squid::Grid({dim.x, dim.y});
     }
     squid::Grid grid{};
     uint8_t render_order{};
     bool collidable{};
-    sf::Vector2<uint16_t> dimensions{};
+    sf::Vector2<uint32_t> dimensions{};
     
 };
 
@@ -68,7 +68,7 @@ class Map {
 public:
     
     using Vec = sf::Vector2<float>;
-    using Vecu16 = sf::Vector2<uint16_t>;
+    using Vecu16 = sf::Vector2<uint32_t>;
     
     Map();
     //methods
@@ -81,6 +81,9 @@ public:
     void spawn_projectile_at(sf::Vector2<float> pos);
     void manage_projectiles();
     Vec get_spawn_position(int portal_source_map_id);
+
+    //helper for player state
+    bool entered_from_left();
     
     //layers
     std::vector<Layer> layers;

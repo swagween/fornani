@@ -40,15 +40,15 @@ struct PlayerStats {
 
 struct PlayerInventoryStats {
     
-    uint16_t gem_spinel{};
-    uint16_t gem_topaz{};
-    uint16_t gem_tourmaline{};
-    uint16_t gem_peridot{};
+    uint32_t gem_spinel{};
+    uint32_t gem_topaz{};
+    uint32_t gem_tourmaline{};
+    uint32_t gem_peridot{};
     
-    uint16_t flower_lavender{};
-    uint16_t flower_daffodil{};
-    uint16_t flower_hibiscus{};
-    uint16_t flower_orchid{};
+    uint32_t flower_lavender{};
+    uint32_t flower_daffodil{};
+    uint32_t flower_hibiscus{};
+    uint32_t flower_orchid{};
     
 };
 
@@ -122,6 +122,7 @@ enum class Movement {
 	landed_trigger,
 	entered_freefall,
 	freefalling,
+    autonomous_walk,
 
 	is_wall_sliding,
 	wall_slide_trigger,
@@ -130,6 +131,7 @@ enum class Movement {
 
 enum class Input {
     restricted,
+    no_anim,
     exit_request,
     inspecting,
     inspecting_trigger
@@ -168,9 +170,13 @@ public:
     void set_position(sf::Vector2<float> new_pos);
     void update_direction();
     void update_weapon_direction();
+    void walk();
+    void autonomous_walk();
 
     void restrict_inputs();
     void unrestrict_inputs();
+    void restrict_animation();
+    void no_move();
 
     bool grounded();
     bool moving();

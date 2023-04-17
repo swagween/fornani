@@ -156,20 +156,20 @@ public:
         
     }
     void handle_events(sf::Event& event) {
-        svc::playerLocator.get().handle_events(event);
         if (event.type == sf::Event::EventType::KeyPressed) {
-            if (event.key.code == sf::Keyboard::Z) {
+            if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right) {
                 svc::playerLocator.get().flags.input.set(Input::exit_request);
             }
         }
         if (event.type == sf::Event::EventType::KeyReleased) {
-            if (event.key.code == sf::Keyboard::Z) {
+            if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right) {
                 svc::playerLocator.get().flags.input.reset(Input::exit_request);
                 svc::playerLocator.get().unrestrict_inputs();
                 svc::playerLocator.get().flags.input.reset(Input::inspecting);
                 svc::playerLocator.get().flags.input.reset(Input::inspecting_trigger);
             }
         }
+        svc::playerLocator.get().handle_events(event);
         if (event.type == sf::Event::EventType::KeyPressed) {
             if (event.key.code == sf::Keyboard::H) {
                 show_colliders = !show_colliders;

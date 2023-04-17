@@ -32,8 +32,8 @@ namespace shape {
         jumpbox.vertices[3] = sf::Vector2<float>(0, 0 + default_dim + default_jumpbox_height);
 
 
-        left_detector.left_offset = 0.0f;
-        right_detector.right_offset = 0.0f;
+        left_detector.left_offset = default_detector_width - 0.01f;
+        right_detector.right_offset = default_detector_width - 0.01f;;
 
         left_detector.vertices[0] = sf::Vector2<float>(0 - default_detector_width, 0 + default_detector_buffer);
         left_detector.vertices[1] = sf::Vector2<float>(0, 0 + default_detector_buffer);
@@ -67,8 +67,8 @@ namespace shape {
         jumpbox.vertices[3] = sf::Vector2<float>(start_pos.x, start_pos.y + dim.y + default_jumpbox_height);
 
 
-        left_detector.left_offset = default_detector_width - 0.0001;
-        right_detector.right_offset = default_detector_width - 0.0001;
+        left_detector.left_offset = 0.0f;
+        right_detector.right_offset = 0.0f;
 
         left_detector.vertices[0] = sf::Vector2<float>(start_pos.x - default_detector_width, start_pos.y + default_detector_buffer);
         left_detector.vertices[1] = sf::Vector2<float>(start_pos.x, start_pos.y + default_detector_buffer);
@@ -89,12 +89,9 @@ namespace shape {
         jumpbox.update(physics.position.x, physics.position.y + dimensions.x, dimensions.x, default_jumpbox_height);
         left_detector.update(physics.position.x - default_detector_width, physics.position.y + default_detector_buffer, default_detector_width, default_detector_height);
         right_detector.update(physics.position.x + dimensions.x, physics.position.y + default_detector_buffer, default_detector_width, default_detector_height);
-
     }
 
     void Collider::handle_map_collision(const Shape& cell, lookup::TILE_TYPE tile_type) {
-        float y_dist = cell.vertices[0].y - left_detector.vertices[2].y;
-        sf::Vector2<float> detector_mtv = left_detector.testCollisionGetMTV(left_detector, cell);
 
         //tile flags
         bool is_ramp = tile_type == lookup::TILE_TYPE::TILE_RAMP;
@@ -151,8 +148,6 @@ namespace shape {
                 spike_trigger = true;
             }
 
-            sync_components();
-
             physics.mtv = { 0.0f, 0.0f };
             just_collided = true;
             is_colliding_with_level = true;
@@ -160,6 +155,8 @@ namespace shape {
 
         }
 
+        float y_dist = cell.vertices[0].y - left_detector.vertices[2].y;
+        sf::Vector2<float> detector_mtv = left_detector.testCollisionGetMTV(left_detector, cell);
 		if (left_detector.SAT(cell) && !is_plat && !is_spike && !is_ramp) {
 			if (!ceiling_collision && !just_landed) {
                 has_left_collision = true;
@@ -185,5 +182,7 @@ namespace shape {
         if (jumpbox.SAT(cell) && !is_spike) {
             is_any_jump_colllision = !(is_plat && physics.velocity.y < 0.0f);
         }
+
+        sync_components();
     }
 }

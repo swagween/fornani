@@ -63,8 +63,6 @@ void Map::load(const std::string& path) {
             cell.type = typ;
             
             input.ignore(); //ignore the delimiter
-            input.ignore();
-            input.ignore();
         }
         layer.grid.update();
         layer.grid.init_shape_vertices();
@@ -264,22 +262,17 @@ void Map::update() {
             } else if(svc::playerLocator.get().flags.input.test(Input::inspecting)) {
                 portal.activated = true;
                 svc::playerLocator.get().restrict_inputs();
+                svc::playerLocator.get().restrict_animation();
             }
             //player just entered room via border portal
             if (!portal.ready && portal.activate_on_contact) {
+                svc::playerLocator.get().behavior.facing_lr = entered_from_left() ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
                 svc::playerLocator.get().restrict_inputs();
-                if (svc::playerLocator.get().behavior.facing_lr == behavior::DIR_LR::LEFT) {
-                    svc::playerLocator.get().flags.movement.set(Movement::move_left);
-                }
-                else if (svc::playerLocator.get().behavior.facing_lr == behavior::DIR_LR::RIGHT) {
-                    svc::playerLocator.get().flags.movement.set(Movement::move_right);
-                }
+                svc::playerLocator.get().autonomous_walk();
             }
         } else {
             if(!portal.ready && portal.activate_on_contact) {
                 svc::playerLocator.get().unrestrict_inputs();
-                svc::playerLocator.get().flags.movement.reset(Movement::move_left);
-                svc::playerLocator.get().flags.movement.reset(Movement::move_right);
             }
             portal.ready = true;
         }
@@ -384,19 +377,36 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
                     win.draw(tileset.at(cell.value));
                     if(cell.collision_check) {
                         sf::RectangleShape box{};
-                        box.setPosition(cell.position.x - cam.x, cell.position.y - cam.y);
-                        box.setFillColor(sf::Color{100, 100, 130, 20});
-                        box.setOutlineColor(sf::Color(235, 232, 249, 80));
+                        box.setPosition(cell.bounding_box.vertices[0].x - cam.x, cell.bounding_box.vertices[0].y - cam.y);
+                        box.setFillColor(sf::Color{100, 100, 130, 80});
+                        box.setOutlineColor(sf::Color(235, 232, 249, 140));
                         box.setOutlineThickness(-1);
                         box.setSize(sf::Vector2<float>{(float)cell.bounding_box.shape_w, (float)cell.bounding_box.shape_h});
-                        //win.draw(box);
+                        win.draw(box);
                     }
                 }
             }
         }
     }
 
-    
+    if (real_dimensions.y < cam::screen_dimensions.y) {
+        float ydiff = (cam::screen_dimensions.y - real_dimensions.y) / 2;
+        borderbox.setFillColor(flcolor::black);
+        borderbox.setSize({ (float)cam::screen_dimensions.x, ydiff });
+        borderbox.setPosition(0.0f, 0.0f);
+        win.draw(borderbox);
+        borderbox.setPosition(0.0f, real_dimensions.y + ydiff);
+        win.draw(borderbox);
+    }
+    if (real_dimensions.x < cam::screen_dimensions.x) {
+        float xdiff = (cam::screen_dimensions.x - real_dimensions.x) / 2;
+        borderbox.setFillColor(flcolor::black);
+        borderbox.setSize({ xdiff, (float)cam::screen_dimensions.y });
+        borderbox.setPosition(0.0f, 0.0f);
+        win.draw(borderbox);
+        borderbox.setPosition(real_dimensions.x + xdiff, 0.0f);
+        win.draw(borderbox);
+    }
 
     for (auto& portal : portals) {
         portal.render(win, cam);
@@ -440,24 +450,6 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 
 void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
     background->render(win, cam, real_dimensions);
-    if (real_dimensions.y < cam::screen_dimensions.y) {
-        float ydiff = (cam::screen_dimensions.y - real_dimensions.y) / 2;
-        borderbox.setFillColor(flcolor::black);
-        borderbox.setSize({ (float)cam::screen_dimensions.x, ydiff});
-        borderbox.setPosition(0.0f, 0.0f);
-        win.draw(borderbox);
-        borderbox.setPosition(0.0f, real_dimensions.y + ydiff);
-        win.draw(borderbox);
-    }
-    if (real_dimensions.x < cam::screen_dimensions.x) {
-        float xdiff = (cam::screen_dimensions.x - real_dimensions.x) / 2;
-        borderbox.setFillColor(flcolor::black);
-        borderbox.setSize({ xdiff, (float)cam::screen_dimensions.y });
-        borderbox.setPosition(0.0f, 0.0f);
-        win.draw(borderbox);
-        borderbox.setPosition(real_dimensions.x + xdiff, 0.0f);
-        win.draw(borderbox);
-    }
     if (real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(real_dimensions); }
     for(auto& layer : layers) {
         if(layer.render_order < 4) {
@@ -528,6 +520,10 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
         }
     }
     return Vec(300.f, 390.f);
+}
+
+bool Map::entered_from_left() {
+    return svc::playerLocator.get().collider.physics.position.x < CELL_SIZE * 8; //player is on the left side of the map
 }
 
 squid::Tile& Map::tile_at(const uint8_t i, const uint8_t j) {
