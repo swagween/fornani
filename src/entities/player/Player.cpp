@@ -359,9 +359,7 @@ void Player::update_behavior() {
     
     if(behavior.current_state.params.complete) {
         if(grounded()) {
-           
             behavior.reset();
-            
         } else {
             behavior.air(collider.physics.velocity.y);
         }

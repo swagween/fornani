@@ -1,0 +1,9 @@
+1,1,0#
+it's a fireplace. it looks like it hasn't been used in years.#
+10,11#
+1,1,0#
+would you like to rest?#
+13,6#
+1,1,0#
+it's a potted plant.#
+14,11#

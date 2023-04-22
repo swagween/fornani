@@ -16,6 +16,10 @@ target_sources(${PROJECT_NAME} PRIVATE
     components/PhysicsComponent.hpp
     components/PhysicsComponent.cpp
 	components/BehaviorComponent.hpp
+    components/Animation.hpp
+    components/Animation.cpp
+    components/AnimationController.hpp
+    components/AnimationController.cpp
 	utils/Grid.hpp
 	utils/Grid.cpp
 	utils/Shape.hpp

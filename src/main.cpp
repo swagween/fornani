@@ -147,7 +147,7 @@ static void show_overlay() {
                     ImGui::Text("Has Left Collision: ");
                     ImGui::SameLine();
                     if (svc::playerLocator.get().collider.has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    if (svc::playerLocator.get().collider.is_any_jump_colllision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if (svc::playerLocator.get().collider.is_any_jump_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
 
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
@@ -248,8 +248,20 @@ static void show_overlay() {
                     if(ImGui::Button("Shadow")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SHADOW_PLAT_01");
-                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SHADOW_DOJO_01");
+                        svc::playerLocator.get().set_position({ 4 * 32, 11 * 32 });
+                    }
+                    if (ImGui::Button("Stone")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/STONE_CORRIDOR_01");
+                        svc::playerLocator.get().set_position({ 10 * 32, 16 * 32 });
+                    }
+                    if (ImGui::Button("Overturned")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/OVERTURNED_DOJO_01");
+                        svc::playerLocator.get().set_position({ 4 * 32, 11 * 32 });
                     }
                     if(ImGui::Button("Cargo")) {
                         svc::assetLocator.get().click.play();

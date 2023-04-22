@@ -6,6 +6,7 @@
 //
 
 #include "Collider.hpp"
+#include "../graphics/FLColor.hpp"
 
 namespace shape {
 
@@ -84,6 +85,18 @@ namespace shape {
     }
 
     void Collider::sync_components() {
+        if (left_aabb_counter == 0) {
+            has_left_collision = false;
+        }
+        if (right_aabb_counter == 0) {
+            has_right_collision = false;
+        }
+        if (is_any_collision) {
+            is_colliding_with_level = true;
+        }
+        else {
+            is_colliding_with_level = false;
+        }
         bounding_box.update(physics.position.x, physics.position.y, dimensions.x , dimensions.y);
         predictive_bounding_box.update(physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y, dimensions.x, dimensions.y);
         jumpbox.update(physics.position.x, physics.position.y + dimensions.x, dimensions.x, default_jumpbox_height);
@@ -101,7 +114,7 @@ namespace shape {
         if (predictive_bounding_box.SAT(cell)) {
             if (!is_spike) {
                 if (!is_plat) {
-                    is_any_colllision = true;
+                    is_any_collision = true;
                 }
                 //set mtv
                 physics.mtv = predictive_bounding_box.testCollisionGetMTV(predictive_bounding_box, cell);
@@ -180,9 +193,49 @@ namespace shape {
         ceiling_collision = false;
 
         if (jumpbox.SAT(cell) && !is_spike) {
-            is_any_jump_colllision = !(is_plat && physics.velocity.y < 0.0f);
+            is_any_jump_collision = !(is_plat && physics.velocity.y < 0.0f);
+            flags.set(State::grounded);
+        } else {
+            flags.reset(State::grounded);
         }
 
         sync_components();
+    }
+
+    void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+        box.setSize(dimensions);
+        box.setPosition(physics.position.x - cam.x, physics.position.y - cam.y);
+        box.setFillColor(sf::Color{50, 60, 230, 80});
+        box.setOutlineColor(flcolor::white);
+        box.setOutlineThickness(-1);
+        //win.draw(box);
+        box.setSize(dimensions);
+        box.setPosition(predictive_bounding_box.shape_x - cam.x, predictive_bounding_box.shape_y - cam.y);
+        if (has_left_collision) {
+            box.setFillColor(sf::Color{ 50, 230, 50, 200 });
+        } else if(has_right_collision) {
+            box.setFillColor(sf::Color{ 50, 60, 230, 200 });
+        } else {
+            box.setFillColor(sf::Color{ 230, 230, 10, 70 });
+        }
+        box.setOutlineColor(flcolor::fucshia);
+        box.setOutlineThickness(-1);
+        win.draw(box);
+        box.setSize(sf::Vector2<float>{(float)left_detector.shape_w, (float)left_detector.shape_h});
+        box.setPosition(left_detector.shape_x - cam.x, left_detector.shape_y - cam.y);
+        box.setFillColor(sf::Color{ 50, 60, 130, 80 });
+        win.draw(box);
+        box.setSize(sf::Vector2<float>{(float)right_detector.shape_w, (float)right_detector.shape_h});
+        box.setPosition(right_detector.shape_x - cam.x, right_detector.shape_y - cam.y);
+        box.setFillColor(sf::Color{ 50, 60, 130, 80 });
+        win.draw(box);
+
+    }
+    void Collider::reset() {
+        is_any_jump_collision = false;
+        is_any_collision = false;
+        left_aabb_counter = 0;
+        right_aabb_counter = 0;
+        flags = {};
     }
 }

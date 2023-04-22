@@ -38,12 +38,18 @@ inline std::unordered_map<int, std::string> get_map_label {
     {120,     "FIRSTWIND_CLOSET_03"   },
     {121,     "FIRSTWIND_INFIRMARY_01"   },
     {122,     "FIRSTWIND_DECK_01"   },
+    {198,     "OVERTURNED_DOJO_02"   },
+    {199,     "OVERTURNED_DOJO_01"   },
 
     {800,     "UNDER_LEDGE_01"       },
     {801,     "UNDER_HOME_01"       },
     {802,     "SHADOW_CORRIDOR_01"      },
     {803,     "SHADOW_CORRIDOR_02"      },
-    {804,     "SHADOW_LEDGE_01"         }
+    {804,     "SHADOW_LEDGE_01"         },
+
+    {1101,     "STONE_CORRIDOR_01"      },
+    {1102,     "STONE_CHAMBER_01"      },
+    {1103,     "STONE_HALL_01"      }
 };
 
 }

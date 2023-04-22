@@ -13,7 +13,6 @@ inline util::Random r{};
 
 void Critter::update() {
 
-    collider.physics.update_euler();
     behavior.update();
     alert_range.update(collider.physics.position.x - alert_range.shape_w/2, collider.physics.position.y - alert_range.shape_h / 2, alert_range.shape_w, alert_range.shape_h);
     hostile_range.update(collider.physics.position.x - hostile_range.shape_w / 2, collider.physics.position.y - hostile_range.shape_h / 2, hostile_range.shape_w, hostile_range.shape_h);
@@ -35,9 +34,9 @@ void Critter::update() {
         behavior.idle();
     }
     
-    if (collider.is_any_jump_colllision) {
+    if (collider.is_any_jump_collision) {
         collider.physics.acceleration.y = 0.0f;
-        collider.is_any_jump_colllision = false;
+        collider.is_any_jump_collision = false;
     }
 
     if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.turn(); behavior.facing_lr = behavior::DIR_LR::LEFT; }
@@ -51,8 +50,19 @@ void Critter::update() {
     if(flags.seeking) {
         seek_current_target();
     }
-    if (collider.is_any_jump_colllision) { collider.physics.acceleration.y = 0.0f; }
+    if (collider.is_any_jump_collision) { collider.physics.acceleration.y = 0.0f; }
     if(abs(collider.physics.position.x - current_target.x) < 16.0f && abs(collider.physics.position.y - current_target.y) < 16.0f) { flags.seeking = false; }
+    if (!collider.is_colliding_with_level) { collider.physics.mtv = { 0.0f, 0.0f }; }
+    collider.just_collided = false;
+    if (!collider.grounded && collider.physics.velocity.y < 5.0f) {
+        collider.physics.gravity = 0.003;
+    }
+    else {
+        collider.physics.gravity = 0.0f;
+    }
+    if (collider.has_left_collision) { collider.physics.acceleration.x = 0.0f; }
+
+    collider.physics.update_euler();
 
     behavior.current_state.update();
 
@@ -81,6 +91,7 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     //win.draw(ar);
     //win.draw(hr);
     win.draw(sprite);
+    collider.render(win, campos);
     //win.draw(hurtbox);
     
     //do this after drawing to avoid 1-frame stuttering

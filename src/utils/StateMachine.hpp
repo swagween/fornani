@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <memory>
 
-namespace {
+namespace fsm {
 
 template<typename State>
 class StateMachine {
@@ -21,7 +21,6 @@ public:
     ~StateMachine() { current_state.reset(); }
     StateMachine& operator=(StateMachine&&) = delete;
     
-    State& initialize();
     State& get_current_state() {
         assert(current_state);
         return *current_state;

@@ -10,6 +10,7 @@
 #include "Shape.hpp"
 #include "../components/PhysicsComponent.hpp"
 #include "../setup/EnumLookups.hpp"
+#include "BitFlags.hpp"
 
 namespace shape {
 
@@ -20,6 +21,18 @@ namespace shape {
 	const float default_detector_height = 21.f;
 	const float default_detector_buffer = (default_dim - default_detector_height) / 2;
 
+	enum class State {
+		just_collided,
+		is_colliding_with_level,
+		has_left_collision,
+		has_right_collision,
+		is_any_jump_colllision,
+		is_any_collision,
+		just_landed,
+		ceiling_collision,
+		grounded,
+	};
+
 	class Collider {
 	public:
 
@@ -28,6 +41,8 @@ namespace shape {
 
 		void sync_components();
 		void handle_map_collision(const Shape& cell, lookup::TILE_TYPE tile_type);
+		void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+		void reset();
 
 		Shape bounding_box{};
 		Shape predictive_bounding_box{};
@@ -36,15 +51,17 @@ namespace shape {
 		Shape right_detector{};
 
 		components::PhysicsComponent physics{};
+		util::BitFlags<State> flags{};
 
 		bool just_collided{ false };
 		bool is_colliding_with_level{};
 		bool has_left_collision{};
 		bool has_right_collision{};
-		bool is_any_jump_colllision{ false };
-		bool is_any_colllision{ false };
+		bool is_any_jump_collision{ false };
+		bool is_any_collision{ false };
 		bool just_landed{};
 		bool ceiling_collision{ false };
+		bool grounded{ false };
 
 		float landed_threshold{ 1.0f };
 
@@ -55,6 +72,8 @@ namespace shape {
 		sf::Vector2<float>dimensions{};
 
 		bool spike_trigger{};
+
+		sf::RectangleShape box{};
 
 	};
 

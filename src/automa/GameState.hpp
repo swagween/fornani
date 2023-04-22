@@ -198,6 +198,7 @@ public:
         if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
         if (map.real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(map.real_dimensions); }
         svc::playerLocator.get().update(svc::clockLocator.get().elapsed_time);
+        for (auto& critter : map.critters) { critter.update(); }
         svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
     }
     
@@ -206,52 +207,6 @@ public:
         sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
         map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         
-        if(show_colliders) {
-            sf::Vector2<float> jumpbox_pos = sf::operator-(svc::playerLocator.get().collider.jumpbox.vertices.at(0), svc::cameraLocator.get().physics.position);
-            sf::RectangleShape jbx{};
-            jbx.setPosition(jumpbox_pos.x, jumpbox_pos.y);
-            jbx.setFillColor(sf::Color::Transparent);
-            jbx.setOutlineColor(sf::Color(235, 232, 249, 80));
-            jbx.setOutlineThickness(-1);
-            jbx.setSize({(float)svc::playerLocator.get().collider.jumpbox.shape_w, (float)svc::playerLocator.get().collider.jumpbox.shape_h});
-            win.draw(jbx);
-            
-            sf::Vector2<float> leftbox_pos = sf::operator-(svc::playerLocator.get().collider.left_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
-            sf::RectangleShape leftbox{};
-            leftbox.setPosition(leftbox_pos.x, leftbox_pos.y);
-            leftbox.setFillColor(sf::Color::Transparent);
-            leftbox.setOutlineColor(sf::Color(235, 232, 249, 80));
-            leftbox.setOutlineThickness(-1);
-            leftbox.setSize({(float)svc::playerLocator.get().collider.left_detector.shape_w, (float)svc::playerLocator.get().collider.left_detector.shape_h});
-            win.draw(leftbox);
-            
-            sf::Vector2<float> rightbox_pos = sf::operator-(svc::playerLocator.get().collider.right_detector.vertices.at(0), svc::cameraLocator.get().physics.position);
-            sf::RectangleShape rightbox{};
-            rightbox.setPosition(rightbox_pos.x, rightbox_pos.y);
-            rightbox.setFillColor(sf::Color::Transparent);
-            rightbox.setOutlineColor(sf::Color(235, 232, 249, 80));
-            rightbox.setOutlineThickness(-1);
-            rightbox.setSize({(float)svc::playerLocator.get().collider.right_detector.shape_w, (float)svc::playerLocator.get().collider.right_detector.shape_h});
-            win.draw(rightbox);
-            
-            sf::Vector2<float> hbx_pos = sf::operator-(svc::playerLocator.get().collider.bounding_box.vertices.at(0), svc::cameraLocator.get().physics.position);
-            sf::RectangleShape hbx{};
-            hbx.setPosition(hbx_pos.x, hbx_pos.y);
-            hbx.setFillColor(sf::Color::Transparent);
-            hbx.setOutlineColor(flcolor::white);
-            hbx.setOutlineThickness(-1);
-            hbx.setSize({(float)svc::playerLocator.get().collider.bounding_box.shape_w, (float)svc::playerLocator.get().collider.bounding_box.shape_h});
-            win.draw(hbx);
-
-            sf::Vector2<float> phbx_pos = sf::operator-(svc::playerLocator.get().collider.predictive_bounding_box.vertices.at(0), svc::cameraLocator.get().physics.position);
-            sf::RectangleShape phbx{};
-            phbx.setPosition(phbx_pos.x, phbx_pos.y);
-            phbx.setFillColor(sf::Color{220, 40, 100, 20});
-            phbx.setOutlineColor(sf::Color(235, 20, 80, 140));
-            phbx.setOutlineThickness(-1);
-            phbx.setSize({ (float)svc::playerLocator.get().collider.predictive_bounding_box.shape_w, (float)svc::playerLocator.get().collider.predictive_bounding_box.shape_h });
-            win.draw(phbx);
-        }
         if (!show_colliders) {
             //player
             sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
@@ -276,18 +231,13 @@ public:
                     win.draw(weap_sprite);
                 }
             }
+        } else {
+            svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
         }
         
         map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         hud.render(win);
-        
-//        sf::RectangleShape hbx{};
-//        hbx.setPosition(20, screen_dimensions.y - 276);
-//        hbx.setFillColor(flcolor::goldenrod);
-//        hbx.setOutlineColor(flcolor::white);
-//        hbx.setOutlineThickness(-1);
-//        hbx.setSize({128, 256});
-//        win.draw(hbx);
+
         svc::assetLocator.get().sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
         svc::assetLocator.get().sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);
 //        win.draw(svc::assetLocator.get().sp_ui_test);

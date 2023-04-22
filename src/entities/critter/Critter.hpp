@@ -16,6 +16,7 @@
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
 #include "../../utils/Collider.hpp"
+#include "../../components/AnimationController.hpp"
 
 namespace critter {
 
@@ -111,7 +112,8 @@ public:
     CritterStats stats{};
     CritterFlags flags{};
     
-    components::CritterBehaviorComponent behavior{};
+    components::CritterBehaviorComponent behavior{};//to be replaced by animation
+    //components::AnimationController animation{};
     shape::Collider collider{};
     Shape alert_range{};
     Shape hostile_range{};
