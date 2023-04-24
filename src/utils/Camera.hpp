@@ -114,6 +114,7 @@ public:
     }
     
     void shake() {
+        util::Random rand{};
         float nudge_x = rand.random_range(-SHAKE_FACTOR, SHAKE_FACTOR);
         float nudge_y = rand.random_range(-SHAKE_FACTOR, SHAKE_FACTOR);
         physics.velocity.x = nudge_x*0.1;
@@ -125,8 +126,6 @@ public:
     
     int shake_counter{};
     bool shaking = false;
-    
-    util::Random rand{};
     
 };
 

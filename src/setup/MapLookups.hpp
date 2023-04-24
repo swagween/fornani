@@ -49,7 +49,10 @@ inline std::unordered_map<int, std::string> get_map_label {
 
     {1101,     "STONE_CORRIDOR_01"      },
     {1102,     "STONE_CHAMBER_01"      },
-    {1103,     "STONE_HALL_01"      }
+    {1103,     "STONE_HALL_01"      },
+
+    {1701,     "SKY_CHAMBER_01"      },
+    {1702,     "SKY_CHAMBER_02"      }
 };
 
 }

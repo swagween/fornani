@@ -22,14 +22,16 @@ const int FLOOR_SLANT_INDEX = 208;
 struct Tile {
     
     Tile() {};
-    Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, lookup::TILE_TYPE t) : index(i), position(p), value(val), type(t) {}
+    Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, lookup::TILE_TYPE t) : index(i), position(p), value(val), type(t) {
+        bounding_box = shape::Shape(sf::Vector2<float>(DEFAULT_SPACING, DEFAULT_SPACING));
+    }
     
     sf::Vector2<uint32_t> index{};
     sf::Vector2<float> position{};
     
     uint32_t value{};
     lookup::TILE_TYPE type{}; //for assigning attributes
-    Shape bounding_box{}; //for collision
+    shape::Shape bounding_box{}; //for collision
     
     bool collision_check{};
 

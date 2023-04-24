@@ -74,8 +74,8 @@ public:
         collider.physics.maximum_velocity = sf::Vector2<float>(s.speed, s.speed*4);
         if (m.gravity) { collider.physics.gravity = 0.03f; }
 
-        alert_range = Shape( { (float)s.vision * 1.5f, (float)s.vision * 1.5f } );
-        hostile_range = Shape( { (float)s.vision, (float)s.vision } );
+        alert_range = shape::Shape( { (float)s.vision * 1.5f, (float)s.vision * 1.5f } );
+        hostile_range = shape::Shape( { (float)s.vision, (float)s.vision } );
 
         ar.setSize( { (float)(s.vision * 1.5), (float)(s.vision * 1.5) });
         hr.setSize( { (float)s.vision, (float)s.vision } );
@@ -115,8 +115,8 @@ public:
     components::CritterBehaviorComponent behavior{};//to be replaced by animation
     //components::AnimationController animation{};
     shape::Collider collider{};
-    Shape alert_range{};
-    Shape hostile_range{};
+    shape::Shape alert_range{};
+    shape::Shape hostile_range{};
     
     sf::Vector2<int> sprite_dimensions{};
     sf::Vector2<int> spritesheet_dimensions{};

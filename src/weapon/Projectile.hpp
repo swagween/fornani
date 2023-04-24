@@ -99,11 +99,8 @@ public:
     
     void update() {
         physics.update();
-        bounding_box.vertices[0] = sf::Vector2<float>(physics.position.x,  physics.position.y);
-        bounding_box.vertices[1] = sf::Vector2<float>(physics.position.x + DEFAULT_DIMENSIONS.x, physics.position.y);
-        bounding_box.vertices[2] = sf::Vector2<float>(physics.position.x + DEFAULT_DIMENSIONS.x, physics.position.y + DEFAULT_DIMENSIONS.y);
-        bounding_box.vertices[3] = sf::Vector2<float>(physics.position.x,  physics.position.y + DEFAULT_DIMENSIONS.y);
-        bounding_box.update(physics.position.x, physics.position.y, DEFAULT_DIMENSIONS.x, DEFAULT_DIMENSIONS.y);
+        bounding_box.dimensions = DEFAULT_DIMENSIONS;
+        bounding_box.set_position(physics.position);
         stats.lifespan--;
         
         //animation
@@ -149,7 +146,7 @@ public:
     }
     
     FIRING_DIRECTION dir{};
-    Shape bounding_box{};
+    shape::Shape bounding_box{};
     components::PhysicsComponent physics{};
     ProjectileStats stats{};
     ProjectileAnimation anim{};

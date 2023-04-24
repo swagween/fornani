@@ -114,7 +114,6 @@ enum class Movement {
 	left_released,
 	right_released,
 
-	grounded,
 	stopping,
 	just_stopped,
 	suspended_trigger,
@@ -190,6 +189,9 @@ public:
     bool is_invincible();
     void kill();
     void start_over();
+
+    //map helpers
+    behavior::DIR_LR entered_from();
     
     //sound
     void play_sounds();

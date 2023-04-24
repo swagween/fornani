@@ -131,7 +131,7 @@ static void show_overlay() {
                     ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
                     ImGui::Text("Colliding with Level: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().collider.is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if(svc::playerLocator.get().collider.flags.test(shape::State::is_colliding_with_level)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
                     if(svc::playerLocator.get().grounded()) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
@@ -143,11 +143,11 @@ static void show_overlay() {
                     ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.params.lookup_value);
                     ImGui::Text("Has Right Collision: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().collider.has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if(svc::playerLocator.get().collider.flags.test(shape::State::has_right_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Has Left Collision: ");
                     ImGui::SameLine();
-                    if (svc::playerLocator.get().collider.has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    if (svc::playerLocator.get().collider.is_any_jump_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if (svc::playerLocator.get().collider.flags.test(shape::State::has_left_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if (svc::playerLocator.get().collider.flags.test(shape::State::is_any_jump_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
 
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
@@ -244,6 +244,12 @@ static void show_overlay() {
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_HUT_01");
                         
                         svc::playerLocator.get().set_position({100, 160});
+                    }
+                    if (ImGui::Button("Sky")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SKY_CHAMBER_01");
+                        svc::playerLocator.get().set_position({ 7 * 32, 16 * 32 });
                     }
                     if(ImGui::Button("Shadow")) {
                         svc::assetLocator.get().click.play();

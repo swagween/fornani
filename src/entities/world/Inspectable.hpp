@@ -24,7 +24,8 @@ namespace entity {
 		Inspectable(Vecu16 dim, Vecu16 pos) : scaled_dimensions(dim), scaled_position(pos) {
 			dimensions = static_cast<Vec>(dim * UNIT_SIZE);
 			position = static_cast<Vec>(pos * UNIT_SIZE);
-			bounding_box = Shape(dimensions);
+			bounding_box = shape::Shape(dimensions);
+			bounding_box.set_position(position);
 		}
 		void update();
 		void render(sf::RenderWindow& win, Vec campos); //for debugging
@@ -33,7 +34,7 @@ namespace entity {
 		Vec position{};
 		Vecu16 scaled_dimensions{};
 		Vecu16 scaled_position{};
-		Shape bounding_box{};
+		shape::Shape bounding_box{};
 
 		bool activated{};
 		bool activate_on_contact{};

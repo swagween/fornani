@@ -14,15 +14,15 @@ inline util::Random r{};
 void Critter::update() {
 
     behavior.update();
-    alert_range.update(collider.physics.position.x - alert_range.shape_w/2, collider.physics.position.y - alert_range.shape_h / 2, alert_range.shape_w, alert_range.shape_h);
-    hostile_range.update(collider.physics.position.x - hostile_range.shape_w / 2, collider.physics.position.y - hostile_range.shape_h / 2, hostile_range.shape_w, hostile_range.shape_h);
+    alert_range.set_position(sf::Vector2<float>(collider.physics.position.x - alert_range.dimensions.x/2, collider.physics.position.y - alert_range.dimensions.y / 2));
+    hostile_range.set_position(sf::Vector2<float>(collider.physics.position.x - hostile_range.dimensions.x / 2, collider.physics.position.y - hostile_range.dimensions.y / 2));
     ar.setFillColor(sf::Color{ 80, 80, 20, 60 });
     hr.setFillColor(sf::Color{ 80, 40, 20, 60 });
     ar.setOutlineColor(sf::Color{ 180, 180, 180});
     hr.setOutlineColor(sf::Color{ 180, 180, 180});
     ar.setOutlineThickness(-1);
     hr.setOutlineThickness(-1);
-    collider.bounding_box.update(collider.physics.position.x, collider.physics.position.y, dimensions.x, dimensions.y);
+    collider.bounding_box.set_position(collider.physics.position);
 
     if(flags.asleep) {
         behavior.sleep();
@@ -34,9 +34,9 @@ void Critter::update() {
         behavior.idle();
     }
     
-    if (collider.is_any_jump_collision) {
+    if (collider.flags.test(shape::State::is_any_jump_collision)) {
         collider.physics.acceleration.y = 0.0f;
-        collider.is_any_jump_collision = false;
+        collider.flags.reset(shape::State::is_any_jump_collision);
     }
 
     if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.turn(); behavior.facing_lr = behavior::DIR_LR::LEFT; }
@@ -50,23 +50,23 @@ void Critter::update() {
     if(flags.seeking) {
         seek_current_target();
     }
-    if (collider.is_any_jump_collision) { collider.physics.acceleration.y = 0.0f; }
+    /*if (collider.flags.test(shape::State::is_any_jump_collision)) { collider.physics.acceleration.y = 0.0f; }
     if(abs(collider.physics.position.x - current_target.x) < 16.0f && abs(collider.physics.position.y - current_target.y) < 16.0f) { flags.seeking = false; }
-    if (!collider.is_colliding_with_level) { collider.physics.mtv = { 0.0f, 0.0f }; }
-    collider.just_collided = false;
-    if (!collider.grounded && collider.physics.velocity.y < 5.0f) {
+    if (!collider.flags.test(shape::State::is_colliding_with_level)) { collider.physics.mtv = { 0.0f, 0.0f }; }
+    collider.flags.reset(shape::State::just_collided);
+    if (!collider.flags.test(shape::State::grounded) && collider.physics.velocity.y < 5.0f) {
         collider.physics.gravity = 0.003;
     }
     else {
         collider.physics.gravity = 0.0f;
     }
-    if (collider.has_left_collision) { collider.physics.acceleration.x = 0.0f; }
+    if (collider.flags.test(shape::State::has_left_collision)) { collider.physics.acceleration.x = 0.0f; }*/
 
     collider.physics.update_euler();
-
     behavior.current_state.update();
-
     collider.sync_components();
+    collider.update();
+
 }
 
 void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
@@ -83,15 +83,15 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     
     hurtbox.setSize(dimensions);
     hurtbox.setPosition(collider.physics.position.x - campos.x, collider.physics.position.y - campos.y);
-    ar.setPosition(alert_range.shape_x - campos.x, alert_range.shape_y - campos.y);
-    hr.setPosition(hostile_range.shape_x - campos.x, hostile_range.shape_y - campos.y);
+    ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
+    hr.setPosition(hostile_range.position.x - campos.x, hostile_range.position.y - campos.y);
     hurtbox.setFillColor(sf::Color::Transparent);
     hurtbox.setOutlineColor(flcolor::white);
     hurtbox.setOutlineThickness(-1);
     //win.draw(ar);
     //win.draw(hr);
     win.draw(sprite);
-    collider.render(win, campos);
+    //collider.render(win, campos);
     //win.draw(hurtbox);
     
     //do this after drawing to avoid 1-frame stuttering
@@ -134,8 +134,8 @@ void Critter::seek_current_target() {
     if (abs(steering.x) < 0.5) { collider.physics.acceleration.x = 0.0f; return; }
     steering *= 0.08f;
     //don't steer through walls
-    if (collider.has_right_collision && steering.x > 0.0f) { return; }
-    if (collider.has_left_collision  && steering.x < 0.0f) { return; }
+    /*if (collider.flags.test(shape::State::has_right_collision) && steering.x > 0.0f) { return; }
+    if (collider.flags.test(shape::State::has_left_collision)  && steering.x < 0.0f) { return; }*/
     collider.physics.acceleration.x = steering.x;
 
 }

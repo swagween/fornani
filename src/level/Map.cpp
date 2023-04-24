@@ -112,9 +112,12 @@ void Map::load(const std::string& path) {
         input.close();
     }
     
-    /*critters.push_back(bestiary.get_critter_at(0));
+    critters.push_back(bestiary.get_critter_at(0));
     critters.back().set_position({12 * 32, 11 * 32});
-    critters.back().collider.physics.zero();*/
+    critters.back().collider.physics.zero();
+
+    colliders.push_back(&critters.back().collider);
+    colliders.push_back(&svc::playerLocator.get().collider);
 
     transition.fade_in = true;
     svc::playerLocator.get().unrestrict_inputs();
@@ -135,39 +138,29 @@ void Map::update() {
 
     manage_projectiles();
     auto barrier = 3.0f;
+
     //someday, I will have a for(auto& entity : entities) loop and the player will be included in that
-    for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-        cell.collision_check = false;
-        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().collider.bounding_box.shape_x) > PLAYER_WIDTH*barrier ||
-           abs(cell.bounding_box.shape_y - svc::playerLocator.get().collider.bounding_box.shape_y) > PLAYER_HEIGHT*barrier) {
-            continue;
-        } else {
-            cell.collision_check = true;
-            
-            if(cell.value > 0) {
-                svc::playerLocator.get().collider.handle_map_collision(cell.bounding_box, cell.type);
+
+    for(auto& collider : colliders) {
+        for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+            cell.collision_check = false;
+            if (abs(cell.bounding_box.position.x - collider->bounding_box.position.x) > collider->dimensions.x * barrier ||
+                abs(cell.bounding_box.position.y - collider->bounding_box.position.y) > collider->dimensions.y * (barrier - 1)) {
+                continue;
+            }
+            else {
+                cell.collision_check = true;
+                if (cell.value > 0) {
+                    collider->handle_map_collision(cell.bounding_box, cell.type);
+                }
             }
         }
     }
 
-	for (auto& critter : critters) {
-		for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-			if (abs(cell.bounding_box.shape_x - critter.collider.bounding_box.shape_x) > critter.dimensions.x * barrier ||
-				abs(cell.bounding_box.shape_y - critter.collider.bounding_box.shape_y) > critter.dimensions.y * barrier) {
-				continue;
-			}
-			else {
-				cell.collision_check = true;
-				if (cell.value > 0) {
-					critter.collider.handle_map_collision(cell.bounding_box, cell.type);
-				}
-			}
-		}
-	}
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& proj : active_projectiles) {
-            if(abs(cell.bounding_box.shape_x - proj.bounding_box.shape_x) > PLAYER_WIDTH * barrier ||
-               abs(cell.bounding_box.shape_y - proj.bounding_box.shape_y) > PLAYER_HEIGHT * barrier) {
+            if(abs(cell.bounding_box.position.x - proj.bounding_box.position.x) > PLAYER_WIDTH * barrier ||
+               abs(cell.bounding_box.position.y - proj.bounding_box.position.y) > PLAYER_HEIGHT * barrier) {
                 continue;
             } else {
                 cell.collision_check = true;
@@ -189,16 +182,17 @@ void Map::update() {
             }
         }
     }
+
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& emitter : active_emitters) {
             for(auto& particle : emitter.get_particles()) {
-                if(abs(cell.bounding_box.shape_x - particle.bounding_box.shape_x) > PLAYER_WIDTH * barrier ||
-                   abs(cell.bounding_box.shape_y - particle.bounding_box.shape_y) > PLAYER_HEIGHT * barrier) {
+                if(abs(cell.bounding_box.position.x - particle.bounding_box.position.x) > PLAYER_WIDTH * barrier ||
+                   abs(cell.bounding_box.position.y - particle.bounding_box.position.y) > PLAYER_HEIGHT * barrier) {
                     continue;
                 } else {
                     cell.collision_check = true;
                     if(particle.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
-                        Shape::Vec mtv = particle.bounding_box.testCollisionGetMTV(particle.bounding_box, cell.bounding_box);
+                        shape::Shape::Vec mtv = particle.bounding_box.testCollisionGetMTV(particle.bounding_box, cell.bounding_box);
                         sf::operator+=(particle.physics.position, mtv);
                         particle.physics.acceleration.y *= -1.0f;
                         particle.physics.acceleration.x *= -1.0f;
@@ -232,52 +226,17 @@ void Map::update() {
             critter.behavior.bark();
             critter.idle_action_queue.pop();
         }
+
     }
 
-    if (svc::playerLocator.get().collider.is_any_jump_collision) {
-        svc::playerLocator.get().flags.movement.set(Movement::grounded);
-    }
-    else {
-        svc::playerLocator.get().flags.movement.reset(Movement::grounded);
+    for(auto& collider : colliders) {
+        collider->reset_ground_flags();
     }
 
 
     for (auto& portal : portals) {
         portal.update();
-        if (portal.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
-            if (portal.activate_on_contact && portal.ready) {
-                portal.activated = true;
-                svc::playerLocator.get().restrict_inputs();
-            } else if(svc::playerLocator.get().flags.input.test(Input::inspecting)) {
-                portal.activated = true;
-                svc::playerLocator.get().restrict_inputs();
-                svc::playerLocator.get().restrict_animation();
-            }
-            //player just entered room via border portal
-            if (!portal.ready && portal.activate_on_contact) {
-                svc::playerLocator.get().behavior.facing_lr = entered_from_left() ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
-                svc::playerLocator.get().restrict_inputs();
-                svc::playerLocator.get().autonomous_walk();
-            }
-        } else {
-            if(!portal.ready && portal.activate_on_contact) {
-                svc::playerLocator.get().unrestrict_inputs();
-            }
-            portal.ready = true;
-        }
-        if (portal.activated) {
-            transition.fade_out = true;
-            if (transition.done) {
-                try {
-                    svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(portal.destination_map_id);
-                }
-                catch (std::out_of_range) {
-                    svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
-                }
-                svc::stateControllerLocator.get().trigger = true;
-                svc::stateControllerLocator.get().source_id = portal.source_map_id;
-            }
-        }
+        portal.handle_activation(room_id, transition.fade_out, transition.done);
     }
 
     for (auto& inspectable : inspectables) {
@@ -326,7 +285,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
     for(auto& proj : active_projectiles) {
         sf::Sprite proj_sprite;
         int curr_frame = proj.sprite_id + proj.anim.num_sprites*proj.anim_frame;
-        svc::assetLocator.get().sp_clover_projectile.at(curr_frame).setPosition( {proj.bounding_box.shape_x - cam.x, proj.bounding_box.shape_y - cam.y - proj.bounding_box.shape_h/2} );
+        svc::assetLocator.get().sp_clover_projectile.at(curr_frame).setPosition( {proj.bounding_box.position.x - cam.x, proj.bounding_box.position.y - cam.y - proj.bounding_box.dimensions.y/2} );
         arms::Weapon& curr_weapon = lookup::type_to_weapon.at(proj.type);
         std::vector<sf::Sprite>& curr_proj_sprites = lookup::projectile_sprites.at(curr_weapon.type);
         
@@ -335,7 +294,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
             win.draw(svc::assetLocator.get().sp_clover_projectile.at(curr_frame));
         } else if(!curr_proj_sprites.empty()) {
             proj_sprite = curr_proj_sprites.at(arms::ProjDirLookup.at(proj.dir));
-            proj_sprite.setPosition({proj.bounding_box.shape_x - cam.x, proj.bounding_box.shape_y - cam.y - proj.bounding_box.shape_h/2} );
+            proj_sprite.setPosition({proj.bounding_box.position.x - cam.x, proj.bounding_box.position.y - cam.y - proj.bounding_box.dimensions.y/2} );
             win.draw(proj_sprite);
         }
     }
@@ -358,8 +317,8 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
         if(layer.render_order >= 4) {
             for(auto& cell : layer.grid.cells) {
                 if(cell.value > 0) {
-                    int cell_x = cell.bounding_box.shape_x - cam.x;
-                    int cell_y = cell.bounding_box.shape_y - cam.y;
+                    int cell_x = cell.bounding_box.position.x - cam.x;
+                    int cell_y = cell.bounding_box.position.y - cam.y;
                     tileset.at(cell.value).setPosition(cell_x, cell_y);
                     win.draw(tileset.at(cell.value));
                     if(cell.collision_check) {
@@ -368,7 +327,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
                         box.setFillColor(sf::Color{100, 100, 130, 80});
                         box.setOutlineColor(sf::Color(235, 232, 249, 140));
                         box.setOutlineThickness(-1);
-                        box.setSize(sf::Vector2<float>{(float)cell.bounding_box.shape_w, (float)cell.bounding_box.shape_h});
+                        box.setSize(sf::Vector2<float>{(float)cell.bounding_box.dimensions.x, (float)cell.bounding_box.dimensions.y});
                         //win.draw(box);
                     }
                 }
@@ -417,7 +376,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
         win.setView(minimap);
         for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
             minimap_tile.setPosition(cell.position.x - cam.x, cell.position.y - cam.y);
-            minimap_tile.setSize(sf::Vector2<float>{(float)cell.bounding_box.shape_w, (float)cell.bounding_box.shape_h});
+            minimap_tile.setSize(sf::Vector2<float>{(float)cell.bounding_box.dimensions.x, (float)cell.bounding_box.dimensions.y});
             if (cell.value > 0) {
                 minimap_tile.setFillColor(sf::Color{20, 240, 20, 120});
                 win.draw(minimap_tile);
@@ -442,8 +401,8 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
         if(layer.render_order < 4) {
             for(auto& cell : layer.grid.cells) {
                 if(cell.value > 0) {
-                    int cell_x = cell.bounding_box.shape_x - cam.x;
-                    int cell_y = cell.bounding_box.shape_y - cam.y;
+                    int cell_x = cell.bounding_box.position.x - cam.x;
+                    int cell_y = cell.bounding_box.position.y - cam.y;
                     tileset.at(cell.value).setPosition(cell_x, cell_y);
                     win.draw(tileset.at(cell.value));
                 }
@@ -509,10 +468,6 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
     return Vec(300.f, 390.f);
 }
 
-bool Map::entered_from_left() {
-    return svc::playerLocator.get().collider.physics.position.x < CELL_SIZE * 8; //player is on the left side of the map
-}
-
 squid::Tile& Map::tile_at(const uint8_t i, const uint8_t j) {
     //for checking tile value
     if(i * j < layers.at(MIDDLEGROUND).grid.cells.size()) {
@@ -520,7 +475,7 @@ squid::Tile& Map::tile_at(const uint8_t i, const uint8_t j) {
     }
 }
 
-Shape& Map::shape_at(const uint8_t i, const uint8_t j) {
+shape::Shape& Map::shape_at(const uint8_t i, const uint8_t j) {
     //for testing collision
     if(i * j < layers.at(MIDDLEGROUND).grid.cells.size()) {
         return layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x).bounding_box;

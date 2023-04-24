@@ -77,13 +77,10 @@ public:
     void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
     void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
     squid::Tile& tile_at(const uint8_t i, const uint8_t j);
-    Shape& shape_at(const uint8_t i, const uint8_t j);
+    shape::Shape& shape_at(const uint8_t i, const uint8_t j);
     void spawn_projectile_at(sf::Vector2<float> pos);
     void manage_projectiles();
     Vec get_spawn_position(int portal_source_map_id);
-
-    //helper for player state
-    bool entered_from_left();
     
     //layers
     std::vector<Layer> layers;
@@ -92,6 +89,7 @@ public:
     Vecu16 chunk_dimensions{}; // how many chunks (16x16 squares) in the room
     
     //entities
+    std::vector<shape::Collider*> colliders{};
     std::vector<arms::Projectile> active_projectiles{};
     std::vector<vfx::Emitter> active_emitters{};
     std::vector<critter::Critter> critters{};

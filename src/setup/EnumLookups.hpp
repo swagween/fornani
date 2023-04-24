@@ -13,6 +13,8 @@
 
 namespace lookup {
 
+
+inline const float SPACING{ 32.0f };
 inline const int NUM_STYLES{20};
 
 enum class CONTROLS {

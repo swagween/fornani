@@ -14,6 +14,7 @@ namespace vfx {
 
 using Time = std::chrono::duration<float>;
 const int default_lifespan = 50;
+const float default_dim = 2.f;
 
 class Particle {
 public:
@@ -48,7 +49,8 @@ public:
         float var = r.random_range_float(-grav_variance, grav_variance);
         physics.acceleration.y = grav + var;
         physics.update_dampen();
-        bounding_box.update(physics.position.x, physics.position.y, 2, 2);
+        bounding_box.dimensions = sf::Vector2<float>(default_dim, default_dim);
+        bounding_box.set_position(physics.position);
         --lifespan;
     }
     components::PhysicsComponent physics{};
@@ -57,7 +59,7 @@ public:
     float force_variance{};
     float angle_range{};
     float size{};
-    Shape bounding_box{};
+    shape::Shape bounding_box{};
     util::Random r{};
 };
 

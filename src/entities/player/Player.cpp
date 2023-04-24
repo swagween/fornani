@@ -78,8 +78,8 @@ void Player::handle_events(sf::Event& event) {
         if (!flags.movement.test(Movement::autonomous_walk)) {
             if (event.key.code == sf::Keyboard::Left) {
                 flags.movement.reset(Movement::move_left);
-                collider.has_left_collision = false;
-                if (!collider.has_right_collision) {
+                collider.flags.reset(shape::State::has_left_collision);
+                if (!collider.flags.test(shape::State::has_right_collision)) {
                     flags.movement.reset(Movement::is_wall_sliding);
                 }
                 flags.movement.set(Movement::stopping);
@@ -99,8 +99,8 @@ void Player::handle_events(sf::Event& event) {
             }
             if (event.key.code == sf::Keyboard::Right) {
                 flags.movement.reset(Movement::move_right);
-                collider.has_right_collision = false;
-                if (!collider.has_left_collision) {
+                collider.flags.reset(shape::State::has_right_collision);
+                if (!collider.flags.test(shape::State::has_left_collision)) {
                     flags.movement.reset(Movement::is_wall_sliding);
                 }
                 flags.movement.set(Movement::stopping);
@@ -258,12 +258,12 @@ void Player::update(Time dt) {
         //weapon physics
         if (weapon_fired && !weapons_hotbar.empty()) {
             if (behavior.facing_strictly_right()) {
-                if (!collider.has_right_collision) {
+                if (!collider.flags.test(shape::State::has_right_collision)) {
                     collider.physics.acceleration.x += -loadout.get_equipped_weapon().attributes.recoil;
                 }
             }
             if (behavior.facing_strictly_left()) {
-                if (!collider.has_left_collision) {
+                if (!collider.flags.test(shape::State::has_left_collision)) {
                     collider.physics.acceleration.x += loadout.get_equipped_weapon().attributes.recoil;
                 }
             }
@@ -286,8 +286,7 @@ void Player::update(Time dt) {
     
     //for parameter tweaking, remove later
     collider.physics.friction = grounded() ? sf::Vector2<float>{stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC} : sf::Vector2<float>{stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC };
-    if(!collider.is_colliding_with_level) { collider.physics.mtv = {0.0f, 0.0f}; }
-    collider.just_collided = false;
+    collider.update();
 
     //hurt
     if (is_invincible()) { collider.spike_trigger = false; flash_sprite(); }
@@ -365,9 +364,6 @@ void Player::update_behavior() {
         }
     }
 
-    if (flags.movement.test(Movement::autonomous_walk)) {
-        behavior.run();
-    }
     
     if(moving() && behavior.current_state.params.behavior_id == "idle") {
         if(grounded()) {
@@ -401,7 +397,7 @@ void Player::update_behavior() {
     }
     
     
-    if(collider.just_landed && jump_request == -1) {
+    if(collider.flags.test(shape::State::just_landed) && jump_request == -1) {
         behavior.land();
         flags.sounds.set(Soundboard::land);
         flags.movement.reset(Movement::freefalling);
@@ -417,7 +413,7 @@ void Player::update_behavior() {
 
     flags.movement.reset(Movement::stopping);
     flags.movement.reset(Movement::just_stopped);
-    collider.just_landed = false;
+    collider.flags.reset(shape::State::just_landed);
     flags.movement.reset(Movement::left_released);
     flags.movement.reset(Movement::right_released);
     flags.movement.reset(Movement::wall_slide_trigger);
@@ -435,7 +431,7 @@ void Player::update_behavior() {
         }
     }
     
-    if(grounded() || (!collider.has_left_collision && !collider.has_right_collision) || abs(collider.physics.velocity.x) > 0.001f) {
+    if(grounded() || (!collider.flags.test(shape::State::has_left_collision) && !collider.flags.test(shape::State::has_right_collision)) || abs(collider.physics.velocity.x) > 0.001f) {
         flags.movement.reset(Movement::is_wall_sliding);
     }
     update_direction();
@@ -485,13 +481,13 @@ void Player::update_direction() {
         }
     }
     if (behavior.facing_left()) {
-        anchor_point = { collider.physics.position.x + collider.bounding_box.shape_w / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.shape_h / 2 };
+        anchor_point = { collider.physics.position.x + collider.bounding_box.dimensions.x / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.dimensions.y / 2 };
     }
     else if (behavior.facing_right()) {
-        anchor_point = { collider.physics.position.x + collider.bounding_box.shape_w / 2 + ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.shape_h / 2 };
+        anchor_point = { collider.physics.position.x + collider.bounding_box.dimensions.x / 2 + ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.dimensions.y / 2 };
     }
     else {
-        anchor_point = { collider.physics.position.x + collider.bounding_box.shape_w / 2, collider.physics.position.y + collider.bounding_box.shape_h / 2 };
+        anchor_point = { collider.physics.position.x + collider.bounding_box.dimensions.x / 2, collider.physics.position.y + collider.bounding_box.dimensions.y / 2 };
     }
 }
 
@@ -547,10 +543,10 @@ void Player::update_weapon_direction() {
 }
 
 void Player::walk() {
-    if (flags.movement.test(Movement::move_right) && !collider.has_right_collision) {
+    if (flags.movement.test(Movement::move_right) && !collider.flags.test(shape::State::has_right_collision)) {
         collider.physics.acceleration.x = grounded() ? stats.X_ACC : (stats.X_ACC_AIR / stats.AIR_MULTIPLIER);
     }
-    if (flags.movement.test(Movement::move_left) && !collider.has_left_collision) {
+    if (flags.movement.test(Movement::move_left) && !collider.flags.test(shape::State::has_left_collision)) {
         collider.physics.acceleration.x = grounded() ? -stats.X_ACC : (-stats.X_ACC_AIR / stats.AIR_MULTIPLIER);
     }
     if (behavior.current_state.get_frame() == 44 || behavior.current_state.get_frame() == 46) {
@@ -597,11 +593,11 @@ void Player::no_move() {
 }
 
 bool Player::grounded() {
-    return flags.movement.test(Movement::grounded);
+    return collider.flags.test(shape::State::grounded);
 }
 
 bool Player::moving() {
-    return flags.movement.test(Movement::move_left) || flags.movement.test(Movement::move_right);
+    return flags.movement.test(Movement::move_left) || flags.movement.test(Movement::move_right) || flags.movement.test(Movement::autonomous_walk);
 }
 
 sf::Vector2<float> Player::get_fire_point() {
@@ -654,6 +650,10 @@ void Player::kill() {
 void Player::start_over() {
     player_stats.health = player_stats.max_health;
     flags.state.set(State::alive);
+}
+
+behavior::DIR_LR Player::entered_from() {
+    return (collider.physics.position.x < lookup::SPACING * 8) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
 }
 
 void Player::play_sounds() {
