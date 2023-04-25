@@ -76,17 +76,16 @@ namespace shape {
         bool is_plat = tile_type == lookup::TILE_TYPE::TILE_PLATFORM;
         bool is_spike = tile_type == lookup::TILE_TYPE::TILE_SPIKES;
 
+        if (is_plat) { handle_platform_collision(cell); return; }
+        if (is_spike) { handle_spike_collision(cell); return; }
+
         if (predictive_bounding_box.SAT(cell)) {
             if (!is_spike) {
-                if (!is_plat) {
-                    flags.set(State::is_any_collision);
-                }
+
+                flags.set(State::is_any_collision);
+
                 //set mtv
                 physics.mtv = predictive_bounding_box.testCollisionGetMTV(predictive_bounding_box, cell);
-
-                if(is_plat) {
-                    if (physics.mtv.x > 0.0f) { physics.mtv.x = 0.0f; }
-                }
 
                 if (is_ramp && abs(physics.velocity.y) < 0.0001f) {
                     physics.position.y += physics.mtv.y;
@@ -95,29 +94,40 @@ namespace shape {
                 if (physics.velocity.y > 3.0f) {
                     physics.mtv.x = 0.0f;
                 }
-                //here, we can do MTV again with the player's predicted position based on velocity
+                //here, we can do MTV resolution with the player's predicted position based on velocity
+				bool y_collision{ false };
 				if (physics.velocity.y > -0.01f && predictive_bounding_box.position.y < cell.position.y) {
 					if (physics.velocity.y > landed_threshold) {
 						flags.set(State::just_landed);
 					}
-                        float ydist = predictive_bounding_box.position.y - physics.position.y;
-                        float correction = ydist + physics.mtv.y;
-                        physics.position.y += correction;
-                        physics.velocity.y = 0.0f;
-                        physics.acceleration.y = 0.0f;
+					float ydist = predictive_bounding_box.position.y - physics.position.y;
+					float correction = ydist + physics.mtv.y;
+					physics.position.y += correction;
+					physics.velocity.y = 0.0f;
+					physics.acceleration.y = 0.0f;
+					y_collision = true;
+					sync_components();
 				}
+				if (abs(physics.velocity.x) > 0.0f && !is_ramp && !is_ramp && !y_collision) {
+					float xdist = predictive_bounding_box.position.x - physics.position.x;
+					float correction = xdist + physics.mtv.x;
+					physics.position.x += correction;
+					sync_components();
+				}
+
                 //player hits the ceiling
-                if (physics.velocity.y < -0.01f && abs(physics.mtv.y) > 0.001f && !is_plat) {
+                if (physics.velocity.y < -0.01f && abs(physics.mtv.y) > 0.001f) {
                     float ydist = physics.position.y - predictive_bounding_box.position.y;
                     float correction = ydist + physics.mtv.y;
                     physics.position.y += correction;
                     physics.acceleration.y = 0.0f;
                     physics.velocity.y *= -0.5;
                     flags.reset(State::ceiling_collision);
+                    sync_components();
                 }
 
                 //only for landing
-                if (physics.velocity.y > 0.0f && !flags.test(State::has_left_collision) && !flags.test(State::has_right_collision) && !is_plat) {
+                if (physics.velocity.y > 0.0f && !flags.test(State::has_left_collision) && !flags.test(State::has_right_collision)) {
                     physics.acceleration.y = 0.0f;
                     physics.velocity.y = 0.0f;
                 }
@@ -127,39 +137,42 @@ namespace shape {
                     spike_trigger = true;
                 }
             }
-
-            if (!is_plat) {
                 physics.mtv = { 0.0f, 0.0f };
                 flags.set(State::just_collided);
                 flags.set(State::is_colliding_with_level);
-            }
 
-
-        }
-
-        float y_dist = cell.vertices[0].y - left_detector.vertices[2].y;
-        sf::Vector2<float> detector_mtv = left_detector.testCollisionGetMTV(left_detector, cell);
-		if (left_detector.SAT(cell) && !is_plat && !is_spike && !is_ramp) {
-			if (!flags.test(State::ceiling_collision) && !flags.test(State::just_landed)) {
-                flags.set(State::has_left_collision);
-				physics.acceleration.x = 0.0f;
-				physics.velocity.x = 0.0f;
-				physics.position.x += detector_mtv.x;
-			}
-			left_aabb_counter++;
 		}
-		detector_mtv = right_detector.testCollisionGetMTV(right_detector, cell);
-		if (right_detector.SAT(cell) && !is_plat && !is_spike && !is_ramp) {
-			if (!flags.test(State::ceiling_collision) && !flags.test(State::just_landed)) {
-                flags.set(State::has_right_collision);
-				physics.acceleration.x = 0.0f;
-				physics.velocity.x = 0.0f;
-				physics.position.x += detector_mtv.x;
-			}
-            right_aabb_counter++;
-        }
 
-        flags.reset(State::ceiling_collision);
+		//bool higher_than_cell_top = (cell.position.y) - (physics.position.y + dimensions.y) > 0.1f;
+
+		//if (higher_than_cell_top) {
+			float y_dist = cell.vertices[0].y - left_detector.vertices[2].y;
+			sf::Vector2<float> detector_mtv = left_detector.testCollisionGetMTV(left_detector, cell);
+
+			bool left_collision = physics.velocity.x < 0.0f;
+
+			if (left_detector.SAT(cell) && left_collision && !is_plat && !is_spike && !is_ramp) {
+				if (!flags.test(State::ceiling_collision) && !flags.test(State::just_landed)) {
+					flags.set(State::has_left_collision);
+					physics.acceleration.x = 0.0f;
+					physics.velocity.x = 0.0f;
+					physics.position.x += detector_mtv.x;
+				}
+				left_aabb_counter++;
+			}
+			detector_mtv = right_detector.testCollisionGetMTV(right_detector, cell);
+			if (right_detector.SAT(cell) && !left_collision && !is_plat && !is_spike && !is_ramp) {
+				if (!flags.test(State::ceiling_collision) && !flags.test(State::just_landed)) {
+					flags.set(State::has_right_collision);
+					physics.acceleration.x = 0.0f;
+					physics.velocity.x = 0.0f;
+					physics.position.x += detector_mtv.x;
+				}
+				right_aabb_counter++;
+			}
+		//}
+
+		flags.reset(State::ceiling_collision);
 
         if (jumpbox.SAT(cell) && !is_spike) {
             if (!is_plat) { flags.set(State::grounded); }
@@ -171,6 +184,17 @@ namespace shape {
 
         sync_components();
     }
+
+
+    void Collider::handle_platform_collision(const Shape& cell) {
+
+    }
+
+	void Collider::handle_spike_collision(const Shape& cell) {
+		if (hurtbox.SAT(cell)) {
+			spike_trigger = true;
+		}
+	}
 
     void Collider::update() {
         if (!flags.test(State::is_colliding_with_level)) { physics.mtv = { 0.0f, 0.0f }; }

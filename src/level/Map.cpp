@@ -112,11 +112,11 @@ void Map::load(const std::string& path) {
         input.close();
     }
     
-    critters.push_back(bestiary.get_critter_at(0));
+    /*critters.push_back(bestiary.get_critter_at(0));
     critters.back().set_position({12 * 32, 11 * 32});
     critters.back().collider.physics.zero();
 
-    colliders.push_back(&critters.back().collider);
+    colliders.push_back(&critters.back().collider);*/
     colliders.push_back(&svc::playerLocator.get().collider);
 
     transition.fade_in = true;

@@ -17,8 +17,8 @@ namespace shape {
 	const float default_dim = 24.0f;
 
 	const float default_jumpbox_height = 2.0f;
-	const float default_detector_width = 3.0f;
-	const float default_detector_height = 16.f;
+	const float default_detector_width = 2.0f;
+	const float default_detector_height = 23.f;
 	const float default_detector_buffer = (default_dim - default_detector_height) / 2;
 
 	enum class State {
@@ -41,6 +41,8 @@ namespace shape {
 
 		void sync_components();
 		void handle_map_collision(const Shape& cell, lookup::TILE_TYPE tile_type);
+		void handle_platform_collision(const Shape& cell);
+		void handle_spike_collision(const Shape& cell);
 		void update();
 		void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 		void reset();
