@@ -112,11 +112,21 @@ void Map::load(const std::string& path) {
         input.close();
     }
     
-    /*critters.push_back(bestiary.get_critter_at(0));
-    critters.back().set_position({12 * 32, 11 * 32});
-    critters.back().collider.physics.zero();
 
-    colliders.push_back(&critters.back().collider);*/
+
+    critters.push_back(&bestiary.get_critter_at(0));
+    critters.back()->set_position({12 * 32, 11 * 32});
+    critters.back()->collider.physics.zero();
+
+    critters.push_back(&bestiary.get_critter_at(1));
+    critters.back()->set_position({ 15 * 32, 11 * 32 });
+    critters.back()->collider.physics.zero();
+
+    for(auto& critter : critters) {
+
+        colliders.push_back(&critter->collider);
+    
+    }
     colliders.push_back(&svc::playerLocator.get().collider);
 
     transition.fade_in = true;
@@ -133,7 +143,7 @@ void Map::update() {
     background->update();
     svc::playerLocator.get().collider.reset();
     for (auto& critter : critters) {
-        critter.collider.reset();
+        critter->collider.reset();
     }
 
     manage_projectiles();
@@ -209,23 +219,27 @@ void Map::update() {
     }
     
     for(auto& critter : critters) {
+
+        //must generalize this code; this is frdog-specific
+        //something like critter.update();
+        critter->unique_update();
         //critter.random_walk(sf::Vector2<int>(120, 180));
-        critter.seek_current_target();
-        critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
-        if (svc::playerLocator.get().collider.bounding_box.SAT(critter.hostile_range)) {
-            critter.current_target = svc::playerLocator.get().collider.physics.position;
-            critter.awake();
-        } else if (svc::playerLocator.get().collider.bounding_box.SAT(critter.alert_range)) {
-            critter.wake_up();
+        /*critter.seek_current_target();
+        critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;*/
+        if (svc::playerLocator.get().collider.bounding_box.SAT(critter->hostile_range)) {
+            //critter.current_target = svc::playerLocator.get().collider.physics.position;
+            critter->awake();
+        } else if (svc::playerLocator.get().collider.bounding_box.SAT(critter->alert_range)) {
+            critter->wake_up();
         } else {
-            critter.sleep();
+            critter->sleep();
         }
         
-        critter.random_idle_action();
-        while(!critter.idle_action_queue.empty()) {
+        //critter.random_idle_action();
+        /*while (!critter.idle_action_queue.empty()) {
             critter.behavior.bark();
             critter.idle_action_queue.pop();
-        }
+        }*/
 
     }
 
@@ -310,7 +324,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
     }
     
     for(auto& critter : critters) {
-        critter.render(win, cam);
+        critter->render(win, cam);
     }
     
     for(auto& layer : layers) {

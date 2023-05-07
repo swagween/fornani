@@ -18,7 +18,7 @@ namespace shape {
 
 	const float default_jumpbox_height = 2.0f;
 	const float default_detector_width = 2.0f;
-	const float default_detector_height = 23.f;
+	const float default_detector_height = 19.f;
 	const float default_detector_buffer = (default_dim - default_detector_height) / 2;
 
 	enum class State {
@@ -31,6 +31,10 @@ namespace shape {
 		just_landed,
 		ceiling_collision,
 		grounded,
+	};
+
+	struct PhysicsStats {
+		float GRAV{ 0.002f };
 	};
 
 	class Collider {
@@ -55,6 +59,7 @@ namespace shape {
 		Shape right_detector{};
 		Shape hurtbox{};
 
+		PhysicsStats stats{};
 		components::PhysicsComponent physics{};
 		util::BitFlags<State> flags{};
 

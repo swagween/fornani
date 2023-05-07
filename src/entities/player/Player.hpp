@@ -58,20 +58,20 @@ struct PhysicsStats {
     float PLAYER_MAX_XVEL = 2.380f;
     float PLAYER_MAX_YVEL = 0.426f;
 
-    float AIR_MULTIPLIER = 2.268f;
+    float AIR_MULTIPLIER = 2.912f;
 
-    float PLAYER_GRAV = 0.003f;
+    float PLAYER_GRAV = 0.002f;
 
-    float TERMINAL_VELOCITY = 2.1f;
+    float TERMINAL_VELOCITY = 1.8f;
 
-    float PLAYER_GROUND_FRIC = 0.979f;
+    float PLAYER_GROUND_FRIC = 0.974f;
     float PLAYER_HORIZ_AIR_FRIC = 0.990f;
-    float PLAYER_VERT_AIR_FRIC = 0.956f;
+    float PLAYER_VERT_AIR_FRIC = 0.966f;
 
     float X_ACC = 0.056f;
     float X_ACC_AIR = 0.056f;
 
-    float JUMP_MAX = 0.418f;
+    float JUMP_MAX = 0.304f;
     
     float WALL_SLIDE_THRESHOLD = -1.0f;
     float WALL_SLIDE_SPEED = 1.31f;

@@ -80,7 +80,6 @@ namespace shape {
         if (is_spike) { handle_spike_collision(cell); return; }
 
         if (predictive_bounding_box.SAT(cell)) {
-            if (!is_spike) {
 
                 flags.set(State::is_any_collision);
 
@@ -96,7 +95,8 @@ namespace shape {
                 }
                 //here, we can do MTV resolution with the player's predicted position based on velocity
 				bool y_collision{ false };
-				if (physics.velocity.y > -0.01f && predictive_bounding_box.position.y < cell.position.y) {
+                auto vertical_buffer = predictive_bounding_box.position.y - predictive_bounding_box.dimensions.y;
+				if (physics.velocity.y > -0.01f && vertical_buffer < cell.position.y) {
 					if (physics.velocity.y > landed_threshold) {
 						flags.set(State::just_landed);
 					}
@@ -108,20 +108,24 @@ namespace shape {
 					y_collision = true;
 					sync_components();
 				}
-				if (abs(physics.velocity.x) > 0.0f && !is_ramp && !is_ramp && !y_collision) {
-					float xdist = predictive_bounding_box.position.x - physics.position.x;
-					float correction = xdist + physics.mtv.x;
-					physics.position.x += correction;
+				if (abs(physics.velocity.x) > 0.0f && !y_collision) {
+                    if (!is_ramp) {
+                        float xdist = predictive_bounding_box.position.x - physics.position.x;
+                        float correction = xdist + physics.mtv.x;
+                        physics.position.x += correction;
+                    } else { physics.position.x += physics.mtv.x; }
 					sync_components();
 				}
 
                 //player hits the ceiling
-                if (physics.velocity.y < -0.01f && abs(physics.mtv.y) > 0.001f) {
-                    float ydist = physics.position.y - predictive_bounding_box.position.y;
-                    float correction = ydist + physics.mtv.y;
-                    physics.position.y += correction;
+                if (!flags.test(State::grounded)) {
+                    if (!is_ramp) {
+                        float ydist = physics.position.y - predictive_bounding_box.position.y;
+                        float correction = ydist + physics.mtv.y;
+                        physics.position.y += correction;
+                    } else { physics.position.y += physics.mtv.y; }
                     physics.acceleration.y = 0.0f;
-                    physics.velocity.y *= -0.5;
+                    physics.velocity.y *= -0.5f;
                     flags.reset(State::ceiling_collision);
                     sync_components();
                 }
@@ -132,11 +136,6 @@ namespace shape {
                     physics.velocity.y = 0.0f;
                 }
 
-            } else {
-                if (hurtbox.SAT(cell)) {
-                    spike_trigger = true;
-                }
-            }
                 physics.mtv = { 0.0f, 0.0f };
                 flags.set(State::just_collided);
                 flags.set(State::is_colliding_with_level);
@@ -199,6 +198,7 @@ namespace shape {
     void Collider::update() {
         if (!flags.test(State::is_colliding_with_level)) { physics.mtv = { 0.0f, 0.0f }; }
         flags.reset(State::just_collided);
+        physics.gravity = flags.test(State::grounded) ? 0.0f : stats.GRAV;
     }
 
     

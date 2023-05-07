@@ -247,14 +247,6 @@ void Player::update(Time dt) {
             if (abs(collider.physics.velocity.x) > 0.4f && grounded()) { flags.movement.set(Movement::just_stopped); }
         }
 
-        //gravity and stats corrections
-        if (!grounded() && collider.physics.velocity.y < stats.TERMINAL_VELOCITY) {
-            collider.physics.gravity = stats.PLAYER_GRAV;
-        }
-        else {
-            collider.physics.gravity = 0.0f;
-        }
-
         //weapon physics
         if (weapon_fired && !weapons_hotbar.empty()) {
             if (behavior.facing_strictly_right()) {
@@ -287,7 +279,6 @@ void Player::update(Time dt) {
     //for parameter tweaking, remove later
     collider.physics.friction = grounded() ? sf::Vector2<float>{stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC} : sf::Vector2<float>{stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC };
     collider.update();
-
     //hurt
     if (is_invincible()) { collider.spike_trigger = false; flash_sprite(); }
     else { sprite.setColor(sf::Color::White); }

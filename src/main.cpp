@@ -153,20 +153,20 @@ static void show_overlay() {
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
                     ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
                     
-                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 0.01f);
+                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().stats.PLAYER_GRAV, 0.000f, 0.008f);
                     ImGui::SliderFloat("PLAYER MASS",               &svc::playerLocator.get().stats.PLAYER_MASS, 0.1f, 2.0f);
                     ImGui::SliderFloat("AIR MANEUVERABILITY",       &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
-                    ImGui::SliderFloat("TERMINAL VELOCITY",         &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 32.0f);
+                    ImGui::SliderFloat("TERMINAL VELOCITY",         &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 8.0f);
 
                     ImGui::Text("Friction Multipliers");
-                    ImGui::SliderFloat("GROUND FRICTION",           &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.9f, 1.0f);
-                    ImGui::SliderFloat("HORIZONTAL AIR FRICTION",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.9f, 1.0f);
-                    ImGui::SliderFloat("VERTICAL AIR FRICTION",     &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.9f, 1.0f);
+                    ImGui::SliderFloat("GROUND FRICTION",           &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.900f, 1.000f);
+                    ImGui::SliderFloat("HORIZONTAL AIR FRICTION",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.900f, 1.000f);
+                    ImGui::SliderFloat("VERTICAL AIR FRICTION",     &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.900f, 1.000f);
                     ImGui::NewLine();
 
                     ImGui::SliderFloat("GROUND SPEED",              &svc::playerLocator.get().stats.X_ACC, 0.0f, 0.2f);
                     ImGui::SliderFloat("AIR SPEED",                 &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 0.2f);
-                    ImGui::SliderFloat("JUMP HEIGHT",               &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 1.0f);
+                    ImGui::SliderFloat("JUMP HEIGHT",               &svc::playerLocator.get().stats.JUMP_MAX, 0.15f, 0.5f);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Weapon"))

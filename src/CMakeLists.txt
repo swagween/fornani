@@ -28,6 +28,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	utils/Collider.cpp
 	utils/Camera.hpp
 	utils/StateMachine.hpp
+    utils/StateFunction.hpp
 	utils/AdjacencyList.hpp
 	utils/Random.hpp
     utils/Clock.hpp
@@ -46,6 +47,11 @@ target_sources(${PROJECT_NAME} PRIVATE
     entities/critter/Critter.cpp
     entities/critter/CritterTables.hpp
     entities/critter/CritterActions.cpp
+    entities/critter/Bestiary.hpp
+    entities/critter/critters/Hulmet.hpp
+    entities/critter/critters/Hulmet.cpp
+    entities/critter/critters/Frdog.hpp
+    entities/critter/critters/Frdog.cpp
     entities/critter/Bestiary.hpp
     entities/world/Portal.hpp
     entities/world/Portal.cpp

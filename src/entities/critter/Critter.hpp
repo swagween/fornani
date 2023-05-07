@@ -17,6 +17,7 @@
 #include "../../components/BehaviorComponent.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../components/AnimationController.hpp"
+#include "../../utils/StateFunction.hpp"
 
 namespace critter {
 
@@ -66,6 +67,7 @@ struct FrameTracker {
 class Critter {
     
 public:
+
     Critter() = default;
     Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim) : metadata(m), stats(s), sprite_dimensions(sprite_dim), spritesheet_dimensions(spritesheet_dim), dimensions(dim) {
         collider = shape::Collider(); 
@@ -79,11 +81,12 @@ public:
 
         ar.setSize( { (float)(s.vision * 1.5), (float)(s.vision * 1.5) });
         hr.setSize( { (float)s.vision, (float)s.vision } );
-
-        behavior = components::CritterBehaviorComponent(m.id);
     }
     ~Critter() {}
+
+    virtual void unique_update() {};
     
+    void init();
     void update();
     void render(sf::RenderWindow& win, sf::Vector2<float> campos);
     void set_sprite();
@@ -112,7 +115,7 @@ public:
     CritterStats stats{};
     CritterFlags flags{};
     
-    components::CritterBehaviorComponent behavior{};//to be replaced by animation
+    behavior::Behavior behavior{};
     //components::AnimationController animation{};
     shape::Collider collider{};
     shape::Shape alert_range{};

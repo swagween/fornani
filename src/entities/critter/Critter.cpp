@@ -11,6 +11,23 @@ namespace critter {
 
 inline util::Random r{};
 
+void Critter::init() {
+    collider = shape::Collider();
+    set_sprite();
+    collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
+    collider.physics.maximum_velocity = sf::Vector2<float>(stats.speed, stats.speed * 4);
+    if (metadata.gravity) { collider.physics.gravity = 0.03f; }
+
+    alert_range = shape::Shape({ (float)stats.vision * 1.5f, (float)stats.vision * 1.5f });
+    hostile_range = shape::Shape({ (float)stats.vision, (float)stats.vision });
+
+    ar.setSize({ (float)(stats.vision * 1.5), (float)(stats.vision * 1.5) });
+    hr.setSize({ (float)stats.vision, (float)stats.vision });
+
+    //behavior = components::CritterBehaviorComponent(metadata.id);
+
+}
+
 void Critter::update() {
 
     behavior.update();
@@ -22,50 +39,16 @@ void Critter::update() {
     hr.setOutlineColor(sf::Color{ 180, 180, 180});
     ar.setOutlineThickness(-1);
     hr.setOutlineThickness(-1);
-    collider.bounding_box.set_position(collider.physics.position);
-
-    if(flags.asleep) {
-        behavior.sleep();
-        current_target = collider.physics.position;
-    } else if(flags.awakened) {
-        behavior.awaken();
-        current_target = collider.physics.position;
-    } else {
-        behavior.idle();
-    }
-    
-    if (collider.flags.test(shape::State::is_any_jump_collision)) {
-        collider.physics.acceleration.y = 0.0f;
-        collider.flags.reset(shape::State::is_any_jump_collision);
-    }
-
-    if (collider.physics.acceleration.x < 0.0f && collider.physics.velocity.x > 0.0f) { behavior.turn(); behavior.facing_lr = behavior::DIR_LR::LEFT; }
-    if (collider.physics.acceleration.x > 0.0f && collider.physics.velocity.x < 0.0f) { behavior.turn(); behavior.facing_lr = behavior::DIR_LR::RIGHT; }
-
-
-    if (abs(collider.physics.velocity.x) > 0.02f && behavior.current_state.params.behavior_id == "frdog_idle") {
-        behavior.run();
-    }
     
     if(flags.seeking) {
         seek_current_target();
     }
-    /*if (collider.flags.test(shape::State::is_any_jump_collision)) { collider.physics.acceleration.y = 0.0f; }
-    if(abs(collider.physics.position.x - current_target.x) < 16.0f && abs(collider.physics.position.y - current_target.y) < 16.0f) { flags.seeking = false; }
-    if (!collider.flags.test(shape::State::is_colliding_with_level)) { collider.physics.mtv = { 0.0f, 0.0f }; }
-    collider.flags.reset(shape::State::just_collided);
-    if (!collider.flags.test(shape::State::grounded) && collider.physics.velocity.y < 5.0f) {
-        collider.physics.gravity = 0.003;
-    }
-    else {
-        collider.physics.gravity = 0.0f;
-    }
-    if (collider.flags.test(shape::State::has_left_collision)) { collider.physics.acceleration.x = 0.0f; }*/
 
     collider.physics.update_euler();
-    behavior.current_state.update();
     collider.sync_components();
     collider.update();
+
+    unique_update();
 
 }
 
@@ -88,14 +71,14 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     hurtbox.setFillColor(sf::Color::Transparent);
     hurtbox.setOutlineColor(flcolor::white);
     hurtbox.setOutlineThickness(-1);
-    //win.draw(ar);
-    //win.draw(hr);
+    win.draw(ar);
+    win.draw(hr);
     win.draw(sprite);
     //collider.render(win, campos);
     //win.draw(hurtbox);
     
     //do this after drawing to avoid 1-frame stuttering
-    if(behavior.facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) {
+    /*if(behavior.facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) {
         if(!behavior.restricted()) {
             sprite.scale(-1.0f, 1.0f);
             behavior.turn();
@@ -106,7 +89,7 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
             sprite.scale(-1.0f, 1.0f);
             behavior.turn();
         }
-    }
+    }*/
 }
 
 void Critter::set_sprite() {
