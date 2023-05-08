@@ -18,7 +18,7 @@ namespace critter {
 		Hulmet() {
 			metadata = { 1, VARIANT::SOLDIER, true, false, true }; stats = { 2, 14, 0.5f, 1.0f, 16 * 32 };
 			sprite_dimensions = { 56, 42 };
-			spritesheet_dimensions = { 1, 13 };
+			spritesheet_dimensions = { 1, 14 };
 			dimensions = { 16.0f, 16.0f };
 			init();
 		}
@@ -26,7 +26,6 @@ namespace critter {
 		void unique_update() override;
 		
 		fsm::StateFunction state_function = std::bind(&Hulmet::update_idle, this);
-		fsm::StateFunction update_start();
 		fsm::StateFunction update_idle();
 		fsm::StateFunction update_alert();
 		fsm::StateFunction update_turn();

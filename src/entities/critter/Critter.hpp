@@ -16,7 +16,6 @@
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
 #include "../../utils/Collider.hpp"
-#include "../../components/AnimationController.hpp"
 #include "../../utils/StateFunction.hpp"
 
 namespace critter {
@@ -57,6 +56,8 @@ struct CritterFlags {
     bool awake{};
     bool awakened{};
     bool asleep{};
+    bool turning{};
+    bool flip{};
 };
 
 struct FrameTracker {
@@ -85,6 +86,7 @@ public:
     ~Critter() {}
 
     virtual void unique_update() {};
+    virtual void sprite_flip();
     
     void init();
     void update();
@@ -116,7 +118,7 @@ public:
     CritterFlags flags{};
     
     behavior::Behavior behavior{};
-    //components::AnimationController animation{};
+    behavior::DIR_LR facing_lr{};
     shape::Collider collider{};
     shape::Shape alert_range{};
     shape::Shape hostile_range{};

@@ -58,6 +58,10 @@ namespace behavior {
     }
     
     int Behavior::get_frame() { return params.lookup_value + params.current_frame; }
+
+    bool Behavior::restricted() {
+		return params.restrictive && !params.complete;
+    }
     
 
 

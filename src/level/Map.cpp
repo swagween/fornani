@@ -220,14 +220,11 @@ void Map::update() {
     
     for(auto& critter : critters) {
 
-        //must generalize this code; this is frdog-specific
-        //something like critter.update();
+        critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
         critter->unique_update();
         //critter.random_walk(sf::Vector2<int>(120, 180));
-        /*critter.seek_current_target();
-        critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;*/
         if (svc::playerLocator.get().collider.bounding_box.SAT(critter->hostile_range)) {
-            //critter.current_target = svc::playerLocator.get().collider.physics.position;
+            critter->current_target = svc::playerLocator.get().collider.physics.position;
             critter->awake();
         } else if (svc::playerLocator.get().collider.bounding_box.SAT(critter->alert_range)) {
             critter->wake_up();

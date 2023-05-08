@@ -63,7 +63,7 @@ inline BehaviorParameters hulmet_charging = BehaviorParameters("hulmet_charging"
 inline BehaviorParameters hulmet_alert =    BehaviorParameters("hulmet_alert", 1, 12, false, false, false, 6);
 inline BehaviorParameters hulmet_hurt =     BehaviorParameters("hulmet_hurt", 4, 12, false, false, false, 0);
 inline BehaviorParameters hulmet_dying =    BehaviorParameters("hulmet_dying", 1, 12, false, false, false, 11);
-inline BehaviorParameters hulmet_turn =     BehaviorParameters("hulmet_turn", 1, 12, true, true, true, 8);
+inline BehaviorParameters hulmet_turn =     BehaviorParameters("hulmet_turn", 1, 12, true, true, true, 13);
 
 
 } // end behavior

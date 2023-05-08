@@ -27,7 +27,6 @@ namespace critter {
 		void unique_update() override;
 
 		fsm::StateFunction state_function = std::bind(&Frdog::update_idle, this);
-		fsm::StateFunction update_start();
 		fsm::StateFunction update_idle();
 		fsm::StateFunction update_sleep();
 		fsm::StateFunction update_sit();

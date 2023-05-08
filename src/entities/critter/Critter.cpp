@@ -11,6 +11,16 @@ namespace critter {
 
 inline util::Random r{};
 
+void Critter::sprite_flip() {
+    if (flags.flip) { sprite.scale(-1.0f, 1.0f); flags.flip = false; }
+    //flip the sprite based on the critter's direction
+    sf::Vector2<float> right_scale = { 1.0f, 1.0f };
+    sf::Vector2<float> left_scale = { -1.0f, 1.0f };
+    if ((facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) || (facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale)) {
+        flags.turning = true;
+    }
+}
+
 void Critter::init() {
     collider = shape::Collider();
     set_sprite();
@@ -48,22 +58,19 @@ void Critter::update() {
     collider.sync_components();
     collider.update();
 
+    //get UV coords
+    int u = (int)(behavior.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+    int v = (int)(behavior.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+    sprite.setTextureRect(sf::IntRect({ u, v }, { sprite_dimensions.x, sprite_dimensions.y }));
+    sprite.setOrigin(sprite_dimensions.x / 2, dimensions.y / 2);
+
     unique_update();
 
 }
 
 void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
+
     sprite.setPosition(collider.physics.position.x - campos.x + dimensions.x / 2, collider.physics.position.y - 8 - campos.y);
-    
-    //get UV coords
-    int u = (int)(behavior.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-    int v = (int)(behavior.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
-    sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
-    sprite.setOrigin(sprite_dimensions.x/2, dimensions.y/2);
-    //flip the sprite based on the critter's direction
-    sf::Vector2<float> right_scale = {1.0f, 1.0f};
-    sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-    
     hurtbox.setSize(dimensions);
     hurtbox.setPosition(collider.physics.position.x - campos.x, collider.physics.position.y - campos.y);
     ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
@@ -76,20 +83,8 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     win.draw(sprite);
     //collider.render(win, campos);
     //win.draw(hurtbox);
+    sprite_flip();
     
-    //do this after drawing to avoid 1-frame stuttering
-    /*if(behavior.facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) {
-        if(!behavior.restricted()) {
-            sprite.scale(-1.0f, 1.0f);
-            behavior.turn();
-        }
-    }
-    if(behavior.facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale) {
-        if(!behavior.restricted()) {
-            sprite.scale(-1.0f, 1.0f);
-            behavior.turn();
-        }
-    }*/
 }
 
 void Critter::set_sprite() {
@@ -111,14 +106,8 @@ void Critter::seek_current_target() {
     sf::Vector2<float> desired = current_target - collider.physics.position;
     desired *= stats.speed;
     sf::Vector2<float> steering = desired - collider.physics.velocity;
-    //    if(steering.x > 0.1) { steering.x = 0.1; }
-    //    if(steering.x < -0.1) { steering.x = -0.1; }
-        //collider.physics.apply_force(steering);
     if (abs(steering.x) < 0.5) { collider.physics.acceleration.x = 0.0f; return; }
     steering *= 0.08f;
-    //don't steer through walls
-    /*if (collider.flags.test(shape::State::has_right_collision) && steering.x > 0.0f) { return; }
-    if (collider.flags.test(shape::State::has_left_collision)  && steering.x < 0.0f) { return; }*/
     collider.physics.acceleration.x = steering.x;
 
 }
