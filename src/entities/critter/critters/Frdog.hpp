@@ -21,6 +21,7 @@ namespace critter {
 			sprite_dimensions = sf::Vector2<int>{ 72, 48 };
 			spritesheet_dimensions = sf::Vector2<int>{4, 5};
 			dimensions = sf::Vector2<float>{32.0f, 32.0f};
+			y_offset = 8;
 			init();
 		}
 

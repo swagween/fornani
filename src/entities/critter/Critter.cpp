@@ -70,7 +70,7 @@ void Critter::update() {
 
 void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
 
-    sprite.setPosition(collider.physics.position.x - campos.x + dimensions.x / 2, collider.physics.position.y - 8 - campos.y);
+    sprite.setPosition(collider.physics.position.x - campos.x + dimensions.x / 2, collider.physics.position.y - y_offset - campos.y);
     hurtbox.setSize(dimensions);
     hurtbox.setPosition(collider.physics.position.x - campos.x, collider.physics.position.y - campos.y);
     ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
@@ -78,8 +78,8 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     hurtbox.setFillColor(sf::Color::Transparent);
     hurtbox.setOutlineColor(flcolor::white);
     hurtbox.setOutlineThickness(-1);
-    win.draw(ar);
-    win.draw(hr);
+    /*win.draw(ar);
+    win.draw(hr);*/
     win.draw(sprite);
     //collider.render(win, campos);
     //win.draw(hurtbox);

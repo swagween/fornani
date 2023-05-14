@@ -19,10 +19,15 @@ namespace behavior {
             params.done = true;
         }
     }
+
+    bool Behavior::start() {
+        return (params.complete || params.started);
+    }
     
     void Behavior::update() {
 
         params.frame_trigger = false;
+        params.just_started = false;
 
         dt = svc::clockLocator.get().tick_rate;
         dt *= svc::clockLocator.get().tick_multiplier * animation_multiplier;

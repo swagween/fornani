@@ -217,6 +217,15 @@ void Map::update() {
             }
         }
     }
+
+    for (auto& proj : active_projectiles) {
+        for (auto& critter : critters) {
+            if(proj.bounding_box.SAT(critter->collider.bounding_box)) {
+                proj.destroy();
+                critter->flags.hurt = true;
+            }
+        }
+    }
     
     for(auto& critter : critters) {
 

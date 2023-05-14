@@ -20,6 +20,7 @@ namespace critter {
 			sprite_dimensions = { 56, 42 };
 			spritesheet_dimensions = { 1, 14 };
 			dimensions = { 16.0f, 16.0f };
+			y_offset = 10;
 			init();
 		}
 
