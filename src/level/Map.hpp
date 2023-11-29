@@ -112,6 +112,7 @@ public:
     int room_id{}; // should be assigned to its constituent chunks
     bool game_over{ false };
     bool show_minimap{ false };
+    bool debug_mode{ false };
     
 };
 

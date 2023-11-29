@@ -60,6 +60,7 @@ struct CritterFlags {
     bool flip{};
     bool barking{};
     bool hurt{};
+    bool shot{};
 };
 
 struct FrameTracker {
@@ -128,7 +129,7 @@ public:
     sf::Vector2<int> sprite_dimensions{};
     sf::Vector2<int> spritesheet_dimensions{};
     sf::Vector2<float> dimensions{};
-    int y_offset{};
+    sf::Vector2<float> offset{};
     int anim_loop_count{};
     
     sf::Sprite sprite{};

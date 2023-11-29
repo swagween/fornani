@@ -164,6 +164,7 @@ void Map::update() {
                     collider->handle_map_collision(cell.bounding_box, cell.type);
                 }
             }
+            
         }
     }
 
@@ -222,6 +223,7 @@ void Map::update() {
         for (auto& critter : critters) {
             if(proj.bounding_box.SAT(critter->collider.bounding_box)) {
                 proj.destroy();
+                critter->flags.shot = true;
                 critter->flags.hurt = true;
             }
         }
@@ -230,7 +232,6 @@ void Map::update() {
     for(auto& critter : critters) {
 
         critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
-        critter->unique_update();
         //critter.random_walk(sf::Vector2<int>(120, 180));
         if (svc::playerLocator.get().collider.bounding_box.SAT(critter->hostile_range)) {
             critter->current_target = svc::playerLocator.get().collider.physics.position;
@@ -341,7 +342,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
                     int cell_y = cell.bounding_box.position.y - cam.y;
                     tileset.at(cell.value).setPosition(cell_x, cell_y);
                     win.draw(tileset.at(cell.value));
-                    if(cell.collision_check) {
+                    if(cell.collision_check && debug_mode) {
                         sf::RectangleShape box{};
                         box.setPosition(cell.bounding_box.vertices[0].x - cam.x, cell.bounding_box.vertices[0].y - cam.y);
                         box.setFillColor(sf::Color{100, 100, 130, 80});

@@ -58,6 +58,7 @@ public:
     };
     
     STATE state = STATE::STATE_NULL;
+    bool debug_mode{ false };
 };
 
 
@@ -198,8 +199,9 @@ public:
         if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
         if (map.real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(map.real_dimensions); }
         svc::playerLocator.get().update(svc::clockLocator.get().elapsed_time);
-        for (auto& critter : map.critters) { critter->update(); critter->unique_update(); }
+        for (auto& critter : map.critters) { critter->update(); critter->unique_update(); critter->flags.shot = false; }
         svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
+        map.debug_mode = debug_mode;
     }
     
     void render(sf::RenderWindow& win) {
@@ -250,7 +252,7 @@ public:
     world::Map map{};
     sf::Texture tileset{};
     std::vector<sf::Sprite> tileset_sprites{};
-    bool show_colliders = false;
+    bool show_colliders{ false };
     int x{0};
     
     gui::HUD hud{{20, 20}};

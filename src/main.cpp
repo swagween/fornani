@@ -124,6 +124,7 @@ static void show_overlay() {
                     ImGui::Text("Behavior No Loop? %s", svc::playerLocator.get().behavior.current_state.params.no_loop ? "Yes" : "No");
                     ImGui::Text("Invincibility Counter: %i", svc::playerLocator.get().counters.invincibility);
                     ImGui::Text("Spike Trigger: %s", svc::playerLocator.get().collider.spike_trigger ? "True" : "False");
+                    ImGui::Text("On Ramp: %s", svc::playerLocator.get().collider.on_ramp() ? "True" : "False");
 
                     ImGui::Text("Inspecting? %s", svc::playerLocator.get().flags.input.test(Input::inspecting) ? "Yes" : "No");
 
@@ -445,6 +446,7 @@ void run(char** argv) {
         //game logic and rendering
         
         SM.get_current_state().logic();
+        SM.get_current_state().debug_mode = debug_mode;
 
         //switch states
         if (svc::stateControllerLocator.get().trigger) {

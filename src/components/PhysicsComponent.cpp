@@ -13,6 +13,7 @@ namespace components {
     
     using Time = std::chrono::duration<float>;
     
+
     void PhysicsComponent::apply_force(sf::Vector2<float> force) {
         sf::operator+= (acceleration, force);
     }
@@ -84,6 +85,10 @@ namespace components {
     void PhysicsComponent::zero() {
         acceleration = { 0.0f, 0.0f };
         velocity = { 0.0f, 0.0f };
+    }
+
+    void PhysicsComponent::hitstun() {
+        dt /= 2.0f;
     }
     
 

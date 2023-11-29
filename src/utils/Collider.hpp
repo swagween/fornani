@@ -31,6 +31,7 @@ namespace shape {
 		just_landed,
 		ceiling_collision,
 		grounded,
+		on_ramp,
 	};
 
 	struct PhysicsStats {
@@ -51,6 +52,8 @@ namespace shape {
 		void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 		void reset();
 		void reset_ground_flags();
+
+		bool on_ramp();
 
 		Shape bounding_box{};
 		Shape predictive_bounding_box{};
@@ -73,7 +76,10 @@ namespace shape {
 
 		bool spike_trigger{};
 
+		
+
 		sf::RectangleShape box{};
+		std::vector<std::string> inst;
 
 	};
 

@@ -18,6 +18,7 @@
 #include "../utils/Clock.hpp"
 #include "../automa/StateController.hpp"
 #include "../gui/Console.hpp"
+#include "../utils/Random.hpp"
 
 namespace svc {
 
@@ -27,6 +28,7 @@ inline auto cameraLocator =				forloop::Service<cam::Camera>::Instance{};
 inline auto clockLocator =				forloop::Service<util::Clock>::Instance{};
 inline auto stateControllerLocator =	forloop::Service<automa::StateController>::Instance{};
 inline auto consoleLocator =			forloop::Service<gui::Console>::Instance{};
+inline auto randomLocator =				forloop::Service<util::Random>::Instance{};
 
 }
 

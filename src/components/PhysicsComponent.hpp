@@ -33,7 +33,7 @@ public:
     using Time = std::chrono::duration<float>;
     
     PhysicsComponent() : friction(FRICTION_DEFAULT), mass(MASS_DEFAULT) {};
-    PhysicsComponent(sf::Vector2<float> fric, float ma, sf::Vector2<float> max_vel = sf::Vector2<float>{ UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED }, float grav = 0.0f) : friction(fric), mass(ma), maximum_velocity(max_vel), gravity(grav) {};
+    PhysicsComponent(sf::Vector2<float> fric, float ma, sf::Vector2<float> max_vel = sf::Vector2<float>{ UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED }, float grav = 0.0f) : friction(fric), mass(ma), maximum_velocity(max_vel), gravity(grav) {}
 
     //basic physics variables
     sf::Vector2<float> acceleration{0.0f, 0.0f};
@@ -59,6 +59,7 @@ public:
     void update();
     void update_dampen();
     void zero();
+    void hitstun();
 
     //fixed physics time step variables
     Time dt{ 0.001f };

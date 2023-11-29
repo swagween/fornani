@@ -153,7 +153,6 @@ public:
 
     using Clock = std::chrono::steady_clock;
     using Time = std::chrono::duration<float>;
-    
     Player();
     
     //member functions
@@ -164,6 +163,7 @@ public:
     void update_animation();
     void update_sprite();
     void flash_sprite();
+    void calculate_sprite_offset();
     
     void update_behavior();
     void set_position(sf::Vector2<float> new_pos);
@@ -209,6 +209,7 @@ public:
     sf::Vector2<float> apparent_position{};
     sf::Vector2<float> anchor_point{};
     sf::Vector2<float> hand_position{};
+    sf::Vector2<float> sprite_offset{};
     
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};

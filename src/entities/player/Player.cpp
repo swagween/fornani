@@ -296,13 +296,14 @@ void Player::update(Time dt) {
 void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
     
     sf::Vector2<float> player_pos = apparent_position - campos;
+    calculate_sprite_offset();
     
     //get UV coords
     int u = (int)(behavior.get_frame() / NANI_SPRITESHEET_HEIGHT) * NANI_SPRITE_WIDTH;
     int v = (int)(behavior.get_frame() % NANI_SPRITESHEET_HEIGHT) * NANI_SPRITE_WIDTH;
     sprite.setTextureRect(sf::IntRect({u, v}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
     sprite.setOrigin(NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2);
-    sprite.setPosition(player_pos.x, player_pos.y);
+    sprite.setPosition(player_pos.x, player_pos.y + sprite_offset.y);
     
     //flip the sprite based on the player's direction
     sf::Vector2<float> right_scale = {1.0f, 1.0f};
@@ -337,6 +338,12 @@ void Player::update_sprite() {
 void Player::flash_sprite() {
     if ((counters.invincibility / 10) % 2 == 0) { sprite.setColor(flcolor::red); }
     else { sprite.setColor(flcolor::blue); }
+}
+
+void Player::calculate_sprite_offset() {
+    if (!collider.on_ramp()) { sprite_offset.y = 0.0f; return; }
+    //sprite_offset.y = behavior.facing_lr == behavior::DIR_LR::RIGHT ? 10.f : 15.f;
+
 }
 
 void Player::update_behavior() {

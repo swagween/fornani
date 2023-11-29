@@ -40,6 +40,7 @@ void Critter::init() {
 
 void Critter::update() {
 
+    unique_update();
     behavior.update();
     alert_range.set_position(sf::Vector2<float>(collider.physics.position.x - alert_range.dimensions.x/2, collider.physics.position.y - alert_range.dimensions.y / 2));
     hostile_range.set_position(sf::Vector2<float>(collider.physics.position.x - hostile_range.dimensions.x / 2, collider.physics.position.y - hostile_range.dimensions.y / 2));
@@ -64,13 +65,11 @@ void Critter::update() {
     sprite.setTextureRect(sf::IntRect({ u, v }, { sprite_dimensions.x, sprite_dimensions.y }));
     sprite.setOrigin(sprite_dimensions.x / 2, dimensions.y / 2);
 
-    unique_update();
-
 }
 
 void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
 
-    sprite.setPosition(collider.physics.position.x - campos.x + dimensions.x / 2, collider.physics.position.y - y_offset - campos.y);
+    sprite.setPosition(collider.physics.position.x - offset.x - campos.x + dimensions.x / 2, collider.physics.position.y - offset.y - campos.y);
     hurtbox.setSize(dimensions);
     hurtbox.setPosition(collider.physics.position.x - campos.x, collider.physics.position.y - campos.y);
     ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
