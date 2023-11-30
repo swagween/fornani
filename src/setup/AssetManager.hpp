@@ -192,6 +192,8 @@ public:
         hurt.setBuffer(hurt_buffer);
         player_death_buffer.loadFromFile(resource_path + "/audio/sfx/player_death.wav");
         player_death.setBuffer(player_death_buffer);
+        enem_hit_buffer.loadFromFile(resource_path + "/audio/sfx/enemy_hit.wav");
+        enem_hit.setBuffer(enem_hit_buffer);
         
         brown_noise.openFromFile(resource_path + "/audio/songs/brown_noise.wav");
         clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");
@@ -318,6 +320,8 @@ public:
     sf::Sound hurt;
     sf::SoundBuffer player_death_buffer{};
     sf::Sound player_death;
+    sf::SoundBuffer enem_hit_buffer{};
+    sf::Sound enem_hit;
     
     //songs!
     sf::Music brown_noise{};

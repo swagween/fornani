@@ -23,6 +23,7 @@ namespace critter {
 			dimensions = sf::Vector2<float>{32.0f, 32.0f};
 			offset.y = 8;
 			init();
+			flags.vulnerable = true; //frdogs always vulnerable
 		}
 
 		void unique_update() override;

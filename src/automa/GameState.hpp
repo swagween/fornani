@@ -151,9 +151,9 @@ public:
         svc::assetLocator.get().three_pipes.play();
         svc::assetLocator.get().three_pipes.setLoop(true);
         */
-        svc::assetLocator.get().brown_noise.setVolume(20);
+        /*svc::assetLocator.get().brown_noise.setVolume(20);
         svc::assetLocator.get().brown_noise.play();
-        svc::assetLocator.get().brown_noise.setLoop(true);
+        svc::assetLocator.get().brown_noise.setLoop(true);*/
         
     }
     void handle_events(sf::Event& event) {

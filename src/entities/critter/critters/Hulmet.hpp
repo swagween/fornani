@@ -22,6 +22,7 @@ namespace critter {
 			dimensions = { 16.0f, 16.0f };
 			offset.y = 10;
 			init();
+			flags.vulnerable = true; //hulmets always vulnerable
 		}
 
 		void unique_update() override;

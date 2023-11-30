@@ -47,7 +47,10 @@ struct CritterStats {
     float loot_multiplier{};
     int energy{};
     int vision{};
-    
+};
+
+struct CritterCondition {
+    int hp{1};
 };
 
 struct CritterFlags {
@@ -61,6 +64,7 @@ struct CritterFlags {
     bool barking{};
     bool hurt{};
     bool shot{};
+    bool vulnerable{};
 };
 
 struct FrameTracker {
@@ -85,6 +89,7 @@ public:
 
         ar.setSize( { (float)(s.vision * 1.5), (float)(s.vision * 1.5) });
         hr.setSize( { (float)s.vision, (float)s.vision } );
+        condition.hp = s.base_hp;
     }
     ~Critter() {}
 
@@ -118,6 +123,7 @@ public:
     
     CritterMetadata metadata{};
     CritterStats stats{};
+    CritterCondition condition{};
     CritterFlags flags{};
     
     behavior::Behavior behavior{};
@@ -136,6 +142,7 @@ public:
     sf::RectangleShape hurtbox{}; // for debugging
     sf::RectangleShape ar{};
     sf::RectangleShape hr{};
+    sf::RectangleShape hpbox{}; // for debug
     
     std::queue<int> idle_action_queue{};
     

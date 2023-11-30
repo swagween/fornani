@@ -34,6 +34,8 @@ void Critter::init() {
     ar.setSize({ (float)(stats.vision * 1.5), (float)(stats.vision * 1.5) });
     hr.setSize({ (float)stats.vision, (float)stats.vision });
 
+    condition.hp = stats.base_hp;
+
     //behavior = components::CritterBehaviorComponent(metadata.id);
 
 }
@@ -83,6 +85,15 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     //collider.render(win, campos);
     //win.draw(hurtbox);
     sprite_flip();
+
+    //draw health for debug
+    hpbox.setFillColor(sf::Color{0, 228, 185});
+    hpbox.setSize(sf::Vector2<float>{1.0f, 4.0f});
+    for(int i = 0; i < stats.base_hp; ++i) {
+        hpbox.setPosition(sprite.getPosition().x + i, sprite.getPosition().y - 14);
+        if (i > condition.hp) { hpbox.setFillColor(sf::Color{29, 118, 112}); }
+        win.draw(hpbox);
+    }
     
 }
 

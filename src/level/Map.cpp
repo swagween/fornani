@@ -111,14 +111,14 @@ void Map::load(const std::string& path) {
         }
         input.close();
     }
-    
 
+    for(int i = 0; i < 4; ++i) {
+        critters.push_back(&bestiary.get_critter_at(i));
+        critters.back()->set_position({ i*4 * 32, 11 * 32 });
+        critters.back()->collider.physics.zero();
+    }
 
-    critters.push_back(&bestiary.get_critter_at(0));
-    critters.back()->set_position({12 * 32, 11 * 32});
-    critters.back()->collider.physics.zero();
-
-    critters.push_back(&bestiary.get_critter_at(1));
+    critters.push_back(&bestiary.get_critter_at(17));
     critters.back()->set_position({ 15 * 32, 11 * 32 });
     critters.back()->collider.physics.zero();
 
@@ -221,10 +221,13 @@ void Map::update() {
 
     for (auto& proj : active_projectiles) {
         for (auto& critter : critters) {
-            if(proj.bounding_box.SAT(critter->collider.bounding_box)) {
+            if (proj.bounding_box.SAT(critter->collider.bounding_box)) {
                 proj.destroy();
                 critter->flags.shot = true;
-                critter->flags.hurt = true;
+                if (critter->flags.vulnerable) {
+                    critter->flags.hurt = true;
+                    critter->condition.hp -= proj.stats.damage;
+                }
             }
         }
     }
@@ -232,7 +235,7 @@ void Map::update() {
     for(auto& critter : critters) {
 
         critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
-        //critter.random_walk(sf::Vector2<int>(120, 180));
+        //critter->random_walk(sf::Vector2<int>(120, 180));
         if (svc::playerLocator.get().collider.bounding_box.SAT(critter->hostile_range)) {
             critter->current_target = svc::playerLocator.get().collider.physics.position;
             critter->awake();
@@ -241,12 +244,6 @@ void Map::update() {
         } else {
             critter->sleep();
         }
-        
-        //critter.random_idle_action();
-        /*while (!critter.idle_action_queue.empty()) {
-            critter.behavior.bark();
-            critter.idle_action_queue.pop();
-        }*/
 
     }
 
@@ -472,6 +469,7 @@ void Map::manage_projectiles() {
     
     std::erase_if(active_projectiles,   [](auto const& p) { return p.stats.lifespan < 0;    });
     std::erase_if(active_emitters, [](auto const& p) { return p.particles.empty();          });
+    std::erase_if(critters, [](auto const& c) { return c->condition.hp <= 0;                 });
     
     if (!svc::playerLocator.get().weapons_hotbar.empty()) {
         if (svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
