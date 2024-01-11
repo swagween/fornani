@@ -12,9 +12,9 @@
 #include "../components/PhysicsComponent.hpp"
 #include "../utils/Random.hpp"
 
-namespace {
+namespace cam {
 
-const float CAM_FRICTION = 0.9f;
+const float CAM_FRICTION = 0.75f;
 const float CAM_MASS = 1.0f;
 const float CAM_GRAV = 0.003f;
 
@@ -78,6 +78,16 @@ public:
             physics.position.x = bounds.x - bounding_box.width;
         }
     }
+
+    void fix_horizontally(sf::Vector2<float> map_dim) { 
+        bounding_box.top = (map_dim.y - screen_dimensions.y) / 2;
+        physics.position.y = bounding_box.top;
+    }
+
+    void fix_vertically(sf::Vector2<float> map_dim) {
+        bounding_box.left = (map_dim.x - screen_dimensions.x) / 2;
+        physics.position.x = bounding_box.left;
+    }
     
     void set_position(sf::Vector2<float> new_pos) {
         physics.position = new_pos;
@@ -104,6 +114,7 @@ public:
     }
     
     void shake() {
+        util::Random rand{};
         float nudge_x = rand.random_range(-SHAKE_FACTOR, SHAKE_FACTOR);
         float nudge_y = rand.random_range(-SHAKE_FACTOR, SHAKE_FACTOR);
         physics.velocity.x = nudge_x*0.1;
@@ -115,8 +126,6 @@ public:
     
     int shake_counter{};
     bool shaking = false;
-    
-    util::Random rand{};
     
 };
 

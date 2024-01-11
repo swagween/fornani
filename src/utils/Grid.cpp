@@ -42,7 +42,9 @@ void squid::Grid::initialize() {
         } else {
             ypos = yidx*spacing;
         }
-        cells.push_back(Tile({xidx, yidx}, {xpos, ypos}, 0, TILE_NULL));
+        cells.push_back(Tile({xidx, yidx}, {xpos, ypos}, 0, lookup::TILE_TYPE::TILE_BASIC));
+        cells.back().position = sf::Vector2<float>(xpos, ypos);
+        cells.back().bounding_box.set_position(sf::Vector2<float>(xpos, ypos));
         
     }
     
@@ -73,69 +75,34 @@ void squid::Grid::set_spacing(float spc) {
 
 void squid::Grid::push_cells(int i) {
     // calculate index values
-    uint32_t xidx = std::floor(i%dimensions.x);
-    uint32_t yidx = std::floor(i/dimensions.x);
-    
+    uint32_t xidx = std::floor(i % dimensions.x);
+    uint32_t yidx = std::floor(i / dimensions.x);
+
     //calculate positions with offsets
     float xpos, ypos;
-    if(yidx % 2 == 0) {
-        xpos = xidx*spacing;
-    } else {
-        xpos = xidx*spacing;
+    if (yidx % 2 == 0) {
+        xpos = xidx * spacing;
     }
-    
-    if(xidx % 2 == 0) {
-        ypos = yidx*spacing;
-    } else {
-        ypos = yidx*spacing;
+    else {
+        xpos = xidx * spacing;
     }
-    
+
+    if (xidx % 2 == 0) {
+        ypos = yidx * spacing;
+    }
+    else {
+        ypos = yidx * spacing;
+    }
+
     //populate the grid
     cells.at(i).index = sf::Vector2<uint32_t>(xidx, yidx);
     cells.at(i).position = sf::Vector2<float>(xpos, ypos);
-    
-    cells.at(i).bounding_box.update(xpos, ypos, spacing, spacing);
-}
 
-squid::TILE_TYPE squid::lookup_type(int idx) {
-    if(idx < 1) {
-        return TILE_NULL;
-    }
-    if(idx < 192) {
-        return TILE_BASIC;
-    }
-    if(idx <= 223) {
-        return TILE_RAMP;
-    }
-    if(idx <= 227) {
-        return TILE_LAVA;
-    }
-    if(idx <= 231) {
-        return TILE_CURRENT;
-    }
-    if(idx <= 235) {
-        return TILE_FLAMMABLE;
-    }
-    if(idx <= 239) {
-        return TILE_PLATFORM;
-    }
-    if(idx <= 243) {
-        return TILE_WATER;
-    }
-    if(idx <= 247) {
-        return TILE_BREAKABLE;
-    }
-    if(idx <= 251) {
-        return TILE_LADDER;
-    }
-    if(idx <= 255) {
-        return TILE_SPIKES;
-    }
-    return TILE_NULL;
+    cells.at(i).bounding_box.set_position(sf::Vector2<float>(xpos, ypos));
 }
 
 void squid::Grid::init_shape_vertices() {
-    int _WIDTH = 32;
+    float _WIDTH = 32.f;
     for (auto& tile : cells) {
         //check vector bounds
         if(tile.bounding_box.vertices.size() >= 4) {
@@ -154,7 +121,7 @@ void squid::Grid::init_shape_vertices() {
                     tile.bounding_box.vertices[3].y -= _WIDTH/2;
                     break;
                 case CEIL_SLANT_INDEX + 3:
-                    tile.bounding_box.vertices[2].y -= _WIDTH - error;
+                    tile.bounding_box.vertices[2].y -= _WIDTH - shape::error;
                     tile.bounding_box.vertices[3].y -= _WIDTH - _WIDTH/4;
                     break;
                     //top right long ramp
@@ -170,7 +137,7 @@ void squid::Grid::init_shape_vertices() {
                     tile.bounding_box.vertices[2].y -= _WIDTH/2;
                     break;
                 case CEIL_SLANT_INDEX + 4:
-                    tile.bounding_box.vertices[3].y -= _WIDTH - error;
+                    tile.bounding_box.vertices[3].y -= _WIDTH - shape::error;
                     tile.bounding_box.vertices[2].y -= _WIDTH - _WIDTH/4;
                     break;
                     //top left short ramp 1
@@ -179,7 +146,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case CEIL_SLANT_INDEX + 9:
                     tile.bounding_box.vertices[3].y -= _WIDTH/2;
-                    tile.bounding_box.vertices[2].y -= _WIDTH - error;
+                    tile.bounding_box.vertices[2].y -= _WIDTH - shape::error;
                     break;
                     //top right short ramp 1
                 case CEIL_SLANT_INDEX + 11:
@@ -187,7 +154,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case CEIL_SLANT_INDEX + 10:
                     tile.bounding_box.vertices[2].y -= _WIDTH/2;
-                    tile.bounding_box.vertices[3].y -= _WIDTH - error;
+                    tile.bounding_box.vertices[3].y -= _WIDTH - shape::error;
                     break;
                     //top left short ramp 2
                 case CEIL_SLANT_INDEX + 12:
@@ -195,7 +162,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case CEIL_SLANT_INDEX + 13:
                     tile.bounding_box.vertices[3].y -= _WIDTH/2;
-                    tile.bounding_box.vertices[2].y -= _WIDTH - error;
+                    tile.bounding_box.vertices[2].y -= _WIDTH - shape::error;
                     break;
                     //top right short ramp 2
                 case CEIL_SLANT_INDEX + 15:
@@ -203,7 +170,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case CEIL_SLANT_INDEX + 14:
                     tile.bounding_box.vertices[2].y -= _WIDTH/2;
-                    tile.bounding_box.vertices[3].y -= _WIDTH - error;
+                    tile.bounding_box.vertices[3].y -= _WIDTH - shape::error;
                     break;
                     //bottom left long ramp
                 case FLOOR_SLANT_INDEX:
@@ -219,7 +186,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case FLOOR_SLANT_INDEX + 3:
                     tile.bounding_box.vertices[0].y += _WIDTH - _WIDTH/4;
-                    tile.bounding_box.vertices[1].y += _WIDTH - error;
+                    tile.bounding_box.vertices[1].y += _WIDTH - shape::error;
                     break;
                     //bottom right long ramp
                 case FLOOR_SLANT_INDEX + 7:
@@ -235,7 +202,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case FLOOR_SLANT_INDEX + 4:
                     tile.bounding_box.vertices[1].y += _WIDTH - _WIDTH/4;
-                    tile.bounding_box.vertices[0].y += _WIDTH - error;
+                    tile.bounding_box.vertices[0].y += _WIDTH - shape::error;
                     break;
                     //bottom left short ramp 1
                 case FLOOR_SLANT_INDEX + 8:
@@ -243,7 +210,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case FLOOR_SLANT_INDEX + 9:
                     tile.bounding_box.vertices[0].y += _WIDTH/2;
-                    tile.bounding_box.vertices[1].y += _WIDTH - error;
+                    tile.bounding_box.vertices[1].y += _WIDTH - shape::error;
                     break;
                     //bottom right short ramp 1
                 case FLOOR_SLANT_INDEX + 11:
@@ -251,7 +218,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case FLOOR_SLANT_INDEX + 10:
                     tile.bounding_box.vertices[1].y += _WIDTH/2;
-                    tile.bounding_box.vertices[0].y += _WIDTH - error;
+                    tile.bounding_box.vertices[0].y += _WIDTH - shape::error;
                     break;
                     //bottom left short ramp 2
                 case FLOOR_SLANT_INDEX + 12:
@@ -259,7 +226,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case FLOOR_SLANT_INDEX + 13:
                     tile.bounding_box.vertices[0].y += _WIDTH/2;
-                    tile.bounding_box.vertices[1].y += _WIDTH - error;
+                    tile.bounding_box.vertices[1].y += _WIDTH - shape::error;
                     break;
                     //bottom right short ramp 2
                 case FLOOR_SLANT_INDEX + 15:
@@ -267,7 +234,7 @@ void squid::Grid::init_shape_vertices() {
                     break;
                 case FLOOR_SLANT_INDEX + 14:
                     tile.bounding_box.vertices[1].y += _WIDTH/2;
-                    tile.bounding_box.vertices[0].y += _WIDTH - error;
+                    tile.bounding_box.vertices[0].y += _WIDTH - shape::error;
                     break;
                 default:
                     break;

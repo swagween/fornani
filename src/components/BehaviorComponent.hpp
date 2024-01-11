@@ -27,160 +27,186 @@ public:
     
 };
 
+class SimpleBehaviorComponent {
+public:
+
+    SimpleBehaviorComponent() { current_state = behavior::Behavior(behavior::simple_off); }
+
+    void update() {
+        if (current_state.params.complete && current_state.params.no_loop) {
+            off();
+        }
+    }
+    void on() {
+        if (ready()) {
+            current_state = behavior::Behavior(behavior::simple_on);
+        }
+    }
+    void off() {
+        current_state = behavior::Behavior(behavior::simple_off);
+    }
+    bool ready() {
+        return !current_state.params.transitional || current_state.params.complete;
+    }
+
+    int get_frame() { return current_state.get_frame(); }
+
+    behavior::Behavior current_state;
+};
+
 class PlayerBehaviorComponent {
 public:
-    
+
     PlayerBehaviorComponent() { current_state = behavior::Behavior(); }
-    
+
     void update() {
-        if(current_state.params.complete && current_state.params.no_loop) {
+        if (current_state.params.complete && current_state.params.no_loop) {
             reset();
         }
     }
-    
+
     void end_loop() {
-        if(current_state.params.complete && current_state.params.no_loop) {
+        if (current_state.params.complete && current_state.params.no_loop) {
             reset();
         }
     }
-    
+
     void reset() {
-        if(ready()) {
-            switch(facing) {
-                case behavior::DIR::UP:
-                    current_state = behavior::Behavior(behavior::idle_up);
-                    break;
-                case behavior::DIR::DOWN:
-                    current_state = behavior::Behavior(behavior::idle_up);
-                    break;
-                default:
-                    current_state = behavior::Behavior(behavior::idle);
-                    break;
+        if (ready()) {
+            switch (facing) {
+            case behavior::DIR::UP:
+                current_state = behavior::Behavior(behavior::idle_up);
+                break;
+            case behavior::DIR::DOWN:
+                current_state = behavior::Behavior(behavior::idle_up);
+                break;
+            default:
+                current_state = behavior::Behavior(behavior::idle);
+                break;
             }
         }
     }
-    
+
     void run() {
-        if(ready()) {
-            switch(facing_lr) {
-                case behavior::DIR_LR::LEFT:
-                    current_state = behavior::Behavior(behavior::running);
-                    break;
-                case behavior::DIR_LR::RIGHT:
-                    current_state = behavior::Behavior(behavior::running);
-                    break;
+        if (ready()) {
+            switch (facing_lr) {
+            case behavior::DIR_LR::LEFT:
+                current_state = behavior::Behavior(behavior::running);
+                break;
+            case behavior::DIR_LR::RIGHT:
+                current_state = behavior::Behavior(behavior::running);
+                break;
             }
         }
     }
-    
+
     void stop() {
-        if(ready()) {
-            switch(facing) {
-                case behavior::DIR::UP_RIGHT:
-                    current_state = behavior::Behavior(behavior::stop_up);
-                    break;
-                case behavior::DIR::DOWN_RIGHT:
-                    current_state = behavior::Behavior(behavior::stop_down);
-                    break;
-                case behavior::DIR::UP_LEFT:
-                    current_state = behavior::Behavior(behavior::stop_up);
-                    break;
-                case behavior::DIR::DOWN_LEFT:
-                    current_state = behavior::Behavior(behavior::stop_down);
-                    break;
-                default:
-                    current_state = behavior::Behavior(behavior::stop);
-                    break;
-            }
+        if (ready()) {
+            current_state = behavior::Behavior(behavior::stop);
         }
     }
-    
+
     void turn() {
-        if(ready()) {
+        if (ready()) {
             current_state = behavior::Behavior(behavior::turning);
         }
     }
-    
+
+    void hurt() {
+        if (ready()) {
+            current_state = behavior::Behavior(behavior::hurt);
+        }
+    }
+
     void jump() {
-        if(ready()) {
+        if (ready()) {
             current_state = behavior::Behavior(behavior::jumpsquat);
         }
     }
+
+    void inspect() {
+        if (ready()) {
+            current_state = behavior::Behavior(behavior::inspecting);
+        }
+    }
+
     void rise() {
-        if(ready()) {
+        if (ready()) {
             current_state = behavior::Behavior(behavior::rising);
         }
     }
     void suspend() {
-        if(ready()) {
+        if (ready()) {
             current_state = behavior::Behavior(behavior::suspended);
         }
     }
     void fall() {
-        if(ready()) {
+        if (ready()) {
             current_state = behavior::Behavior(behavior::falling);
         }
     }
-    
+
     void land() {
-        if(ready()) {
+        if (ready()) {
             current_state = behavior::Behavior(behavior::landing);
         }
     }
-    
+
     void air(float velocity) {
-        if(ready()) {
-            if(velocity < -suspension_threshold*2) {
+        if (ready()) {
+            if (velocity < -suspension_threshold) {
                 rise();
-            } else if (velocity < suspension_threshold) {
+            }
+            else if (velocity < suspension_threshold) {
                 suspend();
-            } else {
+            }
+            else {
                 fall();
             }
         }
     }
-    
+
     void wall_slide() {
-        if(ready()) {
+        if (ready()) {
             current_state = behavior::Behavior(behavior::wall_sliding);
         }
     }
-    
+
     bool ready() {
         return !current_state.params.transitional || current_state.params.complete;
     }
-    
+
     bool restricted() {
         return current_state.params.restrictive && !current_state.params.complete;
     }
-    
+
     bool facing_left() {
         return facing_lr == behavior::DIR_LR::LEFT;
     }
-    
+
     bool facing_right() {
         return facing_lr == behavior::DIR_LR::RIGHT;
     }
-    
+
     bool facing_up() {
         return facing == behavior::DIR::UP_LEFT || facing == behavior::DIR::UP || facing == behavior::DIR::UP_RIGHT;
     }
-    
+
     bool facing_down() {
         return facing == behavior::DIR::DOWN_LEFT || facing == behavior::DIR::DOWN || facing == behavior::DIR::DOWN_RIGHT;
     }
-    
+
     bool facing_strictly_left() {
         return facing == behavior::DIR::LEFT;
     }
-    
+
     bool facing_strictly_right() {
         return facing == behavior::DIR::RIGHT;
     }
-    
+
     int get_frame() { return current_state.get_frame(); }
-    
-    const float suspension_threshold = 3.0f;
+
+    const float suspension_threshold{ 1.0f };
     behavior::DIR facing{};
     behavior::DIR_LR facing_lr{};
     
@@ -192,17 +218,29 @@ public:
 class CritterBehaviorComponent {
 public:
     CritterBehaviorComponent() { current_state = behavior::Behavior(behavior::frdog_idle); };
+    CritterBehaviorComponent(int pid) : id(pid) {}
     
-    void update() {
-        if(current_state.params.complete) {
-            idle();
+    void reset() {
+        if(ready()) {
+            switch (id) {
+            case 0: current_state = behavior::Behavior(behavior::frdog_idle); break;
+            case 1: current_state = behavior::Behavior(behavior::hulmet_idle); break;
+            }
         }
-        current_state.update();
+    }
+
+    void update() {
+        if(current_state.params.complete && current_state.params.no_loop) {
+            reset();
+        }
     }
 
     void idle() {
-        if(ready()) {
-            current_state = behavior::Behavior(behavior::frdog_idle);
+        if(ready() && complete()) {
+            switch (id) {
+            case 0: current_state = behavior::Behavior(behavior::frdog_idle); break;
+            case 1: current_state = behavior::Behavior(behavior::hulmet_idle); break;
+            }
         }
     }
 
@@ -238,13 +276,19 @@ public:
 
     void turn() {
         if(ready()) {
-            current_state = behavior::Behavior(behavior::frdog_turn);
+            switch (id) {
+            case 0: current_state = behavior::Behavior(behavior::frdog_turn); break;
+            case 1: current_state = behavior::Behavior(behavior::hulmet_turn); break;
+            }
         }
     }
 
     void run() {
         if(ready()) {
-            current_state = behavior::Behavior(behavior::frdog_run);
+            switch (id) {
+            case 0: current_state = behavior::Behavior(behavior::frdog_run); break;
+            case 1: current_state = behavior::Behavior(behavior::hulmet_run); break;
+            }
         }
     }
 
@@ -261,6 +305,10 @@ public:
     bool restricted() {
         return current_state.params.restrictive && !current_state.params.complete;
     }
+
+    bool complete() {
+        return current_state.params.complete;
+    }
     
     bool facing_left() {
         return facing_lr == behavior::DIR_LR::LEFT;
@@ -275,6 +323,8 @@ public:
     behavior::DIR_LR facing_lr{};
     
     behavior::Behavior current_state;
+
+    int id{};
     
 };
 

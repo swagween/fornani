@@ -19,7 +19,7 @@ StateManager::StateManager() {
 }
 
 StateManager::~StateManager() {
-    g_current_state.reset();
+    //g_current_state.reset();
 }
 
 auto StateManager::get_current_state() -> automa::GameState& {

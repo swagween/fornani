@@ -16,16 +16,25 @@
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
 #include "../../utils/Collider.hpp"
+#include "../../utils/StateFunction.hpp"
 
 namespace critter {
 
+    enum class VARIANT {
+        BEAST,
+        SOLDIER,
+        GRUB,
+        GHOST
+    };
+
 inline std::unordered_map<int, sf::Texture&> get_critter_texture {
-    {0, svc::assetLocator.get().t_frdog}
+    {0, svc::assetLocator.get().t_frdog},
+    {1, svc::assetLocator.get().t_hulmet}
 };
 
 struct CritterMetadata {
     int id{};
-    int variant{};
+    VARIANT variant{};
     bool hostile{};
     bool hurt_on_contact{};
     bool gravity{};
@@ -36,14 +45,26 @@ struct CritterStats {
     int base_hp{};
     float speed{};
     float loot_multiplier{};
-    
     int energy{};
-    
+    int vision{};
+};
+
+struct CritterCondition {
+    int hp{1};
 };
 
 struct CritterFlags {
     bool alive{};
     bool seeking{};
+    bool awake{};
+    bool awakened{};
+    bool asleep{};
+    bool turning{};
+    bool flip{};
+    bool barking{};
+    bool hurt{};
+    bool shot{};
+    bool vulnerable{};
 };
 
 struct FrameTracker {
@@ -54,19 +75,37 @@ struct FrameTracker {
 class Critter {
     
 public:
+
     Critter() = default;
     Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim) : metadata(m), stats(s), sprite_dimensions(sprite_dim), spritesheet_dimensions(spritesheet_dim), dimensions(dim) {
         collider = shape::Collider(); 
         set_sprite();
-        collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.91f, 0.91f}, 1.0f);
+        collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
+        collider.physics.maximum_velocity = sf::Vector2<float>(s.speed, s.speed*4);
+        if (m.gravity) { collider.physics.gravity = 0.03f; }
+
+        alert_range = shape::Shape( { (float)s.vision * 1.5f, (float)s.vision * 1.5f } );
+        hostile_range = shape::Shape( { (float)s.vision, (float)s.vision } );
+
+        ar.setSize( { (float)(s.vision * 1.5), (float)(s.vision * 1.5) });
+        hr.setSize( { (float)s.vision, (float)s.vision } );
+        condition.hp = s.base_hp;
     }
     ~Critter() {}
+
+    virtual void unique_update() {};
+    virtual void sprite_flip();
     
+    void init();
     void update();
     void render(sf::RenderWindow& win, sf::Vector2<float> campos);
     void set_sprite();
     void set_position(sf::Vector2<int> pos);
     void seek_current_target();
+    void wake_up();
+    void sleep();
+    void awake();
+
     
     //general critter methods, to be called dependent on critter type
 //    void stop();
@@ -84,17 +123,26 @@ public:
     
     CritterMetadata metadata{};
     CritterStats stats{};
+    CritterCondition condition{};
     CritterFlags flags{};
     
-    components::CritterBehaviorComponent behavior{};
+    behavior::Behavior behavior{};
+    behavior::DIR_LR facing_lr{};
     shape::Collider collider{};
+    shape::Shape alert_range{};
+    shape::Shape hostile_range{};
     
     sf::Vector2<int> sprite_dimensions{};
     sf::Vector2<int> spritesheet_dimensions{};
     sf::Vector2<float> dimensions{};
+    sf::Vector2<float> offset{};
+    int anim_loop_count{};
     
     sf::Sprite sprite{};
     sf::RectangleShape hurtbox{}; // for debugging
+    sf::RectangleShape ar{};
+    sf::RectangleShape hr{};
+    sf::RectangleShape hpbox{}; // for debug
     
     std::queue<int> idle_action_queue{};
     

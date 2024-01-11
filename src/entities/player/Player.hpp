@@ -11,19 +11,21 @@
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
 #include "../../weapon/Arsenal.hpp"
+#include "../../utils/BitFlags.hpp"
 #include <array>
 #include <memory>
 
-const float PLAYER_WIDTH = 16.0f;
-const float PLAYER_HEIGHT = 28.0f;
+const float PLAYER_WIDTH = 24.0f;
+const float PLAYER_HEIGHT = 24.0f;
 const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
-const float JUMPBOX_HEIGHT = 2.0f;
+const float JUMPBOX_HEIGHT = 8.0f;
 const float DETECTOR_WIDTH = 8.0f;
-const float DETECTOR_HEIGHT = 24.0f;
+const float DETECTOR_HEIGHT = 22.0f;
 const float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
 const float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
 const int JUMP_BUFFER_TIME = 12;
+const int INVINCIBILITY_TIME = 200;
 const int ANCHOR_BUFFER = 50;
 const int num_sprites{220};
 
@@ -38,15 +40,15 @@ struct PlayerStats {
 
 struct PlayerInventoryStats {
     
-    uint16_t gem_spinel{};
-    uint16_t gem_topaz{};
-    uint16_t gem_tourmaline{};
-    uint16_t gem_peridot{};
+    uint32_t gem_spinel{};
+    uint32_t gem_topaz{};
+    uint32_t gem_tourmaline{};
+    uint32_t gem_peridot{};
     
-    uint16_t flower_lavender{};
-    uint16_t flower_daffodil{};
-    uint16_t flower_hibiscus{};
-    uint16_t flower_orchid{};
+    uint32_t flower_lavender{};
+    uint32_t flower_daffodil{};
+    uint32_t flower_hibiscus{};
+    uint32_t flower_orchid{};
     
 };
 
@@ -56,40 +58,101 @@ struct PhysicsStats {
     float PLAYER_MAX_XVEL = 2.380f;
     float PLAYER_MAX_YVEL = 0.426f;
 
-    float AIR_MULTIPLIER = 2.2f;
+    float AIR_MULTIPLIER = 2.912f;
 
-    float PLAYER_GRAV = 0.33f;
+    float PLAYER_GRAV = 0.002f;
 
-    float TERMINAL_VELOCITY = 8.0f;
+    float TERMINAL_VELOCITY = 1.8f;
 
-    float PLAYER_GROUND_FRIC = 0.858f;
-    float PLAYER_VERT_AIR_FRIC = 0.912f;
-    float PLAYER_HORIZ_AIR_FRIC = 0.971f;
-    float PLAYER_MASS = 1.0f;
+    float PLAYER_GROUND_FRIC = 0.974f;
+    float PLAYER_HORIZ_AIR_FRIC = 0.990f;
+    float PLAYER_VERT_AIR_FRIC = 0.966f;
 
-    float X_ACC = 2.371f;
-    float X_ACC_AIR = 4.691f;
+    float X_ACC = 0.056f;
+    float X_ACC_AIR = 0.056f;
 
-    float JUMP_MAX = 5.825f;
-    int   JUMP_TIME = 10;
+    float JUMP_MAX = 0.304f;
     
     float WALL_SLIDE_THRESHOLD = -1.0f;
     float WALL_SLIDE_SPEED = 1.31f;
+    float PLAYER_MASS = 1.0f;
+
+    float JUMP_RELEASE_MULTIPLIER = 0.65f;
+
+    float HURT_ACC = 0.15f;
     
 };
 
-struct SoundboardFlags {
-    bool jump{};
-    bool step{};
-    bool land{};
-    bool weapon_swap{};
+struct Counters {
+    int invincibility{};
+};
+
+enum class Soundboard {
+    jump,
+    step,
+    land,
+    weapon_swap,
+    hurt,
+};
+
+enum class Jump {
+    hold, //true if jump is pressed and permanently false once released, until player touches the ground again
+    trigger, //true for one frame if jump is pressed and the player is grounded
+    can_jump, //true if the player is grounded
+    just_jumped, //used for updating animation
+    is_pressed, //true if the jump button is pressed, false if not. independent of player's state.
+    is_released, //true if jump released midair, reset upon landing
+    jumping, //true if jumpsquat is over, falce once player lands
+};
+
+enum class Movement {
+
+	move_left,
+	move_right,
+	look_up,
+	look_down,
+	left_released,
+	right_released,
+
+	stopping,
+	just_stopped,
+	suspended_trigger,
+	fall_trigger,
+	landed_trigger,
+	entered_freefall,
+	freefalling,
+    autonomous_walk,
+
+	is_wall_sliding,
+	wall_slide_trigger,
+	release_wallslide,
+};
+
+enum class Input {
+    restricted,
+    no_anim,
+    exit_request,
+    inspecting,
+    inspecting_trigger
+};
+
+enum class State {
+    alive
+};
+
+struct PlayerFlags {
+    util::BitFlags<Soundboard> sounds{};
+    util::BitFlags<Jump> jump{};
+    util::BitFlags<Movement> movement{};
+    util::BitFlags<Input> input{};
+    util::BitFlags<State> state{};
 };
 
 class Player {
 public:
-    
+
+    using Clock = std::chrono::steady_clock;
     using Time = std::chrono::duration<float>;
-    
     Player();
     
     //member functions
@@ -98,14 +161,38 @@ public:
     void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
     void assign_texture(sf::Texture& tex);
     void update_animation();
+    void update_sprite();
+    void flash_sprite();
+    void calculate_sprite_offset();
     
     void update_behavior();
     void set_position(sf::Vector2<float> new_pos);
     void update_direction();
     void update_weapon_direction();
+    void walk();
+    void autonomous_walk();
+
+    void restrict_inputs();
+    void unrestrict_inputs();
+    void restrict_animation();
+    void no_move();
+
+    bool grounded();
+    bool moving();
+    bool moving_at_all();
     
     //firing
     sf::Vector2<float> get_fire_point();
+
+    //level events
+    void make_invincible();
+    void update_invincibility();
+    bool is_invincible();
+    void kill();
+    void start_over();
+
+    //map helpers
+    behavior::DIR_LR entered_from();
     
     //sound
     void play_sounds();
@@ -116,7 +203,6 @@ public:
     shape::Collider collider{ {PLAYER_WIDTH, PLAYER_HEIGHT}, {PLAYER_START_X, PLAYER_START_Y} };
     components::PlayerBehaviorComponent behavior{};
     behavior::DIR last_dir{};
-    PhysicsStats stats{};
     arms::Arsenal loadout{};
     std::vector<arms::WEAPON_TYPE> weapons_hotbar{};
     int current_weapon{};
@@ -124,49 +210,36 @@ public:
     sf::Vector2<float> apparent_position{};
     sf::Vector2<float> anchor_point{};
     sf::Vector2<float> hand_position{};
+    sf::Vector2<float> sprite_offset{};
     
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
+    PhysicsStats stats{};
+    PlayerFlags flags{};
     
+    Counters counters{};
+
+    //fixed animation time step variables
+    Time dt{ 0.001f };
+    Clock::time_point current_time = Clock::now();
+    Time accumulator{ 0.0f };
+
     //sprites
     sf::Sprite sprite{};
     
-    SoundboardFlags soundboard_flags{};
-    
-    bool move_left{};
-    bool move_right{};
-    bool look_up{};
-    bool look_down{};
-    
     bool grav = true;
 
-    bool grounded = false;
-    bool jump_hold = false;
-    bool jump_trigger = false;
-    bool can_jump{};
-    bool just_jumped{};
-    bool is_jump_pressed{};
-    bool stopping{};
-    bool left_released{};
-    bool right_released{};
-    bool is_wall_sliding{};
-    int jump_request{};
     
-    bool suspended_trigger{};
-    bool fall_trigger{};
-    bool landed_trigger{};
-    bool wall_slide_trigger{};
-    bool release_wallslide{};
-    bool entered_freefall{};
-    bool freefalling{};
-    bool sprite_flip{};
+    int jump_request{};
+
+    bool just_hurt{};
     
     bool weapon_fired{};
     bool start_cooldown{};
-    
+
+    bool sprite_flip{};
+
     int wall_slide_ctr{0};
-    
-    int jump_height_counter{};
     
 };
  /* Player_hpp */

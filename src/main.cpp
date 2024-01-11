@@ -9,6 +9,7 @@
 //all services and providers included first
 #include "setup/ServiceLocator.hpp"
 #include "automa/StateManager.hpp"
+#include "setup/EnumLookups.hpp"
 #include "utils/Grid.hpp"
 #include "utils/Shape.hpp"
 
@@ -20,6 +21,7 @@ namespace {
 
 auto SM = automa::StateManager{};
 auto window = sf::RenderWindow();
+auto minimap = sf::View();
 
 const int NUM_TIMESTEPS = 64;
 int TIME_STEP_MILLI = 0;
@@ -36,7 +38,7 @@ float FPS = 0.0;
 
 int shake_counter = 0;
 
-sf::Vector2<uint16_t> win_size{};
+sf::Vector2<uint32_t> win_size{};
 float height_ratio{};
 float width_ratio{};
 
@@ -70,8 +72,8 @@ static void show_overlay() {
                 window.RenderTarget::setActive();
             }
             ImGui::Separator();
-            ImGui::Text("Screen Dimensions X: %u", screen_dimensions.x);
-            ImGui::Text("Screen Dimensions Y: %u", screen_dimensions.y);
+            ImGui::Text("Screen Dimensions X: %u", cam::screen_dimensions.x);
+            ImGui::Text("Screen Dimensions Y: %u", cam::screen_dimensions.y);
             if (ImGui::IsMousePosValid()) {
                 ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
             } else {
@@ -86,12 +88,13 @@ static void show_overlay() {
                     ImGui::Text("Time");
                     ImGui::TextUnformatted(std::to_string(time_markers[frame % NUM_TIMESTEPS]).c_str());
                     ImGui::Text("Timer Elapsed Time: %.5f", svc::clockLocator.get().elapsed_time.count());
-                    ImGui::Text("Main Time (seconds): %.1f", seconds);
                     ImGui::Text("Timer Time (seconds): %.1f", svc::clockLocator.get().seconds);
-                    ImGui::Text("FPS: %.3f", FPS);
-                    ImGui::SliderInt("Time Step (in milliseconds)", &TIME_STEP_MILLI, 0, 60);
+                    ImGui::Text("Time Step (milliseconds): %.1f", svc::clockLocator.get().dt.count());
+                    ImGui::Text("Accumulator: %.1f", svc::clockLocator.get().accumulator);
+                    ImGui::Text("FPS: %.1f", svc::clockLocator.get().FPS);
 
-                    ImGui::SliderFloat("Tick Rate: ", &svc::clockLocator.get().tick_rate, 0.002, 0.01);
+                    ImGui::SliderFloat("Tick Rate: ", &svc::clockLocator.get().rate, 0.00050f, 0.0080f, "%.8f");
+                    if (ImGui::Button("Reset")) { svc::clockLocator.get().rate = 0.001; }
                     ImGui::Separator();
                     ImGui::EndTabItem();
                     ImGui::PlotHistogram("Frame Times", time_markers, NUM_TIMESTEPS, 0, NULL, 0.0f, 0.02f, ImVec2(0, 80.0f));
@@ -112,69 +115,76 @@ static void show_overlay() {
 //                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
 //                    if(!svc::playerLocator.get().collider.bounding_box.vertices.empty()) {
                     //                        ImGui::Text("Player collider.bounding_box Pos: (%.1f,%.1f)", svc::playerLocator.get().collider.bounding_box.vertices.at(0).x, svc::playerLocator.get().collider.bounding_box.vertices.at(0).y);
-                    //                    }
-                    ImGui::Text("Player Behavior: ");
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted(svc::playerLocator.get().behavior.current_state.params.behavior_id.c_str());
-                    ImGui::Text("Behavior Restricted: ");
-                    ImGui::SameLine();
-                    if(svc::playerLocator.get().behavior.restricted()) {
-                        ImGui::TextUnformatted("Yes");
-                    } else {
-                        ImGui::TextUnformatted("No");
-                    }
+                    //             
+                ImGui::Text("Alive? %s", svc::playerLocator.get().flags.state.test(State::alive) ? "Yes" : "No");
+                    ImGui::Text("Player Behavior: %s", svc::playerLocator.get().behavior.current_state.params.behavior_id);
+                    ImGui::Text("Behavior Restricted? %s", svc::playerLocator.get().behavior.restricted() ? "Yes" : "No");
+                    ImGui::Text("Behavior Current Frame: %i", svc::playerLocator.get().behavior.current_state.params.current_frame);
+                    ImGui::Text("Behavior Complete? %s", svc::playerLocator.get().behavior.current_state.params.complete ? "Yes" : "No");
+                    ImGui::Text("Behavior No Loop? %s", svc::playerLocator.get().behavior.current_state.params.no_loop ? "Yes" : "No");
+                    ImGui::Text("Invincibility Counter: %i", svc::playerLocator.get().counters.invincibility);
+                    ImGui::Text("Spike Trigger: %s", svc::playerLocator.get().collider.spike_trigger ? "True" : "False");
+                    ImGui::Text("On Ramp: %s", svc::playerLocator.get().collider.on_ramp() ? "True" : "False");
+
+                    ImGui::Text("Inspecting? %s", svc::playerLocator.get().flags.input.test(Input::inspecting) ? "Yes" : "No");
+
                     ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
                     ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
                     ImGui::Text("Colliding with Level: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().collider.is_colliding_with_level) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if(svc::playerLocator.get().collider.flags.test(shape::State::is_colliding_with_level)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Grounded: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().grounded) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    ImGui::Text("Jump Request: %i", svc::playerLocator.get().jump_request);
-                    if(svc::playerLocator.get().is_jump_pressed) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-                    if(svc::playerLocator.get().jump_hold) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-//                    ImGui::Text("Is Wall Sliding: ");
-//                    ImGui::SameLine();
-//                    if(svc::playerLocator.get().is_wall_sliding) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-//                    ImGui::Text("Wall Slide Trigger: ");
-//                    ImGui::SameLine();
-//                    if(svc::playerLocator.get().wall_slide_trigger) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
-//                    ImGui::Text("Anim Frame: ");
-//                    ImGui::SameLine();
+                    if(svc::playerLocator.get().grounded()) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Jump Request : %i", svc::playerLocator.get().jump_request);
+                    ImGui::Text("Jump Pressed : %s", svc::playerLocator.get().flags.jump.test(Jump::is_pressed) ? "Yes" : "No");
+                    ImGui::Text("Jump Hold    : %s", svc::playerLocator.get().flags.jump.test(Jump::hold) ? "Yes" : "No");
+                    ImGui::Text("Jump Released: %s", svc::playerLocator.get().flags.jump.test(Jump::is_released) ? "Yes" : "No");
+                    ImGui::Text("Jumping      : %s", svc::playerLocator.get().flags.jump.test(Jump::jumping) ? "Yes" : "No");
                     ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.params.lookup_value);
-//                    ImGui::Text("Real Frame: ");
-//                    ImGui::SameLine();
-//                    ImGui::TextUnformatted(std::to_string(svc::playerLocator.get().behavior.current_state.get()->params.anim_frame).c_str());
                     ImGui::Text("Has Right Collision: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().collider.has_right_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if(svc::playerLocator.get().collider.flags.test(shape::State::has_right_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     ImGui::Text("Has Left Collision: ");
                     ImGui::SameLine();
-                    if(svc::playerLocator.get().collider.has_left_collision) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if (svc::playerLocator.get().collider.flags.test(shape::State::has_left_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    if (svc::playerLocator.get().collider.flags.test(shape::State::is_any_jump_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
                     ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
                     
-                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().stats.PLAYER_GRAV, 0.0f, 32.0f);
+                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().stats.PLAYER_GRAV, 0.000f, 0.008f);
                     ImGui::SliderFloat("PLAYER MASS",               &svc::playerLocator.get().stats.PLAYER_MASS, 0.1f, 2.0f);
                     ImGui::SliderFloat("AIR MANEUVERABILITY",       &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
-                    ImGui::SliderFloat("TERMINAL VELOCITY",         &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 32.0f);
+                    ImGui::SliderFloat("TERMINAL VELOCITY",         &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 8.0f);
 
                     ImGui::Text("Friction Multipliers");
-                    ImGui::SliderFloat("GROUND FRICTION",           &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.0f, 1.0f);
-                    ImGui::SliderFloat("HORIZONTAL AIR FRICTION",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.8f, 1.0f);
-                    ImGui::SliderFloat("VERTICAL AIR FRICTION",     &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.8f, 1.0f);
+                    ImGui::SliderFloat("GROUND FRICTION",           &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.900f, 1.000f);
+                    ImGui::SliderFloat("HORIZONTAL AIR FRICTION",   &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.900f, 1.000f);
+                    ImGui::SliderFloat("VERTICAL AIR FRICTION",     &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.900f, 1.000f);
                     ImGui::NewLine();
 
-                    ImGui::SliderFloat("GROUND SPEED",              &svc::playerLocator.get().stats.X_ACC, 0.0f, 5.0f);
-                    ImGui::SliderFloat("AIR SPEED",                 &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 5.0f);
-                    ImGui::SliderFloat("JUMP HEIGHT",               &svc::playerLocator.get().stats.JUMP_MAX, 0.0f, 10.0f);
-                    ImGui::SliderInt("JUMP TIME",                   &svc::playerLocator.get().stats.JUMP_TIME, 0, 50);
+                    ImGui::SliderFloat("GROUND SPEED",              &svc::playerLocator.get().stats.X_ACC, 0.0f, 0.2f);
+                    ImGui::SliderFloat("AIR SPEED",                 &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 0.2f);
+                    ImGui::SliderFloat("JUMP HEIGHT",               &svc::playerLocator.get().stats.JUMP_MAX, 0.15f, 0.5f);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Weapon"))
                 {
+					if (ImGui::Button("Toggle Weapons")) {
+                        if (svc::playerLocator.get().weapons_hotbar.empty()) {
+                            svc::playerLocator.get().weapons_hotbar = {
+                                arms::WEAPON_TYPE::BRYNS_GUN,
+                                arms::WEAPON_TYPE::PLASMER,
+                                arms::WEAPON_TYPE::CLOVER
+                            };
+                            svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
+                        } else {
+                            svc::playerLocator.get().weapons_hotbar.clear();
+                        }
+					}
+                    
                     ImGui::Separator();
                     ImGui::Text("Equipped Weapon: ");
                     ImGui::SameLine();
@@ -202,9 +212,11 @@ static void show_overlay() {
                     ImGui::EndTabItem();
                     
                 }
-                if (ImGui::BeginTabItem("Camera"))
+                if (ImGui::BeginTabItem("General"))
                 {
                     ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().physics.position.x, svc::cameraLocator.get().physics.position.y);
+                    ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
+
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Resources"))
@@ -234,23 +246,83 @@ static void show_overlay() {
                         
                         svc::playerLocator.get().set_position({100, 160});
                     }
+                    if (ImGui::Button("Base")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/BASE_LIVING_01");
+
+                        svc::playerLocator.get().set_position({ 25 * 32, 10 * 32 });
+                    }
+                    if (ImGui::Button("Base Lab")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/BASE_LAB_01");
+
+                        svc::playerLocator.get().set_position({ 28 * 32, 8 * 32 });
+                    }
+                    if (ImGui::Button("Skycorps")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SKYCORPS_ANTECHAMBER_01");
+
+                        svc::playerLocator.get().set_position({ 28 * 32, 8 * 32 });
+                    }
+                    if (ImGui::Button("Sky")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SKY_CHAMBER_01");
+                        svc::playerLocator.get().set_position({ 7 * 32, 16 * 32 });
+                    }
                     if(ImGui::Button("Shadow")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SHADOW_PLAT_01");
-                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SHADOW_DOJO_01");
+                        svc::playerLocator.get().set_position({ 4 * 32, 11 * 32 });
                     }
-                    if(ImGui::Button("Hoarder")) {
+                    if (ImGui::Button("Stone")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/HOARDER_DEADEND_01");
-                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/STONE_CORRIDOR_01");
+                        svc::playerLocator.get().set_position({ 10 * 32, 16 * 32 });
+                    }
+                    if (ImGui::Button("Overturned")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/OVERTURNED_DOJO_01");
+                        svc::playerLocator.get().set_position({ 4 * 32, 11 * 32 });
+                    }
+                    if(ImGui::Button("Cargo")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CARGO_01");
+                    }
+                    if (ImGui::Button("Shaft")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_SHAFT_01");
+                        svc::playerLocator.get().set_position({ 3 * 32, 8 * 32 });
+                    }
+                    if (ImGui::Button("Atrium")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_ATRIUM_01");
+                    }
+                    if (ImGui::Button("Hangar")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_HANGAR_01");
+                        svc::playerLocator.get().set_position({ 3080, 790 });
+                    }
+                    if (ImGui::Button("Corridor 3")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CORRIDOR_03");
+                        svc::playerLocator.get().set_position({ 2327, 360 });
                     }
                     if(ImGui::Button("Lab")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
-                        svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                     }
                     if(ImGui::Button("Toxic")) {
                         svc::assetLocator.get().click.play();
@@ -306,47 +378,38 @@ void run(char** argv) {
     //state manager
     SM.set_current_state(std::make_unique<automa::GameState>());
     
-    window.create(sf::VideoMode(screen_dimensions.x, screen_dimensions.y), "For Nani (beta v1.0)");
+    window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "For Nani (beta v1.0)");
     
     bool debug_mode = false;
-    //init clock
     
     //some SFML variables for drawing a basic window + background
     window.setVerticalSyncEnabled(true);
+    //window.setFramerateLimit(20);
     window.setKeyRepeatEnabled(false);
     
     ImGui::SFML::Init(window);
     window.requestFocus();
     
+    //lookups
+    lookup::populate_lookup();
     
     sf::RectangleShape background{};
-    background.setSize(static_cast<sf::Vector2<float> >(screen_dimensions));
+    background.setSize(static_cast<sf::Vector2<float> >(cam::screen_dimensions));
     background.setPosition(0, 0);
     background.setFillColor(sf::Color(10, 10, 20));
 
-    width_ratio = (float)screen_dimensions.x / (float)screen_dimensions.y;
-    height_ratio = (float)screen_dimensions.y / (float)screen_dimensions.x;
+    width_ratio = (float)cam::screen_dimensions.x / (float)cam::screen_dimensions.y;
+    height_ratio = (float)cam::screen_dimensions.y / (float)cam::screen_dimensions.x;
     
     
     //game loop
     sf::Clock deltaClock{};
-    auto current_time = Clock::now();
     
     while (window.isOpen()) {
+
         svc::clockLocator.get().tick();
-        time_step = Time{std::chrono::milliseconds(TIME_STEP_MILLI)};
-        frame++;
-        auto new_time = Clock::now();
-        auto frame_time = Time{new_time - current_time};
-        current_time = new_time;
-        elapsed_time += frame_time;
-        elapsed_marker = elapsed_time;
-        time_markers[frame%NUM_TIMESTEPS] = frame_time.count();
-        seconds += elapsed_time.count();
-        FPS_counter++;
         win_size.x = window.getSize().x;
         win_size.y = window.getSize().y;
-        
         
         //SFML event variable
         auto event = sf::Event{};
@@ -367,19 +430,32 @@ void run(char** argv) {
                     window.setSize(sf::Vector2u{win_size.x, win_size.y});
                     break;
                 case sf::Event::KeyPressed:
-                    if(event.key.code == sf::Keyboard::Escape) {
-                        return;
+					if (event.key.code == sf::Keyboard::Escape) {
+						return;
+					}
+					if (event.key.code == sf::Keyboard::D) {
+						debug_mode = !debug_mode;
+						svc::assetLocator.get().click.play();
+					}
+                    if (event.key.code == sf::Keyboard::K) {
+                        svc::playerLocator.get().kill();
                     }
-                    if(event.key.code == sf::Keyboard::D) {
-                        debug_mode = !debug_mode;
-                        svc::assetLocator.get().click.play();
+                    if (event.key.code == sf::Keyboard::T) {
+                        svc::consoleLocator.get().begin();
+                        svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
                     }
                     if (event.key.code == sf::Keyboard::Q) {
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_ARENA_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_PRISON_01");
+                        svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
+                        svc::assetLocator.get().dusken_cove.setVolume(svc::assetLocator.get().music_vol);
+                        //svc::assetLocator.get().dusken_cove.play();
+                        svc::assetLocator.get().dusken_cove.setLoop(true);
+                        svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani);
+
                     }
                     break;
                 default:
@@ -390,12 +466,15 @@ void run(char** argv) {
         
         //game logic and rendering
         
-        if(elapsed_time.count() > time_step.count()) {
-            SM.get_current_state().logic(elapsed_time);
-            FPS = FPS_counter / seconds;
-            elapsed_time = Time::zero();
+        SM.get_current_state().logic();
+        SM.get_current_state().debug_mode = debug_mode;
+
+        //switch states
+        if (svc::stateControllerLocator.get().trigger) {
+            SM.set_current_state(std::make_unique<flstates::Dojo>());
+            SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/" + svc::stateControllerLocator.get().next_state);
+            svc::stateControllerLocator.get().trigger = false;
         }
-        
         
             
         ImGui::SFML::Update(window, deltaClock.restart());

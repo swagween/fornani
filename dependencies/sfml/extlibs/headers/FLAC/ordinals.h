@@ -61,7 +61,7 @@ typedef uint8_t FLAC__uint8;
 typedef int16_t FLAC__int16;
 typedef int32_t FLAC__int32;
 typedef int64_t FLAC__int64;
-typedef uint16_t FLAC__uint16;
+typedef uint32_t FLAC__uint16;
 typedef uint32_t FLAC__uint32;
 typedef uint64_t FLAC__uint64;
 

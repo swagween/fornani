@@ -66,14 +66,14 @@ constexpr inline ProjectileAnimation default_anim{1, 1, 8};
 constexpr inline ProjectileAnimation clover_anim{5, 4, 4};
 
 /* ProjectileStats(int dmg, int lfs, float spd, float var, float stn, float kbk, bool per, int lifespan_var) */
-constexpr inline ProjectileStats bryns_gun_stats{    4 , 18, 12.0, 0.1, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats plasmer_stats{      5 , 12, 16.0, 0.0, 0.0, 0.0, false, false, 0};
+constexpr inline ProjectileStats bryns_gun_stats{    4 , 18, 4.0, 0.1, 0.0, 0.0, false, false, 0};
+constexpr inline ProjectileStats plasmer_stats{      5 , 12, 8.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats wasp_stats{         6 , 24, 8.0 , 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats blizzard_stats{     8 , 30, 20.0, 0.0, 1.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats bismuth_stats{      8 , 24, 12.0, 0.2, 0.0, 0.0, false, true , 0};
 constexpr inline ProjectileStats underdog_stats{     6 , 42, 24.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats electron_stats{     9 , 33, 16.0, 0.0, 1.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats clover_stats{       4 , 44, 7.0 , 0.5, 0.0, 0.0, false, false, 4};
+constexpr inline ProjectileStats clover_stats{       4 , 44, 1.5 , 0.1, 0.0, 0.0, false, false, 4};
 constexpr inline ProjectileStats triton_stats{       10, 36, 4.0 , 0.0, 0.0, 0.0, true , false, 0};
 constexpr inline ProjectileStats willet_585_stats{   9 , 24, 24.0, 0.0, 0.0, 3.0, false, false, 0};
 constexpr inline ProjectileStats quasar_stats{       16, 36, 8.0 , 0.0, 0.0, 0.0, false, true , 0};
@@ -88,7 +88,7 @@ constexpr inline ProjectileStats tomahawk_stats{     1 , 20, 2.0 , 0.0, 0.0, 0.0
 
 /* WeaponAttributes(bool aut, bool bmr, int rat, int cldn, float recl) */
 constexpr inline WeaponAttributes bryns_gun_attributes{  false, false, 4 , 1,  0.0f};
-constexpr inline WeaponAttributes plasmer_attributes{    false, false, 3 , 2 , 1.0f};
+constexpr inline WeaponAttributes plasmer_attributes{    false, false, 3 , 2 , 0.1f};
 constexpr inline WeaponAttributes wasp_attributes{       false, false, 4 , 1 , 0.0f};
 constexpr inline WeaponAttributes blizzard_attributes{   false, false, 2 , 3 , 0.0f};
 constexpr inline WeaponAttributes bismuth_attributes{    false, false, 3 , 2 , 2.0f};
@@ -123,9 +123,9 @@ struct EmitterStats {
     int particle_lifespan{};
     int particle_lifespan_variance{};
 };*/
-constexpr inline vfx::ElementBehavior heavy_gun_spray{0.8, 2.0, 4.0, 1.5, 0.8, 0.85, 0.2, 0.87, 0.87};
-constexpr inline vfx::ElementBehavior light_gun_spray{0.8, 0.0, 3.0, 1.5, 1.4, 0.0, 0.2, 0.92, 0.92};
-constexpr inline vfx::ElementBehavior bubble_spray{0.4, 0.0, 1.3, 1.5, 3.4, -0.1, 0.15, 0.92, 0.92};
+constexpr inline vfx::ElementBehavior heavy_gun_spray{2, 1, 1.0, 0.8, 0.8, 0.005, 0.001, 0.99, 0.99};
+constexpr inline vfx::ElementBehavior light_gun_spray{2, 3, 1.9, 0.8, 0.4, 0.0, 0.0, 0.99, 0.99};
+constexpr inline vfx::ElementBehavior bubble_spray{1, 0, 1.3, 1.5, 3.4, -0.01, 0.001, 0.92, 0.92};
 constexpr inline vfx::EmitterStats burst{6, 0, 40, 30};
 
 class Weapon {

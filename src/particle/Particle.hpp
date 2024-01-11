@@ -14,12 +14,13 @@ namespace vfx {
 
 using Time = std::chrono::duration<float>;
 const int default_lifespan = 50;
+const float default_dim = 2.f;
 
 class Particle {
 public:
     
     Particle() = default;
-    Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric) : physics(p), init_force(f), force_variance(v), angle_range(a) {
+    Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric, float sz = 3.0f) : physics(p), init_force(f), force_variance(v), angle_range(a), size(sz) {
         physics.friction = fric;
         float randx{};
         float randy{};
@@ -43,13 +44,13 @@ public:
         }
         physics.velocity.x = randx*init_force;
         physics.velocity.y = randy*init_force;
-//        physics.apply_force({randx*init_force, randy*init_force});
     }
     void update(float initial_force, float grav, float grav_variance) {
         float var = r.random_range_float(-grav_variance, grav_variance);
         physics.acceleration.y = grav + var;
         physics.update_dampen();
-        bounding_box.update(physics.position.x, physics.position.y, 2, 2);
+        bounding_box.dimensions = sf::Vector2<float>(default_dim, default_dim);
+        bounding_box.set_position(physics.position);
         --lifespan;
     }
     components::PhysicsComponent physics{};
@@ -57,7 +58,8 @@ public:
     float init_force{};
     float force_variance{};
     float angle_range{};
-    Shape bounding_box{};
+    float size{};
+    shape::Shape bounding_box{};
     util::Random r{};
 };
 

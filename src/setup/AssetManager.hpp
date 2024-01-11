@@ -29,6 +29,7 @@ public:
     
     void importTextures() {
         t_nani.loadFromFile(resource_path + "/image/character/nani.png");
+        t_nani_unarmed.loadFromFile(resource_path + "/image/character/nani_unarmed.png");
         t_nani_dark.loadFromFile(resource_path + "/image/character/nani_dark.png");
         t_nani_red.loadFromFile(resource_path + "/image/character/nani_red.png");
         
@@ -36,9 +37,11 @@ public:
         t_ui_test.loadFromFile(resource_path + "/image/gui/ui_test.png");
         
         t_frdog.loadFromFile(resource_path + "/image/critter/frdog.png");
+        t_hulmet.loadFromFile(resource_path + "/image/critter/hulmet.png");
         
         t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
         t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
+        t_ui.loadFromFile(resource_path + "/image/gui/ui.png");
         
         //guns and bullets!
         t_bryns_gun.loadFromFile(resource_path + "/image/weapon/bryns_gun.png");
@@ -60,6 +63,9 @@ public:
         t_bg_rosyhaze.loadFromFile(resource_path + "/image/background/rosyhaze.png");
         t_bg_slime.loadFromFile(resource_path + "/image/background/slime.png");
         t_bg_dirt.loadFromFile(resource_path + "/image/background/dirt.png");
+
+        t_large_animators.loadFromFile(resource_path + "/image/animators/large_animators_01.png");
+        t_small_animators.loadFromFile(resource_path + "/image/animators/small_animators_01.png");
         
         //load all the other textures...
         
@@ -179,15 +185,24 @@ public:
         pop_mid.setBuffer(pop_mid_buffer);
         jump_buffer.loadFromFile(resource_path + "/audio/sfx/jump.wav");
         jump.setBuffer(jump_buffer);
+        shatter_buffer.loadFromFile(resource_path + "/audio/sfx/shatter.wav");
+        shatter.setBuffer(shatter_buffer);
         step_buffer.loadFromFile(resource_path + "/audio/sfx/steps.wav");
         step.setBuffer(step_buffer);
         landed_buffer.loadFromFile(resource_path + "/audio/sfx/landed.wav");
-        landed.setBuffer(step_buffer);
+        landed.setBuffer(landed_buffer);
+        hurt_buffer.loadFromFile(resource_path + "/audio/sfx/hurt.wav");
+        hurt.setBuffer(hurt_buffer);
+        player_death_buffer.loadFromFile(resource_path + "/audio/sfx/player_death.wav");
+        player_death.setBuffer(player_death_buffer);
+        enem_hit_buffer.loadFromFile(resource_path + "/audio/sfx/enemy_hit.wav");
+        enem_hit.setBuffer(enem_hit_buffer);
         
         brown_noise.openFromFile(resource_path + "/audio/songs/brown_noise.wav");
         clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");
         abandoned.openFromFile(resource_path + "/audio/songs/abandoned.wav");
         three_pipes.openFromFile(resource_path + "/audio/songs/three_pipes.wav");
+        dusken_cove.openFromFile(resource_path + "/audio/songs/dusken_cove.wav");
     }
     
     void setResourcePath(char** argv) {
@@ -213,6 +228,7 @@ public:
     
     //player and NPCs!
     sf::Texture t_nani{};
+    sf::Texture t_nani_unarmed{};
     sf::Texture t_nani_dark{};
     sf::Texture t_nani_red{};
     
@@ -224,12 +240,14 @@ public:
     
     //critters and bosses!
     sf::Texture t_frdog{};
+    sf::Texture t_hulmet{};
     
     //gui
     sf::Texture t_hud{};
     sf::Texture t_hud2x{};
     sf::Sprite sp_hud{};
     sf::Sprite sp_hud2x{};
+    sf::Texture t_ui{};
     
     sf::Texture t_hud_elements{};
     std::vector<sf::Sprite> sp_hud_elements{};
@@ -239,6 +257,9 @@ public:
     
     //tiles!
     std::vector<sf::Texture> tilesets{};
+
+    sf::Texture t_large_animators{};
+    sf::Texture t_small_animators{};
     
     //load scrollingbackground sheets
     sf::Texture t_bg_opensky{};
@@ -295,16 +316,25 @@ public:
     
     sf::SoundBuffer jump_buffer{};
     sf::Sound jump;
+    sf::SoundBuffer shatter_buffer{};
+    sf::Sound shatter;
     sf::SoundBuffer step_buffer{};
     sf::Sound step;
     sf::SoundBuffer landed_buffer{};
     sf::Sound landed;
+    sf::SoundBuffer hurt_buffer{};
+    sf::Sound hurt;
+    sf::SoundBuffer player_death_buffer{};
+    sf::Sound player_death;
+    sf::SoundBuffer enem_hit_buffer{};
+    sf::Sound enem_hit;
     
     //songs!
     sf::Music brown_noise{};
     sf::Music clay_statue{};
     sf::Music abandoned{};
     sf::Music three_pipes{};
+    sf::Music dusken_cove{};
     
     //other members
     int music_vol{24};

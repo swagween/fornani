@@ -24,22 +24,37 @@ target_sources(${PROJECT_NAME} PRIVATE
 	utils/Collider.cpp
 	utils/Camera.hpp
 	utils/StateMachine.hpp
+    utils/StateFunction.hpp
 	utils/AdjacencyList.hpp
 	utils/Random.hpp
     utils/Clock.hpp
+    utils/BitFlags.hpp
 	setup/AssetManager.hpp
 	setup/ServiceLocator.hpp
     setup/LookupTables.hpp
     setup/EnumLookups.hpp
+    setup/MapLookups.hpp
 	entities/player/Player.hpp
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp
+    entities/behavior/Behavior.cpp
     entities/behavior/EntityBehavior.hpp
     entities/critter/Critter.hpp
     entities/critter/Critter.cpp
     entities/critter/CritterTables.hpp
     entities/critter/CritterActions.cpp
     entities/critter/Bestiary.hpp
+    entities/critter/critters/Hulmet.hpp
+    entities/critter/critters/Hulmet.cpp
+    entities/critter/critters/Frdog.hpp
+    entities/critter/critters/Frdog.cpp
+    entities/critter/Bestiary.hpp
+    entities/world/Portal.hpp
+    entities/world/Portal.cpp
+    entities/world/Inspectable.hpp
+    entities/world/Inspectable.cpp
+    entities/world/Animator.hpp
+    entities/world/Animator.cpp
 	weapon/Weapon.hpp
 	weapon/Arsenal.hpp
 	weapon/Projectile.hpp
@@ -49,11 +64,16 @@ target_sources(${PROJECT_NAME} PRIVATE
 	automa/GameState.cpp
 	automa/StateManager.hpp
 	automa/StateManager.cpp
+    automa/StateController.hpp
     gui/HUD.hpp
+    gui/Console.hpp
+    gui/Console.cpp
 	service/Service.hpp
     graphics/FLColor.hpp
     graphics/Background.hpp
     graphics/Background.cpp
+    graphics/Transition.hpp
+    graphics/Transition.cpp
 
 )
 

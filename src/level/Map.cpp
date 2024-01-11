@@ -7,6 +7,7 @@
 //
 
 #include "Map.hpp"
+#include "../setup/EnumLookups.hpp"
 #include "../setup/ServiceLocator.hpp"
 
 namespace world {
@@ -57,13 +58,11 @@ void Map::load(const std::string& path) {
         input.open(path + "/map_tiles_" + std::to_string(counter) + ".txt");
         for(auto& cell : layer.grid.cells) {
             input >> value;
-            squid::TILE_TYPE typ = squid::lookup_type(value);
+            lookup::TILE_TYPE typ = lookup::tile_lookup.at(value);
             cell.value = value;
             cell.type = typ;
             
             input.ignore(); //ignore the delimiter
-            input.ignore();
-            input.ignore();
         }
         layer.grid.update();
         layer.grid.init_shape_vertices();
@@ -71,74 +70,162 @@ void Map::load(const std::string& path) {
         input.close();
         ++counter;
     }
+
+    //get portal data
+    input.open(path + "/map_portals.txt");
+    if (input.is_open()) {
+        while (!input.eof()) {
+            entity::Portal p{};
+            input >> p.scaled_dimensions.x; input.ignore();
+            input >> p.scaled_dimensions.y; input.ignore();
+            input >> value; p.activate_on_contact = (bool)value; input.ignore();
+            input >> p.source_map_id; input.ignore();
+            input >> p.destination_map_id; input.ignore();
+            input >> p.scaled_position.x; input.ignore();
+            input >> p.scaled_position.y; input.ignore();
+            p.update();
+            if (p.dimensions.x != 0) { //only push if one was read, otherwise we reached the end of the file
+                portals.push_back(p);
+                portals.back().update();
+            }
+        }
+        input.close();
+    }
+
+    //get inspectable data
+    input.open(path + "/map_inspectables.txt");
+    if (input.is_open()) {
+        while (!input.eof()) {
+            entity::Inspectable p{};
+            input >> p.scaled_dimensions.x; input.ignore();
+            input >> p.scaled_dimensions.y; input.ignore();
+            input >> value; p.activate_on_contact = (bool)value; input.ignore(); input.ignore();
+            std::getline(input, p.message, '#');
+            input >> p.scaled_position.x; input.ignore();
+            input >> p.scaled_position.y; input.ignore();
+            p.update();
+            if (p.dimensions.x != 0) { //only push if one was read, otherwise we reached the end of the file
+                inspectables.push_back(p);
+                inspectables.back().update();
+            }
+        }
+        input.close();
+    }
+
+    //get animator data
+    input.open(path + "/map_animators.txt");
+    if (input.is_open()) {
+        while (!input.eof()) {
+            entity::Animator p{};
+            input >> p.scaled_dimensions.x; input.ignore();
+            input >> p.scaled_dimensions.y; input.ignore();
+            input >> value; p.id = value; input.ignore();
+            input >> value; p.automatic = (bool)value; input.ignore();
+            input >> value; p.foreground = (bool)value; input.ignore();
+            input >> p.scaled_position.x; input.ignore();
+            input >> p.scaled_position.y; input.ignore();
+            if (p.scaled_dimensions.x != 0) { //only push if one was read, otherwise we reached the end of the file
+                uint32_t large_dim = 16;
+                p.dimensions = static_cast<Vec>(p.scaled_dimensions * large_dim);
+                p.bounding_box = shape::Shape(p.dimensions);
+                animators.push_back(p);
+            }
+        }
+        input.close();
+    }
+
+    for(int i = 0; i < 4; ++i) {
+        critters.push_back(&bestiary.get_critter_at(i));
+        critters.back()->set_position({ i*4 * 32, 11 * 32 });
+        critters.back()->collider.physics.zero();
+    }
+
+    critters.push_back(&bestiary.get_critter_at(17));
+    critters.back()->set_position({ 15 * 32, 11 * 32 });
+    critters.back()->collider.physics.zero();
+
+    for(auto& critter : critters) {
+
+        colliders.push_back(&critter->collider);
     
-    critters.push_back(bestiary.get_critter_at(0));
-    critters.back().set_position({104, 464});
-    critters.back().collider.physics.zero();
+    }
+    colliders.push_back(&svc::playerLocator.get().collider);
+
+    transition.fade_in = true;
+    svc::playerLocator.get().unrestrict_inputs();
+    minimap = sf::View(sf::FloatRect(0.0f, 0.0f, cam::screen_dimensions.x * 2, cam::screen_dimensions.y * 2));
+    minimap.setViewport(sf::FloatRect(0.0f, 0.75f, 0.2f, 0.2f));
     
 }
 
 void Map::update() {
+
+    svc::consoleLocator.get().update();
+
     background->update();
-    svc::playerLocator.get().collider.is_any_jump_colllision = false;
-    svc::playerLocator.get().collider.is_any_colllision = false;
-    svc::playerLocator.get().collider.left_aabb_counter = 0;
-    svc::playerLocator.get().collider.right_aabb_counter = 0;
-    
-    manage_projectiles();
-    auto barrier = 3.0f;
-    //someday, I will have a for(auto& entity : entities) loop and the player will be included in that
-    for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-        cell.collision_check = false;
-        if(abs(cell.bounding_box.shape_x - svc::playerLocator.get().collider.bounding_box.shape_x) > PLAYER_WIDTH*barrier ||
-           abs(cell.bounding_box.shape_y - svc::playerLocator.get().collider.bounding_box.shape_y) > PLAYER_HEIGHT*barrier) {
-            continue;
-        } else {
-            cell.collision_check = true;
-            
-            if(cell.value > 0) {
-                svc::playerLocator.get().collider.handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
-            }
-        }
+    svc::playerLocator.get().collider.reset();
+    for (auto& critter : critters) {
+        critter->collider.reset();
     }
 
-    for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-        for (auto& critter : critters) {
-            if (abs(cell.bounding_box.shape_x - critter.collider.bounding_box.shape_x) > critter.dimensions.x * barrier ||
-                abs(cell.bounding_box.shape_y - critter.collider.bounding_box.shape_y) > critter.dimensions.y * barrier) {
+    manage_projectiles();
+    auto barrier = 3.0f;
+
+    //someday, I will have a for(auto& entity : entities) loop and the player will be included in that
+
+    for(auto& collider : colliders) {
+        for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+            cell.collision_check = false;
+            if (abs(cell.bounding_box.position.x - collider->bounding_box.position.x) > collider->dimensions.x * barrier ||
+                abs(cell.bounding_box.position.y - collider->bounding_box.position.y) > collider->dimensions.y * (barrier - 1)) {
                 continue;
             }
             else {
                 cell.collision_check = true;
                 if (cell.value > 0) {
-                    critter.collider.handle_map_collision(cell.bounding_box, cell.type == squid::TILE_RAMP);
+                    collider->handle_map_collision(cell.bounding_box, cell.type);
                 }
             }
+            
         }
     }
+
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& proj : active_projectiles) {
-            if(abs(cell.bounding_box.shape_x - proj.bounding_box.shape_x) > PLAYER_WIDTH * barrier ||
-               abs(cell.bounding_box.shape_y - proj.bounding_box.shape_y) > PLAYER_HEIGHT * barrier) {
+            if(abs(cell.bounding_box.position.x - proj.bounding_box.position.x) > PLAYER_WIDTH * barrier ||
+               abs(cell.bounding_box.position.y - proj.bounding_box.position.y) > PLAYER_HEIGHT * barrier) {
                 continue;
             } else {
                 cell.collision_check = true;
                 if(proj.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
+                    if(cell.type == lookup::TILE_TYPE::TILE_BREAKABLE) {
+                        --cell.value;
+                        if (lookup::tile_lookup.at(cell.value) != lookup::TILE_TYPE::TILE_BREAKABLE) {
+                            cell.value = 0;
+                            active_emitters.push_back(breakable_debris);
+                            active_emitters.back().get_physics().acceleration += proj.physics.acceleration;
+                            active_emitters.back().set_position(cell.position.x + CELL_SIZE / 2, cell.position.y + CELL_SIZE / 2);
+                            active_emitters.back().set_direction(proj.physics.dir);
+                            active_emitters.back().update();
+                            svc::assetLocator.get().shatter.play();
+                        }
+                    }
                     proj.destroy();
                 }
             }
         }
     }
+
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& emitter : active_emitters) {
             for(auto& particle : emitter.get_particles()) {
-                if(abs(cell.bounding_box.shape_x - particle.bounding_box.shape_x) > PLAYER_WIDTH * barrier ||
-                   abs(cell.bounding_box.shape_y - particle.bounding_box.shape_y) > PLAYER_HEIGHT * barrier) {
+                if(abs(cell.bounding_box.position.x - particle.bounding_box.position.x) > PLAYER_WIDTH * barrier ||
+                   abs(cell.bounding_box.position.y - particle.bounding_box.position.y) > PLAYER_HEIGHT * barrier) {
                     continue;
                 } else {
                     cell.collision_check = true;
                     if(particle.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
-                        Shape::Vec mtv = particle.bounding_box.testCollisionGetMTV(particle.bounding_box, cell.bounding_box);
+                        shape::Shape::Vec mtv = particle.bounding_box.testCollisionGetMTV(particle.bounding_box, cell.bounding_box);
                         sf::operator+=(particle.physics.position, mtv);
                         particle.physics.acceleration.y *= -1.0f;
                         particle.physics.acceleration.x *= -1.0f;
@@ -153,46 +240,102 @@ void Map::update() {
             }
         }
     }
+
+    for (auto& proj : active_projectiles) {
+        for (auto& critter : critters) {
+            if (proj.bounding_box.SAT(critter->collider.bounding_box)) {
+                proj.destroy();
+                critter->flags.shot = true;
+                if (critter->flags.vulnerable) {
+                    critter->flags.hurt = true;
+                    critter->condition.hp -= proj.stats.damage;
+                }
+            }
+        }
+    }
     
     for(auto& critter : critters) {
-        critter.random_walk(sf::Vector2<int>(120, 180));
-        //critter.current_target = svc::playerLocator.get().collider.physics.position;
-        //critter.seek_current_target();
-        //critter.behavior.facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter.collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
-        critter.update();
-        
-        critter.random_idle_action();
-        while(!critter.idle_action_queue.empty()) {
-            critter.behavior.bark();
-            critter.idle_action_queue.pop();
+
+        critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
+        //critter->random_walk(sf::Vector2<int>(120, 180));
+        if (svc::playerLocator.get().collider.bounding_box.SAT(critter->hostile_range)) {
+            critter->current_target = svc::playerLocator.get().collider.physics.position;
+            critter->awake();
+        } else if (svc::playerLocator.get().collider.bounding_box.SAT(critter->alert_range)) {
+            critter->wake_up();
+        } else {
+            critter->sleep();
         }
-        
+
     }
-    //update player flags
-    if(svc::playerLocator.get().collider.left_aabb_counter == 0) {
-        svc::playerLocator.get().collider.has_left_collision = false;
+
+    for(auto& collider : colliders) {
+        collider->reset_ground_flags();
     }
-    if(svc::playerLocator.get().collider.right_aabb_counter == 0) {
-        svc::playerLocator.get().collider.has_right_collision = false;
+
+
+    for (auto& portal : portals) {
+        portal.update();
+        portal.handle_activation(room_id, transition.fade_out, transition.done);
     }
-    if(svc::playerLocator.get().collider.is_any_jump_colllision) {
-        svc::playerLocator.get().grounded = true;
-    } else {
-        svc::playerLocator.get().grounded = false;
+
+    for (auto& inspectable : inspectables) {
+        if (svc::playerLocator.get().flags.input.test(Input::inspecting) && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+            inspectable.activated = true;
+            svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
+            svc::playerLocator.get().restrict_inputs();
+        }
+        if(inspectable.activated && svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
+            svc::consoleLocator.get().begin();
+            if(svc::playerLocator.get().flags.input.test(Input::exit_request)) {
+                inspectable.activated = false;
+                svc::consoleLocator.get().end();
+            }
+        }
     }
-    if(svc::playerLocator.get().collider.is_any_colllision) {
-        svc::playerLocator.get().collider.is_colliding_with_level = true;
-    } else {
-        svc::playerLocator.get().collider.is_colliding_with_level = false;
+
+    for (auto& animator : animators) {
+        if (animator.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box) && svc::playerLocator.get().moving_at_all()) {
+            animator.anim.on();
+            animator.activated = true;
+        } else {
+            animator.activated = false;
+        }
+        animator.update();
     }
-    
+
+    //check if player died
+    if(!svc::playerLocator.get().flags.state.test(State::alive) && !game_over) {
+        active_emitters.push_back(player_death);
+        active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
+        active_emitters.back().set_position(svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
+        active_emitters.back().set_direction(components::DIRECTION::DOWN);
+        active_emitters.back().update();
+        svc::assetLocator.get().player_death.play();
+        game_over = true;
+    }
+
+    if(game_over) {
+        transition.fade_out = true;
+        if (transition.done) {
+            svc::playerLocator.get().start_over();
+            svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101); //temporary. later, we will load the last save
+            svc::stateControllerLocator.get().trigger = true;
+            svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
+        }
+    }
+
+    if (svc::clockLocator.get().every_x_frames(1)) {
+        transition.update();
+    }
+
 }
 
 void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
     for(auto& proj : active_projectiles) {
         sf::Sprite proj_sprite;
         int curr_frame = proj.sprite_id + proj.anim.num_sprites*proj.anim_frame;
-        svc::assetLocator.get().sp_clover_projectile.at(curr_frame).setPosition( {proj.bounding_box.shape_x - cam.x, proj.bounding_box.shape_y - cam.y - proj.bounding_box.shape_h/2} );
+        svc::assetLocator.get().sp_clover_projectile.at(curr_frame).setPosition( {proj.bounding_box.position.x - cam.x, proj.bounding_box.position.y - cam.y - proj.bounding_box.dimensions.y/2} );
         arms::Weapon& curr_weapon = lookup::type_to_weapon.at(proj.type);
         std::vector<sf::Sprite>& curr_proj_sprites = lookup::projectile_sprites.at(curr_weapon.type);
         
@@ -201,7 +344,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
             win.draw(svc::assetLocator.get().sp_clover_projectile.at(curr_frame));
         } else if(!curr_proj_sprites.empty()) {
             proj_sprite = curr_proj_sprites.at(arms::ProjDirLookup.at(proj.dir));
-            proj_sprite.setPosition({proj.bounding_box.shape_x - cam.x, proj.bounding_box.shape_y - cam.y - proj.bounding_box.shape_h/2} );
+            proj_sprite.setPosition({proj.bounding_box.position.x - cam.x, proj.bounding_box.position.y - cam.y - proj.bounding_box.dimensions.y/2} );
             win.draw(proj_sprite);
         }
     }
@@ -210,47 +353,113 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
         for(auto& particle : emitter.get_particles()) {
             sf::RectangleShape dot{};
             dot.setFillColor(emitter.color);
-            dot.setSize({3.0f, 3.0f});
-            dot.setPosition(particle.physics.position.x - cam.x, particle.physics.position.y - cam.y);
+            dot.setSize({particle.size, particle.size});
+            dot.setPosition(particle.physics.position.x - cam.x - particle.size, particle.physics.position.y - cam.y - particle.size);
             win.draw(dot);
         }
     }
     
     for(auto& critter : critters) {
-        critter.render(win, cam);
+        critter->render(win, cam);
+    }
+
+    for (auto& animator : animators) {
+        if (!animator.foreground) { animator.render(win, cam); }
     }
     
     for(auto& layer : layers) {
         if(layer.render_order >= 4) {
             for(auto& cell : layer.grid.cells) {
                 if(cell.value > 0) {
-                    int cell_x = cell.bounding_box.shape_x - cam.x;
-                    int cell_y = cell.bounding_box.shape_y - cam.y;
+                    int cell_x = cell.bounding_box.position.x - cam.x;
+                    int cell_y = cell.bounding_box.position.y - cam.y;
                     tileset.at(cell.value).setPosition(cell_x, cell_y);
                     win.draw(tileset.at(cell.value));
-                    if(cell.collision_check) {
+                    if(cell.collision_check && debug_mode) {
                         sf::RectangleShape box{};
-                        box.setPosition(cell.position.x - cam.x, cell.position.y - cam.y);
+                        box.setPosition(cell.bounding_box.vertices[0].x - cam.x, cell.bounding_box.vertices[0].y - cam.y);
                         box.setFillColor(sf::Color{100, 100, 130, 80});
-                        box.setOutlineColor(sf::Color(235, 232, 249, 180));
-                        box.setOutlineThickness(-2);
-                        box.setSize(sf::Vector2<float>{(float)cell.bounding_box.shape_w, (float)cell.bounding_box.shape_h});
-//                        win.draw(box);
+                        box.setOutlineColor(sf::Color(235, 232, 249, 140));
+                        box.setOutlineThickness(-1);
+                        box.setSize(sf::Vector2<float>{(float)cell.bounding_box.dimensions.x, (float)cell.bounding_box.dimensions.y});
+                        //win.draw(box);
                     }
                 }
             }
         }
     }
+
+    if (real_dimensions.y < cam::screen_dimensions.y) {
+        float ydiff = (cam::screen_dimensions.y - real_dimensions.y) / 2;
+        borderbox.setFillColor(flcolor::black);
+        borderbox.setSize({ (float)cam::screen_dimensions.x, ydiff });
+        borderbox.setPosition(0.0f, 0.0f);
+        win.draw(borderbox);
+        borderbox.setPosition(0.0f, real_dimensions.y + ydiff);
+        win.draw(borderbox);
+    }
+    if (real_dimensions.x < cam::screen_dimensions.x) {
+        float xdiff = (cam::screen_dimensions.x - real_dimensions.x) / 2;
+        borderbox.setFillColor(flcolor::black);
+        borderbox.setSize({ xdiff, (float)cam::screen_dimensions.y });
+        borderbox.setPosition(0.0f, 0.0f);
+        win.draw(borderbox);
+        borderbox.setPosition(real_dimensions.x + xdiff, 0.0f);
+        win.draw(borderbox);
+    }
+
+    for (auto& portal : portals) {
+        portal.render(win, cam);
+    }
+    for (auto& inspectable : inspectables) {
+        inspectable.render(win, cam); //for debug
+    }
+    for(auto& animator : animators) {
+        if (animator.foreground) { animator.render(win, cam); }
+    }
+
+    if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
+        svc::consoleLocator.get().render(win);
+        for (auto& inspectable : inspectables) {
+            if (inspectable.activated) {
+                svc::consoleLocator.get().write(win, inspectable.message);
+                //svc::consoleLocator.get().write(win, "ab?:-_()#`");
+            }
+        }
+    }
+
+    //render minimap
+    if (show_minimap) {
+        win.setView(minimap);
+        for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+            minimap_tile.setPosition(cell.position.x - cam.x, cell.position.y - cam.y);
+            minimap_tile.setSize(sf::Vector2<float>{(float)cell.bounding_box.dimensions.x, (float)cell.bounding_box.dimensions.y});
+            if (cell.value > 0) {
+                minimap_tile.setFillColor(sf::Color{20, 240, 20, 120});
+                win.draw(minimap_tile);
+            }
+            else {
+                minimap_tile.setFillColor(sf::Color{ 20, 20, 20, 120 });
+                win.draw(minimap_tile);
+            }
+        }
+        minimap_tile.setPosition(svc::playerLocator.get().collider.physics.position.x - cam.x, svc::playerLocator.get().collider.physics.position.y - cam.y);
+        minimap_tile.setFillColor(sf::Color{ 240, 240, 240, 180 });
+        win.draw(minimap_tile);
+        win.setView(sf::View(sf::FloatRect{ 0.f, 0.f, (float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y }));
+    }
+
 }
 
 void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
     background->render(win, cam, real_dimensions);
+    if (real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(real_dimensions); }
     for(auto& layer : layers) {
         if(layer.render_order < 4) {
             for(auto& cell : layer.grid.cells) {
                 if(cell.value > 0) {
-                    int cell_x = cell.bounding_box.shape_x - cam.x;
-                    int cell_y = cell.bounding_box.shape_y - cam.y;
+                    int cell_x = cell.bounding_box.position.x - cam.x;
+                    int cell_y = cell.bounding_box.position.y - cam.y;
                     tileset.at(cell.value).setPosition(cell_x, cell_y);
                     win.draw(tileset.at(cell.value));
                 }
@@ -269,7 +478,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
         active_projectiles.back().update();
         
         active_emitters.push_back(svc::playerLocator.get().loadout.get_equipped_weapon().spray);
-        active_emitters.back().get_physics().acceleration = svc::playerLocator.get().collider.physics.acceleration;
+        active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
         active_emitters.back().set_position(pos.x, pos.y);
         active_emitters.back().set_direction(svc::playerLocator.get().collider.physics.dir);
         active_emitters.back().update();
@@ -281,7 +490,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
             svc::assetLocator.get().bg_shot.play();
         } else {
             util::Random r{};
-            float randp = r.random_range_float(-0.3, 0.3);
+            float randp = r.random_range_float(-0.3f, 0.3f);
             svc::assetLocator.get().pop_mid.setPitch(1 + randp);
             svc::assetLocator.get().pop_mid.play();
         }
@@ -299,23 +508,35 @@ void Map::manage_projectiles() {
     
     std::erase_if(active_projectiles,   [](auto const& p) { return p.stats.lifespan < 0;    });
     std::erase_if(active_emitters, [](auto const& p) { return p.particles.empty();          });
+    std::erase_if(critters, [](auto const& c) { return c->condition.hp <= 0;                 });
     
-    if(svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
-        spawn_projectile_at(svc::playerLocator.get().get_fire_point());
+    if (!svc::playerLocator.get().weapons_hotbar.empty()) {
+        if (svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
+            spawn_projectile_at(svc::playerLocator.get().get_fire_point());
+        }
     }
 }
 
-squid::Tile* Map::tile_at(const uint8_t i, const uint8_t j) {
+sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
+    for (auto& portal : portals) {
+        if (portal.source_map_id == portal_source_map_id) {
+            return(portal.position);
+        }
+    }
+    return Vec(300.f, 390.f);
+}
+
+squid::Tile& Map::tile_at(const uint8_t i, const uint8_t j) {
     //for checking tile value
     if(i * j < layers.at(MIDDLEGROUND).grid.cells.size()) {
-        return &layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x);
+        return layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x);
     }
 }
 
-Shape* Map::shape_at(const uint8_t i, const uint8_t j) {
+shape::Shape& Map::shape_at(const uint8_t i, const uint8_t j) {
     //for testing collision
     if(i * j < layers.at(MIDDLEGROUND).grid.cells.size()) {
-        return &layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x).bounding_box;
+        return layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x).bounding_box;
     }
 }
 

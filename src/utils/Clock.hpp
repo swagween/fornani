@@ -13,8 +13,6 @@
 
 namespace util {
 
-const int ms_delay{0};
-
 class Clock {
     
 public:
@@ -33,11 +31,13 @@ public:
         elapsed_time += frame_time;
         seconds += elapsed_time.count();
         
-        if(elapsed_time.count() > time_step.count()) {
+        if(elapsed_time.count() > dt.count()) {
             elapsed_time = Time::zero();
         }
 
-        
+        FPS = static_cast<float>(frame) / accumulator;
+
+        tick_rate = Time(rate);
 
         ++frame;
     }
@@ -55,22 +55,21 @@ public:
     }
     
     int seconds_int() { return static_cast<int>(std::floor(seconds)); }
-    float tick_constant() { return dt * (tick_multiplier / dt); }
     
     Time elapsed_time{};
     Tpt current_time = Clk::now();
     float seconds{0.0f};
-    Time time_step{std::chrono::milliseconds(ms_delay)};
     int frame{0};
 
-    double t{ 0.0 };
-    double dt{ 0.01 };
-    double accumulator{ 0.0 };
+    Time dt{ 0.001f };
+    float accumulator{ 0.0f };
 
-    float tick_rate{ 0.005 };
-    float tick_multiplier{ 0.25 };
-    float frame_limit{ 0.02 };
-    
+    Time tick_rate{ 0.001f };
+    const float tick_multiplier{ 0.25f };
+    const float frame_limit{ 0.032f };
+
+    float FPS{ 60.0f }; //assume 60 to begin with
+    float rate{ 0.001f };
     
 }; // End Clock
 
