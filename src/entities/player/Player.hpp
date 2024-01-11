@@ -71,7 +71,8 @@ struct PhysicsStats {
     float X_ACC = 0.056f;
     float X_ACC_AIR = 0.056f;
 
-    float JUMP_MAX = 0.304f;
+    //float JUMP_MAX = 0.304f; //3 blocks
+    float JUMP_MAX = 0.338f; //4 blocks
     
     float WALL_SLIDE_THRESHOLD = -1.0f;
     float WALL_SLIDE_SPEED = 1.31f;

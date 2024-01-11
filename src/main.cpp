@@ -5,6 +5,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
 //all services and providers included first
 #include "setup/ServiceLocator.hpp"
@@ -22,6 +24,8 @@ namespace {
 auto SM = automa::StateManager{};
 auto window = sf::RenderWindow();
 auto minimap = sf::View();
+
+sf::Texture screencap{};
 
 const int NUM_TIMESTEPS = 64;
 int TIME_STEP_MILLI = 0;
@@ -42,6 +46,21 @@ sf::Vector2<uint32_t> win_size{};
 float height_ratio{};
 float width_ratio{};
 
+
+
+void save_screenshot() {
+
+    const std::time_t now = std::time(nullptr);
+
+    std::string filedate = std::asctime(std::localtime(&now));
+    std::erase_if(filedate, [](auto const& c) { return c == ':' || isspace(c); });
+    std::string filename = "screenshot_" + filedate + ".png";
+
+    if (screencap.copyToImage().saveToFile(filename)) {
+        std::cout << "screenshot saved to " << filename << std::endl;
+    }
+
+}
 
 
 static void show_overlay() {
@@ -216,6 +235,11 @@ static void show_overlay() {
                 {
                     ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().physics.position.x, svc::cameraLocator.get().physics.position.y);
                     ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
+                    if(ImGui::Button("Save Screenshot")) {
+
+                        save_screenshot();
+
+                    }
 
                     ImGui::EndTabItem();
                 }
@@ -379,6 +403,8 @@ void run(char** argv) {
     SM.set_current_state(std::make_unique<automa::GameState>());
     
     window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "For Nani (beta v1.0)");
+
+    screencap.create(window.getSize().x, window.getSize().y);
     
     bool debug_mode = false;
     
@@ -457,6 +483,9 @@ void run(char** argv) {
                         svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani);
 
                     }
+                    if (event.key.code == sf::Keyboard::P) {
+                        save_screenshot();
+                    }
                     break;
                 default:
                     break;
@@ -478,6 +507,7 @@ void run(char** argv) {
         
             
         ImGui::SFML::Update(window, deltaClock.restart());
+        screencap.update(window);
         
         //ImGui stuff
         if(debug_mode) {
@@ -495,6 +525,7 @@ void run(char** argv) {
     }
     
 }
+
 
 } //end namespace
 
