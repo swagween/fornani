@@ -27,6 +27,33 @@ public:
     
 };
 
+class SimpleBehaviorComponent {
+public:
+
+    SimpleBehaviorComponent() { current_state = behavior::Behavior(behavior::simple_off); }
+
+    void update() {
+        if (current_state.params.complete && current_state.params.no_loop) {
+            off();
+        }
+    }
+    void on() {
+        if (ready()) {
+            current_state = behavior::Behavior(behavior::simple_on);
+        }
+    }
+    void off() {
+        current_state = behavior::Behavior(behavior::simple_off);
+    }
+    bool ready() {
+        return !current_state.params.transitional || current_state.params.complete;
+    }
+
+    int get_frame() { return current_state.get_frame(); }
+
+    behavior::Behavior current_state;
+};
+
 class PlayerBehaviorComponent {
 public:
 

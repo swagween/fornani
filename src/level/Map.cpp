@@ -112,6 +112,25 @@ void Map::load(const std::string& path) {
         input.close();
     }
 
+    //get animator data
+    input.open(path + "/map_animators.txt");
+    if (input.is_open()) {
+        while (!input.eof()) {
+            entity::Animator p{};
+            input >> p.scaled_dimensions.x; input.ignore();
+            input >> p.scaled_dimensions.y; input.ignore();
+            input >> value; p.id = value; input.ignore();
+            input >> value; p.automatic = (bool)value; input.ignore();
+            input >> value; p.foreground = (bool)value; input.ignore();
+            input >> p.scaled_position.x; input.ignore();
+            input >> p.scaled_position.y; input.ignore();
+            if (p.scaled_dimensions.x != 0) { //only push if one was read, otherwise we reached the end of the file
+                animators.push_back(p);
+            }
+        }
+        input.close();
+    }
+
     for(int i = 0; i < 4; ++i) {
         critters.push_back(&bestiary.get_critter_at(i));
         critters.back()->set_position({ i*4 * 32, 11 * 32 });
@@ -272,6 +291,13 @@ void Map::update() {
         }
     }
 
+    for (auto& animator : animators) {
+        if (svc::playerLocator.get().collider.bounding_box.SAT(animator.bounding_box)) {
+            animator.anim.on();
+        }
+        animator.update();
+    }
+
     //check if player died
     if(!svc::playerLocator.get().flags.state.test(State::alive) && !game_over) {
         active_emitters.push_back(player_death);
@@ -377,6 +403,9 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
     }
     for (auto& inspectable : inspectables) {
         inspectable.render(win, cam); //for debug
+    }
+    for(auto& animator : animators) {
+        animator.render(win, cam);
     }
 
     if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {

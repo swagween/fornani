@@ -21,6 +21,7 @@
 #include "../entities/critter/Bestiary.hpp"
 #include "../entities/world/Portal.hpp"
 #include "../entities/world/Inspectable.hpp"
+#include "../entities/world/Animator.hpp"
 
 const int NUM_LAYERS{8};
 const int CHUNK_SIZE{16};
@@ -95,6 +96,7 @@ public:
     std::vector<critter::Critter*> critters{};
     std::vector<entity::Portal> portals{};
     std::vector<entity::Inspectable> inspectables{};
+    std::vector<entity::Animator> animators{};
     
     std::unique_ptr<bg::Background> background{};
     flfx::Transition transition{255};

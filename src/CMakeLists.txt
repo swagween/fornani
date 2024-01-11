@@ -53,6 +53,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     entities/world/Portal.cpp
     entities/world/Inspectable.hpp
     entities/world/Inspectable.cpp
+    entities/world/Animator.hpp
+    entities/world/Animator.cpp
 	weapon/Weapon.hpp
 	weapon/Arsenal.hpp
 	weapon/Projectile.hpp

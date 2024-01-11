@@ -63,6 +63,9 @@ public:
         t_bg_rosyhaze.loadFromFile(resource_path + "/image/background/rosyhaze.png");
         t_bg_slime.loadFromFile(resource_path + "/image/background/slime.png");
         t_bg_dirt.loadFromFile(resource_path + "/image/background/dirt.png");
+
+        t_large_animators.loadFromFile(resource_path + "/image/animators/large_animators_01.png");
+        t_small_animators.loadFromFile(resource_path + "/image/animators/small_animators_01.png");
         
         //load all the other textures...
         
@@ -254,6 +257,9 @@ public:
     
     //tiles!
     std::vector<sf::Texture> tilesets{};
+
+    sf::Texture t_large_animators{};
+    sf::Texture t_small_animators{};
     
     //load scrollingbackground sheets
     sf::Texture t_bg_opensky{};
