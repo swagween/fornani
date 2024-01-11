@@ -65,7 +65,7 @@ inline BehaviorParameters hulmet_hurt =     BehaviorParameters("hulmet_hurt", 4,
 inline BehaviorParameters hulmet_dying =    BehaviorParameters("hulmet_dying", 1, 12, false, false, false, 11);
 inline BehaviorParameters hulmet_turn =     BehaviorParameters("hulmet_turn", 1, 12, true, true, true, 13);
 
-inline BehaviorParameters simple_on =       BehaviorParameters("simple_on", 5, 8, false, false, true, 0);
+inline BehaviorParameters simple_on =       BehaviorParameters("simple_on", 5, 12, true, false, true, 0);
 inline BehaviorParameters simple_off =      BehaviorParameters("simple_off", 1, 8, false, false, false, 0);
 
 

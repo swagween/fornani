@@ -125,6 +125,9 @@ void Map::load(const std::string& path) {
             input >> p.scaled_position.x; input.ignore();
             input >> p.scaled_position.y; input.ignore();
             if (p.scaled_dimensions.x != 0) { //only push if one was read, otherwise we reached the end of the file
+                uint32_t large_dim = 16;
+                p.dimensions = static_cast<Vec>(p.scaled_dimensions * large_dim);
+                p.bounding_box = shape::Shape(p.dimensions);
                 animators.push_back(p);
             }
         }
@@ -292,8 +295,11 @@ void Map::update() {
     }
 
     for (auto& animator : animators) {
-        if (svc::playerLocator.get().collider.bounding_box.SAT(animator.bounding_box)) {
+        if (animator.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box) && svc::playerLocator.get().moving_at_all()) {
             animator.anim.on();
+            animator.activated = true;
+        } else {
+            animator.activated = false;
         }
         animator.update();
     }
@@ -356,6 +362,10 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
     for(auto& critter : critters) {
         critter->render(win, cam);
     }
+
+    for (auto& animator : animators) {
+        if (!animator.foreground) { animator.render(win, cam); }
+    }
     
     for(auto& layer : layers) {
         if(layer.render_order >= 4) {
@@ -405,7 +415,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
         inspectable.render(win, cam); //for debug
     }
     for(auto& animator : animators) {
-        animator.render(win, cam);
+        if (animator.foreground) { animator.render(win, cam); }
     }
 
     if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {

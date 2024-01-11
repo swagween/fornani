@@ -8,11 +8,13 @@
 
 #include "../../utils/Shape.hpp"
 #include "../../components/BehaviorComponent.hpp"
+#include "../../utils/StateFunction.hpp"
 #include <string>
 
 namespace entity {
 
 	const uint32_t A_UNIT_SIZE = 32;
+	const sf::Vector2<uint32_t> large_animator_offset{ 16, 16 };
 
 	class Animator {
 
@@ -39,6 +41,7 @@ namespace entity {
 		shape::Shape bounding_box{};
 		sf::Sprite sprite{};
 		components::SimpleBehaviorComponent anim{};
+		behavior::Behavior behavior{};
 
 		int id{};
 		bool activated{};

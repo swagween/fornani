@@ -11,8 +11,9 @@ namespace entity {
 	void Animator::update() {
 		sprite.setTexture(svc::assetLocator.get().t_large_animators);
 		position = static_cast<Vec>(scaled_position * A_UNIT_SIZE);
+		Vec adjusted_pos = Vec(scaled_position.x * entity::A_UNIT_SIZE + entity::large_animator_offset.x, scaled_position.y * entity::A_UNIT_SIZE + entity::large_animator_offset.y);
 		dimensions = static_cast<Vec>(scaled_dimensions * A_UNIT_SIZE);
-		bounding_box.set_position(position);
+		bounding_box.set_position(adjusted_pos);
 
 		bool large = scaled_dimensions.x == 2;
 		int converted_id = large ? id - 100 : id - 200;
@@ -28,8 +29,20 @@ namespace entity {
 		sprite.setTextureRect(sf::IntRect({ u, v }, { sprite_dimensions.x, sprite_dimensions.y }));
 	}
 	void Animator::render(sf::RenderWindow& win, Vec campos) {
-		sprite.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
+		sprite.setPosition(position.x - campos.x, position.y - campos.y);
 		win.draw(sprite);
+		sf::RectangleShape box{};
+		if (activated) {
+			box.setFillColor(sf::Color{ 80, 180, 120, 100 });
+		}
+		else {
+			box.setFillColor(sf::Color{ 180, 120, 80, 100 });
+		}
+		box.setOutlineColor(sf::Color::White);
+		box.setOutlineThickness(-1);
+		box.setPosition(bounding_box.position - campos);
+		box.setSize(bounding_box.dimensions);
+		//win.draw(box);
 	}
 	int Animator::get_frame() {
 		return anim.get_frame();

@@ -179,6 +179,7 @@ public:
 
     bool grounded();
     bool moving();
+    bool moving_at_all();
     
     //firing
     sf::Vector2<float> get_fire_point();

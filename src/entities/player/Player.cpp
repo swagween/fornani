@@ -598,6 +598,11 @@ bool Player::moving() {
     return flags.movement.test(Movement::move_left) || flags.movement.test(Movement::move_right) || flags.movement.test(Movement::autonomous_walk);
 }
 
+bool Player::moving_at_all() {
+    return flags.movement.test(Movement::move_left) || flags.movement.test(Movement::move_right) ||
+        flags.movement.test(Movement::autonomous_walk) || flags.movement.test(Movement::freefalling) || flags.movement.test(Movement::entered_freefall);
+}
+
 sf::Vector2<float> Player::get_fire_point() {
     if(behavior.facing_strictly_left()) {
         return apparent_position + hand_position + sf::Vector2<float>{static_cast<float>(-loadout.get_equipped_weapon().sprite_dimensions.x), 0.0f} - sf::Vector2<float>{NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2};

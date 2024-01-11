@@ -246,6 +246,27 @@ static void show_overlay() {
                         
                         svc::playerLocator.get().set_position({100, 160});
                     }
+                    if (ImGui::Button("Base")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/BASE_LIVING_01");
+
+                        svc::playerLocator.get().set_position({ 25 * 32, 10 * 32 });
+                    }
+                    if (ImGui::Button("Base Lab")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/BASE_LAB_01");
+
+                        svc::playerLocator.get().set_position({ 28 * 32, 8 * 32 });
+                    }
+                    if (ImGui::Button("Skycorps")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SKYCORPS_ANTECHAMBER_01");
+
+                        svc::playerLocator.get().set_position({ 28 * 32, 8 * 32 });
+                    }
                     if (ImGui::Button("Sky")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
