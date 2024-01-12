@@ -16,23 +16,62 @@
 
 namespace gui {
 
-enum ELEMS {
-    PIPE = 0,
-    HP = 1,
-    HP_EMPTY = 2,
-    TEXT = 3
+enum HP_ELEMS {
+    HP_LIGHT = 0, HP_FILLED = 1,
+    HP_TAKEN = 2,
+    HP_GONE = 3
 };
 
-inline const sf::Vector2<int> HP_origin{36, 0};
-inline const sf::Vector2<int> ORB_origin{48, 24};
+enum COLOR_CODE {
+    WHITE = 0,
+    PERIWINKLE = 1,
+    GREEN = 2,
+    ORANGE = 3,
+    FUCSHIA = 4,
+    PURPLE = 5
+};
+
 inline const sf::Vector2<int> GUN_origin{48, 48};
-inline const int PAD{6};
+inline const int distance_from_edge{ 20 };
+inline const int PAD{4};
+inline const int HP_pad{ 2 };
+inline const int orb_pad{ 8 };
+inline const sf::Vector2<int> heart_dimensions{ 18, 18 };
+inline const sf::Vector2<int> orb_text_dimensions{ 18, 16 };
+inline const sf::Vector2<int> gun_dimensions{ 66, 18 };
+inline const sf::Vector2<int> HP_origin{ distance_from_edge, static_cast<int>(cam::screen_dimensions.y) - distance_from_edge - heart_dimensions.y};
+inline const sf::Vector2<int> ORB_origin{ distance_from_edge, HP_origin.y - PAD - orb_text_dimensions.y };
+inline const int orb_label_width{ 44 };
+inline const int orb_label_index{ 10 };
+
+const int num_heart_sprites = 4;
+const int num_orb_chars = 11;
+const int num_guns = 7; //to be changed later, obviously
+const int num_colors = 6;
 
 class HUD {
     
 public:
     
-    HUD(sf::Vector2<int> pos) : position(pos) { update(); }
+    HUD(sf::Vector2<int> pos) : position(pos) {
+        update();
+        for(int i = 0; i < num_heart_sprites; ++i) {
+            sp_hearts.at(i).setTexture(svc::assetLocator.get().t_hud_hearts);
+            sp_hearts.at(i).setTextureRect(sf::IntRect({ heart_dimensions.x * i, 0 }, heart_dimensions));
+        }
+        for (int i = 0; i < num_orb_chars; ++i) {
+            sp_orb_text.at(i).setTexture(svc::assetLocator.get().t_hud_orb_font);
+            if (i < 10) {
+                sp_orb_text.at(i).setTextureRect(sf::IntRect({ orb_text_dimensions.x * i, 0 }, orb_text_dimensions));
+            } else {
+                sp_orb_text.at(i).setTextureRect(sf::IntRect({ orb_text_dimensions.x * i, 0 }, { orb_label_width, orb_text_dimensions.y }));
+            }
+        }
+        for(int i = 0; i < num_guns; ++i) {
+            sp_guns.at(i).setTexture(svc::assetLocator.get().t_hud_gun_color);
+            sp_guns.at(i).setTextureRect(sf::IntRect({ gun_dimensions.x, i * gun_dimensions.y }, gun_dimensions));
+        }
+    }
     
     void update() {
         filled_hp_cells = svc::playerLocator.get().player_stats.health;
@@ -59,58 +98,39 @@ public:
     }
     
     void render(sf::RenderWindow& win) {
-        svc::assetLocator.get().sp_hud.setPosition(position.x, position.y);
-        win.draw(svc::assetLocator.get().sp_hud);
-        
-        //beginning pipes
-        svc::assetLocator.get().sp_hud_elements.at(PIPE).setPosition(position.x + HP_origin.x + PAD, position.y);
-        win.draw(svc::assetLocator.get().sp_hud_elements.at(PIPE));
-        svc::assetLocator.get().sp_hud_elements.at(PIPE).setPosition(position.x + ORB_origin.x + PAD, position.y + ORB_origin.y);
-        win.draw(svc::assetLocator.get().sp_hud_elements.at(PIPE));
-        svc::assetLocator.get().sp_hud_elements.at(PIPE).setPosition(position.x + GUN_origin.x + PAD, position.y + GUN_origin.y);
-        win.draw(svc::assetLocator.get().sp_hud_elements.at(PIPE));
         
         //HP
         for(int i = 0; i < total_hp_cells; ++i) {
             if(i < filled_hp_cells) {
-                svc::assetLocator.get().sp_hud_elements.at(HP).setPosition(position.x + HP_origin.x + PAD + (8 * i) + 2, position.y);
-                win.draw(svc::assetLocator.get().sp_hud_elements.at(HP));
+                if (i == 0) {
+                    sp_hearts.at(HP_FILLED).setPosition(HP_origin.x + i * heart_dimensions.x, HP_origin.y);
+                } else {
+                    sp_hearts.at(HP_FILLED).setPosition(HP_origin.x + i * heart_dimensions.x + i * HP_pad, HP_origin.y);
+                }
+                win.draw(sp_hearts.at(HP_FILLED));
             } else {
-                svc::assetLocator.get().sp_hud_elements.at(HP_EMPTY).setPosition(position.x + HP_origin.x + PAD + (8 * i) + 2, position.y);
-                win.draw(svc::assetLocator.get().sp_hud_elements.at(HP_EMPTY));
+                sp_hearts.at(HP_GONE).setPosition(HP_origin.x + i * heart_dimensions.x + i * HP_pad, HP_origin.y);
+                win.draw(sp_hearts.at(HP_GONE));
             }
         }
         
         //ORB
+        sp_orb_text.at(orb_label_index).setPosition(ORB_origin.x, ORB_origin.y);
+        win.draw(sp_orb_text.at(orb_label_index));
         digits = std::to_string(num_orbs);
         int ctr{0};
         for(auto& digit : digits) {
-            svc::assetLocator.get().sp_hud_elements.at(TEXT).setPosition(position.x + ORB_origin.x + PAD + (12 * ctr) + 2, position.y + ORB_origin.y);
-            win.draw(svc::assetLocator.get().sp_hud_elements.at(TEXT));
-            
-            svc::assetLocator.get().sp_alphabet.at(lookup::get_character.at(('0' + digit))).setPosition(position.x + ORB_origin.x + PAD + (12 * ctr) + 2, position.y + ORB_origin.y + 2);
-            win.draw(svc::assetLocator.get().sp_alphabet.at(lookup::get_character.at(('0' + digit))));
+
+            if (digit - '0' >= 0 && digit - '0' < 10) {
+                sp_orb_text.at(digit - '0').setPosition(ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), ORB_origin.y);
+                win.draw(sp_orb_text.at(digit - '0'));
+            }
             
             ctr++;
         }
-        //end pipe
-        svc::assetLocator.get().sp_hud_elements.at(PIPE).setPosition(position.x + ORB_origin.x + PAD + (12 * ctr) + 4, position.y + ORB_origin.y);
-        win.draw(svc::assetLocator.get().sp_hud_elements.at(PIPE));
         
         //GUN
-        ctr = 0;
-        for(auto& letter : gun_name) {
-            svc::assetLocator.get().sp_hud_elements.at(TEXT).setPosition(position.x + GUN_origin.x + PAD + (12 * ctr) + 2, position.y + GUN_origin.y);
-            win.draw(svc::assetLocator.get().sp_hud_elements.at(TEXT));
-            if(!std::isspace(letter)) {
-                svc::assetLocator.get().sp_alphabet.at(lookup::get_character.at(letter)).setPosition(position.x + GUN_origin.x + PAD + (12 * ctr) + 2, position.y + GUN_origin.y + 2);
-                win.draw(svc::assetLocator.get().sp_alphabet.at(lookup::get_character.at(letter)));
-            }
-            ctr++;
-        }
-        //end pipe
-        svc::assetLocator.get().sp_hud_elements.at(PIPE).setPosition(position.x + GUN_origin.x + PAD + (12 * ctr) + 4, position.y + GUN_origin.y);
-        win.draw(svc::assetLocator.get().sp_hud_elements.at(PIPE));
+        // todo
     }
     
     sf::Vector2<int> position{};
@@ -119,7 +139,12 @@ public:
     int max_orbs{};
     int num_orbs{};
     std::string_view gun_name{};
-    std::string_view digits{};
+    std::string digits{};
+
+    std::array<sf::Sprite, num_heart_sprites> sp_hearts{};
+    std::array<sf::Sprite, num_orb_chars> sp_orb_text{};
+    std::array<sf::Sprite, num_guns> sp_guns{};
+    std::array<sf::Sprite, num_colors> sp_pointer{};
     
 }; // end HUD
 

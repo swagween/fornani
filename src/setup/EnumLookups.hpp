@@ -198,6 +198,19 @@ inline std::unordered_map<char, int> get_character {
     {'`', 51}
 };
 
+inline std::unordered_map<char, int> get_orb_number{
+    {'0', 0},
+    {'1', 1},
+    {'2', 2},
+    {'3', 3},
+    {'4', 4},
+    {'5', 5},
+    {'6', 6},
+    {'7', 7},
+    {'8', 8},
+    {'9', 9}
+};
+
 
 inline std::unordered_map<CONTROLS, sf::Keyboard::Key> controls_mapping {
     {CONTROLS::JUMP, sf::Keyboard::Z},

@@ -128,13 +128,11 @@ static void show_overlay() {
                 if (ImGui::BeginTabItem("Player"))
                 {
                     ImGui::Text("Player Stats");
-//                    ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 64);
-//                    ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 64);
-//                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 999);
-//                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
-//                    if(!svc::playerLocator.get().collider.bounding_box.vertices.empty()) {
-                    //                        ImGui::Text("Player collider.bounding_box Pos: (%.1f,%.1f)", svc::playerLocator.get().collider.bounding_box.vertices.at(0).x, svc::playerLocator.get().collider.bounding_box.vertices.at(0).y);
-                    //             
+                    ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 12);
+                    ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 12);
+                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 99999);
+                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 99999);
+                                 
                 ImGui::Text("Alive? %s", svc::playerLocator.get().flags.state.test(State::alive) ? "Yes" : "No");
                     ImGui::Text("Player Behavior: %s", svc::playerLocator.get().behavior.current_state.params.behavior_id);
                     ImGui::Text("Behavior Restricted? %s", svc::playerLocator.get().behavior.restricted() ? "Yes" : "No");
@@ -454,6 +452,7 @@ void run(char** argv) {
                         win_size.y = win_size.x * height_ratio;
                     }
                     window.setSize(sf::Vector2u{win_size.x, win_size.y});
+                    screencap.create(window.getSize().x, window.getSize().y);
                     break;
                 case sf::Event::KeyPressed:
 					if (event.key.code == sf::Keyboard::Escape) {

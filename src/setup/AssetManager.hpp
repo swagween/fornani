@@ -39,9 +39,9 @@ public:
         t_frdog.loadFromFile(resource_path + "/image/critter/frdog.png");
         t_hulmet.loadFromFile(resource_path + "/image/critter/hulmet.png");
         
-        t_hud.loadFromFile(resource_path + "/image/gui/hud.png");
-        t_hud2x.loadFromFile(resource_path + "/image/gui/hud2x.png");
         t_ui.loadFromFile(resource_path + "/image/gui/ui.png");
+        t_hud_orb_font.loadFromFile(resource_path + "/image/gui/HUD_orb_font.png");
+        t_hud_hearts.loadFromFile(resource_path + "/image/gui/HUD_hearts.png");
         
         //guns and bullets!
         t_bryns_gun.loadFromFile(resource_path + "/image/weapon/bryns_gun.png");
@@ -51,7 +51,6 @@ public:
         t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer_proj.png");
         t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover_proj.png");
         
-        t_hud_elements.loadFromFile(resource_path + "/image/gui/hud_elements.png");
         t_alphabet.loadFromFile(resource_path + "/image/gui/alphabet.png");
         
         t_bg_dusk.loadFromFile(resource_path + "/image/background/dusk.png");
@@ -82,21 +81,9 @@ public:
     }
     
     void assignSprites() {
-        sp_hud.setTexture(t_hud);
-        sp_hud2x.setTexture(t_hud2x);
         
         sp_bryn_test.setTexture(t_bryn_test);
         sp_ui_test.setTexture(t_ui_test);
-        
-        //gui
-        for(int i = 0; i < 4; ++i) {
-            sp_hud_elements.push_back(sf::Sprite());
-            sp_hud_elements.back().setTexture(t_hud_elements);
-        }
-        sp_hud_elements.at(0).setTextureRect(sf::IntRect({0, 0}, {2, 18}));
-        sp_hud_elements.at(1).setTextureRect(sf::IntRect({2, 0}, {8, 18}));
-        sp_hud_elements.at(2).setTextureRect(sf::IntRect({10, 0}, {8, 18}));
-        sp_hud_elements.at(3).setTextureRect(sf::IntRect({18, 0}, {14, 18}));
         
         for(int j = 0; j < 2; ++j) {
             for(int i = 0; i < 26; ++i) {
@@ -243,14 +230,10 @@ public:
     sf::Texture t_hulmet{};
     
     //gui
-    sf::Texture t_hud{};
-    sf::Texture t_hud2x{};
-    sf::Sprite sp_hud{};
-    sf::Sprite sp_hud2x{};
     sf::Texture t_ui{};
-    
-    sf::Texture t_hud_elements{};
-    std::vector<sf::Sprite> sp_hud_elements{};
+
+    sf::Texture t_hud_orb_font{};
+    sf::Texture t_hud_hearts{};
     
     sf::Texture t_alphabet{};
     std::vector<sf::Sprite> sp_alphabet{};
