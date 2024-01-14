@@ -42,12 +42,15 @@ public:
         t_ui.loadFromFile(resource_path + "/image/gui/ui.png");
         t_hud_orb_font.loadFromFile(resource_path + "/image/gui/HUD_orb_font.png");
         t_hud_hearts.loadFromFile(resource_path + "/image/gui/HUD_hearts.png");
+        t_hud_pointer.loadFromFile(resource_path + "/image/gui/HUD_pointer.png");
+        t_hud_gun_color.loadFromFile(resource_path + "/image/gui/HUD_gun_color.png");
+        t_hud_gun_shadow.loadFromFile(resource_path + "/image/gui/HUD_gun_shadow.png");
         
         //guns and bullets!
-        t_bryns_gun.loadFromFile(resource_path + "/image/weapon/bryns_gun.png");
+        t_bryns_gun.loadFromFile(resource_path + "/image/weapon/bg.png");
         t_plasmer.loadFromFile(resource_path + "/image/weapon/plasmer.png");
         t_clover.loadFromFile(resource_path + "/image/weapon/clover.png");
-        t_bryns_gun_projectile.loadFromFile(resource_path + "/image/weapon/bryns_gun_proj.png");
+        t_bryns_gun_projectile.loadFromFile(resource_path + "/image/weapon/bg_proj.png");
         t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer_proj.png");
         t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover_proj.png");
         
@@ -120,11 +123,17 @@ public:
         sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({clov_total_w - clov_h * 2, clov_h},   {clov_h,  clov_w})));
         sp_clover.push_back(sf::Sprite(t_clover, sf::IntRect({clov_total_w - clov_h, clov_h},       {clov_h,  clov_w})));
         
-        int bg_proj_w = 22; int bg_proj_h = 12;
+        int bg_proj_h = 12;
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({ 0, 0 }, { 4, bg_proj_h })));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({ 4, 0 }, { 12, bg_proj_h })));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({ 16, 0 }, { 14, bg_proj_h })));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({ 30, 0 }, { 22, bg_proj_h })));
+
+        /*int bg_proj_w = 22; int bg_proj_h = 12;
         sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({0, 0},                        {bg_proj_w, bg_proj_h})));
         sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({0, bg_proj_h},                {bg_proj_w, bg_proj_h})));
         sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({bg_proj_w, 0},                {bg_proj_h, bg_proj_w})));
-        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({bg_proj_w + bg_proj_w, 0},    {bg_proj_h, bg_proj_w})));
+        sp_bryns_gun_projectile.push_back(sf::Sprite(t_bryns_gun_projectile, sf::IntRect({bg_proj_w + bg_proj_w, 0},    {bg_proj_h, bg_proj_w})));*/
         
         int plas_proj_w = 20; int plas_proj_h = 10;
         sp_plasmer_projectile.push_back(sf::Sprite(t_plasmer_projectile, sf::IntRect({0, 0},                            {plas_proj_w, plas_proj_h})));
@@ -234,6 +243,9 @@ public:
 
     sf::Texture t_hud_orb_font{};
     sf::Texture t_hud_hearts{};
+    sf::Texture t_hud_gun_color{};
+    sf::Texture t_hud_gun_shadow{};
+    sf::Texture t_hud_pointer{};
     
     sf::Texture t_alphabet{};
     std::vector<sf::Sprite> sp_alphabet{};

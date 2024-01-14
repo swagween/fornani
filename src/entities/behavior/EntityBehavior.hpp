@@ -26,6 +26,10 @@ enum class DIR_LR {
     LEFT, RIGHT
 };
 
+enum class DIR_UND {
+    UP, NEUTRAL, DOWN
+};
+
 /* BehaviorParameters(id, duration, framerate, transitional, restrictive, no_loop, lookup) */
 
 inline BehaviorParameters idle =            BehaviorParameters("idle", 8, 14, false, false, false, 20);

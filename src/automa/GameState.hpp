@@ -214,7 +214,7 @@ public:
             sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
             svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
 
-            if (!svc::playerLocator.get().weapons_hotbar.empty()) {
+            /*if (!svc::playerLocator.get().weapons_hotbar.empty()) {
                 arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
                 std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);
                 sf::Sprite weap_sprite;
@@ -232,7 +232,7 @@ public:
                 if (svc::playerLocator.get().flags.state.test(State::alive)) {
                     win.draw(weap_sprite);
                 }
-            }
+            }*/
         } else {
             svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
         }

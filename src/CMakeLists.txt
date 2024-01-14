@@ -38,6 +38,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	entities/player/Player.cpp
     entities/behavior/Behavior.hpp
     entities/behavior/Behavior.cpp
+    entities/behavior/Animation.hpp
+    entities/behavior/Animation.cpp
     entities/behavior/EntityBehavior.hpp
     entities/critter/Critter.hpp
     entities/critter/Critter.cpp
@@ -56,8 +58,10 @@ target_sources(${PROJECT_NAME} PRIVATE
     entities/world/Animator.hpp
     entities/world/Animator.cpp
 	weapon/Weapon.hpp
+    weapon/Weapon.cpp
 	weapon/Arsenal.hpp
 	weapon/Projectile.hpp
+	weapon/Projectile.cpp
 	level/Map.hpp
 	level/Map.cpp
 	automa/GameState.hpp

@@ -8,6 +8,7 @@
 
 #include "Player.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../../setup/LookupTables.hpp"
 
 Player::Player() {
     
@@ -309,14 +310,19 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
     sf::Vector2<float> right_scale = {1.0f, 1.0f};
     sf::Vector2<float> left_scale = {-1.0f, 1.0f};
     if(behavior.facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) {
+        //loadout.get_equipped_weapon().sp_gun.scale(-1.0f, 1.0f);
         sprite.scale(-1.0f, 1.0f);
     }
     if(behavior.facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale) {
+        //loadout.get_equipped_weapon().sp_gun.scale(-1.0f, 1.0f);
         sprite.scale(-1.0f, 1.0f);
     }
     if (flags.state.test(State::alive)) {
         win.draw(sprite);
     }
+
+    loadout.get_equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(loadout.get_equipped_weapon().type));
+    loadout.get_equipped_weapon().render(win, campos);
     
 }
 
@@ -446,36 +452,45 @@ void Player::set_position(sf::Vector2<float> new_pos) {
 
 void Player::update_direction() {
     behavior.facing = last_dir;
+    behavior.facing_und = behavior::DIR_UND::NEUTRAL;
     if(behavior.facing_right()) {
         behavior.facing = behavior::DIR::RIGHT;
         if(flags.movement.test(Movement::look_up)) {
             behavior.facing = behavior::DIR::UP_RIGHT;
+            behavior.facing_und = behavior::DIR_UND::UP;
         }
         if(flags.movement.test(Movement::look_down) && !grounded()) {
             behavior.facing = behavior::DIR::DOWN_RIGHT;
+            behavior.facing_und = behavior::DIR_UND::DOWN;
         }
     }
     if(behavior.facing_left()) {
         behavior.facing = behavior::DIR::LEFT;
         if(flags.movement.test(Movement::look_up)) {
             behavior.facing = behavior::DIR::UP_LEFT;
+            behavior.facing_und = behavior::DIR_UND::UP;
         }
         if(flags.movement.test(Movement::look_down) && !grounded()) {
             behavior.facing = behavior::DIR::DOWN_LEFT;
+            behavior.facing_und = behavior::DIR_UND::DOWN;
         }
     }
     if(!moving() && flags.movement.test(Movement::look_up)) {
         if(behavior.facing_strictly_left()) {
             behavior.facing = behavior::DIR::UP_LEFT;
+            behavior.facing_und = behavior::DIR_UND::UP;
         } else {
             behavior.facing = behavior::DIR::UP_RIGHT;
+            behavior.facing_und = behavior::DIR_UND::UP;
         }
     }
     if(!flags.movement.test(Movement::move_left) && !flags.movement.test(Movement::move_right) && flags.movement.test(Movement::look_down) && !grounded()) {
         if(behavior.facing_strictly_left()) {
             behavior.facing = behavior::DIR::DOWN_LEFT;
+            behavior.facing_und = behavior::DIR_UND::DOWN;
         } else {
             behavior.facing = behavior::DIR::DOWN_RIGHT;
+            behavior.facing_und = behavior::DIR_UND::DOWN;
         }
     }
     if (behavior.facing_left()) {
@@ -687,33 +702,15 @@ std::string Player::print_direction(bool lr) {
                 break;
         }
     }
-    switch(behavior.facing) {
-        case behavior::DIR::NEUTRAL:
+    switch(behavior.facing_und) {
+        case behavior::DIR_UND::NEUTRAL:
             return "NEUTRAL";
             break;
-        case behavior::DIR::LEFT:
-            return "LEFT";
-            break;
-        case behavior::DIR::RIGHT:
-            return "RIGHT";
-            break;
-        case behavior::DIR::UP:
+        case behavior::DIR_UND::UP:
             return "UP";
             break;
-        case behavior::DIR::DOWN:
+        case behavior::DIR_UND::DOWN:
             return "DOWN";
-            break;
-        case behavior::DIR::UP_RIGHT:
-            return "UP RIGHT";
-            break;
-        case behavior::DIR::UP_LEFT:
-            return "UP LEFT";
-            break;
-        case behavior::DIR::DOWN_RIGHT:
-            return "DOWN RIGHT";
-            break;
-        case behavior::DIR::DOWN_LEFT:
-            return "DOWN LEFT";
             break;
     }
 }

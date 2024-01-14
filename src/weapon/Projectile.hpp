@@ -11,7 +11,9 @@
 #include <memory>
 #include <list>
 #include <unordered_map>
+#include <chrono>
 #include "../components/PhysicsComponent.hpp"
+#include "../entities/behavior/Animation.hpp"
 #include "../utils/Shape.hpp"
 #include "../utils/Random.hpp"
 #include "../particle/Emitter.hpp"
@@ -70,7 +72,7 @@ struct ProjectileStats {
     
     bool persistent{};
     bool spray{};
-    
+     
     int lifespan_variance{};
     
 };
@@ -82,68 +84,20 @@ struct ProjectileAnimation {
 };
 
 class Projectile {
+
+    using Clock = std::chrono::steady_clock;
+    using Time = std::chrono::duration<float>;
     
 public:
     
-    Projectile() {
-        physics = components::PhysicsComponent();
-        physics.velocity.x = stats.speed;
-        seed();
-    };
-    Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t) : stats(s), physics(p), anim(a), type(t) {
-        physics.velocity.x = stats.speed;
-        seed();
-        set_sprite();
-    }
-    ~Projectile() {}
-    
-    void update() {
-        physics.update();
-        bounding_box.dimensions = DEFAULT_DIMENSIONS;
-        bounding_box.set_position(physics.position);
-        stats.lifespan--;
-        
-        //animation
-        if(curr_frame % anim.framerate == 0) {
-            anim_frame++;
-        }
-        if(anim_frame >= anim.num_frames) { anim_frame = 0; }
-        curr_frame++;
-    }
-    
-    void destroy() {
-        stats.lifespan = -1;
-    }
-    
-    void seed() {
-        util::Random r{};
-        stats.lifespan += r.random_range(-stats.lifespan_variance, stats.lifespan_variance);
-        float var = r.random_range_float(-stats.variance, stats.variance);
-        switch(dir) {
-            case FIRING_DIRECTION::LEFT:
-                physics.velocity = {-stats.speed + (var/2), var};
-                physics.dir = components::DIRECTION::LEFT;
-                break;
-            case FIRING_DIRECTION::RIGHT:
-                physics.velocity = {stats.speed + (var/2), var};
-                physics.dir = components::DIRECTION::RIGHT;
-                break;
-            case FIRING_DIRECTION::UP:
-                physics.velocity = {var, -stats.speed + (var/2)};
-                physics.dir = components::DIRECTION::UP;
-                break;
-            case FIRING_DIRECTION::DOWN:
-                physics.velocity = {var, stats.speed + (var/2)};
-                physics.dir = components::DIRECTION::DOWN;
-                break;
-        }
-    }
-    
-    void set_sprite() {
-        if(anim.num_sprites < 2) { sprite_id = 0; return; }
-        util::Random r{};
-        sprite_id = r.random_range(0, anim.num_sprites - 1 );
-    }
+    Projectile();
+    Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t);
+
+    void update();
+    void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+    void destroy();
+    void seed();
+    void set_sprite();
     
     FIRING_DIRECTION dir{};
     shape::Shape bounding_box{};
@@ -151,10 +105,17 @@ public:
     ProjectileStats stats{};
     ProjectileAnimation anim{};
     WEAPON_TYPE type{};
+
+    std::vector<sf::Sprite> sp_proj{};
     
     int sprite_id{};
     int curr_frame{};
     int anim_frame{};
+
+    //fixed animation time step variables
+    Time dt{ 0.001f };
+    Clock::time_point current_time = Clock::now();
+    Time accumulator{ 0.0f };
     
 }; // End Projectile
 

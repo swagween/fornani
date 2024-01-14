@@ -17,7 +17,7 @@ namespace arms {
 
 using Key = WEAPON_TYPE;
 
-inline Weapon bryns_gun  =  Weapon("bryn's gun"    , Key::BRYNS_GUN      , bryns_gun_attributes,   bryns_gun_stats );
+inline Weapon bryns_gun  =  Weapon("bryn's gun"    , Key::BRYNS_GUN      , bryns_gun_attributes,   bryns_gun_stats,  light_gun_spray, bg_anim, {18, 8});
 inline Weapon plasmer    =  Weapon("plasmer"       , Key::PLASMER        , plasmer_attributes,     plasmer_stats   , heavy_gun_spray);
 inline Weapon wasp       =  Weapon("wasp"          , Key::WASP           , wasp_attributes,        wasp_stats      );
 inline Weapon blizzard   =  Weapon("blizzard"      , Key::BLIZZARD       , blizzard_attributes,    blizzard_stats  );

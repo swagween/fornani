@@ -333,7 +333,8 @@ void Map::update() {
 
 void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
     for(auto& proj : active_projectiles) {
-        sf::Sprite proj_sprite;
+        proj.render(win, cam);
+        /*sf::Sprite proj_sprite;
         int curr_frame = proj.sprite_id + proj.anim.num_sprites*proj.anim_frame;
         svc::assetLocator.get().sp_clover_projectile.at(curr_frame).setPosition( {proj.bounding_box.position.x - cam.x, proj.bounding_box.position.y - cam.y - proj.bounding_box.dimensions.y/2} );
         arms::Weapon& curr_weapon = lookup::type_to_weapon.at(proj.type);
@@ -346,18 +347,18 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
             proj_sprite = curr_proj_sprites.at(arms::ProjDirLookup.at(proj.dir));
             proj_sprite.setPosition({proj.bounding_box.position.x - cam.x, proj.bounding_box.position.y - cam.y - proj.bounding_box.dimensions.y/2} );
             win.draw(proj_sprite);
-        }
+        }*/
     }
     
-    for(auto& emitter : active_emitters) {
-        for(auto& particle : emitter.get_particles()) {
-            sf::RectangleShape dot{};
-            dot.setFillColor(emitter.color);
-            dot.setSize({particle.size, particle.size});
-            dot.setPosition(particle.physics.position.x - cam.x - particle.size, particle.physics.position.y - cam.y - particle.size);
-            win.draw(dot);
-        }
-    }
+	for (auto& emitter : active_emitters) {
+		for (auto& particle : emitter.get_particles()) {
+			sf::RectangleShape dot{};
+			dot.setFillColor(emitter.color);
+			dot.setSize({ particle.size, particle.size });
+			dot.setPosition(particle.physics.position.x - cam.x - particle.size, particle.physics.position.y - cam.y - particle.size);
+			win.draw(dot);
+		}
+	}
     
     for(auto& critter : critters) {
         critter->render(win, cam);
@@ -512,7 +513,7 @@ void Map::manage_projectiles() {
     
     if (!svc::playerLocator.get().weapons_hotbar.empty()) {
         if (svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
-            spawn_projectile_at(svc::playerLocator.get().get_fire_point());
+            spawn_projectile_at(svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point);
         }
     }
 }
