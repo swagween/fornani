@@ -78,6 +78,27 @@ namespace lookup {
 		{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().sp_bryns_gun_projectile}
 	};
 
+	inline std::unordered_map<arms::WEAPON_TYPE, sf::Texture&> projectile_texture {
+		{arms::WEAPON_TYPE::BRYNS_GUN,  svc::assetLocator.get().t_bryns_gun_projectile},
+	{arms::WEAPON_TYPE::PLASMER,    svc::assetLocator.get().t_plasmer_projectile  },
+	{arms::WEAPON_TYPE::WASP,       svc::assetLocator.get().t_wasp_projectile},
+	{arms::WEAPON_TYPE::BLIZZARD,   svc::assetLocator.get().t_blizzard_projectile},
+	{arms::WEAPON_TYPE::BISMUTH,    svc::assetLocator.get().t_bismuth_projectile},
+	{arms::WEAPON_TYPE::UNDERDOG,   svc::assetLocator.get().t_underdog_projectile},
+	{arms::WEAPON_TYPE::ELECTRON,   svc::assetLocator.get().t_electron_projectile},
+	{arms::WEAPON_TYPE::CLOVER,     svc::assetLocator.get().t_clover_projectile   },
+	{arms::WEAPON_TYPE::TRITON,     svc::assetLocator.get().t_triton_projectile},
+	{arms::WEAPON_TYPE::WILLET_585, svc::assetLocator.get().t_willet_585_projectile},
+	{arms::WEAPON_TYPE::QUASAR,     svc::assetLocator.get().t_quasar_projectile},
+	{arms::WEAPON_TYPE::NOVA,       svc::assetLocator.get().t_nova_projectile},
+	{arms::WEAPON_TYPE::VENOM,      svc::assetLocator.get().t_venom_projectile},
+	{arms::WEAPON_TYPE::TWIN,       svc::assetLocator.get().t_twin_projectile},
+	{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().t_carise_projectile},
+	{arms::WEAPON_TYPE::STINGER,    svc::assetLocator.get().t_stinger_projectile},
+	{arms::WEAPON_TYPE::TUSK,       svc::assetLocator.get().t_tusk_projectile},
+	{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().t_tomahawk_projectile}
+	};
+
 	inline std::unordered_map<arms::WEAPON_TYPE, arms::Weapon&> type_to_weapon{
 		{arms::WEAPON_TYPE::BRYNS_GUN,  arms::bryns_gun     },
 		{arms::WEAPON_TYPE::PLASMER,    arms::plasmer       },

@@ -67,9 +67,10 @@ namespace critter {
     }
 
     fsm::StateFunction Frdog::update_hurt() {
+        if (flags.just_hurt) { svc::assetLocator.get().enem_hit.play(); }
+        flags.just_hurt = false;
         if (behavior.start()) {
-            behavior = behavior::Behavior(behavior::frdog_hurt); 
-            if (anim_loop_count == 0) { svc::assetLocator.get().enem_hit.play(); }
+            behavior = behavior::Behavior(behavior::frdog_hurt);
             behavior.params.started = false;
             ++anim_loop_count;
         }

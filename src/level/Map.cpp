@@ -248,6 +248,7 @@ void Map::update() {
                 critter->flags.shot = true;
                 if (critter->flags.vulnerable) {
                     critter->flags.hurt = true;
+                    critter->flags.just_hurt = true;
                     critter->condition.hp -= proj.stats.damage;
                 }
             }
@@ -350,24 +351,32 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
         }*/
     }
     
+    //emitters
 	for (auto& emitter : active_emitters) {
 		for (auto& particle : emitter.get_particles()) {
 			sf::RectangleShape dot{};
 			dot.setFillColor(emitter.color);
 			dot.setSize({ particle.size, particle.size });
-			dot.setPosition(particle.physics.position.x - cam.x - particle.size, particle.physics.position.y - cam.y - particle.size);
+			dot.setPosition(particle.physics.position.x - cam.x, particle.physics.position.y - cam.y);
 			win.draw(dot);
 		}
 	}
+
+    //player
+    sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
+    svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
     
+    //enemies
     for(auto& critter : critters) {
         critter->render(win, cam);
     }
 
+    //foreground animators
     for (auto& animator : animators) {
         if (!animator.foreground) { animator.render(win, cam); }
     }
     
+    //level foreground
     for(auto& layer : layers) {
         if(layer.render_order >= 4) {
             for(auto& cell : layer.grid.cells) {

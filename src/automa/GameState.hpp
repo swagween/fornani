@@ -209,35 +209,10 @@ public:
         sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
         map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
         
-        if (!show_colliders) {
-            //player
-            sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
-            svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
-
-            /*if (!svc::playerLocator.get().weapons_hotbar.empty()) {
-                arms::Weapon& curr_weapon = svc::playerLocator.get().loadout.get_equipped_weapon();
-                std::vector<sf::Sprite>& curr_weapon_sprites = lookup::weapon_sprites.at(curr_weapon.type);
-                sf::Sprite weap_sprite;
-                if (!curr_weapon_sprites.empty()) {
-                    weap_sprite = curr_weapon_sprites.at(arms::WeaponDirLookup.at(curr_weapon.sprite_orientation));
-                    weap_sprite.setOrigin(NANI_SPRITE_WIDTH / 2, NANI_SPRITE_WIDTH / 2);
-                }
-
-                sf::Vector2<float> anchor = svc::playerLocator.get().hand_position;
-                sf::Vector2<int> offset = svc::playerLocator.get().loadout.get_equipped_weapon().sprite_offset;
-                weap_sprite.setPosition(player_pos.x + anchor.x + offset.x, player_pos.y + anchor.y + offset.y);
-                if (map.style == lookup::STYLE::NIGHT) {
-                    weap_sprite.setColor(flcolor::night);
-                }
-                if (svc::playerLocator.get().flags.state.test(State::alive)) {
-                    win.draw(weap_sprite);
-                }
-            }*/
-        } else {
-            svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
-        }
+        
         
         map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
+        if (show_colliders) { svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position); }
         hud.render(win);
 
         svc::assetLocator.get().sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);

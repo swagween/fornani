@@ -31,16 +31,8 @@ struct WeaponAttributes {
     int cooldown_time{};
     float recoil{};
     COLOR_CODE ui_color{};
+    std::array<float, 2> barrel_position{};
     
-};
-
-inline std::unordered_map<WEAPON_DIR, int> WeaponDirLookup {
-    {WEAPON_DIR::LEFT,          1},
-    {WEAPON_DIR::RIGHT,         0},
-    {WEAPON_DIR::UP_RIGHT,      2},
-    {WEAPON_DIR::UP_LEFT,       5},
-    {WEAPON_DIR::DOWN_RIGHT,    3},
-    {WEAPON_DIR::DOWN_LEFT,     4}
 };
 
 inline std::unordered_map<FIRING_DIRECTION, int> ProjDirLookup {
@@ -77,14 +69,14 @@ constexpr inline ProjectileAnimation clover_anim{5, 4, 4};
 constexpr inline ProjectileAnimation bg_anim{ 4, 1, 8 };
 
 /* ProjectileStats(int dmg, int lfs, float spd, float var, float stn, float kbk, bool per, int lifespan_var) */
-constexpr inline ProjectileStats bryns_gun_stats{    4 , 180, 4.0, 0.1, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats plasmer_stats{      5 , 120, 8.0, 0.0, 0.0, 0.0, false, false, 0};
+constexpr inline ProjectileStats bryns_gun_stats{    4 , 180, 2.5, 0.1, 0.0, 0.0, false, false, 0};
+constexpr inline ProjectileStats plasmer_stats{      5 , 220, 3.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats wasp_stats{         6 , 240, 8.0 , 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats blizzard_stats{     8 , 300, 20.0, 0.0, 1.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats bismuth_stats{      8 , 240, 12.0, 0.2, 0.0, 0.0, false, true , 0};
 constexpr inline ProjectileStats underdog_stats{     6 , 420, 24.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats electron_stats{     9 , 330, 16.0, 0.0, 1.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats clover_stats{       4 , 440, 1.5 , 0.1, 0.0, 0.0, false, false, 4};
+constexpr inline ProjectileStats clover_stats{       4 , 440, 0.5 , 0.1, 0.0, 0.0, false, false, 4};
 constexpr inline ProjectileStats triton_stats{       10, 360, 4.0 , 0.0, 0.0, 0.0, true , false, 0};
 constexpr inline ProjectileStats willet_585_stats{   9 , 240, 24.0, 0.0, 0.0, 3.0, false, false, 0};
 constexpr inline ProjectileStats quasar_stats{       16, 360, 8.0 , 0.0, 0.0, 0.0, false, true , 0};
@@ -96,26 +88,31 @@ constexpr inline ProjectileStats stinger_stats{      5 , 300, 16.0, 2.0, 0.0, 0.
 constexpr inline ProjectileStats tusk_stats{         16, 240, 20.0, 0.0, 3.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats tomahawk_stats{     1 , 200, 2.0 , 0.0, 0.0, 0.0, true , false, 0};
 
+//barrel points on sprites
+constexpr inline std::array<float, 2> bg_barrel{ 18.0f, 2.0f };
+constexpr inline std::array<float, 2> plasmer_barrel{ 22.0f, 7.0f };
+constexpr inline std::array<float, 2> clover_barrel{ 18.0f, 4.0f };
+
 
 /* WeaponAttributes(bool aut, bool bmr, int rat, int cldn, float recl) */
-constexpr inline WeaponAttributes bryns_gun_attributes{  false, false, 4 , 1,  0.0f, PERIWINKLE };
-constexpr inline WeaponAttributes plasmer_attributes{    false, false, 3 , 2 , 0.1f, FUCSHIA    };
-constexpr inline WeaponAttributes wasp_attributes{       false, false, 4 , 1 , 0.0f, ORANGE     };
-constexpr inline WeaponAttributes blizzard_attributes{   false, false, 2 , 3 , 0.0f, PERIWINKLE };
-constexpr inline WeaponAttributes bismuth_attributes{    false, false, 3 , 2 , 2.0f, FUCSHIA    };
-constexpr inline WeaponAttributes underdog_attributes{   false, false, 6 , 1 , 0.0f, ORANGE     };
-constexpr inline WeaponAttributes electron_attributes{   false, false, 2 , 4 , 0.0f, WHITE      };
-constexpr inline WeaponAttributes clover_attributes{     true , false, 16, 8 , 0.0f, GREEN      };
-constexpr inline WeaponAttributes triton_attributes{     false, false, 2 , 0 , 0.0f, ORANGE     };
-constexpr inline WeaponAttributes willet_585_attributes{ false, false, 3 , 1 , 0.0f, PURPLE     };
-constexpr inline WeaponAttributes quasar_attributes{     false, false, 1 , 16, 0.0f, GREEN      };
-constexpr inline WeaponAttributes nova_attributes{       false, false, 4 , 3 , 0.0f, GREEN      };
-constexpr inline WeaponAttributes venom_attributes{      false, false, 3 , 5 , 0.0f, ORANGE     };
-constexpr inline WeaponAttributes twin_attributes{       false, false, 4 , 4 , 3.0f, FUCSHIA    };
-constexpr inline WeaponAttributes carise_attributes{     false, false, 4 , 2 , 0.0f, PURPLE     };
-constexpr inline WeaponAttributes stinger_attributes{    true , false, 16, 2 , 0.0f, WHITE      };
-constexpr inline WeaponAttributes tusk_attributes{       false, false, 2 , 5 , 0.0f, WHITE      };
-constexpr inline WeaponAttributes tomahawk_attributes{   false, true , 1 , 0 , 0.0f, WHITE      };
+constexpr inline WeaponAttributes bryns_gun_attributes{  false, false, 4 , 1,  0.0f, PERIWINKLE,    bg_barrel };
+constexpr inline WeaponAttributes plasmer_attributes{    false, false, 3 , 2 , 1.1f, FUCSHIA,       plasmer_barrel };
+constexpr inline WeaponAttributes wasp_attributes{       false, false, 4 , 1 , 0.0f, ORANGE,        bg_barrel };
+constexpr inline WeaponAttributes blizzard_attributes{   false, false, 2 , 3 , 0.0f, PERIWINKLE,    bg_barrel };
+constexpr inline WeaponAttributes bismuth_attributes{    false, false, 3 , 2 , 2.0f, FUCSHIA,       bg_barrel };
+constexpr inline WeaponAttributes underdog_attributes{   false, false, 6 , 1 , 0.0f, ORANGE,        bg_barrel };
+constexpr inline WeaponAttributes electron_attributes{   false, false, 2 , 4 , 0.0f, WHITE,         bg_barrel };
+constexpr inline WeaponAttributes clover_attributes{     true , false, 16, 8 , 0.0f, GREEN,         clover_barrel };
+constexpr inline WeaponAttributes triton_attributes{     false, false, 2 , 0 , 0.0f, ORANGE,        bg_barrel };
+constexpr inline WeaponAttributes willet_585_attributes{ false, false, 3 , 1 , 0.0f, PURPLE,        bg_barrel };
+constexpr inline WeaponAttributes quasar_attributes{     false, false, 1 , 16, 0.0f, GREEN,         bg_barrel };
+constexpr inline WeaponAttributes nova_attributes{       false, false, 4 , 3 , 0.0f, GREEN,         bg_barrel };
+constexpr inline WeaponAttributes venom_attributes{      false, false, 3 , 5 , 0.0f, ORANGE,        bg_barrel };
+constexpr inline WeaponAttributes twin_attributes{       false, false, 4 , 4 , 3.0f, FUCSHIA,       bg_barrel };
+constexpr inline WeaponAttributes carise_attributes{     false, false, 4 , 2 , 0.0f, PURPLE,        bg_barrel };
+constexpr inline WeaponAttributes stinger_attributes{    true , false, 16, 2 , 0.0f, WHITE,         bg_barrel };
+constexpr inline WeaponAttributes tusk_attributes{       false, false, 2 , 5 , 0.0f, WHITE,         bg_barrel };
+constexpr inline WeaponAttributes tomahawk_attributes{   false, true , 1 , 0 , 0.0f, WHITE,         bg_barrel };
 
 /* struct ElementBehavior {
  float rate{}; //expulsion rate
@@ -148,6 +145,7 @@ public:
         const vfx::ElementBehavior spr = light_gun_spray, const ProjectileAnimation& pa = default_anim, 
         sf::Vector2<int> dim = { 16, 16 });
 
+    void update();
     void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
 
     void equip();
@@ -155,8 +153,8 @@ public:
     void unlock();
     void lock();
 
-    bool is_equipped();
-    bool is_unlocked();
+    bool is_equipped() const;
+    bool is_unlocked() const;
 
     void set_position(sf::Vector2<float> pos);
     void set_orientation();
@@ -171,7 +169,6 @@ public:
     sf::Vector2<float> barrel_point{};
     
     WEAPON_TYPE type{};
-    WEAPON_DIR sprite_orientation{};
     sf::Vector2<int> sprite_dimensions{};
     sf::Vector2<int> sprite_offset{};
     std::string label{};
@@ -179,6 +176,8 @@ public:
     sf::Sprite sp_gun{};
     
     int current_cooldown = attributes.cooldown_time;
+    FIRING_DIRECTION fire_dir{};
+
     
 private:
     

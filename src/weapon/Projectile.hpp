@@ -12,6 +12,7 @@
 #include <list>
 #include <unordered_map>
 #include <chrono>
+#include <deque>
 #include "../components/PhysicsComponent.hpp"
 #include "../entities/behavior/Animation.hpp"
 #include "../utils/Shape.hpp"
@@ -59,6 +60,7 @@ enum class FIRING_DIRECTION {
 };
 
 const sf::Vector2<float> DEFAULT_DIMENSIONS{8.0, 8.0};
+const int history_limit{ 12 };
 
 struct ProjectileStats {
     
@@ -104,7 +106,7 @@ public:
     components::PhysicsComponent physics{};
     ProjectileStats stats{};
     ProjectileAnimation anim{};
-    WEAPON_TYPE type{};
+    WEAPON_TYPE type{WEAPON_TYPE::BRYNS_GUN};
 
     std::vector<sf::Sprite> sp_proj{};
     
@@ -116,6 +118,10 @@ public:
     Time dt{ 0.001f };
     Clock::time_point current_time = Clock::now();
     Time accumulator{ 0.0f };
+
+    sf::RectangleShape box{};
+
+    std::deque<sf::Vector2<float>> position_history{};
     
 }; // End Projectile
 

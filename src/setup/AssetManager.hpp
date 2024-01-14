@@ -283,6 +283,22 @@ public:
     sf::Texture t_plasmer_projectile{};
     sf::Texture t_clover{};
     sf::Texture t_clover_projectile{};
+    sf::Texture t_wasp_projectile{};
+    sf::Texture t_blizzard_projectile{};
+    sf::Texture t_bismuth_projectile{};
+    sf::Texture t_underdog_projectile{};
+    sf::Texture t_electron_projectile{};
+    sf::Texture t_triton_projectile{};
+    sf::Texture t_willet_585_projectile{};
+    sf::Texture t_quasar_projectile{};
+    sf::Texture t_nova_projectile{};
+    sf::Texture t_venom_projectile{};
+    sf::Texture t_twin_projectile{};
+    sf::Texture t_carise_projectile{};
+    sf::Texture t_stinger_projectile{};
+    sf::Texture t_tusk_projectile{};
+    sf::Texture t_tomahawk_projectile{};
+
     std::vector<sf::Sprite> sp_bryns_gun{};
     std::vector<sf::Sprite> sp_bryns_gun_projectile{};
     std::vector<sf::Sprite> sp_plasmer{};

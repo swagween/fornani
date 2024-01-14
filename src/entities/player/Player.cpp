@@ -27,7 +27,7 @@ Player::Player() {
     
     //sprites
     assign_texture(svc::assetLocator.get().t_nani);
-    sprite.setTexture(svc::assetLocator.get().t_nani_red);
+    sprite.setTexture(svc::assetLocator.get().t_nani);
     
 }
 
@@ -440,7 +440,7 @@ void Player::update_behavior() {
     }
     update_direction();
     if (!weapons_hotbar.empty()) {
-        update_weapon_direction();
+        update_weapon();
     }
     
 }
@@ -504,14 +504,12 @@ void Player::update_direction() {
     }
 }
 
-void Player::update_weapon_direction() {
+void Player::update_weapon() {
     switch(behavior.facing_lr) {
         case behavior::DIR_LR::LEFT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::LEFT;
             collider.physics.dir = components::DIRECTION::LEFT;
             break;
         case behavior::DIR_LR::RIGHT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::RIGHT;
             collider.physics.dir = components::DIRECTION::RIGHT;
             break;
     }
@@ -523,30 +521,26 @@ void Player::update_weapon_direction() {
         case behavior::DIR::RIGHT:
             break;
         case behavior::DIR::UP:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
             collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::DOWN:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_LEFT;
             collider.physics.dir = components::DIRECTION::DOWN;
             break;
         case behavior::DIR::UP_RIGHT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_RIGHT;
             collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::UP_LEFT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
             collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::DOWN_RIGHT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_RIGHT;
             collider.physics.dir = components::DIRECTION::DOWN;
             break;
         case behavior::DIR::DOWN_LEFT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_LEFT;
             collider.physics.dir = components::DIRECTION::DOWN;
             break;
     }
+
+    loadout.get_equipped_weapon().update();
     loadout.get_equipped_weapon().set_orientation();
     if(behavior.facing_right()) {
         hand_position = {28, 36};
@@ -605,15 +599,15 @@ void Player::no_move() {
     flags.movement.reset(Movement::move_left);
 }
 
-bool Player::grounded() {
+bool Player::grounded() const {
     return collider.flags.test(shape::State::grounded);
 }
 
-bool Player::moving() {
+bool Player::moving() const {
     return flags.movement.test(Movement::move_left) || flags.movement.test(Movement::move_right) || flags.movement.test(Movement::autonomous_walk);
 }
 
-bool Player::moving_at_all() {
+bool Player::moving_at_all() const {
     return flags.movement.test(Movement::move_left) || flags.movement.test(Movement::move_right) ||
         flags.movement.test(Movement::autonomous_walk) || flags.movement.test(Movement::freefalling) || flags.movement.test(Movement::entered_freefall);
 }
@@ -657,7 +651,7 @@ void Player::update_invincibility() {
     }
 }
 
-bool Player::is_invincible() {
+bool Player::is_invincible() const {
     return counters.invincibility > 0;
 }
 

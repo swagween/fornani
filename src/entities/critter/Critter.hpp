@@ -63,6 +63,7 @@ struct CritterFlags {
     bool flip{};
     bool barking{};
     bool hurt{};
+    bool just_hurt{};
     bool shot{};
     bool vulnerable{};
 };

@@ -6,6 +6,7 @@
 
 #include "Projectile.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../setup/LookupTables.hpp"
 
 namespace arms {
     
@@ -25,6 +26,10 @@ namespace arms {
         physics.update_euler();
         bounding_box.dimensions = DEFAULT_DIMENSIONS;
         bounding_box.set_position(physics.position);
+        position_history.push_back(physics.position);
+        if(position_history.size() > history_limit) {
+            position_history.pop_front();
+        }
 
         dt = svc::clockLocator.get().tick_rate;
 
@@ -55,6 +60,24 @@ namespace arms {
     }
 
     void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+        if (sp_proj.size() > 0) {
+            win.draw(sp_proj.at(0));
+        }
+
+        box.setFillColor(spray_color.at(type));
+        
+        box.setSize(sf::Vector2<float>{8.0f, 8.0f});
+        for(auto& pos : position_history) {
+            box.setPosition(pos.x - campos.x - box.getSize().x/2, pos.y - campos.y - box.getSize().y/2);
+            win.draw(box);
+            sf::Uint8 new_r = box.getFillColor().r + 1;
+            sf::Uint8 new_g = box.getFillColor().g + 1;
+            sf::Uint8 new_b = box.getFillColor().b + 1;
+            sf::Color new_color{ new_r, new_g, new_b };
+            box.setFillColor(new_color);
+        }
+
+        
     }
 
     void Projectile::destroy() {
@@ -89,6 +112,18 @@ namespace arms {
         if (anim.num_sprites < 2) { sprite_id = 0; return; }
         util::Random r{};
         sprite_id = r.random_range(0, anim.num_sprites - 1);
+
+        for (int i = 0; i < num_sprites; ++i) {
+            sp_proj.push_back(sf::Sprite());
+        }
+
+        for(auto& sprite : sp_proj) {
+            //sprite.setTexture(lookup::projectile_texture.at(WEAPON_TYPE::BRYNS_GUN));
+            sprite.setPosition(physics.position);
+        }
+        //sp_proj = svc::assetLocator.get().sp_bryns_gun_projectile;
+        //sp_proj = lookup::projectile_sprites.at(type);
+
     }
 
 

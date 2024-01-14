@@ -169,7 +169,7 @@ public:
     void update_behavior();
     void set_position(sf::Vector2<float> new_pos);
     void update_direction();
-    void update_weapon_direction();
+    void update_weapon();
     void walk();
     void autonomous_walk();
 
@@ -178,9 +178,9 @@ public:
     void restrict_animation();
     void no_move();
 
-    bool grounded();
-    bool moving();
-    bool moving_at_all();
+    bool grounded() const;
+    bool moving() const;
+    bool moving_at_all() const;
     
     //firing
     sf::Vector2<float> get_fire_point();
@@ -188,7 +188,7 @@ public:
     //level events
     void make_invincible();
     void update_invincibility();
-    bool is_invincible();
+    bool is_invincible() const;
     void kill();
     void start_over();
 
