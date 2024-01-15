@@ -60,7 +60,7 @@ enum class FIRING_DIRECTION {
 };
 
 const sf::Vector2<float> DEFAULT_DIMENSIONS{8.0, 8.0};
-const int history_limit{ 12 };
+const int history_limit{ 4 };
 
 struct ProjectileStats {
     

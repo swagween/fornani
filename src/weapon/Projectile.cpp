@@ -63,18 +63,54 @@ namespace arms {
         if (sp_proj.size() > 0) {
             win.draw(sp_proj.at(0));
         }
-
-        box.setFillColor(spray_color.at(type));
         
-        box.setSize(sf::Vector2<float>{8.0f, 8.0f});
-        for(auto& pos : position_history) {
-            box.setPosition(pos.x - campos.x - box.getSize().x/2, pos.y - campos.y - box.getSize().y/2);
+        //this is the right idea but needs to be refactored and generalized
+
+        float width{};
+        for (int i = 0; i < position_history.size(); ++i) {
+            switch (i) {
+            case 3:
+                box.setFillColor(sf::Color{ 243, 239, 255 });
+                if (abs(position_history.at(i).x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x) < 14.0f) {
+                    width = abs(position_history.at(i).x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x);
+                }
+                else {
+                    width = 14.0f;
+                }
+                box.setSize(sf::Vector2<float>{width, 12.0f});
+                    break;
+            case 2:
+                box.setFillColor(sf::Color{ 236, 201, 255 });
+                if (abs(position_history.at(i).x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x) < 14.0f) {
+                    width = abs(position_history.at(i).x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x);
+                }
+                else {
+                    width = 14.0f;
+                }
+                box.setSize(sf::Vector2<float>{width, 12.0f});
+                    break;
+            case 1:
+                box.setFillColor(sf::Color{ 206, 170, 255 });
+                if (abs(position_history.at(i).x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x) < 14.0f) {
+                    width = abs(position_history.at(i).x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x);
+                }
+                else {
+                    width = 14.0f;
+                }
+                box.setSize(sf::Vector2<float>{width, 12.0f});
+                    break;
+            case 0:
+                box.setFillColor(sf::Color{ 164, 133, 255 });
+                if(abs(position_history.at(i).x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x) < 14.0f) {
+                    width = abs(position_history.at(i).x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x);
+                } else {
+                    width = 14.0f;
+                }
+                box.setSize(sf::Vector2<float>{width, 12.0f});
+                    break;
+            }
+            box.setPosition(position_history.at(i).x - campos.x, position_history.at(i).y - campos.y - box.getSize().y/2);
             win.draw(box);
-            sf::Uint8 new_r = box.getFillColor().r + 1;
-            sf::Uint8 new_g = box.getFillColor().g + 1;
-            sf::Uint8 new_b = box.getFillColor().b + 1;
-            sf::Color new_color{ new_r, new_g, new_b };
-            box.setFillColor(new_color);
         }
 
         

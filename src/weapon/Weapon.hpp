@@ -69,7 +69,7 @@ constexpr inline ProjectileAnimation clover_anim{5, 4, 4};
 constexpr inline ProjectileAnimation bg_anim{ 4, 1, 8 };
 
 /* ProjectileStats(int dmg, int lfs, float spd, float var, float stn, float kbk, bool per, int lifespan_var) */
-constexpr inline ProjectileStats bryns_gun_stats{    4 , 180, 2.5, 0.1, 0.0, 0.0, false, false, 0};
+constexpr inline ProjectileStats bryns_gun_stats{    4 , 320, 2.5, 0.1, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats plasmer_stats{      5 , 220, 3.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats wasp_stats{         6 , 240, 8.0 , 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats blizzard_stats{     8 , 300, 20.0, 0.0, 1.0, 0.0, false, false, 0};
@@ -96,7 +96,7 @@ constexpr inline std::array<float, 2> clover_barrel{ 18.0f, 4.0f };
 
 /* WeaponAttributes(bool aut, bool bmr, int rat, int cldn, float recl) */
 constexpr inline WeaponAttributes bryns_gun_attributes{  false, false, 4 , 1,  0.0f, PERIWINKLE,    bg_barrel };
-constexpr inline WeaponAttributes plasmer_attributes{    false, false, 3 , 2 , 1.1f, FUCSHIA,       plasmer_barrel };
+constexpr inline WeaponAttributes plasmer_attributes{    false, false, 3 , 2 , 0.1f, FUCSHIA,       plasmer_barrel };
 constexpr inline WeaponAttributes wasp_attributes{       false, false, 4 , 1 , 0.0f, ORANGE,        bg_barrel };
 constexpr inline WeaponAttributes blizzard_attributes{   false, false, 2 , 3 , 0.0f, PERIWINKLE,    bg_barrel };
 constexpr inline WeaponAttributes bismuth_attributes{    false, false, 3 , 2 , 2.0f, FUCSHIA,       bg_barrel };
