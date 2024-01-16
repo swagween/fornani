@@ -17,6 +17,7 @@
 #include "../entities/behavior/Animation.hpp"
 #include "../utils/Shape.hpp"
 #include "../utils/Random.hpp"
+#include "../utils/BitFlags.hpp"
 #include "../particle/Emitter.hpp"
 #include "../graphics/FLColor.hpp"
 
@@ -71,7 +72,7 @@ const int history_limit{ 4 };
 struct ProjectileStats {
     
     int damage{};
-    int lifespan{};
+    int range{};
     
     float speed{};
     float variance{};
@@ -81,7 +82,7 @@ struct ProjectileStats {
     bool persistent{};
     bool spray{};
      
-    int lifespan_variance{};
+    int range_variance{};
     
 };
 
@@ -89,6 +90,12 @@ struct ProjectileAnimation {
     int num_sprites{};
     int num_frames{};
     int framerate{};
+};
+
+enum class ProjectileState {
+    initialized,
+    destruction_initiated,
+    destroyed
 };
 
 class Projectile {
@@ -103,7 +110,7 @@ public:
 
     void update();
     void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
-    void destroy();
+    void destroy(bool completely);
     void seed();
     void set_sprite();
     void set_orientation(sf::Sprite& sprite);
@@ -120,7 +127,11 @@ public:
 
     RENDER_TYPE render_type{};
 
+    util::BitFlags<ProjectileState> state{};
+
     sf::Vector2<float> max_dimensions{};
+    sf::Vector2<float> fired_point{};
+    sf::Vector2<float> destruction_point{};
 
     std::vector<sf::Sprite> sp_proj{};
     

@@ -69,19 +69,19 @@ constexpr inline ProjectileAnimation clover_anim{5, 4, 4};
 constexpr inline ProjectileAnimation bg_anim{ 4, 1, 8 };
 constexpr inline ProjectileAnimation nova_anim{ 1, 1, 8 };
 
-/* ProjectileStats(int dmg, int lfs, float spd, float var, float stn, float kbk, bool per, int lifespan_var) */
-constexpr inline ProjectileStats bryns_gun_stats{    4 , 320, 2.5, 0.1, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats plasmer_stats{      5 , 220, 3.0, 0.0, 0.0, 0.0, false, false, 0};
+/* ProjectileStats(int dmg, int range, float spd, float var, float stn, float kbk, bool per, int lifespan_var) */
+constexpr inline ProjectileStats bryns_gun_stats{    4 , 200, 2.5, 0.1, 0.0, 0.0, false, false, 0};
+constexpr inline ProjectileStats plasmer_stats{      5 , 240, 3.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats wasp_stats{         6 , 240, 8.0 , 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats blizzard_stats{     8 , 300, 20.0, 0.0, 1.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats bismuth_stats{      8 , 240, 12.0, 0.2, 0.0, 0.0, false, true , 0};
-constexpr inline ProjectileStats underdog_stats{     6 , 420, 24.0, 0.0, 0.0, 0.0, false, false, 0};
+constexpr inline ProjectileStats underdog_stats{     6 , 140, 24.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats electron_stats{     9 , 330, 16.0, 0.0, 1.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats clover_stats{       4 , 440, 0.5 , 0.1, 0.0, 0.0, false, false, 4};
+constexpr inline ProjectileStats clover_stats{       4 , 140, 0.5 , 0.1, 0.0, 0.0, false, false, 4};
 constexpr inline ProjectileStats triton_stats{       10, 360, 4.0 , 0.0, 0.0, 0.0, true , false, 0};
 constexpr inline ProjectileStats willet_585_stats{   9 , 240, 24.0, 0.0, 0.0, 3.0, false, false, 0};
 constexpr inline ProjectileStats quasar_stats{       16, 360, 8.0 , 0.0, 0.0, 0.0, false, true , 0};
-constexpr inline ProjectileStats nova_stats{         7 , 380, 2.9, 0.02, 0.1, 0.0, false, false, 0};
+constexpr inline ProjectileStats nova_stats{         7 , 260, 2.9, 0.02, 0.1, 0.0, false, false, 0};
 constexpr inline ProjectileStats venom_stats{        8 , 480, 32.0, 1.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats twin_stats{         7 , 300, 22.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats carise_stats{       14, 240, 12.0, 0.1, 4.0, 0.0, false, false, 0};

@@ -34,11 +34,11 @@ void Background::update() {
     if(behavior.scrolling) {
         int idx = 0;
         for(auto& sprite : sprites) {
-            float camera_scalar = 0.0*(svc::cameraLocator.get().observed_velocity.x);
-            float new_speed = behavior.scroll_speed * (1 + camera_scalar);
-            int offset = idx * (-frames[idx] * behavior.scroll_speed);
+            int camera_scalar = 0*(svc::cameraLocator.get().observed_velocity.x);
+            int new_speed = behavior.scroll_speed + camera_scalar;
+            int offset = idx * (-frames[idx] + new_speed);
             if(offset < -1920) {frames[idx] = 0; }
-            sprite.setPosition(idx * (-frames[idx] * new_speed), 0);
+            sprite.setPosition(idx * (-frames[idx] + new_speed), 0);
             ++idx;
         }
         for(auto& frame : frames) {

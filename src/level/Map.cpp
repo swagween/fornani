@@ -210,7 +210,7 @@ void Map::update() {
                             svc::assetLocator.get().shatter.play();
                         }
                     }
-                    proj.destroy();
+                    proj.destroy(false);
                 }
             }
         }
@@ -244,7 +244,7 @@ void Map::update() {
     for (auto& proj : active_projectiles) {
         for (auto& critter : critters) {
             if (proj.bounding_box.SAT(critter->collider.bounding_box)) {
-                proj.destroy();
+                proj.destroy(true);
                 critter->flags.shot = true;
                 if (critter->flags.vulnerable) {
                     critter->flags.hurt = true;
@@ -528,7 +528,7 @@ void Map::manage_projectiles() {
         spray.update();
     }
     
-    std::erase_if(active_projectiles,   [](auto const& p) { return p.stats.lifespan < 0;    });
+    std::erase_if(active_projectiles,   [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed);    });
     std::erase_if(active_emitters, [](auto const& p) { return p.particles.empty();          });
     std::erase_if(critters, [](auto const& c) { return c->condition.hp <= 0;                 });
     

@@ -221,7 +221,7 @@ static void show_overlay() {
                     ImGui::Text("Projectile Stats: ");
                     ImGui::Indent();
                     ImGui::Text("Damage: (%i)",   svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.damage);
-                    ImGui::Text("Lifespan: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.lifespan);
+                    ImGui::Text("Range: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.range);
                     ImGui::Text("Speed: (%.2f)",  svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.speed);
                     ImGui::Text("Velocity: (%.4f,%.4f)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.velocity.x,
                                 svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.velocity.y);
@@ -242,9 +242,11 @@ static void show_overlay() {
                     if(ImGui::Button("Toggle Greybox Mode")) {
                         if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
                             svc::greyboxModeLocator.get().reset(svc::bit_state::state);
+                            svc::greyboxModeLocator.get().set(svc::bit_state::trigger);
+                        } else {
+                            svc::greyboxModeLocator.get().set(svc::bit_state::state);
+                            svc::greyboxModeLocator.get().set(svc::bit_state::trigger);
                         }
-                        svc::greyboxModeLocator.get().set(svc::bit_state::state);
-                        svc::greyboxModeLocator.get().set(svc::bit_state::trigger);
                         
                     }
                     ImGui::Text("Greybox Mode : %s", svc::greyboxModeLocator.get().test(svc::bit_state::state) ? "On" : "Off");
