@@ -9,13 +9,13 @@
 
 namespace arms {
 
-    Weapon::Weapon(std::string lbl, WEAPON_TYPE weapon_type, const WeaponAttributes& wa, const ProjectileStats& ps, const vfx::ElementBehavior spr, const ProjectileAnimation& pa, sf::Vector2<int> dim ) :
+    Weapon::Weapon(std::string lbl, WEAPON_TYPE weapon_type, const WeaponAttributes& wa, const ProjectileStats& ps, const vfx::ElementBehavior spr, const ProjectileAnimation& pa, RENDER_TYPE rt, sf::Vector2<int> dim, sf::Vector2<float> proj_dim) :
         label(lbl),
         type(weapon_type),
         attributes(wa),
         sprite_dimensions(dim)
     {
-        projectile = Projectile(ps, components::PhysicsComponent(), pa, weapon_type);
+        projectile = Projectile(ps, components::PhysicsComponent(), pa, weapon_type, rt, proj_dim);
         spray = vfx::Emitter(spr, burst, spray_color.at(type));
         barrel_point = { sprite_position.x + 18, sprite_position.y + 1 };
     }
@@ -37,8 +37,11 @@ namespace arms {
         box.setFillColor(flcolor::fucshia);
         box.setSize(sf::Vector2<float>{2.0f, 2.0f});
 
-        win.draw(sp_gun);
-        win.draw(box);
+        if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+            win.draw(box);
+        }else {
+            win.draw(sp_gun);
+        }
     }
 
     void Weapon::equip() { equipped = true; }

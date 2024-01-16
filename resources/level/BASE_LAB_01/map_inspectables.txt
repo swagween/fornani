@@ -1,12 +1,12 @@
 1,1,0#
-Spectrum 07; Specimen intact.#
+spectrum 07; specimen intact.#
 12,19#
 1,1,0#
-Spectrum 06; Specimen intact.#
+spectrum 06; specimen intact.#
 20,19#
 1,1,0#
-Spectrum 05; Specimen intact.#
+spectrum 05; specimen intact.#
 23,19#
 1,1,0#
-Spectrum 02; Specimen severely damaged.#
+spectrum 02; specimen severely damaged.#
 48,19#

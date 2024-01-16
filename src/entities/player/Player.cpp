@@ -318,7 +318,12 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
         sprite.scale(-1.0f, 1.0f);
     }
     if (flags.state.test(State::alive)) {
-        win.draw(sprite);
+        if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+
+        }
+        else {
+            win.draw(sprite);
+        }
     }
 
     loadout.get_equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(loadout.get_equipped_weapon().type));

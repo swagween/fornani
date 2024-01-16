@@ -45,6 +45,7 @@ public:
     }
     
     void update() {
+
         physics.update_dampen();
         bounding_box.left = physics.position.x;
         bounding_box.top = physics.position.y;
@@ -66,6 +67,8 @@ public:
                 shaking = false;
             }
         }
+
+        
     }
     
     void restrict_movement(sf::Vector2<float>& bounds) {
@@ -123,6 +126,9 @@ public:
     
     sf::Rect<float> bounding_box{};
     components::PhysicsComponent physics{};
+    sf::Vector2<float> observed_velocity{};
+    sf::Vector2<float> position{};
+    sf::Vector2<float> previous_position{};
     
     int shake_counter{};
     bool shaking = false;

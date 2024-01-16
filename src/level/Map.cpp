@@ -384,7 +384,9 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
                     int cell_x = cell.bounding_box.position.x - cam.x;
                     int cell_y = cell.bounding_box.position.y - cam.y;
                     tileset.at(cell.value).setPosition(cell_x, cell_y);
-                    win.draw(tileset.at(cell.value));
+                    if (!svc::greyboxModeLocator.get().test(svc::bit_state::state) || layer.render_order == 4) {
+                        win.draw(tileset.at(cell.value));
+                    }
                     if(cell.collision_check && debug_mode) {
                         sf::RectangleShape box{};
                         box.setPosition(cell.bounding_box.vertices[0].x - cam.x, cell.bounding_box.vertices[0].y - cam.y);
@@ -462,7 +464,15 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 }
 
 void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
-    background->render(win, cam, real_dimensions);
+    if (!svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+        background->render(win, cam, real_dimensions);
+    }else {
+        sf::RectangleShape box{};
+        box.setPosition(0, 0);
+        box.setFillColor(flcolor::black);
+        box.setSize({ (float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y });
+        win.draw(box);
+        }
     if (real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(real_dimensions); }
     for(auto& layer : layers) {
         if(layer.render_order < 4) {
@@ -471,7 +481,9 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
                     int cell_x = cell.bounding_box.position.x - cam.x;
                     int cell_y = cell.bounding_box.position.y - cam.y;
                     tileset.at(cell.value).setPosition(cell_x, cell_y);
-                    win.draw(tileset.at(cell.value));
+                    if (!svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+                        win.draw(tileset.at(cell.value));
+                    }
                 }
             }
         }

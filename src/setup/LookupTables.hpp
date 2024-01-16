@@ -48,7 +48,7 @@ namespace lookup {
 	{arms::WEAPON_TYPE::TRITON,     svc::assetLocator.get().t_bryns_gun},
 	{arms::WEAPON_TYPE::WILLET_585, svc::assetLocator.get().t_bryns_gun},
 	{arms::WEAPON_TYPE::QUASAR,     svc::assetLocator.get().t_bryns_gun},
-	{arms::WEAPON_TYPE::NOVA,       svc::assetLocator.get().t_bryns_gun},
+	{arms::WEAPON_TYPE::NOVA,       svc::assetLocator.get().t_nova	},
 	{arms::WEAPON_TYPE::VENOM,      svc::assetLocator.get().t_bryns_gun},
 	{arms::WEAPON_TYPE::TWIN,       svc::assetLocator.get().t_bryns_gun},
 	{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().t_bryns_gun},

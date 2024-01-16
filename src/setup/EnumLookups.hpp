@@ -15,7 +15,7 @@ namespace lookup {
 
 
 inline const float SPACING{ 32.0f };
-inline const int NUM_STYLES{20};
+inline const int NUM_STYLES{21};
 
 enum class CONTROLS {
     JUMP,
@@ -52,7 +52,8 @@ enum class STYLE {
     FACTORY,
     SHADOW,
     HOARDER,
-    MANSION
+    MANSION,
+    PROVISIONAL
 };
 
 enum class TILE_TYPE {
@@ -94,7 +95,8 @@ inline std::unordered_map<int, STYLE> get_style {
     {16,    STYLE::FACTORY      },
     {17,    STYLE::SHADOW       },
     {18,    STYLE::HOARDER      },
-    {19,    STYLE::MANSION      }
+    {19,    STYLE::MANSION      },
+    {20,    STYLE::PROVISIONAL  }
 };
 
 inline std::unordered_map<STYLE, int> get_style_id {
@@ -117,7 +119,8 @@ inline std::unordered_map<STYLE, int> get_style_id {
     {STYLE::FACTORY, 16     },
     {STYLE::SHADOW, 17      },
     {STYLE::HOARDER, 18     },
-    {STYLE::MANSION, 19     }
+    {STYLE::MANSION, 19     },
+    {STYLE::PROVISIONAL, 20 }
 };
 
 inline std::unordered_map<STYLE, const char*> get_style_string {
@@ -140,7 +143,8 @@ inline std::unordered_map<STYLE, const char*> get_style_string {
     {STYLE::FACTORY,    "factory"       },
     {STYLE::SHADOW,     "shadow"        },
     {STYLE::HOARDER,    "hoarder"       },
-    {STYLE::MANSION,    "mansion"       }
+    {STYLE::MANSION,    "mansion"       },
+    {STYLE::PROVISIONAL,"provisional"   }
 };
 
 inline std::unordered_map<char, int> get_character {

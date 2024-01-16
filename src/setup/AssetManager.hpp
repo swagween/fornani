@@ -50,9 +50,11 @@ public:
         t_bryns_gun.loadFromFile(resource_path + "/image/weapon/bg.png");
         t_plasmer.loadFromFile(resource_path + "/image/weapon/plasmer.png");
         t_clover.loadFromFile(resource_path + "/image/weapon/clover.png");
+        t_nova.loadFromFile(resource_path + "/image/weapon/nova.png");
         t_bryns_gun_projectile.loadFromFile(resource_path + "/image/weapon/bg_proj.png");
         t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer_proj.png");
         t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover_proj.png");
+        t_nova_projectile.loadFromFile(resource_path + "/image/weapon/nova_proj.png");
         
         t_alphabet.loadFromFile(resource_path + "/image/gui/alphabet.png");
         
@@ -291,6 +293,7 @@ public:
     sf::Texture t_triton_projectile{};
     sf::Texture t_willet_585_projectile{};
     sf::Texture t_quasar_projectile{};
+    sf::Texture t_nova{};
     sf::Texture t_nova_projectile{};
     sf::Texture t_venom_projectile{};
     sf::Texture t_twin_projectile{};

@@ -59,6 +59,12 @@ enum class FIRING_DIRECTION {
     DOWN
 };
 
+enum class RENDER_TYPE {
+    ANIMATED,
+    SINGLE_SPRITE,
+    MULTI_SPRITE
+};
+
 const sf::Vector2<float> DEFAULT_DIMENSIONS{8.0, 8.0};
 const int history_limit{ 4 };
 
@@ -93,20 +99,28 @@ class Projectile {
 public:
     
     Projectile();
-    Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t);
+    Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t, RENDER_TYPE rt, sf::Vector2<float> dim);
 
     void update();
     void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
     void destroy();
     void seed();
     void set_sprite();
+    void set_orientation(sf::Sprite& sprite);
+    void constrain_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
+    void constrain_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
     
     FIRING_DIRECTION dir{};
     shape::Shape bounding_box{};
     components::PhysicsComponent physics{};
     ProjectileStats stats{};
     ProjectileAnimation anim{};
+
     WEAPON_TYPE type{WEAPON_TYPE::BRYNS_GUN};
+
+    RENDER_TYPE render_type{};
+
+    sf::Vector2<float> max_dimensions{};
 
     std::vector<sf::Sprite> sp_proj{};
     
@@ -121,6 +135,7 @@ public:
 
     sf::RectangleShape box{};
 
+    std::vector<sf::Color> colors{};
     std::deque<sf::Vector2<float>> position_history{};
     
 }; // End Projectile

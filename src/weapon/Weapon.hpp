@@ -67,6 +67,7 @@ inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color {
 constexpr inline ProjectileAnimation default_anim{1, 1, 8};
 constexpr inline ProjectileAnimation clover_anim{5, 4, 4};
 constexpr inline ProjectileAnimation bg_anim{ 4, 1, 8 };
+constexpr inline ProjectileAnimation nova_anim{ 1, 1, 8 };
 
 /* ProjectileStats(int dmg, int lfs, float spd, float var, float stn, float kbk, bool per, int lifespan_var) */
 constexpr inline ProjectileStats bryns_gun_stats{    4 , 320, 2.5, 0.1, 0.0, 0.0, false, false, 0};
@@ -80,7 +81,7 @@ constexpr inline ProjectileStats clover_stats{       4 , 440, 0.5 , 0.1, 0.0, 0.
 constexpr inline ProjectileStats triton_stats{       10, 360, 4.0 , 0.0, 0.0, 0.0, true , false, 0};
 constexpr inline ProjectileStats willet_585_stats{   9 , 240, 24.0, 0.0, 0.0, 3.0, false, false, 0};
 constexpr inline ProjectileStats quasar_stats{       16, 360, 8.0 , 0.0, 0.0, 0.0, false, true , 0};
-constexpr inline ProjectileStats nova_stats{         7 , 240, 16.0, 0.0, 0.0, 5.0, false, false, 0};
+constexpr inline ProjectileStats nova_stats{         7 , 380, 2.9, 0.02, 0.1, 0.0, false, false, 0};
 constexpr inline ProjectileStats venom_stats{        8 , 480, 32.0, 1.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats twin_stats{         7 , 300, 22.0, 0.0, 0.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats carise_stats{       14, 240, 12.0, 0.1, 4.0, 0.0, false, false, 0};
@@ -92,6 +93,7 @@ constexpr inline ProjectileStats tomahawk_stats{     1 , 200, 2.0 , 0.0, 0.0, 0.
 constexpr inline std::array<float, 2> bg_barrel{ 18.0f, 2.0f };
 constexpr inline std::array<float, 2> plasmer_barrel{ 22.0f, 7.0f };
 constexpr inline std::array<float, 2> clover_barrel{ 18.0f, 4.0f };
+constexpr inline std::array<float, 2> nova_barrel{ 24.0f, 4.0f };
 
 
 /* WeaponAttributes(bool aut, bool bmr, int rat, int cldn, float recl) */
@@ -106,7 +108,7 @@ constexpr inline WeaponAttributes clover_attributes{     true , false, 16, 8 , 0
 constexpr inline WeaponAttributes triton_attributes{     false, false, 2 , 0 , 0.0f, ORANGE,        bg_barrel };
 constexpr inline WeaponAttributes willet_585_attributes{ false, false, 3 , 1 , 0.0f, PURPLE,        bg_barrel };
 constexpr inline WeaponAttributes quasar_attributes{     false, false, 1 , 16, 0.0f, GREEN,         bg_barrel };
-constexpr inline WeaponAttributes nova_attributes{       false, false, 4 , 3 , 0.0f, GREEN,         bg_barrel };
+constexpr inline WeaponAttributes nova_attributes{       false, false, 4 , 3 , 0.0f, FUCSHIA,       nova_barrel };
 constexpr inline WeaponAttributes venom_attributes{      false, false, 3 , 5 , 0.0f, ORANGE,        bg_barrel };
 constexpr inline WeaponAttributes twin_attributes{       false, false, 4 , 4 , 3.0f, FUCSHIA,       bg_barrel };
 constexpr inline WeaponAttributes carise_attributes{     false, false, 4 , 2 , 0.0f, PURPLE,        bg_barrel };
@@ -133,17 +135,18 @@ struct EmitterStats {
 };*/
 constexpr inline vfx::ElementBehavior heavy_gun_spray{2, 1, 1.0, 0.8, 0.8, 0.005, 0.001, 0.99, 0.99};
 constexpr inline vfx::ElementBehavior light_gun_spray{2, 3, 1.9, 0.8, 0.4, 0.0, 0.0, 0.99, 0.99};
+constexpr inline vfx::ElementBehavior powerful_gun_spray{ 2, 3, 2.1, 0.9, 0.3, 0.0, 0.0, 0.99, 0.99 };
 constexpr inline vfx::ElementBehavior bubble_spray{1, 0, 1.3, 1.5, 3.4, -0.01, 0.001, 0.92, 0.92};
 constexpr inline vfx::EmitterStats burst{6, 0, 40, 30};
 
 class Weapon {
-    
+
 public:
-    
+
     Weapon() = default;
-    Weapon(std::string lbl, WEAPON_TYPE weapon_type, const WeaponAttributes& wa, const ProjectileStats& ps, 
-        const vfx::ElementBehavior spr = light_gun_spray, const ProjectileAnimation& pa = default_anim, 
-        sf::Vector2<int> dim = { 16, 16 });
+    Weapon(std::string lbl, WEAPON_TYPE weapon_type, const WeaponAttributes& wa, const ProjectileStats& ps,
+        const vfx::ElementBehavior spr = light_gun_spray, const ProjectileAnimation& pa = default_anim, RENDER_TYPE rt = RENDER_TYPE::SINGLE_SPRITE,
+        sf::Vector2<int> dim = { 16, 16 }, sf::Vector2<float> proj_dim = {28.0f, 12.0f});
 
     void update();
     void render(sf::RenderWindow& win, sf::Vector2<float>& campos);

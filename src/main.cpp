@@ -194,7 +194,8 @@ static void show_overlay() {
                             svc::playerLocator.get().weapons_hotbar = {
                                 arms::WEAPON_TYPE::BRYNS_GUN,
                                 arms::WEAPON_TYPE::PLASMER,
-                                arms::WEAPON_TYPE::CLOVER
+                                arms::WEAPON_TYPE::CLOVER,
+                                arms::WEAPON_TYPE::NOVA
                             };
                             svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
                         } else {
@@ -231,13 +232,22 @@ static void show_overlay() {
                 }
                 if (ImGui::BeginTabItem("General"))
                 {
-                    ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().physics.position.x, svc::cameraLocator.get().physics.position.y);
+                    ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().position.x, svc::cameraLocator.get().position.y);
+                    ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
                     ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
                     if(ImGui::Button("Save Screenshot")) {
-
                         save_screenshot();
-
                     }
+
+                    if(ImGui::Button("Toggle Greybox Mode")) {
+                        if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+                            svc::greyboxModeLocator.get().reset(svc::bit_state::state);
+                        }
+                        svc::greyboxModeLocator.get().set(svc::bit_state::state);
+                        svc::greyboxModeLocator.get().set(svc::bit_state::trigger);
+                        
+                    }
+                    ImGui::Text("Greybox Mode : %s", svc::greyboxModeLocator.get().test(svc::bit_state::state) ? "On" : "Off");
 
                     ImGui::EndTabItem();
                 }
@@ -313,7 +323,7 @@ static void show_overlay() {
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/OVERTURNED_DOJO_01");
                         svc::playerLocator.get().set_position({ 4 * 32, 11 * 32 });
                     }
-                    if(ImGui::Button("Cargo")) {
+                    /*if(ImGui::Button("Cargo")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CARGO_01");
@@ -323,8 +333,8 @@ static void show_overlay() {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_SHAFT_01");
                         svc::playerLocator.get().set_position({ 3 * 32, 8 * 32 });
-                    }
-                    if (ImGui::Button("Atrium")) {
+                    }*/
+                    /*if (ImGui::Button("Atrium")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_ATRIUM_01");
@@ -345,7 +355,7 @@ static void show_overlay() {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
-                    }
+                    }*/
                     if(ImGui::Button("Toxic")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
@@ -360,13 +370,13 @@ static void show_overlay() {
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/GRUB_TUNNEL_01");
                         svc::playerLocator.get().set_position({224, 290});
                     }
-                    if(ImGui::Button("Night")) {
+                    /*if(ImGui::Button("Night")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/NIGHT_CRANE_01");
                         svc::playerLocator.get().set_position({50, 50});
                         svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani_dark);
-                    }
+                    }*/
                     if(ImGui::Button("Night 2")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
@@ -503,6 +513,9 @@ void run(char** argv) {
             SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/" + svc::stateControllerLocator.get().next_state);
             svc::stateControllerLocator.get().trigger = false;
         }
+
+        //reset global triggers
+        svc::greyboxModeLocator.get().reset(svc::bit_state::trigger);
         
             
         ImGui::SFML::Update(window, deltaClock.restart());
