@@ -82,6 +82,7 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     /*win.draw(ar);
     win.draw(hr);*/
     win.draw(sprite);
+    svc::counterLocator.get().at(svc::draw_calls)++;
     //collider.render(win, campos);
     //win.draw(hurtbox);
     sprite_flip();
@@ -93,6 +94,7 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
         hpbox.setPosition(sprite.getPosition().x + i, sprite.getPosition().y - 14);
         if (i > condition.hp) { hpbox.setFillColor(sf::Color{29, 118, 112}); }
         win.draw(hpbox);
+        svc::counterLocator.get().at(svc::draw_calls)++;
     }
     
 }

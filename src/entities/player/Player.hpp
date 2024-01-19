@@ -56,23 +56,23 @@ struct PlayerInventoryStats {
 struct PhysicsStats {
 
     float PLAYER_MAX_XVEL = 2.380f;
-    float PLAYER_MAX_YVEL = 0.426f;
+    float PLAYER_MAX_YVEL = 0.226f;
 
     float AIR_MULTIPLIER = 2.912f;
 
     float PLAYER_GRAV = 0.002f;
 
-    float TERMINAL_VELOCITY = 1.8f;
+    float TERMINAL_VELOCITY = 0.8f;
 
-    float PLAYER_GROUND_FRIC = 0.974f;
-    float PLAYER_HORIZ_AIR_FRIC = 0.990f;
-    float PLAYER_VERT_AIR_FRIC = 0.966f;
+    float PLAYER_GROUND_FRIC = 0.963f;
+    float PLAYER_HORIZ_AIR_FRIC = 0.987f;
+    float PLAYER_VERT_AIR_FRIC = 0.956f;
 
     float X_ACC = 0.056f;
     float X_ACC_AIR = 0.056f;
 
     //float JUMP_MAX = 0.304f; //3 blocks
-    float JUMP_MAX = 0.338f; //4 blocks
+    float JUMP_MAX = 0.392f; //4 blocks
     
     float WALL_SLIDE_THRESHOLD = -1.0f;
     float WALL_SLIDE_SPEED = 1.31f;

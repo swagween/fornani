@@ -5,6 +5,7 @@
 //
 
 #include "Inspectable.hpp"
+#include "../../setup/ServiceLocator.hpp"
 
 namespace entity {
 	void Inspectable::update() {
@@ -23,7 +24,8 @@ namespace entity {
 		box.setOutlineThickness(-1);
 		box.setPosition(bounding_box.position - campos);
 		box.setSize(dimensions);
-		win.draw(box);
+		/*win.draw(box);
+		svc::counterLocator.get().at(svc::draw_calls)++;*/
 	}
 } // end entity
 

@@ -185,8 +185,8 @@ namespace flstates {
 			svc::playerLocator.get().handle_events(event);
 			if (event.type == sf::Event::EventType::KeyPressed) {
 				if (event.key.code == sf::Keyboard::H) {
-					svc::greyboxModeLocator.get().set(svc::bit_state::state);
-					svc::greyboxModeLocator.get().set(svc::bit_state::trigger);
+					svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
+					svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
 				}
 			}
 			if (event.type == sf::Event::EventType::KeyPressed) {
@@ -230,8 +230,10 @@ namespace flstates {
 
 
 			map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
-			if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) { svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position); }
+			if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position); }
 			hud.render(win);
+
+			map.render_console(win);
 
 			svc::assetLocator.get().sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
 			svc::assetLocator.get().sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);
@@ -240,8 +242,8 @@ namespace flstates {
 
 			map.transition.render(win);
 
-			if (svc::greyboxModeLocator.get().test(svc::bit_state::trigger)) {
-				if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+			if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_trigger)) {
+				if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 					tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(lookup::STYLE::PROVISIONAL));
 					setTilesetTexture(tileset);
 				}

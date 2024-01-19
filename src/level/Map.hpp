@@ -77,6 +77,7 @@ public:
     void update();
     void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
     void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
+    void render_console(sf::RenderWindow& win);
     squid::Tile& tile_at(const uint8_t i, const uint8_t j);
     shape::Shape& shape_at(const uint8_t i, const uint8_t j);
     void spawn_projectile_at(sf::Vector2<float> pos);

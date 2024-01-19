@@ -41,6 +41,15 @@ inline std::unordered_map<int, std::string> get_map_label {
     {198,     "OVERTURNED_DOJO_02"   },
     {199,     "OVERTURNED_DOJO_01"   },
 
+    {305,     "WOODSHINE_VILLAGE_01"   },
+    {306,     "WOODSHINE_GAIA_01"   },
+    {307,     "WOODSHINE_SHACK_01"   },
+    {308,     "WOODSHINE_INN_01"   },
+    {309,     "WOODSHINE_BRODY_01"   },
+    {310,     "WOODSHINE_HALL_01"   },
+    {311,     "WOODSHINE_WAREHOUSE_01"   },
+    {312,     "WOODSHINE_BRODY_02"   },
+
     {800,     "UNDER_LEDGE_01"       },
     {801,     "UNDER_HOME_01"       },
     {802,     "SHADOW_CORRIDOR_01"      },

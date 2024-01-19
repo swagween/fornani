@@ -41,6 +41,7 @@ int FPS_counter = 0;
 float FPS = 0.0;
 
 int shake_counter = 0;
+int frame_draw_counter{ 0 };
 
 sf::Vector2<uint32_t> win_size{};
 float height_ratio{};
@@ -232,24 +233,28 @@ static void show_overlay() {
                 }
                 if (ImGui::BeginTabItem("General"))
                 {
+                    ImGui::Text("Float Readout: (%.8f)", svc::floatReadoutLocator.get());
                     ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().position.x, svc::cameraLocator.get().position.y);
                     ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
                     ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
                     if(ImGui::Button("Save Screenshot")) {
                         save_screenshot();
                     }
-
-                    if(ImGui::Button("Toggle Greybox Mode")) {
-                        if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
-                            svc::greyboxModeLocator.get().reset(svc::bit_state::state);
-                            svc::greyboxModeLocator.get().set(svc::bit_state::trigger);
+                    ImGui::Separator();
+                    if(ImGui::Button("Toggle Greyblock Mode")) {
+                        if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+                            svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_state);
+                            svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
                         } else {
-                            svc::greyboxModeLocator.get().set(svc::bit_state::state);
-                            svc::greyboxModeLocator.get().set(svc::bit_state::trigger);
+                            svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
+                            svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
                         }
                         
                     }
-                    ImGui::Text("Greybox Mode : %s", svc::greyboxModeLocator.get().test(svc::bit_state::state) ? "On" : "Off");
+                    ImGui::Text("Greybox Mode : %s", svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state) ? "On" : "Off");
+                    ImGui::Separator();
+                    ImGui::Text("Draw Calls: %u", frame_draw_counter);
+                    frame_draw_counter = 0;
 
                     ImGui::EndTabItem();
                 }
@@ -279,6 +284,13 @@ static void show_overlay() {
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_HUT_01");
                         
                         svc::playerLocator.get().set_position({100, 160});
+                    }
+                    if (ImGui::Button("Ancient Field")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/ANCIENT_FIELD_01");
+
+                        svc::playerLocator.get().set_position({ 100, 160 });
                     }
                     if (ImGui::Button("Base")) {
                         svc::assetLocator.get().click.play();
@@ -325,17 +337,30 @@ static void show_overlay() {
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/OVERTURNED_DOJO_01");
                         svc::playerLocator.get().set_position({ 4 * 32, 11 * 32 });
                     }
-                    /*if(ImGui::Button("Cargo")) {
+                    if (ImGui::Button("Glade")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CARGO_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/OVERTURNED_GLADE_01");
+                        svc::playerLocator.get().set_position({ 4 * 32, 4 * 32 });
+                    }
+                    if (ImGui::Button("Woodshine")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/WOODSHINE_VILLAGE_01");
+                        svc::playerLocator.get().set_position({ 32, 1280 });
+                    }
+                    if(ImGui::Button("Collision Room")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SKY_COLLISIONROOM_01");
+                        svc::playerLocator.get().set_position({ 5 * 32, 5 * 32 });
                     }
                     if (ImGui::Button("Shaft")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_SHAFT_01");
                         svc::playerLocator.get().set_position({ 3 * 32, 8 * 32 });
-                    }*/
+                    }
                     /*if (ImGui::Button("Atrium")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
@@ -446,6 +471,9 @@ void run(char** argv) {
         svc::clockLocator.get().tick();
         win_size.x = window.getSize().x;
         win_size.y = window.getSize().y;
+
+        uint16_t draw_counter = 0;
+        svc::counterLocator.get().at(svc::draw_calls) = draw_counter;
         
         //SFML event variable
         auto event = sf::Event{};
@@ -517,7 +545,7 @@ void run(char** argv) {
         }
 
         //reset global triggers
-        svc::greyboxModeLocator.get().reset(svc::bit_state::trigger);
+        svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_trigger);
         
             
         ImGui::SFML::Update(window, deltaClock.restart());
@@ -536,6 +564,7 @@ void run(char** argv) {
         
         ImGui::SFML::Render(window);
         window.display();
+        frame_draw_counter = svc::counterLocator.get().at(svc::draw_calls);
     }
     
 }

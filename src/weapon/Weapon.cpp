@@ -37,10 +37,12 @@ namespace arms {
         box.setFillColor(flcolor::fucshia);
         box.setSize(sf::Vector2<float>{2.0f, 2.0f});
 
-        if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+        if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
             win.draw(box);
+            svc::counterLocator.get().at(svc::draw_calls)++;
         }else {
             win.draw(sp_gun);
+            svc::counterLocator.get().at(svc::draw_calls)++;
         }
     }
 

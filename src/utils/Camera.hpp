@@ -25,6 +25,8 @@ const int SHAKE_FACTOR = 8;
 const int SHAKE_VOLATILITY = 12;
 const int SHAKE_DURATION = 100;
 
+const int border_buffer{ 32 };
+
 const float TINY_VALUE = 0.000001f;
 
 inline const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
@@ -110,6 +112,10 @@ public:
         force_y *= str;
         physics.apply_force({force_x, force_y});
         update();
+    }
+
+    bool within_frame(int x, int y) {
+        return (x > 0) && (x < screen_dimensions.x + border_buffer) && (y > 0) && (y < screen_dimensions.y + border_buffer);
     }
     
     void begin_shake() {

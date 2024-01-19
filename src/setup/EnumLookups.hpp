@@ -58,7 +58,8 @@ enum class STYLE {
 
 enum class TILE_TYPE {
     TILE_BASIC,
-    TILE_RAMP,
+    TILE_GROUND_RAMP,
+    TILE_CEILING_RAMP,
     TILE_MOVEABLE,
     TILE_PLATFORM,
     TILE_WATER,
@@ -237,7 +238,8 @@ inline std::unordered_map<int, TILE_TYPE> tile_lookup{};
 static void populate_lookup() {
 	for (int i = 0; i < 256; ++i) {
 		if (i < 192 && i >= 0)   { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
-		if (i < 224 && i >= 192) { tile_lookup.insert({ i, TILE_TYPE::TILE_RAMP });         }
+        if (i < 208 && i >= 192) { tile_lookup.insert({ i, TILE_TYPE::TILE_CEILING_RAMP }); }
+		if (i < 224 && i >= 208) { tile_lookup.insert({ i, TILE_TYPE::TILE_GROUND_RAMP });         }
 		if (i < 228 && i >= 224) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
 		if (i < 232 && i >= 228) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
 		if (i < 236 && i >= 232) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }

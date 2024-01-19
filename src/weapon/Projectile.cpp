@@ -40,11 +40,6 @@ namespace arms {
 
 	void Projectile::update() {
 
-		if (state.test(ProjectileState::initialized)) {
-			fired_point = svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point;
-			state.reset(ProjectileState::initialized);
-		}
-
 		physics.update_euler();
 		if (dir == FIRING_DIRECTION::LEFT) {
 			bounding_box.set_position(shape::Shape::Vec{ physics.position.x, physics.position.y - bounding_box.dimensions.y / 2 });
@@ -100,6 +95,7 @@ namespace arms {
 			for (auto& sprite : sp_proj) {
 				constrain_at_barrel(sprite, campos);
 				win.draw(sprite);
+				svc::counterLocator.get().at(svc::draw_calls)++;
 			}
 
 		} else if (render_type == RENDER_TYPE::SINGLE_SPRITE) {
@@ -119,10 +115,12 @@ namespace arms {
 				}
 				box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
 
-				if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+				if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 					win.draw(box);
+					svc::counterLocator.get().at(svc::draw_calls)++;
 				} else {
 					win.draw(sp_proj.at(0));
+					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 			}
 		}
@@ -142,6 +140,8 @@ namespace arms {
 			else { destruction_point = bounding_box.position + bounding_box.dimensions; }
 			state.set(ProjectileState::destruction_initiated);
 		}
+
+		stats.damage = 0;
 
 	}
 
@@ -231,8 +231,8 @@ namespace arms {
 
 	void Projectile::constrain_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos) {
 		if (dir == FIRING_DIRECTION::LEFT || dir == FIRING_DIRECTION::RIGHT) {
-			if (abs(physics.position.x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x) < max_dimensions.x) {
-				int width = abs(physics.position.x - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.x);
+			if (abs(physics.position.x - fired_point.x) < max_dimensions.x) {
+				int width = abs(physics.position.x - fired_point.x);
 				sprite.setTextureRect(sf::IntRect({ (int)(max_dimensions.x - width), 0 }, { width, (int)max_dimensions.y }));
 				bounding_box.dimensions.x = width;
 			} else {
@@ -247,8 +247,8 @@ namespace arms {
 
 		} else {
 			bounding_box.dimensions.x = max_dimensions.y;
-			if (abs(physics.position.y - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.y) < max_dimensions.x) {
-				int height = abs(physics.position.y - svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point.y);
+			if (abs(physics.position.y - fired_point.y) < max_dimensions.x) {
+				int height = abs(physics.position.y - fired_point.y);
 				sprite.setTextureRect(sf::IntRect({ (int)(max_dimensions.x - height), 0 }, { height, (int)max_dimensions.y }));
 				bounding_box.dimensions.y = height;
 			} else {

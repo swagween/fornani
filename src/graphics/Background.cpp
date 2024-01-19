@@ -34,11 +34,9 @@ void Background::update() {
     if(behavior.scrolling) {
         int idx = 0;
         for(auto& sprite : sprites) {
-            int camera_scalar = 0*(svc::cameraLocator.get().observed_velocity.x);
-            int new_speed = behavior.scroll_speed + camera_scalar;
-            int offset = idx * (-frames[idx] + new_speed);
+            int offset = idx * (-frames[idx] * behavior.scroll_speed);
             if(offset < -1920) {frames[idx] = 0; }
-            sprite.setPosition(idx * (-frames[idx] + new_speed), 0);
+            sprite.setPosition(idx * (-frames[idx] * behavior.scroll_speed), 0);
             ++idx;
         }
         for(auto& frame : frames) {
@@ -51,12 +49,14 @@ void Background::render(sf::RenderWindow &win, sf::Vector2<float>& campos, sf::V
     if(behavior.scrolling) {
         for(auto& sprite : sprites) {
             win.draw(sprite);
+            svc::counterLocator.get().at(svc::draw_calls)++;
         }
     } else if (!sprites.empty()) {
         for(int i = 0; i < mapdim.x / behavior.parallax_multiplier; i += tile_dim) {
             for(int j = 0; j < mapdim.y / behavior.parallax_multiplier; j += tile_dim) {
                 sprites.at(0).setPosition(i - behavior.parallax_multiplier * campos.x, j - behavior.parallax_multiplier * campos.y);
                 win.draw(sprites.at(0));
+                svc::counterLocator.get().at(svc::draw_calls)++;
             }
         }
     }

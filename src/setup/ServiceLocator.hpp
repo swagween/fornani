@@ -22,7 +22,9 @@
 
 namespace svc {
 
-	enum class bit_state {state, trigger};
+	enum class global_flags {greyblock_state, greyblock_trigger};
+	enum counters {draw_calls = 0};
+	const int num_counters = 1;
 
 	inline auto assetLocator = forloop::Service<AssetManager>::Instance{};
 	inline auto playerLocator = forloop::Service<Player>::Instance{};
@@ -31,7 +33,9 @@ namespace svc {
 	inline auto stateControllerLocator = forloop::Service<automa::StateController>::Instance{};
 	inline auto consoleLocator = forloop::Service<gui::Console>::Instance{};
 	inline auto randomLocator = forloop::Service<util::Random>::Instance{};
-	inline auto greyboxModeLocator = forloop::Service < util::BitFlags<bit_state> > ::Instance{};
+	inline auto globalBitFlagsLocator = forloop::Service<util::BitFlags<global_flags> >::Instance{};
+	inline auto counterLocator = forloop::Service< std::array<uint16_t, num_counters> >::Instance{};
+	inline auto floatReadoutLocator = forloop::Service<float>::Instance{};
 
 }
 

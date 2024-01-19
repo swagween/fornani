@@ -318,11 +318,11 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
         sprite.scale(-1.0f, 1.0f);
     }
     if (flags.state.test(State::alive)) {
-        if (svc::greyboxModeLocator.get().test(svc::bit_state::state)) {
+        if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 
-        }
-        else {
+        } else {
             win.draw(sprite);
+            svc::counterLocator.get().at(svc::draw_calls)++;
         }
     }
 

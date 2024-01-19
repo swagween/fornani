@@ -112,16 +112,19 @@ namespace gui {
 						sp_hearts.at(HP_FILLED).setPosition(HP_origin.x + i * heart_dimensions.x + i * HP_pad, HP_origin.y);
 					}
 					win.draw(sp_hearts.at(HP_FILLED));
+					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 				else {
 					sp_hearts.at(HP_GONE).setPosition(HP_origin.x + i * heart_dimensions.x + i * HP_pad, HP_origin.y);
 					win.draw(sp_hearts.at(HP_GONE));
+					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 			}
 
 			//ORB
 			sp_orb_text.at(orb_label_index).setPosition(ORB_origin.x, ORB_origin.y);
 			win.draw(sp_orb_text.at(orb_label_index));
+			svc::counterLocator.get().at(svc::draw_calls)++;
 			digits = std::to_string(num_orbs);
 			int ctr{ 0 };
 			for (auto& digit : digits) {
@@ -129,6 +132,7 @@ namespace gui {
 				if (digit - '0' >= 0 && digit - '0' < 10) {
 					sp_orb_text.at(digit - '0').setPosition(ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), ORB_origin.y);
 					win.draw(sp_orb_text.at(digit - '0'));
+					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 
 				ctr++;
@@ -143,16 +147,20 @@ namespace gui {
 					sp_guns_shadow.at(gun_index).setPosition(GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 					if(svc::playerLocator.get().loadout.equipped_weapon == svc::playerLocator.get().weapons_hotbar.at(i)) {
 						win.draw(sp_guns_shadow.at(gun_index));
+						svc::counterLocator.get().at(svc::draw_calls)++;
 						win.draw(sp_guns.at(gun_index));
+						svc::counterLocator.get().at(svc::draw_calls)++;
 						pointer_index = i;
 					} else {
 						win.draw(sp_guns_shadow.at(gun_index));
+						svc::counterLocator.get().at(svc::draw_calls)++;
 					}
 				}
 				arms::WEAPON_TYPE curr_type = svc::playerLocator.get().loadout.get_equipped_weapon().type;
 				sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color).setPosition(GUN_origin.x, GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
 				if (svc::playerLocator.get().weapons_hotbar.size() != 0) {
 					win.draw(sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color));
+					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 			
 		}
