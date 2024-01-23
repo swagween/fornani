@@ -2,18 +2,17 @@
 //  main.cpp
 //  For Nani
 //
-
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 //all services and providers included first
-#include "setup/ServiceLocator.hpp"
-#include "automa/StateManager.hpp"
-#include "setup/EnumLookups.hpp"
-#include "utils/Grid.hpp"
-#include "utils/Shape.hpp"
+#include "src/setup/ServiceLocator.hpp"
+#include "src/automa/StateManager.hpp"
+#include "src/setup/EnumLookups.hpp"
+#include "src/utils/Grid.hpp"
+#include "src/utils/Shape.hpp"
 
 #include <imgui-SFML.h>
 #include <imgui.h>

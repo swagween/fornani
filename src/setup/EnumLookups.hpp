@@ -17,6 +17,9 @@ namespace lookup {
 inline const float SPACING{ 32.0f };
 inline const int NUM_STYLES{21};
 
+const inline float unit_size_f{ 32.0f };
+const inline int unit_size_i{ 32 };
+
 enum class CONTROLS {
     JUMP,
     SHOOT,

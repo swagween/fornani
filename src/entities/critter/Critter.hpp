@@ -17,6 +17,7 @@
 #include "../../components/BehaviorComponent.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../utils/StateFunction.hpp"
+#include <djson/json.hpp>
 
 namespace critter {
 
@@ -25,6 +26,26 @@ namespace critter {
         SOLDIER,
         GRUB,
         GHOST
+    };
+
+    enum class CRITTER_TYPE {
+        hulmet,
+        tank,
+        bunker,
+        thug,
+        worker,
+        frdog,
+        jackdaw,
+        frcat,
+        biter,
+        bee,
+        roller,
+        snek,
+        behemoth,
+        stinger,
+        watchman,
+        gnat,
+        moth
     };
 
 inline std::unordered_map<int, sf::Texture&> get_critter_texture {
@@ -130,6 +151,7 @@ public:
     behavior::Behavior behavior{};
     behavior::DIR_LR facing_lr{};
     shape::Collider collider{};
+    std::vector<shape::Collider> hurtboxes{};
     shape::Shape alert_range{};
     shape::Shape hostile_range{};
     

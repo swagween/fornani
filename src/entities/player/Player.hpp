@@ -12,6 +12,7 @@
 #include "../../components/BehaviorComponent.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "../../utils/BitFlags.hpp"
+#include "Antenna.hpp"
 #include <array>
 #include <memory>
 
@@ -212,6 +213,8 @@ public:
     sf::Vector2<float> anchor_point{};
     sf::Vector2<float> hand_position{};
     sf::Vector2<float> sprite_offset{};
+
+    std::vector<entity::Antenna> antennae{};
     
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};

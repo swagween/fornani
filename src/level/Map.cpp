@@ -134,20 +134,42 @@ void Map::load(const std::string& path) {
         input.close();
     }
 
-    /*for(int i = 0; i < 4; ++i) {
-        critters.push_back(&bestiary.get_critter_at(i));
-        critters.back()->set_position({ i*4 * 32, 11 * 32 });
-        critters.back()->collider.physics.zero();
-    }
+    //get critter data
+    //zero the pool_counter
+    critter::pool_counter.fill(0);
+    input.open(path + "/map_critters.txt");
+    if (input.is_open()) {
+        while (!input.eof()) {
 
-    critters.push_back(&bestiary.get_critter_at(17));
-    critters.back()->set_position({ 15 * 32, 11 * 32 });
-    critters.back()->collider.physics.zero();*/
+            int id{}; sf::Vector2<int> pos{};
+
+            //extract id and position
+            input >> id; input.ignore();
+            input >> pos.x; input.ignore();
+            input >> pos.y; input.ignore();
+
+            //fetch the type
+            critter::CRITTER_TYPE type = critter::get_critter_type.at(id);
+
+            //push the critter
+            //which type of critter? and how deep into the pool are we?
+            critters.push_back(*bestiary.fetch_critter_of_type(type, critter::pool_counter.at(id)));
+            critters.back()->set_position({ pos.x * TILE_WIDTH, pos.y * TILE_WIDTH });
+            critters.back()->collider.physics.zero();
+            critter::pool_counter.at(id)++;
+
+        }
+        input.close();
+    }
 
     for(auto& critter : critters) {
 
         colliders.push_back(&critter->collider);
     
+    }
+    colliders.push_back(&svc::playerLocator.get().collider);
+    for(auto& a : svc::playerLocator.get().antennae) {
+        colliders.push_back(&a.collider);
     }
     colliders.push_back(&svc::playerLocator.get().collider);
 
@@ -164,6 +186,9 @@ void Map::update() {
 
     background->update();
     svc::playerLocator.get().collider.reset();
+    for (auto& a : svc::playerLocator.get().antennae) {
+        //a.collider.reset();
+    }
     for (auto& critter : critters) {
         critter->collider.reset();
     }

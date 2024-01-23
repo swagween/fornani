@@ -17,6 +17,13 @@ namespace critter {
             idle_action_queue.pop();
         }
 
+        //set colliders depending on animation state
+        for(auto& hurtbox : hurtboxes) {
+            //hurtbox.bounding_box.set_position(get_hurtbox_pos(i));
+        }
+
+        //hurtboxes.at(0).bounding_box.set_position(sf::Vector2<float>)
+
         state_function = state_function();
 	}
 

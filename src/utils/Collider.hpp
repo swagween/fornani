@@ -19,7 +19,6 @@ namespace shape {
 	const float default_jumpbox_height = 2.0f;
 	const float default_detector_width = 2.0f;
 	const float default_detector_height = 19.f;
-	const float default_detector_buffer = (default_dim - default_detector_height) / 2;
 
 	enum class State {
 		just_collided,
@@ -67,6 +66,7 @@ namespace shape {
 		util::BitFlags<State> flags{};
 
 		float landed_threshold{ 1.0f };
+		float detector_buffer{ 19.0f };
 
 		//prob not needed or used...
 		int left_aabb_counter{ 0 };

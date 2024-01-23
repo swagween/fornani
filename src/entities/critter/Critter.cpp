@@ -84,7 +84,8 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     win.draw(sprite);
     svc::counterLocator.get().at(svc::draw_calls)++;
     //collider.render(win, campos);
-    //win.draw(hurtbox);
+    win.draw(hurtbox);
+    svc::counterLocator.get().at(svc::draw_calls)++;
     sprite_flip();
 
     //draw health for debug

@@ -49,6 +49,8 @@ inline std::unordered_map<int, std::string> get_map_label {
     {310,     "WOODSHINE_HALL_01"   },
     {311,     "WOODSHINE_WAREHOUSE_01"   },
     {312,     "WOODSHINE_BRODY_02"   },
+    {313,     "WOODSHINE_CRAWL_01"   },
+    {314,     "WOODSHINE_CELLAR_01"   },
 
     {800,     "UNDER_LEDGE_01"       },
     {801,     "UNDER_HOME_01"       },

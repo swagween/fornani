@@ -17,6 +17,21 @@ Player::Player() {
     anchor_point = { collider.physics.position.x + PLAYER_WIDTH/2, collider.physics.position.y + PLAYER_HEIGHT/2};
     behavior.current_state = behavior::Behavior(behavior::idle);
     behavior.facing_lr = behavior::DIR_LR::RIGHT;
+    antennae.push_back(entity::Antenna( collider.physics.position, flcolor::dark_orange, 0.029f ));
+    antennae.push_back(entity::Antenna( collider.physics.position, flcolor::dark_orange, 0.029f ));
+
+    antennae.push_back(entity::Antenna(collider.physics.position, flcolor::bright_orange, 0.03f));
+    antennae.push_back(entity::Antenna(collider.physics.position, flcolor::bright_orange, 0.03f));
+
+        antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.62f, 0.62f}, 1.0f);
+        antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
+        antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.62f, 0.62f}, 1.0f);
+        antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
+
+        antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.65f, 0.65f}, 1.0f);
+        antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+        antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.65f, 0.65f}, 1.0f);
+        antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
     
     /*weapons_hotbar = {
         arms::WEAPON_TYPE::BRYNS_GUN,
@@ -26,8 +41,8 @@ Player::Player() {
     loadout.equipped_weapon = weapons_hotbar.at(0);*/
     
     //sprites
-    assign_texture(svc::assetLocator.get().t_nani);
-    sprite.setTexture(svc::assetLocator.get().t_nani);
+    assign_texture(svc::assetLocator.get().t_nani_unarmed);
+    sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
     
 }
 
@@ -274,7 +289,6 @@ void Player::update(Time dt) {
     }
     
     collider.physics.update_euler();
-    
     collider.sync_components();
     
     //for parameter tweaking, remove later
@@ -292,6 +306,26 @@ void Player::update(Time dt) {
     update_behavior();
     apparent_position.x = collider.physics.position.x + PLAYER_WIDTH/2;
     apparent_position.y = collider.physics.position.y;
+
+    //antennae!
+    sf::Vector2<float> antenna_offset{ 7.0f, -15.0f };
+    int ctr{ 0 };
+    for (auto& a : antennae) {
+        a.set_target_position(collider.physics.position + antenna_offset);
+        a.update();
+        a.collider.sync_components();
+        antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.0f;
+        ++ctr;
+    }
+
+    if(!weapons_hotbar.empty()) {
+        assign_texture(svc::assetLocator.get().t_nani);
+        sprite.setTexture(svc::assetLocator.get().t_nani);
+    } else {
+        assign_texture(svc::assetLocator.get().t_nani_unarmed);
+        sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
+    }
+
 }
 
 void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
@@ -326,8 +360,12 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
         }
     }
 
-    loadout.get_equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(loadout.get_equipped_weapon().type));
-    loadout.get_equipped_weapon().render(win, campos);
+    if (!weapons_hotbar.empty()) {
+        loadout.get_equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(loadout.get_equipped_weapon().type));
+        loadout.get_equipped_weapon().render(win, campos);
+    }
+
+    for (auto& a : antennae) { a.render(win, campos); }
     
 }
 
@@ -453,6 +491,14 @@ void Player::update_behavior() {
 void Player::set_position(sf::Vector2<float> new_pos) {
     collider.physics.position = new_pos;
     collider.sync_components();
+    sf::Vector2<float> antenna_offset{ 7.0f, -15.0f };
+    int ctr{ 0 };
+    for (auto& a : antennae) {
+        a.update();
+        a.collider.physics.position = collider.physics.position + antenna_offset;
+        antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.0f;
+        ++ctr;
+    }
 }
 
 void Player::update_direction() {

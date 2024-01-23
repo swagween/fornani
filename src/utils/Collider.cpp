@@ -37,11 +37,13 @@ namespace shape {
 		right_detector.dimensions = sf::Vector2<float>(default_detector_width, default_detector_height);
 		hurtbox.dimensions = sf::Vector2<float>(dim.x / 2, dim.y / 2);
 
+		detector_buffer = (dim.y - left_detector.dimensions.y) / 2;
+
 		bounding_box.position = start_pos;
 		predictive_bounding_box.position = start_pos;
 		jumpbox.position = sf::Vector2<float>(start_pos.x, start_pos.y + dim.y);
-		left_detector.position = sf::Vector2<float>(start_pos.x - left_detector.dimensions.x, start_pos.y + default_detector_buffer);
-		right_detector.position = sf::Vector2<float>(start_pos.x + dim.x, start_pos.y + default_detector_buffer);
+		left_detector.position = sf::Vector2<float>(start_pos.x - left_detector.dimensions.x, start_pos.y + detector_buffer);
+		right_detector.position = sf::Vector2<float>(start_pos.x + dim.x, start_pos.y + detector_buffer);
 		hurtbox.position = sf::Vector2<float>(start_pos.x + (dim.x / 2) - (hurtbox.dimensions.x / 2), start_pos.y + (dim.y / 2) - (hurtbox.dimensions.y / 2));
 
 	}
@@ -60,11 +62,13 @@ namespace shape {
 			flags.reset(State::is_colliding_with_level);
 		}
 
+		detector_buffer = (dimensions.y - left_detector.dimensions.y) / 2;
+
 		bounding_box.set_position(physics.position);
 		predictive_bounding_box.set_position(physics.position + physics.velocity);
 		jumpbox.set_position(sf::Vector2<float>{ physics.position.x, physics.position.y + dimensions.y});
-		left_detector.set_position(sf::Vector2<float>{ physics.position.x - default_detector_width, physics.position.y + default_detector_buffer});
-		right_detector.set_position(sf::Vector2<float>{ physics.position.x + dimensions.x, physics.position.y + default_detector_buffer});
+		left_detector.set_position(sf::Vector2<float>{ physics.position.x - default_detector_width, physics.position.y + detector_buffer});
+		right_detector.set_position(sf::Vector2<float>{ physics.position.x + dimensions.x, physics.position.y + detector_buffer});
 		hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x / 2) - (hurtbox.dimensions.x / 2), physics.position.y + (dimensions.y / 2) - (hurtbox.dimensions.y / 2)));
 
 	}
@@ -119,22 +123,24 @@ namespace shape {
 				if (is_ceiling_ramp && !flags.test(State::grounded)) {
 					float xdist = physics.position.x - predictive_bounding_box.position.x;
 					float correction = xdist + physics.mtv.x;
-					physics.position.x += 1.2 * correction;
+					physics.position.x += 1.01 * correction;
 					//dont correct x if player is jumping in opposite direction of ramp slope
 					if (physics.mtv.x * physics.velocity.x < 0.0f && abs(physics.velocity.x) > 0.01f) { 
 						physics.velocity.x *= 0.2f;
 					}
-					physics.position.y += 2 * physics.mtv.y;
-				} else if (!is_ground_ramp) {
-					float xdist = physics.position.x - predictive_bounding_box.position.x;
-					float correction = xdist + physics.mtv.x;
-					physics.position.x += correction;
-					svc::floatReadoutLocator.get() = correction;
+					float ydist = physics.position.y - predictive_bounding_box.position.y;
+					correction = ydist + physics.mtv.y;
+					physics.position.y += 1.01 * correction;
+				
 				}  else {
 					float xdist = predictive_bounding_box.position.x - physics.position.x;
 					float correction = xdist + physics.mtv.x;
 					//physics.position.x += correction;
-					physics.position.x += physics.mtv.x;
+					physics.position.x += correction;
+					float ydist = physics.position.y - predictive_bounding_box.position.y;
+					correction = ydist + physics.mtv.y;
+					physics.position.y += 1.01 * correction;
+					svc::floatReadoutLocator.get() = correction;
 				}
 				sync_components();
 			}
@@ -229,9 +235,7 @@ namespace shape {
 		box.setSize(dimensions);
 		box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
 		box.setFillColor(sf::Color{ 50, 60, 230, 80 });
-		box.setOutlineColor(flcolor::white);
-		box.setOutlineThickness(-1);
-		win.draw(box);
+		//win.draw(box);
 		box.setSize(dimensions);
 		box.setPosition(predictive_bounding_box.position.x - cam.x, predictive_bounding_box.position.y - cam.y);
 		if (flags.test(State::has_left_collision)) {
@@ -241,8 +245,6 @@ namespace shape {
 		} else {
 			box.setFillColor(sf::Color{ 230, 230, 10, 70 });
 		}
-		box.setOutlineColor(flcolor::fucshia);
-		box.setOutlineThickness(-1);
 		win.draw(box);
 		box.setSize(sf::Vector2<float>{(float)left_detector.dimensions.x, (float)left_detector.dimensions.y});
 		box.setPosition(left_detector.position.x - cam.x, left_detector.position.y - cam.y);
@@ -255,7 +257,7 @@ namespace shape {
 		box.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});
 		box.setPosition(hurtbox.position.x - cam.x, hurtbox.position.y - cam.y);
 		box.setFillColor(flcolor::goldenrod);
-		win.draw(box);
+		//win.draw(box);
 
 	}
 	void Collider::reset() {
