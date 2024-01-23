@@ -166,6 +166,12 @@ static void show_overlay() {
                     ImGui::SameLine();
                     if (svc::playerLocator.get().collider.flags.test(shape::State::has_left_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     if (svc::playerLocator.get().collider.flags.test(shape::State::is_any_jump_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Has Top Collision: ");
+                    ImGui::SameLine();
+                    if (svc::playerLocator.get().collider.flags.test(shape::State::has_top_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Has Bottom Collision: ");
+                    ImGui::SameLine();
+                    if (svc::playerLocator.get().collider.flags.test(shape::State::has_bottom_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
 
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);

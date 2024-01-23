@@ -25,6 +25,8 @@ namespace shape {
 		is_colliding_with_level,
 		has_left_collision,
 		has_right_collision,
+		has_top_collision,
+		has_bottom_collision,
 		is_any_jump_collision,
 		is_any_collision,
 		just_landed,
@@ -38,6 +40,7 @@ namespace shape {
 	};
 
 	class Collider {
+
 	public:
 
 		Collider();
@@ -59,6 +62,8 @@ namespace shape {
 		Shape jumpbox{};
 		Shape left_detector{};
 		Shape right_detector{};
+		Shape top_detector{};
+		Shape bottom_detector{};
 		Shape hurtbox{};
 
 		PhysicsStats stats{};
@@ -68,10 +73,6 @@ namespace shape {
 		float landed_threshold{ 1.0f };
 		float detector_buffer{ 19.0f };
 
-		//prob not needed or used...
-		int left_aabb_counter{ 0 };
-		int right_aabb_counter{ 0 };
-
 		sf::Vector2<float>dimensions{};
 
 		bool spike_trigger{};
@@ -80,6 +81,7 @@ namespace shape {
 
 		sf::RectangleShape box{};
 		std::vector<std::string> inst;
+
 
 	};
 

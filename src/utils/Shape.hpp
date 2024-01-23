@@ -18,7 +18,7 @@
 
 namespace shape {
 
-    const double error = 0.01f;
+    const double error = 0.0001f;
 
     class Shape {
 

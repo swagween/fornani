@@ -171,7 +171,6 @@ void Map::load(const std::string& path) {
     for(auto& a : svc::playerLocator.get().antennae) {
         colliders.push_back(&a.collider);
     }
-    colliders.push_back(&svc::playerLocator.get().collider);
 
     transition.fade_in = true;
     svc::playerLocator.get().unrestrict_inputs();
@@ -187,8 +186,9 @@ void Map::update() {
     background->update();
     svc::playerLocator.get().collider.reset();
     for (auto& a : svc::playerLocator.get().antennae) {
-        //a.collider.reset();
+        a.collider.reset();
     }
+
     for (auto& critter : critters) {
         critter->collider.reset();
     }
@@ -201,8 +201,8 @@ void Map::update() {
     for(auto& collider : colliders) {
         for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
             cell.collision_check = false;
-            if (abs(cell.bounding_box.position.x - collider->bounding_box.position.x) > collider->dimensions.x * barrier ||
-                abs(cell.bounding_box.position.y - collider->bounding_box.position.y) > collider->dimensions.y * (barrier - 1)) {
+            if (abs(cell.bounding_box.position.x - collider->bounding_box.position.x) > lookup::unit_size_i * barrier ||
+                abs(cell.bounding_box.position.y - collider->bounding_box.position.y) > lookup::unit_size_i * (barrier - 1)) {
                 continue;
             }
             else {
@@ -217,8 +217,8 @@ void Map::update() {
 
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& proj : active_projectiles) {
-            if(abs(cell.bounding_box.position.x - proj.bounding_box.position.x) > PLAYER_WIDTH * barrier ||
-               abs(cell.bounding_box.position.y - proj.bounding_box.position.y) > PLAYER_HEIGHT * barrier) {
+            if(abs(cell.bounding_box.position.x - proj.bounding_box.position.x) > lookup::unit_size_i * barrier ||
+               abs(cell.bounding_box.position.y - proj.bounding_box.position.y) > lookup::unit_size_i * barrier) {
                 continue;
             } else {
                 cell.collision_check = true;
@@ -244,8 +244,8 @@ void Map::update() {
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
         for(auto& emitter : active_emitters) {
             for(auto& particle : emitter.get_particles()) {
-                if(abs(cell.bounding_box.position.x - particle.bounding_box.position.x) > PLAYER_WIDTH * barrier ||
-                   abs(cell.bounding_box.position.y - particle.bounding_box.position.y) > PLAYER_HEIGHT * barrier) {
+                if(abs(cell.bounding_box.position.x - particle.bounding_box.position.x) > lookup::unit_size_i * barrier ||
+                   abs(cell.bounding_box.position.y - particle.bounding_box.position.y) > lookup::unit_size_i * barrier) {
                     continue;
                 } else {
                     cell.collision_check = true;

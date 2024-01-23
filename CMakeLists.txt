@@ -76,6 +76,10 @@ src/entities/world/Inspectable.hpp
 src/entities/world/Inspectable.cpp
 src/entities/world/Animator.hpp
 src/entities/world/Animator.cpp
+src/entities/item/Drop.hpp
+src/entities/item/Drop.cpp
+src/entities/item/Loot.hpp
+src/entities/item/Loot.cpp
 src/weapon/Weapon.hpp
 src/weapon/Weapon.cpp
 src/weapon/Arsenal.hpp

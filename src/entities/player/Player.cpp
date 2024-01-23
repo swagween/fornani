@@ -23,9 +23,9 @@ Player::Player() {
     antennae.push_back(entity::Antenna(collider.physics.position, flcolor::bright_orange, 0.03f));
     antennae.push_back(entity::Antenna(collider.physics.position, flcolor::bright_orange, 0.03f));
 
-        antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.62f, 0.62f}, 1.0f);
+        antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.63f, 0.63f}, 1.0f);
         antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
-        antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.62f, 0.62f}, 1.0f);
+        antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.63f, 0.63f}, 1.0f);
         antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
 
         antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.65f, 0.65f}, 1.0f);

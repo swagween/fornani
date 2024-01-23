@@ -27,6 +27,7 @@ namespace entity {
 
 		collider.physics.update_dampen();
 		collider.sync_components();
+		//collider.reset();
 
 	}
 
@@ -50,10 +51,13 @@ namespace entity {
 	void Antenna::render(sf::RenderWindow& win, Vec campos) {
 
 		box.setPosition((int)(collider.bounding_box.position.x - campos.x), (int)(collider.bounding_box.position.y - campos.y));
-		//win.draw(box);
-		svc::counterLocator.get().at(svc::draw_calls)++;
 
-		collider.render(win, campos);
+		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+			collider.render(win, campos);
+		} else {
+			win.draw(box);
+		}
+		svc::counterLocator.get().at(svc::draw_calls)++;
 
 	}
 } // end entity
