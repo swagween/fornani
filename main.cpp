@@ -360,10 +360,10 @@ static void show_overlay() {
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SKY_COLLISIONROOM_01");
                         svc::playerLocator.get().set_position({ 5 * 32, 5 * 32 });
                     }
-                    if (ImGui::Button("Shaft")) {
+                    if (ImGui::Button("Grub Dojo")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_SHAFT_01");
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/GRUB_DOJO_01");
                         svc::playerLocator.get().set_position({ 3 * 32, 8 * 32 });
                     }
                     /*if (ImGui::Button("Atrium")) {
@@ -440,7 +440,8 @@ void run(char** argv) {
     svc::assetLocator.get().load_audio();
     
     //state manager
-    SM.set_current_state(std::make_unique<automa::GameState>());
+    SM.set_current_state(std::make_unique<flstates::MainMenu>());
+    SM.get_current_state().init(svc::assetLocator.get().resource_path);
     
     window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "For Nani (beta v1.0)");
 
@@ -516,11 +517,11 @@ void run(char** argv) {
                     }
                     if (event.key.code == sf::Keyboard::Q) {
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());
+                        SM.get_current_state().init(svc::assetLocator.get().resource_path);
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_PRISON_01");
-                        svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
                         svc::assetLocator.get().dusken_cove.setVolume(svc::assetLocator.get().music_vol);
                         //svc::assetLocator.get().dusken_cove.play();
                         svc::assetLocator.get().dusken_cove.setLoop(true);

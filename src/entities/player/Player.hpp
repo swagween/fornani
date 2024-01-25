@@ -16,7 +16,7 @@
 #include <array>
 #include <memory>
 
-const float PLAYER_WIDTH = 24.0f;
+const float PLAYER_WIDTH = 18.0f;
 const float PLAYER_HEIGHT = 24.0f;
 const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
@@ -213,8 +213,11 @@ public:
     sf::Vector2<float> anchor_point{};
     sf::Vector2<float> hand_position{};
     sf::Vector2<float> sprite_offset{};
+    sf::Vector2<float> sprite_dimensions{};
+    sf::Vector2<float> sprite_position{};
 
     std::vector<entity::Antenna> antennae{};
+    sf::Vector2<float> antenna_offset{ 4.f, -13.f};
     
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};

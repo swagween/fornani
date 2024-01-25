@@ -27,6 +27,14 @@ namespace critter {
         state_function = state_function();
 	}
 
+    void Frdog::load_data() {
+        constexpr auto text = R"({ "xdim": 72, "ydim": 48 })";
+        auto const stats = dj::Json::parse(text);
+        assert(!stats.is_null());
+        sprite_dimensions.x = stats["xdim"].as<int>();
+        sprite_dimensions.y = stats["ydim"].as<int>();
+    }
+
 	fsm::StateFunction Frdog::update_idle() {
         if (behavior.start()) { behavior = behavior::Behavior(behavior::frdog_idle); behavior.params.started = false; }
 		if (abs(collider.physics.velocity.x) > 0.0002f) { behavior.params.started = true; return BIND(update_run); }

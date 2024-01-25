@@ -50,6 +50,7 @@ namespace shape {
 		void handle_map_collision(const Shape& cell, lookup::TILE_TYPE tile_type);
 		void handle_platform_collision(const Shape& cell);
 		void handle_spike_collision(const Shape& cell);
+		void handle_collider_collision(const Shape& collider);
 		void update();
 		void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 		void reset();

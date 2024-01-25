@@ -259,6 +259,80 @@ namespace shape {
 		}
 	}
 
+	void Collider::handle_collider_collision(const Shape& collider) {
+
+		if (predictive_bounding_box.SAT(collider)) {
+
+			//set mtv
+			physics.mtv = predictive_bounding_box.testCollisionGetMTV(predictive_bounding_box, collider);
+
+			//handle top detector collisions before general case
+			sf::Vector2<float> detector_mtv = top_detector.testCollisionGetMTV(top_detector, collider);
+			detector_mtv = top_detector.testCollisionGetMTV(top_detector, collider);
+			if (top_detector.SAT(collider)) {
+				flags.set(State::has_top_collision);
+				flags.set(State::ceiling_collision);
+				physics.acceleration.y = 0.0f;
+				physics.velocity.y = 0.0f;
+				physics.position.y += abs(detector_mtv.y);
+
+			}
+			detector_mtv = bottom_detector.testCollisionGetMTV(bottom_detector, collider);
+			if (bottom_detector.SAT(collider)) {
+				flags.set(State::has_bottom_collision);
+				physics.acceleration.y = 0.0f;
+				physics.velocity.y = 0.0f;
+				physics.position.y -= abs(detector_mtv.y);
+				svc::floatReadoutLocator.get() = detector_mtv.y;
+
+			}
+
+			auto ydist = predictive_bounding_box.position.y - physics.position.y;
+			auto correction = ydist + physics.mtv.y;
+			physics.position.y += correction;
+			physics.velocity.y = 0.0f;
+			physics.acceleration.y = 0.0f;
+			sync_components();
+
+			//do this again in case there is an unusual outcome from the above checks
+			auto temp_mtv = bounding_box.testCollisionGetMTV(bounding_box, collider);
+			physics.position.x += temp_mtv.x;
+			physics.position.y += temp_mtv.y;
+
+			physics.mtv = { 0.0f, 0.0f };
+			flags.set(State::just_collided);
+			flags.set(State::is_colliding_with_level);
+		}
+
+		sf::Vector2<float> detector_mtv = left_detector.testCollisionGetMTV(left_detector, collider);
+		bool left_collision = physics.velocity.x < 0.0f;
+		if (left_detector.SAT(collider) && left_collision) {
+			if (!flags.test(State::just_landed)) {
+				flags.set(State::has_left_collision);
+				physics.acceleration.x = 0.0f;
+				physics.velocity.x = 0.0f;
+				physics.position.x += detector_mtv.x;
+			}
+		}
+
+		detector_mtv = right_detector.testCollisionGetMTV(right_detector, collider);
+		if (right_detector.SAT(collider) && !left_collision) {
+			if (!flags.test(State::just_landed)) {
+				flags.set(State::has_right_collision);
+				physics.acceleration.x = 0.0f;
+				physics.velocity.x = 0.0f;
+				physics.position.x += detector_mtv.x;
+			}
+		}
+		if (jumpbox.SAT(collider)) {
+			flags.set(State::grounded);
+			flags.set(State::is_any_jump_collision);
+		} else {
+			flags.reset(State::grounded);
+		}
+
+	}
+
 	void Collider::update() {
 		if (!flags.test(State::is_colliding_with_level)) { physics.mtv = { 0.0f, 0.0f }; }
 		flags.reset(State::just_collided);

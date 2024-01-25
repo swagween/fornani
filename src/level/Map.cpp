@@ -197,7 +197,6 @@ void Map::update() {
     auto barrier = 3.0f;
 
     //someday, I will have a for(auto& entity : entities) loop and the player will be included in that
-
     for(auto& collider : colliders) {
         for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
             cell.collision_check = false;
@@ -234,8 +233,11 @@ void Map::update() {
                             active_emitters.back().update();
                             svc::assetLocator.get().shatter.play();
                         }
+                    } else if(cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) {
+                        continue;
+                    } else {
+                        proj.destroy(false);
                     }
-                    proj.destroy(false);
                 }
             }
         }
@@ -282,6 +284,9 @@ void Map::update() {
     }
     
     for(auto& critter : critters) {
+
+        //handle collision
+        svc::playerLocator.get().collider.handle_collider_collision(critter->collider.bounding_box);
 
         critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
         //critter->random_walk(sf::Vector2<int>(120, 180));
@@ -494,14 +499,14 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
     if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
         background->render(win, cam, real_dimensions);
-    }else {
+    } else {
         sf::RectangleShape box{};
         box.setPosition(0, 0);
         box.setFillColor(flcolor::black);
         box.setSize({ (float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y });
         win.draw(box);
         svc::counterLocator.get().at(svc::draw_calls)++;
-        }
+    }
     if (real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(real_dimensions); }
     for(auto& layer : layers) {
         if(layer.render_order < 4) {

@@ -26,6 +26,7 @@ namespace critter {
 		}
 
 		void unique_update() override;
+		void load_data() override;
 		
 		fsm::StateFunction state_function = std::bind(&Hulmet::update_idle, this);
 		fsm::StateFunction update_idle();

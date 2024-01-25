@@ -12,6 +12,7 @@
 #include <list>
 #include <unordered_map>
 #include <queue>
+#include <assert.h>
 #include "../../setup/ServiceLocator.hpp"
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/BehaviorComponent.hpp"
@@ -116,6 +117,7 @@ public:
     ~Critter() {}
 
     virtual void unique_update() {};
+    virtual void load_data() {};
     virtual void sprite_flip();
     
     void init();

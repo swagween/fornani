@@ -13,6 +13,9 @@ namespace critter {
 		state_function = state_function();
 	}
 
+	void Hulmet::load_data() {
+	}
+
 	fsm::StateFunction Hulmet::update_idle() {
 		if (behavior.params.complete) { behavior = behavior::Behavior(behavior::hulmet_idle); }
 		if (flags.turning) {

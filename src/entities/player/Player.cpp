@@ -23,15 +23,17 @@ Player::Player() {
     antennae.push_back(entity::Antenna(collider.physics.position, flcolor::bright_orange, 0.03f));
     antennae.push_back(entity::Antenna(collider.physics.position, flcolor::bright_orange, 0.03f));
 
-        antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.63f, 0.63f}, 1.0f);
+        antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.73f, 0.73f}, 1.0f);
         antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
-        antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.63f, 0.63f}, 1.0f);
+        antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.73f, 0.73f}, 1.0f);
         antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
 
-        antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.65f, 0.65f}, 1.0f);
+        antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.75f, 0.75f}, 1.0f);
         antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
-        antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.65f, 0.65f}, 1.0f);
+        antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.75f, 0.75f}, 1.0f);
         antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+
+        sprite_dimensions = { 48.f, 48.f };
     
     /*weapons_hotbar = {
         arms::WEAPON_TYPE::BRYNS_GUN,
@@ -308,13 +310,17 @@ void Player::update(Time dt) {
     apparent_position.y = collider.physics.position.y;
 
     //antennae!
-    sf::Vector2<float> antenna_offset{ 7.0f, -15.0f };
     int ctr{ 0 };
     for (auto& a : antennae) {
         a.set_target_position(collider.physics.position + antenna_offset);
         a.update();
         a.collider.sync_components();
-        antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.0f;
+        a.collider.handle_collider_collision(collider.bounding_box);
+        if (behavior.facing_lr == behavior::DIR_LR::RIGHT) {
+            antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;
+        } else {
+            antenna_offset.x = ctr % 2 == 0 ? 2.f : 13.f;
+        }
         ++ctr;
     }
 
@@ -338,7 +344,7 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
     int v = (int)(behavior.get_frame() % NANI_SPRITESHEET_HEIGHT) * NANI_SPRITE_WIDTH;
     sprite.setTextureRect(sf::IntRect({u, v}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
     sprite.setOrigin(NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2);
-    sprite.setPosition(player_pos.x, player_pos.y + sprite_offset.y);
+    sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
     
     //flip the sprite based on the player's direction
     sf::Vector2<float> right_scale = {1.0f, 1.0f};
@@ -357,6 +363,7 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
         } else {
             win.draw(sprite);
             svc::counterLocator.get().at(svc::draw_calls)++;
+            collider.render(win, campos);
         }
     }
 
@@ -390,8 +397,9 @@ void Player::flash_sprite() {
 }
 
 void Player::calculate_sprite_offset() {
-    if (!collider.on_ramp()) { sprite_offset.y = 0.0f; return; }
-    //sprite_offset.y = behavior.facing_lr == behavior::DIR_LR::RIGHT ? 10.f : 15.f;
+    sprite_offset.y = 0.f;
+    if (collider.flags.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
+    sprite_position = { collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y };
 
 }
 
@@ -491,7 +499,6 @@ void Player::update_behavior() {
 void Player::set_position(sf::Vector2<float> new_pos) {
     collider.physics.position = new_pos;
     collider.sync_components();
-    sf::Vector2<float> antenna_offset{ 7.0f, -15.0f };
     int ctr{ 0 };
     for (auto& a : antennae) {
         a.update();

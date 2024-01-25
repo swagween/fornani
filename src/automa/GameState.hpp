@@ -75,26 +75,167 @@ namespace flstates {
 	class MainMenu : public automa::GameState {
 	public:
 
+		enum class MenuSelection {
+			new_game,
+			load_game,
+			options
+		};
 
+		std::unordered_map<MenuSelection, int> menu_selection_id{
+			{MenuSelection::new_game, 0}, {MenuSelection::load_game, 1}, {MenuSelection::options, 2}
+		};
+
+		//5, 8, 11
 		MainMenu() {
 			state = automa::STATE::STATE_MENU;
+			svc::cameraLocator.get().set_position({ 1, 1 });
 		};
 		void init(const std::string& load_path) {
+
+			selection_width = 92;
+			selection_buffer = 14;
+			title_buffer = 70;
+			top_buffer = 296;
+			middle = (int)cam::screen_dimensions.x / 2;
+			int selection_point = middle - selection_width / 2;
+
+			new_rect = { { middle - 20, top_buffer }, { 40, 10 } };
+			load_rect = { { middle - 24, top_buffer + selection_buffer + new_rect.getSize().y }, { 50, 16 } };
+			options_rect = { { middle - 46, top_buffer + (selection_buffer * 2) + new_rect.getSize().y + load_rect.getSize().y}, { 92, 22 } };
+
+			selection = MenuSelection::new_game;
+			left_dot = entity::Antenna({ new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y }, flcolor::ui_white, 0.0008f);
+			right_dot = entity::Antenna({ new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y }, flcolor::ui_white, 0.0008f);
+
+			left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.983f, 0.983f}, 1.0f);
+			left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(0.5f, 0.5f);
+			right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.983f, 0.983f}, 1.0f);
+			right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(0.5f, 0.5f);
+
+			left_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(new_rect.getPosition()));
+			right_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(new_rect.getPosition() + new_rect.getSize()));
+			left_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(new_rect.getPosition()));
+			right_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(new_rect.getPosition() + new_rect.getSize()));
+
+
+			int y_height_counter{ 0 };
+			for (auto i = 0; i < 6; ++i) {
+
+				//the menu options have different sprite heights
+				int height{};
+				switch (i % 3) {
+				case 0: height = 10; break;
+				case 1: height = 16; break;
+				case 2: height = 22; break;
+				}
+
+				title_assets.push_back(sf::Sprite{ svc::assetLocator.get().t_title_assets, sf::IntRect({0, y_height_counter}, {selection_width, height }) });
+
+				switch (i % 3) {
+				case 0: title_assets.at(i).setPosition(selection_point, new_rect.getPosition().y); break;
+				case 1: title_assets.at(i).setPosition(selection_point, load_rect.getPosition().y); break;
+				case 2: title_assets.at(i).setPosition(selection_point, options_rect.getPosition().y); break;
+				}
+
+				y_height_counter += height;
+
+			}
+			
+			title = sf::Sprite{ svc::assetLocator.get().t_title, sf::IntRect({ 0, 0 }, { (int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y }) };
+
 		}
-		void setTilesetTexture(sf::Texture& t) {
-		}
+
+		void setTilesetTexture(sf::Texture& t) {}
+
 		void handle_events(sf::Event& event) {
 
 			if (event.type == sf::Event::EventType::KeyPressed) {
+				if(event.key.code == sf::Keyboard::Down) {
+					selection = (menu_selection_id.at(selection) % 3 == 2) ? MenuSelection::new_game : (MenuSelection)(menu_selection_id.at(selection) + 1);
+				}
+				if (event.key.code == sf::Keyboard::Up) {
+					selection = (menu_selection_id.at(selection) % 3 == 0) ? MenuSelection::options : (MenuSelection)(menu_selection_id.at(selection) - 1);
+				}
+				if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
+					if (selection == MenuSelection::new_game) {
+						svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
+						svc::stateControllerLocator.get().trigger = true;
+
+					}
+					if (selection == MenuSelection::load_game) {
+						//todo: implement saving and loading
+						svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
+						svc::stateControllerLocator.get().trigger = true;
+					}
+					if (selection == MenuSelection::options) {
+						//todo: make options menu
+
+					}
+				}
 			}
 
 		}
 
-		void logic() {}
+		void logic() {
+			left_dot.update();
+			right_dot.update();
+			switch (selection) {
+			case MenuSelection::new_game:
+				dot_pad.y = 5.f;
+				left_dot.set_target_position({ new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y });
+				right_dot.set_target_position({ new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y });
+				break;
+			case MenuSelection::load_game:
+				dot_pad.y = 8.f;
+				left_dot.set_target_position({ load_rect.getPosition().x - dot_pad.x, load_rect.getPosition().y + dot_pad.y });
+				right_dot.set_target_position({ load_rect.getPosition().x + load_rect.width + dot_pad.x, load_rect.getPosition().y + dot_pad.y });
+				break;
+			case MenuSelection::options:
+				dot_pad.y = 11.f;
+				left_dot.set_target_position({ options_rect.getPosition().x - dot_pad.x, options_rect.getPosition().y + dot_pad.y });
+				right_dot.set_target_position({ options_rect.getPosition().x + options_rect.width + dot_pad.x, options_rect.getPosition().y + dot_pad.y });
+				break;
+			}
+		}
 
 		void render(sf::RenderWindow& win) {
+			win.draw(title);
+			svc::counterLocator.get().at(svc::draw_calls)++;
+
+			int selection_adjustment{};
+			for (auto i = 0; i < 3; ++i) {
+				if (i == menu_selection_id.at(selection)) { selection_adjustment = 3; } else { selection_adjustment = 0; }
+				if (i + selection_adjustment < 6) {
+					win.draw(title_assets.at(i + selection_adjustment));
+					svc::counterLocator.get().at(svc::draw_calls)++;
+				}
+			}
+
+			left_dot.render(win, { 0, 0 });
+			right_dot.render(win, { 0, 0 });
 
 		}
+
+		//title textures
+		sf::Sprite title{};
+		std::vector<sf::Sprite> title_assets{};
+
+		MenuSelection selection{};
+
+		int selection_width{};
+		int selection_buffer{};
+		int title_buffer{};
+		int top_buffer{};
+		int middle{};
+
+		sf::IntRect new_rect{};
+		sf::IntRect load_rect{};
+		sf::IntRect options_rect{};
+
+		entity::Antenna left_dot{};
+		entity::Antenna right_dot{};
+		sf::Vector2<float> dot_pad{ 24.f, 8.f };
+
 	};
 
 	// =======================================================================
@@ -140,7 +281,7 @@ namespace flstates {
 				}
 			}
 			if (!found_one) {
-				svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
+				svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 319.6582f));
 			}
 
 			//        svc::assetLocator.get().abandoned.setVolume(50);

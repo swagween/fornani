@@ -58,6 +58,7 @@ public:
         
         t_alphabet.loadFromFile(resource_path + "/image/gui/alphabet.png");
         
+        //backgrounds
         t_bg_dusk.loadFromFile(resource_path + "/image/background/dusk.png");
         t_bg_opensky.loadFromFile(resource_path + "/image/background/opensky.png");
         t_bg_overcast.loadFromFile(resource_path + "/image/background/overcast.png");
@@ -70,6 +71,11 @@ public:
 
         t_large_animators.loadFromFile(resource_path + "/image/animators/large_animators_01.png");
         t_small_animators.loadFromFile(resource_path + "/image/animators/small_animators_01.png");
+
+        //title stuff
+        t_title.loadFromFile(resource_path + "/image/gui/title.png");
+        t_title_assets.loadFromFile(resource_path + "/image/gui/title_assets.png");
+
         
         //load all the other textures...
         
@@ -242,6 +248,8 @@ public:
     
     //gui
     sf::Texture t_ui{};
+    sf::Texture t_title{};
+    sf::Texture t_title_assets{};
 
     sf::Texture t_hud_orb_font{};
     sf::Texture t_hud_hearts{};
