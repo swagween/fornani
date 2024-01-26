@@ -1,38 +1,39 @@
 //
-//  Antenna.hpp
+//  Attractor.hpp
 //  entity
 //
 //
 
 #pragma once
 
-#include "../../utils/Collider.hpp"
+#include "../utils/Collider.hpp"
 #include <string>
 
-namespace entity {
+namespace vfx {
 
-	class Antenna {
+	class Attractor {
 
 	public:
 
 		using Vec = sf::Vector2<float>;
 		using Vecu16 = sf::Vector2<uint32_t>;
 
-		Antenna() = default;
-		Antenna(Vec pos, sf::Color col, float agf);
+		Attractor() = default;
+		Attractor(Vec pos, sf::Color col, float agf, Vec size = {4.f, 4.f});
 		void update();
 		void set_target_position(Vec new_position);
 		void render(sf::RenderWindow& win, Vec campos);
 
 		shape::Collider collider{};
 		Vecu16 scaled_position{};
+		Vec dimensions{};
 
 		sf::Color color{};
 		sf::RectangleShape box{};
-		float antenna_gravity_force{};
+		float attractor_gravity_force{};
 
 	};
 
-} // end entity
+} // end vfx
 
-/* Antenna_hpp */
+/* Attractor_hpp */

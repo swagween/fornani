@@ -14,6 +14,7 @@ namespace critter {
 	}
 
 	void Hulmet::load_data() {
+		colliders.push_back(shape::Collider());
 	}
 
 	fsm::StateFunction Hulmet::update_idle() {

@@ -14,14 +14,17 @@ Player::Player() {
     
     collider = shape::Collider(sf::Vector2<float>{ PLAYER_WIDTH, PLAYER_HEIGHT }, sf::Vector2<float>{ PLAYER_START_X, PLAYER_START_Y });
     collider.physics = components::PhysicsComponent({ stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC }, stats.PLAYER_MASS);
+    head = shape::Collider(sf::Vector2<float>{ PLAYER_WIDTH + 4, head_height }, sf::Vector2<float>{ PLAYER_START_X - 2, PLAYER_START_Y - head_height });
+    collider.physics = components::PhysicsComponent({ stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC }, stats.PLAYER_MASS);
+
     anchor_point = { collider.physics.position.x + PLAYER_WIDTH/2, collider.physics.position.y + PLAYER_HEIGHT/2};
     behavior.current_state = behavior::Behavior(behavior::idle);
     behavior.facing_lr = behavior::DIR_LR::RIGHT;
-    antennae.push_back(entity::Antenna( collider.physics.position, flcolor::dark_orange, 0.029f ));
-    antennae.push_back(entity::Antenna( collider.physics.position, flcolor::dark_orange, 0.029f ));
+    antennae.push_back(vfx::Attractor( collider.physics.position, flcolor::dark_orange, 0.029f ));
+    antennae.push_back(vfx::Attractor( collider.physics.position, flcolor::dark_orange, 0.029f, {2.f, 4.f} ));
 
-    antennae.push_back(entity::Antenna(collider.physics.position, flcolor::bright_orange, 0.03f));
-    antennae.push_back(entity::Antenna(collider.physics.position, flcolor::bright_orange, 0.03f));
+    antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, 0.03f));
+    antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, 0.03f, {2.f, 4.f}));
 
         antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.73f, 0.73f}, 1.0f);
         antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
@@ -292,10 +295,13 @@ void Player::update(Time dt) {
     
     collider.physics.update_euler();
     collider.sync_components();
+    head.physics.position = { collider.bounding_box.position.x - 2, collider.bounding_box.position.y - head_height };
+    head.sync_components();
     
     //for parameter tweaking, remove later
     collider.physics.friction = grounded() ? sf::Vector2<float>{stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC} : sf::Vector2<float>{stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC };
     collider.update();
+
     //hurt
     if (is_invincible()) { collider.spike_trigger = false; flash_sprite(); }
     else { sprite.setColor(sf::Color::White); }
@@ -315,6 +321,7 @@ void Player::update(Time dt) {
         a.set_target_position(collider.physics.position + antenna_offset);
         a.update();
         a.collider.sync_components();
+        a.collider.handle_collider_collision(head.bounding_box);
         a.collider.handle_collider_collision(collider.bounding_box);
         if (behavior.facing_lr == behavior::DIR_LR::RIGHT) {
             antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;
@@ -359,11 +366,13 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
     }
     if (flags.state.test(State::alive)) {
         if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-
+            collider.render(win, campos);
+            head.render(win, campos);
         } else {
             win.draw(sprite);
             svc::counterLocator.get().at(svc::draw_calls)++;
-            collider.render(win, campos);
+            //collider.render(win, campos);
+            //head.render(win, campos);
         }
     }
 

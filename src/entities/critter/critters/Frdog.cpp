@@ -5,6 +5,7 @@
 //
 
 #include "Frdog.hpp"
+#include "../../../setup/ServiceLocator.hpp"
 
 namespace critter {
 
@@ -28,16 +29,44 @@ namespace critter {
 	}
 
     void Frdog::load_data() {
-        constexpr auto text = R"({ "xdim": 72, "ydim": 48 })";
-        auto const stats = dj::Json::parse(text);
-        assert(!stats.is_null());
-        sprite_dimensions.x = stats["xdim"].as<int>();
-        sprite_dimensions.y = stats["ydim"].as<int>();
+
+        if (colliders.empty()) {
+            for (int j = 0; j < num_colliders; ++j) {
+                auto const& xdim = svc::dataLocator.get().frdog["colliders"][0]["boxes"][j]["dimensions"]["x"].as<float>();
+                auto const& ydim = svc::dataLocator.get().frdog["colliders"][0]["boxes"][j]["dimensions"]["y"].as<float>();
+                auto const& xpos = svc::dataLocator.get().frdog["colliders"][0]["boxes"][j]["position"]["x"].as<float>();
+                auto const& ypos = svc::dataLocator.get().frdog["colliders"][0]["boxes"][j]["position"]["y"].as<float>();
+
+                colliders.push_back(shape::Collider({ xdim, ydim }));
+                colliders.back().sprite_offset = { xpos, ypos };
+                colliders.back().physics = components::PhysicsComponent({ 0.8f, 0.997f }, 1.f);
+            }
+        }
+
+        if(hurtboxes.empty()) {
+            for (int j = 0; j < num_hurtboxes; ++j) {
+                auto const& xdim = svc::dataLocator.get().frdog["hurtboxes"][0]["boxes"][j]["dimensions"]["x"].as<float>();
+                auto const& ydim = svc::dataLocator.get().frdog["hurtboxes"][0]["boxes"][j]["dimensions"]["y"].as<float>();
+                auto const& xpos = svc::dataLocator.get().frdog["hurtboxes"][0]["boxes"][j]["position"]["x"].as<float>();
+                auto const& ypos = svc::dataLocator.get().frdog["hurtboxes"][0]["boxes"][j]["position"]["y"].as<float>();
+
+                hurtboxes.push_back(shape::Shape());
+                hurtboxes.back().dimensions = { xdim, ydim };
+                hurtboxes.back().sprite_offset = { xpos, ypos };
+
+            }
+        }
+
+        sprite_dimensions.x = 72;
+        sprite_dimensions.y = 48;
+
     }
 
 	fsm::StateFunction Frdog::update_idle() {
         if (behavior.start()) { behavior = behavior::Behavior(behavior::frdog_idle); behavior.params.started = false; }
-		if (abs(collider.physics.velocity.x) > 0.0002f) { behavior.params.started = true; return BIND(update_run); }
+        if (!colliders.empty()) {
+            if (abs(colliders.at(0).physics.velocity.x) > 0.0002f) { behavior.params.started = true; return BIND(update_run); }
+        }
         if (flags.awakened)     { behavior.params.started = true; return BIND(update_sit); }
         if (flags.turning)      { behavior.params.started = true; return BIND(update_turn); }
         if (flags.barking)      { behavior.params.started = true; return BIND(update_bark); }
@@ -76,7 +105,9 @@ namespace critter {
     fsm::StateFunction Frdog::update_run() {
         if(behavior.start()) { behavior = behavior::Behavior(behavior::frdog_run); behavior.params.started = false; }
         if (flags.turning) { behavior.params.started = true; return BIND(update_turn); }
-        if (abs(collider.physics.velocity.x) < 0.04f) { behavior.params.just_started = true; return BIND(update_idle); }
+        if (!colliders.empty()) {
+            if (abs(colliders.at(0).physics.velocity.x) < 0.04f) { behavior.params.just_started = true; return BIND(update_idle); }
+        }
         if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
     }

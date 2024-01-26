@@ -154,8 +154,11 @@ void Map::load(const std::string& path) {
             //push the critter
             //which type of critter? and how deep into the pool are we?
             critters.push_back(*bestiary.fetch_critter_of_type(type, critter::pool_counter.at(id)));
+            critters.back()->load_data();
             critters.back()->set_position({ pos.x * TILE_WIDTH, pos.y * TILE_WIDTH });
-            critters.back()->collider.physics.zero();
+            for (auto& collider : critters.back()->colliders) {
+                collider.physics.zero();
+            }
             critter::pool_counter.at(id)++;
 
         }
@@ -163,8 +166,9 @@ void Map::load(const std::string& path) {
     }
 
     for(auto& critter : critters) {
-
-        colliders.push_back(&critter->collider);
+        for (auto& collider : critter->colliders) {
+            colliders.push_back(&collider);
+        }
     
     }
     colliders.push_back(&svc::playerLocator.get().collider);
@@ -190,7 +194,9 @@ void Map::update() {
     }
 
     for (auto& critter : critters) {
-        critter->collider.reset();
+        for (auto& collider : critter->colliders) {
+            collider.reset();
+        }
     }
 
     manage_projectiles();
@@ -271,14 +277,16 @@ void Map::update() {
     for (auto& proj : active_projectiles) {
         if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
         for (auto& critter : critters) {
-            if (proj.bounding_box.SAT(critter->collider.bounding_box)) {
-                critter->flags.shot = true;
-                if (critter->flags.vulnerable) {
-                    critter->flags.hurt = true;
-                    critter->flags.just_hurt = true;
-                    critter->condition.hp -= proj.stats.damage;
+            for (auto& hurtbox : critter->hurtboxes) {
+                if (proj.bounding_box.SAT(hurtbox)) {
+                    critter->flags.shot = true;
+                    if (critter->flags.vulnerable) {
+                        critter->flags.hurt = true;
+                        critter->flags.just_hurt = true;
+                        critter->condition.hp -= proj.stats.damage;
+                    }
+                    proj.destroy(false);
                 }
-                proj.destroy(false);
             }
         }
     }
@@ -286,9 +294,12 @@ void Map::update() {
     for(auto& critter : critters) {
 
         //handle collision
-        svc::playerLocator.get().collider.handle_collider_collision(critter->collider.bounding_box);
-
-        critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->collider.physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
+        for (auto& collider : critter->colliders) {
+            svc::playerLocator.get().collider.handle_collider_collision(collider.bounding_box);
+        }
+        if (!critter->colliders.empty()) {
+            critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->colliders.at(0).physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
+        }
         //critter->random_walk(sf::Vector2<int>(120, 180));
         if (svc::playerLocator.get().collider.bounding_box.SAT(critter->hostile_range)) {
             critter->current_target = svc::playerLocator.get().collider.physics.position;

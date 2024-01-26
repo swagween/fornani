@@ -21,6 +21,7 @@ namespace critter {
 			spritesheet_dimensions = { 1, 14 };
 			dimensions = { 16.0f, 16.0f };
 			offset.y = 10;
+			colliders.push_back(shape::Collider());
 			init();
 			flags.vulnerable = true; //hulmets always vulnerable
 		}

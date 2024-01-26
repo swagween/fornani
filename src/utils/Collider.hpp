@@ -44,7 +44,7 @@ namespace shape {
 	public:
 
 		Collider();
-		Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos);
+		Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos = { 0, 0 });
 
 		void sync_components();
 		void handle_map_collision(const Shape& cell, lookup::TILE_TYPE tile_type);
@@ -74,7 +74,8 @@ namespace shape {
 		float landed_threshold{ 1.0f };
 		float detector_buffer{ 19.0f };
 
-		sf::Vector2<float>dimensions{};
+		sf::Vector2<float> dimensions{};
+		sf::Vector2<float> sprite_offset{};
 
 		bool spike_trigger{};
 

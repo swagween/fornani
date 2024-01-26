@@ -14,8 +14,7 @@
 
 #include "../graphics/FLColor.hpp"
 #include "../setup/EnumLookups.hpp"
-
-namespace fs = std::filesystem;
+#include "ResourceFinder.hpp"
 
 const uint8_t TILE_WIDTH = 32;
 const int NANI_SPRITESHEET_WIDTH = 22;
@@ -28,53 +27,53 @@ public:
     AssetManager() {};
     
     void importTextures() {
-        t_nani.loadFromFile(resource_path + "/image/character/nani.png");
-        t_nani_unarmed.loadFromFile(resource_path + "/image/character/nani_unarmed.png");
-        t_nani_dark.loadFromFile(resource_path + "/image/character/nani_dark.png");
-        t_nani_red.loadFromFile(resource_path + "/image/character/nani_red.png");
+        t_nani.loadFromFile(finder.resource_path + "/image/character/nani.png");
+        t_nani_unarmed.loadFromFile(finder.resource_path + "/image/character/nani_unarmed.png");
+        t_nani_dark.loadFromFile(finder.resource_path + "/image/character/nani_dark.png");
+        t_nani_red.loadFromFile(finder.resource_path + "/image/character/nani_red.png");
         
-        t_bryn_test.loadFromFile(resource_path + "/image/portrait/bryn_test.png");
-        t_ui_test.loadFromFile(resource_path + "/image/gui/ui_test.png");
+        t_bryn_test.loadFromFile(finder.resource_path + "/image/portrait/bryn_test.png");
+        t_ui_test.loadFromFile(finder.resource_path + "/image/gui/ui_test.png");
         
-        t_frdog.loadFromFile(resource_path + "/image/critter/frdog.png");
-        t_hulmet.loadFromFile(resource_path + "/image/critter/hulmet.png");
+        t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
+        t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
         
-        t_ui.loadFromFile(resource_path + "/image/gui/ui.png");
-        t_hud_orb_font.loadFromFile(resource_path + "/image/gui/HUD_orb_font.png");
-        t_hud_hearts.loadFromFile(resource_path + "/image/gui/HUD_hearts.png");
-        t_hud_pointer.loadFromFile(resource_path + "/image/gui/HUD_pointer.png");
-        t_hud_gun_color.loadFromFile(resource_path + "/image/gui/HUD_gun_color.png");
-        t_hud_gun_shadow.loadFromFile(resource_path + "/image/gui/HUD_gun_shadow.png");
+        t_ui.loadFromFile(finder.resource_path + "/image/gui/ui.png");
+        t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
+        t_hud_hearts.loadFromFile(finder.resource_path + "/image/gui/HUD_hearts.png");
+        t_hud_pointer.loadFromFile(finder.resource_path + "/image/gui/HUD_pointer.png");
+        t_hud_gun_color.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_color.png");
+        t_hud_gun_shadow.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_shadow.png");
         
         //guns and bullets!
-        t_bryns_gun.loadFromFile(resource_path + "/image/weapon/bg.png");
-        t_plasmer.loadFromFile(resource_path + "/image/weapon/plasmer.png");
-        t_clover.loadFromFile(resource_path + "/image/weapon/clover.png");
-        t_nova.loadFromFile(resource_path + "/image/weapon/nova.png");
-        t_bryns_gun_projectile.loadFromFile(resource_path + "/image/weapon/bg_proj.png");
-        t_plasmer_projectile.loadFromFile(resource_path + "/image/weapon/plasmer_proj.png");
-        t_clover_projectile.loadFromFile(resource_path + "/image/weapon/clover_proj.png");
-        t_nova_projectile.loadFromFile(resource_path + "/image/weapon/nova_proj.png");
+        t_bryns_gun.loadFromFile(finder.resource_path + "/image/weapon/bg.png");
+        t_plasmer.loadFromFile(finder.resource_path + "/image/weapon/plasmer.png");
+        t_clover.loadFromFile(finder.resource_path + "/image/weapon/clover.png");
+        t_nova.loadFromFile(finder.resource_path + "/image/weapon/nova.png");
+        t_bryns_gun_projectile.loadFromFile(finder.resource_path + "/image/weapon/bg_proj.png");
+        t_plasmer_projectile.loadFromFile(finder.resource_path + "/image/weapon/plasmer_proj.png");
+        t_clover_projectile.loadFromFile(finder.resource_path + "/image/weapon/clover_proj.png");
+        t_nova_projectile.loadFromFile(finder.resource_path + "/image/weapon/nova_proj.png");
         
-        t_alphabet.loadFromFile(resource_path + "/image/gui/alphabet.png");
+        t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
         
         //backgrounds
-        t_bg_dusk.loadFromFile(resource_path + "/image/background/dusk.png");
-        t_bg_opensky.loadFromFile(resource_path + "/image/background/opensky.png");
-        t_bg_overcast.loadFromFile(resource_path + "/image/background/overcast.png");
-        t_bg_night.loadFromFile(resource_path + "/image/background/night.png");
-        t_bg_dawn.loadFromFile(resource_path + "/image/background/dawn.png");
-        t_bg_sunrise.loadFromFile(resource_path + "/image/background/sunrise.png");
-        t_bg_rosyhaze.loadFromFile(resource_path + "/image/background/rosyhaze.png");
-        t_bg_slime.loadFromFile(resource_path + "/image/background/slime.png");
-        t_bg_dirt.loadFromFile(resource_path + "/image/background/dirt.png");
+        t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");
+        t_bg_opensky.loadFromFile(finder.resource_path + "/image/background/opensky.png");
+        t_bg_overcast.loadFromFile(finder.resource_path + "/image/background/overcast.png");
+        t_bg_night.loadFromFile(finder.resource_path + "/image/background/night.png");
+        t_bg_dawn.loadFromFile(finder.resource_path + "/image/background/dawn.png");
+        t_bg_sunrise.loadFromFile(finder.resource_path + "/image/background/sunrise.png");
+        t_bg_rosyhaze.loadFromFile(finder.resource_path + "/image/background/rosyhaze.png");
+        t_bg_slime.loadFromFile(finder.resource_path + "/image/background/slime.png");
+        t_bg_dirt.loadFromFile(finder.resource_path + "/image/background/dirt.png");
 
-        t_large_animators.loadFromFile(resource_path + "/image/animators/large_animators_01.png");
-        t_small_animators.loadFromFile(resource_path + "/image/animators/small_animators_01.png");
+        t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators_01.png");
+        t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators_01.png");
 
         //title stuff
-        t_title.loadFromFile(resource_path + "/image/gui/title.png");
-        t_title_assets.loadFromFile(resource_path + "/image/gui/title_assets.png");
+        t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
+        t_title_assets.loadFromFile(finder.resource_path + "/image/gui/title_assets.png");
 
         
         //load all the other textures...
@@ -87,7 +86,7 @@ public:
         for(int i = 0; i < lookup::NUM_STYLES; ++i) {
             tilesets.push_back(sf::Texture());
             std::string style = lookup::get_style_string.at(lookup::get_style.at(i));
-            tilesets.back().loadFromFile(resource_path + "/image/tile/" + style + "_tiles.png");
+            tilesets.back().loadFromFile(finder.resource_path + "/image/tile/" + style + "_tiles.png");
         }
     }
     
@@ -177,55 +176,36 @@ public:
     }
     
     void load_audio() {
-        click_buffer.loadFromFile(resource_path + "/audio/sfx/heavy_click.wav");
+        click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/heavy_click.wav");
         click.setBuffer(click_buffer);
-        arms_switch_buffer.loadFromFile(resource_path + "/audio/sfx/arms_switch.wav");
+        arms_switch_buffer.loadFromFile(finder.resource_path + "/audio/sfx/arms_switch.wav");
         arms_switch.setBuffer(arms_switch_buffer);
-        bg_shot_buffer.loadFromFile(resource_path + "/audio/sfx/bg_shot.wav");
+        bg_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bg_shot.wav");
         bg_shot.setBuffer(bg_shot_buffer);
-        plasmer_shot_buffer.loadFromFile(resource_path + "/audio/sfx/plasmer_shot.wav");
+        plasmer_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/plasmer_shot.wav");
         plasmer_shot.setBuffer(plasmer_shot_buffer);
-        pop_mid_buffer.loadFromFile(resource_path + "/audio/sfx/clover.wav");
+        pop_mid_buffer.loadFromFile(finder.resource_path + "/audio/sfx/clover.wav");
         pop_mid.setBuffer(pop_mid_buffer);
-        jump_buffer.loadFromFile(resource_path + "/audio/sfx/jump.wav");
+        jump_buffer.loadFromFile(finder.resource_path + "/audio/sfx/jump.wav");
         jump.setBuffer(jump_buffer);
-        shatter_buffer.loadFromFile(resource_path + "/audio/sfx/shatter.wav");
+        shatter_buffer.loadFromFile(finder.resource_path + "/audio/sfx/shatter.wav");
         shatter.setBuffer(shatter_buffer);
-        step_buffer.loadFromFile(resource_path + "/audio/sfx/steps.wav");
+        step_buffer.loadFromFile(finder.resource_path + "/audio/sfx/steps.wav");
         step.setBuffer(step_buffer);
-        landed_buffer.loadFromFile(resource_path + "/audio/sfx/landed.wav");
+        landed_buffer.loadFromFile(finder.resource_path + "/audio/sfx/landed.wav");
         landed.setBuffer(landed_buffer);
-        hurt_buffer.loadFromFile(resource_path + "/audio/sfx/hurt.wav");
+        hurt_buffer.loadFromFile(finder.resource_path + "/audio/sfx/hurt.wav");
         hurt.setBuffer(hurt_buffer);
-        player_death_buffer.loadFromFile(resource_path + "/audio/sfx/player_death.wav");
+        player_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/player_death.wav");
         player_death.setBuffer(player_death_buffer);
-        enem_hit_buffer.loadFromFile(resource_path + "/audio/sfx/enemy_hit.wav");
+        enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/enemy_hit.wav");
         enem_hit.setBuffer(enem_hit_buffer);
         
-        brown_noise.openFromFile(resource_path + "/audio/songs/brown_noise.wav");
-        clay_statue.openFromFile(resource_path + "/audio/songs/clay_statue.wav");
-        abandoned.openFromFile(resource_path + "/audio/songs/abandoned.wav");
-        three_pipes.openFromFile(resource_path + "/audio/songs/three_pipes.wav");
-        dusken_cove.openFromFile(resource_path + "/audio/songs/dusken_cove.wav");
-    }
-    
-    void setResourcePath(char** argv) {
-        resource_path = find_resources(argv[0]).string();
-    }
-    
-    fs::path find_resources(fs::path exe) {
-        auto check = [](fs::path const& prefix) {
-            auto path = prefix / "resources";
-            if (fs::is_directory(path)) { return path; }
-            return fs::path{};
-        };
-        while (!exe.empty()) {
-            if (auto ret = check(exe); !ret.empty()) { return ret; }
-            auto parent = exe.parent_path();
-            if (exe == parent) { break; }
-            exe = std::move(parent);
-        }
-        return {};
+        brown_noise.openFromFile(finder.resource_path + "/audio/songs/brown_noise.wav");
+        clay_statue.openFromFile(finder.resource_path + "/audio/songs/clay_statue.wav");
+        abandoned.openFromFile(finder.resource_path + "/audio/songs/abandoned.wav");
+        three_pipes.openFromFile(finder.resource_path + "/audio/songs/three_pipes.wav");
+        dusken_cove.openFromFile(finder.resource_path + "/audio/songs/dusken_cove.wav");
     }
     
     //declare all the textures and sprites as members of the AssetManager
@@ -320,9 +300,6 @@ public:
     //condense these into a 2d vector later
     std::vector<sf::Sprite> sp_tileset_provisional{};
     
-    std::string resource_path = "";
-    
-    
     //sound effects!
     sf::SoundBuffer click_buffer{};
     sf::Sound click;
@@ -360,6 +337,8 @@ public:
     
     //other members
     int music_vol{24};
+
+    data::ResourceFinder finder{};
     
     
 };

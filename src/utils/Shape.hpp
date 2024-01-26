@@ -67,6 +67,7 @@ namespace shape {
 
         Vec dimensions{};
         Vec position{};
+        Vec sprite_offset{};
 
         int num_sides;
 

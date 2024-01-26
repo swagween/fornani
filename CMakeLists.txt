@@ -31,6 +31,8 @@ main.cpp
 src/particle/Emitter.hpp
 src/particle/ObjectPool.hpp
 src/particle/Particle.hpp
+src/particle/Attractor.hpp
+src/particle/Attractor.cpp
 src/components/PhysicsComponent.hpp
 src/components/PhysicsComponent.cpp
 src/components/BehaviorComponent.hpp
@@ -52,10 +54,11 @@ src/setup/ServiceLocator.hpp
 src/setup/LookupTables.hpp
 src/setup/EnumLookups.hpp
 src/setup/MapLookups.hpp
+src/setup/DataManager.hpp
+src/setup/DataManager.cpp
+src/setup/ResourceFinder.hpp
 src/entities/player/Player.hpp
 src/entities/player/Player.cpp
-src/entities/player/Antenna.hpp
-src/entities/player/Antenna.cpp
 src/entities/behavior/Behavior.hpp
 src/entities/behavior/Behavior.cpp
 src/entities/behavior/Animation.hpp

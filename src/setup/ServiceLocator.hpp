@@ -12,6 +12,7 @@
 #include <string>
 
 #include "AssetManager.hpp"
+#include "DataManager.hpp"
 #include "../entities/player/Player.hpp"
 #include "../utils/Camera.hpp"
 #include "../service/Service.hpp"
@@ -27,6 +28,7 @@ namespace svc {
 	const int num_counters = 1;
 
 	inline auto assetLocator = forloop::Service<AssetManager>::Instance{};
+	inline auto dataLocator = forloop::Service<data::DataManager>::Instance{};
 	inline auto playerLocator = forloop::Service<Player>::Instance{};
 	inline auto cameraLocator = forloop::Service<cam::Camera>::Instance{};
 	inline auto clockLocator = forloop::Service<util::Clock>::Instance{};

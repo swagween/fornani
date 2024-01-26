@@ -263,6 +263,10 @@ namespace shape {
 
 		if (predictive_bounding_box.SAT(collider)) {
 
+			//just for animation purposes
+			if (physics.velocity.y > landed_threshold) {
+				flags.set(State::just_landed);
+			}
 			//set mtv
 			physics.mtv = predictive_bounding_box.testCollisionGetMTV(predictive_bounding_box, collider);
 

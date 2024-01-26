@@ -104,13 +104,13 @@ namespace flstates {
 			options_rect = { { middle - 46, top_buffer + (selection_buffer * 2) + new_rect.getSize().y + load_rect.getSize().y}, { 92, 22 } };
 
 			selection = MenuSelection::new_game;
-			left_dot = entity::Antenna({ new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y }, flcolor::ui_white, 0.0008f);
-			right_dot = entity::Antenna({ new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y }, flcolor::ui_white, 0.0008f);
+			left_dot = vfx::Attractor({ new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y }, flcolor::ui_white, 0.008f);
+			right_dot = vfx::Attractor({ new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y }, flcolor::ui_white, 0.008f);
 
-			left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.983f, 0.983f}, 1.0f);
-			left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(0.5f, 0.5f);
-			right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.983f, 0.983f}, 1.0f);
-			right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(0.5f, 0.5f);
+			left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
+			left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+			right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
+			right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
 
 			left_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(new_rect.getPosition()));
 			right_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(new_rect.getPosition() + new_rect.getSize()));
@@ -232,8 +232,8 @@ namespace flstates {
 		sf::IntRect load_rect{};
 		sf::IntRect options_rect{};
 
-		entity::Antenna left_dot{};
-		entity::Antenna right_dot{};
+		vfx::Attractor left_dot{};
+		vfx::Attractor right_dot{};
 		sf::Vector2<float> dot_pad{ 24.f, 8.f };
 
 	};

@@ -101,11 +101,11 @@ public:
 
     Critter() = default;
     Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim) : metadata(m), stats(s), sprite_dimensions(sprite_dim), spritesheet_dimensions(spritesheet_dim), dimensions(dim) {
-        collider = shape::Collider(); 
+        //colliders.push_back( shape::Collider() ); 
         set_sprite();
-        collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
-        collider.physics.maximum_velocity = sf::Vector2<float>(s.speed, s.speed*4);
-        if (m.gravity) { collider.physics.gravity = 0.03f; }
+        /*colliders.at(0).physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
+        colliders.at(0).physics.maximum_velocity = sf::Vector2<float>(s.speed, s.speed*4);*/
+        //if (m.gravity) { colliders.at(0).physics.gravity = 0.03f; }
 
         alert_range = shape::Shape( { (float)s.vision * 1.5f, (float)s.vision * 1.5f } );
         hostile_range = shape::Shape( { (float)s.vision, (float)s.vision } );
@@ -152,8 +152,8 @@ public:
     
     behavior::Behavior behavior{};
     behavior::DIR_LR facing_lr{};
-    shape::Collider collider{};
-    std::vector<shape::Collider> hurtboxes{};
+    std::vector<shape::Collider> colliders{};
+    std::vector<shape::Shape> hurtboxes{};
     shape::Shape alert_range{};
     shape::Shape hostile_range{};
     
@@ -161,10 +161,16 @@ public:
     sf::Vector2<int> spritesheet_dimensions{};
     sf::Vector2<float> dimensions{};
     sf::Vector2<float> offset{};
+    sf::Vector2<float> sprite_position{};
     int anim_loop_count{};
+
+    //collider loading
+    int num_anim_frames{};
+    int num_colliders{};
+    int num_hurtboxes{};
     
     sf::Sprite sprite{};
-    sf::RectangleShape hurtbox{}; // for debugging
+    sf::RectangleShape drawbox{}; // for debugging
     sf::RectangleShape ar{};
     sf::RectangleShape hr{};
     sf::RectangleShape hpbox{}; // for debug
