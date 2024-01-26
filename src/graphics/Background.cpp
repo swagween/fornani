@@ -49,12 +49,14 @@ void Background::render(sf::RenderWindow &win, sf::Vector2<float>& campos, sf::V
     if(behavior.scrolling) {
         for(auto& sprite : sprites) {
             win.draw(sprite);
+            svc::counterLocator.get().at(svc::draw_calls)++;
         }
     } else if (!sprites.empty()) {
         for(int i = 0; i < mapdim.x / behavior.parallax_multiplier; i += tile_dim) {
             for(int j = 0; j < mapdim.y / behavior.parallax_multiplier; j += tile_dim) {
                 sprites.at(0).setPosition(i - behavior.parallax_multiplier * campos.x, j - behavior.parallax_multiplier * campos.y);
                 win.draw(sprites.at(0));
+                svc::counterLocator.get().at(svc::draw_calls)++;
             }
         }
     }

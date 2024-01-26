@@ -2,16 +2,17 @@
 //  main.cpp
 //  For Nani
 //
-
 #include <SFML/Graphics.hpp>
 #include <cmath>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
 //all services and providers included first
-#include "setup/ServiceLocator.hpp"
-#include "automa/StateManager.hpp"
-#include "setup/EnumLookups.hpp"
-#include "utils/Grid.hpp"
-#include "utils/Shape.hpp"
+#include "src/setup/ServiceLocator.hpp"
+#include "src/automa/StateManager.hpp"
+#include "src/setup/EnumLookups.hpp"
+#include "src/utils/Grid.hpp"
+#include "src/utils/Shape.hpp"
 
 #include <imgui-SFML.h>
 #include <imgui.h>
@@ -22,6 +23,8 @@ namespace {
 auto SM = automa::StateManager{};
 auto window = sf::RenderWindow();
 auto minimap = sf::View();
+
+sf::Texture screencap{};
 
 const int NUM_TIMESTEPS = 64;
 int TIME_STEP_MILLI = 0;
@@ -37,11 +40,27 @@ int FPS_counter = 0;
 float FPS = 0.0;
 
 int shake_counter = 0;
+int frame_draw_counter{ 0 };
 
 sf::Vector2<uint32_t> win_size{};
 float height_ratio{};
 float width_ratio{};
 
+
+
+void save_screenshot() {
+
+    const std::time_t now = std::time(nullptr);
+
+    std::string filedate = std::asctime(std::localtime(&now));
+    std::erase_if(filedate, [](auto const& c) { return c == ':' || isspace(c); });
+    std::string filename = "screenshot_" + filedate + ".png";
+
+    if (screencap.copyToImage().saveToFile(filename)) {
+        std::cout << "screenshot saved to " << filename << std::endl;
+    }
+
+}
 
 
 static void show_overlay() {
@@ -109,13 +128,11 @@ static void show_overlay() {
                 if (ImGui::BeginTabItem("Player"))
                 {
                     ImGui::Text("Player Stats");
-//                    ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 64);
-//                    ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 64);
-//                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 999);
-//                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 999);
-//                    if(!svc::playerLocator.get().collider.bounding_box.vertices.empty()) {
-                    //                        ImGui::Text("Player collider.bounding_box Pos: (%.1f,%.1f)", svc::playerLocator.get().collider.bounding_box.vertices.at(0).x, svc::playerLocator.get().collider.bounding_box.vertices.at(0).y);
-                    //             
+                    ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 12);
+                    ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 12);
+                    ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 99999);
+                    ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 99999);
+                                 
                 ImGui::Text("Alive? %s", svc::playerLocator.get().flags.state.test(State::alive) ? "Yes" : "No");
                     ImGui::Text("Player Behavior: %s", svc::playerLocator.get().behavior.current_state.params.behavior_id);
                     ImGui::Text("Behavior Restricted? %s", svc::playerLocator.get().behavior.restricted() ? "Yes" : "No");
@@ -149,12 +166,18 @@ static void show_overlay() {
                     ImGui::SameLine();
                     if (svc::playerLocator.get().collider.flags.test(shape::State::has_left_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
                     if (svc::playerLocator.get().collider.flags.test(shape::State::is_any_jump_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Has Top Collision: ");
+                    ImGui::SameLine();
+                    if (svc::playerLocator.get().collider.flags.test(shape::State::has_top_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
+                    ImGui::Text("Has Bottom Collision: ");
+                    ImGui::SameLine();
+                    if (svc::playerLocator.get().collider.flags.test(shape::State::has_bottom_collision)) { ImGui::Text("Yes"); } else { ImGui::Text("No"); }
 
                     ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
                     ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
                     ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
                     
-                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().stats.PLAYER_GRAV, 0.000f, 0.008f);
+                    ImGui::SliderFloat("GRAVITY",                   &svc::playerLocator.get().collider.stats.GRAV, 0.000f, 0.008f);
                     ImGui::SliderFloat("PLAYER MASS",               &svc::playerLocator.get().stats.PLAYER_MASS, 0.1f, 2.0f);
                     ImGui::SliderFloat("AIR MANEUVERABILITY",       &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
                     ImGui::SliderFloat("TERMINAL VELOCITY",         &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 8.0f);
@@ -177,7 +200,8 @@ static void show_overlay() {
                             svc::playerLocator.get().weapons_hotbar = {
                                 arms::WEAPON_TYPE::BRYNS_GUN,
                                 arms::WEAPON_TYPE::PLASMER,
-                                arms::WEAPON_TYPE::CLOVER
+                                arms::WEAPON_TYPE::CLOVER,
+                                arms::WEAPON_TYPE::NOVA
                             };
                             svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
                         } else {
@@ -203,7 +227,7 @@ static void show_overlay() {
                     ImGui::Text("Projectile Stats: ");
                     ImGui::Indent();
                     ImGui::Text("Damage: (%i)",   svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.damage);
-                    ImGui::Text("Lifespan: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.lifespan);
+                    ImGui::Text("Range: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.range);
                     ImGui::Text("Speed: (%.2f)",  svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.speed);
                     ImGui::Text("Velocity: (%.4f,%.4f)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.velocity.x,
                                 svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.velocity.y);
@@ -214,8 +238,28 @@ static void show_overlay() {
                 }
                 if (ImGui::BeginTabItem("General"))
                 {
-                    ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().physics.position.x, svc::cameraLocator.get().physics.position.y);
+                    ImGui::Text("Float Readout: (%.8f)", svc::floatReadoutLocator.get());
+                    ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().position.x, svc::cameraLocator.get().position.y);
+                    ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
                     ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
+                    if(ImGui::Button("Save Screenshot")) {
+                        save_screenshot();
+                    }
+                    ImGui::Separator();
+                    if(ImGui::Button("Toggle Greyblock Mode")) {
+                        if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+                            svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_state);
+                            svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
+                        } else {
+                            svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
+                            svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
+                        }
+                        
+                    }
+                    ImGui::Text("Greybox Mode : %s", svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state) ? "On" : "Off");
+                    ImGui::Separator();
+                    ImGui::Text("Draw Calls: %u", frame_draw_counter);
+                    frame_draw_counter = 0;
 
                     ImGui::EndTabItem();
                 }
@@ -236,73 +280,93 @@ static void show_overlay() {
                     if(ImGui::Button("Under")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_LEDGE_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/UNDER_LEDGE_01");
                         svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                     }
                     if(ImGui::Button("House")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/UNDER_HUT_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/UNDER_HUT_01");
                         
                         svc::playerLocator.get().set_position({100, 160});
+                    }
+                    if (ImGui::Button("Ancient Field")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/ANCIENT_FIELD_01");
+
+                        svc::playerLocator.get().set_position({ 100, 160 });
                     }
                     if (ImGui::Button("Base")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/BASE_LIVING_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/BASE_LIVING_01");
 
                         svc::playerLocator.get().set_position({ 25 * 32, 10 * 32 });
                     }
                     if (ImGui::Button("Base Lab")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/BASE_LAB_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/BASE_LAB_01");
 
                         svc::playerLocator.get().set_position({ 28 * 32, 8 * 32 });
                     }
                     if (ImGui::Button("Skycorps")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SKYCORPS_ANTECHAMBER_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/SKYCORPS_ANTECHAMBER_01");
 
                         svc::playerLocator.get().set_position({ 28 * 32, 8 * 32 });
                     }
                     if (ImGui::Button("Sky")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SKY_CHAMBER_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/SKY_CHAMBER_01");
                         svc::playerLocator.get().set_position({ 7 * 32, 16 * 32 });
                     }
                     if(ImGui::Button("Shadow")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/SHADOW_DOJO_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/SHADOW_DOJO_01");
                         svc::playerLocator.get().set_position({ 4 * 32, 11 * 32 });
                     }
                     if (ImGui::Button("Stone")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/STONE_CORRIDOR_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/STONE_CORRIDOR_01");
                         svc::playerLocator.get().set_position({ 10 * 32, 16 * 32 });
                     }
                     if (ImGui::Button("Overturned")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/OVERTURNED_DOJO_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/OVERTURNED_DOJO_01");
                         svc::playerLocator.get().set_position({ 4 * 32, 11 * 32 });
                     }
-                    if(ImGui::Button("Cargo")) {
+                    if (ImGui::Button("Glade")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CARGO_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/OVERTURNED_GLADE_01");
+                        svc::playerLocator.get().set_position({ 4 * 32, 4 * 32 });
                     }
-                    if (ImGui::Button("Shaft")) {
+                    if (ImGui::Button("Woodshine")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_SHAFT_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/WOODSHINE_VILLAGE_01");
+                        svc::playerLocator.get().set_position({ 32, 1280 });
+                    }
+                    if(ImGui::Button("Collision Room")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/SKY_COLLISIONROOM_01");
+                        svc::playerLocator.get().set_position({ 5 * 32, 5 * 32 });
+                    }
+                    if (ImGui::Button("Grub Dojo")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/GRUB_DOJO_01");
                         svc::playerLocator.get().set_position({ 3 * 32, 8 * 32 });
                     }
-                    if (ImGui::Button("Atrium")) {
+                    /*if (ImGui::Button("Atrium")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_ATRIUM_01");
@@ -323,11 +387,11 @@ static void show_overlay() {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
-                    }
+                    }*/
                     if(ImGui::Button("Toxic")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/TOXIC_ARENA_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/TOXIC_ARENA_01");
                         svc::playerLocator.get().set_position({ PLAYER_START_X, PLAYER_START_Y });
                         svc::playerLocator.get().collider.physics.zero();
                         svc::playerLocator.get().set_position({34, 484});
@@ -335,20 +399,20 @@ static void show_overlay() {
                     if(ImGui::Button("Grub")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/GRUB_TUNNEL_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/GRUB_TUNNEL_01");
                         svc::playerLocator.get().set_position({224, 290});
                     }
-                    if(ImGui::Button("Night")) {
+                    /*if(ImGui::Button("Night")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
                         SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/NIGHT_CRANE_01");
                         svc::playerLocator.get().set_position({50, 50});
                         svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani_dark);
-                    }
+                    }*/
                     if(ImGui::Button("Night 2")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/NIGHT_CATWALK_01");
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/NIGHT_CATWALK_01");
                         svc::playerLocator.get().set_position({50, 50});
                         svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani_dark);
                     }
@@ -368,17 +432,23 @@ static void show_overlay() {
 void run(char** argv) {
     
     //load all assets
+    //data
+    svc::dataLocator.get().finder.setResourcePath(argv);
+    svc::dataLocator.get().load_data();
     //images
-    svc::assetLocator.get().setResourcePath(argv);
+    svc::assetLocator.get().finder.setResourcePath(argv);
     svc::assetLocator.get().importTextures();
     svc::assetLocator.get().assignSprites();
     //sounds
     svc::assetLocator.get().load_audio();
     
     //state manager
-    SM.set_current_state(std::make_unique<automa::GameState>());
+    SM.set_current_state(std::make_unique<flstates::MainMenu>());
+    SM.get_current_state().init(svc::assetLocator.get().finder.resource_path);
     
     window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "For Nani (beta v1.0)");
+
+    screencap.create(window.getSize().x, window.getSize().y);
     
     bool debug_mode = false;
     
@@ -410,6 +480,9 @@ void run(char** argv) {
         svc::clockLocator.get().tick();
         win_size.x = window.getSize().x;
         win_size.y = window.getSize().y;
+
+        uint16_t draw_counter = 0;
+        svc::counterLocator.get().at(svc::draw_calls) = draw_counter;
         
         //SFML event variable
         auto event = sf::Event{};
@@ -428,6 +501,7 @@ void run(char** argv) {
                         win_size.y = win_size.x * height_ratio;
                     }
                     window.setSize(sf::Vector2u{win_size.x, win_size.y});
+                    screencap.create(window.getSize().x, window.getSize().y);
                     break;
                 case sf::Event::KeyPressed:
 					if (event.key.code == sf::Keyboard::Escape) {
@@ -446,16 +520,19 @@ void run(char** argv) {
                     }
                     if (event.key.code == sf::Keyboard::Q) {
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path);
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
-                        SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/FIRSTWIND_PRISON_01");
-                        svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/FIRSTWIND_PRISON_01");
                         svc::assetLocator.get().dusken_cove.setVolume(svc::assetLocator.get().music_vol);
                         //svc::assetLocator.get().dusken_cove.play();
                         svc::assetLocator.get().dusken_cove.setLoop(true);
                         svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani);
 
+                    }
+                    if (event.key.code == sf::Keyboard::P) {
+                        save_screenshot();
                     }
                     break;
                 default:
@@ -472,12 +549,16 @@ void run(char** argv) {
         //switch states
         if (svc::stateControllerLocator.get().trigger) {
             SM.set_current_state(std::make_unique<flstates::Dojo>());
-            SM.get_current_state().init(svc::assetLocator.get().resource_path + "/level/" + svc::stateControllerLocator.get().next_state);
+            SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/" + svc::stateControllerLocator.get().next_state);
             svc::stateControllerLocator.get().trigger = false;
         }
+
+        //reset global triggers
+        svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_trigger);
         
             
         ImGui::SFML::Update(window, deltaClock.restart());
+        screencap.update(window);
         
         //ImGui stuff
         if(debug_mode) {
@@ -492,9 +573,11 @@ void run(char** argv) {
         
         ImGui::SFML::Render(window);
         window.display();
+        frame_draw_counter = svc::counterLocator.get().at(svc::draw_calls);
     }
     
 }
+
 
 } //end namespace
 

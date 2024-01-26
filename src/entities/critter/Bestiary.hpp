@@ -10,6 +10,7 @@
 #include <cmath>
 #include <random>
 #include <list>
+#include <optional>
 #include "Critter.hpp"
 #include "../../components/BehaviorComponent.hpp"
 #include "critters/Frdog.hpp"
@@ -17,9 +18,30 @@
 
 namespace critter {
 
+    inline std::unordered_map<int, CRITTER_TYPE> get_critter_type{
+    {0, CRITTER_TYPE::hulmet},
+    {1, CRITTER_TYPE::tank},
+    {2, CRITTER_TYPE::bunker},
+    {3, CRITTER_TYPE::thug},
+    {4, CRITTER_TYPE::worker},
+    {5, CRITTER_TYPE::frdog},
+    {6, CRITTER_TYPE::jackdaw},
+    {7, CRITTER_TYPE::frcat},
+    {8, CRITTER_TYPE::biter},
+    {9, CRITTER_TYPE::bee},
+    {10, CRITTER_TYPE::roller},
+    {11, CRITTER_TYPE::snek},
+    {12, CRITTER_TYPE::behemoth},
+    {13, CRITTER_TYPE::stinger},
+    {14, CRITTER_TYPE::watchman},
+    {15, CRITTER_TYPE::gnat},
+    {16, CRITTER_TYPE::moth},
+    };
+
     const int pool_size_singular{ 1 };
     const int pool_size_small{ 16 };
     const int pool_size_large{ 32 };
+    const int num_critters{ 17 };
 
     /*
     CritterMetadata { id, variant, hostile, hurt_on_contact, gravity }
@@ -32,30 +54,24 @@ inline Critter hulmet = Critter(CritterMetadata{1, VARIANT::SOLDIER, true, false
 inline std::array<Frdog, pool_size_small> frdog_pool{};
 inline std::array<Hulmet, pool_size_small> hulmet_pool{};
 
-
-struct BestiaryList {
-    
-    BestiaryList() {
-        
-    }
-    
-    std::unordered_map<int, Critter&> critters{};
-};
+inline std::array<int, num_critters> pool_counter{};
 
 class Bestiary {
 public:
-    Bestiary() {
-        for(int i = 0; i < pool_size_small; ++i) {
-            bestiary_list.critters.insert({ i + pool_size_small * frdog.metadata.id, frdog_pool.at(i) });
-            bestiary_list.critters.insert({ i + pool_size_small * hulmet.metadata.id, hulmet_pool.at(i) });
-        }
-    }
-    ~Bestiary() { bestiary_list.critters.clear(); }
+    Bestiary() = default;
+    ~Bestiary() { }
     Bestiary& operator=(Bestiary&&) = delete;
-    
-    Critter& get_critter_at(int idx) { return bestiary_list.critters.at(idx); }
-    
-    BestiaryList bestiary_list{};
+    std::optional<Critter*> fetch_critter_of_type(CRITTER_TYPE type, int next) {
+        switch (type) {
+        case CRITTER_TYPE::hulmet:
+            if (next > pool_size_small) { return std::nullopt; }
+            return &hulmet_pool.at(next);
+        case CRITTER_TYPE::frdog:
+            if (next > pool_size_small) { return std::nullopt; }
+            return &frdog_pool.at(next);
+        }
+        return std::nullopt;
+    }
 };
 
 

@@ -1,0 +1,12 @@
+1,1,0#
+looks like it's tea time.#
+9,10#
+1,1,0#
+there is a book about an airship called pioneer ii. it's very dusty.#
+2,10#
+1,1,0#
+there is a book about an airship called pioneer ii. it's very dusty.#
+2,10#
+1,1,0#
+you find nothing of particular interest.#
+13,10#

@@ -18,7 +18,7 @@
 
 namespace shape {
 
-    const double error = 0.01f;
+    const double error = 0.0001f;
 
     class Shape {
 
@@ -67,6 +67,7 @@ namespace shape {
 
         Vec dimensions{};
         Vec position{};
+        Vec sprite_offset{};
 
         int num_sides;
 

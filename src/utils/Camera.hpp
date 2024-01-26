@@ -25,6 +25,8 @@ const int SHAKE_FACTOR = 8;
 const int SHAKE_VOLATILITY = 12;
 const int SHAKE_DURATION = 100;
 
+const int border_buffer{ 32 };
+
 const float TINY_VALUE = 0.000001f;
 
 inline const sf::Vector2<uint32_t> aspect_ratio { 3840, 2160 };
@@ -45,6 +47,7 @@ public:
     }
     
     void update() {
+
         physics.update_dampen();
         bounding_box.left = physics.position.x;
         bounding_box.top = physics.position.y;
@@ -66,6 +69,8 @@ public:
                 shaking = false;
             }
         }
+
+        
     }
     
     void restrict_movement(sf::Vector2<float>& bounds) {
@@ -108,6 +113,10 @@ public:
         physics.apply_force({force_x, force_y});
         update();
     }
+
+    bool within_frame(int x, int y) {
+        return (x > 0) && (x < screen_dimensions.x + border_buffer) && (y > 0) && (y < screen_dimensions.y + border_buffer);
+    }
     
     void begin_shake() {
         shaking = true;
@@ -123,6 +132,9 @@ public:
     
     sf::Rect<float> bounding_box{};
     components::PhysicsComponent physics{};
+    sf::Vector2<float> observed_velocity{};
+    sf::Vector2<float> position{};
+    sf::Vector2<float> previous_position{};
     
     int shake_counter{};
     bool shaking = false;

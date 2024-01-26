@@ -17,18 +17,18 @@ namespace arms {
 
 using Key = WEAPON_TYPE;
 
-inline Weapon bryns_gun  =  Weapon("bryn's gun"    , Key::BRYNS_GUN      , bryns_gun_attributes,   bryns_gun_stats );
-inline Weapon plasmer    =  Weapon("plasmer"       , Key::PLASMER        , plasmer_attributes,     plasmer_stats   , heavy_gun_spray);
+inline Weapon bryns_gun  =  Weapon("bryn's gun"    , Key::BRYNS_GUN      , bryns_gun_attributes,   bryns_gun_stats,  light_gun_spray, bg_anim, RENDER_TYPE::SINGLE_SPRITE, {18, 8}, { 28.0f, 12.0f });
+inline Weapon plasmer    =  Weapon("plasmer"       , Key::PLASMER        , plasmer_attributes,     plasmer_stats   , heavy_gun_spray, bg_anim, RENDER_TYPE::SINGLE_SPRITE, {22, 10}, { 38.0f, 12.0f });
 inline Weapon wasp       =  Weapon("wasp"          , Key::WASP           , wasp_attributes,        wasp_stats      );
 inline Weapon blizzard   =  Weapon("blizzard"      , Key::BLIZZARD       , blizzard_attributes,    blizzard_stats  );
 inline Weapon bismuth    =  Weapon("bismuth"       , Key::BISMUTH        , bismuth_attributes,     bismuth_stats   );
-inline Weapon underdog   =  Weapon("underdog"      , Key::UNDERDOG       , underdog_attributes,    underdog_stats  );
+inline Weapon underdog   =  Weapon("underdog"      , Key::UNDERDOG       , underdog_attributes,    underdog_stats,   light_gun_spray, bg_anim, RENDER_TYPE::MULTI_SPRITE, { 26, 10 }, { 32.0f, 16.0f });
 inline Weapon electron   =  Weapon("electron"      , Key::ELECTRON       , electron_attributes,    electron_stats  );
-inline Weapon clover     =  Weapon("clover"        , Key::CLOVER         , clover_attributes,      clover_stats    , bubble_spray, clover_anim, {18, 10});
+inline Weapon clover     =  Weapon("clover"        , Key::CLOVER         , clover_attributes,      clover_stats    , bubble_spray, clover_anim, RENDER_TYPE::ANIMATED, {18, 10});
 inline Weapon triton     =  Weapon("triton"        , Key::TRITON         , triton_attributes,      triton_stats    );
 inline Weapon willet_585 =  Weapon("willet 585"    , Key::WILLET_585     , willet_585_attributes,  willet_585_stats);
 inline Weapon quasar     =  Weapon("quasar"        , Key::QUASAR         , quasar_attributes,      quasar_stats    );
-inline Weapon nova       =  Weapon("nova"          , Key::NOVA           , nova_attributes,        nova_stats      );
+inline Weapon nova       =  Weapon("nova"          , Key::NOVA           , nova_attributes,        nova_stats, powerful_gun_spray, nova_anim, RENDER_TYPE::SINGLE_SPRITE, { 24, 10 }, {28.0f, 12.0f});
 inline Weapon venom      =  Weapon("venom"         , Key::VENOM          , venom_attributes,       venom_stats     );
 inline Weapon twin       =  Weapon("twin"          , Key::TWIN           , twin_attributes,        twin_stats      );
 inline Weapon carise     =  Weapon("carise"        , Key::CARISE         , carise_attributes,      carise_stats    );

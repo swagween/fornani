@@ -25,6 +25,7 @@ enum class DIRECTION {
 const sf::Vector2<float> FRICTION_DEFAULT = {0.9f, 0.9f};
 const float MASS_DEFAULT = 1.0f;
 const float UNIVERSAL_MAX_SPEED = 64.0f;
+const float TERMINAL_VELOCITY = 1.8f;
 
 class PhysicsComponent {
 public:

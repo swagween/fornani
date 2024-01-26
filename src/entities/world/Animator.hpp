@@ -47,10 +47,11 @@ namespace entity {
 		bool activated{};
 		bool automatic{};
 		bool foreground{};
+		bool large{};
 
 		int current_frame{0};
 
-		sf::Vector2<int> sprite_dimensions{64, 64}; //hardcoding for now
+		sf::Vector2<int> sprite_dimensions{}; //hardcoding for now
 		sf::Vector2<int> spritesheet_dimensions{1024, 320};
 
 	};

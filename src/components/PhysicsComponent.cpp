@@ -40,6 +40,7 @@ namespace components {
         int integrations = 0;
         while (accumulator >= dt) {
 
+
             previous_acceleration = acceleration;
             previous_velocity = velocity;
             previous_position = position;
@@ -68,6 +69,7 @@ namespace components {
         if (velocity.x < -maximum_velocity.x) { velocity.x = -maximum_velocity.x; }
         if (velocity.y > maximum_velocity.y) { velocity.y = maximum_velocity.y; }
         if (velocity.y < -maximum_velocity.y) { velocity.y = -maximum_velocity.y; }
+        if (velocity.y > TERMINAL_VELOCITY) { velocity.y = TERMINAL_VELOCITY; }
         position = position + velocity * ndt;
 
     }

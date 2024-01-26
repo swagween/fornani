@@ -15,7 +15,10 @@ namespace lookup {
 
 
 inline const float SPACING{ 32.0f };
-inline const int NUM_STYLES{20};
+inline const int NUM_STYLES{21};
+
+const inline float unit_size_f{ 32.0f };
+const inline int unit_size_i{ 32 };
 
 enum class CONTROLS {
     JUMP,
@@ -52,12 +55,14 @@ enum class STYLE {
     FACTORY,
     SHADOW,
     HOARDER,
-    MANSION
+    MANSION,
+    PROVISIONAL
 };
 
 enum class TILE_TYPE {
     TILE_BASIC,
-    TILE_RAMP,
+    TILE_GROUND_RAMP,
+    TILE_CEILING_RAMP,
     TILE_MOVEABLE,
     TILE_PLATFORM,
     TILE_WATER,
@@ -94,7 +99,8 @@ inline std::unordered_map<int, STYLE> get_style {
     {16,    STYLE::FACTORY      },
     {17,    STYLE::SHADOW       },
     {18,    STYLE::HOARDER      },
-    {19,    STYLE::MANSION      }
+    {19,    STYLE::MANSION      },
+    {20,    STYLE::PROVISIONAL  }
 };
 
 inline std::unordered_map<STYLE, int> get_style_id {
@@ -117,7 +123,8 @@ inline std::unordered_map<STYLE, int> get_style_id {
     {STYLE::FACTORY, 16     },
     {STYLE::SHADOW, 17      },
     {STYLE::HOARDER, 18     },
-    {STYLE::MANSION, 19     }
+    {STYLE::MANSION, 19     },
+    {STYLE::PROVISIONAL, 20 }
 };
 
 inline std::unordered_map<STYLE, const char*> get_style_string {
@@ -140,7 +147,8 @@ inline std::unordered_map<STYLE, const char*> get_style_string {
     {STYLE::FACTORY,    "factory"       },
     {STYLE::SHADOW,     "shadow"        },
     {STYLE::HOARDER,    "hoarder"       },
-    {STYLE::MANSION,    "mansion"       }
+    {STYLE::MANSION,    "mansion"       },
+    {STYLE::PROVISIONAL,"provisional"   }
 };
 
 inline std::unordered_map<char, int> get_character {
@@ -198,6 +206,19 @@ inline std::unordered_map<char, int> get_character {
     {'`', 51}
 };
 
+inline std::unordered_map<char, int> get_orb_number{
+    {'0', 0},
+    {'1', 1},
+    {'2', 2},
+    {'3', 3},
+    {'4', 4},
+    {'5', 5},
+    {'6', 6},
+    {'7', 7},
+    {'8', 8},
+    {'9', 9}
+};
+
 
 inline std::unordered_map<CONTROLS, sf::Keyboard::Key> controls_mapping {
     {CONTROLS::JUMP, sf::Keyboard::Z},
@@ -220,7 +241,8 @@ inline std::unordered_map<int, TILE_TYPE> tile_lookup{};
 static void populate_lookup() {
 	for (int i = 0; i < 256; ++i) {
 		if (i < 192 && i >= 0)   { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
-		if (i < 224 && i >= 192) { tile_lookup.insert({ i, TILE_TYPE::TILE_RAMP });         }
+        if (i < 208 && i >= 192) { tile_lookup.insert({ i, TILE_TYPE::TILE_CEILING_RAMP }); }
+		if (i < 224 && i >= 208) { tile_lookup.insert({ i, TILE_TYPE::TILE_GROUND_RAMP });         }
 		if (i < 228 && i >= 224) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
 		if (i < 232 && i >= 228) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
 		if (i < 236 && i >= 232) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }

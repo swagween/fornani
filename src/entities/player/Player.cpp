@@ -8,14 +8,35 @@
 
 #include "Player.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../../setup/LookupTables.hpp"
 
 Player::Player() {
     
     collider = shape::Collider(sf::Vector2<float>{ PLAYER_WIDTH, PLAYER_HEIGHT }, sf::Vector2<float>{ PLAYER_START_X, PLAYER_START_Y });
     collider.physics = components::PhysicsComponent({ stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC }, stats.PLAYER_MASS);
+    head = shape::Collider(sf::Vector2<float>{ PLAYER_WIDTH + 4, head_height }, sf::Vector2<float>{ PLAYER_START_X - 2, PLAYER_START_Y - head_height });
+    collider.physics = components::PhysicsComponent({ stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC }, stats.PLAYER_MASS);
+
     anchor_point = { collider.physics.position.x + PLAYER_WIDTH/2, collider.physics.position.y + PLAYER_HEIGHT/2};
     behavior.current_state = behavior::Behavior(behavior::idle);
     behavior.facing_lr = behavior::DIR_LR::RIGHT;
+    antennae.push_back(vfx::Attractor( collider.physics.position, flcolor::dark_orange, 0.029f ));
+    antennae.push_back(vfx::Attractor( collider.physics.position, flcolor::dark_orange, 0.029f, {2.f, 4.f} ));
+
+    antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, 0.03f));
+    antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, 0.03f, {2.f, 4.f}));
+
+        antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.73f, 0.73f}, 1.0f);
+        antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
+        antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.73f, 0.73f}, 1.0f);
+        antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
+
+        antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.75f, 0.75f}, 1.0f);
+        antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+        antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.75f, 0.75f}, 1.0f);
+        antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+
+        sprite_dimensions = { 48.f, 48.f };
     
     /*weapons_hotbar = {
         arms::WEAPON_TYPE::BRYNS_GUN,
@@ -25,8 +46,8 @@ Player::Player() {
     loadout.equipped_weapon = weapons_hotbar.at(0);*/
     
     //sprites
-    assign_texture(svc::assetLocator.get().t_nani);
-    sprite.setTexture(svc::assetLocator.get().t_nani_red);
+    assign_texture(svc::assetLocator.get().t_nani_unarmed);
+    sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
     
 }
 
@@ -273,12 +294,14 @@ void Player::update(Time dt) {
     }
     
     collider.physics.update_euler();
-    
     collider.sync_components();
+    head.physics.position = { collider.bounding_box.position.x - 2, collider.bounding_box.position.y - head_height };
+    head.sync_components();
     
     //for parameter tweaking, remove later
     collider.physics.friction = grounded() ? sf::Vector2<float>{stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC} : sf::Vector2<float>{stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC };
     collider.update();
+
     //hurt
     if (is_invincible()) { collider.spike_trigger = false; flash_sprite(); }
     else { sprite.setColor(sf::Color::White); }
@@ -291,6 +314,31 @@ void Player::update(Time dt) {
     update_behavior();
     apparent_position.x = collider.physics.position.x + PLAYER_WIDTH/2;
     apparent_position.y = collider.physics.position.y;
+
+    //antennae!
+    int ctr{ 0 };
+    for (auto& a : antennae) {
+        a.set_target_position(collider.physics.position + antenna_offset);
+        a.update();
+        a.collider.sync_components();
+        a.collider.handle_collider_collision(head.bounding_box);
+        a.collider.handle_collider_collision(collider.bounding_box);
+        if (behavior.facing_lr == behavior::DIR_LR::RIGHT) {
+            antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;
+        } else {
+            antenna_offset.x = ctr % 2 == 0 ? 2.f : 13.f;
+        }
+        ++ctr;
+    }
+
+    if(!weapons_hotbar.empty()) {
+        assign_texture(svc::assetLocator.get().t_nani);
+        sprite.setTexture(svc::assetLocator.get().t_nani);
+    } else {
+        assign_texture(svc::assetLocator.get().t_nani_unarmed);
+        sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
+    }
+
 }
 
 void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
@@ -303,20 +351,37 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
     int v = (int)(behavior.get_frame() % NANI_SPRITESHEET_HEIGHT) * NANI_SPRITE_WIDTH;
     sprite.setTextureRect(sf::IntRect({u, v}, {NANI_SPRITE_WIDTH, NANI_SPRITE_WIDTH}));
     sprite.setOrigin(NANI_SPRITE_WIDTH/2, NANI_SPRITE_WIDTH/2);
-    sprite.setPosition(player_pos.x, player_pos.y + sprite_offset.y);
+    sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
     
     //flip the sprite based on the player's direction
     sf::Vector2<float> right_scale = {1.0f, 1.0f};
     sf::Vector2<float> left_scale = {-1.0f, 1.0f};
     if(behavior.facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) {
+        //loadout.get_equipped_weapon().sp_gun.scale(-1.0f, 1.0f);
         sprite.scale(-1.0f, 1.0f);
     }
     if(behavior.facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale) {
+        //loadout.get_equipped_weapon().sp_gun.scale(-1.0f, 1.0f);
         sprite.scale(-1.0f, 1.0f);
     }
     if (flags.state.test(State::alive)) {
-        win.draw(sprite);
+        if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+            collider.render(win, campos);
+            head.render(win, campos);
+        } else {
+            win.draw(sprite);
+            svc::counterLocator.get().at(svc::draw_calls)++;
+            //collider.render(win, campos);
+            //head.render(win, campos);
+        }
     }
+
+    if (!weapons_hotbar.empty()) {
+        loadout.get_equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(loadout.get_equipped_weapon().type));
+        loadout.get_equipped_weapon().render(win, campos);
+    }
+
+    for (auto& a : antennae) { a.render(win, campos); }
     
 }
 
@@ -341,8 +406,9 @@ void Player::flash_sprite() {
 }
 
 void Player::calculate_sprite_offset() {
-    if (!collider.on_ramp()) { sprite_offset.y = 0.0f; return; }
-    //sprite_offset.y = behavior.facing_lr == behavior::DIR_LR::RIGHT ? 10.f : 15.f;
+    sprite_offset.y = 0.f;
+    if (collider.flags.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
+    sprite_position = { collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y };
 
 }
 
@@ -434,7 +500,7 @@ void Player::update_behavior() {
     }
     update_direction();
     if (!weapons_hotbar.empty()) {
-        update_weapon_direction();
+        update_weapon();
     }
     
 }
@@ -442,40 +508,56 @@ void Player::update_behavior() {
 void Player::set_position(sf::Vector2<float> new_pos) {
     collider.physics.position = new_pos;
     collider.sync_components();
+    int ctr{ 0 };
+    for (auto& a : antennae) {
+        a.update();
+        a.collider.physics.position = collider.physics.position + antenna_offset;
+        antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.0f;
+        ++ctr;
+    }
 }
 
 void Player::update_direction() {
     behavior.facing = last_dir;
+    behavior.facing_und = behavior::DIR_UND::NEUTRAL;
     if(behavior.facing_right()) {
         behavior.facing = behavior::DIR::RIGHT;
         if(flags.movement.test(Movement::look_up)) {
             behavior.facing = behavior::DIR::UP_RIGHT;
+            behavior.facing_und = behavior::DIR_UND::UP;
         }
         if(flags.movement.test(Movement::look_down) && !grounded()) {
             behavior.facing = behavior::DIR::DOWN_RIGHT;
+            behavior.facing_und = behavior::DIR_UND::DOWN;
         }
     }
     if(behavior.facing_left()) {
         behavior.facing = behavior::DIR::LEFT;
         if(flags.movement.test(Movement::look_up)) {
             behavior.facing = behavior::DIR::UP_LEFT;
+            behavior.facing_und = behavior::DIR_UND::UP;
         }
         if(flags.movement.test(Movement::look_down) && !grounded()) {
             behavior.facing = behavior::DIR::DOWN_LEFT;
+            behavior.facing_und = behavior::DIR_UND::DOWN;
         }
     }
     if(!moving() && flags.movement.test(Movement::look_up)) {
         if(behavior.facing_strictly_left()) {
             behavior.facing = behavior::DIR::UP_LEFT;
+            behavior.facing_und = behavior::DIR_UND::UP;
         } else {
             behavior.facing = behavior::DIR::UP_RIGHT;
+            behavior.facing_und = behavior::DIR_UND::UP;
         }
     }
     if(!flags.movement.test(Movement::move_left) && !flags.movement.test(Movement::move_right) && flags.movement.test(Movement::look_down) && !grounded()) {
         if(behavior.facing_strictly_left()) {
             behavior.facing = behavior::DIR::DOWN_LEFT;
+            behavior.facing_und = behavior::DIR_UND::DOWN;
         } else {
             behavior.facing = behavior::DIR::DOWN_RIGHT;
+            behavior.facing_und = behavior::DIR_UND::DOWN;
         }
     }
     if (behavior.facing_left()) {
@@ -489,14 +571,12 @@ void Player::update_direction() {
     }
 }
 
-void Player::update_weapon_direction() {
+void Player::update_weapon() {
     switch(behavior.facing_lr) {
         case behavior::DIR_LR::LEFT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::LEFT;
             collider.physics.dir = components::DIRECTION::LEFT;
             break;
         case behavior::DIR_LR::RIGHT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::RIGHT;
             collider.physics.dir = components::DIRECTION::RIGHT;
             break;
     }
@@ -508,30 +588,26 @@ void Player::update_weapon_direction() {
         case behavior::DIR::RIGHT:
             break;
         case behavior::DIR::UP:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
             collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::DOWN:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_LEFT;
             collider.physics.dir = components::DIRECTION::DOWN;
             break;
         case behavior::DIR::UP_RIGHT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_RIGHT;
             collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::UP_LEFT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::UP_LEFT;
             collider.physics.dir = components::DIRECTION::UP;
             break;
         case behavior::DIR::DOWN_RIGHT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_RIGHT;
             collider.physics.dir = components::DIRECTION::DOWN;
             break;
         case behavior::DIR::DOWN_LEFT:
-            loadout.get_equipped_weapon().sprite_orientation = arms::WEAPON_DIR::DOWN_LEFT;
             collider.physics.dir = components::DIRECTION::DOWN;
             break;
     }
+
+    loadout.get_equipped_weapon().update();
     loadout.get_equipped_weapon().set_orientation();
     if(behavior.facing_right()) {
         hand_position = {28, 36};
@@ -590,15 +666,15 @@ void Player::no_move() {
     flags.movement.reset(Movement::move_left);
 }
 
-bool Player::grounded() {
+bool Player::grounded() const {
     return collider.flags.test(shape::State::grounded);
 }
 
-bool Player::moving() {
+bool Player::moving() const {
     return flags.movement.test(Movement::move_left) || flags.movement.test(Movement::move_right) || flags.movement.test(Movement::autonomous_walk);
 }
 
-bool Player::moving_at_all() {
+bool Player::moving_at_all() const {
     return flags.movement.test(Movement::move_left) || flags.movement.test(Movement::move_right) ||
         flags.movement.test(Movement::autonomous_walk) || flags.movement.test(Movement::freefalling) || flags.movement.test(Movement::entered_freefall);
 }
@@ -642,7 +718,7 @@ void Player::update_invincibility() {
     }
 }
 
-bool Player::is_invincible() {
+bool Player::is_invincible() const {
     return counters.invincibility > 0;
 }
 
@@ -687,33 +763,15 @@ std::string Player::print_direction(bool lr) {
                 break;
         }
     }
-    switch(behavior.facing) {
-        case behavior::DIR::NEUTRAL:
+    switch(behavior.facing_und) {
+        case behavior::DIR_UND::NEUTRAL:
             return "NEUTRAL";
             break;
-        case behavior::DIR::LEFT:
-            return "LEFT";
-            break;
-        case behavior::DIR::RIGHT:
-            return "RIGHT";
-            break;
-        case behavior::DIR::UP:
+        case behavior::DIR_UND::UP:
             return "UP";
             break;
-        case behavior::DIR::DOWN:
+        case behavior::DIR_UND::DOWN:
             return "DOWN";
-            break;
-        case behavior::DIR::UP_RIGHT:
-            return "UP RIGHT";
-            break;
-        case behavior::DIR::UP_LEFT:
-            return "UP LEFT";
-            break;
-        case behavior::DIR::DOWN_RIGHT:
-            return "DOWN RIGHT";
-            break;
-        case behavior::DIR::DOWN_LEFT:
-            return "DOWN LEFT";
             break;
     }
 }

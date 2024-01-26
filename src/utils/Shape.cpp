@@ -107,7 +107,7 @@ namespace shape {
         return result;
     }
 
-    static const float NORMAL_TOLERANCE = 0.001f;
+    static const float NORMAL_TOLERANCE = 0.0001f;
 
     float Shape::getLength(const Vec v)
     {
@@ -398,8 +398,8 @@ namespace shape {
         return colliding;
     }
 
-    const float small_value = 4.0f;
-    const float epsilon = 0.5f;
+    const float small_value = 0.001f;
+    const float epsilon = 0.0005f;
 
     bool Shape::AABB_is_left_collision(const Shape& immovable) {
         if (immovable.vertices.size() < 4) {

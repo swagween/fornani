@@ -1,0 +1,46 @@
+{
+  "colliders": [
+    {
+      "tile_id": 0,
+      "boxes": [
+        {
+          "dimensions": {
+            "x": 30,
+            "y": 46
+          },
+          "position": {
+            "x": 24,
+            "y": 1
+          }
+        }
+      ]
+    }
+  ],
+  "hurtboxes": [
+    {
+      "tile_id": 0,
+      "boxes": [
+        {
+          "dimensions": {
+            "x": 20,
+            "y": 22
+          },
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "dimensions": {
+            "x": 42,
+            "y": 30
+          },
+          "position": {
+            "x": 6,
+            "y": 16
+          }
+        }
+      ]
+    }
+  ]
+}

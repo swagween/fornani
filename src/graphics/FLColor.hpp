@@ -24,6 +24,9 @@ inline sf::Color black{		   14,  6,   11 };
 inline sf::Color periwinkle{   159, 138, 247};
 inline sf::Color green{        81,  186, 155};
 inline sf::Color night{        19,  18,  16 };
+inline sf::Color bright_orange{255, 131, 28 };
+inline sf::Color dark_orange{  210, 71,  0};
+inline sf::Color ui_white{ 254, 252, 216 };
 }
 
 

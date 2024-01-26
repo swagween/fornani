@@ -209,6 +209,7 @@ public:
     const float suspension_threshold{ 1.0f };
     behavior::DIR facing{};
     behavior::DIR_LR facing_lr{};
+    behavior::DIR_UND facing_und{};
     
     behavior::Behavior current_state;
     
@@ -321,6 +322,7 @@ public:
     int get_frame() { return current_state.get_frame(); }
     
     behavior::DIR_LR facing_lr{};
+    behavior::DIR_UND facing_und{};
     
     behavior::Behavior current_state;
 

@@ -12,11 +12,13 @@
 #include "../../components/BehaviorComponent.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "../../utils/BitFlags.hpp"
+#include "../../particle/Attractor.hpp"
 #include <array>
 #include <memory>
 
-const float PLAYER_WIDTH = 24.0f;
+const float PLAYER_WIDTH = 18.0f;
 const float PLAYER_HEIGHT = 24.0f;
+const float head_height{ 8.f };
 const float PLAYER_START_X = 100.0f;
 const float PLAYER_START_Y = 100.0f;
 const float JUMPBOX_HEIGHT = 8.0f;
@@ -56,22 +58,23 @@ struct PlayerInventoryStats {
 struct PhysicsStats {
 
     float PLAYER_MAX_XVEL = 2.380f;
-    float PLAYER_MAX_YVEL = 0.426f;
+    float PLAYER_MAX_YVEL = 0.226f;
 
     float AIR_MULTIPLIER = 2.912f;
 
     float PLAYER_GRAV = 0.002f;
 
-    float TERMINAL_VELOCITY = 1.8f;
+    float TERMINAL_VELOCITY = 0.8f;
 
-    float PLAYER_GROUND_FRIC = 0.974f;
-    float PLAYER_HORIZ_AIR_FRIC = 0.990f;
-    float PLAYER_VERT_AIR_FRIC = 0.966f;
+    float PLAYER_GROUND_FRIC = 0.963f;
+    float PLAYER_HORIZ_AIR_FRIC = 0.987f;
+    float PLAYER_VERT_AIR_FRIC = 0.956f;
 
     float X_ACC = 0.056f;
     float X_ACC_AIR = 0.056f;
 
-    float JUMP_MAX = 0.304f;
+    //float JUMP_MAX = 0.304f; //3 blocks
+    float JUMP_MAX = 0.392f; //4 blocks
     
     float WALL_SLIDE_THRESHOLD = -1.0f;
     float WALL_SLIDE_SPEED = 1.31f;
@@ -168,7 +171,7 @@ public:
     void update_behavior();
     void set_position(sf::Vector2<float> new_pos);
     void update_direction();
-    void update_weapon_direction();
+    void update_weapon();
     void walk();
     void autonomous_walk();
 
@@ -177,9 +180,9 @@ public:
     void restrict_animation();
     void no_move();
 
-    bool grounded();
-    bool moving();
-    bool moving_at_all();
+    bool grounded() const;
+    bool moving() const;
+    bool moving_at_all() const;
     
     //firing
     sf::Vector2<float> get_fire_point();
@@ -187,7 +190,7 @@ public:
     //level events
     void make_invincible();
     void update_invincibility();
-    bool is_invincible();
+    bool is_invincible() const;
     void kill();
     void start_over();
 
@@ -201,6 +204,7 @@ public:
     std::string print_direction(bool lr);
 
     shape::Collider collider{ {PLAYER_WIDTH, PLAYER_HEIGHT}, {PLAYER_START_X, PLAYER_START_Y} };
+    shape::Collider head{};
     components::PlayerBehaviorComponent behavior{};
     behavior::DIR last_dir{};
     arms::Arsenal loadout{};
@@ -211,6 +215,11 @@ public:
     sf::Vector2<float> anchor_point{};
     sf::Vector2<float> hand_position{};
     sf::Vector2<float> sprite_offset{};
+    sf::Vector2<float> sprite_dimensions{};
+    sf::Vector2<float> sprite_position{};
+
+    std::vector<vfx::Attractor> antennae{};
+    sf::Vector2<float> antenna_offset{ 4.f, -13.f};
     
     PlayerStats player_stats{3, 3, 0, 100};
     PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
