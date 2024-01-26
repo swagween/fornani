@@ -19,8 +19,7 @@ namespace critter {
 			metadata = { 1, VARIANT::SOLDIER, true, false, true }; stats = { 2, 14, 0.5f, 1.0f, 16 * 32 };
 			sprite_dimensions = { 56, 42 };
 			spritesheet_dimensions = { 1, 14 };
-			dimensions = { 16.0f, 16.0f };
-			offset.y = 10;
+			dimensions = { 16.0f, 16.0f }; 
 			colliders.push_back(shape::Collider());
 			init();
 			flags.vulnerable = true; //hulmets always vulnerable

@@ -61,7 +61,7 @@ void Critter::update() {
     }
 
     if (!colliders.empty()) {
-        sprite_position = colliders.at(0).physics.position;
+        sprite_position = colliders.at(0).physics.position + sprite.getOrigin() - colliders.at(0).sprite_offset;
     }
 
     for (auto& collider : colliders) {
@@ -70,51 +70,54 @@ void Critter::update() {
         collider.update();
     }
 
-    for(auto& hbx : hurtboxes) {
-        hbx.update();
-        if(facing_lr == behavior::DIR_LR::LEFT) {
-            hbx.set_position({ sprite_position.x + hbx.sprite_offset.x, sprite_position.y + hbx.sprite_offset.y });
-        } else {
-            hbx.set_position({ sprite_position.x + colliders.at(0).dimensions.x + (sprite_dimensions.x / 2) - hbx.sprite_offset.x, sprite_position.y + hbx.sprite_offset.y });
-        }
-    }
-
     //get UV coords
     int u = (int)(behavior.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
     int v = (int)(behavior.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
     sprite.setTextureRect(sf::IntRect({ u, v }, { sprite_dimensions.x, sprite_dimensions.y }));
     sprite.setOrigin(sprite_dimensions.x / 2, dimensions.y / 2);
 
+    int ctr{ 0 };
+    for (auto& hbx : hurtboxes) {
+        hbx = hurtbox_atlas.at((int)(behavior.get_frame() * num_hurtboxes + ctr));
+        hbx.update();
+        if (facing_lr == behavior::DIR_LR::RIGHT) {
+            hbx.set_position({ sprite_position.x + hbx.sprite_offset.x - sprite.getOrigin().x, sprite_position.y - sprite.getOrigin().y + hbx.sprite_offset.y });
+        } else if (facing_lr == behavior::DIR_LR::LEFT) {
+            hbx.set_position({ sprite_position.x - hbx.sprite_offset.x + sprite.getOrigin().x - hbx.dimensions.x, sprite_position.y - sprite.getOrigin().y + hbx.sprite_offset.y });
+        }
+        ++ctr;
+    }
+
 
 }
 
 void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
-    if (!colliders.empty()) {
-        sprite.setPosition(sprite_position.x - offset.x - campos.x + dimensions.x / 2, sprite_position.y - offset.y + 22 - campos.y);
-        drawbox.setSize(dimensions);
-    }
+    sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
+    drawbox.setSize(dimensions);
     ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
     hr.setPosition(hostile_range.position.x - campos.x, hostile_range.position.y - campos.y);
-    drawbox.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
-    drawbox.setSize({ 2.f, 2.f });
-    drawbox.setFillColor(flcolor::fucshia);
-    drawbox.setOutlineColor(flcolor::fucshia);
-    drawbox.setOutlineThickness(-1);
-    win.draw(drawbox);
-    /*win.draw(ar);
-    win.draw(hr);*/
     win.draw(sprite);
     svc::counterLocator.get().at(svc::draw_calls)++;
-    for (auto& collider : colliders) {
-        collider.render(win, campos);
-    }
-    for(auto& hbx : hurtboxes) {
+
+    if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+        //debug
+        drawbox.setPosition(sprite_position.x - sprite.getOrigin().x - campos.x, sprite_position.y - sprite.getOrigin().y - campos.y);
+        drawbox.setSize({ (float)sprite_dimensions.x, (float)sprite_dimensions.y });
         drawbox.setFillColor(sf::Color::Transparent);
-        drawbox.setOutlineColor(flcolor::goldenrod);
+        drawbox.setOutlineColor(flcolor::fucshia);
         drawbox.setOutlineThickness(-1);
-        drawbox.setSize(hbx.dimensions);
-        drawbox.setPosition(hbx.position.x - campos.x, hbx.position.y - campos.y);
         win.draw(drawbox);
+        for (auto& collider : colliders) {
+            collider.render(win, campos);
+        }
+        for (auto& hbx : hurtboxes) {
+            drawbox.setFillColor(sf::Color{ 255, 255, 20, 20 });
+            drawbox.setOutlineColor(flcolor::goldenrod);
+            drawbox.setOutlineThickness(-1);
+            drawbox.setSize(hbx.dimensions);
+            drawbox.setPosition(hbx.position.x - campos.x, hbx.position.y - campos.y);
+            win.draw(drawbox);
+        }
     }
     svc::counterLocator.get().at(svc::draw_calls)++;
     sprite_flip();

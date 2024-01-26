@@ -153,14 +153,16 @@ public:
     behavior::Behavior behavior{};
     behavior::DIR_LR facing_lr{};
     std::vector<shape::Collider> colliders{};
+
+    std::vector<shape::Shape> hurtbox_atlas{};
     std::vector<shape::Shape> hurtboxes{};
     shape::Shape alert_range{};
     shape::Shape hostile_range{};
     
     sf::Vector2<int> sprite_dimensions{};
     sf::Vector2<int> spritesheet_dimensions{};
-    sf::Vector2<float> dimensions{};
     sf::Vector2<float> offset{};
+    sf::Vector2<float> dimensions{};
     sf::Vector2<float> sprite_position{};
     int anim_loop_count{};
 

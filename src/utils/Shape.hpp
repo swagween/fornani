@@ -65,9 +65,11 @@ namespace shape {
         std::vector<Vec> normals;
         Vec axis;
 
+        //for hurtboxes
         Vec dimensions{};
         Vec position{};
         Vec sprite_offset{};
+        int tile_id{};
 
         int num_sides;
 

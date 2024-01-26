@@ -43,17 +43,26 @@ namespace critter {
             }
         }
 
-        if(hurtboxes.empty()) {
-            for (int j = 0; j < num_hurtboxes; ++j) {
-                auto const& xdim = svc::dataLocator.get().frdog["hurtboxes"][0]["boxes"][j]["dimensions"]["x"].as<float>();
-                auto const& ydim = svc::dataLocator.get().frdog["hurtboxes"][0]["boxes"][j]["dimensions"]["y"].as<float>();
-                auto const& xpos = svc::dataLocator.get().frdog["hurtboxes"][0]["boxes"][j]["position"]["x"].as<float>();
-                auto const& ypos = svc::dataLocator.get().frdog["hurtboxes"][0]["boxes"][j]["position"]["y"].as<float>();
+        if(hurtbox_atlas.empty()) {
+            for (int i = 0; i < num_anim_frames; ++i) {
+                for (int j = 0; j < num_hurtboxes; ++j) {
+                    auto const& xdim = svc::dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["dimensions"]["x"].as<float>();
+                    auto const& ydim = svc::dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["dimensions"]["y"].as<float>();
+                    auto const& xpos = svc::dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["position"]["x"].as<float>();
+                    auto const& ypos = svc::dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["position"]["y"].as<float>();
 
-                hurtboxes.push_back(shape::Shape());
-                hurtboxes.back().dimensions = { xdim, ydim };
-                hurtboxes.back().sprite_offset = { xpos, ypos };
+                    auto const& id = svc::dataLocator.get().frdog["hurtboxes"][i]["tile_id"].as<int>();
 
+                    hurtbox_atlas.push_back(shape::Shape());
+                    hurtbox_atlas.back().dimensions = { xdim, ydim };
+                    hurtbox_atlas.back().sprite_offset = { xpos, ypos };
+                    hurtbox_atlas.back().tile_id = id;
+
+                    if(i == 0) {
+                        hurtboxes.push_back(hurtbox_atlas.back());
+                    }
+
+                }
             }
         }
 
@@ -124,7 +133,6 @@ namespace critter {
         if (anim_loop_count > 2) {
             behavior.params.started = true;
             anim_loop_count = 0;
-            offset = { 0.0f, 8.0f };
             flags.hurt = false;
             return flags.shot ? BIND(update_hurt) : BIND(update_idle);
         }

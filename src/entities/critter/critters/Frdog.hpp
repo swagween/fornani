@@ -19,12 +19,12 @@ namespace critter {
 			num_anim_frames = 20;
 			num_colliders = 1;
 			num_hurtboxes = 2;
+			offset.y = 2.f;
 			metadata = { 0, VARIANT::BEAST, true, false, true };
 			stats = { 3, 35, 0.3f, 2.0f, 80, 12 * 32 };
 			//sprite_dimensions = sf::Vector2<int>{ 72, 48 };
 			spritesheet_dimensions = sf::Vector2<int>{4, 5};
 			dimensions = sf::Vector2<float>{32.0f, 32.0f};
-			offset.y = 8;
 			init();
 			flags.vulnerable = true; //frdogs always vulnerable
 		}
