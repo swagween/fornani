@@ -20,6 +20,7 @@
 #include "../automa/StateController.hpp"
 #include "../gui/Console.hpp"
 #include "../utils/Random.hpp"
+#include "../utils/InputState.hpp"
 
 namespace svc {
 
@@ -36,6 +37,7 @@ namespace svc {
 	inline auto consoleLocator = forloop::Service<gui::Console>::Instance{};
 	inline auto randomLocator = forloop::Service<util::Random>::Instance{};
 	inline auto globalBitFlagsLocator = forloop::Service<util::BitFlags<global_flags> >::Instance{};
+	inline auto inputStateLocator = forloop::Service<util::InputState>::Instance{};
 	inline auto counterLocator = forloop::Service< std::array<uint16_t, num_counters> >::Instance{};
 	inline auto floatReadoutLocator = forloop::Service<float>::Instance{};
 

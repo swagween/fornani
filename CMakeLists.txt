@@ -49,6 +49,7 @@ src/utils/AdjacencyList.hpp
 src/utils/Random.hpp
 src/utils/Clock.hpp
 src/utils/BitFlags.hpp
+src/utils/InputState.hpp
 src/setup/AssetManager.hpp
 src/setup/ServiceLocator.hpp
 src/setup/LookupTables.hpp

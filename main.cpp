@@ -118,6 +118,29 @@ static void show_overlay() {
                     ImGui::EndTabItem();
                     ImGui::PlotHistogram("Frame Times", time_markers, NUM_TIMESTEPS, 0, NULL, 0.0f, 0.02f, ImVec2(0, 80.0f));
                 }
+                if (ImGui::BeginTabItem("Key States")) {
+                    ImGui::Text("Shift held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::held) ? "Yes" : "No");
+                    ImGui::Text("Shift triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::triggered) ? "Yes" : "No");
+                    ImGui::Text("Shift released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::released) ? "Yes" : "No");
+                    ImGui::Separator();
+                    ImGui::Text("Left held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::held) ? "Yes" : "No");
+                    ImGui::Text("Left triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::triggered) ? "Yes" : "No");
+                    ImGui::Text("Left released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::released) ? "Yes" : "No");
+                    ImGui::Separator();
+                    ImGui::Text("Right held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::held) ? "Yes" : "No");
+                    ImGui::Text("Right triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::triggered) ? "Yes" : "No");
+                    ImGui::Text("Right released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::released) ? "Yes" : "No");
+                    ImGui::Separator();
+                    ImGui::Text("Up held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::held) ? "Yes" : "No");
+                    ImGui::Text("Up triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::triggered) ? "Yes" : "No");
+                    ImGui::Text("Up released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::released) ? "Yes" : "No");
+                    ImGui::Separator();
+                    ImGui::Text("Down held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::held) ? "Yes" : "No");
+                    ImGui::Text("Down triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered) ? "Yes" : "No");
+                    ImGui::Text("Down released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::released) ? "Yes" : "No");
+                    ImGui::Separator();
+                    ImGui::EndTabItem();
+                }
                 if (ImGui::BeginTabItem("Audio"))
                 {
                     ImGui::Separator();
@@ -132,6 +155,11 @@ static void show_overlay() {
                     ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 12);
                     ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 99999);
                     ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 99999);
+
+                    ImGui::Separator();
+                    ImGui::Text("Move Left : %s", svc::playerLocator.get().flags.movement.test(Movement::move_left) ? "Yes" : "No");
+                    ImGui::Text("Move Right : %s", svc::playerLocator.get().flags.movement.test(Movement::move_right) ? "Yes" : "No");
+                    ImGui::Separator();
                                  
                 ImGui::Text("Alive? %s", svc::playerLocator.get().flags.state.test(State::alive) ? "Yes" : "No");
                     ImGui::Text("Player Behavior: %s", svc::playerLocator.get().behavior.current_state.params.behavior_id);
@@ -534,6 +562,10 @@ void run(char** argv) {
                     if (event.key.code == sf::Keyboard::P) {
                         save_screenshot();
                     }
+                    svc::inputStateLocator.get().handle_press(event.key.code);
+                    break;
+                case sf::Event::KeyReleased:
+                    svc::inputStateLocator.get().handle_release(event.key.code);
                     break;
                 default:
                     break;
@@ -574,6 +606,8 @@ void run(char** argv) {
         ImGui::SFML::Render(window);
         window.display();
         frame_draw_counter = svc::counterLocator.get().at(svc::draw_calls);
+        svc::inputStateLocator.get().reset_triggers();
+        
     }
     
 }
