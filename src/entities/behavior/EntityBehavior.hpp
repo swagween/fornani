@@ -61,13 +61,13 @@ inline BehaviorParameters frdog_bark =      BehaviorParameters("frdog_bark", 1, 
 inline BehaviorParameters frdog_turn =      BehaviorParameters("frdog_turn", 1, 12, true , true, true, 13);
 inline BehaviorParameters frdog_run =       BehaviorParameters("frdog_run", 4, DEFAULT_FRAMERATE, false, false, false, 16);
 
-inline BehaviorParameters hulmet_idle =     BehaviorParameters("hulmet_idle", 2, 14, false, false, false, 5);
-inline BehaviorParameters hulmet_run =      BehaviorParameters("hulmet_run", 4, 12, false, false, false, 7);
-inline BehaviorParameters hulmet_charging = BehaviorParameters("hulmet_charging", 2, 12, false, false, false, 4);
-inline BehaviorParameters hulmet_alert =    BehaviorParameters("hulmet_alert", 1, 12, false, false, false, 6);
-inline BehaviorParameters hulmet_hurt =     BehaviorParameters("hulmet_hurt", 4, 12, false, false, false, 0);
-inline BehaviorParameters hulmet_dying =    BehaviorParameters("hulmet_dying", 1, 12, false, false, false, 11);
+inline BehaviorParameters hulmet_idle =     BehaviorParameters("hulmet_idle", 6, 14, false, false, false, 0);
+inline BehaviorParameters hulmet_run =      BehaviorParameters("hulmet_run", 4, 12, false, false, false, 12);
+inline BehaviorParameters hulmet_charging = BehaviorParameters("hulmet_charging", 2, 12, false, false, false, 6);
+inline BehaviorParameters hulmet_hurt =     BehaviorParameters("hulmet_hurt", 4, 12, false, false, false, 8);
 inline BehaviorParameters hulmet_turn =     BehaviorParameters("hulmet_turn", 1, 12, true, true, true, 13);
+inline BehaviorParameters hulmet_shooting = BehaviorParameters("hulmet_shooting", 2, 12, true, true, true, 16);
+inline BehaviorParameters hulmet_hiding =   BehaviorParameters("hulmet_hiding", 2, 12, true, true, true, 18);
 
 inline BehaviorParameters simple_on =       BehaviorParameters("simple_on", 5, 12, true, false, true, 0);
 inline BehaviorParameters simple_off =      BehaviorParameters("simple_off", 1, 8, false, false, false, 0);

@@ -22,11 +22,12 @@ namespace critter {
 			offset.y = 2.f;
 			metadata = { 0, VARIANT::BEAST, true, false, true };
 			stats = { 3, 35, 0.3f, 2.0f, 80, 12 * 32 };
-			//sprite_dimensions = sf::Vector2<int>{ 72, 48 };
 			spritesheet_dimensions = sf::Vector2<int>{4, 5};
-			dimensions = sf::Vector2<float>{32.0f, 32.0f};
 			init();
 			flags.vulnerable = true; //frdogs always vulnerable
+
+			alert_range = shape::Shape({ (float)stats.vision * 1.5f, (float)stats.vision * 1.5f });
+			hostile_range = shape::Shape({ (float)stats.vision, (float)stats.vision });
 		}
 
 		void unique_update() override;

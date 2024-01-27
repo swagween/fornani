@@ -174,6 +174,7 @@ public:
     void update_weapon();
     void walk();
     void autonomous_walk();
+    void hurt(int amount);
 
     void restrict_inputs();
     void unrestrict_inputs();

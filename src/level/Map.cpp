@@ -221,6 +221,13 @@ void Map::update() {
     }
 
     for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+        //damage player if spikes
+        if(cell.type == lookup::TILE_TYPE::TILE_SPIKES && svc::playerLocator.get().collider.hurtbox.SAT(cell.bounding_box)) {
+            svc::playerLocator.get().hurt(1);
+        }
+        if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && svc::playerLocator.get().collider.hurtbox.SAT(cell.bounding_box)) {
+            svc::playerLocator.get().hurt(64);
+        }
         for(auto& proj : active_projectiles) {
             if(abs(cell.bounding_box.position.x - proj.bounding_box.position.x) > lookup::unit_size_i * barrier ||
                abs(cell.bounding_box.position.y - proj.bounding_box.position.y) > lookup::unit_size_i * barrier) {
@@ -278,16 +285,22 @@ void Map::update() {
         if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
         for (auto& critter : critters) {
             for (auto& hurtbox : critter->hurtboxes) {
-                if (proj.bounding_box.SAT(hurtbox)) {
-                    critter->flags.shot = true;
-                    if (critter->flags.vulnerable) {
-                        critter->flags.hurt = true;
-                        critter->flags.just_hurt = true;
-                        critter->condition.hp -= proj.stats.damage;
+                if(proj.team != arms::TEAMS::SKYCORPS) {
+                    if (proj.bounding_box.SAT(hurtbox)) {
+                        critter->flags.shot = true;
+                        if (critter->flags.vulnerable) {
+                            critter->flags.hurt = true;
+                            critter->flags.just_hurt = true;
+                            critter->condition.hp -= proj.stats.damage;
+                        }
+                        proj.destroy(false);
                     }
-                    proj.destroy(false);
                 }
             }
+        }
+        if(proj.bounding_box.SAT(svc::playerLocator.get().collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
+            svc::playerLocator.get().hurt(proj.stats.damage);
+            proj.destroy(false);
         }
     }
     
@@ -296,18 +309,19 @@ void Map::update() {
         //handle collision
         for (auto& collider : critter->colliders) {
             svc::playerLocator.get().collider.handle_collider_collision(collider.bounding_box);
+            for (auto& other_critter : critters) {
+                if (!(other_critter == critter)) {
+                    for (auto& other_collider : other_critter->colliders) {
+                        collider.handle_collider_collision(other_collider.bounding_box);
+                    }
+                }
+            }
         }
         if (!critter->colliders.empty()) {
             critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->colliders.at(0).physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
-        }
-        //critter->random_walk(sf::Vector2<int>(120, 180));
-        if (svc::playerLocator.get().collider.bounding_box.SAT(critter->hostile_range)) {
-            critter->current_target = svc::playerLocator.get().collider.physics.position;
-            critter->awake();
-        } else if (svc::playerLocator.get().collider.bounding_box.SAT(critter->alert_range)) {
-            critter->wake_up();
-        } else {
-            critter->sleep();
+            if (critter->flags.seeking) {
+                critter->facing_lr = (critter->colliders.at(0).physics.velocity.x < 0.f) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
+            }
         }
 
     }
@@ -577,10 +591,26 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
             svc::assetLocator.get().pop_mid.setPitch(1 + randp);
             svc::assetLocator.get().pop_mid.play();
         }
-        
     }
 }
 
+void Map::spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter) {
+    active_projectiles.push_back(critter.weapon.projectile);
+    active_projectiles.back().fired_point = pos;
+    active_projectiles.back().set_sprite();
+    active_projectiles.back().physics = components::PhysicsComponent({ 1.0f, 1.0f }, 1.0f);
+    active_projectiles.back().physics.position = pos;
+    active_projectiles.back().seed();
+    active_projectiles.back().update();
+
+    active_emitters.push_back(vfx::Emitter(arms::light_gun_spray, arms::burst, arms::spray_color.at(arms::WEAPON_TYPE::WASP)));
+    active_emitters.back().get_physics().acceleration += critter.colliders.at(0).physics.acceleration;
+    active_emitters.back().set_position(pos.x, pos.y);
+    active_emitters.back().set_direction(critter.colliders.at(0).physics.dir);
+    active_emitters.back().update();
+    critter.flags.weapon_fired = false;
+}
+ 
 void Map::manage_projectiles() {
     for(auto& proj : active_projectiles) {
         proj.update();
@@ -596,6 +626,12 @@ void Map::manage_projectiles() {
     if (!svc::playerLocator.get().weapons_hotbar.empty()) {
         if (svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) {
             spawn_projectile_at(svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point);
+        }
+    }
+
+    for(auto& critter : critters) {
+        if(critter->flags.weapon_fired) {
+            spawn_critter_projectile_at(critter->barrel_point, *critter);
         }
     }
 }

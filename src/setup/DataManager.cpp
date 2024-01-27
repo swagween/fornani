@@ -14,7 +14,8 @@ namespace data {
 
 		frdog = dj::Json::from_file((finder.resource_path + "/data/enemy/frdog.json").c_str());
 		assert(!frdog.is_null());
-
+		hulmet = dj::Json::from_file((finder.resource_path + "/data/enemy/hulmet.json").c_str());
+		assert(!frdog.is_null());
 		
 	
 	}

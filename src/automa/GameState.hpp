@@ -311,11 +311,13 @@ namespace flstates {
 
 		void handle_events(sf::Event& event) {
 			if (event.type == sf::Event::EventType::KeyPressed) {
+				svc::inputStateLocator.get().handle_press(event.key.code);
 				if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right) {
 					svc::playerLocator.get().flags.input.set(Input::exit_request);
 				}
 			}
 			if (event.type == sf::Event::EventType::KeyReleased) {
+				svc::inputStateLocator.get().handle_release(event.key.code);
 				if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right) {
 					svc::playerLocator.get().flags.input.reset(Input::exit_request);
 					svc::playerLocator.get().unrestrict_inputs();

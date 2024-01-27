@@ -69,6 +69,7 @@ struct CritterStats {
     float loot_multiplier{};
     int energy{};
     int vision{};
+    int cooldown{};
 };
 
 struct CritterCondition {
@@ -88,6 +89,11 @@ struct CritterFlags {
     bool just_hurt{};
     bool shot{};
     bool vulnerable{};
+    bool charging{};
+    bool shooting{};
+    bool hiding{};
+    bool running{};
+    bool weapon_fired{};
 };
 
 struct FrameTracker {
@@ -98,6 +104,9 @@ struct FrameTracker {
 class Critter {
     
 public:
+
+    using Clock = std::chrono::steady_clock;
+    using Time = std::chrono::duration<float>;
 
     Critter() = default;
     Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim) : metadata(m), stats(s), sprite_dimensions(sprite_dim), spritesheet_dimensions(spritesheet_dim), dimensions(dim) {
@@ -119,6 +128,7 @@ public:
     virtual void unique_update() {};
     virtual void load_data() {};
     virtual void sprite_flip();
+    virtual void cooldown(); //for armed enemies
     
     void init();
     void update();
@@ -164,6 +174,10 @@ public:
     sf::Vector2<float> offset{};
     sf::Vector2<float> dimensions{};
     sf::Vector2<float> sprite_position{};
+    sf::Vector2<float> barrel_point{};
+
+    arms::Weapon weapon{};
+
     int anim_loop_count{};
 
     //collider loading
@@ -180,6 +194,11 @@ public:
     std::queue<int> idle_action_queue{};
     
     sf::Vector2<float> current_target{};
+
+    //fixed animation time step variables
+    Time dt{ 0.001f };
+    Clock::time_point current_time = Clock::now();
+    Time accumulator{ 0.0f };
     
 };
 

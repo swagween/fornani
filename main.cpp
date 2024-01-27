@@ -394,6 +394,12 @@ static void show_overlay() {
                         SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/GRUB_DOJO_01");
                         svc::playerLocator.get().set_position({ 3 * 32, 8 * 32 });
                     }
+                    if (ImGui::Button("Firstwind Dojo")) {
+                        svc::assetLocator.get().click.play();
+                        SM.set_current_state(std::make_unique<flstates::Dojo>());
+                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/FIRSTWIND_DOJO_01");
+                        svc::playerLocator.get().set_position({ 3 * 32, 8 * 32 });
+                    }
                     /*if (ImGui::Button("Atrium")) {
                         svc::assetLocator.get().click.play();
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
@@ -562,15 +568,14 @@ void run(char** argv) {
                     if (event.key.code == sf::Keyboard::P) {
                         save_screenshot();
                     }
-                    svc::inputStateLocator.get().handle_press(event.key.code);
                     break;
                 case sf::Event::KeyReleased:
-                    svc::inputStateLocator.get().handle_release(event.key.code);
                     break;
                 default:
                     break;
             }
             SM.get_current_state().handle_events(event);
+            svc::inputStateLocator.get().reset_triggers();
         }
         
         //game logic and rendering
@@ -606,7 +611,6 @@ void run(char** argv) {
         ImGui::SFML::Render(window);
         window.display();
         frame_draw_counter = svc::counterLocator.get().at(svc::draw_calls);
-        svc::inputStateLocator.get().reset_triggers();
         
     }
     

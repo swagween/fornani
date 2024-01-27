@@ -41,7 +41,15 @@ enum class WEAPON_TYPE {
     CARISE,
     STINGER,
     TUSK,
-    TOMAHAWK
+    TOMAHAWK,
+
+    SKYCORPS_AR
+};
+
+enum class TEAMS {
+    NANI,
+    SKYCORPS,
+    BEASTS
 };
 
 enum class WEAPON_DIR {
@@ -124,7 +132,7 @@ public:
     ProjectileAnimation anim{};
 
     WEAPON_TYPE type{WEAPON_TYPE::BRYNS_GUN};
-
+    TEAMS team{ TEAMS::NANI }; //default to player projectile. emenies'/bosses' will be set separately
     RENDER_TYPE render_type{};
 
     util::BitFlags<ProjectileState> state{};

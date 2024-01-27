@@ -289,12 +289,7 @@ void Player::update(Time dt) {
 	collider.physics.friction = grounded() ? sf::Vector2<float>{stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC} : sf::Vector2<float>{ stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC };
 	collider.update();
 
-	//hurt
-	if (is_invincible()) { collider.spike_trigger = false; flash_sprite(); } else { sprite.setColor(sf::Color::White); }
-	just_hurt = collider.spike_trigger;
-	if (collider.spike_trigger && !is_invincible()) { collider.physics.acceleration.y = -stats.HURT_ACC; collider.spike_trigger = false; make_invincible(); flags.sounds.set(Soundboard::hurt); --player_stats.health; }
 	update_invincibility();
-	if (player_stats.health <= 0) { kill(); }
 
 	play_sounds();
 	update_behavior();
@@ -454,6 +449,7 @@ void Player::update_behavior() {
 
 	if (just_hurt) {
 		behavior.hurt();
+		just_hurt = false;
 	}
 
 	if (flags.movement.test(Movement::wall_slide_trigger)) { flags.movement.set(Movement::is_wall_sliding); }
@@ -624,6 +620,22 @@ void Player::autonomous_walk() {
 	}
 }
 
+void Player::hurt(int amount = 1) {
+
+	if (!is_invincible()) {
+		player_stats.health -= amount;
+		collider.physics.acceleration.y = -stats.HURT_ACC;
+		collider.spike_trigger = false;
+		make_invincible();
+		flags.sounds.set(Soundboard::hurt);
+		just_hurt = true;
+	}
+
+
+	if (player_stats.health <= 0) { kill(); }
+
+}
+
 void Player::restrict_inputs() {
 
 	flags.input.set(Input::restricted);
@@ -679,6 +691,9 @@ void Player::make_invincible() {
 }
 
 void Player::update_invincibility() {
+
+	if (is_invincible()) { flash_sprite(); } else { sprite.setColor(sf::Color::White); }
+
 	dt = svc::clockLocator.get().tick_rate;
 
 	auto new_time = Clock::now();

@@ -19,6 +19,7 @@ void Critter::random_walk(sf::Vector2<int> range) {
             auto distance = r.random_range(range.x, range.y);
             current_target = sf::Vector2<float>(colliders.at(0).physics.position.x + (r.signed_coin_flip() * distance), colliders.at(0).physics.position.y);
             flags.seeking = true;
+            flags.running = true;
         }
     }
     

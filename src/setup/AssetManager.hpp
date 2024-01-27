@@ -54,6 +54,7 @@ public:
         t_plasmer_projectile.loadFromFile(finder.resource_path + "/image/weapon/plasmer_proj.png");
         t_clover_projectile.loadFromFile(finder.resource_path + "/image/weapon/clover_proj.png");
         t_nova_projectile.loadFromFile(finder.resource_path + "/image/weapon/nova_proj.png");
+        t_skycorps_ar_projectile.loadFromFile(finder.resource_path + "/image/weapon/skycorps_ar_proj.png");
         
         t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
         
@@ -289,6 +290,7 @@ public:
     sf::Texture t_stinger_projectile{};
     sf::Texture t_tusk_projectile{};
     sf::Texture t_tomahawk_projectile{};
+    sf::Texture t_skycorps_ar_projectile{};
 
     std::vector<sf::Sprite> sp_bryns_gun{};
     std::vector<sf::Sprite> sp_bryns_gun_projectile{};

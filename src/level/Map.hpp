@@ -81,6 +81,7 @@ public:
     squid::Tile& tile_at(const uint8_t i, const uint8_t j);
     shape::Shape& shape_at(const uint8_t i, const uint8_t j);
     void spawn_projectile_at(sf::Vector2<float> pos);
+    void spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter);
     void manage_projectiles();
     Vec get_spawn_position(int portal_source_map_id);
     

@@ -65,7 +65,7 @@ enum class TILE_TYPE {
     TILE_CEILING_RAMP,
     TILE_MOVEABLE,
     TILE_PLATFORM,
-    TILE_WATER,
+    TILE_DEATH_SPIKES,
     TILE_BREAKABLE,
     TILE_LADDER,
     TILE_SPIKES,
@@ -247,7 +247,7 @@ static void populate_lookup() {
 		if (i < 232 && i >= 228) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
 		if (i < 236 && i >= 232) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
 		if (i < 240 && i >= 236) { tile_lookup.insert({ i, TILE_TYPE::TILE_PLATFORM });     }
-		if (i < 244 && i >= 240) { tile_lookup.insert({ i, TILE_TYPE::TILE_WATER });        }
+		if (i < 244 && i >= 240) { tile_lookup.insert({ i, TILE_TYPE::TILE_DEATH_SPIKES });        }
 		if (i < 248 && i >= 244) { tile_lookup.insert({ i, TILE_TYPE::TILE_BREAKABLE });    }
 		if (i < 252 && i >= 248) { tile_lookup.insert({ i, TILE_TYPE::TILE_LADDER });       }
 		if (i < 256 && i >= 252) { tile_lookup.insert({ i, TILE_TYPE::TILE_SPIKES });       }

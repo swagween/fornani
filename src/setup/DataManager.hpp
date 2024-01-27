@@ -23,6 +23,7 @@ namespace data {
 		void load_data();
 
 		dj::Json frdog{};
+		dj::Json hulmet{};
 
 		ResourceFinder finder{};
 	

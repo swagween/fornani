@@ -33,7 +33,8 @@ namespace lookup {
 		{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().sp_bryns_gun},
 		{arms::WEAPON_TYPE::STINGER,    svc::assetLocator.get().sp_bryns_gun},
 		{arms::WEAPON_TYPE::TUSK,       svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().sp_bryns_gun}
+		{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().sp_bryns_gun},
+		{arms::WEAPON_TYPE::SKYCORPS_AR,svc::assetLocator.get().sp_bryns_gun}
 	};
 
 	inline std::unordered_map<arms::WEAPON_TYPE, sf::Texture&> weapon_texture {
@@ -54,7 +55,8 @@ namespace lookup {
 	{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().t_bryns_gun},
 	{arms::WEAPON_TYPE::STINGER,    svc::assetLocator.get().t_bryns_gun},
 	{arms::WEAPON_TYPE::TUSK,       svc::assetLocator.get().t_bryns_gun},
-	{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().t_bryns_gun}
+	{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().t_bryns_gun},
+	{arms::WEAPON_TYPE::SKYCORPS_AR,svc::assetLocator.get().t_bryns_gun}
 	};
 
 	inline std::unordered_map<arms::WEAPON_TYPE, std::vector<sf::Sprite>&> projectile_sprites{
@@ -75,7 +77,8 @@ namespace lookup {
 		{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().sp_bryns_gun_projectile},
 		{arms::WEAPON_TYPE::STINGER,    svc::assetLocator.get().sp_bryns_gun_projectile},
 		{arms::WEAPON_TYPE::TUSK,       svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().sp_bryns_gun_projectile}
+		{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().sp_bryns_gun_projectile},
+		{arms::WEAPON_TYPE::SKYCORPS_AR,svc::assetLocator.get().sp_bryns_gun_projectile}
 	};
 
 	inline std::unordered_map<arms::WEAPON_TYPE, sf::Texture&> projectile_texture {
@@ -96,7 +99,8 @@ namespace lookup {
 	{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().t_carise_projectile},
 	{arms::WEAPON_TYPE::STINGER,    svc::assetLocator.get().t_stinger_projectile},
 	{arms::WEAPON_TYPE::TUSK,       svc::assetLocator.get().t_tusk_projectile},
-	{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().t_tomahawk_projectile}
+	{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().t_tomahawk_projectile},
+	{arms::WEAPON_TYPE::SKYCORPS_AR,svc::assetLocator.get().t_skycorps_ar_projectile}
 	};
 
 	inline std::unordered_map<arms::WEAPON_TYPE, arms::Weapon&> type_to_weapon{
@@ -117,7 +121,8 @@ namespace lookup {
 		{arms::WEAPON_TYPE::CARISE,     arms::carise        },
 		{arms::WEAPON_TYPE::STINGER,    arms::stinger       },
 		{arms::WEAPON_TYPE::TUSK,       arms::tusk          },
-		{arms::WEAPON_TYPE::TOMAHAWK,   arms::tomahawk      }
+		{arms::WEAPON_TYPE::TOMAHAWK,   arms::tomahawk      },
+		{arms::WEAPON_TYPE::SKYCORPS_AR,arms::skycorps_ar   }
 	};
 
 	inline std::unordered_map<arms::WEAPON_TYPE, int> type_to_index{
@@ -138,7 +143,8 @@ namespace lookup {
 	{ arms::WEAPON_TYPE::CARISE, 14 },
 	{ arms::WEAPON_TYPE::STINGER, 15 },
 	{ arms::WEAPON_TYPE::TUSK, 16 },
-	{arms::WEAPON_TYPE::TOMAHAWK, 17 }
+	{arms::WEAPON_TYPE::TOMAHAWK, 17 },
+	{arms::WEAPON_TYPE::SKYCORPS_AR, 18 }
 	};
 
 }

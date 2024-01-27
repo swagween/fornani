@@ -17,6 +17,9 @@ namespace arms {
 
 using Key = WEAPON_TYPE;
 
+/*    const vfx::ElementBehavior spr = light_gun_spray, const ProjectileAnimation& pa = default_anim, RENDER_TYPE rt = RENDER_TYPE::SINGLE_SPRITE,
+    sf::Vector2<int> dim = { 16, 16 }, sf::Vector2<float> proj_dim = { 28.0f, 12.0f }); */
+
 inline Weapon bryns_gun  =  Weapon("bryn's gun"    , Key::BRYNS_GUN      , bryns_gun_attributes,   bryns_gun_stats,  light_gun_spray, bg_anim, RENDER_TYPE::SINGLE_SPRITE, {18, 8}, { 28.0f, 12.0f });
 inline Weapon plasmer    =  Weapon("plasmer"       , Key::PLASMER        , plasmer_attributes,     plasmer_stats   , heavy_gun_spray, bg_anim, RENDER_TYPE::SINGLE_SPRITE, {22, 10}, { 38.0f, 12.0f });
 inline Weapon wasp       =  Weapon("wasp"          , Key::WASP           , wasp_attributes,        wasp_stats      );
@@ -35,6 +38,9 @@ inline Weapon carise     =  Weapon("carise"        , Key::CARISE         , caris
 inline Weapon stinger    =  Weapon("stinger"       , Key::STINGER        , stinger_attributes,     stinger_stats   );
 inline Weapon tusk       =  Weapon("tusk"          , Key::TUSK           , tusk_attributes,        tusk_stats      );
 inline Weapon tomahawk   =  Weapon("tomahawk"      , Key::TOMAHAWK       , tomahawk_attributes,    tomahawk_stats  );
+
+//enemy
+inline Weapon skycorps_ar = Weapon("skycorps_ar", Key::SKYCORPS_AR, skycorps_ar_attributes, skycorps_ar_stats, light_gun_spray, bg_anim, RENDER_TYPE::SINGLE_SPRITE, { 0, 0 }, { 14.0f, 14.0f });
 
 struct Armory {
     

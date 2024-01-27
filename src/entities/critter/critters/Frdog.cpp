@@ -11,6 +11,20 @@ namespace critter {
 
 	void Frdog::unique_update() {
 
+        if (!colliders.empty()) {
+            alert_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - alert_range.dimensions.x / 2, colliders.at(0).physics.position.y - alert_range.dimensions.y / 2));
+            hostile_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - hostile_range.dimensions.x / 2, colliders.at(0).physics.position.y - hostile_range.dimensions.y / 2));
+        }
+
+        if (svc::playerLocator.get().collider.bounding_box.SAT(hostile_range)) {
+            current_target = svc::playerLocator.get().collider.physics.position;
+            awake();
+        } else if (svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
+            wake_up();
+        } else {
+            sleep();
+        }
+
         //seek_current_target();
         random_idle_action();
         while (!idle_action_queue.empty()) {
@@ -18,12 +32,7 @@ namespace critter {
             idle_action_queue.pop();
         }
 
-        //set colliders depending on animation state
-        for(auto& hurtbox : hurtboxes) {
-            //hurtbox.bounding_box.set_position(get_hurtbox_pos(i));
-        }
 
-        //hurtboxes.at(0).bounding_box.set_position(sf::Vector2<float>)
 
         state_function = state_function();
 	}

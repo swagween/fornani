@@ -61,7 +61,10 @@ inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color {
     {arms::WEAPON_TYPE::CARISE,     flcolor::blue       },
     {arms::WEAPON_TYPE::STINGER,    flcolor::goldenrod  },
     {arms::WEAPON_TYPE::TUSK,       flcolor::white      },
-    {arms::WEAPON_TYPE::TOMAHAWK,   flcolor::white      }
+    {arms::WEAPON_TYPE::TOMAHAWK,   flcolor::white      },
+
+    {arms::WEAPON_TYPE::SKYCORPS_AR,flcolor::goldenrod  },
+
 };
 
 constexpr inline ProjectileAnimation default_anim{1, 1, 8};
@@ -89,6 +92,10 @@ constexpr inline ProjectileStats stinger_stats{      5 , 300, 16.0, 2.0, 0.0, 0.
 constexpr inline ProjectileStats tusk_stats{         16, 240, 20.0, 0.0, 3.0, 0.0, false, false, 0};
 constexpr inline ProjectileStats tomahawk_stats{     1 , 200, 2.0 , 0.0, 0.0, 0.0, true , false, 0};
 
+//enemy
+constexpr inline ProjectileStats skycorps_ar_stats{ 2 , 600, 1.0 , 0.0, 0.0, 0.0, true , false, 0 };
+
+
 //barrel points on sprites
 constexpr inline std::array<float, 2> bg_barrel{ 18.0f, 2.0f };
 constexpr inline std::array<float, 2> plasmer_barrel{ 22.0f, 7.0f };
@@ -115,6 +122,8 @@ constexpr inline WeaponAttributes carise_attributes{     false, false, 4 , 2 , 0
 constexpr inline WeaponAttributes stinger_attributes{    true , false, 16, 2 , 0.0f, WHITE,         bg_barrel };
 constexpr inline WeaponAttributes tusk_attributes{       false, false, 2 , 5 , 0.0f, WHITE,         bg_barrel };
 constexpr inline WeaponAttributes tomahawk_attributes{   false, true , 1 , 0 , 0.0f, WHITE,         bg_barrel };
+
+constexpr inline WeaponAttributes skycorps_ar_attributes{ false, false , 1 , 0 , 0.2f, WHITE,         bg_barrel };
 
 /* struct ElementBehavior {
  float rate{}; //expulsion rate

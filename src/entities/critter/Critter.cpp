@@ -30,12 +30,6 @@ void Critter::init() {
         if (metadata.gravity) { collider.physics.gravity = 0.03f; }
     }*/
 
-    alert_range = shape::Shape({ (float)stats.vision * 1.5f, (float)stats.vision * 1.5f });
-    hostile_range = shape::Shape({ (float)stats.vision, (float)stats.vision });
-
-    ar.setSize({ (float)(stats.vision * 1.5), (float)(stats.vision * 1.5) });
-    hr.setSize({ (float)stats.vision, (float)stats.vision });
-
     condition.hp = stats.base_hp;
 
 }
@@ -44,17 +38,6 @@ void Critter::update() {
 
     unique_update();
     behavior.update();
-    if (!colliders.empty()) {
-        alert_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - alert_range.dimensions.x / 2, colliders.at(0).physics.position.y - alert_range.dimensions.y / 2));
-        hostile_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - hostile_range.dimensions.x / 2, colliders.at(0).physics.position.y - hostile_range.dimensions.y / 2));
-    }
-
-    ar.setFillColor(sf::Color{ 80, 80, 20, 60 });
-    hr.setFillColor(sf::Color{ 80, 40, 20, 60 });
-    ar.setOutlineColor(sf::Color{ 180, 180, 180});
-    hr.setOutlineColor(sf::Color{ 180, 180, 180});
-    ar.setOutlineThickness(-1);
-    hr.setOutlineThickness(-1);
     
     if(flags.seeking) {
         seek_current_target();
@@ -94,12 +77,21 @@ void Critter::update() {
 void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
     drawbox.setSize(dimensions);
+
+    ar.setSize({ (float)(alert_range.dimensions.x), (float)(alert_range.dimensions.y) });
+    hr.setSize({ (float)hostile_range.dimensions.x, (float)hostile_range.dimensions.y });
     ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
     hr.setPosition(hostile_range.position.x - campos.x, hostile_range.position.y - campos.y);
     win.draw(sprite);
     svc::counterLocator.get().at(svc::draw_calls)++;
 
     if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+        ar.setFillColor(sf::Color{ 80, 80, 20, 60 });
+        hr.setFillColor(sf::Color{ 80, 40, 20, 60 });
+        ar.setOutlineColor(sf::Color{ 180, 180, 180 });
+        hr.setOutlineColor(sf::Color{ 180, 180, 180 });
+        ar.setOutlineThickness(-1);
+        hr.setOutlineThickness(-1);
         //debug
         drawbox.setPosition(sprite_position.x - sprite.getOrigin().x - campos.x, sprite_position.y - sprite.getOrigin().y - campos.y);
         drawbox.setSize({ (float)sprite_dimensions.x, (float)sprite_dimensions.y });
@@ -118,6 +110,8 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
             drawbox.setPosition(hbx.position.x - campos.x, hbx.position.y - campos.y);
             win.draw(drawbox);
         }
+        win.draw(ar);
+        win.draw(hr);
     }
     svc::counterLocator.get().at(svc::draw_calls)++;
     sprite_flip();
@@ -159,7 +153,9 @@ void Critter::seek_current_target() {
     sf::Vector2<float> steering = desired - colliders.at(0).physics.velocity;
     if (abs(steering.x) < 0.5) { colliders.at(0).physics.acceleration.x = 0.0f; return; }
     steering *= 0.08f;
-    colliders.at(0).physics.acceleration.x = steering.x;
+    if (flags.running || flags.seeking) {
+        colliders.at(0).physics.acceleration.x = steering.x;
+    }
 
 }
 void Critter::wake_up() {
@@ -177,6 +173,30 @@ void Critter::awake() {
     flags.awake = true;
     flags.awakened = false;
     flags.asleep = false;
+}
+
+void Critter::cooldown() {
+    dt = svc::clockLocator.get().tick_rate;
+
+    auto new_time = Clock::now();
+    Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
+
+    if (frame_time.count() > svc::clockLocator.get().frame_limit) {
+        frame_time = Time{ svc::clockLocator.get().frame_limit };
+    }
+    current_time = new_time;
+    accumulator += frame_time;
+
+    int integrations = 0;
+    while (accumulator >= dt) {
+
+        --stats.cooldown;
+
+        accumulator -= dt;
+        ++integrations;
+    }
+
+    if (stats.cooldown < 0) { stats.cooldown = 0; }
 }
                                                   
 

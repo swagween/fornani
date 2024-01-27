@@ -192,6 +192,10 @@ namespace arms {
 				sprite.setTexture(svc::assetLocator.get().t_nova_projectile);
 				sprite.setTextureRect(sf::IntRect({ 0, 0 }, { 28, 12 }));
 			}
+			if (type == WEAPON_TYPE::SKYCORPS_AR) {
+				sprite.setTexture(svc::assetLocator.get().t_skycorps_ar_projectile);
+				sprite.setTextureRect(sf::IntRect({ 0, 0 }, { 14, 14 }));
+			}
 
 			//sprite.setTexture(lookup::projectile_texture.at(WEAPON_TYPE::BRYNS_GUN));
 			sprite.setPosition(physics.position);
