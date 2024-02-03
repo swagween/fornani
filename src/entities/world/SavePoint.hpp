@@ -1,0 +1,45 @@
+//
+//  SavePoint.hpp
+//  entity
+//
+//
+
+#pragma once
+
+#include "../../utils/Shape.hpp"
+#include "../../setup/EnumLookups.hpp"
+#include <string>
+
+namespace entity {
+
+	class SavePoint {
+
+	public:
+
+		using Vec = sf::Vector2<float>;
+		using Vecu16 = sf::Vector2<uint32_t>;
+
+		SavePoint() = default;
+		SavePoint(Vecu16 pos) : scaled_position(pos) {
+			//position = static_cast<Vec>(pos * lookup::unit_size_f);
+			bounding_box = shape::Shape(dimensions);
+			bounding_box.set_position(position);
+		}
+
+		void update();
+		void render(sf::RenderWindow& win, Vec campos);
+
+		void save(); // talk to SaveDataManager to write current progress to save.json
+
+		Vec dimensions{32, 32};
+		Vec position{};
+		Vecu16 scaled_position{};
+		shape::Shape bounding_box{};
+		sf::Sprite sprite{};
+		bool activated{};
+
+	};
+
+} // end entity
+
+/* SavePoint_hpp */

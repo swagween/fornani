@@ -24,7 +24,7 @@ namespace critter {
 			stats = { 2, 14, 0.5f, 1.0f, 16 * 32, 16 * 32 };
 			spritesheet_dimensions = sf::Vector2<int>{ 5, 4 };
 			init();
-			flags.vulnerable = true; //hulmets always vulnerable
+			flags.set(Flags::vulnerable); //hulmets always vulnerable
 
 			alert_range = shape::Shape({ (float)stats.vision/2, (float)stats.vision * 2});
 			hostile_range = shape::Shape({ (float)stats.vision, (float)stats.vision / 6});

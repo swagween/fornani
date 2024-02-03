@@ -9,7 +9,7 @@
 #ifndef Tile_hpp
 #define Tile_hpp
 
-#include "../utils/shape.hpp"
+#include "../utils/Shape.hpp"
 #include <vector>
 
 enum TILE_TYPE {
@@ -37,7 +37,7 @@ public:
     uint8_t value; //for figuring out which texture to use
     
     TILE_TYPE type; //for assigning attributes
-    Shape bounding_box; //for collision
+    shape::Shape bounding_box; //for collision
     
 };
 

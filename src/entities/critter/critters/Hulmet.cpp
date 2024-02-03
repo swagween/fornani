@@ -10,29 +10,37 @@ namespace critter {
 	
 	void Hulmet::unique_update() {
 
-        random_walk({ 100, 100 });
 
-
+        if(!svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
+            random_walk({ 100, 100 });
+        }
         if (!colliders.empty()) {
             alert_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - alert_range.dimensions.x / 2, colliders.at(0).physics.position.y - alert_range.dimensions.y / 2));
             hostile_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - hostile_range.dimensions.x / 2, colliders.at(0).physics.position.y - hostile_range.dimensions.y / 2));
         }
-        if(svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range) && !flags.charging && !flags.shooting && stats.cooldown == 0) {
-            flags.charging = true;
-            flags.hiding = false;
-            seek_current_target();
-        }
-        if (svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
-            flags.hiding = true;
-        } else {
-            flags.hiding = false;
+        if(svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range) && !flags.test(Flags::charging) && !flags.test(Flags::shooting) && stats.cooldown == 0) {
+
+            //decide randomly whether to chase the player or start shooting
+            if (svc::randomLocator.get().percent_chance(1.f)) {
+                flags.set(Flags::charging);
+            } else {
+                current_target = svc::playerLocator.get().collider.physics.position;
+                flags.reset(Flags::charging);
+                seek_current_target();
+            }
+
+            flags.reset(Flags::hiding);
+            flags.set(Flags::seeking);
         }
 
-        flags.vulnerable = !flags.hiding;
+        if (svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
+            flags.set(Flags::hiding);
+        } else {
+            flags.reset(Flags::hiding);
+        }
 
         barrel_point = facing_lr == behavior::DIR_LR::RIGHT ? sprite_position + sf::Vector2<float>{6.f, 28.f} : sprite_position + sf::Vector2<float>(sprite_dimensions) - sf::Vector2<float>{6.f, 28.f};
        
-
         cooldown();
 
 		state_function = state_function();
@@ -83,11 +91,12 @@ namespace critter {
 	}
 
 	fsm::StateFunction Hulmet::update_idle() {
+        flags.set(Flags::vulnerable);
 		if (behavior.params.complete) { behavior = behavior::Behavior(behavior::hulmet_idle); }
-		if (flags.turning) { return BIND(update_turn); }
-        if (flags.charging && stats.cooldown == 0) { behavior.params.started = true; return BIND(update_charge); }
-        if (flags.hiding) { behavior.params.started = true; return BIND(update_hide); }
-        if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
+		if (flags.test(Flags::turning)) { return BIND(update_turn); }
+        if (flags.test(Flags::charging) && stats.cooldown == 0) { behavior.params.started = true; return BIND(update_charge); }
+        if (flags.test(Flags::hiding)) { behavior.params.started = true; return BIND(update_hide); }
+        if (flags.test(Flags::hurt)) { behavior.params.started = true; return BIND(update_hurt); }
         if (!colliders.empty()) {
             if (abs(colliders.at(0).physics.velocity.x) > 0.2f) { behavior.params.started = true; return BIND(update_run); }
         }
@@ -95,15 +104,17 @@ namespace critter {
 	}
 
 	fsm::StateFunction Hulmet::update_turn() {
+        flags.set(Flags::vulnerable);
 		if (behavior.params.started) { behavior = behavior::Behavior(behavior::hulmet_turn); behavior.params.started = false; }
-		if (behavior.params.complete) { flags.turning = false; flags.flip = true; return BIND(update_idle); }
-        if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
+        if (behavior.params.complete) { flags.reset(Flags::turning); flags.set(Flags::flip); return BIND(update_idle); }
+        if (flags.test(Flags::hurt)) { behavior.params.started = true; return BIND(update_hurt); }
 		return std::move(state_function);
 	}
 
     fsm::StateFunction Hulmet::update_charge() {
-        flags.seeking = false;
-        flags.running = false;
+        flags.reset(Flags::seeking);
+        flags.reset(Flags::running);
+        flags.set(Flags::vulnerable);
         for (auto& collider : colliders) { collider.physics.velocity.x = 0.f; collider.physics.acceleration.x = 0.f; }
         if (behavior.start()) {
             behavior = behavior::Behavior(behavior::hulmet_charging);
@@ -114,46 +125,53 @@ namespace critter {
         if (anim_loop_count > 4) {
             behavior.params.started = true;
             anim_loop_count = 0;
-            flags.charging = false;
-            flags.hurt = false;
-            return svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) ? BIND(update_shoot) : BIND(update_idle);
+            flags.reset(Flags::charging);
+            flags.reset(Flags::hurt);
+            return svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) ? BIND(update_shoot) : (flags.test(Flags::just_hurt) ? BIND(update_hurt) : BIND(update_idle));
         }
+        if (flags.test(Flags::turning)) { return BIND(update_turn); }
         //charging cannot be interrupted by hurt
-        if (flags.just_hurt) { svc::assetLocator.get().enem_hit.play(); }
-        flags.just_hurt = false;
+        if (flags.test(Flags::just_hurt)) { behavior.params.started = true; return BIND(update_hurt); }
+        flags.reset(Flags::just_hurt);
         return std::move(state_function);
     }
 
     fsm::StateFunction Hulmet::update_shoot() {
-        flags.seeking = false;
-        flags.running = false;
+        flags.reset(Flags::seeking);
+        flags.reset(Flags::running);
+        flags.set(Flags::vulnerable);
         for (auto& collider : colliders) { collider.physics.velocity.x = 0.f; collider.physics.acceleration.x = 0.f; }
-        if (behavior.params.started) { behavior = behavior::Behavior(behavior::hulmet_shooting); flags.weapon_fired = true; behavior.params.started = false; }
-        if (behavior.params.complete) { flags.hurt = false; flags.shooting = false; flags.weapon_fired = false; stats.cooldown = 500; return BIND(update_idle); }
+        if (behavior.params.started) { behavior = behavior::Behavior(behavior::hulmet_shooting); flags.set(Flags::weapon_fired); behavior.params.started = false; }
+        if (behavior.params.complete) { flags.reset(Flags::hurt); flags.reset(Flags::shooting); flags.reset(Flags::weapon_fired); stats.cooldown = 500; return BIND(update_idle); }
+
+        if (flags.test(Flags::turning)) { return BIND(update_turn); }
         //shooting cannot be interrupted by hurt
-        if (flags.just_hurt) { svc::assetLocator.get().enem_hit.play(); }
-        flags.just_hurt = false;
+        if (flags.test(Flags::just_hurt)) { svc::assetLocator.get().enem_hit.play(); }
+        flags.reset(Flags::just_hurt);
         return std::move(state_function);
     }
 
     fsm::StateFunction Hulmet::update_run() {
+        flags.set(Flags::vulnerable);
         if (behavior.start()) { behavior = behavior::Behavior(behavior::hulmet_run); behavior.params.started = false; }
-        if (flags.turning) { behavior.params.started = true; return BIND(update_turn); }
+        if (flags.test(Flags::turning)) { behavior.params.started = true; return BIND(update_turn); }
         if (!colliders.empty()) {
             if (abs(colliders.at(0).physics.velocity.x) < 0.24f) { behavior.params.just_started = true; return BIND(update_idle); }
         }
-        if (flags.charging) { behavior.params.started = true; return BIND(update_charge); }
-        if (flags.hiding) { behavior.params.started = true; return BIND(update_hide); }
-        if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
+        if (flags.test(Flags::charging)) { behavior.params.started = true; return BIND(update_charge); }
+        if (flags.test(Flags::hiding)) { behavior.params.started = true; return BIND(update_hide); }
+        if (flags.test(Flags::hurt)) { behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
     }
 
     fsm::StateFunction Hulmet::update_hurt() {
-        flags.seeking = false;
-        flags.running = false;
+        flags.reset(Flags::seeking);
+        flags.reset(Flags::running);
+        flags.set(Flags::vulnerable);
+        if (flags.test(Flags::turning)) { return BIND(update_turn); }
         for (auto& collider : colliders) { collider.physics.velocity.x = 0.f; collider.physics.acceleration.x = 0.f; }
-        if (flags.just_hurt) { svc::assetLocator.get().enem_hit.play(); }
-        flags.just_hurt = false;
+        if (flags.test(Flags::just_hurt)) { svc::assetLocator.get().enem_hit.play(); }
+        flags.reset(Flags::just_hurt);
         if (behavior.start()) {
             behavior = behavior::Behavior(behavior::hulmet_hurt);
             behavior.params.started = false;
@@ -163,16 +181,17 @@ namespace critter {
         if (anim_loop_count > 2) {
             behavior.params.started = true;
             anim_loop_count = 0;
-            flags.hurt = false;
-            return flags.shot ? BIND(update_hurt) : BIND(update_idle);
+            flags.reset(Flags::hurt);
+            return flags.test(Flags::shot) ? BIND(update_hurt) : BIND(update_idle);
         }
 
         return std::move(state_function);
     }
 
     fsm::StateFunction Hulmet::update_hide() {
-        flags.seeking = false;
-        flags.running = false;
+        flags.reset(Flags::seeking);
+        flags.reset(Flags::running);
+        flags.reset(Flags::vulnerable);
         for (auto& collider : colliders) { collider.physics.velocity.x = 0.f; collider.physics.acceleration.x = 0.f; }
         if (behavior.start()) {
             behavior = behavior::Behavior(behavior::hulmet_hiding);
@@ -181,9 +200,9 @@ namespace critter {
         }
         if (anim_loop_count > 1) {
             behavior.params.current_frame = 1;
-            return flags.hiding ? BIND(update_hide) : BIND(update_idle);
+            return flags.test(Flags::hiding) ? BIND(update_hide) : BIND(update_idle);
         }
-        if (flags.charging) { behavior.params.started = true; flags.hiding = false; return BIND(update_charge); }
+        if (flags.test(Flags::charging)) { behavior.params.started = true; flags.reset(Flags::hiding); return BIND(update_charge); }
         return std::move(state_function);
     }
 

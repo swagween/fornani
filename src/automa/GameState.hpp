@@ -356,7 +356,7 @@ namespace flstates {
 			if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
 			if (map.real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(map.real_dimensions); }
 			svc::playerLocator.get().update(svc::clockLocator.get().elapsed_time);
-			for (auto& critter : map.critters) { critter->update(); critter->unique_update(); critter->flags.shot = false; }
+			for (auto& critter : map.critters) { critter->update(); critter->unique_update(); critter->flags.reset(critter::Flags::shot); }
 			svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
 			map.debug_mode = debug_mode;
 

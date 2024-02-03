@@ -3,8 +3,8 @@
     {
       "tile_id": 0,
       "boxes": [{
-          "dimensions": {"x": 32,"y": 30},
-          "position": {"x": 24,"y": 8}
+          "dimensions": {"x": 32,"y": 22},
+          "position": {"x": 24,"y": 16}
         }]
     }
   ],

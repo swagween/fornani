@@ -6,24 +6,33 @@
 
 #include "Critter.hpp"
 #include "../../utils/Random.hpp"
+#include <imgui.h>
 
 namespace critter {
 
-inline util::Random r{};
-
 void Critter::sprite_flip() {
-    if (flags.flip) { sprite.scale(-1.0f, 1.0f); flags.flip = false; }
+    if (flags.test(Flags::flip)) { sprite.scale(-1.0f, 1.0f); flags.reset(Flags::flip); }
     //flip the sprite based on the critter's direction
     sf::Vector2<float> right_scale = { 1.0f, 1.0f };
     sf::Vector2<float> left_scale = { -1.0f, 1.0f };
     if ((facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) || (facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale)) {
-        flags.turning = true;
+        flags.set(Flags::turning);
+    }
+    if(facing_lr == behavior::DIR_LR::LEFT) {
+        colliders.at(0).physics.dir = components::DIRECTION::LEFT;
+        weapon.fire_dir = arms::FIRING_DIRECTION::LEFT;
+    } else {
+        colliders.at(0).physics.dir = components::DIRECTION::RIGHT;
+        weapon.fire_dir = arms::FIRING_DIRECTION::RIGHT;
     }
 }
 
 void Critter::init() {
 
     set_sprite();
+
+    unique_id = svc::randomLocator.get().random_range(-2147483647, 2147483647);
+
     /*for (auto& collider : colliders) {
         collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
         collider.physics.maximum_velocity = sf::Vector2<float>(stats.speed, stats.speed * 4);
@@ -39,7 +48,7 @@ void Critter::update() {
     unique_update();
     behavior.update();
     
-    if(flags.seeking) {
+    if(flags.test(Flags::seeking)) {
         seek_current_target();
     }
 
@@ -74,7 +83,7 @@ void Critter::update() {
 
 }
 
-void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
+void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
     sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
     drawbox.setSize(dimensions);
 
@@ -117,15 +126,42 @@ void Critter::render(sf::RenderWindow &win, sf::Vector2<float> campos) {
     sprite_flip();
 
     //draw health for debug
-    hpbox.setFillColor(sf::Color{0, 228, 185});
+    hpbox.setFillColor(sf::Color{ 0, 228, 185 });
     hpbox.setSize(sf::Vector2<float>{1.0f, 4.0f});
-    for(int i = 0; i < stats.base_hp; ++i) {
+    for (int i = 0; i < stats.base_hp; ++i) {
         hpbox.setPosition(sprite.getPosition().x + i, sprite.getPosition().y - 14);
-        if (i > condition.hp) { hpbox.setFillColor(sf::Color{29, 118, 112}); }
-        //win.draw(hpbox);
+        if (i > condition.hp) { hpbox.setFillColor(sf::Color{ 29, 118, 112 }); }
+        win.draw(hpbox);
         svc::counterLocator.get().at(svc::draw_calls)++;
     }
-    
+
+    if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration;
+        ImGui::SetNextWindowPos(sprite_position - campos, ImGuiCond_Always);
+        ImGui::SetNextWindowBgAlpha(0.15f); // Transparent background
+        ImGui::Begin(std::to_string(sprite_position.x).c_str(), 0, window_flags);
+        ImGui::Text("X Position: %f", colliders.at(0).physics.position.x);
+        ImGui::Text("Y Position: %f", colliders.at(0).physics.position.y);
+
+        if (flags.test(Flags::alive)) { ImGui::Text("alive"); }
+        if (flags.test(Flags::seeking)) { ImGui::Text("seeking"); }
+        if (flags.test(Flags::awake)) { ImGui::Text("awake"); }
+        if (flags.test(Flags::awakened)) { ImGui::Text("awakened"); }
+        if (flags.test(Flags::asleep)) { ImGui::Text("asleep"); }
+        if (flags.test(Flags::turning)) { ImGui::Text("turning"); }
+        if (flags.test(Flags::flip)) { ImGui::Text("flip"); }
+        if (flags.test(Flags::barking)) { ImGui::Text("barking"); }
+        if (flags.test(Flags::hurt)) { ImGui::Text("hurt"); }
+        if (flags.test(Flags::just_hurt)) { ImGui::Text("just hurt"); }
+        if (flags.test(Flags::shot)) { ImGui::Text("shot"); }
+        if (flags.test(Flags::vulnerable)) { ImGui::Text("vulnerable"); }
+        if (flags.test(Flags::charging)) { ImGui::Text("charging"); }
+        if (flags.test(Flags::shooting)) { ImGui::Text("shooting"); }
+        if (flags.test(Flags::hiding)) { ImGui::Text("hiding"); }
+        if (flags.test(Flags::running)) { ImGui::Text("running"); }
+        if (flags.test(Flags::weapon_fired)) { ImGui::Text("weapon fired"); }
+        ImGui::End();
+    }
 }
 
 void Critter::set_sprite() {
@@ -153,26 +189,26 @@ void Critter::seek_current_target() {
     sf::Vector2<float> steering = desired - colliders.at(0).physics.velocity;
     if (abs(steering.x) < 0.5) { colliders.at(0).physics.acceleration.x = 0.0f; return; }
     steering *= 0.08f;
-    if (flags.running || flags.seeking) {
+    if (flags.test(Flags::running) || flags.test(Flags::seeking)) {
         colliders.at(0).physics.acceleration.x = steering.x;
     }
 
 }
 void Critter::wake_up() {
-    flags.asleep = false;
-    flags.awakened = true;
-    flags.awake = false;
+    flags.reset(Flags::asleep);
+    flags.set(Flags::awakened);
+    flags.reset(Flags::awake);
 }
 void Critter::sleep() {
-    flags.asleep = true;
-    flags.awakened = false;
-    flags.awake = false;
+    flags.set(Flags::asleep);
+    flags.reset(Flags::awakened);
+    flags.reset(Flags::awake);
 }
 
 void Critter::awake() {
-    flags.awake = true;
-    flags.awakened = false;
-    flags.asleep = false;
+    flags.reset(Flags::asleep);
+    flags.reset(Flags::awakened);
+    flags.set(Flags::awake);
 }
 
 void Critter::cooldown() {

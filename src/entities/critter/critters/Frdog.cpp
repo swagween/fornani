@@ -28,7 +28,7 @@ namespace critter {
         //seek_current_target();
         random_idle_action();
         while (!idle_action_queue.empty()) {
-            flags.barking = true;
+            flags.set(Flags::barking);
             idle_action_queue.pop();
         }
 
@@ -85,10 +85,10 @@ namespace critter {
         if (!colliders.empty()) {
             if (abs(colliders.at(0).physics.velocity.x) > 0.0002f) { behavior.params.started = true; return BIND(update_run); }
         }
-        if (flags.awakened)     { behavior.params.started = true; return BIND(update_sit); }
-        if (flags.turning)      { behavior.params.started = true; return BIND(update_turn); }
-        if (flags.barking)      { behavior.params.started = true; return BIND(update_bark); }
-        if (flags.hurt)         { behavior.params.started = true; return BIND(update_hurt); }
+        if (flags.test(Flags::awakened))     { behavior.params.started = true; return BIND(update_sit); }
+        if (flags.test(Flags::turning))      { behavior.params.started = true; return BIND(update_turn); }
+        if (flags.test(Flags::barking))      { behavior.params.started = true; return BIND(update_bark); }
+        if (flags.test(Flags::hurt))         { behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
 	}
 
@@ -96,43 +96,43 @@ namespace critter {
 
         if (behavior.start()) { behavior = behavior::Behavior(behavior::frdog_asleep); behavior.params.started = false;
         }
-        if(flags.awakened) { behavior.params.started = true; return BIND(update_sit); }
-        if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
+        if(flags.test(Flags::awakened)) { behavior.params.started = true; return BIND(update_sit); }
+        if (flags.test(Flags::hurt)) { behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
     }
 
     fsm::StateFunction Frdog::update_sit() {
         if (behavior.start()) { behavior = behavior::Behavior(behavior::frdog_awakened); behavior.params.started = false; }
-        if(!flags.awakened) { behavior.params.started = true; return flags.asleep ? BIND(update_sleep) : BIND(update_idle); }
-        if (flags.hurt) {behavior.params.started = true; return BIND(update_hurt); }
+        if(!flags.test(Flags::awakened)) { behavior.params.started = true; return flags.test(Flags::asleep) ? BIND(update_sleep) : BIND(update_idle); }
+        if (flags.test(Flags::hurt)) {behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
     }
      
     fsm::StateFunction Frdog::update_turn() {
         if (behavior.params.started) { behavior = behavior::Behavior(behavior::frdog_turn); behavior.params.started = false; }
-        if (behavior.params.complete) { flags.turning = false; flags.flip = true; return BIND(update_idle); }
-        if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
+        if (behavior.params.complete) { flags.reset(Flags::turning); flags.set(Flags::flip); return BIND(update_idle); }
+        if (flags.test(Flags::hurt)) { behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
     }
 
     fsm::StateFunction Frdog::update_charge() {
-        if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
+        if (flags.test(Flags::hurt)) { behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
     }
 
     fsm::StateFunction Frdog::update_run() {
         if(behavior.start()) { behavior = behavior::Behavior(behavior::frdog_run); behavior.params.started = false; }
-        if (flags.turning) { behavior.params.started = true; return BIND(update_turn); }
+        if (flags.test(Flags::turning)) { behavior.params.started = true; return BIND(update_turn); }
         if (!colliders.empty()) {
             if (abs(colliders.at(0).physics.velocity.x) < 0.04f) { behavior.params.just_started = true; return BIND(update_idle); }
         }
-        if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
+        if (flags.test(Flags::hurt)) { behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
     }
 
     fsm::StateFunction Frdog::update_hurt() {
-        if (flags.just_hurt) { svc::assetLocator.get().enem_hit.play(); }
-        flags.just_hurt = false;
+        if (flags.test(Flags::just_hurt)) { svc::assetLocator.get().enem_hit.play(); }
+        flags.reset(Flags::just_hurt);
         if (behavior.start()) {
             behavior = behavior::Behavior(behavior::frdog_hurt);
             behavior.params.started = false;
@@ -142,8 +142,8 @@ namespace critter {
         if (anim_loop_count > 2) {
             behavior.params.started = true;
             anim_loop_count = 0;
-            flags.hurt = false;
-            return flags.shot ? BIND(update_hurt) : BIND(update_idle);
+            flags.reset(Flags::hurt);
+            return flags.test(Flags::shot) ? BIND(update_hurt) : BIND(update_idle);
         }
 
         return std::move(state_function);
@@ -151,8 +151,8 @@ namespace critter {
 
     fsm::StateFunction Frdog::update_bark() {
         if (behavior.params.started) { behavior = behavior::Behavior(behavior::frdog_bark); behavior.params.started = false; }
-        if (behavior.params.complete) { behavior.params.started = true; flags.barking = false; return BIND(update_idle); }
-        if (flags.hurt) { behavior.params.started = true; return BIND(update_hurt); }
+        if (behavior.params.complete) { behavior.params.started = true; flags.reset(Flags::barking); return BIND(update_idle); }
+        if (flags.test(Flags::hurt)) { behavior.params.started = true; return BIND(update_hurt); }
         return std::move(state_function);
     }
 

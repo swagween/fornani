@@ -29,17 +29,15 @@ namespace components {
 
         auto new_time = Clock::now();
         Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
-        /*printf("frame_time.count(): %i\n", static_cast<int>(frame_time.count()));*/
         if (frame_time.count() > svc::clockLocator.get().frame_limit) {
             frame_time = Time{ svc::clockLocator.get().frame_limit };
         }
-        /*printf("frame count:\n %0.5f", frame_count);*/
+
         current_time = new_time;
         accumulator += frame_time;
-        /*printf("accumulator: %.i\n", accumulator.count());*/
+
         int integrations = 0;
         while (accumulator >= dt) {
-
 
             previous_acceleration = acceleration;
             previous_velocity = velocity;
@@ -49,15 +47,6 @@ namespace components {
             accumulator -= dt;
             ++integrations;
         }
-
-        /*printf("integrations: %i\n\n", integrations);*/
-        //fixme: linear interpolation
-        /*const float alpha = accumulator.count() / svc::clockLocator.get().tick_constant();
-        acceleration = acceleration * alpha + previous_acceleration * (1.0f - alpha);
-        velocity = velocity * alpha + previous_velocity * (1.0f - alpha);
-        position = position * alpha + previous_position * (1.0f - alpha);*/
-
-
     }
 
     void PhysicsComponent::integrate(float ndt) {

@@ -30,6 +30,7 @@ const int JUMP_BUFFER_TIME = 12;
 const int INVINCIBILITY_TIME = 200;
 const int ANCHOR_BUFFER = 50;
 const int num_sprites{220};
+const float stopped_threshold{ 0.2f };
 
 struct PlayerStats {
     

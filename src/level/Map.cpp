@@ -9,6 +9,7 @@
 #include "Map.hpp"
 #include "../setup/EnumLookups.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include <imgui.h>
 
 namespace world {
 
@@ -287,10 +288,10 @@ void Map::update() {
             for (auto& hurtbox : critter->hurtboxes) {
                 if(proj.team != arms::TEAMS::SKYCORPS) {
                     if (proj.bounding_box.SAT(hurtbox)) {
-                        critter->flags.shot = true;
-                        if (critter->flags.vulnerable) {
-                            critter->flags.hurt = true;
-                            critter->flags.just_hurt = true;
+                        critter->flags.set(critter::Flags::shot);
+                        if (critter->flags.test(critter::Flags::vulnerable)) {
+                            critter->flags.set(critter::Flags::hurt);
+                            critter->flags.set(critter::Flags::just_hurt);
                             critter->condition.hp -= proj.stats.damage;
                         }
                         proj.destroy(false);
@@ -319,7 +320,7 @@ void Map::update() {
         }
         if (!critter->colliders.empty()) {
             critter->facing_lr = (svc::playerLocator.get().collider.physics.position.x < critter->colliders.at(0).physics.position.x) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
-            if (critter->flags.seeking) {
+            if (critter->flags.test(critter::Flags::seeking)) {
                 critter->facing_lr = (critter->colliders.at(0).physics.velocity.x < 0.f) ? behavior::DIR_LR::RIGHT : behavior::DIR_LR::LEFT;
             }
         }
@@ -608,7 +609,7 @@ void Map::spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& 
     active_emitters.back().set_position(pos.x, pos.y);
     active_emitters.back().set_direction(critter.colliders.at(0).physics.dir);
     active_emitters.back().update();
-    critter.flags.weapon_fired = false;
+    critter.flags.reset(critter::Flags::weapon_fired);
 }
  
 void Map::manage_projectiles() {
@@ -630,7 +631,7 @@ void Map::manage_projectiles() {
     }
 
     for(auto& critter : critters) {
-        if(critter->flags.weapon_fired) {
+        if(critter->flags.test(critter::Flags::weapon_fired)) {
             spawn_critter_projectile_at(critter->barrel_point, *critter);
         }
     }

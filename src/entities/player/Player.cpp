@@ -252,7 +252,7 @@ void Player::update(Time dt) {
 		//zero the player's horizontal acceleration if movement was not requested
 		if (!moving()) {
 			collider.physics.acceleration.x = 0.0f;
-			if (abs(collider.physics.velocity.x) > 0.4f && grounded()) { flags.movement.set(Movement::just_stopped); }
+			if (abs(collider.physics.velocity.x) > stopped_threshold && grounded()) { flags.movement.set(Movement::just_stopped); }
 		}
 
 		//weapon physics
