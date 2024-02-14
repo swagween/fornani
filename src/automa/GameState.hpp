@@ -90,6 +90,7 @@ namespace flstates {
 			state = automa::STATE::STATE_MENU;
 			svc::cameraLocator.get().set_position({ 1, 1 });
 		};
+
 		void init(const std::string& load_path) {
 
 			selection_width = 92;
@@ -158,14 +159,36 @@ namespace flstates {
 				}
 				if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 					if (selection == MenuSelection::new_game) {
+
 						svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
 						svc::stateControllerLocator.get().trigger = true;
 
 					}
 					if (selection == MenuSelection::load_game) {
-						//todo: implement saving and loading
-						svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
+
+						svc::dataLocator.get().load_progress();
+						int save_pt_id = svc::dataLocator.get().save["save_point_id"].as<int>();
+						int room_id = lookup::save_point_to_room_id.at(save_pt_id);
+
+						svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
 						svc::stateControllerLocator.get().trigger = true;
+
+						//set player data based on save file
+						svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
+						svc::playerLocator.get().player_stats.health = svc::dataLocator.get().save["player_data"]["hp"].as<int>();
+						svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
+
+						//load player's arsenal
+						svc::playerLocator.get().weapons_hotbar.clear();
+						for (auto& gun_id : svc::dataLocator.get().save["player_data"]["arsenal"].array_view()) {
+							svc::playerLocator.get().weapons_hotbar.push_back(lookup::index_to_type.at(gun_id.as<int>()));
+						}
+						if (!svc::playerLocator.get().weapons_hotbar.empty()) {
+							auto equipped_gun = svc::dataLocator.get().save["player_data"]["equipped_gun"].as<int>();
+							svc::playerLocator.get().loadout.equipped_weapon = lookup::index_to_type.at(equipped_gun);
+						}
+						
+
 					}
 					if (selection == MenuSelection::options) {
 						//todo: make options menu
@@ -281,7 +304,10 @@ namespace flstates {
 				}
 			}
 			if (!found_one) {
-				svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 319.6582f));
+				float ppx = svc::dataLocator.get().save["player_data"]["position"]["x"].as<float>();
+				float ppy = svc::dataLocator.get().save["player_data"]["position"]["y"].as<float>();
+				sf::Vector2f player_pos = { ppx, ppy };
+				svc::playerLocator.get().set_position(player_pos);
 			}
 
 			//        svc::assetLocator.get().abandoned.setVolume(50);

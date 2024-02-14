@@ -22,6 +22,7 @@
 #include "../entities/world/Portal.hpp"
 #include "../entities/world/Inspectable.hpp"
 #include "../entities/world/Animator.hpp"
+#include "../entities/world/SavePoint.hpp"
 
 const int NUM_LAYERS{8};
 const int CHUNK_SIZE{16};
@@ -99,6 +100,7 @@ public:
     std::vector<entity::Portal> portals{};
     std::vector<entity::Inspectable> inspectables{};
     std::vector<entity::Animator> animators{};
+    entity::SavePoint save_point{};
     
     std::unique_ptr<bg::Background> background{};
     flfx::Transition transition{255};

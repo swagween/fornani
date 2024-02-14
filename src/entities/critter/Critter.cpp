@@ -137,11 +137,12 @@ void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 
     if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration;
-        ImGui::SetNextWindowPos(sprite_position - campos, ImGuiCond_Always);
-        ImGui::SetNextWindowBgAlpha(0.15f); // Transparent background
+        ImGui::SetNextWindowSize({ 160, 180 });
+        ImGui::SetNextWindowPos( sprite_position - campos, ImGuiCond_Always);
+        ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
         ImGui::Begin(std::to_string(sprite_position.x).c_str(), 0, window_flags);
-        ImGui::Text("X Position: %f", colliders.at(0).physics.position.x);
-        ImGui::Text("Y Position: %f", colliders.at(0).physics.position.y);
+        ImGui::Text("X Position: %.1f", colliders.at(0).physics.position.x);
+        ImGui::Text("Y Position: %.1f", colliders.at(0).physics.position.y);
 
         if (flags.test(Flags::alive)) { ImGui::Text("alive"); }
         if (flags.test(Flags::seeking)) { ImGui::Text("seeking"); }

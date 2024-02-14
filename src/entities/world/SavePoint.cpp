@@ -9,7 +9,31 @@
 
 namespace entity {
 
+	SavePoint::SavePoint() {
+		id = -1;
+		dimensions = { 32, 32 };
+		bounding_box = shape::Shape(dimensions);
+	}
+
 	void SavePoint::update() {
+
+		position = static_cast<Vec>(scaled_position) * 32.f;
+		bounding_box.set_position(position);
+		activated = false;
+
+		if(svc::playerLocator.get().flags.input.test(Input::inspecting)) {
+			if (svc::playerLocator.get().collider.bounding_box.SAT(bounding_box)) {
+
+				if (can_activate) {
+					activated = true;
+					save();
+				}
+
+			}
+		} else {
+			can_activate = true;
+		}
+
 	}
 
 	void SavePoint::render(sf::RenderWindow& win, Vec campos) {
@@ -29,6 +53,13 @@ namespace entity {
 		box.setSize(bounding_box.dimensions);
 		win.draw(box);
 		svc::counterLocator.get().at(svc::draw_calls)++;
+	}
+
+	void SavePoint::save() {
+
+		svc::dataLocator.get().save_progress(id);
+		can_activate = false;
+
 	}
 
 } // end entity

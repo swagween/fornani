@@ -9,7 +9,8 @@
 
 namespace arms {
 
-    Weapon::Weapon(std::string lbl, WEAPON_TYPE weapon_type, const WeaponAttributes& wa, const ProjectileStats& ps, const vfx::ElementBehavior spr, const ProjectileAnimation& pa, RENDER_TYPE rt, sf::Vector2<int> dim, sf::Vector2<float> proj_dim) :
+    Weapon::Weapon(int id, std::string lbl, WEAPON_TYPE weapon_type, const WeaponAttributes& wa, const ProjectileStats& ps, const vfx::ElementBehavior spr, const ProjectileAnimation& pa, RENDER_TYPE rt, sf::Vector2<int> dim, sf::Vector2<float> proj_dim) :
+        id(id),
         label(lbl),
         type(weapon_type),
         attributes(wa),
@@ -103,6 +104,10 @@ namespace arms {
             break;
         }
         projectile.dir = fire_dir;
+    }
+
+    int Weapon::get_id() {
+        return id;
     }
 
 } // end arms

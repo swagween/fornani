@@ -11,32 +11,39 @@ namespace critter {
 	void Hulmet::unique_update() {
 
 
-        if(!svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
-            random_walk({ 100, 100 });
-        }
+        //set ranges
         if (!colliders.empty()) {
             alert_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - alert_range.dimensions.x / 2, colliders.at(0).physics.position.y - alert_range.dimensions.y / 2));
             hostile_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - hostile_range.dimensions.x / 2, colliders.at(0).physics.position.y - hostile_range.dimensions.y / 2));
         }
+
+        //player is in hostile range
         if(svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range) && !flags.test(Flags::charging) && !flags.test(Flags::shooting) && stats.cooldown == 0) {
 
             //decide randomly whether to chase the player or start shooting
-            if (svc::randomLocator.get().percent_chance(1.f)) {
+            if (svc::randomLocator.get().percent_chance(0.2f)) {
                 flags.set(Flags::charging);
+                flags.reset(Flags::seeking);
             } else {
                 current_target = svc::playerLocator.get().collider.physics.position;
                 flags.reset(Flags::charging);
                 seek_current_target();
+                flags.set(Flags::seeking);
             }
 
             flags.reset(Flags::hiding);
-            flags.set(Flags::seeking);
         }
 
+        //player is very close
         if (svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
             flags.set(Flags::hiding);
         } else {
             flags.reset(Flags::hiding);
+        }
+        
+        //player is out of range
+        if (!svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
+            random_walk({ 100, 100 });
         }
 
         barrel_point = facing_lr == behavior::DIR_LR::RIGHT ? sprite_position + sf::Vector2<float>{6.f, 28.f} : sprite_position + sf::Vector2<float>(sprite_dimensions) - sf::Vector2<float>{6.f, 28.f};

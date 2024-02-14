@@ -135,6 +135,17 @@ void Map::load(const std::string& path) {
         input.close();
     }
 
+    //get save point data
+    input.open(path + "/map_save_point.txt");
+    if (input.is_open()) {
+        while (!input.eof()) {
+            input >> value; save_point.id = value; input.ignore();
+            input >> save_point.scaled_position.x; input.ignore();
+            input >> save_point.scaled_position.y; input.ignore();
+        }
+        input.close();
+    }
+
     //get critter data
     //zero the pool_counter
     critter::pool_counter.fill(0);
@@ -362,6 +373,10 @@ void Map::update() {
         animator.update();
     }
 
+    if (save_point.id != -1) {
+        save_point.update();
+    }
+
     //check if player died
     if(!svc::playerLocator.get().flags.state.test(State::alive) && !game_over) {
         active_emitters.push_back(player_death);
@@ -432,6 +447,10 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
     //foreground animators
     for (auto& animator : animators) {
         if (!animator.foreground) { animator.render(win, cam); }
+    }
+
+    if (save_point.id != -1) {
+        save_point.render(win, cam);
     }
     
     //level foreground

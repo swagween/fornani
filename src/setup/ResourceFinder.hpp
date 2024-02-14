@@ -1,5 +1,5 @@
 //
-//  LookupTables.hpp
+//  ResourceFinder.hpp
 //
 //  Created by Alex Frasca on 12/26/22.
 //
@@ -46,4 +46,4 @@ namespace data {
 
 }
 
-/* LookupTables_hpp */
+/* ResourceFinder_hpp */

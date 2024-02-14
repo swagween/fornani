@@ -26,7 +26,7 @@ namespace critter {
 			init();
 			flags.set(Flags::vulnerable); //hulmets always vulnerable
 
-			alert_range = shape::Shape({ (float)stats.vision/2, (float)stats.vision * 2});
+			alert_range = shape::Shape({ (float)stats.vision/4, (float)stats.vision * 2});
 			hostile_range = shape::Shape({ (float)stats.vision, (float)stats.vision / 6});
 			stats.cooldown = 500;
 

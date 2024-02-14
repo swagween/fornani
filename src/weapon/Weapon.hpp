@@ -153,7 +153,7 @@ class Weapon {
 public:
 
     Weapon() = default;
-    Weapon(std::string lbl, WEAPON_TYPE weapon_type, const WeaponAttributes& wa, const ProjectileStats& ps,
+    Weapon(int id, std::string lbl, WEAPON_TYPE weapon_type, const WeaponAttributes& wa, const ProjectileStats& ps,
         const vfx::ElementBehavior spr = light_gun_spray, const ProjectileAnimation& pa = default_anim, RENDER_TYPE rt = RENDER_TYPE::SINGLE_SPRITE,
         sf::Vector2<int> dim = { 16, 16 }, sf::Vector2<float> proj_dim = {28.0f, 12.0f});
 
@@ -170,6 +170,8 @@ public:
 
     void set_position(sf::Vector2<float> pos);
     void set_orientation();
+
+    int get_id();
     
     WeaponAttributes attributes{};
     
@@ -195,6 +197,7 @@ private:
     
     bool equipped{};
     bool unlocked{};
+    int id{};
     
 }; // End AdjacencyList
 

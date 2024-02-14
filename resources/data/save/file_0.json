@@ -1,0 +1,19 @@
+{
+  "player_data": {
+    "max_hp": 5,
+    "hp": 3,
+    "orbs": 14948,
+    "position": {
+      "x": 121.701660,
+      "y": 231.926987
+    },
+    "arsenal": [
+      0,
+      1,
+      7,
+      11
+    ],
+    "equipped_gun": 0
+  },
+  "save_point_id": 0
+}

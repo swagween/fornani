@@ -21,9 +21,13 @@ namespace data {
 	public:
 
 		void load_data();
+		void save_progress(int save_point_id);
+		void load_progress();
 
 		dj::Json frdog{};
 		dj::Json hulmet{};
+
+		dj::Json save{};
 
 		ResourceFinder finder{};
 	

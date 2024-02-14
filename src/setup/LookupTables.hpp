@@ -147,6 +147,28 @@ namespace lookup {
 	{arms::WEAPON_TYPE::SKYCORPS_AR, 18 }
 	};
 
+	inline std::unordered_map<int, arms::WEAPON_TYPE> index_to_type{
+		{0, arms::WEAPON_TYPE::BRYNS_GUN},
+		{1, arms::WEAPON_TYPE::PLASMER},
+		{2, arms::WEAPON_TYPE::WASP},
+		{3, arms::WEAPON_TYPE::BLIZZARD},
+		{4, arms::WEAPON_TYPE::BISMUTH},
+		{5, arms::WEAPON_TYPE::UNDERDOG},
+		{6, arms::WEAPON_TYPE::ELECTRON},
+	{ 7, arms::WEAPON_TYPE::CLOVER},
+	{ 8, arms::WEAPON_TYPE::TRITON},
+	{ 9, arms::WEAPON_TYPE::WILLET_585},
+	{ 10, arms::WEAPON_TYPE::QUASAR},
+	{ 11, arms::WEAPON_TYPE::NOVA},
+	{ 12, arms::WEAPON_TYPE::VENOM},
+	{ 13, arms::WEAPON_TYPE::TWIN},
+	{ 14, arms::WEAPON_TYPE::CARISE},
+	{ 15, arms::WEAPON_TYPE::STINGER},
+	{ 16, arms::WEAPON_TYPE::TUSK},
+	{17, arms::WEAPON_TYPE::TOMAHAWK},
+	{18, arms::WEAPON_TYPE::SKYCORPS_AR}
+	};
+
 }
 
 /* LookupTables_hpp */
