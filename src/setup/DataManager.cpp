@@ -8,6 +8,7 @@
 
 #include "DataManager.hpp"
 #include "LookupTables.hpp"
+#include "MapLookups.hpp"
 #include "ServiceLocator.hpp"
 
 namespace data {
@@ -53,6 +54,45 @@ namespace data {
 
 		save = dj::Json::from_file((finder.resource_path + "/data/save/file_0.json").c_str());
 		assert(!save.is_null());
+
+		int save_pt_id = svc::dataLocator.get().save["save_point_id"].as<int>();
+		int room_id = lookup::save_point_to_room_id.at(save_pt_id);
+
+		svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
+		svc::stateControllerLocator.get().trigger = true;
+
+		//set player data based on save file
+		svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
+		svc::playerLocator.get().player_stats.health = svc::dataLocator.get().save["player_data"]["hp"].as<int>();
+		svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
+
+		//load player's arsenal
+		svc::playerLocator.get().weapons_hotbar.clear();
+		for (auto& gun_id : svc::dataLocator.get().save["player_data"]["arsenal"].array_view()) {
+			svc::playerLocator.get().weapons_hotbar.push_back(lookup::index_to_type.at(gun_id.as<int>()));
+		}
+		if (!svc::playerLocator.get().weapons_hotbar.empty()) {
+			auto equipped_gun = svc::dataLocator.get().save["player_data"]["equipped_gun"].as<int>();
+			svc::playerLocator.get().loadout.equipped_weapon = lookup::index_to_type.at(equipped_gun);
+		}
+
+	}
+
+	void DataManager::load_blank_save() {
+
+		save = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
+		assert(!save.is_null());
+
+		svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
+		svc::stateControllerLocator.get().trigger = true;
+
+		//set player data based on save file
+		svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
+		svc::playerLocator.get().player_stats.health = svc::dataLocator.get().save["player_data"]["hp"].as<int>();
+		svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
+
+		//load player's arsenal
+		svc::playerLocator.get().weapons_hotbar.clear();
 
 	}
 

@@ -18,6 +18,7 @@ public:
     std::string next_state{};
     bool trigger{ false };
     int source_id{};
+    bool save_loaded{ false };
     
 }; // End StateController
 

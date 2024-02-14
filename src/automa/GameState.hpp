@@ -160,34 +160,13 @@ namespace flstates {
 				if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 					if (selection == MenuSelection::new_game) {
 
-						svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
-						svc::stateControllerLocator.get().trigger = true;
-
+						svc::dataLocator.get().load_blank_save();
+						svc::stateControllerLocator.get().save_loaded = true;
 					}
 					if (selection == MenuSelection::load_game) {
 
 						svc::dataLocator.get().load_progress();
-						int save_pt_id = svc::dataLocator.get().save["save_point_id"].as<int>();
-						int room_id = lookup::save_point_to_room_id.at(save_pt_id);
-
-						svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
-						svc::stateControllerLocator.get().trigger = true;
-
-						//set player data based on save file
-						svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
-						svc::playerLocator.get().player_stats.health = svc::dataLocator.get().save["player_data"]["hp"].as<int>();
-						svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
-
-						//load player's arsenal
-						svc::playerLocator.get().weapons_hotbar.clear();
-						for (auto& gun_id : svc::dataLocator.get().save["player_data"]["arsenal"].array_view()) {
-							svc::playerLocator.get().weapons_hotbar.push_back(lookup::index_to_type.at(gun_id.as<int>()));
-						}
-						if (!svc::playerLocator.get().weapons_hotbar.empty()) {
-							auto equipped_gun = svc::dataLocator.get().save["player_data"]["equipped_gun"].as<int>();
-							svc::playerLocator.get().loadout.equipped_weapon = lookup::index_to_type.at(equipped_gun);
-						}
-						
+						svc::stateControllerLocator.get().save_loaded = true;
 
 					}
 					if (selection == MenuSelection::options) {
@@ -294,13 +273,16 @@ namespace flstates {
 			svc::playerLocator.get().collider.physics.zero();
 			svc::playerLocator.get().flags.state.set(State::alive);
 			bool found_one = false;
-			for (auto& portal : map.portals) {
-				if (portal.destination_map_id == svc::stateControllerLocator.get().source_id) {
-					found_one = true;
-					sf::Vector2<float> spawn_position{ portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - PLAYER_HEIGHT };
-					svc::playerLocator.get().set_position(spawn_position);
-					svc::cameraLocator.get().center(spawn_position);
-					svc::cameraLocator.get().physics.position = spawn_position - sf::Vector2<float>(svc::cameraLocator.get().bounding_box.width / 2, svc::cameraLocator.get().bounding_box.height / 2);
+			//only search for door entry if room was not loaded from main menu
+			if (!svc::stateControllerLocator.get().save_loaded) {
+				for (auto& portal : map.portals) {
+					if (portal.destination_map_id == svc::stateControllerLocator.get().source_id) {
+						found_one = true;
+						sf::Vector2<float> spawn_position{ portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - PLAYER_HEIGHT };
+						svc::playerLocator.get().set_position(spawn_position);
+						svc::cameraLocator.get().center(spawn_position);
+						svc::cameraLocator.get().physics.position = spawn_position - sf::Vector2<float>(svc::cameraLocator.get().bounding_box.width / 2, svc::cameraLocator.get().bounding_box.height / 2);
+					}
 				}
 			}
 			if (!found_one) {
@@ -309,6 +291,8 @@ namespace flstates {
 				sf::Vector2f player_pos = { ppx, ppy };
 				svc::playerLocator.get().set_position(player_pos);
 			}
+			//save was loaded from a json, so we successfully skipped door search
+			svc::stateControllerLocator.get().save_loaded = false;
 
 			//        svc::assetLocator.get().abandoned.setVolume(50);
 			//        svc::assetLocator.get().abandoned.play();
