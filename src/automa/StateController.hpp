@@ -11,6 +11,13 @@
 
 namespace automa {
 
+    enum class menu_type {
+    file_select,
+    options,
+    settings,
+    credits
+    };
+
 class StateController {
     
 public:
@@ -19,6 +26,9 @@ public:
     bool trigger{ false };
     int source_id{};
     bool save_loaded{ false };
+
+    bool trigger_submenu{ false };
+    menu_type submenu{};
     
 }; // End StateController
 

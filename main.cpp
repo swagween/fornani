@@ -584,6 +584,23 @@ void run(char** argv) {
         SM.get_current_state().debug_mode = debug_mode;
 
         //switch states
+        if(svc::stateControllerLocator.get().trigger_submenu) {
+            switch(svc::stateControllerLocator.get().submenu) {
+            case automa::menu_type::file_select:
+                SM.set_current_state(std::make_unique<flstates::FileMenu>());
+                break;
+            case automa::menu_type::options:
+                //todo
+                break;
+            case automa::menu_type::settings:
+                //todo
+                break;
+            case automa::menu_type::credits:
+                //todo
+                break;
+            }
+            svc::stateControllerLocator.get().trigger_submenu = false;
+        }
         if (svc::stateControllerLocator.get().trigger) {
             SM.set_current_state(std::make_unique<flstates::Dojo>());
             SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/" + svc::stateControllerLocator.get().next_state);

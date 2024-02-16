@@ -28,6 +28,7 @@ namespace automa {
 		STATE_EXIT,
 		STATE_MENU,
 		STATE_OPTIONS,
+		STATE_FILE,
 		STATE_MAIN,
 		STATE_DOJO
 	};
@@ -165,8 +166,8 @@ namespace flstates {
 					}
 					if (selection == MenuSelection::load_game) {
 
-						svc::dataLocator.get().load_progress();
-						svc::stateControllerLocator.get().save_loaded = true;
+						svc::stateControllerLocator.get().submenu = automa::menu_type::file_select;
+						svc::stateControllerLocator.get().trigger_submenu = true;
 
 					}
 					if (selection == MenuSelection::options) {
@@ -233,6 +234,140 @@ namespace flstates {
 		sf::IntRect new_rect{};
 		sf::IntRect load_rect{};
 		sf::IntRect options_rect{};
+
+		vfx::Attractor left_dot{};
+		vfx::Attractor right_dot{};
+		sf::Vector2<float> dot_pad{ 24.f, 8.f };
+
+	};
+
+	// =======================================================================
+	//
+	//    FILE_MENU
+	//
+	// =======================================================================
+
+	class FileMenu : public automa::GameState {
+
+		static const int num_files{ 3 };
+
+		public:
+
+		std::array<int, num_files> files {
+			1, 2, 3
+		};
+
+		FileMenu() {
+			state = automa::STATE::STATE_FILE;
+			svc::cameraLocator.get().set_position({ 1, 1 });
+			init("");
+		};
+
+		void init(const std::string& load_path) {
+
+			title.setPosition(0, 0);
+			title.setSize(static_cast<sf::Vector2f>(cam::screen_dimensions));
+			title.setFillColor(flcolor::ui_black);
+
+			selection_width = 92;
+			selection_buffer = 14;
+			top_buffer = 186;
+			middle = (int)cam::screen_dimensions.x / 2;
+			int selection_point = middle - selection_width / 2;
+			text_left = middle - text_dim.x / 2;
+			text_right = middle + text_dim.x / 2;
+
+			for(int i = 0; i < num_files; ++i) {
+				file_rects.at(i) = sf::IntRect({ text_left, top_buffer + (text_dim.y * (i)) + (selection_buffer * (i % num_files)) }, text_dim);
+			}
+
+			left_dot = vfx::Attractor({ file_rects.at(0).getPosition().x - dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y }, flcolor::bright_orange, 0.008f);
+			right_dot = vfx::Attractor({ file_rects.at(0).getPosition().x + file_rects.at(0).width + dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y }, flcolor::bright_orange, 0.008f);
+
+			left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
+			left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+			right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
+			right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+
+			left_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition()));
+			right_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
+			left_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition()));
+			right_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
+
+			for (auto i = 0; i < num_files * 2; ++i) {
+
+				file_text.at(i) = sf::Sprite{ svc::assetLocator.get().t_file_text, sf::IntRect({0, i * text_dim.y}, text_dim) };
+				file_text.at(i).setPosition(text_left, top_buffer + (text_dim.y * (i % num_files)) + (selection_buffer * (i % num_files)));
+
+			}
+
+		}
+
+		void setTilesetTexture(sf::Texture& t) {}
+
+		void handle_events(sf::Event& event) {
+
+			if (event.type == sf::Event::EventType::KeyPressed) {
+				if (event.key.code == sf::Keyboard::Down) {
+					++selection;
+				}
+				if (event.key.code == sf::Keyboard::Up) {
+					--selection;
+				}
+				if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
+					//constrain selection
+					if (selection >= num_files) { selection = 0; }
+					if (selection < 0) { selection = num_files - 1; }
+					svc::dataLocator.get().load_progress(selection);
+					svc::stateControllerLocator.get().save_loaded = true;
+				}
+			}
+
+		}
+
+		void logic() {
+			//constrain selection
+			if (selection >= num_files) { selection = 0; }
+			if (selection < 0) { selection = num_files - 1; }
+			left_dot.update();
+			right_dot.update();
+			left_dot.set_target_position({ text_left - dot_pad.x, file_rects.at(selection).getPosition().y + dot_pad.y });
+			right_dot.set_target_position({ text_right + dot_pad.x, file_rects.at(selection).getPosition().y + dot_pad.y });
+		}
+
+		void render(sf::RenderWindow& win) {
+			win.draw(title);
+			svc::counterLocator.get().at(svc::draw_calls)++;
+
+			int selection_adjustment{};
+			for (auto i = 0; i < num_files; ++i) {
+				if (i == selection) { selection_adjustment = 3; } else { selection_adjustment = 0; }
+				win.draw(file_text.at(i + selection_adjustment));
+				svc::counterLocator.get().at(svc::draw_calls)++;
+			}
+
+			left_dot.render(win, { 0, 0 });
+			right_dot.render(win, { 0, 0 });
+
+		}
+
+		//menu textures
+		sf::RectangleShape title{};
+		std::array<sf::Sprite, num_files * 2> file_text{};
+
+		
+
+		int selection{ 0 };
+
+		int selection_width{};
+		int selection_buffer{};
+		int top_buffer{};
+		int middle{};
+		int text_left{};
+		int text_right{};
+		sf::Vector2i text_dim{ 72, 16 };
+
+		std::array<sf::IntRect, num_files> file_rects{};
 
 		vfx::Attractor left_dot{};
 		vfx::Attractor right_dot{};

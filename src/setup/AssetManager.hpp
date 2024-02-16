@@ -75,6 +75,7 @@ public:
         //title stuff
         t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
         t_title_assets.loadFromFile(finder.resource_path + "/image/gui/title_assets.png");
+        t_file_text.loadFromFile(finder.resource_path + "/image/gui/file_text.png");
 
         
         //load all the other textures...
@@ -231,6 +232,7 @@ public:
     sf::Texture t_ui{};
     sf::Texture t_title{};
     sf::Texture t_title_assets{};
+    sf::Texture t_file_text{};
 
     sf::Texture t_hud_orb_font{};
     sf::Texture t_hud_hearts{};

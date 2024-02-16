@@ -46,13 +46,15 @@ namespace data {
 
 		save["save_point_id"] = save_point_id;
 
-		save.dj::Json::to_file((finder.resource_path + "/data/save/file_0.json").c_str());
+		save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) +".json").c_str());
 
 	}
 
-	void DataManager::load_progress() {
+	void DataManager::load_progress(const int file) {
 
-		save = dj::Json::from_file((finder.resource_path + "/data/save/file_0.json").c_str());
+		current_save = file;
+
+		save = dj::Json::from_file((finder.resource_path + "/data/save/file_" + std::to_string(file) + ".json").c_str());
 		assert(!save.is_null());
 
 		int save_pt_id = svc::dataLocator.get().save["save_point_id"].as<int>();

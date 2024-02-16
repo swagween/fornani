@@ -13,6 +13,7 @@
 #include <list>
 #include "../setup/ServiceLocator.hpp"
 #include "../setup/EnumLookups.hpp"
+#include "../setup/LookupTables.hpp"
 
 namespace gui {
 
