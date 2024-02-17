@@ -1,62 +1,48 @@
-//
-//  Console.hpp
-//  fornani
-//
-//  Created by Alex Frasca on 12/26/22.
-//
 
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <array>
+#include <string>
 #include "../utils/BitFlags.hpp"
 #include "../utils/Camera.hpp"
 
 namespace gui {
 
-    const int corner_factor{ 22 };
-    const int edge_factor{ 4 };
-    const float height_factor{ 4.0f };
+int const corner_factor{22};
+int const edge_factor{4};
+float const height_factor{4.0f};
 
-const float pad{ 32.0f };
-const float text_pad{ 8.0f };
+float const pad{32.0f};
+float const text_pad{8.0f};
 inline const sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad}; // bottom left corner
 
-enum class ConsoleFlags {
-active,
-finished
-};
+enum class ConsoleFlags { active, finished };
 
 class Console {
-    
-public:
-    
-    Console();
 
-    void begin();
-    void update();
-    void render(sf::RenderWindow& win);
+  public:
+	Console();
 
-    void write(sf::RenderWindow& win, std::string_view message);
-    void write_speech(sf::RenderWindow& win, std::string_view message);
-    void end();
+	void begin();
+	void update();
+	void render(sf::RenderWindow& win);
 
-    void nine_slice(int corner_dim, int edge_dim);
+	void write(sf::RenderWindow& win, std::string_view message);
+	void write_speech(sf::RenderWindow& win, std::string_view message);
+	void end();
 
-    
-    sf::Vector2<float> position{};
-    sf::Vector2<float> dimensions{};
-    sf::Vector2<float> text_origin{};
-    util::BitFlags<ConsoleFlags> flags{};
+	void nine_slice(int corner_dim, int edge_dim);
 
-    std::array<sf::Sprite, 9> sprites{};
+	sf::Vector2<float> position{};
+	sf::Vector2<float> dimensions{};
+	sf::Vector2<float> text_origin{};
+	util::BitFlags<ConsoleFlags> flags{};
 
-    int extent{};
-    int speed{ 8 };
-    
-}; // end Console
+	std::array<sf::Sprite, 9> sprites{};
 
-} // end gui
+	int extent{};
+	int speed{8};
+};
 
- /* HUD_hpp */
+} // namespace gui

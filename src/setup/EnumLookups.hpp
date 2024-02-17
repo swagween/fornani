@@ -1,11 +1,5 @@
-//
-//  EnumLookups.hpp
-//
-//  Created by Alex Frasca on 12/26/22.
-//
 
 #pragma once
-
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -255,5 +249,3 @@ static void populate_lookup() {
 }
 
 }
-
-/* LookupTables_hpp */

@@ -1,25 +1,19 @@
-//
-//  BitFlags.hpp
-//  fornani
-//
-//  Created by Alex Frasca on 12/26/22.
-//
 
 #pragma once
 
 #include <bitset>
 
 namespace util {
-    template <typename Enum, std::size_t Size = 32u>
-    struct BitFlags {
-        std::bitset<Size> bits{};
 
-        bool test(Enum e) const { return bits[static_cast<std::size_t>(e)]; }
-        void set(Enum e) { bits.set(static_cast<std::size_t>(e)); }
-        void reset(Enum e) { bits.reset(static_cast<std::size_t>(e)); }
+template <typename Enum, std::size_t Size = 32u>
+struct BitFlags {
+	std::bitset<Size> bits{};
 
-        bool operator==(BitFlags const&) const = default;
-    };
-}
+	bool test(Enum e) const { return bits[static_cast<std::size_t>(e)]; }
+	void set(Enum e) { bits.set(static_cast<std::size_t>(e)); }
+	void reset(Enum e) { bits.reset(static_cast<std::size_t>(e)); }
 
-/* BitFlags_hpp */
+	bool operator==(BitFlags const&) const = default;
+};
+
+} // namespace util

@@ -1,34 +1,24 @@
-//
-//  Loot.hpp
-//  item
-//
-//
 
 #pragma once
 
-//#include "../../particle/Emitter.hpp"
-#include "Drop.hpp"
 #include <string>
+#include "Drop.hpp"
 
 namespace item {
 
-	class Loot {
+class Loot {
 
-		using Vec = sf::Vector2<float>;
-		using Vecu16 = sf::Vector2<uint32_t>;
+	using Vec = sf::Vector2<float>;
+	using Vecu16 = sf::Vector2<uint32_t>;
 
-	public:
+  public:
+	Loot() = default;
+	Loot(Vec pos);
 
-		Loot() = default;
-		Loot(Vec pos);
+	void update();
 
-		void update();
+	// vfx::Emitter burst{};
+	std::vector<Drop> drops{};
+};
 
-		//vfx::Emitter burst{};
-		std::vector<Drop> drops{};
-
-	};
-
-} // end item
-
-/* Loot_hpp */
+} // namespace item

@@ -1,11 +1,5 @@
-//
-//  LookupTables.hpp
-//
-//  Created by Alex Frasca on 12/26/22.
-//
 
 #pragma once
-
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -170,5 +164,3 @@ namespace lookup {
 	};
 
 }
-
-/* LookupTables_hpp */

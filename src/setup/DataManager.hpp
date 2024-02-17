@@ -1,40 +1,32 @@
-//
-//  LookupTables.hpp
-//
-//  Created by Alex Frasca on 12/26/22.
-//
 
 #pragma once
 
-
+#include <assert.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <iostream>
-#include <assert.h>
 #include <string>
 #include "ResourceFinder.hpp"
 
 namespace data {
 
-	class DataManager {
+class DataManager {
 
-	public:
+  public:
+	void load_data();
+	void save_progress(int save_point_id);
+	void load_progress(int const file, bool state_switch = false);
+	void load_blank_save(bool state_switch = false);
 
-		void load_data();
-		void save_progress(int save_point_id);
-		void load_progress(const int file, bool state_switch = false);
-		void load_blank_save(bool state_switch = false);
+	dj::Json frdog{};
+	dj::Json hulmet{};
 
-		dj::Json frdog{};
-		dj::Json hulmet{};
+	dj::Json save{};
+	int current_save{};
 
-		dj::Json save{};
-		int current_save{};
+	dj::Json map_table{};
 
-		ResourceFinder finder{};
-	
-	};
+	ResourceFinder finder{};
+};
 
-}
-
-/* LookupTables_hpp */
+} // namespace data

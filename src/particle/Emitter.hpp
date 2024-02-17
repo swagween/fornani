@@ -72,9 +72,6 @@ public:
     
     std::vector<Particle>& const get_particles();
     
-    int get_lifespan();
-    int num_particles();
-    
     sf::Color color{};
     
     std::vector<Particle> particles{};

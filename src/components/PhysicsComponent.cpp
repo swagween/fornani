@@ -1,8 +1,3 @@
-//
-//  PhysicsComponent.hpp
-//  components
-//
-//
 
 #pragma once
 
@@ -10,79 +5,66 @@
 #include "../setup/ServiceLocator.hpp"
 
 namespace components {
-    
-    using Time = std::chrono::duration<float>;
-    
 
-    void PhysicsComponent::apply_force(sf::Vector2<float> force) {
-        sf::operator+= (acceleration, force);
-    }
-    
-    void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
-        acceleration.x += (magnitude * cos(angle)) / mass;
-        acceleration.y += (magnitude * sin(angle)) / mass;
-    }
-    
-    void PhysicsComponent::update_euler() {
+using Time = std::chrono::duration<float>;
 
-        dt = svc::clockLocator.get().tick_rate;
+void PhysicsComponent::apply_force(sf::Vector2<float> force) { sf::operator+=(acceleration, force); }
 
-        auto new_time = Clock::now();
-        Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
-        if (frame_time.count() > svc::clockLocator.get().frame_limit) {
-            frame_time = Time{ svc::clockLocator.get().frame_limit };
-        }
+void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
+	acceleration.x += (magnitude * cos(angle)) / mass;
+	acceleration.y += (magnitude * sin(angle)) / mass;
+}
 
-        current_time = new_time;
-        accumulator += frame_time;
+void PhysicsComponent::update_euler() {
 
-        int integrations = 0;
-        while (accumulator >= dt) {
+	dt = svc::clockLocator.get().tick_rate;
 
-            previous_acceleration = acceleration;
-            previous_velocity = velocity;
-            previous_position = position;
-            integrate(svc::clockLocator.get().tick_multiplier);
+	auto new_time = Clock::now();
+	Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
+	if (frame_time.count() > svc::clockLocator.get().frame_limit) { frame_time = Time{svc::clockLocator.get().frame_limit}; }
 
-            accumulator -= dt;
-            ++integrations;
-        }
-    }
+	current_time = new_time;
+	accumulator += frame_time;
 
-    void PhysicsComponent::integrate(float ndt) {
+	int integrations = 0;
+	while (accumulator >= dt) {
 
-        acceleration.y += gravity * ndt;
-        velocity.x = (velocity.x + (acceleration.x / mass) * ndt) * friction.x;
-        velocity.y = (velocity.y + (acceleration.y / mass) * ndt) * friction.y;
-        if (velocity.x > maximum_velocity.x) { velocity.x = maximum_velocity.x; }
-        if (velocity.x < -maximum_velocity.x) { velocity.x = -maximum_velocity.x; }
-        if (velocity.y > maximum_velocity.y) { velocity.y = maximum_velocity.y; }
-        if (velocity.y < -maximum_velocity.y) { velocity.y = -maximum_velocity.y; }
-        if (velocity.y > TERMINAL_VELOCITY) { velocity.y = TERMINAL_VELOCITY; }
-        position = position + velocity * ndt;
+		previous_acceleration = acceleration;
+		previous_velocity = velocity;
+		previous_position = position;
+		integrate(svc::clockLocator.get().tick_multiplier);
 
-    }
-    
-    void PhysicsComponent::update() {
-        update_euler();
-    }
-    
-    void PhysicsComponent::update_dampen() {
-        acceleration /= svc::clockLocator.get().tick_multiplier;
-        update_euler();
-        acceleration = {0.0f, 0.0f};
-    }
+		accumulator -= dt;
+		++integrations;
+	}
+}
 
-    void PhysicsComponent::zero() {
-        acceleration = { 0.0f, 0.0f };
-        velocity = { 0.0f, 0.0f };
-    }
+void PhysicsComponent::integrate(float ndt) {
 
-    void PhysicsComponent::hitstun() {
-        dt /= 2.0f;
-    }
-    
+	acceleration.y += gravity * ndt;
+	velocity.x = (velocity.x + (acceleration.x / mass) * ndt) * friction.x;
+	velocity.y = (velocity.y + (acceleration.y / mass) * ndt) * friction.y;
+	if (velocity.x > maximum_velocity.x) { velocity.x = maximum_velocity.x; }
+	if (velocity.x < -maximum_velocity.x) { velocity.x = -maximum_velocity.x; }
+	if (velocity.y > maximum_velocity.y) { velocity.y = maximum_velocity.y; }
+	if (velocity.y < -maximum_velocity.y) { velocity.y = -maximum_velocity.y; }
+	if (velocity.y > TERMINAL_VELOCITY) { velocity.y = TERMINAL_VELOCITY; }
+	position = position + velocity * ndt;
+}
 
-} // end components
+void PhysicsComponent::update() { update_euler(); }
 
-/* PhysicsComponent_hpp */
+void PhysicsComponent::update_dampen() {
+	acceleration /= svc::clockLocator.get().tick_multiplier;
+	update_euler();
+	acceleration = {0.0f, 0.0f};
+}
+
+void PhysicsComponent::zero() {
+	acceleration = {0.0f, 0.0f};
+	velocity = {0.0f, 0.0f};
+}
+
+void PhysicsComponent::hitstun() { dt /= 2.0f; }
+
+} // namespace components

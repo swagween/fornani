@@ -1,43 +1,34 @@
-//
-//  SavePoint.hpp
-//  entity
-//
-//
 
 #pragma once
 
-#include "../../utils/Shape.hpp"
-#include "../../setup/EnumLookups.hpp"
 #include <string>
+#include "../../setup/EnumLookups.hpp"
+#include "../../utils/Shape.hpp"
 
 namespace entity {
 
-	class SavePoint {
+class SavePoint {
 
-	public:
+  public:
+	using Vec = sf::Vector2<float>;
+	using Vecu16 = sf::Vector2<uint32_t>;
 
-		using Vec = sf::Vector2<float>;
-		using Vecu16 = sf::Vector2<uint32_t>;
+	SavePoint();
 
-		SavePoint();
+	void update();
+	void render(sf::RenderWindow& win, Vec campos);
 
-		void update();
-		void render(sf::RenderWindow& win, Vec campos);
+	void save(); // talk to SaveDataManager to write current progress to save.json
 
-		void save(); // talk to SaveDataManager to write current progress to save.json
+	Vec dimensions{32, 32};
+	Vec position{};
+	Vecu16 scaled_position{};
+	shape::Shape bounding_box{};
+	sf::Sprite sprite{};
+	bool activated{};
+	bool can_activate{true};
 
-		Vec dimensions{32, 32};
-		Vec position{};
-		Vecu16 scaled_position{};
-		shape::Shape bounding_box{};
-		sf::Sprite sprite{};
-		bool activated{};
-		bool can_activate{ true };
+	int id{};
+};
 
-		int id{};
-
-	};
-
-} // end entity
-
-/* SavePoint_hpp */
+} // namespace entity
