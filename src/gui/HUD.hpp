@@ -107,23 +107,23 @@ namespace gui {
 			for (int i = 0; i < total_hp_cells; ++i) {
 				if (i < filled_hp_cells) {
 					if (i == 0) {
-						sp_hearts.at(HP_FILLED).setPosition(HP_origin.x + i * heart_dimensions.x, HP_origin.y);
+						sp_hearts.at(HP_FILLED).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x, corner_pad.y + HP_origin.y);
 					}
 					else {
-						sp_hearts.at(HP_FILLED).setPosition(HP_origin.x + i * heart_dimensions.x + i * HP_pad, HP_origin.y);
+						sp_hearts.at(HP_FILLED).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
 					}
 					win.draw(sp_hearts.at(HP_FILLED));
 					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 				else {
-					sp_hearts.at(HP_GONE).setPosition(HP_origin.x + i * heart_dimensions.x + i * HP_pad, HP_origin.y);
+					sp_hearts.at(HP_GONE).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
 					win.draw(sp_hearts.at(HP_GONE));
 					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 			}
 
 			//ORB
-			sp_orb_text.at(orb_label_index).setPosition(ORB_origin.x, ORB_origin.y);
+			sp_orb_text.at(orb_label_index).setPosition(corner_pad.x + ORB_origin.x, corner_pad.y + ORB_origin.y);
 			win.draw(sp_orb_text.at(orb_label_index));
 			svc::counterLocator.get().at(svc::draw_calls)++;
 			digits = std::to_string(num_orbs);
@@ -131,7 +131,7 @@ namespace gui {
 			for (auto& digit : digits) {
 
 				if (digit - '0' >= 0 && digit - '0' < 10) {
-					sp_orb_text.at(digit - '0').setPosition(ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), ORB_origin.y);
+					sp_orb_text.at(digit - '0').setPosition(corner_pad.x + ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), corner_pad.y + ORB_origin.y);
 					win.draw(sp_orb_text.at(digit - '0'));
 					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
@@ -144,8 +144,8 @@ namespace gui {
 ;			int loadout_size = svc::playerLocator.get().weapons_hotbar.size();
 				for (int i = 0; i < loadout_size; ++i) {
 					int gun_index = lookup::type_to_index.at(svc::playerLocator.get().weapons_hotbar.at(i));
-					sp_guns.at(gun_index).setPosition(GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-					sp_guns_shadow.at(gun_index).setPosition(GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
+					sp_guns.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
+					sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 					if(svc::playerLocator.get().loadout.equipped_weapon == svc::playerLocator.get().weapons_hotbar.at(i)) {
 						win.draw(sp_guns_shadow.at(gun_index));
 						svc::counterLocator.get().at(svc::draw_calls)++;
@@ -158,12 +158,16 @@ namespace gui {
 					}
 				}
 				arms::WEAPON_TYPE curr_type = svc::playerLocator.get().loadout.get_equipped_weapon().type;
-				sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color).setPosition(GUN_origin.x, GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
+				sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
 				if (svc::playerLocator.get().weapons_hotbar.size() != 0) {
 					win.draw(sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color));
 					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 			
+		}
+
+		void set_corner_pad(bool file_preview = false) {
+			file_preview ? corner_pad = { ((float)cam::screen_dimensions.x / 2) - 140, -60.f } : corner_pad = { 0.f, 0.f };
 		}
 
 
@@ -180,6 +184,8 @@ std::array<sf::Sprite, num_orb_chars> sp_orb_text{};
 std::array<sf::Sprite, num_guns> sp_guns_shadow{};
 std::array<sf::Sprite, num_guns> sp_guns{};
 std::array<sf::Sprite, num_colors> sp_pointer{};
+
+sf::Vector2f corner_pad{}; //for rendering file preview
 
 }; // end HUD
 

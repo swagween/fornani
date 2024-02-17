@@ -22,8 +22,8 @@ namespace data {
 
 		void load_data();
 		void save_progress(int save_point_id);
-		void load_progress(const int file);
-		void load_blank_save();
+		void load_progress(const int file, bool state_switch = false);
+		void load_blank_save(bool state_switch = false);
 
 		dj::Json frdog{};
 		dj::Json hulmet{};

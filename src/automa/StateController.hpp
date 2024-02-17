@@ -28,6 +28,7 @@ public:
     bool save_loaded{ false };
 
     bool trigger_submenu{ false };
+    bool exit_submenu{ false };
     menu_type submenu{};
     
 }; // End StateController

@@ -436,7 +436,6 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 	}
 
     //player
-    sf::Vector2<float> player_pos = svc::playerLocator.get().apparent_position - svc::cameraLocator.get().physics.position;
     svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
     
     //enemies

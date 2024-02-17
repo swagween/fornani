@@ -297,20 +297,7 @@ void Player::update(Time dt) {
 	apparent_position.y = collider.physics.position.y;
 
 	//antennae!
-	int ctr{ 0 };
-	for (auto& a : antennae) {
-		a.set_target_position(collider.physics.position + antenna_offset);
-		a.update();
-		a.collider.sync_components();
-		a.collider.handle_collider_collision(head.bounding_box);
-		a.collider.handle_collider_collision(collider.bounding_box);
-		if (behavior.facing_lr == behavior::DIR_LR::RIGHT) {
-			antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;
-		} else {
-			antenna_offset.x = ctr % 2 == 0 ? 2.f : 13.f;
-		}
-		++ctr;
-	}
+	update_antennae();
 
 	if (!weapons_hotbar.empty()) {
 		assign_texture(svc::assetLocator.get().t_nani);
@@ -631,19 +618,33 @@ void Player::hurt(int amount = 1) {
 		just_hurt = true;
 	}
 
-
 	if (player_stats.health <= 0) { kill(); }
 
 }
 
-void Player::restrict_inputs() {
+void Player::update_antennae() {
+	int ctr{ 0 };
+	for (auto& a : antennae) {
+		a.set_target_position(collider.physics.position + antenna_offset);
+		a.update();
+		a.collider.sync_components();
+		a.collider.handle_collider_collision(head.bounding_box);
+		a.collider.handle_collider_collision(collider.bounding_box);
+		if (behavior.facing_lr == behavior::DIR_LR::RIGHT) {
+			antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;
+		} else {
+			antenna_offset.x = ctr % 2 == 0 ? 2.f : 13.f;
+		}
+		++ctr;
+	}
+}
 
+void Player::restrict_inputs() {
 	flags.input.set(Input::restricted);
 	flags.movement.reset(Movement::look_down);
 	flags.movement.reset(Movement::look_up);
 	flags.input.reset(Input::inspecting_trigger);
 	weapon_fired = false;
-
 }
 
 void Player::unrestrict_inputs() {
@@ -727,6 +728,18 @@ void Player::kill() {
 void Player::start_over() {
 	player_stats.health = player_stats.max_health;
 	flags.state.set(State::alive);
+}
+
+void Player::reset_flags() {
+	flags = {};
+}
+
+void Player::total_reset() {
+	start_over();
+	collider.physics.zero();
+	reset_flags();
+	weapons_hotbar.clear();
+	update_antennae();
 }
 
 behavior::DIR_LR Player::entered_from() {

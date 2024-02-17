@@ -554,7 +554,6 @@ void run(char** argv) {
                     }
                     if (event.key.code == sf::Keyboard::Q) {
                         SM.set_current_state(std::make_unique<flstates::MainMenu>());
-                        SM.get_current_state().init(svc::assetLocator.get().finder.resource_path);
                     }
                     if (event.key.code == sf::Keyboard::W) {
                         SM.set_current_state(std::make_unique<flstates::Dojo>());
@@ -600,6 +599,10 @@ void run(char** argv) {
                 break;
             }
             svc::stateControllerLocator.get().trigger_submenu = false;
+        }
+        if(svc::stateControllerLocator.get().exit_submenu) {
+            SM.set_current_state(std::make_unique<flstates::MainMenu>());
+            svc::stateControllerLocator.get().exit_submenu = false;
         }
         if (svc::stateControllerLocator.get().trigger) {
             SM.set_current_state(std::make_unique<flstates::Dojo>());

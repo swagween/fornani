@@ -176,6 +176,7 @@ public:
     void walk();
     void autonomous_walk();
     void hurt(int amount);
+    void update_antennae();
 
     void restrict_inputs();
     void unrestrict_inputs();
@@ -195,6 +196,9 @@ public:
     bool is_invincible() const;
     void kill();
     void start_over();
+
+    void reset_flags();
+    void total_reset();
 
     //map helpers
     behavior::DIR_LR entered_from();

@@ -50,7 +50,7 @@ namespace data {
 
 	}
 
-	void DataManager::load_progress(const int file) {
+	void DataManager::load_progress(const int file, bool state_switch) {
 
 		current_save = file;
 
@@ -60,8 +60,10 @@ namespace data {
 		int save_pt_id = svc::dataLocator.get().save["save_point_id"].as<int>();
 		int room_id = lookup::save_point_to_room_id.at(save_pt_id);
 
-		svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
-		svc::stateControllerLocator.get().trigger = true;
+		if (state_switch) {
+			svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
+			svc::stateControllerLocator.get().trigger = true;
+		}
 
 		//set player data based on save file
 		svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
@@ -80,13 +82,15 @@ namespace data {
 
 	}
 
-	void DataManager::load_blank_save() {
+	void DataManager::load_blank_save(bool state_switch) {
 
 		save = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
 		assert(!save.is_null());
 
-		svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
-		svc::stateControllerLocator.get().trigger = true;
+		if (state_switch) {
+			svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
+			svc::stateControllerLocator.get().trigger = true;
+		}
 
 		//set player data based on save file
 		svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();

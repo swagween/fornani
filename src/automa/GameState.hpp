@@ -33,6 +33,12 @@ namespace automa {
 		STATE_DOJO
 	};
 
+	enum class MenuSelection {
+		new_game,
+		load_game,
+		options
+	};
+
 	class GameState {
 
 	public:
@@ -60,12 +66,22 @@ namespace automa {
 
 		STATE state = STATE::STATE_NULL;
 		bool debug_mode{ false };
+
+		gui::HUD hud{ {20, 20} };
+
+		vfx::Attractor left_dot{};
+		vfx::Attractor right_dot{};
+		sf::Vector2<float> dot_pad{ 24.f, 8.f };
+
 	};
 
 
 }
 
 namespace flstates {
+
+	inline automa::MenuSelection selection{};
+	inline int file_selection{ 0 };
 
 	// =======================================================================
 	//
@@ -76,20 +92,15 @@ namespace flstates {
 	class MainMenu : public automa::GameState {
 	public:
 
-		enum class MenuSelection {
-			new_game,
-			load_game,
-			options
-		};
-
-		std::unordered_map<MenuSelection, int> menu_selection_id{
-			{MenuSelection::new_game, 0}, {MenuSelection::load_game, 1}, {MenuSelection::options, 2}
+		std::unordered_map<automa::MenuSelection, int> menu_selection_id{
+			{automa::MenuSelection::new_game, 0}, {automa::MenuSelection::load_game, 1}, {automa::MenuSelection::options, 2}
 		};
 
 		//5, 8, 11
 		MainMenu() {
 			state = automa::STATE::STATE_MENU;
 			svc::cameraLocator.get().set_position({ 1, 1 });
+			init("");
 		};
 
 		void init(const std::string& load_path) {
@@ -105,7 +116,6 @@ namespace flstates {
 			load_rect = { { middle - 24, top_buffer + selection_buffer + new_rect.getSize().y }, { 50, 16 } };
 			options_rect = { { middle - 46, top_buffer + (selection_buffer * 2) + new_rect.getSize().y + load_rect.getSize().y}, { 92, 22 } };
 
-			selection = MenuSelection::new_game;
 			left_dot = vfx::Attractor({ new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y }, flcolor::bright_orange, 0.008f);
 			right_dot = vfx::Attractor({ new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y }, flcolor::bright_orange, 0.008f);
 
@@ -153,27 +163,41 @@ namespace flstates {
 
 			if (event.type == sf::Event::EventType::KeyPressed) {
 				if(event.key.code == sf::Keyboard::Down) {
-					selection = (menu_selection_id.at(selection) % 3 == 2) ? MenuSelection::new_game : (MenuSelection)(menu_selection_id.at(selection) + 1);
+					selection = (menu_selection_id.at(selection) % 3 == 2) ? automa::MenuSelection::new_game : (automa::MenuSelection)(menu_selection_id.at(selection) + 1);
+					svc::assetLocator.get().menu_shift.play();
 				}
 				if (event.key.code == sf::Keyboard::Up) {
-					selection = (menu_selection_id.at(selection) % 3 == 0) ? MenuSelection::options : (MenuSelection)(menu_selection_id.at(selection) - 1);
+					selection = (menu_selection_id.at(selection) % 3 == 0) ? automa::MenuSelection::options : (automa::MenuSelection)(menu_selection_id.at(selection) - 1);
+					svc::assetLocator.get().menu_shift.play();
 				}
 				if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
-					if (selection == MenuSelection::new_game) {
+					if (selection == automa::MenuSelection::new_game) {
 
-						svc::dataLocator.get().load_blank_save();
+						svc::dataLocator.get().load_blank_save(true);
 						svc::stateControllerLocator.get().save_loaded = true;
+
+						svc::assetLocator.get().click.play();
+
 					}
-					if (selection == MenuSelection::load_game) {
+					if (selection == automa::MenuSelection::load_game) {
 
 						svc::stateControllerLocator.get().submenu = automa::menu_type::file_select;
 						svc::stateControllerLocator.get().trigger_submenu = true;
 
-					}
-					if (selection == MenuSelection::options) {
-						//todo: make options menu
+						svc::assetLocator.get().click.play();
 
 					}
+					if (selection == automa::MenuSelection::options) {
+						//todo: make options menu
+						svc::assetLocator.get().click.play();
+
+					}
+				}
+				if (event.key.code == sf::Keyboard::Right && selection == automa::MenuSelection::load_game) {
+					svc::stateControllerLocator.get().submenu = automa::menu_type::file_select;
+					svc::stateControllerLocator.get().trigger_submenu = true;
+
+					svc::assetLocator.get().menu_next.play();
 				}
 			}
 
@@ -183,17 +207,17 @@ namespace flstates {
 			left_dot.update();
 			right_dot.update();
 			switch (selection) {
-			case MenuSelection::new_game:
+			case automa::MenuSelection::new_game:
 				dot_pad.y = 5.f;
 				left_dot.set_target_position({ new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y });
 				right_dot.set_target_position({ new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y });
 				break;
-			case MenuSelection::load_game:
+			case automa::MenuSelection::load_game:
 				dot_pad.y = 8.f;
 				left_dot.set_target_position({ load_rect.getPosition().x - dot_pad.x, load_rect.getPosition().y + dot_pad.y });
 				right_dot.set_target_position({ load_rect.getPosition().x + load_rect.width + dot_pad.x, load_rect.getPosition().y + dot_pad.y });
 				break;
-			case MenuSelection::options:
+			case automa::MenuSelection::options:
 				dot_pad.y = 11.f;
 				left_dot.set_target_position({ options_rect.getPosition().x - dot_pad.x, options_rect.getPosition().y + dot_pad.y });
 				right_dot.set_target_position({ options_rect.getPosition().x + options_rect.width + dot_pad.x, options_rect.getPosition().y + dot_pad.y });
@@ -223,8 +247,6 @@ namespace flstates {
 		sf::Sprite title{};
 		std::vector<sf::Sprite> title_assets{};
 
-		MenuSelection selection{};
-
 		int selection_width{};
 		int selection_buffer{};
 		int title_buffer{};
@@ -253,17 +275,15 @@ namespace flstates {
 
 		public:
 
-		std::array<int, num_files> files {
-			1, 2, 3
-		};
-
 		FileMenu() {
+			file_selection = 0;
 			state = automa::STATE::STATE_FILE;
+			svc::dataLocator.get().load_blank_save();
+			hud.set_corner_pad(true); //display hud preview for each file in the center of the screen
+			constrain_selection();
+			svc::dataLocator.get().load_progress(file_selection);
 			svc::cameraLocator.get().set_position({ 1, 1 });
-			init("");
-		};
-
-		void init(const std::string& load_path) {
+			svc::playerLocator.get().set_position({ (float)(cam::screen_dimensions.x / 2) + 80, 360 });
 
 			title.setPosition(0, 0);
 			title.setSize(static_cast<sf::Vector2f>(cam::screen_dimensions));
@@ -277,7 +297,7 @@ namespace flstates {
 			text_left = middle - text_dim.x / 2;
 			text_right = middle + text_dim.x / 2;
 
-			for(int i = 0; i < num_files; ++i) {
+			for (int i = 0; i < num_files; ++i) {
 				file_rects.at(i) = sf::IntRect({ text_left, top_buffer + (text_dim.y * (i)) + (selection_buffer * (i % num_files)) }, text_dim);
 			}
 
@@ -294,12 +314,21 @@ namespace flstates {
 			left_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition()));
 			right_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
 
+			logic();
+
 			for (auto i = 0; i < num_files * 2; ++i) {
 
 				file_text.at(i) = sf::Sprite{ svc::assetLocator.get().t_file_text, sf::IntRect({0, i * text_dim.y}, text_dim) };
 				file_text.at(i).setPosition(text_left, top_buffer + (text_dim.y * (i % num_files)) + (selection_buffer * (i % num_files)));
 
 			}
+		};
+
+		~FileMenu() {
+			svc::playerLocator.get().total_reset();
+		}
+
+		void init(const std::string& load_path) {
 
 		}
 
@@ -309,30 +338,64 @@ namespace flstates {
 
 			if (event.type == sf::Event::EventType::KeyPressed) {
 				if (event.key.code == sf::Keyboard::Down) {
-					++selection;
+					++file_selection;
+					constrain_selection();
+					svc::dataLocator.get().load_blank_save();
+					svc::dataLocator.get().load_progress(file_selection);
+					svc::assetLocator.get().menu_shift.play();
 				}
 				if (event.key.code == sf::Keyboard::Up) {
-					--selection;
+					--file_selection;
+					constrain_selection();
+					svc::dataLocator.get().load_blank_save();
+					svc::dataLocator.get().load_progress(file_selection);
+					svc::assetLocator.get().menu_shift.play();
+				}
+				if (event.key.code == sf::Keyboard::Left) {
+					svc::stateControllerLocator.get().exit_submenu = true;
+					svc::assetLocator.get().menu_back.play();
 				}
 				if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
-					//constrain selection
-					if (selection >= num_files) { selection = 0; }
-					if (selection < 0) { selection = num_files - 1; }
-					svc::dataLocator.get().load_progress(selection);
+					constrain_selection();
+					svc::dataLocator.get().load_progress(file_selection, true);
 					svc::stateControllerLocator.get().save_loaded = true;
+					svc::assetLocator.get().click.play();
 				}
 			}
 
 		}
 
 		void logic() {
-			//constrain selection
-			if (selection >= num_files) { selection = 0; }
-			if (selection < 0) { selection = num_files - 1; }
+			constrain_selection();
+			
 			left_dot.update();
 			right_dot.update();
-			left_dot.set_target_position({ text_left - dot_pad.x, file_rects.at(selection).getPosition().y + dot_pad.y });
-			right_dot.set_target_position({ text_right + dot_pad.x, file_rects.at(selection).getPosition().y + dot_pad.y });
+			left_dot.set_target_position({ text_left - dot_pad.x, file_rects.at(file_selection).getPosition().y + dot_pad.y });
+			right_dot.set_target_position({ text_right + dot_pad.x, file_rects.at(file_selection).getPosition().y + dot_pad.y });
+
+			hud.update();
+			for (auto& a : svc::playerLocator.get().antennae) {
+				a.collider.reset();
+			}
+
+			svc::playerLocator.get().collider.physics.acceleration = { 0.f, 0.f };
+			svc::playerLocator.get().collider.physics.velocity = { 0.f, 0.f };
+			svc::playerLocator.get().collider.physics.zero();
+			svc::playerLocator.get().flags.state.set(State::alive);
+			svc::playerLocator.get().collider.reset();
+			svc::playerLocator.get().flags.movement.set(Movement::move_left);
+			svc::playerLocator.get().collider.flags.set(shape::State::grounded);
+
+			svc::playerLocator.get().behavior.facing_lr = behavior::DIR_LR::LEFT;
+			svc::playerLocator.get().update_weapon();
+			svc::playerLocator.get().update_animation();
+			svc::playerLocator.get().update_sprite();
+			svc::playerLocator.get().update_direction();
+			svc::playerLocator.get().apparent_position.x = svc::playerLocator.get().collider.physics.position.x + PLAYER_WIDTH / 2;
+			svc::playerLocator.get().apparent_position.y = svc::playerLocator.get().collider.physics.position.y;
+			svc::playerLocator.get().update_behavior();
+			svc::playerLocator.get().update_antennae();
+
 		}
 
 		void render(sf::RenderWindow& win) {
@@ -341,7 +404,7 @@ namespace flstates {
 
 			int selection_adjustment{};
 			for (auto i = 0; i < num_files; ++i) {
-				if (i == selection) { selection_adjustment = 3; } else { selection_adjustment = 0; }
+				if (i == file_selection) { selection_adjustment = 3; } else { selection_adjustment = 0; }
 				win.draw(file_text.at(i + selection_adjustment));
 				svc::counterLocator.get().at(svc::draw_calls)++;
 			}
@@ -349,6 +412,15 @@ namespace flstates {
 			left_dot.render(win, { 0, 0 });
 			right_dot.render(win, { 0, 0 });
 
+			svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
+
+			hud.render(win);
+
+		}
+
+		void constrain_selection() {
+			if (file_selection >= num_files) { file_selection = 0; }
+			if (file_selection < 0) { file_selection = num_files - 1; }
 		}
 
 		//menu textures
@@ -356,8 +428,6 @@ namespace flstates {
 		std::array<sf::Sprite, num_files * 2> file_text{};
 
 		
-
-		int selection{ 0 };
 
 		int selection_width{};
 		int selection_buffer{};
@@ -368,10 +438,6 @@ namespace flstates {
 		sf::Vector2i text_dim{ 72, 16 };
 
 		std::array<sf::IntRect, num_files> file_rects{};
-
-		vfx::Attractor left_dot{};
-		vfx::Attractor right_dot{};
-		sf::Vector2<float> dot_pad{ 24.f, 8.f };
 
 	};
 
@@ -390,9 +456,12 @@ namespace flstates {
 			svc::playerLocator.get().set_position({ 360, 500 });
 		}
 		void init(const std::string& load_path) {
+
+			hud.set_corner_pad(false); //reset hud position to corner
+			svc::playerLocator.get().reset_flags();
+
 			map.load(load_path);
 			svc::playerLocator.get().behavior.current_state = behavior::Behavior(behavior::idle);
-			svc::playerLocator.get().flags.input.reset(Input::inspecting);
 			tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
 			for (int i = 0; i < 16; ++i) {
 				for (int j = 0; j < 16; ++j) {
@@ -515,8 +584,6 @@ namespace flstates {
 			sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
 			map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
-
-
 			map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 			if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position); }
 			hud.render(win);
@@ -548,8 +615,6 @@ namespace flstates {
 		std::vector<sf::Sprite> tileset_sprites{};
 		bool show_colliders{ false };
 		int x{ 0 };
-
-		gui::HUD hud{ {20, 20} };
 
 	};
 

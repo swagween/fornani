@@ -180,6 +180,16 @@ public:
     void load_audio() {
         click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/heavy_click.wav");
         click.setBuffer(click_buffer);
+        sharp_click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/click.wav");
+        sharp_click.setBuffer(sharp_click_buffer);
+        menu_shift_buffer.loadFromFile(finder.resource_path + "/audio/sfx/menu_shift_1.wav");
+        menu_shift.setBuffer(menu_shift_buffer);
+        menu_back_buffer.loadFromFile(finder.resource_path + "/audio/sfx/menu_shift_2.wav");
+        menu_back.setBuffer(menu_back_buffer);
+        menu_next_buffer.loadFromFile(finder.resource_path + "/audio/sfx/menu_shift_3.wav");
+        menu_next.setBuffer(menu_next_buffer);
+        sharp_click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/click.wav");
+        sharp_click.setBuffer(sharp_click_buffer);
         arms_switch_buffer.loadFromFile(finder.resource_path + "/audio/sfx/arms_switch.wav");
         arms_switch.setBuffer(arms_switch_buffer);
         bg_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bg_shot.wav");
@@ -307,6 +317,14 @@ public:
     //sound effects!
     sf::SoundBuffer click_buffer{};
     sf::Sound click;
+    sf::SoundBuffer sharp_click_buffer{};
+    sf::Sound sharp_click;
+    sf::SoundBuffer menu_shift_buffer{};
+    sf::Sound menu_shift;
+    sf::SoundBuffer menu_back_buffer{};
+    sf::Sound menu_back;
+    sf::SoundBuffer menu_next_buffer{};
+    sf::Sound menu_next;
     
     sf::SoundBuffer arms_switch_buffer{};
     sf::Sound arms_switch;
