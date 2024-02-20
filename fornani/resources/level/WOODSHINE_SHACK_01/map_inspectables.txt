@@ -1,0 +1,6 @@
+1,1,0#
+there's trash everywhere. you could probably spruce this place up...#
+4,8#
+1,1,0#
+this fireplace has seen better days.#
+24,12#

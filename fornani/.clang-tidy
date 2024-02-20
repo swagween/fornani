@@ -1,0 +1,16 @@
+---
+Checks: 'clang-analyzer-*,
+	concurrency-*,
+	cppcoreguidelines-*,
+	-cppcoreguidelines-non-private-member-variables-in-classes,
+	misc-*,
+	-misc-non-private-member-variables-in-classes,
+	modernize-*,
+	-modernize-use-trailing-return-type,
+	performance-*,
+	portability-*,
+	readability-*,
+	-readability-identifier-length,
+	-readability-uppercase-literal-suffix 
+	-readability-magic-numbers'
+...
