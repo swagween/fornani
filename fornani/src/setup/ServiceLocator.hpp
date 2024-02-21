@@ -14,6 +14,7 @@
 #include "../service/Service.hpp"
 #include "../utils/Camera.hpp"
 #include "../utils/Clock.hpp"
+#include "../utils/Ticker.hpp"
 #include "../utils/InputState.hpp"
 #include "../utils/Random.hpp"
 #include "AssetManager.hpp"
@@ -30,6 +31,7 @@ inline auto dataLocator = forloop::Service<data::DataManager>::Instance{};
 inline auto playerLocator = forloop::Service<player::Player>::Instance{};
 inline auto cameraLocator = forloop::Service<cam::Camera>::Instance{};
 inline auto clockLocator = forloop::Service<util::Clock>::Instance{};
+inline auto tickerLocator = forloop::Service<util::Ticker>::Instance{};
 inline auto stateControllerLocator = forloop::Service<automa::StateController>::Instance{};
 inline auto consoleLocator = forloop::Service<gui::Console>::Instance{};
 inline auto randomLocator = forloop::Service<util::Random>::Instance{};

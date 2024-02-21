@@ -17,29 +17,16 @@ void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
 
 void PhysicsComponent::update_euler() {
 
-	dt = svc::clockLocator.get().tick_rate;
+	svc::tickerLocator.get().tick([this] { integrate(); });
 
-	auto new_time = Clock::now();
-	Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
-	if (frame_time.count() > svc::clockLocator.get().frame_limit) { frame_time = Time{svc::clockLocator.get().frame_limit}; }
-
-	current_time = new_time;
-	accumulator += frame_time;
-
-	int integrations = 0;
-	while (accumulator >= dt) {
-
-		previous_acceleration = acceleration;
-		previous_velocity = velocity;
-		previous_position = position;
-		integrate(svc::clockLocator.get().tick_multiplier);
-
-		accumulator -= dt;
-		++integrations;
-	}
 }
 
-void PhysicsComponent::integrate(float ndt) {
+void PhysicsComponent::integrate() {
+
+	float ndt = svc::tickerLocator.get().ft.count() * svc::tickerLocator.get().tick_multiplier;
+	previous_acceleration = acceleration;
+	previous_velocity = velocity;
+	previous_position = position;
 
 	acceleration.y += gravity * ndt;
 	velocity.x = (velocity.x + (acceleration.x / mass) * ndt) * friction.x;
@@ -55,7 +42,7 @@ void PhysicsComponent::integrate(float ndt) {
 void PhysicsComponent::update() { update_euler(); }
 
 void PhysicsComponent::update_dampen() {
-	acceleration /= svc::clockLocator.get().tick_multiplier;
+	//acceleration /= svc::tickerLocator.get().tick_rate;
 	update_euler();
 	acceleration = {0.0f, 0.0f};
 }

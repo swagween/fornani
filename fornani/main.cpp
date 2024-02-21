@@ -98,19 +98,16 @@ static void show_overlay() {
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("Time")) {
 					ImGui::Separator();
-					ImGui::Text("Time");
-					ImGui::TextUnformatted(std::to_string(time_markers[frame % NUM_TIMESTEPS]).c_str());
-					ImGui::Text("Timer Elapsed Time: %.5f", svc::clockLocator.get().elapsed_time.count());
-					ImGui::Text("Timer Time (seconds): %.1f", svc::clockLocator.get().seconds);
-					ImGui::Text("Time Step (milliseconds): %.1f", svc::clockLocator.get().dt.count());
-					ImGui::Text("Accumulator: %.1f", svc::clockLocator.get().accumulator);
-					ImGui::Text("FPS: %.1f", svc::clockLocator.get().FPS);
+					ImGui::Text("Ticker");
+					ImGui::Text("dt: %.8f", svc::tickerLocator.get().dt.count());
+					ImGui::Text("New Time: %.8f", svc::tickerLocator.get().new_time);
+					ImGui::Text("Current Time: %.8f", svc::tickerLocator.get().current_time);
+					ImGui::Text("Residue: %.8f", svc::tickerLocator.get().accumulator.count());
 
-					ImGui::SliderFloat("Tick Rate: ", &svc::clockLocator.get().rate, 0.00050f, 0.0080f, "%.8f");
-					if (ImGui::Button("Reset")) { svc::clockLocator.get().rate = 0.001; }
-					ImGui::Separator();
+					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.001f, "%.5f");
+					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 10.f, 100.f, "%.1f");
+					if (ImGui::Button("Reset")) { svc::tickerLocator.get().tick_rate = 5; }
 					ImGui::EndTabItem();
-					ImGui::PlotHistogram("Frame Times", time_markers, NUM_TIMESTEPS, 0, NULL, 0.0f, 0.02f, ImVec2(0, 80.0f));
 				}
 				if (ImGui::BeginTabItem("Key States")) {
 					ImGui::Text("Shift held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::held) ? "Yes" : "No");
@@ -133,6 +130,10 @@ static void show_overlay() {
 					ImGui::Text("Down triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered) ? "Yes" : "No");
 					ImGui::Text("Down released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::released) ? "Yes" : "No");
 					ImGui::Separator();
+					ImGui::Text("Z held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held) ? "Yes" : "No");
+					ImGui::Text("Z triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) ? "Yes" : "No");
+					ImGui::Text("Z released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released) ? "Yes" : "No");
+					ImGui::Separator();
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Audio")) {
@@ -142,108 +143,88 @@ static void show_overlay() {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Player")) {
-					ImGui::Text("Player Stats");
-					ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 12);
-					ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 12);
-					ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 99999);
-					ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 99999);
+					if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
+						if (ImGui::BeginTabItem("Physics")) {
+							ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
+							ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
+							ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Movement")) {
+							ImGui::Text("Move Left : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_left) ? "Yes" : "No");
+							ImGui::Text("Move Right : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_right) ? "Yes" : "No");
+							ImGui::Separator();
+							ImGui::Text("Controller");
+							ImGui::Text("Move Left : %s", svc::playerLocator.get().controller.get_controller_state(controllers::Movement::move_x) < 0.f ? "Yes" : "No");
+							ImGui::Text("Move Right : %s", svc::playerLocator.get().controller.get_controller_state(controllers::Movement::move_x) > 0.f ? "Yes" : "No");
+							ImGui::Text("Facing : %s", svc::playerLocator.get().print_direction(true).c_str());
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Jump")) {
+							ImGui::Text("Jump Request : %i", svc::playerLocator.get().controller.get_jump_request());
+							ImGui::Text("Jump Released : %s", svc::playerLocator.get().controller.jump_released() ? "Yes" : "No");
+							ImGui::Text("Can Jump : %s", svc::playerLocator.get().controller.can_jump() ? "Yes" : "No");
+							ImGui::Text("Jumping? : %s", svc::playerLocator.get().controller.jumping() ? "Yes" : "No");
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Animation")) {
+							ImGui::Text("Player Behavior: %s", svc::playerLocator.get().behavior.current_state.params.behavior_id.c_str());
+							ImGui::Text("Behavior Restricted? %s", svc::playerLocator.get().behavior.restricted() ? "Yes" : "No");
+							ImGui::Text("Behavior Current Frame: %i", svc::playerLocator.get().behavior.current_state.params.current_frame);
+							ImGui::Text("Behavior Complete? %s", svc::playerLocator.get().behavior.current_state.params.complete ? "Yes" : "No");
+							ImGui::Text("Behavior No Loop? %s", svc::playerLocator.get().behavior.current_state.params.no_loop ? "Yes" : "No");
+							ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.params.lookup_value);
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Stats")) {
+							ImGui::Text("Player Stats");
+							ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 12);
+							ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 12);
+							ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 99999);
+							ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 99999);
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Parameter Tweaking")) {
+							ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().collider.stats.GRAV, 0.000f, 0.008f);
+							ImGui::SliderFloat("PLAYER MASS", &svc::playerLocator.get().stats.PLAYER_MASS, 0.1f, 2.0f);
+							ImGui::SliderFloat("AIR MANEUVERABILITY", &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
+							ImGui::SliderFloat("TERMINAL VELOCITY", &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 8.0f);
 
-					ImGui::Separator();
-					ImGui::Text("Move Left : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_left) ? "Yes" : "No");
-					ImGui::Text("Move Right : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_right) ? "Yes" : "No");
-					ImGui::Separator();
-					ImGui::Text("Controller");
-					ImGui::Text("Move Left : %s", svc::playerLocator.get().controller.get_controller_state(controllers::Movement::move_x) < 0.f ? "Yes" : "No");
-					ImGui::Text("Move Right : %s", svc::playerLocator.get().controller.get_controller_state(controllers::Movement::move_x) > 0.f ? "Yes" : "No");
-					ImGui::Text("Facing : %s", svc::playerLocator.get().print_direction(true).c_str());
-					ImGui::Separator();
+							ImGui::Text("Friction Multipliers");
+							ImGui::SliderFloat("GROUND FRICTION", &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.900f, 1.000f);
+							ImGui::SliderFloat("HORIZONTAL AIR FRICTION", &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.900f, 1.000f);
+							ImGui::SliderFloat("VERTICAL AIR FRICTION", &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.900f, 1.000f);
+							ImGui::NewLine();
 
-					ImGui::Text("Alive? %s", svc::playerLocator.get().flags.state.test(player::State::alive) ? "Yes" : "No");
-					ImGui::Text("Player Behavior: %s", svc::playerLocator.get().behavior.current_state.params.behavior_id);
-					ImGui::Text("Behavior Restricted? %s", svc::playerLocator.get().behavior.restricted() ? "Yes" : "No");
-					ImGui::Text("Behavior Current Frame: %i", svc::playerLocator.get().behavior.current_state.params.current_frame);
-					ImGui::Text("Behavior Complete? %s", svc::playerLocator.get().behavior.current_state.params.complete ? "Yes" : "No");
-					ImGui::Text("Behavior No Loop? %s", svc::playerLocator.get().behavior.current_state.params.no_loop ? "Yes" : "No");
-					ImGui::Text("Invincibility Counter: %i", svc::playerLocator.get().counters.invincibility);
-					ImGui::Text("Spike Trigger: %s", svc::playerLocator.get().collider.spike_trigger ? "True" : "False");
-					ImGui::Text("On Ramp: %s", svc::playerLocator.get().collider.on_ramp() ? "True" : "False");
+							ImGui::SliderFloat("GROUND SPEED", &svc::playerLocator.get().stats.X_ACC, 0.0f, 0.2f);
+							ImGui::SliderFloat("AIR SPEED", &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 0.2f);
+							ImGui::SliderFloat("JUMP MAX", &svc::playerLocator.get().stats.jump_max, 0.15f, 0.5f);
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Misc")) {
 
-					ImGui::Text("Inspecting? %s", svc::playerLocator.get().flags.input.test(player::Input::inspecting) ? "Yes" : "No");
+							ImGui::Text("Alive? %s", svc::playerLocator.get().flags.state.test(player::State::alive) ? "Yes" : "No");
 
-					ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
-					ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
-					ImGui::Text("Colliding with Level: ");
-					ImGui::SameLine();
-					if (svc::playerLocator.get().collider.flags.test(shape::State::is_colliding_with_level)) {
-						ImGui::Text("Yes");
-					} else {
-						ImGui::Text("No");
+							ImGui::Text("Invincibility Counter: %i", svc::playerLocator.get().counters.invincibility);
+							ImGui::Text("Spike Trigger: %s", svc::playerLocator.get().collider.spike_trigger ? "True" : "False");
+							ImGui::Text("On Ramp: %s", svc::playerLocator.get().collider.on_ramp() ? "True" : "False");
+
+							ImGui::Text("Inspecting? %s", svc::playerLocator.get().flags.input.test(player::Input::inspecting) ? "Yes" : "No");
+
+							ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
+							ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
+							ImGui::Text("Grounded: %s", svc::playerLocator.get().grounded() ? "Yes" : "No");
+
+							ImGui::Text("Jump Request : %i", svc::playerLocator.get().jump_request);
+							ImGui::Text("Jump Pressed : %s", svc::playerLocator.get().flags.jump.test(player::Jump::is_pressed) ? "Yes" : "No");
+							ImGui::Text("Jump Hold    : %s", svc::playerLocator.get().flags.jump.test(player::Jump::hold) ? "Yes" : "No");
+							ImGui::Text("Jump Released: %s", svc::playerLocator.get().flags.jump.test(player::Jump::is_released) ? "Yes" : "No");
+							ImGui::Text("Jumping      : %s", svc::playerLocator.get().flags.jump.test(player::Jump::jumping) ? "Yes" : "No");
+							ImGui::EndTabItem();
+						}
+
+						ImGui::EndTabBar();
 					}
-					ImGui::Text("Grounded: ");
-					ImGui::SameLine();
-					if (svc::playerLocator.get().grounded()) {
-						ImGui::Text("Yes");
-					} else {
-						ImGui::Text("No");
-					}
-					ImGui::Text("Jump Request : %i", svc::playerLocator.get().jump_request);
-					ImGui::Text("Jump Pressed : %s", svc::playerLocator.get().flags.jump.test(player::Jump::is_pressed) ? "Yes" : "No");
-					ImGui::Text("Jump Hold    : %s", svc::playerLocator.get().flags.jump.test(player::Jump::hold) ? "Yes" : "No");
-					ImGui::Text("Jump Released: %s", svc::playerLocator.get().flags.jump.test(player::Jump::is_released) ? "Yes" : "No");
-					ImGui::Text("Jumping      : %s", svc::playerLocator.get().flags.jump.test(player::Jump::jumping) ? "Yes" : "No");
-					ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.params.lookup_value);
-					ImGui::Text("Has Right Collision: ");
-					ImGui::SameLine();
-					if (svc::playerLocator.get().collider.flags.test(shape::State::has_right_collision)) {
-						ImGui::Text("Yes");
-					} else {
-						ImGui::Text("No");
-					}
-					ImGui::Text("Has Left Collision: ");
-					ImGui::SameLine();
-					if (svc::playerLocator.get().collider.flags.test(shape::State::has_left_collision)) {
-						ImGui::Text("Yes");
-					} else {
-						ImGui::Text("No");
-					}
-					if (svc::playerLocator.get().collider.flags.test(shape::State::is_any_jump_collision)) {
-						ImGui::Text("Yes");
-					} else {
-						ImGui::Text("No");
-					}
-					ImGui::Text("Has Top Collision: ");
-					ImGui::SameLine();
-					if (svc::playerLocator.get().collider.flags.test(shape::State::has_top_collision)) {
-						ImGui::Text("Yes");
-					} else {
-						ImGui::Text("No");
-					}
-					ImGui::Text("Has Bottom Collision: ");
-					ImGui::SameLine();
-					if (svc::playerLocator.get().collider.flags.test(shape::State::has_bottom_collision)) {
-						ImGui::Text("Yes");
-					} else {
-						ImGui::Text("No");
-					}
-
-					ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
-					ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
-					ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
-
-					ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().collider.stats.GRAV, 0.000f, 0.008f);
-					ImGui::SliderFloat("PLAYER MASS", &svc::playerLocator.get().stats.PLAYER_MASS, 0.1f, 2.0f);
-					ImGui::SliderFloat("AIR MANEUVERABILITY", &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
-					ImGui::SliderFloat("TERMINAL VELOCITY", &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 8.0f);
-
-					ImGui::Text("Friction Multipliers");
-					ImGui::SliderFloat("GROUND FRICTION", &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.900f, 1.000f);
-					ImGui::SliderFloat("HORIZONTAL AIR FRICTION", &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.900f, 1.000f);
-					ImGui::SliderFloat("VERTICAL AIR FRICTION", &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.900f, 1.000f);
-					ImGui::NewLine();
-
-					ImGui::SliderFloat("GROUND SPEED", &svc::playerLocator.get().stats.X_ACC, 0.0f, 0.2f);
-					ImGui::SliderFloat("AIR SPEED", &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 0.2f);
-					ImGui::SliderFloat("JUMP HEIGHT", &svc::playerLocator.get().stats.JUMP_MAX, 0.15f, 0.5f);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Weapon")) {
@@ -581,13 +562,13 @@ void run(char** argv) {
 			}
 			SM.get_current_state().handle_events(event);
 			if (valid_event) { ImGui::SFML::ProcessEvent(event); }
-			svc::inputStateLocator.get().reset_triggers();
 			valid_event = true;
 		}
 
 		// game logic and rendering
-
+		svc::tickerLocator.get().start_frame();
 		SM.get_current_state().logic();
+		svc::tickerLocator.get().end_frame();
 		SM.get_current_state().debug_mode = debug_mode;
 
 		// switch states
@@ -618,6 +599,7 @@ void run(char** argv) {
 
 		// reset global triggers
 		svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_trigger);
+		svc::inputStateLocator.get().reset_triggers();
 
 		ImGui::SFML::Update(window, deltaClock.restart());
 		screencap.update(window);

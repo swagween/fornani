@@ -12,7 +12,9 @@ void PlayerController::update() {
 
 	auto const& left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::held);
 	auto const& right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::held);
-	auto const& start_jump = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
+	auto const& jump_started = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
+	auto const& jump_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held);
+	auto const& jump_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released);
 
 
 	key_map[Movement::move_x] = 0.f;
@@ -23,27 +25,25 @@ void PlayerController::update() {
 	direction = moving_left() ? Direction::left : direction;
 	direction = moving_right() ? Direction::right : direction;
 
-	key_map[Movement::jump] = start_jump ? 1.f : 0.f;
-	if (start_jump) { jump(); }
-	if (!flags.test(MovementState::grounded)) { prevent_jump(); }
+	key_map[Movement::jump] = jump_started ? 1.f : 0.f;
 
-}
+	bool can_launch = !restricted() && flags.test(MovementState::grounded) && !jump_flags.test(Jump::jumping);
+	can_launch ? jump_flags.set(Jump::can_jump) : jump_flags.reset(Jump::can_jump);
 
-void PlayerController::jump() {
-	if (!flags.test(MovementState::restricted)) {
-		jump_flags.set(Jump::is_pressed);
-		jump_request = jump_time;
-		jump_flags.set(Jump::just_jumped);
-		jump_flags.set(Jump::trigger);
+	if (jump_started) { jump_request = jump_time; }
+	if (jump_held) {
 	}
+	if (jump_released) { jump_flags.set(Jump::is_released); }
+
+	if (jump_requested() && flags.test(MovementState::grounded)) {
+		jump_flags.set(Jump::jumpsquat_trigger);
+		prevent_jump();
+	}
+
+
 }
 
-void PlayerController::sustain_jump() {
-	if (jump_flags.test(Jump::just_jumped) || jump_flags.test(Jump::hold) || jump_flags.test(Jump::jumping) || jump_request > -1) { jump_flags.set(Jump::is_released); }
-	jump_flags.reset(Jump::is_pressed);
-	jump_flags.reset(Jump::hold);
-	if (!restricted()) { jump_flags.set(Jump::can_jump); }
-}
+void PlayerController::jump() { jump_flags.set(Jump::jumping); }
 
 void PlayerController::prevent_jump() { jump_request = -1; }
 
@@ -56,23 +56,19 @@ void PlayerController::ground() { flags.set(MovementState::grounded); }
 
 void PlayerController::unground() { flags.reset(MovementState::grounded); }
 
+void PlayerController::restrict() { flags.set(MovementState::restricted); }
+
+void PlayerController::unrestrict() { flags.reset(MovementState::restricted); }
+
 void PlayerController::start_jumping() {
 	jump_flags.set(Jump::jumping);
 	jump_flags.reset(Jump::can_jump);
 	jump_flags.reset(Jump::trigger);
 }
 
-void PlayerController::set_jump_hold() { jump_flags.set(Jump::hold); }
-
-void PlayerController::reset_jump() { jump_flags.reset(Jump::jumping); }
-
-void PlayerController::reset_just_jumped() { jump_flags.reset(Jump::just_jumped); }
-
-void PlayerController::reset_jump_flags() {
-	if (!jump_flags.test(Jump::is_pressed)) { jump_flags.reset(Jump::hold); }
-	if (flags.test(MovementState::grounded) && jump_request == -1) { jump_flags.reset(Jump::is_released); }
-
-	if (jump_flags.test(Jump::is_released) && !flags.test(MovementState::grounded)) { jump_flags.reset(Jump::is_released); }
+void PlayerController::reset_jump() {
+	jump_flags.reset(Jump::jumping);
+	jump_flags.reset(Jump::is_released);
 }
 
 void PlayerController::decrement_jump() {
@@ -93,9 +89,29 @@ void PlayerController::decrement_jump() {
 		accumulator -= dt;
 		++integrations;
 	}
+
+	if (jump_request < 0) { jump_request = -1; }
+
 }
 
-float& PlayerController::get_controller_state(Movement key) { return key_map[key]; }
+void PlayerController::start_jumpsquat() {
+	jump_flags.set(Jump::jumpsquat_trigger);
+	jump_flags.set(Jump::jumpsquatting);
+}
+
+void PlayerController::stop_jumpsquatting() { jump_flags.reset(Jump::jumpsquatting); }
+
+void PlayerController::reset_jumpsquat_trigger() { jump_flags.reset(Jump::jumpsquat_trigger); }
+
+void PlayerController::reset_just_jumped() { jump_flags.reset(Jump::just_jumped); }
+
+std::optional<float> PlayerController::get_controller_state(Movement key) const {
+	if (auto search = key_map.find(key); search != key_map.end()) {
+		return search->second;
+	} else {
+		return std::nullopt;
+	}
+}
 
 bool PlayerController::moving() { return key_map[Movement::move_x] != 0.f; }
 
@@ -111,10 +127,18 @@ bool PlayerController::restricted() const { return flags.test(MovementState::res
 
 bool PlayerController::jump_requested() const { return jump_request > -1; }
 
-bool PlayerController::just_jumped() { return jump_flags.test(Jump::just_jumped); }
-
-bool PlayerController::jump_triggered() const { return jump_flags.test(Jump::trigger); }
-
 bool PlayerController::jump_released() const { return jump_flags.test(Jump::is_released) && jump_flags.test(Jump::jumping); }
+
+bool PlayerController::can_jump() const { return jump_flags.test(Jump::can_jump); }
+
+bool PlayerController::jumping() const { return jump_flags.test(Jump::jumping); }
+
+bool PlayerController::just_jumped() const { return jump_flags.test(Jump::just_jumped); }
+
+bool PlayerController::jumpsquatting() const { return jump_flags.test(Jump::jumpsquatting); }
+
+bool PlayerController::jumpsquat_trigger() const { return jump_flags.test(Jump::jumpsquat_trigger); }
+
+int PlayerController::get_jump_request() const { return jump_request; }
 
 } // namespace controllers

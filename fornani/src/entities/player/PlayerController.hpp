@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <chrono>
+#include <optional>
 #include "../../utils/BitFlags.hpp"
 
 namespace controllers {
@@ -9,18 +10,21 @@ namespace controllers {
 	using Clock = std::chrono::steady_clock;
 	using Time = std::chrono::duration<float>;
 
-	constexpr static int jump_time{12};
+	constexpr static int jump_time{120};
 
 enum class Movement { move_x, jump };
 enum class MovementState { restricted, grounded };
 enum class Jump {
-	hold,		 // true if jump is pressed and permanently false once released, until player touches the ground again
-	trigger,	 // true for one frame if jump is pressed and the player is grounded
-	can_jump,	 // true if the player is grounded
-	just_jumped, // used for updating animation
-	is_pressed,	 // true if the jump button is pressed, false if not. independent of player's state.
-	is_released, // true if jump released midair, reset upon landing
-	jumping,	 // true if jumpsquat is over, falce once player lands
+	hold,			// true if jump is pressed and permanently false once released, until player touches the ground again (USED)
+	trigger,		// true for one frame if jump is pressed and the player is grounded (UNUSED)
+	can_jump,		// true if the player is grounded (USED)
+	just_jumped,	// used for updating animation (USED)
+	jump_launched,	// successful jump, set player's y acceleration! (USED)
+	jumpsquatting,	// (USED)
+	jumpsquat_trigger, //(USED)
+	is_pressed,		// true if the jump button is pressed, false if not. independent of player's state.
+	is_released,	// true if jump released midair, reset upon landing (USED)
+	jumping,		// true if jumpsquat is over, false once player lands (USED)
 };
 enum class Direction { left, right };
 
@@ -31,20 +35,23 @@ class PlayerController {
 
 	void update();
 	void jump();
-	void sustain_jump();
 	void prevent_jump();
 	void stop();
 	void ground();
 	void unground();
+	void restrict();
+	void unrestrict();
 
 	void start_jumping();
-	void set_jump_hold();
 	void reset_jump();
-	void reset_just_jumped();
-	void reset_jump_flags();
 	void decrement_jump();
 
-	float& get_controller_state(Movement key);
+	void start_jumpsquat();
+	void stop_jumpsquatting();
+	void reset_jumpsquat_trigger();
+	void reset_just_jumped();
+
+	std::optional<float> get_controller_state(Movement key) const;
 
 	bool moving();
 	bool moving_left();
@@ -54,9 +61,15 @@ class PlayerController {
 	bool restricted() const;
 
 	bool jump_requested() const;
-	bool just_jumped();
-	bool jump_triggered() const;
 	bool jump_released() const;
+	bool can_jump() const;
+	bool jumping() const;
+	bool just_jumped() const;
+
+	bool jumpsquatting() const;
+	bool jumpsquat_trigger() const;
+
+	int get_jump_request() const;
 
 
   private:

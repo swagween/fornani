@@ -57,7 +57,7 @@ struct PhysicsStats {
 
 	float AIR_MULTIPLIER = 2.912f;
 
-	float PLAYER_GRAV = 0.002f;
+	float PLAYER_GRAV = 0.0018f;
 
 	float TERMINAL_VELOCITY = 0.8f;
 
@@ -69,13 +69,13 @@ struct PhysicsStats {
 	float X_ACC_AIR = 0.056f;
 
 	// float JUMP_MAX = 0.304f; //3 blocks
-	float JUMP_MAX = 0.392f; // 4 blocks
+	float jump_max = 0.290f; // 4 blocks
 
 	float WALL_SLIDE_THRESHOLD = -1.0f;
 	float WALL_SLIDE_SPEED = 1.31f;
 	float PLAYER_MASS = 1.0f;
 
-	float JUMP_RELEASE_MULTIPLIER = 0.65f;
+	float jump_release_multiplier = 0.65f;
 
 	float HURT_ACC = 0.15f;
 };

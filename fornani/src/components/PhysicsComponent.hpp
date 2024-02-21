@@ -44,7 +44,7 @@ class PhysicsComponent {
 	void apply_force(sf::Vector2<float> force);
 	void apply_force_at_angle(float magnitude, float angle);
 	void update_euler();
-	void integrate(float ndt);
+	void integrate();
 	void update();
 	void update_dampen();
 	void zero();

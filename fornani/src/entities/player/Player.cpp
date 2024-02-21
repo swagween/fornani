@@ -145,6 +145,7 @@ void Player::handle_events(sf::Event& event) {
 
 void Player::update(Time dt) {
 
+	behavior.restricted() ? controller.restrict() : controller.unrestrict();
 	grounded() ? controller.ground() : controller.unground();
 	controller.update();
 
@@ -162,32 +163,20 @@ void Player::update(Time dt) {
 
 		if (flags.input.test(Input::inspecting_trigger) && behavior.current_state.params.behavior_id == "inspecting" && behavior.current_state.params.done) { flags.input.set(Input::inspecting); }
 
-		// check if player requested jump
-		if (grounded() && controller.jump_requested()) {
-			controller.set_jump_hold();
-			if (controller.just_jumped()) { behavior.jump(); }
+		//jump!
+		if (controller.jumpsquat_trigger()) {
+			behavior.jump();
+			controller.start_jumpsquat();
+			controller.reset_jumpsquat_trigger();
 		}
-
-		// preset flags
-		if (grounded()) { controller.reset_jump(); } // do this before jumping, otherwise it will trigger on the same frame
-
-		// jump!
-		if (controller.jump_requested()) {
-			if (!behavior.restricted()) { // once jumpsquat is over
-				controller.decrement_jump();
-				if (grounded()) {
-					collider.physics.acceleration.y = -stats.JUMP_MAX / 1.3f;
-					controller.start_jumping();
-					behavior.rise();
-					if (!controller.jump_triggered()) { flags.sounds.set(Soundboard::jump); }
-				}
-			}
+		if (controller.jumpsquatting() && !behavior.restricted()) {
+			controller.stop_jumpsquatting();
+			controller.start_jumping();
+			collider.physics.acceleration.y = -stats.jump_max;
+			behavior.rise();
 		}
-
-		// reset jump flags
-		controller.reset_jump_flags();
 		if (controller.jump_released()) {
-			collider.physics.acceleration.y *= stats.JUMP_RELEASE_MULTIPLIER;
+			collider.physics.acceleration.y *= stats.jump_release_multiplier;
 			controller.reset_jump();
 		}
 
@@ -352,7 +341,7 @@ void Player::update_behavior() {
 		if (grounded()) { behavior.reset(); }
 	}
 
-	if (collider.flags.test(shape::State::just_landed) && jump_request == -1) {
+	if (collider.flags.test(shape::State::just_landed) && controller.get_jump_request() == -1) {
 		behavior.land();
 		flags.sounds.set(Soundboard::land);
 		flags.movement.reset(Movement::freefalling);
