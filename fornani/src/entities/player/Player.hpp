@@ -51,33 +51,16 @@ struct PlayerInventoryStats {
 };
 
 struct PhysicsStats {
-
-	float PLAYER_MAX_XVEL = 2.380f;
-	float PLAYER_MAX_YVEL = 0.226f;
-
-	float AIR_MULTIPLIER = 2.912f;
-
-	float PLAYER_GRAV = 0.0018f;
-
-	float TERMINAL_VELOCITY = 0.8f;
-
-	float PLAYER_GROUND_FRIC = 0.963f;
-	float PLAYER_HORIZ_AIR_FRIC = 0.987f;
-	float PLAYER_VERT_AIR_FRIC = 0.956f;
-
-	float X_ACC = 0.056f;
-	float X_ACC_AIR = 0.056f;
-
-	// float JUMP_MAX = 0.304f; //3 blocks
-	float jump_max = 0.290f; // 4 blocks
-
-	float WALL_SLIDE_THRESHOLD = -1.0f;
-	float WALL_SLIDE_SPEED = 1.31f;
-	float PLAYER_MASS = 1.0f;
-
-	float jump_release_multiplier = 0.65f;
-
-	float HURT_ACC = 0.15f;
+	float grav{};
+	float ground_fric{};
+	float air_fric{};
+	float x_acc{};
+	float air_multiplier{};
+	float jump_velocity{};
+	float jump_release_multiplier{};
+	float hurt_acc{};
+	sf::Vector2<float> maximum_velocity{};
+	float mass{};
 };
 
 struct Counters {
@@ -143,6 +126,8 @@ class Player {
 	using Time = std::chrono::duration<float>;
 	Player();
 
+	// init (violates RAII but must happen after resource path is set)
+	void init();
 	// member functions
 	void handle_events(sf::Event& event);
 	void update(Time dt);
@@ -215,7 +200,7 @@ class Player {
 
 	PlayerStats player_stats{3, 3, 0, 99999};
 	PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
-	PhysicsStats stats{};
+	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 
 	Counters counters{};

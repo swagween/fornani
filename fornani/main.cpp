@@ -100,13 +100,17 @@ static void show_overlay() {
 					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", svc::tickerLocator.get().dt.count());
-					ImGui::Text("New Time: %.8f", svc::tickerLocator.get().new_time);
-					ImGui::Text("Current Time: %.8f", svc::tickerLocator.get().current_time);
-					ImGui::Text("Residue: %.8f", svc::tickerLocator.get().accumulator.count());
-
-					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.001f, "%.5f");
+					ImGui::Text("New Time: %.4f", svc::tickerLocator.get().new_time);
+					ImGui::Text("Current Time: %.4f", svc::tickerLocator.get().current_time);
+					ImGui::Text("Accumulator: %.4f", svc::tickerLocator.get().accumulator.count());
+					ImGui::Separator();
+					ImGui::Text("Seconds Passed: %.2f", svc::tickerLocator.get().total_seconds_passed.count());
+					ImGui::Text("Ticks Per Frame: %.2f", svc::tickerLocator.get().ticks_per_frame);
+					ImGui::Text("Frames Per Second: %.2f", svc::tickerLocator.get().fps);
+					ImGui::Separator();
+					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.005f, "%.5f");
 					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 10.f, 100.f, "%.1f");
-					if (ImGui::Button("Reset")) { svc::tickerLocator.get().tick_rate = 5; }
+					if (ImGui::Button("Reset")) { svc::tickerLocator.get().tick_rate = 0.001; }
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Key States")) {
@@ -185,20 +189,22 @@ static void show_overlay() {
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {
-							ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().collider.stats.GRAV, 0.000f, 0.008f);
-							ImGui::SliderFloat("PLAYER MASS", &svc::playerLocator.get().stats.PLAYER_MASS, 0.1f, 2.0f);
-							ImGui::SliderFloat("AIR MANEUVERABILITY", &svc::playerLocator.get().stats.AIR_MULTIPLIER, 0.0f, 5.0f);
-							ImGui::SliderFloat("TERMINAL VELOCITY", &svc::playerLocator.get().stats.TERMINAL_VELOCITY, 1.0f, 8.0f);
+							ImGui::Text("Vertical Movement");
+							ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().physics_stats.grav, 0.f, 0.08f, "%.5f");
+							ImGui::SliderFloat("JUMP VELOCITY", &svc::playerLocator.get().physics_stats.jump_velocity, 0.0005f, 0.5f, "%.5f");
+							ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &svc::playerLocator.get().physics_stats.jump_release_multiplier, 0.005f, 2.f, "%.5f");
+							ImGui::SliderFloat("MAX Y VELOCITY", &svc::playerLocator.get().physics_stats.maximum_velocity.y, 1.0f, 60.0f);
 
-							ImGui::Text("Friction Multipliers");
-							ImGui::SliderFloat("GROUND FRICTION", &svc::playerLocator.get().stats.PLAYER_GROUND_FRIC, 0.900f, 1.000f);
-							ImGui::SliderFloat("HORIZONTAL AIR FRICTION", &svc::playerLocator.get().stats.PLAYER_HORIZ_AIR_FRIC, 0.900f, 1.000f);
-							ImGui::SliderFloat("VERTICAL AIR FRICTION", &svc::playerLocator.get().stats.PLAYER_VERT_AIR_FRIC, 0.900f, 1.000f);
-							ImGui::NewLine();
+							ImGui::Separator();
+							ImGui::Text("Horizontal Movement");
+							ImGui::SliderFloat("AIR MULTIPLIER", &svc::playerLocator.get().physics_stats.air_multiplier, 0.0f, 5.0f);
+							ImGui::SliderFloat("GROUND FRICTION", &svc::playerLocator.get().physics_stats.ground_fric, 0.900f, 1.000f);
+							ImGui::SliderFloat("AIR FRICTION", &svc::playerLocator.get().physics_stats.air_fric, 0.900f, 1.000f);
+							ImGui::SliderFloat("GROUND SPEED", &svc::playerLocator.get().physics_stats.x_acc, 0.0f, 0.2f);
+							ImGui::SliderFloat("MAX X VELOCITY", &svc::playerLocator.get().physics_stats.maximum_velocity.x, 1.0f, 10.0f);
 
-							ImGui::SliderFloat("GROUND SPEED", &svc::playerLocator.get().stats.X_ACC, 0.0f, 0.2f);
-							ImGui::SliderFloat("AIR SPEED", &svc::playerLocator.get().stats.X_ACC_AIR, 0.0f, 0.2f);
-							ImGui::SliderFloat("JUMP MAX", &svc::playerLocator.get().stats.jump_max, 0.15f, 0.5f);
+							ImGui::Separator();
+							if (ImGui::Button("Save Parameters")) { svc::dataLocator.get().save_player_params(); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Misc")) {
@@ -467,6 +473,8 @@ void run(char** argv) {
 	svc::assetLocator.get().assignSprites();
 	// sounds
 	svc::assetLocator.get().load_audio();
+	//player
+	svc::playerLocator.get().init();
 
 	// state manager
 	SM.set_current_state(std::make_unique<automa::MainMenu>());
@@ -501,6 +509,8 @@ void run(char** argv) {
 	sf::Clock deltaClock{};
 
 	while (window.isOpen()) {
+
+		svc::tickerLocator.get().start_frame();
 
 		svc::clockLocator.get().tick();
 		win_size.x = window.getSize().x;
@@ -566,9 +576,7 @@ void run(char** argv) {
 		}
 
 		// game logic and rendering
-		svc::tickerLocator.get().start_frame();
 		SM.get_current_state().logic();
-		svc::tickerLocator.get().end_frame();
 		SM.get_current_state().debug_mode = debug_mode;
 
 		// switch states
@@ -616,6 +624,7 @@ void run(char** argv) {
 		ImGui::SFML::Render(window);
 		window.display();
 		frame_draw_counter = svc::counterLocator.get().at(svc::draw_calls);
+		svc::tickerLocator.get().end_frame();
 	}
 }
 

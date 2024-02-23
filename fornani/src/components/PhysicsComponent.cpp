@@ -35,8 +35,8 @@ void PhysicsComponent::integrate() {
 	if (velocity.x < -maximum_velocity.x) { velocity.x = -maximum_velocity.x; }
 	if (velocity.y > maximum_velocity.y) { velocity.y = maximum_velocity.y; }
 	if (velocity.y < -maximum_velocity.y) { velocity.y = -maximum_velocity.y; }
-	if (velocity.y > TERMINAL_VELOCITY) { velocity.y = TERMINAL_VELOCITY; }
 	position = position + velocity * ndt;
+	acceleration.y - 0.f;
 }
 
 void PhysicsComponent::update() { update_euler(); }

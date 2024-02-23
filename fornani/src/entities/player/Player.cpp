@@ -5,12 +5,19 @@
 
 namespace player {
 
-Player::Player() {
+Player::Player() {}
+
+void Player::init() {
+
+	svc::dataLocator.get().load_player_params();
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
-	collider.physics = components::PhysicsComponent({stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC}, stats.PLAYER_MASS);
+	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 	head = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH + 4, head_height}, sf::Vector2<float>{PLAYER_START_X - 2, PLAYER_START_Y - head_height});
-	collider.physics = components::PhysicsComponent({stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC}, stats.PLAYER_MASS);
+	head.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
+
+	//collider.physics.maximum_velocity = physics_stats.maximum_velocity;
+	//collider.stats.GRAV = physics_stats.grav;
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 	behavior.current_state = behavior::Behavior(behavior::idle);
@@ -21,15 +28,20 @@ Player::Player() {
 	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, 0.03f));
 	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, 0.03f, {2.f, 4.f}));
 
-	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.73f, 0.73f}, 1.0f);
-	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
-	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.73f, 0.73f}, 1.0f);
-	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(2.5f, 2.5f);
+	float back_fric{0.93f};
+	float front_fric{0.95f};
+	float back_speed{3.93f};
+	float front_speed{4.55f};
 
-	antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.75f, 0.75f}, 1.0f);
-	antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
-	antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.75f, 0.75f}, 1.0f);
-	antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
+	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(back_speed, back_speed);
+	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
+	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(back_speed, back_speed);
+
+	antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{front_fric, front_fric}, 1.0f);
+	antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(front_speed, front_speed);
+	antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{front_fric, front_fric}, 1.0f);
+	antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(front_speed, front_speed);
 
 	sprite_dimensions = {48.f, 48.f};
 
@@ -145,6 +157,9 @@ void Player::handle_events(sf::Event& event) {
 
 void Player::update(Time dt) {
 
+	collider.physics.gravity = physics_stats.grav;
+	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
+
 	behavior.restricted() ? controller.restrict() : controller.unrestrict();
 	grounded() ? controller.ground() : controller.unground();
 	controller.update();
@@ -163,7 +178,7 @@ void Player::update(Time dt) {
 
 		if (flags.input.test(Input::inspecting_trigger) && behavior.current_state.params.behavior_id == "inspecting" && behavior.current_state.params.done) { flags.input.set(Input::inspecting); }
 
-		//jump!
+		// jump!
 		if (controller.jumpsquat_trigger()) {
 			behavior.jump();
 			controller.start_jumpsquat();
@@ -172,16 +187,13 @@ void Player::update(Time dt) {
 		if (controller.jumpsquatting() && !behavior.restricted()) {
 			controller.stop_jumpsquatting();
 			controller.start_jumping();
-			collider.physics.acceleration.y = -stats.jump_max;
+			collider.physics.acceleration.y = -physics_stats.jump_velocity;
 			behavior.rise();
 		}
 		if (controller.jump_released()) {
-			collider.physics.acceleration.y *= stats.jump_release_multiplier;
+			collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 			controller.reset_jump();
 		}
-
-		
-		
 
 		// check keystate
 		if (!behavior.restricted()) { walk(); }
@@ -213,7 +225,7 @@ void Player::update(Time dt) {
 	head.sync_components();
 
 	// for parameter tweaking, remove later
-	collider.physics.friction = grounded() ? sf::Vector2<float>{stats.PLAYER_GROUND_FRIC, stats.PLAYER_GROUND_FRIC} : sf::Vector2<float>{stats.PLAYER_HORIZ_AIR_FRIC, stats.PLAYER_VERT_AIR_FRIC};
+	collider.physics.friction = grounded() ? sf::Vector2<float>{physics_stats.ground_fric, physics_stats.ground_fric} : sf::Vector2<float>{physics_stats.air_fric, physics_stats.air_fric};
 	collider.update();
 
 	update_invincibility();
@@ -473,15 +485,15 @@ void Player::update_weapon() {
 
 void Player::walk() {
 
-	if (controller.moving_right() && !collider.flags.test(shape::State::has_right_collision)) { collider.physics.acceleration.x = grounded() ? stats.X_ACC : (stats.X_ACC_AIR / stats.AIR_MULTIPLIER); }
-	if (controller.moving_left() && !collider.flags.test(shape::State::has_left_collision)) { collider.physics.acceleration.x = grounded() ? -stats.X_ACC : (-stats.X_ACC_AIR / stats.AIR_MULTIPLIER); }
+	if (controller.moving_right() && !collider.flags.test(shape::State::has_right_collision)) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
+	if (controller.moving_left() && !collider.flags.test(shape::State::has_left_collision)) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (behavior.current_state.get_frame() == 44 || behavior.current_state.get_frame() == 46) {
 		if (behavior.current_state.params.frame_trigger) { flags.sounds.set(Soundboard::step); }
 	}
 }
 
 void Player::autonomous_walk() {
-	collider.physics.acceleration.x = grounded() ? stats.X_ACC : (stats.X_ACC_AIR / stats.AIR_MULTIPLIER);
+	collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier);
 	if (controller.facing_left()) { collider.physics.acceleration.x *= -1.f; }
 	flags.movement.set(Movement::autonomous_walk);
 	if (behavior.current_state.get_frame() == 44 || behavior.current_state.get_frame() == 46) {
@@ -493,7 +505,7 @@ void Player::hurt(int amount = 1) {
 
 	if (!is_invincible()) {
 		player_stats.health -= amount;
-		collider.physics.acceleration.y = -stats.HURT_ACC;
+		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
 		make_invincible();
 		flags.sounds.set(Soundboard::hurt);

@@ -10,19 +10,16 @@ namespace data {
 
 void DataManager::load_data() {
 
-	//enemies
+	// enemies
 	frdog = dj::Json::from_file((finder.resource_path + "/data/enemy/frdog.json").c_str());
 	assert(!frdog.is_null());
 	hulmet = dj::Json::from_file((finder.resource_path + "/data/enemy/hulmet.json").c_str());
 	assert(!frdog.is_null());
 
-	//map
+	// map
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
-	for(auto const& room : map_table["rooms"].array_view()) {
-		lookup::get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string()));
-	}
-
+	for (auto const& room : map_table["rooms"].array_view()) { lookup::get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
 }
 
 void DataManager::save_progress(int save_point_id) {
@@ -97,6 +94,44 @@ void DataManager::load_blank_save(bool state_switch) {
 
 	// load player's arsenal
 	svc::playerLocator.get().weapons_hotbar.clear();
+}
+
+void DataManager::load_player_params() {
+	player_params = dj::Json::from_file((finder.resource_path + "/data/player/physics_params.json").c_str());
+	assert(!player_params.is_null());
+
+	svc::playerLocator.get().physics_stats.grav = player_params["physics"]["grav"].as<float>();
+	svc::playerLocator.get().physics_stats.ground_fric = player_params["physics"]["ground_fric"].as<float>();
+	svc::playerLocator.get().physics_stats.air_fric = player_params["physics"]["air_fric"].as<float>();
+	svc::playerLocator.get().physics_stats.x_acc = player_params["physics"]["x_acc"].as<float>();
+	svc::playerLocator.get().physics_stats.air_multiplier = player_params["physics"]["air_multiplier"].as<float>();
+	svc::playerLocator.get().physics_stats.jump_velocity = player_params["physics"]["jump_velocity"].as<float>();
+	svc::playerLocator.get().physics_stats.jump_release_multiplier = player_params["physics"]["jump_release_multiplier"].as<float>();
+	svc::playerLocator.get().physics_stats.hurt_acc = player_params["physics"]["hurt_acc"].as<float>();
+
+	svc::playerLocator.get().physics_stats.maximum_velocity.x = player_params["physics"]["maximum_velocity"]["x"].as<float>();
+	svc::playerLocator.get().physics_stats.maximum_velocity.y = player_params["physics"]["maximum_velocity"]["y"].as<float>();
+
+	svc::playerLocator.get().physics_stats.mass = player_params["physics"]["mass"].as<float>();
+}
+
+void DataManager::save_player_params() {
+
+	player_params["physics"]["grav"] = svc::playerLocator.get().physics_stats.grav;
+	player_params["physics"]["ground_fric"] = svc::playerLocator.get().physics_stats.ground_fric;
+	player_params["physics"]["air_fric"] = svc::playerLocator.get().physics_stats.air_fric;
+	player_params["physics"]["x_acc"] = svc::playerLocator.get().physics_stats.x_acc;
+	player_params["physics"]["air_multiplier"] = svc::playerLocator.get().physics_stats.air_multiplier;
+	player_params["physics"]["jump_velocity"] = svc::playerLocator.get().physics_stats.jump_velocity;
+	player_params["physics"]["jump_release_multiplier"] = svc::playerLocator.get().physics_stats.jump_release_multiplier;
+	player_params["physics"]["hurt_acc"] = svc::playerLocator.get().physics_stats.hurt_acc;
+
+	player_params["physics"]["maximum_velocity"]["x"] = svc::playerLocator.get().physics_stats.maximum_velocity.x;
+	player_params["physics"]["maximum_velocity"]["y"] = svc::playerLocator.get().physics_stats.maximum_velocity.y;
+
+	player_params["physics"]["mass"] = svc::playerLocator.get().physics_stats.mass;
+
+	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 }
 
 } // namespace data
