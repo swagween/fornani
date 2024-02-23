@@ -19,16 +19,14 @@ struct Ticker {
 	void tick(F fn) {
 
 		ft = Tim{tick_rate};
-
 		
 		if (dt.count() > tick_limit.count()) { return; } // return for unexpected dt values, particularly during the beginning of the state
-		accumulator = dt + residue;
+
+		accumulator = 2*dt + residue;
 		if (accumulator < ft) {
 			std::printf("accumulator exit condition reached.\n");
 			return;
 		}
-		
-		accumulator += dt;
 
 		int integrations{0};
 		while (accumulator >= ft) {

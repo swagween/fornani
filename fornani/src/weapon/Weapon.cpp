@@ -58,42 +58,42 @@ void Weapon::set_orientation() {
 	// start from default
 	sp_gun.setRotation(neutral_rotation);
 	sp_gun.setScale(right_scale);
+	
+	firing_direction = svc::playerLocator.get().controller.direction;
 
-	switch (svc::playerLocator.get().behavior.facing_und) {
-	case behavior::DIR_UND::UP:
+	switch (svc::playerLocator.get().controller.direction.und) {
+	case dir::UND::up:
 		svc::playerLocator.get().behavior.facing_lr == behavior::DIR_LR::RIGHT ? sp_gun.rotate(-90) : sp_gun.rotate(90);
 		barrel_point = {sprite_position.x + attributes.barrel_position.at(1), sprite_position.y - attributes.barrel_position.at(0)};
-		fire_dir = FIRING_DIRECTION::UP;
+		firing_direction.neutralize_lr();
 		break;
-	case behavior::DIR_UND::NEUTRAL:
+	case dir::UND::neutral:
 		// do nothing
 		break;
-	case behavior::DIR_UND::DOWN:
+	case dir::UND::down:
 		svc::playerLocator.get().behavior.facing_lr == behavior::DIR_LR::RIGHT ? sp_gun.rotate(90) : sp_gun.rotate(-90);
 		barrel_point = {sprite_position.x + sprite_dimensions.y - attributes.barrel_position.at(1) - sprite_dimensions.y, sprite_position.y + sprite_dimensions.x};
-		fire_dir = FIRING_DIRECTION::DOWN;
+		firing_direction.neutralize_lr();
 		break;
 	}
-	switch (svc::playerLocator.get().behavior.facing_lr) {
-	case behavior::DIR_LR::RIGHT:
+	switch (svc::playerLocator.get().controller.direction.lr) {
+	case dir::LR::right:
 		if (svc::playerLocator.get().behavior.facing_und == behavior::DIR_UND::NEUTRAL) {
 			barrel_point = {sprite_position.x + attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)};
-			fire_dir = FIRING_DIRECTION::RIGHT;
 		}
 		break;
-	case behavior::DIR_LR::LEFT:
+	case dir::LR::left:
 		if (svc::playerLocator.get().behavior.facing_und == behavior::DIR_UND::NEUTRAL) {
 			barrel_point = {sprite_position.x - attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)};
-			fire_dir = FIRING_DIRECTION::LEFT;
-		} else if (svc::playerLocator.get().behavior.facing_und == behavior::DIR_UND::DOWN) {
+		} else if (svc::playerLocator.get().controller.direction.und == dir::UND::down) {
 			barrel_point.x += 2.0f * attributes.barrel_position.at(1);
-		} else if (svc::playerLocator.get().behavior.facing_und == behavior::DIR_UND::UP) {
+		} else if (svc::playerLocator.get().controller.direction.und == dir::UND::up) {
 			barrel_point.x -= 2.0f * attributes.barrel_position.at(1);
 		}
 		sp_gun.scale(-1.0f, 1.0f);
 		break;
 	}
-	projectile.dir = fire_dir;
+	projectile.direction = firing_direction;
 }
 
 int Weapon::get_id() { return id; }

@@ -16,10 +16,10 @@ void Critter::sprite_flip() {
 	if ((facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) || (facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale)) { flags.set(Flags::turning); }
 	if (facing_lr == behavior::DIR_LR::LEFT) {
 		colliders.at(0).physics.dir = components::DIRECTION::LEFT;
-		weapon.fire_dir = arms::FIRING_DIRECTION::LEFT;
+		weapon.firing_direction.lr = dir::LR::left;
 	} else {
 		colliders.at(0).physics.dir = components::DIRECTION::RIGHT;
-		weapon.fire_dir = arms::FIRING_DIRECTION::RIGHT;
+		weapon.firing_direction.lr = dir::LR::right;
 	}
 }
 

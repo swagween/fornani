@@ -37,13 +37,13 @@ Projectile::Projectile(ProjectileStats s, components::PhysicsComponent p, Projec
 void Projectile::update() {
 
 	physics.update_euler();
-	if (dir == FIRING_DIRECTION::LEFT) {
+	if (direction.lr == dir::LR::left) {
 		bounding_box.set_position(shape::Shape::Vec{physics.position.x, physics.position.y - bounding_box.dimensions.y / 2});
-	} else if (dir == FIRING_DIRECTION::RIGHT) {
+	} else if (direction.lr == dir::LR::right) {
 		bounding_box.set_position(shape::Shape::Vec{physics.position.x - bounding_box.dimensions.x, physics.position.y - bounding_box.dimensions.y / 2});
-	} else if (dir == FIRING_DIRECTION::UP) {
+	} else if (direction.und == dir::UND::up) {
 		bounding_box.set_position(shape::Shape::Vec{physics.position.x - bounding_box.dimensions.x / 2, physics.position.y});
-	} else if (dir == FIRING_DIRECTION::DOWN) {
+	} else if (direction.und == dir::UND::down) {
 		bounding_box.set_position(shape::Shape::Vec{physics.position.x - bounding_box.dimensions.x / 2, physics.position.y - bounding_box.dimensions.y});
 	}
 	position_history.push_back(physics.position);
@@ -70,7 +70,7 @@ void Projectile::update() {
 		++integrations;
 	}
 
-	if (dir == FIRING_DIRECTION::LEFT || dir == FIRING_DIRECTION::RIGHT) {
+	if (direction.lr == dir::LR::left || direction.lr == dir::LR::right) {
 		if (abs(physics.position.x - fired_point.x) >= stats.range) { destroy(false); }
 	} else {
 		if (abs(physics.position.y - fired_point.y) >= stats.range) { destroy(false); }
@@ -121,7 +121,7 @@ void Projectile::destroy(bool completely) {
 	}
 
 	if (!state.test(ProjectileState::destruction_initiated)) {
-		if (dir == FIRING_DIRECTION::UP || dir == FIRING_DIRECTION::LEFT) {
+		if (direction.lr == dir::LR::left || direction.und == dir::UND::up) {
 			destruction_point = bounding_box.position;
 		} else {
 			destruction_point = bounding_box.position + bounding_box.dimensions;
@@ -136,20 +136,22 @@ void Projectile::seed() {
 	util::Random r{};
 	stats.range += r.random_range(-stats.range_variance, stats.range_variance);
 	float var = r.random_range_float(-stats.variance, stats.variance);
-	switch (dir) {
-	case FIRING_DIRECTION::LEFT:
+	switch (direction.lr) {
+	case dir::LR::left:
 		physics.velocity = {-stats.speed + (var / 2), var};
 		physics.dir = components::DIRECTION::LEFT;
 		break;
-	case FIRING_DIRECTION::RIGHT:
+	case dir::LR::right:
 		physics.velocity = {stats.speed + (var / 2), var};
 		physics.dir = components::DIRECTION::RIGHT;
 		break;
-	case FIRING_DIRECTION::UP:
+	}
+	switch (direction.und) {
+	case dir::UND::up:
 		physics.velocity = {var, -stats.speed + (var / 2)};
 		physics.dir = components::DIRECTION::UP;
 		break;
-	case FIRING_DIRECTION::DOWN:
+	case dir::UND::down:
 		physics.velocity = {var, stats.speed + (var / 2)};
 		physics.dir = components::DIRECTION::DOWN;
 		break;
@@ -200,20 +202,18 @@ void Projectile::set_orientation(sf::Sprite& sprite) {
 	sprite.setRotation(0.0f);
 	sprite.setOrigin(0, 0);
 
-	switch (dir) {
-
-	case FIRING_DIRECTION::LEFT: sprite.scale({-1.0f, 1.0f}); break;
-	case FIRING_DIRECTION::RIGHT:
-
-		// do nothing
-		break;
-	case FIRING_DIRECTION::UP: sprite.rotate(-90); break;
-	case FIRING_DIRECTION::DOWN: sprite.rotate(90); break;
+	switch (direction.lr) {
+	case dir::LR::left: sprite.scale({-1.0f, 1.0f}); break;
+	case dir::LR::right: break;
+	}
+	switch (direction.und) {
+	case dir::UND::up: sprite.rotate(-90); break;
+	case dir::UND::down: sprite.rotate(90); break;
 	}
 }
 
 void Projectile::constrain_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos) {
-	if (dir == FIRING_DIRECTION::LEFT || dir == FIRING_DIRECTION::RIGHT) {
+	if (direction.lr != dir::LR::neutral) {
 		if (abs(physics.position.x - fired_point.x) < max_dimensions.x) {
 			int width = abs(physics.position.x - fired_point.x);
 			sprite.setTextureRect(sf::IntRect({(int)(max_dimensions.x - width), 0}, {width, (int)max_dimensions.y}));
@@ -222,9 +222,9 @@ void Projectile::constrain_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& cam
 			sprite.setTextureRect(sf::IntRect({0, 0}, {(int)(bounding_box.dimensions.x), (int)(bounding_box.dimensions.y)}));
 			bounding_box.dimensions.x = max_dimensions.x;
 		}
-		if (dir == FIRING_DIRECTION::RIGHT) {
+		if (direction.lr == dir::LR::right) {
 			sprite.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
-		} else if (dir == FIRING_DIRECTION::LEFT) {
+		} else if (direction.lr == dir::LR::left) {
 			sprite.setPosition(bounding_box.position.x + bounding_box.dimensions.x - campos.x, bounding_box.position.y - campos.y);
 		}
 
@@ -238,17 +238,17 @@ void Projectile::constrain_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& cam
 			sprite.setTextureRect(sf::IntRect({0, 0}, {(int)(max_dimensions.x), (int)(max_dimensions.y)}));
 			bounding_box.dimensions.y = max_dimensions.x;
 		}
-		if (dir == FIRING_DIRECTION::UP) {
+		if (direction.und == dir::UND::up) {
 			sprite.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y + bounding_box.dimensions.y - campos.y);
-		} else if (dir == FIRING_DIRECTION::DOWN) {
+		} else if (direction.und == dir::UND::down) {
 			sprite.setPosition(bounding_box.position.x + bounding_box.dimensions.x - campos.x, bounding_box.position.y - campos.y);
 		}
 	}
 }
 
 void Projectile::constrain_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos) {
-	if (dir == FIRING_DIRECTION::LEFT || dir == FIRING_DIRECTION::RIGHT) {
-		if (dir == FIRING_DIRECTION::LEFT) {
+	if (direction.lr != dir::LR::neutral) {
+		if (direction.lr == dir::LR::left) {
 			float rear = bounding_box.dimensions.x + physics.position.x;
 			int width = abs(rear - destruction_point.x);
 			sprite.setTextureRect(sf::IntRect({0, 0}, {width, (int)max_dimensions.y}));
@@ -267,7 +267,7 @@ void Projectile::constrain_at_destruction_point(sf::Sprite& sprite, sf::Vector2<
 		}
 
 	} else {
-		if (dir == FIRING_DIRECTION::UP) {
+		if (direction.und == dir::UND::up) {
 			float rear = bounding_box.dimensions.y + physics.position.y;
 			int height = abs(rear - destruction_point.y);
 			sprite.setTextureRect(sf::IntRect({0, 0}, {height, (int)max_dimensions.y}));

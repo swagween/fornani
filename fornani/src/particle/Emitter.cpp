@@ -54,7 +54,7 @@ ElementBehavior& Emitter::get_behavior() { return behavior; }
 
 void Emitter::set_rate(float r) { behavior.rate = r; }
 void Emitter::set_expulsion_force(float f) { behavior.expulsion_force = f; }
-void Emitter::set_friction(float f) { physics.friction = {f, f}; }
+void Emitter::set_friction(float f) { physics.set_constant_friction({f, f}); }
 void Emitter::set_lifespan(int l) { stats.lifespan = l; }
 void Emitter::set_direction(components::DIRECTION d) { physics.dir = d; }
 

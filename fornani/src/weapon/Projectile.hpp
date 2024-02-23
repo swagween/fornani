@@ -12,6 +12,7 @@
 #include "../graphics/FLColor.hpp"
 #include "../particle/Emitter.hpp"
 #include "../utils/BitFlags.hpp"
+#include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
 
@@ -42,9 +43,9 @@ enum class WEAPON_TYPE {
 
 enum class TEAMS { NANI, SKYCORPS, BEASTS };
 
-enum class WEAPON_DIR { LEFT, RIGHT, UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT };
+//enum class WEAPON_DIR { LEFT, RIGHT, UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT };
 
-enum class FIRING_DIRECTION { LEFT, RIGHT, UP, DOWN };
+//enum class FIRING_DIRECTION { LEFT, RIGHT, UP, DOWN };
 
 enum class RENDER_TYPE { ANIMATED, SINGLE_SPRITE, MULTI_SPRITE };
 
@@ -93,7 +94,7 @@ class Projectile {
 	void constrain_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
 	void constrain_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
 
-	FIRING_DIRECTION dir{};
+	dir::Direction direction{};
 	shape::Shape bounding_box{};
 	components::PhysicsComponent physics{};
 	ProjectileStats stats{};

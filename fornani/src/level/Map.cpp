@@ -216,7 +216,7 @@ void Map::load(std::string const& path) {
 		for (auto& collider : critter->colliders) { colliders.push_back(&collider); }
 	}
 	colliders.push_back(&svc::playerLocator.get().collider);
-	for (auto& a : svc::playerLocator.get().antennae) { colliders.push_back(&a.collider); }
+	//for (auto& a : svc::playerLocator.get().antennae) { colliders.push_back(&a.collider); }
 
 	transition.fade_in = true;
 	svc::playerLocator.get().unrestrict_inputs();

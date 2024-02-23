@@ -321,6 +321,7 @@ void Collider::update() {
 	if (!flags.test(State::is_colliding_with_level)) { physics.mtv = {0.0f, 0.0f}; }
 	flags.reset(State::just_collided);
 	physics.gravity = flags.test(State::grounded) ? 0.0f : stats.GRAV;
+	flags.test(State::grounded) ? physics.flags.set(components::State::grounded) : physics.flags.reset(components::State::grounded);
 }
 
 void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {

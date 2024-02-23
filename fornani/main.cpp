@@ -1,5 +1,5 @@
 
-//main
+// main
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
@@ -47,7 +47,7 @@ float width_ratio{};
 
 void save_screenshot() {
 
-	const std::time_t now = std::time(nullptr);
+	std::time_t const now = std::time(nullptr);
 
 	std::string filedate = std::asctime(std::localtime(&now));
 	std::erase_if(filedate, [](auto const& c) { return c == ':' || isspace(c); });
@@ -110,7 +110,10 @@ static void show_overlay() {
 					ImGui::Separator();
 					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.005f, "%.5f");
 					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 10.f, 100.f, "%.1f");
-					if (ImGui::Button("Reset")) { svc::tickerLocator.get().tick_rate = 0.001; }
+					if (ImGui::Button("Reset")) {
+						svc::tickerLocator.get().tick_rate = 0.003f;
+						svc::tickerLocator.get().tick_multiplier = 48.f;
+					}
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Key States")) {
@@ -152,6 +155,13 @@ static void show_overlay() {
 							ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
 							ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
 							ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
+							ImGui::Text("Player Jer: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.jerk.x, svc::playerLocator.get().collider.physics.jerk.y);
+							ImGui::Separator();
+							ImGui::Text("Player Grounded?    : %s", svc::playerLocator.get().grounded() ? "Yes" : "No");
+							ImGui::Text("Controller Grounded?: %s", svc::playerLocator.get().controller.grounded() ? "Yes" : "No");
+							ImGui::Text("Collider Grounded?  : %s", svc::playerLocator.get().collider.flags.test(shape::State::grounded) ? "Yes" : "No");
+							ImGui::Text("Physics Grounded?   : %s", svc::playerLocator.get().collider.physics.flags.test(components::State::grounded()) ? "Yes" : "No");
+
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Movement")) {
@@ -159,8 +169,9 @@ static void show_overlay() {
 							ImGui::Text("Move Right : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_right) ? "Yes" : "No");
 							ImGui::Separator();
 							ImGui::Text("Controller");
-							ImGui::Text("Move Left : %s", svc::playerLocator.get().controller.get_controller_state(controllers::Movement::move_x) < 0.f ? "Yes" : "No");
-							ImGui::Text("Move Right : %s", svc::playerLocator.get().controller.get_controller_state(controllers::Movement::move_x) > 0.f ? "Yes" : "No");
+							ImGui::Text("Move Left : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::move_x) < 0.f ? "Yes" : "No");
+							ImGui::Text("Move Right : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::move_x) > 0.f ? "Yes" : "No");
+							ImGui::Text("Inspecting : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::inspect) > 0.f ? "Yes" : "No");
 							ImGui::Text("Facing : %s", svc::playerLocator.get().print_direction(true).c_str());
 							ImGui::EndTabItem();
 						}
@@ -191,7 +202,7 @@ static void show_overlay() {
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {
 							ImGui::Text("Vertical Movement");
 							ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().physics_stats.grav, 0.f, 0.08f, "%.5f");
-							ImGui::SliderFloat("JUMP VELOCITY", &svc::playerLocator.get().physics_stats.jump_velocity, 0.0005f, 0.5f, "%.5f");
+							ImGui::SliderFloat("JUMP VELOCITY", &svc::playerLocator.get().physics_stats.jump_velocity, 0.5f, 5.5f, "%.5f");
 							ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &svc::playerLocator.get().physics_stats.jump_release_multiplier, 0.005f, 2.f, "%.5f");
 							ImGui::SliderFloat("MAX Y VELOCITY", &svc::playerLocator.get().physics_stats.maximum_velocity.y, 1.0f, 60.0f);
 
@@ -274,6 +285,8 @@ static void show_overlay() {
 				if (ImGui::BeginTabItem("General")) {
 					ImGui::Text("Float Readout: (%.8f)", svc::floatReadoutLocator.get());
 					ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().position.x, svc::cameraLocator.get().position.y);
+					ImGui::SliderFloat("Camera X Friction", &svc::cameraLocator.get().physics.ground_friction.x, 0.8f, 1.f, "%.5f");
+					ImGui::SliderFloat("Camera Y Friction", &svc::cameraLocator.get().physics.ground_friction.y, 0.8f, 1.f, "%.5f");
 					ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
 					ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
 					if (ImGui::Button("Save Screenshot")) { save_screenshot(); }
@@ -473,7 +486,7 @@ void run(char** argv) {
 	svc::assetLocator.get().assignSprites();
 	// sounds
 	svc::assetLocator.get().load_audio();
-	//player
+	// player
 	svc::playerLocator.get().init();
 
 	// state manager
@@ -566,8 +579,7 @@ void run(char** argv) {
 				}
 				if (event.key.code == sf::Keyboard::P) { save_screenshot(); }
 				break;
-			case sf::Event::KeyReleased:
-				break;
+			case sf::Event::KeyReleased: break;
 			default: break;
 			}
 			SM.get_current_state().handle_events(event);
@@ -628,7 +640,7 @@ void run(char** argv) {
 	}
 }
 
-}
+} // namespace
 
 int main(int argc, char** argv) {
 	assert(argc > 0);

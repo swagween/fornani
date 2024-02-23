@@ -16,7 +16,7 @@ enum class DIR_UND { UP, NEUTRAL, DOWN };
 inline BehaviorParameters idle = BehaviorParameters("idle", 8, 14, false, false, false, 20);
 inline BehaviorParameters idle_up = BehaviorParameters("idle_up", 8, DEFAULT_FRAMERATE, false, false, false, 0);
 inline BehaviorParameters idle_down = BehaviorParameters("idle_down", 8, DEFAULT_FRAMERATE, false, false, false, 10);
-inline BehaviorParameters jumpsquat = BehaviorParameters("jumpsquat", 2, 2, true, true, true, 60);
+inline BehaviorParameters jumpsquat = BehaviorParameters("jumpsquat", 2, 4, true, true, true, 60);
 inline BehaviorParameters rising = BehaviorParameters("rising", 2, DEFAULT_FRAMERATE, true, false, false, 54);
 inline BehaviorParameters suspended = BehaviorParameters("suspended", 3, 10, false, false, false, 30);
 inline BehaviorParameters falling = BehaviorParameters("falling", 4, 10, false, false, false, 62);

@@ -1,11 +1,11 @@
 {
   "physics": {
-    "grav": 0.004120,
+    "grav": 0.026390,
     "ground_fric": 0.970000,
-    "air_fric": 0.991000,
+    "air_fric": 0.921000,
     "x_acc": 0.176000,
-    "air_multiplier": 3.093000,
-    "jump_velocity": 0.245100,
+    "air_multiplier": 0.361000,
+    "jump_velocity": 2.046390,
     "jump_release_multiplier": 0.601440,
     "hurt_acc": 0.150000,
     "maximum_velocity": {

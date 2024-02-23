@@ -6,7 +6,7 @@ namespace vfx {
 
 Particle::Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric, float sz) : physics(p), init_force(f), force_variance(v), angle_range(a), size(sz) {
 	lifespan = svc::randomLocator.get().random_range(default_lifespan, 100);
-	physics.friction = fric;
+	physics.set_constant_friction(fric);
 	float randx{};
 	float randy{};
 	switch (physics.dir) {

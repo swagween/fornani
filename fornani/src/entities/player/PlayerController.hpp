@@ -4,6 +4,8 @@
 #include <chrono>
 #include <optional>
 #include "../../utils/BitFlags.hpp"
+#include "../../utils/Direction.hpp"
+
 
 namespace controllers {
 
@@ -12,7 +14,7 @@ namespace controllers {
 
 	constexpr static int jump_time{120};
 
-enum class Movement { move_x, jump };
+enum class ControllerInput { move_x, jump, arms_switch, inspect };
 enum class MovementState { restricted, grounded };
 enum class Jump {
 	hold,			// true if jump is pressed and permanently false once released, until player touches the ground again (USED)
@@ -26,7 +28,6 @@ enum class Jump {
 	is_released,	// true if jump released midair, reset upon landing (USED)
 	jumping,		// true if jumpsquat is over, false once player lands (USED)
 };
-enum class Direction { left, right };
 
 class PlayerController {
 
@@ -51,7 +52,7 @@ class PlayerController {
 	void reset_jumpsquat_trigger();
 	void reset_just_jumped();
 
-	std::optional<float> get_controller_state(Movement key) const;
+	std::optional<float> get_controller_state(ControllerInput key) const;
 
 	bool moving();
 	bool moving_left();
@@ -59,6 +60,7 @@ class PlayerController {
 	bool facing_left() const;
 	bool facing_right() const;
 	bool restricted() const;
+	bool grounded() const;
 
 	bool jump_requested() const;
 	bool jump_released() const;
@@ -71,12 +73,13 @@ class PlayerController {
 
 	int get_jump_request() const;
 
+	
+	dir::Direction direction{};
 
   private:
-	std::unordered_map<Movement, float> key_map{};
+	std::unordered_map<ControllerInput, float> key_map{};
 	util::BitFlags<MovementState> flags{}; //unused
 	util::BitFlags<Jump> jump_flags{};
-	Direction direction{};
 
 	int jump_request{};
 

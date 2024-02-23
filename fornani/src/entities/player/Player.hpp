@@ -180,8 +180,7 @@ class Player {
 
 	//components
 	controllers::PlayerController controller{};
-	shape::Collider collider{{PLAYER_WIDTH, PLAYER_HEIGHT}, {PLAYER_START_X, PLAYER_START_Y}};
-	shape::Collider head{};
+	shape::Collider collider{};
 	components::PlayerBehaviorComponent behavior{};
 	behavior::DIR last_dir{};
 	arms::Arsenal loadout{};
