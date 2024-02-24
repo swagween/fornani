@@ -6,6 +6,7 @@ namespace controllers {
 PlayerController::PlayerController() {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
+	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::arms_switch, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::inspect, 0.f));
 	direction.und = dir::UND::neutral;
@@ -19,6 +20,8 @@ void PlayerController::update() {
 	auto const& jump_started = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
 	auto const& jump_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held);
 	auto const& jump_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released);
+	auto const& shoot_pressed = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
+	auto const& shoot_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released);
 	auto const& arms_switch_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::A).key_state.test(util::key_state::triggered);
 	auto const& arms_switch_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::S).key_state.test(util::key_state::triggered);
 	auto const& inspected = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered);
@@ -33,6 +36,9 @@ void PlayerController::update() {
 	direction.lr = moving_right() ? dir::LR::right : direction.lr;
 
 	key_map[ControllerInput::jump] = jump_started ? 1.f : 0.f;
+
+	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
+	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
 
 	key_map[ControllerInput::arms_switch] = 0.f;
 	key_map[ControllerInput::arms_switch] = arms_switch_left ? -1.f : key_map[ControllerInput::arms_switch];
@@ -56,8 +62,8 @@ void PlayerController::update() {
 		prevent_jump();
 	}
 
-	svc::tickerLocator.get().tick([this] { decrement_jump(); });
-
+	//svc::tickerLocator.get().tick([this] { decrement_jump(); });
+	decrement_jump();
 }
 
 void PlayerController::jump() { jump_flags.set(Jump::jumping); }
@@ -104,6 +110,8 @@ void PlayerController::reset_jumpsquat_trigger() { jump_flags.reset(Jump::jumpsq
 
 void PlayerController::reset_just_jumped() { jump_flags.reset(Jump::just_jumped); }
 
+void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = flag ? 1.f : 0.f; }
+
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {
 		return search->second;
@@ -135,6 +143,8 @@ bool PlayerController::can_jump() const { return jump_flags.test(Jump::can_jump)
 bool PlayerController::jumping() const { return jump_flags.test(Jump::jumping); }
 
 bool PlayerController::just_jumped() const { return jump_flags.test(Jump::just_jumped); }
+
+bool PlayerController::shot() { return key_map[ControllerInput::shoot] == 1.f; }
 
 bool PlayerController::jumpsquatting() const { return jump_flags.test(Jump::jumpsquatting); }
 

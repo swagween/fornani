@@ -16,7 +16,8 @@ class MainMenu : public GameState {
 	void init(std::string const& load_path);
 	void setTilesetTexture(sf::Texture& t);
 	void handle_events(sf::Event& event);
-	void logic();
+	void tick_update();
+	void frame_update();
 	void render(sf::RenderWindow& win);
 
 	sf::Sprite title{};

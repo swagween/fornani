@@ -61,7 +61,6 @@ class Map {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
-	Map();
 	// methods
 	void load(std::string const& path);
 	void update();

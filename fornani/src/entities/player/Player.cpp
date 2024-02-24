@@ -114,7 +114,7 @@ void Player::handle_events(sf::Event& event) {
 	}
 	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::released)) { flags.movement.reset(Movement::look_up); }
 	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::released)) { flags.movement.reset(Movement::look_down); }
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released)) { weapon_fired = false; }
+	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released)) {  }
 	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered)) {
 		if (!flags.input.test(Input::restricted)) {
 			flags.jump.set(Jump::is_pressed);
@@ -130,7 +130,7 @@ void Player::handle_events(sf::Event& event) {
 		if (!grounded()) { jump_request = -1; }
 		if (!behavior.restricted()) { flags.jump.set(Jump::can_jump); }
 	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered)) { weapon_fired = true; }
+	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered)) { }
 	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::A).key_state.test(util::key_state::triggered)) {
 		if (!weapons_hotbar.empty()) {
 			current_weapon--;
@@ -156,6 +156,8 @@ void Player::update(Time dt) {
 
 	collider.physics.gravity = physics_stats.grav;
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
+	collider.physics.ground_friction = {physics_stats.ground_fric, physics_stats.ground_fric};
+	collider.physics.air_friction = {physics_stats.air_fric, physics_stats.air_fric};
 
 	update_direction();
 
@@ -190,7 +192,7 @@ void Player::update(Time dt) {
 			collider.physics.acceleration.y = -physics_stats.jump_velocity;
 			behavior.rise();
 		}
-		if (controller.jump_released()) {
+		if (controller.jump_released() && controller.jumping()) {
 			collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 			controller.reset_jump();
 		}
@@ -205,7 +207,7 @@ void Player::update(Time dt) {
 		}
 
 		// weapon physics
-		if (weapon_fired && !weapons_hotbar.empty()) {
+		if (controller.shot() && !weapons_hotbar.empty()) {
 			if (behavior.facing_strictly_right()) {
 				if (!collider.flags.test(shape::State::has_right_collision)) { collider.physics.acceleration.x += -loadout.get_equipped_weapon().attributes.recoil; }
 			}
@@ -359,7 +361,9 @@ void Player::update_behavior() {
 	}
 
 	if (flags.movement.test(Movement::wall_slide_trigger)) { flags.movement.set(Movement::is_wall_sliding); }
-	if (weapon_fired) { start_cooldown = true; }
+	if (controller.shot()) {
+		start_cooldown = true;
+	}
 
 	flags.movement.reset(Movement::stopping);
 	flags.movement.reset(Movement::just_stopped);
@@ -369,7 +373,8 @@ void Player::update_behavior() {
 	flags.movement.reset(Movement::wall_slide_trigger);
 	flags.movement.reset(Movement::release_wallslide);
 	if (!weapons_hotbar.empty()) {
-		if (!loadout.get_equipped_weapon().attributes.automatic) { weapon_fired = false; }
+		if (!loadout.get_equipped_weapon().attributes.automatic) { //controller.set_shot(false);
+		}
 		if (start_cooldown) {
 			loadout.get_equipped_weapon().current_cooldown--;
 			if (loadout.get_equipped_weapon().current_cooldown < 0) {
@@ -530,7 +535,7 @@ void Player::restrict_inputs() {
 	flags.movement.reset(Movement::look_down);
 	flags.movement.reset(Movement::look_up);
 	flags.input.reset(Input::inspecting_trigger);
-	weapon_fired = false;
+	controller.set_shot(false);
 }
 
 void Player::unrestrict_inputs() {

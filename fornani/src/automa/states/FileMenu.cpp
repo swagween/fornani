@@ -49,7 +49,7 @@ FileMenu::FileMenu() {
 	right_dot.collider.physics.position =
 		(static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
 
-	logic();
+	tick_update();
 
 	for (auto i = 0; i < num_files * 2; ++i) {
 
@@ -95,7 +95,7 @@ void FileMenu::handle_events(sf::Event& event) {
 	}
 }
 
-void FileMenu::logic() {
+void FileMenu::tick_update() {
 	constrain_selection();
 
 	left_dot.update();
@@ -124,6 +124,8 @@ void FileMenu::logic() {
 	svc::playerLocator.get().update_behavior();
 	svc::playerLocator.get().update_antennae();
 }
+
+void FileMenu::frame_update() {}
 
 void FileMenu::render(sf::RenderWindow& win) {
 	win.draw(title);

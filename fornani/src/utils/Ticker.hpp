@@ -15,6 +15,9 @@ using Mil = std::chrono::milliseconds;
 
 struct Ticker {
 
+	// this is a faulty approach. tick gets called way too many times per frame,
+	// and the residue variable contains only the last iteration of the last 
+	// object that used the function
 	template <typename F>
 	void tick(F fn) {
 
@@ -77,8 +80,8 @@ struct Ticker {
 	Clk::time_point current_time{Clk::now()};
 	Clk::time_point new_time{Clk::now()};
 
-	float tick_rate{0.003f};
-	float tick_multiplier{48.f};
+	float tick_rate{0.016f};
+	float tick_multiplier{16.f};
 
 	static constexpr Tim tick_limit{0.1f};
 

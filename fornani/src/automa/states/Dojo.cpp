@@ -99,7 +99,7 @@ void Dojo::handle_events(sf::Event& event) {
 	}
 }
 
-void Dojo::logic() {
+void Dojo::tick_update() {
 	svc::cameraLocator.get().previous_position = svc::cameraLocator.get().position;
 	map.update();
 	hud.update();
@@ -120,7 +120,11 @@ void Dojo::logic() {
 	svc::cameraLocator.get().position = svc::cameraLocator.get().physics.position;
 	svc::cameraLocator.get().observed_velocity.x = svc::cameraLocator.get().position.x - svc::cameraLocator.get().previous_position.x;
 	svc::cameraLocator.get().observed_velocity.y = svc::cameraLocator.get().position.y - svc::cameraLocator.get().previous_position.y;
+
+	svc::inputStateLocator.get().reset_triggers();
 }
+
+void Dojo::frame_update() {}
 
 void Dojo::render(sf::RenderWindow& win) {
 	sf::Vector2<float> camvel = svc::cameraLocator.get().physics.velocity;

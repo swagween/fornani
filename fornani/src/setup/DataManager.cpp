@@ -12,14 +12,21 @@ void DataManager::load_data() {
 
 	// enemies
 	frdog = dj::Json::from_file((finder.resource_path + "/data/enemy/frdog.json").c_str());
+	std::cout << "loading frdog ...";
 	assert(!frdog.is_null());
+	std::cout << " success!\n";
 	hulmet = dj::Json::from_file((finder.resource_path + "/data/enemy/hulmet.json").c_str());
+	std::cout << "loading hulmet ...";
 	assert(!frdog.is_null());
+	std::cout << " success!\n";
+
 
 	// map
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
+	std::cout << "loading map data ...";
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) { lookup::get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
+	std::cout << " success!\n";
 }
 
 void DataManager::save_progress(int save_point_id) {
@@ -97,6 +104,8 @@ void DataManager::load_blank_save(bool state_switch) {
 }
 
 void DataManager::load_player_params() {
+
+	std::cout << "loading player params ...";
 	player_params = dj::Json::from_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
@@ -113,10 +122,12 @@ void DataManager::load_player_params() {
 	svc::playerLocator.get().physics_stats.maximum_velocity.y = player_params["physics"]["maximum_velocity"]["y"].as<float>();
 
 	svc::playerLocator.get().physics_stats.mass = player_params["physics"]["mass"].as<float>();
+	std::cout << " success!\n";
 }
 
 void DataManager::save_player_params() {
 
+	std::cout << "saving player params ...";
 	player_params["physics"]["grav"] = svc::playerLocator.get().physics_stats.grav;
 	player_params["physics"]["ground_fric"] = svc::playerLocator.get().physics_stats.ground_fric;
 	player_params["physics"]["air_fric"] = svc::playerLocator.get().physics_stats.air_fric;
@@ -132,6 +143,7 @@ void DataManager::save_player_params() {
 	player_params["physics"]["mass"] = svc::playerLocator.get().physics_stats.mass;
 
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
+	std::cout << " success!\n";
 }
 
 } // namespace data

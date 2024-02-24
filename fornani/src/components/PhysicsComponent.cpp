@@ -17,7 +17,8 @@ void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
 
 void PhysicsComponent::update_euler() {
 
-	svc::tickerLocator.get().tick([this] { integrate(); });
+	//svc::tickerLocator.get().tick([this] { integrate(); });
+	integrate();
 
 }
 

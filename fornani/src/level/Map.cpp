@@ -6,8 +6,6 @@
 
 namespace world {
 
-Map::Map() { load(svc::dataLocator.get().finder.resource_path); }
-
 void Map::load(std::string const& path) {
 
 	std::string filepath = path + "/map_data.txt";
@@ -628,7 +626,13 @@ void Map::manage_projectiles() {
 	std::erase_if(critters, [](auto const& c) { return c->condition.hp <= 0; });
 
 	if (!svc::playerLocator.get().weapons_hotbar.empty()) {
-		if (svc::playerLocator.get().weapon_fired && !svc::playerLocator.get().start_cooldown) { spawn_projectile_at(svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point); }
+		if (svc::playerLocator.get().controller.shot() && !svc::playerLocator.get().start_cooldown) {
+			std::cout << "shot!\n";
+			spawn_projectile_at(svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point);
+			if (!svc::playerLocator.get().loadout.get_equipped_weapon().attributes.automatic) {
+				svc::playerLocator.get().controller.set_shot(false);
+			}
+		}
 	}
 
 	for (auto& critter : critters) {

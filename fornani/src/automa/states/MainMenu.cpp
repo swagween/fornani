@@ -115,7 +115,7 @@ void MainMenu::handle_events(sf::Event& event) {
 	}
 }
 
-void MainMenu::logic() {
+void MainMenu::tick_update() {
 	left_dot.update();
 	right_dot.update();
 	switch (selection) {
@@ -140,6 +140,8 @@ void MainMenu::logic() {
 		break;
 	}
 }
+
+void MainMenu::frame_update() {}
 
 void MainMenu::render(sf::RenderWindow& win) {
 	win.draw(title);

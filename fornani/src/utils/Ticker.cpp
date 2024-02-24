@@ -1,6 +1,0 @@
-
-
-namespace util {
-
-
-} // namespace util

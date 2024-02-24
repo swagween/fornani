@@ -217,7 +217,6 @@ class Player {
 	int jump_request{};
 
 	bool just_hurt{};
-	bool weapon_fired{};
 	bool start_cooldown{};
 	bool sprite_flip{};
 

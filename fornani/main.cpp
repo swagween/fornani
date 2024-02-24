@@ -108,11 +108,11 @@ static void show_overlay() {
 					ImGui::Text("Ticks Per Frame: %.2f", svc::tickerLocator.get().ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", svc::tickerLocator.get().fps);
 					ImGui::Separator();
-					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.005f, "%.5f");
+					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.02f, "%.5f");
 					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 10.f, 100.f, "%.1f");
 					if (ImGui::Button("Reset")) {
-						svc::tickerLocator.get().tick_rate = 0.003f;
-						svc::tickerLocator.get().tick_multiplier = 48.f;
+						svc::tickerLocator.get().tick_rate = 0.016f;
+						svc::tickerLocator.get().tick_multiplier = 16;
 					}
 					ImGui::EndTabItem();
 				}
@@ -140,6 +140,10 @@ static void show_overlay() {
 					ImGui::Text("Z held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held) ? "Yes" : "No");
 					ImGui::Text("Z triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) ? "Yes" : "No");
 					ImGui::Text("Z released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released) ? "Yes" : "No");
+					ImGui::Separator();
+					ImGui::Text("X held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::held) ? "Yes" : "No");
+					ImGui::Text("X triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered) ? "Yes" : "No");
+					ImGui::Text("X released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released) ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::EndTabItem();
 				}
@@ -201,7 +205,7 @@ static void show_overlay() {
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {
 							ImGui::Text("Vertical Movement");
-							ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().physics_stats.grav, 0.f, 0.08f, "%.5f");
+							ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().physics_stats.grav, 0.f, 0.2f, "%.5f");
 							ImGui::SliderFloat("JUMP VELOCITY", &svc::playerLocator.get().physics_stats.jump_velocity, 0.5f, 5.5f, "%.5f");
 							ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &svc::playerLocator.get().physics_stats.jump_release_multiplier, 0.005f, 2.f, "%.5f");
 							ImGui::SliderFloat("MAX Y VELOCITY", &svc::playerLocator.get().physics_stats.maximum_velocity.y, 1.0f, 60.0f);
@@ -211,7 +215,7 @@ static void show_overlay() {
 							ImGui::SliderFloat("AIR MULTIPLIER", &svc::playerLocator.get().physics_stats.air_multiplier, 0.0f, 5.0f);
 							ImGui::SliderFloat("GROUND FRICTION", &svc::playerLocator.get().physics_stats.ground_fric, 0.900f, 1.000f);
 							ImGui::SliderFloat("AIR FRICTION", &svc::playerLocator.get().physics_stats.air_fric, 0.900f, 1.000f);
-							ImGui::SliderFloat("GROUND SPEED", &svc::playerLocator.get().physics_stats.x_acc, 0.0f, 0.2f);
+							ImGui::SliderFloat("GROUND SPEED", &svc::playerLocator.get().physics_stats.x_acc, 0.0f, 1.f);
 							ImGui::SliderFloat("MAX X VELOCITY", &svc::playerLocator.get().physics_stats.maximum_velocity.x, 1.0f, 10.0f);
 
 							ImGui::Separator();
@@ -255,16 +259,7 @@ static void show_overlay() {
 					}
 
 					ImGui::Separator();
-					ImGui::Text("Equipped Weapon: ");
-					ImGui::SameLine();
-					ImGui::TextUnformatted(svc::playerLocator.get().loadout.get_equipped_weapon().label.c_str());
-					ImGui::Text("Weapon Fired: ");
-					ImGui::SameLine();
-					if (svc::playerLocator.get().weapon_fired) {
-						ImGui::Text("Yes");
-					} else {
-						ImGui::Text("No");
-					}
+					ImGui::Text("Equipped Weapon: %s", svc::playerLocator.get().loadout.get_equipped_weapon().label.c_str());
 					ImGui::Separator();
 					ImGui::Text("Weapon Stats: ");
 					ImGui::Indent();
@@ -588,7 +583,9 @@ void run(char** argv) {
 		}
 
 		// game logic and rendering
-		SM.get_current_state().logic();
+		svc::tickerLocator.get().tick([] { SM.get_current_state().tick_update(); });
+		SM.get_current_state().frame_update();
+		
 		SM.get_current_state().debug_mode = debug_mode;
 
 		// switch states
@@ -619,7 +616,6 @@ void run(char** argv) {
 
 		// reset global triggers
 		svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_trigger);
-		svc::inputStateLocator.get().reset_triggers();
 
 		ImGui::SFML::Update(window, deltaClock.restart());
 		screencap.update(window);
