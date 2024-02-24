@@ -1,0 +1,173 @@
+{
+  "colliders": [
+    {
+      "tile_id": 0,
+      "boxes": [{
+          "dimensions": {"x": 30,"y": 36},
+          "position": {"x": 18,"y": 12}
+        }]
+    }
+  ],
+  "hurtboxes": [
+    {"tile_id": 0,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 1,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 2,
+      "boxes": [{
+          "dimensions": {"x": 22,"y": 26},
+          "position": { "x": 12,"y": 16}
+        },{
+          "dimensions": { "x": 44,"y": 22},
+          "position": {"x": 22,"y": 26}
+        }]},
+    {"tile_id": 3,
+      "boxes": [{
+          "dimensions": {"x": 22,"y": 26},
+          "position": { "x": 12,"y": 16}
+        },{
+          "dimensions": { "x": 44,"y": 22},
+          "position": {"x": 22,"y": 26}
+        }]},
+    {"tile_id": 4,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 5,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 6,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 7,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 8,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 9,
+      "boxes": [{
+          "dimensions": {"x": 28,"y": 24},
+          "position": { "x": 18,"y": 14}
+        },{
+          "dimensions": { "x": 40,"y": 32},
+          "position": {"x": 28,"y": 16}
+        }]},
+    {"tile_id": 10,
+      "boxes": [{
+          "dimensions": {"x": 28,"y": 24},
+          "position": { "x": 18,"y": 14}
+        },{
+          "dimensions": { "x": 40,"y": 32},
+          "position": {"x": 28,"y": 16}
+        }]},
+    {"tile_id": 11,
+      "boxes": [{
+          "dimensions": {"x": 12,"y": 22},
+          "position": {"x": 14,"y": 26}
+        },{
+          "dimensions": { "x": 40,"y": 22},
+          "position": {"x": 26,"y": 26}
+        }]},
+    {"tile_id": 12,
+      "boxes": [{
+          "dimensions": {"x": 12,"y": 22},
+          "position": {"x": 14,"y": 26}
+        },{
+          "dimensions": { "x": 40,"y": 22},
+          "position": {"x": 26,"y": 26}
+        }]},
+    {"tile_id": 13,
+      "boxes": [{
+          "dimensions": {"x": 18,"y": 18},
+          "position": { "x": 26,"y": 2}
+        },{
+          "dimensions": {"x": 42,"y": 28},
+          "position": { "x": 8,"y": 20}
+        }]},
+    {"tile_id": 14,
+      "boxes": [{
+          "dimensions": {"x": 38,"y": 28},
+          "position": { "x": 26,"y": 20}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 15,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 16,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 17,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 18,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]},
+    {"tile_id": 19,
+      "boxes": [{
+          "dimensions": {"x": 20,"y": 22},
+          "position": { "x": 18,"y": 2}
+        },{
+          "dimensions": { "x": 42,"y": 30},
+          "position": {"x": 24,"y": 18}
+        }]}
+  ]
+}

@@ -1,0 +1,223 @@
+
+#include "Critter.hpp"
+#include <imgui.h>
+#include "../../utils/Random.hpp"
+
+namespace critter {
+
+void Critter::sprite_flip() {
+	if (flags.test(Flags::flip)) {
+		sprite.scale(-1.0f, 1.0f);
+		flags.reset(Flags::flip);
+	}
+	// flip the sprite based on the critter's direction
+	sf::Vector2<float> right_scale = {1.0f, 1.0f};
+	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
+	if ((facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) || (facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale)) { flags.set(Flags::turning); }
+	if (facing_lr == behavior::DIR_LR::LEFT) {
+		colliders.at(0).physics.dir = components::DIRECTION::LEFT;
+		weapon.firing_direction.lr = dir::LR::left;
+	} else {
+		colliders.at(0).physics.dir = components::DIRECTION::RIGHT;
+		weapon.firing_direction.lr = dir::LR::right;
+	}
+}
+
+void Critter::init() {
+
+	set_sprite();
+
+	unique_id = svc::randomLocator.get().random_range(-2147483647, 2147483647);
+
+	/*for (auto& collider : colliders) {
+		collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
+		collider.physics.maximum_velocity = sf::Vector2<float>(stats.speed, stats.speed * 4);
+		if (metadata.gravity) { collider.physics.gravity = 0.03f; }
+	}*/
+
+	condition.hp = stats.base_hp;
+}
+
+void Critter::update() {
+
+	unique_update();
+	behavior.update();
+
+	if (flags.test(Flags::seeking)) { seek_current_target(); }
+
+	if (!colliders.empty()) { sprite_position = colliders.at(0).physics.position + sprite.getOrigin() - colliders.at(0).sprite_offset; }
+
+	for (auto& collider : colliders) {
+		collider.physics.update_euler();
+		collider.sync_components();
+		collider.update();
+	}
+
+	// get UV coords
+	int u = (int)(behavior.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+	int v = (int)(behavior.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+	sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
+	sprite.setOrigin(sprite_dimensions.x / 2, dimensions.y / 2);
+
+	int ctr{0};
+	for (auto& hbx : hurtboxes) {
+		hbx = hurtbox_atlas.at((int)(behavior.get_frame() * num_hurtboxes + ctr));
+		hbx.update();
+		if (facing_lr == behavior::DIR_LR::RIGHT) {
+			hbx.set_position({sprite_position.x + hbx.sprite_offset.x - sprite.getOrigin().x, sprite_position.y - sprite.getOrigin().y + hbx.sprite_offset.y});
+		} else if (facing_lr == behavior::DIR_LR::LEFT) {
+			hbx.set_position({sprite_position.x - hbx.sprite_offset.x + sprite.getOrigin().x - hbx.dimensions.x, sprite_position.y - sprite.getOrigin().y + hbx.sprite_offset.y});
+		}
+		++ctr;
+	}
+}
+
+void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
+	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
+	drawbox.setSize(dimensions);
+
+	ar.setSize({(float)(alert_range.dimensions.x), (float)(alert_range.dimensions.y)});
+	hr.setSize({(float)hostile_range.dimensions.x, (float)hostile_range.dimensions.y});
+	ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
+	hr.setPosition(hostile_range.position.x - campos.x, hostile_range.position.y - campos.y);
+	win.draw(sprite);
+	svc::counterLocator.get().at(svc::draw_calls)++;
+
+	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		ar.setFillColor(sf::Color{80, 80, 20, 60});
+		hr.setFillColor(sf::Color{80, 40, 20, 60});
+		ar.setOutlineColor(sf::Color{180, 180, 180});
+		hr.setOutlineColor(sf::Color{180, 180, 180});
+		ar.setOutlineThickness(-1);
+		hr.setOutlineThickness(-1);
+		// debug
+		drawbox.setPosition(sprite_position.x - sprite.getOrigin().x - campos.x, sprite_position.y - sprite.getOrigin().y - campos.y);
+		drawbox.setSize({(float)sprite_dimensions.x, (float)sprite_dimensions.y});
+		drawbox.setFillColor(sf::Color::Transparent);
+		drawbox.setOutlineColor(flcolor::fucshia);
+		drawbox.setOutlineThickness(-1);
+		win.draw(drawbox);
+		for (auto& collider : colliders) { collider.render(win, campos); }
+		for (auto& hbx : hurtboxes) {
+			drawbox.setFillColor(sf::Color{255, 255, 20, 20});
+			drawbox.setOutlineColor(flcolor::goldenrod);
+			drawbox.setOutlineThickness(-1);
+			drawbox.setSize(hbx.dimensions);
+			drawbox.setPosition(hbx.position.x - campos.x, hbx.position.y - campos.y);
+			win.draw(drawbox);
+		}
+		win.draw(ar);
+		win.draw(hr);
+	}
+	svc::counterLocator.get().at(svc::draw_calls)++;
+	sprite_flip();
+
+	// draw health for debug
+	hpbox.setFillColor(sf::Color{0, 228, 185});
+	hpbox.setSize(sf::Vector2<float>{1.0f, 4.0f});
+	for (int i = 0; i < stats.base_hp; ++i) {
+		hpbox.setPosition(sprite.getPosition().x + i, sprite.getPosition().y - 14);
+		if (i > condition.hp) { hpbox.setFillColor(sf::Color{29, 118, 112}); }
+		win.draw(hpbox);
+		svc::counterLocator.get().at(svc::draw_calls)++;
+	}
+
+	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration;
+		ImGui::SetNextWindowSize({160, 180});
+		ImGui::SetNextWindowPos(sprite_position - campos, ImGuiCond_Always);
+		ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+		ImGui::Begin(std::to_string(sprite_position.x).c_str(), 0, window_flags);
+		ImGui::Text("X Position: %.1f", colliders.at(0).physics.position.x);
+		ImGui::Text("Y Position: %.1f", colliders.at(0).physics.position.y);
+
+		if (flags.test(Flags::alive)) { ImGui::Text("alive"); }
+		if (flags.test(Flags::seeking)) { ImGui::Text("seeking"); }
+		if (flags.test(Flags::awake)) { ImGui::Text("awake"); }
+		if (flags.test(Flags::awakened)) { ImGui::Text("awakened"); }
+		if (flags.test(Flags::asleep)) { ImGui::Text("asleep"); }
+		if (flags.test(Flags::turning)) { ImGui::Text("turning"); }
+		if (flags.test(Flags::flip)) { ImGui::Text("flip"); }
+		if (flags.test(Flags::barking)) { ImGui::Text("barking"); }
+		if (flags.test(Flags::hurt)) { ImGui::Text("hurt"); }
+		if (flags.test(Flags::just_hurt)) { ImGui::Text("just hurt"); }
+		if (flags.test(Flags::shot)) { ImGui::Text("shot"); }
+		if (flags.test(Flags::vulnerable)) { ImGui::Text("vulnerable"); }
+		if (flags.test(Flags::charging)) { ImGui::Text("charging"); }
+		if (flags.test(Flags::shooting)) { ImGui::Text("shooting"); }
+		if (flags.test(Flags::hiding)) { ImGui::Text("hiding"); }
+		if (flags.test(Flags::running)) { ImGui::Text("running"); }
+		if (flags.test(Flags::weapon_fired)) { ImGui::Text("weapon fired"); }
+		ImGui::End();
+	}
+}
+
+void Critter::set_sprite() {
+	try {
+		sprite.setTexture(get_critter_texture.at(metadata.id));
+	} catch (std::out_of_range) {
+		printf("Failed to set sprite for critter.\n");
+		return;
+	}
+}
+
+void Critter::set_position(sf::Vector2<int> pos) {
+
+	for (auto& collider : colliders) {
+		sprite_position = static_cast<sf::Vector2<float>>(pos);
+		collider.physics.position = sprite_position + collider.sprite_offset;
+		collider.sync_components();
+	}
+}
+
+void Critter::seek_current_target() {
+	sf::Vector2<float> desired = current_target - colliders.at(0).physics.position;
+	desired *= stats.speed;
+	sf::Vector2<float> steering = desired - colliders.at(0).physics.velocity;
+	if (abs(steering.x) < 0.5) {
+		colliders.at(0).physics.acceleration.x = 0.0f;
+		return;
+	}
+	steering *= 0.08f;
+	if (flags.test(Flags::running) || flags.test(Flags::seeking)) { colliders.at(0).physics.acceleration.x = steering.x; }
+}
+void Critter::wake_up() {
+	flags.reset(Flags::asleep);
+	flags.set(Flags::awakened);
+	flags.reset(Flags::awake);
+}
+void Critter::sleep() {
+	flags.set(Flags::asleep);
+	flags.reset(Flags::awakened);
+	flags.reset(Flags::awake);
+}
+
+void Critter::awake() {
+	flags.reset(Flags::asleep);
+	flags.reset(Flags::awakened);
+	flags.set(Flags::awake);
+}
+
+void Critter::cooldown() {
+	dt = svc::clockLocator.get().tick_rate;
+
+	auto new_time = Clock::now();
+	Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
+
+	if (frame_time.count() > svc::clockLocator.get().frame_limit) { frame_time = Time{svc::clockLocator.get().frame_limit}; }
+	current_time = new_time;
+	accumulator += frame_time;
+
+	int integrations = 0;
+	while (accumulator >= dt) {
+
+		--stats.cooldown;
+
+		accumulator -= dt;
+		++integrations;
+	}
+
+	if (stats.cooldown < 0) { stats.cooldown = 0; }
+}
+
+} // namespace critter
