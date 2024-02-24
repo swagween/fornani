@@ -25,15 +25,15 @@ MainMenu::MainMenu() {
 					{92, 22}};
 
 	left_dot = vfx::Attractor({new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y},
-							  flcolor::bright_orange, 0.008f);
+							  flcolor::bright_orange, dot_force);
 	right_dot =
 		vfx::Attractor({new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y},
-					   flcolor::bright_orange, 0.008f);
+					   flcolor::bright_orange, dot_force);
 
-	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
-	left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
-	right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
-	right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
+	left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);
+	right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
+	right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);
 
 	left_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(new_rect.getPosition()));
 	right_dot.collider.bounding_box.set_position(

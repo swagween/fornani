@@ -19,26 +19,24 @@ void Player::init() {
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 	behavior.current_state = behavior::Behavior(behavior::idle);
 	behavior.facing_lr = behavior::DIR_LR::RIGHT;
-	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, 0.029f));
-	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, 0.029f, {2.f, 4.f}));
+	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, antenna_force));
+	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, antenna_force, {2.f, 4.f}));
 
-	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, 0.03f));
-	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, 0.03f, {2.f, 4.f}));
+	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, antenna_force));
+	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, antenna_force, {2.f, 4.f}));
 
-	float back_fric{0.96f};
-	float front_fric{0.97f};
-	float back_speed{5.9f};
-	float front_speed{6.f};
+	float back_fric{0.74f};
+	float front_fric{0.77f};
 
 	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
-	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(back_speed, back_speed);
+	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
-	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(back_speed, back_speed);
+	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 
 	antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{front_fric, front_fric}, 1.0f);
-	antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(front_speed, front_speed);
+	antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 	antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{front_fric, front_fric}, 1.0f);
-	antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(front_speed, front_speed);
+	antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 
 	sprite_dimensions = {48.f, 48.f};
 
@@ -272,8 +270,12 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 			collider.render(win, campos);
 		} else {
+			antennae[0].render(win, campos);
+			antennae[2].render(win, campos);
 			win.draw(sprite);
-			svc::counterLocator.get().at(svc::draw_calls)++;
+			antennae[1].render(win, campos);
+			antennae[3].render(win, campos);
+			svc::counterLocator.get().at(svc::draw_calls) += 5;
 		}
 	}
 
@@ -281,8 +283,6 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		loadout.get_equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(loadout.get_equipped_weapon().type));
 		loadout.get_equipped_weapon().render(win, campos);
 	}
-
-	for (auto& a : antennae) { a.render(win, campos); }
 }
 
 void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }

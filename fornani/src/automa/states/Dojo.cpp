@@ -80,7 +80,7 @@ void Dojo::handle_events(sf::Event& event) {
 			svc::playerLocator.get().flags.input.reset(player::Input::inspecting_trigger);
 		}
 	}
-	//svc::playerLocator.get().handle_events(event);
+	// svc::playerLocator.get().handle_events(event);
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::H) {
 			svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
@@ -132,8 +132,11 @@ void Dojo::render(sf::RenderWindow& win) {
 	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
 	map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position); }
-	hud.render(win);
+	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
+	}
+
+	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
 
 	map.render_console(win);
 

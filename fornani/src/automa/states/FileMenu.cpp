@@ -25,37 +25,27 @@ FileMenu::FileMenu() {
 	text_left = middle - text_dim.x / 2;
 	text_right = middle + text_dim.x / 2;
 
-	for (int i = 0; i < num_files; ++i) {
-		file_rects.at(i) =
-			sf::IntRect({text_left, top_buffer + (text_dim.y * (i)) + (selection_buffer * (i % num_files))}, text_dim);
-	}
+	for (int i = 0; i < num_files; ++i) { file_rects.at(i) = sf::IntRect({text_left, top_buffer + (text_dim.y * (i)) + (selection_buffer * (i % num_files))}, text_dim); }
 
-	left_dot =
-		vfx::Attractor({file_rects.at(0).getPosition().x - dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y},
-					   flcolor::bright_orange, 0.008f);
-	right_dot = vfx::Attractor({file_rects.at(0).getPosition().x + file_rects.at(0).width + dot_pad.x,
-								file_rects.at(0).getPosition().y + dot_pad.y},
-							   flcolor::bright_orange, 0.008f);
+	left_dot = vfx::Attractor({file_rects.at(0).getPosition().x - dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y}, flcolor::bright_orange, dot_force);
+	right_dot = vfx::Attractor({file_rects.at(0).getPosition().x + file_rects.at(0).width + dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y}, flcolor::bright_orange, dot_force);
 
-	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
-	left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
-	right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
-	right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
+	left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);
+	right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
+	right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);
 
 	left_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition()));
-	right_dot.collider.bounding_box.set_position(
-		static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
+	right_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
 	left_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition()));
-	right_dot.collider.physics.position =
-		(static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
+	right_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
 
 	tick_update();
 
 	for (auto i = 0; i < num_files * 2; ++i) {
 
 		file_text.at(i) = sf::Sprite{svc::assetLocator.get().t_file_text, sf::IntRect({0, i * text_dim.y}, text_dim)};
-		file_text.at(i).setPosition(text_left,
-									top_buffer + (text_dim.y * (i % num_files)) + (selection_buffer * (i % num_files)));
+		file_text.at(i).setPosition(text_left, top_buffer + (text_dim.y * (i % num_files)) + (selection_buffer * (i % num_files)));
 	}
 }
 
@@ -156,4 +146,4 @@ void FileMenu::constrain_selection() {
 	if (file_selection < 0) { file_selection = num_files - 1; }
 }
 
-}
+} // namespace automa
