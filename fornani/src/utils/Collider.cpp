@@ -112,7 +112,6 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			physics.acceleration.y = 0.0f;
 			physics.velocity.y = 0.0f;
 			physics.position.y -= abs(detector_mtv.y);
-			svc::floatReadoutLocator.get() = detector_mtv.y;
 		}
 
 		// ramp-specific stuff
@@ -131,7 +130,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 				auto xdist = predictive_bounding_box.position.x - physics.position.x;
 				auto correction = xdist - physics.mtv.x;
 
-				physics.position.x += correction;
+				//physics.position.x += correction;
 
 				auto ydist = predictive_bounding_box.position.y - physics.position.y;
 				correction = ydist - physics.mtv.y;
@@ -152,6 +151,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			// still zero this because of gravity
 			physics.velocity.y = 0.0f;
 			physics.acceleration.y = 0.0f;
+			//std::cout << "walks! ";
 		}
 
 		// and finally, a player jumps into a ramp. it's very similar to landing on a ramp, it just has different signs
@@ -269,7 +269,6 @@ void Collider::handle_collider_collision(Shape const& collider) {
 			physics.acceleration.y = 0.0f;
 			physics.velocity.y = 0.0f;
 			physics.position.y -= abs(detector_mtv.y);
-			svc::floatReadoutLocator.get() = detector_mtv.y;
 		}
 
 		auto ydist = predictive_bounding_box.position.y - physics.position.y;

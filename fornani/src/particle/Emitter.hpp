@@ -52,6 +52,7 @@ public:
     ~Emitter();
     
     void update();
+	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 
     bool empty();
     
@@ -73,6 +74,7 @@ public:
     std::vector<Particle>& const get_particles();
     
     sf::Color color{};
+	sf::RectangleShape dot{};
     
     std::vector<Particle> particles{};
     ElementBehavior behavior{};

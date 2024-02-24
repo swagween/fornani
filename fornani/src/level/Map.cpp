@@ -420,14 +420,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 
 	// emitters
 	for (auto& emitter : active_emitters) {
-		for (auto& particle : emitter.get_particles()) {
-			sf::RectangleShape dot{};
-			dot.setFillColor(emitter.color);
-			dot.setSize({particle.size, particle.size});
-			dot.setPosition(particle.physics.position.x - cam.x, particle.physics.position.y - cam.y);
-			win.draw(dot);
-			svc::counterLocator.get().at(svc::draw_calls)++;
-		}
+		emitter.render(win, cam);
 	}
 
 	// player

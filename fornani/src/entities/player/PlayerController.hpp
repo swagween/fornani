@@ -12,21 +12,21 @@ namespace controllers {
 	using Clock = std::chrono::steady_clock;
 	using Time = std::chrono::duration<float>;
 
-	constexpr static int jump_time{120};
+	constexpr static int jump_time{16};
 
 enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect };
 enum class MovementState { restricted, grounded };
-enum class Jump {
-	hold,			// true if jump is pressed and permanently false once released, until player touches the ground again (USED)
+enum class Jump {		// true if jump is pressed and permanently false once released, until player touches the ground again (USED)
 	trigger,		// true for one frame if jump is pressed and the player is grounded (UNUSED)
 	can_jump,		// true if the player is grounded (USED)
 	just_jumped,	// used for updating animation (USED)
 	jump_launched,	// successful jump, set player's y acceleration! (USED)
+	jump_held,		// to prevent deceleration being called after jumping
 	jumpsquatting,	// (USED)
 	jumpsquat_trigger, //(USED)
 	is_pressed,		// true if the jump button is pressed, false if not. independent of player's state.
 	is_released,	// true if jump released midair, reset upon landing (USED)
-	jumping,		// true if jumpsquat is over, false once player lands (USED)
+	jumping		// true if jumpsquat is over, false once player lands (USED)
 };
 
 class PlayerController {
@@ -69,6 +69,7 @@ class PlayerController {
 	bool can_jump() const;
 	bool jumping() const;
 	bool just_jumped() const;
+	bool jump_held() const;
 
 	bool shot();
 

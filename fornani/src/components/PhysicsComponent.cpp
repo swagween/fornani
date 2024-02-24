@@ -68,7 +68,6 @@ void PhysicsComponent::calculate_maximum_acceleration() {
 	for (auto& acc : x_acc_history) {
 		if (acc > max) { max = acc; }
 	}
-	svc::floatReadoutLocator.get() = max;
 
 }
 

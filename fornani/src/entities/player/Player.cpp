@@ -182,7 +182,6 @@ void Player::update(Time dt) {
 
 		// jump!
 		if (controller.jumpsquat_trigger()) {
-			behavior.jump();
 			controller.start_jumpsquat();
 			controller.reset_jumpsquat_trigger();
 		}
@@ -191,8 +190,8 @@ void Player::update(Time dt) {
 			controller.start_jumping();
 			collider.physics.acceleration.y = -physics_stats.jump_velocity;
 			behavior.rise();
-		}
-		if (controller.jump_released() && controller.jumping()) {
+			behavior.jump();
+		} else if (controller.jump_released() && controller.jumping() && !controller.jump_held()) {
 			collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 			controller.reset_jump();
 		}
