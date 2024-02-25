@@ -45,111 +45,6 @@ void Player::init() {
 	sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
 }
 
-void Player::handle_events(sf::Event& event) {
-	if (!svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) { unrestrict_inputs(); }
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::triggered)) {
-		flags.movement.set(Movement::move_left);
-		if (grounded()) {
-			if (behavior.facing == behavior::DIR::RIGHT) {
-				behavior.turn();
-				behavior.facing = behavior::DIR::LEFT;
-				flags.movement.reset(Movement::is_wall_sliding);
-			} else {
-				behavior.run();
-			}
-		} else if (!flags.input.test(Input::restricted)) {
-			if (!flags.movement.test(Movement::is_wall_sliding)) { behavior.air(collider.physics.velocity.y); }
-		}
-		behavior.facing = behavior::DIR::LEFT;
-		behavior.facing_lr = behavior::DIR_LR::LEFT;
-	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::triggered)) {
-		flags.movement.set(Movement::move_right);
-		if (grounded()) {
-			if (behavior.facing == behavior::DIR::LEFT) {
-				behavior.turn();
-				flags.movement.reset(Movement::is_wall_sliding);
-			} else {
-				behavior.run();
-			}
-		} else if (!flags.input.test(Input::restricted)) {
-			if (!flags.movement.test(Movement::is_wall_sliding)) { behavior.air(collider.physics.velocity.y); }
-		}
-		behavior.facing = behavior::DIR::RIGHT;
-		behavior.facing_lr = behavior::DIR_LR::RIGHT;
-	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::triggered)) { flags.movement.set(Movement::look_up); }
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered)) { flags.movement.set(Movement::look_down); }
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::released)) {
-		if (!flags.movement.test(Movement::autonomous_walk)) {
-			flags.movement.reset(Movement::move_left);
-			collider.flags.reset(shape::State::has_left_collision);
-			if (!collider.flags.test(shape::State::has_right_collision)) { flags.movement.reset(Movement::is_wall_sliding); }
-			flags.movement.set(Movement::stopping);
-			last_dir = behavior::DIR::LEFT;
-			flags.movement.set(Movement::left_released);
-			if (grounded()) {
-				if (!flags.movement.test(Movement::move_right) && !behavior.restricted()) { behavior.reset(); }
-			} else {
-				if (!behavior.restricted() && !flags.movement.test(Movement::is_wall_sliding)) { behavior.air(collider.physics.velocity.y); }
-			}
-			if (flags.movement.test(Movement::move_right)) { behavior.facing_lr = behavior::DIR_LR::RIGHT; }
-		}
-	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::released)) {
-		flags.movement.reset(Movement::move_right);
-		collider.flags.reset(shape::State::has_right_collision);
-		if (!collider.flags.test(shape::State::has_left_collision)) { flags.movement.reset(Movement::is_wall_sliding); }
-		flags.movement.set(Movement::stopping);
-		last_dir = behavior::DIR::RIGHT;
-		flags.movement.set(Movement::right_released);
-		if (grounded()) {
-			if (!behavior.restricted()) { behavior.reset(); }
-		} else {
-			if (!behavior.restricted() && !flags.movement.test(Movement::is_wall_sliding)) { behavior.air(collider.physics.velocity.y); }
-		}
-		if (flags.movement.test(Movement::move_left)) { behavior.facing_lr = behavior::DIR_LR::LEFT; }
-	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::released)) { flags.movement.reset(Movement::look_up); }
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::released)) { flags.movement.reset(Movement::look_down); }
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released)) {  }
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered)) {
-		if (!flags.input.test(Input::restricted)) {
-			flags.jump.set(Jump::is_pressed);
-			jump_request = JUMP_BUFFER_TIME;
-			flags.jump.set(Jump::just_jumped);
-			flags.jump.set(Jump::trigger);
-		}
-	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released)) {
-		if (flags.jump.test(Jump::just_jumped) || flags.jump.test(Jump::hold) || flags.jump.test(Jump::jumping) || jump_request > -1) { flags.jump.set(Jump::is_released); }
-		flags.jump.reset(Jump::is_pressed);
-		flags.jump.reset(Jump::hold);
-		if (!grounded()) { jump_request = -1; }
-		if (!behavior.restricted()) { flags.jump.set(Jump::can_jump); }
-	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered)) { }
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::A).key_state.test(util::key_state::triggered)) {
-		if (!weapons_hotbar.empty()) {
-			current_weapon--;
-			if (current_weapon < 0) { current_weapon = (int)weapons_hotbar.size() - 1; }
-			loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
-			flags.sounds.set(Soundboard::weapon_swap);
-		}
-	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::S).key_state.test(util::key_state::triggered)) {
-		if (!weapons_hotbar.empty()) {
-			current_weapon++;
-			if (current_weapon > weapons_hotbar.size() - 1) { current_weapon = 0; }
-			loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
-			flags.sounds.set(Soundboard::weapon_swap);
-		}
-	}
-	if (svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered)) {
-		if (grounded()) { flags.input.set(Input::inspecting_trigger); }
-	}
-}
-
 void Player::update(Time dt) {
 
 	collider.physics.gravity = physics_stats.grav;
@@ -163,6 +58,22 @@ void Player::update(Time dt) {
 	grounded() ? controller.ground() : controller.unground();
 
 	controller.update();
+	animation.update();
+
+	if (!weapons_hotbar.empty()) {
+		if (controller.arms_switch() == -1.f) {
+			current_weapon--;
+			if (current_weapon < 0) { current_weapon = (int)weapons_hotbar.size() - 1; }
+			loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+			flags.sounds.set(Soundboard::weapon_swap);
+		}
+		if (controller.arms_switch() == 1.f) {
+			current_weapon++;
+			if (current_weapon > weapons_hotbar.size() - 1) { current_weapon = 0; }
+			loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+			flags.sounds.set(Soundboard::weapon_swap);
+		}
+	}
 
 	if (!flags.input.test(Input::no_anim)) {
 		update_animation();
@@ -227,7 +138,7 @@ void Player::update(Time dt) {
 	update_invincibility();
 
 	play_sounds();
-	update_behavior();
+	//update_behavior();
 	apparent_position.x = collider.physics.position.x + PLAYER_WIDTH / 2;
 	apparent_position.y = collider.physics.position.y;
 
@@ -249,8 +160,8 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	calculate_sprite_offset();
 
 	// get UV coords
-	int u = (int)(behavior.get_frame() / asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
-	int v = (int)(behavior.get_frame() % asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
+	int u = (int)(animation.get_frame() / asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
+	int v = (int)(animation.get_frame() % asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
 	sprite.setTextureRect(sf::IntRect({u, v}, {asset::NANI_SPRITE_WIDTH, asset::NANI_SPRITE_WIDTH}));
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
@@ -360,9 +271,7 @@ void Player::update_behavior() {
 	}
 
 	if (flags.movement.test(Movement::wall_slide_trigger)) { flags.movement.set(Movement::is_wall_sliding); }
-	if (controller.shot()) {
-		start_cooldown = true;
-	}
+	if (controller.shot()) { start_cooldown = true; }
 
 	flags.movement.reset(Movement::stopping);
 	flags.movement.reset(Movement::just_stopped);
@@ -371,21 +280,9 @@ void Player::update_behavior() {
 	flags.movement.reset(Movement::right_released);
 	flags.movement.reset(Movement::wall_slide_trigger);
 	flags.movement.reset(Movement::release_wallslide);
-	if (!weapons_hotbar.empty()) {
-		if (!loadout.get_equipped_weapon().attributes.automatic) { //controller.set_shot(false);
-		}
-		if (start_cooldown) {
-			loadout.get_equipped_weapon().current_cooldown--;
-			if (loadout.get_equipped_weapon().current_cooldown < 0) {
-				loadout.get_equipped_weapon().current_cooldown = loadout.get_equipped_weapon().attributes.cooldown_time;
-				start_cooldown = false;
-			}
-		}
-	}
 
 	if (grounded() || (!collider.flags.test(shape::State::has_left_collision) && !collider.flags.test(shape::State::has_right_collision)) || abs(collider.physics.velocity.x) > 0.001f) { flags.movement.reset(Movement::is_wall_sliding); }
 	update_direction();
-	if (!weapons_hotbar.empty()) { update_weapon(); }
 }
 
 void Player::set_position(sf::Vector2<float> new_pos) {
@@ -453,27 +350,7 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon() {
-	if (controller.facing_left()) { collider.physics.dir = components::DIRECTION::LEFT; }
-	if (controller.facing_right()) { collider.physics.dir = components::DIRECTION::RIGHT; }
-
-	switch (behavior.facing_lr) {
-	case behavior::DIR_LR::LEFT: collider.physics.dir = components::DIRECTION::LEFT; break;
-	case behavior::DIR_LR::RIGHT: collider.physics.dir = components::DIRECTION::RIGHT; break;
-	}
-	switch (behavior.facing) {
-	case behavior::DIR::NEUTRAL: break;
-	case behavior::DIR::LEFT: break;
-	case behavior::DIR::RIGHT: break;
-	case behavior::DIR::UP: collider.physics.dir = components::DIRECTION::UP; break;
-	case behavior::DIR::DOWN: collider.physics.dir = components::DIRECTION::DOWN; break;
-	case behavior::DIR::UP_RIGHT: collider.physics.dir = components::DIRECTION::UP; break;
-	case behavior::DIR::UP_LEFT: collider.physics.dir = components::DIRECTION::UP; break;
-	case behavior::DIR::DOWN_RIGHT: collider.physics.dir = components::DIRECTION::DOWN; break;
-	case behavior::DIR::DOWN_LEFT: collider.physics.dir = components::DIRECTION::DOWN; break;
-	}
-
 	loadout.get_equipped_weapon().update();
-	loadout.get_equipped_weapon().set_orientation();
 	if (controller.facing_right()) {
 		hand_position = {28, 36};
 	} else {
@@ -488,7 +365,6 @@ void Player::walk() {
 	if (behavior.current_state.get_frame() == 44 || behavior.current_state.get_frame() == 46) {
 		if (behavior.current_state.params.frame_trigger) { flags.sounds.set(Soundboard::step); }
 	}
-
 }
 
 void Player::autonomous_walk() {
@@ -556,6 +432,8 @@ bool Player::grounded() const { return collider.flags.test(shape::State::grounde
 bool Player::moving() { return (controller.moving() || flags.movement.test(Movement::autonomous_walk)); }
 
 bool Player::moving_at_all() { return (controller.moving() || flags.movement.test(Movement::autonomous_walk) || flags.movement.test(Movement::freefalling) || flags.movement.test(Movement::entered_freefall)); }
+
+bool Player::can_shoot() { return controller.shot() && !loadout.get_equipped_weapon().cooling_down(); }
 
 sf::Vector2<float> Player::get_fire_point() {
 	if (behavior.facing_strictly_left()) {

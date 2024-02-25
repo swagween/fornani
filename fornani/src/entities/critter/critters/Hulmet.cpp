@@ -38,7 +38,7 @@ void Hulmet::unique_update() {
 	// player is out of range
 	if (!svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) { random_walk({100, 100}); }
 
-	barrel_point = facing_lr == behavior::DIR_LR::RIGHT ? sprite_position + sf::Vector2<float>{6.f, 28.f} : sprite_position + sf::Vector2<float>(sprite_dimensions) - sf::Vector2<float>{6.f, 28.f};
+	barrel_point = direction.lr == dir::LR::right ? sprite_position + sf::Vector2<float>{6.f, 28.f} : sprite_position + sf::Vector2<float>(sprite_dimensions) - sf::Vector2<float>{6.f, 28.f};
 
 	cooldown();
 

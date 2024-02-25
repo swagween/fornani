@@ -4,7 +4,7 @@
 
 namespace arms {
 
-Weapon::Weapon(int id, std::string lbl, WEAPON_TYPE weapon_type, WeaponAttributes const& wa, ProjectileStats const& ps, const vfx::ElementBehavior spr, ProjectileAnimation const& pa, RENDER_TYPE rt, sf::Vector2<int> dim,
+Weapon::Weapon(int id, std::string lbl, WEAPON_TYPE weapon_type, WeaponAttributes const& wa, ProjectileStats const& ps, vfx::ElementBehavior const spr, ProjectileAnimation const& pa, RENDER_TYPE rt, sf::Vector2<int> dim,
 			   sf::Vector2<float> proj_dim)
 	: id(id), label(lbl), type(weapon_type), attributes(wa), sprite_dimensions(dim) {
 	projectile = Projectile(ps, components::PhysicsComponent(), pa, weapon_type, rt, proj_dim);
@@ -12,14 +12,21 @@ Weapon::Weapon(int id, std::string lbl, WEAPON_TYPE weapon_type, WeaponAttribute
 	barrel_point = {sprite_position.x + 18, sprite_position.y + 1};
 }
 
-void Weapon::update() {}
+void Weapon::update() {
+	set_orientation();
+	if (cooling_down()) { --cooldown_counter; }
+	if (cooldown_counter < 0) {
+		flags.reset(GunState::cooling_down);
+		cooldown_counter = 0;
+	}
+	if (cooldown_counter > 0) { flags.set(GunState::cooling_down); }
+}
 
 void Weapon::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x, svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + 8};
 	sf::Vector2<float> h_pos = svc::playerLocator.get().hand_position;
 	sp_gun.setPosition(p_pos.x - campos.x, p_pos.y - campos.y);
 	set_position(p_pos);
-	set_orientation();
 
 	// fire point debug
 	sf::RectangleShape box{};
@@ -36,13 +43,22 @@ void Weapon::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	}
 }
 
-void Weapon::equip() { equipped = true; }
-void Weapon::unequip() { equipped = false; }
-void Weapon::unlock() { unlocked = true; }
-void Weapon::lock() { unlocked = true; }
+void Weapon::equip() { flags.set(GunState::equipped); }
+void Weapon::unequip() { flags.reset(GunState::equipped); }
+void Weapon::unlock() { flags.set(GunState::unlocked); }
+void Weapon::lock() { flags.reset(GunState::unlocked); }
 
-bool Weapon::is_equipped() const { return equipped; }
-bool Weapon::is_unlocked() const { return unlocked; }
+void Weapon::shoot() { cooldown(); }
+
+void Weapon::cooldown() {
+	flags.set(GunState::cooling_down);
+	cooldown_counter = attributes.cooldown_time;
+}
+
+bool Weapon::is_equipped() const { return flags.test(GunState::equipped); }
+bool Weapon::is_unlocked() const { return flags.test(GunState::unlocked); }
+
+bool Weapon::cooling_down() const { return flags.test(GunState::cooling_down); }
 
 void Weapon::set_position(sf::Vector2<float> pos) { sprite_position = pos; }
 
@@ -58,41 +74,35 @@ void Weapon::set_orientation() {
 	// start from default
 	sp_gun.setRotation(neutral_rotation);
 	sp_gun.setScale(right_scale);
-	
+
 	firing_direction = svc::playerLocator.get().controller.direction;
 
-	switch (svc::playerLocator.get().controller.direction.und) {
-	case dir::UND::up:
-		svc::playerLocator.get().behavior.facing_lr == behavior::DIR_LR::RIGHT ? sp_gun.rotate(-90) : sp_gun.rotate(90);
-		barrel_point = {sprite_position.x + attributes.barrel_position.at(1), sprite_position.y - attributes.barrel_position.at(0)};
-		firing_direction.neutralize_lr();
-		break;
-	case dir::UND::neutral:
-		// do nothing
-		break;
-	case dir::UND::down:
-		svc::playerLocator.get().behavior.facing_lr == behavior::DIR_LR::RIGHT ? sp_gun.rotate(90) : sp_gun.rotate(-90);
-		barrel_point = {sprite_position.x + sprite_dimensions.y - attributes.barrel_position.at(1) - sprite_dimensions.y, sprite_position.y + sprite_dimensions.x};
-		firing_direction.neutralize_lr();
-		break;
-	}
-	switch (svc::playerLocator.get().controller.direction.lr) {
-	case dir::LR::right:
-		if (svc::playerLocator.get().behavior.facing_und == behavior::DIR_UND::NEUTRAL) {
-			barrel_point = {sprite_position.x + attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)};
-		}
-		break;
+	switch (firing_direction.lr) {
+	case dir::LR::right: barrel_point.x -= 2.0f * attributes.barrel_position.at(1); break;
 	case dir::LR::left:
-		if (svc::playerLocator.get().behavior.facing_und == behavior::DIR_UND::NEUTRAL) {
-			barrel_point = {sprite_position.x - attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)};
-		} else if (svc::playerLocator.get().controller.direction.und == dir::UND::down) {
-			barrel_point.x += 2.0f * attributes.barrel_position.at(1);
-		} else if (svc::playerLocator.get().controller.direction.und == dir::UND::up) {
-			barrel_point.x -= 2.0f * attributes.barrel_position.at(1);
-		}
+		barrel_point.x += 2.0f * attributes.barrel_position.at(1);
 		sp_gun.scale(-1.0f, 1.0f);
 		break;
 	}
+	switch (firing_direction.und) {
+	case dir::UND::up:
+		svc::playerLocator.get().controller.direction.lr == dir::LR::right ? sp_gun.rotate(-90) : sp_gun.rotate(90);
+		barrel_point = {sprite_position.x + attributes.barrel_position.at(1), sprite_position.y - attributes.barrel_position.at(0)};
+		firing_direction.neutralize_lr();
+		break;
+	case dir::UND::down:
+		svc::playerLocator.get().controller.direction.lr == dir::LR::right ? sp_gun.rotate(90) : sp_gun.rotate(-90);
+		barrel_point = {sprite_position.x + sprite_dimensions.y - attributes.barrel_position.at(1) - sprite_dimensions.y, sprite_position.y + sprite_dimensions.x};
+		firing_direction.neutralize_lr();
+		break;
+	case dir::UND::neutral:
+		switch (firing_direction.lr) {
+		case dir::LR::right: barrel_point = {sprite_position.x + attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)}; break;
+		case dir::LR::left: barrel_point = {sprite_position.x - attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)}; break;
+		}
+		break;
+	}
+
 	projectile.direction = firing_direction;
 }
 

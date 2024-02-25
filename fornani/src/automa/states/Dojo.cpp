@@ -101,8 +101,8 @@ void Dojo::handle_events(sf::Event& event) {
 
 void Dojo::tick_update() {
 	svc::cameraLocator.get().previous_position = svc::cameraLocator.get().position;
+	svc::playerLocator.get().update_weapon();
 	map.update();
-	hud.update();
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
 	svc::cameraLocator.get().update();
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);
@@ -124,7 +124,10 @@ void Dojo::tick_update() {
 	svc::inputStateLocator.get().reset_triggers();
 }
 
-void Dojo::frame_update() {}
+void Dojo::frame_update() {
+	map.background->update();
+	hud.update();
+}
 
 void Dojo::render(sf::RenderWindow& win) {
 	sf::Vector2<float> camvel = svc::cameraLocator.get().physics.velocity;

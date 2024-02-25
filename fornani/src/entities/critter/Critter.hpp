@@ -108,7 +108,7 @@ class Critter {
 	util::BitFlags<Flags> flags{};
 
 	behavior::Behavior behavior{};
-	behavior::DIR_LR facing_lr{};
+	dir::Direction direction{};
 	std::vector<shape::Collider> colliders{};
 
 	std::vector<shape::Shape> hurtbox_atlas{};

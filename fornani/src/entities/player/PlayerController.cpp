@@ -17,6 +17,8 @@ void PlayerController::update() {
 
 	auto const& left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::held);
 	auto const& right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::held);
+	auto const& up = svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::held);
+	auto const& down = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::held);
 	auto const& jump_started = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
 	auto const& jump_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held);
 	auto const& jump_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released);
@@ -24,7 +26,7 @@ void PlayerController::update() {
 	auto const& shoot_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released);
 	auto const& arms_switch_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::A).key_state.test(util::key_state::triggered);
 	auto const& arms_switch_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::S).key_state.test(util::key_state::triggered);
-	auto const& inspected = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered);
+	auto const& inspected = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered) && grounded();
 
 	key_map[ControllerInput::move_x] = 0.f;
 	key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
@@ -33,6 +35,9 @@ void PlayerController::update() {
 
 	direction.lr = moving_left() ? dir::LR::left : direction.lr;
 	direction.lr = moving_right() ? dir::LR::right : direction.lr;
+	direction.und = dir::UND::neutral;
+	direction.und = up ? dir::UND::up : direction.und;
+	direction.und = down ? dir::UND::down : direction.und;
 
 	key_map[ControllerInput::jump] = jump_started ? 1.f : 0.f;
 
@@ -43,7 +48,7 @@ void PlayerController::update() {
 	key_map[ControllerInput::arms_switch] = arms_switch_left ? -1.f : key_map[ControllerInput::arms_switch];
 	key_map[ControllerInput::arms_switch] = arms_switch_right ? 1.f : key_map[ControllerInput::arms_switch];
 
-	key_map[ControllerInput::inspect] = inspected && grounded() ? 1.f : 0.f;
+	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
 
 	bool can_launch = !restricted() && flags.test(MovementState::grounded) && !jump_flags.test(Jump::jumping);
 	can_launch ? jump_flags.set(Jump::can_jump) : jump_flags.reset(Jump::can_jump);
@@ -110,6 +115,8 @@ void PlayerController::reset_jumpsquat_trigger() { jump_flags.reset(Jump::jumpsq
 void PlayerController::reset_just_jumped() { jump_flags.reset(Jump::just_jumped); }
 
 void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = flag ? 1.f : 0.f; }
+
+float PlayerController::arms_switch() { return key_map[ControllerInput::arms_switch]; }
 
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {

@@ -53,6 +53,7 @@ class PlayerController {
 	void reset_just_jumped();
 
 	void set_shot(bool flag);
+	float arms_switch();
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 

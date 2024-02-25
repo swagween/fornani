@@ -169,6 +169,9 @@ static void show_overlay() {
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Movement")) {
+							ImGui::Text("Direction LR: %s", svc::playerLocator.get().controller.direction.print_lr().c_str());
+							ImGui::Text("Direction UND : %s", svc::playerLocator.get().controller.direction.print_und().c_str());
+							ImGui::Separator();
 							ImGui::Text("Move Left : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_left) ? "Yes" : "No");
 							ImGui::Text("Move Right : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_right) ? "Yes" : "No");
 							ImGui::Separator();
@@ -257,6 +260,14 @@ static void show_overlay() {
 							svc::playerLocator.get().weapons_hotbar.clear();
 						}
 					}
+
+					ImGui::Text("Firing Direction LR: %s", svc::playerLocator.get().loadout.get_equipped_weapon().firing_direction.print_lr().c_str());
+					ImGui::Text("Firing Direction UND : %s", svc::playerLocator.get().loadout.get_equipped_weapon().firing_direction.print_und().c_str());
+
+					ImGui::Text("Can Shoot? %s", svc::playerLocator.get().can_shoot() ? "Yes" : "No");
+					ImGui::Text("Cooling Down? %s", svc::playerLocator.get().loadout.get_equipped_weapon().cooling_down() ? "Yes" : "No");
+					ImGui::Text("Cooldown Time %i", svc::playerLocator.get().loadout.get_equipped_weapon().cooldown_counter);
+
 
 					ImGui::Separator();
 					ImGui::Text("Equipped Weapon: %s", svc::playerLocator.get().loadout.get_equipped_weapon().label.c_str());

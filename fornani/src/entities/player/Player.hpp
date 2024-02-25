@@ -10,6 +10,7 @@
 #include "../../utils/Collider.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "PlayerController.hpp"
+#include "PlayerAnimation.hpp"
 
 namespace player {
 
@@ -132,7 +133,6 @@ class Player {
 	// init (violates RAII but must happen after resource path is set)
 	void init();
 	// member functions
-	void handle_events(sf::Event& event);
 	void update(Time dt);
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void assign_texture(sf::Texture& tex);
@@ -158,6 +158,7 @@ class Player {
 	bool grounded() const;
 	bool moving();
 	bool moving_at_all();
+	bool can_shoot();
 
 	// firing
 	sf::Vector2<float> get_fire_point();
@@ -185,6 +186,7 @@ class Player {
 	controllers::PlayerController controller{};
 	shape::Collider collider{};
 	components::PlayerBehaviorComponent behavior{};
+	PlayerAnimation animation{};
 	behavior::DIR last_dir{};
 	arms::Arsenal loadout{};
 	std::vector<arms::WEAPON_TYPE> weapons_hotbar{};

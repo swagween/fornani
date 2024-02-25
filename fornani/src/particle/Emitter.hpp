@@ -69,10 +69,12 @@ public:
     void set_expulsion_force(float f);
     void set_friction(float f);
     void set_lifespan(int l);
-    void set_direction(components::DIRECTION d);
+    void set_direction(dir::Direction d);
     
     std::vector<Particle>& const get_particles();
     
+    dir::Direction direction{};
+
     sf::Color color{};
 	sf::RectangleShape dot{};
     

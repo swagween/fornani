@@ -6,6 +6,7 @@
 #include <list>
 #include <random>
 #include <vector>
+#include "../../utils/BitFlags.hpp"
 
 namespace anim {
 
@@ -14,46 +15,35 @@ int const DEFAULT_DURATION = 8;
 int const DEFAULT_NUM_BEHAVIORS = 1;
 int const animation_multiplier = 32;
 
-struct AnimationParameters {
-	AnimationParameters() { set_params(); }
-	AnimationParameters(int d, int f, bool nl) : duration(d), framerate(f), no_loop(nl) { set_params(); }
-	~AnimationParameters() {}
-	void set_params() {
-		current_frame = 0;
-		anim_frame = framerate - 1;
-		started = true;
-	}
-	int framerate{};
-	int current_frame{};
-	int anim_frame{};
+struct Parameters {
+	int lookup{};
 	int duration{};
-	bool no_loop{};
-	bool done{false};
-	bool started{true};
-	bool frame_trigger{};
+	int framerate{};
+	bool one_off{};
 };
 
-class Animation {
+enum class State {active, complete};
 
-	using Clock = std::chrono::steady_clock;
-	using Time = std::chrono::duration<float>;
+struct Animation {
 
-  public:
-	Animation() = default;
-	Animation(AnimationParameters p) : params(p) { update(); }
+	Parameters params{};
+	std::string label{};
 
 	void refresh();
 	void start();
 	void update();
-	void end(bool cutoff);
-	int get_frame();
+	void end();
+	void set_params(Parameters& const new_params);
+	int get_frame() const;
 
-	AnimationParameters params{};
+	bool active() const;
+	bool complete() const;
 
-	// fixed animation time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{0.0f};
+	int current_frame{};
+	int counter{};
+
+	util::BitFlags<State> flags{};
+
 };
 
 } // namespace anim

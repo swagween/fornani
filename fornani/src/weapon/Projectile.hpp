@@ -91,8 +91,12 @@ class Projectile {
 	void seed();
 	void set_sprite();
 	void set_orientation(sf::Sprite& sprite);
-	void constrain_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
-	void constrain_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
+	void set_position(sf::Vector2<float>& pos);
+	void sync_position();
+	void constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
+	void constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
+	void constrain_hitbox_at_barrel();
+	void constrain_hitbox_at_destruction_point();
 
 	dir::Direction direction{};
 	shape::Shape bounding_box{};
