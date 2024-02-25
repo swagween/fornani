@@ -60,6 +60,15 @@ void Player::update(Time dt) {
 	controller.update();
 	animation.update();
 
+	//update animation
+	if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
+	if (controller.moving() && abs(collider.physics.velocity.x) > animation.run_threshold) { animation.state.set(AnimState::run); }
+	if (collider.physics.velocity.y > animation.suspension_threshold && !flags.movement.test(Movement::freefalling)) { flags.movement.set(Movement::entered_freefall); }
+	if (collider.physics.velocity.y > -animation.suspension_threshold && collider.physics.velocity.y < animation.suspension_threshold) { animation.state.set(AnimState::suspend); }
+	if (flags.movement.test(Movement::entered_freefall)) { animation.state.set(AnimState::fall); }
+	if (collider.flags.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
+	if (abs(collider.physics.velocity.x) < animation.stop_threshold) { animation.state.set(AnimState::stop); }
+
 	if (!weapons_hotbar.empty()) {
 		if (controller.arms_switch() == -1.f) {
 			current_weapon--;
@@ -91,6 +100,7 @@ void Player::update(Time dt) {
 
 		// jump!
 		if (controller.jumpsquat_trigger()) {
+			animation.state.set(AnimState::jumpsquat);
 			controller.start_jumpsquat();
 			controller.reset_jumpsquat_trigger();
 		}
@@ -98,7 +108,7 @@ void Player::update(Time dt) {
 			controller.stop_jumpsquatting();
 			controller.start_jumping();
 			collider.physics.acceleration.y = -physics_stats.jump_velocity;
-			behavior.rise();
+			animation.state.set(AnimState::rise);
 			behavior.jump();
 		} else if (controller.jump_released() && controller.jumping() && !controller.jump_held()) {
 			collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
@@ -170,12 +180,14 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
 	if (controller.facing_left() && sprite.getScale() == right_scale) {
-		// loadout.get_equipped_weapon().sp_gun.scale(-1.0f, 1.0f);
 		sprite.scale(-1.0f, 1.0f);
+		animation.state.set(AnimState::turn);
+		animation.start();
 	}
 	if (controller.facing_right() && sprite.getScale() == left_scale) {
-		// loadout.get_equipped_weapon().sp_gun.scale(-1.0f, 1.0f);
 		sprite.scale(-1.0f, 1.0f);
+		animation.state.set(AnimState::turn);
+		animation.start();
 	}
 	if (flags.state.test(State::alive)) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {

@@ -154,6 +154,8 @@ bool PlayerController::jump_held() const { return jump_flags.test(Jump::jump_hel
 
 bool PlayerController::shot() { return key_map[ControllerInput::shoot] == 1.f; }
 
+bool PlayerController::inspecting() { return key_map[ControllerInput::inspect] == 1.f; }
+
 bool PlayerController::jumpsquatting() const { return jump_flags.test(Jump::jumpsquatting); }
 
 bool PlayerController::jumpsquat_trigger() const { return jump_flags.test(Jump::jumpsquat_trigger); }

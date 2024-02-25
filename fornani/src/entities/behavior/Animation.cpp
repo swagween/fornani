@@ -7,7 +7,6 @@ namespace anim {
 void Animation::refresh() {
 	counter = 0;
 	current_frame = 0;
-	start();
 }
 
 void Animation::start() {
@@ -16,19 +15,21 @@ void Animation::start() {
 }
 
 void Animation::update() {
-	if (counter % params.framerate == 0) { ++current_frame; }
-	if (current_frame == params.duration - 1) {
+	++counter;
+	if (counter % params.framerate == 0) {
+		//std::cout << "frame: " << current_frame << "\n";
+		++current_frame;
+	}
+	if (current_frame == params.duration) {
 		current_frame = 0;
 		if (params.one_off) { end(); }
 	}
-	++counter;
 }
 
 
 void Animation::end() {
 	flags.reset(State::active);
 	flags.set(State::complete);
-	refresh();
 }
 
 void Animation::set_params(Parameters& const new_params) {

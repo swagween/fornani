@@ -20,6 +20,8 @@ struct Parameters {
 	int duration{};
 	int framerate{};
 	bool one_off{};
+	bool repeat_last_frame{};
+	bool interruptible{true};
 };
 
 enum class State {active, complete};

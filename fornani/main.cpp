@@ -190,12 +190,12 @@ static void show_overlay() {
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Animation")) {
-							ImGui::Text("Player Behavior: %s", svc::playerLocator.get().behavior.current_state.params.behavior_id.c_str());
-							ImGui::Text("Behavior Restricted? %s", svc::playerLocator.get().behavior.restricted() ? "Yes" : "No");
-							ImGui::Text("Behavior Current Frame: %i", svc::playerLocator.get().behavior.current_state.params.current_frame);
-							ImGui::Text("Behavior Complete? %s", svc::playerLocator.get().behavior.current_state.params.complete ? "Yes" : "No");
-							ImGui::Text("Behavior No Loop? %s", svc::playerLocator.get().behavior.current_state.params.no_loop ? "Yes" : "No");
-							ImGui::Text("Sprite Lookup: %i", svc::playerLocator.get().behavior.current_state.params.lookup_value);
+							ImGui::Text("Animation: %s", svc::playerLocator.get().animation.animation.label.c_str());
+							ImGui::Separator();
+							ImGui::Text("Current Frame: %i", svc::playerLocator.get().animation.animation.current_frame);
+							ImGui::Text("Complete? %s", svc::playerLocator.get().animation.animation.complete() ? "Yes" : "No");
+							ImGui::Text("One Off? %s", svc::playerLocator.get().animation.animation.params.one_off ? "Yes" : "No");
+							ImGui::Text("Repeat Last Frame? %s", svc::playerLocator.get().animation.animation.params.repeat_last_frame ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Stats")) {
@@ -544,6 +544,7 @@ void run(char** argv) {
 		bool valid_event{};
 		// check window events
 		while (window.pollEvent(event)) {
+			svc::playerLocator.get().animation.state = {};
 			if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
 			if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 			if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }

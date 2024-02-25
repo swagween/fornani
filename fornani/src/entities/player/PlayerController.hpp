@@ -74,6 +74,8 @@ class PlayerController {
 
 	bool shot();
 
+	bool inspecting();
+
 	bool jumpsquatting() const;
 	bool jumpsquat_trigger() const;
 
