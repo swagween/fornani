@@ -19,6 +19,7 @@ struct Direction {
 	void neutralize_lr() {
 		lr = LR::neutral;
 	}
+	float as_float() { return lr == LR::left ? -1.f : (lr == LR::right ? 1.f : 0.f); }
 
 	std::string print_und() const { return "UND: " + (std::string)(und == UND::up ? "UP" : (und == UND::neutral ? "NEUTRAL" : "DOWN")); }
 	std::string print_lr() const { return "LR: " + (std::string)(lr == LR::left ? "LEFT" : (lr == LR::neutral ? "NEUTRAL" : "RIGHT")); }

@@ -189,23 +189,33 @@ static void show_overlay() {
 							ImGui::Text("Jumping? : %s", svc::playerLocator.get().controller.jumping() ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
+
+						if (ImGui::BeginTabItem("Dash")) {
+							ImGui::Text("Dash Value : %f", svc::playerLocator.get().controller.dash_value());
+							ImGui::Text("Dash Request : %i", svc::playerLocator.get().controller.get_dash_request());
+							ImGui::Text("Dash Count : %i", svc::playerLocator.get().controller.get_dash_count());
+							ImGui::Text("Can Dash? : %s", svc::playerLocator.get().controller.can_dash() ? "Yes" : "No");
+							ImGui::EndTabItem();
+						}
 						if (ImGui::BeginTabItem("Animation")) {
 							ImGui::Text("Animation: %s", svc::playerLocator.get().animation.animation.label.c_str());
 							ImGui::Separator();
 							ImGui::Text("Current Frame: %i", svc::playerLocator.get().animation.animation.current_frame);
 							ImGui::Text("Complete? %s", svc::playerLocator.get().animation.animation.complete() ? "Yes" : "No");
-							ImGui::Text("One Off? %s", svc::playerLocator.get().animation.animation.params.one_off ? "Yes" : "No");
+							ImGui::Text("One Off? %s", svc::playerLocator.get().animation.animation.params.num_loops > -1 ? "Yes" : "No");
 							ImGui::Text("Repeat Last Frame? %s", svc::playerLocator.get().animation.animation.params.repeat_last_frame ? "Yes" : "No");
 							ImGui::Separator();
-							ImGui::Text("idle	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::idle) ? "flag set" : "");
-							ImGui::Text("run	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::run) ? "flag set" : "");
-							ImGui::Text("stop	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::stop) ? "flag set" : "");
-							ImGui::Text("turn	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::turn) ? "flag set" : "");
-							ImGui::Text("jsquat	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::jumpsquat) ? "flag set" : "");
-							ImGui::Text("rise	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::rise) ? "flag set" : "");
+							ImGui::Text("idle...: %s", svc::playerLocator.get().animation.state.test(player::AnimState::idle) ? "flag set" : "");
+							ImGui::Text("run....: %s", svc::playerLocator.get().animation.state.test(player::AnimState::run) ? "flag set" : "");
+							ImGui::Text("stop...: %s", svc::playerLocator.get().animation.state.test(player::AnimState::stop) ? "flag set" : "");
+							ImGui::Text("turn...: %s", svc::playerLocator.get().animation.state.test(player::AnimState::turn) ? "flag set" : "");
+							ImGui::Text("jsquat.: %s", svc::playerLocator.get().animation.state.test(player::AnimState::jumpsquat) ? "flag set" : "");
+							ImGui::Text("rise...: %s", svc::playerLocator.get().animation.state.test(player::AnimState::rise) ? "flag set" : "");
 							ImGui::Text("suspend: %s", svc::playerLocator.get().animation.state.test(player::AnimState::suspend) ? "flag set" : "");
-							ImGui::Text("fall	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::fall) ? "flag set" : "");
-							ImGui::Text("land	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::land) ? "flag set" : "");
+							ImGui::Text("fall...: %s", svc::playerLocator.get().animation.state.test(player::AnimState::fall) ? "flag set" : "");
+							ImGui::Text("land...: %s", svc::playerLocator.get().animation.state.test(player::AnimState::land) ? "flag set" : "");
+							ImGui::Text("dash...: %s", svc::playerLocator.get().animation.state.test(player::AnimState::dash) ? "flag set" : "");
+							ImGui::Text("inspect: %s", svc::playerLocator.get().animation.state.test(player::AnimState::inspect) ? "flag set" : "");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Stats")) {

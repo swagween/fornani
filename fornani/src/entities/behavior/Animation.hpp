@@ -19,7 +19,7 @@ struct Parameters {
 	int lookup{};
 	int duration{};
 	int framerate{};
-	bool one_off{};
+	int num_loops{};
 	bool repeat_last_frame{};
 	bool interruptible{true};
 };
@@ -44,6 +44,7 @@ struct Animation {
 
 	int current_frame{};
 	int counter{};
+	int loop_counter{};
 
 	util::BitFlags<State> flags{};
 

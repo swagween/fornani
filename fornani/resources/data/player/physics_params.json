@@ -9,9 +9,11 @@
     "jump_release_multiplier": 0.406060,
     "hurt_acc": 0.150000,
     "maximum_velocity": {
-      "x": 4.479000,
+      "x": 6.521000,
       "y": 9.211000
     },
-    "mass": 1.000000
+    "mass": 1.000000,
+    "dash_multiplier": 1.000000,
+    "dash_speed": 10.000000
   }
 }

@@ -54,9 +54,8 @@ void Player::update(Time dt) {
 	grounded() ? controller.ground() : controller.unground();
 
 	controller.update();
-	
 
-	//update loadout
+	// update loadout
 	if (!weapons_hotbar.empty()) {
 		if (controller.arms_switch() == -1.f) {
 			current_weapon--;
@@ -103,10 +102,19 @@ void Player::update(Time dt) {
 			if (abs(collider.physics.velocity.x) > stopped_threshold && grounded()) { flags.movement.set(Movement::just_stopped); }
 		}
 
+		// dash
+		if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
+			collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.dash_multiplier;
+			collider.physics.velocity.y = controller.vertical_movement() * physics_stats.dash_multiplier;
+			collider.physics.acceleration.x += controller.dash_value() * (physics_stats.maximum_velocity.x / physics_stats.air_multiplier) * physics_stats.dash_speed;
+			collider.physics.velocity.x += controller.dash_value() * (physics_stats.maximum_velocity.x / physics_stats.air_multiplier) * 10.f;
+			controller.dash();
+		}
+
 		// weapon physics
 		if (controller.shot() && !weapons_hotbar.empty()) {
-			if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += -loadout.get_equipped_weapon().attributes.recoil / 8; }
-			if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += loadout.get_equipped_weapon().attributes.recoil; }
+			if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -loadout.get_equipped_weapon().attributes.recoil / 80; }
+			if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += loadout.get_equipped_weapon().attributes.recoil; }
 		}
 
 		if (flags.movement.test(Movement::move_left) && flags.movement.test(Movement::move_right)) { collider.physics.acceleration.x = 0.0f; }
@@ -125,6 +133,12 @@ void Player::update(Time dt) {
 	apparent_position.y = collider.physics.position.y;
 	
 	update_animation();
+
+	
+	if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
+		controller.stop_dashing();
+		controller.cancel_dash_request();
+	}
 
 	// antennae!
 	update_antennae();
@@ -185,21 +199,29 @@ void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
 void Player::update_animation() {
 
 	if (grounded()) {
+		if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
 		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
 			if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
-			if (controller.nothing_pressed()) { animation.state.set(AnimState::idle); }
-			if (controller.moving()) { animation.state.set(AnimState::run); }
+			if (controller.nothing_pressed() && !controller.dashing()) { animation.state.set(AnimState::idle); }
+			if (controller.moving() && !controller.dashing()) { animation.state.set(AnimState::run); }
 			if (abs(collider.physics.velocity.x) > animation.stop_threshold) { animation.state.test(AnimState::stop); }
 		}
 	} else {
 		if (collider.physics.velocity.y > -animation.suspension_threshold && collider.physics.velocity.y < animation.suspension_threshold) { animation.state.set(AnimState::suspend); }
 	}
-	if (collider.flags.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
+
+	if (collider.flags.test(shape::State::just_landed)) {
+		animation.state.set(AnimState::land);
+		controller.reset_dash_count();
+	}
 	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
 
 	if (collider.physics.velocity.y < -animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::rise); }
 	if (collider.physics.velocity.y > animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::fall); }
+
+	if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
+	if (controller.dash_requested()) { animation.state.set(AnimState::dash); }
 
 	animation.update();
 
@@ -340,25 +362,8 @@ void Player::update_invincibility() {
 	} else {
 		sprite.setColor(sf::Color::White);
 	}
-
-	dt = svc::clockLocator.get().tick_rate;
-
-	auto new_time = Clock::now();
-	Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
-
-	if (frame_time.count() > svc::clockLocator.get().frame_limit) { frame_time = Time{svc::clockLocator.get().frame_limit}; }
-	current_time = new_time;
-	accumulator += frame_time;
-
-	int integrations = 0;
-	if (accumulator >= dt) {
-
 		--counters.invincibility;
 		if (counters.invincibility < 0) { counters.invincibility = 0; }
-
-		accumulator = Time::zero();
-		++integrations;
-	}
 }
 
 bool Player::is_invincible() const { return counters.invincibility > 0; }

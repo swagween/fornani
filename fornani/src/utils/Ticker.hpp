@@ -22,10 +22,14 @@ struct Ticker {
 	void tick(F fn) {
 
 		ft = Tim{tick_rate};
+
+		new_time = Clk::now();
+		dt = std::chrono::duration_cast<Tim>(new_time - current_time);
+		current_time = new_time;
 		
 		if (dt.count() > tick_limit.count()) { return; } // return for unexpected dt values, particularly during the beginning of the state
 
-		accumulator = 2*dt + residue;
+		accumulator = 2 * dt + residue;
 		if (accumulator < ft) {
 			std::printf("accumulator exit condition reached.\n");
 			return;
@@ -47,14 +51,8 @@ struct Ticker {
 	};
 
 	void start_frame() {
-		new_time = Clk::now();
-		dt = std::chrono::duration_cast<Tim>(new_time - current_time);
-
 		++num_frames;
-
 		total_seconds_passed += dt;
-
-		current_time = new_time;
 	}
 
 	void end_frame() {
@@ -83,7 +81,7 @@ struct Ticker {
 	float tick_rate{0.016f};
 	float tick_multiplier{16.f};
 
-	static constexpr Tim tick_limit{0.1f};
+	static constexpr Tim tick_limit{0.2f};
 
 	Tim ft{};
 	Tim dt{};

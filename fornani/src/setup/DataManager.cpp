@@ -122,6 +122,8 @@ void DataManager::load_player_params() {
 	svc::playerLocator.get().physics_stats.maximum_velocity.y = player_params["physics"]["maximum_velocity"]["y"].as<float>();
 
 	svc::playerLocator.get().physics_stats.mass = player_params["physics"]["mass"].as<float>();
+	svc::playerLocator.get().physics_stats.dash_multiplier = player_params["physics"]["dash_multiplier"].as<float>();
+	svc::playerLocator.get().physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
 	std::cout << " success!\n";
 }
 

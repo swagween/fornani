@@ -7,6 +7,7 @@ namespace anim {
 void Animation::refresh() {
 	counter = 0;
 	current_frame = 0;
+	loop_counter = 0;
 }
 
 void Animation::start() {
@@ -16,13 +17,24 @@ void Animation::start() {
 
 void Animation::update() {
 	++counter;
+
 	if (keyframe_over()) {
-		//std::cout << "frame: " << current_frame << "\n";
+		// std::cout << "frame: " << current_frame << "\n";
 		++current_frame;
 	}
+
+	if (current_frame == params.duration && params.repeat_last_frame) {
+		current_frame = params.duration - 1;
+		end();
+		return;
+	}
 	if (current_frame == params.duration) {
+		if (loop_counter == params.num_loops) { end(); }
 		current_frame = 0;
-		if (params.one_off) { end(); }
+		if (params.num_loops != -1) {
+			++loop_counter;
+			// don't increment for infinite loops
+		}
 	}
 }
 

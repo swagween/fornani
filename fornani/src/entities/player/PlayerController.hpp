@@ -13,8 +13,9 @@ namespace controllers {
 	using Time = std::chrono::duration<float>;
 
 	constexpr static int jump_time{16};
+	constexpr static int dash_time{20};
 
-enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect};
+enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect, dash, move_y};
 enum class MovementState { restricted, grounded };
 enum class Jump {		// true if jump is pressed and permanently false once released, until player touches the ground again (USED)
 	trigger,		// true for one frame if jump is pressed and the player is grounded (UNUSED)
@@ -43,9 +44,15 @@ class PlayerController {
 	void restrict();
 	void unrestrict();
 
+	void stop_dashing();
+
 	void start_jumping();
 	void reset_jump();
-	void decrement_jump();
+	void decrement_requests();
+
+	void reset_dash_count();
+	void cancel_dash_request();
+	void dash();
 
 	void start_jumpsquat();
 	void stop_jumpsquatting();
@@ -67,7 +74,11 @@ class PlayerController {
 	bool restricted() const;
 	bool grounded() const;
 
+	float vertical_movement();
+
 	bool jump_requested() const;
+	bool dash_requested() const;
+
 	bool jump_released() const;
 	bool can_jump() const;
 	bool jumping() const;
@@ -77,11 +88,17 @@ class PlayerController {
 	bool shot();
 
 	bool inspecting();
+	bool dashing();
+	bool can_dash();
 
 	bool jumpsquatting() const;
 	bool jumpsquat_trigger() const;
 
 	int get_jump_request() const;
+	int get_dash_request() const;
+	int get_dash_count() const;
+	float dash_value();
+
 
 	
 	dir::Direction direction{};
@@ -92,6 +109,8 @@ class PlayerController {
 	util::BitFlags<Jump> jump_flags{};
 
 	int jump_request{};
+	int dash_request{};
+	int dash_count{};
 
 	// fixed animation time step variables
 	Time dt{0.001f};

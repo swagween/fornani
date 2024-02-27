@@ -65,6 +65,8 @@ struct PhysicsStats {
 	float hurt_acc{};
 	sf::Vector2<float> maximum_velocity{};
 	float mass{};
+	float dash_multiplier{};
+	float dash_speed{};
 };
 
 struct Counters {
@@ -158,9 +160,6 @@ class Player {
 	bool moving();
 	bool moving_at_all();
 	bool can_shoot();
-
-	// firing
-	sf::Vector2<float> get_fire_point();
 
 	// level events
 	void make_invincible();
