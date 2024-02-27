@@ -141,7 +141,6 @@ class Player {
 	void flash_sprite();
 	void calculate_sprite_offset();
 
-	void update_behavior();
 	void set_position(sf::Vector2<float> new_pos);
 	void update_direction();
 	void update_weapon();
@@ -174,7 +173,7 @@ class Player {
 	void total_reset();
 
 	// map helpers
-	behavior::DIR_LR entered_from();
+	dir::LR entered_from();
 
 	// sound
 	void play_sounds();
@@ -185,7 +184,6 @@ class Player {
 	//components
 	controllers::PlayerController controller{};
 	shape::Collider collider{};
-	components::PlayerBehaviorComponent behavior{};
 	PlayerAnimation animation{};
 	behavior::DIR last_dir{};
 	arms::Arsenal loadout{};

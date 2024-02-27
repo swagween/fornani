@@ -16,7 +16,7 @@ void Animation::start() {
 
 void Animation::update() {
 	++counter;
-	if (counter % params.framerate == 0) {
+	if (keyframe_over()) {
 		//std::cout << "frame: " << current_frame << "\n";
 		++current_frame;
 	}
@@ -26,7 +26,6 @@ void Animation::update() {
 	}
 }
 
-
 void Animation::end() {
 	flags.reset(State::active);
 	flags.set(State::complete);
@@ -34,6 +33,8 @@ void Animation::end() {
 
 void Animation::set_params(Parameters& const new_params) {
 	params = new_params;
+	refresh();
+	start();
 }
 
 int Animation::get_frame() const { return params.lookup + current_frame; }
@@ -41,5 +42,7 @@ int Animation::get_frame() const { return params.lookup + current_frame; }
 bool Animation::active() const { return flags.test(State::active); }
 
 bool Animation::complete() const { return flags.test(State::complete); }
+
+bool Animation::keyframe_over() const { return counter % params.framerate == 0; }
 
 } // namespace anim

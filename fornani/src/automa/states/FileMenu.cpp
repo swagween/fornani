@@ -104,14 +104,13 @@ void FileMenu::tick_update() {
 	svc::playerLocator.get().flags.movement.set(player::Movement::move_left);
 	svc::playerLocator.get().collider.flags.set(shape::State::grounded);
 
-	svc::playerLocator.get().behavior.facing_lr = behavior::DIR_LR::LEFT;
 	svc::playerLocator.get().update_weapon();
 	svc::playerLocator.get().update_animation();
 	svc::playerLocator.get().update_sprite();
 	svc::playerLocator.get().update_direction();
 	svc::playerLocator.get().apparent_position.x = svc::playerLocator.get().collider.physics.position.x + player::PLAYER_WIDTH / 2;
 	svc::playerLocator.get().apparent_position.y = svc::playerLocator.get().collider.physics.position.y;
-	svc::playerLocator.get().update_behavior();
+	svc::playerLocator.get().update_animation();
 	svc::playerLocator.get().update_antennae();
 }
 

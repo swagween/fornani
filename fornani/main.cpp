@@ -196,6 +196,16 @@ static void show_overlay() {
 							ImGui::Text("Complete? %s", svc::playerLocator.get().animation.animation.complete() ? "Yes" : "No");
 							ImGui::Text("One Off? %s", svc::playerLocator.get().animation.animation.params.one_off ? "Yes" : "No");
 							ImGui::Text("Repeat Last Frame? %s", svc::playerLocator.get().animation.animation.params.repeat_last_frame ? "Yes" : "No");
+							ImGui::Separator();
+							ImGui::Text("idle	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::idle) ? "flag set" : "");
+							ImGui::Text("run	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::run) ? "flag set" : "");
+							ImGui::Text("stop	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::stop) ? "flag set" : "");
+							ImGui::Text("turn	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::turn) ? "flag set" : "");
+							ImGui::Text("jsquat	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::jumpsquat) ? "flag set" : "");
+							ImGui::Text("rise	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::rise) ? "flag set" : "");
+							ImGui::Text("suspend: %s", svc::playerLocator.get().animation.state.test(player::AnimState::suspend) ? "flag set" : "");
+							ImGui::Text("fall	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::fall) ? "flag set" : "");
+							ImGui::Text("land	: %s", svc::playerLocator.get().animation.state.test(player::AnimState::land) ? "flag set" : "");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Stats")) {

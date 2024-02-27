@@ -14,7 +14,6 @@ void Dojo::init(std::string const& load_path) {
 	svc::playerLocator.get().reset_flags();
 
 	map.load(load_path);
-	svc::playerLocator.get().behavior.current_state = behavior::Behavior(behavior::idle);
 	tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
 	for (int i = 0; i < 16; ++i) {
 		for (int j = 0; j < 16; ++j) {

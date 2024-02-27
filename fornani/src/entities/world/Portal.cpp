@@ -40,7 +40,7 @@ void Portal::handle_activation(int room_id, bool& fade_out, bool& done) {
 		}
 		// player just entered room via border portal
 		if (!ready && activate_on_contact) {
-			svc::playerLocator.get().behavior.facing_lr = svc::playerLocator.get().entered_from();
+			svc::playerLocator.get().controller.direction.lr = svc::playerLocator.get().entered_from();
 			svc::playerLocator.get().restrict_inputs();
 			svc::playerLocator.get().autonomous_walk();
 		}

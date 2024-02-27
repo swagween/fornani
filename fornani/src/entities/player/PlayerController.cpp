@@ -126,6 +126,8 @@ std::optional<float> PlayerController::get_controller_state(ControllerInput key)
 	}
 }
 
+bool PlayerController::nothing_pressed() { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::jump] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
+
 bool PlayerController::moving() { return key_map[ControllerInput::move_x] != 0.f; }
 
 bool PlayerController::moving_left() { return key_map[ControllerInput::move_x] < 0.f; }

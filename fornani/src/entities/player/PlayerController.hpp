@@ -14,7 +14,7 @@ namespace controllers {
 
 	constexpr static int jump_time{16};
 
-enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect };
+enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect};
 enum class MovementState { restricted, grounded };
 enum class Jump {		// true if jump is pressed and permanently false once released, until player touches the ground again (USED)
 	trigger,		// true for one frame if jump is pressed and the player is grounded (UNUSED)
@@ -56,6 +56,8 @@ class PlayerController {
 	float arms_switch();
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
+
+	bool nothing_pressed();
 
 	bool moving();
 	bool moving_left();

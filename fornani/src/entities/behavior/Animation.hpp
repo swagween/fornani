@@ -40,6 +40,7 @@ struct Animation {
 
 	bool active() const;
 	bool complete() const;
+	bool keyframe_over() const;
 
 	int current_frame{};
 	int counter{};
