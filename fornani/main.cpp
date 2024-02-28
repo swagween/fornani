@@ -313,6 +313,7 @@ static void show_overlay() {
 					ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().position.x, svc::cameraLocator.get().position.y);
 					ImGui::SliderFloat("Camera X Friction", &svc::cameraLocator.get().physics.ground_friction.x, 0.8f, 1.f, "%.5f");
 					ImGui::SliderFloat("Camera Y Friction", &svc::cameraLocator.get().physics.ground_friction.y, 0.8f, 1.f, "%.5f");
+					ImGui::SliderFloat("Camera Grav Force", &svc::cameraLocator.get().grav_force, 0.003f, 0.03f, "%.5f");
 					ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
 					ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
 					if (ImGui::Button("Save Screenshot")) { save_screenshot(); }
