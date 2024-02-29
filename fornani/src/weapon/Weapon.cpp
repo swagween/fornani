@@ -4,12 +4,30 @@
 
 namespace arms {
 
+	Weapon::Weapon(int id) : id(id) {
+	
+		label = svc::dataLocator.get().weapon["weapons"][0]["label"].as_string();
+
+		attributes.automatic = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["automatic"].as<bool>();
+		attributes.boomerang = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["boomerang"].as<bool>();
+		attributes.rate = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["rate"].as<int>();
+		attributes.cooldown_time = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["cooldown_time"].as<int>();
+		attributes.recoil = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["recoil"].as<float>();
+		//attributes.ui_color = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["ui_color"].as<int>();
+
+		projectile = Projectile(id);
+
+	
+	}
+
 Weapon::Weapon(int id, std::string lbl, WEAPON_TYPE weapon_type, WeaponAttributes const& wa, ProjectileStats const& ps, vfx::ElementBehavior const spr, ProjectileAnimation const& pa, RENDER_TYPE rt, sf::Vector2<int> dim,
 			   sf::Vector2<float> proj_dim)
 	: id(id), label(lbl), type(weapon_type), attributes(wa), sprite_dimensions(dim) {
+
 	projectile = Projectile(ps, components::PhysicsComponent(), pa, weapon_type, rt, proj_dim);
 	spray = vfx::Emitter(spr, burst, spray_color.at(type));
 	barrel_point = {sprite_position.x + 18, sprite_position.y + 1};
+
 }
 
 void Weapon::update() {

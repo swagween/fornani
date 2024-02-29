@@ -273,39 +273,39 @@ static void show_overlay() {
 				}
 				if (ImGui::BeginTabItem("Weapon")) {
 					if (ImGui::Button("Toggle Weapons")) {
-						if (svc::playerLocator.get().weapons_hotbar.empty()) {
-							svc::playerLocator.get().weapons_hotbar = {arms::WEAPON_TYPE::BRYNS_GUN, arms::WEAPON_TYPE::PLASMER, arms::WEAPON_TYPE::CLOVER, arms::WEAPON_TYPE::NOVA};
-							svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
+						if (svc::playerLocator.get().arsenal.loadout.empty()) {
+							//svc::playerLocator.get().weapons_hotbar = {arms::WEAPON_TYPE::BRYNS_GUN, arms::WEAPON_TYPE::PLASMER, arms::WEAPON_TYPE::CLOVER, arms::WEAPON_TYPE::NOVA};
+							//svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
+							svc::playerLocator.get().arsenal.push_to_loadout(0);
 						} else {
-							svc::playerLocator.get().weapons_hotbar.clear();
+							//svc::playerLocator.get().weapons_hotbar.clear();
+							svc::playerLocator.get().arsenal.loadout = {};
 						}
 					}
 
-					ImGui::Text("Firing Direction LR: %s", svc::playerLocator.get().loadout.get_equipped_weapon().firing_direction.print_lr().c_str());
-					ImGui::Text("Firing Direction UND : %s", svc::playerLocator.get().loadout.get_equipped_weapon().firing_direction.print_und().c_str());
+					ImGui::Text("Firing Direction LR: %s", svc::playerLocator.get().equipped_weapon().firing_direction.print_lr().c_str());
+					ImGui::Text("Firing Direction UND : %s", svc::playerLocator.get().equipped_weapon().firing_direction.print_und().c_str());
 
-					ImGui::Text("Can Shoot? %s", svc::playerLocator.get().can_shoot() ? "Yes" : "No");
-					ImGui::Text("Cooling Down? %s", svc::playerLocator.get().loadout.get_equipped_weapon().cooling_down() ? "Yes" : "No");
-					ImGui::Text("Cooldown Time %i", svc::playerLocator.get().loadout.get_equipped_weapon().cooldown_counter);
-
+					ImGui::Text("Cooling Down? %s", svc::playerLocator.get().equipped_weapon().cooling_down() ? "Yes" : "No");
+					ImGui::Text("Cooldown Time %i", svc::playerLocator.get().equipped_weapon().cooldown_counter);
 
 					ImGui::Separator();
-					ImGui::Text("Equipped Weapon: %s", svc::playerLocator.get().loadout.get_equipped_weapon().label.c_str());
+					ImGui::Text("Equipped Weapon: %s", svc::playerLocator.get().equipped_weapon().label.c_str());
 					ImGui::Separator();
 					ImGui::Text("Weapon Stats: ");
 					ImGui::Indent();
-					ImGui::Text("Rate: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().attributes.rate);
-					ImGui::Text("Cooldown: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().attributes.cooldown_time);
-					ImGui::Text("Recoil: (%.2f)", svc::playerLocator.get().loadout.get_equipped_weapon().attributes.recoil);
+					ImGui::Text("Rate: (%i)", svc::playerLocator.get().equipped_weapon().attributes.rate);
+					ImGui::Text("Cooldown: (%i)", svc::playerLocator.get().equipped_weapon().attributes.cooldown_time);
+					ImGui::Text("Recoil: (%.2f)", svc::playerLocator.get().equipped_weapon().attributes.recoil);
 					ImGui::Separator();
 					ImGui::Unindent();
 					ImGui::Text("Projectile Stats: ");
 					ImGui::Indent();
-					ImGui::Text("Damage: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.damage);
-					ImGui::Text("Range: (%i)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.range);
-					ImGui::Text("Speed: (%.2f)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.stats.speed);
-					ImGui::Text("Velocity: (%.4f,%.4f)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.velocity.x, svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.velocity.y);
-					ImGui::Text("Position: (%.4f,%.4f)", svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.position.x, svc::playerLocator.get().loadout.get_equipped_weapon().projectile.physics.position.y);
+					ImGui::Text("Damage: (%i)", svc::playerLocator.get().equipped_weapon().projectile.stats.damage);
+					ImGui::Text("Range: (%i)", svc::playerLocator.get().equipped_weapon().projectile.stats.range);
+					ImGui::Text("Speed: (%.2f)", svc::playerLocator.get().equipped_weapon().projectile.stats.speed);
+					ImGui::Text("Velocity: (%.4f,%.4f)", svc::playerLocator.get().equipped_weapon().projectile.physics.velocity.x, svc::playerLocator.get().equipped_weapon().projectile.physics.velocity.y);
+					ImGui::Text("Position: (%.4f,%.4f)", svc::playerLocator.get().equipped_weapon().projectile.physics.position.x, svc::playerLocator.get().equipped_weapon().projectile.physics.position.y);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("General")) {
@@ -618,6 +618,9 @@ void run(char** argv) {
 		// game logic and rendering
 		svc::tickerLocator.get().tick([] { SM.get_current_state().tick_update(); });
 		SM.get_current_state().frame_update();
+
+		//play sounds
+		svc::soundboardLocator.get().play_sounds();
 		
 		SM.get_current_state().debug_mode = debug_mode;
 

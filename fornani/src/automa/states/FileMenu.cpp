@@ -63,24 +63,24 @@ void FileMenu::handle_events(sf::Event& event) {
 			constrain_selection();
 			svc::dataLocator.get().load_blank_save();
 			svc::dataLocator.get().load_progress(file_selection);
-			svc::assetLocator.get().menu_shift.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Up) {
 			--file_selection;
 			constrain_selection();
 			svc::dataLocator.get().load_blank_save();
 			svc::dataLocator.get().load_progress(file_selection);
-			svc::assetLocator.get().menu_shift.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Left) {
 			svc::stateControllerLocator.get().exit_submenu = true;
-			svc::assetLocator.get().menu_back.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::backward_switch);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			constrain_selection();
 			svc::dataLocator.get().load_progress(file_selection, true);
 			svc::stateControllerLocator.get().save_loaded = true;
-			svc::assetLocator.get().click.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::select);
 		}
 	}
 }

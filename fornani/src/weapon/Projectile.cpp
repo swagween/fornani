@@ -11,6 +11,16 @@ Projectile::Projectile() {
 	seed();
 };
 
+Projectile::Projectile(int id) {
+
+	
+	stats.damage = svc::dataLocator.get().weapon["weapons"][0]["projectile"]["damage"].as<int>();
+
+	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
+	physics.velocity.x = stats.speed;
+	seed();
+}
+
 Projectile::Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t, RENDER_TYPE rt, sf::Vector2<float> dim) : stats(s), physics(p), anim(a), type(t), render_type(rt) {
 	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physics.velocity.x = stats.speed;

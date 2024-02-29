@@ -80,37 +80,38 @@ void MainMenu::handle_events(sf::Event& event) {
 			selection = (menu_selection_id.at(selection) % 3 == 2)
 							? MenuSelection::new_game
 							: (MenuSelection)(menu_selection_id.at(selection) + 1);
-			svc::assetLocator.get().menu_shift.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Up) {
 			selection = (menu_selection_id.at(selection) % 3 == 0)
 							? MenuSelection::options
 							: (MenuSelection)(menu_selection_id.at(selection) - 1);
-			svc::assetLocator.get().menu_shift.play();
+
+			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			if (selection == MenuSelection::new_game) {
 
 				svc::dataLocator.get().load_blank_save(true);
 				svc::stateControllerLocator.get().save_loaded = true;
-				svc::assetLocator.get().click.play();
+				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::load_game) {
 
 				svc::stateControllerLocator.get().submenu = menu_type::file_select;
 				svc::stateControllerLocator.get().trigger_submenu = true;
-				svc::assetLocator.get().click.play();
+				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::options) {
 
 				// todo: make options menu
-				svc::assetLocator.get().click.play();
+				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 		}
 		if (event.key.code == sf::Keyboard::Right && selection == MenuSelection::load_game) {
 			svc::stateControllerLocator.get().submenu = menu_type::file_select;
 			svc::stateControllerLocator.get().trigger_submenu = true;
-			svc::assetLocator.get().menu_next.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::forward_switch);
 		}
 	}
 }

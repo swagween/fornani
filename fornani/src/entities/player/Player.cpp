@@ -10,6 +10,7 @@ Player::Player() {}
 void Player::init() {
 
 	svc::dataLocator.get().load_player_params();
+	arsenal.init();
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
@@ -56,18 +57,18 @@ void Player::update(Time dt) {
 	controller.update();
 
 	// update loadout
-	if (!weapons_hotbar.empty()) {
+	if (!arsenal.loadout.empty()) {
 		if (controller.arms_switch() == -1.f) {
 			current_weapon--;
-			if (current_weapon < 0) { current_weapon = (int)weapons_hotbar.size() - 1; }
-			loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
-			flags.sounds.set(Soundboard::weapon_swap);
+			if (current_weapon < 0) { current_weapon = (int)arsenal.loadout.size() - 1; }
+			//loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+			svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
 		}
 		if (controller.arms_switch() == 1.f) {
 			current_weapon++;
-			if (current_weapon > weapons_hotbar.size() - 1) { current_weapon = 0; }
-			loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
-			flags.sounds.set(Soundboard::weapon_swap);
+			if (current_weapon > arsenal.loadout.size() - 1) { current_weapon = 0; }
+			//loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+			svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
 		}
 	}
 
@@ -88,6 +89,7 @@ void Player::update(Time dt) {
 			controller.start_jumping();
 			collider.physics.acceleration.y = -physics_stats.jump_velocity;
 			animation.state.set(AnimState::rise);
+			svc::soundboardLocator.get().player.set(audio::Player::jump);
 		} else if (controller.jump_released() && controller.jumping() && !controller.jump_held() && collider.physics.velocity.y < 0) {
 			collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 			controller.reset_jump();
@@ -112,9 +114,9 @@ void Player::update(Time dt) {
 		}
 
 		// weapon physics
-		if (controller.shot() && !weapons_hotbar.empty()) {
-			if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -loadout.get_equipped_weapon().attributes.recoil / 80; }
-			if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += loadout.get_equipped_weapon().attributes.recoil; }
+		if (controller.shot() && !arsenal.loadout.empty()) {
+			if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -equipped_weapon().attributes.recoil / 80; }
+			if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
 		}
 
 		if (flags.movement.test(Movement::move_left) && flags.movement.test(Movement::move_right)) { collider.physics.acceleration.x = 0.0f; }
@@ -128,7 +130,6 @@ void Player::update(Time dt) {
 
 	update_invincibility();
 
-	play_sounds();
 	apparent_position.x = collider.physics.position.x + PLAYER_WIDTH / 2;
 	apparent_position.y = collider.physics.position.y;
 	
@@ -143,7 +144,7 @@ void Player::update(Time dt) {
 	// antennae!
 	update_antennae();
 
-	if (!weapons_hotbar.empty()) {
+	if (!arsenal.loadout.empty()) {
 		assign_texture(svc::assetLocator.get().t_nani);
 		sprite.setTexture(svc::assetLocator.get().t_nani);
 	} else {
@@ -188,9 +189,9 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		}
 	}
 
-	if (!weapons_hotbar.empty()) {
-		loadout.get_equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(loadout.get_equipped_weapon().type));
-		loadout.get_equipped_weapon().render(win, campos);
+	if (!arsenal.loadout.empty()) {
+		equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(equipped_weapon().type));
+		equipped_weapon().render(win, campos);
 	}
 }
 
@@ -228,7 +229,7 @@ void Player::update_animation() {
 }
 
 void Player::update_sprite() {
-	if (weapons_hotbar.empty()) { sprite.setTexture(svc::assetLocator.get().t_nani_unarmed); }
+	if (arsenal.loadout.empty()) { sprite.setTexture(svc::assetLocator.get().t_nani_unarmed); }
 }
 
 void Player::flash_sprite() {
@@ -268,7 +269,7 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon() {
-	loadout.get_equipped_weapon().update();
+	equipped_weapon().update();
 	if (controller.facing_right()) {
 		hand_position = {28, 36};
 	} else {
@@ -281,7 +282,7 @@ void Player::walk() {
 	if (controller.moving_right() && !collider.flags.test(shape::State::has_right_collision)) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (controller.moving_left() && !collider.flags.test(shape::State::has_left_collision)) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
-		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { flags.sounds.set(Soundboard::step); }
+		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().player.set(audio::Player::step); }
 	}
 }
 
@@ -290,7 +291,7 @@ void Player::autonomous_walk() {
 	if (controller.facing_left()) { collider.physics.acceleration.x *= -1.f; }
 	flags.movement.set(Movement::autonomous_walk);
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
-		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { flags.sounds.set(Soundboard::step); }
+		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().player.set(audio::Player::step); }
 	}
 }
 
@@ -301,7 +302,7 @@ void Player::hurt(int amount = 1) {
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
 		make_invincible();
-		flags.sounds.set(Soundboard::hurt);
+		svc::soundboardLocator.get().player.set(audio::Player::hurt);
 		just_hurt = true;
 	}
 
@@ -351,7 +352,13 @@ bool Player::moving() { return (controller.moving() || flags.movement.test(Movem
 
 bool Player::moving_at_all() { return (controller.moving() || flags.movement.test(Movement::autonomous_walk) || flags.movement.test(Movement::freefalling) || flags.movement.test(Movement::entered_freefall)); }
 
-bool Player::can_shoot() { return controller.shot() && !loadout.get_equipped_weapon().cooling_down(); }
+bool Player::fire_weapon() {
+	if (controller.shot() && !equipped_weapon().cooling_down()) {
+		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(equipped_weapon().type));
+		return true;
+	}
+	return false;
+}
 
 void Player::make_invincible() { counters.invincibility = INVINCIBILITY_TIME; }
 
@@ -381,28 +388,20 @@ void Player::total_reset() {
 	start_over();
 	collider.physics.zero();
 	reset_flags();
-	weapons_hotbar.clear();
+	arsenal.loadout.clear();
 	update_antennae();
 }
 
-dir::LR Player::entered_from() { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
-
-void Player::play_sounds() {
-
-	if (flags.sounds.test(Soundboard::land)) { svc::assetLocator.get().landed.play(); }
-	if (flags.sounds.test(Soundboard::jump)) { svc::assetLocator.get().jump.play(); }
-	if (flags.sounds.test(Soundboard::step)) {
-		util::Random r{};
-		float randp = r.random_range_float(0.0f, 0.1f);
-		svc::assetLocator.get().step.setPitch(1.0f + randp);
-
-		svc::assetLocator.get().step.setVolume(60);
-		svc::assetLocator.get().step.play();
+arms::Weapon& Player::equipped_weapon() {
+	if (arsenal.loadout.empty()) {
+		//default to bryns gun
+		return arsenal.armory.at(0);
+	} else {
+		return arsenal.loadout.at(current_weapon);
 	}
-	if (flags.sounds.test(Soundboard::weapon_swap)) { svc::assetLocator.get().arms_switch.play(); }
-	if (flags.sounds.test(Soundboard::hurt)) { svc::assetLocator.get().hurt.play(); }
-	flags.sounds = {};
 }
+
+dir::LR Player::entered_from() { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
 
 std::string Player::print_direction(bool lr) {
 	if (lr) {

@@ -19,6 +19,7 @@
 #include "../utils/Random.hpp"
 #include "AssetManager.hpp"
 #include "DataManager.hpp"
+#include "../audio/Soundboard.hpp"
 
 namespace svc {
 
@@ -39,5 +40,6 @@ inline auto globalBitFlagsLocator = forloop::Service<util::BitFlags<global_flags
 inline auto inputStateLocator = forloop::Service<util::InputState>::Instance{};
 inline auto counterLocator = forloop::Service<std::array<uint16_t, num_counters>>::Instance{};
 inline auto floatReadoutLocator = forloop::Service<float>::Instance{};
+inline auto soundboardLocator = forloop::Service<audio::Soundboard>::Instance{};
 
 } // namespace svc

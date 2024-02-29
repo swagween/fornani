@@ -9,6 +9,28 @@
 
 namespace lookup {
 
+	inline std::unordered_map<arms::WEAPON_TYPE, audio::Weapon> gun_sound{
+	{arms::WEAPON_TYPE::BRYNS_GUN, audio::Weapon::bryns_gun},
+	 {arms::WEAPON_TYPE::PLASMER, audio::Weapon::plasmer},
+		 {arms::WEAPON_TYPE::WASP, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::BLIZZARD, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::BISMUTH, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::UNDERDOG, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::ELECTRON, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::CLOVER, audio::Weapon::clover},
+		 {arms::WEAPON_TYPE::TRITON, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::WILLET_585, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::QUASAR, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::NOVA, audio::Weapon::nova},
+		 {arms::WEAPON_TYPE::VENOM, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::TWIN, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::CARISE, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::STINGER, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::TUSK, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::TOMAHAWK, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::SKYCORPS_AR, audio::Weapon::bryns_gun}
+	};
+
 	inline std::unordered_map<arms::WEAPON_TYPE, std::vector<sf::Sprite>&> weapon_sprites{
 		{arms::WEAPON_TYPE::BRYNS_GUN,  svc::assetLocator.get().sp_bryns_gun},
 		{arms::WEAPON_TYPE::PLASMER,    svc::assetLocator.get().sp_plasmer  },

@@ -83,6 +83,7 @@ class Projectile {
 
   public:
 	Projectile();
+	Projectile(int id);
 	Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t, RENDER_TYPE rt, sf::Vector2<float> dim);
 
 	void update();

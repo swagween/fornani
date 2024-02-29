@@ -73,14 +73,6 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class Soundboard {
-	jump,
-	step,
-	land,
-	weapon_swap,
-	hurt,
-};
-
 enum class Jump {
 	hold,		 // true if jump is pressed and permanently false once released, until player touches the ground again
 	trigger,	 // true for one frame if jump is pressed and the player is grounded
@@ -119,7 +111,6 @@ enum class Input { restricted, no_anim, exit_request, inspecting, inspecting_tri
 enum class State { alive };
 
 struct PlayerFlags {
-	util::BitFlags<Soundboard> sounds{};
 	util::BitFlags<Jump> jump{};
 	util::BitFlags<Movement> movement{};
 	util::BitFlags<Input> input{};
@@ -159,7 +150,7 @@ class Player {
 	bool grounded() const;
 	bool moving();
 	bool moving_at_all();
-	bool can_shoot();
+	bool fire_weapon();
 
 	// level events
 	void make_invincible();
@@ -171,11 +162,10 @@ class Player {
 	void reset_flags();
 	void total_reset();
 
+	arms::Weapon& equipped_weapon();
+
 	// map helpers
 	dir::LR entered_from();
-
-	// sound
-	void play_sounds();
 
 	// for debug mode
 	std::string print_direction(bool lr);
@@ -185,8 +175,9 @@ class Player {
 	shape::Collider collider{};
 	PlayerAnimation animation{};
 	behavior::DIR last_dir{};
-	arms::Arsenal loadout{};
-	std::vector<arms::WEAPON_TYPE> weapons_hotbar{};
+
+	//weapons
+	arms::Arsenal arsenal{};
 	int current_weapon{};
 
 	sf::Vector2<float> apparent_position{};

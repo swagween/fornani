@@ -556,21 +556,22 @@ void Map::render_console(sf::RenderWindow& win) {
 }
 
 void Map::spawn_projectile_at(sf::Vector2<float> pos) {
-	active_projectiles.push_back(svc::playerLocator.get().loadout.get_equipped_weapon().projectile);
+	active_projectiles.push_back(svc::playerLocator.get().equipped_weapon().projectile);
 	active_projectiles.back().set_sprite();
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed();
 	active_projectiles.back().update();
 	active_projectiles.back().sync_position();
 
-	active_emitters.push_back(svc::playerLocator.get().loadout.get_equipped_weapon().spray);
+	active_emitters.push_back(svc::playerLocator.get().equipped_weapon().spray);
 	active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
 	active_emitters.back().set_position(pos.x, pos.y);
-	active_emitters.back().set_direction(svc::playerLocator.get().loadout.get_equipped_weapon().firing_direction);
+	active_emitters.back().set_direction(svc::playerLocator.get().equipped_weapon().firing_direction);
 	active_emitters.back().update();
 
+
 	// temp, I should do this somewhere else
-	if (svc::playerLocator.get().loadout.get_equipped_weapon().type == arms::WEAPON_TYPE::PLASMER) {
+	/*if (svc::playerLocator.get().loadout.get_equipped_weapon().type == arms::WEAPON_TYPE::PLASMER) {
 		svc::assetLocator.get().plasmer_shot.play();
 	} else if (svc::playerLocator.get().loadout.get_equipped_weapon().type == arms::WEAPON_TYPE::BRYNS_GUN) {
 		svc::assetLocator.get().bg_shot.play();
@@ -579,7 +580,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 		float randp = r.random_range_float(-0.3f, 0.3f);
 		svc::assetLocator.get().pop_mid.setPitch(1 + randp);
 		svc::assetLocator.get().pop_mid.play();
-	}
+	}*/
 }
 
 void Map::spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter) {
@@ -606,11 +607,11 @@ void Map::manage_projectiles() {
 	std::erase_if(active_emitters, [](auto const& p) { return p.particles.empty(); });
 	std::erase_if(critters, [](auto const& c) { return c->condition.hp <= 0; });
 
-	if (!svc::playerLocator.get().weapons_hotbar.empty()) {
-		if (svc::playerLocator.get().can_shoot()) {
-			spawn_projectile_at(svc::playerLocator.get().loadout.get_equipped_weapon().barrel_point);
-			svc::playerLocator.get().loadout.get_equipped_weapon().shoot();
-			if (!svc::playerLocator.get().loadout.get_equipped_weapon().attributes.automatic) { svc::playerLocator.get().controller.set_shot(false); }
+	if (!svc::playerLocator.get().arsenal.loadout.empty()) {
+		if (svc::playerLocator.get().fire_weapon()) {
+			spawn_projectile_at(svc::playerLocator.get().equipped_weapon().barrel_point);
+			svc::playerLocator.get().equipped_weapon().shoot();
+			if (!svc::playerLocator.get().equipped_weapon().attributes.automatic) { svc::playerLocator.get().controller.set_shot(false); }
 		}
 	}
 
