@@ -135,9 +135,9 @@ class HUD {
 			}
 		}
 		arms::WEAPON_TYPE curr_type = svc::playerLocator.get().equipped_weapon().type;
-		sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
+		sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
 		if (!svc::playerLocator.get().arsenal.loadout.empty()) {
-			win.draw(sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color));
+			win.draw(sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color));
 			svc::counterLocator.get().at(svc::draw_calls)++;
 		}
 	}

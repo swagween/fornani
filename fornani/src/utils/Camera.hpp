@@ -94,7 +94,8 @@ class Camera {
 		float force_x = mx - gx;
 		float force_y = my - gy;
 		float mag = sqrt((force_x * force_x) + (force_y * force_y));
-		float str = grav_force / mag * mag;
+		float str{}; 
+		if (mag != 0.0000f) { str = grav_force / mag * mag; }
 		force_x *= str;
 		force_y *= str;
 		physics.apply_force({force_x, force_y});

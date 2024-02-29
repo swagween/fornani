@@ -277,6 +277,7 @@ static void show_overlay() {
 							//svc::playerLocator.get().weapons_hotbar = {arms::WEAPON_TYPE::BRYNS_GUN, arms::WEAPON_TYPE::PLASMER, arms::WEAPON_TYPE::CLOVER, arms::WEAPON_TYPE::NOVA};
 							//svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
 							svc::playerLocator.get().arsenal.push_to_loadout(0);
+							svc::playerLocator.get().arsenal.push_to_loadout(1);
 						} else {
 							//svc::playerLocator.get().weapons_hotbar.clear();
 							svc::playerLocator.get().arsenal.loadout = {};
@@ -291,6 +292,11 @@ static void show_overlay() {
 
 					ImGui::Separator();
 					ImGui::Text("Equipped Weapon: %s", svc::playerLocator.get().equipped_weapon().label.c_str());
+					ImGui::Text("UI color: %i", (int)svc::playerLocator.get().equipped_weapon().attributes.ui_color);
+					ImGui::Text("Sprite Dimensions X: %.2f", (int)svc::playerLocator.get().equipped_weapon().sprite_dimensions.x);
+					ImGui::Text("Sprite Dimensions Y: %.2f", (int)svc::playerLocator.get().equipped_weapon().sprite_dimensions.y);
+					ImGui::Text("Barrel Point X: %f", (int)svc::playerLocator.get().equipped_weapon().barrel_point.x);
+					ImGui::Text("Barrel Point Y: %f", (int)svc::playerLocator.get().equipped_weapon().barrel_point.y);
 					ImGui::Separator();
 					ImGui::Text("Weapon Stats: ");
 					ImGui::Indent();
@@ -301,7 +307,7 @@ static void show_overlay() {
 					ImGui::Unindent();
 					ImGui::Text("Projectile Stats: ");
 					ImGui::Indent();
-					ImGui::Text("Damage: (%i)", svc::playerLocator.get().equipped_weapon().projectile.stats.damage);
+					ImGui::Text("Damage: (%i)", svc::playerLocator.get().equipped_weapon().projectile.stats.base_damage);
 					ImGui::Text("Range: (%i)", svc::playerLocator.get().equipped_weapon().projectile.stats.range);
 					ImGui::Text("Speed: (%.2f)", svc::playerLocator.get().equipped_weapon().projectile.stats.speed);
 					ImGui::Text("Velocity: (%.4f,%.4f)", svc::playerLocator.get().equipped_weapon().projectile.physics.velocity.x, svc::playerLocator.get().equipped_weapon().projectile.physics.velocity.y);

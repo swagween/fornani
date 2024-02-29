@@ -43,27 +43,25 @@ enum class WEAPON_TYPE {
 
 enum class TEAMS { NANI, SKYCORPS, BEASTS };
 
-//enum class WEAPON_DIR { LEFT, RIGHT, UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT };
-
-//enum class FIRING_DIRECTION { LEFT, RIGHT, UP, DOWN };
-
 enum class RENDER_TYPE { ANIMATED, SINGLE_SPRITE, MULTI_SPRITE };
 
-const sf::Vector2<float> DEFAULT_DIMENSIONS{8.0, 8.0};
+sf::Vector2<float> const DEFAULT_DIMENSIONS{8.0, 8.0};
 int const history_limit{4};
 
 struct ProjectileStats {
 
-	int damage{};
+	int base_damage{};
 	int range{};
 
 	float speed{};
 	float variance{};
-	float stun{};
+	float stun_time{};
 	float knockback{};
 
 	bool persistent{};
-	bool spray{};
+
+	float acceleration_factor{};
+	float dampen_factor{};
 
 	int range_variance{};
 };
@@ -84,7 +82,6 @@ class Projectile {
   public:
 	Projectile();
 	Projectile(int id);
-	Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t, RENDER_TYPE rt, sf::Vector2<float> dim);
 
 	void update();
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);

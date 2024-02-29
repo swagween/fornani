@@ -4,30 +4,44 @@
 
 namespace arms {
 
-	Weapon::Weapon(int id) : id(id) {
-	
-		label = svc::dataLocator.get().weapon["weapons"][0]["label"].as_string();
+Weapon::Weapon(int id) : id(id) {
 
-		attributes.automatic = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["automatic"].as<bool>();
-		attributes.boomerang = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["boomerang"].as<bool>();
-		attributes.rate = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["rate"].as<int>();
-		attributes.cooldown_time = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["cooldown_time"].as<int>();
-		attributes.recoil = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["recoil"].as<float>();
-		//attributes.ui_color = svc::dataLocator.get().weapon["weapons"][0]["attributes"]["ui_color"].as<int>();
+	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id];
 
-		projectile = Projectile(id);
+	label = in_data["label"].as_string();
+	type = index_to_type.at(id);
 
-	
-	}
+	sprite_dimensions.x = in_data["dimensions"]["x"].as<int>();
+	sprite_dimensions.y = in_data["dimensions"]["y"].as<int>();
 
-Weapon::Weapon(int id, std::string lbl, WEAPON_TYPE weapon_type, WeaponAttributes const& wa, ProjectileStats const& ps, vfx::ElementBehavior const spr, ProjectileAnimation const& pa, RENDER_TYPE rt, sf::Vector2<int> dim,
-			   sf::Vector2<float> proj_dim)
-	: id(id), label(lbl), type(weapon_type), attributes(wa), sprite_dimensions(dim) {
+	attributes.barrel_position.at(0) = in_data["barrel_point"]["x"].as<float>();
+	attributes.barrel_position.at(1) = in_data["barrel_point"]["y"].as<float>();
 
-	projectile = Projectile(ps, components::PhysicsComponent(), pa, weapon_type, rt, proj_dim);
-	spray = vfx::Emitter(spr, burst, spray_color.at(type));
-	barrel_point = {sprite_position.x + 18, sprite_position.y + 1};
+	attributes.automatic = (bool)in_data["attributes"]["automatic"].as_bool();
+	attributes.boomerang = (bool)in_data["attributes"]["boomerang"].as_bool();
+	attributes.rate = in_data["attributes"]["rate"].as<int>();
+	attributes.cooldown_time = in_data["attributes"]["cooldown_time"].as<int>();
+	attributes.recoil = in_data["attributes"]["recoil"].as<float>();
+	attributes.ui_color = (COLOR_CODE)in_data["attributes"]["ui_color"].as<int>();
 
+	spray_behavior.rate = in_data["spray"]["particle"]["rate"].as<int>();
+	spray_behavior.rate_variance = in_data["spray"]["particle"]["rate_variance"].as<int>();
+	spray_behavior.expulsion_force = in_data["spray"]["particle"]["expulsion_force"].as<float>();
+	spray_behavior.expulsion_variance = in_data["spray"]["particle"]["expulsion_variance"].as<float>();
+	spray_behavior.cone = in_data["spray"]["particle"]["cone"].as<int>();
+	spray_behavior.grav = in_data["spray"]["particle"]["grav"].as<int>();
+	spray_behavior.grav_variance = in_data["spray"]["particle"]["grav_variance"].as<int>();
+	spray_behavior.x_friction = in_data["spray"]["particle"]["x_friction"].as<int>();
+	spray_behavior.y_friction = in_data["spray"]["particle"]["y_friction"].as<int>();
+
+	spray_stats.lifespan = in_data["spray"]["emitter"]["lifespan"].as<int>();
+	spray_stats.lifespan_variance = in_data["spray"]["emitter"]["lifespan_variance"].as<int>();
+	spray_stats.particle_lifespan = in_data["spray"]["emitter"]["particle_lifespan"].as<int>();
+	spray_stats.particle_lifespan_variance = in_data["spray"]["emitter"]["particle_lifespan_variance"].as<int>();
+
+	spray = vfx::Emitter(spray_behavior, spray_stats, spray_color.at(type));
+
+	projectile = Projectile(id);
 }
 
 void Weapon::update() {

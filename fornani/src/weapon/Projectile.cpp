@@ -13,15 +13,31 @@ Projectile::Projectile() {
 
 Projectile::Projectile(int id) {
 
-	
-	stats.damage = svc::dataLocator.get().weapon["weapons"][0]["projectile"]["damage"].as<int>();
+	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id]["projectile"];
 
-	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
-	physics.velocity.x = stats.speed;
-	seed();
-}
+	type = index_to_type.at(id);
 
-Projectile::Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t, RENDER_TYPE rt, sf::Vector2<float> dim) : stats(s), physics(p), anim(a), type(t), render_type(rt) {
+	stats.base_damage = in_data["attributes"]["base_damage"].as<int>();
+	stats.range = in_data["attributes"]["range"].as<int>();
+	stats.speed = in_data["attributes"]["speed"].as<int>();
+	stats.variance = in_data["attributes"]["variance"].as<float>();
+	stats.stun_time = in_data["attributes"]["stun_time"].as<float>();
+	stats.knockback = in_data["attributes"]["knockback"].as<float>();
+	stats.persistent = (bool)in_data["attributes"]["persistent"].as_bool();
+	stats.range_variance = in_data["attributes"]["range_variance"].as<float>();
+	stats.acceleration_factor = in_data["attributes"]["acceleration_factor"].as<float>();
+	stats.dampen_factor = in_data["attributes"]["dampen_factor"].as<float>();
+
+	anim.num_sprites = in_data["animation"]["num_sprites"].as<int>();
+	anim.num_frames = in_data["animation"]["num_frames"].as<int>();
+	anim.framerate = in_data["animation"]["framerate"].as<int>();
+
+	sf::Vector2<float> dim{};
+	dim.x = in_data["dimensions"]["x"].as<float>();
+	dim.y = in_data["dimensions"]["y"].as<float>();
+
+	render_type = RENDER_TYPE::SINGLE_SPRITE;
+
 	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physics.velocity.x = stats.speed;
 	bounding_box.dimensions = dim;
@@ -29,20 +45,6 @@ Projectile::Projectile(ProjectileStats s, components::PhysicsComponent p, Projec
 	state.set(ProjectileState::initialized);
 	seed();
 	set_sprite();
-
-	// set projectile colors
-	if (spray_color.at(t) == flcolor::periwinkle) {
-		colors.push_back(sf::Color{164, 133, 255});
-		colors.push_back(sf::Color{206, 170, 255});
-		colors.push_back(sf::Color{236, 201, 255});
-		colors.push_back(sf::Color{243, 239, 255});
-	}
-	if (spray_color.at(t) == flcolor::fucshia) {
-		colors.push_back(sf::Color{191, 0, 105});
-		colors.push_back(sf::Color{203, 39, 130});
-		colors.push_back(sf::Color{227, 27, 116});
-		colors.push_back(sf::Color{255, 0, 83});
-	}
 }
 
 void Projectile::update() {
@@ -127,7 +129,7 @@ void Projectile::destroy(bool completely) {
 		state.set(ProjectileState::destruction_initiated);
 	}
 
-	stats.damage = 0;
+	stats.base_damage = 0;
 }
 
 void Projectile::seed() {

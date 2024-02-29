@@ -305,7 +305,7 @@ void Map::update() {
 						if (critter->flags.test(critter::Flags::vulnerable)) {
 							critter->flags.set(critter::Flags::hurt);
 							critter->flags.set(critter::Flags::just_hurt);
-							critter->condition.hp -= proj.stats.damage;
+							critter->condition.hp -= proj.stats.base_damage;
 						}
 						proj.destroy(false);
 					}
@@ -313,7 +313,7 @@ void Map::update() {
 			}
 		}
 		if (proj.bounding_box.SAT(svc::playerLocator.get().collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
-			svc::playerLocator.get().hurt(proj.stats.damage);
+			svc::playerLocator.get().hurt(proj.stats.base_damage);
 			proj.destroy(false);
 		}
 	}
@@ -569,18 +569,6 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 	active_emitters.back().set_direction(svc::playerLocator.get().equipped_weapon().firing_direction);
 	active_emitters.back().update();
 
-
-	// temp, I should do this somewhere else
-	/*if (svc::playerLocator.get().loadout.get_equipped_weapon().type == arms::WEAPON_TYPE::PLASMER) {
-		svc::assetLocator.get().plasmer_shot.play();
-	} else if (svc::playerLocator.get().loadout.get_equipped_weapon().type == arms::WEAPON_TYPE::BRYNS_GUN) {
-		svc::assetLocator.get().bg_shot.play();
-	} else {
-		util::Random r{};
-		float randp = r.random_range_float(-0.3f, 0.3f);
-		svc::assetLocator.get().pop_mid.setPitch(1 + randp);
-		svc::assetLocator.get().pop_mid.play();
-	}*/
 }
 
 void Map::spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter) {
@@ -591,7 +579,7 @@ void Map::spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& 
 	active_projectiles.back().seed();
 	active_projectiles.back().update();
 
-	active_emitters.push_back(vfx::Emitter(arms::light_gun_spray, arms::burst, arms::spray_color.at(arms::WEAPON_TYPE::WASP)));
+	active_emitters.push_back(critter.weapon.spray);
 	active_emitters.back().get_physics().acceleration += critter.colliders.at(0).physics.acceleration;
 	active_emitters.back().set_position(pos.x, pos.y);
 	active_emitters.back().set_direction(critter.weapon.firing_direction);
