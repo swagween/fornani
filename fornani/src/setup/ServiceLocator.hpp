@@ -14,11 +14,14 @@
 #include "../service/Service.hpp"
 #include "../utils/Camera.hpp"
 #include "../utils/Clock.hpp"
+#include "../utils/Stopwatch.hpp"
 #include "../utils/Ticker.hpp"
 #include "../utils/InputState.hpp"
 #include "../utils/Random.hpp"
 #include "AssetManager.hpp"
 #include "DataManager.hpp"
+#include "TextManager.hpp"
+#include "../graphics/TextWriter.hpp"	
 #include "../audio/Soundboard.hpp"
 
 namespace svc {
@@ -29,9 +32,11 @@ int const num_counters = 1;
 
 inline auto assetLocator = forloop::Service<asset::AssetManager>::Instance{};
 inline auto dataLocator = forloop::Service<data::DataManager>::Instance{};
+inline auto textLocator = forloop::Service<data::TextManager>::Instance{};
 inline auto playerLocator = forloop::Service<player::Player>::Instance{};
 inline auto cameraLocator = forloop::Service<cam::Camera>::Instance{};
 inline auto clockLocator = forloop::Service<util::Clock>::Instance{};
+inline auto stopwatchLocator = forloop::Service<util::Stopwatch>::Instance{};
 inline auto tickerLocator = forloop::Service<util::Ticker>::Instance{};
 inline auto stateControllerLocator = forloop::Service<automa::StateController>::Instance{};
 inline auto consoleLocator = forloop::Service<gui::Console>::Instance{};

@@ -115,7 +115,7 @@ void Map::load(std::string const& path) {
 			p.activate_on_contact = (bool)value;
 			input.ignore();
 			input.ignore();
-			std::getline(input, p.message, '#');
+			std::getline(input, p.key, '#');
 			input >> p.scaled_position.x;
 			input.ignore();
 			input >> p.scaled_position.y;
@@ -548,11 +548,14 @@ void Map::render_console(sf::RenderWindow& win) {
 		svc::consoleLocator.get().render(win);
 		for (auto& inspectable : inspectables) {
 			if (inspectable.activated) {
-				svc::consoleLocator.get().write(win, inspectable.message);
+				svc::consoleLocator.get().load_and_launch(inspectable.key);
+				svc::consoleLocator.get().write(win);
+				//svc::consoleLocator.get().write(win, inspectable.message);
 				// svc::consoleLocator.get().write(win, "ab?:-_()#`");
 			}
 		}
 	}
+	svc::consoleLocator.get().write(win, false);
 }
 
 void Map::spawn_projectile_at(sf::Vector2<float> pos) {

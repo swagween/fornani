@@ -11,6 +11,7 @@
 #include "../../weapon/Arsenal.hpp"
 #include "PlayerController.hpp"
 #include "PlayerAnimation.hpp"
+#include "Transponder.hpp"
 
 namespace player {
 
@@ -131,6 +132,7 @@ class Player {
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
+	void update_transponder();
 	void flash_sprite();
 	void calculate_sprite_offset();
 
@@ -172,6 +174,7 @@ class Player {
 
 	//components
 	controllers::PlayerController controller{};
+	Transponder transponder{};
 	shape::Collider collider{};
 	PlayerAnimation animation{};
 	behavior::DIR last_dir{};

@@ -53,8 +53,8 @@ void Player::update(Time dt) {
 
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
-
 	controller.update();
+	update_transponder();
 
 	// update loadout
 	if (!arsenal.loadout.empty()) {
@@ -230,6 +230,17 @@ void Player::update_animation() {
 
 void Player::update_sprite() {
 	if (arsenal.loadout.empty()) { sprite.setTexture(svc::assetLocator.get().t_nani_unarmed); }
+}
+
+void Player::update_transponder() {
+	if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
+		controller.prevent_movement();
+		if (controller.transponder_skip()) { transponder.skip_ahead(); }
+		if (controller.transponder_next()) { transponder.next(); }
+		if (controller.transponder_exit()) { transponder.exit(); }
+		transponder.update();
+	}
+	transponder.end();
 }
 
 void Player::flash_sprite() {

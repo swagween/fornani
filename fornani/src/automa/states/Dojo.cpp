@@ -113,6 +113,7 @@ void Dojo::tick_update() {
 		critter->unique_update();
 		critter->flags.reset(critter::Flags::shot);
 	}
+
 	svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
 	map.debug_mode = debug_mode;
 

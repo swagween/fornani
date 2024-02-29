@@ -14,7 +14,6 @@ void DataManager::load_data() {
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
 	std::cout << "loading weapon data ...";
 	assert(!weapon.is_null());
-	assert(weapon["weapons"][0]["attributes"]["rate"].as<int>() == 42);
 	std::cout << " success!\n";
 
 	// enemies

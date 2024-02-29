@@ -116,6 +116,25 @@ static void show_overlay() {
 					}
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("Console")) {
+					ImGui::Separator();
+
+					ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
+					ImGui::Text("Console Writer Active : %s", svc::consoleLocator.get().writer.active() ? "Yes" : "No");
+					ImGui::Text("Console Writer Complete : %s", svc::consoleLocator.get().writer.complete() ? "Yes" : "No");
+					ImGui::Separator();
+					ImGui::Text("Player Transponder Skipping : %s", svc::playerLocator.get().transponder.skipped_ahead() ? "Yes" : "No");
+					ImGui::Text("Player Transponder Exited : %s", svc::playerLocator.get().transponder.exited() ? "Yes" : "No");
+					ImGui::Text("Player Transponder Requested Next : %s", svc::playerLocator.get().transponder.requested_next() ? "Yes" : "No");
+					ImGui::Separator();
+					ImGui::Text("Player Restricted? : %s", svc::playerLocator.get().controller.restricted() ? "Yes" : "No");
+					ImGui::Text("Player Inspecting? : %s", svc::playerLocator.get().controller.inspecting() ? "Yes" : "No");
+					ImGui::Separator();
+					ImGui::SliderInt("Text Size", &svc::consoleLocator.get().writer.text_size, 6, 64);
+
+
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Key States")) {
 					ImGui::Text("Shift held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::held) ? "Yes" : "No");
 					ImGui::Text("Shift triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::triggered) ? "Yes" : "No");
@@ -321,7 +340,7 @@ static void show_overlay() {
 					ImGui::SliderFloat("Camera Y Friction", &svc::cameraLocator.get().physics.ground_friction.y, 0.8f, 1.f, "%.5f");
 					ImGui::SliderFloat("Camera Grav Force", &svc::cameraLocator.get().grav_force, 0.003f, 0.03f, "%.5f");
 					ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
-					ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
+					
 					if (ImGui::Button("Save Screenshot")) { save_screenshot(); }
 					ImGui::Separator();
 					if (ImGui::Button("Toggle Greyblock Mode")) {
@@ -513,6 +532,9 @@ void run(char** argv) {
 	// data
 	svc::dataLocator.get().finder.setResourcePath(argv);
 	svc::dataLocator.get().load_data();
+	//text
+	svc::textLocator.get().finder.setResourcePath(argv);
+	svc::textLocator.get().load_data();
 	// images
 	svc::assetLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().importTextures();
@@ -599,8 +621,7 @@ void run(char** argv) {
 				}
 				if (event.key.code == sf::Keyboard::K) { svc::playerLocator.get().kill(); }
 				if (event.key.code == sf::Keyboard::T) {
-					svc::consoleLocator.get().begin();
-					svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
+					svc::consoleLocator.get().load_and_launch("bookshelf_1");
 				}
 				if (event.key.code == sf::Keyboard::Q) { SM.set_current_state(std::make_unique<automa::MainMenu>()); }
 				if (event.key.code == sf::Keyboard::W) {

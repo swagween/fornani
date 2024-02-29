@@ -6,6 +6,7 @@
 #include <string>
 #include "../utils/BitFlags.hpp"
 #include "../utils/Camera.hpp"
+#include "../graphics/TextWriter.hpp"
 
 namespace gui {
 
@@ -17,7 +18,14 @@ float const pad{32.0f};
 float const text_pad{8.0f};
 inline const sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad}; // bottom left corner
 
-enum class ConsoleFlags { active, finished };
+enum class ConsoleFlags { active, finished, loaded };
+
+struct Border {
+	float left{};
+	float right{};
+	float top{};
+	float bottom{};
+};
 
 class Console {
 
@@ -28,8 +36,8 @@ class Console {
 	void update();
 	void render(sf::RenderWindow& win);
 
-	void write(sf::RenderWindow& win, std::string_view message);
-	void write_speech(sf::RenderWindow& win, std::string_view message);
+	void load_and_launch(std::string_view key);
+	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
 
 	void nine_slice(int corner_dim, int edge_dim);
@@ -40,6 +48,14 @@ class Console {
 	util::BitFlags<ConsoleFlags> flags{};
 
 	std::array<sf::Sprite, 9> sprites{};
+
+	text::TextWriter writer{};
+	Border border{
+		20.f,
+		20.f,
+		16.f,
+		16.f
+	};
 
 	int extent{};
 	int speed{8};

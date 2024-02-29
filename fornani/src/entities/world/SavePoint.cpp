@@ -16,12 +16,13 @@ void SavePoint::update() {
 	bounding_box.set_position(position);
 	activated = false;
 
-	if (svc::playerLocator.get().flags.input.test(player::Input::inspecting)) {
+	if (svc::playerLocator.get().controller.inspecting()) {
 		if (svc::playerLocator.get().collider.bounding_box.SAT(bounding_box)) {
 
 			if (can_activate) {
 				activated = true;
 				save();
+				svc::consoleLocator.get().load_and_launch("save");
 			}
 		}
 	} else {

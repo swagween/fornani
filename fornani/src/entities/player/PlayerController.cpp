@@ -31,6 +31,10 @@ void PlayerController::update() {
 	auto const& dash_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) && !grounded() && left;
 	auto const& dash_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) && !grounded() && right;
 
+	auto const& transponder_skip = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) || svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
+	auto const& transponder_next = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
+	auto const& transponder_exit = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
+	
 	key_map[ControllerInput::move_x] = 0.f;
 	key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
 	key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
@@ -45,11 +49,18 @@ void PlayerController::update() {
 	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
 	if ((dash_left || dash_right) && dash_count == 0) { dash_request = dash_time; }
 
-	direction.lr = moving_left() ? dir::LR::left : direction.lr;
-	direction.lr = moving_right() ? dir::LR::right : direction.lr;
-	direction.und = dir::UND::neutral;
-	direction.und = up ? dir::UND::up : direction.und;
-	direction.und = down ? dir::UND::down : direction.und;
+	if (!restricted()) {
+		direction.lr = moving_left() ? dir::LR::left : direction.lr;
+		direction.lr = moving_right() ? dir::LR::right : direction.lr;
+		direction.und = dir::UND::neutral;
+		direction.und = up ? dir::UND::up : direction.und;
+		direction.und = down ? dir::UND::down : direction.und;
+	}
+
+	//transponder flags
+	transponder_skip ? transponder_flags.set(TransponderInput::skip) : transponder_flags.reset(TransponderInput::skip);
+	transponder_next ? transponder_flags.set(TransponderInput::next) : transponder_flags.reset(TransponderInput::next);
+	transponder_exit ? transponder_flags.set(TransponderInput::exit) : transponder_flags.reset(TransponderInput::exit);
 
 	key_map[ControllerInput::jump] = jump_started ? 1.f : 0.f;
 
@@ -78,6 +89,7 @@ void PlayerController::update() {
 		prevent_jump();
 	}
 
+	flags.reset(MovementState::restricted);
 	decrement_requests();
 }
 
@@ -139,6 +151,19 @@ void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = f
 
 float PlayerController::arms_switch() { return key_map[ControllerInput::arms_switch]; }
 
+void PlayerController::prevent_movement() {
+	key_map[ControllerInput::move_x] = 0.f;
+	key_map[ControllerInput::move_y] = 0.f;
+	key_map[ControllerInput::dash] = 0.f;
+	key_map[ControllerInput::arms_switch] = 0.f;
+	key_map[ControllerInput::inspect] = 0.f;
+	key_map[ControllerInput::shoot] = 0.f;
+	key_map[ControllerInput::jump] = 0.f;
+	jump_flags = {};
+	prevent_jump();
+	flags.set(MovementState::restricted);
+}
+
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {
 		return search->second;
@@ -190,6 +215,12 @@ bool PlayerController::can_dash() { return dash_count == 0; }
 bool PlayerController::jumpsquatting() const { return jump_flags.test(Jump::jumpsquatting); }
 
 bool PlayerController::jumpsquat_trigger() const { return jump_flags.test(Jump::jumpsquat_trigger); }
+
+bool PlayerController::transponder_skip() const { return transponder_flags.test(TransponderInput::skip); }
+
+bool PlayerController::transponder_next() const { return transponder_flags.test(TransponderInput::next); }
+
+bool PlayerController::transponder_exit() const { return transponder_flags.test(TransponderInput::skip); }
 
 int PlayerController::get_jump_request() const { return jump_request; }
 

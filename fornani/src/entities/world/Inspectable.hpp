@@ -33,6 +33,8 @@ class Inspectable {
 	bool activated{};
 	bool activate_on_contact{};
 
+	std::string key{};
+
 	std::string message{};
 };
 

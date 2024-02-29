@@ -25,6 +25,7 @@ class DataManager {
 
 	dj::Json weapon{};
 
+	//enemy
 	dj::Json frdog{};
 	dj::Json hulmet{};
 
