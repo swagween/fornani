@@ -9,9 +9,9 @@
 
 namespace cam {
 
-float const CAM_FRICTION = 0.95f;
+float const CAM_FRICTION = 0.85f;
 float const CAM_MASS = 1.0f;
-float const CAM_GRAV = 0.11f;
+float const CAM_GRAV = 0.09f;
 
 int const CX_OFFSET = 60;
 int const CY_OFFSET = 60;

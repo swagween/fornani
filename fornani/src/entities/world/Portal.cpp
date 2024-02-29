@@ -32,20 +32,25 @@ void Portal::handle_activation(int room_id, bool& fade_out, bool& done) {
 	if (bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
 		if (activate_on_contact && ready) {
 			activated = true;
-			svc::playerLocator.get().restrict_inputs();
-		} else if (svc::playerLocator.get().flags.input.test(player::Input::inspecting)) {
+			svc::playerLocator.get().controller.prevent_movement();
+			svc::playerLocator.get().controller.autonomous_walk();
+			svc::playerLocator.get().walk();
+		} else if (svc::playerLocator.get().controller.inspecting()) {
 			activated = true;
-			svc::playerLocator.get().restrict_inputs();
-			svc::playerLocator.get().restrict_animation();
+			svc::playerLocator.get().controller.prevent_movement();
 		}
 		// player just entered room via border portal
 		if (!ready && activate_on_contact) {
 			svc::playerLocator.get().controller.direction.lr = svc::playerLocator.get().entered_from();
-			svc::playerLocator.get().restrict_inputs();
-			svc::playerLocator.get().autonomous_walk();
+			svc::playerLocator.get().controller.prevent_movement();
+			svc::playerLocator.get().controller.autonomous_walk();
+			svc::playerLocator.get().walk();
 		}
 	} else {
-		if (!ready && activate_on_contact) { svc::playerLocator.get().unrestrict_inputs(); }
+		if (!ready && activate_on_contact) {
+			svc::playerLocator.get().unrestrict_inputs();
+			svc::playerLocator.get().controller.stop_walking_autonomously();
+		}
 		ready = true;
 	}
 	if (activated) {

@@ -51,7 +51,7 @@ class Console {
 
 	text::TextWriter writer{};
 	Border border{
-		20.f,
+		28.f,
 		20.f,
 		16.f,
 		16.f

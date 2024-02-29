@@ -140,7 +140,6 @@ class Player {
 	void update_direction();
 	void update_weapon();
 	void walk();
-	void autonomous_walk();
 	void hurt(int amount);
 	void update_antennae();
 

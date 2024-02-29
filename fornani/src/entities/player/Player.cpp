@@ -289,18 +289,8 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
-
 	if (controller.moving_right() && !collider.flags.test(shape::State::has_right_collision)) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (controller.moving_left() && !collider.flags.test(shape::State::has_left_collision)) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
-	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
-		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().player.set(audio::Player::step); }
-	}
-}
-
-void Player::autonomous_walk() {
-	collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier);
-	if (controller.facing_left()) { collider.physics.acceleration.x *= -1.f; }
-	flags.movement.set(Movement::autonomous_walk);
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
 		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().player.set(audio::Player::step); }
 	}

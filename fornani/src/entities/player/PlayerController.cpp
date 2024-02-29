@@ -16,6 +16,8 @@ PlayerController::PlayerController() {
 
 void PlayerController::update() {
 
+	if (walking_autonomously()) { return; }
+
 	auto const& left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::held);
 	auto const& right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::held);
 	auto const& up = svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::held);
@@ -147,6 +149,13 @@ void PlayerController::reset_jumpsquat_trigger() { jump_flags.reset(Jump::jumpsq
 
 void PlayerController::reset_just_jumped() { jump_flags.reset(Jump::just_jumped); }
 
+void PlayerController::autonomous_walk() {
+	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = 1.f : key_map[ControllerInput::move_x] = -1.f;
+	flags.set(MovementState::walking_autonomously);
+}
+
+void PlayerController::stop_walking_autonomously() { flags.reset(MovementState::walking_autonomously); }
+
 void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = flag ? 1.f : 0.f; }
 
 float PlayerController::arms_switch() { return key_map[ControllerInput::arms_switch]; }
@@ -187,6 +196,8 @@ bool PlayerController::facing_right() const { return direction.lr == dir::LR::ri
 bool PlayerController::restricted() const { return flags.test(MovementState::restricted); }
 
 bool PlayerController::grounded() const { return flags.test(MovementState::grounded); }
+
+bool PlayerController::walking_autonomously() const { return flags.test(MovementState::walking_autonomously); }
 
 float PlayerController::vertical_movement() { return key_map[ControllerInput::move_y]; }
 

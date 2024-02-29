@@ -16,7 +16,7 @@ constexpr static int dash_time{20};
 
 enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect, dash, move_y };
 enum class TransponderInput { skip, next, exit };
-enum class MovementState { restricted, grounded };
+enum class MovementState { restricted, grounded, walking_autonomously };
 enum class Jump {	   // true if jump is pressed and permanently false once released, until player touches the ground again (USED)
 	trigger,		   // true for one frame if jump is pressed and the player is grounded (UNUSED)
 	can_jump,		   // true if the player is grounded (USED)
@@ -58,6 +58,8 @@ class PlayerController {
 	void stop_jumpsquatting();
 	void reset_jumpsquat_trigger();
 	void reset_just_jumped();
+	void autonomous_walk();
+	void stop_walking_autonomously();
 
 	void set_shot(bool flag);
 	float arms_switch();
@@ -75,6 +77,7 @@ class PlayerController {
 	bool facing_right() const;
 	bool restricted() const;
 	bool grounded() const;
+	bool walking_autonomously() const;
 
 	float vertical_movement();
 
