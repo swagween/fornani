@@ -4,25 +4,27 @@
 
 namespace vfx {
 
-Particle::Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric, float sz) : physics(p), init_force(f), force_variance(v), angle_range(a), size(sz) {
+Particle::Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric, float sz, dir::Direction dir_) : physics(p), init_force(f), force_variance(v), angle_range(a), size(sz), direction(dir_) {
 	lifespan = svc::randomLocator.get().random_range(default_lifespan, 100);
 	physics.set_constant_friction(fric);
 	float randx{};
 	float randy{};
-	switch (physics.dir) {
-	case components::DIRECTION::LEFT:
+	switch (direction.lr) {
+	case dir::LR::left:
 		randx = svc::randomLocator.get().random_range_float(init_force - force_variance, init_force + force_variance) * -1;
 		randy = svc::randomLocator.get().random_range_float(-angle_range, angle_range);
 		break;
-	case components::DIRECTION::RIGHT:
+	case dir::LR::right:
 		randx = svc::randomLocator.get().random_range_float(init_force - force_variance, init_force + force_variance);
 		randy = svc::randomLocator.get().random_range_float(-angle_range, angle_range);
 		break;
-	case components::DIRECTION::UP:
+	}
+	switch (direction.und) {
+	case dir::UND::up:
 		randx = svc::randomLocator.get().random_range_float(-angle_range, angle_range);
 		randy = svc::randomLocator.get().random_range_float(init_force - force_variance, init_force + force_variance) * -1;
 		break;
-	case components::DIRECTION::DOWN:
+	case dir::UND::down:
 		randx = svc::randomLocator.get().random_range_float(-angle_range, angle_range);
 		randy = svc::randomLocator.get().random_range_float(init_force - force_variance, init_force + force_variance);
 		break;

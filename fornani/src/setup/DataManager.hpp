@@ -23,6 +23,9 @@ class DataManager {
 	void load_player_params();
 	void save_player_params();
 
+	dj::Json weapon{};
+
+	//enemy
 	dj::Json frdog{};
 	dj::Json hulmet{};
 

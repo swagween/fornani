@@ -63,24 +63,24 @@ void FileMenu::handle_events(sf::Event& event) {
 			constrain_selection();
 			svc::dataLocator.get().load_blank_save();
 			svc::dataLocator.get().load_progress(file_selection);
-			svc::assetLocator.get().menu_shift.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Up) {
 			--file_selection;
 			constrain_selection();
 			svc::dataLocator.get().load_blank_save();
 			svc::dataLocator.get().load_progress(file_selection);
-			svc::assetLocator.get().menu_shift.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Left) {
 			svc::stateControllerLocator.get().exit_submenu = true;
-			svc::assetLocator.get().menu_back.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::backward_switch);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			constrain_selection();
 			svc::dataLocator.get().load_progress(file_selection, true);
 			svc::stateControllerLocator.get().save_loaded = true;
-			svc::assetLocator.get().click.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::select);
 		}
 	}
 }
@@ -96,22 +96,21 @@ void FileMenu::tick_update() {
 	hud.update();
 	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
 
-	svc::playerLocator.get().collider.physics.acceleration = {0.f, 0.f};
-	svc::playerLocator.get().collider.physics.velocity = {0.f, 0.f};
+	svc::playerLocator.get().collider.physics.acceleration = {};
+	svc::playerLocator.get().collider.physics.velocity = {};
 	svc::playerLocator.get().collider.physics.zero();
 	svc::playerLocator.get().flags.state.set(player::State::alive);
 	svc::playerLocator.get().collider.reset();
-	svc::playerLocator.get().flags.movement.set(player::Movement::move_left);
+	svc::playerLocator.get().controller.autonomous_walk();
 	svc::playerLocator.get().collider.flags.set(shape::State::grounded);
 
-	svc::playerLocator.get().behavior.facing_lr = behavior::DIR_LR::LEFT;
 	svc::playerLocator.get().update_weapon();
 	svc::playerLocator.get().update_animation();
 	svc::playerLocator.get().update_sprite();
 	svc::playerLocator.get().update_direction();
 	svc::playerLocator.get().apparent_position.x = svc::playerLocator.get().collider.physics.position.x + player::PLAYER_WIDTH / 2;
 	svc::playerLocator.get().apparent_position.y = svc::playerLocator.get().collider.physics.position.y;
-	svc::playerLocator.get().update_behavior();
+	svc::playerLocator.get().update_animation();
 	svc::playerLocator.get().update_antennae();
 }
 

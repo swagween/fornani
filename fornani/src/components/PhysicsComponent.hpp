@@ -8,10 +8,9 @@
 #include <vector>
 #include <deque>
 #include "../utils/BitFlags.hpp"
+#include "../utils/Direction.hpp"
 
 namespace components {
-
-enum class DIRECTION { LEFT, RIGHT, UP, DOWN, NONE };
 
 const sf::Vector2<float> FRICTION_DEFAULT = {0.9f, 0.9f};
 float const MASS_DEFAULT = 1.0f;
@@ -46,7 +45,6 @@ class PhysicsComponent {
 	float mass{1.0f};
 	float gravity{};
 	sf::Vector2<float> maximum_velocity{UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED};
-	DIRECTION dir{};
 
 	void apply_force(sf::Vector2<float> force);
 	void apply_force_at_angle(float magnitude, float angle);
@@ -66,6 +64,7 @@ class PhysicsComponent {
 	Time accumulator{};
 
 	util::BitFlags<State> flags{};
+	dir::Direction direction{};
 
 	std::deque<float> x_acc_history{};
 	std::deque<float> y_acc_history{};

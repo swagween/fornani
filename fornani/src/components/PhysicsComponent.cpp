@@ -17,8 +17,9 @@ void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
 
 void PhysicsComponent::update_euler() {
 
-	//svc::tickerLocator.get().tick([this] { integrate(); });
 	integrate();
+	direction.und = velocity.y > 0.f ? dir::UND::down : (velocity.y < 0.f ? dir::UND::up : dir::UND::neutral);
+	direction.lr = velocity.x > 0.f ? dir::LR::right : (velocity.x < 0.f ? dir::LR::left : dir::LR::neutral);
 
 }
 

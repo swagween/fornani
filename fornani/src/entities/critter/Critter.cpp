@@ -13,14 +13,7 @@ void Critter::sprite_flip() {
 	// flip the sprite based on the critter's direction
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-	if ((facing_lr == behavior::DIR_LR::LEFT && sprite.getScale() == right_scale) || (facing_lr == behavior::DIR_LR::RIGHT && sprite.getScale() == left_scale)) { flags.set(Flags::turning); }
-	if (facing_lr == behavior::DIR_LR::LEFT) {
-		colliders.at(0).physics.dir = components::DIRECTION::LEFT;
-		weapon.firing_direction.lr = dir::LR::left;
-	} else {
-		colliders.at(0).physics.dir = components::DIRECTION::RIGHT;
-		weapon.firing_direction.lr = dir::LR::right;
-	}
+	direction.lr == dir::LR::left ? sprite.setScale(left_scale) : sprite.setScale(right_scale);
 }
 
 void Critter::init() {
@@ -42,6 +35,7 @@ void Critter::update() {
 
 	unique_update();
 	behavior.update();
+	weapon.firing_direction = direction;
 
 	if (flags.test(Flags::seeking)) { seek_current_target(); }
 
@@ -63,9 +57,9 @@ void Critter::update() {
 	for (auto& hbx : hurtboxes) {
 		hbx = hurtbox_atlas.at((int)(behavior.get_frame() * num_hurtboxes + ctr));
 		hbx.update();
-		if (facing_lr == behavior::DIR_LR::RIGHT) {
+		if (direction.lr == dir::LR::right) {
 			hbx.set_position({sprite_position.x + hbx.sprite_offset.x - sprite.getOrigin().x, sprite_position.y - sprite.getOrigin().y + hbx.sprite_offset.y});
-		} else if (facing_lr == behavior::DIR_LR::LEFT) {
+		} else if (direction.lr == dir::LR::left) {
 			hbx.set_position({sprite_position.x - hbx.sprite_offset.x + sprite.getOrigin().x - hbx.dimensions.x, sprite_position.y - sprite.getOrigin().y + hbx.sprite_offset.y});
 		}
 		++ctr;
@@ -199,23 +193,8 @@ void Critter::awake() {
 }
 
 void Critter::cooldown() {
-	dt = svc::clockLocator.get().tick_rate;
 
-	auto new_time = Clock::now();
-	Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
-
-	if (frame_time.count() > svc::clockLocator.get().frame_limit) { frame_time = Time{svc::clockLocator.get().frame_limit}; }
-	current_time = new_time;
-	accumulator += frame_time;
-
-	int integrations = 0;
-	while (accumulator >= dt) {
-
-		--stats.cooldown;
-
-		accumulator -= dt;
-		++integrations;
-	}
+	--stats.cooldown;
 
 	if (stats.cooldown < 0) { stats.cooldown = 0; }
 }

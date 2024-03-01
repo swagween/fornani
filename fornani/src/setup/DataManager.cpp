@@ -10,6 +10,12 @@ namespace data {
 
 void DataManager::load_data() {
 
+	//weapon
+	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
+	std::cout << "loading weapon data ...";
+	assert(!weapon.is_null());
+	std::cout << " success!\n";
+
 	// enemies
 	frdog = dj::Json::from_file((finder.resource_path + "/data/enemy/frdog.json").c_str());
 	std::cout << "loading frdog ...";
@@ -44,11 +50,11 @@ void DataManager::save_progress(int save_point_id) {
 	auto const wipe = dj::Json::parse(empty_array);
 	save["player_data"]["arsenal"] = wipe;
 	// push player arsenal
-	for (auto& gun : svc::playerLocator.get().weapons_hotbar) {
-		int this_id = lookup::type_to_index.at(gun);
+	for (auto& gun : svc::playerLocator.get().arsenal.loadout) {
+		int this_id = gun.get_id();
 		save["player_data"]["arsenal"].push_back(this_id);
 	}
-	save["player_data"]["equipped_gun"] = svc::playerLocator.get().loadout.get_equipped_weapon().get_id();
+	save["player_data"]["equipped_gun"] = svc::playerLocator.get().equipped_weapon().get_id();
 
 	save["save_point_id"] = save_point_id;
 
@@ -76,11 +82,13 @@ void DataManager::load_progress(int const file, bool state_switch) {
 	svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	svc::playerLocator.get().weapons_hotbar.clear();
-	for (auto& gun_id : svc::dataLocator.get().save["player_data"]["arsenal"].array_view()) { svc::playerLocator.get().weapons_hotbar.push_back(lookup::index_to_type.at(gun_id.as<int>())); }
-	if (!svc::playerLocator.get().weapons_hotbar.empty()) {
+	svc::playerLocator.get().arsenal.loadout.clear();
+	for (auto& gun_id : svc::dataLocator.get().save["player_data"]["arsenal"].array_view()) {
+		svc::playerLocator.get().arsenal.push_to_loadout(gun_id.as<int>());
+	}
+	if (!svc::playerLocator.get().arsenal.loadout.empty()) {
 		auto equipped_gun = svc::dataLocator.get().save["player_data"]["equipped_gun"].as<int>();
-		svc::playerLocator.get().loadout.equipped_weapon = lookup::index_to_type.at(equipped_gun);
+		svc::playerLocator.get().current_weapon = equipped_gun;
 	}
 }
 
@@ -100,7 +108,7 @@ void DataManager::load_blank_save(bool state_switch) {
 	svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	svc::playerLocator.get().weapons_hotbar.clear();
+	svc::playerLocator.get().arsenal.loadout.clear();
 }
 
 void DataManager::load_player_params() {
@@ -122,6 +130,8 @@ void DataManager::load_player_params() {
 	svc::playerLocator.get().physics_stats.maximum_velocity.y = player_params["physics"]["maximum_velocity"]["y"].as<float>();
 
 	svc::playerLocator.get().physics_stats.mass = player_params["physics"]["mass"].as<float>();
+	svc::playerLocator.get().physics_stats.dash_multiplier = player_params["physics"]["dash_multiplier"].as<float>();
+	svc::playerLocator.get().physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
 	std::cout << " success!\n";
 }
 
