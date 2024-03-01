@@ -67,6 +67,7 @@ struct PhysicsStats {
 	float mass{};
 	float dash_multiplier{};
 	float dash_speed{};
+	float dash_dampen{};
 };
 
 struct Counters {
@@ -95,6 +96,10 @@ class Player {
 	void update_transponder();
 	void flash_sprite();
 	void calculate_sprite_offset();
+
+	//moves
+	void jump();
+	void dash();
 
 	void set_position(sf::Vector2<float> new_pos);
 	void update_direction();

@@ -31,7 +31,7 @@ void TextWriter::wrap() {
 	if (horizontal_extent > bounds.x) {
 
 		// get index of last in-bounds space
-		float last_space_index{};
+		int last_space_index{};
 		for (auto i{0}; i < message.getString().getSize(); ++i) {
 			char const current_char = (char)message.getString().getData()[i];
 			if (std::isspace(current_char)) {
@@ -48,11 +48,6 @@ void TextWriter::wrap() {
 				}
 			}
 		}
-
-		// splice the string at this spot
-		// stick a backslash at the end of the left string
-		// do it again for the right string (recursion?)
-
 	}
 
 }

@@ -14,6 +14,7 @@
     },
     "mass": 1.000000,
     "dash_multiplier": 1.000000,
-    "dash_speed": 10.000000
+    "dash_speed": 10.000000,
+    "dash_dampen": 0.93
   }
 }
