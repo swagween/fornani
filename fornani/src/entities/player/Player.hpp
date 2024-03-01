@@ -35,7 +35,6 @@ constexpr inline float antenna_force{0.4f};
 constexpr inline float antenna_speed{16.f};
 
 struct PlayerStats {
-
 	int health{};
 	int max_health{};
 	int orbs{};
@@ -74,60 +73,21 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class Jump {
-	hold,		 // true if jump is pressed and permanently false once released, until player touches the ground again
-	trigger,	 // true for one frame if jump is pressed and the player is grounded
-	can_jump,	 // true if the player is grounded
-	just_jumped, // used for updating animation
-	is_pressed,	 // true if the jump button is pressed, false if not. independent of player's state.
-	is_released, // true if jump released midair, reset upon landing
-	jumping,	 // true if jumpsquat is over, falce once player lands
-};
-
-enum class Movement {
-
-	move_left,
-	move_right,
-	look_up,
-	look_down,
-	left_released,
-	right_released,
-
-	stopping,
-	just_stopped,
-	suspended_trigger,
-	fall_trigger,
-	landed_trigger,
-	entered_freefall,
-	freefalling,
-	autonomous_walk,
-
-	is_wall_sliding,
-	wall_slide_trigger,
-	release_wallslide,
-};
-
-enum class Input { restricted, no_anim, exit_request, inspecting, inspecting_trigger };
-
 enum class State { alive };
 
 struct PlayerFlags {
-	util::BitFlags<Jump> jump{};
-	util::BitFlags<Movement> movement{};
-	util::BitFlags<Input> input{};
 	util::BitFlags<State> state{};
 };
 
 class Player {
   public:
-	using Clock = std::chrono::steady_clock;
-	using Time = std::chrono::duration<float>;
+
 	Player();
 
 	// init (violates RAII but must happen after resource path is set)
 	void init();
 	// member functions
-	void update(Time dt);
+	void update();
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
@@ -143,14 +103,7 @@ class Player {
 	void hurt(int amount);
 	void update_antennae();
 
-	void restrict_inputs();
-	void unrestrict_inputs();
-	void restrict_animation();
-	void no_move();
-
 	bool grounded() const;
-	bool moving();
-	bool moving_at_all();
 	bool fire_weapon();
 
 	// level events
@@ -193,16 +146,11 @@ class Player {
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
 	PlayerStats player_stats{3, 3, 0, 99999};
-	PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
+	PlayerInventoryStats player_inv_stats{};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 
 	Counters counters{};
-
-	// fixed animation time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{0.0f};
 
 	// sprites
 	sf::Sprite sprite{};
@@ -214,8 +162,6 @@ class Player {
 	bool just_hurt{};
 	bool start_cooldown{};
 	bool sprite_flip{};
-
-	int wall_slide_ctr{0};
 };
 
 } // namespace player

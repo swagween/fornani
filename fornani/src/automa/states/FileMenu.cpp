@@ -96,12 +96,12 @@ void FileMenu::tick_update() {
 	hud.update();
 	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
 
-	svc::playerLocator.get().collider.physics.acceleration = {0.f, 0.f};
-	svc::playerLocator.get().collider.physics.velocity = {0.f, 0.f};
+	svc::playerLocator.get().collider.physics.acceleration = {};
+	svc::playerLocator.get().collider.physics.velocity = {};
 	svc::playerLocator.get().collider.physics.zero();
 	svc::playerLocator.get().flags.state.set(player::State::alive);
 	svc::playerLocator.get().collider.reset();
-	svc::playerLocator.get().flags.movement.set(player::Movement::move_left);
+	svc::playerLocator.get().controller.autonomous_walk();
 	svc::playerLocator.get().collider.flags.set(shape::State::grounded);
 
 	svc::playerLocator.get().update_weapon();

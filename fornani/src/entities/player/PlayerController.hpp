@@ -36,6 +36,7 @@ class PlayerController {
 	PlayerController();
 
 	void update();
+	void clean();
 	void jump();
 	void prevent_jump();
 	void stop();

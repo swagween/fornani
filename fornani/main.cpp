@@ -191,9 +191,6 @@ static void show_overlay() {
 							ImGui::Text("Direction LR: %s", svc::playerLocator.get().controller.direction.print_lr().c_str());
 							ImGui::Text("Direction UND : %s", svc::playerLocator.get().controller.direction.print_und().c_str());
 							ImGui::Separator();
-							ImGui::Text("Move Left : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_left) ? "Yes" : "No");
-							ImGui::Text("Move Right : %s", svc::playerLocator.get().flags.movement.test(player::Movement::move_right) ? "Yes" : "No");
-							ImGui::Separator();
 							ImGui::Text("Controller");
 							ImGui::Text("Move Left : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::move_x) < 0.f ? "Yes" : "No");
 							ImGui::Text("Move Right : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::move_x) > 0.f ? "Yes" : "No");
@@ -261,6 +258,11 @@ static void show_overlay() {
 							ImGui::SliderFloat("MAX X VELOCITY", &svc::playerLocator.get().physics_stats.maximum_velocity.x, 1.0f, 10.0f);
 
 							ImGui::Separator();
+							ImGui::Text("Dash");
+							ImGui::SliderFloat("Dash Speed", &svc::playerLocator.get().physics_stats.dash_speed, 1.0f, 10.0f);
+							ImGui::SliderFloat("Dash Multiplier", &svc::playerLocator.get().physics_stats.dash_multiplier, 0.0f, 10.0f);
+
+							ImGui::Separator();
 							if (ImGui::Button("Save Parameters")) { svc::dataLocator.get().save_player_params(); }
 							ImGui::EndTabItem();
 						}
@@ -272,17 +274,7 @@ static void show_overlay() {
 							ImGui::Text("Spike Trigger: %s", svc::playerLocator.get().collider.spike_trigger ? "True" : "False");
 							ImGui::Text("On Ramp: %s", svc::playerLocator.get().collider.on_ramp() ? "True" : "False");
 
-							ImGui::Text("Inspecting? %s", svc::playerLocator.get().flags.input.test(player::Input::inspecting) ? "Yes" : "No");
-
-							ImGui::Text("Player Facing: %s", svc::playerLocator.get().print_direction(false).c_str());
-							ImGui::Text("Player Facing LR: %s", svc::playerLocator.get().print_direction(true).c_str());
 							ImGui::Text("Grounded: %s", svc::playerLocator.get().grounded() ? "Yes" : "No");
-
-							ImGui::Text("Jump Request : %i", svc::playerLocator.get().jump_request);
-							ImGui::Text("Jump Pressed : %s", svc::playerLocator.get().flags.jump.test(player::Jump::is_pressed) ? "Yes" : "No");
-							ImGui::Text("Jump Hold    : %s", svc::playerLocator.get().flags.jump.test(player::Jump::hold) ? "Yes" : "No");
-							ImGui::Text("Jump Released: %s", svc::playerLocator.get().flags.jump.test(player::Jump::is_released) ? "Yes" : "No");
-							ImGui::Text("Jumping      : %s", svc::playerLocator.get().flags.jump.test(player::Jump::jumping) ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
 
@@ -322,6 +314,9 @@ static void show_overlay() {
 					ImGui::Text("Rate: (%i)", svc::playerLocator.get().equipped_weapon().attributes.rate);
 					ImGui::Text("Cooldown: (%i)", svc::playerLocator.get().equipped_weapon().attributes.cooldown_time);
 					ImGui::Text("Recoil: (%.2f)", svc::playerLocator.get().equipped_weapon().attributes.recoil);
+					ImGui::Text("Spray Force: (%.2f)", svc::playerLocator.get().equipped_weapon().spray_behavior.expulsion_force);
+					ImGui::Text("Spray Grav: (%.2f)", svc::playerLocator.get().equipped_weapon().spray_behavior.grav);
+
 					ImGui::Separator();
 					ImGui::Unindent();
 					ImGui::Text("Projectile Stats: ");
@@ -580,7 +575,6 @@ void run(char** argv) {
 
 		svc::tickerLocator.get().start_frame();
 
-		svc::clockLocator.get().tick();
 		win_size.x = window.getSize().x;
 		win_size.y = window.getSize().y;
 

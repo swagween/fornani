@@ -44,7 +44,7 @@ void Player::init() {
 	sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
 }
 
-void Player::update(Time dt) {
+void Player::update() {
 
 	collider.physics.gravity = physics_stats.grav;
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
@@ -61,23 +61,17 @@ void Player::update(Time dt) {
 		if (controller.arms_switch() == -1.f) {
 			current_weapon--;
 			if (current_weapon < 0) { current_weapon = (int)arsenal.loadout.size() - 1; }
-			//loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+			// loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
 			svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
 		}
 		if (controller.arms_switch() == 1.f) {
 			current_weapon++;
 			if (current_weapon > arsenal.loadout.size() - 1) { current_weapon = 0; }
-			//loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+			// loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
 			svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
 		}
 	}
 
-	if (!flags.input.test(Input::restricted)) {
-
-		if (moving() || flags.movement.test(Movement::look_up) || jump_request > -1) {
-			flags.input.reset(Input::inspecting);
-			flags.input.reset(Input::inspecting_trigger);
-		}
 		// jump!
 		if (controller.jumpsquat_trigger()) {
 			animation.state.set(AnimState::jumpsquat);
@@ -98,10 +92,8 @@ void Player::update(Time dt) {
 		// check keystate
 		if (!controller.jumpsquatting()) { walk(); }
 
-		// zero the player's horizontal acceleration if movement was not requested
-		if (!moving()) {
+		if (!controller.moving()) {
 			collider.physics.acceleration.x = 0.0f;
-			if (abs(collider.physics.velocity.x) > stopped_threshold && grounded()) { flags.movement.set(Movement::just_stopped); }
 		}
 
 		// dash
@@ -118,9 +110,7 @@ void Player::update(Time dt) {
 			if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -equipped_weapon().attributes.recoil / 80; }
 			if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
 		}
-
-		if (flags.movement.test(Movement::move_left) && flags.movement.test(Movement::move_right)) { collider.physics.acceleration.x = 0.0f; }
-	}
+	
 
 	collider.physics.update_euler();
 	collider.sync_components();
@@ -132,10 +122,9 @@ void Player::update(Time dt) {
 
 	apparent_position.x = collider.physics.position.x + PLAYER_WIDTH / 2;
 	apparent_position.y = collider.physics.position.y;
-	
+
 	update_animation();
 
-	
 	if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
 		controller.stop_dashing();
 		controller.cancel_dash_request();
@@ -225,7 +214,6 @@ void Player::update_animation() {
 	if (controller.dash_requested()) { animation.state.set(AnimState::dash); }
 
 	animation.update();
-
 }
 
 void Player::update_sprite() {
@@ -325,33 +313,7 @@ void Player::update_antennae() {
 	}
 }
 
-void Player::restrict_inputs() {
-	flags.input.set(Input::restricted);
-	flags.movement.reset(Movement::look_down);
-	flags.movement.reset(Movement::look_up);
-	flags.input.reset(Input::inspecting_trigger);
-	controller.set_shot(false);
-}
-
-void Player::unrestrict_inputs() {
-	flags.input.reset(Input::restricted);
-	flags.input.reset(Input::no_anim);
-	flags.movement.reset(Movement::autonomous_walk);
-}
-
-void Player::restrict_animation() { flags.input.set(Input::no_anim); }
-
-void Player::no_move() {
-	flags.movement.reset(Movement::move_right);
-	flags.movement.reset(Movement::move_left);
-	controller.stop();
-}
-
 bool Player::grounded() const { return collider.flags.test(shape::State::grounded); }
-
-bool Player::moving() { return (controller.moving() || flags.movement.test(Movement::autonomous_walk)); }
-
-bool Player::moving_at_all() { return (controller.moving() || flags.movement.test(Movement::autonomous_walk) || flags.movement.test(Movement::freefalling) || flags.movement.test(Movement::entered_freefall)); }
 
 bool Player::fire_weapon() {
 	if (controller.shot() && !equipped_weapon().cooling_down()) {
@@ -370,8 +332,8 @@ void Player::update_invincibility() {
 	} else {
 		sprite.setColor(sf::Color::White);
 	}
-		--counters.invincibility;
-		if (counters.invincibility < 0) { counters.invincibility = 0; }
+	--counters.invincibility;
+	if (counters.invincibility < 0) { counters.invincibility = 0; }
 }
 
 bool Player::is_invincible() const { return counters.invincibility > 0; }
@@ -395,7 +357,7 @@ void Player::total_reset() {
 
 arms::Weapon& Player::equipped_weapon() {
 	if (arsenal.loadout.empty()) {
-		//default to bryns gun
+		// default to bryns gun
 		return arsenal.armory.at(0);
 	} else {
 		return arsenal.loadout.at(current_weapon);

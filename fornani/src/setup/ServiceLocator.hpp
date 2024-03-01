@@ -13,7 +13,6 @@
 #include "../gui/Console.hpp"
 #include "../service/Service.hpp"
 #include "../utils/Camera.hpp"
-#include "../utils/Clock.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/Ticker.hpp"
 #include "../utils/InputState.hpp"
@@ -35,7 +34,6 @@ inline auto dataLocator = forloop::Service<data::DataManager>::Instance{};
 inline auto textLocator = forloop::Service<data::TextManager>::Instance{};
 inline auto playerLocator = forloop::Service<player::Player>::Instance{};
 inline auto cameraLocator = forloop::Service<cam::Camera>::Instance{};
-inline auto clockLocator = forloop::Service<util::Clock>::Instance{};
 inline auto stopwatchLocator = forloop::Service<util::Stopwatch>::Instance{};
 inline auto tickerLocator = forloop::Service<util::Ticker>::Instance{};
 inline auto stateControllerLocator = forloop::Service<automa::StateController>::Instance{};

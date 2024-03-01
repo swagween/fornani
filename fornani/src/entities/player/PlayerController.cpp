@@ -95,6 +95,8 @@ void PlayerController::update() {
 	decrement_requests();
 }
 
+void PlayerController::clean() { flags = {}; }
+
 void PlayerController::jump() { jump_flags.set(Jump::jumping); }
 
 void PlayerController::prevent_jump() { jump_request = -1; }

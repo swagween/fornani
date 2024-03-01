@@ -51,13 +51,13 @@
         "particle": {
           "rate": 2,
           "rate_variance": 1,
-          "expulsion_force": 1.0,
-          "expulsion_variance": 0.8,
+          "expulsion_force": 4.0,
+          "expulsion_variance": 2.8,
           "cone": 0.8,
           "grav": 0.005,
           "grav_variance": 0.001,
-          "x_friction": 0.001,
-          "y_friction": 0.001
+          "x_friction": 0.93,
+          "y_friction": 0.93
         }
       }
     },
@@ -113,13 +113,13 @@
         "particle": {
           "rate": 2,
           "rate_variance": 1,
-          "expulsion_force": 1.0,
-          "expulsion_variance": 0.8,
+          "expulsion_force": 6.0,
+          "expulsion_variance": 4.8,
           "cone": 0.8,
-          "grav": 0.005,
-          "grav_variance": 0.001,
-          "x_friction": 0.001,
-          "y_friction": 0.001
+          "grav": 0.05,
+          "grav_variance": 0.01,
+          "x_friction": 0.91,
+          "y_friction": 0.91
         }
       }
     },

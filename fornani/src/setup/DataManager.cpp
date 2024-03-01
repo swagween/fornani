@@ -84,7 +84,6 @@ void DataManager::load_progress(int const file, bool state_switch) {
 	// load player's arsenal
 	svc::playerLocator.get().arsenal.loadout.clear();
 	for (auto& gun_id : svc::dataLocator.get().save["player_data"]["arsenal"].array_view()) {
-		svc::playerLocator.get().arsenal.loadout.push_back(svc::playerLocator.get().arsenal.armory.at(gun_id.as<int>()));
 		svc::playerLocator.get().arsenal.push_to_loadout(gun_id.as<int>());
 	}
 	if (!svc::playerLocator.get().arsenal.loadout.empty()) {

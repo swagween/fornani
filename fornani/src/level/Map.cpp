@@ -215,7 +215,6 @@ void Map::load(std::string const& path) {
 	// for (auto& a : svc::playerLocator.get().antennae) { colliders.push_back(&a.collider); }
 
 	transition.fade_in = true;
-	svc::playerLocator.get().unrestrict_inputs();
 	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, cam::screen_dimensions.x * 2, cam::screen_dimensions.y * 2));
 	minimap.setViewport(sf::FloatRect(0.0f, 0.75f, 0.2f, 0.2f));
 }
@@ -343,14 +342,13 @@ void Map::update() {
 	}
 
 	for (auto& inspectable : inspectables) {
-		if (svc::playerLocator.get().flags.input.test(player::Input::inspecting) && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+		if (svc::playerLocator.get().controller.inspecting() && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
 			inspectable.activated = true;
 			svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
-			svc::playerLocator.get().restrict_inputs();
 		}
 		if (inspectable.activated && svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
 			svc::consoleLocator.get().begin();
-			if (svc::playerLocator.get().flags.input.test(player::Input::exit_request)) {
+			if (svc::playerLocator.get().controller.transponder_exit()) {
 				inspectable.activated = false;
 				svc::consoleLocator.get().end();
 			}
@@ -358,7 +356,7 @@ void Map::update() {
 	}
 
 	for (auto& animator : animators) {
-		if (animator.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box) && svc::playerLocator.get().moving_at_all()) {
+		if (animator.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box) && svc::playerLocator.get().controller.moving()) {
 			animator.anim.on();
 			animator.activated = true;
 		} else {
@@ -390,7 +388,7 @@ void Map::update() {
 		}
 	}
 
-	if (svc::clockLocator.get().every_x_frames(1)) { transition.update(); }
+	if (svc::tickerLocator.get().every_x_frames(1)) { transition.update(); }
 }
 
 void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {

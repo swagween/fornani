@@ -13,8 +13,8 @@
 namespace text {
 
 	enum class MessageState{ active, complete };
-static int const default_writing_speed{8};
-static int const fast_writing_speed{2};
+static int const default_writing_speed{12};
+static int const fast_writing_speed{1};
 
 class TextWriter {
   public:

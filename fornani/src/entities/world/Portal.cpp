@@ -48,7 +48,6 @@ void Portal::handle_activation(int room_id, bool& fade_out, bool& done) {
 		}
 	} else {
 		if (!ready && activate_on_contact) {
-			svc::playerLocator.get().unrestrict_inputs();
 			svc::playerLocator.get().controller.stop_walking_autonomously();
 		}
 		ready = true;

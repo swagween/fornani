@@ -28,11 +28,11 @@ Weapon::Weapon(int id) : id(id) {
 	spray_behavior.rate_variance = in_data["spray"]["particle"]["rate_variance"].as<int>();
 	spray_behavior.expulsion_force = in_data["spray"]["particle"]["expulsion_force"].as<float>();
 	spray_behavior.expulsion_variance = in_data["spray"]["particle"]["expulsion_variance"].as<float>();
-	spray_behavior.cone = in_data["spray"]["particle"]["cone"].as<int>();
-	spray_behavior.grav = in_data["spray"]["particle"]["grav"].as<int>();
-	spray_behavior.grav_variance = in_data["spray"]["particle"]["grav_variance"].as<int>();
-	spray_behavior.x_friction = in_data["spray"]["particle"]["x_friction"].as<int>();
-	spray_behavior.y_friction = in_data["spray"]["particle"]["y_friction"].as<int>();
+	spray_behavior.cone = in_data["spray"]["particle"]["cone"].as<float>();
+	spray_behavior.grav = in_data["spray"]["particle"]["grav"].as<float>();
+	spray_behavior.grav_variance = in_data["spray"]["particle"]["grav_variance"].as<float>();
+	spray_behavior.x_friction = in_data["spray"]["particle"]["x_friction"].as<float>();
+	spray_behavior.y_friction = in_data["spray"]["particle"]["y_friction"].as<float>();
 
 	spray_stats.lifespan = in_data["spray"]["emitter"]["lifespan"].as<int>();
 	spray_stats.lifespan_variance = in_data["spray"]["emitter"]["lifespan_variance"].as<int>();

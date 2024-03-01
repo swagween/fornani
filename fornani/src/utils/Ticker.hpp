@@ -74,6 +74,12 @@ struct Ticker {
 		seconds_passed = Tim::zero();
 	}
 
+	bool every_x_frames(int const freq) { return num_frames % freq == 0; }
+
+	bool every_x_ticks(int const freq) { return (int)total_integrations % freq == 0; }
+
+	bool every_x_milliseconds(int num_milliseconds) {}
+
 	// fixed animation time step variables
 	Clk::time_point current_time{Clk::now()};
 	Clk::time_point new_time{Clk::now()};

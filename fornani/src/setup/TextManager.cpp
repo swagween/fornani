@@ -15,7 +15,7 @@ void TextManager::load_data() {
 	std::cout << " success!\n";
 
 	//set font
-	font = finder.resource_path + "/text/fonts/Vera.ttf";
+	font = finder.resource_path + "/text/fonts/Connection.otf";
 
 }
 

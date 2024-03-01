@@ -193,23 +193,8 @@ void Critter::awake() {
 }
 
 void Critter::cooldown() {
-	dt = svc::clockLocator.get().tick_rate;
 
-	auto new_time = Clock::now();
-	Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
-
-	if (frame_time.count() > svc::clockLocator.get().frame_limit) { frame_time = Time{svc::clockLocator.get().frame_limit}; }
-	current_time = new_time;
-	accumulator += frame_time;
-
-	int integrations = 0;
-	while (accumulator >= dt) {
-
-		--stats.cooldown;
-
-		accumulator -= dt;
-		++integrations;
-	}
+	--stats.cooldown;
 
 	if (stats.cooldown < 0) { stats.cooldown = 0; }
 }

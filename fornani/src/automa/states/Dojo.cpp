@@ -52,6 +52,10 @@ void Dojo::init(std::string const& load_path) {
 
 	// save was loaded from a json, so we successfully skipped door search
 	svc::stateControllerLocator.get().save_loaded = false;
+
+	svc::inputStateLocator.get().reset_triggers();
+	svc::playerLocator.get().controller = {};
+	svc::playerLocator.get().controller.prevent_movement();
 }
 
 void Dojo::setTilesetTexture(sf::Texture& t) {
@@ -66,20 +70,8 @@ void Dojo::setTilesetTexture(sf::Texture& t) {
 }
 
 void Dojo::handle_events(sf::Event& event) {
-	if (event.type == sf::Event::EventType::KeyPressed) {
-		svc::inputStateLocator.get().handle_press(event.key.code);
-		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right) { svc::playerLocator.get().flags.input.set(player::Input::exit_request); }
-	}
-	if (event.type == sf::Event::EventType::KeyReleased) {
-		svc::inputStateLocator.get().handle_release(event.key.code);
-		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right) {
-			svc::playerLocator.get().flags.input.reset(player::Input::exit_request);
-			svc::playerLocator.get().unrestrict_inputs();
-			svc::playerLocator.get().flags.input.reset(player::Input::inspecting);
-			svc::playerLocator.get().flags.input.reset(player::Input::inspecting_trigger);
-		}
-	}
-	// svc::playerLocator.get().handle_events(event);
+	if (event.type == sf::Event::EventType::KeyPressed) { svc::inputStateLocator.get().handle_press(event.key.code); }
+	if (event.type == sf::Event::EventType::KeyReleased) { svc::inputStateLocator.get().handle_release(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::H) {
 			svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
@@ -107,7 +99,7 @@ void Dojo::tick_update() {
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);
 	if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
 	if (map.real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(map.real_dimensions); }
-	svc::playerLocator.get().update(svc::clockLocator.get().elapsed_time);
+	svc::playerLocator.get().update();
 	for (auto& critter : map.critters) {
 		critter->update();
 		critter->unique_update();
