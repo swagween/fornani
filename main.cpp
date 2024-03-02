@@ -109,7 +109,7 @@ static void show_overlay() {
 					ImGui::Text("Frames Per Second: %.2f", svc::tickerLocator.get().fps);
 					ImGui::Separator();
 					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.02f, "%.5f");
-					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 10.f, 100.f, "%.1f");
+					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 0.f, 64.f, "%.2f");
 					if (ImGui::Button("Reset")) {
 						svc::tickerLocator.get().tick_rate = 0.016f;
 						svc::tickerLocator.get().tick_multiplier = 16;
@@ -174,22 +174,24 @@ static void show_overlay() {
 				}
 				if (ImGui::BeginTabItem("Player")) {
 					if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
-						if (ImGui::BeginTabItem("Physics")) {
+						if (ImGui::BeginTabItem("Physics and Collision")) {
 							ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
 							ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);
 							ImGui::Text("Player Acc: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.acceleration.x, svc::playerLocator.get().collider.physics.acceleration.y);
 							ImGui::Text("Player Jer: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.jerk.x, svc::playerLocator.get().collider.physics.jerk.y);
 							ImGui::Separator();
-							ImGui::Text("Player Grounded?    : %s", svc::playerLocator.get().grounded() ? "Yes" : "No");
-							ImGui::Text("Controller Grounded?: %s", svc::playerLocator.get().controller.grounded() ? "Yes" : "No");
-							ImGui::Text("Collider Grounded?  : %s", svc::playerLocator.get().collider.flags.test(shape::State::grounded) ? "Yes" : "No");
-							ImGui::Text("Physics Grounded?   : %s", svc::playerLocator.get().collider.physics.flags.test(components::State::grounded()) ? "Yes" : "No");
-
+							ImGui::Text("Player Grounded: %s", svc::playerLocator.get().grounded() ? "Yes" : "No");
+							ImGui::Separator();
+							ImGui::Text("Right Collision	: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_right_collision) ? "Yes" : "No");
+							ImGui::Text("Left Collision		: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_left_collision) ? "Yes" : "No");
+							ImGui::Text("Top Collision		: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_top_collision) ? "Yes" : "No");
+							ImGui::Text("Bottom Collision	: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
+							
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Movement")) {
-							ImGui::Text("Direction LR: %s", svc::playerLocator.get().controller.direction.print_lr().c_str());
-							ImGui::Text("Direction UND : %s", svc::playerLocator.get().controller.direction.print_und().c_str());
+							ImGui::Text("Direction LR	: %s", svc::playerLocator.get().controller.direction.print_lr().c_str());
+							ImGui::Text("Direction UND	: %s", svc::playerLocator.get().controller.direction.print_und().c_str());
 							ImGui::Separator();
 							ImGui::Text("Controller");
 							ImGui::Text("Move Left : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::move_x) < 0.f ? "Yes" : "No");
@@ -261,6 +263,7 @@ static void show_overlay() {
 							ImGui::Text("Dash");
 							ImGui::SliderFloat("Dash Speed", &svc::playerLocator.get().physics_stats.dash_speed, 1.0f, 10.0f);
 							ImGui::SliderFloat("Dash Multiplier", &svc::playerLocator.get().physics_stats.dash_multiplier, 0.0f, 10.0f);
+							ImGui::SliderFloat("Dash Dampen", &svc::playerLocator.get().physics_stats.dash_dampen, 0.7f, 1.0f);
 
 							ImGui::Separator();
 							if (ImGui::Button("Save Parameters")) { svc::dataLocator.get().save_player_params(); }

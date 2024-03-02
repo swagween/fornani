@@ -29,9 +29,11 @@ struct Ticker {
 		
 		if (dt.count() > tick_limit.count()) { return; } // return for unexpected dt values, particularly during the beginning of the state
 
-		accumulator = 2 * dt + residue;
+		accumulator = dt + residue;
 		if (accumulator < ft) {
 			std::printf("accumulator exit condition reached.\n");
+			residue += accumulator;
+			accumulator = Tim::zero();
 			return;
 		}
 
@@ -84,10 +86,10 @@ struct Ticker {
 	Clk::time_point current_time{Clk::now()};
 	Clk::time_point new_time{Clk::now()};
 
-	float tick_rate{0.016f};
-	float tick_multiplier{16.f};
+	float tick_rate{0.005f};
+	float tick_multiplier{24.f};
 
-	static constexpr Tim tick_limit{0.2f};
+	static constexpr Tim tick_limit{0.5f};
 
 	Tim ft{};
 	Tim dt{};

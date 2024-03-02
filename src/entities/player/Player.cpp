@@ -72,45 +72,21 @@ void Player::update() {
 		}
 	}
 
-		// jump!
-		if (controller.jumpsquat_trigger()) {
-			animation.state.set(AnimState::jumpsquat);
-			controller.start_jumpsquat();
-			controller.reset_jumpsquat_trigger();
-		}
-		if (controller.jumpsquatting() && !animation.state.test(AnimState::jumpsquat)) {
-			controller.stop_jumpsquatting();
-			controller.start_jumping();
-			collider.physics.acceleration.y = -physics_stats.jump_velocity;
-			animation.state.set(AnimState::rise);
-			svc::soundboardLocator.get().player.set(audio::Player::jump);
-		} else if (controller.jump_released() && controller.jumping() && !controller.jump_held() && collider.physics.velocity.y < 0) {
-			collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
-			controller.reset_jump();
-		}
+	// jump!
+	jump();
 
-		// check keystate
-		if (!controller.jumpsquatting()) { walk(); }
+	// check keystate
+	if (!controller.jumpsquatting()) { walk(); }
+	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
 
-		if (!controller.moving()) {
-			collider.physics.acceleration.x = 0.0f;
-		}
+	// dash
+	dash();
 
-		// dash
-		if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
-			collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.dash_multiplier;
-			collider.physics.velocity.y = controller.vertical_movement() * physics_stats.dash_multiplier;
-			collider.physics.acceleration.x += controller.dash_value() * (physics_stats.maximum_velocity.x / physics_stats.air_multiplier) * physics_stats.dash_speed;
-			collider.physics.velocity.x += controller.dash_value() * (physics_stats.maximum_velocity.x / physics_stats.air_multiplier) * 10.f;
-			controller.dash();
-		}
-
-		// weapon physics
-		if (controller.shot() && !arsenal.loadout.empty()) {
-			if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -equipped_weapon().attributes.recoil / 80; }
-			if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
-		}
-	
+	// weapon physics
+	if (controller.shot() && !arsenal.loadout.empty()) {
+		if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -equipped_weapon().attributes.recoil / 80; }
+		if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
+	}
 
 	collider.physics.update_euler();
 	collider.sync_components();
@@ -124,6 +100,7 @@ void Player::update() {
 	apparent_position.y = collider.physics.position.y;
 
 	update_animation();
+	update_weapon();
 
 	if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
 		controller.stop_dashing();
@@ -245,6 +222,38 @@ void Player::calculate_sprite_offset() {
 	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y};
 }
 
+void Player::jump() {
+	if (controller.jumpsquat_trigger()) {
+		animation.state.set(AnimState::jumpsquat);
+		controller.start_jumpsquat();
+		controller.reset_jumpsquat_trigger();
+	}
+	if (controller.jumpsquatting() && !animation.state.test(AnimState::jumpsquat)) {
+		controller.stop_jumpsquatting();
+		controller.start_jumping();
+		collider.physics.acceleration.y = -physics_stats.jump_velocity;
+		animation.state.set(AnimState::rise);
+		svc::soundboardLocator.get().player.set(audio::Player::jump);
+	} else if (controller.jump_released() && controller.jumping() && !controller.jump_held() && collider.physics.velocity.y < 0) {
+		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
+		controller.reset_jump();
+	}
+}
+
+void Player::dash() {
+	if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
+		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.dash_multiplier;
+		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.dash_multiplier;
+
+		if (!collider.has_horizontal_collision()) {
+			collider.physics.acceleration.x += controller.dash_value() * (physics_stats.maximum_velocity.x / physics_stats.air_multiplier) * physics_stats.dash_speed;
+			collider.physics.velocity.x += controller.dash_value() * (physics_stats.maximum_velocity.x / physics_stats.air_multiplier) * physics_stats.dash_dampen;
+		}
+
+		controller.dash();
+	}
+}
+
 void Player::set_position(sf::Vector2<float> new_pos) {
 	collider.physics.position = new_pos;
 	collider.sync_components();
@@ -277,8 +286,8 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
-	if (controller.moving_right() && !collider.flags.test(shape::State::has_right_collision)) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
-	if (controller.moving_left() && !collider.flags.test(shape::State::has_left_collision)) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
+	if (controller.moving_right() && !collider.has_right_collision()) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
+	if (controller.moving_left() && !collider.has_left_collision()) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
 		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().player.set(audio::Player::step); }
 	}

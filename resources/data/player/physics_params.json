@@ -5,7 +5,7 @@
     "air_fric": 0.907000,
     "x_acc": 0.943000,
     "air_multiplier": 0.799000,
-    "jump_velocity": 6.056700,
+    "jump_velocity": 7.211340,
     "jump_release_multiplier": 0.406060,
     "hurt_acc": 0.150000,
     "maximum_velocity": {
@@ -14,6 +14,7 @@
     },
     "mass": 1.000000,
     "dash_multiplier": 1.000000,
-    "dash_speed": 10.000000
+    "dash_speed": 10.000000,
+    "dash_dampen": 0.93
   }
 }

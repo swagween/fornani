@@ -91,15 +91,15 @@ void Dojo::handle_events(sf::Event& event) {
 }
 
 void Dojo::tick_update() {
+
+	svc::playerLocator.get().update();
 	svc::cameraLocator.get().previous_position = svc::cameraLocator.get().position;
-	svc::playerLocator.get().update_weapon();
 	map.update();
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
 	svc::cameraLocator.get().update();
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);
 	if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
 	if (map.real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(map.real_dimensions); }
-	svc::playerLocator.get().update();
 	for (auto& critter : map.critters) {
 		critter->update();
 		critter->unique_update();
