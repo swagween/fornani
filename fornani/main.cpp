@@ -109,7 +109,7 @@ static void show_overlay() {
 					ImGui::Text("Frames Per Second: %.2f", svc::tickerLocator.get().fps);
 					ImGui::Separator();
 					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.02f, "%.5f");
-					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 0.f, 32.f, "%.2f");
+					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 0.f, 64.f, "%.2f");
 					if (ImGui::Button("Reset")) {
 						svc::tickerLocator.get().tick_rate = 0.016f;
 						svc::tickerLocator.get().tick_multiplier = 16;

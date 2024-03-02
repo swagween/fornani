@@ -20,8 +20,6 @@ Attractor::Attractor(Vec pos, sf::Color col, float agf, Vec size)
 	box.setSize(dimensions);
 	box.setPosition(collider.bounding_box.position);
 	box.setFillColor(color);
-	collider.left_detector.dimensions = sf::Vector2<float>(1.f, 4.f);
-	collider.right_detector.dimensions = sf::Vector2<float>(1.f, 4.f);
 }
 
 void Attractor::update() {

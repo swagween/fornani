@@ -11,7 +11,7 @@ namespace shape {
 float const default_dim = 24.0f;
 
 float const default_jumpbox_height = 4.0f;
-float const default_detector_width = 10.f;
+float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 
 enum class State {
@@ -29,7 +29,8 @@ enum class Collision {
 	has_left_collision,
 	has_right_collision,
 	has_top_collision,
-	has_bottom_collision
+	has_bottom_collision,
+	ramp_collision
 };
 
 struct PhysicsStats {
@@ -63,11 +64,8 @@ class Collider {
 	Shape bounding_box{};
 	Shape predictive_vertical{};
 	Shape predictive_horizontal{};
+	Shape predictive_combined{};
 	Shape jumpbox{};
-	Shape left_detector{};
-	Shape right_detector{};
-	Shape top_detector{};
-	Shape bottom_detector{};
 	Shape hurtbox{};
 
 	PhysicsStats stats{};
