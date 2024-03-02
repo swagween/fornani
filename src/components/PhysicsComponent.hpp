@@ -21,8 +21,6 @@ enum class State { grounded };
 
 class PhysicsComponent {
   public:
-	using Clock = std::chrono::steady_clock;
-	using Time = std::chrono::duration<float>;
 
 	PhysicsComponent() : ground_friction(FRICTION_DEFAULT), air_friction(FRICTION_DEFAULT), mass(MASS_DEFAULT){};
 	PhysicsComponent(sf::Vector2<float> fric, float ma, sf::Vector2<float> max_vel = sf::Vector2<float>{UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED}, float grav = 0.0f)
@@ -57,11 +55,6 @@ class PhysicsComponent {
 	void zero();
 	void hitstun();
 	void set_constant_friction(sf::Vector2<float> fric);
-
-	// fixed physics time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{};
 
 	util::BitFlags<State> flags{};
 	dir::Direction direction{};

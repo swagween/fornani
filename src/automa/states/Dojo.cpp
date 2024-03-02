@@ -94,7 +94,9 @@ void Dojo::tick_update() {
 
 	svc::playerLocator.get().update();
 	svc::cameraLocator.get().previous_position = svc::cameraLocator.get().position;
+	svc::stopwatchLocator.get().start();
 	map.update();
+	svc::stopwatchLocator.get().stop();
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
 	svc::cameraLocator.get().update();
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);

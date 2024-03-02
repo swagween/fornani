@@ -2,9 +2,11 @@
 #pragma once
 
 #include <chrono>
+#include <deque>
 #include <functional>
 #include <memory>
 #include <random>
+#include <thread>
 #include <utility>
 
 namespace util {
@@ -13,11 +15,8 @@ using Clk = std::chrono::steady_clock;
 using Tim = std::chrono::duration<float>;
 using Mil = std::chrono::milliseconds;
 
-struct Ticker {
-
-	// this is a faulty approach. tick gets called way too many times per frame,
-	// and the residue variable contains only the last iteration of the last 
-	// object that used the function
+class Ticker {
+  public:
 	template <typename F>
 	void tick(F fn) {
 
@@ -26,7 +25,7 @@ struct Ticker {
 		new_time = Clk::now();
 		dt = std::chrono::duration_cast<Tim>(new_time - current_time);
 		current_time = new_time;
-		
+
 		if (dt.count() > tick_limit.count()) { return; } // return for unexpected dt values, particularly during the beginning of the state
 
 		accumulator = dt + residue;
@@ -52,37 +51,15 @@ struct Ticker {
 		++calls_per_frame;
 	};
 
-	void start_frame() {
-		++num_frames;
-		total_seconds_passed += dt;
-	}
+	float global_tick_rate();
 
-	void end_frame() {
-		ticks_per_frame = total_integrations / (num_frames * calls_per_frame);
-		calls_per_frame = 0;
-		calculate_fps();
-	}
+	void start_frame();
+	void end_frame();
+	void calculate_fps();
+	bool every_x_frames(int const freq);
+	bool every_x_ticks(int const freq);
+	bool every_x_milliseconds(int num_milliseconds);
 
-	void calculate_fps() {
-		if (num_frames <= sample_size) {
-			frame_list.push_back(dt);
-		} else {
-			frame_list.pop_front();
-			frame_list.push_back(dt);
-		}
-		for (auto& frame : frame_list) { seconds_passed += frame; }
-
-		fps = num_frames <= sample_size ? num_frames / seconds_passed.count() : sample_size / seconds_passed.count();
-		seconds_passed = Tim::zero();
-	}
-
-	bool every_x_frames(int const freq) { return num_frames % freq == 0; }
-
-	bool every_x_ticks(int const freq) { return (int)total_integrations % freq == 0; }
-
-	bool every_x_milliseconds(int num_milliseconds) {}
-
-	// fixed animation time step variables
 	Clk::time_point current_time{Clk::now()};
 	Clk::time_point new_time{Clk::now()};
 
@@ -108,6 +85,7 @@ struct Ticker {
 	Tim total_seconds_passed{};
 	float fps{60.f};
 
+  private:
 	std::deque<Tim> frame_list{};
 };
 

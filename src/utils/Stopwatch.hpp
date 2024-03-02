@@ -2,6 +2,8 @@
 #pragma once
 
 #include <chrono>
+#include <deque>
+#include <iostream>
 #include <memory>
 #include <random>
 
@@ -12,14 +14,38 @@ class Stopwatch {
   public:
 	using Clk = std::chrono::steady_clock;
 	using Tpt = std::chrono::time_point<std::chrono::steady_clock>;
-	using Time = std::chrono::duration<float>;
+	using Time = std::chrono::duration<float, std::milli>;
 
-	void start() { current_time = Clk::now(); };
-	void stop() { elapsed_time = current_time - Clk::now(); };
-	void print_time() { std::cout << "Elapsed Time: " << elapsed_time.count() << "\n"; }
+	void start() { start_time = Clk::now(); };
+	void stop() {
+		elapsed_time = Clk::now() - start_time;
+		snapshot.history.push_back(elapsed_time.count());
+		calculate_snapshot();
+	};
+	float get_snapshot() const { return snapshot.average_elapsed_ms; }
+	void print_time() const { std::cout << "Elapsed Time: " << elapsed_time.count() << "\n"; }
 
 	Time elapsed_time{};
-	Tpt current_time = Clk::now();
+	Tpt start_time = Clk::now();
+
+  private:
+	struct Snapshot {
+		std::deque<float> history{};
+		float average_elapsed_ms{};
+		int sample_size{128};
+		int interval{128};
+		int current_tick{};
+	};
+	void calculate_snapshot() {
+		if (snapshot.history.size() >= snapshot.sample_size) { snapshot.history.pop_front(); }
+		float average{};
+		float running_total{};
+		for (auto& sample : snapshot.history) { running_total += sample; }
+		average = running_total / snapshot.history.size();
+		++snapshot.current_tick;
+		if (snapshot.current_tick % snapshot.interval == 0) { snapshot.average_elapsed_ms = average; }
+	}
+	Snapshot snapshot{};
 };
 
 } // namespace util

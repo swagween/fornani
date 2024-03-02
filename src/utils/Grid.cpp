@@ -31,24 +31,40 @@ Grid::Grid(sf::Vector2<uint32_t> d) : dimensions(d) {
 		cells.push_back(Tile({xidx, yidx}, {xpos, ypos}, 0, lookup::TILE_TYPE::TILE_BASIC));
 		cells.back().position = sf::Vector2<float>(xpos, ypos);
 		cells.back().bounding_box.set_position(sf::Vector2<float>(xpos, ypos));
+		cells.back().one_d_index = i;
 	}
 
 	init_shape_vertices();
+}
+
+void Grid::check_neighbors() {
+	for (auto i{0}; i < cells.size(); ++i) {
+		if (cells.at(i).is_occupied()) {
+			bool surrounded{true};
+			// right neighbor
+			if (!(i == cells.size() - 1)) {
+				if (!cells.at(i + 1).is_occupied()) { surrounded = false; }
+			}
+			// left neighbor
+			if (!(i == 0)) {
+				if (!cells.at(i - 1).is_occupied()) { surrounded = false; }
+			}
+			// top neighbor
+			if (!(i < dimensions.x)) {
+				if (!cells.at(i - dimensions.x).is_occupied()) { surrounded = false; }
+			}
+			// bottom neighbor
+			if (!(i > cells.size() - dimensions.x - 1)) {
+				if (!cells.at(i + dimensions.x).is_occupied()) { surrounded = false; }
+			}
+			cells.at(i).surrounded = surrounded;
+		}
+	}
 }
 
 void Grid::update() {
 	for (int i = 0; i < dimensions.x * dimensions.y; i++) { push_cells(i); }
 	init_shape_vertices();
-}
-
-void Grid::set_spacing(float spc) {
-
-	spacing = spc;
-	for (int i = 0; i < dimensions.x * dimensions.y; i++) {
-		float xpos = cells.at(i).index.x * spacing;
-		float ypos = cells.at(i).index.y * spacing;
-		cells.at(i).position = sf::Vector2<float>(xpos, ypos);
-	}
 }
 
 void Grid::push_cells(int i) {

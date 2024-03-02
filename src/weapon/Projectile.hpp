@@ -76,9 +76,6 @@ enum class ProjectileState { initialized, destruction_initiated, destroyed };
 
 class Projectile {
 
-	using Clock = std::chrono::steady_clock;
-	using Time = std::chrono::duration<float>;
-
   public:
 	Projectile();
 	Projectile(int id);
@@ -117,11 +114,6 @@ class Projectile {
 	int sprite_id{};
 	int curr_frame{};
 	int anim_frame{};
-
-	// fixed animation time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{0.0f};
 
 	sf::RectangleShape box{};
 

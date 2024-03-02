@@ -8,9 +8,6 @@
 
 namespace controllers {
 
-using Clock = std::chrono::steady_clock;
-using Time = std::chrono::duration<float>;
-
 constexpr static int jump_time{16};
 constexpr static int dash_time{20};
 
@@ -120,10 +117,5 @@ class PlayerController {
 	int jump_request{};
 	int dash_request{};
 	int dash_count{};
-
-	// fixed animation time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{0.0f};
 };
 } // namespace controllers

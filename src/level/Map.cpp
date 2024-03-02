@@ -217,6 +217,8 @@ void Map::load(std::string const& path) {
 	transition.fade_in = true;
 	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, cam::screen_dimensions.x * 2, cam::screen_dimensions.y * 2));
 	minimap.setViewport(sf::FloatRect(0.0f, 0.75f, 0.2f, 0.2f));
+
+	generate_collidable_layer();
 }
 
 void Map::update() {
@@ -231,14 +233,14 @@ void Map::update() {
 	}
 
 	manage_projectiles();
-	auto barrier = 2.0f;
 
 	// someday, I will have a for(auto& entity : entities) loop and the player will be included in that
 	for (auto& collider : colliders) {
-		for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+		for (auto& index : collidable_indeces) {
+			auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
 			cell.collision_check = false;
-			if (abs(cell.bounding_box.position.x - collider->bounding_box.position.x) > lookup::unit_size_i * barrier || abs(cell.bounding_box.position.y - collider->bounding_box.position.y) > lookup::unit_size_i * (barrier - 1)) {
-				continue;
+			if (!nearby(cell.bounding_box, collider->bounding_box)) { continue;
+			
 			} else {
 				cell.collision_check = true;
 				if (cell.value > 0) { collider->handle_map_collision(cell.bounding_box, cell.type); }
@@ -246,10 +248,11 @@ void Map::update() {
 		}
 	}
 
-	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+	for (auto& index : collidable_indeces) {
+		auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
 		for (auto& emitter : active_emitters) {
 			for (auto& particle : emitter.get_particles()) {
-				if (abs(cell.bounding_box.position.x - particle.bounding_box.position.x) > lookup::unit_size_i * barrier || abs(cell.bounding_box.position.y - particle.bounding_box.position.y) > lookup::unit_size_i * barrier) {
+				if (!nearby(cell.bounding_box, particle.bounding_box)) {
 					continue;
 				} else {
 					cell.collision_check = true;
@@ -268,7 +271,7 @@ void Map::update() {
 		if (cell.type == lookup::TILE_TYPE::TILE_SPIKES && svc::playerLocator.get().collider.hurtbox.SAT(cell.bounding_box)) { svc::playerLocator.get().hurt(1); }
 		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && svc::playerLocator.get().collider.hurtbox.SAT(cell.bounding_box)) { svc::playerLocator.get().hurt(64); }
 		for (auto& proj : active_projectiles) {
-			if (abs(cell.bounding_box.position.x - proj.bounding_box.position.x) > lookup::unit_size_i * barrier || abs(cell.bounding_box.position.y - proj.bounding_box.position.y) > lookup::unit_size_i * barrier) {
+			if (!nearby(cell.bounding_box, proj.bounding_box)) {
 				continue;
 			} else {
 				cell.collision_check = true;
@@ -394,20 +397,6 @@ void Map::update() {
 void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
 	for (auto& proj : active_projectiles) {
 		proj.render(win, cam);
-		/*sf::Sprite proj_sprite;
-		int curr_frame = proj.sprite_id + proj.anim.num_sprites*proj.anim_frame;
-		svc::assetLocator.get().sp_clover_projectile.at(curr_frame).setPosition( {proj.bounding_box.position.x - cam.x, proj.bounding_box.position.y - cam.y - proj.bounding_box.dimensions.y/2} );
-		arms::Weapon& curr_weapon = lookup::type_to_weapon.at(proj.type);
-		std::vector<sf::Sprite>& curr_proj_sprites = lookup::projectile_sprites.at(curr_weapon.type);
-
-
-		if(curr_weapon.type == arms::WEAPON_TYPE::CLOVER) {
-			win.draw(svc::assetLocator.get().sp_clover_projectile.at(curr_frame));
-		} else if(!curr_proj_sprites.empty()) {
-			proj_sprite = curr_proj_sprites.at(arms::ProjDirLookup.at(proj.dir));
-			proj_sprite.setPosition({proj.bounding_box.position.x - cam.x, proj.bounding_box.position.y - cam.y - proj.bounding_box.dimensions.y/2} );
-			win.draw(proj_sprite);
-		}*/
 	}
 
 	// emitters
@@ -430,7 +419,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 	for (auto& layer : layers) {
 		if (layer.render_order >= 4) {
 			for (auto& cell : layer.grid.cells) {
-				if (cell.value > 0) {
+				if (cell.is_occupied()) {
 					int cell_x = cell.bounding_box.position.x - cam.x;
 					int cell_y = cell.bounding_box.position.y - cam.y;
 					tileset.at(cell.value).setPosition(cell_x, cell_y);
@@ -486,6 +475,27 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 		if (animator.foreground) { animator.render(win, cam); }
 	}
 
+	for (auto& index : collidable_indeces) {
+		auto cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
+		if (cell.is_occupied()) {
+			int cell_x = cell.bounding_box.position.x - cam.x;
+			int cell_y = cell.bounding_box.position.y - cam.y;
+			tileset.at(cell.value).setPosition(cell_x, cell_y);
+			if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+				if (svc::cameraLocator.get().within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) {
+					sf::RectangleShape box{};
+					box.setPosition(cell.bounding_box.vertices[0].x - cam.x, cell.bounding_box.vertices[0].y - cam.y);
+					box.setFillColor(sf::Color::Transparent);
+					box.setOutlineColor(flcolor::goldenrod);
+					box.setOutlineThickness(-3);
+					box.setSize(sf::Vector2<float>{(float)cell.bounding_box.dimensions.x, (float)cell.bounding_box.dimensions.y});
+					//win.draw(box);
+					svc::counterLocator.get().at(svc::draw_calls)++;
+				}
+			}
+		}
+	}
+
 	// render minimap
 	if (show_minimap) {
 		win.setView(minimap);
@@ -525,7 +535,7 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 	for (auto& layer : layers) {
 		if (layer.render_order < 4) {
 			for (auto& cell : layer.grid.cells) {
-				if (cell.value > 0) {
+				if (cell.is_occupied()) {
 					int cell_x = cell.bounding_box.position.x - cam.x;
 					int cell_y = cell.bounding_box.position.y - cam.y;
 					tileset.at(cell.value).setPosition(cell_x, cell_y);
@@ -609,11 +619,22 @@ void Map::manage_projectiles() {
 	}
 }
 
+void Map::generate_collidable_layer() {
+	layers.at(MIDDLEGROUND).grid.check_neighbors();
+	for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+		if (!cell.surrounded && cell.is_occupied()) { collidable_indeces.push_back(cell.one_d_index); }
+	}
+}
+
 sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 	for (auto& portal : portals) {
 		if (portal.source_map_id == portal_source_map_id) { return (portal.position); }
 	}
 	return Vec(300.f, 390.f);
+}
+
+bool Map::nearby(shape::Shape& first, shape::Shape& second) {
+	return abs(first.position.x - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
 }
 
 squid::Tile& Map::tile_at(uint8_t const i, uint8_t const j) {

@@ -25,20 +25,20 @@ void PhysicsComponent::update_euler() {
 
 void PhysicsComponent::integrate() {
 
-	float ndt = svc::tickerLocator.get().ft.count() * svc::tickerLocator.get().tick_multiplier;
+	float dt = svc::tickerLocator.get().global_tick_rate();
 	previous_acceleration = acceleration;
 	previous_velocity = velocity;
 	previous_position = position;
 
-	acceleration.y += gravity * ndt;
+	acceleration.y += gravity * dt;
 	sf::Vector2<float> friction = flags.test(State::grounded) ? ground_friction : air_friction;
-	velocity.x = (velocity.x + (acceleration.x / mass) * ndt) * friction.x;
-	velocity.y = (velocity.y + (acceleration.y / mass) * ndt) * friction.y;
+	velocity.x = (velocity.x + (acceleration.x / mass) * dt) * friction.x;
+	velocity.y = (velocity.y + (acceleration.y / mass) * dt) * friction.y;
 	if (velocity.x > maximum_velocity.x) { velocity.x = maximum_velocity.x; }
 	if (velocity.x < -maximum_velocity.x) { velocity.x = -maximum_velocity.x; }
 	if (velocity.y > maximum_velocity.y) { velocity.y = maximum_velocity.y; }
 	if (velocity.y < -maximum_velocity.y) { velocity.y = -maximum_velocity.y; }
-	position = position + velocity * ndt;
+	position = position + velocity * dt;
 
 	if (y_acc_history.size() < acceleration_sample_size) { y_acc_history.push_back(acceleration.y);
 	} else {
@@ -93,7 +93,7 @@ void PhysicsComponent::zero() {
 	velocity = {0.0f, 0.0f};
 }
 
-void PhysicsComponent::hitstun() { dt /= 2.0f; }
+void PhysicsComponent::hitstun() {}
 
 void PhysicsComponent::set_constant_friction(sf::Vector2<float> fric) {
 	ground_friction = {fric.x, fric.x};

@@ -114,6 +114,10 @@ static void show_overlay() {
 						svc::tickerLocator.get().tick_rate = 0.016f;
 						svc::tickerLocator.get().tick_multiplier = 16;
 					}
+					ImGui::Separator();
+					ImGui::Text("Stopwatch");
+					ImGui::Text("average time: %.4f", svc::stopwatchLocator.get().get_snapshot());
+
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Console")) {
