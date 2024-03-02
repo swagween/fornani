@@ -32,7 +32,7 @@ class Stopwatch {
 	struct Snapshot {
 		std::deque<float> history{};
 		float average_elapsed_ms{};
-		int sample_size{128};
+		int sample_size{512};
 		int interval{128};
 		int current_tick{};
 	};

@@ -47,7 +47,7 @@ void Collider::sync_components() {
 	bounding_box.set_position(physics.position);
 	predictive_vertical.dimensions.x = dimensions.x - 2 * vertical_detector_buffer;
 	predictive_horizontal.dimensions.x = dimensions.x + 2 * detector_buffer;
-	predictive_horizontal.dimensions.y = dimensions.y - 2 * detector_buffer;
+	predictive_horizontal.dimensions.y = dimensions.y - 3 * detector_buffer;
 	predictive_combined.dimensions = dimensions;
 	predictive_vertical.set_position(sf::Vector2<float>{physics.position.x + vertical_detector_buffer, physics.position.y + physics.velocity.y});
 	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - detector_buffer + physics.velocity.x, physics.position.y + detector_buffer});
@@ -87,6 +87,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			physics.velocity.y = 0.f;
 			physics.position.y += physics.mtv.y;
 		} else {
+			if (physics.velocity.y > landed_threshold) { flags.set(State::just_landed); }
 			correct_y();
 		}
 		physics.mtv.y < 0.f ? collision_flags.set(Collision::has_bottom_collision) : collision_flags.set(Collision::has_top_collision);
@@ -104,6 +105,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			collision_flags.set(Collision::ramp_collision);
 			physics.mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
 			if (falls_onto_ramp) {
+				if (physics.velocity.y > landed_threshold) { flags.set(State::just_landed); }
 				auto temp_mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
 				bool one_overlaps = !(abs(temp_mtv.x) > 0.f) && !(abs(temp_mtv.y) > 0.f);
 
@@ -131,6 +133,8 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 				// still zero this because of gravity
 				physics.velocity.y = 0.0f;
 				physics.acceleration.y = 0.0f;
+				//if the collider is dashing
+				if (abs(physics.velocity.x) > physics.maximum_velocity.x * 0.5) { jumps_into_ramp = true; }
 			}
 			if (jumps_into_ramp) {
 				auto temp_mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
@@ -162,8 +166,8 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		collision_flags.set(Collision::any_collision);
 		// set mtv
 		physics.mtv = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, cell);
-		if (!is_ramp) { correct_x(); }
 		physics.mtv.x > 0.f ? collision_flags.set(Collision::has_left_collision) : collision_flags.set(Collision::has_right_collision);
+		if (!is_ramp) { correct_x(); }
 		physics.mtv = {};
 	}
 	
@@ -178,6 +182,12 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		flags.set(State::is_any_jump_collision);
 	} else {
 		flags.reset(State::grounded);
+	}
+
+	//don't slide down ramps
+	if (flags.test(State::grounded) && physics.velocity.y > 0.f) {
+		physics.acceleration.y = 0;
+		physics.velocity.y = 0.f;
 	}
 
 	sync_components();

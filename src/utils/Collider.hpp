@@ -10,7 +10,7 @@ namespace shape {
 
 float const default_dim = 24.0f;
 
-float const default_jumpbox_height = 4.0f;
+float const default_jumpbox_height = 2.0f;
 float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 
@@ -73,7 +73,7 @@ class Collider {
 	util::BitFlags<State> flags{};
 	util::BitFlags<Collision> collision_flags{};
 
-	float landed_threshold{1.0f};
+	float landed_threshold{6.0f};
 	float detector_buffer{19.0f};
 
 	sf::Vector2<float> dimensions{};

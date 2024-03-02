@@ -65,7 +65,7 @@ struct PhysicsStats {
 	float hurt_acc{};
 	sf::Vector2<float> maximum_velocity{};
 	float mass{};
-	float dash_multiplier{};
+	float vertical_dash_multiplier{};
 	float dash_speed{};
 	float dash_dampen{};
 };

@@ -13,7 +13,7 @@ namespace anim {
 int const DEFAULT_FRAMERATE = 8;
 int const DEFAULT_DURATION = 8;
 int const DEFAULT_NUM_BEHAVIORS = 1;
-int const animation_multiplier = 32;
+int const animation_multiplier = 64;
 
 struct Parameters {
 	int lookup{};

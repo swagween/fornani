@@ -130,8 +130,9 @@ void DataManager::load_player_params() {
 	svc::playerLocator.get().physics_stats.maximum_velocity.y = player_params["physics"]["maximum_velocity"]["y"].as<float>();
 
 	svc::playerLocator.get().physics_stats.mass = player_params["physics"]["mass"].as<float>();
-	svc::playerLocator.get().physics_stats.dash_multiplier = player_params["physics"]["dash_multiplier"].as<float>();
+	svc::playerLocator.get().physics_stats.vertical_dash_multiplier = player_params["physics"]["vertical_dash_multiplier"].as<float>();
 	svc::playerLocator.get().physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
+	svc::playerLocator.get().physics_stats.dash_dampen = player_params["physics"]["dash_dampen"].as<float>();
 	std::cout << " success!\n";
 }
 
@@ -151,6 +152,9 @@ void DataManager::save_player_params() {
 	player_params["physics"]["maximum_velocity"]["y"] = svc::playerLocator.get().physics_stats.maximum_velocity.y;
 
 	player_params["physics"]["mass"] = svc::playerLocator.get().physics_stats.mass;
+	player_params["physics"]["vertical_dash_multiplier"] = svc::playerLocator.get().physics_stats.vertical_dash_multiplier;
+	player_params["physics"]["dash_speed"] = svc::playerLocator.get().physics_stats.dash_speed;
+	player_params["physics"]["dash_dampen"] = svc::playerLocator.get().physics_stats.dash_dampen;
 
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	std::cout << " success!\n";

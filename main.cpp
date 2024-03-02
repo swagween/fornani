@@ -186,10 +186,10 @@ static void show_overlay() {
 							ImGui::Separator();
 							ImGui::Text("Player Grounded: %s", svc::playerLocator.get().grounded() ? "Yes" : "No");
 							ImGui::Separator();
-							ImGui::Text("Right Collision	: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_right_collision) ? "Yes" : "No");
-							ImGui::Text("Left Collision		: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_left_collision) ? "Yes" : "No");
-							ImGui::Text("Top Collision		: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_top_collision) ? "Yes" : "No");
-							ImGui::Text("Bottom Collision	: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
+							ImGui::Text("Right Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_right_collision) ? "Yes" : "No");
+							ImGui::Text("Left Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_left_collision) ? "Yes" : "No");
+							ImGui::Text("Top Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_top_collision) ? "Yes" : "No");
+							ImGui::Text("Bottom Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
 							
 							ImGui::EndTabItem();
 						}
@@ -250,8 +250,8 @@ static void show_overlay() {
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {
 							ImGui::Text("Vertical Movement");
-							ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().physics_stats.grav, 0.f, 0.5f, "%.5f");
-							ImGui::SliderFloat("JUMP VELOCITY", &svc::playerLocator.get().physics_stats.jump_velocity, 0.5f, 7.5f, "%.5f");
+							ImGui::SliderFloat("GRAVITY", &svc::playerLocator.get().physics_stats.grav, 0.f, 0.8f, "%.5f");
+							ImGui::SliderFloat("JUMP VELOCITY", &svc::playerLocator.get().physics_stats.jump_velocity, 0.5f, 12.0f, "%.5f");
 							ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &svc::playerLocator.get().physics_stats.jump_release_multiplier, 0.005f, 1.f, "%.5f");
 							ImGui::SliderFloat("MAX Y VELOCITY", &svc::playerLocator.get().physics_stats.maximum_velocity.y, 1.0f, 60.0f);
 
@@ -265,9 +265,9 @@ static void show_overlay() {
 
 							ImGui::Separator();
 							ImGui::Text("Dash");
-							ImGui::SliderFloat("Dash Speed", &svc::playerLocator.get().physics_stats.dash_speed, 1.0f, 10.0f);
-							ImGui::SliderFloat("Dash Multiplier", &svc::playerLocator.get().physics_stats.dash_multiplier, 0.0f, 10.0f);
-							ImGui::SliderFloat("Dash Dampen", &svc::playerLocator.get().physics_stats.dash_dampen, 0.7f, 1.0f);
+							ImGui::SliderFloat("Dash Speed", &svc::playerLocator.get().physics_stats.dash_speed, 1.0f, 30.0f);
+							ImGui::SliderFloat("Vertical Dash Multiplier", &svc::playerLocator.get().physics_stats.vertical_dash_multiplier, 0.0f, 10.0f);
+							ImGui::SliderFloat("Dash Dampen", &svc::playerLocator.get().physics_stats.dash_dampen, 0.7f, 2.0f);
 
 							ImGui::Separator();
 							if (ImGui::Button("Save Parameters")) { svc::dataLocator.get().save_player_params(); }

@@ -56,6 +56,8 @@ void Player::update() {
 	controller.update();
 	update_transponder();
 
+	if (grounded()) { controller.reset_dash_count(); }
+
 	// update loadout
 	if (!arsenal.loadout.empty()) {
 		if (controller.arms_switch() == -1.f) {
@@ -72,6 +74,10 @@ void Player::update() {
 		}
 	}
 
+	//do this elsehwere later
+	if (collider.flags.test(shape::State::just_landed)) { svc::soundboardLocator.get().player.set(audio::Player::land); }
+	collider.flags.reset(shape::State::just_landed);
+
 	// jump!
 	jump();
 
@@ -79,8 +85,6 @@ void Player::update() {
 	if (!controller.jumpsquatting()) { walk(); }
 	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
 
-	// dash
-	dash();
 
 	// weapon physics
 	if (controller.shot() && !arsenal.loadout.empty()) {
@@ -90,6 +94,8 @@ void Player::update() {
 
 	collider.physics.update_euler();
 	collider.sync_components();
+
+	dash();
 
 	// for parameter tweaking, remove later
 	collider.update();
@@ -179,7 +185,6 @@ void Player::update_animation() {
 
 	if (collider.flags.test(shape::State::just_landed)) {
 		animation.state.set(AnimState::land);
-		controller.reset_dash_count();
 	}
 	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
@@ -242,16 +247,15 @@ void Player::jump() {
 
 void Player::dash() {
 	if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
-		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.dash_multiplier;
-		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.dash_multiplier;
+		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
+		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 
 		if (!collider.has_horizontal_collision()) {
-			collider.physics.acceleration.x += controller.dash_value() * (physics_stats.maximum_velocity.x / physics_stats.air_multiplier) * physics_stats.dash_speed;
-			collider.physics.velocity.x += controller.dash_value() * (physics_stats.maximum_velocity.x / physics_stats.air_multiplier) * physics_stats.dash_dampen;
+			collider.physics.acceleration.x = controller.dash_value() * physics_stats.maximum_velocity.x * physics_stats.dash_speed;
 		}
-
 		controller.dash();
 	}
+	if (controller.dashing()) { collider.physics.velocity.x *= physics_stats.dash_dampen; }
 }
 
 void Player::set_position(sf::Vector2<float> new_pos) {

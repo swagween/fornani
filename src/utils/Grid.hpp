@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 #include <cmath>
-#include <vector>
 #include <iostream>
+#include <vector>
 #include "../setup/EnumLookups.hpp"
 #include "../utils/Shape.hpp"
 
@@ -17,7 +17,7 @@ int const FLOOR_SLANT_INDEX = 208;
 
 struct Tile {
 
-	Tile(){};
+	Tile() = default;
 	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, lookup::TILE_TYPE t) : index(i), position(p), value(val), type(t) { bounding_box = shape::Shape(sf::Vector2<float>(DEFAULT_SPACING, DEFAULT_SPACING)); }
 
 	bool is_occupied() const { return value > 0; }
@@ -36,21 +36,19 @@ struct Tile {
 
 class Grid {
   public:
-	Grid();
+	Grid() = default;
 	Grid(sf::Vector2<uint32_t> d);
 
 	sf::Vector2<uint32_t> dimensions{};
-	float spacing{};
-
 	std::vector<Tile> cells{};
 
 	void update();
 	void check_neighbors();
 
-	private:
+  private:
 	void init_shape_vertices();
 	void push_cells(int i);
-
+	float spacing{};
 };
 
 } // namespace squid

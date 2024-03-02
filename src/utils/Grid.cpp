@@ -3,8 +3,6 @@
 
 namespace squid {
 
-Grid::Grid() {}
-
 Grid::Grid(sf::Vector2<uint32_t> d) : dimensions(d) {
 	spacing = DEFAULT_SPACING;
 	cells.clear();
@@ -57,6 +55,8 @@ void Grid::check_neighbors() {
 			if (!(i > cells.size() - dimensions.x - 1)) {
 				if (!cells.at(i + dimensions.x).is_occupied()) { surrounded = false; }
 			}
+			lookup::TILE_TYPE tile_check = lookup::tile_lookup.at(cells.at(i).value);
+			if (tile_check == lookup::TILE_TYPE::TILE_CEILING_RAMP || tile_check == lookup::TILE_TYPE::TILE_GROUND_RAMP) { surrounded = false; }
 			cells.at(i).surrounded = surrounded;
 		}
 	}

@@ -345,7 +345,7 @@ void Map::update() {
 	}
 
 	for (auto& inspectable : inspectables) {
-		if (svc::playerLocator.get().controller.inspecting() && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+		if (svc::playerLocator.get().controller.inspecting() && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.hurtbox)) {
 			inspectable.activated = true;
 			svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
 		}
@@ -634,7 +634,7 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 }
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) {
-	return abs(first.position.x - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
+	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
 }
 
 squid::Tile& Map::tile_at(uint8_t const i, uint8_t const j) {

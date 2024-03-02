@@ -106,7 +106,7 @@ class Map {
 	sf::RectangleShape minimap_tile{};
 	sf::RectangleShape borderbox{};
 	int bg{}; // which background to render
-	float collision_barrier = 1.1f;
+	float collision_barrier = 1.5f;
 
 	int room_id{}; // should be assigned to its constituent chunks
 	bool game_over{false};
