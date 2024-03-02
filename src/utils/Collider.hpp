@@ -10,9 +10,9 @@ namespace shape {
 
 float const default_dim = 24.0f;
 
-float const default_jumpbox_height = 2.0f;
-float const default_detector_width = 2.0f;
-float const default_detector_height = 19.f;
+float const default_jumpbox_height = 4.0f;
+float const default_detector_width = 3.3f;
+float const default_detector_height = 18.f;
 
 enum class State {
 	just_collided,

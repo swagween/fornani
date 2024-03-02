@@ -1,0 +1,189 @@
+{
+  "weapons": [
+    {
+      "label": "bryn's gun",
+      "dimensions": {
+        "x": 18,
+        "y": 8
+      },
+      "barrel_point": {
+        "x": 18.0,
+        "y": 2.0
+      },
+      "attributes": {
+        "automatic": false,
+        "boomerang": false,
+        "rate": 42,
+        "cooldown_time": 0,
+        "recoil": 0.00,
+        "ui_color": 1
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 28.0,
+          "y": 12.0
+        },
+        "attributes": {
+          "base_damage": 4,
+          "range": 200,
+          "speed": 15.5,
+          "variance": 0.1,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 8
+        }
+      },
+      "spray": {
+        "emitter": {
+          "lifespan": 6,
+          "lifespan_variance": 0,
+          "particle_lifespan": 40,
+          "particle_lifespan_variance": 30
+        },
+        "particle": {
+          "rate": 2,
+          "rate_variance": 1,
+          "expulsion_force": 4.0,
+          "expulsion_variance": 2.8,
+          "cone": 0.8,
+          "grav": 0.005,
+          "grav_variance": 0.001,
+          "x_friction": 0.93,
+          "y_friction": 0.93
+        }
+      }
+    },
+
+    {
+      "label": "plasmer",
+      "dimensions": {
+        "x": 18,
+        "y": 8
+      },
+      "barrel_point": {
+        "x": 22.0,
+        "y": 7.0
+      },
+      "attributes": {
+        "automatic": false,
+        "boomerang": false,
+        "rate": 42,
+        "cooldown_time": 0,
+        "recoil": 0.00,
+        "ui_color": 4
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 28.0,
+          "y": 12.0
+        },
+        "attributes": {
+          "base_damage": 5,
+          "range": 240,
+          "speed": 17.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 8
+        }
+      },
+      "spray": {
+        "emitter": {
+          "lifespan": 6,
+          "lifespan_variance": 0,
+          "particle_lifespan": 40,
+          "particle_lifespan_variance": 30
+        },
+        "particle": {
+          "rate": 2,
+          "rate_variance": 1,
+          "expulsion_force": 6.0,
+          "expulsion_variance": 4.8,
+          "cone": 0.8,
+          "grav": 0.05,
+          "grav_variance": 0.01,
+          "x_friction": 0.91,
+          "y_friction": 0.91
+        }
+      }
+    },
+
+    {
+      "label": "skycorps ar",
+      "dimensions": {
+        "x": 18,
+        "y": 8
+      },
+      "barrel_point": {
+        "x": 22.0,
+        "y": 7.0
+      },
+      "attributes": {
+        "automatic": false,
+        "boomerang": false,
+        "rate": 42,
+        "cooldown_time": 0,
+        "recoil": 0.00,
+        "ui_color": 3
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 28.0,
+          "y": 12.0
+        },
+        "attributes": {
+          "base_damage": 5,
+          "range": 240,
+          "speed": 17.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 8
+        }
+      },
+      "spray": {
+        "emitter": {
+          "lifespan": 6,
+          "lifespan_variance": 0,
+          "particle_lifespan": 40,
+          "particle_lifespan_variance": 30
+        },
+        "particle": {
+          "rate": 2,
+          "rate_variance": 1,
+          "expulsion_force": 1.0,
+          "expulsion_variance": 0.8,
+          "cone": 0.8,
+          "grav": 0.005,
+          "grav_variance": 0.001,
+          "x_friction": 0.001,
+          "y_friction": 0.001
+        }
+      }
+    }
+  ]
+}

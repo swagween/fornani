@@ -23,9 +23,15 @@ Console::Console() {
 	extent = corner_factor * 2;
 }
 
-void Console::begin() { dimensions.y = corner_factor * 2; }
+void Console::begin() {
+	dimensions.y = corner_factor * 2;
+	flags.set(ConsoleFlags::active);
+	writer.activate();
+}
 
 void Console::update() {
+	writer.set_bounds(position + sf::Vector2<float>{dimensions.x - 2 * border.left, dimensions.y - 2 * border.top});
+	writer.set_position(position + sf::Vector2<float>{border.left, border.top});
 	if (flags.test(ConsoleFlags::active)) { extent += speed; }
 	if (extent < (float)cam::screen_dimensions.y / height_factor) {
 		dimensions.y = extent;
@@ -33,34 +39,28 @@ void Console::update() {
 		dimensions.y = (float)cam::screen_dimensions.y / height_factor;
 	}
 	nine_slice(corner_factor, edge_factor);
+	writer.update();
 }
 
 void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
 }
 
-void Console::write(sf::RenderWindow& win, std::string_view message) {
-	int ctr{0};
-	for (auto& letter : message) {
-		if (!std::isspace(letter)) {
-			try {
-				if (auto search = lookup::get_character.find(letter); search != lookup::get_character.end()) {
-					svc::assetLocator.get().sp_alphabet.at(lookup::get_character.at(letter)).setPosition(position.x + text_origin.x + (12 * ctr) + 2, position.y + text_origin.y);
-					win.draw(svc::assetLocator.get().sp_alphabet.at(lookup::get_character.at(letter)));
-				} else {
-					printf("Error: %c is not in the map.\n", letter);
-				}
-			} catch (std::out_of_range) { printf("Error: %c is out of range.\n", letter); }
-		}
-		ctr++;
+void Console::load_and_launch(std::string_view key) {
+	if (!flags.test(ConsoleFlags::loaded)) {
+		writer.load_message(svc::textLocator.get().console, key);
+		flags.set(ConsoleFlags::loaded);
+		begin();
 	}
 }
 
-void Console::write_speech(sf::RenderWindow& win, std::string_view message) {}
+void Console::write(sf::RenderWindow& win, bool instant) { instant ? writer.write_instant_message(win) : writer.write_gradual_message(win); }
 
 void Console::end() {
 	extent = dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
+	flags.reset(ConsoleFlags::loaded);
+	writer.deactivate();
 }
 
 void Console::nine_slice(int corner_dim, int edge_dim) {

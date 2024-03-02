@@ -9,6 +9,9 @@
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../weapon/Arsenal.hpp"
+#include "PlayerController.hpp"
+#include "PlayerAnimation.hpp"
+#include "Transponder.hpp"
 
 namespace player {
 
@@ -28,8 +31,10 @@ int const ANCHOR_BUFFER = 50;
 int const num_sprites{220};
 float const stopped_threshold{0.2f};
 
-struct PlayerStats {
+constexpr inline float antenna_force{0.4f};
+constexpr inline float antenna_speed{16.f};
 
+struct PlayerStats {
 	int health{};
 	int max_health{};
 	int orbs{};
@@ -50,128 +55,56 @@ struct PlayerInventoryStats {
 };
 
 struct PhysicsStats {
-
-	float PLAYER_MAX_XVEL = 2.380f;
-	float PLAYER_MAX_YVEL = 0.226f;
-
-	float AIR_MULTIPLIER = 2.912f;
-
-	float PLAYER_GRAV = 0.002f;
-
-	float TERMINAL_VELOCITY = 0.8f;
-
-	float PLAYER_GROUND_FRIC = 0.963f;
-	float PLAYER_HORIZ_AIR_FRIC = 0.987f;
-	float PLAYER_VERT_AIR_FRIC = 0.956f;
-
-	float X_ACC = 0.056f;
-	float X_ACC_AIR = 0.056f;
-
-	// float JUMP_MAX = 0.304f; //3 blocks
-	float JUMP_MAX = 0.392f; // 4 blocks
-
-	float WALL_SLIDE_THRESHOLD = -1.0f;
-	float WALL_SLIDE_SPEED = 1.31f;
-	float PLAYER_MASS = 1.0f;
-
-	float JUMP_RELEASE_MULTIPLIER = 0.65f;
-
-	float HURT_ACC = 0.15f;
+	float grav{};
+	float ground_fric{};
+	float air_fric{};
+	float x_acc{};
+	float air_multiplier{};
+	float jump_velocity{};
+	float jump_release_multiplier{};
+	float hurt_acc{};
+	sf::Vector2<float> maximum_velocity{};
+	float mass{};
+	float dash_multiplier{};
+	float dash_speed{};
 };
 
 struct Counters {
 	int invincibility{};
 };
 
-enum class Soundboard {
-	jump,
-	step,
-	land,
-	weapon_swap,
-	hurt,
-};
-
-enum class Jump {
-	hold,		 // true if jump is pressed and permanently false once released, until player touches the ground again
-	trigger,	 // true for one frame if jump is pressed and the player is grounded
-	can_jump,	 // true if the player is grounded
-	just_jumped, // used for updating animation
-	is_pressed,	 // true if the jump button is pressed, false if not. independent of player's state.
-	is_released, // true if jump released midair, reset upon landing
-	jumping,	 // true if jumpsquat is over, falce once player lands
-};
-
-enum class Movement {
-
-	move_left,
-	move_right,
-	look_up,
-	look_down,
-	left_released,
-	right_released,
-
-	stopping,
-	just_stopped,
-	suspended_trigger,
-	fall_trigger,
-	landed_trigger,
-	entered_freefall,
-	freefalling,
-	autonomous_walk,
-
-	is_wall_sliding,
-	wall_slide_trigger,
-	release_wallslide,
-};
-
-enum class Input { restricted, no_anim, exit_request, inspecting, inspecting_trigger };
-
 enum class State { alive };
 
 struct PlayerFlags {
-	util::BitFlags<Soundboard> sounds{};
-	util::BitFlags<Jump> jump{};
-	util::BitFlags<Movement> movement{};
-	util::BitFlags<Input> input{};
 	util::BitFlags<State> state{};
 };
 
 class Player {
   public:
-	using Clock = std::chrono::steady_clock;
-	using Time = std::chrono::duration<float>;
+
 	Player();
 
+	// init (violates RAII but must happen after resource path is set)
+	void init();
 	// member functions
-	void handle_events(sf::Event& event);
-	void update(Time dt);
+	void update();
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
+	void update_transponder();
 	void flash_sprite();
 	void calculate_sprite_offset();
 
-	void update_behavior();
 	void set_position(sf::Vector2<float> new_pos);
 	void update_direction();
 	void update_weapon();
 	void walk();
-	void autonomous_walk();
 	void hurt(int amount);
 	void update_antennae();
 
-	void restrict_inputs();
-	void unrestrict_inputs();
-	void restrict_animation();
-	void no_move();
-
 	bool grounded() const;
-	bool moving() const;
-	bool moving_at_all() const;
-
-	// firing
-	sf::Vector2<float> get_fire_point();
+	bool fire_weapon();
 
 	// level events
 	void make_invincible();
@@ -183,21 +116,23 @@ class Player {
 	void reset_flags();
 	void total_reset();
 
-	// map helpers
-	behavior::DIR_LR entered_from();
+	arms::Weapon& equipped_weapon();
 
-	// sound
-	void play_sounds();
+	// map helpers
+	dir::LR entered_from();
 
 	// for debug mode
 	std::string print_direction(bool lr);
 
-	shape::Collider collider{{PLAYER_WIDTH, PLAYER_HEIGHT}, {PLAYER_START_X, PLAYER_START_Y}};
-	shape::Collider head{};
-	components::PlayerBehaviorComponent behavior{};
+	//components
+	controllers::PlayerController controller{};
+	Transponder transponder{};
+	shape::Collider collider{};
+	PlayerAnimation animation{};
 	behavior::DIR last_dir{};
-	arms::Arsenal loadout{};
-	std::vector<arms::WEAPON_TYPE> weapons_hotbar{};
+
+	//weapons
+	arms::Arsenal arsenal{};
 	int current_weapon{};
 
 	sf::Vector2<float> apparent_position{};
@@ -211,16 +146,11 @@ class Player {
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
 	PlayerStats player_stats{3, 3, 0, 99999};
-	PlayerInventoryStats player_inv_stats{0, 0, 0, 0, 0, 0, 0, 0};
-	PhysicsStats stats{};
+	PlayerInventoryStats player_inv_stats{};
+	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 
 	Counters counters{};
-
-	// fixed animation time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{0.0f};
 
 	// sprites
 	sf::Sprite sprite{};
@@ -230,11 +160,8 @@ class Player {
 	int jump_request{};
 
 	bool just_hurt{};
-	bool weapon_fired{};
 	bool start_cooldown{};
 	bool sprite_flip{};
-
-	int wall_slide_ctr{0};
 };
 
 } // namespace player

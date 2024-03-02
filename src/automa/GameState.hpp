@@ -23,6 +23,10 @@ enum class MenuSelection { new_game, load_game, options };
 inline MenuSelection selection{};
 inline int file_selection{0};
 
+constexpr inline float dot_force{0.09f};
+constexpr inline float dot_fric{0.87f};
+constexpr inline float dot_speed{20.f};
+
 class GameState {
 
   public:
@@ -38,7 +42,8 @@ class GameState {
 	virtual void init(std::string const& load_path){};
 	virtual void setTilesetTexture(sf::Texture& t){};
 	virtual void handle_events(sf::Event& event){};
-	virtual void logic(){};
+	virtual void tick_update(){};
+	virtual void frame_update(){};
 	virtual void render(sf::RenderWindow& win){};
 
 	STATE state = STATE::STATE_NULL;

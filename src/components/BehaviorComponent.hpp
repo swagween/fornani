@@ -137,7 +137,7 @@ class PlayerBehaviorComponent {
 
 	int get_frame() { return current_state.get_frame(); }
 
-	float const suspension_threshold{1.0f};
+	float const suspension_threshold{1.7f};
 	behavior::DIR facing{};
 	behavior::DIR_LR facing_lr{};
 	behavior::DIR_UND facing_und{};

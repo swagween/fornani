@@ -62,7 +62,7 @@ class InputState {
 		}
 	}
 
-	std::unordered_map<sf::Keyboard::Key, Key> keys{
+	std::unordered_map<sf::Keyboard::Key, Key> keys {
 		{sf::Keyboard::LShift, Key{key::shift}}, {sf::Keyboard::Z, Key{key::z}},		 {sf::Keyboard::X, Key{key::x}},   {sf::Keyboard::A, Key{key::a}},		 {sf::Keyboard::S, Key{key::s}},
 		{sf::Keyboard::Left, Key{key::left}},	 {sf::Keyboard::Right, Key{key::right}}, {sf::Keyboard::Up, Key{key::up}}, {sf::Keyboard::Down, Key{key::down}},
 	};

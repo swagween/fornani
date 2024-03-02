@@ -14,8 +14,7 @@ void Emitter::update() { // this will tick every element and the generator itsel
 	physics.update();
 	if (stats.lifespan > 0) { // make a particle at a certain rate
 		for (int i = 0; i < behavior.rate; ++i) {
-			particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}, stats.part_size));
-			particles.back().physics.dir = physics.dir;
+			particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}, stats.part_size, direction));
 			int var = svc::randomLocator.get().random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
 			particles.back().lifespan = stats.particle_lifespan + var;
 		}
@@ -26,6 +25,18 @@ void Emitter::update() { // this will tick every element and the generator itsel
 	std::erase_if(particles, [](auto const& p) { return p.lifespan < 0; });
 
 	--stats.lifespan;
+}
+
+void Emitter::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		for (auto& particle : particles) {
+			dot.setFillColor(color);
+			dot.setSize({particle.size, particle.size});
+			dot.setPosition(particle.physics.position.x - cam.x, particle.physics.position.y - cam.y);
+			win.draw(dot);
+			svc::counterLocator.get().at(svc::draw_calls)++;
+		}
+	}
 }
 
 bool Emitter::empty() { return particles.empty(); }
@@ -54,9 +65,9 @@ ElementBehavior& Emitter::get_behavior() { return behavior; }
 
 void Emitter::set_rate(float r) { behavior.rate = r; }
 void Emitter::set_expulsion_force(float f) { behavior.expulsion_force = f; }
-void Emitter::set_friction(float f) { physics.friction = {f, f}; }
+void Emitter::set_friction(float f) { physics.set_constant_friction({f, f}); }
 void Emitter::set_lifespan(int l) { stats.lifespan = l; }
-void Emitter::set_direction(components::DIRECTION d) { physics.dir = d; }
+void Emitter::set_direction(dir::Direction d) { direction = d; }
 
 std::vector<Particle>& const Emitter::get_particles() { return particles; }
 

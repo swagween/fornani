@@ -4,14 +4,21 @@
 #include <cstdio>
 #include <list>
 #include <memory>
+#include "../utils/BitFlags.hpp"
 #include "Projectile.hpp"
 
 namespace arms {
 
 enum COLOR_CODE { WHITE = 0, PERIWINKLE = 1, GREEN = 2, ORANGE = 3, FUCSHIA = 4, PURPLE = 5 };
 
-struct WeaponAttributes {
+enum class GunState { unlocked, equipped, cooling_down, reloading };
 
+inline std::unordered_map<int, arms::WEAPON_TYPE> index_to_type{{0, arms::WEAPON_TYPE::BRYNS_GUN}, {1, arms::WEAPON_TYPE::PLASMER},	 {2, arms::WEAPON_TYPE::WASP},		{3, arms::WEAPON_TYPE::BLIZZARD},	 {4, arms::WEAPON_TYPE::BISMUTH},
+																{5, arms::WEAPON_TYPE::UNDERDOG},  {6, arms::WEAPON_TYPE::ELECTRON}, {7, arms::WEAPON_TYPE::CLOVER},	{8, arms::WEAPON_TYPE::TRITON},		 {9, arms::WEAPON_TYPE::WILLET_585},
+																{10, arms::WEAPON_TYPE::QUASAR},   {11, arms::WEAPON_TYPE::NOVA},	 {12, arms::WEAPON_TYPE::VENOM},	{13, arms::WEAPON_TYPE::TWIN},		 {14, arms::WEAPON_TYPE::CARISE},
+																{15, arms::WEAPON_TYPE::STINGER},  {16, arms::WEAPON_TYPE::TUSK},	 {17, arms::WEAPON_TYPE::TOMAHAWK}, {18, arms::WEAPON_TYPE::SKYCORPS_AR}};
+
+struct WeaponAttributes {
 	bool automatic{};
 	bool boomerang{};
 	int rate{};
@@ -19,13 +26,6 @@ struct WeaponAttributes {
 	float recoil{};
 	COLOR_CODE ui_color{};
 	std::array<float, 2> barrel_position{};
-};
-
-inline std::unordered_map<FIRING_DIRECTION, int> ProjDirLookup{
-	{FIRING_DIRECTION::LEFT, 1},
-	{FIRING_DIRECTION::RIGHT, 0},
-	{FIRING_DIRECTION::UP, 2},
-	{FIRING_DIRECTION::DOWN, 3},
 };
 
 inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color{
@@ -40,91 +40,17 @@ inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color{
 
 };
 
-constexpr inline ProjectileAnimation default_anim{1, 1, 8};
-constexpr inline ProjectileAnimation clover_anim{5, 4, 4};
-constexpr inline ProjectileAnimation bg_anim{4, 1, 8};
-constexpr inline ProjectileAnimation nova_anim{1, 1, 8};
-
-/* ProjectileStats(int dmg, int range, float spd, float var, float stn, float kbk, bool per, int lifespan_var) */
-constexpr inline ProjectileStats bryns_gun_stats{4, 200, 2.5, 0.1, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats plasmer_stats{5, 240, 3.0, 0.0, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats wasp_stats{6, 240, 8.0, 0.0, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats blizzard_stats{8, 300, 20.0, 0.0, 1.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats bismuth_stats{8, 240, 12.0, 0.2, 0.0, 0.0, false, true, 0};
-constexpr inline ProjectileStats underdog_stats{6, 140, 24.0, 0.0, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats electron_stats{9, 330, 16.0, 0.0, 1.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats clover_stats{4, 140, 0.5, 0.1, 0.0, 0.0, false, false, 4};
-constexpr inline ProjectileStats triton_stats{10, 360, 4.0, 0.0, 0.0, 0.0, true, false, 0};
-constexpr inline ProjectileStats willet_585_stats{9, 240, 24.0, 0.0, 0.0, 3.0, false, false, 0};
-constexpr inline ProjectileStats quasar_stats{16, 360, 8.0, 0.0, 0.0, 0.0, false, true, 0};
-constexpr inline ProjectileStats nova_stats{7, 260, 2.9, 0.02, 0.1, 0.0, false, false, 0};
-constexpr inline ProjectileStats venom_stats{8, 480, 32.0, 1.0, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats twin_stats{7, 300, 22.0, 0.0, 0.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats carise_stats{14, 240, 12.0, 0.1, 4.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats stinger_stats{5, 300, 16.0, 2.0, 0.0, 0.0, false, false, 3};
-constexpr inline ProjectileStats tusk_stats{16, 240, 20.0, 0.0, 3.0, 0.0, false, false, 0};
-constexpr inline ProjectileStats tomahawk_stats{1, 200, 2.0, 0.0, 0.0, 0.0, true, false, 0};
-
-// enemy
-constexpr inline ProjectileStats skycorps_ar_stats{2, 600, 1.0, 0.0, 0.0, 0.0, true, false, 0};
-
-// barrel points on sprites
-constexpr inline std::array<float, 2> bg_barrel{18.0f, 2.0f};
-constexpr inline std::array<float, 2> plasmer_barrel{22.0f, 7.0f};
-constexpr inline std::array<float, 2> clover_barrel{18.0f, 4.0f};
-constexpr inline std::array<float, 2> nova_barrel{24.0f, 4.0f};
-
-/* WeaponAttributes(bool aut, bool bmr, int rat, int cldn, float recl) */
-constexpr inline WeaponAttributes bryns_gun_attributes{false, false, 4, 1, 0.0f, PERIWINKLE, bg_barrel};
-constexpr inline WeaponAttributes plasmer_attributes{false, false, 3, 2, 0.1f, FUCSHIA, plasmer_barrel};
-constexpr inline WeaponAttributes wasp_attributes{false, false, 4, 1, 0.0f, ORANGE, bg_barrel};
-constexpr inline WeaponAttributes blizzard_attributes{false, false, 2, 3, 0.0f, PERIWINKLE, bg_barrel};
-constexpr inline WeaponAttributes bismuth_attributes{false, false, 3, 2, 2.0f, FUCSHIA, bg_barrel};
-constexpr inline WeaponAttributes underdog_attributes{false, false, 6, 1, 0.0f, ORANGE, bg_barrel};
-constexpr inline WeaponAttributes electron_attributes{false, false, 2, 4, 0.0f, WHITE, bg_barrel};
-constexpr inline WeaponAttributes clover_attributes{true, false, 16, 8, 0.0f, GREEN, clover_barrel};
-constexpr inline WeaponAttributes triton_attributes{false, false, 2, 0, 0.0f, ORANGE, bg_barrel};
-constexpr inline WeaponAttributes willet_585_attributes{false, false, 3, 1, 0.0f, PURPLE, bg_barrel};
-constexpr inline WeaponAttributes quasar_attributes{false, false, 1, 16, 0.0f, GREEN, bg_barrel};
-constexpr inline WeaponAttributes nova_attributes{false, false, 4, 3, 0.0f, FUCSHIA, nova_barrel};
-constexpr inline WeaponAttributes venom_attributes{false, false, 3, 5, 0.0f, ORANGE, bg_barrel};
-constexpr inline WeaponAttributes twin_attributes{false, false, 4, 4, 3.0f, FUCSHIA, bg_barrel};
-constexpr inline WeaponAttributes carise_attributes{false, false, 4, 2, 0.0f, PURPLE, bg_barrel};
-constexpr inline WeaponAttributes stinger_attributes{true, false, 16, 2, 0.0f, WHITE, bg_barrel};
-constexpr inline WeaponAttributes tusk_attributes{false, false, 2, 5, 0.0f, WHITE, bg_barrel};
-constexpr inline WeaponAttributes tomahawk_attributes{false, true, 1, 0, 0.0f, WHITE, bg_barrel};
-
-constexpr inline WeaponAttributes skycorps_ar_attributes{false, false, 1, 0, 0.2f, WHITE, bg_barrel};
-
-/* struct ElementBehavior {
- float rate{}; //expulsion rate
- float rate_variance{}; //variance in expulsion rate
- float expulsion_force{};
- float expulsion_variance{};
- float cone{}; //angle in radians of element dispersal
- float grav{};
- float grav_variance{};
- float x_friction{};
- float y_friction{};
-};
-struct EmitterStats {
-	int lifespan{};
-	int lifespan_variance{};
-	int particle_lifespan{};
-	int particle_lifespan_variance{};
-};*/
-constexpr inline vfx::ElementBehavior heavy_gun_spray{2, 1, 1.0, 0.8, 0.8, 0.005, 0.001, 0.99, 0.99};
-constexpr inline vfx::ElementBehavior light_gun_spray{2, 3, 1.9, 0.8, 0.4, 0.0, 0.0, 0.99, 0.99};
-constexpr inline vfx::ElementBehavior powerful_gun_spray{2, 3, 2.1, 0.9, 0.3, 0.0, 0.0, 0.99, 0.99};
-constexpr inline vfx::ElementBehavior bubble_spray{1, 0, 1.3, 1.5, 3.4, -0.01, 0.001, 0.92, 0.92};
-constexpr inline vfx::EmitterStats burst{6, 0, 40, 30};
+// constexpr inline vfx::ElementBehavior heavy_gun_spray{2, 1, 1.0, 0.8, 0.8, 0.005, 0.001, 0.99, 0.99};
+// constexpr inline vfx::ElementBehavior light_gun_spray{2, 3, 1.9, 0.8, 0.4, 0.0, 0.0, 0.99, 0.99};
+// constexpr inline vfx::ElementBehavior powerful_gun_spray{2, 3, 2.1, 0.9, 0.3, 0.0, 0.0, 0.99, 0.99};
+// constexpr inline vfx::ElementBehavior bubble_spray{1, 0, 1.3, 1.5, 3.4, -0.01, 0.001, 0.92, 0.92};
+// constexpr inline vfx::EmitterStats burst{6, 0, 40, 30};
 
 class Weapon {
 
   public:
 	Weapon() = default;
-	Weapon(int id, std::string lbl, WEAPON_TYPE weapon_type, WeaponAttributes const& wa, ProjectileStats const& ps, const vfx::ElementBehavior spr = light_gun_spray, ProjectileAnimation const& pa = default_anim,
-		   RENDER_TYPE rt = RENDER_TYPE::SINGLE_SPRITE, sf::Vector2<int> dim = {16, 16}, sf::Vector2<float> proj_dim = {28.0f, 12.0f});
+	Weapon(int id);
 
 	void update();
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -133,9 +59,12 @@ class Weapon {
 	void unequip();
 	void unlock();
 	void lock();
+	void shoot();
+	void cooldown();
 
 	bool is_equipped() const;
 	bool is_unlocked() const;
+	bool cooling_down() const;
 
 	void set_position(sf::Vector2<float> pos);
 	void set_orientation();
@@ -146,6 +75,8 @@ class Weapon {
 
 	Projectile projectile{};
 	vfx::Emitter spray{};
+	vfx::ElementBehavior spray_behavior{};
+	vfx::EmitterStats spray_stats{};
 
 	sf::Vector2<float> sprite_position{};
 	std::vector<sf::Vector2<float>> anchor_points{};
@@ -158,13 +89,12 @@ class Weapon {
 
 	sf::Sprite sp_gun{};
 
-	int current_cooldown = attributes.cooldown_time;
-	FIRING_DIRECTION fire_dir{};
+	int cooldown_counter{};
+	dir::Direction firing_direction{};
 
   private:
-	bool equipped{};
-	bool unlocked{};
+	util::BitFlags<GunState> flags{};
 	int id{};
 };
 
-}
+} // namespace arms

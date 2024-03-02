@@ -6,7 +6,7 @@ namespace critter {
 
 void Critter::random_walk(sf::Vector2<int> range) {
 	// potentially initiate walk every [energy] frames
-	if (svc::clockLocator.get().every_x_frames(stats.energy)) {
+	if (svc::tickerLocator.get().every_x_frames(stats.energy)) {
 		// give a 30% chance to do a random walk
 		if (svc::randomLocator.get().percent_chance(30) && abs(colliders.at(0).physics.velocity.x) < 1.0f) {
 			auto distance = svc::randomLocator.get().random_range(range.x, range.y);
@@ -19,7 +19,7 @@ void Critter::random_walk(sf::Vector2<int> range) {
 
 void Critter::random_idle_action() {
 
-	if (svc::clockLocator.get().every_x_frames(10)) {
+	if (svc::tickerLocator.get().every_x_frames(10)) {
 		if (svc::randomLocator.get().percent_chance(2)) { idle_action_queue.push(1); }
 	}
 }

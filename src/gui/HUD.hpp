@@ -69,7 +69,7 @@ class HUD {
 		num_orbs = svc::playerLocator.get().player_stats.orbs;
 		total_hp_cells = svc::playerLocator.get().player_stats.max_health;
 		max_orbs = svc::playerLocator.get().player_stats.max_orbs;
-		gun_name = svc::playerLocator.get().loadout.get_equipped_weapon().label;
+		if (!svc::playerLocator.get().arsenal.loadout.empty()) { gun_name = svc::playerLocator.get().equipped_weapon().label; }
 		constrain();
 	}
 
@@ -118,13 +118,12 @@ class HUD {
 
 		// GUN
 		int pointer_index{0};
-		;
-		int loadout_size = svc::playerLocator.get().weapons_hotbar.size();
+		int loadout_size = svc::playerLocator.get().arsenal.loadout.size();
 		for (int i = 0; i < loadout_size; ++i) {
-			int gun_index = lookup::type_to_index.at(svc::playerLocator.get().weapons_hotbar.at(i));
+			int gun_index = svc::playerLocator.get().arsenal.loadout.at(i).get_id();
 			sp_guns.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-			if (svc::playerLocator.get().loadout.equipped_weapon == svc::playerLocator.get().weapons_hotbar.at(i)) {
+			if (i == svc::playerLocator.get().current_weapon) {
 				win.draw(sp_guns_shadow.at(gun_index));
 				svc::counterLocator.get().at(svc::draw_calls)++;
 				win.draw(sp_guns.at(gun_index));
@@ -135,10 +134,10 @@ class HUD {
 				svc::counterLocator.get().at(svc::draw_calls)++;
 			}
 		}
-		arms::WEAPON_TYPE curr_type = svc::playerLocator.get().loadout.get_equipped_weapon().type;
-		sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
-		if (svc::playerLocator.get().weapons_hotbar.size() != 0) {
-			win.draw(sp_pointer.at(lookup::type_to_weapon.at(curr_type).attributes.ui_color));
+		arms::WEAPON_TYPE curr_type = svc::playerLocator.get().equipped_weapon().type;
+		sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
+		if (!svc::playerLocator.get().arsenal.loadout.empty()) {
+			win.draw(sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color));
 			svc::counterLocator.get().at(svc::draw_calls)++;
 		}
 	}

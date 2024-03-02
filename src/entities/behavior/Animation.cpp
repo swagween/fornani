@@ -5,57 +5,56 @@
 namespace anim {
 
 void Animation::refresh() {
-	if (params.current_frame == 0) { params.done = false; }
-	if (params.current_frame >= params.duration && (!params.no_loop)) {
-		params.current_frame = params.no_loop ? (params.duration - 1) : 0;
-	} else if (params.current_frame >= params.duration && params.no_loop) {
-		params.current_frame = params.duration - 1;
-		params.done = true;
-	}
+	counter = 0;
+	current_frame = 0;
+	loop_counter = 0;
 }
 
 void Animation::start() {
-	params.started = true;
-	;
+	flags.set(State::active);
+	flags.reset(State::complete);
 }
 
 void Animation::update() {
+	++counter;
 
-	dt = svc::clockLocator.get().tick_rate;
-	dt *= svc::clockLocator.get().tick_multiplier * animation_multiplier;
+	if (keyframe_over()) {
+		// std::cout << "frame: " << current_frame << "\n";
+		++current_frame;
+	}
 
-	auto new_time = Clock::now();
-	Time frame_time = std::chrono::duration_cast<Time>(new_time - current_time);
-
-	if (frame_time.count() > svc::clockLocator.get().frame_limit) { frame_time = Time{svc::clockLocator.get().frame_limit}; }
-	current_time = new_time;
-	accumulator += frame_time;
-
-	int integrations = 0;
-	if (accumulator >= dt) {
-
-		params.anim_frame--;
-		if (params.anim_frame < 0) { params.anim_frame = params.framerate - 1; }
-		if (params.anim_frame == 0) {
-			params.current_frame++;
-			params.frame_trigger = true;
+	if (current_frame == params.duration && params.repeat_last_frame) {
+		current_frame = params.duration - 1;
+		end();
+		return;
+	}
+	if (current_frame == params.duration) {
+		if (loop_counter == params.num_loops) { end(); }
+		current_frame = 0;
+		if (params.num_loops != -1) {
+			++loop_counter;
+			// don't increment for infinite loops
 		}
-		refresh();
-
-		accumulator = Time::zero();
-		++integrations;
 	}
 }
 
-void Animation::end(bool cutoff) {
-	if (cutoff) {
-		params.started = false;
-		params.current_frame = 0;
-	} else {
-		params.started = false;
-	}
+void Animation::end() {
+	flags.reset(State::active);
+	flags.set(State::complete);
 }
 
-int Animation::get_frame() { return params.current_frame; }
+void Animation::set_params(Parameters& const new_params) {
+	params = new_params;
+	refresh();
+	start();
+}
+
+int Animation::get_frame() const { return params.lookup + current_frame; }
+
+bool Animation::active() const { return flags.test(State::active); }
+
+bool Animation::complete() const { return flags.test(State::complete); }
+
+bool Animation::keyframe_over() const { return counter % params.framerate == 0; }
 
 } // namespace anim

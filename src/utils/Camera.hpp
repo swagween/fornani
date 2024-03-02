@@ -9,9 +9,9 @@
 
 namespace cam {
 
-float const CAM_FRICTION = 0.75f;
+float const CAM_FRICTION = 0.85f;
 float const CAM_MASS = 1.0f;
-float const CAM_GRAV = 0.003f;
+float const CAM_GRAV = 0.09f;
 
 int const CX_OFFSET = 60;
 int const CY_OFFSET = 60;
@@ -94,7 +94,8 @@ class Camera {
 		float force_x = mx - gx;
 		float force_y = my - gy;
 		float mag = sqrt((force_x * force_x) + (force_y * force_y));
-		float str = CAM_GRAV / mag * mag;
+		float str{}; 
+		if (mag != 0.0000f) { str = grav_force / mag * mag; }
 		force_x *= str;
 		force_y *= str;
 		physics.apply_force({force_x, force_y});
@@ -120,6 +121,7 @@ class Camera {
 	sf::Vector2<float> previous_position{};
 
 	int shake_counter{};
+	float grav_force{CAM_GRAV};
 	bool shaking = false;
 };
 
