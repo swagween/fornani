@@ -271,12 +271,12 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 			animation.end();
 			return BIND(update_run);
 		}
-		if (state.test(AnimState::jumpsquat)) {
-			state.reset(AnimState::inspect);
-			animation.set_params(jumpsquat);
-			animation.end();
-			return BIND(update_jumpsquat);
-		}
+	}
+	if (state.test(AnimState::jumpsquat)) {
+		state.reset(AnimState::inspect);
+		animation.set_params(jumpsquat);
+		animation.end();
+		return BIND(update_jumpsquat);
 	}
 	state = {};
 	state.set(AnimState::inspect);

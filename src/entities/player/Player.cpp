@@ -24,8 +24,8 @@ void Player::init() {
 	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, antenna_force));
 	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, antenna_force, {2.f, 4.f}));
 
-	float back_fric{0.74f};
-	float front_fric{0.77f};
+	float back_fric{0.84f};
+	float front_fric{0.87f};
 
 	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
 	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
@@ -150,11 +150,11 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 			collider.render(win, campos);
 		} else {
-			antennae[0].render(win, campos);
-			antennae[2].render(win, campos);
-			win.draw(sprite);
 			antennae[1].render(win, campos);
 			antennae[3].render(win, campos);
+			win.draw(sprite);
+			antennae[0].render(win, campos);
+			antennae[2].render(win, campos);
 			svc::counterLocator.get().at(svc::draw_calls) += 5;
 		}
 	}
@@ -250,6 +250,7 @@ void Player::dash() {
 
 		if (!collider.has_horizontal_collision()) {
 			collider.physics.acceleration.x += controller.dash_value() * physics_stats.dash_speed;
+			collider.physics.velocity.x += controller.dash_value() * physics_stats.dash_speed;
 		}
 		controller.dash();
 	}

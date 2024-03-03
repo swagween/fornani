@@ -31,7 +31,7 @@ int const ANCHOR_BUFFER = 50;
 int const num_sprites{220};
 float const stopped_threshold{0.2f};
 
-constexpr inline float antenna_force{0.4f};
+constexpr inline float antenna_force{0.6f};
 constexpr inline float antenna_speed{16.f};
 
 struct PlayerStats {
