@@ -104,6 +104,14 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		if (bounding_box.SAT(cell)) {
 			collision_flags.set(Collision::ramp_collision);
 			physics.mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
+			if (walks_up_ramp && !collision_flags.test(Collision::has_top_collision)) {
+				physics.position.y += physics.mtv.y;
+				// still zero this because of gravity
+				physics.velocity.y = 0.0f;
+				physics.acceleration.y = 0.0f;
+				// if the collider is dashing
+				if (abs(physics.velocity.x) > physics.maximum_velocity.x * 0.1) { falls_onto_ramp = true; }
+			}
 			if (falls_onto_ramp) {
 				if (physics.velocity.y > landed_threshold) { flags.set(State::just_landed); }
 				auto temp_mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
@@ -127,14 +135,6 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 					physics.position.x += temp_mtv.x;
 					physics.position.y += temp_mtv.y;
 				}
-			}
-			if (walks_up_ramp && !collision_flags.test(Collision::has_top_collision)) {
-				physics.position.y += physics.mtv.y;
-				// still zero this because of gravity
-				physics.velocity.y = 0.0f;
-				physics.acceleration.y = 0.0f;
-				//if the collider is dashing
-				if (abs(physics.velocity.x) > physics.maximum_velocity.x * 0.5) { jumps_into_ramp = true; }
 			}
 			if (jumps_into_ramp) {
 				auto temp_mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);

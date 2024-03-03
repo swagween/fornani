@@ -78,8 +78,8 @@ void Player::update() {
 	if (collider.flags.test(shape::State::just_landed)) { svc::soundboardLocator.get().player.set(audio::Player::land); }
 	collider.flags.reset(shape::State::just_landed);
 
-	// jump!
 	jump();
+	dash();
 
 	// check keystate
 	if (!controller.jumpsquatting()) { walk(); }
@@ -94,8 +94,6 @@ void Player::update() {
 
 	collider.physics.update_euler();
 	collider.sync_components();
-
-	dash();
 
 	// for parameter tweaking, remove later
 	collider.update();
@@ -251,11 +249,10 @@ void Player::dash() {
 		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 
 		if (!collider.has_horizontal_collision()) {
-			collider.physics.acceleration.x = controller.dash_value() * physics_stats.maximum_velocity.x * physics_stats.dash_speed;
+			collider.physics.acceleration.x += controller.dash_value() * physics_stats.dash_speed;
 		}
 		controller.dash();
 	}
-	if (controller.dashing()) { collider.physics.velocity.x *= physics_stats.dash_dampen; }
 }
 
 void Player::set_position(sf::Vector2<float> new_pos) {

@@ -19,7 +19,6 @@ void Animation::update() {
 	++counter;
 
 	if (keyframe_over()) {
-		// std::cout << "frame: " << current_frame << "\n";
 		++current_frame;
 	}
 

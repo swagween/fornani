@@ -3,6 +3,7 @@
 
 #include "PhysicsComponent.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include <algorithm>
 
 namespace components {
 
@@ -34,10 +35,8 @@ void PhysicsComponent::integrate() {
 	sf::Vector2<float> friction = flags.test(State::grounded) ? ground_friction : air_friction;
 	velocity.x = (velocity.x + (acceleration.x / mass) * dt) * friction.x;
 	velocity.y = (velocity.y + (acceleration.y / mass) * dt) * friction.y;
-	if (velocity.x > maximum_velocity.x) { velocity.x = maximum_velocity.x; }
-	if (velocity.x < -maximum_velocity.x) { velocity.x = -maximum_velocity.x; }
-	if (velocity.y > maximum_velocity.y) { velocity.y = maximum_velocity.y; }
-	if (velocity.y < -maximum_velocity.y) { velocity.y = -maximum_velocity.y; }
+	velocity.x = std::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
+	velocity.y = std::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
 	position = position + velocity * dt;
 
 	if (y_acc_history.size() < acceleration_sample_size) { y_acc_history.push_back(acceleration.y);

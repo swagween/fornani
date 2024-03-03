@@ -14,18 +14,18 @@ enum class AnimState { idle, turn, run, jumpsquat, rise, suspend, fall, stop, in
 
 // { lookup, duration, framerate, num_loops (-1 for infinite) }
 inline anim::Parameters idle{20, 8, 18, -1};
-inline anim::Parameters turn{33, 3, 8, 0};
-inline anim::Parameters run{44, 4, 18, -1};
-inline anim::Parameters jumpsquat{61, 1, 12, 0};
-inline anim::Parameters rise{54, 2, 12, -1};
-inline anim::Parameters suspend{30, 3, 20, -1};
-inline anim::Parameters fall{62, 4, 10, -1};
-inline anim::Parameters stop{74, 2, 24, 0};
-inline anim::Parameters land{56, 2, 18, 0};
+inline anim::Parameters turn{33, 3, 18, 0};
+inline anim::Parameters run{44, 4, 28, -1};
+inline anim::Parameters jumpsquat{61, 1, 16, 0};
+inline anim::Parameters rise{54, 2, 22, -1};
+inline anim::Parameters suspend{30, 3, 30, -1};
+inline anim::Parameters fall{62, 4, 20, -1};
+inline anim::Parameters stop{74, 2, 34, 0};
+inline anim::Parameters land{56, 2, 28, 0};
 
-inline anim::Parameters inspect{37, 2, 20, -1, true};
-inline anim::Parameters hurt{76, 2, 12, 1};
-inline anim::Parameters dash{40, 4, 12, 0};
+inline anim::Parameters inspect{37, 2, 30, -1, true};
+inline anim::Parameters hurt{76, 2, 22, 1};
+inline anim::Parameters dash{40, 4, 22, 0};
 
 class PlayerAnimation {
 
