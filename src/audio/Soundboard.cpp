@@ -33,9 +33,15 @@ void Soundboard::play_sounds() {
 	if (weapon.test(Weapon::clover)) {
 		float random_pitch = svc::randomLocator.get().random_range_float(-0.3f, 0.3f);
 		svc::assetLocator.get().pop_mid.setPitch(1 + random_pitch);
-		svc::assetLocator.get().pop_mid.play(); }
+		svc::assetLocator.get().pop_mid.play();
+	}
 	if (weapon.test(Weapon::nova)) { svc::assetLocator.get().pop_mid.play(); }
-
+	if (weapon.test(Weapon::tomahawk)) {
+		float random_pitch = svc::randomLocator.get().random_range_float(0.f, 0.4f);
+		svc::assetLocator.get().tomahawk_flight.setPitch(1.0f + random_pitch);
+		if (svc::tickerLocator.get().every_x_frames(40)) { svc::assetLocator.get().tomahawk_flight.play(); }
+	}
+	if (weapon.test(Weapon::tomahawk_catch)) { svc::assetLocator.get().tomahawk_catch.play(); }
 
 	//reset flags
 	menu = {};

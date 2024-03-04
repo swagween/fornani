@@ -34,7 +34,7 @@ struct CritterMetadata {
 
 struct CritterStats {
 	int base_damage{};
-	int base_hp{};
+	float base_hp{};
 	float speed{};
 	float loot_multiplier{};
 	int energy{};
@@ -43,7 +43,7 @@ struct CritterStats {
 };
 
 struct CritterCondition {
-	int hp{1};
+	float hp{1};
 };
 
 enum class Flags { alive, seeking, awake, awakened, asleep, turning, flip, barking, hurt, just_hurt, shot, vulnerable, charging, shooting, hiding, running, weapon_fired };

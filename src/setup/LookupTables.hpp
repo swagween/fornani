@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
-
 #include "ServiceLocator.hpp"
 #include "../weapon/Weapon.hpp"
 
@@ -27,30 +26,8 @@ namespace lookup {
 		 {arms::WEAPON_TYPE::CARISE, audio::Weapon::bryns_gun},
 		 {arms::WEAPON_TYPE::STINGER, audio::Weapon::bryns_gun},
 		 {arms::WEAPON_TYPE::TUSK, audio::Weapon::bryns_gun},
-		 {arms::WEAPON_TYPE::TOMAHAWK, audio::Weapon::bryns_gun},
+		 {arms::WEAPON_TYPE::TOMAHAWK, audio::Weapon::tomahawk},
 		 {arms::WEAPON_TYPE::SKYCORPS_AR, audio::Weapon::bryns_gun}
-	};
-
-	inline std::unordered_map<arms::WEAPON_TYPE, std::vector<sf::Sprite>&> weapon_sprites{
-		{arms::WEAPON_TYPE::BRYNS_GUN,  svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::PLASMER,    svc::assetLocator.get().sp_plasmer  },
-		{arms::WEAPON_TYPE::WASP,       svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::BLIZZARD,   svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::BISMUTH,    svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::UNDERDOG,   svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::ELECTRON,   svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::CLOVER,     svc::assetLocator.get().sp_clover   },
-		{arms::WEAPON_TYPE::TRITON,     svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::WILLET_585, svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::QUASAR,     svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::NOVA,       svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::VENOM,      svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::TWIN,       svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::STINGER,    svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::TUSK,       svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().sp_bryns_gun},
-		{arms::WEAPON_TYPE::SKYCORPS_AR,svc::assetLocator.get().sp_bryns_gun}
 	};
 
 	inline std::unordered_map<arms::WEAPON_TYPE, sf::Texture&> weapon_texture {
@@ -71,33 +48,11 @@ namespace lookup {
 	{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().t_bryns_gun},
 	{arms::WEAPON_TYPE::STINGER,    svc::assetLocator.get().t_bryns_gun},
 	{arms::WEAPON_TYPE::TUSK,       svc::assetLocator.get().t_bryns_gun},
-	{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().t_bryns_gun},
+	{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().t_tomahawk},
 	{arms::WEAPON_TYPE::SKYCORPS_AR,svc::assetLocator.get().t_bryns_gun}
 	};
 
-	inline std::unordered_map<arms::WEAPON_TYPE, std::vector<sf::Sprite>&> projectile_sprites{
-		{arms::WEAPON_TYPE::BRYNS_GUN,  svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::PLASMER,    svc::assetLocator.get().sp_plasmer_projectile  },
-		{arms::WEAPON_TYPE::WASP,       svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::BLIZZARD,   svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::BISMUTH,    svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::UNDERDOG,   svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::ELECTRON,   svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::CLOVER,     svc::assetLocator.get().sp_clover_projectile   },
-		{arms::WEAPON_TYPE::TRITON,     svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::WILLET_585, svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::QUASAR,     svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::NOVA,       svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::VENOM,      svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::TWIN,       svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::CARISE,     svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::STINGER,    svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::TUSK,       svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::TOMAHAWK,   svc::assetLocator.get().sp_bryns_gun_projectile},
-		{arms::WEAPON_TYPE::SKYCORPS_AR,svc::assetLocator.get().sp_bryns_gun_projectile}
-	};
-
-	inline std::unordered_map<arms::WEAPON_TYPE, sf::Texture&> projectile_texture {
+	inline std::unordered_map<arms::WEAPON_TYPE, sf::Texture&> type_to_texture_ref {
 		{arms::WEAPON_TYPE::BRYNS_GUN,  svc::assetLocator.get().t_bryns_gun_projectile},
 	{arms::WEAPON_TYPE::PLASMER,    svc::assetLocator.get().t_plasmer_projectile  },
 	{arms::WEAPON_TYPE::WASP,       svc::assetLocator.get().t_wasp_projectile},
@@ -122,8 +77,8 @@ namespace lookup {
 	inline std::unordered_map<arms::WEAPON_TYPE, int> type_to_index{
 		{arms::WEAPON_TYPE::BRYNS_GUN, 0},
 		{arms::WEAPON_TYPE::PLASMER, 1},
-		{arms::WEAPON_TYPE::WASP, 2},
-		{arms::WEAPON_TYPE::BLIZZARD, 3},
+		{arms::WEAPON_TYPE::WASP, 17},
+		{arms::WEAPON_TYPE::BLIZZARD, 18},
 		{arms::WEAPON_TYPE::BISMUTH, 4},
 		{arms::WEAPON_TYPE::UNDERDOG, 5 },
 		{arms::WEAPON_TYPE::ELECTRON, 6 },
@@ -137,8 +92,8 @@ namespace lookup {
 	{ arms::WEAPON_TYPE::CARISE, 14 },
 	{ arms::WEAPON_TYPE::STINGER, 15 },
 	{ arms::WEAPON_TYPE::TUSK, 16 },
-	{arms::WEAPON_TYPE::TOMAHAWK, 17 },
-	{arms::WEAPON_TYPE::SKYCORPS_AR, 18 }
+	{arms::WEAPON_TYPE::TOMAHAWK, 3 },
+	{arms::WEAPON_TYPE::SKYCORPS_AR, 2 }
 	};
 
 }

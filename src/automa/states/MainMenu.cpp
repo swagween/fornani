@@ -69,7 +69,10 @@ MainMenu::MainMenu() {
 					   sf::IntRect({0, 0}, {(int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y})};
 };
 
-void MainMenu::init(std::string const& load_path) {}
+void MainMenu::init(std::string const& load_path) {
+	svc::musicPlayerLocator.get().load("clay");
+	svc::musicPlayerLocator.get().play_looped();
+}
 
 void MainMenu::setTilesetTexture(sf::Texture& t) {}
 
@@ -117,6 +120,7 @@ void MainMenu::handle_events(sf::Event& event) {
 }
 
 void MainMenu::tick_update() {
+	svc::musicPlayerLocator.get().update();
 	left_dot.update();
 	right_dot.update();
 	switch (selection) {

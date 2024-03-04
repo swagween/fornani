@@ -22,6 +22,7 @@
 #include "TextManager.hpp"
 #include "../graphics/TextWriter.hpp"	
 #include "../audio/Soundboard.hpp"
+#include "../audio/MusicPlayer.hpp"
 
 namespace svc {
 
@@ -44,5 +45,6 @@ inline auto inputStateLocator = forloop::Service<util::InputState>::Instance{};
 inline auto counterLocator = forloop::Service<std::array<uint16_t, num_counters>>::Instance{};
 inline auto floatReadoutLocator = forloop::Service<float>::Instance{};
 inline auto soundboardLocator = forloop::Service<audio::Soundboard>::Instance{};
+inline auto musicPlayerLocator = forloop::Service<audio::MusicPlayer>::Instance{};
 
 } // namespace svc

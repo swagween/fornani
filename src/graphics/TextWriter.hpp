@@ -4,15 +4,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <djson/json.hpp>
+#include <array>
 #include <string>
 #include <string_view>
 #include <xstring>
-#include <array>
 #include "../utils/BitFlags.hpp"
 
 namespace text {
 
-	enum class MessageState{ active, complete };
+enum class MessageState { active, complete };
 static int const default_writing_speed{12};
 static int const fast_writing_speed{1};
 
@@ -35,8 +35,8 @@ class TextWriter {
 	bool active() const;
 	bool complete() const;
 
-	//public for debugging
-	int text_size{24};
+	// public for debugging
+	int text_size{16};
 
   private:
 	sf::Text message{};

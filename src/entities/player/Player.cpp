@@ -128,6 +128,12 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	sf::Vector2<float> player_pos = apparent_position - campos;
 	calculate_sprite_offset();
 
+	// dashing effect
+	sprite.setPosition(sprite_position);
+	if (svc::tickerLocator.get().every_x_frames(8) && animation.state.test(AnimState::dash)) { sprite_history.update(sprite); }
+	if (svc::tickerLocator.get().every_x_frames(8) && !animation.state.test(AnimState::dash)) { sprite_history.flush(); }
+	drag_sprite(win, campos);
+
 	// get UV coords
 	int u = (int)(animation.get_frame() / asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
 	int v = (int)(animation.get_frame() % asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
@@ -217,6 +223,28 @@ void Player::flash_sprite() {
 	} else {
 		sprite.setColor(flcolor::blue);
 	}
+}
+
+void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+
+	int r = 100;
+	int g = 80;
+	int a = 100;
+	int ctr{0};
+	for (auto& sp : sprite_history.sprites) {
+		sp.setColor(sf::Color(255, 255, 255, a));
+		sp.setPosition(sprite_history.positions.at(ctr) - campos);
+		if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+			win.draw(sp);
+			++svc::counterLocator.get().at(svc::draw_calls);
+		}
+		r += 36;
+		g += 20;
+		a += 20;
+		++ctr;
+	}
+	sprite.setColor(sf::Color::White);
+
 }
 
 void Player::calculate_sprite_offset() {
@@ -327,7 +355,7 @@ void Player::update_antennae() {
 bool Player::grounded() const { return collider.flags.test(shape::State::grounded); }
 
 bool Player::fire_weapon() {
-	if (controller.shot() && !equipped_weapon().cooling_down()) {
+	if (controller.shot() && equipped_weapon().can_shoot()) {
 		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(equipped_weapon().type));
 		return true;
 	}

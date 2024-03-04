@@ -54,6 +54,6 @@ bool Animation::active() const { return flags.test(State::active); }
 
 bool Animation::complete() const { return flags.test(State::complete); }
 
-bool Animation::keyframe_over() const { return counter % params.framerate == 0; }
+bool Animation::keyframe_over() const { return params.framerate != 0 ? counter % params.framerate == 0 : true; } //long-winded to avoid division by 0
 
 } // namespace anim

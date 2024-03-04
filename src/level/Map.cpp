@@ -276,7 +276,7 @@ void Map::update() {
 			} else {
 				cell.collision_check = true;
 				if (proj.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
-					if (cell.type == lookup::TILE_TYPE::TILE_BREAKABLE) {
+					if (cell.type == lookup::TILE_TYPE::TILE_BREAKABLE && !proj.stats.transcendent) {
 						--cell.value;
 						if (lookup::tile_lookup.at(cell.value) != lookup::TILE_TYPE::TILE_BREAKABLE) {
 							cell.value = 0;
@@ -289,7 +289,7 @@ void Map::update() {
 						}
 					} else if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) {
 						continue;
-					} else {
+					} else if (!proj.stats.transcendent) {
 						proj.destroy(false);
 					}
 				}
@@ -309,7 +309,7 @@ void Map::update() {
 							critter->flags.set(critter::Flags::just_hurt);
 							critter->condition.hp -= proj.stats.base_damage;
 						}
-						proj.destroy(false);
+						if (!proj.stats.persistent) { proj.destroy(false); }
 					}
 				}
 			}
@@ -573,6 +573,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 	active_projectiles.back().seed();
 	active_projectiles.back().update();
 	active_projectiles.back().sync_position();
+	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
 
 	active_emitters.push_back(svc::playerLocator.get().equipped_weapon().spray);
 	active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
@@ -602,13 +603,21 @@ void Map::manage_projectiles() {
 	for (auto& proj : active_projectiles) { proj.update(); }
 	for (auto& spray : active_emitters) { spray.update(); }
 
-	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
+	std::erase_if(active_projectiles, [](auto const& p) {
+		if (p.state.test(arms::ProjectileState::destroyed)) {
+			--svc::playerLocator.get().equipped_weapon().active_projectiles;
+			return true;
+		} else {
+			return false;
+		}
+	});
 	std::erase_if(active_emitters, [](auto const& p) { return p.particles.empty(); });
 	std::erase_if(critters, [](auto const& c) { return c->condition.hp <= 0; });
 
 	if (!svc::playerLocator.get().arsenal.loadout.empty()) {
 		if (svc::playerLocator.get().fire_weapon()) {
 			spawn_projectile_at(svc::playerLocator.get().equipped_weapon().barrel_point);
+			++svc::playerLocator.get().equipped_weapon().active_projectiles;
 			svc::playerLocator.get().equipped_weapon().shoot();
 			if (!svc::playerLocator.get().equipped_weapon().attributes.automatic) { svc::playerLocator.get().controller.set_shot(false); }
 		}

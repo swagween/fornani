@@ -13,10 +13,10 @@ enum COLOR_CODE { WHITE = 0, PERIWINKLE = 1, GREEN = 2, ORANGE = 3, FUCSHIA = 4,
 
 enum class GunState { unlocked, equipped, cooling_down, reloading };
 
-inline std::unordered_map<int, arms::WEAPON_TYPE> index_to_type{{0, arms::WEAPON_TYPE::BRYNS_GUN}, {1, arms::WEAPON_TYPE::PLASMER},	 {2, arms::WEAPON_TYPE::WASP},		{3, arms::WEAPON_TYPE::BLIZZARD},	 {4, arms::WEAPON_TYPE::BISMUTH},
+inline std::unordered_map<int, arms::WEAPON_TYPE> index_to_type{{0, arms::WEAPON_TYPE::BRYNS_GUN}, {1, arms::WEAPON_TYPE::PLASMER},	 {2, arms::WEAPON_TYPE::SKYCORPS_AR},		{3, arms::WEAPON_TYPE::TOMAHAWK},	 {4, arms::WEAPON_TYPE::BISMUTH},
 																{5, arms::WEAPON_TYPE::UNDERDOG},  {6, arms::WEAPON_TYPE::ELECTRON}, {7, arms::WEAPON_TYPE::CLOVER},	{8, arms::WEAPON_TYPE::TRITON},		 {9, arms::WEAPON_TYPE::WILLET_585},
 																{10, arms::WEAPON_TYPE::QUASAR},   {11, arms::WEAPON_TYPE::NOVA},	 {12, arms::WEAPON_TYPE::VENOM},	{13, arms::WEAPON_TYPE::TWIN},		 {14, arms::WEAPON_TYPE::CARISE},
-																{15, arms::WEAPON_TYPE::STINGER},  {16, arms::WEAPON_TYPE::TUSK},	 {17, arms::WEAPON_TYPE::TOMAHAWK}, {18, arms::WEAPON_TYPE::SKYCORPS_AR}};
+																{15, arms::WEAPON_TYPE::STINGER},  {16, arms::WEAPON_TYPE::TUSK},	 {17, arms::WEAPON_TYPE::WASP}, {18, arms::WEAPON_TYPE::BLIZZARD}};
 
 struct WeaponAttributes {
 	bool automatic{};
@@ -40,12 +40,6 @@ inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color{
 
 };
 
-// constexpr inline vfx::ElementBehavior heavy_gun_spray{2, 1, 1.0, 0.8, 0.8, 0.005, 0.001, 0.99, 0.99};
-// constexpr inline vfx::ElementBehavior light_gun_spray{2, 3, 1.9, 0.8, 0.4, 0.0, 0.0, 0.99, 0.99};
-// constexpr inline vfx::ElementBehavior powerful_gun_spray{2, 3, 2.1, 0.9, 0.3, 0.0, 0.0, 0.99, 0.99};
-// constexpr inline vfx::ElementBehavior bubble_spray{1, 0, 1.3, 1.5, 3.4, -0.01, 0.001, 0.92, 0.92};
-// constexpr inline vfx::EmitterStats burst{6, 0, 40, 30};
-
 class Weapon {
 
   public:
@@ -65,6 +59,7 @@ class Weapon {
 	bool is_equipped() const;
 	bool is_unlocked() const;
 	bool cooling_down() const;
+	bool can_shoot() const;
 
 	void set_position(sf::Vector2<float> pos);
 	void set_orientation();
@@ -79,6 +74,7 @@ class Weapon {
 	vfx::EmitterStats spray_stats{};
 
 	sf::Vector2<float> sprite_position{};
+	sf::Vector2<float> gun_offset{};
 	std::vector<sf::Vector2<float>> anchor_points{};
 	sf::Vector2<float> barrel_point{};
 
@@ -89,6 +85,8 @@ class Weapon {
 
 	sf::Sprite sp_gun{};
 
+	
+	int active_projectiles{};
 	int cooldown_counter{};
 	dir::Direction firing_direction{};
 

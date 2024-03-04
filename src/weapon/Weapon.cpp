@@ -13,12 +13,13 @@ Weapon::Weapon(int id) : id(id) {
 
 	sprite_dimensions.x = in_data["dimensions"]["x"].as<int>();
 	sprite_dimensions.y = in_data["dimensions"]["y"].as<int>();
+	gun_offset.x = in_data["gun_offset"]["x"].as<int>();
+	gun_offset.y = in_data["gun_offset"]["y"].as<int>();
 
 	attributes.barrel_position.at(0) = in_data["barrel_point"]["x"].as<float>();
 	attributes.barrel_position.at(1) = in_data["barrel_point"]["y"].as<float>();
 
 	attributes.automatic = (bool)in_data["attributes"]["automatic"].as_bool();
-	attributes.boomerang = (bool)in_data["attributes"]["boomerang"].as_bool();
 	attributes.rate = in_data["attributes"]["rate"].as<int>();
 	attributes.cooldown_time = in_data["attributes"]["cooldown_time"].as<int>();
 	attributes.recoil = in_data["attributes"]["recoil"].as<float>();
@@ -42,9 +43,11 @@ Weapon::Weapon(int id) : id(id) {
 	spray = vfx::Emitter(spray_behavior, spray_stats, spray_color.at(type));
 
 	projectile = Projectile(id);
+	attributes.boomerang = projectile.stats.boomerang;
 }
 
 void Weapon::update() {
+	active_projectiles = std::clamp(active_projectiles, 0, attributes.rate);
 	set_orientation();
 	if (cooling_down()) { --cooldown_counter; }
 	if (cooldown_counter < 0) {
@@ -55,18 +58,17 @@ void Weapon::update() {
 }
 
 void Weapon::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
-	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x, svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + 8};
-	sf::Vector2<float> h_pos = svc::playerLocator.get().hand_position;
+	if (attributes.boomerang && active_projectiles == attributes.rate) { return; }
+	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x + gun_offset.x, svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + gun_offset.y};
 	sp_gun.setPosition(p_pos.x - campos.x, p_pos.y - campos.y);
 	set_position(p_pos);
 
-	// fire point debug
-	sf::RectangleShape box{};
-	box.setPosition(barrel_point.x - campos.x - 1, barrel_point.y - campos.y - 1);
-	box.setFillColor(flcolor::fucshia);
-	box.setSize(sf::Vector2<float>{2.0f, 2.0f});
-
 	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		// fire point debug
+		sf::RectangleShape box{};
+		box.setPosition(barrel_point.x - campos.x - 1, barrel_point.y - campos.y - 1);
+		box.setFillColor(flcolor::fucshia);
+		box.setSize(sf::Vector2<float>{2.0f, 2.0f});
 		win.draw(box);
 		svc::counterLocator.get().at(svc::draw_calls)++;
 	} else {
@@ -91,6 +93,8 @@ bool Weapon::is_equipped() const { return flags.test(GunState::equipped); }
 bool Weapon::is_unlocked() const { return flags.test(GunState::unlocked); }
 
 bool Weapon::cooling_down() const { return flags.test(GunState::cooling_down); }
+
+bool Weapon::can_shoot() const { return !cooling_down() && !(active_projectiles >= attributes.rate); }
 
 void Weapon::set_position(sf::Vector2<float> pos) { sprite_position = pos; }
 

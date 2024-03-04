@@ -8,7 +8,7 @@ namespace audio {
 
 enum class Menu { select, shift, forward_switch, backward_switch };
 enum class Player { jump, step, land, arms_switch, shoot, hurt, dash };
-enum class Weapon {bryns_gun, plasmer, nova, clover};
+enum class Weapon { bryns_gun, plasmer, nova, clover, tomahawk, tomahawk_catch };
 
 //critters
 enum class Frdog {hurt};

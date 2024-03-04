@@ -15,6 +15,8 @@
 #include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
+#include "../particle/Attractor.hpp"
+#include "../utils/Cooldown.hpp"
 
 namespace arms {
 
@@ -50,7 +52,7 @@ int const history_limit{4};
 
 struct ProjectileStats {
 
-	int base_damage{};
+	float base_damage{};
 	int range{};
 
 	float speed{};
@@ -59,9 +61,13 @@ struct ProjectileStats {
 	float knockback{};
 
 	bool persistent{};
+	bool transcendent{};
+	bool constrained{};
+	bool boomerang{};
 
 	float acceleration_factor{};
 	float dampen_factor{};
+	float attractor_force{};
 
 	int range_variance{};
 };
@@ -87,6 +93,7 @@ class Projectile {
 	void set_sprite();
 	void set_orientation(sf::Sprite& sprite);
 	void set_position(sf::Vector2<float>& pos);
+	void set_boomerang_speed();
 	void sync_position();
 	void constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
 	void constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
@@ -111,9 +118,11 @@ class Projectile {
 
 	std::vector<sf::Sprite> sp_proj{};
 
-	int sprite_id{};
-	int curr_frame{};
-	int anim_frame{};
+	anim::Animation animation{};
+
+	util::Cooldown cooldown{};
+
+	vfx::Attractor attractor{};
 
 	sf::RectangleShape box{};
 

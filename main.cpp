@@ -294,8 +294,9 @@ static void show_overlay() {
 						if (svc::playerLocator.get().arsenal.loadout.empty()) {
 							//svc::playerLocator.get().weapons_hotbar = {arms::WEAPON_TYPE::BRYNS_GUN, arms::WEAPON_TYPE::PLASMER, arms::WEAPON_TYPE::CLOVER, arms::WEAPON_TYPE::NOVA};
 							//svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
-							svc::playerLocator.get().arsenal.push_to_loadout(0);
-							svc::playerLocator.get().arsenal.push_to_loadout(1);
+							svc::playerLocator.get().arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::BRYNS_GUN));
+							svc::playerLocator.get().arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::PLASMER));
+							svc::playerLocator.get().arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::TOMAHAWK));
 						} else {
 							//svc::playerLocator.get().weapons_hotbar.clear();
 							svc::playerLocator.get().arsenal.loadout = {};
@@ -307,6 +308,7 @@ static void show_overlay() {
 
 					ImGui::Text("Cooling Down? %s", svc::playerLocator.get().equipped_weapon().cooling_down() ? "Yes" : "No");
 					ImGui::Text("Cooldown Time %i", svc::playerLocator.get().equipped_weapon().cooldown_counter);
+					ImGui::Text("Active Projectiles: %i", svc::playerLocator.get().equipped_weapon().active_projectiles);
 
 					ImGui::Separator();
 					ImGui::Text("Equipped Weapon: %s", svc::playerLocator.get().equipped_weapon().label.c_str());
@@ -328,7 +330,7 @@ static void show_overlay() {
 					ImGui::Unindent();
 					ImGui::Text("Projectile Stats: ");
 					ImGui::Indent();
-					ImGui::Text("Damage: (%i)", svc::playerLocator.get().equipped_weapon().projectile.stats.base_damage);
+					ImGui::Text("Damage: (%f)", svc::playerLocator.get().equipped_weapon().projectile.stats.base_damage);
 					ImGui::Text("Range: (%i)", svc::playerLocator.get().equipped_weapon().projectile.stats.range);
 					ImGui::Text("Speed: (%.2f)", svc::playerLocator.get().equipped_weapon().projectile.stats.speed);
 					ImGui::Text("Velocity: (%.4f,%.4f)", svc::playerLocator.get().equipped_weapon().projectile.physics.velocity.x, svc::playerLocator.get().equipped_weapon().projectile.physics.velocity.y);
@@ -540,8 +542,8 @@ void run(char** argv) {
 	// images
 	svc::assetLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().importTextures();
-	svc::assetLocator.get().assignSprites();
 	// sounds
+	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().load_audio();
 	// player
 	svc::playerLocator.get().init();

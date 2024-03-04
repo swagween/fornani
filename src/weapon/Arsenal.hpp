@@ -16,6 +16,7 @@ constexpr static int max_weapons{19};
 inline Weapon bryns_gun{0};
 inline Weapon plasmer{1};
 inline Weapon skycorps_ar{2};
+inline Weapon tomahawk{3};
 
 struct Arsenal {
 

@@ -9,6 +9,7 @@
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../weapon/Arsenal.hpp"
+#include "../../graphics/SpriteHistory.hpp"
 #include "PlayerController.hpp"
 #include "PlayerAnimation.hpp"
 #include "Transponder.hpp"
@@ -95,6 +96,7 @@ class Player {
 	void update_sprite();
 	void update_transponder();
 	void flash_sprite();
+	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void calculate_sprite_offset();
 
 	//moves
@@ -159,6 +161,7 @@ class Player {
 
 	// sprites
 	sf::Sprite sprite{};
+	flfx::SpriteHistory sprite_history{};
 
 	bool grav = true;
 
