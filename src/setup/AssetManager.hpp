@@ -29,6 +29,10 @@ class AssetManager {
 		t_nani_dark.loadFromFile(finder.resource_path + "/image/character/nani_dark.png");
 		t_nani_red.loadFromFile(finder.resource_path + "/image/character/nani_red.png");
 
+		t_palette_nani.loadFromFile(finder.resource_path + "/image/character/nani_palette_default.png");
+		t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");
+		t_palette_naninight.loadFromFile(finder.resource_path + "/image/character/nani_palette_night.png");
+
 		t_bryn_test.loadFromFile(finder.resource_path + "/image/portrait/bryn_test.png");
 		t_ui_test.loadFromFile(finder.resource_path + "/image/gui/ui_test.png");
 
@@ -155,6 +159,11 @@ class AssetManager {
 	sf::Texture t_nani_unarmed{};
 	sf::Texture t_nani_dark{};
 	sf::Texture t_nani_red{};
+
+	//player palettes
+	sf::Texture t_palette_nani{};
+	sf::Texture t_palette_nanidiv{};
+	sf::Texture t_palette_naninight{};
 
 	// portraits!
 	sf::Texture t_bryn_test{};

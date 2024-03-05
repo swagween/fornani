@@ -40,8 +40,12 @@ void Player::init() {
 	sprite_dimensions = {48.f, 48.f};
 
 	// sprites
-	assign_texture(svc::assetLocator.get().t_nani_unarmed);
+	//assign_texture(svc::assetLocator.get().t_nani_unarmed);
 	sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
+
+	texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
+	texture_updater.load_palette(svc::assetLocator.get().t_palette_nanidiv);
+
 }
 
 void Player::update() {
@@ -113,14 +117,6 @@ void Player::update() {
 
 	// antennae!
 	update_antennae();
-
-	if (!arsenal.loadout.empty()) {
-		assign_texture(svc::assetLocator.get().t_nani);
-		sprite.setTexture(svc::assetLocator.get().t_nani);
-	} else {
-		assign_texture(svc::assetLocator.get().t_nani_unarmed);
-		sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
-	}
 }
 
 void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
@@ -169,6 +165,10 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(equipped_weapon().type));
 		equipped_weapon().render(win, campos);
 	}
+
+	//texture updater debug
+	texture_updater.debug_render(win, campos);
+
 }
 
 void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
@@ -203,7 +203,7 @@ void Player::update_animation() {
 }
 
 void Player::update_sprite() {
-	if (arsenal.loadout.empty()) { sprite.setTexture(svc::assetLocator.get().t_nani_unarmed); }
+	//if (arsenal.loadout.empty()) { sprite.setTexture(svc::assetLocator.get().t_nani_unarmed); }
 }
 
 void Player::update_transponder() {

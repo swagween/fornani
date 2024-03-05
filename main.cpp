@@ -181,6 +181,19 @@ static void show_overlay() {
 				}
 				if (ImGui::BeginTabItem("Player")) {
 					if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
+						if (ImGui::BeginTabItem("Texture")) {
+							if(ImGui::Button("Default")) {
+								svc::playerLocator.get().texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nanidiv);
+								svc::playerLocator.get().texture_updater.load_palette(svc::assetLocator.get().t_palette_nani);
+								svc::playerLocator.get().texture_updater.update_texture(svc::assetLocator.get().t_nani_unarmed);
+							}
+							if (ImGui::Button("Divine")) {
+								svc::playerLocator.get().texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
+								svc::playerLocator.get().texture_updater.load_palette(svc::assetLocator.get().t_palette_nanidiv);
+								svc::playerLocator.get().texture_updater.update_texture(svc::assetLocator.get().t_nani_unarmed);
+							}
+							ImGui::EndTabItem();
+						}
 						if (ImGui::BeginTabItem("Physics and Collision")) {
 							ImGui::Text("Player Pos: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
 							ImGui::Text("Player Vel: (%.4f,%.4f)", svc::playerLocator.get().collider.physics.velocity.x, svc::playerLocator.get().collider.physics.velocity.y);

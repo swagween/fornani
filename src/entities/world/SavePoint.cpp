@@ -35,13 +35,8 @@ void SavePoint::update() {
 		svc::soundboardLocator.get().proximities.save = abs(svc::playerLocator.get().collider.bounding_box.position.x - bounding_box.position.x);
 
 		if (svc::playerLocator.get().collider.bounding_box.SAT(bounding_box)) {
-			if (!svc::playerLocator.get().controller.moving()) {
-				intensity = 3;
-				if (animation.keyframe_over()) { animation.params.framerate = 16; }
-			} else {
-				intensity = 2;
-				if (animation.keyframe_over()) { animation.params.framerate = 20; }
-			}
+			intensity = 3;
+			if (animation.keyframe_over()) { animation.params.framerate = 16; }
 			if (svc::playerLocator.get().controller.inspecting()) {
 				if (can_activate) {
 					activated = true;
@@ -51,13 +46,13 @@ void SavePoint::update() {
 				}
 			}
 		} else {
-			intensity = 1;
-			if (animation.keyframe_over()) { animation.params.framerate = 24; }
+			intensity = 2;
+			if (animation.keyframe_over()) { animation.params.framerate = 20; }
 			can_activate = true;
 		}
 	} else {
-		intensity = 0;
-		if (animation.keyframe_over()) { animation.params.framerate = 30; }
+		intensity = 1;
+		if (animation.keyframe_over()) { animation.params.framerate = 24; }
 	}
 }
 

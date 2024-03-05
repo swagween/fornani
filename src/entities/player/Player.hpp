@@ -13,6 +13,7 @@
 #include "PlayerController.hpp"
 #include "PlayerAnimation.hpp"
 #include "Transponder.hpp"
+#include "../../graphics/TextureUpdater.hpp"
 
 namespace player {
 
@@ -162,6 +163,9 @@ class Player {
 	// sprites
 	sf::Sprite sprite{};
 	flfx::SpriteHistory sprite_history{};
+
+	//texture updater
+	flfx::TextureUpdater texture_updater{};
 
 	bool grav = true;
 
