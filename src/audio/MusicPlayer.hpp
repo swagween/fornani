@@ -29,10 +29,9 @@ class MusicPlayer {
 	util::BitFlags<SongState> state_flags{};
 	int current_loop{};
 
-	//std::unique_ptr<sf::Music> song_first{};
 	sf::Music song_first{};
 	sf::Music song_loop{};
-	sf::Music::TimeSpan time_span{};
+	sf::SoundSource::Status status{};
 
 };
 

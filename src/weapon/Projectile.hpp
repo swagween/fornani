@@ -10,6 +10,7 @@
 #include "../components/PhysicsComponent.hpp"
 #include "../entities/behavior/Animation.hpp"
 #include "../graphics/FLColor.hpp"
+#include "../graphics/SpriteHistory.hpp"
 #include "../particle/Emitter.hpp"
 #include "../utils/BitFlags.hpp"
 #include "../utils/Direction.hpp"
@@ -119,6 +120,7 @@ class Projectile {
 	std::vector<sf::Sprite> sp_proj{};
 
 	anim::Animation animation{};
+	flfx::SpriteHistory sprite_history{};
 
 	util::Cooldown cooldown{};
 

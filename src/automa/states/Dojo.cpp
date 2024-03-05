@@ -94,9 +94,7 @@ void Dojo::tick_update() {
 
 	svc::playerLocator.get().update();
 	svc::cameraLocator.get().previous_position = svc::cameraLocator.get().position;
-	svc::stopwatchLocator.get().start();
 	map.update();
-	svc::stopwatchLocator.get().stop();
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
 	svc::cameraLocator.get().update();
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);
@@ -126,6 +124,7 @@ void Dojo::frame_update() {
 void Dojo::render(sf::RenderWindow& win) {
 	sf::Vector2<float> camvel = svc::cameraLocator.get().physics.velocity;
 	sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
+	svc::stopwatchLocator.get().start();
 	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
 	map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
@@ -133,6 +132,7 @@ void Dojo::render(sf::RenderWindow& win) {
 		svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
 	}
 
+	svc::stopwatchLocator.get().stop();
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
 
 	map.render_console(win);
@@ -141,6 +141,7 @@ void Dojo::render(sf::RenderWindow& win) {
 	svc::assetLocator.get().sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);
 
 	map.transition.render(win);
+
 
 	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_trigger)) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
