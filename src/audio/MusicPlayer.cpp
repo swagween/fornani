@@ -10,12 +10,20 @@ void MusicPlayer::load(std::string song_name) {
 	song_loop.openFromFile(finder.resource_path + "/audio/songs/" + song_name + "_loop.ogg");
 }
 void MusicPlayer::play_once() {
+	if (state_flags.test(SongState::off)) {
+		stop();
+		return;
+	}
 	song_first.setLoop(false);
 	song_first.setVolume(60);
 	song_first.play();
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::play_looped() {
+	if (state_flags.test(SongState::off)) {
+		stop();
+		return;
+	}
 	song_first.setLoop(false);
 	song_loop.setLoop(true);
 	song_first.setVolume(60);
@@ -24,6 +32,10 @@ void MusicPlayer::play_looped() {
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::update() {
+	if (state_flags.test(SongState::off)) {
+		stop();
+		return;
+	}
 	if (song_first.getStatus() == sf::SoundSource::Stopped) {
 		if (song_loop.getStatus() == sf::SoundSource::Status::Playing) { return; }
 		song_first.setPlayingOffset(sf::Time::Zero);
@@ -36,7 +48,12 @@ void MusicPlayer::update() {
 	}
 }
 void MusicPlayer::pause() {}
-void MusicPlayer::stop() {}
+void MusicPlayer::stop() {
+	song_first.stop();
+	song_loop.stop();
+}
 void MusicPlayer::fade_out() {}
 void MusicPlayer::fade_in() {}
+void MusicPlayer::turn_off() { state_flags.set(SongState::off); }
+void MusicPlayer::turn_on() { state_flags.reset(SongState::off); }
 } // namespace audio

@@ -81,6 +81,7 @@ void FileMenu::handle_events(sf::Event& event) {
 			svc::dataLocator.get().load_progress(file_selection, true);
 			svc::stateControllerLocator.get().save_loaded = true;
 			svc::soundboardLocator.get().menu.set(audio::Menu::select);
+			svc::soundboardLocator.get().world.set(audio::World::load);
 		}
 	}
 }

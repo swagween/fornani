@@ -37,6 +37,7 @@ auto time_step = Time{std::chrono::milliseconds(TIME_STEP_MILLI)}; // FPS
 float seconds = 0.0;
 int FPS_counter = 0;
 float FPS = 0.0;
+bool music{};
 
 int shake_counter = 0;
 int frame_draw_counter{0};
@@ -172,6 +173,8 @@ static void show_overlay() {
 				}
 				if (ImGui::BeginTabItem("Audio")) {
 					ImGui::Separator();
+					ImGui::Text("Music Player");
+					if (ImGui::Checkbox("music", &music)) { music ? svc::musicPlayerLocator.get().turn_on() : svc::musicPlayerLocator.get().turn_off(); }
 					ImGui::Text("Music Volume");
 					ImGui::SliderInt("##musvol", &svc::assetLocator.get().music_vol, 0, 100);
 					ImGui::EndTabItem();
@@ -545,6 +548,7 @@ void run(char** argv) {
 	// sounds
 	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().load_audio();
+	svc::musicPlayerLocator.get().turn_off(); //off by default
 	// player
 	svc::playerLocator.get().init();
 

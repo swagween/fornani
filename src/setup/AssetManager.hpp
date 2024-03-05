@@ -88,6 +88,8 @@ class AssetManager {
 			std::string style = lookup::get_style_string.at(lookup::get_style.at(i));
 			tilesets.back().loadFromFile(finder.resource_path + "/image/tile/" + style + "_tiles.png");
 		}
+
+		savepoint.loadFromFile(finder.resource_path + "/image/entity/savepoint.png");
 	
 	}
 
@@ -130,6 +132,14 @@ class AssetManager {
 		player_death.setBuffer(player_death_buffer);
 		enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/enemy_hit.wav");
 		enem_hit.setBuffer(enem_hit_buffer);
+		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
+		save.setBuffer(save_buffer);
+		load_buffer.loadFromFile(finder.resource_path + "/audio/sfx/load_game.wav");
+		load.setBuffer(load_buffer);
+		soft_sparkle_high_buffer.loadFromFile(finder.resource_path + "/audio/sfx/soft_sparkle_high.wav");
+		soft_sparkle_high.setBuffer(soft_sparkle_high_buffer);
+		soft_sparkle_buffer.loadFromFile(finder.resource_path + "/audio/sfx/soft_sparkle.wav");
+		soft_sparkle.setBuffer(soft_sparkle_buffer);
 
 		brown_noise.openFromFile(finder.resource_path + "/audio/songs/brown_noise.wav");
 		clay_statue.openFromFile(finder.resource_path + "/audio/songs/clay_statue.wav");
@@ -173,6 +183,9 @@ class AssetManager {
 
 	// tiles!
 	std::vector<sf::Texture> tilesets{};
+
+	//save
+	sf::Texture savepoint{};
 
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
@@ -265,6 +278,16 @@ class AssetManager {
 	sf::Sound player_death;
 	sf::SoundBuffer enem_hit_buffer{};
 	sf::Sound enem_hit;
+
+	//save/load
+	sf::SoundBuffer save_buffer{};
+	sf::Sound save;
+	sf::SoundBuffer load_buffer{};
+	sf::Sound load;
+	sf::SoundBuffer soft_sparkle_high_buffer{};
+	sf::Sound soft_sparkle_high;
+	sf::SoundBuffer soft_sparkle_buffer{};
+	sf::Sound soft_sparkle;
 
 	// songs!
 	sf::Music brown_noise{};

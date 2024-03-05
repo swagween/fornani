@@ -2,19 +2,29 @@
 #pragma once
 
 #include "Soundboard.hpp"
+#include <algorithm>
 #include "../setup/ServiceLocator.hpp"
 
 namespace audio {
 
 void Soundboard::play_sounds() {
 
-	//menu
+	// menu
 	if (menu.test(Menu::forward_switch)) { svc::assetLocator.get().menu_next.play(); }
 	if (menu.test(Menu::backward_switch)) { svc::assetLocator.get().menu_back.play(); }
 	if (menu.test(Menu::select)) { svc::assetLocator.get().click.play(); }
 	if (menu.test(Menu::shift)) { svc::assetLocator.get().menu_shift.play(); }
 
-	//player
+	// console
+	if (console.test(Console::select)) { svc::assetLocator.get().sharp_click.play(); }
+	if (console.test(Console::done)) { svc::assetLocator.get().click.play(); }
+
+	// world
+	if (world.test(World::load)) { svc::assetLocator.get().load.play(); }
+	if (world.test(World::save)) { svc::assetLocator.get().save.play(); }
+	if (world.test(World::soft_sparkle)) { svc::assetLocator.get().soft_sparkle.play(); }
+
+	// player
 	if (player.test(Player::land)) { svc::assetLocator.get().landed.play(); }
 	if (player.test(Player::jump)) { svc::assetLocator.get().jump.play(); }
 	if (player.test(Player::step)) {
@@ -27,7 +37,7 @@ void Soundboard::play_sounds() {
 	if (player.test(Player::arms_switch)) { svc::assetLocator.get().arms_switch.play(); }
 	if (player.test(Player::hurt)) { svc::assetLocator.get().hurt.play(); }
 
-	//gun
+	// gun
 	if (weapon.test(Weapon::bryns_gun)) { svc::assetLocator.get().bg_shot.play(); }
 	if (weapon.test(Weapon::plasmer)) { svc::assetLocator.get().plasmer_shot.play(); }
 	if (weapon.test(Weapon::clover)) {
@@ -43,11 +53,15 @@ void Soundboard::play_sounds() {
 	}
 	if (weapon.test(Weapon::tomahawk_catch)) { svc::assetLocator.get().tomahawk_catch.play(); }
 
-	//reset flags
+	// reset flags
 	menu = {};
+	console = {};
+	world = {};
 	player = {};
 	weapon = {};
 
+	// reset proximities
+	proximities = {};
 }
 
 } // namespace audio

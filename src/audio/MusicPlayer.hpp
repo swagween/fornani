@@ -9,7 +9,7 @@
 namespace audio {
 
 enum class Song { clay_statue };
-enum class SongState { playing, paused };
+enum class SongState { playing, paused, off };
 
 class MusicPlayer {
   public:
@@ -21,6 +21,8 @@ class MusicPlayer {
 	void stop();
 	void fade_out();
 	void fade_in();
+	void turn_off();
+	void turn_on();
 
 	data::ResourceFinder finder{};
 

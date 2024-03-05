@@ -12,8 +12,9 @@
 
 namespace gui {
 
-	class Selector {
+class Selector {
+
 
 };
 
-} // namespace text
+} // namespace gui
