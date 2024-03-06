@@ -40,15 +40,17 @@ void Player::init() {
 	sprite_dimensions = {48.f, 48.f};
 
 	// sprites
-	//assign_texture(svc::assetLocator.get().t_nani_unarmed);
-	sprite.setTexture(svc::assetLocator.get().t_nani_unarmed);
+	sprite.setTexture(svc::assetLocator.get().t_nani);
 
+	texture_updater.load_base_texture(svc::assetLocator.get().t_nani);
 	texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
-	texture_updater.load_palette(svc::assetLocator.get().t_palette_nanidiv);
 
 }
 
 void Player::update() {
+
+	//reassign sprite
+	svc::playerLocator.get().sprite.setTexture(texture_updater.get_dynamic_texture());
 
 	collider.physics.gravity = physics_stats.grav;
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;

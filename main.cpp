@@ -137,7 +137,6 @@ static void show_overlay() {
 					ImGui::Separator();
 					ImGui::SliderInt("Text Size", &svc::consoleLocator.get().writer.text_size, 6, 64);
 
-
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Key States")) {
@@ -182,16 +181,9 @@ static void show_overlay() {
 				if (ImGui::BeginTabItem("Player")) {
 					if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
 						if (ImGui::BeginTabItem("Texture")) {
-							if(ImGui::Button("Default")) {
-								svc::playerLocator.get().texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nanidiv);
-								svc::playerLocator.get().texture_updater.load_palette(svc::assetLocator.get().t_palette_nani);
-								svc::playerLocator.get().texture_updater.update_texture(svc::assetLocator.get().t_nani_unarmed);
-							}
-							if (ImGui::Button("Divine")) {
-								svc::playerLocator.get().texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
-								svc::playerLocator.get().texture_updater.load_palette(svc::assetLocator.get().t_palette_nanidiv);
-								svc::playerLocator.get().texture_updater.update_texture(svc::assetLocator.get().t_nani_unarmed);
-							}
+							if (ImGui::Button("Default")) { svc::playerLocator.get().texture_updater.switch_to_palette(svc::assetLocator.get().t_palette_nani); }
+							if (ImGui::Button("Divine")) { svc::playerLocator.get().texture_updater.switch_to_palette(svc::assetLocator.get().t_palette_nanidiv); }
+							if (ImGui::Button("Night")) { svc::playerLocator.get().texture_updater.switch_to_palette(svc::assetLocator.get().t_palette_naninight); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Physics and Collision")) {
@@ -206,7 +198,7 @@ static void show_overlay() {
 							ImGui::Text("Left Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_left_collision) ? "Yes" : "No");
 							ImGui::Text("Top Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_top_collision) ? "Yes" : "No");
 							ImGui::Text("Bottom Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
-							
+
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Movement")) {
@@ -308,13 +300,13 @@ static void show_overlay() {
 				if (ImGui::BeginTabItem("Weapon")) {
 					if (ImGui::Button("Toggle Weapons")) {
 						if (svc::playerLocator.get().arsenal.loadout.empty()) {
-							//svc::playerLocator.get().weapons_hotbar = {arms::WEAPON_TYPE::BRYNS_GUN, arms::WEAPON_TYPE::PLASMER, arms::WEAPON_TYPE::CLOVER, arms::WEAPON_TYPE::NOVA};
-							//svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
+							// svc::playerLocator.get().weapons_hotbar = {arms::WEAPON_TYPE::BRYNS_GUN, arms::WEAPON_TYPE::PLASMER, arms::WEAPON_TYPE::CLOVER, arms::WEAPON_TYPE::NOVA};
+							// svc::playerLocator.get().loadout.equipped_weapon = svc::playerLocator.get().weapons_hotbar.at(0);
 							svc::playerLocator.get().arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::BRYNS_GUN));
 							svc::playerLocator.get().arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::PLASMER));
 							svc::playerLocator.get().arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::TOMAHAWK));
 						} else {
-							//svc::playerLocator.get().weapons_hotbar.clear();
+							// svc::playerLocator.get().weapons_hotbar.clear();
 							svc::playerLocator.get().arsenal.loadout = {};
 						}
 					}
@@ -360,7 +352,7 @@ static void show_overlay() {
 					ImGui::SliderFloat("Camera Y Friction", &svc::cameraLocator.get().physics.ground_friction.y, 0.8f, 1.f, "%.5f");
 					ImGui::SliderFloat("Camera Grav Force", &svc::cameraLocator.get().grav_force, 0.003f, 0.03f, "%.5f");
 					ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
-					
+
 					if (ImGui::Button("Save Screenshot")) { save_screenshot(); }
 					ImGui::Separator();
 					if (ImGui::Button("Toggle Greyblock Mode")) {
@@ -534,7 +526,6 @@ static void show_overlay() {
 						SM.set_current_state(std::make_unique<automa::Dojo>());
 						SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/NIGHT_CATWALK_01");
 						svc::playerLocator.get().set_position({50, 50});
-						svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani_dark);
 					}
 					ImGui::EndTabItem();
 				}
@@ -552,7 +543,7 @@ void run(char** argv) {
 	// data
 	svc::dataLocator.get().finder.setResourcePath(argv);
 	svc::dataLocator.get().load_data();
-	//text
+	// text
 	svc::textLocator.get().finder.setResourcePath(argv);
 	svc::textLocator.get().load_data();
 	// images
@@ -561,7 +552,7 @@ void run(char** argv) {
 	// sounds
 	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().load_audio();
-	svc::musicPlayerLocator.get().turn_off(); //off by default
+	svc::musicPlayerLocator.get().turn_off(); // off by default
 	// player
 	svc::playerLocator.get().init();
 
@@ -640,9 +631,7 @@ void run(char** argv) {
 					svc::assetLocator.get().click.play();
 				}
 				if (event.key.code == sf::Keyboard::K) { svc::playerLocator.get().kill(); }
-				if (event.key.code == sf::Keyboard::T) {
-					svc::consoleLocator.get().load_and_launch("bookshelf_1");
-				}
+				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch("bookshelf_1"); }
 				if (event.key.code == sf::Keyboard::Q) { SM.set_current_state(std::make_unique<automa::MainMenu>()); }
 				if (event.key.code == sf::Keyboard::W) {
 					SM.set_current_state(std::make_unique<automa::Dojo>());
@@ -666,9 +655,9 @@ void run(char** argv) {
 		svc::tickerLocator.get().tick([] { SM.get_current_state().tick_update(); });
 		SM.get_current_state().frame_update();
 
-		//play sounds
+		// play sounds
 		svc::soundboardLocator.get().play_sounds();
-		
+
 		SM.get_current_state().debug_mode = debug_mode;
 
 		// switch states

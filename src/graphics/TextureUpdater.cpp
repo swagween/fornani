@@ -26,6 +26,17 @@ void TextureUpdater::load_pixel_map(sf::Texture& map_texture) {
 		map.push_back(i);
 	}
 }
+
+void TextureUpdater::switch_to_palette(sf::Texture& palette_texture) {
+	dynamic_texture = base_texture;
+	load_palette(palette_texture);
+	update_texture(dynamic_texture);
+}
+void TextureUpdater::load_base_texture(sf::Texture& base) {
+	base_texture = base;
+	dynamic_texture = base;
+}
+
 void TextureUpdater::load_palette(sf::Texture& palette_texture) {
 	palette.clear();
 	palette_colors.clear();
@@ -56,7 +67,7 @@ void TextureUpdater::update_texture(sf::Texture& texture) {
 	int height = texture_data.getSize().y;
 	int total_array_size = width * height * 4;
 
-	//iterate over passed texture
+	// iterate over passed texture
 	for (int i = 0; i < total_array_size; ++i) {
 
 		// fill image
@@ -65,15 +76,15 @@ void TextureUpdater::update_texture(sf::Texture& texture) {
 		sf::Color current_pixel{};
 		int to_index{};
 
-		//next pixel
+		// next pixel
 		if (i % 4 == 0) {
 			current_pixel = {(sf::Uint8)(image_data[i]), (sf::Uint8)(image_data[i + 1]), (sf::Uint8)(image_data[i + 2]), (sf::Uint8)(image_data[i + 3])};
 
 			// find this pixels home index
 			for (int j = 0; j < map_colors.size(); ++j) {
 				// found base pixel to map, i is where we need to check in the new palette
-					sf::Color map_check = map_colors.at(j);
-					if (map_check == current_pixel) { to_index = j; }
+				sf::Color map_check = map_colors.at(j);
+				if (map_check == current_pixel) { to_index = j; }
 			}
 			// found, it's to_index
 			// get the color at to_index from our new palette
@@ -91,16 +102,23 @@ void TextureUpdater::update_texture(sf::Texture& texture) {
 }
 
 void flfx::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
-	debug.setSize({32.f, 32.f});
-	if (!map_colors.empty()) {
-		debug.setFillColor(map_colors.at(0));
-		debug.setPosition(0, 0);
+	debug.setSize({8.f, 8.f});
+	int i{};
+	for (auto& color : map_colors) {
+		debug.setFillColor(color);
+		debug.setPosition(i * 8, 0);
 		win.draw(debug);
+		++i;
 	}
-	if (!palette_colors.empty()) {
-		debug.setFillColor(palette_colors.at(0));
-		debug.setPosition(32.f, 0);
+	i = 0;
+	for (auto& color : palette_colors) {
+		debug.setFillColor(color);
+		debug.setPosition(i * 8, 10);
 		win.draw(debug);
+		++i;
 	}
 }
+
+sf::Texture& TextureUpdater::get_dynamic_texture() { return dynamic_texture; }
+
 } // namespace flfx
