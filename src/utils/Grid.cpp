@@ -41,22 +41,20 @@ void Grid::check_neighbors() {
 			bool surrounded{true};
 			// right neighbor
 			if (!(i == cells.size() - 1)) {
-				if (!cells.at(i + 1).is_occupied()) { surrounded = false; }
+				if (!cells.at(i + 1).is_occupied() || !cells.at(i + 1).is_collidable()) { surrounded = false; }
 			}
 			// left neighbor
 			if (!(i == 0)) {
-				if (!cells.at(i - 1).is_occupied()) { surrounded = false; }
+				if (!cells.at(i - 1).is_occupied() || !cells.at(i - 1).is_collidable()) { surrounded = false; }
 			}
 			// top neighbor
 			if (!(i < dimensions.x)) {
-				if (!cells.at(i - dimensions.x).is_occupied()) { surrounded = false; }
+				if (!cells.at(i - dimensions.x).is_occupied() || !cells.at(i - dimensions.x).is_collidable()) { surrounded = false; }
 			}
 			// bottom neighbor
 			if (!(i > cells.size() - dimensions.x - 1)) {
-				if (!cells.at(i + dimensions.x).is_occupied()) { surrounded = false; }
+				if (!cells.at(i + dimensions.x).is_occupied() || !cells.at(i + dimensions.x).is_collidable()) { surrounded = false; }
 			}
-			lookup::TILE_TYPE tile_check = lookup::tile_lookup.at(cells.at(i).value);
-			if (tile_check == lookup::TILE_TYPE::TILE_CEILING_RAMP || tile_check == lookup::TILE_TYPE::TILE_GROUND_RAMP) { surrounded = false; }
 			cells.at(i).surrounded = surrounded;
 		}
 	}

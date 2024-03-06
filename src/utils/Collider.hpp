@@ -33,6 +33,10 @@ enum class Collision {
 	ramp_collision
 };
 
+enum class Dash { dash_cancel_collision };
+
+enum class Movement { dashing };
+
 struct PhysicsStats {
 	float GRAV{0.002f};
 };
@@ -72,6 +76,8 @@ class Collider {
 	components::PhysicsComponent physics{};
 	util::BitFlags<State> flags{};
 	util::BitFlags<Collision> collision_flags{};
+	util::BitFlags<Movement> movement_flags{};
+	util::BitFlags<Dash> dash_flags{};
 
 	float landed_threshold{6.0f};
 	float detector_buffer{19.0f};

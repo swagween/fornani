@@ -9,7 +9,7 @@
 namespace controllers {
 
 constexpr static int jump_time{16};
-constexpr static int dash_time{20};
+constexpr static int dash_time{32};
 
 enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect, dash, move_y };
 enum class TransponderInput { skip, next, exit };

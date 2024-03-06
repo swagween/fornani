@@ -73,12 +73,6 @@ void Dojo::handle_events(sf::Event& event) {
 	if (event.type == sf::Event::EventType::KeyPressed) { svc::inputStateLocator.get().handle_press(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyReleased) { svc::inputStateLocator.get().handle_release(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyPressed) {
-		if (event.key.code == sf::Keyboard::H) {
-			svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
-			svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
-		}
-	}
-	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
 	}
 	if (event.type == sf::Event::EventType::KeyPressed) {
@@ -124,7 +118,6 @@ void Dojo::frame_update() {
 void Dojo::render(sf::RenderWindow& win) {
 	sf::Vector2<float> camvel = svc::cameraLocator.get().physics.velocity;
 	sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
-	svc::stopwatchLocator.get().start();
 	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
 	map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
@@ -132,7 +125,6 @@ void Dojo::render(sf::RenderWindow& win) {
 		svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
 	}
 
-	svc::stopwatchLocator.get().stop();
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
 
 	map.render_console(win);

@@ -110,7 +110,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 				physics.velocity.y = 0.0f;
 				physics.acceleration.y = 0.0f;
 				// if the collider is dashing
-				if (abs(physics.velocity.x) > physics.maximum_velocity.x * 0.1) { falls_onto_ramp = true; }
+				if (movement_flags.test(Movement::dashing)) { falls_onto_ramp = true; }
 			}
 			if (falls_onto_ramp) {
 				if (physics.velocity.y > landed_threshold) { flags.set(State::just_landed); }
@@ -167,12 +167,13 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		// set mtv
 		physics.mtv = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, cell);
 		physics.mtv.x > 0.f ? collision_flags.set(Collision::has_left_collision) : collision_flags.set(Collision::has_right_collision);
+		dash_flags.set(Dash::dash_cancel_collision); //cancel dash to prevent clipping through blocks
 		if (!is_ramp) { correct_x(); }
 		physics.mtv = {};
 	}
 	
 	//final check if above corrections yielded unusual results
-	if (predictive_combined.SAT(cell)) {
+	if (predictive_combined.SAT(cell) && !movement_flags.test(Movement::dashing)) {
 		physics.mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
 		physics.position += physics.mtv;
 	}
@@ -191,6 +192,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 	}
 
 	sync_components();
+	movement_flags = {}; //these are just used for collision handling
 }
 
 void Collider::correct_x() {
@@ -229,7 +231,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive vertical
 	box.setSize(predictive_vertical.dimensions);
 	box.setPosition(predictive_vertical.position.x - cam.x, predictive_vertical.position.y - cam.y);
-	box.setOutlineColor(flcolor::fucshia);
+	box.setOutlineColor(sf::Color{255, 0, 0, 20});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -237,7 +239,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.dimensions);
 	box.setPosition(predictive_horizontal.position.x - cam.x, predictive_horizontal.position.y - cam.y);
-	box.setOutlineColor(flcolor::goldenrod);
+	box.setOutlineColor(sf::Color{0, 0, 255, 20});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -245,7 +247,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive combined
 	box.setSize(predictive_combined.dimensions);
 	box.setPosition(predictive_combined.position.x - cam.x, predictive_combined.position.y - cam.y);
-	box.setOutlineColor(flcolor::green);
+	box.setOutlineColor(sf::Color{255, 0, 255, 20});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -253,8 +255,8 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw bounding box
 	box.setSize(dimensions);
 	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
-	box.setFillColor(sf::Color::Transparent);
-	box.setOutlineColor(sf::Color{255, 255, 255, 80});
+	box.setFillColor(sf::Color{200, 150, 255, 80});
+	box.setOutlineColor(sf::Color{255, 255, 255, 255});
 	box.setOutlineThickness(-1);
 	// flags.test(State::is_colliding_with_level) ? box.setFillColor(sf::Color{90, 100, 20, 60}) : box.setFillColor(sf::Color::Transparent);
 	win.draw(box);

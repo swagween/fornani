@@ -21,6 +21,7 @@ struct Tile {
 	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, lookup::TILE_TYPE t) : index(i), position(p), value(val), type(t) { bounding_box = shape::Shape(sf::Vector2<float>(DEFAULT_SPACING, DEFAULT_SPACING)); }
 
 	bool is_occupied() const { return value > 0; }
+	bool is_collidable() const { return type != lookup::TILE_TYPE::TILE_CEILING_RAMP && type != lookup::TILE_TYPE::TILE_GROUND_RAMP && type != lookup::TILE_TYPE::TILE_SPIKES; }
 
 	sf::Vector2<uint32_t> index{};
 	sf::Vector2<float> position{};

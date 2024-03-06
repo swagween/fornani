@@ -36,7 +36,7 @@ void PlayerController::update() {
 	auto const& transponder_skip = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) || svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
 	auto const& transponder_next = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
 	auto const& transponder_exit = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
-	
+
 	key_map[ControllerInput::move_x] = 0.f;
 	key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
 	key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
@@ -59,7 +59,7 @@ void PlayerController::update() {
 		direction.und = down ? dir::UND::down : direction.und;
 	}
 
-	//transponder flags
+	// transponder flags
 	transponder_skip ? transponder_flags.set(TransponderInput::skip) : transponder_flags.reset(TransponderInput::skip);
 	transponder_next ? transponder_flags.set(TransponderInput::next) : transponder_flags.reset(TransponderInput::next);
 	transponder_exit ? transponder_flags.set(TransponderInput::exit) : transponder_flags.reset(TransponderInput::exit);
@@ -241,7 +241,6 @@ int PlayerController::get_dash_request() const { return dash_request; }
 
 int PlayerController::get_dash_count() const { return dash_count; }
 
-float PlayerController::dash_value() { return key_map[ControllerInput::dash];
-}
+float PlayerController::dash_value() { return key_map[ControllerInput::dash]; }
 
 } // namespace controllers

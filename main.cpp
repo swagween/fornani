@@ -198,6 +198,8 @@ static void show_overlay() {
 							ImGui::Text("Left Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_left_collision) ? "Yes" : "No");
 							ImGui::Text("Top Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_top_collision) ? "Yes" : "No");
 							ImGui::Text("Bottom Collision: %s", svc::playerLocator.get().collider.collision_flags.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
+							ImGui::Separator();
+							ImGui::Text("Dash Cancel Collision: %s", svc::playerLocator.get().collider.dash_flags.test(shape::Dash::dash_cancel_collision) ? "Yes" : "No");
 
 							ImGui::EndTabItem();
 						}
@@ -364,7 +366,7 @@ static void show_overlay() {
 							svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
 						}
 					}
-					ImGui::Text("Greybox Mode : %s", svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state) ? "On" : "Off");
+					ImGui::Text("Greyblock Mode : %s", svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state) ? "On" : "Off");
 					ImGui::Separator();
 					ImGui::Text("Draw Calls: %u", frame_draw_counter);
 					frame_draw_counter = 0;
@@ -591,6 +593,8 @@ void run(char** argv) {
 	while (window.isOpen()) {
 
 		svc::tickerLocator.get().start_frame();
+		// reset global triggers
+		svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_trigger);
 
 		win_size.x = window.getSize().x;
 		win_size.y = window.getSize().y;
@@ -642,6 +646,15 @@ void run(char** argv) {
 					svc::playerLocator.get().assign_texture(svc::assetLocator.get().t_nani);
 				}
 				if (event.key.code == sf::Keyboard::P) { save_screenshot(); }
+				if (event.key.code == sf::Keyboard::H) {
+					if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+						svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_state);
+						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
+					} else {
+						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
+						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
+					}
+				}
 				break;
 			case sf::Event::KeyReleased: break;
 			default: break;
@@ -685,9 +698,6 @@ void run(char** argv) {
 			SM.get_current_state().init(svc::assetLocator.get().finder.resource_path + "/level/" + svc::stateControllerLocator.get().next_state);
 			svc::stateControllerLocator.get().trigger = false;
 		}
-
-		// reset global triggers
-		svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_trigger);
 
 		ImGui::SFML::Update(window, deltaClock.restart());
 		screencap.update(window);

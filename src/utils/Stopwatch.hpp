@@ -29,13 +29,13 @@ class Stopwatch {
 	Tpt start_time = Clk::now();
 
   private:
-	struct Snapshot {
+	struct {
 		std::deque<float> history{};
 		float average_elapsed_ms{};
 		int sample_size{512};
 		int interval{128};
 		int current_tick{};
-	};
+	} snapshot{};
 	void calculate_snapshot() {
 		if (snapshot.history.size() >= snapshot.sample_size) { snapshot.history.pop_front(); }
 		float average{};
@@ -45,7 +45,6 @@ class Stopwatch {
 		++snapshot.current_tick;
 		if (snapshot.current_tick % snapshot.interval == 0) { snapshot.average_elapsed_ms = average; }
 	}
-	Snapshot snapshot{};
 };
 
 } // namespace util

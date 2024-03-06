@@ -115,6 +115,7 @@ void Player::update() {
 	if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
 		controller.stop_dashing();
 		controller.cancel_dash_request();
+		collider.dash_flags.reset(shape::Dash::dash_cancel_collision);
 	}
 
 	// antennae!
@@ -278,7 +279,8 @@ void Player::dash() {
 		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 
-		if (!collider.has_horizontal_collision()) {
+		if (!collider.dash_flags.test(shape::Dash::dash_cancel_collision)) {
+			collider.movement_flags.set(shape::Movement::dashing);
 			collider.physics.acceleration.x += controller.dash_value() * physics_stats.dash_speed;
 			collider.physics.velocity.x += controller.dash_value() * physics_stats.dash_speed;
 		}
