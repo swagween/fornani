@@ -170,7 +170,7 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	}
 
 	//texture updater debug
-	texture_updater.debug_render(win, campos);
+	//texture_updater.debug_render(win, campos);
 
 }
 

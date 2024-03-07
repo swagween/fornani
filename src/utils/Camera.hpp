@@ -42,6 +42,7 @@ class Camera {
 	void update() {
 
 		physics.update_dampen();
+		observed_velocity = physics.velocity;
 		bounding_box.left = physics.position.x;
 		bounding_box.top = physics.position.y;
 		if (bounding_box.top < 0.0f) {
@@ -70,6 +71,7 @@ class Camera {
 		if (bounding_box.left + bounding_box.width > bounds.x) {
 			bounding_box.left = bounds.x - bounding_box.width;
 			physics.position.x = bounds.x - bounding_box.width;
+			observed_velocity.x = 0.f;
 		}
 	}
 

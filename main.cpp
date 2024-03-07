@@ -323,10 +323,10 @@ static void show_overlay() {
 					ImGui::Separator();
 					ImGui::Text("Equipped Weapon: %s", svc::playerLocator.get().equipped_weapon().label.c_str());
 					ImGui::Text("UI color: %i", (int)svc::playerLocator.get().equipped_weapon().attributes.ui_color);
-					ImGui::Text("Sprite Dimensions X: %.2f", (int)svc::playerLocator.get().equipped_weapon().sprite_dimensions.x);
-					ImGui::Text("Sprite Dimensions Y: %.2f", (int)svc::playerLocator.get().equipped_weapon().sprite_dimensions.y);
-					ImGui::Text("Barrel Point X: %f", (int)svc::playerLocator.get().equipped_weapon().barrel_point.x);
-					ImGui::Text("Barrel Point Y: %f", (int)svc::playerLocator.get().equipped_weapon().barrel_point.y);
+					ImGui::Text("Sprite Dimensions X: %.1f", svc::playerLocator.get().equipped_weapon().sprite_dimensions.x);
+					ImGui::Text("Sprite Dimensions Y: %.1f", svc::playerLocator.get().equipped_weapon().sprite_dimensions.y);
+					ImGui::Text("Barrel Point X: %.1f", svc::playerLocator.get().equipped_weapon().barrel_point.x);
+					ImGui::Text("Barrel Point Y: %.1f", svc::playerLocator.get().equipped_weapon().barrel_point.y);
 					ImGui::Separator();
 					ImGui::Text("Weapon Stats: ");
 					ImGui::Indent();

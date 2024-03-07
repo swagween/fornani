@@ -49,7 +49,7 @@ void PlayerController::update() {
 
 	key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
 	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
-	if ((dash_left || dash_right) && dash_count == 0) { dash_request = dash_time; }
+	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }
 
 	if (!restricted()) {
 		direction.lr = moving_left() ? dir::LR::left : direction.lr;

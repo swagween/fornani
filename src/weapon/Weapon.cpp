@@ -55,13 +55,17 @@ void Weapon::update() {
 		cooldown_counter = 0;
 	}
 	if (cooldown_counter > 0) { flags.set(GunState::cooling_down); }
+	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x + gun_offset.x, svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + gun_offset.y};
+	set_position(p_pos);
 }
 
 void Weapon::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+
+	// nani threw it, so don't render it in her hand
 	if (attributes.boomerang && active_projectiles == attributes.rate) { return; }
-	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x + gun_offset.x, svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + gun_offset.y};
-	sp_gun.setPosition(p_pos.x - campos.x, p_pos.y - campos.y);
-	set_position(p_pos);
+
+	// set sprite position
+	sp_gun.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 
 	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 		// fire point debug
@@ -119,6 +123,7 @@ void Weapon::set_orientation() {
 		barrel_point.x += 2.0f * attributes.barrel_position.at(1);
 		sp_gun.scale(-1.0f, 1.0f);
 		break;
+	default: break;
 	}
 	switch (firing_direction.und) {
 	case dir::UND::up:
@@ -137,8 +142,8 @@ void Weapon::set_orientation() {
 		case dir::LR::left: barrel_point = {sprite_position.x - attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)}; break;
 		}
 		break;
+	default: break;
 	}
-
 	projectile.direction = firing_direction;
 }
 

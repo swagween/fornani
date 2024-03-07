@@ -87,7 +87,6 @@ void Dojo::handle_events(sf::Event& event) {
 void Dojo::tick_update() {
 
 	svc::playerLocator.get().update();
-	svc::cameraLocator.get().previous_position = svc::cameraLocator.get().position;
 	map.update();
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
 	svc::cameraLocator.get().update();
@@ -102,10 +101,6 @@ void Dojo::tick_update() {
 
 	svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
 	map.debug_mode = debug_mode;
-
-	svc::cameraLocator.get().position = svc::cameraLocator.get().physics.position;
-	svc::cameraLocator.get().observed_velocity.x = svc::cameraLocator.get().position.x - svc::cameraLocator.get().previous_position.x;
-	svc::cameraLocator.get().observed_velocity.y = svc::cameraLocator.get().position.y - svc::cameraLocator.get().previous_position.y;
 
 	svc::inputStateLocator.get().reset_triggers();
 }
