@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "../utils/BitFlags.hpp"
 #include "../setup/ResourceFinder.hpp"
+#include <thread>
 
 namespace audio {
 
@@ -34,6 +35,11 @@ class MusicPlayer {
 	sf::Music song_first{};
 	sf::Music song_loop{};
 	sf::SoundSource::Status status{};
+
+	sf::Time start_time{};
+	sf::Time end_time{};
+	sf::Time current_time{};
+	sf::Clock music_clock{};
 
 };
 

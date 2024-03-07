@@ -316,7 +316,7 @@ static void show_overlay() {
 					ImGui::Text("Extant Projectiles:");
 					ImGui::NewLine();
 					for (auto& weapon : svc::playerLocator.get().arsenal.loadout) {
-						ImGui::Text("Gun: %s", weapon.label.c_str());
+						ImGui::Text("%s", (weapon.label + ": ").c_str());
 						ImGui::SameLine();
 						ImGui::Text("%i", svc::playerLocator.get().extant_instances(weapon.get_id()));
 					}
@@ -563,7 +563,7 @@ void run(char** argv) {
 	// sounds
 	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().load_audio();
-	svc::musicPlayerLocator.get().turn_off(); // off by default
+	//svc::musicPlayerLocator.get().turn_off(); // off by default
 	// player
 	svc::playerLocator.get().init();
 

@@ -412,7 +412,7 @@ void Player::total_reset() {
 }
 
 arms::Weapon& Player::equipped_weapon() {
-	if (arsenal.loadout.empty()) {
+	if (arsenal.loadout.empty() || current_weapon >= arsenal.loadout.size()) {
 		// default to bryns gun
 		return arsenal.armory.at(0);
 	} else {

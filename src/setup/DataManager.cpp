@@ -54,7 +54,7 @@ void DataManager::save_progress(int save_point_id) {
 		int this_id = gun.get_id();
 		save["player_data"]["arsenal"].push_back(this_id);
 	}
-	save["player_data"]["equipped_gun"] = svc::playerLocator.get().equipped_weapon().get_id();
+	save["player_data"]["equipped_gun"] = svc::playerLocator.get().current_weapon;
 
 	save["save_point_id"] = save_point_id;
 
@@ -90,6 +90,9 @@ void DataManager::load_progress(int const file, bool state_switch) {
 		auto equipped_gun = svc::dataLocator.get().save["player_data"]["equipped_gun"].as<int>();
 		svc::playerLocator.get().current_weapon = equipped_gun;
 	}
+
+	//reset some things that might be lingering
+	svc::consoleLocator.get().flags.reset(gui::ConsoleFlags::active);
 }
 
 void DataManager::load_blank_save(bool state_switch) {

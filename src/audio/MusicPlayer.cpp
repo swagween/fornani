@@ -29,6 +29,7 @@ void MusicPlayer::play_looped() {
 	song_first.setVolume(60);
 	song_loop.setVolume(60);
 	song_first.play();
+	music_clock.restart();
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::update() {
@@ -36,13 +37,14 @@ void MusicPlayer::update() {
 		stop();
 		return;
 	}
-	if (song_first.getStatus() == sf::SoundSource::Stopped) {
+	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMilliseconds();
+	if (song_dt < svc::tickerLocator.get().tick_rate) {
 		if (song_loop.getStatus() == sf::SoundSource::Status::Playing) { return; }
-		song_first.setPlayingOffset(sf::Time::Zero);
-		song_first.stop();
 		status = sf::SoundSource::Status::Stopped;
 	}
 	if (status != sf::SoundSource::Status::Playing) {
+		std::chrono::milliseconds wait_time = std::chrono::milliseconds{(int)(svc::tickerLocator.get().tick_rate - song_dt)};
+		std::this_thread::sleep_for(wait_time * 20);
 		song_loop.play();
 		status = sf::SoundSource::Status::Playing;
 	}
