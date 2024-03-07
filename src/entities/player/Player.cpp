@@ -120,6 +120,10 @@ void Player::update() {
 
 	// antennae!
 	update_antennae();
+
+	//harness
+	harness.update();
+	harness.collider.physics.position = collider.physics.position;
 }
 
 void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
@@ -154,6 +158,7 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	if (flags.state.test(State::alive)) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 			collider.render(win, campos);
+			harness.render(win, campos);
 		} else {
 			antennae[1].render(win, campos);
 			antennae[3].render(win, campos);
@@ -229,11 +234,8 @@ void Player::flash_sprite() {
 }
 
 void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
-
-	int r = 100;
-	int g = 80;
-	int a = 100;
-	int ctr{0};
+	auto a{100};
+	auto ctr{0};
 	for (auto& sp : sprite_history.sprites) {
 		sp.setColor(sf::Color(255, 255, 255, a));
 		sp.setPosition(sprite_history.positions.at(ctr) - campos);
@@ -241,8 +243,6 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			win.draw(sp);
 			++svc::counterLocator.get().at(svc::draw_calls);
 		}
-		r += 36;
-		g += 20;
 		a += 20;
 		++ctr;
 	}

@@ -1,8 +1,3 @@
-//
-//  Attractor.cpp
-//  entity
-//
-//
 
 #include "Attractor.hpp"
 #include "../setup/ServiceLocator.hpp"
@@ -57,5 +52,3 @@ void Attractor::render(sf::RenderWindow& win, Vec campos) {
 	svc::counterLocator.get().at(svc::draw_calls)++;
 }
 } // namespace vfx
-
-/* Attractor_cpp */

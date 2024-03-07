@@ -563,7 +563,7 @@ void run(char** argv) {
 	// sounds
 	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().load_audio();
-	//svc::musicPlayerLocator.get().turn_off(); // off by default
+	svc::musicPlayerLocator.get().turn_off(); // off by default
 	// player
 	svc::playerLocator.get().init();
 

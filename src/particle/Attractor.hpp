@@ -1,8 +1,3 @@
-//
-//  Attractor.hpp
-//  entity
-//
-//
 
 #pragma once
 
@@ -33,5 +28,3 @@ class Attractor {
 };
 
 } // namespace vfx
-
-/* Attractor_hpp */

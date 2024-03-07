@@ -270,6 +270,74 @@
           "y_friction": 0.97
         }
       }
+    },
+
+    {
+      "label": "grappling_hook",
+      "dimensions": {
+        "x": 18,
+        "y": 10
+      },
+      "gun_offset": {
+        "x": 0,
+        "y": 6
+      },
+      "barrel_point": {
+        "x": 14.0,
+        "y": 3.0
+      },
+      "attributes": {
+        "automatic": false,
+        "rate": 1,
+        "cooldown_time": 0,
+        "recoil": 0.00,
+        "ui_color": 1
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 14.0,
+          "y": 14.0
+        },
+        "attributes": {
+          "base_damage": 0.05,
+          "range": 400,
+          "speed": 12.5,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": true,
+          "transcendent": true,
+          "boomerang": true,
+          "constrained": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 2,
+          "framerate": 5
+        }
+      },
+      "spray": {
+        "emitter": {
+          "lifespan": 11,
+          "lifespan_variance": 8,
+          "particle_lifespan": 40,
+          "particle_lifespan_variance": 30
+        },
+        "particle": {
+          "rate": 2,
+          "rate_variance": 1,
+          "expulsion_force": 4.0,
+          "expulsion_variance": 2.8,
+          "cone": 1.8,
+          "grav": 0.0,
+          "grav_variance": 0.0,
+          "x_friction": 0.97,
+          "y_friction": 0.97
+        }
+      }
     }
   ]
 }

@@ -6,17 +6,18 @@
 #include <memory>
 #include <unordered_map>
 #include <array>
-#include "Weapon.hpp"
+#include "GrapplingHook.hpp"
 
 namespace arms {
 
 using Key = WEAPON_TYPE;
-constexpr static int max_weapons{19};
+constexpr static int max_weapons{20};
 
 inline Weapon bryns_gun{0};
 inline Weapon plasmer{1};
 inline Weapon skycorps_ar{2};
 inline Weapon tomahawk{3};
+inline GrapplingHook grappling_hook{4};
 
 struct Arsenal {
 
@@ -24,7 +25,13 @@ struct Arsenal {
 	Arsenal& operator=(Arsenal&&) = delete;
 	
 	void init() {
-		for (int i = 0; i < max_weapons; ++i) { armory.at(i) = Weapon(i); }
+		for (int i = 0; i < max_weapons; ++i) {
+			if (i == 4) {
+				armory.at(i) = GrapplingHook(i);
+			} else {
+				armory.at(i) = Weapon(i);
+			}
+		}
 	}
 	void push_to_loadout(int id) { loadout.push_back(armory.at(id)); }
 
