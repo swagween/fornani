@@ -1,0 +1,20 @@
+{
+  "physics": {
+    "grav": 0.500000,
+    "ground_fric": 0.937000,
+    "air_fric": 0.936000,
+    "x_acc": 1.794000,
+    "air_multiplier": 0.851000,
+    "jump_velocity": 8.739690,
+    "jump_release_multiplier": 0.517890,
+    "hurt_acc": 0.150000,
+    "maximum_velocity": {
+      "x": 9.490000,
+      "y": 14.990000
+    },
+    "mass": 1.000000,
+    "vertical_dash_multiplier": 1.237000,
+    "dash_speed": 8.474000,
+    "dash_dampen": 1.732000
+  }
+}

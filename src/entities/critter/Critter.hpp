@@ -34,7 +34,7 @@ struct CritterMetadata {
 
 struct CritterStats {
 	int base_damage{};
-	int base_hp{};
+	float base_hp{};
 	float speed{};
 	float loot_multiplier{};
 	int energy{};
@@ -43,7 +43,7 @@ struct CritterStats {
 };
 
 struct CritterCondition {
-	int hp{1};
+	float hp{1};
 };
 
 enum class Flags { alive, seeking, awake, awakened, asleep, turning, flip, barking, hurt, just_hurt, shot, vulnerable, charging, shooting, hiding, running, weapon_fired };
@@ -55,8 +55,6 @@ struct FrameTracker {
 class Critter {
 
   public:
-	using Clock = std::chrono::steady_clock;
-	using Time = std::chrono::duration<float>;
 
 	Critter() = default;
 	Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim)
@@ -108,7 +106,7 @@ class Critter {
 	util::BitFlags<Flags> flags{};
 
 	behavior::Behavior behavior{};
-	behavior::DIR_LR facing_lr{};
+	dir::Direction direction{};
 	std::vector<shape::Collider> colliders{};
 
 	std::vector<shape::Shape> hurtbox_atlas{};
@@ -141,11 +139,6 @@ class Critter {
 	std::queue<int> idle_action_queue{};
 
 	sf::Vector2<float> current_target{};
-
-	// fixed animation time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{0.0f};
 
 	int unique_id{};
 };

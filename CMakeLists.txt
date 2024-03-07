@@ -17,7 +17,6 @@ FetchContent_Declare(
 )
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_MakeAvailable(djson)
-
 target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
 
 set(BUILD_SHARED_LIBS ON)
@@ -27,8 +26,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-audio)
 
 file(GLOB_RECURSE sources LIST_DIRECTORIES false CONFIGURE_DEPENDS "src/*.?pp")
-
-
 
 target_sources(${PROJECT_NAME} PRIVATE
 main.cpp

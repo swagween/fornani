@@ -14,7 +14,6 @@ void Dojo::init(std::string const& load_path) {
 	svc::playerLocator.get().reset_flags();
 
 	map.load(load_path);
-	svc::playerLocator.get().behavior.current_state = behavior::Behavior(behavior::idle);
 	tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
 	for (int i = 0; i < 16; ++i) {
 		for (int j = 0; j < 16; ++j) {
@@ -53,6 +52,10 @@ void Dojo::init(std::string const& load_path) {
 
 	// save was loaded from a json, so we successfully skipped door search
 	svc::stateControllerLocator.get().save_loaded = false;
+
+	svc::inputStateLocator.get().reset_triggers();
+	svc::playerLocator.get().controller = {};
+	svc::playerLocator.get().controller.prevent_movement();
 }
 
 void Dojo::setTilesetTexture(sf::Texture& t) {
@@ -67,26 +70,8 @@ void Dojo::setTilesetTexture(sf::Texture& t) {
 }
 
 void Dojo::handle_events(sf::Event& event) {
-	if (event.type == sf::Event::EventType::KeyPressed) {
-		svc::inputStateLocator.get().handle_press(event.key.code);
-		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right) { svc::playerLocator.get().flags.input.set(player::Input::exit_request); }
-	}
-	if (event.type == sf::Event::EventType::KeyReleased) {
-		svc::inputStateLocator.get().handle_release(event.key.code);
-		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right) {
-			svc::playerLocator.get().flags.input.reset(player::Input::exit_request);
-			svc::playerLocator.get().unrestrict_inputs();
-			svc::playerLocator.get().flags.input.reset(player::Input::inspecting);
-			svc::playerLocator.get().flags.input.reset(player::Input::inspecting_trigger);
-		}
-	}
-	svc::playerLocator.get().handle_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) {
-		if (event.key.code == sf::Keyboard::H) {
-			svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
-			svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
-		}
-	}
+	if (event.type == sf::Event::EventType::KeyPressed) { svc::inputStateLocator.get().handle_press(event.key.code); }
+	if (event.type == sf::Event::EventType::KeyReleased) { svc::inputStateLocator.get().handle_release(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
 	}
@@ -99,27 +84,30 @@ void Dojo::handle_events(sf::Event& event) {
 	}
 }
 
-void Dojo::logic() {
-	svc::cameraLocator.get().previous_position = svc::cameraLocator.get().position;
+void Dojo::tick_update() {
+
+	svc::playerLocator.get().update();
 	map.update();
-	hud.update();
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
 	svc::cameraLocator.get().update();
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);
 	if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
 	if (map.real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(map.real_dimensions); }
-	svc::playerLocator.get().update(svc::clockLocator.get().elapsed_time);
 	for (auto& critter : map.critters) {
 		critter->update();
 		critter->unique_update();
 		critter->flags.reset(critter::Flags::shot);
 	}
+
 	svc::assetLocator.get().three_pipes.setVolume(svc::assetLocator.get().music_vol);
 	map.debug_mode = debug_mode;
 
-	svc::cameraLocator.get().position = svc::cameraLocator.get().physics.position;
-	svc::cameraLocator.get().observed_velocity.x = svc::cameraLocator.get().position.x - svc::cameraLocator.get().previous_position.x;
-	svc::cameraLocator.get().observed_velocity.y = svc::cameraLocator.get().position.y - svc::cameraLocator.get().previous_position.y;
+	svc::inputStateLocator.get().reset_triggers();
+}
+
+void Dojo::frame_update() {
+	map.background->update();
+	hud.update();
 }
 
 void Dojo::render(sf::RenderWindow& win) {
@@ -128,8 +116,11 @@ void Dojo::render(sf::RenderWindow& win) {
 	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
 	map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position); }
-	hud.render(win);
+	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
+	}
+
+	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
 
 	map.render_console(win);
 
@@ -137,6 +128,7 @@ void Dojo::render(sf::RenderWindow& win) {
 	svc::assetLocator.get().sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);
 
 	map.transition.render(win);
+
 
 	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_trigger)) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {

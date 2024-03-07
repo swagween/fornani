@@ -10,10 +10,14 @@
 #include "../components/PhysicsComponent.hpp"
 #include "../entities/behavior/Animation.hpp"
 #include "../graphics/FLColor.hpp"
+#include "../graphics/SpriteHistory.hpp"
 #include "../particle/Emitter.hpp"
 #include "../utils/BitFlags.hpp"
+#include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
+#include "../particle/Attractor.hpp"
+#include "../utils/Cooldown.hpp"
 
 namespace arms {
 
@@ -42,27 +46,29 @@ enum class WEAPON_TYPE {
 
 enum class TEAMS { NANI, SKYCORPS, BEASTS };
 
-enum class WEAPON_DIR { LEFT, RIGHT, UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT };
-
-enum class FIRING_DIRECTION { LEFT, RIGHT, UP, DOWN };
-
 enum class RENDER_TYPE { ANIMATED, SINGLE_SPRITE, MULTI_SPRITE };
 
-const sf::Vector2<float> DEFAULT_DIMENSIONS{8.0, 8.0};
+sf::Vector2<float> const DEFAULT_DIMENSIONS{8.0, 8.0};
 int const history_limit{4};
 
 struct ProjectileStats {
 
-	int damage{};
+	float base_damage{};
 	int range{};
 
 	float speed{};
 	float variance{};
-	float stun{};
+	float stun_time{};
 	float knockback{};
 
 	bool persistent{};
-	bool spray{};
+	bool transcendent{};
+	bool constrained{};
+	bool boomerang{};
+
+	float acceleration_factor{};
+	float dampen_factor{};
+	float attractor_force{};
 
 	int range_variance{};
 };
@@ -77,12 +83,9 @@ enum class ProjectileState { initialized, destruction_initiated, destroyed };
 
 class Projectile {
 
-	using Clock = std::chrono::steady_clock;
-	using Time = std::chrono::duration<float>;
-
   public:
 	Projectile();
-	Projectile(ProjectileStats s, components::PhysicsComponent p, ProjectileAnimation a, WEAPON_TYPE t, RENDER_TYPE rt, sf::Vector2<float> dim);
+	Projectile(int id);
 
 	void update();
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -90,10 +93,15 @@ class Projectile {
 	void seed();
 	void set_sprite();
 	void set_orientation(sf::Sprite& sprite);
-	void constrain_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
-	void constrain_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
+	void set_position(sf::Vector2<float>& pos);
+	void set_boomerang_speed();
+	void sync_position();
+	void constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
+	void constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
+	void constrain_hitbox_at_barrel();
+	void constrain_hitbox_at_destruction_point();
 
-	FIRING_DIRECTION dir{};
+	dir::Direction direction{};
 	shape::Shape bounding_box{};
 	components::PhysicsComponent physics{};
 	ProjectileStats stats{};
@@ -111,14 +119,12 @@ class Projectile {
 
 	std::vector<sf::Sprite> sp_proj{};
 
-	int sprite_id{};
-	int curr_frame{};
-	int anim_frame{};
+	anim::Animation animation{};
+	flfx::SpriteHistory sprite_history{};
 
-	// fixed animation time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{0.0f};
+	util::Cooldown cooldown{};
+
+	vfx::Attractor attractor{};
 
 	sf::RectangleShape box{};
 

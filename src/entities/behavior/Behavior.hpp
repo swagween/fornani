@@ -42,9 +42,6 @@ struct BehaviorParameters {
 
 class Behavior {
 
-	using Clock = std::chrono::steady_clock;
-	using Time = std::chrono::duration<float>;
-
   public:
 	Behavior() = default;
 	Behavior(BehaviorParameters p) : params(p) { update(); }
@@ -57,11 +54,6 @@ class Behavior {
 	bool restricted();
 
 	BehaviorParameters params{};
-
-	// fixed animation time step variables
-	Time dt{0.001f};
-	Clock::time_point current_time = Clock::now();
-	Time accumulator{0.0f};
 };
 
 } // namespace behavior

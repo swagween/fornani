@@ -61,7 +61,6 @@ class Map {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
-	Map();
 	// methods
 	void load(std::string const& path);
 	void update();
@@ -73,13 +72,17 @@ class Map {
 	void spawn_projectile_at(sf::Vector2<float> pos);
 	void spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter);
 	void manage_projectiles();
+	void generate_collidable_layer();
 	Vec get_spawn_position(int portal_source_map_id);
+
+	bool nearby(shape::Shape& first, shape::Shape& second);
 
 	// layers
 	std::vector<Layer> layers;
-	Vec real_dimensions{};	   // pixel dimensions (maybe useless)
-	Vecu16 dimensions{};	   // points on the 32x32-unit grid
-	Vecu16 chunk_dimensions{}; // how many chunks (16x16 squares) in the room
+	std::vector<uint32_t> collidable_indeces{};		// generated on load to reduce collision checks in hot code
+	Vec real_dimensions{};		// pixel dimensions (maybe useless)
+	Vecu16 dimensions{};		// points on the 32x32-unit grid
+	Vecu16 chunk_dimensions{};	// how many chunks (16x16 squares) in the room
 
 	// entities
 	std::vector<shape::Collider*> colliders{};
@@ -103,6 +106,7 @@ class Map {
 	sf::RectangleShape minimap_tile{};
 	sf::RectangleShape borderbox{};
 	int bg{}; // which background to render
+	float collision_barrier = 1.5f;
 
 	int room_id{}; // should be assigned to its constituent chunks
 	bool game_over{false};

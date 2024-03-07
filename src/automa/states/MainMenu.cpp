@@ -25,15 +25,15 @@ MainMenu::MainMenu() {
 					{92, 22}};
 
 	left_dot = vfx::Attractor({new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y},
-							  flcolor::bright_orange, 0.008f);
+							  flcolor::bright_orange, dot_force);
 	right_dot =
 		vfx::Attractor({new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y},
-					   flcolor::bright_orange, 0.008f);
+					   flcolor::bright_orange, dot_force);
 
-	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
-	left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
-	right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.83f, 0.83f}, 1.0f);
-	right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(4.5f, 4.5f);
+	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
+	left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);
+	right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
+	right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);
 
 	left_dot.collider.bounding_box.set_position(static_cast<sf::Vector2<float>>(new_rect.getPosition()));
 	right_dot.collider.bounding_box.set_position(
@@ -69,7 +69,10 @@ MainMenu::MainMenu() {
 					   sf::IntRect({0, 0}, {(int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y})};
 };
 
-void MainMenu::init(std::string const& load_path) {}
+void MainMenu::init(std::string const& load_path) {
+	svc::musicPlayerLocator.get().load("clay");
+	svc::musicPlayerLocator.get().play_looped();
+}
 
 void MainMenu::setTilesetTexture(sf::Texture& t) {}
 
@@ -80,42 +83,44 @@ void MainMenu::handle_events(sf::Event& event) {
 			selection = (menu_selection_id.at(selection) % 3 == 2)
 							? MenuSelection::new_game
 							: (MenuSelection)(menu_selection_id.at(selection) + 1);
-			svc::assetLocator.get().menu_shift.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Up) {
 			selection = (menu_selection_id.at(selection) % 3 == 0)
 							? MenuSelection::options
 							: (MenuSelection)(menu_selection_id.at(selection) - 1);
-			svc::assetLocator.get().menu_shift.play();
+
+			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			if (selection == MenuSelection::new_game) {
 
 				svc::dataLocator.get().load_blank_save(true);
 				svc::stateControllerLocator.get().save_loaded = true;
-				svc::assetLocator.get().click.play();
+				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::load_game) {
 
 				svc::stateControllerLocator.get().submenu = menu_type::file_select;
 				svc::stateControllerLocator.get().trigger_submenu = true;
-				svc::assetLocator.get().click.play();
+				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::options) {
 
 				// todo: make options menu
-				svc::assetLocator.get().click.play();
+				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 		}
 		if (event.key.code == sf::Keyboard::Right && selection == MenuSelection::load_game) {
 			svc::stateControllerLocator.get().submenu = menu_type::file_select;
 			svc::stateControllerLocator.get().trigger_submenu = true;
-			svc::assetLocator.get().menu_next.play();
+			svc::soundboardLocator.get().menu.set(audio::Menu::forward_switch);
 		}
 	}
 }
 
-void MainMenu::logic() {
+void MainMenu::tick_update() {
+	svc::musicPlayerLocator.get().update();
 	left_dot.update();
 	right_dot.update();
 	switch (selection) {
@@ -140,6 +145,8 @@ void MainMenu::logic() {
 		break;
 	}
 }
+
+void MainMenu::frame_update() {}
 
 void MainMenu::render(sf::RenderWindow& win) {
 	win.draw(title);

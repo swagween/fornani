@@ -10,6 +10,9 @@ Background::Background(BackgroundBehavior b, int bg_id) : behavior(b) {
 	if (b.scrolling) {
 		int idx = 0;
 		for (auto& sprite : sprites) {
+			physics.push_back(components::PhysicsComponent());
+			physics.back().air_friction = {1.f, 1.f};
+			physics.back().ground_friction = {1.f, 1.f};
 			sprite.setTextureRect(sf::IntRect({0, 540 * idx}, {3840, 540}));
 			sprite.setTexture(get_backdrop_texture.at(bg_id));
 			++idx;
@@ -25,15 +28,22 @@ Background::Background(BackgroundBehavior b, int bg_id) : behavior(b) {
 }
 
 void Background::update() {
+	float frame_speedup = std::clamp(svc::cameraLocator.get().observed_velocity.x, 1.f, std::numeric_limits<float>::infinity()); // positive number
+	
 	if (behavior.scrolling) {
+		if (physics.size() < sprites.size()) { return; }
 		int idx = 0;
 		for (auto& sprite : sprites) {
-			int offset = idx * (-frames[idx] * behavior.scroll_speed);
-			if (offset < -1920) { frames[idx] = 0; }
-			sprite.setPosition(idx * (-frames[idx] * behavior.scroll_speed), 0);
+			physics.at(idx).velocity.x = -1 * (frame_speedup) * behavior.scroll_speed * idx; // negative
+			physics.at(idx).update_euler();
+
+			if (physics.at(idx).position.x < -scroll_size) {
+				physics.at(idx).position.x = 0.f;
+			}
+
+			sprite.setPosition(physics.at(idx).position.x, 0.f);
 			++idx;
 		}
-		for (auto& frame : frames) { ++frame; }
 	}
 }
 
