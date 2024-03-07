@@ -69,13 +69,13 @@ void Player::update() {
 		if (controller.arms_switch() == -1.f) {
 			current_weapon--;
 			if (current_weapon < 0) { current_weapon = (int)arsenal.loadout.size() - 1; }
-			// loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+			equipped_weapon().active_projectiles = arsenal.extant_projectile_instances.at(current_weapon);
 			svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
 		}
 		if (controller.arms_switch() == 1.f) {
 			current_weapon++;
 			if (current_weapon > arsenal.loadout.size() - 1) { current_weapon = 0; }
-			// loadout.equipped_weapon = weapons_hotbar.at(current_weapon);
+			equipped_weapon().active_projectiles = arsenal.extant_projectile_instances.at(current_weapon);
 			svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
 		}
 	}
@@ -313,7 +313,17 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon() {
-	equipped_weapon().update();
+	//clamp extant projectile instances to the weapon's rate
+	assert(arsenal.extant_projectile_instances.size() >= arsenal.armory.size());
+	for (std::size_t index = 0; index < arsenal.extant_projectile_instances.size(); ++index) {
+		auto& count = arsenal.extant_projectile_instances.at(index);
+		count = std::clamp(count, 0, arsenal.armory.at(index).attributes.rate);
+	}
+	//update all weapons in loadout to avoid unusual behavior upon fast weapon switching
+	for (auto& weapon : arsenal.loadout) {
+		weapon.active_projectiles = extant_instances(weapon.get_id());
+		weapon.update();
+	}
 	if (controller.facing_right()) {
 		hand_position = {28, 36};
 	} else {
@@ -362,6 +372,7 @@ bool Player::grounded() const { return collider.flags.test(shape::State::grounde
 
 bool Player::fire_weapon() {
 	if (controller.shot() && equipped_weapon().can_shoot()) {
+		++extant_instances(equipped_weapon().get_id());
 		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(equipped_weapon().type));
 		return true;
 	}
@@ -408,6 +419,8 @@ arms::Weapon& Player::equipped_weapon() {
 		return arsenal.loadout.at(current_weapon);
 	}
 }
+
+int& Player::extant_instances(int index) { return arsenal.extant_projectile_instances.at(index); }
 
 dir::LR Player::entered_from() { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
 

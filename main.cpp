@@ -312,6 +312,15 @@ static void show_overlay() {
 							svc::playerLocator.get().arsenal.loadout = {};
 						}
 					}
+					ImGui::Separator();
+					ImGui::Text("Extant Projectiles:");
+					ImGui::NewLine();
+					for (auto& weapon : svc::playerLocator.get().arsenal.loadout) {
+						ImGui::Text("Gun: %s", weapon.label.c_str());
+						ImGui::SameLine();
+						ImGui::Text("%i", svc::playerLocator.get().extant_instances(weapon.get_id()));
+					}
+					ImGui::Separator();
 
 					ImGui::Text("Firing Direction LR: %s", svc::playerLocator.get().equipped_weapon().firing_direction.print_lr().c_str());
 					ImGui::Text("Firing Direction UND : %s", svc::playerLocator.get().equipped_weapon().firing_direction.print_und().c_str());
@@ -323,8 +332,8 @@ static void show_overlay() {
 					ImGui::Separator();
 					ImGui::Text("Equipped Weapon: %s", svc::playerLocator.get().equipped_weapon().label.c_str());
 					ImGui::Text("UI color: %i", (int)svc::playerLocator.get().equipped_weapon().attributes.ui_color);
-					ImGui::Text("Sprite Dimensions X: %.1f", svc::playerLocator.get().equipped_weapon().sprite_dimensions.x);
-					ImGui::Text("Sprite Dimensions Y: %.1f", svc::playerLocator.get().equipped_weapon().sprite_dimensions.y);
+					ImGui::Text("Sprite Dimensions X: %i", svc::playerLocator.get().equipped_weapon().sprite_dimensions.x);
+					ImGui::Text("Sprite Dimensions Y: %i", svc::playerLocator.get().equipped_weapon().sprite_dimensions.y);
 					ImGui::Text("Barrel Point X: %.1f", svc::playerLocator.get().equipped_weapon().barrel_point.x);
 					ImGui::Text("Barrel Point Y: %.1f", svc::playerLocator.get().equipped_weapon().barrel_point.y);
 					ImGui::Separator();

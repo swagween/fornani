@@ -239,8 +239,9 @@ void Map::update() {
 		for (auto& index : collidable_indeces) {
 			auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
 			cell.collision_check = false;
-			if (!nearby(cell.bounding_box, collider->bounding_box)) { continue;
-			
+			if (!nearby(cell.bounding_box, collider->bounding_box)) {
+				continue;
+
 			} else {
 				cell.collision_check = true;
 				if (cell.value > 0) { collider->handle_map_collision(cell.bounding_box, cell.type); }
@@ -395,9 +396,7 @@ void Map::update() {
 }
 
 void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
-	for (auto& proj : active_projectiles) {
-		proj.render(win, cam);
-	}
+	for (auto& proj : active_projectiles) { proj.render(win, cam); }
 
 	// emitters
 	for (auto& emitter : active_emitters) { emitter.render(win, cam); }
@@ -489,7 +488,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 					box.setOutlineColor(flcolor::goldenrod);
 					box.setOutlineThickness(-3);
 					box.setSize(sf::Vector2<float>{(float)cell.bounding_box.dimensions.x, (float)cell.bounding_box.dimensions.y});
-					//win.draw(box);
+					// win.draw(box);
 					svc::counterLocator.get().at(svc::draw_calls)++;
 				}
 			}
@@ -558,8 +557,8 @@ void Map::render_console(sf::RenderWindow& win) {
 			if (inspectable.activated) {
 				svc::consoleLocator.get().load_and_launch(inspectable.key);
 				svc::consoleLocator.get().write(win);
-				//svc::consoleLocator.get().write(win, inspectable.message);
-				// svc::consoleLocator.get().write(win, "ab?:-_()#`");
+				// svc::consoleLocator.get().write(win, inspectable.message);
+				//  svc::consoleLocator.get().write(win, "ab?:-_()#`");
 			}
 		}
 	}
@@ -580,7 +579,6 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 	active_emitters.back().set_position(pos.x, pos.y);
 	active_emitters.back().set_direction(svc::playerLocator.get().equipped_weapon().firing_direction);
 	active_emitters.back().update();
-
 }
 
 void Map::spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter) {
@@ -605,7 +603,7 @@ void Map::manage_projectiles() {
 
 	std::erase_if(active_projectiles, [](auto const& p) {
 		if (p.state.test(arms::ProjectileState::destroyed)) {
-			--svc::playerLocator.get().equipped_weapon().active_projectiles;
+			--svc::playerLocator.get().extant_instances(lookup::type_to_index.at(p.type));
 			return true;
 		} else {
 			return false;
@@ -630,7 +628,7 @@ void Map::manage_projectiles() {
 
 void Map::generate_collidable_layer() {
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
-	for(auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
 		if (!cell.surrounded && cell.is_occupied()) { collidable_indeces.push_back(cell.one_d_index); }
 	}
 }

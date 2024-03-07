@@ -30,6 +30,7 @@ struct Arsenal {
 
 	std::array<Weapon, max_weapons> armory{};
 	std::vector<Weapon> loadout{};
+	std::array<int, max_weapons> extant_projectile_instances{};
 
 };
 

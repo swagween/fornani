@@ -125,6 +125,7 @@ class Player {
 	void total_reset();
 
 	arms::Weapon& equipped_weapon();
+	int& extant_instances(int index);
 
 	// map helpers
 	dir::LR entered_from();

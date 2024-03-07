@@ -14,7 +14,7 @@ int const corner_factor{56};
 int const edge_factor{2};
 float const height_factor{3.0f};
 
-float const pad{146.0f};
+float const pad{168.f};
 float const pad_y{20};
 float const text_pad{8.0f};
 inline const sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad_y}; // bottom left corner

@@ -40,14 +40,14 @@ Weapon::Weapon(int id) : id(id) {
 	spray_stats.particle_lifespan = in_data["spray"]["emitter"]["particle_lifespan"].as<int>();
 	spray_stats.particle_lifespan_variance = in_data["spray"]["emitter"]["particle_lifespan_variance"].as<int>();
 
-	spray = vfx::Emitter(spray_behavior, spray_stats, spray_color.at(type));
+	spray = vfx::Emitter(spray_behavior, spray_stats, spray_color.at(type), dark_spray_color.at(type));
 
 	projectile = Projectile(id);
 	attributes.boomerang = projectile.stats.boomerang;
 }
 
 void Weapon::update() {
-	active_projectiles = std::clamp(active_projectiles, 0, attributes.rate);
+	active_projectiles = std::clamp(active_projectiles, 0, INT_MAX);
 	set_orientation();
 	if (cooling_down()) { --cooldown_counter; }
 	if (cooldown_counter < 0) {

@@ -13,10 +13,10 @@ enum COLOR_CODE { WHITE = 0, PERIWINKLE = 1, GREEN = 2, ORANGE = 3, FUCSHIA = 4,
 
 enum class GunState { unlocked, equipped, cooling_down, reloading };
 
-inline std::unordered_map<int, arms::WEAPON_TYPE> index_to_type{{0, arms::WEAPON_TYPE::BRYNS_GUN}, {1, arms::WEAPON_TYPE::PLASMER},	 {2, arms::WEAPON_TYPE::SKYCORPS_AR},		{3, arms::WEAPON_TYPE::TOMAHAWK},	 {4, arms::WEAPON_TYPE::BISMUTH},
-																{5, arms::WEAPON_TYPE::UNDERDOG},  {6, arms::WEAPON_TYPE::ELECTRON}, {7, arms::WEAPON_TYPE::CLOVER},	{8, arms::WEAPON_TYPE::TRITON},		 {9, arms::WEAPON_TYPE::WILLET_585},
-																{10, arms::WEAPON_TYPE::QUASAR},   {11, arms::WEAPON_TYPE::NOVA},	 {12, arms::WEAPON_TYPE::VENOM},	{13, arms::WEAPON_TYPE::TWIN},		 {14, arms::WEAPON_TYPE::CARISE},
-																{15, arms::WEAPON_TYPE::STINGER},  {16, arms::WEAPON_TYPE::TUSK},	 {17, arms::WEAPON_TYPE::WASP}, {18, arms::WEAPON_TYPE::BLIZZARD}};
+inline std::unordered_map<int, arms::WEAPON_TYPE> index_to_type{{0, arms::WEAPON_TYPE::BRYNS_GUN}, {1, arms::WEAPON_TYPE::PLASMER},	 {2, arms::WEAPON_TYPE::SKYCORPS_AR}, {3, arms::WEAPON_TYPE::TOMAHAWK}, {4, arms::WEAPON_TYPE::BISMUTH},
+																{5, arms::WEAPON_TYPE::UNDERDOG},  {6, arms::WEAPON_TYPE::ELECTRON}, {7, arms::WEAPON_TYPE::CLOVER},	  {8, arms::WEAPON_TYPE::TRITON},	{9, arms::WEAPON_TYPE::WILLET_585},
+																{10, arms::WEAPON_TYPE::QUASAR},   {11, arms::WEAPON_TYPE::NOVA},	 {12, arms::WEAPON_TYPE::VENOM},	  {13, arms::WEAPON_TYPE::TWIN},	{14, arms::WEAPON_TYPE::CARISE},
+																{15, arms::WEAPON_TYPE::STINGER},  {16, arms::WEAPON_TYPE::TUSK},	 {17, arms::WEAPON_TYPE::WASP},		  {18, arms::WEAPON_TYPE::BLIZZARD}};
 
 struct WeaponAttributes {
 	bool automatic{};
@@ -35,6 +35,16 @@ inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color{
 	{arms::WEAPON_TYPE::WILLET_585, flcolor::periwinkle}, {arms::WEAPON_TYPE::QUASAR, flcolor::green},	  {arms::WEAPON_TYPE::NOVA, flcolor::white},
 	{arms::WEAPON_TYPE::VENOM, flcolor::goldenrod},		  {arms::WEAPON_TYPE::TWIN, flcolor::fucshia},	  {arms::WEAPON_TYPE::CARISE, flcolor::blue},
 	{arms::WEAPON_TYPE::STINGER, flcolor::goldenrod},	  {arms::WEAPON_TYPE::TUSK, flcolor::white},	  {arms::WEAPON_TYPE::TOMAHAWK, flcolor::white},
+
+	{arms::WEAPON_TYPE::SKYCORPS_AR, flcolor::goldenrod},
+
+};
+inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> dark_spray_color{
+	{arms::WEAPON_TYPE::BRYNS_GUN, flcolor::blue},		  {arms::WEAPON_TYPE::PLASMER, flcolor::dark_fucshia},	 {arms::WEAPON_TYPE::WASP, flcolor::dark_orange},	{arms::WEAPON_TYPE::BLIZZARD, flcolor::navy_blue},
+	{arms::WEAPON_TYPE::BISMUTH, flcolor::dark_fucshia},  {arms::WEAPON_TYPE::UNDERDOG, flcolor::dark_orange},	 {arms::WEAPON_TYPE::ELECTRON, flcolor::goldenrod}, {arms::WEAPON_TYPE::CLOVER, flcolor::navy_blue},
+	{arms::WEAPON_TYPE::TRITON, flcolor::dark_orange},	  {arms::WEAPON_TYPE::WILLET_585, flcolor::blue},		 {arms::WEAPON_TYPE::QUASAR, flcolor::dark_orange}, {arms::WEAPON_TYPE::NOVA, flcolor::blue},
+	{arms::WEAPON_TYPE::VENOM, flcolor::dark_fucshia},	  {arms::WEAPON_TYPE::TWIN, flcolor::navy_blue},		 {arms::WEAPON_TYPE::CARISE, flcolor::navy_blue},	{arms::WEAPON_TYPE::STINGER, flcolor::fucshia},
+	{arms::WEAPON_TYPE::TUSK, flcolor::bright_orange},	  {arms::WEAPON_TYPE::TOMAHAWK, flcolor::white},
 
 	{arms::WEAPON_TYPE::SKYCORPS_AR, flcolor::goldenrod},
 
@@ -85,7 +95,6 @@ class Weapon {
 
 	sf::Sprite sp_gun{};
 
-	
 	int active_projectiles{};
 	int cooldown_counter{};
 	dir::Direction firing_direction{};

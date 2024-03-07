@@ -70,7 +70,8 @@ void Projectile::update() {
 		attractor.update();
 		physics.position = attractor.collider.physics.position;
 		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(type)); //repeat sound
-		if (attractor.collider.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box) && cooldown.is_complete()) {
+		// use predictive bounding box so player can "meet up" with the boomerang
+		if (attractor.collider.bounding_box.SAT(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
 			svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
