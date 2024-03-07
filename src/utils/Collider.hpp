@@ -35,7 +35,7 @@ enum class Collision {
 
 enum class Dash { dash_cancel_collision };
 
-enum class Movement { dashing };
+enum class Movement { dashing, jumping };
 
 struct PhysicsStats {
 	float GRAV{0.002f};
@@ -49,8 +49,10 @@ class Collider {
 
 	void sync_components();
 	void handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_type);
-	void correct_x();
-	void correct_y();
+	void correct_x(sf::Vector2<float> mtv);
+	void correct_y(sf::Vector2<float> mtv);
+	void correct_x_y(sf::Vector2<float> mtv);
+	void correct_corner(sf::Vector2<float> mtv);
 	void handle_platform_collision(Shape const& cell);
 	void handle_spike_collision(Shape const& cell);
 	void handle_collider_collision(Shape const& collider);
@@ -80,7 +82,8 @@ class Collider {
 	util::BitFlags<Dash> dash_flags{};
 
 	float landed_threshold{6.0f};
-	float detector_buffer{19.0f};
+	float horizontal_detector_buffer{2.0f};
+	float vertical_detector_buffer{1.0f};
 
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> sprite_offset{};

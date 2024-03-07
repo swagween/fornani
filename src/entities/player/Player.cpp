@@ -261,6 +261,7 @@ void Player::jump() {
 		animation.state.set(AnimState::jumpsquat);
 		controller.start_jumpsquat();
 		controller.reset_jumpsquat_trigger();
+		collider.movement_flags.set(shape::Movement::jumping);
 	}
 	if (controller.jumpsquatting() && !animation.state.test(AnimState::jumpsquat)) {
 		controller.stop_jumpsquatting();
@@ -268,6 +269,7 @@ void Player::jump() {
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
 		animation.state.set(AnimState::rise);
 		svc::soundboardLocator.get().player.set(audio::Player::jump);
+		collider.movement_flags.set(shape::Movement::jumping);
 	} else if (controller.jump_released() && controller.jumping() && !controller.jump_held() && collider.physics.velocity.y < 0) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 		controller.reset_jump();
@@ -276,11 +278,11 @@ void Player::jump() {
 
 void Player::dash() {
 	if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
+		collider.movement_flags.set(shape::Movement::dashing);
 		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 
 		if (!collider.dash_flags.test(shape::Dash::dash_cancel_collision)) {
-			collider.movement_flags.set(shape::Movement::dashing);
 			collider.physics.acceleration.x += controller.dash_value() * physics_stats.dash_speed;
 			collider.physics.velocity.x += controller.dash_value() * physics_stats.dash_speed;
 		}
