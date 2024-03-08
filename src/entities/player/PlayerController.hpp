@@ -26,6 +26,7 @@ enum class Jump {	   // true if jump is pressed and permanently false once relea
 	is_released,	   // true if jump released midair, reset upon landing (USED)
 	jumping			   // true if jumpsquat is over, false once player lands (USED)
 };
+enum class Hook { hook_released, hook_held };
 
 class PlayerController {
 
@@ -89,6 +90,8 @@ class PlayerController {
 	bool jump_held() const;
 
 	bool shot();
+	bool released_hook();
+	bool hook_held() const;
 
 	bool inspecting();
 	bool dashing();
@@ -113,6 +116,7 @@ class PlayerController {
 	util::BitFlags<MovementState> flags{}; // unused
 	util::BitFlags<Jump> jump_flags{};
 	util::BitFlags<TransponderInput> transponder_flags{};
+	util::BitFlags<Hook> hook_flags{};
 
 	int jump_request{};
 	int dash_request{};

@@ -22,6 +22,7 @@ struct Tile {
 
 	bool is_occupied() const { return value > 0; }
 	bool is_collidable() const { return type != lookup::TILE_TYPE::TILE_CEILING_RAMP && type != lookup::TILE_TYPE::TILE_GROUND_RAMP && type != lookup::TILE_TYPE::TILE_SPIKES; }
+	sf::Vector2<float> bottom_point() { return {bounding_box.position.x + bounding_box.dimensions.x / 2, bounding_box.position.y + bounding_box.dimensions.y}; }
 
 	sf::Vector2<uint32_t> index{};
 	sf::Vector2<float> position{};

@@ -97,6 +97,11 @@ static void show_overlay() {
 			}
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
+				if (ImGui::BeginTabItem("Logger")) {
+					ImGui::Separator();
+					svc::loggerLocator.get().run();
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Time")) {
 					ImGui::Separator();
 					ImGui::Text("Ticker");
@@ -312,6 +317,11 @@ static void show_overlay() {
 							svc::playerLocator.get().arsenal.loadout = {};
 						}
 					}
+
+					ImGui::Separator();
+					ImGui::Text("Grappling Hook:");
+					ImGui::Text("Hook held? %s", svc::playerLocator.get().controller.hook_held() ? "Yes" : "No");
+
 					ImGui::Separator();
 					ImGui::Text("Extant Projectiles:");
 					ImGui::NewLine();

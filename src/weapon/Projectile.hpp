@@ -18,6 +18,7 @@
 #include "../utils/Shape.hpp"
 #include "../particle/Attractor.hpp"
 #include "../utils/Cooldown.hpp"
+#include "GrapplingHook.hpp"
 
 namespace arms {
 
@@ -66,10 +67,17 @@ struct ProjectileStats {
 	bool transcendent{};
 	bool constrained{};
 	bool boomerang{};
+	bool spring{};
 
 	float acceleration_factor{};
 	float dampen_factor{};
 	float attractor_force{};
+	float attractor_max_speed{};
+	float attractor_friction{};
+
+	float spring_dampen{};
+	float spring_constant{};
+	float spring_rest_length{};
 
 	int range_variance{};
 };
@@ -96,11 +104,13 @@ class Projectile {
 	void set_orientation(sf::Sprite& sprite);
 	void set_position(sf::Vector2<float>& pos);
 	void set_boomerang_speed();
+	void set_hook_speed();
 	void sync_position();
 	void constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
 	void constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
 	void constrain_hitbox_at_barrel();
 	void constrain_hitbox_at_destruction_point();
+	void lock_to_anchor();
 
 	dir::Direction direction{};
 	shape::Shape bounding_box{};
@@ -126,6 +136,7 @@ class Projectile {
 	util::Cooldown cooldown{};
 
 	vfx::Attractor attractor{};
+	GrapplingHook hook{};
 
 	sf::RectangleShape box{};
 

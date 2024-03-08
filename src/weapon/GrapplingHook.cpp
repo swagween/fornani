@@ -1,15 +1,27 @@
 #include "GrapplingHook.hpp"
-#include <iostream>
+#include "../setup/ServiceLocator.hpp"
 
 namespace arms {
-arms::GrapplingHook::GrapplingHook(int id) : Weapon(id) {
+void GrapplingHook::update() {
 
-	projectile.physics = components::PhysicsComponent({0.9f, 0.9f}, 1.0f);
-	projectile.stats.attractor_force = 0.0525f;
-	projectile.attractor = vfx::Attractor(projectile.physics.position, flcolor::goldenrod, projectile.stats.attractor_force);
-	projectile.attractor.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.993f, 0.993f}, 1.0f);
-	projectile.attractor.collider.physics.maximum_velocity = {60.f, 60.f};
+	if (grapple_flags.test(GrappleState::anchored)) {
+		spring.update();
+		svc::loggerLocator.get().states.set(util::State::hook_anchored);
+	} else {
+		svc::loggerLocator.get().states.reset(util::State::hook_anchored);
+	}
+	if (grapple_triggers.test(arms::GrappleTriggers::released)) {
+		//spring.reverse_anchor_and_bob();
+		spring.variables = {};
+		svc::loggerLocator.get().triggers.set(util::Trigger::hook_released);
+	}
+	if (grapple_flags.test(arms::GrappleState::snaking)) {
+		spring.set_anchor(svc::playerLocator.get().apparent_position);
+		spring.update();
+		svc::loggerLocator.get().states.set(util::State::hook_snaking);
+	} else {
+		svc::loggerLocator.get().states.reset(util::State::hook_snaking);
+	}
 
 }
-
 } // namespace arms

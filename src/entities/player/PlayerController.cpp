@@ -37,6 +37,8 @@ void PlayerController::update() {
 	auto const& transponder_next = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
 	auto const& transponder_exit = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
 
+	auto const& hook_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::held);
+
 	key_map[ControllerInput::move_x] = 0.f;
 	key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
 	key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
@@ -64,10 +66,16 @@ void PlayerController::update() {
 	transponder_next ? transponder_flags.set(TransponderInput::next) : transponder_flags.reset(TransponderInput::next);
 	transponder_exit ? transponder_flags.set(TransponderInput::exit) : transponder_flags.reset(TransponderInput::exit);
 
+	//hook
+	hook_held ? hook_flags.set(Hook::hook_held) : hook_flags.reset(Hook::hook_held);
+
 	key_map[ControllerInput::jump] = jump_started ? 1.f : 0.f;
 
 	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
-	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
+	if (shoot_released) {
+		key_map[ControllerInput::shoot] = 0.f;
+		hook_flags.set(Hook::hook_released);
+	}
 
 	key_map[ControllerInput::arms_switch] = 0.f;
 	key_map[ControllerInput::arms_switch] = arms_switch_left ? -1.f : key_map[ControllerInput::arms_switch];
@@ -218,6 +226,10 @@ bool PlayerController::just_jumped() const { return jump_flags.test(Jump::just_j
 bool PlayerController::jump_held() const { return jump_flags.test(Jump::jump_held); }
 
 bool PlayerController::shot() { return key_map[ControllerInput::shoot] == 1.f; }
+
+bool PlayerController::released_hook() { return hook_flags.test(Hook::hook_released); }
+
+bool PlayerController::hook_held() const { return hook_flags.test(Hook::hook_held); }
 
 bool PlayerController::inspecting() { return key_map[ControllerInput::inspect] == 1.f; }
 

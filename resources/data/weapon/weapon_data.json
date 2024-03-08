@@ -37,9 +37,16 @@
           "transcendent": false,
           "persistent": false,
           "constrained": true,
+          "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "attractor_force": 0.0,
+          "attractor_max_speed": 0.0,
+          "attractor_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
         },
         "animation": {
           "num_sprites": 1,
@@ -105,9 +112,16 @@
           "transcendent": false,
           "boomerang": false,
           "constrained": true,
+          "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "attractor_force": 0.0,
+          "attractor_max_speed": 0.0,
+          "attractor_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
         },
         "animation": {
           "num_sprites": 1,
@@ -173,9 +187,16 @@
           "transcendent": false,
           "boomerang": false,
           "constrained": true,
+          "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "attractor_force": 0.0,
+          "attractor_max_speed": 0.0,
+          "attractor_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
         },
         "animation": {
           "num_sprites": 1,
@@ -241,9 +262,16 @@
           "transcendent": true,
           "boomerang": true,
           "constrained": false,
+          "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "attractor_force": 0.025,
+          "attractor_max_speed": 60.0,
+          "attractor_friction": 0.993,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
         },
         "animation": {
           "num_sprites": 1,
@@ -289,7 +317,7 @@
       "attributes": {
         "automatic": false,
         "rate": 1,
-        "cooldown_time": 0,
+        "cooldown_time": 20,
         "recoil": 0.00,
         "ui_color": 1
       },
@@ -307,16 +335,23 @@
           "knockback": 0.0,
           "persistent": true,
           "transcendent": true,
-          "boomerang": true,
+          "boomerang": false,
           "constrained": false,
+          "spring": true,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "attractor_force": 0.0,
+          "attractor_max_speed": 0.0,
+          "attractor_friction": 0.0,
+          "spring_dampen": 0.93,
+          "spring_constant": 0.1,
+          "spring_rest_length": 20.0
         },
         "animation": {
           "num_sprites": 1,
           "num_frames": 2,
-          "framerate": 5
+          "framerate": 10
         }
       },
       "spray": {

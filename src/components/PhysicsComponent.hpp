@@ -55,6 +55,7 @@ class PhysicsComponent {
 	void zero();
 	void hitstun();
 	void set_constant_friction(sf::Vector2<float> fric);
+	void set_global_friction(float fric);
 
 	util::BitFlags<State> flags{};
 	dir::Direction direction{};

@@ -249,6 +249,7 @@ void Map::update() {
 		}
 	}
 
+	// i need to refactor this...
 	for (auto& index : collidable_indeces) {
 		auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
 		for (auto& emitter : active_emitters) {
@@ -281,6 +282,7 @@ void Map::update() {
 						--cell.value;
 						if (lookup::tile_lookup.at(cell.value) != lookup::TILE_TYPE::TILE_BREAKABLE) {
 							cell.value = 0;
+							// i need to not do this here
 							active_emitters.push_back(breakable_debris);
 							active_emitters.back().get_physics().acceleration += proj.physics.acceleration;
 							active_emitters.back().set_position(cell.position.x + CELL_SIZE / 2, cell.position.y + CELL_SIZE / 2);
@@ -292,6 +294,11 @@ void Map::update() {
 						continue;
 					} else if (!proj.stats.transcendent) {
 						proj.destroy(false);
+					}
+					if (proj.stats.spring) {
+						proj.hook.spring.set_anchor(cell.bottom_point());
+						proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
+						handle_grappling_hook(proj);
 					}
 				}
 			}
@@ -396,7 +403,10 @@ void Map::update() {
 }
 
 void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
-	for (auto& proj : active_projectiles) { proj.render(win, cam); }
+	for (auto& proj : active_projectiles) {
+		proj.render(win, cam);
+		if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) { proj.hook.spring.render(win, cam); }
+	}
 
 	// emitters
 	for (auto& emitter : active_emitters) { emitter.render(win, cam); }
@@ -573,6 +583,10 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 	active_projectiles.back().update();
 	active_projectiles.back().sync_position();
 	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
+	if (active_projectiles.back().stats.spring) {
+		active_projectiles.back().set_hook_speed();
+		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);
+	}
 
 	active_emitters.push_back(svc::playerLocator.get().equipped_weapon().spray);
 	active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
@@ -630,6 +644,29 @@ void Map::generate_collidable_layer() {
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
 		if (!cell.surrounded && cell.is_occupied()) { collidable_indeces.push_back(cell.one_d_index); }
+	}
+}
+
+void Map::handle_grappling_hook(arms::Projectile& proj) {
+	//do this first block once
+	if (proj.hook.grapple_triggers.test(arms::GrappleTriggers::found) && !proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
+		proj.hook.spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point);
+		proj.hook.grapple_triggers.reset(arms::GrappleTriggers::found);
+		proj.hook.grapple_flags.set(arms::GrappleState::anchored);
+		proj.hook.grapple_flags.reset(arms::GrappleState::probing);
+		std::cout << "found!\n";
+	}
+	if (svc::playerLocator.get().controller.hook_held() && proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
+		proj.lock_to_anchor();
+		proj.hook.spring.update();
+		//svc::playerLocator.get().collider.physics.position = proj.hook.spring.get_bob();
+	}
+	if (svc::playerLocator.get().controller.released_hook()) {
+		proj.hook.grapple_flags.reset(arms::GrappleState::anchored);
+		proj.hook.grapple_triggers.set(arms::GrappleTriggers::released);
+		proj.hook.grapple_flags.set(arms::GrappleState::snaking);
+		std::cout << "released!\n";
+
 	}
 }
 

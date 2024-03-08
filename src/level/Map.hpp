@@ -73,6 +73,7 @@ class Map {
 	void spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter);
 	void manage_projectiles();
 	void generate_collidable_layer();
+	void handle_grappling_hook(arms::Projectile& proj);
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second);

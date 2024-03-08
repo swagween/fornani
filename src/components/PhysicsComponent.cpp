@@ -99,4 +99,9 @@ void PhysicsComponent::set_constant_friction(sf::Vector2<float> fric) {
 	air_friction = {fric.y, fric.y};
 }
 
+void PhysicsComponent::set_global_friction(float fric) {
+	ground_friction = {fric, fric};
+	air_friction = {fric, fric};
+}
+
 } // namespace components

@@ -93,6 +93,7 @@ void DataManager::load_progress(int const file, bool state_switch) {
 
 	//reset some things that might be lingering
 	svc::consoleLocator.get().flags.reset(gui::ConsoleFlags::active);
+	svc::playerLocator.get().arsenal.extant_projectile_instances = {};
 }
 
 void DataManager::load_blank_save(bool state_switch) {
