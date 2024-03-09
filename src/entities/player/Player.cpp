@@ -19,11 +19,11 @@ void Player::init() {
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
-	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, antenna_force));
-	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, antenna_force, {2.f, 4.f}));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::dark_orange, antenna_force));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::dark_orange, antenna_force, {2.f, 4.f}));
 
-	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, antenna_force));
-	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::bright_orange, antenna_force, {2.f, 4.f}));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::bright_orange, antenna_force));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::bright_orange, antenna_force, {2.f, 4.f}));
 
 	float back_fric{0.84f};
 	float front_fric{0.87f};

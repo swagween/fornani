@@ -5,7 +5,7 @@
 #include <memory>
 #include "../../components/BehaviorComponent.hpp"
 #include "../../components/PhysicsComponent.hpp"
-#include "../../particle/Attractor.hpp"
+#include "../../particle/Gravitator.hpp"
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../weapon/Arsenal.hpp"
@@ -137,7 +137,7 @@ class Player {
 	sf::Vector2<float> sprite_dimensions{};
 	sf::Vector2<float> sprite_position{};
 
-	std::vector<vfx::Attractor> antennae{};
+	std::vector<vfx::Gravitator> antennae{};
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
 	PlayerStats player_stats{3, 3, 0, 99999};

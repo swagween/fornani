@@ -16,7 +16,7 @@
 #include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
-#include "../particle/Attractor.hpp"
+#include "../particle/Gravitator.hpp"
 #include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
 
@@ -71,9 +71,9 @@ struct ProjectileStats {
 
 	float acceleration_factor{};
 	float dampen_factor{};
-	float attractor_force{};
-	float attractor_max_speed{};
-	float attractor_friction{};
+	float gravitator_force{};
+	float gravitator_max_speed{};
+	float gravitator_friction{};
 
 	float spring_dampen{};
 	float spring_constant{};
@@ -135,7 +135,7 @@ class Projectile {
 
 	util::Cooldown cooldown{};
 
-	vfx::Attractor attractor{};
+	vfx::Gravitator gravitator{};
 	GrapplingHook hook{};
 
 	sf::RectangleShape box{};

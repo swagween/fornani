@@ -27,8 +27,8 @@ FileMenu::FileMenu() {
 
 	for (int i = 0; i < num_files; ++i) { file_rects.at(i) = sf::IntRect({text_left, top_buffer + (text_dim.y * (i)) + (selection_buffer * (i % num_files))}, text_dim); }
 
-	left_dot = vfx::Attractor({file_rects.at(0).getPosition().x - dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y}, flcolor::bright_orange, dot_force);
-	right_dot = vfx::Attractor({file_rects.at(0).getPosition().x + file_rects.at(0).width + dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y}, flcolor::bright_orange, dot_force);
+	left_dot = vfx::Gravitator({file_rects.at(0).getPosition().x - dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y}, flcolor::bright_orange, dot_force);
+	right_dot = vfx::Gravitator({file_rects.at(0).getPosition().x + file_rects.at(0).width + dot_pad.x, file_rects.at(0).getPosition().y + dot_pad.y}, flcolor::bright_orange, dot_force);
 
 	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
 	left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);

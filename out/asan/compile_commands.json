@@ -211,15 +211,15 @@
 },
 {
   "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
-  "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"Debug\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 @CMakeFiles\\fornani.dir\\Debug\\src\\particle\\Attractor.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\Debug\\src\\particle\\Attractor.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Attractor.cpp",
-  "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Attractor.cpp",
-  "output": "CMakeFiles\\fornani.dir\\Debug\\src\\particle\\Attractor.cpp.obj"
-},
-{
-  "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
   "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"Debug\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 @CMakeFiles\\fornani.dir\\Debug\\src\\particle\\Emitter.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\Debug\\src\\particle\\Emitter.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Emitter.cpp",
   "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Emitter.cpp",
   "output": "CMakeFiles\\fornani.dir\\Debug\\src\\particle\\Emitter.cpp.obj"
+},
+{
+  "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
+  "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"Debug\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 @CMakeFiles\\fornani.dir\\Debug\\src\\particle\\Gravitator.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\Debug\\src\\particle\\Gravitator.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Gravitator.cpp",
+  "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Gravitator.cpp",
+  "output": "CMakeFiles\\fornani.dir\\Debug\\src\\particle\\Gravitator.cpp.obj"
 },
 {
   "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
@@ -511,15 +511,15 @@
 },
 {
   "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
-  "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"Release\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /O2 /Ob2 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\Release\\src\\particle\\Attractor.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\Release\\src\\particle\\Attractor.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Attractor.cpp",
-  "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Attractor.cpp",
-  "output": "CMakeFiles\\fornani.dir\\Release\\src\\particle\\Attractor.cpp.obj"
-},
-{
-  "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
   "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"Release\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /O2 /Ob2 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\Release\\src\\particle\\Emitter.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\Release\\src\\particle\\Emitter.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Emitter.cpp",
   "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Emitter.cpp",
   "output": "CMakeFiles\\fornani.dir\\Release\\src\\particle\\Emitter.cpp.obj"
+},
+{
+  "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
+  "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"Release\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /O2 /Ob2 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\Release\\src\\particle\\Gravitator.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\Release\\src\\particle\\Gravitator.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Gravitator.cpp",
+  "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Gravitator.cpp",
+  "output": "CMakeFiles\\fornani.dir\\Release\\src\\particle\\Gravitator.cpp.obj"
 },
 {
   "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
@@ -811,15 +811,15 @@
 },
 {
   "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
-  "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"RelWithDebInfo\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /Zi /O2 /Ob1 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Attractor.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Attractor.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Attractor.cpp",
-  "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Attractor.cpp",
-  "output": "CMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Attractor.cpp.obj"
-},
-{
-  "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
   "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"RelWithDebInfo\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /Zi /O2 /Ob1 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Emitter.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Emitter.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Emitter.cpp",
   "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Emitter.cpp",
   "output": "CMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Emitter.cpp.obj"
+},
+{
+  "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
+  "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"RelWithDebInfo\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /Zi /O2 /Ob1 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Gravitator.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Gravitator.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Gravitator.cpp",
+  "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Gravitator.cpp",
+  "output": "CMakeFiles\\fornani.dir\\RelWithDebInfo\\src\\particle\\Gravitator.cpp.obj"
 },
 {
   "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
@@ -1111,15 +1111,15 @@
 },
 {
   "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
-  "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"MinSizeRel\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /O1 /Ob1 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Attractor.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Attractor.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Attractor.cpp",
-  "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Attractor.cpp",
-  "output": "CMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Attractor.cpp.obj"
-},
-{
-  "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
   "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"MinSizeRel\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /O1 /Ob1 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Emitter.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Emitter.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Emitter.cpp",
   "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Emitter.cpp",
   "output": "CMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Emitter.cpp.obj"
+},
+{
+  "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",
+  "command": "C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DIMGUI_USER_CONFIG=\\\"imconfig-SFML.h\\\" -DCMAKE_INTDIR=\\\"MinSizeRel\\\" -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-build\\include -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\imgui-sfml-src -IC:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\sfml-src\\include -fsanitize=address -O1 /MD /O1 /Ob1 /DNDEBUG -std:c++20 @CMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Gravitator.cpp.obj.modmap /FoCMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Gravitator.cpp.obj /FdTARGET_COMPILE_PDB /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Gravitator.cpp",
+  "file": "C:\\Users\\alexf\\Documents\\coding\\fornani\\src\\particle\\Gravitator.cpp",
+  "output": "CMakeFiles\\fornani.dir\\MinSizeRel\\src\\particle\\Gravitator.cpp.obj"
 },
 {
   "directory": "C:/Users/alexf/Documents/coding/fornani/out/asan",

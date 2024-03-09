@@ -335,3 +335,171 @@ events:
         
       exitCode: 0
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "out/asan/_deps/djson-src/CMakeLists.txt:52 (try_compile)"
+    directories:
+      source: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fsanitize=address -O1"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_C_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "has_from_chars_d"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_1887a
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  -fsanitize=address -O1  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_1887a.dir\\Debug\\str_to_d_fc.cpp.obj /FdCMakeFiles\\cmTC_1887a.dir\\Debug\\cmTC_1887a.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\src\\compat\\str_to_d_fc.cpp
+        cl : Command line warning D9025 : overriding '/O1' with '/Od'
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_1887a.lib CMakeFiles\\cmTC_1887a.dir\\Debug\\str_to_d_fc.cpp.obj  && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "out/asan/_deps/djson-src/CMakeLists.txt:53 (try_compile)"
+    directories:
+      source: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fsanitize=address -O1"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_C_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "has_make_unique_for_overwrite"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_63b40
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  -fsanitize=address -O1  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_63b40.dir\\Debug\\make_char_buf_mufo.cpp.obj /FdCMakeFiles\\cmTC_63b40.dir\\Debug\\cmTC_63b40.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\src\\compat\\make_char_buf_mufo.cpp
+        cl : Command line warning D9025 : overriding '/O1' with '/Od'
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_63b40.lib CMakeFiles\\cmTC_63b40.dir\\Debug\\make_char_buf_mufo.cpp.obj  && cd ."
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "out/asan/_deps/djson-src/CMakeLists.txt:52 (try_compile)"
+    directories:
+      source: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fsanitize=address -O1"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_C_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "has_from_chars_d"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_c9cdb
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  -fsanitize=address -O1  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_c9cdb.dir\\Debug\\str_to_d_fc.cpp.obj /FdCMakeFiles\\cmTC_c9cdb.dir\\Debug\\cmTC_c9cdb.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\src\\compat\\str_to_d_fc.cpp
+        cl : Command line warning D9025 : overriding '/O1' with '/Od'
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_c9cdb.lib CMakeFiles\\cmTC_c9cdb.dir\\Debug\\str_to_d_fc.cpp.obj  && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "out/asan/_deps/djson-src/CMakeLists.txt:53 (try_compile)"
+    directories:
+      source: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fsanitize=address -O1"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_C_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "has_make_unique_for_overwrite"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_15480
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  -fsanitize=address -O1  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_15480.dir\\Debug\\make_char_buf_mufo.cpp.obj /FdCMakeFiles\\cmTC_15480.dir\\Debug\\cmTC_15480.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\src\\compat\\make_char_buf_mufo.cpp
+        cl : Command line warning D9025 : overriding '/O1' with '/Od'
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_15480.lib CMakeFiles\\cmTC_15480.dir\\Debug\\make_char_buf_mufo.cpp.obj  && cd ."
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "out/asan/_deps/djson-src/CMakeLists.txt:52 (try_compile)"
+    directories:
+      source: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fsanitize=address -O1"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_C_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "has_from_chars_d"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_366ea
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  -fsanitize=address -O1  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_366ea.dir\\Debug\\str_to_d_fc.cpp.obj /FdCMakeFiles\\cmTC_366ea.dir\\Debug\\cmTC_366ea.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\src\\compat\\str_to_d_fc.cpp
+        cl : Command line warning D9025 : overriding '/O1' with '/Od'
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_366ea.lib CMakeFiles\\cmTC_366ea.dir\\Debug\\str_to_d_fc.cpp.obj  && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "out/asan/_deps/djson-src/CMakeLists.txt:53 (try_compile)"
+    directories:
+      source: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fsanitize=address -O1"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_C_LINK_NO_PIE_SUPPORTED: "NO"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "has_make_unique_for_overwrite"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_1ede6
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  -fsanitize=address -O1  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_1ede6.dir\\Debug\\make_char_buf_mufo.cpp.obj /FdCMakeFiles\\cmTC_1ede6.dir\\Debug\\cmTC_1ede6.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\asan\\_deps\\djson-src\\src\\compat\\make_char_buf_mufo.cpp
+        cl : Command line warning D9025 : overriding '/O1' with '/Od'
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_1ede6.lib CMakeFiles\\cmTC_1ede6.dir\\Debug\\make_char_buf_mufo.cpp.obj  && cd ."
+        
+      exitCode: 0
+...

@@ -31,9 +31,9 @@ Projectile::Projectile(int id) {
 	stats.range_variance = in_data["attributes"]["range_variance"].as<float>();
 	stats.acceleration_factor = in_data["attributes"]["acceleration_factor"].as<float>();
 	stats.dampen_factor = in_data["attributes"]["dampen_factor"].as<float>();
-	stats.attractor_force = in_data["attributes"]["attractor_force"].as<float>();
-	stats.attractor_max_speed = in_data["attributes"]["attractor_max_speed"].as<float>();
-	stats.attractor_friction = in_data["attributes"]["attractor_friction"].as<float>();
+	stats.gravitator_force = in_data["attributes"]["gravitator_force"].as<float>();
+	stats.gravitator_max_speed = in_data["attributes"]["gravitator_max_speed"].as<float>();
+	stats.gravitator_friction = in_data["attributes"]["gravitator_friction"].as<float>();
 	stats.spring_dampen = in_data["attributes"]["spring_dampen"].as<float>();
 	stats.spring_constant = in_data["attributes"]["spring_constant"].as<float>();
 	stats.spring_rest_length = in_data["attributes"]["spring_rest_length"].as<float>();
@@ -51,10 +51,10 @@ Projectile::Projectile(int id) {
 	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physics.velocity.x = stats.speed;
 
-	// attractor
-	attractor = vfx::Attractor(physics.position, flcolor::goldenrod, stats.attractor_force);
-	attractor.collider.physics = components::PhysicsComponent(sf::Vector2<float>{stats.attractor_friction, stats.attractor_friction}, 1.0f);
-	attractor.collider.physics.maximum_velocity = {stats.attractor_max_speed, stats.attractor_max_speed};
+	// Gravitator
+	gravitator = vfx::Gravitator(physics.position, flcolor::goldenrod, stats.gravitator_force);
+	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{stats.gravitator_friction, stats.gravitator_friction}, 1.0f);
+	gravitator.collider.physics.maximum_velocity = {stats.gravitator_max_speed, stats.gravitator_max_speed};
 
 	// spring
 	hook.spring = vfx::Spring({stats.spring_dampen, stats.spring_constant, stats.spring_rest_length});
@@ -105,12 +105,12 @@ void Projectile::update() {
 
 	// tomahawk-specific stuff
 	if (stats.boomerang) {
-		attractor.set_target_position(svc::playerLocator.get().apparent_position);
-		attractor.update();
-		physics.position = attractor.collider.physics.position;
+		gravitator.set_target_position(svc::playerLocator.get().apparent_position);
+		gravitator.update();
+		physics.position = gravitator.collider.physics.position;
 		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(type)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
-		if (attractor.collider.bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+		if (gravitator.collider.bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
 			svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
@@ -161,7 +161,7 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			sp_proj.at(0).setTextureRect(sf::IntRect({u, v}, {(int)max_dimensions.x, (int)max_dimensions.y}));
 
 			// unconstrained projectiles have to get sprites set here
-			if (stats.boomerang) { sp_proj.at(0).setPosition(attractor.collider.physics.position - campos); }
+			if (stats.boomerang) { sp_proj.at(0).setPosition(gravitator.collider.physics.position - campos); }
 			if (stats.spring) { hook.spring.render(win, campos); }
 			if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) { sp_proj.at(0).setPosition(hook.spring.get_bob() - campos); }
 			constrain_sprite_at_barrel(sp_proj.at(0), campos);
@@ -177,7 +177,7 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
 
 			if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-				attractor.render(win, campos);
+				gravitator.render(win, campos);
 				win.draw(box);
 				svc::counterLocator.get().at(svc::draw_calls)++;
 			} else {
@@ -257,8 +257,8 @@ void Projectile::set_position(sf::Vector2<float>& pos) {
 }
 
 void Projectile::set_boomerang_speed() {
-	attractor.collider.physics.velocity.x = direction.lr == dir::LR::left ? -stats.speed : (direction.lr == dir::LR::right ? stats.speed : 0.f);
-	attractor.collider.physics.velocity.y = direction.und == dir::UND::up ? -stats.speed : (direction.und == dir::UND::down ? stats.speed : 0.f);
+	gravitator.collider.physics.velocity.x = direction.lr == dir::LR::left ? -stats.speed : (direction.lr == dir::LR::right ? stats.speed : 0.f);
+	gravitator.collider.physics.velocity.y = direction.und == dir::UND::up ? -stats.speed : (direction.und == dir::UND::down ? stats.speed : 0.f);
 }
 
 void Projectile::set_hook_speed() {
@@ -266,7 +266,7 @@ void Projectile::set_hook_speed() {
 	//hook.spring.variables.physics.velocity.y = direction.und == dir::UND::up ? -stats.speed : (direction.und == dir::UND::down ? stats.speed : 0.f);
 }
 
-void Projectile::sync_position() { attractor.collider.physics.position = fired_point; }
+void Projectile::sync_position() { gravitator.collider.physics.position = fired_point; }
 
 void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos) {
 	if (!stats.constrained) { return; }

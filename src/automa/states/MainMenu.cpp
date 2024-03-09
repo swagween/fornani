@@ -24,10 +24,9 @@ MainMenu::MainMenu() {
 	options_rect = {{middle - 46, top_buffer + (selection_buffer * 2) + new_rect.getSize().y + load_rect.getSize().y},
 					{92, 22}};
 
-	left_dot = vfx::Attractor({new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y},
+	left_dot = vfx::Gravitator({new_rect.getPosition().x - dot_pad.x, new_rect.getPosition().y + dot_pad.y},
 							  flcolor::bright_orange, dot_force);
-	right_dot =
-		vfx::Attractor({new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y},
+	right_dot = vfx::Gravitator({new_rect.getPosition().x + new_rect.width + dot_pad.x, new_rect.getPosition().y + dot_pad.y},
 					   flcolor::bright_orange, dot_force);
 
 	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
