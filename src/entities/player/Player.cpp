@@ -19,9 +19,6 @@ void Player::init() {
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
-	harness = vfx::Attractor(collider.physics.position, flcolor::goldenrod, antenna_force / 2);
-	harness.collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
-
 	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, antenna_force));
 	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, antenna_force, {2.f, 4.f}));
 
@@ -108,9 +105,6 @@ void Player::update() {
 	// antennae!
 	update_antennae();
 
-	// harness
-	harness.update();
-	if (!controller.hook_held()) { harness.collider.physics.position = collider.physics.position; }
 }
 
 void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
@@ -145,7 +139,6 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	if (flags.state.test(State::alive)) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 			collider.render(win, campos);
-			harness.render(win, campos);
 		} else {
 			antennae[1].render(win, campos);
 			antennae[3].render(win, campos);
@@ -358,8 +351,6 @@ void Player::update_antennae() {
 		++ctr;
 	}
 }
-
-void Player::lock_to_harness() { collider.physics.position = harness.collider.physics.position; }
 
 bool Player::grounded() const { return collider.flags.test(shape::State::grounded); }
 

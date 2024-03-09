@@ -118,9 +118,6 @@ void Dojo::render(sf::RenderWindow& win) {
 	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
 	map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-		svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
-	}
 
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
 

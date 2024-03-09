@@ -427,7 +427,9 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 	svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
 
 	// enemies
-	for (auto& critter : critters) { critter->render(win, cam); }
+	for (auto& critter : critters) {
+		if (svc::cameraLocator.get().within_frame(critter->sprite_position.x, critter->sprite_position.y)) { critter->render(win, cam); }
+	}
 
 	// foreground animators
 	for (auto& animator : animators) {

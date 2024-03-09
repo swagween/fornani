@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "_deps/sfml-build/src/SFML",
+		"source" : "out/asan/_deps/sfml-src/src/SFML"
+	}
+}

@@ -1,0 +1,21 @@
+# ninja log v5
+24	83	7317032608560719	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-mkdir	81c992c18698a558
+24	83	7317032608560719	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-mkdir	81c992c18698a558
+84	5730	7317032665022669	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-download	b02e34412d2603f2
+84	5730	7317032665022669	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-download	b02e34412d2603f2
+5730	5850	0	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-update	9e19a95b2b8ff9b0
+5730	5850	0	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-update	9e19a95b2b8ff9b0
+5850	5897	7317032666755355	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-patch	2b52f115f453bc41
+5850	5897	7317032666755355	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-patch	2b52f115f453bc41
+5897	5950	7317032667224535	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-configure	47e97c3b301ac6d0
+5897	5950	7317032667224535	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-configure	47e97c3b301ac6d0
+5950	6001	7317032667693372	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-build	674f3c33a01436de
+5950	6001	7317032667693372	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-build	674f3c33a01436de
+6001	6059	7317032668322217	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-install	b200af20ef36a857
+6001	6059	7317032668322217	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-install	b200af20ef36a857
+6059	6123	7317032669024201	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-test	ca361e5dba98ba32
+6059	6123	7317032669024201	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-test	ca361e5dba98ba32
+6123	6197	7317032669738204	CMakeFiles/Debug/sfml-populate-complete	2965b6d32155646d
+6123	6197	7317032669738204	sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-done	2965b6d32155646d
+6123	6197	7317032669738204	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/CMakeFiles/Debug/sfml-populate-complete	2965b6d32155646d
+6123	6197	7317032669738204	C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/Debug/sfml-populate-done	2965b6d32155646d

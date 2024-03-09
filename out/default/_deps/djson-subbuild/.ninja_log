@@ -1,0 +1,21 @@
+# ninja log v5
+39	102	7317033513856010	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-mkdir	8ac8aee66f9a2b7b
+39	102	7317033513856010	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-mkdir	8ac8aee66f9a2b7b
+103	1511	7317033527857971	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-download	9c7e3b960608bb33
+103	1511	7317033527857971	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-download	9c7e3b960608bb33
+1511	1648	0	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-update	91e6804a196d0ad4
+1511	1648	0	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-update	91e6804a196d0ad4
+1648	1719	7317033529900827	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-patch	8d2f0810c1ebb4af
+1648	1719	7317033529900827	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-patch	8d2f0810c1ebb4af
+1720	1777	7317033530534072	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-configure	f1b52bdd7fc49037
+1720	1777	7317033530534072	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-configure	f1b52bdd7fc49037
+1777	1843	7317033531239226	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-build	30851f903fe3cd12
+1777	1843	7317033531239226	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-build	30851f903fe3cd12
+1843	1917	7317033531944493	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-install	2eb834597d088ed4
+1843	1917	7317033531944493	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-install	2eb834597d088ed4
+1917	1979	7317033532577688	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-test	69077d1cecb8a8c5
+1917	1979	7317033532577688	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-test	69077d1cecb8a8c5
+1979	2082	7317033533523974	CMakeFiles/Debug/djson-populate-complete	6006b60c1107ea24
+1979	2082	7317033533523974	djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-done	6006b60c1107ea24
+1979	2082	7317033533523974	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/CMakeFiles/Debug/djson-populate-complete	6006b60c1107ea24
+1979	2082	7317033533523974	C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/Debug/djson-populate-done	6006b60c1107ea24

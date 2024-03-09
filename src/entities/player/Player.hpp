@@ -97,7 +97,6 @@ class Player {
 	void walk();
 	void hurt(int amount);
 	void update_antennae();
-	void lock_to_harness();
 
 	bool grounded() const;
 	bool fire_weapon();
@@ -139,7 +138,6 @@ class Player {
 	sf::Vector2<float> sprite_position{};
 
 	std::vector<vfx::Attractor> antennae{};
-	vfx::Attractor harness{};
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
 	PlayerStats player_stats{3, 3, 0, 99999};

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/CMakeFiles/djson-populate-Debug"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/CMakeFiles/djson-populate-(CONFIG).rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/CMakeFiles/(CONFIG)/djson-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/(CONFIG)/djson-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/(CONFIG)/djson-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/(CONFIG)/djson-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/(CONFIG)/djson-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/(CONFIG)/djson-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/(CONFIG)/djson-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/(CONFIG)/djson-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/alexf/Documents/coding/fornani/out/asan/_deps/djson-subbuild/djson-populate-prefix/src/djson-populate-stamp/(CONFIG)/djson-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"djson-populate"
+		],
+		"name" : "djson-populate"
+	}
+}

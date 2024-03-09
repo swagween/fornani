@@ -30,7 +30,7 @@ void Emitter::update() { // this will tick every element and the generator itsel
 void Emitter::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 		for (auto& particle : particles) {
-			if ((int)particle.lifespan % 8 == 0) { particle.oscillate_between_colors(dark, bright); }
+			particle.oscillate_between_colors(dark, bright);
 			particle.render(win, cam);
 		}
 	}

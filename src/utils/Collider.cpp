@@ -82,18 +82,13 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		return;
 	}
 
-	svc::stopwatchLocator.get().start();
 	// store all four mtvs
 	auto combined_mtv = predictive_combined.testCollisionGetMTV(predictive_combined, cell);
 	auto vert_mtv = predictive_vertical.testCollisionGetMTV(predictive_vertical, cell);
 	auto horiz_mtv = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, cell);
 	auto actual_mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
 
-
-	svc::stopwatchLocator.get().stop();
-	
-
-	float vert_threshold = 5.5f; //for landing
+	float vert_threshold = 5.5f; // for landing
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
 		bool corner_collision{true};
@@ -116,7 +111,6 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		}
 	}
 
-
 	// now let's settle ramp collisions. remember, the collider has already been resolved from any previous cell collision
 	if (is_ramp) {
 		bool falls_onto = is_ground_ramp && physics.velocity.y > vert_threshold;
@@ -133,11 +127,11 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 				}
 			}
 			if (is_ceiling_ramp) { correct_x_y(actual_mtv); }
-			//cancel dash
+			// cancel dash
 			dash_flags.set(Dash::dash_cancel_collision);
 		}
-		//we also need to check if the predictive bounding box is colliding a ramp, just to deal with falling/jumping onto and into ramps
-		if (predictive_combined.SAT(cell)) { 
+		// we also need to check if the predictive bounding box is colliding a ramp, just to deal with falling/jumping onto and into ramps
+		if (predictive_combined.SAT(cell)) {
 			if (falls_onto) {
 				correct_x_y(combined_mtv);
 				flags.set(State::just_landed);
@@ -148,7 +142,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 						correct_y(combined_mtv);
 					} else {
 						collision_flags.set(Collision::any_collision);
-						correct_y(combined_mtv + sf::Vector2<float>{8.f, 8.f}); //to prevent player gliding down ceiling ramps
+						correct_y(combined_mtv + sf::Vector2<float>{8.f, 8.f}); // to prevent player gliding down ceiling ramps
 					}
 				}
 			}
@@ -165,7 +159,6 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 	movement_flags.reset(Movement::dashing);
 
 	sync_components();
-
 }
 
 void Collider::correct_x(sf::Vector2<float> mtv) {
@@ -211,7 +204,46 @@ void Collider::handle_spike_collision(Shape const& cell) {
 	if (hurtbox.overlaps(cell)) { spike_trigger = true; }
 }
 
-void Collider::handle_collider_collision(Shape const& collider) {}
+void Collider::handle_collider_collision(Shape const& collider) {
+
+	collision_flags = {};
+
+	// store all four mtvs
+	auto combined_mtv = predictive_combined.testCollisionGetMTV(predictive_combined, collider);
+	auto vert_mtv = predictive_vertical.testCollisionGetMTV(predictive_vertical, collider);
+	auto horiz_mtv = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, collider);
+	auto actual_mtv = bounding_box.testCollisionGetMTV(bounding_box, collider);
+
+	float vert_threshold = 5.5f;
+	bool corner_collision{true};
+	if (predictive_vertical.overlaps(collider)) {
+		vert_mtv.y < 0.f ? collision_flags.set(Collision::has_bottom_collision) : collision_flags.set(Collision::has_top_collision);
+		if (collision_flags.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) { flags.set(State::just_landed); } // for landing sound
+		corner_collision = false;
+		correct_y(vert_mtv);
+	}
+	if (predictive_horizontal.overlaps(collider)) {
+		horiz_mtv.x > 0.f ? collision_flags.set(Collision::has_left_collision) : collision_flags.set(Collision::has_right_collision);
+		corner_collision = false;
+		dash_flags.set(Dash::dash_cancel_collision);
+		correct_x(horiz_mtv);
+	}
+	if (predictive_combined.overlaps(collider) && corner_collision) {
+		collision_flags.set(Collision::any_collision);
+		dash_flags.set(Dash::dash_cancel_collision);
+		correct_corner(combined_mtv);
+	}
+	if (jumpbox.SAT(collider)) {
+		flags.set(State::grounded);
+		flags.set(State::is_any_jump_collision);
+	} else {
+		flags.reset(State::grounded);
+	}
+
+	movement_flags.reset(Movement::dashing);
+
+	sync_components();
+}
 
 void Collider::update() {
 	// if (!flags.test(State::is_colliding_with_level)) { physics.mtv = {0.0f, 0.0f}; }

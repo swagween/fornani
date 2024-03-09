@@ -1,0 +1,3 @@
+C:/Users/alexf/Documents/coding/fornani/out/default/_deps/imgui-sfml-subbuild/CMakeFiles/imgui-sfml-populate.dir
+C:/Users/alexf/Documents/coding/fornani/out/default/_deps/imgui-sfml-subbuild/CMakeFiles/edit_cache.dir
+C:/Users/alexf/Documents/coding/fornani/out/default/_deps/imgui-sfml-subbuild/CMakeFiles/rebuild_cache.dir

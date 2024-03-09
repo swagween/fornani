@@ -21,12 +21,6 @@ void Critter::init() {
 
 	unique_id = svc::randomLocator.get().random_range(-2147483647, 2147483647);
 
-	/*for (auto& collider : colliders) {
-		collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
-		collider.physics.maximum_velocity = sf::Vector2<float>(stats.speed, stats.speed * 4);
-		if (metadata.gravity) { collider.physics.gravity = 0.03f; }
-	}*/
-
 	condition.hp = stats.base_hp;
 }
 
@@ -66,6 +60,7 @@ void Critter::update() {
 }
 
 void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
+	svc::stopwatchLocator.get().start();
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 	drawbox.setSize(dimensions);
 
@@ -102,18 +97,18 @@ void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 		win.draw(ar);
 		win.draw(hr);
 	}
-	svc::counterLocator.get().at(svc::draw_calls)++;
 	sprite_flip();
 
 	// draw health for debug
+	hpbox.setPosition({sprite_position.x - campos.x, sprite_position.y - 14.f - campos.y});
+	hpbox.setFillColor(sf::Color{29, 118, 112});
+	hpbox.setSize({stats.base_hp, 4.f});
+	win.draw(hpbox);
 	hpbox.setFillColor(sf::Color{0, 228, 185});
-	hpbox.setSize(sf::Vector2<float>{1.0f, 4.0f});
-	for (int i = 0; i < stats.base_hp; ++i) {
-		hpbox.setPosition(sprite.getPosition().x + i, sprite.getPosition().y - 14);
-		if (i > condition.hp) { hpbox.setFillColor(sf::Color{29, 118, 112}); }
-		win.draw(hpbox);
-		svc::counterLocator.get().at(svc::draw_calls)++;
-	}
+	hpbox.setSize({condition.hp, 4.f});
+	win.draw(hpbox);
+	svc::counterLocator.get().at(svc::draw_calls) += 2;
+	svc::stopwatchLocator.get().stop();
 }
 
 void Critter::set_sprite() {
