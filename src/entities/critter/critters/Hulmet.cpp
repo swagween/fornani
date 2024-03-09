@@ -5,6 +5,9 @@ namespace critter {
 
 void Hulmet::unique_update() {
 
+	auto const player_overlaps_alert = svc::playerLocator.get().collider.bounding_box.overlaps(alert_range);
+	auto const player_overlaps_hostile = svc::playerLocator.get().collider.bounding_box.overlaps(hostile_range);
+
 	// set ranges
 	if (!colliders.empty()) {
 		alert_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - alert_range.dimensions.x / 2, colliders.at(0).physics.position.y - alert_range.dimensions.y / 2));
@@ -12,7 +15,8 @@ void Hulmet::unique_update() {
 	}
 
 	// player is in hostile range
-	if (svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range) && !flags.test(Flags::charging) && !flags.test(Flags::shooting) && stats.cooldown == 0) {
+	if (player_overlaps_hostile && !player_overlaps_alert && !flags.test(Flags::charging) && !flags.test(Flags::shooting) &&
+		stats.cooldown == 0) {
 
 		// decide randomly whether to chase the player or start shooting
 		if (svc::randomLocator.get().percent_chance(0.2f)) {
@@ -29,14 +33,14 @@ void Hulmet::unique_update() {
 	}
 
 	// player is very close
-	if (svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
+	if (player_overlaps_alert) {
 		flags.set(Flags::hiding);
 	} else {
 		flags.reset(Flags::hiding);
 	}
 
 	// player is out of range
-	if (!svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) && !svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) { random_walk({100, 100}); }
+	if (!player_overlaps_hostile && !player_overlaps_alert) { random_walk({100, 100}); }
 
 	barrel_point = direction.lr == dir::LR::right ? sprite_position + sf::Vector2<float>{6.f, 28.f} : sprite_position + sf::Vector2<float>(sprite_dimensions) - sf::Vector2<float>{6.f, 28.f};
 
@@ -147,7 +151,7 @@ fsm::StateFunction Hulmet::update_charge() {
 		anim_loop_count = 0;
 		flags.reset(Flags::charging);
 		flags.reset(Flags::hurt);
-		return svc::playerLocator.get().collider.bounding_box.SAT(hostile_range) ? BIND(update_shoot) : (flags.test(Flags::just_hurt) ? BIND(update_hurt) : BIND(update_idle));
+		return svc::playerLocator.get().collider.bounding_box.overlaps(hostile_range) ? BIND(update_shoot) : (flags.test(Flags::just_hurt) ? BIND(update_hurt) : BIND(update_idle));
 	}
 	if (flags.test(Flags::turning)) { return BIND(update_turn); }
 	// charging cannot be interrupted by hurt

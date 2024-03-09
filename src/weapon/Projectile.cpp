@@ -91,7 +91,7 @@ void Projectile::update() {
 		if (hook.grapple_flags.test(arms::GrappleState::snaking)) {
 			physics.position = hook.spring.get_bob();
 			bounding_box.position = physics.position;
-			if (bounding_box.SAT(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+			if (bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
 				destroy(true);
 				hook.grapple_flags = {};
 				hook.grapple_triggers = {};
@@ -110,7 +110,7 @@ void Projectile::update() {
 		physics.position = attractor.collider.physics.position;
 		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(type)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
-		if (attractor.collider.bounding_box.SAT(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+		if (attractor.collider.bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
 			svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
@@ -210,7 +210,7 @@ void Projectile::seed() {
 
 	float var = svc::randomLocator.get().random_range_float(-stats.variance, stats.variance);
 	if (stats.spring) {
-		physics.velocity = hook.probe_velocity(svc::playerLocator.get().equipped_weapon().firing_direction, stats.speed);
+		physics.velocity = hook.probe_velocity(stats.speed);
 		return;
 	}
 	switch (direction.lr) {

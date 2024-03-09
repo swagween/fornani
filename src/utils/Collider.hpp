@@ -9,6 +9,7 @@
 namespace shape {
 
 float const default_dim = 24.0f;
+float const vicinity_pad = 16.f;
 
 float const default_jumpbox_height = 4.0f;
 float const default_detector_width = 4.f;
@@ -71,6 +72,7 @@ class Collider {
 	Shape predictive_vertical{};
 	Shape predictive_horizontal{};
 	Shape predictive_combined{};
+	Shape vicinity{};
 	Shape jumpbox{};
 	Shape hurtbox{};
 

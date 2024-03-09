@@ -43,19 +43,6 @@ struct PlayerStats {
 	int max_orbs{};
 };
 
-struct PlayerInventoryStats {
-
-	uint32_t gem_spinel{};
-	uint32_t gem_topaz{};
-	uint32_t gem_tourmaline{};
-	uint32_t gem_peridot{};
-
-	uint32_t flower_lavender{};
-	uint32_t flower_daffodil{};
-	uint32_t flower_hibiscus{};
-	uint32_t flower_orchid{};
-};
-
 struct PhysicsStats {
 	float grav{};
 	float ground_fric{};
@@ -135,7 +122,7 @@ class Player {
 	std::string print_direction(bool lr);
 
 	//components
-	controllers::PlayerController controller{};
+	PlayerController controller{};
 	Transponder transponder{};
 	shape::Collider collider{};
 	PlayerAnimation animation{};
@@ -143,7 +130,6 @@ class Player {
 
 	//weapons
 	arms::Arsenal arsenal{};
-	int current_weapon{};
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};
@@ -157,7 +143,6 @@ class Player {
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
 	PlayerStats player_stats{3, 3, 0, 99999};
-	PlayerInventoryStats player_inv_stats{};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 
@@ -171,8 +156,6 @@ class Player {
 	flfx::TextureUpdater texture_updater{};
 
 	bool grav = true;
-
-	int jump_request{};
 
 	bool just_hurt{};
 	bool start_cooldown{};

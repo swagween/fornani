@@ -6,7 +6,7 @@ namespace vfx {
 
 Spring::Spring(Parameters params) : params(params) {
 	variables.physics.set_constant_friction({0.999f, params.dampen_factor});
-	variables.physics.maximum_velocity = {16.f, 16.f};
+	variables.physics.maximum_velocity = {6.f, 6.f};
 }
 
 void Spring::update() {

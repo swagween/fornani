@@ -52,8 +52,7 @@ void Player::init() {
 
 void Player::update() {
 
-	// reassign sprite
-	svc::playerLocator.get().sprite.setTexture(texture_updater.get_dynamic_texture());
+	update_sprite();
 
 	collider.physics.gravity = physics_stats.grav;
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
@@ -67,31 +66,17 @@ void Player::update() {
 
 	if (grounded()) { controller.reset_dash_count(); }
 
-	// update loadout
-	if (!arsenal.loadout.empty()) {
-		if (controller.arms_switch() == -1.f) {
-			current_weapon--;
-			if (current_weapon < 0) { current_weapon = (int)arsenal.loadout.size() - 1; }
-			equipped_weapon().active_projectiles = arsenal.extant_projectile_instances.at(current_weapon);
-			svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
-		}
-		if (controller.arms_switch() == 1.f) {
-			current_weapon++;
-			if (current_weapon > arsenal.loadout.size() - 1) { current_weapon = 0; }
-			equipped_weapon().active_projectiles = arsenal.extant_projectile_instances.at(current_weapon);
-			svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
-		}
-	}
-
 	// do this elsehwere later
 	if (collider.flags.test(shape::State::just_landed)) { svc::soundboardLocator.get().player.set(audio::Player::land); }
 	collider.flags.reset(shape::State::just_landed);
 
-	jump();
+	//player-controlled actions
+	arsenal.switch_weapon(controller.arms_switch());
 	dash();
+	jump();
 
 	// check keystate
-	if (!controller.jumpsquatting()) { walk(); }
+	if (!controller.get_jump().jumpsquatting()) { walk(); }
 	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
 
 	// weapon physics
@@ -210,7 +195,7 @@ void Player::update_animation() {
 }
 
 void Player::update_sprite() {
-	// if (arsenal.loadout.empty()) { sprite.setTexture(svc::assetLocator.get().t_nani_unarmed); }
+	svc::playerLocator.get().sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 
 void Player::update_transponder() {
@@ -255,27 +240,27 @@ void Player::calculate_sprite_offset() {
 }
 
 void Player::jump() {
-	if (controller.jumping()) {
+	if (controller.get_jump().began()) {
 		collider.movement_flags.set(shape::Movement::jumping);
 	} else {
 		collider.movement_flags.reset(shape::Movement::jumping);
 	}
-	if (controller.jumpsquat_trigger()) {
+	if (controller.get_jump().jumpsquat_trigger()) {
 		animation.state.set(AnimState::jumpsquat);
-		controller.start_jumpsquat();
-		controller.reset_jumpsquat_trigger();
+		controller.get_jump().start_jumpsquat();
+		controller.get_jump().reset_jumpsquat_trigger();
 		collider.movement_flags.set(shape::Movement::jumping);
 	}
-	if (controller.jumpsquatting() && !animation.state.test(AnimState::jumpsquat)) {
-		controller.stop_jumpsquatting();
-		controller.start_jumping();
+	if (controller.get_jump().jumpsquatting() && !animation.state.test(AnimState::jumpsquat)) {
+		controller.get_jump().stop_jumpsquatting();
+		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
 		animation.state.set(AnimState::rise);
 		svc::soundboardLocator.get().player.set(audio::Player::jump);
 		collider.movement_flags.set(shape::Movement::jumping);
-	} else if (controller.jump_released() && controller.jumping() && !controller.jump_held() && collider.physics.velocity.y < 0) {
+	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.velocity.y < 0) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
-		controller.reset_jump();
+		controller.get_jump().reset();
 	}
 }
 
@@ -313,6 +298,9 @@ void Player::update_direction() {
 	} else {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
 	}
+
+	//set directions for grappling hook
+	equipped_weapon().projectile.hook.probe_direction = controller.direction;
 }
 
 void Player::update_weapon() {
@@ -417,12 +405,7 @@ void Player::total_reset() {
 }
 
 arms::Weapon& Player::equipped_weapon() {
-	if (arsenal.loadout.empty() || current_weapon >= arsenal.loadout.size()) {
-		// default to bryns gun
-		return arsenal.armory.at(0);
-	} else {
-		return arsenal.loadout.at(current_weapon);
-	}
+	return arsenal.get_current_weapon();
 }
 
 int& Player::extant_instances(int index) { return arsenal.extant_projectile_instances.at(index); }

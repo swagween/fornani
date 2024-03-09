@@ -241,13 +241,19 @@ void Map::update() {
 			cell.collision_check = false;
 			if (!nearby(cell.bounding_box, collider->bounding_box)) {
 				continue;
-
 			} else {
-				cell.collision_check = true;
-				if (cell.value > 0) { collider->handle_map_collision(cell.bounding_box, cell.type); }
+				// check vicinity so we can escape early
+				if (!collider->vicinity.overlaps(cell.bounding_box)) {
+					continue;
+				} else {
+					cell.collision_check = true;
+					if (cell.value > 0) { collider->handle_map_collision(cell.bounding_box, cell.type); }
+				}
 			}
 		}
 	}
+
+	
 
 	// i need to refactor this...
 	for (auto& index : collidable_indeces) {
@@ -258,7 +264,7 @@ void Map::update() {
 					continue;
 				} else {
 					cell.collision_check = true;
-					if (particle.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
+					if (particle.bounding_box.overlaps(cell.bounding_box) && cell.value > 0) {
 						shape::Shape::Vec mtv = particle.bounding_box.testCollisionGetMTV(particle.bounding_box, cell.bounding_box);
 						sf::operator+=(particle.physics.position, mtv);
 						particle.physics.acceleration.y *= -1.0f;
@@ -270,14 +276,14 @@ void Map::update() {
 			}
 		}
 		// damage player if spikes
-		if (cell.type == lookup::TILE_TYPE::TILE_SPIKES && svc::playerLocator.get().collider.hurtbox.SAT(cell.bounding_box)) { svc::playerLocator.get().hurt(1); }
-		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && svc::playerLocator.get().collider.hurtbox.SAT(cell.bounding_box)) { svc::playerLocator.get().hurt(64); }
+		if (cell.type == lookup::TILE_TYPE::TILE_SPIKES && svc::playerLocator.get().collider.hurtbox.overlaps(cell.bounding_box)) { svc::playerLocator.get().hurt(1); }
+		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && svc::playerLocator.get().collider.hurtbox.overlaps(cell.bounding_box)) { svc::playerLocator.get().hurt(64); }
 		for (auto& proj : active_projectiles) {
 			if (!nearby(cell.bounding_box, proj.bounding_box)) {
 				continue;
 			} else {
 				cell.collision_check = true;
-				if (proj.bounding_box.SAT(cell.bounding_box) && cell.value > 0) {
+				if (proj.bounding_box.overlaps(cell.bounding_box) && cell.value > 0) {
 					if (cell.type == lookup::TILE_TYPE::TILE_BREAKABLE && !proj.stats.transcendent) {
 						--cell.value;
 						if (lookup::tile_lookup.at(cell.value) != lookup::TILE_TYPE::TILE_BREAKABLE) {
@@ -299,7 +305,7 @@ void Map::update() {
 					}
 					if (proj.stats.spring) {
 						if (proj.hook.grapple_flags.test(arms::GrappleState::probing)) {
-							proj.hook.spring.set_anchor(cell.bottom_point());
+							proj.hook.spring.set_anchor(cell.middle_point());
 							proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
 						}
 						handle_grappling_hook(proj);
@@ -314,7 +320,7 @@ void Map::update() {
 		for (auto& critter : critters) {
 			for (auto& hurtbox : critter->hurtboxes) {
 				if (proj.team != arms::TEAMS::SKYCORPS) {
-					if (proj.bounding_box.SAT(hurtbox)) {
+					if (proj.bounding_box.overlaps(hurtbox)) {
 						critter->flags.set(critter::Flags::shot);
 						if (critter->flags.test(critter::Flags::vulnerable)) {
 							critter->flags.set(critter::Flags::hurt);
@@ -326,12 +332,14 @@ void Map::update() {
 				}
 			}
 		}
-		if (proj.bounding_box.SAT(svc::playerLocator.get().collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
+		if (proj.bounding_box.overlaps(svc::playerLocator.get().collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
 			svc::playerLocator.get().hurt(proj.stats.base_damage);
 			proj.destroy(false);
 		}
 	}
 
+
+	
 	for (auto& critter : critters) {
 
 		// handle collision
@@ -357,7 +365,7 @@ void Map::update() {
 	}
 
 	for (auto& inspectable : inspectables) {
-		if (svc::playerLocator.get().controller.inspecting() && inspectable.bounding_box.SAT(svc::playerLocator.get().collider.hurtbox)) {
+		if (svc::playerLocator.get().controller.inspecting() && inspectable.bounding_box.overlaps(svc::playerLocator.get().collider.hurtbox)) {
 			inspectable.activated = true;
 			svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
 		}
@@ -371,7 +379,7 @@ void Map::update() {
 	}
 
 	for (auto& animator : animators) {
-		if (animator.bounding_box.SAT(svc::playerLocator.get().collider.bounding_box) && svc::playerLocator.get().controller.moving()) {
+		if (animator.bounding_box.overlaps(svc::playerLocator.get().collider.bounding_box) && svc::playerLocator.get().controller.moving()) {
 			animator.anim.on();
 			animator.activated = true;
 		} else {

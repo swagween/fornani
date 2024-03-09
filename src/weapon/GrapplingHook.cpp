@@ -4,8 +4,7 @@
 namespace arms {
 void GrapplingHook::update() {
 
-	if (grapple_flags.test(GrappleState::probing)) { spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point);
-	}
+	if (grapple_flags.test(GrappleState::probing)) { spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point); }
 	if (grapple_flags.test(GrappleState::anchored)) {
 		spring.update();
 		svc::loggerLocator.get().states.set(util::State::hook_anchored);
@@ -35,31 +34,22 @@ void GrapplingHook::update() {
 	svc::loggerLocator.get().hook_bob_position = spring.get_bob();
 	svc::loggerLocator.get().hook_anchor_position = spring.get_anchor();
 	svc::loggerLocator.get().hook_physics_position = spring.variables.physics.position;
-
 }
-sf::Vector2<float> GrapplingHook::probe_velocity(dir::Direction const& dir, float speed) {
+sf::Vector2<float> GrapplingHook::probe_velocity(float speed) {
 	sf::Vector2<float> ret{};
 	float tweak = speed / 3;
 
-	if (dir.lr == dir::LR::left) {
-		if (dir.und == dir::UND::up) { ret = {-tweak, -speed}; }
-		if (dir.und == dir::UND::neutral) { ret = {-speed, -tweak}; }
-		if (dir.und == dir::UND::down) { ret = {-tweak, speed}; }
+	switch (probe_direction.inter) {
+	case dir::Inter::north: ret = {0, -speed}; break;
+	case dir::Inter::south: ret = {0, speed}; break;
+	case dir::Inter::east: ret = {speed, -tweak}; break;
+	case dir::Inter::west: ret = {-speed, -tweak}; break;
+	case dir::Inter::northwest: ret = {-speed, -speed}; break;
+	case dir::Inter::northeast: ret = {speed, -speed}; break;
+	case dir::Inter::southwest: ret = {-speed, speed}; break;
+	case dir::Inter::southeast: ret = {speed, speed}; break;
 	}
-	if (dir.lr == dir::LR::right) {
-		if (dir.und == dir::UND::up) { ret = {speed, -speed}; }
-		if (dir.und == dir::UND::neutral) { ret = {speed, -tweak}; }
-		if (dir.und == dir::UND::down) { ret = {tweak, speed}; }
-	}
-	if (dir.lr == dir::LR::neutral) {
-		if (dir.und == dir::UND::up) { ret = {0, -speed}; }
-		if (dir.und == dir::UND::neutral) { ret = {speed, -speed}; }
-		if (dir.und == dir::UND::down) { ret = {0, speed}; }
-	}
-
-
 
 	return ret;
-
 }
 } // namespace arms

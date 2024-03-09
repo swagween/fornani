@@ -344,8 +344,8 @@
           "attractor_force": 0.0,
           "attractor_max_speed": 0.0,
           "attractor_friction": 0.0,
-          "spring_dampen": 0.98,
-          "spring_constant": 0.01,
+          "spring_dampen": 0.99,
+          "spring_constant": 0.02,
           "spring_rest_length": 20.0
         },
         "animation": {

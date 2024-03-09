@@ -323,6 +323,15 @@ bool Shape::SAT(Shape const& other) {
 	return true;
 }
 
+bool Shape::overlaps(Shape const& other) {
+	bool ret{true};
+	if (vertices.at(0).x > other.vertices.at(1).x) { ret = false; }
+	if (vertices.at(1).x < other.vertices.at(0).x) { ret = false; }
+	if (vertices.at(0).y > other.vertices.at(2).y) { ret = false; }
+	if (vertices.at(2).y < other.vertices.at(0).y) { ret = false; }
+	return ret;
+}
+
 bool Shape::AABB_handle_left_collision_static(Shape const& immovable) {
 	bool colliding = false;
 	// check that the shape is an initialized quad

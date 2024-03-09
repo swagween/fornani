@@ -24,14 +24,19 @@ struct Arsenal {
 	Arsenal() = default;
 	Arsenal& operator=(Arsenal&&) = delete;
 
-	void init() {
-		for (int i = 0; i < max_weapons; ++i) { armory.at(i) = Weapon(i); }
-	}
-	void push_to_loadout(int id) { loadout.push_back(armory.at(id)); }
+	void init();
+	void push_to_loadout(int id);
+	void switch_weapon(float next);
+	Weapon& get_current_weapon();
+	int get_index();
+	void set_index(int index);
 
 	std::array<Weapon, max_weapons> armory{};
 	std::vector<Weapon> loadout{};
 	std::array<int, max_weapons> extant_projectile_instances{};
+
+  private:
+	int current_weapon{};
 };
 
 } // namespace arms

@@ -213,17 +213,18 @@ static void show_overlay() {
 							ImGui::Text("Direction UND	: %s", svc::playerLocator.get().controller.direction.print_und().c_str());
 							ImGui::Separator();
 							ImGui::Text("Controller");
-							ImGui::Text("Move Left : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::move_x) < 0.f ? "Yes" : "No");
-							ImGui::Text("Move Right : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::move_x) > 0.f ? "Yes" : "No");
-							ImGui::Text("Inspecting : %s", svc::playerLocator.get().controller.get_controller_state(controllers::ControllerInput::inspect) > 0.f ? "Yes" : "No");
+							ImGui::Text("Move Left : %s", svc::playerLocator.get().controller.get_controller_state(player::ControllerInput::move_x) < 0.f ? "Yes" : "No");
+							ImGui::Text("Move Right : %s", svc::playerLocator.get().controller.get_controller_state(player::ControllerInput::move_x) > 0.f ? "Yes" : "No");
+							ImGui::Text("Inspecting : %s", svc::playerLocator.get().controller.get_controller_state(player::ControllerInput::inspect) > 0.f ? "Yes" : "No");
 							ImGui::Text("Facing : %s", svc::playerLocator.get().print_direction(true).c_str());
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Jump")) {
-							ImGui::Text("Jump Request : %i", svc::playerLocator.get().controller.get_jump_request());
-							ImGui::Text("Jump Released : %s", svc::playerLocator.get().controller.jump_released() ? "Yes" : "No");
-							ImGui::Text("Can Jump : %s", svc::playerLocator.get().controller.can_jump() ? "Yes" : "No");
-							ImGui::Text("Jumping? : %s", svc::playerLocator.get().controller.jumping() ? "Yes" : "No");
+							ImGui::Text("Jump Request : %i", svc::playerLocator.get().controller.get_jump().get_request());
+							ImGui::Text("Jump Released : %s", svc::playerLocator.get().controller.get_jump().released() ? "Yes" : "No");
+							ImGui::Text("Can Jump : %s", svc::playerLocator.get().controller.get_jump().can_jump() ? "Yes" : "No");
+							ImGui::Text("Jumping? : %s", svc::playerLocator.get().controller.get_jump().jumping() ? "Yes" : "No");
+							ImGui::Text("Jump Began? : %s", svc::playerLocator.get().controller.get_jump().began() ? "Yes" : "No");
 							ImGui::Text("Jumping? : %s", svc::playerLocator.get().collider.movement_flags.test(shape::Movement::jumping) ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
@@ -321,7 +322,8 @@ static void show_overlay() {
 
 					ImGui::Separator();
 					ImGui::Text("Grappling Hook:");
-					ImGui::Text("Hook held? %s", svc::playerLocator.get().controller.hook_held() ? "Yes" : "No");
+					ImGui::Text("Hook held: %s", svc::playerLocator.get().controller.hook_held() ? "Yes" : "No");
+					ImGui::Text("Direction: %s", svc::playerLocator.get().equipped_weapon().projectile.hook.probe_direction.print_intermediate().c_str());
 
 					ImGui::Separator();
 					ImGui::Text("Extant Projectiles:");
@@ -395,8 +397,14 @@ static void show_overlay() {
 				}
 				if (ImGui::BeginTabItem("Resources")) {
 					ImGui::Text("Size of Asset Manager (Bytes): %lu", sizeof(svc::assetLocator.get()));
+					ImGui::Text("Size of Data Manager (Bytes): %lu", sizeof(svc::dataLocator.get()));
+					ImGui::Text("Size of Text Manager (Bytes): %lu", sizeof(svc::textLocator.get()));
+					ImGui::Text("Size of Music Player (Bytes): %lu", sizeof(svc::musicPlayerLocator.get()));
 					ImGui::Text("Size of Camera (Bytes): %lu", sizeof(svc::cameraLocator.get()));
 					ImGui::Text("Size of Player (Bytes): %lu", sizeof(svc::playerLocator.get()));
+					ImGui::Text("Size of TextureUpdater (Bytes): %lu", sizeof(svc::playerLocator.get().texture_updater));
+					ImGui::Text("Size of Collider (Bytes): %lu", sizeof(svc::playerLocator.get().collider));
+					ImGui::Text("Size of Arsenal (Bytes): %lu", sizeof(svc::playerLocator.get().arsenal));
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("State")) {
