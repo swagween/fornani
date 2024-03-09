@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <string>
 #include "BitFlags.hpp"
 
@@ -18,6 +19,12 @@ class Logger {
 	void print_boolean(std::string label, bool test);
 	BitFlags<Trigger> triggers{};
 	BitFlags<State> states{};
+
+	sf::Vector2<float> hook_bob_position{};
+	sf::Vector2<float> hook_anchor_position{};
+	sf::Vector2<float> hook_physics_position{};
+	sf::Vector2<float> hook_projectile_box_position{};
+	sf::Vector2<float> hook_projectile_physics_position{};
 };
 
 } // namespace util

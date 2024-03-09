@@ -64,6 +64,7 @@ class PlayerController {
 	float arms_switch();
 
 	void prevent_movement();
+	void release_hook();
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 

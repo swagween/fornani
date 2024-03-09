@@ -290,14 +290,18 @@ void Map::update() {
 							active_emitters.back().update();
 							svc::assetLocator.get().shatter.play();
 						}
-					} else if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) {
+					}
+					if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) {
 						continue;
-					} else if (!proj.stats.transcendent) {
+					}
+					if (!proj.stats.transcendent) {
 						proj.destroy(false);
 					}
 					if (proj.stats.spring) {
-						proj.hook.spring.set_anchor(cell.bottom_point());
-						proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
+						if (proj.hook.grapple_flags.test(arms::GrappleState::probing)) {
+							proj.hook.spring.set_anchor(cell.bottom_point());
+							proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
+						}
 						handle_grappling_hook(proj);
 					}
 				}
@@ -649,23 +653,38 @@ void Map::generate_collidable_layer() {
 
 void Map::handle_grappling_hook(arms::Projectile& proj) {
 	//do this first block once
-	if (proj.hook.grapple_triggers.test(arms::GrappleTriggers::found) && !proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
-		proj.hook.spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point);
+	if (proj.hook.grapple_triggers.test(arms::GrappleTriggers::found) && !proj.hook.grapple_flags.test(arms::GrappleState::anchored) && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) {
+		proj.hook.spring.set_bob(svc::playerLocator.get().collider.physics.position);
 		proj.hook.grapple_triggers.reset(arms::GrappleTriggers::found);
 		proj.hook.grapple_flags.set(arms::GrappleState::anchored);
 		proj.hook.grapple_flags.reset(arms::GrappleState::probing);
-		std::cout << "found!\n";
+		proj.hook.spring.set_force(proj.stats.spring_constant);
+		proj.hook.spring.set_rest_length(20);
+		proj.hook.spring.set_rest_length(0.5 * (svc::playerLocator.get().apparent_position.y - proj.hook.spring.get_anchor().y));
+		proj.hook.spring.variables.physics.acceleration += svc::playerLocator.get().collider.physics.acceleration;
+		proj.hook.spring.variables.physics.velocity += svc::playerLocator.get().collider.physics.velocity;
 	}
 	if (svc::playerLocator.get().controller.hook_held() && proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
+		proj.hook.spring.variables.physics.acceleration += svc::playerLocator.get().collider.physics.acceleration;
 		proj.lock_to_anchor();
 		proj.hook.spring.update();
-		//svc::playerLocator.get().collider.physics.position = proj.hook.spring.get_bob();
+		if (!svc::playerLocator.get().collider.has_horizontal_collision() && !svc::playerLocator.get().collider.has_vertical_collision()) {
+			svc::playerLocator.get().collider.physics.position = proj.hook.spring.variables.physics.position;
+		} else {
+			//break out
+			proj.hook.spring.set_force(.2f);
+			proj.hook.grapple_flags.reset(arms::GrappleState::anchored);
+			proj.hook.grapple_triggers.set(arms::GrappleTriggers::released);
+			proj.hook.grapple_flags.set(arms::GrappleState::snaking);
+			svc::playerLocator.get().controller.release_hook();
+		}
 	}
-	if (svc::playerLocator.get().controller.released_hook()) {
+	if (svc::playerLocator.get().controller.released_hook() && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) {
+		proj.hook.spring.set_force(.2f);
 		proj.hook.grapple_flags.reset(arms::GrappleState::anchored);
 		proj.hook.grapple_triggers.set(arms::GrappleTriggers::released);
 		proj.hook.grapple_flags.set(arms::GrappleState::snaking);
-		std::cout << "released!\n";
+		svc::playerLocator.get().controller.release_hook();
 
 	}
 }

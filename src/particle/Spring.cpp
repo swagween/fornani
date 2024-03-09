@@ -5,10 +5,12 @@
 namespace vfx {
 
 Spring::Spring(Parameters params) : params(params) {
-	variables.physics.set_global_friction(params.dampen_factor);
+	variables.physics.set_constant_friction({0.999f, params.dampen_factor});
+	variables.physics.maximum_velocity = {16.f, 16.f};
 }
 
 void Spring::update() {
+	variables.physics.gravity = 1.5f;
 	calculate_force();
 	variables.physics.update();
 	bob = variables.physics.position;
@@ -17,6 +19,8 @@ void Spring::update() {
 void Spring::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	bob_shape.setRadius(8.f);
 	anchor_shape.setRadius(4.f);
+	bob_shape.setFillColor(sf::Color::Transparent);
+	anchor_shape.setFillColor(sf::Color::Transparent);
 	bob_shape.setPosition(bob - cam);
 	anchor_shape.setPosition(anchor - cam);
 	bob_shape.setOutlineThickness(-1);
@@ -28,9 +32,8 @@ void Spring::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	anchor_shape.setRadius(10.f);
 	anchor_shape.setOutlineColor(sf::Color::White);
-	anchor_shape.setPosition(variables.physics.position - cam);
-	win.draw(anchor_shape);
-
+	// anchor_shape.setPosition(variables.physics.position - cam);
+	// win.draw(anchor_shape);
 }
 
 void Spring::calculate_force() {
@@ -59,6 +62,8 @@ void Spring::set_bob(sf::Vector2<float> point) {
 }
 
 void Spring::set_rest_length(float point) { params.rest_length = point; }
+
+void Spring::set_force(float force) { params.spring_constant = force; }
 
 sf::Vector2<float>& Spring::get_bob() { return bob; }
 

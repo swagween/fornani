@@ -110,6 +110,7 @@ class Player {
 	void walk();
 	void hurt(int amount);
 	void update_antennae();
+	void lock_to_harness();
 
 	bool grounded() const;
 	bool fire_weapon();

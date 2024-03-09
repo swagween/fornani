@@ -45,7 +45,7 @@ void Attractor::render(sf::RenderWindow& win, Vec campos) {
 					(int)(collider.bounding_box.position.y - campos.y));
 
 	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-		collider.render(win, campos);
+		win.draw(box);
 	} else {
 		win.draw(box);
 	}

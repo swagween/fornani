@@ -10,6 +10,7 @@ enum class GrappleState { anchored, probing, snaking };
 class GrapplingHook {
   public:
 	void update();
+	sf::Vector2<float> probe_velocity(const dir::Direction& dir, float speed);
 	vfx::Spring spring{};
 	util::BitFlags<GrappleTriggers> grapple_triggers{};
 	util::BitFlags<GrappleState> grapple_flags{};

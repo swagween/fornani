@@ -10,7 +10,7 @@ namespace shape {
 
 float const default_dim = 24.0f;
 
-float const default_jumpbox_height = 2.0f;
+float const default_jumpbox_height = 4.0f;
 float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 

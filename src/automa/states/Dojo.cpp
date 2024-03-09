@@ -85,7 +85,7 @@ void Dojo::handle_events(sf::Event& event) {
 }
 
 void Dojo::tick_update() {
-
+	svc::stopwatchLocator.get().start();
 	svc::playerLocator.get().update();
 	map.update();
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
@@ -103,6 +103,9 @@ void Dojo::tick_update() {
 	map.debug_mode = debug_mode;
 
 	svc::inputStateLocator.get().reset_triggers();
+	svc::playerLocator.get().controller.clean();
+
+	svc::stopwatchLocator.get().stop();
 }
 
 void Dojo::frame_update() {

@@ -22,6 +22,7 @@ class Spring {
 	void set_anchor(sf::Vector2<float> point);
 	void set_bob(sf::Vector2<float> point);
 	void set_rest_length(float point);
+	void set_force(float force);
 	sf::Vector2<float>& get_bob();
 	sf::Vector2<float>& get_anchor();
 

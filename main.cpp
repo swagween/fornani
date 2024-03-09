@@ -224,6 +224,7 @@ static void show_overlay() {
 							ImGui::Text("Jump Released : %s", svc::playerLocator.get().controller.jump_released() ? "Yes" : "No");
 							ImGui::Text("Can Jump : %s", svc::playerLocator.get().controller.can_jump() ? "Yes" : "No");
 							ImGui::Text("Jumping? : %s", svc::playerLocator.get().controller.jumping() ? "Yes" : "No");
+							ImGui::Text("Jumping? : %s", svc::playerLocator.get().collider.movement_flags.test(shape::Movement::jumping) ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
 

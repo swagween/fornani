@@ -81,12 +81,15 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 	auto combined_mtv = predictive_combined.testCollisionGetMTV(predictive_combined, cell);
 	auto actual_mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
 
+	
 
+	float vert_threshold = 5.5f; //for landing
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
 		bool corner_collision{true};
 		if (predictive_vertical.SAT(cell)) {
 			vert_mtv.y < 0.f ? collision_flags.set(Collision::has_bottom_collision) : collision_flags.set(Collision::has_top_collision);
+			if (collision_flags.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) { flags.set(State::just_landed); } // for landing sound
 			corner_collision = false;
 			correct_y(vert_mtv);
 		}
@@ -103,9 +106,9 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		}
 	}
 
+
 	// now let's settle ramp collisions. remember, the collider has already been resolved from any previous cell collision
 	if (is_ramp) {
-		float vert_threshold = 5.5f;
 		bool falls_onto = is_ground_ramp && physics.velocity.y > vert_threshold;
 		bool jumps_into = physics.velocity.y < vert_threshold;
 		// ground ramp
@@ -114,8 +117,10 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			if (is_ground_ramp) {
 				if (actual_mtv.y < 0.f) { physics.position.y += actual_mtv.y; }
 				// still zero this because of gravity
-				physics.velocity.y = 0.0f;
-				physics.acceleration.y = 0.0f;
+				if (!movement_flags.test(Movement::jumping)) {
+					physics.velocity.y = 0.0f;
+					physics.acceleration.y = 0.0f;
+				}
 			}
 			if (is_ceiling_ramp) { correct_x_y(actual_mtv); }
 			//cancel dash
@@ -125,6 +130,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		if (predictive_combined.SAT(cell)) { 
 			if (falls_onto) {
 				correct_x_y(combined_mtv);
+				flags.set(State::just_landed);
 			}
 			if (is_ceiling_ramp) {
 				if (jumps_into) {

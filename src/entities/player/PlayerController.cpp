@@ -103,7 +103,10 @@ void PlayerController::update() {
 	decrement_requests();
 }
 
-void PlayerController::clean() { flags = {}; }
+void PlayerController::clean() {
+	flags = {};
+	hook_flags = {};
+}
 
 void PlayerController::jump() { jump_flags.set(Jump::jumping); }
 
@@ -183,6 +186,8 @@ void PlayerController::prevent_movement() {
 	flags.set(MovementState::restricted);
 }
 
+void PlayerController::release_hook() { hook_flags.reset(Hook::hook_released); }
+
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {
 		return search->second;
@@ -227,7 +232,11 @@ bool PlayerController::jump_held() const { return jump_flags.test(Jump::jump_hel
 
 bool PlayerController::shot() { return key_map[ControllerInput::shoot] == 1.f; }
 
-bool PlayerController::released_hook() { return hook_flags.test(Hook::hook_released); }
+bool PlayerController::released_hook() {
+	bool ret = hook_flags.test(Hook::hook_released);
+	hook_flags.reset(Hook::hook_released);
+	return ret;
+}
 
 bool PlayerController::hook_held() const { return hook_flags.test(Hook::hook_held); }
 

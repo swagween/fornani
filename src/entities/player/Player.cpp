@@ -18,6 +18,10 @@ void Player::init() {
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
+
+	harness = vfx::Attractor(collider.physics.position, flcolor::goldenrod, antenna_force / 2);
+	harness.collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
+
 	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, antenna_force));
 	antennae.push_back(vfx::Attractor(collider.physics.position, flcolor::dark_orange, antenna_force, {2.f, 4.f}));
 
@@ -44,12 +48,11 @@ void Player::init() {
 
 	texture_updater.load_base_texture(svc::assetLocator.get().t_nani);
 	texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
-
 }
 
 void Player::update() {
 
-	//reassign sprite
+	// reassign sprite
 	svc::playerLocator.get().sprite.setTexture(texture_updater.get_dynamic_texture());
 
 	collider.physics.gravity = physics_stats.grav;
@@ -80,7 +83,7 @@ void Player::update() {
 		}
 	}
 
-	//do this elsehwere later
+	// do this elsehwere later
 	if (collider.flags.test(shape::State::just_landed)) { svc::soundboardLocator.get().player.set(audio::Player::land); }
 	collider.flags.reset(shape::State::just_landed);
 
@@ -90,7 +93,6 @@ void Player::update() {
 	// check keystate
 	if (!controller.jumpsquatting()) { walk(); }
 	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
-
 
 	// weapon physics
 	if (controller.shot() && !arsenal.loadout.empty()) {
@@ -121,9 +123,9 @@ void Player::update() {
 	// antennae!
 	update_antennae();
 
-	//harness
+	// harness
 	harness.update();
-	harness.collider.physics.position = collider.physics.position;
+	if (!controller.hook_held()) { harness.collider.physics.position = collider.physics.position; }
 }
 
 void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
@@ -174,9 +176,8 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		equipped_weapon().render(win, campos);
 	}
 
-	//texture updater debug
-	//texture_updater.debug_render(win, campos);
-
+	// texture updater debug
+	// texture_updater.debug_render(win, campos);
 }
 
 void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
@@ -195,9 +196,7 @@ void Player::update_animation() {
 		if (collider.physics.velocity.y > -animation.suspension_threshold && collider.physics.velocity.y < animation.suspension_threshold) { animation.state.set(AnimState::suspend); }
 	}
 
-	if (collider.flags.test(shape::State::just_landed)) {
-		animation.state.set(AnimState::land);
-	}
+	if (collider.flags.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
 
@@ -211,7 +210,7 @@ void Player::update_animation() {
 }
 
 void Player::update_sprite() {
-	//if (arsenal.loadout.empty()) { sprite.setTexture(svc::assetLocator.get().t_nani_unarmed); }
+	// if (arsenal.loadout.empty()) { sprite.setTexture(svc::assetLocator.get().t_nani_unarmed); }
 }
 
 void Player::update_transponder() {
@@ -247,7 +246,6 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		++ctr;
 	}
 	sprite.setColor(sf::Color::White);
-
 }
 
 void Player::calculate_sprite_offset() {
@@ -257,6 +255,11 @@ void Player::calculate_sprite_offset() {
 }
 
 void Player::jump() {
+	if (controller.jumping()) {
+		collider.movement_flags.set(shape::Movement::jumping);
+	} else {
+		collider.movement_flags.reset(shape::Movement::jumping);
+	}
 	if (controller.jumpsquat_trigger()) {
 		animation.state.set(AnimState::jumpsquat);
 		controller.start_jumpsquat();
@@ -313,13 +316,13 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon() {
-	//clamp extant projectile instances to the weapon's rate
+	// clamp extant projectile instances to the weapon's rate
 	assert(arsenal.extant_projectile_instances.size() >= arsenal.armory.size());
 	for (std::size_t index = 0; index < arsenal.extant_projectile_instances.size(); ++index) {
 		auto& count = arsenal.extant_projectile_instances.at(index);
 		count = std::clamp(count, 0, arsenal.armory.at(index).attributes.rate);
 	}
-	//update all weapons in loadout to avoid unusual behavior upon fast weapon switching
+	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.loadout) {
 		weapon.active_projectiles = extant_instances(weapon.get_id());
 		weapon.update();
@@ -367,6 +370,8 @@ void Player::update_antennae() {
 		++ctr;
 	}
 }
+
+void Player::lock_to_harness() { collider.physics.position = harness.collider.physics.position; }
 
 bool Player::grounded() const { return collider.flags.test(shape::State::grounded); }
 

@@ -329,7 +329,7 @@
         "attributes": {
           "base_damage": 0.05,
           "range": 400,
-          "speed": 12.5,
+          "speed": 40.5,
           "variance": 0.0,
           "stun_time": 0.0,
           "knockback": 0.0,
@@ -344,8 +344,8 @@
           "attractor_force": 0.0,
           "attractor_max_speed": 0.0,
           "attractor_friction": 0.0,
-          "spring_dampen": 0.93,
-          "spring_constant": 0.1,
+          "spring_dampen": 0.98,
+          "spring_constant": 0.01,
           "spring_rest_length": 20.0
         },
         "animation": {

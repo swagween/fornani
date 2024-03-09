@@ -82,12 +82,11 @@ void Projectile::update() {
 		hook.update();
 		if (hook.grapple_flags.test(arms::GrappleState::probing)) {
 			hook.spring.set_anchor(physics.position);
-			hook.spring.set_bob(fired_point);
+			hook.spring.set_bob(svc::playerLocator.get().apparent_position);
 		}
 		if (hook.grapple_flags.test(arms::GrappleState::anchored)) {
 			bounding_box.position = hook.spring.get_anchor();
 			physics.position = hook.spring.get_anchor();
-			hook.spring.set_rest_length(stats.spring_rest_length);
 		}
 		if (hook.grapple_flags.test(arms::GrappleState::snaking)) {
 			physics.position = hook.spring.get_bob();
@@ -96,6 +95,7 @@ void Projectile::update() {
 				destroy(true);
 				hook.grapple_flags = {};
 				hook.grapple_triggers = {};
+				svc::loggerLocator.get().states.reset(util::State::hook_snaking);
 				hook.spring.reverse_anchor_and_bob();
 				hook.spring.set_rest_length(stats.spring_rest_length);
 				svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
@@ -162,6 +162,7 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 			// unconstrained projectiles have to get sprites set here
 			if (stats.boomerang) { sp_proj.at(0).setPosition(attractor.collider.physics.position - campos); }
+			if (stats.spring) { hook.spring.render(win, campos); }
 			if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) { sp_proj.at(0).setPosition(hook.spring.get_bob() - campos); }
 			constrain_sprite_at_barrel(sp_proj.at(0), campos);
 			if (state.test(ProjectileState::destruction_initiated)) { constrain_sprite_at_destruction_point(sp_proj.at(0), campos); }
@@ -206,9 +207,12 @@ void Projectile::destroy(bool completely) {
 }
 
 void Projectile::seed() {
-	util::Random r{};
-	stats.range += r.random_range(-stats.range_variance, stats.range_variance);
-	float var = r.random_range_float(-stats.variance, stats.variance);
+
+	float var = svc::randomLocator.get().random_range_float(-stats.variance, stats.variance);
+	if (stats.spring) {
+		physics.velocity = hook.probe_velocity(svc::playerLocator.get().equipped_weapon().firing_direction, stats.speed);
+		return;
+	}
 	switch (direction.lr) {
 	case dir::LR::left: physics.velocity = {-stats.speed + (var / 2), var}; break;
 	case dir::LR::right: physics.velocity = {stats.speed + (var / 2), var}; break;
@@ -258,8 +262,8 @@ void Projectile::set_boomerang_speed() {
 }
 
 void Projectile::set_hook_speed() {
-	hook.spring.variables.physics.velocity.x = direction.lr == dir::LR::left ? -stats.speed : (direction.lr == dir::LR::right ? stats.speed : 0.f);
-	hook.spring.variables.physics.velocity.y = direction.und == dir::UND::up ? -stats.speed : (direction.und == dir::UND::down ? stats.speed : 0.f);
+	//hook.spring.variables.physics.velocity.x = direction.lr == dir::LR::left ? -stats.speed : (direction.lr == dir::LR::right ? stats.speed : 0.f);
+	//hook.spring.variables.physics.velocity.y = direction.und == dir::UND::up ? -stats.speed : (direction.und == dir::UND::down ? stats.speed : 0.f);
 }
 
 void Projectile::sync_position() { attractor.collider.physics.position = fired_point; }
