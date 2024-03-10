@@ -253,8 +253,6 @@ void Map::update() {
 		}
 	}
 
-	
-
 	// i need to refactor this...
 	for (auto& index : collidable_indeces) {
 		auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
@@ -297,12 +295,8 @@ void Map::update() {
 							svc::assetLocator.get().shatter.play();
 						}
 					}
-					if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) {
-						continue;
-					}
-					if (!proj.stats.transcendent) {
-						proj.destroy(false);
-					}
+					if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) { continue; }
+					if (!proj.stats.transcendent) { proj.destroy(false); }
 					if (proj.stats.spring) {
 						if (proj.hook.grapple_flags.test(arms::GrappleState::probing)) {
 							proj.hook.spring.set_anchor(cell.middle_point());
@@ -338,8 +332,6 @@ void Map::update() {
 		}
 	}
 
-
-	
 	for (auto& critter : critters) {
 
 		// handle collision
@@ -662,15 +654,14 @@ void Map::generate_collidable_layer() {
 }
 
 void Map::handle_grappling_hook(arms::Projectile& proj) {
-	//do this first block once
+	// do this first block once
 	if (proj.hook.grapple_triggers.test(arms::GrappleTriggers::found) && !proj.hook.grapple_flags.test(arms::GrappleState::anchored) && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) {
 		proj.hook.spring.set_bob(svc::playerLocator.get().collider.physics.position);
 		proj.hook.grapple_triggers.reset(arms::GrappleTriggers::found);
 		proj.hook.grapple_flags.set(arms::GrappleState::anchored);
 		proj.hook.grapple_flags.reset(arms::GrappleState::probing);
 		proj.hook.spring.set_force(proj.stats.spring_constant);
-		proj.hook.spring.set_rest_length(20);
-		proj.hook.spring.set_rest_length(0.5 * (svc::playerLocator.get().apparent_position.y - proj.hook.spring.get_anchor().y));
+		proj.hook.spring.set_rest_length(0.5 * (svc::playerLocator.get().collider.physics.position.y - proj.hook.spring.get_anchor().y));
 		proj.hook.spring.variables.physics.acceleration += svc::playerLocator.get().collider.physics.acceleration;
 		proj.hook.spring.variables.physics.velocity += svc::playerLocator.get().collider.physics.velocity;
 	}
@@ -678,15 +669,28 @@ void Map::handle_grappling_hook(arms::Projectile& proj) {
 		proj.hook.spring.variables.physics.acceleration += svc::playerLocator.get().collider.physics.acceleration;
 		proj.lock_to_anchor();
 		proj.hook.spring.update();
-		if (!svc::playerLocator.get().collider.has_horizontal_collision() && !svc::playerLocator.get().collider.has_vertical_collision()) {
-			svc::playerLocator.get().collider.physics.position = proj.hook.spring.variables.physics.position;
+		proj.hook.spring.set_rest_length(0.5 * (svc::playerLocator.get().collider.physics.position.y - proj.hook.spring.get_anchor().y));
+		auto& player_collider = svc::playerLocator.get().collider;
+		bool collision{};
+		for (auto& index : collidable_indeces) {
+			auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
+			cell.collision_check = false;
+			if (!nearby(cell.bounding_box, player_collider.bounding_box)) {
+				continue;
+			} else {
+				// check vicinity so we can escape early
+				if (!player_collider.vicinity.overlaps(cell.bounding_box)) {
+					continue;
+				} else {
+					cell.collision_check = true;
+					if (cell.value > 0 && player_collider.predictive_combined.overlaps(cell.bounding_box)) { collision = true; }
+				}
+			}
+		}
+		if (collision) {
+			svc::playerLocator.get().collider.physics.zero();
 		} else {
-			//break out
-			proj.hook.spring.set_force(.2f);
-			proj.hook.grapple_flags.reset(arms::GrappleState::anchored);
-			proj.hook.grapple_triggers.set(arms::GrappleTriggers::released);
-			proj.hook.grapple_flags.set(arms::GrappleState::snaking);
-			svc::playerLocator.get().controller.release_hook();
+			svc::playerLocator.get().collider.physics.position = proj.hook.spring.variables.physics.position;
 		}
 	}
 	if (svc::playerLocator.get().controller.released_hook() && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) {
@@ -695,7 +699,6 @@ void Map::handle_grappling_hook(arms::Projectile& proj) {
 		proj.hook.grapple_triggers.set(arms::GrappleTriggers::released);
 		proj.hook.grapple_flags.set(arms::GrappleState::snaking);
 		svc::playerLocator.get().controller.release_hook();
-
 	}
 }
 

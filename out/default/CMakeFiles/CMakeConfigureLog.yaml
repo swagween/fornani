@@ -63,8 +63,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-7osgnc"
-      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-7osgnc"
+      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-thpjd7"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-thpjd7"
     cmakeVariables:
       CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
       CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -73,11 +73,11 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-7osgnc'
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-thpjd7'
         
-        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_19376
-        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_19376.dir\\Debug\\CMakeCXXCompilerABI.cpp.obj /FdCMakeFiles\\cmTC_19376.dir\\Debug\\ /FS -c "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.28\\Modules\\CMakeCXXCompilerABI.cpp"
-        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_19376.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_19376.dir\\Debug\\CMakeCXXCompilerABI.cpp.obj  /out:Debug\\cmTC_19376.exe /implib:Debug\\cmTC_19376.lib /pdb:Debug\\cmTC_19376.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_5d335
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_5d335.dir\\Debug\\CMakeCXXCompilerABI.cpp.obj /FdCMakeFiles\\cmTC_5d335.dir\\Debug\\ /FS -c "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.28\\Modules\\CMakeCXXCompilerABI.cpp"
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_5d335.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_5d335.dir\\Debug\\CMakeCXXCompilerABI.cpp.obj  /out:Debug\\cmTC_5d335.exe /implib:Debug\\cmTC_5d335.lib /pdb:Debug\\cmTC_5d335.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
         
       exitCode: 0
   -
@@ -135,8 +135,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-uyswbm"
-      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-uyswbm"
+      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-xgetlh"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-xgetlh"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
       CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -146,11 +146,11 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-uyswbm'
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-xgetlh'
         
-        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_0d7c0
-        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_0d7c0.dir\\Debug\\CMakeCCompilerABI.c.obj /FdCMakeFiles\\cmTC_0d7c0.dir\\Debug\\ /FS -c "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.28\\Modules\\CMakeCCompilerABI.c"
-        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_0d7c0.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_0d7c0.dir\\Debug\\CMakeCCompilerABI.c.obj  /out:Debug\\cmTC_0d7c0.exe /implib:Debug\\cmTC_0d7c0.lib /pdb:Debug\\cmTC_0d7c0.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_ce877
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_ce877.dir\\Debug\\CMakeCCompilerABI.c.obj /FdCMakeFiles\\cmTC_ce877.dir\\Debug\\ /FS -c "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.28\\Modules\\CMakeCCompilerABI.c"
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_ce877.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_ce877.dir\\Debug\\CMakeCCompilerABI.c.obj  /out:Debug\\cmTC_ce877.exe /implib:Debug\\cmTC_ce877.lib /pdb:Debug\\cmTC_ce877.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
         
       exitCode: 0
   -
@@ -173,9 +173,9 @@ events:
       stdout: |
         Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-build/CMakeFiles/CMakeTmp'
         
-        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_cf4c1
-        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_cf4c1.dir\\Debug\\str_to_d_fc.cpp.obj /FdCMakeFiles\\cmTC_cf4c1.dir\\Debug\\cmTC_cf4c1.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\_deps\\djson-src\\src\\compat\\str_to_d_fc.cpp
-        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_cf4c1.lib CMakeFiles\\cmTC_cf4c1.dir\\Debug\\str_to_d_fc.cpp.obj  && cd ."
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_3a172
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_3a172.dir\\Debug\\str_to_d_fc.cpp.obj /FdCMakeFiles\\cmTC_3a172.dir\\Debug\\cmTC_3a172.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\_deps\\djson-src\\src\\compat\\str_to_d_fc.cpp
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_3a172.lib CMakeFiles\\cmTC_3a172.dir\\Debug\\str_to_d_fc.cpp.obj  && cd ."
         
       exitCode: 0
   -
@@ -198,9 +198,9 @@ events:
       stdout: |
         Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-build/CMakeFiles/CMakeTmp'
         
-        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_95f6c
-        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_95f6c.dir\\Debug\\make_char_buf_mufo.cpp.obj /FdCMakeFiles\\cmTC_95f6c.dir\\Debug\\cmTC_95f6c.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\_deps\\djson-src\\src\\compat\\make_char_buf_mufo.cpp
-        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_95f6c.lib CMakeFiles\\cmTC_95f6c.dir\\Debug\\make_char_buf_mufo.cpp.obj  && cd ."
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_03dc1
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 -std:c++20 /showIncludes /FoCMakeFiles\\cmTC_03dc1.dir\\Debug\\make_char_buf_mufo.cpp.obj /FdCMakeFiles\\cmTC_03dc1.dir\\Debug\\cmTC_03dc1.pdb /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\_deps\\djson-src\\src\\compat\\make_char_buf_mufo.cpp
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\lib.exe /nologo /machine:x64 /out:Debug\\cmTC_03dc1.lib CMakeFiles\\cmTC_03dc1.dir\\Debug\\make_char_buf_mufo.cpp.obj  && cd ."
         
       exitCode: 0
   -
@@ -213,8 +213,8 @@ events:
     checks:
       - "Looking for sys/types.h"
     directories:
-      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-n4ajlm"
-      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-n4ajlm"
+      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-mmpsis"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-mmpsis"
     cmakeVariables:
       CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
@@ -227,11 +227,11 @@ events:
       variable: "HAVE_SYS_TYPES_H"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-n4ajlm'
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-mmpsis'
         
-        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_2a8be
-        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_2a8be.dir\\Debug\\CheckIncludeFile.c.obj /FdCMakeFiles\\cmTC_2a8be.dir\\Debug\\ /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\CMakeFiles\\CMakeScratch\\TryCompile-n4ajlm\\CheckIncludeFile.c
-        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_2a8be.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_2a8be.dir\\Debug\\CheckIncludeFile.c.obj  /out:Debug\\cmTC_2a8be.exe /implib:Debug\\cmTC_2a8be.lib /pdb:Debug\\cmTC_2a8be.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_5d942
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_5d942.dir\\Debug\\CheckIncludeFile.c.obj /FdCMakeFiles\\cmTC_5d942.dir\\Debug\\ /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\CMakeFiles\\CMakeScratch\\TryCompile-mmpsis\\CheckIncludeFile.c
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_5d942.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_5d942.dir\\Debug\\CheckIncludeFile.c.obj  /out:Debug\\cmTC_5d942.exe /implib:Debug\\cmTC_5d942.lib /pdb:Debug\\cmTC_5d942.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
         
       exitCode: 0
   -
@@ -244,8 +244,8 @@ events:
     checks:
       - "Looking for stdint.h"
     directories:
-      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-q3f0uh"
-      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-q3f0uh"
+      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-ukrws3"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-ukrws3"
     cmakeVariables:
       CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
@@ -258,11 +258,11 @@ events:
       variable: "HAVE_STDINT_H"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-q3f0uh'
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-ukrws3'
         
-        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_cb312
-        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_cb312.dir\\Debug\\CheckIncludeFile.c.obj /FdCMakeFiles\\cmTC_cb312.dir\\Debug\\ /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\CMakeFiles\\CMakeScratch\\TryCompile-q3f0uh\\CheckIncludeFile.c
-        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_cb312.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_cb312.dir\\Debug\\CheckIncludeFile.c.obj  /out:Debug\\cmTC_cb312.exe /implib:Debug\\cmTC_cb312.lib /pdb:Debug\\cmTC_cb312.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_22971
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_22971.dir\\Debug\\CheckIncludeFile.c.obj /FdCMakeFiles\\cmTC_22971.dir\\Debug\\ /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\CMakeFiles\\CMakeScratch\\TryCompile-ukrws3\\CheckIncludeFile.c
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_22971.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_22971.dir\\Debug\\CheckIncludeFile.c.obj  /out:Debug\\cmTC_22971.exe /implib:Debug\\cmTC_22971.lib /pdb:Debug\\cmTC_22971.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
         
       exitCode: 0
   -
@@ -275,8 +275,8 @@ events:
     checks:
       - "Looking for stddef.h"
     directories:
-      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-v9n0q3"
-      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-v9n0q3"
+      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-5q5jmj"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-5q5jmj"
     cmakeVariables:
       CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
@@ -289,11 +289,11 @@ events:
       variable: "HAVE_STDDEF_H"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-v9n0q3'
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-5q5jmj'
         
-        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_b8998
-        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_b8998.dir\\Debug\\CheckIncludeFile.c.obj /FdCMakeFiles\\cmTC_b8998.dir\\Debug\\ /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\CMakeFiles\\CMakeScratch\\TryCompile-v9n0q3\\CheckIncludeFile.c
-        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_b8998.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_b8998.dir\\Debug\\CheckIncludeFile.c.obj  /out:Debug\\cmTC_b8998.exe /implib:Debug\\cmTC_b8998.lib /pdb:Debug\\cmTC_b8998.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_0f437
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_0f437.dir\\Debug\\CheckIncludeFile.c.obj /FdCMakeFiles\\cmTC_0f437.dir\\Debug\\ /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\CMakeFiles\\CMakeScratch\\TryCompile-5q5jmj\\CheckIncludeFile.c
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_0f437.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_0f437.dir\\Debug\\CheckIncludeFile.c.obj  /out:Debug\\cmTC_0f437.exe /implib:Debug\\cmTC_0f437.lib /pdb:Debug\\cmTC_0f437.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
         
       exitCode: 0
   -
@@ -306,8 +306,8 @@ events:
     checks:
       - "Check size of void*"
     directories:
-      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-9kjdip"
-      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-9kjdip"
+      source: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-w3eyt0"
+      binary: "C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-w3eyt0"
     cmakeVariables:
       CMAKE_CXX_LINK_NO_PIE_SUPPORTED: "NO"
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
@@ -320,11 +320,11 @@ events:
       variable: "HAVE_SIZEOF_VOID_PTR"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-9kjdip'
+        Change Dir: 'C:/Users/alexf/Documents/coding/fornani/out/default/CMakeFiles/CMakeScratch/TryCompile-w3eyt0'
         
-        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_00296
-        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_00296.dir\\Debug\\SIZEOF_VOID_PTR.c.obj /FdCMakeFiles\\cmTC_00296.dir\\Debug\\ /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\CMakeFiles\\CMakeScratch\\TryCompile-9kjdip\\SIZEOF_VOID_PTR.c
-        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_00296.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_00296.dir\\Debug\\SIZEOF_VOID_PTR.c.obj  /out:Debug\\cmTC_00296.exe /implib:Debug\\cmTC_00296.lib /pdb:Debug\\cmTC_00296.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+        Run Build Command(s): C:/PROGRA~1/MICROS~3/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v cmTC_aec97
+        [1/2] C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\cl.exe  /nologo -DCMAKE_INTDIR=\\"Debug\\"  /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_aec97.dir\\Debug\\SIZEOF_VOID_PTR.c.obj /FdCMakeFiles\\cmTC_aec97.dir\\Debug\\ /FS -c C:\\Users\\alexf\\Documents\\coding\\fornani\\out\\default\\CMakeFiles\\CMakeScratch\\TryCompile-w3eyt0\\SIZEOF_VOID_PTR.c
+        [2/2] C:\\Windows\\system32\\cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_aec97.dir\\Debug --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~3\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1439~1.335\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_aec97.dir\\Debug\\SIZEOF_VOID_PTR.c.obj  /out:Debug\\cmTC_aec97.exe /implib:Debug\\cmTC_aec97.lib /pdb:Debug\\cmTC_aec97.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
         
       exitCode: 0
 ...
