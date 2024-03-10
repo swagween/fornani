@@ -1,5 +1,6 @@
 #include "GrapplingHook.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../utils/Math.hpp"
 
 namespace arms {
 void GrapplingHook::update() {
@@ -35,6 +36,31 @@ void GrapplingHook::update() {
 	svc::loggerLocator.get().hook_anchor_position = spring.get_anchor();
 	svc::loggerLocator.get().hook_physics_position = spring.variables.physics.position;
 }
+
+void GrapplingHook::break_free() {
+	spring.set_force(.2f);
+	grapple_flags.reset(arms::GrappleState::anchored);
+	grapple_triggers.set(arms::GrappleTriggers::released);
+	grapple_flags.set(arms::GrappleState::snaking);
+	svc::playerLocator.get().controller.release_hook();
+}
+
+void GrapplingHook::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		spring.render(win, campos);
+	} else {
+		rope.setTexture(svc::assetLocator.get().t_rope);
+		rope.setTextureRect(sf::IntRect({0, 0}, {6, 6}));
+		float distance = util::magnitude(svc::playerLocator.get().collider.physics.position - spring.get_anchor());
+		spring.num_links = distance / 20;
+		for (int i = 0; i < spring.num_links; ++i) {
+			rope.setPosition(spring.get_rope(i) - campos);
+			win.draw(rope);
+		}
+	}
+}
+
+
 sf::Vector2<float> GrapplingHook::probe_velocity(float speed) {
 	sf::Vector2<float> ret{};
 	float tweak = speed / 3;
@@ -46,8 +72,8 @@ sf::Vector2<float> GrapplingHook::probe_velocity(float speed) {
 	case dir::Inter::west: ret = {-speed, -tweak}; break;
 	case dir::Inter::northwest: ret = {-speed, -speed}; break;
 	case dir::Inter::northeast: ret = {speed, -speed}; break;
-	case dir::Inter::southwest: ret = {-speed, speed}; break;
-	case dir::Inter::southeast: ret = {speed, speed}; break;
+	case dir::Inter::southwest: ret = {-speed, tweak}; break;
+	case dir::Inter::southeast: ret = {speed, tweak}; break;
 	}
 
 	return ret;

@@ -12,7 +12,10 @@ inline const float SPACING{ 32.0f };
 inline const int NUM_STYLES{21};
 
 const inline float unit_size_f{ 32.0f };
-const inline int unit_size_i{ 32 };
+inline int const unit_size_i{32};
+
+inline float const min_hook_length{32.f};
+inline float const max_hook_length{256.f};
 
 enum class CONTROLS {
     JUMP,
@@ -214,10 +217,10 @@ inline std::unordered_map<char, int> get_orb_number{
 };
 
 
-inline std::unordered_map<CONTROLS, sf::Keyboard::Key> controls_mapping {
+inline std::unordered_map<CONTROLS, sf::Keyboard::Key> control_to_key {
     {CONTROLS::JUMP, sf::Keyboard::Z},
     {CONTROLS::SHOOT, sf::Keyboard::X},
-    {CONTROLS::DASH, sf::Keyboard::C},
+    {CONTROLS::DASH, sf::Keyboard::Z},
 	{CONTROLS::MOVE_LEFT, sf::Keyboard::Left},
 	{CONTROLS::MOVE_RIGHT, sf::Keyboard::Right},
 	{CONTROLS::LOOK_UP, sf::Keyboard::Up},

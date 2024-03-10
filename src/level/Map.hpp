@@ -13,7 +13,7 @@
 #include "../graphics/Transition.hpp"
 #include "../setup/LookupTables.hpp"
 #include "../setup/MapLookups.hpp"
-#include "../utils/Grid.hpp"
+#include "Grid.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
 #include "../weapon/Projectile.hpp"
@@ -46,8 +46,8 @@ class Layer {
 
   public:
 	Layer() = default;
-	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim) : render_order(o), collidable(c), dimensions(dim) { grid = squid::Grid({dim.x, dim.y}); }
-	squid::Grid grid{};
+	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim) : render_order(o), collidable(c), dimensions(dim) { grid = Grid({dim.x, dim.y}); }
+	Grid grid{};
 	uint8_t render_order{};
 	bool collidable{};
 	sf::Vector2<uint32_t> dimensions{};
@@ -67,12 +67,13 @@ class Map {
 	void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
 	void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
 	void render_console(sf::RenderWindow& win);
-	squid::Tile& tile_at(const uint8_t i, const uint8_t j);
+	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
 	void spawn_projectile_at(sf::Vector2<float> pos);
 	void spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter);
 	void manage_projectiles();
 	void generate_collidable_layer();
+	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(arms::Projectile& proj);
 	Vec get_spawn_position(int portal_source_map_id);
 

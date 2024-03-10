@@ -196,6 +196,8 @@ bool PlayerController::walking_autonomously() const { return flags.test(Movement
 
 float PlayerController::vertical_movement() { return key_map[ControllerInput::move_y]; }
 
+float PlayerController::horizontal_movement() { return key_map[ControllerInput::move_x]; }
+
 bool PlayerController::dash_requested() const { return dash_request > -1; }
 
 bool PlayerController::shot() { return key_map[ControllerInput::shoot] == 1.f; }

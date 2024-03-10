@@ -10,7 +10,7 @@
 #include "src/automa/StateManager.hpp"
 #include "src/setup/EnumLookups.hpp"
 #include "src/setup/ServiceLocator.hpp"
-#include "src/utils/Grid.hpp"
+#include "src/level/Grid.hpp"
 #include "src/utils/Shape.hpp"
 
 #include <imgui.h>

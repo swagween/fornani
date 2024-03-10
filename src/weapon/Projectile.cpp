@@ -37,6 +37,7 @@ Projectile::Projectile(int id) {
 	stats.spring_dampen = in_data["attributes"]["spring_dampen"].as<float>();
 	stats.spring_constant = in_data["attributes"]["spring_constant"].as<float>();
 	stats.spring_rest_length = in_data["attributes"]["spring_rest_length"].as<float>();
+	stats.spring_slack = in_data["attributes"]["spring_slack"].as<float>();
 
 	anim.num_sprites = in_data["animation"]["num_sprites"].as<int>();
 	anim.num_frames = in_data["animation"]["num_frames"].as<int>();
@@ -83,11 +84,12 @@ void Projectile::update() {
 		if (hook.grapple_flags.test(arms::GrappleState::probing)) {
 			hook.spring.set_anchor(physics.position);
 			hook.spring.set_bob(svc::playerLocator.get().apparent_position);
+			if (!svc::playerLocator.get().controller.hook_held()) {
+				hook.grapple_flags.set(arms::GrappleState::snaking);
+				hook.grapple_flags.reset(arms::GrappleState::probing);
+			}
 		}
-		if (hook.grapple_flags.test(arms::GrappleState::anchored)) {
-			bounding_box.position = hook.spring.get_anchor();
-			physics.position = hook.spring.get_anchor();
-		}
+		if (hook.grapple_flags.test(arms::GrappleState::anchored)) { lock_to_anchor(); }
 		if (hook.grapple_flags.test(arms::GrappleState::snaking)) {
 			physics.position = hook.spring.get_bob();
 			bounding_box.position = physics.position;
@@ -162,8 +164,13 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 			// unconstrained projectiles have to get sprites set here
 			if (stats.boomerang) { sp_proj.at(0).setPosition(gravitator.collider.physics.position - campos); }
-			if (stats.spring) { hook.spring.render(win, campos); }
-			if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) { sp_proj.at(0).setPosition(hook.spring.get_bob() - campos); }
+			if (stats.spring) { hook.render(win, campos); }
+			if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) {
+				sp_proj.at(0).setPosition(hook.spring.get_bob() - campos);
+			} else if (stats.spring) {
+				sp_proj.at(0).setPosition(hook.spring.get_anchor() - campos);
+			}
+			
 			constrain_sprite_at_barrel(sp_proj.at(0), campos);
 			if (state.test(ProjectileState::destruction_initiated)) { constrain_sprite_at_destruction_point(sp_proj.at(0), campos); }
 
@@ -407,7 +414,7 @@ void Projectile::constrain_hitbox_at_destruction_point() {
 }
 
 void Projectile::lock_to_anchor() {
-	physics.position = hook.spring.get_anchor();
+	physics.position = hook.spring.get_anchor() - bounding_box.dimensions * 0.5f;
 	bounding_box.position = physics.position;
 }
 

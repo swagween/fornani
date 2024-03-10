@@ -15,6 +15,7 @@ class Spring {
   public:
 	Spring() = default;
 	Spring(Parameters params);
+	void calculate();
 	void update();
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void calculate_force();
@@ -25,6 +26,9 @@ class Spring {
 	void set_force(float force);
 	sf::Vector2<float>& get_bob();
 	sf::Vector2<float>& get_anchor();
+	sf::Vector2<float>& get_rope(int index);
+
+	int num_links{8};
 
 	struct {
 		float extension{};

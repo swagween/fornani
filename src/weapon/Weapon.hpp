@@ -39,7 +39,7 @@ inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color{
 	{arms::WEAPON_TYPE::STINGER, flcolor::goldenrod},	  {arms::WEAPON_TYPE::TUSK, flcolor::white},	  {arms::WEAPON_TYPE::TOMAHAWK, flcolor::white},
 
 	{arms::WEAPON_TYPE::SKYCORPS_AR, flcolor::goldenrod}, {arms::WEAPON_TYPE::STINGER, flcolor::goldenrod}, {arms::WEAPON_TYPE::TUSK, flcolor::white},
-	{arms::WEAPON_TYPE::GRAPPLING_HOOK, flcolor::periwinkle}
+	{arms::WEAPON_TYPE::GRAPPLING_HOOK, flcolor::ui_white}
 
 };
 inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> dark_spray_color{
@@ -49,7 +49,7 @@ inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> dark_spray_color{
 	{arms::WEAPON_TYPE::VENOM, flcolor::dark_fucshia},	  {arms::WEAPON_TYPE::TWIN, flcolor::navy_blue},		 {arms::WEAPON_TYPE::CARISE, flcolor::navy_blue},	{arms::WEAPON_TYPE::STINGER, flcolor::fucshia},
 	{arms::WEAPON_TYPE::TUSK, flcolor::bright_orange},	  {arms::WEAPON_TYPE::TOMAHAWK, flcolor::white},
 
-	{arms::WEAPON_TYPE::SKYCORPS_AR, flcolor::goldenrod}, {arms::WEAPON_TYPE::GRAPPLING_HOOK, flcolor::blue}
+	{arms::WEAPON_TYPE::SKYCORPS_AR, flcolor::goldenrod}, {arms::WEAPON_TYPE::GRAPPLING_HOOK, flcolor::ui_white}
 
 };
 

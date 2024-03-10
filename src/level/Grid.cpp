@@ -1,10 +1,10 @@
 
 #include "Grid.hpp"
 
-namespace squid {
+namespace world {
 
 Grid::Grid(sf::Vector2<uint32_t> d) : dimensions(d) {
-	spacing = DEFAULT_SPACING;
+	spacing = lookup::unit_size_f;
 	cells.clear();
 
 	for (int i = 0; i < dimensions.x * dimensions.y; i++) {
@@ -213,4 +213,4 @@ void Grid::init_shape_vertices() {
 	}
 }
 
-} // namespace squid
+} // namespace world

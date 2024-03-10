@@ -319,7 +319,7 @@
         "rate": 1,
         "cooldown_time": 20,
         "recoil": 0.00,
-        "ui_color": 1
+        "ui_color": 0
       },
       "projectile": {
         "dimensions": {
@@ -346,12 +346,13 @@
           "gravitator_friction": 0.0,
           "spring_dampen": 0.99,
           "spring_constant": 0.02,
-          "spring_rest_length": 20.0
+          "spring_rest_length": 20.0,
+          "spring_slack": 0.65
         },
         "animation": {
           "num_sprites": 1,
           "num_frames": 2,
-          "framerate": 10
+          "framerate": 24
         }
       },
       "spray": {
@@ -362,15 +363,15 @@
           "particle_lifespan_variance": 30
         },
         "particle": {
-          "rate": 2,
-          "rate_variance": 1,
-          "expulsion_force": 4.0,
-          "expulsion_variance": 2.8,
+          "rate": 1,
+          "rate_variance": 0,
+          "expulsion_force": 2.0,
+          "expulsion_variance": 0.8,
           "cone": 1.8,
           "grav": 0.0,
           "grav_variance": 0.0,
-          "x_friction": 0.97,
-          "y_friction": 0.97
+          "x_friction": 0.99,
+          "y_friction": 0.99
         }
       }
     }

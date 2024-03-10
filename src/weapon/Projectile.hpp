@@ -78,6 +78,7 @@ struct ProjectileStats {
 	float spring_dampen{};
 	float spring_constant{};
 	float spring_rest_length{};
+	float spring_slack{};
 
 	int range_variance{};
 };

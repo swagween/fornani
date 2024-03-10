@@ -90,8 +90,7 @@ void Player::update() {
 
 	update_invincibility();
 
-	apparent_position.x = collider.physics.position.x + PLAYER_WIDTH / 2;
-	apparent_position.y = collider.physics.position.y;
+	apparent_position = collider.physics.position + collider.dimensions / 2.f;
 
 	update_animation();
 	update_weapon();

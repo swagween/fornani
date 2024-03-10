@@ -308,6 +308,13 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setOutlineColor(flcolor::dark_orange);
 	box.setOutlineThickness(-1);
 	win.draw(box);
+
+	// draw physics position
+	box.setSize({2.f, 2.f});
+	box.setPosition(physics.position.x - cam.x, physics.position.y - cam.y);
+	box.setFillColor(flcolor::green);
+	box.setOutlineThickness(0);
+	win.draw(box);
 }
 void Collider::reset() { flags = {}; }
 void Collider::reset_ground_flags() {

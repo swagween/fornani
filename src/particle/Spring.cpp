@@ -5,35 +5,34 @@
 namespace vfx {
 
 Spring::Spring(Parameters params) : params(params) {
-	variables.physics.set_constant_friction({0.999f, params.dampen_factor});
+	variables.physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
 	variables.physics.maximum_velocity = {6.f, 6.f};
 }
 
+void Spring::calculate() { calculate_force(); }
+
 void Spring::update() {
 	variables.physics.gravity = 1.5f;
-	calculate_force();
+	calculate();
 	variables.physics.update();
 	bob = variables.physics.position;
 }
 
 void Spring::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	bob_shape.setRadius(8.f);
-	anchor_shape.setRadius(4.f);
+	anchor_shape.setRadius(6.f);
+	bob_shape.setOrigin({bob_shape.getRadius(), bob_shape.getRadius()});
+	anchor_shape.setOrigin({anchor_shape.getRadius(), anchor_shape.getRadius()});
 	bob_shape.setFillColor(sf::Color::Transparent);
 	anchor_shape.setFillColor(sf::Color::Transparent);
 	bob_shape.setPosition(bob - cam);
 	anchor_shape.setPosition(anchor - cam);
-	bob_shape.setOutlineThickness(-1);
-	anchor_shape.setOutlineThickness(-1);
+	bob_shape.setOutlineThickness(-2);
+	anchor_shape.setOutlineThickness(-2);
 	bob_shape.setOutlineColor(flcolor::green);
 	anchor_shape.setOutlineColor(flcolor::goldenrod);
 	win.draw(bob_shape);
 	win.draw(anchor_shape);
-
-	anchor_shape.setRadius(10.f);
-	anchor_shape.setOutlineColor(sf::Color::White);
-	// anchor_shape.setPosition(variables.physics.position - cam);
-	// win.draw(anchor_shape);
 }
 
 void Spring::calculate_force() {
@@ -68,5 +67,12 @@ void Spring::set_force(float force) { params.spring_constant = force; }
 sf::Vector2<float>& Spring::get_bob() { return bob; }
 
 sf::Vector2<float>& Spring::get_anchor() { return anchor; }
+
+sf::Vector2<float>& Spring::get_rope(int index) {
+	auto ret = sf::Vector2<float>{};
+	ret = (bob - anchor) / (float)num_links;
+	ret = bob - ret * (float)index;
+	return ret;
+}
 
 } // namespace vfx

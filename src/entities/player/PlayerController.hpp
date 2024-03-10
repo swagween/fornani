@@ -61,6 +61,7 @@ class PlayerController {
 	bool walking_autonomously() const;
 
 	float vertical_movement();
+	float horizontal_movement();
 
 	bool dash_requested() const;
 
