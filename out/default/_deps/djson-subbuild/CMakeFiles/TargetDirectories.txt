@@ -1,3 +1,0 @@
-C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/CMakeFiles/djson-populate.dir
-C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/CMakeFiles/edit_cache.dir
-C:/Users/alexf/Documents/coding/fornani/out/default/_deps/djson-subbuild/CMakeFiles/rebuild_cache.dir
