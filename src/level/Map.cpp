@@ -224,8 +224,6 @@ void Map::load(std::string const& path, services::ServiceLocator& svc, player::P
 
 void Map::update(services::ServiceLocator& svc, player::Player& player) {
 
-	svc.consoleLocator.get().update();
-
 	player.collider.reset();
 	for (auto& a : player.antennae) { a.collider.reset(); }
 

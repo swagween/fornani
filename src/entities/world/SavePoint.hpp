@@ -17,6 +17,7 @@ class SavePoint {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
+	SavePoint() = default;
 	SavePoint(services::ServiceLocator& svc);
 
 	void update(services::ServiceLocator& svc, player::Player& player);

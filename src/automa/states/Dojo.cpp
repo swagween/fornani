@@ -88,6 +88,7 @@ void Dojo::handle_events(sf::Event& event, services::ServiceLocator& svc) {
 }
 
 void Dojo::tick_update(services::ServiceLocator& svc) {
+	console.update();
 	player.update(svc);
 
 	map.update(svc, player);

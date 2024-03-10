@@ -17,9 +17,8 @@ using Mil = std::chrono::milliseconds;
 
 class Ticker {
   public:
-	template <typename F>
-	void tick(F fn) {
 
+	void pretick() {
 		ft = Tim{tick_rate};
 
 		new_time = Clk::now();
@@ -35,21 +34,15 @@ class Ticker {
 			accumulator = Tim::zero();
 			return;
 		}
-
-		int integrations{0};
-		while (accumulator >= ft) {
-
-			fn();
-			accumulator -= ft;
-			++integrations;
-		}
-
+	};
+	void posttick() {
 		residue = accumulator;
 
 		total_integrations += integrations;
 		accumulator = Tim::zero();
 		++calls_per_frame;
 	};
+
 
 	float global_tick_rate();
 
