@@ -4,7 +4,7 @@
 
 namespace entity {
 
-SavePoint::SavePoint() {
+SavePoint::SavePoint(services::ServiceLocator& svc) {
 	id = -1;
 	dimensions = {32, 32};
 	bounding_box = shape::Shape(dimensions);
@@ -15,14 +15,14 @@ SavePoint::SavePoint() {
 
 	sparkle_behavior = {50, 3, 4.3, 0.4, 0.8, -0.3, 0.0, 0.97, 0.97};
 	sparkle_stats = {10, 0, 80, 30};
-	sparkles = vfx::Emitter(sparkle_behavior, sparkle_stats, flcolor::goldenrod);
+	sparkles = vfx::Emitter(svc, sparkle_behavior, sparkle_stats, flcolor::goldenrod);
 	sparkles.set_position(scaled_position.x * 32.f, scaled_position.y * 32.f);
 }
 
-void SavePoint::update() {
+void SavePoint::update(services::ServiceLocator& svc, player::Player& player) {
 
 	animation.update();
-	sparkles.update();
+	sparkles.update(svc);
 
 	sf::Vector2<float> proximity_offset = proximity_box.dimensions * 0.5f + dimensions * 0.5f;
 	position = static_cast<Vec>(scaled_position) * 32.f;
@@ -67,7 +67,6 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
 	win.draw(sprite);
-	svc.counterLocator.get().at(services::counters::draw_calls)++;
 	sf::RectangleShape box{};
 	if (activated) {
 		box.setFillColor(sf::Color{80, 180, 120, 100});
@@ -82,10 +81,9 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	box.setPosition(proximity_box.position - campos);
 	box.setSize(proximity_box.dimensions);
 	// win.draw(box);
-	svc.counterLocator.get().at(services::counters::draw_calls)++;
 }
 
-void SavePoint::save() {
+void SavePoint::save(services::ServiceLocator& svc) {
 
 	svc.dataLocator.get().save_progress(id);
 	can_activate = false;

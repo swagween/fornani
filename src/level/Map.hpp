@@ -95,6 +95,8 @@ class Map {
 
 	lookup::STYLE style{}; // which tileset to render
 
+	cam::Camera camera{};
+
 	// minimap
 	sf::View minimap{};
 	sf::RectangleShape minimap_tile{};

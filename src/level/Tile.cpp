@@ -15,12 +15,12 @@ void Tile::update_polygon(sf::Vector2<float> cam) {
 	polygon.setOutlineThickness(-1);
 }
 
-void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, services::ServiceLocator& svc) {
 	if (collision_check && svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 		update_polygon(cam);
 		if (is_solid()) {
 			win.draw(polygon);
-			svc.counterLocator.get().at(services::counters::draw_calls)++;
+			
 		}
 	}
 }

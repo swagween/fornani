@@ -49,7 +49,11 @@ class GameState {
 	STATE state = STATE::STATE_NULL;
 	bool debug_mode{false};
 
-	gui::HUD hud{{20, 20}};
+	gui::HUD hud{};
+
+	player::Player player{};
+
+	gui::Console console{};
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};

@@ -22,7 +22,7 @@ class TextWriter {
 	void set_position(sf::Vector2<float> pos);
 	void set_bounds(sf::Vector2<float> new_bounds);
 	void wrap();
-	void load_message(dj::Json& source, std::string_view key);
+	void load_message(dj::Json& source, std::string_view key, services::ServiceLocator& svc);
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);
 	void check_if_complete();

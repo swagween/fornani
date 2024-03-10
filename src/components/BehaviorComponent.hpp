@@ -7,7 +7,6 @@
 #include <random>
 #include <vector>
 #include "../entities/behavior/EntityBehavior.hpp"
-#include "../utils/AdjacencyList.hpp"
 #include "../utils/StateMachine.hpp"
 
 namespace components {

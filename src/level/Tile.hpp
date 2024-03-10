@@ -11,7 +11,7 @@ struct Tile {
 	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, lookup::TILE_TYPE t);
 
 	void update_polygon(sf::Vector2<float> cam); // for greyblock mode
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(sf::RenderWindow& win, sf::Vector2<float> cam, services::ServiceLocator& svc);
 
 	bool is_occupied() const;
 	bool is_collidable() const;

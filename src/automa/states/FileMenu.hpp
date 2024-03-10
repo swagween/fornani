@@ -31,6 +31,7 @@ class FileMenu : public automa::GameState {
 	int text_left{};
 	int text_right{};
 	sf::Vector2i text_dim{72, 16};
+	sf::Vector2<float> zero{};
 
 	std::array<sf::IntRect, num_files> file_rects{};
 };

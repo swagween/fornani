@@ -38,8 +38,9 @@ int const num_colors = 6;
 class HUD {
 
   public:
-	HUD(sf::Vector2<int> pos) : position(pos) {
-		update();
+	HUD() = default;
+	HUD(sf::Vector2<int> pos, services::ServiceLocator& svc, player::Player& player) : position(pos) {
+		update(player);
 		for (int i = 0; i < num_heart_sprites; ++i) {
 			sp_hearts.at(i).setTexture(svc.assetLocator.get().t_hud_hearts);
 			sp_hearts.at(i).setTextureRect(sf::IntRect({heart_dimensions.x * i, 0}, heart_dimensions));
@@ -64,7 +65,7 @@ class HUD {
 		}
 	}
 
-	void update() {
+	void update(player::Player& player) {
 		filled_hp_cells = player.player_stats.health;
 		num_orbs = player.player_stats.orbs;
 		total_hp_cells = player.player_stats.max_health;
@@ -80,7 +81,7 @@ class HUD {
 		if (num_orbs < 0) { num_orbs = 0; }
 	}
 
-	void render(sf::RenderWindow& win) {
+	void render(sf::RenderWindow& win, services::ServiceLocator& svc, player::Player& player) {
 
 		// HP
 		for (int i = 0; i < total_hp_cells; ++i) {
@@ -91,18 +92,15 @@ class HUD {
 					sp_hearts.at(HP_FILLED).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
 				}
 				win.draw(sp_hearts.at(HP_FILLED));
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			} else {
 				sp_hearts.at(HP_GONE).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
 				win.draw(sp_hearts.at(HP_GONE));
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			}
 		}
 
 		// ORB
 		sp_orb_text.at(orb_label_index).setPosition(corner_pad.x + ORB_origin.x, corner_pad.y + ORB_origin.y);
 		win.draw(sp_orb_text.at(orb_label_index));
-		svc.counterLocator.get().at(services::counters::draw_calls)++;
 		digits = std::to_string(num_orbs);
 		int ctr{0};
 		for (auto& digit : digits) {
@@ -110,7 +108,6 @@ class HUD {
 			if (digit - '0' >= 0 && digit - '0' < 10) {
 				sp_orb_text.at(digit - '0').setPosition(corner_pad.x + ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), corner_pad.y + ORB_origin.y);
 				win.draw(sp_orb_text.at(digit - '0'));
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			}
 
 			ctr++;
@@ -125,20 +122,18 @@ class HUD {
 			sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			if (i == player.arsenal.get_index()) {
 				win.draw(sp_guns_shadow.at(gun_index));
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
+				
 				win.draw(sp_guns.at(gun_index));
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
 				pointer_index = i;
 			} else {
 				win.draw(sp_guns_shadow.at(gun_index));
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			}
 		}
 		arms::WEAPON_TYPE curr_type = player.equipped_weapon().type;
 		sp_pointer.at(player.equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
 		if (!player.arsenal.loadout.empty()) {
 			win.draw(sp_pointer.at(player.equipped_weapon().attributes.ui_color));
-			svc.counterLocator.get().at(services::counters::draw_calls)++;
+			
 		}
 	}
 

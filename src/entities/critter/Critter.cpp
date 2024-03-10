@@ -69,7 +69,7 @@ void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos, services:
 	ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
 	hr.setPosition(hostile_range.position.x - campos.x, hostile_range.position.y - campos.y);
 	win.draw(sprite);
-	//svc.counterLocator.get().at(services::counters::draw_calls)++;
+	//
 
 	if (svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 		ar.setFillColor(sf::Color{80, 80, 20, 60});

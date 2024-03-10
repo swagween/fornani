@@ -417,11 +417,11 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 	for (auto& emitter : active_emitters) { emitter.render(win, cam); }
 
 	// player
-	player.render(win, svc.cameraLocator.get().physics.position);
+	player.render(win, camera.physics.position);
 
 	// enemies
 	for (auto& critter : critters) {
-		if (svc.cameraLocator.get().within_frame(critter->sprite_position.x, critter->sprite_position.y)) { critter->render(win, cam); }
+		if (camera.within_frame(critter->sprite_position.x, critter->sprite_position.y)) { critter->render(win, cam); }
 	}
 
 	// foreground animators
@@ -440,9 +440,9 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 						int cell_x = cell.bounding_box.position.x - cam.x;
 						int cell_y = cell.bounding_box.position.y - cam.y;
 						tileset.at(cell.value).setPosition(cell_x, cell_y);
-						if (svc.cameraLocator.get().within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) {
+						if (camera.within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) {
 							win.draw(tileset.at(cell.value));
-							svc.counterLocator.get().at(services::counters::draw_calls)++;
+							
 						}
 					}
 					cell.render(win, cam);
@@ -457,10 +457,10 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 		borderbox.setSize({(float)cam::screen_dimensions.x, ydiff});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
-		svc.counterLocator.get().at(services::counters::draw_calls)++;
+		
 		borderbox.setPosition(0.0f, real_dimensions.y + ydiff);
 		win.draw(borderbox);
-		svc.counterLocator.get().at(services::counters::draw_calls)++;
+		
 	}
 	if (real_dimensions.x < cam::screen_dimensions.x) {
 		float xdiff = (cam::screen_dimensions.x - real_dimensions.x) / 2;
@@ -468,10 +468,10 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 		borderbox.setSize({xdiff, (float)cam::screen_dimensions.y});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
-		svc.counterLocator.get().at(services::counters::draw_calls)++;
+		
 		borderbox.setPosition(real_dimensions.x + xdiff, 0.0f);
 		win.draw(borderbox);
-		svc.counterLocator.get().at(services::counters::draw_calls)++;
+		
 	}
 
 	for (auto& portal : portals) { portal.render(win, cam); }
@@ -491,17 +491,17 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 			if (cell.value > 0) {
 				minimap_tile.setFillColor(sf::Color{20, 240, 20, 120});
 				win.draw(minimap_tile);
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
+				
 			} else {
 				minimap_tile.setFillColor(sf::Color{20, 20, 20, 120});
 				win.draw(minimap_tile);
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
+				
 			}
 		}
 		minimap_tile.setPosition(player.collider.physics.position.x - cam.x, player.collider.physics.position.y - cam.y);
 		minimap_tile.setFillColor(sf::Color{240, 240, 240, 180});
 		win.draw(minimap_tile);
-		svc.counterLocator.get().at(services::counters::draw_calls)++;
+		
 		win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y}));
 	}
 }
@@ -515,9 +515,9 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 		box.setFillColor(flcolor::black);
 		box.setSize({(float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y});
 		win.draw(box);
-		svc.counterLocator.get().at(services::counters::draw_calls)++;
+		
 	}
-	if (real_dimensions.y < cam::screen_dimensions.y) { svc.cameraLocator.get().fix_horizontally(real_dimensions); }
+	if (real_dimensions.y < cam::screen_dimensions.y) { camera.fix_horizontally(real_dimensions); }
 	for (auto& layer : layers) {
 		if (layer.render_order < 4) {
 			for (auto& cell : layer.grid.cells) {
@@ -526,9 +526,9 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 					int cell_y = cell.bounding_box.position.y - cam.y;
 					tileset.at(cell.value).setPosition(cell_x, cell_y);
 					if (!svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
-						if (svc.cameraLocator.get().within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) {
+						if (camera.within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) {
 							win.draw(tileset.at(cell.value));
-							svc.counterLocator.get().at(services::counters::draw_calls)++;
+							
 						}
 					}
 				}
@@ -557,7 +557,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos, services::ServiceLocator& 
 	active_projectiles.back().set_sprite();
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed();
-	active_projectiles.back().update();
+	active_projectiles.back().update(svc);
 	active_projectiles.back().sync_position();
 	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
 	if (active_projectiles.back().stats.spring) {
@@ -584,7 +584,7 @@ void Map::spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& 
 	active_emitters.back().get_physics().acceleration += critter.colliders.at(0).physics.acceleration;
 	active_emitters.back().set_position(pos.x, pos.y);
 	active_emitters.back().set_direction(critter.weapon.firing_direction);
-	active_emitters.back().update();
+	active_emitters.back().update(svc);
 	critter.flags.reset(critter::Flags::weapon_fired);
 }
 
@@ -613,7 +613,7 @@ void Map::manage_projectiles(services::ServiceLocator& svc, player::Player& play
 	}
 
 	for (auto& critter : critters) {
-		if (critter->flags.test(critter::Flags::weapon_fired)) { spawn_critter_projectile_at(critter->barrel_point, *critter); }
+		if (critter->flags.test(critter::Flags::weapon_fired)) { spawn_critter_projectile_at(critter->barrel_point, *critter, svc); }
 	}
 }
 

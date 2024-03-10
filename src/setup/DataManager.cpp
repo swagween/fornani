@@ -35,7 +35,7 @@ void DataManager::load_data() {
 	std::cout << " success!\n";
 }
 
-void DataManager::save_progress(int save_point_id) {
+void DataManager::save_progress(services::ServiceLocator& svc, player::Player& player, int save_point_id) {
 
 	// set file data based on player state
 	save["player_data"]["max_hp"] = player.player_stats.max_health;
@@ -61,7 +61,7 @@ void DataManager::save_progress(int save_point_id) {
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
-void DataManager::load_progress(int const file, bool state_switch) {
+void DataManager::load_progress(services::ServiceLocator& svc, player::Player& player, int const file, bool state_switch) {
 
 	current_save = file;
 
@@ -92,11 +92,11 @@ void DataManager::load_progress(int const file, bool state_switch) {
 	}
 
 	//reset some things that might be lingering
-	svc.consoleLocator.get().flags.reset(gui::ConsoleFlags::active);
+	//svc.consoleLocator.get().flags.reset(gui::ConsoleFlags::active);
 	player.arsenal.extant_projectile_instances = {};
 }
 
-void DataManager::load_blank_save(bool state_switch) {
+void DataManager::load_blank_save(services::ServiceLocator& svc, player::Player& player, bool state_switch) {
 
 	save = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
 	assert(!save.is_null());
@@ -115,7 +115,7 @@ void DataManager::load_blank_save(bool state_switch) {
 	player.arsenal.loadout.clear();
 }
 
-void DataManager::load_player_params() {
+void DataManager::load_player_params(player::Player& player) {
 
 	std::cout << "loading player params ...";
 	player_params = dj::Json::from_file((finder.resource_path + "/data/player/physics_params.json").c_str());
@@ -140,7 +140,7 @@ void DataManager::load_player_params() {
 	std::cout << " success!\n";
 }
 
-void DataManager::save_player_params() {
+void DataManager::save_player_params(player::Player& player) {
 
 	std::cout << "saving player params ...";
 	player_params["physics"]["grav"] = player.physics_stats.grav;

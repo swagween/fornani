@@ -31,13 +31,14 @@ struct Border {
 class Console {
 
   public:
-	Console();
+	Console() = default;
+	Console(services::ServiceLocator& svc);
 
 	void begin();
 	void update();
 	void render(sf::RenderWindow& win);
 
-	void load_and_launch(std::string_view key);
+	void load_and_launch(std::string_view key, services::ServiceLocator& svc);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
 

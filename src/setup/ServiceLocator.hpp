@@ -41,13 +41,13 @@ class ServiceLocator {
 	forloop::Service<util::Stopwatch>::Instance stopwatchLocator{};
 	forloop::Service<util::Ticker>::Instance tickerLocator{};
 	forloop::Service<automa::StateController>::Instance stateControllerLocator{};
-	forloop::Service<gui::Console>::Instance consoleLocator{};
-	forloop::Service<util::Random>::Instance randomLocator{};
+	//forloop::Service<gui::Console>::Instance consoleLocator{};
+	//forloop::Service<util::Random>::Instance randomLocator{};
 	forloop::Service<util::BitFlags<global_flags>>::Instance globalBitFlagsLocator{};
 	forloop::Service<util::InputState>::Instance inputStateLocator{};
 	forloop::Service<std::array<uint16_t, num_counters>>::Instance counterLocator{};
-	forloop::Service<float>::Instance floatReadoutLocator{};
-	forloop::Service<util::Logger>::Instance loggerLocator{};
+	//forloop::Service<float>::Instance floatReadoutLocator{};
+	//forloop::Service<util::Logger>::Instance loggerLocator{};
 	forloop::Service<audio::Soundboard>::Instance soundboardLocator{};
 	forloop::Service<audio::MusicPlayer>::Instance musicPlayerLocator{};
 };

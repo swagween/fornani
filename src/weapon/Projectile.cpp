@@ -151,7 +151,7 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos, servi
 		for (auto& sprite : sp_proj) {
 			constrain_sprite_at_barrel(sprite, campos);
 			win.draw(sprite);
-			svc.counterLocator.get().at(services::counters::draw_calls)++;
+			
 		}
 
 	} else if (render_type == RENDER_TYPE::SINGLE_SPRITE) {
@@ -186,10 +186,10 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos, servi
 			if (svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 				gravitator.render(win, campos, svc);
 				win.draw(box);
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
+				
 			} else {
 				win.draw(sp_proj.at(0));
-				svc.counterLocator.get().at(services::counters::draw_calls)++;
+				
 			}
 		}
 	}

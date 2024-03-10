@@ -24,7 +24,7 @@ void Portal::render(sf::RenderWindow& win, Vec campos) {
 	box.setPosition(bounding_box.position - campos);
 	box.setSize(dimensions);
 	/*win.draw(box);
-	svc.counterLocator.get().at(services::counters::draw_calls)++;*/
+	*/
 }
 
 void Portal::handle_activation(services::ServiceLocator& svc, player::Player& player, int room_id, bool& fade_out, bool& done) {

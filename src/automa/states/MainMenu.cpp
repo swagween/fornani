@@ -9,8 +9,8 @@
 namespace automa {
 // 5, 8, 11
 MainMenu::MainMenu(services::ServiceLocator& svc) {
+	console = gui::Console(svc);
 	state = STATE::STATE_MENU;
-	svc.cameraLocator.get().set_position({1, 1});
 
 	selection_width = 92;
 	selection_buffer = 14;
@@ -149,7 +149,7 @@ void MainMenu::frame_update(services::ServiceLocator& svc) {}
 
 void MainMenu::render(sf::RenderWindow& win, services::ServiceLocator& svc) {
 	win.draw(title);
-	svc.counterLocator.get().at(services::counters::draw_calls)++;
+	
 
 	int selection_adjustment{};
 	for (auto i = 0; i < 3; ++i) {
@@ -160,7 +160,7 @@ void MainMenu::render(sf::RenderWindow& win, services::ServiceLocator& svc) {
 		}
 		if (i + selection_adjustment < 6) {
 			win.draw(title_assets.at(i + selection_adjustment));
-			svc.counterLocator.get().at(services::counters::draw_calls)++;
+			
 		}
 	}
 

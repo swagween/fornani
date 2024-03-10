@@ -4,7 +4,7 @@
 
 namespace arms {
 
-void GrapplingHook::update() {
+void GrapplingHook::update(player::Player& player) {
 
 	if (grapple_flags.test(GrappleState::probing)) { spring.set_bob(player.equipped_weapon().barrel_point); }
 	if (grapple_flags.test(GrappleState::anchored)) {
@@ -18,24 +18,16 @@ void GrapplingHook::update() {
 		spring.set_bob(spring.get_anchor());
 		spring.variables.physics.position = spring.get_bob();
 		spring.set_anchor(player.apparent_position);
-		svc.loggerLocator.get().triggers.set(util::Trigger::hook_released);
 		grapple_triggers.reset(arms::GrappleTriggers::released);
 	}
 	if (grapple_flags.test(arms::GrappleState::snaking)) {
 		spring.set_rest_length(-80);
 		spring.set_anchor(player.apparent_position);
 		spring.update();
-		svc.loggerLocator.get().states.set(util::State::hook_snaking);
-	} else {
-		svc.loggerLocator.get().states.reset(util::State::hook_snaking);
 	}
-
-	svc.loggerLocator.get().hook_bob_position = spring.get_bob();
-	svc.loggerLocator.get().hook_anchor_position = spring.get_anchor();
-	svc.loggerLocator.get().hook_physics_position = spring.variables.physics.position;
 }
 
-void GrapplingHook::break_free() {
+void GrapplingHook::break_free(player::Player& player) {
 	spring.set_force(.2f);
 	grapple_flags.reset(arms::GrappleState::anchored);
 	grapple_triggers.set(arms::GrappleTriggers::released);
@@ -43,7 +35,7 @@ void GrapplingHook::break_free() {
 	player.controller.release_hook();
 }
 
-void GrapplingHook::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void GrapplingHook::render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc, player::Player& player) {
 	if (svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 		spring.render(win, campos);
 	} else {

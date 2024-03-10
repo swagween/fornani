@@ -34,11 +34,7 @@ enum class BACKDROP {
 	BG_GROVE
 };
 
-inline std::unordered_map<int, sf::Texture&> get_backdrop_texture{
-	{0, svc.assetLocator.get().t_bg_dusk},		 {1, svc.assetLocator.get().t_bg_sunrise},	 {2, svc.assetLocator.get().t_bg_opensky},	 {3, svc.assetLocator.get().t_bg_rosyhaze}, {4, svc.assetLocator.get().t_bg_dawn},
-	{5, svc.assetLocator.get().t_bg_night},	 {6, svc.assetLocator.get().t_bg_overcast}, {7, svc.assetLocator.get().t_bg_slime},	 {8, svc.assetLocator.get().t_bg_black},	 {9, svc.assetLocator.get().t_bg_navy},
-	{10, svc.assetLocator.get().t_bg_dirt},	 {11, svc.assetLocator.get().t_bg_gear},	 {12, svc.assetLocator.get().t_bg_library}, {13, svc.assetLocator.get().t_bg_granite}, {14, svc.assetLocator.get().t_bg_ruins},
-	{15, svc.assetLocator.get().t_bg_crevasse}, {16, svc.assetLocator.get().t_bg_deep},	 {17, svc.assetLocator.get().t_bg_grove}};
+
 
 struct BackgroundBehavior {
 	int used_layers{};
@@ -57,15 +53,19 @@ class Background {
 
   public:
 	Background() = default;
-	Background(BackgroundBehavior b, int bg_id);
+	Background(BackgroundBehavior b, int bg_id, services::ServiceLocator& svc);
 
-	void update();
+
+	void update(cam::Camera& camera, services::ServiceLocator& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& mapdim);
 
 	std::array<sf::Sprite, num_layers> sprites{};
 	BackgroundBehavior behavior{};
 
 	std::vector<components::PhysicsComponent> physics{};
+
+  private:
+	std::unordered_map<int, sf::Texture&> get_backdrop_texture{};
 };
 
 } // namespace bg

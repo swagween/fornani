@@ -584,8 +584,7 @@ void run(char** argv, services::ServiceLocator& svc) {
 	svc.soundboardLocator.get().finder.setResourcePath(argv);
 	svc.soundboardLocator.get().load_audio();
 	svc.musicPlayerLocator.get().turn_off(); // off by default
-	// player
-	player.init();
+	
 
 	// state manager
 	SM.set_current_state(std::make_unique<automa::MainMenu>());

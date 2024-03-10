@@ -17,12 +17,12 @@ class SavePoint {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
-	SavePoint();
+	SavePoint(services::ServiceLocator& svc);
 
-	void update();
+	void update(services::ServiceLocator& svc, player::Player& player);
 	void render(sf::RenderWindow& win, Vec campos);
 
-	void save(); // talk to SaveDataManager to write current progress to save.json
+	void save(services::ServiceLocator& svc); // talk to SaveDataManager to write current progress to save.json
 
 	Vec dimensions{32, 32};
 	Vec sprite_dimensions{64.f, 64.f};

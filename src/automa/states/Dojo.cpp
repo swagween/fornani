@@ -4,16 +4,19 @@
 namespace automa {
 
 Dojo::Dojo(services::ServiceLocator& svc) {
+
+	console = gui::Console(svc);
 	state = STATE::STATE_DOJO;
-	svc.cameraLocator.get().set_position({1, 1});
+	map.camera.set_position({1, 1});
 	player.set_position({360, 500});
+	hud = gui::HUD({20, 20}, svc, player);
 }
 void Dojo::init(std::string const& load_path, services::ServiceLocator& svc) {
-
+	player.init(svc);
 	hud.set_corner_pad(false); // reset hud position to corner
 	player.reset_flags();
 
-	map.load(load_path);
+	map.load(load_path, svc, player);
 	tileset = svc.assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
 	for (int i = 0; i < 16; ++i) {
 		for (int j = 0; j < 16; ++j) {
@@ -38,8 +41,8 @@ void Dojo::init(std::string const& load_path, services::ServiceLocator& svc) {
 				found_one = true;
 				sf::Vector2<float> spawn_position{portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - player::PLAYER_HEIGHT};
 				player.set_position(spawn_position);
-				svc.cameraLocator.get().center(spawn_position);
-				svc.cameraLocator.get().physics.position = spawn_position - sf::Vector2<float>(svc.cameraLocator.get().bounding_box.width / 2, svc.cameraLocator.get().bounding_box.height / 2);
+				map.camera.center(spawn_position);
+				map.camera.physics.position = spawn_position - sf::Vector2<float>(map.camera.bounding_box.width / 2, map.camera.bounding_box.height / 2);
 			}
 		}
 	}
@@ -85,22 +88,19 @@ void Dojo::handle_events(sf::Event& event, services::ServiceLocator& svc) {
 }
 
 void Dojo::tick_update(services::ServiceLocator& svc) {
-	player.update();
+	player.update(svc);
 
-	map.update(svc);
-	svc.cameraLocator.get().center(player.anchor_point);
-	svc.cameraLocator.get().update();
-	svc.cameraLocator.get().restrict_movement(map.real_dimensions);
-	if (map.real_dimensions.x < cam::screen_dimensions.x) { svc.cameraLocator.get().fix_vertically(map.real_dimensions); }
-	if (map.real_dimensions.y < cam::screen_dimensions.y) { svc.cameraLocator.get().fix_horizontally(map.real_dimensions); }
+	map.update(svc, player);
+	map.camera.center(player.anchor_point);
+	map.camera.update();
+	map.camera.restrict_movement(map.real_dimensions);
+	if (map.real_dimensions.x < cam::screen_dimensions.x) { map.camera.fix_vertically(map.real_dimensions); }
+	if (map.real_dimensions.y < cam::screen_dimensions.y) { map.camera.fix_horizontally(map.real_dimensions); }
 	for (auto& critter : map.critters) {
-		critter->update();
-		critter->unique_update();
+		critter->update(svc.tickerLocator.get().tick_rate);
+		critter->unique_update(player);
 		critter->flags.reset(critter::Flags::shot);
 	}
-
-	svc.assetLocator.get().three_pipes.setVolume(svc.assetLocator.get().music_vol);
-	map.debug_mode = debug_mode;
 
 	svc.inputStateLocator.get().reset_triggers();
 	player.controller.clean();
@@ -108,20 +108,20 @@ void Dojo::tick_update(services::ServiceLocator& svc) {
 }
 
 void Dojo::frame_update(services::ServiceLocator& svc) {
-	map.background->update();
-	hud.update();
+	map.background->update(map.camera, svc);
+	hud.update(player);
 }
 
 void Dojo::render(sf::RenderWindow& win, services::ServiceLocator& svc) {
-	sf::Vector2<float> camvel = svc.cameraLocator.get().physics.velocity;
-	sf::Vector2<float> camoffset = svc.cameraLocator.get().physics.position + camvel;
-	map.render_background(win, tileset_sprites, svc.cameraLocator.get().physics.position);
+	sf::Vector2<float> camvel = map.camera.physics.velocity;
+	sf::Vector2<float> camoffset = map.camera.physics.position + camvel;
+	map.render_background(win, tileset_sprites, map.camera.physics.position, svc);
 
-	map.render(win, tileset_sprites, svc.cameraLocator.get().physics.position);
+	map.render(win, tileset_sprites, map.camera.physics.position, svc);
 
-	if (!svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) { hud.render(win); }
+	if (!svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) { hud.render(win, svc, player); }
 
-	map.render_console(win);
+	map.render_console(win, svc);
 
 	svc.assetLocator.get().sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
 	svc.assetLocator.get().sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);

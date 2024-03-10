@@ -49,6 +49,6 @@ void Gravitator::render(sf::RenderWindow& win, Vec campos, services::ServiceLoca
 	} else {
 		win.draw(box);
 	}
-	svc.counterLocator.get().at(services::counters::draw_calls)++;
+	
 }
 } // namespace vfx
