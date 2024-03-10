@@ -19,12 +19,12 @@ void Critter::init() {
 
 	set_sprite();
 
-	unique_id = svc::randomLocator.get().random_range(-2147483647, 2147483647);
+	//unique_id = svc.randomLocator.get().random_range(-2147483647, 2147483647);
 
 	condition.hp = stats.base_hp;
 }
 
-void Critter::update() {
+void Critter::update(float dt) {
 
 	unique_update();
 	behavior.update();
@@ -35,7 +35,7 @@ void Critter::update() {
 	if (!colliders.empty()) { sprite_position = colliders.at(0).physics.position + sprite.getOrigin() - colliders.at(0).sprite_offset; }
 
 	for (auto& collider : colliders) {
-		collider.physics.update_euler();
+		collider.physics.update(dt);
 		collider.sync_components();
 		collider.update();
 	}
@@ -59,8 +59,8 @@ void Critter::update() {
 	}
 }
 
-void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
-	svc::stopwatchLocator.get().start();
+void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos, services::ServiceLocator& svc) {
+	//svc.stopwatchLocator.get().start();
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 	drawbox.setSize(dimensions);
 
@@ -69,9 +69,9 @@ void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 	ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
 	hr.setPosition(hostile_range.position.x - campos.x, hostile_range.position.y - campos.y);
 	win.draw(sprite);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	//svc.counterLocator.get().at(services::counters::draw_calls)++;
 
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+	if (svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 		ar.setFillColor(sf::Color{80, 80, 20, 60});
 		hr.setFillColor(sf::Color{80, 40, 20, 60});
 		ar.setOutlineColor(sf::Color{180, 180, 180});
@@ -107,13 +107,13 @@ void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 	hpbox.setFillColor(sf::Color{0, 228, 185});
 	hpbox.setSize({condition.hp, 4.f});
 	win.draw(hpbox);
-	svc::counterLocator.get().at(svc::draw_calls) += 2;
-	svc::stopwatchLocator.get().stop();
+	//svc.counterLocator.get().at(services::counters::draw_calls) += 2;
+	//svc.stopwatchLocator.get().stop();
 }
 
 void Critter::set_sprite() {
 	try {
-		sprite.setTexture(get_critter_texture.at(metadata.id));
+		//sprite.setTexture(get_critter_texture.at(metadata.id));
 	} catch (std::out_of_range) {
 		printf("Failed to set sprite for critter.\n");
 		return;

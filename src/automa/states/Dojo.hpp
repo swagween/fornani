@@ -7,13 +7,13 @@ namespace automa {
 
 class Dojo : public GameState {
   public:
-	Dojo();
-	void init(std::string const& load_path);
+	Dojo(services::ServiceLocator& svc);
+	void init(std::string const& load_path, services::ServiceLocator& svc);
 	void setTilesetTexture(sf::Texture& t);
-	void handle_events(sf::Event& event);
-	void tick_update();
-	void frame_update();
-	void render(sf::RenderWindow& win);
+	void handle_events(sf::Event& event, services::ServiceLocator& svc);
+	void tick_update(services::ServiceLocator& svc);
+	void frame_update(services::ServiceLocator& svc);
+	void render(sf::RenderWindow& win, services::ServiceLocator& svc);
 
 	world::Map map{};
 	sf::Texture tileset{};

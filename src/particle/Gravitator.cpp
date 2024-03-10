@@ -39,16 +39,16 @@ void Gravitator::set_target_position(Vec new_position) {
 	collider.physics.apply_force({force_x, force_y});
 }
 
-void Gravitator::render(sf::RenderWindow& win, Vec campos) {
+void Gravitator::render(sf::RenderWindow& win, Vec campos, services::ServiceLocator& svc) {
 
 	box.setPosition((int)(collider.bounding_box.position.x - campos.x),
 					(int)(collider.bounding_box.position.y - campos.y));
 
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+	if (svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 		win.draw(box);
 	} else {
 		win.draw(box);
 	}
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	svc.counterLocator.get().at(services::counters::draw_calls)++;
 }
 } // namespace vfx

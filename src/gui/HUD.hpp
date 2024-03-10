@@ -41,11 +41,11 @@ class HUD {
 	HUD(sf::Vector2<int> pos) : position(pos) {
 		update();
 		for (int i = 0; i < num_heart_sprites; ++i) {
-			sp_hearts.at(i).setTexture(svc::assetLocator.get().t_hud_hearts);
+			sp_hearts.at(i).setTexture(svc.assetLocator.get().t_hud_hearts);
 			sp_hearts.at(i).setTextureRect(sf::IntRect({heart_dimensions.x * i, 0}, heart_dimensions));
 		}
 		for (int i = 0; i < num_orb_chars; ++i) {
-			sp_orb_text.at(i).setTexture(svc::assetLocator.get().t_hud_orb_font);
+			sp_orb_text.at(i).setTexture(svc.assetLocator.get().t_hud_orb_font);
 			if (i < 10) {
 				sp_orb_text.at(i).setTextureRect(sf::IntRect({orb_text_dimensions.x * i, 0}, orb_text_dimensions));
 			} else {
@@ -53,23 +53,23 @@ class HUD {
 			}
 		}
 		for (int i = 0; i < num_guns; ++i) {
-			sp_guns.at(i).setTexture(svc::assetLocator.get().t_hud_gun_color);
+			sp_guns.at(i).setTexture(svc.assetLocator.get().t_hud_gun_color);
 			sp_guns.at(i).setTextureRect(sf::IntRect({0, i * gun_dimensions.y}, gun_dimensions));
-			sp_guns_shadow.at(i).setTexture(svc::assetLocator.get().t_hud_gun_shadow);
+			sp_guns_shadow.at(i).setTexture(svc.assetLocator.get().t_hud_gun_shadow);
 			sp_guns_shadow.at(i).setTextureRect(sf::IntRect({0, i * gun_dimensions.y}, gun_dimensions));
 		}
 		for (int i = 0; i < num_colors; ++i) {
-			sp_pointer.at(i).setTexture(svc::assetLocator.get().t_hud_pointer);
+			sp_pointer.at(i).setTexture(svc.assetLocator.get().t_hud_pointer);
 			sp_pointer.at(i).setTextureRect(sf::IntRect({0, i * pointer_dimensions.y}, pointer_dimensions));
 		}
 	}
 
 	void update() {
-		filled_hp_cells = svc::playerLocator.get().player_stats.health;
-		num_orbs = svc::playerLocator.get().player_stats.orbs;
-		total_hp_cells = svc::playerLocator.get().player_stats.max_health;
-		max_orbs = svc::playerLocator.get().player_stats.max_orbs;
-		if (!svc::playerLocator.get().arsenal.loadout.empty()) { gun_name = svc::playerLocator.get().equipped_weapon().label; }
+		filled_hp_cells = player.player_stats.health;
+		num_orbs = player.player_stats.orbs;
+		total_hp_cells = player.player_stats.max_health;
+		max_orbs = player.player_stats.max_orbs;
+		if (!player.arsenal.loadout.empty()) { gun_name = player.equipped_weapon().label; }
 		constrain();
 	}
 
@@ -91,18 +91,18 @@ class HUD {
 					sp_hearts.at(HP_FILLED).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
 				}
 				win.draw(sp_hearts.at(HP_FILLED));
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			} else {
 				sp_hearts.at(HP_GONE).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
 				win.draw(sp_hearts.at(HP_GONE));
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			}
 		}
 
 		// ORB
 		sp_orb_text.at(orb_label_index).setPosition(corner_pad.x + ORB_origin.x, corner_pad.y + ORB_origin.y);
 		win.draw(sp_orb_text.at(orb_label_index));
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		svc.counterLocator.get().at(services::counters::draw_calls)++;
 		digits = std::to_string(num_orbs);
 		int ctr{0};
 		for (auto& digit : digits) {
@@ -110,7 +110,7 @@ class HUD {
 			if (digit - '0' >= 0 && digit - '0' < 10) {
 				sp_orb_text.at(digit - '0').setPosition(corner_pad.x + ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), corner_pad.y + ORB_origin.y);
 				win.draw(sp_orb_text.at(digit - '0'));
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			}
 
 			ctr++;
@@ -118,27 +118,27 @@ class HUD {
 
 		// GUN
 		int pointer_index{0};
-		int loadout_size = svc::playerLocator.get().arsenal.loadout.size();
+		int loadout_size = player.arsenal.loadout.size();
 		for (int i = 0; i < loadout_size; ++i) {
-			int gun_index = svc::playerLocator.get().arsenal.loadout.at(i).get_id();
+			int gun_index = player.arsenal.loadout.at(i).get_id();
 			sp_guns.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-			if (i == svc::playerLocator.get().arsenal.get_index()) {
+			if (i == player.arsenal.get_index()) {
 				win.draw(sp_guns_shadow.at(gun_index));
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				svc.counterLocator.get().at(services::counters::draw_calls)++;
 				win.draw(sp_guns.at(gun_index));
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				svc.counterLocator.get().at(services::counters::draw_calls)++;
 				pointer_index = i;
 			} else {
 				win.draw(sp_guns_shadow.at(gun_index));
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			}
 		}
-		arms::WEAPON_TYPE curr_type = svc::playerLocator.get().equipped_weapon().type;
-		sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
-		if (!svc::playerLocator.get().arsenal.loadout.empty()) {
-			win.draw(sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color));
-			svc::counterLocator.get().at(svc::draw_calls)++;
+		arms::WEAPON_TYPE curr_type = player.equipped_weapon().type;
+		sp_pointer.at(player.equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
+		if (!player.arsenal.loadout.empty()) {
+			win.draw(sp_pointer.at(player.equipped_weapon().attributes.ui_color));
+			svc.counterLocator.get().at(services::counters::draw_calls)++;
 		}
 	}
 

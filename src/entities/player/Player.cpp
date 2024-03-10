@@ -7,9 +7,9 @@ namespace player {
 
 Player::Player() {}
 
-void Player::init() {
+void Player::init(services::ServiceLocator& svc) {
 
-	svc::dataLocator.get().load_player_params();
+	svc.dataLocator.get().load_player_params();
 	arsenal.init();
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
@@ -41,15 +41,15 @@ void Player::init() {
 	sprite_dimensions = {48.f, 48.f};
 
 	// sprites
-	sprite.setTexture(svc::assetLocator.get().t_nani);
+	sprite.setTexture(svc.assetLocator.get().t_nani);
 
-	texture_updater.load_base_texture(svc::assetLocator.get().t_nani);
-	texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
+	texture_updater.load_base_texture(svc.assetLocator.get().t_nani);
+	texture_updater.load_pixel_map(svc.assetLocator.get().t_palette_nani);
 }
 
-void Player::update() {
+void Player::update(services::ServiceLocator& svc) {
 
-	update_sprite();
+	update_sprite(svc);
 
 	collider.physics.gravity = physics_stats.grav;
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
@@ -58,22 +58,22 @@ void Player::update() {
 
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
-	controller.update();
-	update_transponder();
+	controller.update(svc);
+	update_transponder(svc);
 
 	if (grounded()) { controller.reset_dash_count(); }
 
 	// do this elsehwere later
-	if (collider.flags.test(shape::State::just_landed)) { svc::soundboardLocator.get().player.set(audio::Player::land); }
+	if (collider.flags.test(shape::State::just_landed)) { svc.soundboardLocator.get().player.set(audio::Player::land); }
 	collider.flags.reset(shape::State::just_landed);
 
 	//player-controlled actions
 	arsenal.switch_weapon(controller.arms_switch());
 	dash();
-	jump();
+	jump(svc);
 
 	// check keystate
-	if (!controller.get_jump().jumpsquatting()) { walk(); }
+	if (!controller.get_jump().jumpsquatting()) { walk(svc); }
 	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
 
 	// weapon physics
@@ -82,7 +82,7 @@ void Player::update() {
 		if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
 	}
 
-	collider.physics.update_euler();
+	collider.physics.update(svc.tickerLocator.get().tick_rate);
 	collider.sync_components();
 
 	// for parameter tweaking, remove later
@@ -93,7 +93,7 @@ void Player::update() {
 	apparent_position = collider.physics.position + collider.dimensions / 2.f;
 
 	update_animation();
-	update_weapon();
+	update_weapon(svc);
 
 	if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
 		controller.stop_dashing();
@@ -106,16 +106,16 @@ void Player::update() {
 
 }
 
-void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc) {
 
 	sf::Vector2<float> player_pos = apparent_position - campos;
 	calculate_sprite_offset();
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
-	if (svc::tickerLocator.get().every_x_frames(8) && animation.state.test(AnimState::dash)) { sprite_history.update(sprite); }
-	if (svc::tickerLocator.get().every_x_frames(8) && !animation.state.test(AnimState::dash)) { sprite_history.flush(); }
-	drag_sprite(win, campos);
+	if (svc.tickerLocator.get().every_x_frames(8) && animation.state.test(AnimState::dash)) { sprite_history.update(sprite); }
+	if (svc.tickerLocator.get().every_x_frames(8) && !animation.state.test(AnimState::dash)) { sprite_history.flush(); }
+	drag_sprite(win, campos, svc);
 
 	// get UV coords
 	int u = (int)(animation.get_frame() / asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
@@ -136,21 +136,21 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		if (grounded()) { animation.state.set(AnimState::turn); }
 	}
 	if (flags.state.test(State::alive)) {
-		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		if (svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 			collider.render(win, campos);
 		} else {
-			antennae[1].render(win, campos);
-			antennae[3].render(win, campos);
+			antennae[1].render(win, campos, svc);
+			antennae[3].render(win, campos, svc);
 			win.draw(sprite);
-			antennae[0].render(win, campos);
-			antennae[2].render(win, campos);
-			svc::counterLocator.get().at(svc::draw_calls) += 5;
+			antennae[0].render(win, campos, svc);
+			antennae[2].render(win, campos, svc);
+			svc.counterLocator.get().at(services::counters::draw_calls) += 5;
 		}
 	}
 
 	if (!arsenal.loadout.empty()) {
-		equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(equipped_weapon().type));
-		equipped_weapon().render(win, campos);
+		//equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(equipped_weapon().type));
+		equipped_weapon().render(win, campos, svc);
 	}
 
 	// texture updater debug
@@ -186,17 +186,17 @@ void Player::update_animation() {
 	animation.update();
 }
 
-void Player::update_sprite() {
-	svc::playerLocator.get().sprite.setTexture(texture_updater.get_dynamic_texture());
+void Player::update_sprite(services::ServiceLocator& svc) {
+	sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 
-void Player::update_transponder() {
-	if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
+void Player::update_transponder(services::ServiceLocator& svc) {
+	if (svc.consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
 		controller.prevent_movement();
 		if (controller.transponder_skip()) { transponder.skip_ahead(); }
 		if (controller.transponder_next()) { transponder.next(); }
 		if (controller.transponder_exit()) { transponder.exit(); }
-		transponder.update();
+		transponder.update(svc);
 	}
 	transponder.end();
 }
@@ -209,15 +209,15 @@ void Player::flash_sprite() {
 	}
 }
 
-void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc) {
 	auto a{100};
 	auto ctr{0};
 	for (auto& sp : sprite_history.sprites) {
 		sp.setColor(sf::Color(255, 255, 255, a));
 		sp.setPosition(sprite_history.positions.at(ctr) - campos);
-		if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		if (!svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 			win.draw(sp);
-			++svc::counterLocator.get().at(svc::draw_calls);
+			++svc.counterLocator.get().at(services::counters::draw_calls);
 		}
 		a += 20;
 		++ctr;
@@ -231,7 +231,7 @@ void Player::calculate_sprite_offset() {
 	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y};
 }
 
-void Player::jump() {
+void Player::jump(services::ServiceLocator& svc) {
 	if (controller.get_jump().began()) {
 		collider.movement_flags.set(shape::Movement::jumping);
 	} else {
@@ -248,7 +248,7 @@ void Player::jump() {
 		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
 		animation.state.set(AnimState::rise);
-		svc::soundboardLocator.get().player.set(audio::Player::jump);
+		svc.soundboardLocator.get().player.set(audio::Player::jump);
 		collider.movement_flags.set(shape::Movement::jumping);
 	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.velocity.y < 0) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
@@ -295,7 +295,7 @@ void Player::update_direction() {
 	equipped_weapon().projectile.hook.probe_direction = controller.direction;
 }
 
-void Player::update_weapon() {
+void Player::update_weapon(services::ServiceLocator& svc) {
 	// clamp extant projectile instances to the weapon's rate
 	assert(arsenal.extant_projectile_instances.size() >= arsenal.armory.size());
 	for (std::size_t index = 0; index < arsenal.extant_projectile_instances.size(); ++index) {
@@ -305,7 +305,7 @@ void Player::update_weapon() {
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.loadout) {
 		weapon.active_projectiles = extant_instances(weapon.get_id());
-		weapon.update();
+		weapon.update(svc);
 	}
 	if (controller.facing_right()) {
 		hand_position = {28, 36};
@@ -314,22 +314,22 @@ void Player::update_weapon() {
 	}
 }
 
-void Player::walk() {
+void Player::walk(services::ServiceLocator& svc) {
 	if (controller.moving_right() && !collider.has_right_collision()) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (controller.moving_left() && !collider.has_left_collision()) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
-		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().player.set(audio::Player::step); }
+		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc.soundboardLocator.get().player.set(audio::Player::step); }
 	}
 }
 
-void Player::hurt(int amount = 1) {
+void Player::hurt(services::ServiceLocator& svc, int amount = 1) {
 
 	if (!is_invincible()) {
 		player_stats.health -= amount;
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
 		make_invincible();
-		svc::soundboardLocator.get().player.set(audio::Player::hurt);
+		svc.soundboardLocator.get().player.set(audio::Player::hurt);
 		just_hurt = true;
 	}
 
@@ -353,10 +353,10 @@ void Player::update_antennae() {
 
 bool Player::grounded() const { return collider.flags.test(shape::State::grounded); }
 
-bool Player::fire_weapon() {
+bool Player::fire_weapon(services::ServiceLocator& svc) {
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		++extant_instances(equipped_weapon().get_id());
-		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(equipped_weapon().type));
+		svc.soundboardLocator.get().weapon.set(lookup::gun_sound.at(equipped_weapon().type));
 		return true;
 	}
 	return false;

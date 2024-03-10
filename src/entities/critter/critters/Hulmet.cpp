@@ -3,10 +3,10 @@
 
 namespace critter {
 
-void Hulmet::unique_update() {
+void Hulmet::unique_update(player::Player& player) {
 
-	auto const player_overlaps_alert = svc::playerLocator.get().collider.bounding_box.overlaps(alert_range);
-	auto const player_overlaps_hostile = svc::playerLocator.get().collider.bounding_box.overlaps(hostile_range);
+	auto const player_overlaps_alert = player.collider.bounding_box.overlaps(alert_range);
+	auto const player_overlaps_hostile = player.collider.bounding_box.overlaps(hostile_range);
 
 	// set ranges
 	if (!colliders.empty()) {
@@ -19,11 +19,11 @@ void Hulmet::unique_update() {
 		stats.cooldown == 0) {
 
 		// decide randomly whether to chase the player or start shooting
-		if (svc::randomLocator.get().percent_chance(0.2f)) {
+		if (svc.randomLocator.get().percent_chance(0.2f)) {
 			flags.set(Flags::charging);
 			flags.reset(Flags::seeking);
 		} else {
-			current_target = svc::playerLocator.get().collider.physics.position;
+			current_target = player.collider.physics.position;
 			flags.reset(Flags::charging);
 			seek_current_target();
 			flags.set(Flags::seeking);
@@ -52,10 +52,10 @@ void Hulmet::unique_update() {
 void Hulmet::load_data() {
 	if (colliders.empty()) {
 		for (int j = 0; j < num_colliders; ++j) {
-			auto const& xdim = svc::dataLocator.get().hulmet["colliders"][0]["boxes"][j]["dimensions"]["x"].as<float>();
-			auto const& ydim = svc::dataLocator.get().hulmet["colliders"][0]["boxes"][j]["dimensions"]["y"].as<float>();
-			auto const& xpos = svc::dataLocator.get().hulmet["colliders"][0]["boxes"][j]["position"]["x"].as<float>();
-			auto const& ypos = svc::dataLocator.get().hulmet["colliders"][0]["boxes"][j]["position"]["y"].as<float>();
+			auto const& xdim = svc.dataLocator.get().hulmet["colliders"][0]["boxes"][j]["dimensions"]["x"].as<float>();
+			auto const& ydim = svc.dataLocator.get().hulmet["colliders"][0]["boxes"][j]["dimensions"]["y"].as<float>();
+			auto const& xpos = svc.dataLocator.get().hulmet["colliders"][0]["boxes"][j]["position"]["x"].as<float>();
+			auto const& ypos = svc.dataLocator.get().hulmet["colliders"][0]["boxes"][j]["position"]["y"].as<float>();
 
 			colliders.push_back(shape::Collider({xdim, ydim}));
 			colliders.back().sprite_offset = {xpos, ypos};
@@ -68,12 +68,12 @@ void Hulmet::load_data() {
 	if (hurtbox_atlas.empty()) {
 		for (int i = 0; i < num_anim_frames; ++i) {
 			for (int j = 0; j < num_hurtboxes; ++j) {
-				auto const& xdim = svc::dataLocator.get().hulmet["hurtboxes"][i]["boxes"][j]["dimensions"]["x"].as<float>();
-				auto const& ydim = svc::dataLocator.get().hulmet["hurtboxes"][i]["boxes"][j]["dimensions"]["y"].as<float>();
-				auto const& xpos = svc::dataLocator.get().hulmet["hurtboxes"][i]["boxes"][j]["position"]["x"].as<float>();
-				auto const& ypos = svc::dataLocator.get().hulmet["hurtboxes"][i]["boxes"][j]["position"]["y"].as<float>();
+				auto const& xdim = svc.dataLocator.get().hulmet["hurtboxes"][i]["boxes"][j]["dimensions"]["x"].as<float>();
+				auto const& ydim = svc.dataLocator.get().hulmet["hurtboxes"][i]["boxes"][j]["dimensions"]["y"].as<float>();
+				auto const& xpos = svc.dataLocator.get().hulmet["hurtboxes"][i]["boxes"][j]["position"]["x"].as<float>();
+				auto const& ypos = svc.dataLocator.get().hulmet["hurtboxes"][i]["boxes"][j]["position"]["y"].as<float>();
 
-				auto const& id = svc::dataLocator.get().hulmet["hurtboxes"][i]["tile_id"].as<int>();
+				auto const& id = svc.dataLocator.get().hulmet["hurtboxes"][i]["tile_id"].as<int>();
 
 				hurtbox_atlas.push_back(shape::Shape());
 				hurtbox_atlas.back().dimensions = {xdim, ydim};
@@ -151,7 +151,7 @@ fsm::StateFunction Hulmet::update_charge() {
 		anim_loop_count = 0;
 		flags.reset(Flags::charging);
 		flags.reset(Flags::hurt);
-		return svc::playerLocator.get().collider.bounding_box.overlaps(hostile_range) ? BIND(update_shoot) : (flags.test(Flags::just_hurt) ? BIND(update_hurt) : BIND(update_idle));
+		return player.collider.bounding_box.overlaps(hostile_range) ? BIND(update_shoot) : (flags.test(Flags::just_hurt) ? BIND(update_hurt) : BIND(update_idle));
 	}
 	if (flags.test(Flags::turning)) { return BIND(update_turn); }
 	// charging cannot be interrupted by hurt
@@ -186,7 +186,7 @@ fsm::StateFunction Hulmet::update_shoot() {
 
 	if (flags.test(Flags::turning)) { return BIND(update_turn); }
 	// shooting cannot be interrupted by hurt
-	if (flags.test(Flags::just_hurt)) { svc::assetLocator.get().enem_hit.play(); }
+	if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
 	flags.reset(Flags::just_hurt);
 	return std::move(state_function);
 }
@@ -231,7 +231,7 @@ fsm::StateFunction Hulmet::update_hurt() {
 		collider.physics.velocity.x = 0.f;
 		collider.physics.acceleration.x = 0.f;
 	}
-	if (flags.test(Flags::just_hurt)) { svc::assetLocator.get().enem_hit.play(); }
+	if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
 	flags.reset(Flags::just_hurt);
 	if (behavior.start()) {
 		behavior = behavior::Behavior(behavior::hulmet_hurt);

@@ -97,60 +97,7 @@ class AssetManager {
 	
 	}
 
-	void load_audio() {
-		click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/heavy_click.wav");
-		click.setBuffer(click_buffer);
-		sharp_click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/click.wav");
-		sharp_click.setBuffer(sharp_click_buffer);
-		menu_shift_buffer.loadFromFile(finder.resource_path + "/audio/sfx/menu_shift_1.wav");
-		menu_shift.setBuffer(menu_shift_buffer);
-		menu_back_buffer.loadFromFile(finder.resource_path + "/audio/sfx/menu_shift_2.wav");
-		menu_back.setBuffer(menu_back_buffer);
-		menu_next_buffer.loadFromFile(finder.resource_path + "/audio/sfx/menu_shift_3.wav");
-		menu_next.setBuffer(menu_next_buffer);
-		sharp_click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/click.wav");
-		sharp_click.setBuffer(sharp_click_buffer);
-		arms_switch_buffer.loadFromFile(finder.resource_path + "/audio/sfx/arms_switch.wav");
-		arms_switch.setBuffer(arms_switch_buffer);
-		bg_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bg_shot.wav");
-		bg_shot.setBuffer(bg_shot_buffer);
-		plasmer_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/plasmer_shot.wav");
-		plasmer_shot.setBuffer(plasmer_shot_buffer);
-		tomahawk_flight_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tomahawk_flight.wav");
-		tomahawk_flight.setBuffer(tomahawk_flight_buffer);
-		tomahawk_catch_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tomahawk_catch.wav");
-		tomahawk_catch.setBuffer(tomahawk_catch_buffer);
-		pop_mid_buffer.loadFromFile(finder.resource_path + "/audio/sfx/clover.wav");
-		pop_mid.setBuffer(pop_mid_buffer);
-		jump_buffer.loadFromFile(finder.resource_path + "/audio/sfx/jump.wav");
-		jump.setBuffer(jump_buffer);
-		shatter_buffer.loadFromFile(finder.resource_path + "/audio/sfx/shatter.wav");
-		shatter.setBuffer(shatter_buffer);
-		step_buffer.loadFromFile(finder.resource_path + "/audio/sfx/steps.wav");
-		step.setBuffer(step_buffer);
-		landed_buffer.loadFromFile(finder.resource_path + "/audio/sfx/landed.wav");
-		landed.setBuffer(landed_buffer);
-		hurt_buffer.loadFromFile(finder.resource_path + "/audio/sfx/hurt.wav");
-		hurt.setBuffer(hurt_buffer);
-		player_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/player_death.wav");
-		player_death.setBuffer(player_death_buffer);
-		enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/enemy_hit.wav");
-		enem_hit.setBuffer(enem_hit_buffer);
-		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
-		save.setBuffer(save_buffer);
-		load_buffer.loadFromFile(finder.resource_path + "/audio/sfx/load_game.wav");
-		load.setBuffer(load_buffer);
-		soft_sparkle_high_buffer.loadFromFile(finder.resource_path + "/audio/sfx/soft_sparkle_high.wav");
-		soft_sparkle_high.setBuffer(soft_sparkle_high_buffer);
-		soft_sparkle_buffer.loadFromFile(finder.resource_path + "/audio/sfx/soft_sparkle.wav");
-		soft_sparkle.setBuffer(soft_sparkle_buffer);
-
-		brown_noise.openFromFile(finder.resource_path + "/audio/songs/brown_noise.wav");
-		clay_statue.openFromFile(finder.resource_path + "/audio/songs/clay_statue.wav");
-		abandoned.openFromFile(finder.resource_path + "/audio/songs/abandoned.wav");
-		three_pipes.openFromFile(finder.resource_path + "/audio/songs/three_pipes.wav");
-		dusken_cove.openFromFile(finder.resource_path + "/audio/songs/dusken_cove.wav");
-	}
+	
 
 	// declare all the textures and sprites as members of the AssetManager
 
@@ -247,66 +194,6 @@ class AssetManager {
 
 	// condense these into a 2d vector later
 	std::vector<sf::Sprite> sp_tileset_provisional{};
-
-	// sound effects!
-	sf::SoundBuffer click_buffer{};
-	sf::Sound click;
-	sf::SoundBuffer sharp_click_buffer{};
-	sf::Sound sharp_click;
-	sf::SoundBuffer menu_shift_buffer{};
-	sf::Sound menu_shift;
-	sf::SoundBuffer menu_back_buffer{};
-	sf::Sound menu_back;
-	sf::SoundBuffer menu_next_buffer{};
-	sf::Sound menu_next;
-
-	sf::SoundBuffer arms_switch_buffer{};
-	sf::Sound arms_switch;
-	sf::SoundBuffer bg_shot_buffer{};
-	sf::Sound bg_shot;
-	sf::SoundBuffer plasmer_shot_buffer{};
-	sf::Sound plasmer_shot;
-	sf::SoundBuffer tomahawk_flight_buffer{};
-	sf::Sound tomahawk_flight;
-	sf::SoundBuffer tomahawk_catch_buffer{};
-	sf::Sound tomahawk_catch;
-	sf::SoundBuffer pop_mid_buffer{};
-	sf::Sound pop_mid;
-
-	sf::SoundBuffer jump_buffer{};
-	sf::Sound jump;
-	sf::SoundBuffer shatter_buffer{};
-	sf::Sound shatter;
-	sf::SoundBuffer step_buffer{};
-	sf::Sound step;
-	sf::SoundBuffer landed_buffer{};
-	sf::Sound landed;
-	sf::SoundBuffer hurt_buffer{};
-	sf::Sound hurt;
-	sf::SoundBuffer player_death_buffer{};
-	sf::Sound player_death;
-	sf::SoundBuffer enem_hit_buffer{};
-	sf::Sound enem_hit;
-
-	//save/load
-	sf::SoundBuffer save_buffer{};
-	sf::Sound save;
-	sf::SoundBuffer load_buffer{};
-	sf::Sound load;
-	sf::SoundBuffer soft_sparkle_high_buffer{};
-	sf::Sound soft_sparkle_high;
-	sf::SoundBuffer soft_sparkle_buffer{};
-	sf::Sound soft_sparkle;
-
-	// songs!
-	sf::Music brown_noise{};
-	sf::Music clay_statue{};
-	sf::Music abandoned{};
-	sf::Music three_pipes{};
-	sf::Music dusken_cove{};
-
-	// other members
-	int music_vol{24};
 
 	data::ResourceFinder finder{};
 };

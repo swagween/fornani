@@ -20,9 +20,7 @@ namespace critter {
 
 enum class VARIANT { BEAST, SOLDIER, GRUB, GHOST };
 
-enum class CRITTER_TYPE { hulmet, tank, bunker, thug, worker, frdog, jackdaw, frcat, biter, bee, roller, snek, behemoth, stinger, watchman, gnat, moth };
-
-inline std::unordered_map<int, sf::Texture&> get_critter_texture{{0, svc::assetLocator.get().t_frdog}, {1, svc::assetLocator.get().t_hulmet}};
+enum class CRITTER_TYPE { hulmet, frdog };
 
 struct CritterMetadata {
 	int id{};
@@ -71,14 +69,14 @@ class Critter {
 	}
 	~Critter() {}
 
-	virtual void unique_update(){};
+	virtual void unique_update(player::Player& player){};
 	virtual void load_data(){};
 	virtual void sprite_flip();
 	virtual void cooldown(); // for armed enemies
 
 	void init();
-	void update();
-	void render(sf::RenderWindow& win, sf::Vector2<float> campos);
+	void update(float dt);
+	void render(sf::RenderWindow& win, sf::Vector2<float> campos, services::ServiceLocator& svc);
 	void set_sprite();
 	void set_position(sf::Vector2<int> pos);
 	void seek_current_target();

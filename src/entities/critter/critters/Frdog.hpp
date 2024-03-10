@@ -24,7 +24,7 @@ class Frdog : public Critter {
 		hostile_range = shape::Shape({(float)stats.vision, (float)stats.vision});
 	}
 
-	void unique_update() override;
+	void unique_update(player::Player& player) override;
 	void load_data() override;
 
 	fsm::StateFunction state_function = std::bind(&Frdog::update_idle, this);

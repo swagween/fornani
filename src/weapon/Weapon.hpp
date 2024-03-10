@@ -57,10 +57,10 @@ class Weapon {
 
   public:
 	Weapon() = default;
-	Weapon(int id);
+	Weapon(int id, services::ServiceLocator& svc);
 
-	void update();
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void update(services::ServiceLocator& svc);
+	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc);
 
 	void equip();
 	void unequip();
@@ -75,7 +75,7 @@ class Weapon {
 	bool can_shoot() const;
 
 	void set_position(sf::Vector2<float> pos);
-	void set_orientation();
+	void set_orientation(dir::Direction& player_dir);
 
 	int get_id();
 

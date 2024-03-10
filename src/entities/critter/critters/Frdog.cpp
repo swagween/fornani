@@ -4,17 +4,17 @@
 
 namespace critter {
 
-void Frdog::unique_update() {
+void Frdog::unique_update(player::Player& player) {
 
 	if (!colliders.empty()) {
 		alert_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - alert_range.dimensions.x / 2, colliders.at(0).physics.position.y - alert_range.dimensions.y / 2));
 		hostile_range.set_position(sf::Vector2<float>(colliders.at(0).physics.position.x - hostile_range.dimensions.x / 2, colliders.at(0).physics.position.y - hostile_range.dimensions.y / 2));
 	}
 
-	if (svc::playerLocator.get().collider.bounding_box.SAT(hostile_range)) {
-		current_target = svc::playerLocator.get().collider.physics.position;
+	if (player.collider.bounding_box.SAT(hostile_range)) {
+		current_target = player.collider.physics.position;
 		awake();
-	} else if (svc::playerLocator.get().collider.bounding_box.SAT(alert_range)) {
+	} else if (player.collider.bounding_box.SAT(alert_range)) {
 		wake_up();
 	} else {
 		sleep();
@@ -34,10 +34,10 @@ void Frdog::load_data() {
 
 	if (colliders.empty()) {
 		for (int j = 0; j < num_colliders; ++j) {
-			auto const& xdim = svc::dataLocator.get().frdog["colliders"][0]["boxes"][j]["dimensions"]["x"].as<float>();
-			auto const& ydim = svc::dataLocator.get().frdog["colliders"][0]["boxes"][j]["dimensions"]["y"].as<float>();
-			auto const& xpos = svc::dataLocator.get().frdog["colliders"][0]["boxes"][j]["position"]["x"].as<float>();
-			auto const& ypos = svc::dataLocator.get().frdog["colliders"][0]["boxes"][j]["position"]["y"].as<float>();
+			auto const& xdim = svc.dataLocator.get().frdog["colliders"][0]["boxes"][j]["dimensions"]["x"].as<float>();
+			auto const& ydim = svc.dataLocator.get().frdog["colliders"][0]["boxes"][j]["dimensions"]["y"].as<float>();
+			auto const& xpos = svc.dataLocator.get().frdog["colliders"][0]["boxes"][j]["position"]["x"].as<float>();
+			auto const& ypos = svc.dataLocator.get().frdog["colliders"][0]["boxes"][j]["position"]["y"].as<float>();
 
 			colliders.push_back(shape::Collider({xdim, ydim}));
 			colliders.back().sprite_offset = {xpos, ypos};
@@ -48,12 +48,12 @@ void Frdog::load_data() {
 	if (hurtbox_atlas.empty()) {
 		for (int i = 0; i < num_anim_frames; ++i) {
 			for (int j = 0; j < num_hurtboxes; ++j) {
-				auto const& xdim = svc::dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["dimensions"]["x"].as<float>();
-				auto const& ydim = svc::dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["dimensions"]["y"].as<float>();
-				auto const& xpos = svc::dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["position"]["x"].as<float>();
-				auto const& ypos = svc::dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["position"]["y"].as<float>();
+				auto const& xdim = svc.dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["dimensions"]["x"].as<float>();
+				auto const& ydim = svc.dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["dimensions"]["y"].as<float>();
+				auto const& xpos = svc.dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["position"]["x"].as<float>();
+				auto const& ypos = svc.dataLocator.get().frdog["hurtboxes"][i]["boxes"][j]["position"]["y"].as<float>();
 
-				auto const& id = svc::dataLocator.get().frdog["hurtboxes"][i]["tile_id"].as<int>();
+				auto const& id = svc.dataLocator.get().frdog["hurtboxes"][i]["tile_id"].as<int>();
 
 				hurtbox_atlas.push_back(shape::Shape());
 				hurtbox_atlas.back().dimensions = {xdim, ydim};
@@ -180,7 +180,7 @@ fsm::StateFunction Frdog::update_run() {
 }
 
 fsm::StateFunction Frdog::update_hurt() {
-	if (flags.test(Flags::just_hurt)) { svc::assetLocator.get().enem_hit.play(); }
+	if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
 	flags.reset(Flags::just_hurt);
 	if (behavior.start()) {
 		behavior = behavior::Behavior(behavior::frdog_hurt);

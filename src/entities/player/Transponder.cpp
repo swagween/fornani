@@ -3,18 +3,18 @@
 
 namespace player {
 
-void Transponder::update() {
+void Transponder::update(services::ServiceLocator& svc) {
 
-	// if (requested_next()) { svc::consoleLocator.get().writer.next(); } // TODO
+	// if (requested_next()) { svc.consoleLocator.get().writer.next(); } // TODO
 	if (exited()) {
-		if (svc::consoleLocator.get().writer.complete()) {
-			svc::soundboardLocator.get().console.set(audio::Console::done);
-			svc::consoleLocator.get().end();
+		if (svc.consoleLocator.get().writer.complete()) {
+			svc.soundboardLocator.get().console.set(audio::Console::done);
+			svc.consoleLocator.get().end();
 		}
 	}
 	// execute action based on the state of the console
 	if (skipped_ahead()) {
-		if (svc::consoleLocator.get().writer.active() && !svc::consoleLocator.get().writer.complete()) { svc::consoleLocator.get().writer.skip_ahead(); }
+		if (svc.consoleLocator.get().writer.active() && !svc.consoleLocator.get().writer.complete()) { svc.consoleLocator.get().writer.skip_ahead(); }
 	}
 
 }

@@ -22,7 +22,7 @@ class Portal {
 	}
 	void update();
 	void render(sf::RenderWindow& win, Vec campos); // for debugging
-	void handle_activation(int room_id, bool& fade_out, bool& done);
+	void handle_activation(services::ServiceLocator& svc, player::Player& player, int room_id, bool& fade_out, bool& done);
 
 	Vec dimensions{};
 	Vec position{};

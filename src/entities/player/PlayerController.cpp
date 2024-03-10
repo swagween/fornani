@@ -14,30 +14,30 @@ PlayerController::PlayerController() {
 	direction.lr = dir::LR::right;
 }
 
-void PlayerController::update() {
+void PlayerController::update(services::ServiceLocator& svc) {
 
 	if (walking_autonomously()) { return; }
 
-	auto const& left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::held);
-	auto const& right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::held);
-	auto const& up = svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::held);
-	auto const& down = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::held);
-	auto const& jump_started = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
-	auto const& jump_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held);
-	auto const& jump_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released);
-	auto const& shoot_pressed = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
-	auto const& shoot_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released);
-	auto const& arms_switch_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::A).key_state.test(util::key_state::triggered);
-	auto const& arms_switch_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::S).key_state.test(util::key_state::triggered);
-	auto const& inspected = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered) && grounded() && !left && !right;
-	auto const& dash_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) && !grounded() && left;
-	auto const& dash_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) && !grounded() && right;
+	auto const& left = svc.inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::held);
+	auto const& right = svc.inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::held);
+	auto const& up = svc.inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::held);
+	auto const& down = svc.inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::held);
+	auto const& jump_started = svc.inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
+	auto const& jump_held = svc.inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held);
+	auto const& jump_released = svc.inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released);
+	auto const& shoot_pressed = svc.inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
+	auto const& shoot_released = svc.inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released);
+	auto const& arms_switch_left = svc.inputStateLocator.get().keys.at(sf::Keyboard::A).key_state.test(util::key_state::triggered);
+	auto const& arms_switch_right = svc.inputStateLocator.get().keys.at(sf::Keyboard::S).key_state.test(util::key_state::triggered);
+	auto const& inspected = svc.inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered) && grounded() && !left && !right;
+	auto const& dash_left = svc.inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) && !grounded() && left;
+	auto const& dash_right = svc.inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) && !grounded() && right;
 
-	auto const& transponder_skip = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) || svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
-	auto const& transponder_next = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
-	auto const& transponder_exit = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
+	auto const& transponder_skip = svc.inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) || svc.inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
+	auto const& transponder_next = svc.inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
+	auto const& transponder_exit = svc.inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
 
-	auto const& hook_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::held);
+	auto const& hook_held = svc.inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::held);
 
 	direction.set_intermediate(left, right, up, down);
 

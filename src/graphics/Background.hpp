@@ -35,10 +35,10 @@ enum class BACKDROP {
 };
 
 inline std::unordered_map<int, sf::Texture&> get_backdrop_texture{
-	{0, svc::assetLocator.get().t_bg_dusk},		 {1, svc::assetLocator.get().t_bg_sunrise},	 {2, svc::assetLocator.get().t_bg_opensky},	 {3, svc::assetLocator.get().t_bg_rosyhaze}, {4, svc::assetLocator.get().t_bg_dawn},
-	{5, svc::assetLocator.get().t_bg_night},	 {6, svc::assetLocator.get().t_bg_overcast}, {7, svc::assetLocator.get().t_bg_slime},	 {8, svc::assetLocator.get().t_bg_black},	 {9, svc::assetLocator.get().t_bg_navy},
-	{10, svc::assetLocator.get().t_bg_dirt},	 {11, svc::assetLocator.get().t_bg_gear},	 {12, svc::assetLocator.get().t_bg_library}, {13, svc::assetLocator.get().t_bg_granite}, {14, svc::assetLocator.get().t_bg_ruins},
-	{15, svc::assetLocator.get().t_bg_crevasse}, {16, svc::assetLocator.get().t_bg_deep},	 {17, svc::assetLocator.get().t_bg_grove}};
+	{0, svc.assetLocator.get().t_bg_dusk},		 {1, svc.assetLocator.get().t_bg_sunrise},	 {2, svc.assetLocator.get().t_bg_opensky},	 {3, svc.assetLocator.get().t_bg_rosyhaze}, {4, svc.assetLocator.get().t_bg_dawn},
+	{5, svc.assetLocator.get().t_bg_night},	 {6, svc.assetLocator.get().t_bg_overcast}, {7, svc.assetLocator.get().t_bg_slime},	 {8, svc.assetLocator.get().t_bg_black},	 {9, svc.assetLocator.get().t_bg_navy},
+	{10, svc.assetLocator.get().t_bg_dirt},	 {11, svc.assetLocator.get().t_bg_gear},	 {12, svc.assetLocator.get().t_bg_library}, {13, svc.assetLocator.get().t_bg_granite}, {14, svc.assetLocator.get().t_bg_ruins},
+	{15, svc.assetLocator.get().t_bg_crevasse}, {16, svc.assetLocator.get().t_bg_deep},	 {17, svc.assetLocator.get().t_bg_grove}};
 
 struct BackgroundBehavior {
 	int used_layers{};

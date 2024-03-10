@@ -18,11 +18,19 @@ class Animator {
 	using Vecu16 = sf::Vector2<uint32_t>;
 
 	Animator() = default;
-	Animator(Vecu16 dim, Vecu16 pos) : scaled_dimensions(dim), scaled_position(pos) {
+	Animator(Vecu16 dim, Vecu16 pos, services::ServiceLocator& svc) : scaled_dimensions(dim), scaled_position(pos) {
 		dimensions = static_cast<Vec>(dim * A_UNIT_SIZE);
 		position = static_cast<Vec>(pos * A_UNIT_SIZE);
 		bounding_box = shape::Shape(dimensions);
 		bounding_box.set_position(position);
+		large = scaled_dimensions.x == 2;
+		if (large) {
+			sprite.setTexture(svc.assetLocator.get().t_large_animators);
+			sprite_dimensions = {64, 64};
+		} else {
+			sprite.setTexture(svc.assetLocator.get().t_small_animators);
+			sprite_dimensions = {32, 32};
+		}
 	}
 	void update();
 	void render(sf::RenderWindow& win, Vec campos);

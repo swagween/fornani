@@ -19,9 +19,7 @@ void Inspectable::render(sf::RenderWindow& win, Vec campos) {
 	box.setOutlineThickness(-1);
 	box.setPosition(bounding_box.position - campos);
 	box.setSize(dimensions);
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-		win.draw(box);
-		svc::counterLocator.get().at(svc::draw_calls)++;
-	}
+	win.draw(box);
+
 }
 } // namespace entity

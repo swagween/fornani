@@ -11,9 +11,9 @@ Projectile::Projectile() {
 	seed();
 };
 
-Projectile::Projectile(int id) {
+Projectile::Projectile(int id, services::ServiceLocator& svc) {
 
-	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id]["projectile"];
+	auto const& in_data = svc.dataLocator.get().weapon["weapons"][id]["projectile"];
 
 	type = index_to_type.at(id);
 
@@ -72,7 +72,7 @@ Projectile::Projectile(int id) {
 	set_sprite();
 }
 
-void Projectile::update() {
+void Projectile::update(services::ServiceLocator& svc) {
 
 	// animation
 	animation.update();
@@ -83,8 +83,8 @@ void Projectile::update() {
 		hook.update();
 		if (hook.grapple_flags.test(arms::GrappleState::probing)) {
 			hook.spring.set_anchor(physics.position);
-			hook.spring.set_bob(svc::playerLocator.get().apparent_position);
-			if (!svc::playerLocator.get().controller.hook_held()) {
+			hook.spring.set_bob(player.apparent_position);
+			if (!player.controller.hook_held()) {
 				hook.grapple_flags.set(arms::GrappleState::snaking);
 				hook.grapple_flags.reset(arms::GrappleState::probing);
 			}
@@ -93,28 +93,28 @@ void Projectile::update() {
 		if (hook.grapple_flags.test(arms::GrappleState::snaking)) {
 			physics.position = hook.spring.get_bob();
 			bounding_box.position = physics.position;
-			if (bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+			if (bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 				destroy(true);
 				hook.grapple_flags = {};
 				hook.grapple_triggers = {};
-				svc::loggerLocator.get().states.reset(util::State::hook_snaking);
+				svc.loggerLocator.get().states.reset(util::State::hook_snaking);
 				hook.spring.reverse_anchor_and_bob();
 				hook.spring.set_rest_length(stats.spring_rest_length);
-				svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
+				svc.soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
 			} // destroy when player catches it
 		}
 	}
 
 	// tomahawk-specific stuff
 	if (stats.boomerang) {
-		gravitator.set_target_position(svc::playerLocator.get().apparent_position);
+		gravitator.set_target_position(player.apparent_position);
 		gravitator.update();
 		physics.position = gravitator.collider.physics.position;
-		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(type)); // repeat sound
+		svc.soundboardLocator.get().weapon.set(lookup::gun_sound.at(type)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
-		if (gravitator.collider.bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+		if (gravitator.collider.bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
-			svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
+			svc.soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
 	}
 
@@ -122,7 +122,7 @@ void Projectile::update() {
 	if (state.test(ProjectileState::destruction_initiated)) { constrain_hitbox_at_destruction_point(); }
 	if (state.test(ProjectileState::destruction_initiated) && !stats.constrained) { destroy(true); }
 
-	physics.update_euler();
+	physics.update(svc);
 
 	if (direction.lr == dir::LR::left) {
 		bounding_box.set_position(shape::Shape::Vec{physics.position.x, physics.position.y - bounding_box.dimensions.y / 2});
@@ -144,14 +144,14 @@ void Projectile::update() {
 	}
 }
 
-void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc) {
 
 	// this is the right idea but needs to be refactored and generalized
 	if (render_type == RENDER_TYPE::MULTI_SPRITE) {
 		for (auto& sprite : sp_proj) {
 			constrain_sprite_at_barrel(sprite, campos);
 			win.draw(sprite);
-			svc::counterLocator.get().at(svc::draw_calls)++;
+			svc.counterLocator.get().at(services::counters::draw_calls)++;
 		}
 
 	} else if (render_type == RENDER_TYPE::SINGLE_SPRITE) {
@@ -183,13 +183,13 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			}
 			box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
 
-			if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-				gravitator.render(win, campos);
+			if (svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
+				gravitator.render(win, campos, svc);
 				win.draw(box);
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			} else {
 				win.draw(sp_proj.at(0));
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				svc.counterLocator.get().at(services::counters::draw_calls)++;
 			}
 		}
 	}
@@ -215,7 +215,8 @@ void Projectile::destroy(bool completely) {
 
 void Projectile::seed() {
 
-	float var = svc::randomLocator.get().random_range_float(-stats.variance, stats.variance);
+	//float var = svc.randomLocator.get().random_range_float(-stats.variance, stats.variance);
+	float var = 1.f;
 	if (stats.spring) {
 		physics.velocity = hook.probe_velocity(stats.speed);
 		return;

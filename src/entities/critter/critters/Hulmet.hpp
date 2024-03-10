@@ -24,11 +24,11 @@ class Hulmet : public Critter {
 		hostile_range = shape::Shape({(float)stats.vision, (float)stats.vision / 6});
 		stats.cooldown = 500;
 
-		weapon = arms::skycorps_ar;
+		//weapon = arms::skycorps_ar;
 		weapon.projectile.team = arms::TEAMS::SKYCORPS;
 	}
 
-	void unique_update() override;
+	void unique_update(player::Player& player) override;
 	void load_data() override;
 
 	fsm::StateFunction state_function = std::bind(&Hulmet::update_idle, this);

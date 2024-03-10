@@ -11,7 +11,7 @@ SavePoint::SavePoint() {
 	proximity_box = shape::Shape(dimensions * 16.f);
 
 	animation.set_params(anim_params);
-	sprite.setTexture(svc::assetLocator.get().savepoint);
+	sprite.setTexture(svc.assetLocator.get().savepoint);
 
 	sparkle_behavior = {50, 3, 4.3, 0.4, 0.8, -0.3, 0.0, 0.97, 0.97};
 	sparkle_stats = {10, 0, 80, 30};
@@ -31,18 +31,18 @@ void SavePoint::update() {
 	proximity_box.set_position(position - proximity_offset);
 	activated = false;
 
-	if (svc::playerLocator.get().collider.bounding_box.SAT(proximity_box)) {
-		svc::soundboardLocator.get().proximities.save = abs(svc::playerLocator.get().collider.bounding_box.position.x - bounding_box.position.x);
+	if (player.collider.bounding_box.SAT(proximity_box)) {
+		svc.soundboardLocator.get().proximities.save = abs(player.collider.bounding_box.position.x - bounding_box.position.x);
 
-		if (svc::playerLocator.get().collider.bounding_box.SAT(bounding_box)) {
+		if (player.collider.bounding_box.SAT(bounding_box)) {
 			intensity = 3;
 			if (animation.keyframe_over()) { animation.params.framerate = 16; }
-			if (svc::playerLocator.get().controller.inspecting()) {
+			if (player.controller.inspecting()) {
 				if (can_activate) {
 					activated = true;
 					save();
-					svc::soundboardLocator.get().world.set(audio::World::soft_sparkle);
-					svc::consoleLocator.get().load_and_launch("save");
+					svc.soundboardLocator.get().world.set(audio::World::soft_sparkle);
+					svc.consoleLocator.get().load_and_launch("save");
 				}
 			}
 		} else {
@@ -67,7 +67,7 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
 	win.draw(sprite);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	svc.counterLocator.get().at(services::counters::draw_calls)++;
 	sf::RectangleShape box{};
 	if (activated) {
 		box.setFillColor(sf::Color{80, 180, 120, 100});
@@ -82,12 +82,12 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	box.setPosition(proximity_box.position - campos);
 	box.setSize(proximity_box.dimensions);
 	// win.draw(box);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	svc.counterLocator.get().at(services::counters::draw_calls)++;
 }
 
 void SavePoint::save() {
 
-	svc::dataLocator.get().save_progress(id);
+	svc.dataLocator.get().save_progress(id);
 	can_activate = false;
 }
 

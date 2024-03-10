@@ -3,15 +3,15 @@
 
 namespace automa {
 
-FileMenu::FileMenu() {
+FileMenu::FileMenu(services::ServiceLocator& svc) {
 	file_selection = 0;
 	state = STATE::STATE_FILE;
-	svc::dataLocator.get().load_blank_save();
+	svc.dataLocator.get().load_blank_save();
 	hud.set_corner_pad(true); // display hud preview for each file in the center of the screen
 	constrain_selection();
-	svc::dataLocator.get().load_progress(file_selection);
-	svc::cameraLocator.get().set_position({1, 1});
-	svc::playerLocator.get().set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
+	svc.dataLocator.get().load_progress(file_selection);
+	svc.cameraLocator.get().set_position({1, 1});
+	player.set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
 
 	title.setPosition(0, 0);
 	title.setSize(static_cast<sf::Vector2f>(cam::screen_dimensions));
@@ -44,49 +44,49 @@ FileMenu::FileMenu() {
 
 	for (auto i = 0; i < num_files * 2; ++i) {
 
-		file_text.at(i) = sf::Sprite{svc::assetLocator.get().t_file_text, sf::IntRect({0, i * text_dim.y}, text_dim)};
+		file_text.at(i) = sf::Sprite{svc.assetLocator.get().t_file_text, sf::IntRect({0, i * text_dim.y}, text_dim)};
 		file_text.at(i).setPosition(text_left, top_buffer + (text_dim.y * (i % num_files)) + (selection_buffer * (i % num_files)));
 	}
 }
 
-FileMenu::~FileMenu() { svc::playerLocator.get().total_reset(); }
+FileMenu::~FileMenu() {}
 
-void FileMenu::init(std::string const& load_path) {}
+void FileMenu::init(std::string const& load_path, services::ServiceLocator& svc) {}
 
 void FileMenu::setTilesetTexture(sf::Texture& t) {}
 
-void FileMenu::handle_events(sf::Event& event) {
+void FileMenu::handle_events(sf::Event& event, services::ServiceLocator& svc) {
 
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::Down) {
 			++file_selection;
 			constrain_selection();
-			svc::dataLocator.get().load_blank_save();
-			svc::dataLocator.get().load_progress(file_selection);
-			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
+			svc.dataLocator.get().load_blank_save();
+			svc.dataLocator.get().load_progress(file_selection);
+			svc.soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Up) {
 			--file_selection;
 			constrain_selection();
-			svc::dataLocator.get().load_blank_save();
-			svc::dataLocator.get().load_progress(file_selection);
-			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
+			svc.dataLocator.get().load_blank_save();
+			svc.dataLocator.get().load_progress(file_selection);
+			svc.soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Left) {
-			svc::stateControllerLocator.get().exit_submenu = true;
-			svc::soundboardLocator.get().menu.set(audio::Menu::backward_switch);
+			svc.stateControllerLocator.get().exit_submenu = true;
+			svc.soundboardLocator.get().menu.set(audio::Menu::backward_switch);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			constrain_selection();
-			svc::dataLocator.get().load_progress(file_selection, true);
-			svc::stateControllerLocator.get().save_loaded = true;
-			svc::soundboardLocator.get().menu.set(audio::Menu::select);
-			svc::soundboardLocator.get().world.set(audio::World::load);
+			svc.dataLocator.get().load_progress(file_selection, true);
+			svc.stateControllerLocator.get().save_loaded = true;
+			svc.soundboardLocator.get().menu.set(audio::Menu::select);
+			svc.soundboardLocator.get().world.set(audio::World::load);
 		}
 	}
 }
 
-void FileMenu::tick_update() {
+void FileMenu::tick_update(services::ServiceLocator& svc) {
 	constrain_selection();
 
 	left_dot.update();
@@ -95,31 +95,31 @@ void FileMenu::tick_update() {
 	right_dot.set_target_position({text_right + dot_pad.x, file_rects.at(file_selection).getPosition().y + dot_pad.y});
 
 	hud.update();
-	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
+	for (auto& a : player.antennae) { a.collider.reset(); }
 
-	svc::playerLocator.get().collider.physics.acceleration = {};
-	svc::playerLocator.get().collider.physics.velocity = {};
-	svc::playerLocator.get().collider.physics.zero();
-	svc::playerLocator.get().flags.state.set(player::State::alive);
-	svc::playerLocator.get().collider.reset();
-	svc::playerLocator.get().controller.autonomous_walk();
-	svc::playerLocator.get().collider.flags.set(shape::State::grounded);
+	player.collider.physics.acceleration = {};
+	player.collider.physics.velocity = {};
+	player.collider.physics.zero();
+	player.flags.state.set(player::State::alive);
+	player.collider.reset();
+	player.controller.autonomous_walk();
+	player.collider.flags.set(shape::State::grounded);
 
-	svc::playerLocator.get().update_weapon();
-	svc::playerLocator.get().update_animation();
-	svc::playerLocator.get().update_sprite();
-	svc::playerLocator.get().update_direction();
-	svc::playerLocator.get().apparent_position.x = svc::playerLocator.get().collider.physics.position.x + player::PLAYER_WIDTH / 2;
-	svc::playerLocator.get().apparent_position.y = svc::playerLocator.get().collider.physics.position.y;
-	svc::playerLocator.get().update_animation();
-	svc::playerLocator.get().update_antennae();
+	player.update_weapon();
+	player.update_animation();
+	player.update_sprite();
+	player.update_direction();
+	player.apparent_position.x = player.collider.physics.position.x + player::PLAYER_WIDTH / 2;
+	player.apparent_position.y = player.collider.physics.position.y;
+	player.update_animation();
+	player.update_antennae();
 }
 
-void FileMenu::frame_update() {}
+void FileMenu::frame_update(services::ServiceLocator& svc) {}
 
-void FileMenu::render(sf::RenderWindow& win) {
+void FileMenu::render(sf::RenderWindow& win, services::ServiceLocator& svc) {
 	win.draw(title);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	svc.counterLocator.get().at(services::counters::draw_calls)++;
 
 	int selection_adjustment{};
 	for (auto i = 0; i < num_files; ++i) {
@@ -129,13 +129,13 @@ void FileMenu::render(sf::RenderWindow& win) {
 			selection_adjustment = 0;
 		}
 		win.draw(file_text.at(i + selection_adjustment));
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		svc.counterLocator.get().at(services::counters::draw_calls)++;
 	}
 
 	left_dot.render(win, {0, 0});
 	right_dot.render(win, {0, 0});
 
-	svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
+	player.render(win, svc.cameraLocator.get().physics.position);
 
 	hud.render(win);
 }

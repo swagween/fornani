@@ -4,18 +4,18 @@
 
 namespace vfx {
 
-Emitter::Emitter(ElementBehavior behavior, EmitterStats stats, sf::Color bright_color, sf::Color dark_color) : behavior(behavior), stats(stats), bright(bright_color), dark(dark_color) {
-	int var = svc::randomLocator.get().random_range(-stats.lifespan_variance, stats.lifespan_variance);
+Emitter::Emitter(services::ServiceLocator& svc, ElementBehavior behavior, EmitterStats stats, sf::Color bright_color, sf::Color dark_color) : behavior(behavior), stats(stats), bright(bright_color), dark(dark_color) {
+	int var = svc.randomLocator.get().random_range(-stats.lifespan_variance, stats.lifespan_variance);
 	stats.lifespan += var;
 }
 Emitter::~Emitter() { particles.clear(); }
 
-void Emitter::update() { // this will tick every element and the generator itself
+void Emitter::update(services::ServiceLocator& svc) { // this will tick every element and the generator itself
 	physics.update();
 	if (stats.lifespan > 0) { // make a particle at a certain rate
 		for (int i = 0; i < behavior.rate; ++i) {
-			particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}, stats.part_size, direction));
-			int var = svc::randomLocator.get().random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
+			particles.push_back(Particle(svc, physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}, stats.part_size, direction));
+			int var = svc.randomLocator.get().random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
 			particles.back().lifespan = stats.particle_lifespan + var;
 		}
 	}
@@ -28,7 +28,7 @@ void Emitter::update() { // this will tick every element and the generator itsel
 }
 
 void Emitter::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+	if (!svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 		for (auto& particle : particles) {
 			particle.oscillate_between_colors(dark, bright);
 			particle.render(win, cam);

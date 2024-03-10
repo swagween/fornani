@@ -39,12 +39,12 @@ class GameState {
 	template <typename T>
 	class StateID;
 
-	virtual void init(std::string const& load_path){};
+	virtual void init(std::string const& load_path, services::ServiceLocator& svc){};
 	virtual void setTilesetTexture(sf::Texture& t){};
-	virtual void handle_events(sf::Event& event){};
-	virtual void tick_update(){};
-	virtual void frame_update(){};
-	virtual void render(sf::RenderWindow& win){};
+	virtual void handle_events(sf::Event& event, services::ServiceLocator& svc){};
+	virtual void tick_update(services::ServiceLocator& svc){};
+	virtual void frame_update(services::ServiceLocator& svc){};
+	virtual void render(sf::RenderWindow& win, services::ServiceLocator& svc){};
 
 	STATE state = STATE::STATE_NULL;
 	bool debug_mode{false};

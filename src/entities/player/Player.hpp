@@ -14,6 +14,7 @@
 #include "PlayerAnimation.hpp"
 #include "Transponder.hpp"
 #include "../../graphics/TextureUpdater.hpp"
+#include "../../setup/ServiceLocator.hpp"
 
 namespace player {
 
@@ -75,31 +76,31 @@ class Player {
 	Player();
 
 	// init (violates RAII but must happen after resource path is set)
-	void init();
+	void init(services::ServiceLocator& svc);
 	// member functions
-	void update();
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void update(services::ServiceLocator& svc);
+	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
-	void update_sprite();
-	void update_transponder();
+	void update_sprite(services::ServiceLocator& svc);
+	void update_transponder(services::ServiceLocator& svc);
 	void flash_sprite();
-	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc);
 	void calculate_sprite_offset();
 
 	//moves
-	void jump();
+	void jump(services::ServiceLocator& svc);
 	void dash();
 
 	void set_position(sf::Vector2<float> new_pos);
 	void update_direction();
-	void update_weapon();
-	void walk();
-	void hurt(int amount);
+	void update_weapon(services::ServiceLocator& svc);
+	void walk(services::ServiceLocator& svc);
+	void hurt(services::ServiceLocator& svc, int amount);
 	void update_antennae();
 
 	bool grounded() const;
-	bool fire_weapon();
+	bool fire_weapon(services::ServiceLocator& svc);
 
 	// level events
 	void make_invincible();

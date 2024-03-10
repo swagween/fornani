@@ -16,7 +16,7 @@ class Gravitator {
 	Gravitator(Vec pos, sf::Color col, float agf, Vec size = {4.f, 4.f});
 	void update();
 	void set_target_position(Vec new_position);
-	void render(sf::RenderWindow& win, Vec campos);
+	void render(sf::RenderWindow& win, Vec campos, services::ServiceLocator& svc);
 
 	shape::Collider collider{};
 	Vecu16 scaled_position{};

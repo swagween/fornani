@@ -7,17 +7,12 @@
 #include <memory>
 #include <unordered_map>
 #include "Weapon.hpp"
+#include "../setup/ServiceLocator.hpp"
 
 namespace arms {
 
 using Key = WEAPON_TYPE;
 constexpr static int max_weapons{20};
-
-inline Weapon bryns_gun{0};
-inline Weapon plasmer{1};
-inline Weapon skycorps_ar{2};
-inline Weapon tomahawk{3};
-inline Weapon grappling_hook{4};
 
 struct Arsenal {
 

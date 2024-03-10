@@ -53,7 +53,7 @@ void TextWriter::wrap() {
 }
 
 void TextWriter::load_message(dj::Json& source, std::string_view key) {
-	font.loadFromFile(svc::textLocator.get().font);
+	font.loadFromFile(svc.textLocator.get().font);
 	message.setString(source[key].as_string().data());
 
 	message.setCharacterSize(text_size);

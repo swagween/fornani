@@ -9,6 +9,7 @@
 #include <deque>
 #include "../utils/BitFlags.hpp"
 #include "../utils/Direction.hpp"
+#include "../setup/ServiceLocator.hpp"
 
 namespace components {
 
@@ -46,9 +47,8 @@ class PhysicsComponent {
 
 	void apply_force(sf::Vector2<float> force);
 	void apply_force_at_angle(float magnitude, float angle);
-	void update_euler();
-	void integrate();
-	void update();
+	void integrate(float dt);
+	void update(float dt);
 	void update_dampen();
 	void calculate_maximum_acceleration();
 	void calculate_jerk();

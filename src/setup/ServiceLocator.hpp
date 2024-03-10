@@ -25,28 +25,31 @@
 #include "../audio/Soundboard.hpp"
 #include "../audio/MusicPlayer.hpp"
 
-namespace svc {
+namespace services {
 
 enum class global_flags { greyblock_state, greyblock_trigger };
 enum counters { draw_calls = 0 };
 int const num_counters = 1;
 
-inline auto assetLocator = forloop::Service<asset::AssetManager>::Instance{};
-inline auto dataLocator = forloop::Service<data::DataManager>::Instance{};
-inline auto textLocator = forloop::Service<data::TextManager>::Instance{};
-inline auto playerLocator = forloop::Service<player::Player>::Instance{};
-inline auto cameraLocator = forloop::Service<cam::Camera>::Instance{};
-inline auto stopwatchLocator = forloop::Service<util::Stopwatch>::Instance{};
-inline auto tickerLocator = forloop::Service<util::Ticker>::Instance{};
-inline auto stateControllerLocator = forloop::Service<automa::StateController>::Instance{};
-inline auto consoleLocator = forloop::Service<gui::Console>::Instance{};
-inline auto randomLocator = forloop::Service<util::Random>::Instance{};
-inline auto globalBitFlagsLocator = forloop::Service<util::BitFlags<global_flags>>::Instance{};
-inline auto inputStateLocator = forloop::Service<util::InputState>::Instance{};
-inline auto counterLocator = forloop::Service<std::array<uint16_t, num_counters>>::Instance{};
-inline auto floatReadoutLocator = forloop::Service<float>::Instance{};
-inline auto loggerLocator = forloop::Service<util::Logger>::Instance {};
-inline auto soundboardLocator = forloop::Service<audio::Soundboard>::Instance{};
-inline auto musicPlayerLocator = forloop::Service<audio::MusicPlayer>::Instance{};
+class ServiceLocator {
+  public:
+	forloop::Service<asset::AssetManager>::Instance assetLocator{};
+	forloop::Service<data::DataManager>::Instance dataLocator{};
+	forloop::Service<data::TextManager>::Instance textLocator{};
+	//forloop::Service<player::Player>::Instance playerLocator{};
+	//forloop::Service<cam::Camera>::Instance cameraLocator{};
+	forloop::Service<util::Stopwatch>::Instance stopwatchLocator{};
+	forloop::Service<util::Ticker>::Instance tickerLocator{};
+	forloop::Service<automa::StateController>::Instance stateControllerLocator{};
+	forloop::Service<gui::Console>::Instance consoleLocator{};
+	forloop::Service<util::Random>::Instance randomLocator{};
+	forloop::Service<util::BitFlags<global_flags>>::Instance globalBitFlagsLocator{};
+	forloop::Service<util::InputState>::Instance inputStateLocator{};
+	forloop::Service<std::array<uint16_t, num_counters>>::Instance counterLocator{};
+	forloop::Service<float>::Instance floatReadoutLocator{};
+	forloop::Service<util::Logger>::Instance loggerLocator{};
+	forloop::Service<audio::Soundboard>::Instance soundboardLocator{};
+	forloop::Service<audio::MusicPlayer>::Instance musicPlayerLocator{};
+};
 
 } // namespace svc

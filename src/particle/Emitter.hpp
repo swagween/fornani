@@ -11,6 +11,7 @@
 #include "ObjectPool.hpp"
 #include "Particle.hpp"
 #include "../graphics/FLColor.hpp"
+#include "../setup/ServiceLocator.hpp"
 
 namespace vfx {
 
@@ -43,10 +44,10 @@ class Emitter {
 
   public:
 	Emitter() = default;
-	Emitter(ElementBehavior behavior, EmitterStats stats, sf::Color bright_color = flcolor::white, sf::Color dark_color = flcolor::black);
+	Emitter(services::ServiceLocator& svc, ElementBehavior behavior, EmitterStats stats, sf::Color bright_color = flcolor::white, sf::Color dark_color = flcolor::black);
 	~Emitter();
 
-	void update();
+	void update(services::ServiceLocator& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 
 	bool empty() const;

@@ -17,21 +17,13 @@
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
 #include "../weapon/Projectile.hpp"
+#include "../setup/ServiceLocator.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
 int const CELL_SIZE{32};
 
 namespace world {
-
-/*ElementBehavior {rate, rate_variance, expulsion_force, expulsion_variance, cone, grav, grav_variance, x_friction, y_friction }; */
-// map emitters!
-constexpr inline vfx::ElementBehavior breakable_spray{2, 1, 1.5, 0.8, 0.8, 0.01, 0.005, 0.99, 0.99};
-constexpr inline vfx::EmitterStats breakable_stats{10, 0, 80, 60, 3.0f};
-inline auto breakable_debris = vfx::Emitter(breakable_spray, breakable_stats, flcolor::goldenrod);
-constexpr inline vfx::ElementBehavior player_death_spray{20, 2, 0.65f, 0.45f, std::_Pi_val, 0.f, 0.f, 0.995, 0.995};
-constexpr inline vfx::EmitterStats player_death_stats{4, 0, 80, 60, 4.0f};
-inline auto player_death = vfx::Emitter(player_death_spray, player_death_stats, flcolor::white);
 
 enum LAYER_ORDER {
 	BACKGROUND = 0,
@@ -62,19 +54,19 @@ class Map {
 	using Vecu16 = sf::Vector2<uint32_t>;
 
 	// methods
-	void load(std::string const& path);
-	void update();
-	void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
-	void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
-	void render_console(sf::RenderWindow& win);
+	void load(std::string const& path, services::ServiceLocator& svc, player::Player& player);
+	void update(services::ServiceLocator& svc, player::Player& player);
+	void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam, services::ServiceLocator& svc);
+	void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam, services::ServiceLocator& svc);
+	void render_console(sf::RenderWindow& win, services::ServiceLocator& svc);
 	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
-	void spawn_projectile_at(sf::Vector2<float> pos);
-	void spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter);
-	void manage_projectiles();
+	void spawn_projectile_at(sf::Vector2<float> pos, services::ServiceLocator& svc, player::Player& player);
+	void spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter, services::ServiceLocator& svc);
+	void manage_projectiles(services::ServiceLocator& svc, player::Player& player);
 	void generate_collidable_layer();
 	bool check_cell_collision(shape::Collider collider);
-	void handle_grappling_hook(arms::Projectile& proj);
+	void handle_grappling_hook(arms::Projectile& proj, player::Player& player);
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second);

@@ -5,6 +5,7 @@
 #include <optional>
 #include <unordered_map>
 #include "../../utils/BitFlags.hpp"
+#include "../../setup/ServiceLocator.hpp"
 
 namespace player {
 
@@ -16,7 +17,7 @@ enum class TransponderActions { skip_ahead, next, exit };
 
 class Transponder {
   public:
-	void update();
+	void update(services::ServiceLocator& svc);
 	void end();
 
 	void skip_ahead();

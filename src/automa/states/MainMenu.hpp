@@ -11,14 +11,14 @@ class MainMenu : public GameState {
 	std::unordered_map<MenuSelection, int> menu_selection_id{
 		{MenuSelection::new_game, 0}, {MenuSelection::load_game, 1}, {MenuSelection::options, 2}};
 
-	MainMenu();
+	MainMenu(services::ServiceLocator& svc);
 
-	void init(std::string const& load_path);
+	void init(std::string const& load_path, services::ServiceLocator& svc);
 	void setTilesetTexture(sf::Texture& t);
-	void handle_events(sf::Event& event);
-	void tick_update();
-	void frame_update();
-	void render(sf::RenderWindow& win);
+	void handle_events(sf::Event& event, services::ServiceLocator& svc);
+	void tick_update(services::ServiceLocator& svc);
+	void frame_update(services::ServiceLocator& svc);
+	void render(sf::RenderWindow& win, services::ServiceLocator& svc);
 
 	sf::Sprite title{};
 	std::vector<sf::Sprite> title_assets{};

@@ -5,7 +5,7 @@
 namespace gui {
 
 Console::Console() {
-	for (auto& sprite : sprites) { sprite.setTexture(svc::assetLocator.get().t_ui); }
+	for (auto& sprite : sprites) { sprite.setTexture(svc.assetLocator.get().t_ui); }
 	sprites.at(0).setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
 	sprites.at(1).setTextureRect(sf::IntRect{{corner_factor, 0}, {edge_factor, corner_factor}});
 	sprites.at(2).setTextureRect(sf::IntRect{{corner_factor + edge_factor, 0}, {corner_factor, corner_factor}});
@@ -48,7 +48,7 @@ void Console::render(sf::RenderWindow& win) {
 
 void Console::load_and_launch(std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
-		writer.load_message(svc::textLocator.get().console, key);
+		writer.load_message(svc.textLocator.get().console, key);
 		flags.set(ConsoleFlags::loaded);
 		begin();
 	}

@@ -24,31 +24,31 @@ void Portal::render(sf::RenderWindow& win, Vec campos) {
 	box.setPosition(bounding_box.position - campos);
 	box.setSize(dimensions);
 	/*win.draw(box);
-	svc::counterLocator.get().at(svc::draw_calls)++;*/
+	svc.counterLocator.get().at(services::counters::draw_calls)++;*/
 }
 
-void Portal::handle_activation(int room_id, bool& fade_out, bool& done) {
+void Portal::handle_activation(services::ServiceLocator& svc, player::Player& player, int room_id, bool& fade_out, bool& done) {
 
-	if (bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+	if (bounding_box.SAT(player.collider.bounding_box)) {
 		if (activate_on_contact && ready) {
 			activated = true;
-			svc::playerLocator.get().controller.prevent_movement();
-			svc::playerLocator.get().controller.autonomous_walk();
-			svc::playerLocator.get().walk();
-		} else if (svc::playerLocator.get().controller.inspecting()) {
+			player.controller.prevent_movement();
+			player.controller.autonomous_walk();
+			player.walk(svc);
+		} else if (player.controller.inspecting()) {
 			activated = true;
-			svc::playerLocator.get().controller.prevent_movement();
+			player.controller.prevent_movement();
 		}
 		// player just entered room via border portal
 		if (!ready && activate_on_contact) {
-			svc::playerLocator.get().controller.direction.lr = svc::playerLocator.get().entered_from();
-			svc::playerLocator.get().controller.prevent_movement();
-			svc::playerLocator.get().controller.autonomous_walk();
-			svc::playerLocator.get().walk();
+			player.controller.direction.lr = player.entered_from();
+			player.controller.prevent_movement();
+			player.controller.autonomous_walk();
+			player.walk(svc);
 		}
 	} else {
 		if (!ready && activate_on_contact) {
-			svc::playerLocator.get().controller.stop_walking_autonomously();
+			player.controller.stop_walking_autonomously();
 		}
 		ready = true;
 	}
@@ -56,10 +56,10 @@ void Portal::handle_activation(int room_id, bool& fade_out, bool& done) {
 		fade_out = true;
 		if (done) {
 			try {
-				svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(destination_map_id);
-			} catch (std::out_of_range) { svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id); }
-			svc::stateControllerLocator.get().trigger = true;
-			svc::stateControllerLocator.get().source_id = source_map_id;
+				svc.stateControllerLocator.get().next_state = lookup::get_map_label.at(destination_map_id);
+			} catch (std::out_of_range) { svc.stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id); }
+			svc.stateControllerLocator.get().trigger = true;
+			svc.stateControllerLocator.get().source_id = source_map_id;
 		}
 	}
 }

@@ -6,6 +6,7 @@
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Direction.hpp"
 #include "Jump.hpp"
+#include "../../setup/ServiceLocator.hpp"
 
 namespace player {
 
@@ -22,7 +23,7 @@ class PlayerController {
   public:
 	PlayerController();
 
-	void update();
+	void update(services::ServiceLocator& svc);
 	void clean();
 	void stop();
 	void ground();

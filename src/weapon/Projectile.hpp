@@ -19,6 +19,7 @@
 #include "../particle/Gravitator.hpp"
 #include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
+#include "../setup/ServiceLocator.hpp"
 
 namespace arms {
 
@@ -95,10 +96,10 @@ class Projectile {
 
   public:
 	Projectile();
-	Projectile(int id);
+	Projectile(int id, services::ServiceLocator& svc);
 
-	void update();
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void update(services::ServiceLocator& svc);
+	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc);
 	void destroy(bool completely);
 	void seed();
 	void set_sprite();

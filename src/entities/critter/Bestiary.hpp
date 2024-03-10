@@ -13,11 +13,7 @@
 
 namespace critter {
 
-inline std::unordered_map<int, CRITTER_TYPE> get_critter_type{
-	{0, CRITTER_TYPE::hulmet},	  {1, CRITTER_TYPE::tank},	   {2, CRITTER_TYPE::bunker},	 {3, CRITTER_TYPE::thug},  {4, CRITTER_TYPE::worker},  {5, CRITTER_TYPE::frdog},
-	{6, CRITTER_TYPE::jackdaw},	  {7, CRITTER_TYPE::frcat},	   {8, CRITTER_TYPE::biter},	 {9, CRITTER_TYPE::bee},   {10, CRITTER_TYPE::roller}, {11, CRITTER_TYPE::snek},
-	{12, CRITTER_TYPE::behemoth}, {13, CRITTER_TYPE::stinger}, {14, CRITTER_TYPE::watchman}, {15, CRITTER_TYPE::gnat}, {16, CRITTER_TYPE::moth},
-};
+inline std::unordered_map<int, CRITTER_TYPE> get_critter_type{{0, CRITTER_TYPE::hulmet}, {1, CRITTER_TYPE::frdog}};
 
 int const pool_size_singular{1};
 int const pool_size_small{16};
