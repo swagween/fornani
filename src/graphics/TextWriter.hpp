@@ -9,6 +9,7 @@
 #include <string_view>
 #include <xstring>
 #include "../utils/BitFlags.hpp"
+#include "../setup/ServiceLocator.hpp"
 
 namespace text {
 

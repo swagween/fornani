@@ -25,7 +25,7 @@ class Frdog : public Critter {
 	}
 
 	void unique_update(player::Player& player) override;
-	void load_data() override;
+	void load_data(services::ServiceLocator& svc) override;
 
 	fsm::StateFunction state_function = std::bind(&Frdog::update_idle, this);
 	fsm::StateFunction update_idle();

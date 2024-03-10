@@ -1,6 +1,5 @@
 
 #include "SavePoint.hpp"
-#include "../../setup/ServiceLocator.hpp"
 
 namespace entity {
 

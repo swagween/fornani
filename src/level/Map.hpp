@@ -55,8 +55,8 @@ class Map {
 
 	// methods
 	void load(std::string const& path, services::ServiceLocator& svc, player::Player& player);
-	void update(services::ServiceLocator& svc, player::Player& player);
-	void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam, services::ServiceLocator& svc);
+	void update(services::ServiceLocator& svc, player::Player& player, float dt);
+	void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam, services::ServiceLocator& svc, player::Player& player);
 	void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam, services::ServiceLocator& svc);
 	void render_console(sf::RenderWindow& win, services::ServiceLocator& svc);
 	Tile& tile_at(const uint8_t i, const uint8_t j);
@@ -66,7 +66,7 @@ class Map {
 	void manage_projectiles(services::ServiceLocator& svc, player::Player& player);
 	void generate_collidable_layer();
 	bool check_cell_collision(shape::Collider collider);
-	void handle_grappling_hook(arms::Projectile& proj, player::Player& player);
+	void handle_grappling_hook(arms::Projectile& proj, player::Player& player, float dt);
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second);

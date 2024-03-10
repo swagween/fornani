@@ -1,7 +1,6 @@
 
 #include "Projectile.hpp"
 #include "../setup/LookupTables.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace arms {
 
@@ -72,7 +71,7 @@ Projectile::Projectile(int id, services::ServiceLocator& svc) {
 	set_sprite();
 }
 
-void Projectile::update(services::ServiceLocator& svc) {
+void Projectile::update(services::ServiceLocator& svc, player::Player& player) {
 
 	// animation
 	animation.update();
@@ -80,7 +79,7 @@ void Projectile::update(services::ServiceLocator& svc) {
 	cooldown.update();
 
 	if (stats.spring) {
-		hook.update();
+		hook.update(dt);
 		if (hook.grapple_flags.test(arms::GrappleState::probing)) {
 			hook.spring.set_anchor(physics.position);
 			hook.spring.set_bob(player.apparent_position);
@@ -97,10 +96,9 @@ void Projectile::update(services::ServiceLocator& svc) {
 				destroy(true);
 				hook.grapple_flags = {};
 				hook.grapple_triggers = {};
-				svc.loggerLocator.get().states.reset(util::State::hook_snaking);
 				hook.spring.reverse_anchor_and_bob();
 				hook.spring.set_rest_length(stats.spring_rest_length);
-				svc.soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
+				//svc.soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
 			} // destroy when player catches it
 		}
 	}
@@ -114,7 +112,7 @@ void Projectile::update(services::ServiceLocator& svc) {
 		// use predictive bounding box so player can "meet up" with the boomerang
 		if (gravitator.collider.bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
-			svc.soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
+			//svc.soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
 	}
 

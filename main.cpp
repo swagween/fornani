@@ -285,7 +285,7 @@ static void show_overlay(services::ServiceLocator& svc) {
 							ImGui::SliderFloat("Dash Dampen", &SM.get_current_state().player.physics_stats.dash_dampen, 0.7f, 2.0f);
 
 							ImGui::Separator();
-							if (ImGui::Button("Save Parameters")) { svc.dataLocator.get().save_player_params(SM.get_current_state().player); }
+							if (ImGui::Button("Save Parameters")) { svc.dataLocator.get().save_player_params()); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Misc")) {
@@ -681,11 +681,6 @@ void run(char** argv, services::ServiceLocator& svc) {
 }
 
 } // namespace
-
-static void tick() {
-
-	
-};
 
 int main(int argc, char** argv) {
 	assert(argc > 0);

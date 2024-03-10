@@ -20,6 +20,7 @@
 #include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../entities/player/Player.hpp"
 
 namespace arms {
 
@@ -98,7 +99,7 @@ class Projectile {
 	Projectile();
 	Projectile(int id, services::ServiceLocator& svc);
 
-	void update(services::ServiceLocator& svc);
+	void update(services::ServiceLocator& svc, player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc);
 	void destroy(bool completely);
 	void seed();

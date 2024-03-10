@@ -1,7 +1,6 @@
 
 #include "Collider.hpp"
 #include "../graphics/FLColor.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace shape {
 

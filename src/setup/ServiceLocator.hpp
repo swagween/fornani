@@ -9,19 +9,13 @@
 #include <string>
 
 #include "../automa/StateController.hpp"
-#include "../entities/player/Player.hpp"
-#include "../gui/Console.hpp"
 #include "../service/Service.hpp"
-#include "../utils/Camera.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/Ticker.hpp"
 #include "../utils/InputState.hpp"
-#include "../utils/Random.hpp"
 #include "AssetManager.hpp"
 #include "DataManager.hpp"
 #include "TextManager.hpp"
-#include "../utils/Logger.hpp"
-#include "../graphics/TextWriter.hpp"	
 #include "../audio/Soundboard.hpp"
 #include "../audio/MusicPlayer.hpp"
 

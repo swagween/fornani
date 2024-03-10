@@ -1,6 +1,5 @@
 
 #include "Spring.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace vfx {
 
@@ -11,10 +10,10 @@ Spring::Spring(Parameters params) : params(params) {
 
 void Spring::calculate() { calculate_force(); }
 
-void Spring::update() {
+void Spring::update(float dt) {
 	variables.physics.gravity = 1.5f;
 	calculate();
-	variables.physics.update();
+	variables.physics.update(dt);
 	bob = variables.physics.position;
 }
 
@@ -29,8 +28,8 @@ void Spring::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	anchor_shape.setPosition(anchor - cam);
 	bob_shape.setOutlineThickness(-2);
 	anchor_shape.setOutlineThickness(-2);
-	bob_shape.setOutlineColor(flcolor::green);
-	anchor_shape.setOutlineColor(flcolor::goldenrod);
+	bob_shape.setOutlineColor(sf::Color::Green);
+	anchor_shape.setOutlineColor(sf::Color::Magenta);
 	win.draw(bob_shape);
 	win.draw(anchor_shape);
 }

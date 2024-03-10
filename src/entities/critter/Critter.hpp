@@ -15,6 +15,7 @@
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../utils/StateFunction.hpp"
+#include "../player/Player.hpp"
 
 namespace critter {
 
@@ -70,7 +71,7 @@ class Critter {
 	~Critter() {}
 
 	virtual void unique_update(player::Player& player){};
-	virtual void load_data(){};
+	virtual void load_data(services::ServiceLocator& svc){};
 	virtual void sprite_flip();
 	virtual void cooldown(); // for armed enemies
 

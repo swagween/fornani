@@ -9,6 +9,7 @@
 #include "../entities/player/Player.hpp"
 #include "../graphics/Background.hpp"
 #include "../gui/HUD.hpp"
+#include "../gui/Console.hpp"
 #include "../level/Map.hpp"
 #include "../setup/LookupTables.hpp"
 

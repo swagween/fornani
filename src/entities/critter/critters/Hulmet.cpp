@@ -19,7 +19,7 @@ void Hulmet::unique_update(player::Player& player) {
 		stats.cooldown == 0) {
 
 		// decide randomly whether to chase the player or start shooting
-		if (svc.randomLocator.get().percent_chance(0.2f)) {
+		/*if (svc.randomLocator.get().percent_chance(0.2f)) {
 			flags.set(Flags::charging);
 			flags.reset(Flags::seeking);
 		} else {
@@ -27,7 +27,7 @@ void Hulmet::unique_update(player::Player& player) {
 			flags.reset(Flags::charging);
 			seek_current_target();
 			flags.set(Flags::seeking);
-		}
+		}*/
 
 		flags.reset(Flags::hiding);
 	}
@@ -49,7 +49,7 @@ void Hulmet::unique_update(player::Player& player) {
 	state_function = state_function();
 }
 
-void Hulmet::load_data() {
+void Hulmet::load_data(services::ServiceLocator& svc) {
 	if (colliders.empty()) {
 		for (int j = 0; j < num_colliders; ++j) {
 			auto const& xdim = svc.dataLocator.get().hulmet["colliders"][0]["boxes"][j]["dimensions"]["x"].as<float>();
@@ -151,7 +151,7 @@ fsm::StateFunction Hulmet::update_charge() {
 		anim_loop_count = 0;
 		flags.reset(Flags::charging);
 		flags.reset(Flags::hurt);
-		return player.collider.bounding_box.overlaps(hostile_range) ? BIND(update_shoot) : (flags.test(Flags::just_hurt) ? BIND(update_hurt) : BIND(update_idle));
+		//return player.collider.bounding_box.overlaps(hostile_range) ? BIND(update_shoot) : (flags.test(Flags::just_hurt) ? BIND(update_hurt) : BIND(update_idle));
 	}
 	if (flags.test(Flags::turning)) { return BIND(update_turn); }
 	// charging cannot be interrupted by hurt
@@ -186,7 +186,7 @@ fsm::StateFunction Hulmet::update_shoot() {
 
 	if (flags.test(Flags::turning)) { return BIND(update_turn); }
 	// shooting cannot be interrupted by hurt
-	if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
+	//if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
 	flags.reset(Flags::just_hurt);
 	return std::move(state_function);
 }
@@ -231,7 +231,7 @@ fsm::StateFunction Hulmet::update_hurt() {
 		collider.physics.velocity.x = 0.f;
 		collider.physics.acceleration.x = 0.f;
 	}
-	if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
+	//if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
 	flags.reset(Flags::just_hurt);
 	if (behavior.start()) {
 		behavior = behavior::Behavior(behavior::hulmet_hurt);

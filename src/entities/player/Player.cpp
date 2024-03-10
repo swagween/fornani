@@ -1,7 +1,6 @@
 
 #include "Player.hpp"
 #include "../../setup/LookupTables.hpp"
-#include "../../setup/ServiceLocator.hpp"
 
 namespace player {
 
@@ -9,7 +8,6 @@ Player::Player() {}
 
 void Player::init(services::ServiceLocator& svc) {
 
-	svc.dataLocator.get().load_player_params();
 	arsenal.init();
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});

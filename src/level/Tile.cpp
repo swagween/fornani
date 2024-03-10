@@ -1,5 +1,4 @@
 #include "Tile.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace world {
 

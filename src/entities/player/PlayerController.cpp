@@ -1,5 +1,4 @@
 #include "PlayerController.hpp"
-#include "../../setup/ServiceLocator.hpp"
 
 namespace player {
 

@@ -5,6 +5,7 @@
 #include <array>
 #include <unordered_map>
 #include "../setup/ServiceLocator.hpp"
+#include "../utils/Camera.hpp"
 
 namespace bg {
 

@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "../utils/BitFlags.hpp"
+#include "../setup/ResourceFinder.hpp"
 
 namespace audio {
 

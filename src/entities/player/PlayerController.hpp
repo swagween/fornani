@@ -6,7 +6,6 @@
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Direction.hpp"
 #include "Jump.hpp"
-#include "../../setup/ServiceLocator.hpp"
 
 namespace player {
 

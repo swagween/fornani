@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
-#include "../setup/ServiceLocator.hpp"
 
 namespace flfx {
 

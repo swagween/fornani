@@ -4,30 +4,28 @@
 
 namespace arms {
 
-void GrapplingHook::update(player::Player& player) {
+void GrapplingHook::update(float dt, sf::Vector2<float> player_barrel, sf::Vector2<float> player_position) {
 
-	if (grapple_flags.test(GrappleState::probing)) { spring.set_bob(player.equipped_weapon().barrel_point); }
+	if (grapple_flags.test(GrappleState::probing)) { spring.set_bob(player_barrel); }
 	if (grapple_flags.test(GrappleState::anchored)) {
-		spring.update();
+		spring.update(dt);
 	}
 
 	if (grapple_triggers.test(arms::GrappleTriggers::released)) {
-		player.collider.physics.acceleration = spring.variables.physics.acceleration;
-		player.collider.physics.velocity = spring.variables.physics.velocity;
 		spring.variables = {};
 		spring.set_bob(spring.get_anchor());
 		spring.variables.physics.position = spring.get_bob();
-		spring.set_anchor(player.apparent_position);
+		spring.set_anchor(player_position);
 		grapple_triggers.reset(arms::GrappleTriggers::released);
 	}
 	if (grapple_flags.test(arms::GrappleState::snaking)) {
 		spring.set_rest_length(-80);
-		spring.set_anchor(player.apparent_position);
-		spring.update();
+		spring.set_anchor(player_position);
+		spring.update(dt);
 	}
 }
 
-void GrapplingHook::break_free(player::Player& player) {
+void GrapplingHook::break_free() {
 	spring.set_force(.2f);
 	grapple_flags.reset(arms::GrappleState::anchored);
 	grapple_triggers.set(arms::GrappleTriggers::released);
@@ -35,13 +33,13 @@ void GrapplingHook::break_free(player::Player& player) {
 	player.controller.release_hook();
 }
 
-void GrapplingHook::render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc, player::Player& player) {
+void GrapplingHook::render(sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& player_position, services::ServiceLocator& svc) {
 	if (svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 		spring.render(win, campos);
 	} else {
 		rope.setTexture(svc.assetLocator.get().t_rope);
 		rope.setTextureRect(sf::IntRect({0, 0}, {6, 6}));
-		float distance = util::magnitude(player.collider.physics.position - spring.get_anchor());
+		float distance = util::magnitude(player_position - spring.get_anchor());
 		spring.num_links = distance / 20;
 		for (int i = 0; i < spring.num_links; ++i) {
 			rope.setPosition(spring.get_rope(i) - campos);

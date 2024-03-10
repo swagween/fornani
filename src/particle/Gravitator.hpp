@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../utils/Collider.hpp"
+#include "../setup/ServiceLocator.hpp"
 
 namespace vfx {
 

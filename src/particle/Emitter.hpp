@@ -11,7 +11,6 @@
 #include "ObjectPool.hpp"
 #include "Particle.hpp"
 #include "../graphics/FLColor.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace vfx {
 
@@ -48,7 +47,7 @@ class Emitter {
 	~Emitter();
 
 	void update(services::ServiceLocator& svc);
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(sf::RenderWindow& win, sf::Vector2<float> cam, services::ServiceLocator& svc);
 
 	bool empty() const;
 

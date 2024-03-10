@@ -10,9 +10,9 @@ enum class GrappleTriggers { found, released };
 enum class GrappleState { anchored, probing, snaking };
 class GrapplingHook {
   public:
-	void update(player::Player& player);
-	void break_free(player::Player& player);
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, services::ServiceLocator& svc, player::Player& player);
+	void update(float dt, sf::Vector2<float> player_barrel, sf::Vector2<float> player_position);
+	void break_free();
+	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& player_position, services::ServiceLocator& svc);
 
 	sf::Vector2<float> probe_velocity(float speed);
 	vfx::Spring spring{};

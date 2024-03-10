@@ -1,22 +1,21 @@
 
 #include "Emitter.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace vfx {
 
 Emitter::Emitter(services::ServiceLocator& svc, ElementBehavior behavior, EmitterStats stats, sf::Color bright_color, sf::Color dark_color) : behavior(behavior), stats(stats), bright(bright_color), dark(dark_color) {
-	int var = svc.randomLocator.get().random_range(-stats.lifespan_variance, stats.lifespan_variance);
-	stats.lifespan += var;
+	//int var = svc.randomLocator.get().random_range(-stats.lifespan_variance, stats.lifespan_variance);
+	//stats.lifespan += var;
 }
 Emitter::~Emitter() { particles.clear(); }
 
 void Emitter::update(services::ServiceLocator& svc) { // this will tick every element and the generator itself
-	physics.update();
+	physics.update(svc.tickerLocator.get().tick_rate);
 	if (stats.lifespan > 0) { // make a particle at a certain rate
 		for (int i = 0; i < behavior.rate; ++i) {
 			particles.push_back(Particle(svc, physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}, stats.part_size, direction));
-			int var = svc.randomLocator.get().random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
-			particles.back().lifespan = stats.particle_lifespan + var;
+			//int var = svc.randomLocator.get().random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
+			//particles.back().lifespan = stats.particle_lifespan + var;
 		}
 	}
 
@@ -27,7 +26,7 @@ void Emitter::update(services::ServiceLocator& svc) { // this will tick every el
 	--stats.lifespan;
 }
 
-void Emitter::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Emitter::render(sf::RenderWindow& win, sf::Vector2<float> cam, services::ServiceLocator& svc) {
 	if (!svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) {
 		for (auto& particle : particles) {
 			particle.oscillate_between_colors(dark, bright);

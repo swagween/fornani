@@ -12,6 +12,7 @@ Dojo::Dojo(services::ServiceLocator& svc) {
 	hud = gui::HUD({20, 20}, svc, player);
 }
 void Dojo::init(std::string const& load_path, services::ServiceLocator& svc) {
+	svc.dataLocator.get().load_player_params();
 	player.init(svc);
 	hud.set_corner_pad(false); // reset hud position to corner
 	player.reset_flags();
@@ -91,7 +92,7 @@ void Dojo::tick_update(services::ServiceLocator& svc) {
 	console.update();
 	player.update(svc);
 
-	map.update(svc, player);
+	map.update(svc, player, svc.tickerLocator.get().tick_rate);
 	map.camera.center(player.anchor_point);
 	map.camera.update();
 	map.camera.restrict_movement(map.real_dimensions);
@@ -118,7 +119,7 @@ void Dojo::render(sf::RenderWindow& win, services::ServiceLocator& svc) {
 	sf::Vector2<float> camoffset = map.camera.physics.position + camvel;
 	map.render_background(win, tileset_sprites, map.camera.physics.position, svc);
 
-	map.render(win, tileset_sprites, map.camera.physics.position, svc);
+	map.render(win, tileset_sprites, map.camera.physics.position, svc, player);
 
 	if (!svc.globalBitFlagsLocator.get().test(services::global_flags::greyblock_state)) { hud.render(win, svc, player); }
 

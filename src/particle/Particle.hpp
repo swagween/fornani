@@ -4,6 +4,7 @@
 #include <vector>
 #include "../components/PhysicsComponent.hpp"
 #include "../utils/Shape.hpp"
+#include "../setup/ServiceLocator.hpp"
 
 namespace vfx {
 

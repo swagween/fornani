@@ -1,7 +1,6 @@
 #include "TextWriter.hpp"
 
 #include <SFML/Graphics.hpp>
-#include "../setup/ServiceLocator.hpp"
 
 namespace text {
 

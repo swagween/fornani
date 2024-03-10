@@ -9,7 +9,6 @@
 #include <deque>
 #include "../utils/BitFlags.hpp"
 #include "../utils/Direction.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace components {
 

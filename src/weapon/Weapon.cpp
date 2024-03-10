@@ -1,6 +1,5 @@
 
 #include "Weapon.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace arms {
 
@@ -46,7 +45,7 @@ Weapon::Weapon(int id, services::ServiceLocator& svc) : id(id) {
 	attributes.boomerang = projectile.stats.boomerang;
 }
 
-void Weapon::update(services::ServiceLocator& svc) {
+void Weapon::update(services::ServiceLocator& svc, player::Player& player) {
 	active_projectiles = std::clamp(active_projectiles, 0, INT_MAX);
 	set_orientation(player.controller.direction);
 	if (cooling_down()) { --cooldown_counter; }

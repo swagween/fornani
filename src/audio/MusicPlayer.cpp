@@ -2,7 +2,6 @@
 #pragma once
 
 #include "MusicPlayer.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace audio {
 void MusicPlayer::load(std::string song_name) {

@@ -1,6 +1,5 @@
 
 #include "Frdog.hpp"
-#include "../../../setup/ServiceLocator.hpp"
 
 namespace critter {
 
@@ -30,7 +29,7 @@ void Frdog::unique_update(player::Player& player) {
 	state_function = state_function();
 }
 
-void Frdog::load_data() {
+void Frdog::load_data(services::ServiceLocator& svc) {
 
 	if (colliders.empty()) {
 		for (int j = 0; j < num_colliders; ++j) {
@@ -180,7 +179,7 @@ fsm::StateFunction Frdog::update_run() {
 }
 
 fsm::StateFunction Frdog::update_hurt() {
-	if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
+	//if (flags.test(Flags::just_hurt)) { svc.assetLocator.get().enem_hit.play(); }
 	flags.reset(Flags::just_hurt);
 	if (behavior.start()) {
 		behavior = behavior::Behavior(behavior::frdog_hurt);
