@@ -55,6 +55,9 @@ class AssetManager {
 		t_nova_projectile.loadFromFile(finder.resource_path + "/image/weapon/nova_proj.png");
 		t_skycorps_ar_projectile.loadFromFile(finder.resource_path + "/image/weapon/skycorps_ar_proj.png");
 		t_tomahawk_projectile.loadFromFile(finder.resource_path + "/image/weapon/tomahawk_projectile.png");
+		t_grappling_hook.loadFromFile(finder.resource_path + "/image/weapon/grappling_hook.png");
+		t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
+		t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
 
 		t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 
@@ -238,6 +241,9 @@ class AssetManager {
 	sf::Texture t_tomahawk{};
 	sf::Texture t_tomahawk_projectile{};
 	sf::Texture t_skycorps_ar_projectile{};
+	sf::Texture t_grappling_hook{};
+	sf::Texture t_rope{};
+	sf::Texture t_hook{};
 
 	// condense these into a 2d vector later
 	std::vector<sf::Sprite> sp_tileset_provisional{};

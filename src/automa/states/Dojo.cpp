@@ -85,8 +85,8 @@ void Dojo::handle_events(sf::Event& event) {
 }
 
 void Dojo::tick_update() {
-
 	svc::playerLocator.get().update();
+
 	map.update();
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
 	svc::cameraLocator.get().update();
@@ -103,6 +103,8 @@ void Dojo::tick_update() {
 	map.debug_mode = debug_mode;
 
 	svc::inputStateLocator.get().reset_triggers();
+	svc::playerLocator.get().controller.clean();
+
 }
 
 void Dojo::frame_update() {
@@ -116,9 +118,6 @@ void Dojo::render(sf::RenderWindow& win) {
 	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
 	map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-		svc::playerLocator.get().collider.render(win, svc::cameraLocator.get().physics.position);
-	}
 
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
 

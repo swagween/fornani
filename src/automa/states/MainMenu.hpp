@@ -33,8 +33,8 @@ class MainMenu : public GameState {
 	sf::IntRect load_rect{};
 	sf::IntRect options_rect{};
 
-	vfx::Attractor left_dot{};
-	vfx::Attractor right_dot{};
+	vfx::Gravitator left_dot{};
+	vfx::Gravitator right_dot{};
 	sf::Vector2<float> dot_pad{24.f, 8.f};
 };
 

@@ -37,9 +37,16 @@
           "transcendent": false,
           "persistent": false,
           "constrained": true,
+          "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
         },
         "animation": {
           "num_sprites": 1,
@@ -105,9 +112,16 @@
           "transcendent": false,
           "boomerang": false,
           "constrained": true,
+          "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
         },
         "animation": {
           "num_sprites": 1,
@@ -173,9 +187,16 @@
           "transcendent": false,
           "boomerang": false,
           "constrained": true,
+          "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
         },
         "animation": {
           "num_sprites": 1,
@@ -241,9 +262,16 @@
           "transcendent": true,
           "boomerang": true,
           "constrained": false,
+          "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.025,
+          "gravitator_max_speed": 60.0,
+          "gravitator_friction": 0.993,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
         },
         "animation": {
           "num_sprites": 1,
@@ -268,6 +296,82 @@
           "grav_variance": 0.0,
           "x_friction": 0.97,
           "y_friction": 0.97
+        }
+      }
+    },
+
+    {
+      "label": "grappling_hook",
+      "dimensions": {
+        "x": 18,
+        "y": 10
+      },
+      "gun_offset": {
+        "x": 0,
+        "y": 6
+      },
+      "barrel_point": {
+        "x": 14.0,
+        "y": 3.0
+      },
+      "attributes": {
+        "automatic": false,
+        "rate": 1,
+        "cooldown_time": 20,
+        "recoil": 0.00,
+        "ui_color": 0
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 14.0,
+          "y": 14.0
+        },
+        "attributes": {
+          "base_damage": 0.05,
+          "range": 400,
+          "speed": 40.5,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": true,
+          "transcendent": true,
+          "boomerang": false,
+          "constrained": false,
+          "spring": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.99,
+          "spring_constant": 0.02,
+          "spring_rest_length": 20.0,
+          "spring_slack": 0.65
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 2,
+          "framerate": 24
+        }
+      },
+      "spray": {
+        "emitter": {
+          "lifespan": 11,
+          "lifespan_variance": 8,
+          "particle_lifespan": 40,
+          "particle_lifespan_variance": 30
+        },
+        "particle": {
+          "rate": 1,
+          "rate_variance": 0,
+          "expulsion_force": 2.0,
+          "expulsion_variance": 0.8,
+          "cone": 1.8,
+          "grav": 0.0,
+          "grav_variance": 0.0,
+          "x_friction": 0.99,
+          "y_friction": 0.99
         }
       }
     }

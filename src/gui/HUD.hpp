@@ -123,7 +123,7 @@ class HUD {
 			int gun_index = svc::playerLocator.get().arsenal.loadout.at(i).get_id();
 			sp_guns.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-			if (i == svc::playerLocator.get().current_weapon) {
+			if (i == svc::playerLocator.get().arsenal.get_index()) {
 				win.draw(sp_guns_shadow.at(gun_index));
 				svc::counterLocator.get().at(svc::draw_calls)++;
 				win.draw(sp_guns.at(gun_index));

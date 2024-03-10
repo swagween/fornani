@@ -68,13 +68,9 @@ void Particle::oscillate_between_colors(sf::Color dark, sf::Color bright) {
 	int rand_g = svc::randomLocator.get().random_range(low_g, high_g);
 	int rand_b = svc::randomLocator.get().random_range(low_b, high_b);
 
-	auto red_weight = red ? low_r + (high_r - low_r) / 2 : 0;
-	auto green_weight = green ? low_g + (high_g - low_g) / 2 : 0;
-	auto blue_weight = blue ? low_b + (high_b - low_b) / 2 : 0;
-
-	auto r = std::clamp(rand_r + red_weight, low_r, high_r);
-	auto g = std::clamp(rand_g + green_weight, low_g, high_g);
-	auto b = std::clamp(rand_b + blue_weight, low_b, high_b);
+	auto r = red ? bright.r : std::clamp(rand_r, low_r, high_r);
+	auto g = green ? bright.g : std::clamp(rand_g, low_g, high_g);
+	auto b = blue ? bright.b : std::clamp(rand_b, low_b, high_b);
 
 	color = sf::Color(r, g, b);
 

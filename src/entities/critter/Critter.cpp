@@ -1,6 +1,5 @@
 
 #include "Critter.hpp"
-#include <imgui.h>
 #include "../../utils/Random.hpp"
 
 namespace critter {
@@ -21,12 +20,6 @@ void Critter::init() {
 	set_sprite();
 
 	unique_id = svc::randomLocator.get().random_range(-2147483647, 2147483647);
-
-	/*for (auto& collider : colliders) {
-		collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.997f}, 1.0f);
-		collider.physics.maximum_velocity = sf::Vector2<float>(stats.speed, stats.speed * 4);
-		if (metadata.gravity) { collider.physics.gravity = 0.03f; }
-	}*/
 
 	condition.hp = stats.base_hp;
 }
@@ -67,6 +60,7 @@ void Critter::update() {
 }
 
 void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
+	svc::stopwatchLocator.get().start();
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 	drawbox.setSize(dimensions);
 
@@ -103,47 +97,18 @@ void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 		win.draw(ar);
 		win.draw(hr);
 	}
-	svc::counterLocator.get().at(svc::draw_calls)++;
 	sprite_flip();
 
 	// draw health for debug
+	hpbox.setPosition({sprite_position.x - campos.x, sprite_position.y - 14.f - campos.y});
+	hpbox.setFillColor(sf::Color{29, 118, 112});
+	hpbox.setSize({stats.base_hp, 4.f});
+	win.draw(hpbox);
 	hpbox.setFillColor(sf::Color{0, 228, 185});
-	hpbox.setSize(sf::Vector2<float>{1.0f, 4.0f});
-	for (int i = 0; i < stats.base_hp; ++i) {
-		hpbox.setPosition(sprite.getPosition().x + i, sprite.getPosition().y - 14);
-		if (i > condition.hp) { hpbox.setFillColor(sf::Color{29, 118, 112}); }
-		win.draw(hpbox);
-		svc::counterLocator.get().at(svc::draw_calls)++;
-	}
-
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration;
-		ImGui::SetNextWindowSize({160, 180});
-		ImGui::SetNextWindowPos(sprite_position - campos, ImGuiCond_Always);
-		ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-		ImGui::Begin(std::to_string(sprite_position.x).c_str(), 0, window_flags);
-		ImGui::Text("X Position: %.1f", colliders.at(0).physics.position.x);
-		ImGui::Text("Y Position: %.1f", colliders.at(0).physics.position.y);
-
-		if (flags.test(Flags::alive)) { ImGui::Text("alive"); }
-		if (flags.test(Flags::seeking)) { ImGui::Text("seeking"); }
-		if (flags.test(Flags::awake)) { ImGui::Text("awake"); }
-		if (flags.test(Flags::awakened)) { ImGui::Text("awakened"); }
-		if (flags.test(Flags::asleep)) { ImGui::Text("asleep"); }
-		if (flags.test(Flags::turning)) { ImGui::Text("turning"); }
-		if (flags.test(Flags::flip)) { ImGui::Text("flip"); }
-		if (flags.test(Flags::barking)) { ImGui::Text("barking"); }
-		if (flags.test(Flags::hurt)) { ImGui::Text("hurt"); }
-		if (flags.test(Flags::just_hurt)) { ImGui::Text("just hurt"); }
-		if (flags.test(Flags::shot)) { ImGui::Text("shot"); }
-		if (flags.test(Flags::vulnerable)) { ImGui::Text("vulnerable"); }
-		if (flags.test(Flags::charging)) { ImGui::Text("charging"); }
-		if (flags.test(Flags::shooting)) { ImGui::Text("shooting"); }
-		if (flags.test(Flags::hiding)) { ImGui::Text("hiding"); }
-		if (flags.test(Flags::running)) { ImGui::Text("running"); }
-		if (flags.test(Flags::weapon_fired)) { ImGui::Text("weapon fired"); }
-		ImGui::End();
-	}
+	hpbox.setSize({condition.hp, 4.f});
+	win.draw(hpbox);
+	svc::counterLocator.get().at(svc::draw_calls) += 2;
+	svc::stopwatchLocator.get().stop();
 }
 
 void Critter::set_sprite() {
