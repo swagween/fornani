@@ -7,6 +7,10 @@
 #include "../behavior/Animation.hpp"
 #include "../../particle/Emitter.hpp"
 
+namespace automa {
+	struct ServiceProvider;
+}
+
 namespace entity {
 
 	inline anim::Parameters anim_params{0, 10, 30, -1};
@@ -19,7 +23,7 @@ class SavePoint {
 
 	SavePoint();
 
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, Vec campos);
 
 	void save(); // talk to SaveDataManager to write current progress to save.json

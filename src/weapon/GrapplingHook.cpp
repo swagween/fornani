@@ -5,7 +5,10 @@
 namespace arms {
 void GrapplingHook::update() {
 
-	if (grapple_flags.test(GrappleState::probing)) { spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point); }
+	if (grapple_flags.test(GrappleState::probing)) {
+		spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point);
+		svc::soundboardLocator.get().weapon.set(audio::Weapon::hook_probe);
+	}
 	if (grapple_flags.test(GrappleState::anchored)) {
 		spring.update();
 		svc::loggerLocator.get().states.set(util::State::hook_anchored);

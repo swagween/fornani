@@ -52,6 +52,7 @@ void Soundboard::play_sounds() {
 		if (svc::tickerLocator.get().every_x_frames(40)) { svc::assetLocator.get().tomahawk_flight.play(); }
 	}
 	if (weapon.test(Weapon::tomahawk_catch)) { svc::assetLocator.get().tomahawk_catch.play(); }
+	if (weapon.test(Weapon::hook_probe)) { svc::assetLocator.get().sharp_click.play(); }
 
 	// reset flags
 	menu = {};

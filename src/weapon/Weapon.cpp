@@ -40,7 +40,7 @@ Weapon::Weapon(int id) : id(id) {
 	spray_stats.particle_lifespan = in_data["spray"]["emitter"]["particle_lifespan"].as<int>();
 	spray_stats.particle_lifespan_variance = in_data["spray"]["emitter"]["particle_lifespan_variance"].as<int>();
 
-	spray = vfx::Emitter(spray_behavior, spray_stats, spray_color.at(type), dark_spray_color.at(type));
+	spray = vfx::Emitter(spray_behavior, spray_stats, spray_color.at(type), spray_color.at(type));
 
 	projectile = Projectile(id);
 	attributes.boomerang = projectile.stats.boomerang;
@@ -55,7 +55,8 @@ void Weapon::update() {
 		cooldown_counter = 0;
 	}
 	if (cooldown_counter > 0) { flags.set(GunState::cooling_down); }
-	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x + gun_offset.x, svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + gun_offset.y};
+	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x + gun_offset.x,
+								svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + gun_offset.y - svc::playerLocator.get().collider.dimensions.y / 2.f};
 	set_position(p_pos);
 }
 

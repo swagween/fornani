@@ -40,8 +40,6 @@ FileMenu::FileMenu() {
 	left_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition()));
 	right_dot.collider.physics.position = (static_cast<sf::Vector2<float>>(file_rects.at(0).getPosition() + file_rects.at(0).getSize()));
 
-	tick_update();
-
 	for (auto i = 0; i < num_files * 2; ++i) {
 
 		file_text.at(i) = sf::Sprite{svc::assetLocator.get().t_file_text, sf::IntRect({0, i * text_dim.y}, text_dim)};
@@ -49,13 +47,11 @@ FileMenu::FileMenu() {
 	}
 }
 
-FileMenu::~FileMenu() { svc::playerLocator.get().total_reset(); }
+void FileMenu::init(ServiceProvider& svc, std::string const& load_path) {}
 
-void FileMenu::init(std::string const& load_path) {}
+void FileMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
 
-void FileMenu::setTilesetTexture(sf::Texture& t) {}
-
-void FileMenu::handle_events(sf::Event& event) {
+void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::Down) {
@@ -86,7 +82,7 @@ void FileMenu::handle_events(sf::Event& event) {
 	}
 }
 
-void FileMenu::tick_update() {
+void FileMenu::tick_update(ServiceProvider& svc) {
 	constrain_selection();
 
 	left_dot.update();
@@ -115,9 +111,9 @@ void FileMenu::tick_update() {
 	svc::playerLocator.get().update_antennae();
 }
 
-void FileMenu::frame_update() {}
+void FileMenu::frame_update(ServiceProvider& svc) {}
 
-void FileMenu::render(sf::RenderWindow& win) {
+void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
 	svc::counterLocator.get().at(svc::draw_calls)++;
 

@@ -42,16 +42,6 @@ inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color{
 	{arms::WEAPON_TYPE::GRAPPLING_HOOK, flcolor::ui_white}
 
 };
-inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> dark_spray_color{
-	{arms::WEAPON_TYPE::BRYNS_GUN, flcolor::blue},		  {arms::WEAPON_TYPE::PLASMER, flcolor::dark_fucshia},	 {arms::WEAPON_TYPE::WASP, flcolor::dark_orange},	{arms::WEAPON_TYPE::BLIZZARD, flcolor::navy_blue},
-	{arms::WEAPON_TYPE::BISMUTH, flcolor::dark_fucshia},  {arms::WEAPON_TYPE::UNDERDOG, flcolor::dark_orange},	 {arms::WEAPON_TYPE::ELECTRON, flcolor::goldenrod}, {arms::WEAPON_TYPE::CLOVER, flcolor::navy_blue},
-	{arms::WEAPON_TYPE::TRITON, flcolor::dark_orange},	  {arms::WEAPON_TYPE::WILLET_585, flcolor::blue},		 {arms::WEAPON_TYPE::QUASAR, flcolor::dark_orange}, {arms::WEAPON_TYPE::NOVA, flcolor::blue},
-	{arms::WEAPON_TYPE::VENOM, flcolor::dark_fucshia},	  {arms::WEAPON_TYPE::TWIN, flcolor::navy_blue},		 {arms::WEAPON_TYPE::CARISE, flcolor::navy_blue},	{arms::WEAPON_TYPE::STINGER, flcolor::fucshia},
-	{arms::WEAPON_TYPE::TUSK, flcolor::bright_orange},	  {arms::WEAPON_TYPE::TOMAHAWK, flcolor::white},
-
-	{arms::WEAPON_TYPE::SKYCORPS_AR, flcolor::goldenrod}, {arms::WEAPON_TYPE::GRAPPLING_HOOK, flcolor::ui_white}
-
-};
 
 class Weapon {
 

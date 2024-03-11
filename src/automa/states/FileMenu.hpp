@@ -11,13 +11,12 @@ class FileMenu : public automa::GameState {
 
   public:
 	FileMenu();
-	~FileMenu();
-	void init(std::string const& load_path);
-	void setTilesetTexture(sf::Texture& t);
-	void handle_events(sf::Event& event);
-	void tick_update();
-	void frame_update();
-	void render(sf::RenderWindow& win);
+	void init(ServiceProvider& svc, std::string const& load_path);
+	void setTilesetTexture(ServiceProvider& svc, sf::Texture& t);
+	void handle_events(ServiceProvider& svc, sf::Event& event);
+	void tick_update(ServiceProvider& svc);
+	void frame_update(ServiceProvider& svc);
+	void render(ServiceProvider& svc, sf::RenderWindow& win);
 	void constrain_selection();
 
 	// menu textures

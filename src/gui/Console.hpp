@@ -8,6 +8,10 @@
 #include "../utils/Camera.hpp"
 #include "../graphics/TextWriter.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace gui {
 
 int const corner_factor{56};
@@ -37,7 +41,7 @@ class Console {
 	void update();
 	void render(sf::RenderWindow& win);
 
-	void load_and_launch(std::string_view key);
+	void load_and_launch(automa::ServiceProvider& svc, std::string_view key);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
 

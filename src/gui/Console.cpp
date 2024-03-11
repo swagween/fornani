@@ -1,6 +1,7 @@
 
 #include "Console.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace gui {
 
@@ -27,6 +28,7 @@ void Console::begin() {
 	dimensions.y = corner_factor * 2;
 	flags.set(ConsoleFlags::active);
 	writer.activate();
+	writer.start();
 }
 
 void Console::update() {
@@ -46,9 +48,9 @@ void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
 }
 
-void Console::load_and_launch(std::string_view key) {
+void Console::load_and_launch(automa::ServiceProvider& svc, std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
-		writer.load_message(svc::textLocator.get().console, key);
+		writer.load_message(svc, svc.text.console, key);
 		flags.set(ConsoleFlags::loaded);
 		begin();
 	}

@@ -10,7 +10,7 @@ enum class Menu { select, shift, forward_switch, backward_switch };
 enum class Console { next, done, shift, select, speech, menu_open };
 enum class World { load, save, soft_sparkle, soft_sparkle_high };
 enum class Player { jump, step, land, arms_switch, shoot, hurt, dash };
-enum class Weapon { bryns_gun, plasmer, nova, clover, tomahawk, tomahawk_catch };
+enum class Weapon { bryns_gun, plasmer, nova, clover, tomahawk, tomahawk_catch, hook_probe };
 
 //critters
 enum class Frdog {hurt};

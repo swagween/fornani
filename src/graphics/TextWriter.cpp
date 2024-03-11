@@ -1,15 +1,26 @@
 #include "TextWriter.hpp"
 
 #include <SFML/Graphics.hpp>
+#include "../service/ServiceProvider.hpp"
 #include "../setup/ServiceLocator.hpp"
 
 namespace text {
 
-void TextWriter::update() {
-
+void TextWriter::start() {
 	message.setCharacterSize(text_size);
 	working_message.setCharacterSize(text_size);
-	wrap();
+
+	// calculate number of lines and call wrap() that many times.
+	// can't call wrap() tick-wise because it's very slow
+	auto num_glyphs = message.getString().getSize();
+	auto length = message.getCharacterSize() + message.getLineSpacing();
+	auto gpl = bounds.x / length;
+	auto num_lines = num_glyphs / gpl;
+	for (int i = 0; i < num_lines; ++i) { wrap(); }
+	svc::floatReadoutLocator.get() = (float)num_lines;
+}
+
+void TextWriter::update() {
 
 	if (!flags.test(MessageState::active)) { return; }
 	if (tick_count % writing_speed == 0) {
@@ -32,6 +43,8 @@ void TextWriter::wrap() {
 
 		// get index of last in-bounds space
 		int last_space_index{};
+
+		svc::stopwatchLocator.get().start();
 		for (auto i{0}; i < message.getString().getSize(); ++i) {
 			char const current_char = (char)message.getString().getData()[i];
 			if (std::isspace(current_char)) {
@@ -48,12 +61,12 @@ void TextWriter::wrap() {
 				}
 			}
 		}
+		svc::stopwatchLocator.get().stop();
 	}
-
 }
 
-void TextWriter::load_message(dj::Json& source, std::string_view key) {
-	font.loadFromFile(svc::textLocator.get().font);
+void TextWriter::load_message(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) {
+	font.loadFromFile(svc.text.font);
 	message.setString(source[key].as_string().data());
 
 	message.setCharacterSize(text_size);

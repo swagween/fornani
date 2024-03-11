@@ -68,14 +68,14 @@ MainMenu::MainMenu() {
 					   sf::IntRect({0, 0}, {(int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y})};
 };
 
-void MainMenu::init(std::string const& load_path) {
+void MainMenu::init(ServiceProvider& svc, std::string const& load_path) {
 	svc::musicPlayerLocator.get().load("clay");
 	svc::musicPlayerLocator.get().play_looped();
 }
 
-void MainMenu::setTilesetTexture(sf::Texture& t) {}
+void MainMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
 
-void MainMenu::handle_events(sf::Event& event) {
+void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::Down) {
@@ -118,7 +118,7 @@ void MainMenu::handle_events(sf::Event& event) {
 	}
 }
 
-void MainMenu::tick_update() {
+void MainMenu::tick_update(ServiceProvider& svc) {
 	svc::musicPlayerLocator.get().update();
 	left_dot.update();
 	right_dot.update();
@@ -145,9 +145,9 @@ void MainMenu::tick_update() {
 	}
 }
 
-void MainMenu::frame_update() {}
+void MainMenu::frame_update(ServiceProvider& svc) {}
 
-void MainMenu::render(sf::RenderWindow& win) {
+void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
 	svc::counterLocator.get().at(svc::draw_calls)++;
 

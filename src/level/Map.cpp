@@ -4,6 +4,7 @@
 #include "../setup/EnumLookups.hpp"
 #include "../utils/Math.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace world {
 
@@ -222,7 +223,7 @@ void Map::load(std::string const& path) {
 	generate_collidable_layer();
 }
 
-void Map::update() {
+void Map::update(automa::ServiceProvider& svc) {
 
 	svc::consoleLocator.get().update();
 
@@ -381,7 +382,7 @@ void Map::update() {
 		animator.update();
 	}
 
-	if (save_point.id != -1) { save_point.update(); }
+	if (save_point.id != -1) { save_point.update(svc); }
 
 	// check if player died
 	if (!svc::playerLocator.get().flags.state.test(player::State::alive) && !game_over) {
@@ -537,12 +538,12 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 	}
 }
 
-void Map::render_console(sf::RenderWindow& win) {
+void Map::render_console(automa::ServiceProvider& text_service, sf::RenderWindow& win) {
 	if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
 		svc::consoleLocator.get().render(win);
 		for (auto& inspectable : inspectables) {
 			if (inspectable.activated) {
-				svc::consoleLocator.get().load_and_launch(inspectable.key);
+				svc::consoleLocator.get().load_and_launch(text_service, inspectable.key);
 				svc::consoleLocator.get().write(win);
 				// svc::consoleLocator.get().write(win, inspectable.message);
 				//  svc::consoleLocator.get().write(win, "ab?:-_()#`");

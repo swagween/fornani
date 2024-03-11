@@ -27,24 +27,23 @@ constexpr inline float dot_force{0.09f};
 constexpr inline float dot_fric{0.87f};
 constexpr inline float dot_speed{20.f};
 
+struct ServiceProvider;
+
 class GameState {
 
   public:
 	using Time = std::chrono::duration<float>;
 
 	GameState() = default;
-	GameState(int id) {}
+	GameState(ServiceProvider& svc, int id) {}
 	GameState& operator=(GameState&&) = delete;
 
-	template <typename T>
-	class StateID;
-
-	virtual void init(std::string const& load_path){};
-	virtual void setTilesetTexture(sf::Texture& t){};
-	virtual void handle_events(sf::Event& event){};
-	virtual void tick_update(){};
-	virtual void frame_update(){};
-	virtual void render(sf::RenderWindow& win){};
+	virtual void init(ServiceProvider& svc, std::string const& load_path){};
+	virtual void setTilesetTexture(ServiceProvider& svc, sf::Texture& t){};
+	virtual void handle_events(ServiceProvider& svc, sf::Event& event){};
+	virtual void tick_update(ServiceProvider& svc){};
+	virtual void frame_update(ServiceProvider& svc){};
+	virtual void render(ServiceProvider& svc, sf::RenderWindow& win){};
 
 	STATE state = STATE::STATE_NULL;
 	bool debug_mode{false};
