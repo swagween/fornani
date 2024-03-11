@@ -75,10 +75,10 @@ void Weapon::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		box.setFillColor(flcolor::fucshia);
 		box.setSize(sf::Vector2<float>{2.0f, 2.0f});
 		win.draw(box);
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 	} else {
 		win.draw(sp_gun);
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 	}
 }
 

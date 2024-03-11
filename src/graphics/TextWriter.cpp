@@ -17,7 +17,6 @@ void TextWriter::start() {
 	auto gpl = bounds.x / length;
 	auto num_lines = num_glyphs / gpl;
 	for (int i = 0; i < num_lines; ++i) { wrap(); }
-	svc::floatReadoutLocator.get() = (float)num_lines;
 }
 
 void TextWriter::update() {

@@ -1,13 +1,13 @@
 
 #include "Dojo.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace automa {
 
-Dojo::Dojo() {
-	state = STATE::STATE_DOJO;
-	svc::cameraLocator.get().set_position({1, 1});
-	svc::playerLocator.get().set_position({360, 500});
+Dojo::Dojo(ServiceProvider& svc, int id) {
+
 }
+
 void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
 
 	hud.set_corner_pad(false); // reset hud position to corner
@@ -32,9 +32,9 @@ void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
 
 	bool found_one = false;
 	// only search for door entry if room was not loaded from main menu
-	if (!svc::stateControllerLocator.get().save_loaded) {
+	if (!svc.state_controller.actions.test(Actions::save_loaded)) {
 		for (auto& portal : map.portals) {
-			if (portal.destination_map_id == svc::stateControllerLocator.get().source_id) {
+			if (portal.destination_map_id == svc.state_controller.source_id) {
 				found_one = true;
 				sf::Vector2<float> spawn_position{portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - player::PLAYER_HEIGHT};
 				svc::playerLocator.get().set_position(spawn_position);
@@ -51,7 +51,7 @@ void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
 	}
 
 	// save was loaded from a json, so we successfully skipped door search
-	svc::stateControllerLocator.get().save_loaded = false;
+	svc.state_controller.actions.reset(Actions::save_loaded);
 
 	svc::inputStateLocator.get().reset_triggers();
 	svc::playerLocator.get().controller = {};

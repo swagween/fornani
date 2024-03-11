@@ -68,7 +68,7 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
 	win.draw(sprite);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 	sf::RectangleShape box{};
 	if (activated) {
 		box.setFillColor(sf::Color{80, 180, 120, 100});
@@ -83,7 +83,7 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	box.setPosition(proximity_box.position - campos);
 	box.setSize(proximity_box.dimensions);
 	// win.draw(box);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 }
 
 void SavePoint::save() {

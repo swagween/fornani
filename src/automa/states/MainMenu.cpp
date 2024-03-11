@@ -1,14 +1,10 @@
-//
-//  MainMenu.cpp
-//  automa
-//
-//
 
 #include "MainMenu.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace automa {
-// 5, 8, 11
-MainMenu::MainMenu() {
+
+MainMenu::MainMenu(ServiceProvider& svc, int id) {
 	state = STATE::STATE_MENU;
 	svc::cameraLocator.get().set_position({1, 1});
 
@@ -94,14 +90,15 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			if (selection == MenuSelection::new_game) {
 
-				svc::dataLocator.get().load_blank_save(true);
-				svc::stateControllerLocator.get().save_loaded = true;
+				svc.state_controller.next_state = svc::dataLocator.get().load_blank_save(true);
+				svc.state_controller.actions.set(Actions::trigger);
+				svc.state_controller.actions.set(Actions::save_loaded);
 				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::load_game) {
 
-				svc::stateControllerLocator.get().submenu = menu_type::file_select;
-				svc::stateControllerLocator.get().trigger_submenu = true;
+				svc.state_controller.submenu = menu_type::file_select;
+				svc.state_controller.actions.set(Actions::trigger_submenu);
 				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::options) {
@@ -111,8 +108,8 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			}
 		}
 		if (event.key.code == sf::Keyboard::Right && selection == MenuSelection::load_game) {
-			svc::stateControllerLocator.get().submenu = menu_type::file_select;
-			svc::stateControllerLocator.get().trigger_submenu = true;
+			svc.state_controller.submenu = menu_type::file_select;
+			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc::soundboardLocator.get().menu.set(audio::Menu::forward_switch);
 		}
 	}
@@ -149,7 +146,7 @@ void MainMenu::frame_update(ServiceProvider& svc) {}
 
 void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 
 	int selection_adjustment{};
 	for (auto i = 0; i < 3; ++i) {
@@ -160,7 +157,7 @@ void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		}
 		if (i + selection_adjustment < 6) {
 			win.draw(title_assets.at(i + selection_adjustment));
-			svc::counterLocator.get().at(svc::draw_calls)++;
+			
 		}
 	}
 

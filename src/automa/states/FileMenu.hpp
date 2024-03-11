@@ -10,7 +10,8 @@ class FileMenu : public automa::GameState {
 	static int const num_files{3};
 
   public:
-	FileMenu();
+	FileMenu() = default;
+	FileMenu(ServiceProvider& svc, int id = 0);
 	void init(ServiceProvider& svc, std::string const& load_path);
 	void setTilesetTexture(ServiceProvider& svc, sf::Texture& t);
 	void handle_events(ServiceProvider& svc, sf::Event& event);

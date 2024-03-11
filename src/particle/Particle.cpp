@@ -48,7 +48,7 @@ void Particle::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	dot.setSize({size, size});
 	dot.setPosition(physics.position.x - cam.x, physics.position.y - cam.y);
 	win.draw(dot);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 }
 
 void Particle::oscillate_between_colors(sf::Color dark, sf::Color bright) {

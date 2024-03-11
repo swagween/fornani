@@ -2,6 +2,7 @@
 #include "Portal.hpp"
 #include "../../setup/MapLookups.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace entity {
 
@@ -24,10 +25,10 @@ void Portal::render(sf::RenderWindow& win, Vec campos) {
 	box.setPosition(bounding_box.position - campos);
 	box.setSize(dimensions);
 	/*win.draw(box);
-	svc::counterLocator.get().at(svc::draw_calls)++;*/
+	*/
 }
 
-void Portal::handle_activation(int room_id, bool& fade_out, bool& done) {
+void Portal::handle_activation(automa::ServiceProvider& svc, int room_id, bool& fade_out, bool& done) {
 
 	if (bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
 		if (activate_on_contact && ready) {
@@ -56,10 +57,10 @@ void Portal::handle_activation(int room_id, bool& fade_out, bool& done) {
 		fade_out = true;
 		if (done) {
 			try {
-				svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(destination_map_id);
-			} catch (std::out_of_range) { svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id); }
-			svc::stateControllerLocator.get().trigger = true;
-			svc::stateControllerLocator.get().source_id = source_map_id;
+				svc.state_controller.next_state = lookup::get_map_label.at(destination_map_id);
+			} catch (std::out_of_range) { svc.state_controller.next_state = lookup::get_map_label.at(room_id); }
+			svc.state_controller.actions.set(automa::Actions::trigger);
+			svc.state_controller.refresh(source_map_id);
 		}
 	}
 }

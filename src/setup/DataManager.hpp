@@ -16,8 +16,8 @@ class DataManager {
 	// game save
 	void load_data();
 	void save_progress(int save_point_id);
-	void load_progress(int const file, bool state_switch = false);
-	void load_blank_save(bool state_switch = false);
+	std::string_view load_progress(int const file, bool state_switch = false);
+	std::string_view load_blank_save(bool state_switch = false);
 
 	// tweaking
 	void load_player_params();

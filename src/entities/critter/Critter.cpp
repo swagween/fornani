@@ -60,7 +60,6 @@ void Critter::update() {
 }
 
 void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
-	svc::stopwatchLocator.get().start();
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 	drawbox.setSize(dimensions);
 
@@ -69,7 +68,7 @@ void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 	ar.setPosition(alert_range.position.x - campos.x, alert_range.position.y - campos.y);
 	hr.setPosition(hostile_range.position.x - campos.x, hostile_range.position.y - campos.y);
 	win.draw(sprite);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 
 	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 		ar.setFillColor(sf::Color{80, 80, 20, 60});
@@ -107,8 +106,6 @@ void Critter::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 	hpbox.setFillColor(sf::Color{0, 228, 185});
 	hpbox.setSize({condition.hp, 4.f});
 	win.draw(hpbox);
-	svc::counterLocator.get().at(svc::draw_calls) += 2;
-	svc::stopwatchLocator.get().stop();
 }
 
 void Critter::set_sprite() {

@@ -11,7 +11,8 @@ class MainMenu : public GameState {
 	std::unordered_map<MenuSelection, int> menu_selection_id{
 		{MenuSelection::new_game, 0}, {MenuSelection::load_game, 1}, {MenuSelection::options, 2}};
 
-	MainMenu();
+	MainMenu() = default;
+	MainMenu(ServiceProvider& svc, int id = 0);
 
 	void init(ServiceProvider& svc, std::string const& load_path);
 	void setTilesetTexture(ServiceProvider& svc, sf::Texture& t);

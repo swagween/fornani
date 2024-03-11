@@ -24,10 +24,12 @@ Game::Game(char** argv) {
 	lookup::populate_lookup();
 
 	// state manager
-	game_state.set_current_state(std::make_unique<automa::MainMenu>());
+	game_state.set_current_state(std::make_unique<automa::MainMenu>(services));
 	game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path);
 
 	window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "For Nani (beta v1.0)");
+	measurements.width_ratio = (float)cam::screen_dimensions.x / (float)cam::screen_dimensions.y;
+	measurements.height_ratio = (float)cam::screen_dimensions.y / (float)cam::screen_dimensions.x;
 
 	screencap.create(window.getSize().x, window.getSize().y);
 	background.setSize(static_cast<sf::Vector2<float>>(cam::screen_dimensions));
@@ -51,9 +53,6 @@ void Game::run() { // load all assets
 
 		measurements.win_size.x = window.getSize().x;
 		measurements.win_size.y = window.getSize().y;
-
-		uint16_t draw_counter = 0;
-		svc::counterLocator.get().at(svc::draw_calls) = draw_counter;
 		
 	// game loop
 		sf::Clock deltaClock{};
@@ -92,7 +91,7 @@ void Game::run() { // load all assets
 				}
 				if (event.key.code == sf::Keyboard::K) { svc::playerLocator.get().kill(); }
 				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch(services, "bookshelf_1"); }
-				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>()); }
+				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services)); }
 				if (event.key.code == sf::Keyboard::W) {
 					game_state.set_current_state(std::make_unique<automa::Dojo>());
 					game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path + "/level/FIRSTWIND_PRISON_01");
@@ -128,9 +127,9 @@ void Game::run() { // load all assets
 		svc::soundboardLocator.get().play_sounds();
 
 		// switch states
-		if (svc::stateControllerLocator.get().trigger_submenu) {
-			switch (svc::stateControllerLocator.get().submenu) {
-			case automa::menu_type::file_select: game_state.set_current_state(std::make_unique<automa::FileMenu>()); break;
+		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {
+			switch (services.state_controller.submenu) {
+			case automa::menu_type::file_select: game_state.set_current_state(std::make_unique<automa::FileMenu>(services)); break;
 			case automa::menu_type::options:
 				// todo
 				break;
@@ -141,16 +140,16 @@ void Game::run() { // load all assets
 				// todo
 				break;
 			}
-			svc::stateControllerLocator.get().trigger_submenu = false;
+			services.state_controller.actions.reset(automa::Actions::trigger_submenu);
 		}
-		if (svc::stateControllerLocator.get().exit_submenu) {
-			game_state.set_current_state(std::make_unique<automa::MainMenu>());
-			svc::stateControllerLocator.get().exit_submenu = false;
+		if (services.state_controller.actions.test(automa::Actions::exit_submenu)) {
+			game_state.set_current_state(std::make_unique<automa::MainMenu>(services));
+			services.state_controller.actions.reset(automa::Actions::exit_submenu);
 		}
-		if (svc::stateControllerLocator.get().trigger) {
+		if (services.state_controller.actions.test(automa::Actions::trigger)) {
 			game_state.set_current_state(std::make_unique<automa::Dojo>());
-			game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path + "/level/" + svc::stateControllerLocator.get().next_state);
-			svc::stateControllerLocator.get().trigger = false;
+			game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path + "/level/" + services.state_controller.next_state);
+			services.state_controller.actions.reset(automa::Actions::trigger);
 		}
 
 		ImGui::SFML::Update(window, deltaClock.restart());
@@ -167,7 +166,6 @@ void Game::run() { // load all assets
 
 		ImGui::SFML::Render(window);
 		window.display();
-		trackers.draw_calls = svc::counterLocator.get().at(svc::draw_calls);
 		svc::tickerLocator.get().end_frame();
 	}
 }
@@ -213,11 +211,6 @@ void Game::debug_window() {
 			}
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
-				if (ImGui::BeginTabItem("Logger")) {
-					ImGui::Separator();
-					svc::loggerLocator.get().run();
-					ImGui::EndTabItem();
-				}
 				if (ImGui::BeginTabItem("Time")) {
 					ImGui::Separator();
 					ImGui::Text("Ticker");
@@ -479,7 +472,6 @@ void Game::debug_window() {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("General")) {
-					ImGui::Text("Float Readout: (%.8f)", svc::floatReadoutLocator.get());
 					ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().position.x, svc::cameraLocator.get().position.y);
 					ImGui::SliderFloat("Camera X Friction", &svc::cameraLocator.get().physics.ground_friction.x, 0.8f, 1.f, "%.5f");
 					ImGui::SliderFloat("Camera Y Friction", &svc::cameraLocator.get().physics.ground_friction.y, 0.8f, 1.f, "%.5f");

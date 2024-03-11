@@ -144,7 +144,6 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			win.draw(sprite);
 			antennae[0].render(win, campos);
 			antennae[2].render(win, campos);
-			svc::counterLocator.get().at(svc::draw_calls) += 5;
 		}
 	}
 
@@ -217,7 +216,6 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		sp.setPosition(sprite_history.positions.at(ctr) - campos);
 		if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 			win.draw(sp);
-			++svc::counterLocator.get().at(svc::draw_calls);
 		}
 		a += 20;
 		++ctr;

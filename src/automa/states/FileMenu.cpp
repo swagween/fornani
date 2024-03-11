@@ -1,15 +1,16 @@
 
 #include "FileMenu.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace automa {
 
-FileMenu::FileMenu() {
+FileMenu::FileMenu(ServiceProvider& svc, int id) {
 	file_selection = 0;
 	state = STATE::STATE_FILE;
 	svc::dataLocator.get().load_blank_save();
 	hud.set_corner_pad(true); // display hud preview for each file in the center of the screen
 	constrain_selection();
-	svc::dataLocator.get().load_progress(file_selection);
+	svc.state_controller.next_state = svc::dataLocator.get().load_progress(file_selection);
 	svc::cameraLocator.get().set_position({1, 1});
 	svc::playerLocator.get().set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
 
@@ -69,13 +70,14 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Left) {
-			svc::stateControllerLocator.get().exit_submenu = true;
+			svc.state_controller.actions.set(Actions::exit_submenu);
 			svc::soundboardLocator.get().menu.set(audio::Menu::backward_switch);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			constrain_selection();
 			svc::dataLocator.get().load_progress(file_selection, true);
-			svc::stateControllerLocator.get().save_loaded = true;
+			svc.state_controller.actions.set(Actions::trigger);
+			svc.state_controller.actions.set(Actions::save_loaded);
 			svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			svc::soundboardLocator.get().world.set(audio::World::load);
 		}
@@ -115,7 +117,7 @@ void FileMenu::frame_update(ServiceProvider& svc) {}
 
 void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 
 	int selection_adjustment{};
 	for (auto i = 0; i < num_files; ++i) {
@@ -125,7 +127,7 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 			selection_adjustment = 0;
 		}
 		win.draw(file_text.at(i + selection_adjustment));
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 	}
 
 	left_dot.render(win, {0, 0});
