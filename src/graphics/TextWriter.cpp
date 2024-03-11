@@ -7,9 +7,7 @@
 namespace text {
 
 void TextWriter::start() {
-	message.setCharacterSize(text_size);
-	working_message.setCharacterSize(text_size);
-
+	working_message = message;
 	// calculate number of lines and call wrap() that many times.
 	// can't call wrap() tick-wise because it's very slow
 	auto num_glyphs = message.getString().getSize();
@@ -17,16 +15,22 @@ void TextWriter::start() {
 	auto gpl = bounds.x / length;
 	auto num_lines = num_glyphs / gpl;
 	for (int i = 0; i < num_lines; ++i) { wrap(); }
+
+	activate();
 }
 
 void TextWriter::update() {
 
-	if (!flags.test(MessageState::active)) { return; }
+	if (!writing()) { return; }
 	if (tick_count % writing_speed == 0) {
 		char const next_char = (char)message.getString().getData()[glyph_count];
 		working_str += next_char;
 		working_message.setString(working_str);
 		++glyph_count;
+	}
+	if (glyph_count >= message.getString().getSize()) {
+		reset();
+		deactivate();
 	}
 	++tick_count;
 }
@@ -66,38 +70,35 @@ void TextWriter::wrap() {
 
 void TextWriter::load_message(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) {
 	font.loadFromFile(svc.text.font);
-	message.setString(source[key].as_string().data());
+	suite.clear();
 
-	message.setCharacterSize(text_size);
-	message.setFillColor(flcolor::ui_white);
-	message.setFont(font);
-	message.setPosition(position);
-	working_message.setCharacterSize(text_size);
-	working_message.setFillColor(flcolor::ui_white);
-	working_message.setFont(font);
-	working_message.setPosition(position);
+	for (auto& msg : source[key].array_view()) {
+		suite.push_back(sf::Text());
+		suite.back().setString(msg.as_string().data());
+		stylize(suite.back());
+	}
+
+	message = suite.front();
+	working_message = message;
+}
+
+void TextWriter::stylize(sf::Text& msg) {
+	msg.setCharacterSize(text_size);
+	msg.setFillColor(flcolor::ui_white);
+	msg.setFont(font);
+	msg.setPosition(position);
 }
 
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
-	if (!flags.test(MessageState::active)) { return; }
 	win.draw(message);
 }
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
-	if (!flags.test(MessageState::active)) { return; }
-	check_if_complete();
-	if (complete()) {
+	if (!writing()) {
 		win.draw(message);
 		return;
 	}
 	win.draw(working_message);
-}
-
-void TextWriter::check_if_complete() {
-	if (glyph_count >= message.getString().getSize()) {
-		flags.set(MessageState::complete);
-		reset();
-	}
 }
 
 void TextWriter::reset() {
@@ -110,16 +111,30 @@ void TextWriter::reset() {
 
 void TextWriter::skip_ahead() { writing_speed = fast_writing_speed; }
 
-void TextWriter::activate() { flags.set(MessageState::active); }
+void TextWriter::activate() { flags.set(MessageState::writing); }
 
-void TextWriter::deactivate() {
-	flags.reset(MessageState::active);
-	flags.reset(MessageState::complete);
-	reset();
+void TextWriter::deactivate() { flags.reset(MessageState::writing); }
+
+void TextWriter::request_next() {
+	if (writing()) { return; }
+	if (suite.empty()) {
+		reset();
+	} else {
+		suite.pop_front();
+		if (suite.empty()) {
+			reset();
+			deactivate();
+			return;
+		}
+		message = suite.front();
+		reset();
+		activate();
+		start();
+	}
 }
 
-bool text::TextWriter::active() const { return flags.test(MessageState::active); }
+bool text::TextWriter::writing() const { return flags.test(MessageState::writing); }
 
-bool text::TextWriter::complete() const { return flags.test(MessageState::complete); }
+bool text::TextWriter::complete() const { return !flags.test(MessageState::writing) && suite.empty(); }
 
 } // namespace text

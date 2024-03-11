@@ -90,7 +90,7 @@ void Game::run() { // load all assets
 					svc::assetLocator.get().sharp_click.play();
 				}
 				if (event.key.code == sf::Keyboard::K) { svc::playerLocator.get().kill(); }
-				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch(services, "bookshelf_1"); }
+				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch(services, "test_suite"); }
 				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services)); }
 				if (event.key.code == sf::Keyboard::W) {
 					game_state.set_current_state(std::make_unique<automa::Dojo>());
@@ -239,8 +239,8 @@ void Game::debug_window() {
 					ImGui::Separator();
 
 					ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
-					ImGui::Text("Console Writer Active : %s", svc::consoleLocator.get().writer.active() ? "Yes" : "No");
-					ImGui::Text("Console Writer Complete : %s", svc::consoleLocator.get().writer.complete() ? "Yes" : "No");
+					ImGui::Text("Console Writing? : %s", svc::consoleLocator.get().writer.writing() ? "Yes" : "No");
+					ImGui::Text("Console Writing Done? : %s", svc::consoleLocator.get().writer.complete() ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("Player Transponder Skipping : %s", svc::playerLocator.get().transponder.skipped_ahead() ? "Yes" : "No");
 					ImGui::Text("Player Transponder Exited : %s", svc::playerLocator.get().transponder.exited() ? "Yes" : "No");

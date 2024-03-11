@@ -5,18 +5,21 @@ namespace player {
 
 void Transponder::update() {
 
-	// if (requested_next()) { svc::consoleLocator.get().writer.next(); } // TODO
+	// execute action based on the state of the console
+	if (skipped_ahead()) {
+		if (svc::consoleLocator.get().writer.writing()) { svc::consoleLocator.get().writer.skip_ahead(); }
+	}
+	if (requested_next()) {
+		if (!svc::consoleLocator.get().writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::next); }
+		svc::consoleLocator.get().writer.request_next();
+	}
 	if (exited()) {
 		if (svc::consoleLocator.get().writer.complete()) {
 			svc::soundboardLocator.get().console.set(audio::Console::done);
 			svc::consoleLocator.get().end();
 		}
 	}
-	// execute action based on the state of the console
-	if (skipped_ahead()) {
-		if (svc::consoleLocator.get().writer.active() && !svc::consoleLocator.get().writer.complete()) { svc::consoleLocator.get().writer.skip_ahead(); }
-	}
-
+	if (svc::consoleLocator.get().writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::speech); }
 }
 
 void Transponder::end() { actions = {}; }

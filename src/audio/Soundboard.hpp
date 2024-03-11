@@ -2,6 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "../utils/BitFlags.hpp"
 
 namespace audio {
@@ -28,6 +29,8 @@ struct Soundboard {
 	util::BitFlags<Hulmet> hulmet{};
 
 	void play_sounds();
+	void repeat(sf::Sound& sound, int frequency, float random_pitch_offset = 0.f);
+	void randomize(sf::Sound& sound, float random_pitch_offset);
 
 	struct {
 		float save{};

@@ -27,7 +27,6 @@ Console::Console() {
 void Console::begin() {
 	dimensions.y = corner_factor * 2;
 	flags.set(ConsoleFlags::active);
-	writer.activate();
 	writer.start();
 }
 
@@ -56,13 +55,15 @@ void Console::load_and_launch(automa::ServiceProvider& svc, std::string_view key
 	}
 }
 
-void Console::write(sf::RenderWindow& win, bool instant) { instant ? writer.write_instant_message(win) : writer.write_gradual_message(win); }
+void Console::write(sf::RenderWindow& win, bool instant) {
+	if (!flags.test(ConsoleFlags::active)) { return; }
+	instant ? writer.write_instant_message(win) : writer.write_gradual_message(win);
+}
 
 void Console::end() {
 	extent = dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::loaded);
-	writer.deactivate();
 }
 
 void Console::nine_slice(int corner_dim, int edge_dim) {
