@@ -1,10 +1,15 @@
 
 #include "Console.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace gui {
 
-Console::Console() {
+Console::Console(automa::ServiceProvider& svc) {
+
+	text_suite = svc.text.console;
+	writer = text::TextWriter(svc);
+
 	for (auto& sprite : sprites) { sprite.setTexture(svc::assetLocator.get().t_ui); }
 	sprites.at(0).setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
 	sprites.at(1).setTextureRect(sf::IntRect{{corner_factor, 0}, {edge_factor, corner_factor}});
@@ -26,7 +31,7 @@ Console::Console() {
 void Console::begin() {
 	dimensions.y = corner_factor * 2;
 	flags.set(ConsoleFlags::active);
-	writer.activate();
+	writer.start();
 }
 
 void Console::update() {
@@ -39,6 +44,7 @@ void Console::update() {
 		dimensions.y = (float)cam::screen_dimensions.y / height_factor;
 	}
 	nine_slice(corner_factor, edge_factor);
+	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 	writer.update();
 }
 
@@ -48,19 +54,22 @@ void Console::render(sf::RenderWindow& win) {
 
 void Console::load_and_launch(std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
-		writer.load_message(svc::textLocator.get().console, key);
+		writer.load_message(text_suite, key);
 		flags.set(ConsoleFlags::loaded);
 		begin();
 	}
 }
 
-void Console::write(sf::RenderWindow& win, bool instant) { instant ? writer.write_instant_message(win) : writer.write_gradual_message(win); }
+void Console::write(sf::RenderWindow& win, bool instant) {
+	if (!flags.test(ConsoleFlags::active)) { return; }
+	instant ? writer.write_instant_message(win) : writer.write_gradual_message(win);
+	writer.write_responses(win);
+}
 
 void Console::end() {
 	extent = dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::loaded);
-	writer.deactivate();
 }
 
 void Console::nine_slice(int corner_dim, int edge_dim) {

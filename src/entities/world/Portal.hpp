@@ -3,6 +3,10 @@
 
 #include "../../utils/Shape.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace entity {
 
 const uint32_t CELL_SIZE = 32;
@@ -22,7 +26,7 @@ class Portal {
 	}
 	void update();
 	void render(sf::RenderWindow& win, Vec campos); // for debugging
-	void handle_activation(int room_id, bool& fade_out, bool& done);
+	void handle_activation(automa::ServiceProvider& svc, int room_id, bool& fade_out, bool& done);
 
 	Vec dimensions{};
 	Vec position{};

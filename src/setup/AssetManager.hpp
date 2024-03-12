@@ -21,7 +21,7 @@ inline char const* styles[lookup::NUM_STYLES];
 
 class AssetManager {
   public:
-	AssetManager(){};
+	AssetManager() = default;
 
 	void importTextures() {
 		t_nani.loadFromFile(finder.resource_path + "/image/character/nani.png");

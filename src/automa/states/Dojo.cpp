@@ -1,14 +1,16 @@
 
 #include "Dojo.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace automa {
 
-Dojo::Dojo() {
-	state = STATE::STATE_DOJO;
-	svc::cameraLocator.get().set_position({1, 1});
-	svc::playerLocator.get().set_position({360, 500});
+Dojo::Dojo(ServiceProvider& svc, int id) {
+
 }
-void Dojo::init(std::string const& load_path) {
+
+void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
+
+	console = gui::Console(svc);
 
 	hud.set_corner_pad(false); // reset hud position to corner
 	svc::playerLocator.get().reset_flags();
@@ -32,9 +34,9 @@ void Dojo::init(std::string const& load_path) {
 
 	bool found_one = false;
 	// only search for door entry if room was not loaded from main menu
-	if (!svc::stateControllerLocator.get().save_loaded) {
+	if (!svc.state_controller.actions.test(Actions::save_loaded)) {
 		for (auto& portal : map.portals) {
-			if (portal.destination_map_id == svc::stateControllerLocator.get().source_id) {
+			if (portal.destination_map_id == svc.state_controller.source_id) {
 				found_one = true;
 				sf::Vector2<float> spawn_position{portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - player::PLAYER_HEIGHT};
 				svc::playerLocator.get().set_position(spawn_position);
@@ -51,14 +53,14 @@ void Dojo::init(std::string const& load_path) {
 	}
 
 	// save was loaded from a json, so we successfully skipped door search
-	svc::stateControllerLocator.get().save_loaded = false;
+	svc.state_controller.actions.reset(Actions::save_loaded);
 
 	svc::inputStateLocator.get().reset_triggers();
 	svc::playerLocator.get().controller = {};
 	svc::playerLocator.get().controller.prevent_movement();
 }
 
-void Dojo::setTilesetTexture(sf::Texture& t) {
+void Dojo::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {
 	tileset_sprites.clear();
 	for (int i = 0; i < 16; ++i) {
 		for (int j = 0; j < 16; ++j) {
@@ -69,7 +71,7 @@ void Dojo::setTilesetTexture(sf::Texture& t) {
 	}
 }
 
-void Dojo::handle_events(sf::Event& event) {
+void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (event.type == sf::Event::EventType::KeyPressed) { svc::inputStateLocator.get().handle_press(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyReleased) { svc::inputStateLocator.get().handle_release(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyPressed) {
@@ -84,10 +86,11 @@ void Dojo::handle_events(sf::Event& event) {
 	}
 }
 
-void Dojo::tick_update() {
-	svc::playerLocator.get().update();
+void Dojo::tick_update(ServiceProvider& svc) {
+	svc::playerLocator.get().update(console);
 
-	map.update();
+	map.update(svc, console);
+
 	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
 	svc::cameraLocator.get().update();
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);
@@ -107,12 +110,12 @@ void Dojo::tick_update() {
 
 }
 
-void Dojo::frame_update() {
+void Dojo::frame_update(ServiceProvider& svc) {
 	map.background->update();
 	hud.update();
 }
 
-void Dojo::render(sf::RenderWindow& win) {
+void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	sf::Vector2<float> camvel = svc::cameraLocator.get().physics.velocity;
 	sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
 	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
@@ -120,8 +123,7 @@ void Dojo::render(sf::RenderWindow& win) {
 	map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
-
-	map.render_console(win);
+	map.render_console(console, win);
 
 	svc::assetLocator.get().sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
 	svc::assetLocator.get().sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);
@@ -132,10 +134,10 @@ void Dojo::render(sf::RenderWindow& win) {
 	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_trigger)) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 			tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(lookup::STYLE::PROVISIONAL));
-			setTilesetTexture(tileset);
+			setTilesetTexture(svc, tileset);
 		} else {
 			tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
-			setTilesetTexture(tileset);
+			setTilesetTexture(svc, tileset);
 		}
 	}
 }

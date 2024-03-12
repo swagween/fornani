@@ -1,36 +1,69 @@
 #include "Transponder.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../../gui/Console.hpp"
 
 namespace player {
 
-void Transponder::update() {
+void Transponder::update(gui::Console& console) {
 
-	// if (requested_next()) { svc::consoleLocator.get().writer.next(); } // TODO
+	// execute action based on the state of the console
+	// all of these functions will be called, but will only be executed
+	// if the TextWriter is in the required state.
+
+	// selection mode stuff
+	if (up()) { console.writer.adjust_selection(-1); }
+	if (down()) { console.writer.adjust_selection(1); }
+	if (selected()) { console.writer.process_selection(); }
+
+	// text stuff
+	if (skipped_ahead()) {
+		if (console.writer.writing() && console.writer.can_skip()) { console.writer.skip_ahead(); }
+	}
+	if (requested_next()) {
+		if (!console.writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::next); }
+		console.writer.request_next();
+	}
 	if (exited()) {
-		if (svc::consoleLocator.get().writer.complete()) {
+		if (console.writer.complete()) {
 			svc::soundboardLocator.get().console.set(audio::Console::done);
-			svc::consoleLocator.get().end();
+			console.writer.shutdown();
+			console.end();
 		}
 	}
-	// execute action based on the state of the console
-	if (skipped_ahead()) {
-		if (svc::consoleLocator.get().writer.active() && !svc::consoleLocator.get().writer.complete()) { svc::consoleLocator.get().writer.skip_ahead(); }
-	}
+	if (skip_released()) { console.writer.enable_skip(); }
+	if (console.writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::speech); }
 
+	end();
 }
 
 void Transponder::end() { actions = {}; }
 
 void Transponder::skip_ahead() { actions.set(TransponderActions::skip_ahead); }
 
+void Transponder::enable_skip() { actions.set(TransponderActions::skip_released); }
+
 void Transponder::next() { actions.set(TransponderActions::next); }
 
 void Transponder::exit() { actions.set(TransponderActions::exit); }
 
+void Transponder::go_up() { actions.set(TransponderActions::up); }
+
+void Transponder::go_down() { actions.set(TransponderActions::down); }
+
+void Transponder::select() { actions.set(TransponderActions::select); }
+
 bool Transponder::skipped_ahead() const { return actions.test(TransponderActions::skip_ahead); }
+
+bool Transponder::skip_released() const { return actions.test(TransponderActions::skip_released); }
 
 bool Transponder::requested_next() const { return actions.test(TransponderActions::next); }
 
 bool Transponder::exited() const { return actions.test(TransponderActions::exit); }
+
+bool Transponder::down() const { return actions.test(TransponderActions::down); }
+
+bool Transponder::up() const { return actions.test(TransponderActions::up); }
+
+bool Transponder::selected() const { return actions.test(TransponderActions::select); }
 
 } // namespace player

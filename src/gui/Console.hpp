@@ -8,6 +8,10 @@
 #include "../utils/Camera.hpp"
 #include "../graphics/TextWriter.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace gui {
 
 int const corner_factor{56};
@@ -19,7 +23,7 @@ float const pad_y{20};
 float const text_pad{8.0f};
 inline const sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad_y}; // bottom left corner
 
-enum class ConsoleFlags { active, finished, loaded };
+enum class ConsoleFlags { active, loaded, selection_mode };
 
 struct Border {
 	float left{};
@@ -31,7 +35,8 @@ struct Border {
 class Console {
 
   public:
-	Console();
+	Console() = default;
+	Console(automa::ServiceProvider& svc);
 
 	void begin();
 	void update();
@@ -50,7 +55,9 @@ class Console {
 
 	std::array<sf::Sprite, 9> sprites{};
 
-	text::TextWriter writer{};
+	dj::Json text_suite{};
+
+	text::TextWriter writer;
 	Border border{
 		48.f,
 		40.f,

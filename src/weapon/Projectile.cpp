@@ -97,7 +97,6 @@ void Projectile::update() {
 				destroy(true);
 				hook.grapple_flags = {};
 				hook.grapple_triggers = {};
-				svc::loggerLocator.get().states.reset(util::State::hook_snaking);
 				hook.spring.reverse_anchor_and_bob();
 				hook.spring.set_rest_length(stats.spring_rest_length);
 				svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
@@ -151,7 +150,7 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		for (auto& sprite : sp_proj) {
 			constrain_sprite_at_barrel(sprite, campos);
 			win.draw(sprite);
-			svc::counterLocator.get().at(svc::draw_calls)++;
+			
 		}
 
 	} else if (render_type == RENDER_TYPE::SINGLE_SPRITE) {
@@ -186,10 +185,10 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 				gravitator.render(win, campos);
 				win.draw(box);
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				
 			} else {
 				win.draw(sp_proj.at(0));
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				
 			}
 		}
 	}

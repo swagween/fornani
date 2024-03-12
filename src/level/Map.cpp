@@ -4,6 +4,7 @@
 #include "../setup/EnumLookups.hpp"
 #include "../utils/Math.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace world {
 
@@ -222,9 +223,9 @@ void Map::load(std::string const& path) {
 	generate_collidable_layer();
 }
 
-void Map::update() {
+void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
-	svc::consoleLocator.get().update();
+	console.update();
 
 	svc::playerLocator.get().collider.reset();
 	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
@@ -354,19 +355,19 @@ void Map::update() {
 
 	for (auto& portal : portals) {
 		portal.update();
-		portal.handle_activation(room_id, transition.fade_out, transition.done);
+		portal.handle_activation(svc, room_id, transition.fade_out, transition.done);
 	}
 
 	for (auto& inspectable : inspectables) {
 		if (svc::playerLocator.get().controller.inspecting() && inspectable.bounding_box.overlaps(svc::playerLocator.get().collider.hurtbox)) {
 			inspectable.activated = true;
-			svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
+			console.flags.set(gui::ConsoleFlags::active);
 		}
-		if (inspectable.activated && svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
-			svc::consoleLocator.get().begin();
+		if (inspectable.activated && console.flags.test(gui::ConsoleFlags::active)) {
+			console.begin();
 			if (svc::playerLocator.get().controller.transponder_exit()) {
 				inspectable.activated = false;
-				svc::consoleLocator.get().end();
+				console.end();
 			}
 		}
 	}
@@ -381,7 +382,7 @@ void Map::update() {
 		animator.update();
 	}
 
-	if (save_point.id != -1) { save_point.update(); }
+	if (save_point.id != -1) { save_point.update(svc, console); }
 
 	// check if player died
 	if (!svc::playerLocator.get().flags.state.test(player::State::alive) && !game_over) {
@@ -398,8 +399,8 @@ void Map::update() {
 		transition.fade_out = true;
 		if (transition.done) {
 			svc::playerLocator.get().start_over();
-			svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101); // temporary. later, we will load the last save
-			svc::stateControllerLocator.get().trigger = true;
+			svc.state_controller.next_state = lookup::get_map_label.at(101); // temporary. later, we will load the last save
+			svc.state_controller.actions.set(automa::Actions::trigger);
 			svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
 		}
 	}
@@ -442,7 +443,7 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 						tileset.at(cell.value).setPosition(cell_x, cell_y);
 						if (svc::cameraLocator.get().within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) {
 							win.draw(tileset.at(cell.value));
-							svc::counterLocator.get().at(svc::draw_calls)++;
+							
 						}
 					}
 					cell.render(win, cam);
@@ -457,10 +458,10 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 		borderbox.setSize({(float)cam::screen_dimensions.x, ydiff});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 		borderbox.setPosition(0.0f, real_dimensions.y + ydiff);
 		win.draw(borderbox);
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 	}
 	if (real_dimensions.x < cam::screen_dimensions.x) {
 		float xdiff = (cam::screen_dimensions.x - real_dimensions.x) / 2;
@@ -468,10 +469,10 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 		borderbox.setSize({xdiff, (float)cam::screen_dimensions.y});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 		borderbox.setPosition(real_dimensions.x + xdiff, 0.0f);
 		win.draw(borderbox);
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 	}
 
 	for (auto& portal : portals) { portal.render(win, cam); }
@@ -491,17 +492,17 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 			if (cell.value > 0) {
 				minimap_tile.setFillColor(sf::Color{20, 240, 20, 120});
 				win.draw(minimap_tile);
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				
 			} else {
 				minimap_tile.setFillColor(sf::Color{20, 20, 20, 120});
 				win.draw(minimap_tile);
-				svc::counterLocator.get().at(svc::draw_calls)++;
+				
 			}
 		}
 		minimap_tile.setPosition(svc::playerLocator.get().collider.physics.position.x - cam.x, svc::playerLocator.get().collider.physics.position.y - cam.y);
 		minimap_tile.setFillColor(sf::Color{240, 240, 240, 180});
 		win.draw(minimap_tile);
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 		win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y}));
 	}
 }
@@ -515,7 +516,7 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 		box.setFillColor(flcolor::black);
 		box.setSize({(float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y});
 		win.draw(box);
-		svc::counterLocator.get().at(svc::draw_calls)++;
+		
 	}
 	if (real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(real_dimensions); }
 	for (auto& layer : layers) {
@@ -528,7 +529,7 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 					if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 						if (svc::cameraLocator.get().within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) {
 							win.draw(tileset.at(cell.value));
-							svc::counterLocator.get().at(svc::draw_calls)++;
+							
 						}
 					}
 				}
@@ -537,19 +538,19 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 	}
 }
 
-void Map::render_console(sf::RenderWindow& win) {
-	if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
-		svc::consoleLocator.get().render(win);
+void Map::render_console(gui::Console& console, sf::RenderWindow& win) {
+	if (console.flags.test(gui::ConsoleFlags::active)) {
+		console.render(win);
 		for (auto& inspectable : inspectables) {
 			if (inspectable.activated) {
-				svc::consoleLocator.get().load_and_launch(inspectable.key);
-				svc::consoleLocator.get().write(win);
-				// svc::consoleLocator.get().write(win, inspectable.message);
-				//  svc::consoleLocator.get().write(win, "ab?:-_()#`");
+				console.load_and_launch(inspectable.key);
+				console.write(win);
+				// console.write(win, inspectable.message);
+				//  console.write(win, "ab?:-_()#`");
 			}
 		}
 	}
-	svc::consoleLocator.get().write(win, false);
+	console.write(win, false);
 }
 
 void Map::spawn_projectile_at(sf::Vector2<float> pos) {

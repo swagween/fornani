@@ -2,6 +2,7 @@
 #include "Player.hpp"
 #include "../../setup/LookupTables.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace player {
 
@@ -47,7 +48,7 @@ void Player::init() {
 	texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
 }
 
-void Player::update() {
+void Player::update(gui::Console& console) {
 
 	update_sprite();
 
@@ -59,7 +60,7 @@ void Player::update() {
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
 	controller.update();
-	update_transponder();
+	update_transponder(console);
 
 	if (grounded()) { controller.reset_dash_count(); }
 
@@ -144,7 +145,6 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			win.draw(sprite);
 			antennae[0].render(win, campos);
 			antennae[2].render(win, campos);
-			svc::counterLocator.get().at(svc::draw_calls) += 5;
 		}
 	}
 
@@ -190,13 +190,17 @@ void Player::update_sprite() {
 	svc::playerLocator.get().sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 
-void Player::update_transponder() {
-	if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
+void Player::update_transponder(gui::Console& console) {
+	if (console.flags.test(gui::ConsoleFlags::active)) {
 		controller.prevent_movement();
 		if (controller.transponder_skip()) { transponder.skip_ahead(); }
+		if (controller.transponder_skip_released()) { transponder.enable_skip(); }
 		if (controller.transponder_next()) { transponder.next(); }
 		if (controller.transponder_exit()) { transponder.exit(); }
-		transponder.update();
+		if (controller.transponder_up()) { transponder.go_up(); }
+		if (controller.transponder_down()) { transponder.go_down(); }
+		if (controller.transponder_select()) { transponder.select(); }
+		transponder.update(console);
 	}
 	transponder.end();
 }
@@ -217,7 +221,6 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		sp.setPosition(sprite_history.positions.at(ctr) - campos);
 		if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 			win.draw(sp);
-			++svc::counterLocator.get().at(svc::draw_calls);
 		}
 		a += 20;
 		++ctr;

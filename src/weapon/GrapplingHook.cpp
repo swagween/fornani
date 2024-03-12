@@ -5,12 +5,12 @@
 namespace arms {
 void GrapplingHook::update() {
 
-	if (grapple_flags.test(GrappleState::probing)) { spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point); }
+	if (grapple_flags.test(GrappleState::probing)) {
+		spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point);
+		svc::soundboardLocator.get().weapon.set(audio::Weapon::hook_probe);
+	}
 	if (grapple_flags.test(GrappleState::anchored)) {
 		spring.update();
-		svc::loggerLocator.get().states.set(util::State::hook_anchored);
-	} else {
-		svc::loggerLocator.get().states.reset(util::State::hook_anchored);
 	}
 
 	if (grapple_triggers.test(arms::GrappleTriggers::released)) {
@@ -20,21 +20,13 @@ void GrapplingHook::update() {
 		spring.set_bob(spring.get_anchor());
 		spring.variables.physics.position = spring.get_bob();
 		spring.set_anchor(svc::playerLocator.get().apparent_position);
-		svc::loggerLocator.get().triggers.set(util::Trigger::hook_released);
 		grapple_triggers.reset(arms::GrappleTriggers::released);
 	}
 	if (grapple_flags.test(arms::GrappleState::snaking)) {
 		spring.set_rest_length(-80);
 		spring.set_anchor(svc::playerLocator.get().apparent_position);
 		spring.update();
-		svc::loggerLocator.get().states.set(util::State::hook_snaking);
-	} else {
-		svc::loggerLocator.get().states.reset(util::State::hook_snaking);
 	}
-
-	svc::loggerLocator.get().hook_bob_position = spring.get_bob();
-	svc::loggerLocator.get().hook_anchor_position = spring.get_anchor();
-	svc::loggerLocator.get().hook_physics_position = spring.variables.physics.position;
 }
 
 void GrapplingHook::break_free() {

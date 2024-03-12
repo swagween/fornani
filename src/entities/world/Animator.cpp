@@ -30,7 +30,7 @@ void Animator::update() {
 void Animator::render(sf::RenderWindow& win, Vec campos) {
 	sprite.setPosition((int)(position.x - campos.x), (int)(position.y - campos.y));
 	win.draw(sprite);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 	sf::RectangleShape box{};
 	if (activated) {
 		box.setFillColor(sf::Color{80, 180, 120, 100});
@@ -42,7 +42,7 @@ void Animator::render(sf::RenderWindow& win, Vec campos) {
 	box.setPosition(bounding_box.position - campos);
 	box.setSize(bounding_box.dimensions);
 	/*win.draw(box);
-	svc::counterLocator.get().at(svc::draw_calls)++;*/
+	*/
 }
 int Animator::get_frame() { return anim.get_frame(); }
 

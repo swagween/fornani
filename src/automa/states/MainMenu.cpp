@@ -1,14 +1,10 @@
-//
-//  MainMenu.cpp
-//  automa
-//
-//
 
 #include "MainMenu.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace automa {
-// 5, 8, 11
-MainMenu::MainMenu() {
+
+MainMenu::MainMenu(ServiceProvider& svc, int id) {
 	state = STATE::STATE_MENU;
 	svc::cameraLocator.get().set_position({1, 1});
 
@@ -68,14 +64,14 @@ MainMenu::MainMenu() {
 					   sf::IntRect({0, 0}, {(int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y})};
 };
 
-void MainMenu::init(std::string const& load_path) {
+void MainMenu::init(ServiceProvider& svc, std::string const& load_path) {
 	svc::musicPlayerLocator.get().load("clay");
 	svc::musicPlayerLocator.get().play_looped();
 }
 
-void MainMenu::setTilesetTexture(sf::Texture& t) {}
+void MainMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
 
-void MainMenu::handle_events(sf::Event& event) {
+void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::Down) {
@@ -94,14 +90,15 @@ void MainMenu::handle_events(sf::Event& event) {
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			if (selection == MenuSelection::new_game) {
 
-				svc::dataLocator.get().load_blank_save(true);
-				svc::stateControllerLocator.get().save_loaded = true;
+				svc.state_controller.next_state = svc::dataLocator.get().load_blank_save(true);
+				svc.state_controller.actions.set(Actions::trigger);
+				svc.state_controller.actions.set(Actions::save_loaded);
 				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::load_game) {
 
-				svc::stateControllerLocator.get().submenu = menu_type::file_select;
-				svc::stateControllerLocator.get().trigger_submenu = true;
+				svc.state_controller.submenu = menu_type::file_select;
+				svc.state_controller.actions.set(Actions::trigger_submenu);
 				svc::soundboardLocator.get().menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::options) {
@@ -111,14 +108,14 @@ void MainMenu::handle_events(sf::Event& event) {
 			}
 		}
 		if (event.key.code == sf::Keyboard::Right && selection == MenuSelection::load_game) {
-			svc::stateControllerLocator.get().submenu = menu_type::file_select;
-			svc::stateControllerLocator.get().trigger_submenu = true;
+			svc.state_controller.submenu = menu_type::file_select;
+			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc::soundboardLocator.get().menu.set(audio::Menu::forward_switch);
 		}
 	}
 }
 
-void MainMenu::tick_update() {
+void MainMenu::tick_update(ServiceProvider& svc) {
 	svc::musicPlayerLocator.get().update();
 	left_dot.update();
 	right_dot.update();
@@ -145,11 +142,11 @@ void MainMenu::tick_update() {
 	}
 }
 
-void MainMenu::frame_update() {}
+void MainMenu::frame_update(ServiceProvider& svc) {}
 
-void MainMenu::render(sf::RenderWindow& win) {
+void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 
 	int selection_adjustment{};
 	for (auto i = 0; i < 3; ++i) {
@@ -160,7 +157,7 @@ void MainMenu::render(sf::RenderWindow& win) {
 		}
 		if (i + selection_adjustment < 6) {
 			win.draw(title_assets.at(i + selection_adjustment));
-			svc::counterLocator.get().at(svc::draw_calls)++;
+			
 		}
 	}
 

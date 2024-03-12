@@ -22,6 +22,14 @@ int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
 int const CELL_SIZE{32};
 
+namespace automa {
+struct ServiceProvider;
+}
+
+namespace gui {
+class Console;
+}
+
 namespace world {
 
 /*ElementBehavior {rate, rate_variance, expulsion_force, expulsion_variance, cone, grav, grav_variance, x_friction, y_friction }; */
@@ -63,10 +71,10 @@ class Map {
 
 	// methods
 	void load(std::string const& path);
-	void update();
+	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
 	void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
-	void render_console(sf::RenderWindow& win);
+	void render_console(gui::Console& console, sf::RenderWindow& win);
 	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
 	void spawn_projectile_at(sf::Vector2<float> pos);

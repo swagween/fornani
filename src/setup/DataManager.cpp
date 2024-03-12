@@ -61,7 +61,7 @@ void DataManager::save_progress(int save_point_id) {
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
-void DataManager::load_progress(int const file, bool state_switch) {
+std::string_view DataManager::load_progress(int const file, bool state_switch) {
 
 	current_save = file;
 
@@ -70,11 +70,6 @@ void DataManager::load_progress(int const file, bool state_switch) {
 
 	int save_pt_id = svc::dataLocator.get().save["save_point_id"].as<int>();
 	int room_id = lookup::save_point_to_room_id.at(save_pt_id);
-
-	if (state_switch) {
-		svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(room_id);
-		svc::stateControllerLocator.get().trigger = true;
-	}
 
 	// set player data based on save file
 	svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
@@ -92,19 +87,15 @@ void DataManager::load_progress(int const file, bool state_switch) {
 	}
 
 	//reset some things that might be lingering
-	svc::consoleLocator.get().flags.reset(gui::ConsoleFlags::active);
 	svc::playerLocator.get().arsenal.extant_projectile_instances = {};
+
+	return lookup::get_map_label.at(room_id);
 }
 
-void DataManager::load_blank_save(bool state_switch) {
+std::string_view DataManager::load_blank_save(bool state_switch) {
 
 	save = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
 	assert(!save.is_null());
-
-	if (state_switch) {
-		svc::stateControllerLocator.get().next_state = lookup::get_map_label.at(101);
-		svc::stateControllerLocator.get().trigger = true;
-	}
 
 	// set player data based on save file
 	svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
@@ -113,6 +104,8 @@ void DataManager::load_blank_save(bool state_switch) {
 
 	// load player's arsenal
 	svc::playerLocator.get().arsenal.loadout.clear();
+
+	return lookup::get_map_label.at(101);
 }
 
 void DataManager::load_player_params() {

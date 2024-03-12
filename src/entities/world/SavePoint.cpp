@@ -1,6 +1,8 @@
 
 #include "SavePoint.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../../service/ServiceProvider.hpp"
+#include "../../gui/Console.hpp"
 
 namespace entity {
 
@@ -19,7 +21,7 @@ SavePoint::SavePoint() {
 	sparkles.set_position(scaled_position.x * 32.f, scaled_position.y * 32.f);
 }
 
-void SavePoint::update() {
+void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	animation.update();
 	sparkles.update();
@@ -42,7 +44,7 @@ void SavePoint::update() {
 					activated = true;
 					save();
 					svc::soundboardLocator.get().world.set(audio::World::soft_sparkle);
-					svc::consoleLocator.get().load_and_launch("save");
+					console.load_and_launch("save");
 				}
 			}
 		} else {
@@ -67,7 +69,7 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
 	win.draw(sprite);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 	sf::RectangleShape box{};
 	if (activated) {
 		box.setFillColor(sf::Color{80, 180, 120, 100});
@@ -82,7 +84,7 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	box.setPosition(proximity_box.position - campos);
 	box.setSize(proximity_box.dimensions);
 	// win.draw(box);
-	svc::counterLocator.get().at(svc::draw_calls)++;
+	
 }
 
 void SavePoint::save() {

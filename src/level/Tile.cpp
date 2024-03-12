@@ -20,7 +20,7 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 		update_polygon(cam);
 		if (is_solid()) {
 			win.draw(polygon);
-			svc::counterLocator.get().at(svc::draw_calls)++;
+			
 		}
 	}
 }

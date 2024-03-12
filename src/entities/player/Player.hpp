@@ -15,6 +15,10 @@
 #include "Transponder.hpp"
 #include "../../graphics/TextureUpdater.hpp"
 
+namespace gui {
+class Console;
+}
+
 namespace player {
 
 float const PLAYER_WIDTH = 18.0f;
@@ -77,12 +81,12 @@ class Player {
 	// init (violates RAII but must happen after resource path is set)
 	void init();
 	// member functions
-	void update();
+	void update(gui::Console& console);
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
-	void update_transponder();
+	void update_transponder(gui::Console& console);
 	void flash_sprite();
 	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void calculate_sprite_offset();
