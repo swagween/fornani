@@ -12,7 +12,7 @@ namespace player {
 // the transponder will respond to player inputs and set the state of the console and player accordingly.
 
 // these are all triggers, so they will be reset each tick
-enum class TransponderActions { skip_ahead, next, exit, down, up, select };
+enum class TransponderActions { skip_ahead, next, exit, down, up, select, skip_released };
 
 class Transponder {
   public:
@@ -20,6 +20,7 @@ class Transponder {
 	void end();
 
 	void skip_ahead();
+	void enable_skip();
 	void next();
 	void exit();
 	void go_up();
@@ -27,6 +28,7 @@ class Transponder {
 	void select();
 
 	bool skipped_ahead() const;
+	bool skip_released() const;
 	bool requested_next() const;
 	bool exited() const;
 	bool down() const;

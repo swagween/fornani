@@ -12,7 +12,7 @@ namespace player {
 constexpr static int dash_time{32};
 
 enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect, dash, move_y };
-enum class TransponderInput { skip, next, exit, down, up, select };
+enum class TransponderInput { skip, next, exit, down, up, select, skip_released };
 enum class MovementState { restricted, grounded, walking_autonomously };
 
 enum class Hook { hook_released, hook_held };
@@ -74,6 +74,7 @@ class PlayerController {
 	bool can_dash();
 
 	bool transponder_skip() const;
+	bool transponder_skip_released() const;
 	bool transponder_next() const;
 	bool transponder_exit() const;
 	bool transponder_up() const;

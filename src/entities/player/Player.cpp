@@ -193,6 +193,7 @@ void Player::update_transponder() {
 	if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
 		controller.prevent_movement();
 		if (controller.transponder_skip()) { transponder.skip_ahead(); }
+		if (controller.transponder_skip_released()) { transponder.enable_skip(); }
 		if (controller.transponder_next()) { transponder.next(); }
 		if (controller.transponder_exit()) { transponder.exit(); }
 		if (controller.transponder_up()) { transponder.go_up(); }

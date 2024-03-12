@@ -40,8 +40,8 @@ void Console::update() {
 		dimensions.y = (float)cam::screen_dimensions.y / height_factor;
 	}
 	nine_slice(corner_factor, edge_factor);
-	writer.update();
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
+	writer.update();
 }
 
 void Console::render(sf::RenderWindow& win) {

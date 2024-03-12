@@ -94,7 +94,7 @@ void Game::run() { // load all assets
 					svc::assetLocator.get().sharp_click.play();
 				}
 				if (event.key.code == sf::Keyboard::K) { svc::playerLocator.get().kill(); }
-				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch(services, "test_selector"); }
+				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch(services, "bryn_test"); }
 				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services)); }
 				if (event.key.code == sf::Keyboard::W) {
 					game_state.set_current_state(std::make_unique<automa::Dojo>());

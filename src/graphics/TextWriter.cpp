@@ -35,6 +35,7 @@ void TextWriter::update() {
 
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { shutdown(); }
+	//if (selection_mode()) { writing_speed = default_writing_speed; }
 	if (!writing()) { return; }
 
 	if (tick_count % writing_speed == 0) {
@@ -167,6 +168,8 @@ void TextWriter::reset() {
 
 void TextWriter::skip_ahead() { writing_speed = fast_writing_speed; }
 
+void TextWriter::enable_skip() { flags.reset(MessageState::cannot_skip); }
+
 void TextWriter::activate() { flags.set(MessageState::writing); }
 
 void TextWriter::deactivate() { flags.reset(MessageState::writing); }
@@ -232,6 +235,7 @@ void TextWriter::process_selection() {
 	responses.pop_front();
 
 	svc::soundboardLocator.get().console.set(audio::Console::next);
+	flags.set(MessageState::cannot_skip);
 	flags.reset(MessageState::selection_mode);
 	reset();
 	activate();
@@ -251,6 +255,8 @@ bool TextWriter::writing() const { return flags.test(MessageState::writing); }
 bool TextWriter::complete() const { return !flags.test(MessageState::writing) && suite.empty(); }
 
 bool TextWriter::selection_mode() const { return flags.test(MessageState::selection_mode); }
+
+bool TextWriter::can_skip() const { return !flags.test(MessageState::cannot_skip); }
 
 Message& const TextWriter::current_message() {
 	if (iterators.current_suite_set >= suite.size()) { return zero_option; }

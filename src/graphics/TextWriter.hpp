@@ -23,7 +23,7 @@ struct Message {
 	int target{};
 };
 
-enum class MessageState { writing, selection_mode };
+enum class MessageState { writing, selection_mode, cannot_skip };
 static int const default_writing_speed{8};
 static int const fast_writing_speed{1};
 
@@ -48,11 +48,13 @@ class TextWriter {
 	void shutdown();
 
 	void skip_ahead();
+	void enable_skip();
 	void reset();
 
 	bool writing() const;
 	bool complete() const;
 	bool selection_mode() const;
+	bool can_skip() const;
 
 	Message& const current_message(); //for debug
 	Message& const current_response(); // for debug
