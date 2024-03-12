@@ -211,6 +211,7 @@ void TextWriter::adjust_selection(int amount) {
 	if (!selection_mode()) { return; }
 	if (iterators.current_response_set >= responses.size()) { return; }
 	iterators.current_selection += amount;
+	svc::soundboardLocator.get().console.set(audio::Console::shift);
 	if (iterators.current_selection < 0) { iterators.current_selection = responses.at(iterators.current_response_set).size() - 1; }
 	if (iterators.current_selection >= responses.at(iterators.current_response_set).size()) { iterators.current_selection = 0; }
 }
@@ -230,6 +231,7 @@ void TextWriter::process_selection() {
 	}
 	responses.pop_front();
 
+	svc::soundboardLocator.get().console.set(audio::Console::next);
 	flags.reset(MessageState::selection_mode);
 	reset();
 	activate();
@@ -265,6 +267,7 @@ Message& const TextWriter::current_response() {
 }
 
 int TextWriter::get_current_selection() { return iterators.current_selection; }
+
 int TextWriter::get_current_suite_set() { return iterators.current_suite_set; }
 
 } // namespace text

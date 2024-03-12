@@ -20,6 +20,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (console.test(Console::select)) { svc.assets.click.play(); }
 	if (console.test(Console::done)) { svc.assets.menu_back.play(); }
 	if (console.test(Console::next)) { svc.assets.menu_next.play(); }
+	if (console.test(Console::shift)) { svc.assets.menu_shift.play(); }
 	if (console.test(Console::speech)) { repeat(svc.assets.menu_shift, 5, 0.2f); }
 
 	// world
