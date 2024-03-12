@@ -6,6 +6,11 @@
 
 namespace text {
 
+TextWriter::TextWriter(automa::ServiceProvider& svc) {
+	font.loadFromFile(svc.text.font);
+	font.setSmooth(false);
+}
+
 void TextWriter::start() {
 	
 	// to be replaced with something prettier later
@@ -87,8 +92,7 @@ void TextWriter::wrap() {
 	}
 }
 
-void TextWriter::load_message(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) {
-	font.loadFromFile(svc.text.font);
+void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	suite.clear();
 	responses.clear();
 
@@ -120,6 +124,7 @@ void TextWriter::stylize(sf::Text& msg, bool is_suite) {
 	msg.setCharacterSize(text_size);
 	msg.setFillColor(flcolor::ui_white);
 	msg.setFont(font);
+	msg.setLineSpacing(1.2f);
 	if (is_suite) {
 		msg.setPosition(position);
 	} else {

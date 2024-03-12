@@ -29,12 +29,14 @@ static int const fast_writing_speed{1};
 
 class TextWriter {
   public:
+	TextWriter() = default;
+	TextWriter(automa::ServiceProvider& svc);
 	void start();
 	void update();
 	void set_position(sf::Vector2<float> pos);
 	void set_bounds(sf::Vector2<float> new_bounds);
 	void wrap();
-	void load_message(automa::ServiceProvider& svc, dj::Json& source, std::string_view key);
+	void load_message(dj::Json& source, std::string_view key);
 	void stylize(sf::Text& msg, bool is_suite);
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);

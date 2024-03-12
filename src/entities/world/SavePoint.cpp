@@ -2,6 +2,7 @@
 #include "SavePoint.hpp"
 #include "../../setup/ServiceLocator.hpp"
 #include "../../service/ServiceProvider.hpp"
+#include "../../gui/Console.hpp"
 
 namespace entity {
 
@@ -20,7 +21,7 @@ SavePoint::SavePoint() {
 	sparkles.set_position(scaled_position.x * 32.f, scaled_position.y * 32.f);
 }
 
-void SavePoint::update(automa::ServiceProvider& svc) {
+void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	animation.update();
 	sparkles.update();
@@ -43,7 +44,7 @@ void SavePoint::update(automa::ServiceProvider& svc) {
 					activated = true;
 					save();
 					svc::soundboardLocator.get().world.set(audio::World::soft_sparkle);
-					svc::consoleLocator.get().load_and_launch(svc, "save");
+					console.load_and_launch("save");
 				}
 			}
 		} else {

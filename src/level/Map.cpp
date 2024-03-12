@@ -223,9 +223,9 @@ void Map::load(std::string const& path) {
 	generate_collidable_layer();
 }
 
-void Map::update(automa::ServiceProvider& svc) {
+void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
-	svc::consoleLocator.get().update();
+	console.update();
 
 	svc::playerLocator.get().collider.reset();
 	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
@@ -361,13 +361,13 @@ void Map::update(automa::ServiceProvider& svc) {
 	for (auto& inspectable : inspectables) {
 		if (svc::playerLocator.get().controller.inspecting() && inspectable.bounding_box.overlaps(svc::playerLocator.get().collider.hurtbox)) {
 			inspectable.activated = true;
-			svc::consoleLocator.get().flags.set(gui::ConsoleFlags::active);
+			console.flags.set(gui::ConsoleFlags::active);
 		}
-		if (inspectable.activated && svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
-			svc::consoleLocator.get().begin();
+		if (inspectable.activated && console.flags.test(gui::ConsoleFlags::active)) {
+			console.begin();
 			if (svc::playerLocator.get().controller.transponder_exit()) {
 				inspectable.activated = false;
-				svc::consoleLocator.get().end();
+				console.end();
 			}
 		}
 	}
@@ -382,7 +382,7 @@ void Map::update(automa::ServiceProvider& svc) {
 		animator.update();
 	}
 
-	if (save_point.id != -1) { save_point.update(svc); }
+	if (save_point.id != -1) { save_point.update(svc, console); }
 
 	// check if player died
 	if (!svc::playerLocator.get().flags.state.test(player::State::alive) && !game_over) {
@@ -538,19 +538,19 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 	}
 }
 
-void Map::render_console(automa::ServiceProvider& text_service, sf::RenderWindow& win) {
-	if (svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active)) {
-		svc::consoleLocator.get().render(win);
+void Map::render_console(gui::Console& console, sf::RenderWindow& win) {
+	if (console.flags.test(gui::ConsoleFlags::active)) {
+		console.render(win);
 		for (auto& inspectable : inspectables) {
 			if (inspectable.activated) {
-				svc::consoleLocator.get().load_and_launch(text_service, inspectable.key);
-				svc::consoleLocator.get().write(win);
-				// svc::consoleLocator.get().write(win, inspectable.message);
-				//  svc::consoleLocator.get().write(win, "ab?:-_()#`");
+				console.load_and_launch(inspectable.key);
+				console.write(win);
+				// console.write(win, inspectable.message);
+				//  console.write(win, "ab?:-_()#`");
 			}
 		}
 	}
-	svc::consoleLocator.get().write(win, false);
+	console.write(win, false);
 }
 
 void Map::spawn_projectile_at(sf::Vector2<float> pos) {

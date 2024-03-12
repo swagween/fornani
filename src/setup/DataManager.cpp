@@ -87,7 +87,6 @@ std::string_view DataManager::load_progress(int const file, bool state_switch) {
 	}
 
 	//reset some things that might be lingering
-	svc::consoleLocator.get().flags.reset(gui::ConsoleFlags::active);
 	svc::playerLocator.get().arsenal.extant_projectile_instances = {};
 
 	return lookup::get_map_label.at(room_id);

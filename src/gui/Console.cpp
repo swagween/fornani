@@ -5,7 +5,11 @@
 
 namespace gui {
 
-Console::Console() {
+Console::Console(automa::ServiceProvider& svc) {
+
+	text_suite = svc.text.console;
+	writer = text::TextWriter(svc);
+
 	for (auto& sprite : sprites) { sprite.setTexture(svc::assetLocator.get().t_ui); }
 	sprites.at(0).setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
 	sprites.at(1).setTextureRect(sf::IntRect{{corner_factor, 0}, {edge_factor, corner_factor}});
@@ -48,9 +52,9 @@ void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
 }
 
-void Console::load_and_launch(automa::ServiceProvider& svc, std::string_view key) {
+void Console::load_and_launch(std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
-		writer.load_message(svc, svc.text.console, key);
+		writer.load_message(text_suite, key);
 		flags.set(ConsoleFlags::loaded);
 		begin();
 	}

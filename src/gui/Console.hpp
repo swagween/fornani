@@ -35,13 +35,14 @@ struct Border {
 class Console {
 
   public:
-	Console();
+	Console() = default;
+	Console(automa::ServiceProvider& svc);
 
 	void begin();
 	void update();
 	void render(sf::RenderWindow& win);
 
-	void load_and_launch(automa::ServiceProvider& svc, std::string_view key);
+	void load_and_launch(std::string_view key);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
 
@@ -54,7 +55,9 @@ class Console {
 
 	std::array<sf::Sprite, 9> sprites{};
 
-	text::TextWriter writer{};
+	dj::Json text_suite{};
+
+	text::TextWriter writer;
 	Border border{
 		48.f,
 		40.f,

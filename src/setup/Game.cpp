@@ -94,7 +94,7 @@ void Game::run() { // load all assets
 					svc::assetLocator.get().sharp_click.play();
 				}
 				if (event.key.code == sf::Keyboard::K) { svc::playerLocator.get().kill(); }
-				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch(services, "bryn_test"); }
+				if (event.key.code == sf::Keyboard::T) { game_state.get_current_state().console.load_and_launch("bryn_test"); }
 				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services)); }
 				if (event.key.code == sf::Keyboard::W) {
 					game_state.set_current_state(std::make_unique<automa::Dojo>());
@@ -242,16 +242,16 @@ void Game::debug_window() {
 				if (ImGui::BeginTabItem("Console")) {
 					ImGui::Separator();
 
-					ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
-					ImGui::Text("Console Writing? : %s", svc::consoleLocator.get().writer.writing() ? "Yes" : "No");
-					ImGui::Text("Console Writing Done? : %s", svc::consoleLocator.get().writer.complete() ? "Yes" : "No");
-					ImGui::Text("Console Select Mode? : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::selection_mode) ? "Yes" : "No");
-					ImGui::Text("Writer Select Mode? : %s", svc::consoleLocator.get().writer.selection_mode() ? "Yes" : "No");
-					ImGui::Text("Prompt? : %s", svc::consoleLocator.get().writer.current_message().prompt ? "Yes" : "No");
-					ImGui::Text("Message Target : %i", svc::consoleLocator.get().writer.current_message().target);
-					ImGui::Text("Response Target : %i", svc::consoleLocator.get().writer.current_response().target);
-					ImGui::Text("Current Selection : %i", svc::consoleLocator.get().writer.get_current_selection());
-					ImGui::Text("Current Suite Set : %i", svc::consoleLocator.get().writer.get_current_suite_set());
+					ImGui::Text("Console Active : %s", game_state.get_current_state().console.flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
+					ImGui::Text("Console Writing? : %s", game_state.get_current_state().console.writer.writing() ? "Yes" : "No");
+					ImGui::Text("Console Writing Done? : %s", game_state.get_current_state().console.writer.complete() ? "Yes" : "No");
+					ImGui::Text("Console Select Mode? : %s", game_state.get_current_state().console.flags.test(gui::ConsoleFlags::selection_mode) ? "Yes" : "No");
+					ImGui::Text("Writer Select Mode? : %s", game_state.get_current_state().console.writer.selection_mode() ? "Yes" : "No");
+					ImGui::Text("Prompt? : %s", game_state.get_current_state().console.writer.current_message().prompt ? "Yes" : "No");
+					ImGui::Text("Message Target : %i", game_state.get_current_state().console.writer.current_message().target);
+					ImGui::Text("Response Target : %i", game_state.get_current_state().console.writer.current_response().target);
+					ImGui::Text("Current Selection : %i", game_state.get_current_state().console.writer.get_current_selection());
+					ImGui::Text("Current Suite Set : %i", game_state.get_current_state().console.writer.get_current_suite_set());
 					ImGui::Separator();
 					ImGui::Text("Player Transponder Skipping : %s", svc::playerLocator.get().transponder.skipped_ahead() ? "Yes" : "No");
 					ImGui::Text("Player Transponder Exited : %s", svc::playerLocator.get().transponder.exited() ? "Yes" : "No");
@@ -260,7 +260,7 @@ void Game::debug_window() {
 					ImGui::Text("Player Restricted? : %s", svc::playerLocator.get().controller.restricted() ? "Yes" : "No");
 					ImGui::Text("Player Inspecting? : %s", svc::playerLocator.get().controller.inspecting() ? "Yes" : "No");
 					ImGui::Separator();
-					ImGui::SliderInt("Text Size", &svc::consoleLocator.get().writer.text_size, 6, 64);
+					ImGui::SliderInt("Text Size", &game_state.get_current_state().console.writer.text_size, 6, 64);
 
 					ImGui::EndTabItem();
 				}

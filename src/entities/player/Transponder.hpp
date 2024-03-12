@@ -6,6 +6,10 @@
 #include <unordered_map>
 #include "../../utils/BitFlags.hpp"
 
+namespace gui {
+class Console;
+}
+
 namespace player {
 
 // a small class to handle player interaction with inspectables, NPCs, or anything else that will trigger the console.
@@ -16,7 +20,7 @@ enum class TransponderActions { skip_ahead, next, exit, down, up, select, skip_r
 
 class Transponder {
   public:
-	void update();
+	void update(gui::Console& console);
 	void end();
 
 	void skip_ahead();

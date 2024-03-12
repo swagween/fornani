@@ -1,36 +1,37 @@
 #include "Transponder.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../../gui/Console.hpp"
 
 namespace player {
 
-void Transponder::update() {
+void Transponder::update(gui::Console& console) {
 
 	// execute action based on the state of the console
 	// all of these functions will be called, but will only be executed
 	// if the TextWriter is in the required state.
 
 	// selection mode stuff
-	if (up()) { svc::consoleLocator.get().writer.adjust_selection(-1); }
-	if (down()) { svc::consoleLocator.get().writer.adjust_selection(1); }
-	if (selected()) { svc::consoleLocator.get().writer.process_selection(); }
+	if (up()) { console.writer.adjust_selection(-1); }
+	if (down()) { console.writer.adjust_selection(1); }
+	if (selected()) { console.writer.process_selection(); }
 
 	// text stuff
 	if (skipped_ahead()) {
-		if (svc::consoleLocator.get().writer.writing() && svc::consoleLocator.get().writer.can_skip()) { svc::consoleLocator.get().writer.skip_ahead(); }
+		if (console.writer.writing() && console.writer.can_skip()) { console.writer.skip_ahead(); }
 	}
 	if (requested_next()) {
-		if (!svc::consoleLocator.get().writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::next); }
-		svc::consoleLocator.get().writer.request_next();
+		if (!console.writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::next); }
+		console.writer.request_next();
 	}
 	if (exited()) {
-		if (svc::consoleLocator.get().writer.complete()) {
+		if (console.writer.complete()) {
 			svc::soundboardLocator.get().console.set(audio::Console::done);
-			svc::consoleLocator.get().writer.shutdown();
-			svc::consoleLocator.get().end();
+			console.writer.shutdown();
+			console.end();
 		}
 	}
-	if (skip_released()) { svc::consoleLocator.get().writer.enable_skip(); }
-	if (svc::consoleLocator.get().writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::speech); }
+	if (skip_released()) { console.writer.enable_skip(); }
+	if (console.writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::speech); }
 
 	end();
 }

@@ -11,6 +11,7 @@
 #include "../gui/HUD.hpp"
 #include "../level/Map.hpp"
 #include "../setup/LookupTables.hpp"
+#include "../gui/Console.hpp"
 
 namespace automa {
 
@@ -49,6 +50,7 @@ class GameState {
 	bool debug_mode{false};
 
 	gui::HUD hud{{20, 20}};
+	gui::Console console{};
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
