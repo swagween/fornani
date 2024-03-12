@@ -16,6 +16,11 @@ void DataManager::load_data() {
 	assert(!weapon.is_null());
 	std::cout << " success!\n";
 
+	drop = dj::Json::from_file((finder.resource_path + "/data/item/drop.json").c_str());
+	std::cout << "loading drop data ...";
+	assert(!drop.is_null());
+	std::cout << " success!\n";
+
 	// enemies
 	frdog = dj::Json::from_file((finder.resource_path + "/data/enemy/frdog.json").c_str());
 	std::cout << "loading frdog ...";

@@ -59,6 +59,9 @@ class AssetManager {
 		t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 		t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
 
+		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
+		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
+
 		t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 
 		// backgrounds
@@ -244,6 +247,10 @@ class AssetManager {
 	sf::Texture t_grappling_hook{};
 	sf::Texture t_rope{};
 	sf::Texture t_hook{};
+
+	//items
+	sf::Texture t_heart{};
+	sf::Texture t_orb{};
 
 	// condense these into a 2d vector later
 	std::vector<sf::Sprite> sp_tileset_provisional{};

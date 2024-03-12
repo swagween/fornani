@@ -1,18 +1,21 @@
 
 #include "Drop.hpp"
-#include "../../setup/ServiceLocator.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace item {
 
-Drop::Drop(Vec dim, Vec pos) {
-	collider.bounding_box.dimensions = dim;
-	collider.physics.position = pos;
+Drop::Drop(automa::ServiceProvider& svc) {
+
+
+	sprite.setTexture(svc.assets.t_heart);
+	collider.bounding_box.dimensions = drop_dimensions;
+
+	animation.params
 }
 
 void Drop::update() {
 
-	anim.update();
-	anim.current_state.update();
+	animation.update();
 }
 
 void Drop::render(sf::RenderWindow& win, Vec campos) {

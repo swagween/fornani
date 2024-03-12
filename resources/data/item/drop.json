@@ -1,0 +1,22 @@
+{
+  "heart": {
+    "sprite_dimensions": [ 16.0, 16.0 ],
+    "type": "0",
+    "animation": {
+      "num_sprites": 2,
+      "num_frames": 12,
+      "framerate": 28
+    }
+  },
+
+  "orb": {
+    "sprite_dimensions": [ 16.0, 16.0 ],
+    "type": "1",
+    "animation": {
+      "num_sprites": 4,
+      "num_frames": 7,
+      "framerate": 10
+    }
+  }
+
+}

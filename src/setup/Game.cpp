@@ -8,6 +8,9 @@ Game::Game(char** argv) {
 	// data
 	svc::dataLocator.get().finder.setResourcePath(argv);
 	svc::dataLocator.get().load_data();
+
+	services.data.finder.setResourcePath(argv);
+	services.data.load_data();
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
