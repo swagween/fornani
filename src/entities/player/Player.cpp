@@ -195,6 +195,9 @@ void Player::update_transponder() {
 		if (controller.transponder_skip()) { transponder.skip_ahead(); }
 		if (controller.transponder_next()) { transponder.next(); }
 		if (controller.transponder_exit()) { transponder.exit(); }
+		if (controller.transponder_up()) { transponder.go_up(); }
+		if (controller.transponder_down()) { transponder.go_down(); }
+		if (controller.transponder_select()) { transponder.select(); }
 		transponder.update();
 	}
 	transponder.end();

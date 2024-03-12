@@ -36,6 +36,9 @@ void PlayerController::update() {
 	auto const& transponder_skip = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) || svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
 	auto const& transponder_next = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
 	auto const& transponder_exit = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
+	auto const& transponder_down = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered) || svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
+	auto const& transponder_up = svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::triggered);
+	auto const& transponder_select = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
 
 	auto const& hook_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::held);
 
@@ -67,6 +70,9 @@ void PlayerController::update() {
 	transponder_skip ? transponder_flags.set(TransponderInput::skip) : transponder_flags.reset(TransponderInput::skip);
 	transponder_next ? transponder_flags.set(TransponderInput::next) : transponder_flags.reset(TransponderInput::next);
 	transponder_exit ? transponder_flags.set(TransponderInput::exit) : transponder_flags.reset(TransponderInput::exit);
+	transponder_down ? transponder_flags.set(TransponderInput::down) : transponder_flags.reset(TransponderInput::down);
+	transponder_up ? transponder_flags.set(TransponderInput::up) : transponder_flags.reset(TransponderInput::up);
+	transponder_select ? transponder_flags.set(TransponderInput::select) : transponder_flags.reset(TransponderInput::select);
 
 	//hook
 	hook_held ? hook_flags.set(Hook::hook_held) : hook_flags.reset(Hook::hook_held);
@@ -221,6 +227,12 @@ bool PlayerController::transponder_skip() const { return transponder_flags.test(
 bool PlayerController::transponder_next() const { return transponder_flags.test(TransponderInput::next); }
 
 bool PlayerController::transponder_exit() const { return transponder_flags.test(TransponderInput::skip); }
+
+bool PlayerController::transponder_up() const { return transponder_flags.test(TransponderInput::up); }
+
+bool PlayerController::transponder_down() const { return transponder_flags.test(TransponderInput::down); }
+
+bool PlayerController::transponder_select() const { return transponder_flags.test(TransponderInput::select); }
 
 int PlayerController::get_dash_request() const { return dash_request; }
 

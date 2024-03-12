@@ -41,6 +41,7 @@ void Console::update() {
 	}
 	nine_slice(corner_factor, edge_factor);
 	writer.update();
+	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 }
 
 void Console::render(sf::RenderWindow& win) {
@@ -58,6 +59,7 @@ void Console::load_and_launch(automa::ServiceProvider& svc, std::string_view key
 void Console::write(sf::RenderWindow& win, bool instant) {
 	if (!flags.test(ConsoleFlags::active)) { return; }
 	instant ? writer.write_instant_message(win) : writer.write_gradual_message(win);
+	writer.write_responses(win);
 }
 
 void Console::end() {

@@ -23,7 +23,7 @@ float const pad_y{20};
 float const text_pad{8.0f};
 inline const sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad_y}; // bottom left corner
 
-enum class ConsoleFlags { active, loaded };
+enum class ConsoleFlags { active, loaded, selection_mode };
 
 struct Border {
 	float left{};

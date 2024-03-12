@@ -17,8 +17,14 @@ struct ServiceProvider;
 
 namespace text {
 
-enum class MessageState { writing };
-static int const default_writing_speed{12};
+struct Message {
+	sf::Text data{};
+	bool prompt{};
+	int target{};
+};
+
+enum class MessageState { writing, selection_mode };
+static int const default_writing_speed{8};
 static int const fast_writing_speed{1};
 
 class TextWriter {
@@ -29,27 +35,43 @@ class TextWriter {
 	void set_bounds(sf::Vector2<float> new_bounds);
 	void wrap();
 	void load_message(automa::ServiceProvider& svc, dj::Json& source, std::string_view key);
-	void stylize(sf::Text& msg);
+	void stylize(sf::Text& msg, bool is_suite);
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);
+	void write_responses(sf::RenderWindow& win);
 	void activate();
 	void deactivate();
 	void request_next();
+	void check_for_prompt(Message& msg);
+	void adjust_selection(int amount);
+	void process_selection();
+	void shutdown();
 
 	void skip_ahead();
 	void reset();
 
 	bool writing() const;
 	bool complete() const;
+	bool selection_mode() const;
+
+	Message& const current_message(); //for debug
+	Message& const current_response(); // for debug
+	int get_current_selection();
+	int get_current_suite_set();
 
 	// public for debugging
 	int text_size{16};
 
   private:
+	std::deque<std::deque<Message> > suite{};
+	std::deque<std::deque<Message> > responses{};
 
-	std::deque<sf::Text> suite{};
+	struct {
+		int current_suite_set{};
+		int current_response_set{};
+		int current_selection{};
+	} iterators{};
 
-	sf::Text message{};
 	sf::Text working_message{};
 	std::string working_str{};
 	sf::Font font{};
@@ -59,6 +81,13 @@ class TextWriter {
 	util::BitFlags<MessageState> flags{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> bounds{};
+	sf::Vector2<float> response_position{300.f, 200.f};
+	sf::Vector2<float> response_offset{120.f, 60.f};
+	float pad{30};
+
+	sf::RectangleShape indicator{};
+
+	Message zero_option{}; //for debug
 };
 
 } // namespace text

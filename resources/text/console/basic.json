@@ -3,5 +3,21 @@
   "locked": [ "It's locked." ],
   "teapot": [ "It's a teapot." ],
   "bookshelf_1": [ "You find a book of water-damaged schematics. They are completely illegible, but you suspect that they were written many years before you were born. You decide to leave them right where they are." ],
-  "test_suite": [ "First message.", "Second Message, which has enough text to force it onto the next line.", "Third message." ]
+  "test_suite": {
+    "suite": [ "First message.", "Second Message, which has enough text to force it onto the next line.", "Third message." ],
+    "responses": []
+  },
+  "test_selector": {
+    "suite": [
+      [ "Hello.", "Are you tired?%0" ],
+      [ "Go to sleep!", "Rest is extremely important for recovering your health." ],
+      [ "Then why are you next to a bed?%1" ],
+      [ "Oh okay, carry on." ],
+      [ "Then what are you waiting for?" ]
+    ],
+    "responses": [
+      [ "Yes%0", "No%1" ],
+      [ "I left my transponder on the night stand.%0", "Maybe I am a bit tired...%1" ]
+    ]
+  }
 }

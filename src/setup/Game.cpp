@@ -14,6 +14,10 @@ Game::Game(char** argv) {
 	// images
 	svc::assetLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().importTextures();
+
+	services.assets.finder.setResourcePath(argv);
+	services.assets.importTextures();
+	services.assets.load_audio();
 	// sounds
 	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
 	svc::assetLocator.get().load_audio();
@@ -90,7 +94,7 @@ void Game::run() { // load all assets
 					svc::assetLocator.get().sharp_click.play();
 				}
 				if (event.key.code == sf::Keyboard::K) { svc::playerLocator.get().kill(); }
-				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch(services, "test_suite"); }
+				if (event.key.code == sf::Keyboard::T) { svc::consoleLocator.get().load_and_launch(services, "test_selector"); }
 				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services)); }
 				if (event.key.code == sf::Keyboard::W) {
 					game_state.set_current_state(std::make_unique<automa::Dojo>());
@@ -124,7 +128,7 @@ void Game::run() { // load all assets
 		game_state.get_current_state().frame_update(services);
 
 		// play sounds
-		svc::soundboardLocator.get().play_sounds();
+		svc::soundboardLocator.get().play_sounds(services);
 
 		// switch states
 		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {
@@ -241,6 +245,13 @@ void Game::debug_window() {
 					ImGui::Text("Console Active : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::active) ? "Yes" : "No");
 					ImGui::Text("Console Writing? : %s", svc::consoleLocator.get().writer.writing() ? "Yes" : "No");
 					ImGui::Text("Console Writing Done? : %s", svc::consoleLocator.get().writer.complete() ? "Yes" : "No");
+					ImGui::Text("Console Select Mode? : %s", svc::consoleLocator.get().flags.test(gui::ConsoleFlags::selection_mode) ? "Yes" : "No");
+					ImGui::Text("Writer Select Mode? : %s", svc::consoleLocator.get().writer.selection_mode() ? "Yes" : "No");
+					ImGui::Text("Prompt? : %s", svc::consoleLocator.get().writer.current_message().prompt ? "Yes" : "No");
+					ImGui::Text("Message Target : %i", svc::consoleLocator.get().writer.current_message().target);
+					ImGui::Text("Response Target : %i", svc::consoleLocator.get().writer.current_response().target);
+					ImGui::Text("Current Selection : %i", svc::consoleLocator.get().writer.get_current_selection());
+					ImGui::Text("Current Suite Set : %i", svc::consoleLocator.get().writer.get_current_suite_set());
 					ImGui::Separator();
 					ImGui::Text("Player Transponder Skipping : %s", svc::playerLocator.get().transponder.skipped_ahead() ? "Yes" : "No");
 					ImGui::Text("Player Transponder Exited : %s", svc::playerLocator.get().transponder.exited() ? "Yes" : "No");
