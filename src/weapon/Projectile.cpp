@@ -99,7 +99,7 @@ void Projectile::update() {
 				hook.grapple_triggers = {};
 				hook.spring.reverse_anchor_and_bob();
 				hook.spring.set_rest_length(stats.spring_rest_length);
-				svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
+				svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::tomahawk_catch);
 			} // destroy when player catches it
 		}
 	}
@@ -109,11 +109,11 @@ void Projectile::update() {
 		gravitator.set_target_position(svc::playerLocator.get().apparent_position);
 		gravitator.update();
 		physics.position = gravitator.collider.physics.position;
-		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(type)); // repeat sound
+		svc::soundboardLocator.get().flags.weapon.set(lookup::gun_sound.at(type)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
 		if (gravitator.collider.bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
-			svc::soundboardLocator.get().weapon.set(audio::Weapon::tomahawk_catch);
+			svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
 	}
 

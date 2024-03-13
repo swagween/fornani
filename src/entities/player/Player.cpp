@@ -1,5 +1,6 @@
 
 #include "Player.hpp"
+#include "../item/Drop.hpp"
 #include "../../setup/LookupTables.hpp"
 #include "../../setup/ServiceLocator.hpp"
 #include "../../service/ServiceProvider.hpp"
@@ -65,7 +66,7 @@ void Player::update(gui::Console& console) {
 	if (grounded()) { controller.reset_dash_count(); }
 
 	// do this elsehwere later
-	if (collider.flags.test(shape::State::just_landed)) { svc::soundboardLocator.get().player.set(audio::Player::land); }
+	if (collider.flags.test(shape::State::just_landed)) { svc::soundboardLocator.get().flags.player.set(audio::Player::land); }
 	collider.flags.reset(shape::State::just_landed);
 
 	//player-controlled actions
@@ -83,8 +84,6 @@ void Player::update(gui::Console& console) {
 		if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
 	}
 
-	collider.physics.update_euler();
-	collider.sync_components();
 
 	// for parameter tweaking, remove later
 	collider.update();
@@ -251,7 +250,7 @@ void Player::jump() {
 		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
 		animation.state.set(AnimState::rise);
-		svc::soundboardLocator.get().player.set(audio::Player::jump);
+		svc::soundboardLocator.get().flags.player.set(audio::Player::jump);
 		collider.movement_flags.set(shape::Movement::jumping);
 	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.velocity.y < 0) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
@@ -321,7 +320,7 @@ void Player::walk() {
 	if (controller.moving_right() && !collider.has_right_collision()) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (controller.moving_left() && !collider.has_left_collision()) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
-		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().player.set(audio::Player::step); }
+		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().flags.player.set(audio::Player::step); }
 	}
 }
 
@@ -332,7 +331,7 @@ void Player::hurt(int amount = 1) {
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
 		make_invincible();
-		svc::soundboardLocator.get().player.set(audio::Player::hurt);
+		svc::soundboardLocator.get().flags.player.set(audio::Player::hurt);
 		just_hurt = true;
 	}
 
@@ -359,7 +358,7 @@ bool Player::grounded() const { return collider.flags.test(shape::State::grounde
 bool Player::fire_weapon() {
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		++extant_instances(equipped_weapon().get_id());
-		svc::soundboardLocator.get().weapon.set(lookup::gun_sound.at(equipped_weapon().type));
+		svc::soundboardLocator.get().flags.weapon.set(lookup::gun_sound.at(equipped_weapon().type));
 		return true;
 	}
 	return false;
@@ -385,6 +384,11 @@ void Player::kill() { flags.state.reset(State::alive); }
 void Player::start_over() {
 	player_stats.health = player_stats.max_health;
 	flags.state.set(State::alive);
+}
+
+void Player::give_drop(item::DropType type, int value) {
+	if (type == item::DropType::heart) { player_stats.health += value; }
+	if (type == item::DropType::orb) { player_stats.orbs += value; }
 }
 
 void Player::reset_flags() { flags = {}; }

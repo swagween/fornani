@@ -59,6 +59,9 @@ class AssetManager {
 		t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 		t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
 
+		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
+		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
+
 		t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 
 		// backgrounds
@@ -134,8 +137,19 @@ class AssetManager {
 		hurt.setBuffer(hurt_buffer);
 		player_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/player_death.wav");
 		player_death.setBuffer(player_death_buffer);
-		enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/enemy_hit.wav");
+		enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/rainy_ouch.wav");
 		enem_hit.setBuffer(enem_hit_buffer);
+
+		enem_death_1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/enemy_death.wav");
+		enem_death_1.setBuffer(enem_death_1_buffer);
+
+		heal_buffer.loadFromFile(finder.resource_path + "/audio/sfx/heal.wav");
+		heal.setBuffer(heal_buffer);
+		orb_1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_1.wav");
+		orb_1.setBuffer(orb_1_buffer);
+		orb_5_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_5.wav");
+		orb_5.setBuffer(orb_5_buffer);
+
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
 		load_buffer.loadFromFile(finder.resource_path + "/audio/sfx/load_game.wav");
@@ -245,6 +259,10 @@ class AssetManager {
 	sf::Texture t_rope{};
 	sf::Texture t_hook{};
 
+	//items
+	sf::Texture t_heart{};
+	sf::Texture t_orb{};
+
 	// condense these into a 2d vector later
 	std::vector<sf::Sprite> sp_tileset_provisional{};
 
@@ -287,6 +305,14 @@ class AssetManager {
 	sf::Sound player_death;
 	sf::SoundBuffer enem_hit_buffer{};
 	sf::Sound enem_hit;
+	sf::SoundBuffer enem_death_1_buffer{};
+	sf::Sound enem_death_1;
+	sf::SoundBuffer heal_buffer{};
+	sf::Sound heal;
+	sf::SoundBuffer orb_1_buffer{};
+	sf::Sound orb_1;
+	sf::SoundBuffer orb_5_buffer{};
+	sf::Sound orb_5;
 
 	//save/load
 	sf::SoundBuffer save_buffer{};

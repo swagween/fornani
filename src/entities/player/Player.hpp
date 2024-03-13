@@ -19,6 +19,10 @@ namespace gui {
 class Console;
 }
 
+namespace item {
+enum class DropType;
+}
+
 namespace player {
 
 float const PLAYER_WIDTH = 18.0f;
@@ -111,6 +115,7 @@ class Player {
 	bool is_invincible() const;
 	void kill();
 	void start_over();
+	void give_drop(item::DropType type, int value);
 
 	void reset_flags();
 	void total_reset();

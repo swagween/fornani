@@ -18,7 +18,7 @@ void Arsenal::switch_weapon(float next) {
 	if (current_weapon >= loadout.size()) { current_weapon = 0; }
 	if (current_weapon < loadout.size() && current_weapon < extant_projectile_instances.size()) {
 		loadout.at(current_weapon).active_projectiles = extant_projectile_instances.at(current_weapon);
-		svc::soundboardLocator.get().player.set(audio::Player::arms_switch);
+		svc::soundboardLocator.get().flags.player.set(audio::Player::arms_switch);
 	}
 }
 

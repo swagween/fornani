@@ -6,6 +6,10 @@
 #include "BitFlags.hpp"
 #include "Shape.hpp"
 
+namespace world{
+class Map;
+}
+
 namespace shape {
 
 float const default_dim = 24.0f;
@@ -50,6 +54,7 @@ class Collider {
 
 	void sync_components();
 	void handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_type);
+	void detect_map_collision(world::Map& map);
 	void correct_x(sf::Vector2<float> mtv);
 	void correct_y(sf::Vector2<float> mtv);
 	void correct_x_y(sf::Vector2<float> mtv);

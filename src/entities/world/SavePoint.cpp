@@ -43,7 +43,7 @@ void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 				if (can_activate) {
 					activated = true;
 					save();
-					svc::soundboardLocator.get().world.set(audio::World::soft_sparkle);
+					svc::soundboardLocator.get().flags.world.set(audio::World::soft_sparkle);
 					console.load_and_launch("save");
 				}
 			}

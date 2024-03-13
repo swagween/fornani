@@ -17,6 +17,8 @@ void Critter::random_walk(sf::Vector2<int> range) {
 	}
 }
 
+bool Critter::died() { return condition.hp <= 0; }
+
 void Critter::random_idle_action() {
 
 	if (svc::tickerLocator.get().every_x_frames(10)) {
