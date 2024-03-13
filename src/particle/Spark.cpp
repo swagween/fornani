@@ -8,7 +8,8 @@ Spark::Spark(sf::Vector2<float> pos, sf::Color color) {
 	position = pos;
 	box.setFillColor(color);
 	box.setSize({3.f, 3.f});
-	lifespan.start(100);
+	int rand_diff = svc::randomLocator.get().random_range(0, 50);
+	lifespan.start(200 + rand_diff);
 }
 
 void Spark::update() {

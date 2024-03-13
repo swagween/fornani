@@ -37,10 +37,12 @@ class Drop {
 	void update(world::Map& map);
 	void render(sf::RenderWindow& win, sf::Vector2<float> campos);
 	void set_position(sf::Vector2<float> pos);
-	void destroy();
 
-	bool expired() const;
-	bool is_dead() const;
+	void destroy_completely();
+	void deactivate();
+
+	bool is_completely_gone() const;
+	bool is_inactive() const;
 
 	shape::Collider& get_collider();
 	DropType get_type() const;

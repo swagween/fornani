@@ -14,6 +14,7 @@ class Sparkler {
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos);
 	void set_dimensions(sf::Vector2<float> dim);
+	void deactivate();
 
   private:
 	std::vector<Spark> sparkles{};
@@ -21,6 +22,7 @@ class Sparkler {
 	sf::Vector2<float> position{};
 
 	sf::Color color{};
+	bool active{true};
 };
 
 } // namespace vfx

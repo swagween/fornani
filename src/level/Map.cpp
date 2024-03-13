@@ -323,6 +323,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 							critter->condition.hp -= proj.stats.base_damage;
 							if (critter->died()) {
 								active_loot.push_back(item::Loot(svc, critter->stats.drop_range, critter->stats.loot_multiplier, critter->colliders.at(0).bounding_box.position));
+								svc::soundboardLocator.get().flags.frdog.set(audio::Frdog::death);
 							}
 						}
 						if (!proj.stats.persistent) { proj.destroy(false); }

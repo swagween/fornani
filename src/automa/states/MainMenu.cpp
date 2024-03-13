@@ -78,14 +78,14 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			selection = (menu_selection_id.at(selection) % 3 == 2)
 							? MenuSelection::new_game
 							: (MenuSelection)(menu_selection_id.at(selection) + 1);
-			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
+			svc::soundboardLocator.get().flags.menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Up) {
 			selection = (menu_selection_id.at(selection) % 3 == 0)
 							? MenuSelection::options
 							: (MenuSelection)(menu_selection_id.at(selection) - 1);
 
-			svc::soundboardLocator.get().menu.set(audio::Menu::shift);
+			svc::soundboardLocator.get().flags.menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			if (selection == MenuSelection::new_game) {
@@ -93,24 +93,24 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 				svc.state_controller.next_state = svc::dataLocator.get().load_blank_save(true);
 				svc.state_controller.actions.set(Actions::trigger);
 				svc.state_controller.actions.set(Actions::save_loaded);
-				svc::soundboardLocator.get().menu.set(audio::Menu::select);
+				svc::soundboardLocator.get().flags.menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::load_game) {
 
 				svc.state_controller.submenu = menu_type::file_select;
 				svc.state_controller.actions.set(Actions::trigger_submenu);
-				svc::soundboardLocator.get().menu.set(audio::Menu::select);
+				svc::soundboardLocator.get().flags.menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::options) {
 
 				// todo: make options menu
-				svc::soundboardLocator.get().menu.set(audio::Menu::select);
+				svc::soundboardLocator.get().flags.menu.set(audio::Menu::select);
 			}
 		}
 		if (event.key.code == sf::Keyboard::Right && selection == MenuSelection::load_game) {
 			svc.state_controller.submenu = menu_type::file_select;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
-			svc::soundboardLocator.get().menu.set(audio::Menu::forward_switch);
+			svc::soundboardLocator.get().flags.menu.set(audio::Menu::forward_switch);
 		}
 	}
 }

@@ -20,18 +20,18 @@ void Transponder::update(gui::Console& console) {
 		if (console.writer.writing() && console.writer.can_skip()) { console.writer.skip_ahead(); }
 	}
 	if (requested_next()) {
-		if (!console.writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::next); }
+		if (!console.writer.writing()) { svc::soundboardLocator.get().flags.console.set(audio::Console::next); }
 		console.writer.request_next();
 	}
 	if (exited()) {
 		if (console.writer.complete()) {
-			svc::soundboardLocator.get().console.set(audio::Console::done);
+			svc::soundboardLocator.get().flags.console.set(audio::Console::done);
 			console.writer.shutdown();
 			console.end();
 		}
 	}
 	if (skip_released()) { console.writer.enable_skip(); }
-	if (console.writer.writing()) { svc::soundboardLocator.get().console.set(audio::Console::speech); }
+	if (console.writer.writing()) { svc::soundboardLocator.get().flags.console.set(audio::Console::speech); }
 
 	end();
 }

@@ -92,10 +92,6 @@ void Drop::update(world::Map& map) {
 
 	lifespan.update();
 	afterlife.update();
-	if (lifespan.is_complete() && !(afterlife.get_cooldown() > 0)) {
-		dead = true;
-		afterlife.start(100);
-	}
 
 	animation.update();
 
@@ -124,10 +120,11 @@ void Drop::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 		collider.render(win, campos);
 	} else {
 		sprite.setPosition(collider.physics.position + sprite_offset - campos);
-		if (!dead && (lifespan.get_cooldown() > 500 || (lifespan.get_cooldown() / 20) % 2 == 0)) {
+		if (!is_inactive() && !is_completely_gone() && (lifespan.get_cooldown() > 500 || (lifespan.get_cooldown() / 20) % 2 == 0)) {
 			win.draw(sprite);
-			if (parameters.type == DropType::heart) { sparkler.render(win, campos); }
 		}
+		if (parameters.type == DropType::heart) { sparkler.render(win, campos); }
+		sparkler.render(win, campos);
 	}
 }
 
@@ -136,7 +133,16 @@ void Drop::set_position(sf::Vector2<float> pos) {
 	sparkler.set_position(pos);
 }
 
-void Drop::destroy() { lifespan.cancel(); }
+void Drop::destroy_completely() {
+	lifespan.cancel();
+	afterlife.cancel();
+}
+
+void Drop::deactivate() {
+	lifespan.cancel();
+	afterlife.start(1000);
+	sparkler.deactivate();
+}
 
 shape::Collider& Drop::get_collider() { return collider; }
 
@@ -144,8 +150,8 @@ DropType Drop::get_type() const { return parameters.type; }
 
 int Drop::get_value() const { return value; }
 
-bool Drop::expired() const { return afterlife.is_complete() && lifespan.is_complete(); }
+bool Drop::is_completely_gone() const { return afterlife.is_complete() && lifespan.is_complete(); }
 
-bool Drop::is_dead() const { return dead; }
+bool Drop::is_inactive() const { return lifespan.is_complete() && !afterlife.is_complete(); }
 
 } // namespace item
