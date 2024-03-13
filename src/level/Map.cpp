@@ -322,6 +322,12 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 							critter->flags.set(critter::Flags::hurt);
 							critter->flags.set(critter::Flags::just_hurt);
 							critter->condition.hp -= proj.stats.base_damage;
+							if (critter->died()) {
+								active_loot.push_back(item::Loot(svc, critter->stats.drop_range, critter->stats.loot_multiplier, critter->colliders.at(0).bounding_box.position));
+								for (auto& drop : active_loot.back().get_drops()) {
+									colliders.push_back(&drop.get_collider());
+								}
+							}
 						}
 						if (!proj.stats.persistent) { proj.destroy(false); }
 					}
@@ -333,6 +339,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 			proj.destroy(false);
 		}
 	}
+
+	for (auto& loot : active_loot) { loot.update(); }
 
 	for (auto& critter : critters) {
 
@@ -424,6 +432,9 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 	for (auto& critter : critters) {
 		if (svc::cameraLocator.get().within_frame(critter->sprite_position.x, critter->sprite_position.y)) { critter->render(win, cam); }
 	}
+
+	// loot
+	for (auto& loot : active_loot) { loot.render(win, cam); }
 
 	// foreground animators
 	for (auto& animator : animators) {

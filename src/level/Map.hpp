@@ -17,6 +17,7 @@
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
 #include "../weapon/Projectile.hpp"
+#include "../entities/item/Loot.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -102,6 +103,7 @@ class Map {
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Animator> animators{};
+	std::vector<item::Loot> active_loot{};
 	entity::SavePoint save_point{};
 
 	std::unique_ptr<bg::Background> background{};

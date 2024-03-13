@@ -1,22 +1,23 @@
 {
   "heart": {
-    "sprite_dimensions": [ 16.0, 16.0 ],
-    "type": "0",
+    "sprite_dimensions": [ 26.0, 24.0 ],
+    "spritesheet_dimensions": [ 12, 2 ],
+    "type": 0,
     "animation": {
       "num_sprites": 2,
-      "num_frames": 12,
+      "duration": 12,
       "framerate": 28
     }
   },
 
   "orb": {
-    "sprite_dimensions": [ 16.0, 16.0 ],
-    "type": "1",
+    "sprite_dimensions": [ 24.0, 24.0 ],
+    "spritesheet_dimensions": [ 7, 4 ],
+    "type": 1,
     "animation": {
       "num_sprites": 4,
-      "num_frames": 7,
+      "duration": 7,
       "framerate": 10
     }
   }
-
 }

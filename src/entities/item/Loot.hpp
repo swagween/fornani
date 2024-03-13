@@ -4,6 +4,10 @@
 #include <string>
 #include "Drop.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace item {
 
 class Loot {
@@ -13,11 +17,16 @@ class Loot {
 
   public:
 	Loot() = default;
-	Loot(Vec pos);
+	Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos);
 
 	void update();
+	void render(sf::RenderWindow& win, sf::Vector2<float> campos);
+	void set_position(sf::Vector2<float> pos);
 
-	// vfx::Emitter burst{};
+	std::vector<Drop>& get_drops();
+
+  private:
+	sf::Vector2<float> position{};
 	std::vector<Drop> drops{};
 };
 

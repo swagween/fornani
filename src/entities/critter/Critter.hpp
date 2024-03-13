@@ -40,6 +40,7 @@ struct CritterStats {
 	int energy{};
 	int vision{};
 	int cooldown{};
+	sf::Vector2<int> drop_range{};
 };
 
 struct CritterCondition {
@@ -99,6 +100,8 @@ class Critter {
 	//    void hover_sine();
 	//    void fly_sine();
 	//    void fly_line(bool vertical);
+
+	bool died();
 
 	CritterMetadata metadata{};
 	CritterStats stats{};

@@ -1,6 +1,7 @@
 #pragma once
 #include "../utils/BitFlags.hpp"
 #include "../setup/AssetManager.hpp"
+#include "../setup/DataManager.hpp"
 #include "../setup/TextManager.hpp"
 #include "../automa/StateController.hpp"
 
