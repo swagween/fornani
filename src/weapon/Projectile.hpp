@@ -20,6 +20,10 @@
 #include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace arms {
 
 enum class WEAPON_TYPE {
@@ -95,7 +99,7 @@ class Projectile {
 
   public:
 	Projectile();
-	Projectile(int id);
+	Projectile(automa::ServiceProvider& svc, int id);
 
 	void update();
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);

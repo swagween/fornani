@@ -13,18 +13,17 @@ namespace arms {
 using Key = WEAPON_TYPE;
 constexpr static int max_weapons{20};
 
-inline Weapon bryns_gun{0};
-inline Weapon plasmer{1};
-inline Weapon skycorps_ar{2};
-inline Weapon tomahawk{3};
-inline Weapon grappling_hook{4};
+//inline Weapon bryns_gun{0};
+//inline Weapon plasmer{1};
+//inline Weapon skycorps_ar{2};
+//inline Weapon tomahawk{3};
+//inline Weapon grappling_hook{4};
 
 struct Arsenal {
 
 	Arsenal() = default;
-	Arsenal& operator=(Arsenal&&) = delete;
+	Arsenal(automa::ServiceProvider& svc);
 
-	void init();
 	void push_to_loadout(int id);
 	void switch_weapon(float next);
 	Weapon& get_current_weapon();
@@ -37,6 +36,7 @@ struct Arsenal {
 
   private:
 	int current_weapon{};
+	Weapon default_gun{};
 };
 
 } // namespace arms

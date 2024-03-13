@@ -2,6 +2,7 @@
 #include "Projectile.hpp"
 #include "../setup/LookupTables.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace arms {
 
@@ -11,7 +12,7 @@ Projectile::Projectile() {
 	seed();
 };
 
-Projectile::Projectile(int id) {
+Projectile::Projectile(automa::ServiceProvider& svc, int id) {
 
 	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id]["projectile"];
 
@@ -58,6 +59,7 @@ Projectile::Projectile(int id) {
 	gravitator.collider.physics.maximum_velocity = {stats.gravitator_max_speed, stats.gravitator_max_speed};
 
 	// spring
+	hook = GrapplingHook(svc);
 	hook.spring = vfx::Spring({stats.spring_dampen, stats.spring_constant, stats.spring_rest_length});
 
 	anim::Parameters params = {0, anim.num_frames, anim.framerate, -1};

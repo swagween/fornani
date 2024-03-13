@@ -4,9 +4,7 @@
 
 namespace automa {
 
-Dojo::Dojo(ServiceProvider& svc, int id) {
-
-}
+Dojo::Dojo(ServiceProvider& svc, int id) : map(svc) {}
 
 void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
 
@@ -15,7 +13,7 @@ void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
 	hud.set_corner_pad(false); // reset hud position to corner
 	svc::playerLocator.get().reset_flags();
 
-	map.load(load_path);
+	map.load(svc, load_path);
 	tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
 	for (int i = 0; i < 16; ++i) {
 		for (int j = 0; j < 16; ++j) {

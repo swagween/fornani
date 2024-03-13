@@ -9,7 +9,8 @@ namespace critter {
 class Frdog : public Critter {
 
   public:
-	Frdog() {
+	Frdog() = default;
+	Frdog(automa::ServiceProvider& svc) {
 		num_anim_frames = 20;
 		num_colliders = 1;
 		num_hurtboxes = 2;

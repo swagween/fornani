@@ -9,10 +9,10 @@ namespace player {
 
 Player::Player() {}
 
-void Player::init() {
+void Player::init(automa::ServiceProvider& svc) {
 
 	svc::dataLocator.get().load_player_params();
-	arsenal.init();
+	arsenal = arms::Arsenal(svc);
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);

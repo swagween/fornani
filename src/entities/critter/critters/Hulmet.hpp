@@ -9,7 +9,8 @@ namespace critter {
 class Hulmet : public Critter {
 
   public:
-	Hulmet() {
+	Hulmet() = default;
+	Hulmet(automa::ServiceProvider& svc) {
 		num_anim_frames = 20;
 		num_colliders = 1;
 		num_hurtboxes = 1;
@@ -24,7 +25,7 @@ class Hulmet : public Critter {
 		hostile_range = shape::Shape({(float)stats.vision, (float)stats.vision / 6});
 		stats.cooldown = 500;
 
-		weapon = arms::skycorps_ar;
+		weapon = arms::Weapon{svc, 3};
 		weapon.projectile.team = arms::TEAMS::SKYCORPS;
 	}
 

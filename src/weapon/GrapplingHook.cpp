@@ -1,8 +1,13 @@
 #include "GrapplingHook.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "../utils/Math.hpp"
 
 namespace arms {
+GrapplingHook::GrapplingHook(automa::ServiceProvider& svc) {
+	rope.setTexture(svc.assets.t_rope);
+	rope.setTextureRect(sf::IntRect({0, 0}, {6, 6}));
+}
 void GrapplingHook::update() {
 
 	if (grapple_flags.test(GrappleState::probing)) {
@@ -41,10 +46,9 @@ void GrapplingHook::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 		spring.render(win, campos);
 	} else {
-		rope.setTexture(svc::assetLocator.get().t_rope);
-		rope.setTextureRect(sf::IntRect({0, 0}, {6, 6}));
 		float distance = util::magnitude(svc::playerLocator.get().collider.physics.position - spring.get_anchor());
 		spring.num_links = distance / 20;
+		spring.num_links = 10;
 		for (int i = 0; i < spring.num_links; ++i) {
 			rope.setPosition(spring.get_rope(i) - campos);
 			win.draw(rope);

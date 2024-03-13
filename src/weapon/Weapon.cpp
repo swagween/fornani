@@ -4,7 +4,7 @@
 
 namespace arms {
 
-Weapon::Weapon(int id) : id(id) {
+Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
 
 	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id];
 
@@ -42,7 +42,7 @@ Weapon::Weapon(int id) : id(id) {
 
 	spray = vfx::Emitter(spray_behavior, spray_stats, spray_color.at(type), spray_color.at(type));
 
-	projectile = Projectile(id);
+	projectile = Projectile(svc, id);
 	attributes.boomerang = projectile.stats.boomerang;
 }
 

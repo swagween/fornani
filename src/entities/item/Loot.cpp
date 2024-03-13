@@ -6,7 +6,7 @@
 namespace item {
 Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos) {
 
-	auto drop_rate = svc::randomLocator.get().random_range(5, 10);
+	auto drop_rate = svc::randomLocator.get().random_range(50, 100);
 	position = pos;
 
 	std::string_view key{};

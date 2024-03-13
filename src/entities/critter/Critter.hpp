@@ -16,6 +16,10 @@
 #include "../../utils/Collider.hpp"
 #include "../../utils/StateFunction.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace critter {
 
 enum class VARIANT { BEAST, SOLDIER, GRUB, GHOST };
@@ -58,6 +62,7 @@ class Critter {
   public:
 
 	Critter() = default;
+	Critter(automa::ServiceProvider& svc);
 	Critter(CritterMetadata m, CritterStats s, sf::Vector2<int> sprite_dim, sf::Vector2<int> spritesheet_dim, sf::Vector2<float> dim)
 		: metadata(m), stats(s), sprite_dimensions(sprite_dim), spritesheet_dimensions(spritesheet_dim), dimensions(dim) {
 		
@@ -70,7 +75,6 @@ class Critter {
 		hr.setSize({(float)s.vision, (float)s.vision});
 		condition.hp = s.base_hp;
 	}
-	~Critter() {}
 
 	virtual void unique_update(){};
 	virtual void load_data(){};

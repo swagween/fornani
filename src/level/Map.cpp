@@ -8,7 +8,9 @@
 
 namespace world {
 
-void Map::load(std::string const& path) {
+Map::Map(automa::ServiceProvider& svc) : bestiary(svc) {}
+
+void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 
 	std::string filepath = path + "/map_data.txt";
 
@@ -201,6 +203,7 @@ void Map::load(std::string const& path) {
 
 			// push the critter
 			// which type of critter? and how deep into the pool are we?
+			bestiary.push_critters(svc, {{critter::frdog, 3}});
 			critters.push_back(*bestiary.fetch_critter_of_type(type, critter::pool_counter.at(id)));
 			critters.back()->load_data();
 			critters.back()->set_position({pos.x * asset::TILE_WIDTH, pos.y * asset::TILE_WIDTH});

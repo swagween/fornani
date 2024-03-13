@@ -19,6 +19,10 @@ namespace gui {
 class Console;
 }
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace item {
 enum class DropType;
 }
@@ -83,7 +87,7 @@ class Player {
 	Player();
 
 	// init (violates RAII but must happen after resource path is set)
-	void init();
+	void init(automa::ServiceProvider& svc);
 	// member functions
 	void update(gui::Console& console);
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -137,7 +141,7 @@ class Player {
 	behavior::DIR last_dir{};
 
 	//weapons
-	arms::Arsenal arsenal{};
+	arms::Arsenal arsenal;
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};

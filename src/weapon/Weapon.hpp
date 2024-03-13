@@ -47,7 +47,7 @@ class Weapon {
 
   public:
 	Weapon() = default;
-	Weapon(int id);
+	Weapon(automa::ServiceProvider& svc, int id);
 
 	void update();
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);

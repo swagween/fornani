@@ -26,7 +26,7 @@ Game::Game(char** argv) {
 	svc::assetLocator.get().load_audio();
 	svc::musicPlayerLocator.get().turn_off(); // off by default
 	// player
-	svc::playerLocator.get().init();
+	svc::playerLocator.get().init(services);
 	// lookups
 	lookup::populate_lookup();
 

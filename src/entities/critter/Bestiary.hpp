@@ -32,27 +32,32 @@ CritterStats    { base_damage, base_hp, speed, loot_multiplier, energy, vision }
 inline Critter frdog = Critter(CritterMetadata{0, VARIANT::BEAST, true, false, true}, CritterStats{3, 35, 0.3f, 1.0f, 80, 12 * 32, 8, {5, 10}}, sf::Vector2<int>{72, 48}, sf::Vector2<int>{4, 5}, sf::Vector2<float>{32.0f, 32.0f});
 inline Critter hulmet = Critter(CritterMetadata{1, VARIANT::SOLDIER, true, false, true}, CritterStats{2, 14, 0.5f, 1.f, 16 * 32, 8, 8, {5, 10}}, sf::Vector2<int>{56, 42}, sf::Vector2<int>{1, 14}, sf::Vector2<float>{16.0f, 16.0f});
 
-inline std::array<Frdog, pool_size_small> frdog_pool{};
-inline std::array<Hulmet, pool_size_small> hulmet_pool{};
-
 inline std::array<int, num_critters> pool_counter{};
 
 class Bestiary {
   public:
 	Bestiary() = default;
-	~Bestiary() {}
-	Bestiary& operator=(Bestiary&&) = delete;
+	Bestiary(automa::ServiceProvider& svc);
 	std::optional<Critter*> fetch_critter_of_type(CRITTER_TYPE type, int next) {
 		switch (type) {
 		case CRITTER_TYPE::hulmet:
 			if (next > pool_size_small) { return std::nullopt; }
-			return &hulmet_pool.at(next);
+			//return &hulmet_pool.at(next);
 		case CRITTER_TYPE::frdog:
 			if (next > pool_size_small) { return std::nullopt; }
-			return &frdog_pool.at(next);
+			//return &frdog_pool.at(next);
 		}
 		return std::nullopt;
 	}
+
+	void push_critters(automa::ServiceProvider& svc, std::vector<std::pair<Critter, int>> order);
+
+  private:
+	Frdog frdog;
+	Hulmet hulmet;
+	std::vector<std::unique_ptr<Critter>> critter_pool{};
+	//std::array<Frdog, pool_size_small> frdog_pool;
+	//std::array<Hulmet, pool_size_small> hulmet_pool;
 };
 
 } // namespace critter

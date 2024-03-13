@@ -3,7 +3,7 @@
 #include "../../utils/Random.hpp"
 
 namespace critter {
-
+Critter::Critter(automa::ServiceProvider& svc) {}
 void Critter::sprite_flip() {
 	if (flags.test(Flags::flip)) {
 		sprite.scale(-1.0f, 1.0f);

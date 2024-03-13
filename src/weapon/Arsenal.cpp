@@ -4,8 +4,8 @@
 
 namespace arms {
 
-void Arsenal::init() {
-	for (int i = 0; i < max_weapons; ++i) { armory.at(i) = Weapon(i); }
+Arsenal::Arsenal(automa::ServiceProvider& svc) {
+	for (int i = 0; i < max_weapons; ++i) { armory.at(i) = Weapon(svc, i); }
 }
 
 void Arsenal::push_to_loadout(int id) { loadout.push_back(armory.at(id)); }
@@ -26,7 +26,7 @@ Weapon& Arsenal::get_current_weapon() {
 	if (current_weapon < loadout.size()) {
 		return loadout.at(current_weapon);
 	} else {
-		return bryns_gun;
+		return default_gun;
 	}
 }
 

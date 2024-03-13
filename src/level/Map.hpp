@@ -70,8 +70,11 @@ class Map {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
+	Map() = default;
+	Map(automa::ServiceProvider& svc);
+
 	// methods
-	void load(std::string const& path);
+	void load(automa::ServiceProvider& svc, std::string const& path);
 	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
 	void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
@@ -109,7 +112,7 @@ class Map {
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition{255};
 
-	critter::Bestiary bestiary{};
+	critter::Bestiary bestiary;
 
 	lookup::STYLE style{}; // which tileset to render
 
