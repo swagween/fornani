@@ -8,6 +8,10 @@ namespace automa {
 struct ServiceProvider;
 }
 
+namespace player {
+class Player;
+}
+
 namespace item {
 
 class Loot {
@@ -19,11 +23,9 @@ class Loot {
 	Loot() = default;
 	Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos);
 
-	void update();
+	void update(world::Map& map, player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2<float> campos);
 	void set_position(sf::Vector2<float> pos);
-
-	std::vector<Drop>& get_drops();
 
   private:
 	sf::Vector2<float> position{};

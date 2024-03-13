@@ -2,45 +2,23 @@
 #include "Collider.hpp"
 #include "../graphics/FLColor.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../level/Map.hpp"
 
 namespace shape {
 
 Collider::Collider() {
 
-	physics = components::PhysicsComponent({0.9, 0.9}, 1);
-
 	dimensions = sf::Vector2<float>{default_dim, default_dim};
-
-	bounding_box.dimensions = dimensions;
-	predictive_vertical.dimensions = dimensions;
-	predictive_horizontal.dimensions = dimensions;
-	predictive_combined.dimensions = dimensions;
-	vicinity.dimensions.x = dimensions.x + 2 * vicinity_pad;
-	vicinity.dimensions.y = dimensions.y + 2 * vicinity_pad;
 	jumpbox.dimensions = sf::Vector2<float>(dimensions.x, default_jumpbox_height);
 	hurtbox.dimensions = sf::Vector2<float>(dimensions.x / 2, dimensions.y / 2);
+	sync_components();
 }
 
 Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimensions(dim) {
 
-	physics = components::PhysicsComponent({0.9, 0.9}, 1);
-
 	bounding_box.dimensions = dim;
-	predictive_vertical.dimensions = dim;
-	predictive_horizontal.dimensions = dim;
-	predictive_combined.dimensions = dim;
-	vicinity.dimensions.x = dim.x + 2 * vicinity_pad;
-	vicinity.dimensions.y = dim.y + 2 * vicinity_pad;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
 	hurtbox.dimensions = sf::Vector2<float>(dim.x / 2, dim.y / 2);
-
-	bounding_box.position = start_pos;
-	predictive_vertical.position = start_pos;
-	predictive_horizontal.position = start_pos;
-	predictive_combined.position = start_pos;
-	jumpbox.position = sf::Vector2<float>(start_pos.x, start_pos.y + dim.y);
-
-	hurtbox.position = sf::Vector2<float>(start_pos.x + (dim.x / 2) - (hurtbox.dimensions.x / 2), start_pos.y + (dim.y / 2) - (hurtbox.dimensions.y / 2));
 }
 
 void Collider::sync_components() {
@@ -161,6 +139,25 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 	sync_components();
 }
 
+void Collider::detect_map_collision(world::Map& map) {
+
+	for (auto& index : map.collidable_indeces) {
+		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
+		cell.collision_check = false;
+		if (!map.nearby(cell.bounding_box, bounding_box)) {
+			continue;
+		} else {
+			// check vicinity so we can escape early
+			if (!vicinity.overlaps(cell.bounding_box)) {
+				continue;
+			} else {
+				cell.collision_check = true;
+				if (cell.value > 0) { handle_map_collision(cell.bounding_box, cell.type); }
+			}
+		}
+	}
+}
+
 void Collider::correct_x(sf::Vector2<float> mtv) {
 	auto xdist = predictive_horizontal.position.x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
@@ -246,7 +243,8 @@ void Collider::handle_collider_collision(Shape const& collider) {
 }
 
 void Collider::update() {
-	// if (!flags.test(State::is_colliding_with_level)) { physics.mtv = {0.0f, 0.0f}; }
+	physics.update();
+	sync_components();
 	flags.reset(State::just_collided);
 	physics.gravity = flags.test(State::grounded) ? 0.0f : stats.GRAV;
 	flags.test(State::grounded) ? physics.flags.set(components::State::grounded) : physics.flags.reset(components::State::grounded);
@@ -260,7 +258,6 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setFillColor(sf::Color{200, 150, 255, 20});
 	box.setOutlineColor(sf::Color{255, 255, 255, 255});
 	box.setOutlineThickness(0);
-	// flags.test(State::is_colliding_with_level) ? box.setFillColor(sf::Color{90, 100, 20, 60}) : box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
 
 	// draw predictive vertical

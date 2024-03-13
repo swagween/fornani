@@ -7,7 +7,8 @@ namespace item {
 
 Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability) {
 
-	collider.bounding_box.dimensions = drop_dimensions;
+	collider = shape::Collider(drop_dimensions);
+	collider.sync_components();
 
 	sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
 	sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();
@@ -16,12 +17,19 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 
 	parameters.type = svc.data.drop[key]["type"].as<int>() == 0 ? DropType::heart : DropType::orb;
 
+	collider.physics.set_global_friction(svc.data.drop[key]["friction"].as<float>());
+	collider.stats.GRAV = svc.data.drop[key]["gravity"].as<float>();
+
 	num_sprites = svc.data.drop[key]["animation"]["num_sprites"].as<int>();
 	animation.params.duration = svc.data.drop[key]["animation"]["duration"].as<int>();
 	animation.params.framerate = svc.data.drop[key]["animation"]["framerate"].as<int>();
 	animation.start();
 	animation.refresh();
 
+	//randomly seed the animation start frame so drops in the same loot animate out of sync
+	animation.current_frame = svc::randomLocator.get().random_range(0, animation.params.duration - 1);
+
+	lifespan.start(2000);
 	seed(probability);
 	set_value();
 	set_texture(svc);
@@ -29,13 +37,17 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 
 void Drop::seed(float probability) {
 
-	float rarity = svc::randomLocator.get().random_range_float(0.0f, 1.0f);
-	if (probability * priceless_constant < rarity) {
+	float random_sample = svc::randomLocator.get().random_range_float(0.0f, 1.0f);
+
+	if (random_sample < probability * priceless_constant) {
 		rarity = priceless;
-	} else if (probability * rare_constant < rarity) {
+		std::cout << "priceless\n";
+	} else if (random_sample < probability * rare_constant) {
 		rarity = rare;
-	} else if (probability * uncommon_constant < rarity) {
+		std::cout << "rare\n";
+	} else if (random_sample < probability * uncommon_constant) {
 		rarity = uncommon;
+		std::cout << "uncommon\n";
 	} else {
 		rarity = common;
 	}
@@ -70,36 +82,54 @@ void Drop::set_texture(automa::ServiceProvider& svc) {
 	}
 }
 
-void Drop::update() {
+void Drop::update(world::Map& map) {
+
 	collider.update();
+	collider.detect_map_collision(map);
+	collider.reset();
+	collider.reset_ground_flags();
+	collider.physics.acceleration = {};
+
+	lifespan.update();
 	animation.update();
+
 	sprite_offset = drop_dimensions - sprite_dimensions;
 
-	int x{};
-	int y{};
 	if (parameters.type == DropType::heart) {
 		auto frame = animation.get_frame();
-		if (rarity == priceless || rarity == rare) { y = 1.f; }
-		auto rect = sf::IntRect({(int)(x * sprite_dimensions.x), (int)(y * sprite_dimensions.y)}, static_cast<sf::Vector2<int>>(sprite_dimensions));
+		auto y = rarity == priceless || rarity == rare ? 1.f : 0.f;
+		auto rect = sf::IntRect({(int)(frame * sprite_dimensions.x), (int)(y * sprite_dimensions.y)}, static_cast<sf::Vector2<int>>(sprite_dimensions));
 		sprite.setTextureRect(rect);
 	}
 	if (parameters.type == DropType::orb) {
 		auto frame = animation.get_frame();
-		y = rarity == priceless ? 3.f : (rarity == rare ? 2.f : (rarity == uncommon ? 1.f : 0.f));
-		auto rect = sf::IntRect({(int)(x * sprite_dimensions.x), (int)(y * sprite_dimensions.y)}, static_cast<sf::Vector2<int>>(sprite_dimensions));
+		auto y = rarity == priceless ? 3.f : (rarity == rare ? 2.f : (rarity == uncommon ? 1.f : 0.f));
+		auto rect = sf::IntRect({(int)(frame
+			* sprite_dimensions.x), (int)(y * sprite_dimensions.y)}, static_cast<sf::Vector2<int>>(sprite_dimensions));
 		sprite.setTextureRect(rect);
 	}
-	//std::cout << collider.physics.position.y << "\n";
 }
 
 void Drop::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 
-	sprite.setPosition(collider.physics.position - sprite_offset - campos);
-	win.draw(sprite);
+	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		collider.render(win, campos);
+	} else {
+		sprite.setPosition(collider.physics.position + sprite_offset - campos);
+		win.draw(sprite);
+	}
 }
 
 void Drop::set_position(sf::Vector2<float> pos) { collider.physics.position = pos; }
 
+void Drop::destroy() { lifespan.cancel(); }
+
 shape::Collider& Drop::get_collider() { return collider; }
+
+DropType Drop::get_type() const { return parameters.type; }
+
+int Drop::get_value() const { return value; }
+
+bool Drop::expired() { return lifespan.is_complete(); }
 
 } // namespace item

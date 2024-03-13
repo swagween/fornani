@@ -3,6 +3,8 @@
     "sprite_dimensions": [ 26.0, 24.0 ],
     "spritesheet_dimensions": [ 12, 2 ],
     "type": 0,
+    "friction": 0.8,
+    "gravity": 0.7,
     "animation": {
       "num_sprites": 2,
       "duration": 12,
@@ -14,6 +16,8 @@
     "sprite_dimensions": [ 24.0, 24.0 ],
     "spritesheet_dimensions": [ 7, 4 ],
     "type": 1,
+    "friction": 0.98,
+    "gravity": 16.9,
     "animation": {
       "num_sprites": 4,
       "duration": 7,

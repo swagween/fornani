@@ -7,8 +7,6 @@
 
 namespace components {
 
-using Time = std::chrono::duration<float>;
-
 void PhysicsComponent::apply_force(sf::Vector2<float> force) { sf::operator+=(acceleration, force); }
 
 void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
@@ -58,7 +56,6 @@ void PhysicsComponent::integrate() {
 void PhysicsComponent::update() { update_euler(); }
 
 void PhysicsComponent::update_dampen() {
-	//acceleration /= svc::tickerLocator.get().tick_rate;
 	update_euler();
 	acceleration = {0.0f, 0.0f};
 }

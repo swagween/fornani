@@ -1,5 +1,6 @@
 
 #include "Player.hpp"
+#include "../item/Drop.hpp"
 #include "../../setup/LookupTables.hpp"
 #include "../../setup/ServiceLocator.hpp"
 #include "../../service/ServiceProvider.hpp"
@@ -83,8 +84,6 @@ void Player::update(gui::Console& console) {
 		if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
 	}
 
-	collider.physics.update_euler();
-	collider.sync_components();
 
 	// for parameter tweaking, remove later
 	collider.update();
@@ -385,6 +384,11 @@ void Player::kill() { flags.state.reset(State::alive); }
 void Player::start_over() {
 	player_stats.health = player_stats.max_health;
 	flags.state.set(State::alive);
+}
+
+void Player::give_drop(item::DropType type, int value) {
+	if (type == item::DropType::heart) { player_stats.health += value; }
+	if (type == item::DropType::orb) { player_stats.orbs += value; }
 }
 
 void Player::reset_flags() { flags = {}; }
