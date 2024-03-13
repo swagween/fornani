@@ -26,13 +26,16 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	animation.start();
 	animation.refresh();
 
-	//randomly seed the animation start frame so drops in the same loot animate out of sync
+	// randomly seed the animation start frame so drops in the same loot animate out of sync
 	animation.current_frame = svc::randomLocator.get().random_range(0, animation.params.duration - 1);
 
-	lifespan.start(2000);
+	int rand_cooldown_offset = svc::randomLocator.get().random_range(0, 50);
+	lifespan.start(2500 + rand_cooldown_offset);
 	seed(probability);
 	set_value();
 	set_texture(svc);
+
+	sparkler.set_dimensions(collider.bounding_box.dimensions);
 }
 
 void Drop::seed(float probability) {
@@ -41,13 +44,10 @@ void Drop::seed(float probability) {
 
 	if (random_sample < probability * priceless_constant) {
 		rarity = priceless;
-		std::cout << "priceless\n";
 	} else if (random_sample < probability * rare_constant) {
 		rarity = rare;
-		std::cout << "rare\n";
 	} else if (random_sample < probability * uncommon_constant) {
 		rarity = uncommon;
-		std::cout << "uncommon\n";
 	} else {
 		rarity = common;
 	}
@@ -91,7 +91,16 @@ void Drop::update(world::Map& map) {
 	collider.physics.acceleration = {};
 
 	lifespan.update();
+	afterlife.update();
+	if (lifespan.is_complete() && !(afterlife.get_cooldown() > 0)) {
+		dead = true;
+		afterlife.start(100);
+	}
+
 	animation.update();
+
+	sparkler.update();
+	sparkler.set_position(collider.bounding_box.position);
 
 	sprite_offset = drop_dimensions - sprite_dimensions;
 
@@ -104,8 +113,7 @@ void Drop::update(world::Map& map) {
 	if (parameters.type == DropType::orb) {
 		auto frame = animation.get_frame();
 		auto y = rarity == priceless ? 3.f : (rarity == rare ? 2.f : (rarity == uncommon ? 1.f : 0.f));
-		auto rect = sf::IntRect({(int)(frame
-			* sprite_dimensions.x), (int)(y * sprite_dimensions.y)}, static_cast<sf::Vector2<int>>(sprite_dimensions));
+		auto rect = sf::IntRect({(int)(frame * sprite_dimensions.x), (int)(y * sprite_dimensions.y)}, static_cast<sf::Vector2<int>>(sprite_dimensions));
 		sprite.setTextureRect(rect);
 	}
 }
@@ -116,11 +124,17 @@ void Drop::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
 		collider.render(win, campos);
 	} else {
 		sprite.setPosition(collider.physics.position + sprite_offset - campos);
-		win.draw(sprite);
+		if (!dead && (lifespan.get_cooldown() > 500 || (lifespan.get_cooldown() / 20) % 2 == 0)) {
+			win.draw(sprite);
+			if (parameters.type == DropType::heart) { sparkler.render(win, campos); }
+		}
 	}
 }
 
-void Drop::set_position(sf::Vector2<float> pos) { collider.physics.position = pos; }
+void Drop::set_position(sf::Vector2<float> pos) {
+	collider.physics.position = pos;
+	sparkler.set_position(pos);
+}
 
 void Drop::destroy() { lifespan.cancel(); }
 
@@ -130,6 +144,8 @@ DropType Drop::get_type() const { return parameters.type; }
 
 int Drop::get_value() const { return value; }
 
-bool Drop::expired() { return lifespan.is_complete(); }
+bool Drop::expired() const { return afterlife.is_complete() && lifespan.is_complete(); }
+
+bool Drop::is_dead() const { return dead; }
 
 } // namespace item

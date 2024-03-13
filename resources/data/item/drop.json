@@ -21,7 +21,7 @@
     "animation": {
       "num_sprites": 4,
       "duration": 7,
-      "framerate": 10
+      "framerate": 12
     }
   }
 }

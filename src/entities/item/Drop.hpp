@@ -5,6 +5,8 @@
 #include "../../utils/Collider.hpp"
 #include "../behavior/Animation.hpp"
 #include "../../utils/Cooldown.hpp"
+#include "../../particle/Sparkler.hpp"
+#include "../../graphics/FLColor.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -37,7 +39,8 @@ class Drop {
 	void set_position(sf::Vector2<float> pos);
 	void destroy();
 
-	bool expired();
+	bool expired() const;
+	bool is_dead() const;
 
 	shape::Collider& get_collider();
 	DropType get_type() const;
@@ -59,10 +62,17 @@ class Drop {
 	int value{};
 
 	util::Cooldown lifespan{};
+	util::Cooldown afterlife{}; // so sparkles remain after destruction
+
+	vfx::Sparkler sparkler{drop_dimensions, flcolor::ui_white};
+
+	int cooldown_constant{2500};
 
 	float priceless_constant{0.001f};
 	float rare_constant{0.01f};
 	float uncommon_constant{0.1f};
+
+	bool dead{};
 };
 
 } // namespace item

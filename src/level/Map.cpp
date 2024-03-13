@@ -214,7 +214,6 @@ void Map::load(std::string const& path) {
 		for (auto& collider : critter->colliders) { colliders.push_back(&collider); }
 	}
 	colliders.push_back(&svc::playerLocator.get().collider);
-	// for (auto& a : svc::playerLocator.get().antennae) { colliders.push_back(&a.collider); }
 
 	transition.fade_in = true;
 	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, cam::screen_dimensions.x * 2, cam::screen_dimensions.y * 2));
@@ -337,9 +336,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		}
 	}
 
-	for (auto& loot : active_loot) {
-		loot.update(*this, svc::playerLocator.get());
-	}
+	for (auto& loot : active_loot) { loot.update(*this, svc::playerLocator.get()); }
 
 	for (auto& critter : critters) {
 

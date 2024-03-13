@@ -27,12 +27,12 @@ Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float prob
 void Loot::update(world::Map& map, player::Player& player) {
 	for (auto& drop : drops) {
 		drop.update(map);
-		if (drop.get_collider().bounding_box.overlaps(player.collider.bounding_box)) {
+		if (drop.get_collider().bounding_box.overlaps(player.collider.bounding_box) && !drop.is_dead()) {
 			player.give_drop(drop.get_type(), drop.get_value());
 			drop.destroy();
 		}
 	}
-	std::erase_if(drops, [](auto& d) { return d.expired(); });
+	std::erase_if(drops, [](auto const& d) { return d.expired(); });
 }
 
 void Loot::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
