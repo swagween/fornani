@@ -91,19 +91,8 @@ class Critter {
 	void sleep();
 	void awake();
 
-	// general critter methods, to be called dependent on critter type
-	//    void stop();
-	//    void reverse_direction();
 	void random_idle_action();
 	void random_walk(sf::Vector2<int> range);
-	//    void attack();
-	//    void defend();
-	//    void hop();
-	//    void leap();
-	//    void evade(sf::Vector2<float>& stimulus_pos);
-	//    void hover_sine();
-	//    void fly_sine();
-	//    void fly_line(bool vertical);
 
 	bool died();
 

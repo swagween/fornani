@@ -52,10 +52,11 @@ class Bestiary {
 
 	void push_critters(automa::ServiceProvider& svc, std::vector<std::pair<Critter, int>> order);
 
+	std::vector<std::unique_ptr<Critter>> critter_pool{};
+
   private:
 	Frdog frdog;
 	Hulmet hulmet;
-	std::vector<std::unique_ptr<Critter>> critter_pool{};
 	//std::array<Frdog, pool_size_small> frdog_pool;
 	//std::array<Hulmet, pool_size_small> hulmet_pool;
 };

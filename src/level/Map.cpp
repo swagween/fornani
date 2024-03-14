@@ -183,7 +183,9 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	// get critter data
 	// zero the pool_counter
 	critter::pool_counter.fill(0);
-	input.open(path + "/map_critters.txt");
+	bestiary.push_critters(svc, {{critter::frdog, 4}});
+	int i = 0;
+	input.open(path + "/map_bestiary.critter_pool.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
 
@@ -203,11 +205,11 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 
 			// push the critter
 			// which type of critter? and how deep into the pool are we?
-			bestiary.push_critters(svc, {{critter::frdog, 3}});
-			critters.push_back(*bestiary.fetch_critter_of_type(type, critter::pool_counter.at(id)));
-			critters.back()->load_data();
-			critters.back()->set_position({pos.x * asset::TILE_WIDTH, pos.y * asset::TILE_WIDTH});
-			for (auto& collider : critters.back()->colliders) { collider.physics.zero(); }
+			//bestiary.critter_pool.push_back(*bestiary.fetch_critter_of_type(type, critter::pool_counter.at(id)));
+			//bestiary.critter_pool.push_back(bestiary.critter_pool.at(i));
+			//bestiary.critter_pool.back()->load_data();
+			//bestiary.critter_pool.back()->set_position({pos.x * asset::TILE_WIDTH, pos.y * asset::TILE_WIDTH});
+			for (auto& collider : bestiary.critter_pool.back()->colliders) { collider.physics.zero(); }
 			critter::pool_counter.at(id)++;
 		}
 		input.close();
@@ -216,6 +218,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	for (auto& critter : critters) {
 		for (auto& collider : critter->colliders) { colliders.push_back(&collider); }
 	}
+
 	colliders.push_back(&svc::playerLocator.get().collider);
 
 	transition.fade_in = true;
