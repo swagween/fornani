@@ -8,7 +8,7 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc) : bestiary(svc) {}
+Map::Map(automa::ServiceProvider& svc) : bestiary(svc), enemy_catalog(svc) {}
 
 void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 
@@ -184,6 +184,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	// zero the pool_counter
 	critter::pool_counter.fill(0);
 	bestiary.push_critters(svc, {{critter::frdog, 4}});
+	enemy_catalog.push_critters(svc, {{enemy_catalog.frdog, 4}});
 	int i = 0;
 	input.open(path + "/map_bestiary.critter_pool.txt");
 	if (input.is_open()) {
@@ -238,6 +239,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	for (auto& critter : critters) {
 		for (auto& collider : critter->colliders) { collider.reset(); }
 	}
+
+	for (auto& enemy : enemy_catalog.enemy_pool) { enemy->unique_update(svc, *this); }
 
 	manage_projectiles();
 
@@ -419,7 +422,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	if (svc::tickerLocator.get().every_x_frames(1)) { transition.update(); }
 }
 
-void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
+void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
 	for (auto& proj : active_projectiles) {
 		proj.render(win, cam);
 		if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) { proj.hook.spring.render(win, cam); }
@@ -435,6 +438,8 @@ void Map::render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Ve
 	for (auto& critter : critters) {
 		if (svc::cameraLocator.get().within_frame(critter->sprite_position.x, critter->sprite_position.y)) { critter->render(win, cam); }
 	}
+
+	for (auto& enemy : enemy_catalog.enemy_pool) { enemy->render(svc, win, cam); }
 
 	// loot
 	for (auto& loot : active_loot) { loot.render(win, cam); }

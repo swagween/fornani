@@ -5,14 +5,16 @@
       "variant": "beast"
     },
     "physical": {
-      "dimensions": [],
+      "dimensions": [32, 32],
       "sprite_dimensions": [72, 48],
       "spritesheet_dimensions":  [4, 5],
       "offset": [],
       "num_colliders": 2,
       "num_hurtboxes": 1,
       "alert_range":  [200.0, 300.0],
-      "hostile_range":  [100.0, 200.0]
+      "hostile_range":  [100.0, 200.0],
+      "friction": 0.99,
+      "gravity":  0.5
     },
     "attributes": {
       "base_hp": 20,
@@ -21,6 +23,8 @@
       "loot_multiplier": 1.0
     },
     "animation": {
+      "duration": 2,
+      "framerate":  20
     },
     "general" : {
       "mobile": true,

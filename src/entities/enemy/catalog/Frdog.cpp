@@ -5,8 +5,8 @@ namespace enemy {
 
 Frdog::Frdog(automa::ServiceProvider& svc) : Enemy(svc, "frdog") {}
 
-void Frdog::unique_update(automa::ServiceProvider& svc) {
-	update(svc);
+void Frdog::unique_update(automa::ServiceProvider& svc, world::Map& map) {
+	update(svc, map);
 	state_function = state_function();
 }
 

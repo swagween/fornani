@@ -10,7 +10,7 @@ class Frdog : public Enemy {
   public:
 	Frdog() = default;
 	Frdog(automa::ServiceProvider& svc);
-	void unique_update(automa::ServiceProvider& svc) override;
+	void unique_update(automa::ServiceProvider& svc, world::Map& map) override;
 
 	fsm::StateFunction state_function = std::bind(&Frdog::update_idle, this);
 	fsm::StateFunction update_idle();

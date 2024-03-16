@@ -21,10 +21,11 @@ struct Attributes {
 
 class Enemy : public entity::Entity {
   public:
+	Enemy() = default;
 	Enemy(automa::ServiceProvider& svc, std::string_view label);
-	void update(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	virtual void unique_update(automa::ServiceProvider& svc){};
+	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map){};
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_collider() const -> shape::Collider { return collider; }
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "../entities/critter/Bestiary.hpp"
+#include "../entities/enemy/EnemyCatalog.hpp"
 #include "../entities/world/Animator.hpp"
 #include "../entities/world/Inspectable.hpp"
 #include "../entities/world/Portal.hpp"
@@ -76,7 +77,7 @@ class Map {
 	// methods
 	void load(automa::ServiceProvider& svc, std::string const& path);
 	void update(automa::ServiceProvider& svc, gui::Console& console);
-	void render(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
 	void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
 	void render_console(gui::Console& console, sf::RenderWindow& win);
 	Tile& tile_at(const uint8_t i, const uint8_t j);
@@ -113,6 +114,7 @@ class Map {
 	flfx::Transition transition{255};
 
 	critter::Bestiary bestiary;
+	enemy::EnemyCatalog enemy_catalog;
 
 	lookup::STYLE style{}; // which tileset to render
 

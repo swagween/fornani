@@ -118,7 +118,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
 	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
-	map.render(win, tileset_sprites, svc::cameraLocator.get().physics.position);
+	map.render(svc, win, tileset_sprites, svc::cameraLocator.get().physics.position);
 
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
 	map.render_console(console, win);

@@ -8,7 +8,7 @@
 #include <vector>
 #include "../../components/BehaviorComponent.hpp"
 #include "Critter.hpp"
-#include "critters/Frdog.hpp"
+#include "../enemy/catalog/Frdog.hpp"
 #include "critters/Hulmet.hpp"
 
 namespace critter {
@@ -55,7 +55,7 @@ class Bestiary {
 	std::vector<std::unique_ptr<Critter>> critter_pool{};
 
   private:
-	Frdog frdog;
+	//enemy::Frdog frdog;
 	Hulmet hulmet;
 	//std::array<Frdog, pool_size_small> frdog_pool;
 	//std::array<Hulmet, pool_size_small> hulmet_pool;
