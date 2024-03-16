@@ -35,6 +35,8 @@ class AssetManager {
 
 		t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 		t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
+		texture_lookup.insert({"frdog", t_frdog});
+		texture_lookup.insert({"hulmet", t_hulmet});
 
 		t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 		t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -335,6 +337,8 @@ class AssetManager {
 	int music_vol{24};
 
 	data::ResourceFinder finder{};
+
+	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
 };
 
 } // namespace asset

@@ -9,32 +9,45 @@
 
 namespace enemy {
 
-	enum class GeneralFlags {mobile, gravity};
+enum class GeneralFlags { mobile, gravity };
+enum class StateFlags { alive, alert, hostile };
+enum class Variant { beast, soldier, elemental, worker };
+struct Attributes {
+	float base_hp{};
+	float base_damage{};
+	float speed{};
+	float loot_multiplier{};
+};
 
 class Enemy : public entity::Entity {
   public:
 	Enemy(automa::ServiceProvider& svc, std::string_view label);
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	virtual void unique_update(automa::ServiceProvider& svc){};
+	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
+	[[nodiscard]] auto get_collider() const -> shape::Collider { return collider; }
 
-	virtual void unique_update(){};
-
-  private:
+  protected:
+	std::string_view label{};
 	util::BitFlags<GeneralFlags> general_flags{};
 	shape::Collider collider{};
-	std::string_view label{};
+	anim::Animation animation{};
+	std::vector<anim::Parameters> animation_parameters{};
 
 	struct {
+		int id{};
+		std::string_view variant{};
 	} metadata{};
 
 	struct {
+		std::vector<shape::Shape> hurtbox_atlas{};
+		std::vector<shape::Shape> hurtboxes{};
+		sf::Vector2<float> alert_range{};
+		sf::Vector2<float> hostile_range{};
 	} physical{};
 
-	struct {
-	} attributes{};
-
-	struct {
-	} animation{};
+	Attributes attributes{};
 };
 
 } // namespace enemy

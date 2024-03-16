@@ -5,7 +5,10 @@ namespace enemy {
 
 Frdog::Frdog(automa::ServiceProvider& svc) : Enemy(svc, "frdog") {}
 
-void Frdog::unique_update() { state_function = state_function(); }
+void Frdog::unique_update(automa::ServiceProvider& svc) {
+	update(svc);
+	state_function = state_function();
+}
 
 fsm::StateFunction Frdog::update_idle() { return BIND(update_idle); };
 fsm::StateFunction Frdog::update_sleep() { return BIND(update_idle); };
