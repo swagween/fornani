@@ -5,6 +5,13 @@ namespace enemy {
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Entity(svc), label(label) {
 
 	auto const& in_data = svc.data.enemy[label];
+	auto const& in_metadata = in_data["metadata"];
+	auto const& in_physical = in_data["physical"];
+	auto const& in_attributes = in_data["attributes"];
+	auto const& in_animation = in_data["animation"];
+
+
+
 
 	drawbox.setOutlineColor(svc.styles.colors.ui_white);
 	drawbox.setOutlineThickness(-1);

@@ -2,7 +2,6 @@
   "frdog": {
     "metadata": {
       "id": 0,
-      "label": "frdog",
       "variant": "beast"
     },
     "physical": {
@@ -20,6 +19,7 @@
 
     }
   },
+
   "hulmet": {
 
   }
