@@ -1,0 +1,26 @@
+{
+  "frdog": {
+    "metadata": {
+      "id": 0,
+      "label": "frdog",
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [],
+      "sprite_dimensions": [],
+      "spritesheet_dimensions":  [],
+      "offset": [],
+      "num_colliders": 2,
+      "num_hurtboxes": 1
+    },
+    "attributes": {
+
+    },
+    "animation": {
+
+    }
+  },
+  "hulmet": {
+
+  }
+}

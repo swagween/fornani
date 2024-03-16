@@ -22,6 +22,11 @@ void DataManager::load_data() {
 	std::cout << " success!\n";
 
 	// enemies
+	enemy = dj::Json::from_file((finder.resource_path + "/data/enemy/enemy_params.json").c_str());
+	std::cout << "loading enemy parameters ...";
+	assert(!enemy.is_null());
+	std::cout << " success!\n";
+
 	frdog = dj::Json::from_file((finder.resource_path + "/data/enemy/frdog.json").c_str());
 	std::cout << "loading frdog ...";
 	assert(!frdog.is_null());

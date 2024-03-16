@@ -27,6 +27,7 @@ class DataManager {
 	dj::Json drop{};
 
 	//enemy
+	dj::Json enemy{};
 	dj::Json frdog{};
 	dj::Json hulmet{};
 
