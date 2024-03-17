@@ -6,7 +6,8 @@ namespace enemy {
 Frdog::Frdog(automa::ServiceProvider& svc) : Enemy(svc, "frdog") {}
 
 void Frdog::unique_update(automa::ServiceProvider& svc, world::Map& map) {
-	update(svc, map);
+	flags.state.set(StateFlags::vulnerable); // frdog is always vulnerable
+	Enemy::update(svc, map);
 	state_function = state_function();
 }
 

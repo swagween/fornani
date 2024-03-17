@@ -5,37 +5,52 @@
 #include "../../utils/BitFlags.hpp"
 #include "../behavior/Animation.hpp"
 #include "../../utils/StateFunction.hpp"
+#include "../packages/Health.hpp"
 #include <string_view>
 
 namespace enemy {
 
 enum class GeneralFlags { mobile, gravity };
-enum class StateFlags { alive, alert, hostile };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt };
 enum class Variant { beast, soldier, elemental, worker };
 struct Attributes {
 	float base_hp{};
 	float base_damage{};
 	float speed{};
 	float loot_multiplier{};
+	sf::Vector2<int> drop_range{};
+};
+
+struct Flags {
+	util::BitFlags<GeneralFlags> general{};
+	util::BitFlags<StateFlags> state{};
 };
 
 class Enemy : public entity::Entity {
   public:
 	Enemy() = default;
 	Enemy(automa::ServiceProvider& svc, std::string_view label);
-	void update(automa::ServiceProvider& svc, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void update(automa::ServiceProvider& svc, world::Map& map) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map){};
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
+	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_collider() const -> shape::Collider { return collider; }
-	void set_position(sf::Vector2<float> pos) { collider.physics.position = pos; }
+	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
+	void set_position(sf::Vector2<float> pos) {
+		collider.physics.position = pos;
+		collider.sync_components();
+	}
+
+	entity::Health health{};
+	anim::Animation animation{};
 
   protected:
 	std::string_view label{};
-	util::BitFlags<GeneralFlags> general_flags{};
 	shape::Collider collider{};
-	anim::Animation animation{};
 	std::vector<anim::Parameters> animation_parameters{};
+	Flags flags{};
+	Attributes attributes{};
 
 	struct {
 		int id{};
@@ -48,8 +63,6 @@ class Enemy : public entity::Entity {
 		sf::Vector2<float> alert_range{};
 		sf::Vector2<float> hostile_range{};
 	} physical{};
-
-	Attributes attributes{};
 };
 
 } // namespace enemy

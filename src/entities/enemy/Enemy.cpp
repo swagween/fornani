@@ -2,6 +2,7 @@
 #include "../../service/ServiceProvider.hpp"
 
 namespace enemy {
+
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Entity(svc), label(label) {
 	auto const& in_data = svc.data.enemy[label];
 	auto const& in_metadata = in_data["metadata"];
@@ -37,7 +38,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	attributes.base_hp = in_attributes["base_hp"].as<float>();
 	attributes.loot_multiplier = in_attributes["loot_multiplier"].as<float>();
 	attributes.speed = in_attributes["speed"].as<float>();
-
+	attributes.drop_range.x = in_attributes["drop_range"][0].as<int>();
+	attributes.drop_range.y = in_attributes["drop_range"][1].as<int>();
 	// TODO: load in all the animation data and map them to a set of parameters
 	// let's add this function to services
 	anim::Parameters params{};
@@ -45,9 +47,11 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	params.framerate = in_animation["framerate"].as<int>();
 	animation.set_params(params);
 
-	if (in_general["mobile"].as_bool()) { general_flags.set(GeneralFlags::mobile); }
-	if (in_general["gravity"].as_bool()) { general_flags.set(GeneralFlags::gravity); }
-	if (!general_flags.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
+	health.set_max(attributes.base_hp);
+
+	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
+	if (in_general["gravity"].as_bool()) { flags.general.set(GeneralFlags::gravity); }
+	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 
 	sprite.setTexture(svc.assets.texture_lookup.at(label));
 	drawbox.setSize({(float)sprite_dimensions.x, (float)sprite_dimensions.y});
@@ -63,19 +67,25 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
 	animation.update();
+	health.update(svc, map);
 	// get UV coords
-	int u = (int)(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-	int v = (int)(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
-	sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
-	sprite.setOrigin(sprite_dimensions.x / 2, dimensions.y / 2);
+	if (spritesheet_dimensions.y != 0) {
+		int u = (int)(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+		int v = (int)(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+		sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
+	}
+	sprite.setOrigin((float)sprite_dimensions.x / 2.f, (float)dimensions.y / 2.f);
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	sprite.setPosition(collider.physics.position + sprite_offset - cam);
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+		health.drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 		win.draw(drawbox);
 		collider.render(win, cam);
+		health.render(svc, win, cam);
 	} else {
 		win.draw(sprite);
 	}

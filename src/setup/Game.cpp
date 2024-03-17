@@ -614,7 +614,7 @@ void Game::debug_window() {
 					}
 					if (ImGui::Button("Grub Dojo")) {
 						svc::assetLocator.get().click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>());
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, 0));
 						game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path + "/level/GRUB_DOJO_01");
 						svc::playerLocator.get().set_position({3 * 32, 8 * 32});
 					}

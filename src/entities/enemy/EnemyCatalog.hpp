@@ -8,9 +8,12 @@ class EnemyCatalog {
   public:
 	EnemyCatalog() = default;
 	EnemyCatalog(automa::ServiceProvider& svc);
-	void push_critters(automa::ServiceProvider& svc, std::vector<std::pair<Enemy, int>> order);
+	void update();
+	void push_enemy(automa::ServiceProvider& svc, int id);
+	Enemy& get_enemy(int id);
 
-	std::vector<std::unique_ptr<Enemy>> enemy_pool{};
+	std::vector<int> enemy_pool{};
+	std::unordered_map<int, Enemy> enemy_table{};
 
 	Frdog frdog;
 };

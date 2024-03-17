@@ -104,6 +104,7 @@ class Map {
 	std::vector<arms::Projectile> active_projectiles{};
 	std::vector<vfx::Emitter> active_emitters{};
 	std::vector<std::unique_ptr<critter::Critter>> critters{};
+	std::vector<std::unique_ptr<enemy::Enemy>> enemies{};
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Animator> animators{};
