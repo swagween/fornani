@@ -13,8 +13,8 @@
       "num_hurtboxes": 1,
       "alert_range":  [200.0, 300.0],
       "hostile_range":  [100.0, 200.0],
-      "friction": 0.99,
-      "gravity":  0.5
+      "friction": 0.98,
+      "gravity":  6.5
     },
     "attributes": {
       "base_hp": 20,

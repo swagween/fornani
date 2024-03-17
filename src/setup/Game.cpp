@@ -116,6 +116,7 @@ void Game::run() { // load all assets
 						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
 						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
 					}
+					services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 				}
 				break;
 			case sf::Event::KeyReleased: break;

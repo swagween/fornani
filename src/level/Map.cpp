@@ -186,7 +186,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	bestiary.push_critters(svc, {{critter::frdog, 4}});
 	enemy_catalog.push_critters(svc, {{enemy_catalog.frdog, 4}});
 	int i = 0;
-	input.open(path + "/map_bestiary.critter_pool.txt");
+	input.open(path + "/map_critters.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
 
@@ -209,13 +209,17 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 			//bestiary.critter_pool.push_back(*bestiary.fetch_critter_of_type(type, critter::pool_counter.at(id)));
 			//bestiary.critter_pool.push_back(bestiary.critter_pool.at(i));
 			//bestiary.critter_pool.back()->load_data();
-			//bestiary.critter_pool.back()->set_position({pos.x * asset::TILE_WIDTH, pos.y * asset::TILE_WIDTH});
-			for (auto& collider : bestiary.critter_pool.back()->colliders) { collider.physics.zero(); }
-			critter::pool_counter.at(id)++;
+			if (i < 4) {
+				enemy_catalog.enemy_pool.at(i)->set_position({(float)(pos.x * asset::TILE_WIDTH), (float)(pos.y * asset::TILE_WIDTH)});
+				enemy_catalog.enemy_pool.at(i)->get_collider().physics.zero();
+				critter::pool_counter.at(id)++;
+			}
+			++i;
 		}
 		input.close();
 	}
 
+	std::cout << enemy_catalog.enemy_pool.size() << "\n";
 	for (auto& critter : critters) {
 		for (auto& collider : critter->colliders) { colliders.push_back(&collider); }
 	}
@@ -240,7 +244,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		for (auto& collider : critter->colliders) { collider.reset(); }
 	}
 
-	for (auto& enemy : enemy_catalog.enemy_pool) { enemy->unique_update(svc, *this); }
+	for (auto& enemy : enemy_catalog.enemy_pool) {
+		enemy->unique_update(svc, *this);
+		enemy->get_collider().reset();
+	}
 
 	manage_projectiles();
 

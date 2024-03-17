@@ -28,6 +28,7 @@ class Enemy : public entity::Entity {
 	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map){};
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_collider() const -> shape::Collider { return collider; }
+	void set_position(sf::Vector2<float> pos) { collider.physics.position = pos; }
 
   protected:
 	std::string_view label{};

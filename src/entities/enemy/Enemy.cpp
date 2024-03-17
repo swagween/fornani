@@ -50,6 +50,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	if (!general_flags.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 
 	sprite.setTexture(svc.assets.texture_lookup.at(label));
+	drawbox.setSize({(float)sprite_dimensions.x, (float)sprite_dimensions.y});
+	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(svc.styles.colors.ui_white);
 	drawbox.setOutlineThickness(-1);
 }
@@ -73,6 +75,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	sprite.setPosition(collider.physics.position + sprite_offset - cam);
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(drawbox);
+		collider.render(win, cam);
 	} else {
 		win.draw(sprite);
 	}

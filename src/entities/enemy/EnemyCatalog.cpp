@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "EnemyCatalog.hpp"
 #include "../enemy/catalog/Frdog.hpp"
 
@@ -10,7 +10,7 @@ void EnemyCatalog::push_critters(automa::ServiceProvider& svc, std::vector<std::
 	for (auto& crit : order) {
 		for (auto i{crit.second}; i > 0; --i) {
 			enemy_pool.push_back(std::make_unique<Frdog>(svc));
-			enemy_pool.back().get()->get_collider().physics.position = {300, 300};
+			std::cout << "pushed\n";
 		}
 	}
 }
