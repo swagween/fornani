@@ -1,25 +1,45 @@
 
 #include "Animator.hpp"
-#include "../../setup/ServiceLocator.hpp"
+#include "../../service/Serviceprovider.hpp"
+#include "../player/Player.hpp"
 
 namespace entity {
-void Animator::update() {
-	animation.set_params(params);
+
+Animator::Animator(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos) : scaled_dimensions(dim), scaled_position(pos) {
+	animation.set_params(still);
+	dimensions = static_cast<Vec>(dim * A_UNIT_SIZE);
+	position = static_cast<Vec>(pos * A_UNIT_SIZE);
+	bounding_box = shape::Shape(dimensions);
+	bounding_box.set_position(position);
 	large = scaled_dimensions.x == 2;
 	if (large) {
-		sprite.setTexture(svc::assetLocator.get().t_large_animators);
+		sprite.setTexture(svc.assets.t_large_animators);
 		sprite_dimensions = {64, 64};
 	} else {
-		sprite.setTexture(svc::assetLocator.get().t_small_animators);
+		sprite.setTexture(svc.assets.t_small_animators);
 		sprite_dimensions = {32, 32};
+	}
+}
+void Animator::update(player::Player& player) {
+
+	animation.update();
+	if (bounding_box.overlaps(player.collider.bounding_box) && player.controller.moving()) {
+		if (!activated) {
+			animation.set_params(moving);
+			animation.start();
+			activated = true;
+		}
+	} else {
+		if (animation.complete() && animation.keyframe_over()) {
+			animation.set_params(still);
+			activated = false;
+		}
 	}
 	position = static_cast<Vec>(scaled_position * A_UNIT_SIZE);
 	Vec adjusted_pos = Vec(scaled_position.x * entity::A_UNIT_SIZE + entity::large_animator_offset.x, scaled_position.y * entity::A_UNIT_SIZE + entity::large_animator_offset.y);
 	dimensions = static_cast<Vec>(scaled_dimensions * A_UNIT_SIZE);
 	bounding_box.set_position(adjusted_pos);
 	int converted_id = large ? id - 100 : id - 200;
-
-	if (activated) { animation.update(); }
 	// get UV coords
 	int u = converted_id * scaled_dimensions.x * A_UNIT_SIZE;
 	int v = get_frame() * dimensions.y;

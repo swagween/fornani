@@ -6,25 +6,28 @@
 #include "../../utils/Shape.hpp"
 #include "../../utils/StateFunction.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
+namespace player {
+class Player;
+}
+
 namespace entity {
 
-const uint32_t A_UNIT_SIZE = 32;
-const sf::Vector2<uint32_t> large_animator_offset{16, 16};
+const uint16_t A_UNIT_SIZE = 32;
+const sf::Vector2<uint16_t> large_animator_offset{16, 16};
 
 class Animator {
 
   public:
 	using Vec = sf::Vector2<float>;
-	using Vecu16 = sf::Vector2<uint32_t>;
+	using Vecu16 = sf::Vector2<uint16_t>;
 
 	Animator() = default;
-	Animator(Vecu16 dim, Vecu16 pos) : scaled_dimensions(dim), scaled_position(pos) {
-		dimensions = static_cast<Vec>(dim * A_UNIT_SIZE);
-		position = static_cast<Vec>(pos * A_UNIT_SIZE);
-		bounding_box = shape::Shape(dimensions);
-		bounding_box.set_position(position);
-	}
-	void update();
+	Animator(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos);
+	void update(player::Player& player);
 	void render(sf::RenderWindow& win, Vec campos);
 	int get_frame() const;
 
@@ -48,7 +51,8 @@ class Animator {
 	sf::Vector2<int> spritesheet_dimensions{1024, 320};
 
 	private:
-	anim::Parameters params{0, 5, 28, 0};
+	anim::Parameters moving{1, 4, 28, 0};
+	anim::Parameters still{0, 1, 1, -1};
 };
 
 } // namespace entity

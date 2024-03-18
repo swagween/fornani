@@ -137,29 +137,39 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_animators.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
-			entity::Animator p{};
-			input >> p.scaled_dimensions.x;
+			sf::Vector2<uint16_t> scaled_dim{};
+			sf::Vector2<uint16_t> scaled_pos{};
+			int id_val{};
+			bool automatic_val{};
+			bool foreground_val{};
+			input >> scaled_dim.x;
 			input.ignore();
-			input >> p.scaled_dimensions.y;
-			input.ignore();
-			input >> value;
-			p.id = value;
-			input.ignore();
-			input >> value;
-			p.automatic = (bool)value;
+			input >> scaled_dim.y;
 			input.ignore();
 			input >> value;
-			p.foreground = (bool)value;
+			id_val = value;
 			input.ignore();
-			input >> p.scaled_position.x;
+			input >> value;
+			automatic_val = (bool)value;
 			input.ignore();
-			input >> p.scaled_position.y;
+			input >> value;
+			foreground_val = (bool)value;
 			input.ignore();
-			if (p.scaled_dimensions.x != 0) { // only push if one was read, otherwise we reached the end of the file
-				uint32_t large_dim = 16;
-				p.dimensions = static_cast<Vec>(p.scaled_dimensions * large_dim);
-				p.bounding_box = shape::Shape(p.dimensions);
-				animators.push_back(p);
+			input >> scaled_pos.x;
+			input.ignore();
+			input >> scaled_pos.y;
+			input.ignore();
+
+			auto a = entity::Animator(svc, scaled_dim, scaled_pos);
+			a.id = id_val;
+			a.automatic = automatic_val;
+			a.foreground = foreground_val;
+
+			if (a.scaled_dimensions.x != 0) { // only push if one was read, otherwise we reached the end of the file
+				uint16_t large_dim = 16;
+				a.dimensions = static_cast<Vec>(a.scaled_dimensions * large_dim);
+				a.bounding_box = shape::Shape(a.dimensions);
+				animators.push_back(a);
 			}
 		}
 		input.close();
@@ -336,15 +346,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		}
 	}
 
-	for (auto& animator : animators) {
-		if (animator.bounding_box.overlaps(svc::playerLocator.get().collider.bounding_box) && svc::playerLocator.get().controller.moving()) {
-			animator.animation.start();
-			animator.activated = true;
-		} else {
-			animator.activated = false;
-		}
-		animator.update();
-	}
+	for (auto& animator : animators) { animator.update(svc::playerLocator.get()); }
 
 	if (save_point.id != -1) { save_point.update(svc, console); }
 
