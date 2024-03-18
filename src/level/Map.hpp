@@ -83,7 +83,6 @@ class Map {
 	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
 	void spawn_projectile_at(sf::Vector2<float> pos);
-	void spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter);
 	void manage_projectiles();
 	void generate_collidable_layer();
 	bool check_cell_collision(shape::Collider collider);
@@ -103,7 +102,6 @@ class Map {
 	std::vector<shape::Collider*> colliders{};
 	std::vector<arms::Projectile> active_projectiles{};
 	std::vector<vfx::Emitter> active_emitters{};
-	std::vector<std::unique_ptr<critter::Critter>> critters{};
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Animator> animators{};

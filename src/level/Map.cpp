@@ -230,24 +230,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	manage_projectiles();
 
-	// someday, I will have a for(auto& entity : entities) loop and the player will be included in that
-	for (auto& collider : colliders) {
-		for (auto& index : collidable_indeces) {
-			auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
-			cell.collision_check = false;
-			if (!nearby(cell.bounding_box, collider->bounding_box)) {
-				continue;
-			} else {
-				// check vicinity so we can escape early
-				if (!collider->vicinity.overlaps(cell.bounding_box)) {
-					continue;
-				} else {
-					cell.collision_check = true;
-					if (cell.value > 0) { collider->handle_map_collision(cell.bounding_box, cell.type); }
-				}
-			}
-		}
-	}
+	svc::playerLocator.get().collider.detect_map_collision(*this);
 
 	// i need to refactor this...
 	for (auto& index : collidable_indeces) {
@@ -332,23 +315,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	for (auto& loot : active_loot) { loot.update(*this, svc::playerLocator.get()); }
 
-	for (auto& critter : critters) {
-
-		// handle collision
-		for (auto& collider : critter->colliders) {
-			svc::playerLocator.get().collider.handle_collider_collision(collider.bounding_box);
-			for (auto& other_critter : critters) {
-				if (!(other_critter == critter)) {
-					for (auto& other_collider : other_critter->colliders) { collider.handle_collider_collision(other_collider.bounding_box); }
-				}
-			}
-		}
-		if (!critter->colliders.empty()) {
-			critter->direction.lr = (svc::playerLocator.get().collider.physics.position.x < critter->colliders.at(0).physics.position.x) ? dir::LR::right : dir::LR::left;
-			if (critter->flags.test(critter::Flags::seeking)) { critter->direction.lr = critter->colliders.at(0).physics.direction.lr; }
-		}
-	}
-
 	for (auto& collider : colliders) { collider->reset_ground_flags(); }
 
 	for (auto& portal : portals) {
@@ -418,11 +384,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 	// player
 	svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
 
-	// enemy_catalog.enemies
-	for (auto& critter : critters) {
-		if (svc::cameraLocator.get().within_frame(critter->sprite_position.x, critter->sprite_position.y)) { critter->render(win, cam); }
-	}
-
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
 
 	// loot
@@ -474,9 +435,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 	}
 
 	for (auto& portal : portals) { portal.render(win, cam); }
-	for (auto& inspectable : inspectables) {
-		inspectable.render(win, cam); // for debug
-	}
+
+	for (auto& inspectable : inspectables) { inspectable.render(win, cam); }
+
 	for (auto& animator : animators) {
 		if (animator.foreground) { animator.render(win, cam); }
 	}
@@ -566,22 +527,6 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 	active_emitters.back().update();
 }
 
-void Map::spawn_critter_projectile_at(sf::Vector2<float> pos, critter::Critter& critter) {
-	active_projectiles.push_back(critter.weapon.projectile);
-	active_projectiles.back().fired_point = pos;
-	active_projectiles.back().set_sprite();
-	active_projectiles.back().physics.position = pos;
-	active_projectiles.back().seed();
-	active_projectiles.back().update();
-
-	active_emitters.push_back(critter.weapon.spray);
-	active_emitters.back().get_physics().acceleration += critter.colliders.at(0).physics.acceleration;
-	active_emitters.back().set_position(pos.x, pos.y);
-	active_emitters.back().set_direction(critter.weapon.firing_direction);
-	active_emitters.back().update();
-	critter.flags.reset(critter::Flags::weapon_fired);
-}
-
 void Map::manage_projectiles() {
 	for (auto& proj : active_projectiles) { proj.update(); }
 	for (auto& spray : active_emitters) { spray.update(); }
@@ -603,10 +548,6 @@ void Map::manage_projectiles() {
 			svc::playerLocator.get().equipped_weapon().shoot();
 			if (!svc::playerLocator.get().equipped_weapon().attributes.automatic) { svc::playerLocator.get().controller.set_shot(false); }
 		}
-	}
-
-	for (auto& critter : critters) {
-		if (critter->flags.test(critter::Flags::weapon_fired)) { spawn_critter_projectile_at(critter->barrel_point, *critter); }
 	}
 }
 
