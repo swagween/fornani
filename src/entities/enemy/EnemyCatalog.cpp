@@ -4,18 +4,17 @@
 
 namespace enemy {
 
-EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) : frdog(svc) { enemy_table.insert({5, frdog}); }
+EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {}
 
 void EnemyCatalog::update() {
-	std::erase_if(enemy_pool, [this](auto const& e) { return get_enemy(e).died(); });
+	std::erase_if(enemies, [this](auto const& e) { return e->died(); });
 }
 
-void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, int id) { enemy_pool.push_back(id); }
-
-Enemy& EnemyCatalog::get_enemy(int id) {
-	
-	return enemy_table.at(id);
-	
+void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, int id) {
+	switch (id) {
+	case 5: enemies.push_back(std::make_unique<Frdog>(svc)); break;
+	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
+	}
 }
 
 } // namespace enemy

@@ -197,9 +197,9 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 			input.ignore();
 			input.ignore();
 
-			enemies.push_back(std::make_unique<enemy::Frdog>(svc));
-			enemies.back()->set_position({(float)(pos.x * asset::TILE_WIDTH), (float)(pos.y * asset::TILE_WIDTH)});
-			enemies.back()->get_collider().physics.zero();
+			enemy_catalog.push_enemy(svc, id);
+			enemy_catalog.enemies.back()->set_position({(float)(pos.x * asset::TILE_WIDTH), (float)(pos.y * asset::TILE_WIDTH)});
+			enemy_catalog.enemies.back()->get_collider().physics.zero();
 		}
 		input.close();
 	}
@@ -222,12 +222,11 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	svc::playerLocator.get().collider.reset();
 	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
 
-	for (auto& enemy : enemies) {
+	for (auto& enemy : enemy_catalog.enemies) {
 		enemy->unique_update(svc, *this);
 		enemy->get_collider().physics.zero();
-		//std::cout << enemy->animation.current_frame << "\n";
 	}
-	//enemy_catalog.update();
+	enemy_catalog.update();
 
 	manage_projectiles();
 
@@ -308,7 +307,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
-		for (auto& enemy : enemies) {
+		for (auto& enemy : enemy_catalog.enemies) {
 			if (proj.team != arms::TEAMS::SKYCORPS) {
 				if (proj.bounding_box.overlaps(enemy->get_collider().bounding_box)) {
 					enemy->get_flags().state.set(enemy::StateFlags::shot);
@@ -419,12 +418,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 	// player
 	svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
 
-	// enemies
+	// enemy_catalog.enemies
 	for (auto& critter : critters) {
 		if (svc::cameraLocator.get().within_frame(critter->sprite_position.x, critter->sprite_position.y)) { critter->render(win, cam); }
 	}
 
-	for (auto& enemy : enemies) { enemy->render(svc, win, cam); }
+	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
 
 	// loot
 	for (auto& loot : active_loot) { loot.render(win, cam); }
