@@ -45,6 +45,7 @@ class Enemy : public entity::Entity {
 		collider.physics.position = pos;
 		collider.sync_components();
 	}
+	void hurt() { flags.state.set(StateFlags::hurt); }
 
 	entity::Health health{};
 	anim::Animation animation{};

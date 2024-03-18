@@ -137,8 +137,8 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_animators.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
-			sf::Vector2<uint16_t> scaled_dim{};
-			sf::Vector2<uint16_t> scaled_pos{};
+			sf::Vector2<int> scaled_dim{};
+			sf::Vector2<int> scaled_pos{};
 			int id_val{};
 			bool automatic_val{};
 			bool foreground_val{};
@@ -159,18 +159,15 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 			input.ignore();
 			input >> scaled_pos.y;
 			input.ignore();
+			input.ignore();
 
-			auto a = entity::Animator(svc, scaled_dim, scaled_pos);
+			auto lg = scaled_dim.x == 2;
+			auto a = entity::Animator(svc, scaled_pos, lg);
 			a.id = id_val;
 			a.automatic = automatic_val;
 			a.foreground = foreground_val;
 
-			if (a.scaled_dimensions.x != 0) { // only push if one was read, otherwise we reached the end of the file
-				uint16_t large_dim = 16;
-				a.dimensions = static_cast<Vec>(a.scaled_dimensions * large_dim);
-				a.bounding_box = shape::Shape(a.dimensions);
-				animators.push_back(a);
-			}
+			animators.push_back(a);
 		}
 		input.close();
 	}
@@ -231,12 +228,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	svc::playerLocator.get().collider.reset();
 	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
-
-	for (auto& enemy : enemy_catalog.enemies) {
-		enemy->unique_update(svc, *this, svc::playerLocator.get());
-		enemy->get_collider().physics.zero();
-	}
-	enemy_catalog.update();
 
 	manage_projectiles();
 
@@ -305,7 +296,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 				if (proj.bounding_box.overlaps(enemy->get_collider().bounding_box)) {
 					enemy->get_flags().state.set(enemy::StateFlags::shot);
 					if (enemy->get_flags().state.test(enemy::StateFlags::vulnerable)) {
-						enemy->get_flags().state.set(enemy::StateFlags::hurt);
+						enemy->hurt();
 						enemy->health.inflict(proj.stats.base_damage);
 						if (enemy->died()) {
 							active_loot.push_back(
@@ -322,6 +313,9 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 			proj.destroy(false);
 		}
 	}
+
+	for (auto& enemy : enemy_catalog.enemies) { enemy->unique_update(svc, *this, svc::playerLocator.get()); }
+	enemy_catalog.update();
 
 	for (auto& loot : active_loot) { loot.update(*this, svc::playerLocator.get()); }
 
@@ -393,7 +387,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 
 	// foreground animators
 	for (auto& animator : animators) {
-		if (!animator.foreground) { animator.render(win, cam); }
+		if (!animator.foreground) { animator.render(svc, win, cam); }
 	}
 
 	if (save_point.id != -1) { save_point.render(win, cam); }
@@ -441,7 +435,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 	for (auto& inspectable : inspectables) { inspectable.render(win, cam); }
 
 	for (auto& animator : animators) {
-		if (animator.foreground) { animator.render(win, cam); }
+		if (animator.foreground) { animator.render(svc, win, cam); }
 	}
 
 	// render minimap

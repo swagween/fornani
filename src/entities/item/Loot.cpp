@@ -28,7 +28,7 @@ void Loot::update(world::Map& map, player::Player& player) {
 	std::erase_if(drops, [](auto const& d) { return d.is_completely_gone(); });
 	for (auto& drop : drops) {
 		drop.update(map);
-		if (drop.get_collider().bounding_box.overlaps(player.collider.bounding_box) && !drop.is_inactive()) {
+		if (drop.get_collider().bounding_box.overlaps(player.collider.bounding_box) && !drop.is_inactive() && !drop.is_completely_gone()) {
 			player.give_drop(drop.get_type(), drop.get_value());
 			if (drop.get_type() == DropType::heart) {
 				svc::soundboardLocator.get().flags.item.set(audio::Item::heal);

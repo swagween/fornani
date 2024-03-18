@@ -31,7 +31,7 @@ class Frdog : public Enemy {
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 2, 28, -1};
 	anim::Parameters turn{13, 1, 38, 0};
-	anim::Parameters hurt{9, 2, 20, 4};
+	anim::Parameters hurt{9, 2, 20, 2};
 	anim::Parameters charge{5, 2, 20, 4};
 	anim::Parameters sleep{11, 2, 30, -1};
 	anim::Parameters sit{2, 2, 30, -1};
