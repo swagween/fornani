@@ -4,7 +4,7 @@
 
 namespace entity {
 void Animator::update() {
-
+	animation.set_params(params);
 	large = scaled_dimensions.x == 2;
 	if (large) {
 		sprite.setTexture(svc::assetLocator.get().t_large_animators);
@@ -19,9 +19,7 @@ void Animator::update() {
 	bounding_box.set_position(adjusted_pos);
 	int converted_id = large ? id - 100 : id - 200;
 
-	anim.update();
-	anim.current_state.update();
-	if (activated) {}
+	if (activated) { animation.update(); }
 	// get UV coords
 	int u = converted_id * scaled_dimensions.x * A_UNIT_SIZE;
 	int v = get_frame() * dimensions.y;
@@ -44,6 +42,6 @@ void Animator::render(sf::RenderWindow& win, Vec campos) {
 	/*win.draw(box);
 	*/
 }
-int Animator::get_frame() { return anim.get_frame(); }
+int Animator::get_frame() const { return animation.get_frame(); }
 
 } // namespace entity

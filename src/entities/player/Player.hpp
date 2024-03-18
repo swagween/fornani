@@ -3,7 +3,6 @@
 
 #include <array>
 #include <memory>
-#include "../../components/BehaviorComponent.hpp"
 #include "../../components/PhysicsComponent.hpp"
 #include "../../particle/Gravitator.hpp"
 #include "../../utils/BitFlags.hpp"
@@ -138,7 +137,6 @@ class Player {
 	Transponder transponder{};
 	shape::Collider collider{};
 	PlayerAnimation animation{};
-	behavior::DIR last_dir{};
 
 	//weapons
 	arms::Arsenal arsenal;

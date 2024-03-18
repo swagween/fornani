@@ -1,6 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "../utils/Direction.hpp"
+#include "../utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -12,12 +14,15 @@ class Map;
 
 namespace entity {
 
+enum class State { flip };
+
 class Entity {
   public:
 	Entity() = default;
 	Entity(automa::ServiceProvider& svc){};
-	virtual void update(automa::ServiceProvider& svc, world::Map& map) = 0;
+	virtual void update(automa::ServiceProvider& svc, world::Map& map);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) = 0;
+	void sprite_flip();
 	sf::RectangleShape drawbox{}; // for debug
 
   protected:
@@ -26,6 +31,8 @@ class Entity {
 	sf::Vector2<int> sprite_dimensions{};
 	sf::Vector2<int> spritesheet_dimensions{};
 	sf::Sprite sprite{};
+	dir::Direction direction{};
+	util::BitFlags<State> ent_state{};
 };
 
 } // namespace entity

@@ -3,7 +3,7 @@
 
 #include <string>
 #include "../../utils/Collider.hpp"
-#include "../behavior/Animation.hpp"
+#include "../animation/Animation.hpp"
 #include "../../utils/Cooldown.hpp"
 #include "../../particle/Sparkler.hpp"
 #include "../../graphics/FLColor.hpp"

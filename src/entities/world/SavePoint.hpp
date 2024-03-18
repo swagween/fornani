@@ -4,7 +4,7 @@
 #include <string>
 #include "../../setup/EnumLookups.hpp"
 #include "../../utils/Shape.hpp"
-#include "../behavior/Animation.hpp"
+#include "../animation/Animation.hpp"
 #include "../../particle/Emitter.hpp"
 
 namespace automa {

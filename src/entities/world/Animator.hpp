@@ -2,7 +2,7 @@
 #pragma once
 
 #include <string>
-#include "../../components/BehaviorComponent.hpp"
+#include "../animation/Animation.hpp"
 #include "../../utils/Shape.hpp"
 #include "../../utils/StateFunction.hpp"
 
@@ -26,7 +26,7 @@ class Animator {
 	}
 	void update();
 	void render(sf::RenderWindow& win, Vec campos);
-	int get_frame();
+	int get_frame() const;
 
 	Vec dimensions{};
 	Vec position{};
@@ -34,8 +34,7 @@ class Animator {
 	Vecu16 scaled_position{};
 	shape::Shape bounding_box{};
 	sf::Sprite sprite{};
-	components::SimpleBehaviorComponent anim{};
-	behavior::Behavior behavior{};
+	anim::Animation animation{};
 
 	int id{};
 	bool activated{};
@@ -47,6 +46,9 @@ class Animator {
 
 	sf::Vector2<int> sprite_dimensions{}; // hardcoding for now
 	sf::Vector2<int> spritesheet_dimensions{1024, 320};
+
+	private:
+	anim::Parameters params{0, 5, 28, 0};
 };
 
 } // namespace entity

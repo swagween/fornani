@@ -357,7 +357,7 @@ void Game::debug_window() {
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Animation")) {
-							ImGui::Text("Animation: %s", svc::playerLocator.get().animation.animation.label.c_str());
+							ImGui::Text("Animation: %s", svc::playerLocator.get().animation.animation.label.data());
 							ImGui::Separator();
 							ImGui::Text("Current Frame: %i", svc::playerLocator.get().animation.animation.current_frame);
 							ImGui::Text("Complete? %s", svc::playerLocator.get().animation.animation.complete() ? "Yes" : "No");

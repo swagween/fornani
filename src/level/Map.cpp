@@ -8,7 +8,7 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc) : bestiary(svc), enemy_catalog(svc) {}
+Map::Map(automa::ServiceProvider& svc) : enemy_catalog(svc) {}
 
 void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 
@@ -223,7 +223,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
 
 	for (auto& enemy : enemy_catalog.enemies) {
-		enemy->unique_update(svc, *this);
+		enemy->unique_update(svc, *this, svc::playerLocator.get());
 		enemy->get_collider().physics.zero();
 	}
 	enemy_catalog.update();
@@ -338,7 +338,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	for (auto& animator : animators) {
 		if (animator.bounding_box.overlaps(svc::playerLocator.get().collider.bounding_box) && svc::playerLocator.get().controller.moving()) {
-			animator.anim.on();
+			animator.animation.start();
 			animator.activated = true;
 		} else {
 			animator.activated = false;

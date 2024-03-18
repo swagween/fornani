@@ -29,7 +29,7 @@ enum class State {active, complete};
 struct Animation {
 
 	Parameters params{};
-	std::string label{};
+	std::string_view label{};
 
 	void refresh();
 	void start();

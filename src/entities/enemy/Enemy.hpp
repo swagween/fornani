@@ -3,10 +3,14 @@
 #include "../Entity.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../utils/BitFlags.hpp"
-#include "../behavior/Animation.hpp"
+#include "../animation/Animation.hpp"
 #include "../../utils/StateFunction.hpp"
 #include "../packages/Health.hpp"
 #include <string_view>
+
+namespace player {
+class Player;
+}
 
 namespace enemy {
 
@@ -32,7 +36,7 @@ class Enemy : public entity::Entity {
 	Enemy(automa::ServiceProvider& svc, std::string_view label);
 	void update(automa::ServiceProvider& svc, world::Map& map) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
-	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map){};
+	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player){};
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_collider() const -> shape::Collider { return collider; }

@@ -49,6 +49,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 
 	health.set_max(attributes.base_hp);
 
+	direction.lr = dir::LR::left;
+
 	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
 	if (in_general["gravity"].as_bool()) { flags.general.set(GeneralFlags::gravity); }
 	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
@@ -61,6 +63,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 }
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
+	Entity::update(svc, map);
 	collider.update();
 	collider.detect_map_collision(map);
 	collider.reset();

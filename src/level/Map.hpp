@@ -4,7 +4,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "../entities/critter/Bestiary.hpp"
 #include "../entities/enemy/EnemyCatalog.hpp"
 #include "../entities/world/Animator.hpp"
 #include "../entities/world/Inspectable.hpp"
@@ -111,7 +110,6 @@ class Map {
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition{255};
 
-	critter::Bestiary bestiary;
 	enemy::EnemyCatalog enemy_catalog;
 
 	lookup::STYLE style{}; // which tileset to render
