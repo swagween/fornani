@@ -30,6 +30,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
 	emitter_dimensions.y = in_data["spray"]["dimensions"][1].as<float>();
 
 	emitter_color = svc.styles.colors.ui_white; //todo: customize
+	emitter_type = in_data["spray"]["type"].as_string();
 
 	projectile = Projectile(svc, id);
 	attributes.boomerang = projectile.stats.boomerang;

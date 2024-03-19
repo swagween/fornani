@@ -349,7 +349,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 	}
 
 	// emitters
-	for (auto& emitter : active_emitters) { emitter.render(win, cam); }
+	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 
 	// player
 	svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
@@ -491,7 +491,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);
 	}
 
-	active_emitters.push_back(vfx::Emitter(weapon.barrel_point, weapon.emitter_dimensions, weapon.emmitter_type, weapon.emitter_color, weapon.firing_direction));
+	active_emitters.push_back(vfx::Emitter(weapon.barrel_point, weapon.emitter_dimensions, weapon.emitter_type, weapon.emitter_color, weapon.firing_direction));
 }
 
 void Map::manage_projectiles(automa::ServiceProvider& svc) {

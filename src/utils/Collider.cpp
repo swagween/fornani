@@ -19,6 +19,7 @@ Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimen
 	bounding_box.dimensions = dim;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
 	hurtbox.dimensions = sf::Vector2<float>(dim.x / 2, dim.y / 2);
+	sync_components();
 }
 
 void Collider::sync_components() {
@@ -148,6 +149,7 @@ void Collider::detect_map_collision(world::Map& map) {
 			continue;
 		} else {
 			// check vicinity so we can escape early
+			if (vicinity.vertices.empty()) { return; }
 			if (!vicinity.overlaps(cell.bounding_box)) {
 				continue;
 			} else {

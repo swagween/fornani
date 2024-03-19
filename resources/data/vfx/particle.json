@@ -1,15 +1,15 @@
 {
-  "heavy burst": {
+  "heavy_burst": {
     "expulsion": 8.98,
     "cone": 8.98,
     "friction": 0.8,
     "gravity": 18.7
   },
 
-  "light burst": {
-    "expulsion": 8.98,
-    "cone": 8.98,
-    "friction": 0.98,
+  "light_burst": {
+    "expulsion": 108.98,
+    "cone": 0.98,
+    "friction": 0.999,
     "gravity": 1.9
   }
 }

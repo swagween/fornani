@@ -75,7 +75,7 @@ class Weapon {
 
 	//spray
 	sf::Vector2<float> emitter_dimensions{};
-	std::string_view emmitter_type{};
+	std::string_view emitter_type{};
 	sf::Color emitter_color{};
 
 	sf::Vector2<float> sprite_position{};

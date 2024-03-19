@@ -11,7 +11,7 @@ class Emitter {
 	Emitter() = default;
 	Emitter(sf::Vector2<float> position, sf::Vector2<float> dimensions, std::string_view type, sf::Color color, dir::Direction direction);
 	void update(automa::ServiceProvider& svc, world::Map& map);
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos);
 	void set_dimensions(sf::Vector2<float> dim);
 	void deactivate();

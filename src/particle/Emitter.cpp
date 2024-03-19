@@ -21,8 +21,8 @@ void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 	}
 }
 
-void Emitter::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	for (auto& particle : particles) { particle.render(win, cam); }
+void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	for (auto& particle : particles) { particle.render(svc, win, cam); }
 }
 
 void Emitter::set_position(sf::Vector2<float> pos) { position = pos; }
