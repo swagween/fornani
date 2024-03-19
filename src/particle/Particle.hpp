@@ -1,35 +1,35 @@
 
 #pragma once
-
+#include <SFML/Graphics.hpp>
 #include <vector>
-#include "../components/PhysicsComponent.hpp"
-#include "../utils/Shape.hpp"
+#include <string_view>
+#include "../utils/Collider.hpp"
+#include "../utils/Cooldown.hpp"
+
+namespace automa {
+struct ServiceProvider;
+}
+
+namespace world {
+class Map;
+}
 
 namespace vfx {
 
-using Time = std::chrono::duration<float>;
-int const default_lifespan = 50;
-float const default_dim = 2.f;
-
 class Particle {
   public:
-	Particle() = default;
-	Particle(components::PhysicsComponent p, float f, float v, float a, sf::Vector2<float> fric, float sz = 3.0f, dir::Direction dir_ = dir::Direction{});
-	void update(float initial_force, float grav, float grav_variance);
+	Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction);
+	void update(world::Map& map);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
-	void oscillate_between_colors(sf::Color dark, sf::Color bright);
-	components::PhysicsComponent physics{};
-	float lifespan{};
-	float init_force{};
-	float force_variance{};
-	float angle_range{};
-	float size{};
-	dir::Direction direction{};
-	shape::Shape bounding_box{};
-	sf::Sprite sprite{};
-	sf::RectangleShape dot{};
-	sf::Color color{};
+	[[nodiscard]] auto done() const -> bool { return lifespan.is_complete(); }
 
+  private:
+	sf::RectangleShape box{};
+	sf::Vector2<float> position{};
+	sf::Vector2<float> dimensions{};
+	util::Cooldown lifespan{};
+	shape::Collider collider{};
+	int frame{};
 };
 
 } // namespace vfx

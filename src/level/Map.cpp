@@ -8,7 +8,7 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc) : enemy_catalog(svc) {}
+Map::Map(automa::ServiceProvider& svc) : enemy_catalog(svc), save_point(svc) {}
 
 void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 
@@ -229,30 +229,13 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	svc::playerLocator.get().collider.reset();
 	for (auto& a : svc::playerLocator.get().antennae) { a.collider.reset(); }
 
-	manage_projectiles();
+	manage_projectiles(svc);
 
 	svc::playerLocator.get().collider.detect_map_collision(*this);
 
 	// i need to refactor this...
 	for (auto& index : collidable_indeces) {
 		auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
-		for (auto& emitter : active_emitters) {
-			for (auto& particle : emitter.get_particles()) {
-				if (!nearby(cell.bounding_box, particle.bounding_box)) {
-					continue;
-				} else {
-					cell.collision_check = true;
-					if (particle.bounding_box.overlaps(cell.bounding_box) && cell.value > 0) {
-						shape::Shape::Vec mtv = particle.bounding_box.testCollisionGetMTV(particle.bounding_box, cell.bounding_box);
-						sf::operator+=(particle.physics.position, mtv);
-						particle.physics.acceleration.y *= -1.0f;
-						particle.physics.acceleration.x *= -1.0f;
-						if (abs(mtv.y) > abs(mtv.x)) { particle.physics.velocity.y *= -1.0f; }
-						if (abs(mtv.x) > abs(mtv.y)) { particle.physics.velocity.x *= -1.0f; }
-					}
-				}
-			}
-		}
 		// damage player if spikes
 		if (cell.type == lookup::TILE_TYPE::TILE_SPIKES && svc::playerLocator.get().collider.hurtbox.overlaps(cell.bounding_box)) { svc::playerLocator.get().hurt(1); }
 		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && svc::playerLocator.get().collider.hurtbox.overlaps(cell.bounding_box)) { svc::playerLocator.get().hurt(64); }
@@ -266,12 +249,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 						--cell.value;
 						if (lookup::tile_lookup.at(cell.value) != lookup::TILE_TYPE::TILE_BREAKABLE) {
 							cell.value = 0;
-							// i need to not do this here
-							active_emitters.push_back(breakable_debris);
-							active_emitters.back().get_physics().acceleration += proj.physics.acceleration;
-							active_emitters.back().set_position(cell.position.x + CELL_SIZE / 2.f, cell.position.y + CELL_SIZE / 2.f);
-							active_emitters.back().set_direction(proj.direction);
-							active_emitters.back().update();
 							svc::assetLocator.get().shatter.play();
 						}
 					}
@@ -319,6 +296,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	for (auto& loot : active_loot) { loot.update(*this, svc::playerLocator.get()); }
 
+	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
+
 	for (auto& collider : colliders) { collider->reset_ground_flags(); }
 
 	for (auto& portal : portals) {
@@ -346,11 +325,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	// check if player died
 	if (!svc::playerLocator.get().flags.state.test(player::State::alive) && !game_over) {
-		active_emitters.push_back(player_death);
-		active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
-		active_emitters.back().set_position(svc::playerLocator.get().collider.physics.position.x, svc::playerLocator.get().collider.physics.position.y);
-		active_emitters.back().set_direction(dir::Direction{});
-		active_emitters.back().update();
 		svc::assetLocator.get().player_death.play();
 		game_over = true;
 	}
@@ -504,7 +478,8 @@ void Map::render_console(gui::Console& console, sf::RenderWindow& win) {
 }
 
 void Map::spawn_projectile_at(sf::Vector2<float> pos) {
-	active_projectiles.push_back(svc::playerLocator.get().equipped_weapon().projectile);
+	auto const& weapon = svc::playerLocator.get().equipped_weapon();
+	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_sprite();
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed();
@@ -516,16 +491,12 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);
 	}
 
-	active_emitters.push_back(svc::playerLocator.get().equipped_weapon().spray);
-	active_emitters.back().get_physics().acceleration += svc::playerLocator.get().collider.physics.acceleration;
-	active_emitters.back().set_position(pos.x, pos.y);
-	active_emitters.back().set_direction(svc::playerLocator.get().equipped_weapon().firing_direction);
-	active_emitters.back().update();
+	active_emitters.push_back(vfx::Emitter(weapon.barrel_point, weapon.emitter_dimensions, weapon.emmitter_type, weapon.emitter_color, weapon.firing_direction));
 }
 
-void Map::manage_projectiles() {
+void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	for (auto& proj : active_projectiles) { proj.update(); }
-	for (auto& spray : active_emitters) { spray.update(); }
+	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
 	std::erase_if(active_projectiles, [](auto const& p) {
 		if (p.state.test(arms::ProjectileState::destroyed)) {
@@ -535,7 +506,7 @@ void Map::manage_projectiles() {
 			return false;
 		}
 	});
-	std::erase_if(active_emitters, [](auto const& p) { return p.particles.empty(); });
+	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 
 	if (!svc::playerLocator.get().arsenal.loadout.empty()) {
 		if (svc::playerLocator.get().fire_weapon()) {

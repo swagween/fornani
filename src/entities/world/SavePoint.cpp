@@ -6,29 +6,27 @@
 
 namespace entity {
 
-SavePoint::SavePoint() {
+SavePoint::SavePoint(automa::ServiceProvider& svc) {
 	id = -1;
 	dimensions = {32, 32};
 	bounding_box = shape::Shape(dimensions);
 	proximity_box = shape::Shape(dimensions * 16.f);
 
 	animation.set_params(anim_params);
-	sprite.setTexture(svc::assetLocator.get().savepoint);
+	sprite.setTexture(svc.assets.savepoint);
 
-	sparkle_behavior = {50, 3, 4.3, 0.4, 0.8, -0.3, 0.0, 0.97, 0.97};
-	sparkle_stats = {10, 0, 80, 30};
-	sparkles = vfx::Emitter(sparkle_behavior, sparkle_stats, flcolor::goldenrod);
-	sparkles.set_position(scaled_position.x * 32.f, scaled_position.y * 32.f);
+	sparkler = vfx::Sparkler(dimensions, svc.styles.colors.green);
+	sparkler.set_position({scaled_position.x * 32.f, scaled_position.y * 32.f});
 }
 
 void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	animation.update();
-	sparkles.update();
+	sparkler.update();
 
 	sf::Vector2<float> proximity_offset = proximity_box.dimensions * 0.5f + dimensions * 0.5f;
 	position = static_cast<Vec>(scaled_position) * 32.f;
-	sparkles.set_position(position.x + dimensions.x * 0.5f, position.y + dimensions.y);
+	sparkler.set_position({position.x + dimensions.x * 0.5f, position.y + dimensions.y});
 	bounding_box.set_position(position);
 	proximity_box.set_position(position - proximity_offset);
 	activated = false;
@@ -60,7 +58,7 @@ void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 
-	sparkles.render(win, campos);
+	sparkler.render(win, campos);
 
 	sprite.setPosition((int)(position.x - 16.f - campos.x), (int)(position.y - 32.f - campos.y));
 	// get UV coords (only one row of sprites is supported)

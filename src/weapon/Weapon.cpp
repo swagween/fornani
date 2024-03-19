@@ -1,12 +1,13 @@
 
 #include "Weapon.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
 
-	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id];
+	auto const& in_data = svc.data.weapon["weapons"][id];
 
 	label = in_data["label"].as_string();
 	type = index_to_type.at(id);
@@ -25,22 +26,10 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
 	attributes.recoil = in_data["attributes"]["recoil"].as<float>();
 	attributes.ui_color = (COLOR_CODE)in_data["attributes"]["ui_color"].as<int>();
 
-	spray_behavior.rate = in_data["spray"]["particle"]["rate"].as<int>();
-	spray_behavior.rate_variance = in_data["spray"]["particle"]["rate_variance"].as<int>();
-	spray_behavior.expulsion_force = in_data["spray"]["particle"]["expulsion_force"].as<float>();
-	spray_behavior.expulsion_variance = in_data["spray"]["particle"]["expulsion_variance"].as<float>();
-	spray_behavior.cone = in_data["spray"]["particle"]["cone"].as<float>();
-	spray_behavior.grav = in_data["spray"]["particle"]["grav"].as<float>();
-	spray_behavior.grav_variance = in_data["spray"]["particle"]["grav_variance"].as<float>();
-	spray_behavior.x_friction = in_data["spray"]["particle"]["x_friction"].as<float>();
-	spray_behavior.y_friction = in_data["spray"]["particle"]["y_friction"].as<float>();
+	emitter_dimensions.x = in_data["spray"]["dimensions"][0].as<float>();
+	emitter_dimensions.y = in_data["spray"]["dimensions"][1].as<float>();
 
-	spray_stats.lifespan = in_data["spray"]["emitter"]["lifespan"].as<int>();
-	spray_stats.lifespan_variance = in_data["spray"]["emitter"]["lifespan_variance"].as<int>();
-	spray_stats.particle_lifespan = in_data["spray"]["emitter"]["particle_lifespan"].as<int>();
-	spray_stats.particle_lifespan_variance = in_data["spray"]["emitter"]["particle_lifespan_variance"].as<int>();
-
-	spray = vfx::Emitter(spray_behavior, spray_stats, spray_color.at(type), spray_color.at(type));
+	emitter_color = svc.styles.colors.ui_white; //todo: customize
 
 	projectile = Projectile(svc, id);
 	attributes.boomerang = projectile.stats.boomerang;

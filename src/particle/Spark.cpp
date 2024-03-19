@@ -1,4 +1,3 @@
-
 #include "Spark.hpp"
 #include "../setup/ServiceLocator.hpp"
 

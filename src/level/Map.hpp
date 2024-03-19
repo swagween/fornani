@@ -33,15 +33,6 @@ class Console;
 
 namespace world {
 
-/*ElementBehavior {rate, rate_variance, expulsion_force, expulsion_variance, cone, grav, grav_variance, x_friction, y_friction }; */
-// map emitters!
-constexpr inline vfx::ElementBehavior breakable_spray{2, 1, 1.5, 0.8, 0.8, 0.01, 0.005, 0.99, 0.99};
-constexpr inline vfx::EmitterStats breakable_stats{10, 0, 80, 60, 3.0f};
-inline auto breakable_debris = vfx::Emitter(breakable_spray, breakable_stats, flcolor::goldenrod);
-constexpr inline vfx::ElementBehavior player_death_spray{20, 2, 0.65f, 0.45f, std::_Pi_val, 0.f, 0.f, 0.995, 0.995};
-constexpr inline vfx::EmitterStats player_death_stats{4, 0, 80, 60, 4.0f};
-inline auto player_death = vfx::Emitter(player_death_spray, player_death_stats, flcolor::white);
-
 enum LAYER_ORDER {
 	BACKGROUND = 0,
 	MIDDLEGROUND = 4,
@@ -82,7 +73,7 @@ class Map {
 	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
 	void spawn_projectile_at(sf::Vector2<float> pos);
-	void manage_projectiles();
+	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer();
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(arms::Projectile& proj);
@@ -105,7 +96,7 @@ class Map {
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Animator> animators{};
 	std::vector<item::Loot> active_loot{};
-	entity::SavePoint save_point{};
+	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition{255};

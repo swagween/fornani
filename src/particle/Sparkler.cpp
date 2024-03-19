@@ -1,7 +1,4 @@
 #include "Sparkler.hpp"
-#include "Sparkler.hpp"
-#include "Sparkler.hpp"
-#include "Sparkler.hpp"
 #include "../setup/ServiceLocator.hpp"
 
 namespace vfx {

@@ -72,9 +72,11 @@ class Weapon {
 	WeaponAttributes attributes{};
 
 	Projectile projectile{};
-	vfx::Emitter spray{};
-	vfx::ElementBehavior spray_behavior{};
-	vfx::EmitterStats spray_stats{};
+
+	//spray
+	sf::Vector2<float> emitter_dimensions{};
+	std::string_view emmitter_type{};
+	sf::Color emitter_color{};
 
 	sf::Vector2<float> sprite_position{};
 	sf::Vector2<float> gun_offset{};

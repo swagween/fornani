@@ -5,7 +5,7 @@
 #include "../../setup/EnumLookups.hpp"
 #include "../../utils/Shape.hpp"
 #include "../animation/Animation.hpp"
-#include "../../particle/Emitter.hpp"
+#include "../../particle/Sparkler.hpp"
 
 namespace automa {
 	struct ServiceProvider;
@@ -25,7 +25,8 @@ class SavePoint {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
-	SavePoint();
+	SavePoint() = default;
+	SavePoint(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void render(sf::RenderWindow& win, Vec campos);
@@ -40,9 +41,7 @@ class SavePoint {
 	shape::Shape proximity_box{};
 	sf::Sprite sprite{};
 	anim::Animation animation{};
-	vfx::Emitter sparkles{};
-	vfx::EmitterStats sparkle_stats{};
-	vfx::ElementBehavior sparkle_behavior{};
+	vfx::Sparkler sparkler{};
 	bool activated{};
 	bool can_activate{true};
 
