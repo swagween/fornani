@@ -29,7 +29,9 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
 	emitter_dimensions.x = in_data["spray"]["dimensions"][0].as<float>();
 	emitter_dimensions.y = in_data["spray"]["dimensions"][1].as<float>();
 
-	emitter_color = svc.styles.colors.ui_white; //todo: customize
+	try {
+		emitter_color = svc.styles.spray_colors.at(label);
+	} catch (std::out_of_range) { emitter_color = svc.styles.colors.white; }
 	emitter_type = in_data["spray"]["type"].as_string();
 
 	projectile = Projectile(svc, id);

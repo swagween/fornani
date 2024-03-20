@@ -2,6 +2,7 @@
 #include "Particle.hpp"
 #include "../setup/ServiceLocator.hpp"
 #include "../service/ServiceProvider.hpp"
+#include <numbers>
 
 namespace vfx {
 
@@ -13,18 +14,26 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 
 	auto const& in_data = svc.data.particle[type];
 	auto expulsion = in_data["expulsion"].as<float>();
-	auto angle = in_data["cone"].as<float>();
+	auto expulsion_variance = in_data["expulsion_variance"].as<float>();
+	auto angle_range = in_data["cone"].as<float>();
 	collider.physics.set_global_friction(in_data["friction"].as<float>());
 	collider.stats.GRAV = in_data["gravity"].as<float>();
 
-	expulsion = direction.lr == dir::LR::left ? -expulsion : expulsion;
+	//expulsion = direction.lr == dir::LR::left ? -expulsion : expulsion;
+	auto angle = svc.random.random_range_float(-angle_range, angle_range);
+	if (direction.lr == dir::LR::left) { angle += std::numbers::pi; }
+	if (direction.und == dir::UND::up) { angle += std::numbers::pi * 1.5; }
+	if (direction.und == dir::UND::down) { angle += std::numbers::pi * 0.5; }
+
+	expulsion += svc::randomLocator.get().random_range(-expulsion_variance, expulsion_variance);
 
 	collider.physics.apply_force_at_angle(expulsion, angle);
 	collider.physics.position = position;
 
-
-	int rand_diff = svc::randomLocator.get().random_range(0, 50);
-	lifespan.start(200 + rand_diff);
+	auto lifespan_time = in_data["lifespan"].as<int>();
+	auto lifespan_variance = in_data["lifespan_variance"].as<int>();
+	int rand_diff = svc::randomLocator.get().random_range(-lifespan_variance, lifespan_variance);
+	lifespan.start(lifespan_time + rand_diff);
 }
 
 void Particle::update(world::Map& map) {

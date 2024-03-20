@@ -1,15 +1,41 @@
 {
   "heavy_burst": {
-    "expulsion": 8.98,
-    "cone": 8.98,
-    "friction": 0.8,
-    "gravity": 18.7
+    "expulsion": 110.0,
+    "expulsion_variance": 90.0,
+    "cone": 0.08,
+    "friction": 0.99,
+    "gravity": 3.9,
+    "lifespan": 260,
+    "lifespan_variance": 195
   },
 
   "light_burst": {
-    "expulsion": 108.98,
-    "cone": 0.98,
+    "expulsion": 80.0,
+    "expulsion_variance": 60.0,
+    "cone": 0.18,
+    "friction": 0.98,
+    "gravity": 0.9,
+    "lifespan": 200,
+    "lifespan_variance": 135
+  },
+
+  "fast_burst": {
+    "expulsion": 130.0,
+    "expulsion_variance": 80.0,
+    "cone": 0.08,
+    "friction": 0.99,
+    "gravity": 0.0,
+    "lifespan": 120,
+    "lifespan_variance": 100
+  },
+
+  "twinkle": {
+    "expulsion": 30.0,
+    "expulsion_variance": 20.0,
+    "cone": 0.8,
     "friction": 0.999,
-    "gravity": 1.9
+    "gravity": 0.0,
+    "lifespan": 100,
+    "lifespan_variance": 80
   }
 }

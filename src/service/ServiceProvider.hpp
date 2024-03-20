@@ -5,6 +5,7 @@
 #include "../setup/TextManager.hpp"
 #include "../automa/StateController.hpp"
 #include "../graphics/Style.hpp"
+#include "../utils/Random.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode };
@@ -14,6 +15,7 @@ struct ServiceProvider {
 	data::TextManager text{};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
+	util::Random random{};
 	StateController state_controller{};
 };
 } // namespace automa
