@@ -27,8 +27,14 @@ class Spark {
 	struct {
 		float wobble{0.1};
 		float frequency{0.02f};
-		int speed{2};
+		float speed{0.1};
+		float volatility{0.0f};
 	} parameters{};
+
+	struct {
+		float offset{};
+		float energy{};
+	} variables{};
 	
 };
 

@@ -6,7 +6,6 @@ namespace vfx {
 Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions, sf::Color color, std::string_view type) : dimensions(dimensions), color(color), type(type) {
 	auto const& in_data = svc.data.sparkler[type];
 	behavior.rate = in_data["rate"].as<float>();
-	behavior.volatility = in_data["volatility"].as<float>();
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setOutlineColor(sf::Color::Red);

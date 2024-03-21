@@ -24,7 +24,6 @@ class Sparkler {
 
 	struct {
 		float rate{};
-		float volatility{};
 	} behavior{};
 
 	sf::Color color{};
