@@ -16,9 +16,9 @@ class GrapplingHook {
   public:
 	GrapplingHook() = default;
 	GrapplingHook(automa::ServiceProvider& svc);
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void break_free();
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 
 	sf::Vector2<float> probe_velocity(float speed);
 	vfx::Spring spring{};

@@ -89,7 +89,7 @@ class Player {
 	void init(automa::ServiceProvider& svc);
 	// member functions
 	void update(gui::Console& console);
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
@@ -156,6 +156,8 @@ class Player {
 	PlayerFlags flags{};
 
 	Counters counters{};
+
+	automa::ServiceProvider* m_services;
 
 	// sprites
 	sf::Sprite sprite{};

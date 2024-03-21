@@ -1,6 +1,7 @@
 
 #include "Background.hpp"
 #include "../setup/EnumLookups.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace bg {
 
@@ -27,7 +28,7 @@ Background::Background(BackgroundBehavior b, int bg_id) : behavior(b) {
 	}
 }
 
-void Background::update() {
+void Background::update(automa::ServiceProvider& svc) {
 	float frame_speedup = std::clamp(svc::cameraLocator.get().observed_velocity.x, 1.f, std::numeric_limits<float>::infinity()); // positive number
 	
 	if (behavior.scrolling) {
@@ -35,7 +36,7 @@ void Background::update() {
 		int idx = 0;
 		for (auto& sprite : sprites) {
 			physics.at(idx).velocity.x = -1 * (frame_speedup) * behavior.scroll_speed * idx; // negative
-			physics.at(idx).update_euler();
+			physics.at(idx).update_euler(svc);
 
 			if (physics.at(idx).position.x < -scroll_size) {
 				physics.at(idx).position.x = 0.f;

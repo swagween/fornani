@@ -25,6 +25,11 @@ void DataManager::load_data() {
 	std::cout << "loading particle data ...";
 	assert(!particle.is_null());
 	std::cout << " success!\n";
+	
+	sparkler = dj::Json::from_file((finder.resource_path + "/data/vfx/sparkler.json").c_str());
+	std::cout << "loading sparkler data ...";
+	assert(!sparkler.is_null());
+	std::cout << " success!\n";
 
 	// enemies
 	enemy = dj::Json::from_file((finder.resource_path + "/data/enemy/enemy_params.json").c_str());

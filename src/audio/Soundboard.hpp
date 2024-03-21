@@ -36,8 +36,8 @@ struct Soundboard {
 	} flags{};
 
 	void play_sounds(automa::ServiceProvider& svc);
-	void repeat(sf::Sound& sound, int frequency, float random_pitch_offset = 0.f);
-	void randomize(sf::Sound& sound, float random_pitch_offset);
+	void repeat(automa::ServiceProvider& svc, sf::Sound& sound, int frequency, float random_pitch_offset = 0.f);
+	void randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset);
 
 	struct {
 		float save{};

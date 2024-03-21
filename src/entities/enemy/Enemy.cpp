@@ -64,7 +64,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 	Entity::update(svc, map);
-	collider.update();
+	collider.update(svc);
 	collider.detect_map_collision(map);
 	collider.reset();
 	collider.reset_ground_flags();

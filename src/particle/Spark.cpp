@@ -1,20 +1,26 @@
 #include "Spark.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
+#include <numbers>
 
 namespace vfx {
 
-Spark::Spark(sf::Vector2<float> pos, sf::Color color) {
+Spark::Spark(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Color color, std::string_view type) : type(type) {
+	auto const& in_data = svc.data.sparkler[type];
+	parameters.wobble = in_data["wobble"].as<float>();
+	parameters.frequency = in_data["frequency"].as<float>();
+	parameters.speed = in_data["speed"].as<int>();
 	position = pos;
 	box.setFillColor(color);
 	box.setSize({3.f, 3.f});
-	int rand_diff = svc::randomLocator.get().random_range(0, 50);
+	int rand_diff = svc.random.random_range(0, 50);
 	lifespan.start(200 + rand_diff);
 }
 
-void Spark::update() {
+void Spark::update(automa::ServiceProvider& svc) {
 	++frame;
-	position.x += 0.1 * sin(0.02f * frame);
-	if (svc::tickerLocator.get().every_x_frames(2)) { --position.y; }
+	auto offset = svc.random.random_range_float(0, std::numbers::pi * 2.f * parameters.frequency);
+	position.x += parameters.wobble * sin(parameters.frequency * frame + offset);
+	if (svc.ticker.every_x_frames(parameters.speed)) { --position.y; }
 		
 	lifespan.update();
 }

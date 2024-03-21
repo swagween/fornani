@@ -259,7 +259,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 							proj.hook.spring.set_anchor(cell.middle_point());
 							proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
 						}
-						handle_grappling_hook(proj);
+						handle_grappling_hook(svc, proj);
 					}
 				}
 			}
@@ -296,7 +296,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	for (auto& enemy : enemy_catalog.enemies) { enemy->unique_update(svc, *this, svc::playerLocator.get()); }
 	enemy_catalog.update();
 
-	for (auto& loot : active_loot) { loot.update(*this, svc::playerLocator.get()); }
+	for (auto& loot : active_loot) { loot.update(svc, *this, svc::playerLocator.get()); }
 
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
@@ -341,12 +341,12 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		}
 	}
 
-	if (svc::tickerLocator.get().every_x_frames(1)) { transition.update(); }
+	if (svc.ticker.every_x_frames(1)) { transition.update(); }
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
 	for (auto& proj : active_projectiles) {
-		proj.render(win, cam);
+		proj.render(svc, win, cam);
 		if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) { proj.hook.spring.render(win, cam); }
 	}
 
@@ -354,19 +354,19 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 
 	// player
-	svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
+	svc::playerLocator.get().render(svc, win, svc::cameraLocator.get().physics.position);
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
 
 	// loot
-	for (auto& loot : active_loot) { loot.render(win, cam); }
+	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 
 	// foreground animators
 	for (auto& animator : animators) {
 		if (!animator.foreground) { animator.render(svc, win, cam); }
 	}
 
-	if (save_point.id != -1) { save_point.render(win, cam); }
+	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
 	// level foreground
 	for (auto& layer : layers) {
@@ -479,13 +479,13 @@ void Map::render_console(gui::Console& console, sf::RenderWindow& win) {
 	console.write(win, false);
 }
 
-void Map::spawn_projectile_at(sf::Vector2<float> pos) {
+void Map::spawn_projectile_at(automa::ServiceProvider& svc, sf::Vector2<float> pos) {
 	auto const& weapon = svc::playerLocator.get().equipped_weapon();
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_sprite();
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed();
-	active_projectiles.back().update();
+	active_projectiles.back().update(svc);
 	active_projectiles.back().sync_position();
 	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
 	if (active_projectiles.back().stats.spring) {
@@ -497,7 +497,7 @@ void Map::spawn_projectile_at(sf::Vector2<float> pos) {
 }
 
 void Map::manage_projectiles(automa::ServiceProvider& svc) {
-	for (auto& proj : active_projectiles) { proj.update(); }
+	for (auto& proj : active_projectiles) { proj.update(svc); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
 	std::erase_if(active_projectiles, [](auto const& p) {
@@ -512,7 +512,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 
 	if (!svc::playerLocator.get().arsenal.loadout.empty()) {
 		if (svc::playerLocator.get().fire_weapon()) {
-			spawn_projectile_at(svc::playerLocator.get().equipped_weapon().barrel_point);
+			spawn_projectile_at(svc, svc::playerLocator.get().equipped_weapon().barrel_point);
 			++svc::playerLocator.get().equipped_weapon().active_projectiles;
 			svc::playerLocator.get().equipped_weapon().shoot();
 			if (!svc::playerLocator.get().equipped_weapon().attributes.automatic) { svc::playerLocator.get().controller.set_shot(false); }
@@ -546,7 +546,7 @@ bool Map::check_cell_collision(shape::Collider collider) {
 	return false;
 }
 
-void Map::handle_grappling_hook(arms::Projectile& proj) {
+void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj) {
 	// do this first block once
 	if (proj.hook.grapple_triggers.test(arms::GrappleTriggers::found) && !proj.hook.grapple_flags.test(arms::GrappleState::anchored) && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) {
 		proj.hook.spring.set_bob(svc::playerLocator.get().apparent_position);
@@ -561,7 +561,7 @@ void Map::handle_grappling_hook(arms::Projectile& proj) {
 		proj.hook.spring.variables.physics.acceleration += svc::playerLocator.get().collider.physics.acceleration;
 		proj.hook.spring.variables.physics.acceleration.x += svc::playerLocator.get().controller.horizontal_movement();
 		proj.lock_to_anchor();
-		proj.hook.spring.update();
+		proj.hook.spring.update(svc);
 
 		// shorthand
 		auto& player_collider = svc::playerLocator.get().collider;

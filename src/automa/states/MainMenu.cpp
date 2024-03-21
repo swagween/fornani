@@ -116,9 +116,9 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void MainMenu::tick_update(ServiceProvider& svc) {
-	svc::musicPlayerLocator.get().update();
-	left_dot.update();
-	right_dot.update();
+	svc::musicPlayerLocator.get().update(svc);
+	left_dot.update(svc);
+	right_dot.update(svc);
 	switch (selection) {
 	case MenuSelection::new_game:
 		dot_pad.y = 5.f;
@@ -161,8 +161,8 @@ void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		}
 	}
 
-	left_dot.render(win, {0, 0});
-	right_dot.render(win, {0, 0});
+	left_dot.render(svc, win, {0, 0});
+	right_dot.render(svc, win, {0, 0});
 }
 
 } // namespace automa

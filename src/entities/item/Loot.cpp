@@ -24,10 +24,10 @@ Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float prob
 	}
 }
 
-void Loot::update(world::Map& map, player::Player& player) {
+void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	std::erase_if(drops, [](auto const& d) { return d.is_completely_gone(); });
 	for (auto& drop : drops) {
-		drop.update(map);
+		drop.update(svc, map);
 		if (drop.get_collider().bounding_box.overlaps(player.collider.bounding_box) && !drop.is_inactive() && !drop.is_completely_gone()) {
 			player.give_drop(drop.get_type(), drop.get_value());
 			if (drop.get_type() == DropType::heart) {
@@ -42,8 +42,8 @@ void Loot::update(world::Map& map, player::Player& player) {
 	}
 }
 
-void Loot::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
-	for (auto& drop : drops) { drop.render(win, campos); }
+void Loot::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
+	for (auto& drop : drops) { drop.render(svc, win, campos); }
 }
 
 void Loot::set_position(sf::Vector2<float> pos) { position = pos; }

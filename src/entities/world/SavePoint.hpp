@@ -29,7 +29,7 @@ class SavePoint {
 	SavePoint(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc, gui::Console& console);
-	void render(sf::RenderWindow& win, Vec campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 
 	void save(); // talk to SaveDataManager to write current progress to save.json
 
@@ -40,6 +40,7 @@ class SavePoint {
 	shape::Shape bounding_box{};
 	shape::Shape proximity_box{};
 	sf::Sprite sprite{};
+	sf::RectangleShape drawbox{}; // for debug
 	anim::Animation animation{};
 	vfx::Sparkler sparkler{};
 	bool activated{};

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "PhysicsComponent.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 #include <algorithm>
 
 namespace components {
@@ -14,17 +14,17 @@ void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
 	acceleration.y += (magnitude * sin(angle)) / mass;
 }
 
-void PhysicsComponent::update_euler() {
+void PhysicsComponent::update_euler(automa::ServiceProvider& svc) {
 
-	integrate();
+	integrate(svc);
 	direction.und = velocity.y > 0.f ? dir::UND::down : (velocity.y < 0.f ? dir::UND::up : dir::UND::neutral);
 	direction.lr = velocity.x > 0.f ? dir::LR::right : (velocity.x < 0.f ? dir::LR::left : dir::LR::neutral);
 
 }
 
-void PhysicsComponent::integrate() {
+void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 
-	float dt = svc::tickerLocator.get().global_tick_rate();
+	float dt = svc.ticker.global_tick_rate();
 	previous_acceleration = acceleration;
 	previous_velocity = velocity;
 	previous_position = position;
@@ -53,11 +53,11 @@ void PhysicsComponent::integrate() {
 	calculate_jerk();
 }
 
-void PhysicsComponent::update() { update_euler(); }
+void PhysicsComponent::update(automa::ServiceProvider& svc) { update_euler(svc); }
 
-void PhysicsComponent::update_dampen() {
-	update_euler();
-	acceleration = {0.0f, 0.0f};
+void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
+	update_euler(svc);
+	acceleration = {};
 }
 
 void PhysicsComponent::calculate_maximum_acceleration() {

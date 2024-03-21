@@ -87,8 +87,8 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 void FileMenu::tick_update(ServiceProvider& svc) {
 	constrain_selection();
 
-	left_dot.update();
-	right_dot.update();
+	left_dot.update(svc);
+	right_dot.update(svc);
 	left_dot.set_target_position({text_left - dot_pad.x, file_rects.at(file_selection).getPosition().y + dot_pad.y});
 	right_dot.set_target_position({text_right + dot_pad.x, file_rects.at(file_selection).getPosition().y + dot_pad.y});
 
@@ -130,10 +130,10 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		
 	}
 
-	left_dot.render(win, {0, 0});
-	right_dot.render(win, {0, 0});
+	left_dot.render(svc, win, {0, 0});
+	right_dot.render(svc, win, {0, 0});
 
-	svc::playerLocator.get().render(win, svc::cameraLocator.get().physics.position);
+	svc::playerLocator.get().render(svc, win, svc::cameraLocator.get().physics.position);
 
 	hud.render(win);
 }

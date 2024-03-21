@@ -21,7 +21,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.console.test(Console::done)) { svc.assets.menu_back.play(); }
 	if (flags.console.test(Console::next)) { svc.assets.menu_next.play(); }
 	if (flags.console.test(Console::shift)) { svc.assets.menu_shift.play(); }
-	if (flags.console.test(Console::speech)) { repeat(svc.assets.menu_shift, 5, 0.2f); }
+	if (flags.console.test(Console::speech)) { repeat(svc, svc.assets.menu_shift, 5, 0.2f); }
 
 	// world
 	if (flags.world.test(World::load)) { svc.assets.load.play(); }
@@ -39,17 +39,17 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	// player
 	if (flags.player.test(Player::land)) { svc.assets.landed.play(); }
 	if (flags.player.test(Player::jump)) { svc.assets.jump.play(); }
-	if (flags.player.test(Player::step)) { randomize(svc.assets.step, 0.1f); }
+	if (flags.player.test(Player::step)) { randomize(svc, svc.assets.step, 0.1f); }
 	if (flags.player.test(Player::arms_switch)) { svc.assets.arms_switch.play(); }
 	if (flags.player.test(Player::hurt)) { svc.assets.hurt.play(); }
 
 	// gun
 	if (flags.weapon.test(Weapon::bryns_gun)) { svc.assets.bg_shot.play(); }
 	if (flags.weapon.test(Weapon::plasmer)) { svc.assets.plasmer_shot.play(); }
-	if (flags.weapon.test(Weapon::clover)) { repeat(svc.assets.pop_mid, 2, 0.3f);
+	if (flags.weapon.test(Weapon::clover)) { repeat(svc, svc.assets.pop_mid, 2, 0.3f);
 	}
 	if (flags.weapon.test(Weapon::nova)) { svc.assets.pop_mid.play(); }
-	if (flags.weapon.test(Weapon::tomahawk)) { repeat(svc.assets.tomahawk_flight, 30, 0.4f);
+	if (flags.weapon.test(Weapon::tomahawk)) { repeat(svc, svc.assets.tomahawk_flight, 30, 0.4f);
 	}
 	if (flags.weapon.test(Weapon::tomahawk_catch)) { svc.assets.tomahawk_catch.play(); }
 	if (flags.weapon.test(Weapon::hook_probe)) { svc.assets.sharp_click.play(); }
@@ -61,12 +61,12 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	proximities = {};
 }
 
-void Soundboard::repeat(sf::Sound& sound, int frequency, float random_pitch_offset) {
-	if (svc::tickerLocator.get().every_x_frames(frequency)) { randomize(sound, random_pitch_offset); }
+void Soundboard::repeat(automa::ServiceProvider& svc, sf::Sound& sound, int frequency, float random_pitch_offset) {
+	if (svc.ticker.every_x_frames(frequency)) { randomize(svc, sound, random_pitch_offset); }
 }
 
-void Soundboard::randomize(sf::Sound& sound, float random_pitch_offset) {
-	float random_pitch = svc::randomLocator.get().random_range_float(-random_pitch_offset, random_pitch_offset);
+void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset) {
+	float random_pitch = svc.random.random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.setPitch(1.f + random_pitch);
 	sound.play();
 }

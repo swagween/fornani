@@ -6,6 +6,10 @@
 #include <unordered_map>
 #include "../setup/ServiceLocator.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace bg {
 
 static size_t const num_layers{5};
@@ -59,7 +63,7 @@ class Background {
 	Background() = default;
 	Background(BackgroundBehavior b, int bg_id);
 
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& mapdim);
 
 	std::array<sf::Sprite, num_layers> sprites{};

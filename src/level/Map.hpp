@@ -72,11 +72,11 @@ class Map {
 	void render_console(gui::Console& console, sf::RenderWindow& win);
 	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
-	void spawn_projectile_at(sf::Vector2<float> pos);
+	void spawn_projectile_at(automa::ServiceProvider& svc, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer();
 	bool check_cell_collision(shape::Collider collider);
-	void handle_grappling_hook(arms::Projectile& proj);
+	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second);

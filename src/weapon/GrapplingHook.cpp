@@ -8,14 +8,14 @@ GrapplingHook::GrapplingHook(automa::ServiceProvider& svc) {
 	rope.setTexture(svc.assets.t_rope);
 	rope.setTextureRect(sf::IntRect({0, 0}, {6, 6}));
 }
-void GrapplingHook::update() {
+void GrapplingHook::update(automa::ServiceProvider& svc) {
 
 	if (grapple_flags.test(GrappleState::probing)) {
 		spring.set_bob(svc::playerLocator.get().equipped_weapon().barrel_point);
 		svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::hook_probe);
 	}
 	if (grapple_flags.test(GrappleState::anchored)) {
-		spring.update();
+		spring.update(svc);
 	}
 
 	if (grapple_triggers.test(arms::GrappleTriggers::released)) {
@@ -30,7 +30,7 @@ void GrapplingHook::update() {
 	if (grapple_flags.test(arms::GrappleState::snaking)) {
 		spring.set_rest_length(-80);
 		spring.set_anchor(svc::playerLocator.get().apparent_position);
-		spring.update();
+		spring.update(svc);
 	}
 }
 
@@ -42,8 +42,8 @@ void GrapplingHook::break_free() {
 	svc::playerLocator.get().controller.release_hook();
 }
 
-void GrapplingHook::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+void GrapplingHook::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
+	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		spring.render(win, campos);
 	} else {
 		float distance = util::magnitude(svc::playerLocator.get().collider.physics.position - spring.get_anchor());

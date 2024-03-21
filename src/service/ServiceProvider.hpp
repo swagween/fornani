@@ -6,6 +6,7 @@
 #include "../automa/StateController.hpp"
 #include "../graphics/Style.hpp"
 #include "../utils/Random.hpp"
+#include "../utils/Ticker.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode };
@@ -17,5 +18,6 @@ struct ServiceProvider {
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::Random random{};
 	StateController state_controller{};
+	util::Ticker ticker{};
 };
 } // namespace automa

@@ -1,7 +1,7 @@
 
 #include "Collider.hpp"
 #include "../graphics/FLColor.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "../level/Map.hpp"
 
 namespace shape {
@@ -236,8 +236,8 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	sync_components();
 }
 
-void Collider::update() {
-	physics.update();
+void Collider::update(automa::ServiceProvider& svc) {
+	physics.update(svc);
 	sync_components();
 	flags.reset(State::just_collided);
 	physics.gravity = flags.test(State::grounded) ? 0.0f : stats.GRAV;

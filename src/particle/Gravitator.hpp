@@ -4,6 +4,10 @@
 #include <string>
 #include "../utils/Collider.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace vfx {
 
 class Gravitator {
@@ -14,9 +18,9 @@ class Gravitator {
 
 	Gravitator() = default;
 	Gravitator(Vec pos, sf::Color col, float agf, Vec size = {4.f, 4.f});
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void set_target_position(Vec new_position);
-	void render(sf::RenderWindow& win, Vec campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 
 	shape::Collider collider{};
 	Vecu16 scaled_position{};

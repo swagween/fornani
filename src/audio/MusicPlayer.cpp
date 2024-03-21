@@ -2,7 +2,7 @@
 #pragma once
 
 #include "MusicPlayer.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace audio {
 void MusicPlayer::load(std::string song_name) {
@@ -32,18 +32,18 @@ void MusicPlayer::play_looped() {
 	music_clock.restart();
 	status = sf::SoundSource::Status::Playing;
 }
-void MusicPlayer::update() {
+void MusicPlayer::update(automa::ServiceProvider& svc) {
 	if (state_flags.test(SongState::off)) {
 		stop();
 		return;
 	}
 	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMilliseconds();
-	if (song_dt < svc::tickerLocator.get().tick_rate) {
+	if (song_dt < svc.ticker.tick_rate) {
 		if (song_loop.getStatus() == sf::SoundSource::Status::Playing) { return; }
 		status = sf::SoundSource::Status::Stopped;
 	}
 	if (status != sf::SoundSource::Status::Playing) {
-		std::chrono::milliseconds wait_time = std::chrono::milliseconds{(int)(svc::tickerLocator.get().tick_rate - song_dt)};
+		std::chrono::milliseconds wait_time = std::chrono::milliseconds{(int)(svc.ticker.tick_rate - song_dt)};
 		std::this_thread::sleep_for(wait_time * 20);
 		song_loop.play();
 		status = sf::SoundSource::Status::Playing;

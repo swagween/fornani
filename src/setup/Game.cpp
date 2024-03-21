@@ -54,7 +54,7 @@ Game::Game(char** argv) {
 void Game::run() { // load all assets
 	while (window.isOpen()) {
 
-		svc::tickerLocator.get().start_frame();
+		services.ticker.start_frame();
 		// reset global triggers
 		svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_trigger);
 
@@ -128,7 +128,7 @@ void Game::run() { // load all assets
 		}
 
 		// game logic and rendering
-		svc::tickerLocator.get().tick([this, &svc = services] { game_state.get_current_state().tick_update(svc); });
+		services.ticker.tick([this, &svc = services] { game_state.get_current_state().tick_update(svc); });
 		game_state.get_current_state().frame_update(services);
 
 		// play sounds
@@ -174,7 +174,8 @@ void Game::run() { // load all assets
 
 		ImGui::SFML::Render(window);
 		window.display();
-		svc::tickerLocator.get().end_frame();
+
+		services.ticker.end_frame();
 	}
 }
 
@@ -222,20 +223,20 @@ void Game::debug_window() {
 				if (ImGui::BeginTabItem("Time")) {
 					ImGui::Separator();
 					ImGui::Text("Ticker");
-					ImGui::Text("dt: %.8f", svc::tickerLocator.get().dt.count());
-					ImGui::Text("New Time: %.4f", svc::tickerLocator.get().new_time);
-					ImGui::Text("Current Time: %.4f", svc::tickerLocator.get().current_time);
-					ImGui::Text("Accumulator: %.4f", svc::tickerLocator.get().accumulator.count());
+					ImGui::Text("dt: %.8f", services.ticker.dt.count());
+					ImGui::Text("New Time: %.4f", services.ticker.new_time);
+					ImGui::Text("Current Time: %.4f", services.ticker.current_time);
+					ImGui::Text("Accumulator: %.4f", services.ticker.accumulator.count());
 					ImGui::Separator();
-					ImGui::Text("Seconds Passed: %.2f", svc::tickerLocator.get().total_seconds_passed.count());
-					ImGui::Text("Ticks Per Frame: %.2f", svc::tickerLocator.get().ticks_per_frame);
-					ImGui::Text("Frames Per Second: %.2f", svc::tickerLocator.get().fps);
+					ImGui::Text("Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
+					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
+					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
 					ImGui::Separator();
-					ImGui::SliderFloat("Tick Rate (ms): ", &svc::tickerLocator.get().tick_rate, 0.0001f, 0.02f, "%.5f");
-					ImGui::SliderFloat("Tick Multiplier: ", &svc::tickerLocator.get().tick_multiplier, 0.f, 64.f, "%.2f");
+					ImGui::SliderFloat("Tick Rate (ms): ", &services.ticker.tick_rate, 0.0001f, 0.02f, "%.5f");
+					ImGui::SliderFloat("Tick Multiplier: ", &services.ticker.tick_multiplier, 0.f, 64.f, "%.2f");
 					if (ImGui::Button("Reset")) {
-						svc::tickerLocator.get().tick_rate = 0.016f;
-						svc::tickerLocator.get().tick_multiplier = 16;
+						services.ticker.tick_rate = 0.016f;
+						services.ticker.tick_multiplier = 16;
 					}
 					ImGui::Separator();
 					ImGui::Text("Stopwatch");

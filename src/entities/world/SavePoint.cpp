@@ -11,22 +11,25 @@ SavePoint::SavePoint(automa::ServiceProvider& svc) {
 	dimensions = {32, 32};
 	bounding_box = shape::Shape(dimensions);
 	proximity_box = shape::Shape(dimensions * 16.f);
+	drawbox.setFillColor(sf::Color::Transparent);
+	drawbox.setOutlineThickness(-1);
+	drawbox.setSize(dimensions);
 
 	animation.set_params(anim_params);
 	sprite.setTexture(svc.assets.savepoint);
 
-	sparkler = vfx::Sparkler(dimensions, svc.styles.colors.green);
-	sparkler.set_position({scaled_position.x * 32.f, scaled_position.y * 32.f});
+	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.green, "save_point");
+	sparkler.set_position(position);
 }
 
 void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	animation.update();
-	sparkler.update();
+	sparkler.update(svc);
 
 	sf::Vector2<float> proximity_offset = proximity_box.dimensions * 0.5f + dimensions * 0.5f;
 	position = static_cast<Vec>(scaled_position) * 32.f;
-	sparkler.set_position({position.x + dimensions.x * 0.5f, position.y + dimensions.y});
+	sparkler.set_position(position);
 	bounding_box.set_position(position);
 	proximity_box.set_position(position - proximity_offset);
 	activated = false;
@@ -56,9 +59,9 @@ void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 	}
 }
 
-void SavePoint::render(sf::RenderWindow& win, Vec campos) {
+void SavePoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
 
-	sparkler.render(win, campos);
+	sparkler.render(svc, win, campos);
 
 	sprite.setPosition((int)(position.x - 16.f - campos.x), (int)(position.y - 32.f - campos.y));
 	// get UV coords (only one row of sprites is supported)
@@ -66,23 +69,13 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	int v = (int)(animation.get_frame() * sprite_dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
-	win.draw(sprite);
-	
-	sf::RectangleShape box{};
-	if (activated) {
-		box.setFillColor(sf::Color{80, 180, 120, 100});
+	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+		drawbox.setPosition(position - campos);
+		activated ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
+		win.draw(drawbox);
 	} else {
-		box.setFillColor(sf::Color{180, 120, 80, 100});
+		win.draw(sprite);
 	}
-	box.setOutlineColor(sf::Color::White);
-	box.setOutlineThickness(-1);
-	box.setPosition(bounding_box.position - campos);
-	box.setSize(bounding_box.dimensions);
-	// win.draw(box);
-	box.setPosition(proximity_box.position - campos);
-	box.setSize(proximity_box.dimensions);
-	// win.draw(box);
-	
 }
 
 void SavePoint::save() {

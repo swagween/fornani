@@ -10,6 +10,10 @@
 #include "../utils/BitFlags.hpp"
 #include "../utils/Direction.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace components {
 
 const sf::Vector2<float> FRICTION_DEFAULT = {0.9f, 0.9f};
@@ -48,10 +52,10 @@ class PhysicsComponent {
 
 	void apply_force(sf::Vector2<float> force);
 	void apply_force_at_angle(float magnitude, float angle);
-	void update_euler();
-	void integrate();
-	void update();
-	void update_dampen();
+	void update_euler(automa::ServiceProvider& svc);
+	void integrate(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc);
+	void update_dampen(automa::ServiceProvider& svc);
 	void calculate_maximum_acceleration();
 	void calculate_jerk();
 	void zero();

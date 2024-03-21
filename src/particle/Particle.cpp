@@ -37,9 +37,9 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	lifespan.start(lifespan_time + rand_diff);
 }
 
-void Particle::update(world::Map& map) {
+void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 
-	collider.update();
+	collider.update(svc);
 	collider.detect_map_collision(map);
 	collider.reset();
 	collider.reset_ground_flags();

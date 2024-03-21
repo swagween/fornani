@@ -38,7 +38,7 @@ void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
 				found_one = true;
 				sf::Vector2<float> spawn_position{portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - player::PLAYER_HEIGHT};
 				svc::playerLocator.get().set_position(spawn_position);
-				svc::cameraLocator.get().center(spawn_position);
+				svc::cameraLocator.get().center(svc, spawn_position);
 				svc::cameraLocator.get().physics.position = spawn_position - sf::Vector2<float>(svc::cameraLocator.get().bounding_box.width / 2, svc::cameraLocator.get().bounding_box.height / 2);
 			}
 		}
@@ -89,8 +89,8 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	map.update(svc, console);
 
-	svc::cameraLocator.get().center(svc::playerLocator.get().anchor_point);
-	svc::cameraLocator.get().update();
+	svc::cameraLocator.get().center(svc, svc::playerLocator.get().anchor_point);
+	svc::cameraLocator.get().update(svc);
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);
 	if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
 	if (map.real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(map.real_dimensions); }
@@ -104,7 +104,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {
-	map.background->update();
+	map.background->update(svc);
 	hud.update();
 }
 

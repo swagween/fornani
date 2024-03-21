@@ -7,6 +7,10 @@
 #include "../setup/ResourceFinder.hpp"
 #include <thread>
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace audio {
 
 enum class Song { clay_statue };
@@ -17,7 +21,7 @@ class MusicPlayer {
 	void load(std::string song_name);
 	void play_once();
 	void play_looped();
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void pause();
 	void stop();
 	void fade_out();

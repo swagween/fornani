@@ -11,7 +11,9 @@ Player::Player() {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
-	svc::dataLocator.get().load_player_params();
+	m_services = &svc;
+
+	svc.data.load_player_params();
 	arsenal = arms::Arsenal(svc);
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
@@ -86,7 +88,7 @@ void Player::update(gui::Console& console) {
 
 
 	// for parameter tweaking, remove later
-	collider.update();
+	collider.update(*m_services);
 
 	update_invincibility();
 
@@ -106,15 +108,15 @@ void Player::update(gui::Console& console) {
 
 }
 
-void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 	sf::Vector2<float> player_pos = apparent_position - campos;
 	calculate_sprite_offset();
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
-	if (svc::tickerLocator.get().every_x_frames(8) && animation.state.test(AnimState::dash)) { sprite_history.update(sprite); }
-	if (svc::tickerLocator.get().every_x_frames(8) && !animation.state.test(AnimState::dash)) { sprite_history.flush(); }
+	if (svc.ticker.every_x_frames(8) && animation.state.test(AnimState::dash)) { sprite_history.update(sprite); }
+	if (svc.ticker.every_x_frames(8) && !animation.state.test(AnimState::dash)) { sprite_history.flush(); }
 	drag_sprite(win, campos);
 
 	// get UV coords
@@ -139,11 +141,11 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 			collider.render(win, campos);
 		} else {
-			antennae[1].render(win, campos);
-			antennae[3].render(win, campos);
+			antennae[1].render(svc, win, campos);
+			antennae[3].render(svc, win, campos);
 			win.draw(sprite);
-			antennae[0].render(win, campos);
-			antennae[2].render(win, campos);
+			antennae[0].render(svc, win, campos);
+			antennae[2].render(svc, win, campos);
 		}
 	}
 
@@ -277,7 +279,7 @@ void Player::set_position(sf::Vector2<float> new_pos) {
 	collider.sync_components();
 	int ctr{0};
 	for (auto& a : antennae) {
-		a.update();
+		a.update(*m_services);
 		a.collider.physics.position = collider.physics.position + antenna_offset;
 		antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.0f;
 		++ctr;
@@ -342,7 +344,7 @@ void Player::update_antennae() {
 	int ctr{0};
 	for (auto& a : antennae) {
 		a.set_target_position(collider.physics.position + antenna_offset);
-		a.update();
+		a.update(*m_services);
 		a.collider.sync_components();
 		if (controller.facing_right()) {
 			antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;

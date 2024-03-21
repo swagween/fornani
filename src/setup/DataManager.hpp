@@ -26,6 +26,7 @@ class DataManager {
 	dj::Json weapon{};
 	dj::Json drop{};
 	dj::Json particle{};
+	dj::Json sparkler{};
 
 	//enemy
 	dj::Json enemy{};

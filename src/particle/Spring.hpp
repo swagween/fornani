@@ -16,7 +16,7 @@ class Spring {
 	Spring() = default;
 	Spring(Parameters params);
 	void calculate();
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void calculate_force();
 	void reverse_anchor_and_bob();

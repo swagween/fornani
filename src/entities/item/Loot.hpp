@@ -23,8 +23,8 @@ class Loot {
 	Loot() = default;
 	Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos);
 
-	void update(world::Map& map, player::Player& player);
-	void render(sf::RenderWindow& win, sf::Vector2<float> campos);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
 	void set_position(sf::Vector2<float> pos);
 
   private:

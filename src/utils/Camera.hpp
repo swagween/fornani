@@ -6,6 +6,7 @@
 #include <vector>
 #include "../components/PhysicsComponent.hpp"
 #include "../utils/Random.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace cam {
 
@@ -34,14 +35,14 @@ class Camera {
 		bounding_box = sf::Rect<float>({0.0f, 0.0f}, {(float)screen_dimensions.x, (float)screen_dimensions.y});
 	}
 
-	void move(sf::Vector2<float> new_position) {
+	void move(automa::ServiceProvider& svc, sf::Vector2<float> new_position) {
 		physics.apply_force(physics.position - new_position);
-		update();
+		update(svc);
 	}
 
-	void update() {
+	void update(automa::ServiceProvider& svc) {
 
-		physics.update_dampen();
+		physics.update_dampen(svc);
 		observed_velocity = physics.velocity;
 		bounding_box.left = physics.position.x;
 		bounding_box.top = physics.position.y;
@@ -87,7 +88,7 @@ class Camera {
 
 	void set_position(sf::Vector2<float> new_pos) { physics.position = new_pos; }
 
-	void center(sf::Vector2<float> new_position) {
+	void center(automa::ServiceProvider& svc, sf::Vector2<float> new_position) {
 		float gx = physics.position.x;
 		float gy = physics.position.y;
 		float mx = new_position.x - bounding_box.width / 2;
@@ -101,7 +102,7 @@ class Camera {
 		force_x *= str;
 		force_y *= str;
 		physics.apply_force({force_x, force_y});
-		update();
+		update(svc);
 	}
 
 	bool within_frame(int x, int y) { return (x > 0) && (x < screen_dimensions.x + border_buffer) && (y > 0) && (y < screen_dimensions.y + border_buffer); }

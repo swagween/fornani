@@ -74,7 +74,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, int id) {
 	set_sprite();
 }
 
-void Projectile::update() {
+void Projectile::update(automa::ServiceProvider& svc) {
 
 	// animation
 	animation.update();
@@ -82,7 +82,7 @@ void Projectile::update() {
 	cooldown.update();
 
 	if (stats.spring) {
-		hook.update();
+		hook.update(svc);
 		if (hook.grapple_flags.test(arms::GrappleState::probing)) {
 			hook.spring.set_anchor(physics.position);
 			hook.spring.set_bob(svc::playerLocator.get().apparent_position);
@@ -109,7 +109,7 @@ void Projectile::update() {
 	// tomahawk-specific stuff
 	if (stats.boomerang) {
 		gravitator.set_target_position(svc::playerLocator.get().apparent_position);
-		gravitator.update();
+		gravitator.update(svc);
 		physics.position = gravitator.collider.physics.position;
 		svc::soundboardLocator.get().flags.weapon.set(lookup::gun_sound.at(type)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
@@ -122,8 +122,8 @@ void Projectile::update() {
 	constrain_hitbox_at_barrel();
 	if (state.test(ProjectileState::destruction_initiated)) { constrain_hitbox_at_destruction_point(); }
 	if (state.test(ProjectileState::destruction_initiated) && !stats.constrained) { destroy(true); }
-
-	physics.update_euler();
+	
+	physics.update_euler(svc);
 
 	if (direction.lr == dir::LR::left) {
 		bounding_box.set_position(shape::Shape::Vec{physics.position.x, physics.position.y - bounding_box.dimensions.y / 2});
@@ -145,14 +145,13 @@ void Projectile::update() {
 	}
 }
 
-void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Projectile::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 	// this is the right idea but needs to be refactored and generalized
 	if (render_type == RENDER_TYPE::MULTI_SPRITE) {
 		for (auto& sprite : sp_proj) {
 			constrain_sprite_at_barrel(sprite, campos);
 			win.draw(sprite);
-			
 		}
 
 	} else if (render_type == RENDER_TYPE::SINGLE_SPRITE) {
@@ -165,7 +164,7 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 			// unconstrained projectiles have to get sprites set here
 			if (stats.boomerang) { sp_proj.at(0).setPosition(gravitator.collider.physics.position - campos); }
-			if (stats.spring) { hook.render(win, campos); }
+			if (stats.spring) { hook.render(svc, win, campos); }
 			if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) {
 				sp_proj.at(0).setPosition(hook.spring.get_bob() - campos);
 			} else if (stats.spring) {
@@ -184,13 +183,12 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			}
 			box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
 
-			if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-				gravitator.render(win, campos);
+			if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+				gravitator.render(svc, win, campos);
 				win.draw(box);
 				
 			} else {
 				win.draw(sp_proj.at(0));
-				
 			}
 		}
 	}

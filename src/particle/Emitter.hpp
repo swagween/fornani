@@ -25,6 +25,7 @@ class Emitter {
 
 	std::string_view type{};
 	sf::Color color{};
+	sf::RectangleShape drawbox{}; // for debug
 	util::Cooldown cooldown{};
 	dir::Direction direction{};
 	bool active{true};
