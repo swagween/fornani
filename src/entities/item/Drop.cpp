@@ -9,6 +9,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 
 	collider = shape::Collider(drop_dimensions);
 	collider.sync_components();
+	collider.physics.elasticity = 1.0f;
 
 	sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
 	sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();

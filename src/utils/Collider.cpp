@@ -100,10 +100,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			if (is_ground_ramp) {
 				if (actual_mtv.y < 0.f) { physics.position.y += actual_mtv.y; }
 				// still zero this because of gravity
-				if (!movement_flags.test(Movement::jumping)) {
-					physics.velocity.y = 0.0f;
-					physics.acceleration.y = 0.0f;
-				}
+				if (!movement_flags.test(Movement::jumping)) { physics.zero_y(); }
 			}
 			if (is_ceiling_ramp) { correct_x_y(actual_mtv); }
 			// cancel dash
@@ -164,37 +161,32 @@ void Collider::correct_x(sf::Vector2<float> mtv) {
 	auto xdist = predictive_horizontal.position.x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
 	physics.position.x += correction;
-	physics.acceleration.x = 0.0f;
-	physics.velocity.x = 0.0f;
+	physics.zero_x();
 }
 
 void Collider::correct_y(sf::Vector2<float> mtv) {
 	auto ydist = predictive_vertical.position.y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
 	physics.position.y += correction;
-	physics.acceleration.y = 0.0f;
-	physics.velocity.y = 0.0f;
+	physics.zero_y();
 }
 
 void Collider::correct_x_y(sf::Vector2<float> mtv) {
 	auto xdist = predictive_combined.position.x - physics.position.x;
 	auto correction = xdist + mtv.x;
 	physics.position.x += correction;
-	physics.acceleration.x = 0.0f;
-	physics.velocity.x = 0.0f;
+	physics.zero_x();
 	auto ydist = predictive_combined.position.y - physics.position.y;
 	correction = ydist + mtv.y;
 	physics.position.y += correction;
-	physics.acceleration.y = 0.0f;
-	physics.velocity.y = 0.0f;
+	physics.zero_y();
 }
 
 void Collider::correct_corner(sf::Vector2<float> mtv) {
 	auto ydist = predictive_vertical.position.y - physics.position.y;
 	auto correction = ydist + mtv.y;
 	physics.position.y += correction;
-	physics.acceleration.y = 0.0f;
-	physics.velocity.y = 0.0f;
+	physics.zero_y();
 }
 
 void Collider::handle_platform_collision(Shape const& cell) {}

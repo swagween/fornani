@@ -39,7 +39,7 @@ class Enemy : public entity::Entity {
 	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player){};
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
-	[[nodiscard]] auto get_collider() const -> shape::Collider { return collider; }
+	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
 	void set_position(sf::Vector2<float> pos) {
 		collider.physics.position = pos;

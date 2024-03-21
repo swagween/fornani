@@ -89,6 +89,16 @@ void PhysicsComponent::zero() {
 	velocity = {0.0f, 0.0f};
 }
 
+void PhysicsComponent::zero_x() {
+	acceleration.x = 0.0f;
+	velocity.x *= -elasticity;
+}
+
+void PhysicsComponent::zero_y() {
+	acceleration.y = 0.0f;
+	velocity.y *= -elasticity;
+}
+
 void PhysicsComponent::hitstun() {}
 
 void PhysicsComponent::set_constant_friction(sf::Vector2<float> fric) {

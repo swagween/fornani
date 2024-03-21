@@ -16,6 +16,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	auto expulsion = in_data["expulsion"].as<float>();
 	auto expulsion_variance = in_data["expulsion_variance"].as<float>();
 	auto angle_range = in_data["cone"].as<float>();
+	collider.physics.elasticity = in_data["elasticity"].as<float>();
 	collider.physics.set_global_friction(in_data["friction"].as<float>());
 	collider.stats.GRAV = in_data["gravity"].as<float>();
 

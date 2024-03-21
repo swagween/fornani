@@ -42,6 +42,7 @@ class PhysicsComponent {
 
 	// properties
 	float mass{1.0f};
+	float elasticity{0.0f};
 	float gravity{};
 	sf::Vector2<float> maximum_velocity{UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED};
 
@@ -54,6 +55,8 @@ class PhysicsComponent {
 	void calculate_maximum_acceleration();
 	void calculate_jerk();
 	void zero();
+	void zero_x();
+	void zero_y();
 	void hitstun();
 	void set_constant_friction(sf::Vector2<float> fric);
 	void set_global_friction(float fric);

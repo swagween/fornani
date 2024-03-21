@@ -268,6 +268,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
+		svc::stopwatchLocator.get().start();
 		for (auto& enemy : enemy_catalog.enemies) {
 			if (proj.team != arms::TEAMS::SKYCORPS) {
 				if (proj.bounding_box.overlaps(enemy->get_collider().bounding_box)) {
@@ -285,6 +286,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 				}
 			}
 		}
+		svc::stopwatchLocator.get().stop();
 		if (proj.bounding_box.overlaps(svc::playerLocator.get().collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
 			svc::playerLocator.get().hurt(proj.stats.base_damage);
 			proj.destroy(false);
