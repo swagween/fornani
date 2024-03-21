@@ -67,14 +67,15 @@ class Map {
 	// methods
 	void load(automa::ServiceProvider& svc, std::string const& path);
 	void update(automa::ServiceProvider& svc, gui::Console& console);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
-	void render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_console(gui::Console& console, sf::RenderWindow& win);
 	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
 	void spawn_projectile_at(automa::ServiceProvider& svc, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer();
+	void generate_layer_textures(automa::ServiceProvider& svc);
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	Vec get_spawn_position(int portal_source_map_id);
@@ -103,12 +104,19 @@ class Map {
 
 	enemy::EnemyCatalog enemy_catalog;
 
-	lookup::STYLE style{}; // which tileset to render
-
 	// minimap
 	sf::View minimap{};
 	sf::RectangleShape minimap_tile{};
 	sf::RectangleShape borderbox{};
+
+	//layers
+	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};
+	sf::Sprite tile_sprite{};
+	sf::Sprite layer_sprite{};
+	std::string_view style_label{};
+	int style_id{};
+	int native_style_id{};
+
 	int bg{}; // which background to render
 	float collision_barrier = 1.5f;
 

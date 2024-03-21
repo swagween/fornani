@@ -14,7 +14,8 @@ void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
 	svc::playerLocator.get().reset_flags();
 
 	map.load(svc, load_path);
-	tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
+	//tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
+	tileset = svc.assets.tilesets.at(map.style_id);
 	for (int i = 0; i < 16; ++i) {
 		for (int j = 0; j < 16; ++j) {
 			tileset_sprites.push_back(sf::Sprite());
@@ -111,9 +112,9 @@ void Dojo::frame_update(ServiceProvider& svc) {
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	sf::Vector2<float> camvel = svc::cameraLocator.get().physics.velocity;
 	sf::Vector2<float> camoffset = svc::cameraLocator.get().physics.position + camvel;
-	map.render_background(win, tileset_sprites, svc::cameraLocator.get().physics.position);
+	map.render_background(svc, win, svc::cameraLocator.get().physics.position);
 
-	map.render(svc, win, tileset_sprites, svc::cameraLocator.get().physics.position);
+	map.render(svc, win, svc::cameraLocator.get().physics.position);
 
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
 	map.render_console(console, win);
@@ -129,7 +130,8 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 			tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(lookup::STYLE::PROVISIONAL));
 			setTilesetTexture(svc, tileset);
 		} else {
-			tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
+			//tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
+			tileset = svc.assets.tilesets.at(map.style_id);
 			setTilesetTexture(svc, tileset);
 		}
 	}

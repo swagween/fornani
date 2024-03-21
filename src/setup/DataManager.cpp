@@ -31,6 +31,11 @@ void DataManager::load_data() {
 	assert(!sparkler.is_null());
 	std::cout << " success!\n";
 
+	map_styles = dj::Json::from_file((finder.resource_path + "/data/level/map_styles.json").c_str());
+	std::cout << "loading map_styles data ...";
+	assert(!map_styles.is_null());
+	std::cout << " success!\n";
+
 	// enemies
 	enemy = dj::Json::from_file((finder.resource_path + "/data/enemy/enemy_params.json").c_str());
 	std::cout << "loading enemy parameters ...";

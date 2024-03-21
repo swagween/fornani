@@ -112,9 +112,11 @@ void Game::run() { // load all assets
 					if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 						svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_state);
 						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
+						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 					} else {
 						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
 						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
+						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 					}
 					services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 				}

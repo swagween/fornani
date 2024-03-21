@@ -30,6 +30,7 @@ Background::Background(BackgroundBehavior b, int bg_id) : behavior(b) {
 
 void Background::update(automa::ServiceProvider& svc) {
 	float frame_speedup = std::clamp(svc::cameraLocator.get().observed_velocity.x, 1.f, std::numeric_limits<float>::infinity()); // positive number
+	frame_speedup *= 0.3f;
 	
 	if (behavior.scrolling) {
 		if (physics.size() < sprites.size()) { return; }

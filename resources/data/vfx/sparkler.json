@@ -10,7 +10,7 @@
   },
 
   "save_point": {
-    "rate": 6.0,
+    "rate": 3.0,
     "volatility": 0.5,
     "wobble": 0.02,
     "frequency": 0.005,

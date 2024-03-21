@@ -296,7 +296,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});
 	box.setPosition(vicinity.position.x - cam.x, vicinity.position.y - cam.y);
 	box.setFillColor(sf::Color::Transparent);
-	box.setOutlineColor(flcolor::dark_orange);
+	box.setOutlineColor(sf::Color{120, 60, 80, 80});
 	box.setOutlineThickness(-1);
 	win.draw(box);
 

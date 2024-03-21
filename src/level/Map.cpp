@@ -52,7 +52,10 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 		printf("File is corrupted: Invalid style.\n");
 		return;
 	} else {
-		style = lookup::get_style.at(value);
+		style_label = svc.data.map_styles["styles"][value]["label"].as_string();
+		style_id = svc.data.map_styles["styles"][value]["id"].as<int>();
+		if (svc.greyblock_mode()) { style_id = 20; }
+		native_style_id = svc.data.map_styles["styles"][value]["id"].as<int>();
 	}
 	// bg;
 	input >> value;
@@ -220,6 +223,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	minimap.setViewport(sf::FloatRect(0.0f, 0.75f, 0.2f, 0.2f));
 
 	generate_collidable_layer();
+	generate_layer_textures(svc);
 }
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
@@ -344,7 +348,15 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	if (svc.ticker.every_x_frames(1)) { transition.update(); }
 }
 
-void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
+void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+
+	//check for a switch to greyblock mode
+	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
+		style_id = style_id == 20 ? native_style_id : 20;
+		generate_layer_textures(svc);
+		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
+	}
+
 	for (auto& proj : active_projectiles) {
 		proj.render(svc, win, cam);
 		if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) { proj.hook.spring.render(win, cam); }
@@ -368,21 +380,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
-	// level foreground
-	for (auto& layer : layers) {
-		if (layer.render_order >= 4) {
-			for (auto& cell : layer.grid.cells) {
-				if (cell.is_occupied()) {
-					if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state) || layer.render_order == 4) {
-						int cell_x = cell.bounding_box.position.x - cam.x;
-						int cell_y = cell.bounding_box.position.y - cam.y;
-						tileset.at(cell.value).setPosition(cell_x, cell_y);
-						if (svc::cameraLocator.get().within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) { win.draw(tileset.at(cell.value)); }
-					}
-					cell.render(win, cam);
-				}
-			}
-		}
+	for (int i = 4; i < NUM_LAYERS; ++i) {
+		if (svc.greyblock_mode() && i != 4) { continue; }
+		layer_textures.at(i).display();
+		layer_sprite.setTexture(layer_textures.at(i).getTexture());
+		layer_sprite.setPosition(-cam);
+		win.draw(layer_sprite);
 	}
 
 	if (real_dimensions.y < cam::screen_dimensions.y) {
@@ -437,9 +440,15 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::vecto
 	}
 }
 
-void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tileset, sf::Vector2<float> cam) {
-	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (!svc.greyblock_mode()) {
 		background->render(win, cam, real_dimensions);
+		for (int i = 0; i < 4; ++i) {
+			layer_textures.at(i).display();
+			layer_sprite.setTexture(layer_textures.at(i).getTexture());
+			layer_sprite.setPosition(-cam);
+			win.draw(layer_sprite);
+		}
 	} else {
 		sf::RectangleShape box{};
 		box.setPosition(0, 0);
@@ -448,20 +457,6 @@ void Map::render_background(sf::RenderWindow& win, std::vector<sf::Sprite>& tile
 		win.draw(box);
 	}
 	if (real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(real_dimensions); }
-	for (auto& layer : layers) {
-		if (layer.render_order < 4) {
-			for (auto& cell : layer.grid.cells) {
-				if (cell.is_occupied()) {
-					int cell_x = cell.bounding_box.position.x - cam.x;
-					int cell_y = cell.bounding_box.position.y - cam.y;
-					tileset.at(cell.value).setPosition(cell_x, cell_y);
-					if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-						if (svc::cameraLocator.get().within_frame(cell_x + CELL_SIZE, cell_y + CELL_SIZE)) { win.draw(tileset.at(cell.value)); }
-					}
-				}
-			}
-		}
-	}
 }
 
 void Map::render_console(gui::Console& console, sf::RenderWindow& win) {
@@ -524,6 +519,23 @@ void Map::generate_collidable_layer() {
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
 		if (!cell.surrounded && cell.is_occupied()) { collidable_indeces.push_back(cell.one_d_index); }
+	}
+}
+
+void Map::generate_layer_textures(automa::ServiceProvider& svc) {
+	for (auto& layer : layers) {
+		layer_textures.at(layer.render_order).clear(sf::Color::Transparent);
+		layer_textures.at(layer.render_order).create(layer.grid.dimensions.x * svc.constants.cell_size, layer.grid.dimensions.y * svc.constants.cell_size);
+		for (auto& cell : layer.grid.cells) {
+			if (cell.is_occupied()) {
+				int x_coord = (cell.value % svc.constants.tileset_scaled.x) * svc.constants.cell_size;
+				int y_coord = (cell.value / svc.constants.tileset_scaled.x) * svc.constants.cell_size;
+				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
+				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {(int)svc.constants.cell_size, (int)svc.constants.cell_size}));
+				tile_sprite.setPosition(cell.bounding_box.position);
+				layer_textures.at(layer.render_order).draw(tile_sprite);
+			}
+		}
 	}
 }
 
