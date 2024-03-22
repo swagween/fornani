@@ -16,7 +16,8 @@ class Spark {
 	Spark(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Color color, std::string_view type);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win,sf::Vector2<float> cam);
-	bool done() const;
+	[[nodiscard]] auto done() const -> bool { return lifespan.is_complete(); }
+
   private:
 	sf::RectangleShape box{};
 	sf::Vector2<float> position{};

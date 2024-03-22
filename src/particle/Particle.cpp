@@ -1,6 +1,5 @@
 
 #include "Particle.hpp"
-#include "../setup/ServiceLocator.hpp"
 #include "../service/ServiceProvider.hpp"
 #include <numbers>
 
@@ -20,20 +19,19 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	collider.physics.set_global_friction(in_data["friction"].as<float>());
 	collider.stats.GRAV = in_data["gravity"].as<float>();
 
-	//expulsion = direction.lr == dir::LR::left ? -expulsion : expulsion;
 	auto angle = svc.random.random_range_float(-angle_range, angle_range);
 	if (direction.lr == dir::LR::left) { angle += std::numbers::pi; }
 	if (direction.und == dir::UND::up) { angle += std::numbers::pi * 1.5; }
 	if (direction.und == dir::UND::down) { angle += std::numbers::pi * 0.5; }
 
-	expulsion += svc::randomLocator.get().random_range(-expulsion_variance, expulsion_variance);
+	expulsion += svc.random.random_range(-expulsion_variance, expulsion_variance);
 
 	collider.physics.apply_force_at_angle(expulsion, angle);
 	collider.physics.position = position;
 
 	auto lifespan_time = in_data["lifespan"].as<int>();
 	auto lifespan_variance = in_data["lifespan_variance"].as<int>();
-	int rand_diff = svc::randomLocator.get().random_range(-lifespan_variance, lifespan_variance);
+	int rand_diff = svc.random.random_range(-lifespan_variance, lifespan_variance);
 	lifespan.start(lifespan_time + rand_diff);
 }
 
@@ -49,7 +47,7 @@ void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { 
-	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 	} else {
 		box.setPosition(collider.physics.position - cam);

@@ -5,7 +5,7 @@
 namespace vfx {
 
 Emitter::Emitter(sf::Vector2<float> position, sf::Vector2<float> dimensions, std::string_view type, sf::Color color, dir::Direction direction) : position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
-	cooldown.start(8);
+	cooldown.start(18);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setOutlineColor(sf::Color::Red);
@@ -29,12 +29,11 @@ void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if(svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+	if (svc.greyblock_mode()) {
 		drawbox.setPosition(position - cam);
 		win.draw(drawbox);
-	} else {
-		for (auto& particle : particles) { particle.render(svc, win, cam); }
 	}
+	for (auto& particle : particles) { particle.render(svc, win, cam); }
 }
 
 void Emitter::set_position(sf::Vector2<float> pos) { position = pos; }

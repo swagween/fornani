@@ -27,7 +27,7 @@ void Sparkler::update(automa::ServiceProvider& svc) {
 }
 
 void Sparkler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if(svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+	if (svc.greyblock_mode()) {
 		drawbox.setPosition(position - cam);
 		win.draw(drawbox);
 	} else {

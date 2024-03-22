@@ -30,13 +30,9 @@ void Spark::update(automa::ServiceProvider& svc) {
 	lifespan.update();
 }
 
-void Spark::render(sf::RenderWindow& win, sf::Vector2<float> cam) { 
-	
+void Spark::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setPosition(position - cam);
 	win.draw(box);
 }
-
-bool Spark::done() const { return lifespan.is_complete(); }
-
 
 } // namespace vfx
