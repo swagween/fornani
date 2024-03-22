@@ -1,6 +1,7 @@
 #include <iostream>
 #include "EnemyCatalog.hpp"
 #include "../enemy/catalog/Frdog.hpp"
+#include "../enemy/catalog/Tank.hpp"
 
 namespace enemy {
 
@@ -12,7 +13,7 @@ void EnemyCatalog::update() {
 
 void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, int id) {
 	switch (id) {
-	case 5: enemies.push_back(std::make_unique<Frdog>(svc)); break;
+	case 5: enemies.push_back(std::make_unique<Tank>(svc)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	}
 }

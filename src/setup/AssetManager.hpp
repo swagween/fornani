@@ -35,8 +35,10 @@ class AssetManager {
 
 		t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 		t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
+		t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");
 		texture_lookup.insert({"frdog", t_frdog});
 		texture_lookup.insert({"hulmet", t_hulmet});
+		texture_lookup.insert({"tank", t_tank});
 
 		t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 		t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -187,6 +189,7 @@ class AssetManager {
 	// critters and bosses!
 	sf::Texture t_frdog{};
 	sf::Texture t_hulmet{};
+	sf::Texture t_tank{};
 
 	// gui
 	sf::Texture t_ui{};

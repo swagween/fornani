@@ -37,6 +37,7 @@ class Enemy : public entity::Entity {
 	void update(automa::ServiceProvider& svc, world::Map& map) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player){};
+	void handle_player_collision(player::Player& player) const;
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }

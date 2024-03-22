@@ -297,7 +297,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		}
 	}
 
-	for (auto& enemy : enemy_catalog.enemies) { enemy->unique_update(svc, *this, svc::playerLocator.get()); }
+	for (auto& enemy : enemy_catalog.enemies) {
+		enemy->unique_update(svc, *this, svc::playerLocator.get());
+		enemy->handle_player_collision(svc::playerLocator.get());
+	}
 	enemy_catalog.update();
 
 	for (auto& loot : active_loot) { loot.update(svc, *this, svc::playerLocator.get()); }

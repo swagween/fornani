@@ -1,5 +1,6 @@
 #include "Enemy.hpp"
 #include "../../service/ServiceProvider.hpp"
+#include "../player/Player.hpp"
 
 namespace enemy {
 
@@ -26,6 +27,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	sprite_dimensions.y = in_physical["sprite_dimensions"][1].as<int>();
 	spritesheet_dimensions.x = in_physical["spritesheet_dimensions"][0].as<int>();
 	spritesheet_dimensions.y = in_physical["spritesheet_dimensions"][1].as<int>();
+	sprite_offset.x = in_physical["offset"][0].as<int>();
+	sprite_offset.y = in_physical["offset"][1].as<int>();
 
 	// TODO: load hurtboxes and colliders
 
@@ -93,5 +96,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		win.draw(sprite);
 	}
 }
+
+void Enemy::handle_player_collision(player::Player& player) const { player.collider.handle_collider_collision(collider.bounding_box); }
 
 } // namespace enemy
