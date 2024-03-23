@@ -13,6 +13,7 @@
 #include "PlayerAnimation.hpp"
 #include "Transponder.hpp"
 #include "../../graphics/TextureUpdater.hpp"
+#include "../packages/Health.hpp"
 
 namespace gui {
 class Console;
@@ -48,8 +49,6 @@ constexpr inline float antenna_force{0.6f};
 constexpr inline float antenna_speed{16.f};
 
 struct PlayerStats {
-	int health{};
-	int max_health{};
 	int orbs{};
 	int max_orbs{};
 };
@@ -137,6 +136,7 @@ class Player {
 	Transponder transponder{};
 	shape::Collider collider{};
 	PlayerAnimation animation{};
+	entity::Health health{};
 
 	//weapons
 	arms::Arsenal arsenal;
@@ -151,7 +151,7 @@ class Player {
 	std::vector<vfx::Gravitator> antennae{};
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
-	PlayerStats player_stats{3, 3, 0, 99999};
+	PlayerStats player_stats{0, 99999};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 

@@ -345,11 +345,12 @@ void Game::debug_window() {
 						}
 						if (ImGui::BeginTabItem("Jump")) {
 							ImGui::Text("Jump Request : %i", svc::playerLocator.get().controller.get_jump().get_request());
+							ImGui::Text("Jump Cooldown : %i", svc::playerLocator.get().controller.get_jump().get_cooldown());
 							ImGui::Text("Jump Released : %s", svc::playerLocator.get().controller.get_jump().released() ? "Yes" : "No");
 							ImGui::Text("Can Jump : %s", svc::playerLocator.get().controller.get_jump().can_jump() ? "Yes" : "No");
-							ImGui::Text("Jumping? : %s", svc::playerLocator.get().controller.get_jump().jumping() ? "Yes" : "No");
+							ImGui::Text("Controller Jumping? : %s", svc::playerLocator.get().controller.get_jump().jumping() ? "Yes" : "No");
 							ImGui::Text("Jump Began? : %s", svc::playerLocator.get().controller.get_jump().began() ? "Yes" : "No");
-							ImGui::Text("Jumping? : %s", svc::playerLocator.get().collider.movement_flags.test(shape::Movement::jumping) ? "Yes" : "No");
+							ImGui::Text("Collider Jumping? : %s", svc::playerLocator.get().collider.movement_flags.test(shape::Movement::jumping) ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Dash")) {
@@ -382,8 +383,8 @@ void Game::debug_window() {
 						}
 						if (ImGui::BeginTabItem("Stats")) {
 							ImGui::Text("Player Stats");
-							ImGui::SliderInt("Max HP", &svc::playerLocator.get().player_stats.max_health, 3, 12);
-							ImGui::SliderInt("HP", &svc::playerLocator.get().player_stats.health, 3, 12);
+							ImGui::SliderFloat("Max HP", &svc::playerLocator.get().health.max_hp, 3, 12);
+							ImGui::SliderFloat("HP", &svc::playerLocator.get().health.hp, 0, 12);
 							ImGui::SliderInt("Max Orbs", &svc::playerLocator.get().player_stats.max_orbs, 99, 99999);
 							ImGui::SliderInt("Orbs", &svc::playerLocator.get().player_stats.orbs, 0, 99999);
 							ImGui::EndTabItem();
@@ -459,7 +460,7 @@ void Game::debug_window() {
 					ImGui::Text("Firing Direction UND : %s", svc::playerLocator.get().equipped_weapon().firing_direction.print_und().c_str());
 
 					ImGui::Text("Cooling Down? %s", svc::playerLocator.get().equipped_weapon().cooling_down() ? "Yes" : "No");
-					ImGui::Text("Cooldown Time %i", svc::playerLocator.get().equipped_weapon().cooldown_counter);
+					ImGui::Text("Cooldown Time %i", svc::playerLocator.get().equipped_weapon().cooldown.get_cooldown());
 					ImGui::Text("Active Projectiles: %i", svc::playerLocator.get().equipped_weapon().active_projectiles);
 
 					ImGui::Separator();
@@ -567,7 +568,7 @@ void Game::debug_window() {
 					if (ImGui::Button("Skycorps")) {
 						svc::assetLocator.get().click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services));
-						game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path + "/level/SKYCORPS_ANTECHAMBER_01");
+						game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path + "/level/SKYCORPS_YARD_01");
 
 						svc::playerLocator.get().set_position({28 * 32, 8 * 32});
 					}

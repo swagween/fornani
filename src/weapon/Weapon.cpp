@@ -41,12 +41,12 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
 void Weapon::update() {
 	active_projectiles = std::clamp(active_projectiles, 0, INT_MAX);
 	set_orientation();
-	if (cooling_down()) { --cooldown_counter; }
-	if (cooldown_counter < 0) {
+	cooldown.update();
+	if (cooldown.is_complete()) {
 		flags.reset(GunState::cooling_down);
-		cooldown_counter = 0;
+	} else {
+		flags.set(GunState::cooling_down);
 	}
-	if (cooldown_counter > 0) { flags.set(GunState::cooling_down); }
 	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x + gun_offset.x,
 								svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + gun_offset.y - svc::playerLocator.get().collider.dimensions.y / 2.f};
 	set_position(p_pos);
@@ -79,12 +79,7 @@ void Weapon::unequip() { flags.reset(GunState::equipped); }
 void Weapon::unlock() { flags.set(GunState::unlocked); }
 void Weapon::lock() { flags.reset(GunState::unlocked); }
 
-void Weapon::shoot() { cooldown(); }
-
-void Weapon::cooldown() {
-	flags.set(GunState::cooling_down);
-	cooldown_counter = attributes.cooldown_time;
-}
+void Weapon::shoot() { cooldown.start(attributes.cooldown_time); }
 
 bool Weapon::is_equipped() const { return flags.test(GunState::equipped); }
 bool Weapon::is_unlocked() const { return flags.test(GunState::unlocked); }

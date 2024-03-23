@@ -57,7 +57,6 @@ class Weapon {
 	void unlock();
 	void lock();
 	void shoot();
-	void cooldown();
 
 	bool is_equipped() const;
 	bool is_unlocked() const;
@@ -91,7 +90,7 @@ class Weapon {
 	sf::Sprite sp_gun{};
 
 	int active_projectiles{};
-	int cooldown_counter{};
+	util::Cooldown cooldown{};
 	dir::Direction firing_direction{};
 
   private:

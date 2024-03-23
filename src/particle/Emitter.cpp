@@ -1,11 +1,15 @@
 #include "Emitter.hpp"
-#include "../setup/ServiceLocator.hpp"
 #include "../service/ServiceProvider.hpp"
 
 namespace vfx {
 
-Emitter::Emitter(sf::Vector2<float> position, sf::Vector2<float> dimensions, std::string_view type, sf::Color color, dir::Direction direction) : position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
-	cooldown.start(18);
+Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, std::string_view type, sf::Color color, dir::Direction direction)
+	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
+	auto const& in_data = svc.data.particle[type];
+	variables.load = in_data["load"].as<int>();
+	variables.rate = in_data["rate"].as<float>();
+	
+	cooldown.start(variables.load);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setOutlineColor(sf::Color::Red);
@@ -15,11 +19,11 @@ Emitter::Emitter(sf::Vector2<float> position, sf::Vector2<float> dimensions, std
 void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 	cooldown.update();
 	if (cooldown.is_complete()) { deactivate(); }
-	if (active) {
-		auto x = svc::randomLocator.get().random_range_float(0.f, dimensions.x);
-		auto y = svc::randomLocator.get().random_range_float(0.f, dimensions.y);
+	if (active && (svc.random.percent_chance(variables.rate) || particles.empty())) {
+		auto x = svc.random.random_range_float(0.f, dimensions.x);
+		auto y = svc.random.random_range_float(0.f, dimensions.y);
 		sf::Vector2<float> point{position.x + x, position.y + y};
-		 particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
+		particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
 	
 	}
 	for (auto& particle : particles) {

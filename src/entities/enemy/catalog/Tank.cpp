@@ -4,7 +4,7 @@
 
 namespace enemy {
 
-Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank") {}
+Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank") { animation.set_params(idle); }
 
 void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	
@@ -28,7 +28,7 @@ fsm::StateFunction Tank::update_idle() {
 	}
 	state = {};
 	state.set(TankState::idle);
-	return std::move(state_function);
+	return TANK_BIND(update_idle);
 };
 fsm::StateFunction Tank::update_turn() {
 	animation.label = "turn";

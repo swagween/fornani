@@ -491,7 +491,7 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, sf::Vector2<float> p
 		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);
 	}
 
-	active_emitters.push_back(vfx::Emitter(weapon.barrel_point, weapon.emitter_dimensions, weapon.emitter_type, weapon.emitter_color, weapon.firing_direction));
+	active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.emitter_dimensions, weapon.emitter_type, weapon.emitter_color, weapon.firing_direction));
 }
 
 void Map::manage_projectiles(automa::ServiceProvider& svc) {

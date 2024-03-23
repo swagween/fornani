@@ -4,10 +4,12 @@
 
 namespace entity {
 
-void Health::set_max(float max) {
-	max_hp = max;
-	hp = max;
+void Health::set_max(float amount) {
+	max_hp = amount;
+	hp = amount;
 }
+
+void Health::set_hp(float amount) { hp = amount; }
 
 void Health::update(automa::ServiceProvider& svc, world::Map& map) { hp = std::clamp(hp, 0.f, max_hp); }
 
@@ -20,6 +22,10 @@ void Health::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	win.draw(drawbox);
 };
 
+void Health::heal(float amount) { hp += amount; }
+
 void Health::inflict(float amount) { hp -= amount; }
+
+void Health::reset() { hp = max_hp; }
 
 } // namespace entity

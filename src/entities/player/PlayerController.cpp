@@ -93,19 +93,19 @@ void PlayerController::update() {
 
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
 
-	bool can_launch = !restricted() && flags.test(MovementState::grounded) && !jump.states.test(player::JumpState::jumping);
-	can_launch ? jump.states.set(player::JumpState::can_jump) : jump.states.reset(player::JumpState::can_jump);
+	bool can_launch = !restricted() && flags.test(MovementState::grounded) && !jump.launched();
+	can_launch ? jump.states.set(JumpState::can_jump) : jump.states.reset(JumpState::can_jump);
 
 	if (jump_started) { jump.request_jump(); }
 	if (jump_held) {
-		jump.states.set(player::JumpState::jump_held);
+		jump.states.set(JumpState::jump_held);
 	} else {
-		jump.states.reset(player::JumpState::jump_held);
+		jump.states.reset(JumpState::jump_held);
 	}
-	if (jump_released) { jump.triggers.set(player::JumpTrigger::is_released); }
+	if (jump_released) { jump.triggers.set(JumpTrigger::is_released); }
 
 	if (jump.requested() && flags.test(MovementState::grounded)) {
-		jump.triggers.set(player::JumpTrigger::jumpsquat);
+		jump.triggers.set(JumpTrigger::jumpsquat);
 		jump.prevent();
 	}
 
@@ -244,6 +244,6 @@ int PlayerController::get_dash_count() const { return dash_count; }
 
 float PlayerController::dash_value() { return key_map[ControllerInput::dash]; }
 
-player::Jump& PlayerController::get_jump() { return jump; }
+Jump& PlayerController::get_jump() { return jump; }
 
 } // namespace controllers

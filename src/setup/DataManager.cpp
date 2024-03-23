@@ -63,8 +63,8 @@ void DataManager::load_data() {
 void DataManager::save_progress(int save_point_id) {
 
 	// set file data based on player state
-	save["player_data"]["max_hp"] = svc::playerLocator.get().player_stats.max_health;
-	save["player_data"]["hp"] = svc::playerLocator.get().player_stats.health;
+	save["player_data"]["max_hp"] = svc::playerLocator.get().health.get_max();
+	save["player_data"]["hp"] = svc::playerLocator.get().health.get_hp();
 	save["player_data"]["orbs"] = svc::playerLocator.get().player_stats.orbs;
 	save["player_data"]["position"]["x"] = svc::playerLocator.get().collider.physics.position.x;
 	save["player_data"]["position"]["y"] = svc::playerLocator.get().collider.physics.position.y;
@@ -97,8 +97,8 @@ std::string_view DataManager::load_progress(int const file, bool state_switch) {
 	int room_id = lookup::save_point_to_room_id.at(save_pt_id);
 
 	// set player data based on save file
-	svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
-	svc::playerLocator.get().player_stats.health = svc::dataLocator.get().save["player_data"]["hp"].as<int>();
+	svc::playerLocator.get().health.set_max(svc::dataLocator.get().save["player_data"]["max_hp"].as<int>());
+	svc::playerLocator.get().health.set_hp(svc::dataLocator.get().save["player_data"]["hp"].as<int>());
 	svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
@@ -123,8 +123,8 @@ std::string_view DataManager::load_blank_save(bool state_switch) {
 	assert(!save.is_null());
 
 	// set player data based on save file
-	svc::playerLocator.get().player_stats.max_health = svc::dataLocator.get().save["player_data"]["max_hp"].as<int>();
-	svc::playerLocator.get().player_stats.health = svc::dataLocator.get().save["player_data"]["hp"].as<int>();
+	svc::playerLocator.get().health.set_max(svc::dataLocator.get().save["player_data"]["max_hp"].as<int>());
+	svc::playerLocator.get().health.set_hp(svc::dataLocator.get().save["player_data"]["hp"].as<int>());
 	svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal

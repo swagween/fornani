@@ -246,18 +246,11 @@ void Collider::update(automa::ServiceProvider& svc) {
 
 void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
-	// draw bounding box
-	box.setSize(dimensions);
-	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
-	box.setFillColor(sf::Color{200, 150, 255, 20});
-	box.setOutlineColor(sf::Color{255, 255, 255, 255});
-	box.setOutlineThickness(0);
-	win.draw(box);
 
 	// draw predictive vertical
 	box.setSize(predictive_vertical.dimensions);
 	box.setPosition(predictive_vertical.position.x - cam.x, predictive_vertical.position.y - cam.y);
-	box.setOutlineColor(sf::Color{255, 0, 0, 160});
+	box.setOutlineColor(sf::Color{255, 0, 0, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -265,7 +258,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.dimensions);
 	box.setPosition(predictive_horizontal.position.x - cam.x, predictive_horizontal.position.y - cam.y);
-	box.setOutlineColor(sf::Color{0, 0, 255, 160});
+	box.setOutlineColor(sf::Color{0, 0, 255, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -273,9 +266,17 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive combined
 	box.setSize(predictive_combined.dimensions);
 	box.setPosition(predictive_combined.position.x - cam.x, predictive_combined.position.y - cam.y);
-	box.setOutlineColor(sf::Color{255, 255, 255, 80});
+	box.setOutlineColor(sf::Color{255, 255, 255, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
+	win.draw(box);
+
+	// draw bounding box
+	box.setSize(dimensions);
+	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
+	box.setFillColor(sf::Color{200, 150, 255, 80});
+	box.setOutlineColor(sf::Color{255, 255, 255, 255});
+	box.setOutlineThickness(-1);
 	win.draw(box);
 
 	// draw jump box

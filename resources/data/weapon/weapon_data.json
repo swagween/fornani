@@ -17,7 +17,7 @@
       "attributes": {
         "automatic": false,
         "rate": 42,
-        "cooldown_time": 0,
+        "cooldown_time": 20,
         "recoil": 0.00,
         "ui_color": 1
       },
@@ -78,7 +78,7 @@
       "attributes": {
         "automatic": false,
         "rate": 42,
-        "cooldown_time": 0,
+        "cooldown_time": 30,
         "recoil": 0.00,
         "ui_color": 4
       },
@@ -139,7 +139,7 @@
       "attributes": {
         "automatic": false,
         "rate": 42,
-        "cooldown_time": 0,
+        "cooldown_time": 30,
         "recoil": 0.00,
         "ui_color": 3
       },
@@ -200,7 +200,7 @@
       "attributes": {
         "automatic": false,
         "rate": 1,
-        "cooldown_time": 0,
+        "cooldown_time": 10,
         "recoil": 0.00,
         "ui_color": 0
       },

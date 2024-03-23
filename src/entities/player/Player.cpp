@@ -258,6 +258,7 @@ void Player::jump() {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 		controller.get_jump().reset();
 	}
+	if (collider.flags.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
 }
 
 void Player::dash() {
@@ -329,7 +330,7 @@ void Player::walk() {
 void Player::hurt(int amount = 1) {
 
 	if (!is_invincible()) {
-		player_stats.health -= amount;
+		health.inflict(amount);
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
 		make_invincible();
@@ -337,7 +338,7 @@ void Player::hurt(int amount = 1) {
 		just_hurt = true;
 	}
 
-	if (player_stats.health <= 0) { kill(); }
+	if (health.is_dead()) { kill(); }
 }
 
 void Player::update_antennae() {
@@ -384,12 +385,12 @@ bool Player::is_invincible() const { return counters.invincibility > 0; }
 void Player::kill() { flags.state.reset(State::alive); }
 
 void Player::start_over() {
-	player_stats.health = player_stats.max_health;
+	health.reset();
 	flags.state.set(State::alive);
 }
 
 void Player::give_drop(item::DropType type, int value) {
-	if (type == item::DropType::heart) { player_stats.health += value; }
+	if (type == item::DropType::heart) { health.heal(value); }
 	if (type == item::DropType::orb) { player_stats.orbs += value; }
 }
 
