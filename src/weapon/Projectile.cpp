@@ -183,10 +183,9 @@ void Projectile::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 			}
 			box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
 
-			if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+			if (svc.greyblock_mode()) {
 				gravitator.render(svc, win, campos);
 				win.draw(box);
-				
 			} else {
 				win.draw(sp_proj.at(0));
 			}
@@ -235,7 +234,6 @@ void Projectile::set_sprite() {
 
 	for (auto& sprite : sp_proj) {
 		set_orientation(sprite);
-		// sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int> >(bounding_box.dimensions)));
 		sprite.setTexture(lookup::type_to_texture_ref.at(type));
 	}
 }

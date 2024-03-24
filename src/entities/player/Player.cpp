@@ -153,7 +153,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	if (!arsenal.loadout.empty()) {
 		equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(equipped_weapon().type));
-		equipped_weapon().render(win, campos);
+		equipped_weapon().render(svc, win, campos);
 	}
 
 	// texture updater debug
@@ -312,7 +312,10 @@ void Player::update_weapon() {
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.loadout) {
 		weapon.active_projectiles = extant_instances(weapon.get_id());
+		weapon.firing_direction = controller.direction;
 		weapon.update();
+		sf::Vector2<float> p_pos = {apparent_position.x + weapon.gun_offset.x, apparent_position.y + sprite_offset.y + weapon.gun_offset.y - collider.dimensions.y / 2.f};
+		weapon.set_position(p_pos);
 	}
 	if (controller.facing_right()) {
 		hand_position = {28, 36};

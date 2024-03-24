@@ -6,6 +6,7 @@
 #include "../animation/Animation.hpp"
 #include "../../utils/StateFunction.hpp"
 #include "../packages/Health.hpp"
+#include "../packages/WeaponPackage.hpp"
 #include <string_view>
 
 namespace player {
@@ -66,8 +67,8 @@ class Enemy : public entity::Entity {
 	struct {
 		std::vector<shape::Shape> hurtbox_atlas{};
 		std::vector<shape::Shape> hurtboxes{};
-		sf::Vector2<float> alert_range{};
-		sf::Vector2<float> hostile_range{};
+		shape::Shape alert_range{};
+		shape::Shape hostile_range{};
 	} physical{};
 };
 

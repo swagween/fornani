@@ -73,7 +73,7 @@ class Map {
 	void render_console(gui::Console& console, sf::RenderWindow& win);
 	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
-	void spawn_projectile_at(automa::ServiceProvider& svc, sf::Vector2<float> pos);
+	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer();
 	void generate_layer_textures(automa::ServiceProvider& svc);

@@ -47,12 +47,9 @@ void Weapon::update() {
 	} else {
 		flags.set(GunState::cooling_down);
 	}
-	sf::Vector2<float> p_pos = {svc::playerLocator.get().apparent_position.x + gun_offset.x,
-								svc::playerLocator.get().apparent_position.y + svc::playerLocator.get().sprite_offset.y + gun_offset.y - svc::playerLocator.get().collider.dimensions.y / 2.f};
-	set_position(p_pos);
 }
 
-void Weapon::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 	// nani threw it, so don't render it in her hand
 	if (attributes.boomerang && active_projectiles == attributes.rate) { return; }
@@ -60,17 +57,15 @@ void Weapon::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	// set sprite position
 	sp_gun.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+	if (svc.greyblock_mode()) {
 		// fire point debug
 		sf::RectangleShape box{};
 		box.setPosition(barrel_point.x - campos.x - 1, barrel_point.y - campos.y - 1);
 		box.setFillColor(flcolor::fucshia);
 		box.setSize(sf::Vector2<float>{2.0f, 2.0f});
 		win.draw(box);
-		
 	} else {
 		win.draw(sp_gun);
-		
 	}
 }
 
@@ -84,7 +79,7 @@ void Weapon::shoot() { cooldown.start(attributes.cooldown_time); }
 bool Weapon::is_equipped() const { return flags.test(GunState::equipped); }
 bool Weapon::is_unlocked() const { return flags.test(GunState::unlocked); }
 
-bool Weapon::cooling_down() const { return flags.test(GunState::cooling_down); }
+bool Weapon::cooling_down() const { return !cooldown.is_complete(); }
 
 bool Weapon::can_shoot() const { return !cooling_down() && !(active_projectiles >= attributes.rate); }
 
@@ -92,18 +87,15 @@ void Weapon::set_position(sf::Vector2<float> pos) { sprite_position = pos; }
 
 void Weapon::set_orientation() {
 
-	// flip the sprite based on the player's direction
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-	// rotate the sprite based on the player's direction
 	float neutral_rotation{0.0f};
 	float up_rotation{-90.f};
 	float down_rotation{90.f};
+
 	// start from default
 	sp_gun.setRotation(neutral_rotation);
 	sp_gun.setScale(right_scale);
-
-	firing_direction = svc::playerLocator.get().controller.direction;
 
 	switch (firing_direction.lr) {
 	case dir::LR::right: barrel_point.x -= 2.0f * attributes.barrel_position.at(1); break;

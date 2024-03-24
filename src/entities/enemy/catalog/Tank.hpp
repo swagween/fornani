@@ -23,11 +23,14 @@ class Tank : public Enemy {
 	private:
 	util::BitFlags<TankState> state{};
 
+	//packages
+	entity::WeaponPackage gun;
+
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};
 	anim::Parameters turn{6, 3, 38, 0};
 	anim::Parameters run{9, 4, 38, -1};
-	anim::Parameters shoot{13, 3, 22, -1};
+	anim::Parameters shoot{13, 3, 22, 6};
 
 };
 

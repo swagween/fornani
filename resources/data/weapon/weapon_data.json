@@ -125,38 +125,38 @@
     {
       "label": "skycorps ar",
       "dimensions": {
-        "x": 18,
-        "y": 8
+        "x": 0,
+        "y": 0
       },
       "gun_offset": {
         "x": 0,
-        "y": 8
+        "y": 0
       },
       "barrel_point": {
-        "x": 22.0,
-        "y": 7.0
+        "x": 0.0,
+        "y": 0.0
       },
       "attributes": {
         "automatic": false,
-        "rate": 42,
+        "rate": 8,
         "cooldown_time": 30,
         "recoil": 0.00,
         "ui_color": 3
       },
       "projectile": {
         "dimensions": {
-          "x": 28.0,
-          "y": 12.0
+          "x": 14.0,
+          "y": 14.0
         },
         "attributes": {
-          "base_damage": 5,
+          "base_damage": 2,
           "range": 240,
-          "speed": 17.0,
-          "variance": 0.0,
+          "speed": 8.0,
+          "variance": 0.1,
           "stun_time": 0.0,
           "knockback": 0.0,
           "persistent": false,
-          "transcendent": false,
+          "transcendent": true,
           "boomerang": false,
           "constrained": true,
           "spring": false,
@@ -172,7 +172,7 @@
         },
         "animation": {
           "num_sprites": 1,
-          "num_frames": 1,
+          "num_frames": 4,
           "framerate": 8
         }
       },

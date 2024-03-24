@@ -383,11 +383,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	for (auto& chest : chests) { chest.render(svc, win, cam); }
 
-	for (auto& proj : active_projectiles) {
-		proj.render(svc, win, cam);
-		if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) { proj.hook.spring.render(win, cam); }
-	}
-
 	// emitters
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 
@@ -395,6 +390,11 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	svc::playerLocator.get().render(svc, win, svc::cameraLocator.get().physics.position);
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
+
+	for (auto& proj : active_projectiles) {
+		proj.render(svc, win, cam);
+		if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) { proj.hook.spring.render(win, cam); }
+	}
 
 	// loot
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
@@ -500,8 +500,7 @@ void Map::render_console(gui::Console& console, sf::RenderWindow& win) {
 	console.write(win, false);
 }
 
-void Map::spawn_projectile_at(automa::ServiceProvider& svc, sf::Vector2<float> pos) {
-	auto const& weapon = svc::playerLocator.get().equipped_weapon();
+void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos) {
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_sprite();
 	active_projectiles.back().set_position(pos);
@@ -533,7 +532,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 
 	if (!svc::playerLocator.get().arsenal.loadout.empty()) {
 		if (svc::playerLocator.get().fire_weapon()) {
-			spawn_projectile_at(svc, svc::playerLocator.get().equipped_weapon().barrel_point);
+			spawn_projectile_at(svc, svc::playerLocator.get().equipped_weapon(), svc::playerLocator.get().equipped_weapon().barrel_point);
 			++svc::playerLocator.get().equipped_weapon().active_projectiles;
 			svc::playerLocator.get().equipped_weapon().shoot();
 			if (!svc::playerLocator.get().equipped_weapon().attributes.automatic) { svc::playerLocator.get().controller.set_shot(false); }

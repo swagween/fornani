@@ -26,16 +26,16 @@
   },
 
   "fast_burst": {
-    "load": 18,
+    "load": 5,
     "rate": 100.0,
     "expulsion": 130.0,
     "expulsion_variance": 80.0,
-    "cone": 0.08,
+    "cone": 0.2,
     "friction": 0.97,
     "elasticity": 0.8,
-    "gravity": 0.0,
+    "gravity": 2.0,
     "lifespan": 120,
-    "lifespan_variance": 100
+    "lifespan_variance": 80
   },
 
   "twinkle": {

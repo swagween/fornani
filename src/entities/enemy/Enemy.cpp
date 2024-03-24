@@ -32,10 +32,10 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 
 	// TODO: load hurtboxes and colliders
 
-	physical.alert_range.x = in_physical["alert_range"][0].as<float>();
-	physical.alert_range.y = in_physical["alert_range"][1].as<float>();
-	physical.hostile_range.x = in_physical["hostile_range"][0].as<float>();
-	physical.hostile_range.y = in_physical["hostile_range"][1].as<float>();
+	physical.alert_range.dimensions.x = in_physical["alert_range"][0].as<float>();
+	physical.alert_range.dimensions.y = in_physical["alert_range"][1].as<float>();
+	physical.hostile_range.dimensions.x = in_physical["hostile_range"][0].as<float>();
+	physical.hostile_range.dimensions.y = in_physical["hostile_range"][1].as<float>();
 
 	attributes.base_damage = in_attributes["base_damage"].as<int>();
 	attributes.base_hp = in_attributes["base_hp"].as<float>();
@@ -74,6 +74,11 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 	collider.physics.acceleration = {};
 	animation.update();
 	health.update();
+
+	//update ranges
+	physical.alert_range.set_position(collider.bounding_box.position - (physical.alert_range.dimensions * 0.5f) + (collider.dimensions * 0.5f));
+	physical.hostile_range.set_position(collider.bounding_box.position - (physical.hostile_range.dimensions * 0.5f) + (collider.dimensions * 0.5f));
+
 	// get UV coords
 	if (spritesheet_dimensions.y != 0) {
 		int u = (int)(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
@@ -87,8 +92,19 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	sprite.setPosition(collider.physics.position + sprite_offset - cam);
-	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+	if (svc.greyblock_mode()) {
+		drawbox.setOrigin({0.f, 0.f});
+		drawbox.setSize({(float)sprite_dimensions.x, (float)sprite_dimensions.y});
+		drawbox.setOutlineColor(svc.styles.colors.ui_white);
 		health.drawbox.setPosition(collider.physics.position + sprite_offset - cam);
+		win.draw(drawbox);
+		drawbox.setPosition(physical.alert_range.position - cam);
+		drawbox.setSize(physical.alert_range.dimensions);
+		drawbox.setOutlineColor(sf::Color{80, 20, 60, 80});
+		win.draw(drawbox);
+		drawbox.setPosition(physical.hostile_range.position - cam);
+		drawbox.setSize(physical.hostile_range.dimensions);
+		drawbox.setOutlineColor(sf::Color{140, 30, 60, 110});
 		win.draw(drawbox);
 		collider.render(win, cam);
 		health.render(svc, win, cam);

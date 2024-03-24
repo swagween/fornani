@@ -23,6 +23,7 @@ class Entity {
 	virtual void update(automa::ServiceProvider& svc, world::Map& map);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) = 0;
 	void sprite_flip();
+	[[nodiscard]] auto get_direction() const -> dir::Direction { return direction; }
 	sf::RectangleShape drawbox{}; // for debug
 
   protected:

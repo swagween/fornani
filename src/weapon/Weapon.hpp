@@ -50,7 +50,7 @@ class Weapon {
 	Weapon(automa::ServiceProvider& svc, int id);
 
 	void update();
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 
 	void equip();
 	void unequip();

@@ -2,18 +2,31 @@
 #include <SFML/Graphics.hpp>
 #include "../Entity.hpp"
 #include "../../weapon/Weapon.hpp"
+#include "../../utils/Cycle.hpp"
+
+namespace enemy {
+class Enemy;
+}
 
 namespace entity {
 
 class WeaponPackage : public Entity {
   public:
-	void update(automa::ServiceProvider& svc, world::Map& map);
+	WeaponPackage(automa::ServiceProvider& svc, int id);
+	void update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void shoot();
-	[[nodiscard]] auto get_cooldown() const -> int { return weapon.cooldown.get_cooldown(); }
+	[[nodiscard]] auto get() -> arms::Weapon& { return *weapon; }
+	[[nodiscard]] auto barrel_point() -> sf::Vector2<float> { return weapon->barrel_point; }
+	[[nodiscard]] auto get_cooldown() const -> int { return weapon->cooldown.get_cooldown(); }
+
+	util::Cooldown clip_cooldown{};
+	util::Cycle cycle{2};
+	int clip_cooldown_time{256};
+	sf::Vector2<float> barrel_offset{};
 
   private:
-	arms::Weapon weapon{};
+	std::unique_ptr<arms::Weapon> weapon;
 };
 
 } // namespace entity
