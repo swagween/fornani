@@ -624,7 +624,7 @@ void Game::debug_window() {
 					if (ImGui::Button("Firstwind Dojo")) {
 						svc::assetLocator.get().click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services));
-						game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path + "/level/FIRSTWIND_DOJO_01");
+						game_state.get_current_state().init(services, svc::assetLocator.get().finder.resource_path + "/level/BASE_TEST_03");
 						svc::playerLocator.get().set_position({3 * 32, 8 * 32});
 					}
 					/*if (ImGui::Button("Atrium")) {

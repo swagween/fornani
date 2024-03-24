@@ -1,6 +1,5 @@
 
 #pragma once
-#include <algorithm>
 
 namespace util {
 
