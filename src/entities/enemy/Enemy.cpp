@@ -73,7 +73,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
 	animation.update();
-	health.update(svc, map);
+	health.update();
 	// get UV coords
 	if (spritesheet_dimensions.y != 0) {
 		int u = (int)(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;

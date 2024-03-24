@@ -31,7 +31,7 @@ class Drop {
   public:
 	Drop() = default;
 	Drop(automa::ServiceProvider& svc, std::string_view key, float probability);
-	void seed(float probability);
+	void seed(automa::ServiceProvider& svc, float probability);
 	void set_value();
 	void set_texture(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, world::Map& map);

@@ -21,12 +21,13 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.console.test(Console::done)) { svc.assets.menu_back.play(); }
 	if (flags.console.test(Console::next)) { svc.assets.menu_next.play(); }
 	if (flags.console.test(Console::shift)) { svc.assets.menu_shift.play(); }
-	if (flags.console.test(Console::speech)) { repeat(svc, svc.assets.menu_shift, 5, 0.2f); }
+	if (flags.console.test(Console::speech)) { repeat(svc, svc.assets.menu_shift, 8, 0.2f); }
 
 	// world
 	if (flags.world.test(World::load)) { svc.assets.load.play(); }
 	if (flags.world.test(World::save)) { svc.assets.save.play(); }
 	if (flags.world.test(World::soft_sparkle)) { svc.assets.soft_sparkle.play(); }
+	if (flags.world.test(World::chest)) { svc.assets.chest.play(); }
 
 	//frdog
 	if (flags.frdog.test(Frdog::death)) { svc.assets.enem_death_1.play(); }

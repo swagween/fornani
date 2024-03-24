@@ -8,6 +8,7 @@
 #include "../utils/Random.hpp"
 #include "../utils/Ticker.hpp"
 #include "../utils/Constants.hpp"
+#include "../audio/Soundboard.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger };
@@ -15,6 +16,7 @@ struct ServiceProvider {
 	asset::AssetManager assets{};
 	data::DataManager data{};
 	data::TextManager text{};
+	audio::Soundboard soundboard{};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::Random random{};

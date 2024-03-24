@@ -5,6 +5,18 @@
     ],
     "responses": [ [] ]
   },
+  "chest": {
+    "suite": [
+      [ "You open the chest to find an item..." ]
+    ],
+    "responses": [ [] ]
+  },
+  "open_chest": {
+    "suite": [
+      [ "It's already been opened." ]
+    ],
+    "responses": [ [] ]
+  },
   "test_selector": {
     "suite": [
       [ "Hello.", "Are you tired?%0" ],

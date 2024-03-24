@@ -46,8 +46,8 @@ void Animator::update(player::Player& player) {
 void Animator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	activated ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
 	drawbox.setSize(bounding_box.dimensions);
-	drawbox.setPosition((int)(position.x - cam.x), (int)(position.y - cam.y));
-	sprite.setPosition((int)(position.x - cam.x), (int)(position.y - cam.y));
+	drawbox.setPosition(position.x - cam.x, position.y - cam.y);
+	sprite.setPosition(position.x - cam.x, position.y - cam.y);
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(drawbox);
 	} else {

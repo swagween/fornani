@@ -11,7 +11,7 @@ void Health::set_max(float amount) {
 
 void Health::set_hp(float amount) { hp = amount; }
 
-void Health::update(automa::ServiceProvider& svc, world::Map& map) { hp = std::clamp(hp, 0.f, max_hp); }
+void Health::update() { hp = std::clamp(hp, 0.f, max_hp); }
 
 void Health::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	drawbox.setFillColor(svc.styles.colors.dark_orange);

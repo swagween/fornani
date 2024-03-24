@@ -135,6 +135,7 @@ void Game::run() { // load all assets
 
 		// play sounds
 		svc::soundboardLocator.get().play_sounds(services);
+		services.soundboard.play_sounds(services);
 
 		// switch states
 		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {

@@ -82,7 +82,7 @@ fsm::StateFunction PlayerAnimation::update_run() {
 		animation.set_params(idle);
 		return PA_BIND(update_idle);
 	}
-	if (state.test(AnimState::inspect) && animation.keyframe_over()) {
+	if (state.test(AnimState::inspect)) {
 		state.reset(AnimState::run);
 		animation.set_params(inspect);
 		return PA_BIND(update_inspect);
@@ -224,6 +224,11 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 		animation.set_params(dash);
 		return PA_BIND(update_dash);
 	}
+	if (state.test(AnimState::inspect)) {
+		state.reset(AnimState::fall);
+		animation.set_params(inspect);
+		return PA_BIND(update_inspect);
+	}
 	state = {};
 	state.set(AnimState::fall);
 	return std::move(state_function);
@@ -280,7 +285,7 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 	}
 	state = {};
 	state.set(AnimState::inspect);
-	return std::move(state_function);
+	return PA_BIND(update_inspect);
 }
 
 fsm::StateFunction PlayerAnimation::update_land() {
@@ -302,15 +307,15 @@ fsm::StateFunction PlayerAnimation::update_land() {
 			animation.set_params(rise);
 			return PA_BIND(update_rise);
 		}
-		if (state.test(AnimState::inspect)) {
-			state.reset(AnimState::land);
-			animation.set_params(inspect);
-			return PA_BIND(update_inspect);
-		}
 		state = {};
 		state.set(AnimState::idle);
 		animation.set_params(idle);
 		return PA_BIND(update_idle);
+	}
+	if (state.test(AnimState::inspect)) {
+		state.reset(AnimState::land);
+		animation.set_params(inspect);
+		return PA_BIND(update_inspect);
 	}
 	state = {};
 	state.set(AnimState::land);

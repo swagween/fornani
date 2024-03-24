@@ -90,6 +90,8 @@ void Player::update(gui::Console& console) {
 	// for parameter tweaking, remove later
 	collider.update(*m_services);
 
+	health.update();
+
 	update_invincibility();
 
 	apparent_position = collider.physics.position + collider.dimensions / 2.f;
@@ -232,7 +234,7 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 void Player::calculate_sprite_offset() {
 	sprite_offset.y = 0.f;
 	if (collider.flags.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
-	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y};
+	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y + 1};
 }
 
 void Player::jump() {

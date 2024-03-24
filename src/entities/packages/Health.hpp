@@ -7,7 +7,7 @@ namespace entity {
 class Health : public Entity {
 	float const default_max{8.f};
   public:
-	void update(automa::ServiceProvider& svc, world::Map& map);
+	void update();
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	[[nodiscard]] auto get_hp() const -> float { return hp; }
 	[[nodiscard]] auto get_max() const -> float { return max_hp; }

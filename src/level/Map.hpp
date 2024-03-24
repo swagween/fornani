@@ -18,6 +18,7 @@
 #include "../utils/Shape.hpp"
 #include "../weapon/Projectile.hpp"
 #include "../entities/item/Loot.hpp"
+#include "../entities/world/Chest.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -97,6 +98,7 @@ class Map {
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Animator> animators{};
 	std::vector<item::Loot> active_loot{};
+	std::vector<entity::Chest> chests{};
 	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};

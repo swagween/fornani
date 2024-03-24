@@ -101,6 +101,7 @@ class AssetManager {
 		}
 
 		savepoint.loadFromFile(finder.resource_path + "/image/entity/savepoint.png");
+		t_chest.loadFromFile(finder.resource_path + "/image/entity/chest.png");
 	
 	}
 
@@ -162,6 +163,8 @@ class AssetManager {
 		soft_sparkle_high.setBuffer(soft_sparkle_high_buffer);
 		soft_sparkle_buffer.loadFromFile(finder.resource_path + "/audio/sfx/soft_sparkle.wav");
 		soft_sparkle.setBuffer(soft_sparkle_buffer);
+		chest_buffer.loadFromFile(finder.resource_path + "/audio/sfx/chest.wav");
+		chest.setBuffer(chest_buffer);
 
 		brown_noise.openFromFile(finder.resource_path + "/audio/songs/brown_noise.wav");
 		clay_statue.openFromFile(finder.resource_path + "/audio/songs/clay_statue.wav");
@@ -211,6 +214,7 @@ class AssetManager {
 
 	//save
 	sf::Texture savepoint{};
+	sf::Texture t_chest{};
 
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
@@ -328,6 +332,8 @@ class AssetManager {
 	sf::Sound soft_sparkle_high;
 	sf::SoundBuffer soft_sparkle_buffer{};
 	sf::Sound soft_sparkle;
+	sf::SoundBuffer chest_buffer{};
+	sf::Sound chest{};
 
 	// songs!
 	sf::Music brown_noise{};

@@ -179,13 +179,34 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_save_point.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
-			input >> value;
-			save_point.id = value;
+			input >> save_point.id;
 			input.ignore();
 			input >> save_point.scaled_position.x;
 			input.ignore();
 			input >> save_point.scaled_position.y;
 			input.ignore();
+		}
+		input.close();
+	}
+
+	// get chest data
+	input.open(path + "/map_chests.txt");
+	if (input.is_open()) {
+		while (!input.eof()) {
+			sf::Vector2<float> pos{};
+			int id{};
+			input >> id;
+			input.ignore();
+			input >> pos.x;
+			input.ignore();
+			input >> pos.y;
+			input.ignore();
+			input.ignore();
+			input.ignore();
+
+			chests.push_back(entity::Chest(svc));
+			chests.back().set_id(id);
+			chests.back().set_position_from_scaled(pos);
 		}
 		input.close();
 	}
@@ -213,8 +234,6 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 		}
 		input.close();
 	}
-
-	// std::cout << enemy_catalog.enemy_pool.size() << "\n";
 
 	colliders.push_back(&svc::playerLocator.get().collider);
 
@@ -309,6 +328,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	for (auto& collider : colliders) { collider->reset_ground_flags(); }
 
+	for (auto& chest : chests) { chest.update(svc, *this, console, svc::playerLocator.get()); }
+
 	for (auto& portal : portals) {
 		portal.update();
 		portal.handle_activation(svc, room_id, transition.fade_out, transition.done);
@@ -359,6 +380,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		generate_layer_textures(svc);
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
+
+	for (auto& chest : chests) { chest.render(svc, win, cam); }
 
 	for (auto& proj : active_projectiles) {
 		proj.render(svc, win, cam);
