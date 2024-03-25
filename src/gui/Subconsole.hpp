@@ -7,7 +7,7 @@ namespace gui {
 
 class Subconsole : public Console {
   public:
-	Subconsole();
+	Subconsole(automa::ServiceProvider& svc);
 	std::vector<std::string_view> options{};
 	Selector selector{};
 };

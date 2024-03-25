@@ -8,7 +8,7 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc) : enemy_catalog(svc), save_point(svc) {}
+Map::Map(automa::ServiceProvider& svc) : enemy_catalog(svc), save_point(svc), transition(svc, 256) {}
 
 void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 
@@ -242,9 +242,10 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	}
 
 	colliders.push_back(&svc::playerLocator.get().collider);
+	if (svc::playerLocator.get().animation.state.test(player::AnimState::inspect)) { svc::playerLocator.get().animation.state.set(player::AnimState::idle); }
 
 	transition.fade_in = true;
-	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, cam::screen_dimensions.x * 2, cam::screen_dimensions.y * 2));
+	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2, svc.constants.screen_dimensions.y * 2));
 	minimap.setViewport(sf::FloatRect(0.0f, 0.75f, 0.2f, 0.2f));
 
 	generate_collidable_layer();

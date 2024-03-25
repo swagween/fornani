@@ -133,6 +133,8 @@ void PlayerController::restrict() { flags.set(MovementState::restricted); }
 
 void PlayerController::unrestrict() { flags.reset(MovementState::restricted); }
 
+void PlayerController::uninspect() { key_map[ControllerInput::inspect] = 0.f; }
+
 void PlayerController::stop_dashing() { key_map[ControllerInput::dash] = 0.f; }
 
 

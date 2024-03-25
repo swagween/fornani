@@ -1,6 +1,6 @@
 
 #include "Console.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include <algorithm>
 #include "../service/ServiceProvider.hpp"
 
 namespace gui {
@@ -10,7 +10,7 @@ Console::Console(automa::ServiceProvider& svc) {
 	text_suite = svc.text.console;
 	writer = text::TextWriter(svc);
 
-	for (auto& sprite : sprites) { sprite.setTexture(svc::assetLocator.get().t_ui); }
+	for (auto& sprite : sprites) { sprite.setTexture(svc.assets.t_ui); }
 	sprites.at(0).setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
 	sprites.at(1).setTextureRect(sf::IntRect{{corner_factor, 0}, {edge_factor, corner_factor}});
 	sprites.at(2).setTextureRect(sf::IntRect{{corner_factor + edge_factor, 0}, {corner_factor, corner_factor}});
@@ -21,28 +21,26 @@ Console::Console(automa::ServiceProvider& svc) {
 	sprites.at(7).setTextureRect(sf::IntRect{{corner_factor, corner_factor + edge_factor}, {edge_factor, corner_factor}});
 	sprites.at(8).setTextureRect(sf::IntRect{{corner_factor + edge_factor, corner_factor + edge_factor}, {corner_factor, corner_factor}});
 
-	dimensions = sf::Vector2<float>{(float)cam::screen_dimensions.x - 2 * pad, (float)cam::screen_dimensions.y / height_factor};
-	position = sf::Vector2<float>{origin.x, origin.y - dimensions.y};
+	final_dimensions = sf::Vector2<float>{(float)svc.constants.screen_dimensions.x - 2 * pad, (float)svc.constants.screen_dimensions.y / height_factor};
+	current_dimensions.x = final_dimensions.x;
+	position = sf::Vector2<float>{origin.x, origin.y - final_dimensions.y};
 	text_origin = sf::Vector2<float>{20.0f, 20.0f};
 
 	extent = corner_factor * 2;
 }
 
 void Console::begin() {
-	dimensions.y = corner_factor * 2;
+	current_dimensions.y = corner_factor * 2;
 	flags.set(ConsoleFlags::active);
 	writer.start();
 }
 
 void Console::update() {
-	writer.set_bounds(position + sf::Vector2<float>{dimensions.x - 2 * border.left, dimensions.y - 2 * border.top});
+	writer.set_bounds(position + sf::Vector2<float>{final_dimensions.x - 2 * border.left, final_dimensions.y - 2 * border.top});
 	writer.set_position(position + sf::Vector2<float>{border.left, border.top});
 	if (flags.test(ConsoleFlags::active)) { extent += speed; }
-	if (extent < (float)cam::screen_dimensions.y / height_factor) {
-		dimensions.y = extent;
-	} else {
-		dimensions.y = (float)cam::screen_dimensions.y / height_factor;
-	}
+	extent = std::clamp((float)extent, 0.f, final_dimensions.y);
+	current_dimensions.y = extent;
 	nine_slice(corner_factor, edge_factor);
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 	writer.update();
@@ -67,7 +65,7 @@ void Console::write(sf::RenderWindow& win, bool instant) {
 }
 
 void Console::end() {
-	extent = dimensions.y = corner_factor * 2;
+	extent = current_dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::loaded);
 }
@@ -75,24 +73,24 @@ void Console::end() {
 void Console::nine_slice(int corner_dim, int edge_dim) {
 
 	// set sizes for stretched 9-slice sprites
-	sprites.at(1).setScale({(dimensions.x - 2 * corner_dim) / edge_dim, 1});
-	sprites.at(3).setScale(1, (dimensions.y - 2 * corner_dim) / edge_dim);
-	sprites.at(4).setScale((dimensions.x - 2 * corner_dim) / edge_dim, (dimensions.y - 2 * corner_dim) / edge_dim);
-	sprites.at(5).setScale(1, (dimensions.y - 2 * corner_dim) / edge_dim);
-	sprites.at(7).setScale((dimensions.x - 2 * corner_dim) / edge_dim, 1);
+	sprites.at(1).setScale({(current_dimensions.x - 2 * corner_dim) / edge_dim, 1});
+	sprites.at(3).setScale(1, (current_dimensions.y - 2 * corner_dim) / edge_dim);
+	sprites.at(4).setScale((current_dimensions.x - 2 * corner_dim) / edge_dim, (current_dimensions.y - 2 * corner_dim) / edge_dim);
+	sprites.at(5).setScale(1, (current_dimensions.y - 2 * corner_dim) / edge_dim);
+	sprites.at(7).setScale((current_dimensions.x - 2 * corner_dim) / edge_dim, 1);
 
 	// set position for the 9-slice console box
 	sprites.at(0).setPosition(position.x, position.y);
 	sprites.at(1).setPosition(position.x + corner_dim, position.y);
-	sprites.at(2).setPosition(position.x + dimensions.x - corner_dim, position.y);
+	sprites.at(2).setPosition(position.x + current_dimensions.x - corner_dim, position.y);
 
 	sprites.at(3).setPosition(position.x, position.y + corner_dim);
 	sprites.at(4).setPosition(position.x + corner_dim, position.y + corner_dim);
-	sprites.at(5).setPosition(position.x + dimensions.x - corner_dim, position.y + corner_dim);
+	sprites.at(5).setPosition(position.x + current_dimensions.x - corner_dim, position.y + corner_dim);
 
-	sprites.at(6).setPosition(position.x, position.y + dimensions.y - corner_dim);
-	sprites.at(7).setPosition(position.x + corner_dim, position.y + dimensions.y - corner_dim);
-	sprites.at(8).setPosition(position.x + dimensions.x - corner_dim, position.y + dimensions.y - corner_dim);
+	sprites.at(6).setPosition(position.x, position.y + current_dimensions.y - corner_dim);
+	sprites.at(7).setPosition(position.x + corner_dim, position.y + current_dimensions.y - corner_dim);
+	sprites.at(8).setPosition(position.x + current_dimensions.x - corner_dim, position.y + current_dimensions.y - corner_dim);
 }
 
 } // namespace gui

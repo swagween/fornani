@@ -112,9 +112,7 @@ class Player {
 	bool fire_weapon();
 
 	// level events
-	void make_invincible();
 	void update_invincibility();
-	bool is_invincible() const;
 	void kill();
 	void start_over();
 	void give_drop(item::DropType type, int value);

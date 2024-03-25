@@ -15,6 +15,15 @@ class Style {
 		sf::Color periwinkle{159, 138, 247};
 		sf::Color fucshia{215, 53, 180};
 		sf::Color goldenrod{247, 199, 74};
+		sf::Color red{236, 63, 95};
+		sf::Color blue{110, 98, 173};
+		sf::Color navy_blue{25, 35, 65};
+		sf::Color dark_fucshia{148, 40, 84};
+		sf::Color orange{226, 93, 11};
+		sf::Color dark_grey{55, 49, 64};
+		sf::Color black{14, 6, 11};
+		sf::Color night{19, 18, 16};
+		sf::Color ui_black{12, 12, 20};
 	} colors{};
 
 	std::unordered_map<std::string_view, sf::Color> spray_colors{{"clover", colors.green},			{"bryn's gun", colors.periwinkle}, {"plasmer", colors.fucshia},

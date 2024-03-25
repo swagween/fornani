@@ -21,7 +21,6 @@ float const height_factor{3.0f};
 float const pad{168.f};
 float const pad_y{20};
 float const text_pad{8.0f};
-inline const sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad_y}; // bottom left corner
 
 enum class ConsoleFlags { active, loaded, selection_mode };
 
@@ -49,7 +48,8 @@ class Console {
 	void nine_slice(int corner_dim, int edge_dim);
 
 	sf::Vector2<float> position{};
-	sf::Vector2<float> dimensions{};
+	sf::Vector2<float> current_dimensions{};
+	sf::Vector2<float> final_dimensions{};
 	sf::Vector2<float> text_origin{};
 	util::BitFlags<ConsoleFlags> flags{};
 
@@ -67,6 +67,9 @@ class Console {
 
 	int extent{};
 	int speed{2};
+
+	protected:
+	sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad_y}; // bottom left corner
 };
 
 } // namespace gui

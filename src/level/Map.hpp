@@ -102,7 +102,7 @@ class Map {
 	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};
-	flfx::Transition transition{255};
+	flfx::Transition transition;
 
 	enemy::EnemyCatalog enemy_catalog;
 

@@ -11,7 +11,10 @@ void Health::set_max(float amount) {
 
 void Health::set_hp(float amount) { hp = amount; }
 
-void Health::update() { hp = std::clamp(hp, 0.f, max_hp); }
+void Health::update() {
+	hp = std::clamp(hp, 0.f, max_hp);
+	invincibility.update();
+}
 
 void Health::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	drawbox.setFillColor(svc.styles.colors.dark_orange);
@@ -24,7 +27,12 @@ void Health::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 void Health::heal(float amount) { hp += amount; }
 
-void Health::inflict(float amount) { hp -= amount; }
+void Health::inflict(float amount) {
+	if (invincibility.is_complete()) {
+		hp -= amount;
+		invincibility.start(invincibility_time);
+	}
+}
 
 void Health::reset() { hp = max_hp; }
 

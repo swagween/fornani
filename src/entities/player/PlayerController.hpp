@@ -29,6 +29,7 @@ class PlayerController {
 	void unground();
 	void restrict();
 	void unrestrict();
+	void uninspect();
 
 	void stop_dashing();
 

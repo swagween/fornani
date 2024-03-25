@@ -2,7 +2,6 @@
 #include "Player.hpp"
 #include "../item/Drop.hpp"
 #include "../../setup/LookupTables.hpp"
-#include "../../setup/ServiceLocator.hpp"
 #include "../../service/ServiceProvider.hpp"
 
 namespace player {
@@ -16,6 +15,8 @@ void Player::init(automa::ServiceProvider& svc) {
 	svc.data.load_player_params();
 	arsenal = arms::Arsenal(svc);
 
+	health.invincibility_time = 400;
+
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 
@@ -23,11 +24,11 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
-	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::dark_orange, antenna_force));
-	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::dark_orange, antenna_force, {2.f, 4.f}));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.dark_orange, antenna_force));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.dark_orange, antenna_force, {2.f, 4.f}));
 
-	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::bright_orange, antenna_force));
-	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::bright_orange, antenna_force, {2.f, 4.f}));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force, {2.f, 4.f}));
 
 	float back_fric{0.84f};
 	float front_fric{0.87f};
@@ -168,7 +169,7 @@ void Player::update_animation() {
 		if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
 		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
 			if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
-			if (controller.nothing_pressed() && !controller.dashing()) { animation.state.set(AnimState::idle); }
+			if (controller.nothing_pressed() && !controller.dashing() && !animation.state.test(AnimState::inspect)) { animation.state.set(AnimState::idle); }
 			if (controller.moving() && !controller.dashing()) { animation.state.set(AnimState::run); }
 			if (abs(collider.physics.velocity.x) > animation.stop_threshold) { animation.state.test(AnimState::stop); }
 		}
@@ -209,7 +210,7 @@ void Player::update_transponder(gui::Console& console) {
 }
 
 void Player::flash_sprite() {
-	if ((counters.invincibility / 10) % 2 == 0) {
+	if ((health.invincibility.get_cooldown() / 30) % 2 == 0) {
 		sprite.setColor(flcolor::red);
 	} else {
 		sprite.setColor(flcolor::blue);
@@ -228,7 +229,7 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		a += 20;
 		++ctr;
 	}
-	sprite.setColor(sf::Color::White);
+	//sprite.setColor(sf::Color::White);
 }
 
 void Player::calculate_sprite_offset() {
@@ -335,12 +336,11 @@ void Player::walk() {
 }
 
 void Player::hurt(int amount = 1) {
-
-	if (!is_invincible()) {
+	if (!health.invincible()) {
 		health.inflict(amount);
+		collider.physics.velocity.y = 0.0f;
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
-		make_invincible();
 		svc::soundboardLocator.get().flags.player.set(audio::Player::hurt);
 		just_hurt = true;
 	}
@@ -374,20 +374,13 @@ bool Player::fire_weapon() {
 	return false;
 }
 
-void Player::make_invincible() { counters.invincibility = INVINCIBILITY_TIME; }
-
 void Player::update_invincibility() {
-
-	if (is_invincible()) {
+	if (health.invincible()) {
 		flash_sprite();
 	} else {
 		sprite.setColor(sf::Color::White);
 	}
-	--counters.invincibility;
-	if (counters.invincibility < 0) { counters.invincibility = 0; }
 }
-
-bool Player::is_invincible() const { return counters.invincibility > 0; }
 
 void Player::kill() { flags.state.reset(State::alive); }
 

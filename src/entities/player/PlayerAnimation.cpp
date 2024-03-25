@@ -276,6 +276,12 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 			animation.end();
 			return PA_BIND(update_run);
 		}
+		if (state.test(AnimState::idle)) {
+			state.reset(AnimState::inspect);
+			animation.set_params(idle);
+			animation.end();
+			return PA_BIND(update_idle);
+		}
 	}
 	if (state.test(AnimState::jumpsquat)) {
 		state.reset(AnimState::inspect);
