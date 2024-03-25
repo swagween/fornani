@@ -76,7 +76,7 @@ void DataManager::save_progress(int save_point_id) {
 	save["player_data"]["arsenal"] = wipe;
 	// push player arsenal
 	for (auto& gun : svc::playerLocator.get().arsenal.loadout) {
-		int this_id = gun.get_id();
+		int this_id = gun->get_id();
 		save["player_data"]["arsenal"].push_back(this_id);
 	}
 	save["player_data"]["equipped_gun"] = svc::playerLocator.get().arsenal.get_index();
@@ -130,7 +130,7 @@ std::string_view DataManager::load_blank_save(bool state_switch) {
 	// load player's arsenal
 	svc::playerLocator.get().arsenal.loadout.clear();
 
-	return lookup::get_map_label.at(101);
+	return lookup::get_map_label.at(100);
 }
 
 void DataManager::load_player_params() {

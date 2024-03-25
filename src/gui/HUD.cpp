@@ -2,8 +2,8 @@
 #include "../setup/ServiceLocator.hpp"
 
 namespace gui {
-	
-	HUD::HUD(sf::Vector2<int> pos) : position(pos) {
+
+HUD::HUD(sf::Vector2<int> pos) : position(pos) {
 	update();
 	for (int i = 0; i < num_heart_sprites; ++i) {
 		sp_hearts.at(i).setTexture(svc::assetLocator.get().t_hud_hearts);
@@ -80,27 +80,29 @@ void HUD::render(sf::RenderWindow& win) {
 	}
 
 	// GUN
-	int pointer_index{0};
-	int loadout_size = svc::playerLocator.get().arsenal.loadout.size();
-	for (int i = 0; i < loadout_size; ++i) {
-		int gun_index = svc::playerLocator.get().arsenal.loadout.at(i).get_id();
-		sp_guns.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-		sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-		if (i == svc::playerLocator.get().arsenal.get_index()) {
-			win.draw(sp_guns_shadow.at(gun_index));
+	if (!svc::playerLocator.get().arsenal.loadout.empty()) {
+		int pointer_index{0};
+		int loadout_size = svc::playerLocator.get().arsenal.loadout.size();
+		for (int i = 0; i < loadout_size; ++i) {
+			int gun_index = svc::playerLocator.get().arsenal.loadout.at(i)->get_id();
+			sp_guns.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
+			sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
+			if (i == svc::playerLocator.get().arsenal.get_index()) {
+				win.draw(sp_guns_shadow.at(gun_index));
 
-			win.draw(sp_guns.at(gun_index));
+				win.draw(sp_guns.at(gun_index));
 
-			pointer_index = i;
-		} else {
-			win.draw(sp_guns_shadow.at(gun_index));
+				pointer_index = i;
+			} else {
+				win.draw(sp_guns_shadow.at(gun_index));
+			}
 		}
+		arms::WEAPON_TYPE curr_type = svc::playerLocator.get().equipped_weapon().type;
+		sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
+		win.draw(sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color));
 	}
-	arms::WEAPON_TYPE curr_type = svc::playerLocator.get().equipped_weapon().type;
-	sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
-	if (!svc::playerLocator.get().arsenal.loadout.empty()) { win.draw(sp_pointer.at(svc::playerLocator.get().equipped_weapon().attributes.ui_color)); }
 }
 
 void HUD::set_corner_pad(bool file_preview) { file_preview ? corner_pad = {((float)cam::screen_dimensions.x / 2) - 140, -60.f} : corner_pad = {0.f, 0.f}; }
 
-} // namespace text
+} // namespace gui

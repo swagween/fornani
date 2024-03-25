@@ -30,13 +30,13 @@ struct Arsenal {
 	int get_index();
 	void set_index(int index);
 
-	std::array<Weapon, max_weapons> armory{};
-	std::vector<Weapon> loadout{};
+	std::array<std::shared_ptr<Weapon>, max_weapons> armory{};
+	std::vector<std::shared_ptr<Weapon>> loadout{};
 	std::array<int, max_weapons> extant_projectile_instances{};
 
   private:
 	int current_weapon{};
-	Weapon default_gun{};
+	std::shared_ptr<Weapon> default_gun{};
 };
 
 } // namespace arms

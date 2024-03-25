@@ -84,6 +84,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_portals.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
+			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
 			entity::Portal p{};
 			input >> p.scaled_dimensions.x;
 			input.ignore();
@@ -113,6 +114,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_inspectables.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
+			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
 			entity::Inspectable p{};
 			input >> p.scaled_dimensions.x;
 			input.ignore();
@@ -140,6 +142,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_animators.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
+			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
 			sf::Vector2<int> scaled_dim{};
 			sf::Vector2<int> scaled_pos{};
 			int id_val{};
@@ -179,6 +182,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_save_point.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
+			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
 			input >> save_point.id;
 			input.ignore();
 			input >> save_point.scaled_position.x;
@@ -193,6 +197,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_chests.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
+			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
 			sf::Vector2<float> pos{};
 			int id{};
 			input >> id;
@@ -215,7 +220,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	input.open(path + "/map_critters.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
-
+			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
 			int id{};
 			sf::Vector2<int> pos{};
 
@@ -231,6 +236,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 			enemy_catalog.push_enemy(svc, id);
 			enemy_catalog.enemies.back()->set_position({(float)(pos.x * asset::TILE_WIDTH), (float)(pos.y * asset::TILE_WIDTH)});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
+			
 		}
 		input.close();
 	}
@@ -363,7 +369,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		transition.fade_out = true;
 		if (transition.done) {
 			svc::playerLocator.get().start_over();
-			svc.state_controller.next_state = lookup::get_map_label.at(101); // temporary. later, we will load the last save
+			svc.state_controller.next_state = lookup::get_map_label.at(100); // temporary. later, we will load the last save
 			svc.state_controller.actions.set(automa::Actions::trigger);
 			svc::playerLocator.get().set_position(sf::Vector2<float>(200.f, 390.f));
 		}

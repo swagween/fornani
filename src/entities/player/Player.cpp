@@ -7,7 +7,7 @@
 
 namespace player {
 
-Player::Player() {}
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc) {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -303,19 +303,21 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon() {
+	if (arsenal.armory.empty() || arsenal.loadout.empty()) { return; }
 	// clamp extant projectile instances to the weapon's rate
 	assert(arsenal.extant_projectile_instances.size() >= arsenal.armory.size());
 	for (std::size_t index = 0; index < arsenal.extant_projectile_instances.size(); ++index) {
 		auto& count = arsenal.extant_projectile_instances.at(index);
-		count = std::clamp(count, 0, arsenal.armory.at(index).attributes.rate);
+		if (arsenal.armory.at(index)->attributes.rate < 0) { continue; }
+		count = std::clamp(count, 0, arsenal.armory.at(index)->attributes.rate);
 	}
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.loadout) {
-		weapon.active_projectiles = extant_instances(weapon.get_id());
-		weapon.firing_direction = controller.direction;
-		weapon.update();
-		sf::Vector2<float> p_pos = {apparent_position.x + weapon.gun_offset.x, apparent_position.y + sprite_offset.y + weapon.gun_offset.y - collider.dimensions.y / 2.f};
-		weapon.set_position(p_pos);
+		weapon->active_projectiles = extant_instances(weapon->get_id());
+		weapon->firing_direction = controller.direction;
+		weapon->update();
+		sf::Vector2<float> p_pos = {apparent_position.x + weapon->gun_offset.x, apparent_position.y + sprite_offset.y + weapon->gun_offset.y - collider.dimensions.y / 2.f};
+		weapon->set_position(p_pos);
 	}
 	if (controller.facing_right()) {
 		hand_position = {28, 36};

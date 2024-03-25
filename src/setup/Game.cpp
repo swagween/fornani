@@ -438,7 +438,7 @@ void Game::debug_window() {
 							svc::playerLocator.get().arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::PLASMER));
 							svc::playerLocator.get().arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::TOMAHAWK));
 						} else {
-							svc::playerLocator.get().arsenal.loadout = {};
+							svc::playerLocator.get().arsenal.loadout.clear();
 						}
 					}
 
@@ -451,9 +451,9 @@ void Game::debug_window() {
 					ImGui::Text("Extant Projectiles:");
 					ImGui::NewLine();
 					for (auto& weapon : svc::playerLocator.get().arsenal.loadout) {
-						ImGui::Text("%s", (weapon.label + ": ").c_str());
+						ImGui::Text("%s", (weapon->label + ": ").c_str());
 						ImGui::SameLine();
-						ImGui::Text("%i", svc::playerLocator.get().extant_instances(weapon.get_id()));
+						ImGui::Text("%i", svc::playerLocator.get().extant_instances(weapon->get_id()));
 					}
 					ImGui::Separator();
 

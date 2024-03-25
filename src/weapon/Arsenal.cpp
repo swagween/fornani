@@ -5,7 +5,8 @@
 namespace arms {
 
 Arsenal::Arsenal(automa::ServiceProvider& svc) {
-	for (int i = 0; i < max_weapons; ++i) { armory.at(i) = Weapon(svc, i); }
+	for (int i = 0; i < max_weapons; ++i) { armory.at(i) = std::make_shared<Weapon>(svc, i); }
+	default_gun = std::make_shared<Weapon>(svc, 0);
 }
 
 void Arsenal::push_to_loadout(int id) { loadout.push_back(armory.at(id)); }
@@ -17,16 +18,16 @@ void Arsenal::switch_weapon(float next) {
 	if (current_weapon <= -1) { current_weapon = loadout.size() - 1; }
 	if (current_weapon >= loadout.size()) { current_weapon = 0; }
 	if (current_weapon < loadout.size() && current_weapon < extant_projectile_instances.size()) {
-		loadout.at(current_weapon).active_projectiles = extant_projectile_instances.at(current_weapon);
+		loadout.at(current_weapon)->active_projectiles = extant_projectile_instances.at(current_weapon);
 		svc::soundboardLocator.get().flags.player.set(audio::Player::arms_switch);
 	}
 }
 
 Weapon& Arsenal::get_current_weapon() {
 	if (current_weapon < loadout.size()) {
-		return loadout.at(current_weapon);
+		return *loadout.at(current_weapon);
 	} else {
-		return default_gun;
+		return *default_gun;
 	}
 }
 
