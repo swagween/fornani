@@ -4,7 +4,7 @@
 
 namespace automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, int id) {
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, int id) {
 	state = STATE::STATE_MENU;
 	svc::cameraLocator.get().set_position({1, 1});
 
@@ -64,7 +64,7 @@ MainMenu::MainMenu(ServiceProvider& svc, int id) {
 					   sf::IntRect({0, 0}, {(int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y})};
 };
 
-void MainMenu::init(ServiceProvider& svc, std::string const& load_path) {
+void MainMenu::init(ServiceProvider& svc, std::string_view room) {
 	svc::musicPlayerLocator.get().load("clay");
 	svc::musicPlayerLocator.get().play_looped();
 }

@@ -8,11 +8,12 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc) : enemy_catalog(svc), save_point(svc), transition(svc, 256) {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 256) {}
 
-void Map::load(automa::ServiceProvider& svc, std::string const& path) {
+void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
-	std::string filepath = path + "/map_data.txt";
+	std::string filepath = svc.data.finder.resource_path + room.data() + "/map_data.txt";
+	std::string room_str = svc.data.finder.resource_path + room.data();
 
 	int value{};
 	int counter = 0;
@@ -65,7 +66,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 
 	// get map tiles from text files
 	for (auto& layer : layers) {
-		input.open(path + "/map_tiles_" + std::to_string(counter) + ".txt");
+		input.open(room_str + "/map_tiles_" + std::to_string(counter) + ".txt");
 		for (auto& cell : layer.grid.cells) {
 			input >> value;
 			lookup::TILE_TYPE typ = lookup::tile_lookup.at(value);
@@ -81,7 +82,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	}
 
 	// get portal data
-	input.open(path + "/map_portals.txt");
+	input.open(room_str + "/map_portals.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
 			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
@@ -111,7 +112,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	}
 
 	// get inspectable data
-	input.open(path + "/map_inspectables.txt");
+	input.open(room_str + "/map_inspectables.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
 			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
@@ -139,7 +140,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	}
 
 	// get animator data
-	input.open(path + "/map_animators.txt");
+	input.open(room_str + "/map_animators.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
 			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
@@ -179,7 +180,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	}
 
 	// get save point data
-	input.open(path + "/map_save_point.txt");
+	input.open(room_str + "/map_save_point.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
 			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
@@ -194,7 +195,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	}
 
 	// get chest data
-	input.open(path + "/map_chests.txt");
+	input.open(room_str + "/map_chests.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
 			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
@@ -217,7 +218,7 @@ void Map::load(automa::ServiceProvider& svc, std::string const& path) {
 	}
 
 	// get critter data
-	input.open(path + "/map_critters.txt");
+	input.open(room_str + "/map_critters.txt");
 	if (input.is_open()) {
 		while (!input.eof()) {
 			if (input.peek() == std::ifstream::traits_type::eof()) { break; }

@@ -4,16 +4,16 @@
 
 namespace automa {
 
-Dojo::Dojo(ServiceProvider& svc, int id) : map(svc) {}
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, int id) : GameState(svc, player, id), map(svc, player) {}
 
-void Dojo::init(ServiceProvider& svc, std::string const& load_path) {
+void Dojo::init(ServiceProvider& svc, std::string_view room) {
 
 	console = gui::Console(svc);
 
 	hud.set_corner_pad(false); // reset hud position to corner
 	svc::playerLocator.get().reset_flags();
 
-	map.load(svc, load_path);
+	map.load(svc, room);
 	//tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
 	tileset = svc.assets.tilesets.at(map.style_id);
 	for (int i = 0; i < 16; ++i) {

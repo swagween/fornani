@@ -4,7 +4,7 @@
 
 namespace automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, int id) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, int id) : GameState(svc, player, id) {
 	file_selection = 0;
 	state = STATE::STATE_FILE;
 	svc::dataLocator.get().load_blank_save();
@@ -48,7 +48,7 @@ FileMenu::FileMenu(ServiceProvider& svc, int id) {
 	}
 }
 
-void FileMenu::init(ServiceProvider& svc, std::string const& load_path) {}
+void FileMenu::init(ServiceProvider& svc, std::string_view room) {}
 
 void FileMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
 

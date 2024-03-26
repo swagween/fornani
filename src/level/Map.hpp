@@ -28,6 +28,10 @@ namespace automa {
 struct ServiceProvider;
 }
 
+namespace player {
+class Player;
+}
+
 namespace gui {
 class Console;
 }
@@ -63,10 +67,10 @@ class Map {
 	using Vecu16 = sf::Vector2<uint32_t>;
 
 	Map() = default;
-	Map(automa::ServiceProvider& svc);
+	Map(automa::ServiceProvider& svc, player::Player& player);
 
 	// methods
-	void load(automa::ServiceProvider& svc, std::string const& path);
+	void load(automa::ServiceProvider& svc, std::string_view room);
 	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -126,6 +130,8 @@ class Map {
 	bool game_over{false};
 	bool show_minimap{false};
 	bool debug_mode{false};
+
+	player::Player* player;
 };
 
 } // namespace world

@@ -229,7 +229,6 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		a += 20;
 		++ctr;
 	}
-	//sprite.setColor(sf::Color::White);
 }
 
 void Player::calculate_sprite_offset() {

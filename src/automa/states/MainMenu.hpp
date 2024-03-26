@@ -12,9 +12,9 @@ class MainMenu : public GameState {
 		{MenuSelection::new_game, 0}, {MenuSelection::load_game, 1}, {MenuSelection::options, 2}};
 
 	MainMenu() = default;
-	MainMenu(ServiceProvider& svc, int id = 0);
+	MainMenu(ServiceProvider& svc, player::Player& player, int id = 0);
 
-	void init(ServiceProvider& svc, std::string const& load_path);
+	void init(ServiceProvider& svc, std::string_view room = "");
 	void setTilesetTexture(ServiceProvider& svc, sf::Texture& t);
 	void handle_events(ServiceProvider& svc, sf::Event& event);
 	void tick_update(ServiceProvider& svc);

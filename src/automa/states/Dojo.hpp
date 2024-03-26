@@ -8,8 +8,8 @@ namespace automa {
 class Dojo : public GameState {
   public:
 	Dojo() = default;
-	Dojo(ServiceProvider& svc, int id = 0);
-	void init(ServiceProvider& svc, std::string const& load_path);
+	Dojo(ServiceProvider& svc, player::Player& player, int id = 0);
+	void init(ServiceProvider& svc, std::string_view room = "");
 	void setTilesetTexture(ServiceProvider& svc, sf::Texture& t);
 	void handle_events(ServiceProvider& svc, sf::Event& event);
 	void tick_update(ServiceProvider& svc);

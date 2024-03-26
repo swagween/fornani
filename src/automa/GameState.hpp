@@ -13,6 +13,10 @@
 #include "../setup/LookupTables.hpp"
 #include "../gui/Console.hpp"
 
+namespace player {
+class Player;
+}
+
 namespace automa {
 
 // globals
@@ -36,10 +40,10 @@ class GameState {
 	using Time = std::chrono::duration<float>;
 
 	GameState() = default;
-	GameState(ServiceProvider& svc, int id) {}
+	GameState(ServiceProvider& svc, player::Player& player, int id = 0) : player(&player) {}
 	GameState& operator=(GameState&&) = delete;
 
-	virtual void init(ServiceProvider& svc, std::string const& load_path){};
+	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
 	virtual void setTilesetTexture(ServiceProvider& svc, sf::Texture& t){};
 	virtual void handle_events(ServiceProvider& svc, sf::Event& event){};
 	virtual void tick_update(ServiceProvider& svc){};
@@ -55,6 +59,8 @@ class GameState {
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
 	sf::Vector2<float> dot_pad{24.f, 8.f};
+
+	player::Player* player;
 };
 
 } // namespace automa

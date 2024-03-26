@@ -3,6 +3,7 @@
 #include <random>
 #include "../automa/StateManager.hpp"
 #include "../service/ServiceProvider.hpp"
+#include "../entities/player/Player.hpp"
 #include <imgui-SFML.h>
 
 namespace fornani {
@@ -31,6 +32,7 @@ class Game {
 		int draw_calls{};
 	} trackers{};
 
+	player::Player player{};
 	automa::StateManager game_state{};
 	sf::RenderWindow window{};
 	sf::Texture screencap{};
