@@ -121,6 +121,8 @@ class Projectile {
 	void constrain_hitbox_at_destruction_point();
 	void lock_to_anchor();
 
+	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
+
 	dir::Direction direction{};
 	shape::Shape bounding_box{};
 	components::PhysicsComponent physics{};

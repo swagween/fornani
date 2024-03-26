@@ -18,7 +18,7 @@ void Tile::update_polygon(sf::Vector2<float> cam) {
 void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (collision_check && svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
 		update_polygon(cam);
-		if (is_solid()) {
+		if (!surrounded) {
 			win.draw(polygon);
 			
 		}
@@ -32,6 +32,8 @@ bool Tile::is_collidable() const { return type != lookup::TILE_TYPE::TILE_CEILIN
 bool Tile::is_solid() const { return type == lookup::TILE_TYPE::TILE_BASIC || type == lookup::TILE_TYPE::TILE_BREAKABLE || type == lookup::TILE_TYPE::TILE_CEILING_RAMP || type == lookup::TILE_TYPE::TILE_GROUND_RAMP; }
 
 bool Tile::is_hookable() const { return type == lookup::TILE_TYPE::TILE_BASIC || type == lookup::TILE_TYPE::TILE_BREAKABLE; }
+
+bool Tile::is_breakable() const { return type == lookup::TILE_TYPE::TILE_BREAKABLE; }
 
 bool Tile::is_ramp() const { return type == lookup::TILE_TYPE::TILE_CEILING_RAMP || type == lookup::TILE_TYPE::TILE_GROUND_RAMP; }
 

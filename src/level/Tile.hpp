@@ -17,6 +17,7 @@ struct Tile {
 	bool is_collidable() const;
 	bool is_solid() const;
 	bool is_hookable() const;
+	bool is_breakable() const;
 	bool is_ramp() const;
 	sf::Vector2<float> middle_point();
 

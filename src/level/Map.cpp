@@ -277,12 +277,15 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 			} else {
 				cell.collision_check = true;
 				if ((proj.bounding_box.overlaps(cell.bounding_box) && cell.is_occupied())) {
-					if (cell.type == lookup::TILE_TYPE::TILE_BREAKABLE && !proj.stats.transcendent) {
+					if (cell.is_breakable() && !proj.stats.transcendent && !proj.destruction_initiated()) {
+						std::cout << "bam\n";
 						--cell.value;
-						if (lookup::tile_lookup.at(cell.value) != lookup::TILE_TYPE::TILE_BREAKABLE) {
+						proj.destroy(false);
+						if (cell.value < 244) {
 							cell.value = 0;
 							svc::assetLocator.get().shatter.play();
 						}
+						generate_layer_textures(svc);
 					}
 					if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) { continue; }
 					if (!proj.stats.transcendent) { proj.destroy(false); }
@@ -555,7 +558,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 void Map::generate_collidable_layer() {
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-		if (!cell.surrounded && cell.is_occupied()) { collidable_indeces.push_back(cell.one_d_index); }
+		if ((!cell.surrounded && cell.is_occupied()) || cell.is_breakable()) { collidable_indeces.push_back(cell.one_d_index); }
 	}
 }
 
