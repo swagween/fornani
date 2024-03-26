@@ -24,6 +24,10 @@ namespace automa {
 struct ServiceProvider;
 }
 
+namespace player {
+class Player;
+}
+
 namespace arms {
 
 enum class WEAPON_TYPE {
@@ -101,8 +105,8 @@ class Projectile {
 	Projectile();
 	Projectile(automa::ServiceProvider& svc, int id);
 
-	void update(automa::ServiceProvider& svc);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void update(automa::ServiceProvider& svc, player::Player& player);
+	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void destroy(bool completely);
 	void seed();
 	void set_sprite();

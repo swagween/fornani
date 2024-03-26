@@ -5,6 +5,7 @@
 #include "LookupTables.hpp"
 #include "MapLookups.hpp"
 #include "ServiceLocator.hpp"
+#include "../entities/player/Player.hpp"
 
 namespace data {
 
@@ -60,14 +61,14 @@ void DataManager::load_data() {
 	std::cout << " success!\n";
 }
 
-void DataManager::save_progress(int save_point_id) {
+void DataManager::save_progress(player::Player& player, int save_point_id) {
 
 	// set file data based on player state
-	save["player_data"]["max_hp"] = svc::playerLocator.get().health.get_max();
-	save["player_data"]["hp"] = svc::playerLocator.get().health.get_hp();
-	save["player_data"]["orbs"] = svc::playerLocator.get().player_stats.orbs;
-	save["player_data"]["position"]["x"] = svc::playerLocator.get().collider.physics.position.x;
-	save["player_data"]["position"]["y"] = svc::playerLocator.get().collider.physics.position.y;
+	save["player_data"]["max_hp"] = player.health.get_max();
+	save["player_data"]["hp"] = player.health.get_hp();
+	save["player_data"]["orbs"] = player.player_stats.orbs;
+	save["player_data"]["position"]["x"] = player.collider.physics.position.x;
+	save["player_data"]["position"]["y"] = player.collider.physics.position.y;
 
 	// save arsenal
 	// wipe it first
@@ -75,18 +76,18 @@ void DataManager::save_progress(int save_point_id) {
 	auto const wipe = dj::Json::parse(empty_array);
 	save["player_data"]["arsenal"] = wipe;
 	// push player arsenal
-	for (auto& gun : svc::playerLocator.get().arsenal.loadout) {
+	for (auto& gun : player.arsenal.loadout) {
 		int this_id = gun->get_id();
 		save["player_data"]["arsenal"].push_back(this_id);
 	}
-	save["player_data"]["equipped_gun"] = svc::playerLocator.get().arsenal.get_index();
+	save["player_data"]["equipped_gun"] = player.arsenal.get_index();
 
 	save["save_point_id"] = save_point_id;
 
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
-std::string_view DataManager::load_progress(int const file, bool state_switch) {
+std::string_view DataManager::load_progress(player::Player& player, int const file, bool state_switch) {
 
 	current_save = file;
 
@@ -97,86 +98,86 @@ std::string_view DataManager::load_progress(int const file, bool state_switch) {
 	int room_id = lookup::save_point_to_room_id.at(save_pt_id);
 
 	// set player data based on save file
-	svc::playerLocator.get().health.set_max(svc::dataLocator.get().save["player_data"]["max_hp"].as<int>());
-	svc::playerLocator.get().health.set_hp(svc::dataLocator.get().save["player_data"]["hp"].as<int>());
-	svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
+	player.health.set_max(svc::dataLocator.get().save["player_data"]["max_hp"].as<int>());
+	player.health.set_hp(svc::dataLocator.get().save["player_data"]["hp"].as<int>());
+	player.player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	svc::playerLocator.get().arsenal.loadout.clear();
+	player.arsenal.loadout.clear();
 	for (auto& gun_id : svc::dataLocator.get().save["player_data"]["arsenal"].array_view()) {
-		svc::playerLocator.get().arsenal.push_to_loadout(gun_id.as<int>());
+		player.arsenal.push_to_loadout(gun_id.as<int>());
 	}
-	if (!svc::playerLocator.get().arsenal.loadout.empty()) {
+	if (!player.arsenal.loadout.empty()) {
 		auto equipped_gun = svc::dataLocator.get().save["player_data"]["equipped_gun"].as<int>();
-		svc::playerLocator.get().arsenal.set_index(equipped_gun);
+		player.arsenal.set_index(equipped_gun);
 	}
 
 	//reset some things that might be lingering
-	svc::playerLocator.get().arsenal.extant_projectile_instances = {};
+	player.arsenal.extant_projectile_instances = {};
 
 	return lookup::get_map_label.at(room_id);
 }
 
-std::string_view DataManager::load_blank_save(bool state_switch) {
+std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) {
 
 	save = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
 	assert(!save.is_null());
 
 	// set player data based on save file
-	svc::playerLocator.get().health.set_max(svc::dataLocator.get().save["player_data"]["max_hp"].as<int>());
-	svc::playerLocator.get().health.set_hp(svc::dataLocator.get().save["player_data"]["hp"].as<int>());
-	svc::playerLocator.get().player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
+	player.health.set_max(svc::dataLocator.get().save["player_data"]["max_hp"].as<int>());
+	player.health.set_hp(svc::dataLocator.get().save["player_data"]["hp"].as<int>());
+	player.player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	svc::playerLocator.get().arsenal.loadout.clear();
+	player.arsenal.loadout.clear();
 
 	return lookup::get_map_label.at(100);
 }
 
-void DataManager::load_player_params() {
+void DataManager::load_player_params(player::Player& player) {
 
 	std::cout << "loading player params ...";
 	player_params = dj::Json::from_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
-	svc::playerLocator.get().physics_stats.grav = player_params["physics"]["grav"].as<float>();
-	svc::playerLocator.get().physics_stats.ground_fric = player_params["physics"]["ground_fric"].as<float>();
-	svc::playerLocator.get().physics_stats.air_fric = player_params["physics"]["air_fric"].as<float>();
-	svc::playerLocator.get().physics_stats.x_acc = player_params["physics"]["x_acc"].as<float>();
-	svc::playerLocator.get().physics_stats.air_multiplier = player_params["physics"]["air_multiplier"].as<float>();
-	svc::playerLocator.get().physics_stats.jump_velocity = player_params["physics"]["jump_velocity"].as<float>();
-	svc::playerLocator.get().physics_stats.jump_release_multiplier = player_params["physics"]["jump_release_multiplier"].as<float>();
-	svc::playerLocator.get().physics_stats.hurt_acc = player_params["physics"]["hurt_acc"].as<float>();
+	player.physics_stats.grav = player_params["physics"]["grav"].as<float>();
+	player.physics_stats.ground_fric = player_params["physics"]["ground_fric"].as<float>();
+	player.physics_stats.air_fric = player_params["physics"]["air_fric"].as<float>();
+	player.physics_stats.x_acc = player_params["physics"]["x_acc"].as<float>();
+	player.physics_stats.air_multiplier = player_params["physics"]["air_multiplier"].as<float>();
+	player.physics_stats.jump_velocity = player_params["physics"]["jump_velocity"].as<float>();
+	player.physics_stats.jump_release_multiplier = player_params["physics"]["jump_release_multiplier"].as<float>();
+	player.physics_stats.hurt_acc = player_params["physics"]["hurt_acc"].as<float>();
 
-	svc::playerLocator.get().physics_stats.maximum_velocity.x = player_params["physics"]["maximum_velocity"]["x"].as<float>();
-	svc::playerLocator.get().physics_stats.maximum_velocity.y = player_params["physics"]["maximum_velocity"]["y"].as<float>();
+	player.physics_stats.maximum_velocity.x = player_params["physics"]["maximum_velocity"]["x"].as<float>();
+	player.physics_stats.maximum_velocity.y = player_params["physics"]["maximum_velocity"]["y"].as<float>();
 
-	svc::playerLocator.get().physics_stats.mass = player_params["physics"]["mass"].as<float>();
-	svc::playerLocator.get().physics_stats.vertical_dash_multiplier = player_params["physics"]["vertical_dash_multiplier"].as<float>();
-	svc::playerLocator.get().physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
-	svc::playerLocator.get().physics_stats.dash_dampen = player_params["physics"]["dash_dampen"].as<float>();
+	player.physics_stats.mass = player_params["physics"]["mass"].as<float>();
+	player.physics_stats.vertical_dash_multiplier = player_params["physics"]["vertical_dash_multiplier"].as<float>();
+	player.physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
+	player.physics_stats.dash_dampen = player_params["physics"]["dash_dampen"].as<float>();
 	std::cout << " success!\n";
 }
 
-void DataManager::save_player_params() {
+void DataManager::save_player_params(player::Player& player) {
 
 	std::cout << "saving player params ...";
-	player_params["physics"]["grav"] = svc::playerLocator.get().physics_stats.grav;
-	player_params["physics"]["ground_fric"] = svc::playerLocator.get().physics_stats.ground_fric;
-	player_params["physics"]["air_fric"] = svc::playerLocator.get().physics_stats.air_fric;
-	player_params["physics"]["x_acc"] = svc::playerLocator.get().physics_stats.x_acc;
-	player_params["physics"]["air_multiplier"] = svc::playerLocator.get().physics_stats.air_multiplier;
-	player_params["physics"]["jump_velocity"] = svc::playerLocator.get().physics_stats.jump_velocity;
-	player_params["physics"]["jump_release_multiplier"] = svc::playerLocator.get().physics_stats.jump_release_multiplier;
-	player_params["physics"]["hurt_acc"] = svc::playerLocator.get().physics_stats.hurt_acc;
+	player_params["physics"]["grav"] = player.physics_stats.grav;
+	player_params["physics"]["ground_fric"] = player.physics_stats.ground_fric;
+	player_params["physics"]["air_fric"] = player.physics_stats.air_fric;
+	player_params["physics"]["x_acc"] = player.physics_stats.x_acc;
+	player_params["physics"]["air_multiplier"] = player.physics_stats.air_multiplier;
+	player_params["physics"]["jump_velocity"] = player.physics_stats.jump_velocity;
+	player_params["physics"]["jump_release_multiplier"] = player.physics_stats.jump_release_multiplier;
+	player_params["physics"]["hurt_acc"] = player.physics_stats.hurt_acc;
 
-	player_params["physics"]["maximum_velocity"]["x"] = svc::playerLocator.get().physics_stats.maximum_velocity.x;
-	player_params["physics"]["maximum_velocity"]["y"] = svc::playerLocator.get().physics_stats.maximum_velocity.y;
+	player_params["physics"]["maximum_velocity"]["x"] = player.physics_stats.maximum_velocity.x;
+	player_params["physics"]["maximum_velocity"]["y"] = player.physics_stats.maximum_velocity.y;
 
-	player_params["physics"]["mass"] = svc::playerLocator.get().physics_stats.mass;
-	player_params["physics"]["vertical_dash_multiplier"] = svc::playerLocator.get().physics_stats.vertical_dash_multiplier;
-	player_params["physics"]["dash_speed"] = svc::playerLocator.get().physics_stats.dash_speed;
-	player_params["physics"]["dash_dampen"] = svc::playerLocator.get().physics_stats.dash_dampen;
+	player_params["physics"]["mass"] = player.physics_stats.mass;
+	player_params["physics"]["vertical_dash_multiplier"] = player.physics_stats.vertical_dash_multiplier;
+	player_params["physics"]["dash_speed"] = player.physics_stats.dash_speed;
+	player_params["physics"]["dash_dampen"] = player.physics_stats.dash_dampen;
 
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	std::cout << " success!\n";

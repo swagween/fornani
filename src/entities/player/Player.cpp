@@ -6,13 +6,15 @@
 
 namespace player {
 
+Player::Player() {}
+
 Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc) {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
 	m_services = &svc;
 
-	svc.data.load_player_params();
+	svc.data.load_player_params(*this);
 	arsenal = arms::Arsenal(svc);
 
 	health.invincibility_time = 400;
@@ -191,7 +193,7 @@ void Player::update_animation() {
 }
 
 void Player::update_sprite() {
-	svc::playerLocator.get().sprite.setTexture(texture_updater.get_dynamic_texture());
+	sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 
 void Player::update_transponder(gui::Console& console) {
@@ -315,7 +317,7 @@ void Player::update_weapon() {
 	for (auto& weapon : arsenal.loadout) {
 		weapon->active_projectiles = extant_instances(weapon->get_id());
 		weapon->firing_direction = controller.direction;
-		weapon->update();
+		weapon->update(controller.direction);
 		sf::Vector2<float> p_pos = {apparent_position.x + weapon->gun_offset.x, apparent_position.y + sprite_offset.y + weapon->gun_offset.y - collider.dimensions.y / 2.f};
 		weapon->set_position(p_pos);
 	}

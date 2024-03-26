@@ -49,7 +49,7 @@ class Weapon {
 	Weapon() = default;
 	Weapon(automa::ServiceProvider& svc, int id);
 
-	void update();
+	void update(dir::Direction to_direction);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 
 	void equip();
@@ -64,7 +64,7 @@ class Weapon {
 	bool can_shoot() const;
 
 	void set_position(sf::Vector2<float> pos);
-	void set_orientation();
+	void set_orientation(dir::Direction to_direction);
 
 	int get_id();
 

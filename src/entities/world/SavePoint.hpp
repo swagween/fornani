@@ -8,7 +8,11 @@
 #include "../../particle/Sparkler.hpp"
 
 namespace automa {
-	struct ServiceProvider;
+struct ServiceProvider;
+}
+
+namespace player {
+class Player;
 }
 
 namespace gui {
@@ -28,10 +32,10 @@ class SavePoint {
 	SavePoint() = default;
 	SavePoint(automa::ServiceProvider& svc);
 
-	void update(automa::ServiceProvider& svc, gui::Console& console);
+	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 
-	void save(); // talk to SaveDataManager to write current progress to save.json
+	void save(automa::ServiceProvider& svc, player::Player& player); // talk to SaveDataManager to write current progress to save.json
 
 	Vec dimensions{32, 32};
 	Vec sprite_dimensions{64.f, 64.f};

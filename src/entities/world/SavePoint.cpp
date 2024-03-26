@@ -2,6 +2,7 @@
 #include "SavePoint.hpp"
 #include "../../setup/ServiceLocator.hpp"
 #include "../../service/ServiceProvider.hpp"
+#include "../player/Player.hpp"
 #include "../../gui/Console.hpp"
 
 namespace entity {
@@ -22,7 +23,7 @@ SavePoint::SavePoint(automa::ServiceProvider& svc) {
 	sparkler.set_position(position);
 }
 
-void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
+void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) {
 
 	animation.update();
 	sparkler.update(svc);
@@ -34,16 +35,16 @@ void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 	proximity_box.set_position(position - proximity_offset);
 	activated = false;
 
-	if (svc::playerLocator.get().collider.bounding_box.SAT(proximity_box)) {
-		svc::soundboardLocator.get().proximities.save = abs(svc::playerLocator.get().collider.bounding_box.position.x - bounding_box.position.x);
+	if (player.collider.bounding_box.SAT(proximity_box)) {
+		svc::soundboardLocator.get().proximities.save = abs(player.collider.bounding_box.position.x - bounding_box.position.x);
 
-		if (svc::playerLocator.get().collider.bounding_box.SAT(bounding_box)) {
+		if (player.collider.bounding_box.SAT(bounding_box)) {
 			intensity = 3;
 			if (animation.keyframe_over()) { animation.params.framerate = 16; }
-			if (svc::playerLocator.get().controller.inspecting()) {
+			if (player.controller.inspecting()) {
 				if (can_activate) {
 					activated = true;
-					save();
+					save(svc, player);
 					svc::soundboardLocator.get().flags.world.set(audio::World::soft_sparkle);
 					console.load_and_launch("save");
 				}
@@ -78,9 +79,9 @@ void SavePoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec 
 	}
 }
 
-void SavePoint::save() {
+void SavePoint::save(automa::ServiceProvider& svc, player::Player& player) {
 
-	svc::dataLocator.get().save_progress(id);
+	svc.data.save_progress(player, id);
 	can_activate = false;
 }
 

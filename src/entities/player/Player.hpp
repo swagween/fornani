@@ -81,7 +81,7 @@ struct PlayerFlags {
 
 class Player {
   public:
-	Player() = default;
+	Player();
 	Player(automa::ServiceProvider& svc);
 
 	// init (violates RAII but must happen after resource path is set)

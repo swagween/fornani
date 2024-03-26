@@ -8,6 +8,10 @@
 #include <string>
 #include "ResourceFinder.hpp"
 
+namespace player {
+class Player;
+}
+
 namespace data {
 
 class DataManager {
@@ -15,13 +19,13 @@ class DataManager {
 	public:
 	// game save
 	void load_data();
-	void save_progress(int save_point_id);
-	std::string_view load_progress(int const file, bool state_switch = false);
-	std::string_view load_blank_save(bool state_switch = false);
+	  void save_progress(player::Player& player, int save_point_id);
+	std::string_view load_progress(player::Player& player, int const file, bool state_switch = false);
+	std::string_view load_blank_save(player::Player& player, bool state_switch = false);
 
 	// tweaking
-	void load_player_params();
-	void save_player_params();
+	void load_player_params(player::Player& player);
+	void save_player_params(player::Player& player);
 
 	dj::Json weapon{};
 	dj::Json drop{};

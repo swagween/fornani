@@ -38,9 +38,9 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
 	attributes.boomerang = projectile.stats.boomerang;
 }
 
-void Weapon::update() {
+void Weapon::update(dir::Direction to_direction) {
 	active_projectiles = std::clamp(active_projectiles, 0, INT_MAX);
-	set_orientation();
+	set_orientation(to_direction);
 	cooldown.update();
 	if (cooldown.is_complete()) {
 		flags.reset(GunState::cooling_down);
@@ -85,7 +85,7 @@ bool Weapon::can_shoot() const { return !cooling_down() && !(active_projectiles 
 
 void Weapon::set_position(sf::Vector2<float> pos) { sprite_position = pos; }
 
-void Weapon::set_orientation() {
+void Weapon::set_orientation(dir::Direction to_direction) {
 
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
@@ -107,12 +107,12 @@ void Weapon::set_orientation() {
 	}
 	switch (firing_direction.und) {
 	case dir::UND::up:
-		svc::playerLocator.get().controller.direction.lr == dir::LR::right ? sp_gun.rotate(-90) : sp_gun.rotate(90);
+		to_direction.lr == dir::LR::right ? sp_gun.rotate(-90) : sp_gun.rotate(90);
 		barrel_point = {sprite_position.x + attributes.barrel_position.at(1), sprite_position.y - attributes.barrel_position.at(0)};
 		firing_direction.neutralize_lr();
 		break;
 	case dir::UND::down:
-		svc::playerLocator.get().controller.direction.lr == dir::LR::right ? sp_gun.rotate(90) : sp_gun.rotate(-90);
+		to_direction.lr == dir::LR::right ? sp_gun.rotate(90) : sp_gun.rotate(-90);
 		barrel_point = {sprite_position.x + sprite_dimensions.y - attributes.barrel_position.at(1) - sprite_dimensions.y, sprite_position.y + sprite_dimensions.x};
 		firing_direction.neutralize_lr();
 		break;

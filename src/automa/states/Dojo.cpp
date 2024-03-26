@@ -11,7 +11,7 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	console = gui::Console(svc);
 
 	hud.set_corner_pad(false); // reset hud position to corner
-	svc::playerLocator.get().reset_flags();
+	player->reset_flags();
 
 	map.load(svc, room);
 	//tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
@@ -28,8 +28,8 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	}
 
 	// TODO: refactor player initialization
-	svc::playerLocator.get().collider.physics.zero();
-	svc::playerLocator.get().flags.state.set(player::State::alive);
+	player->collider.physics.zero();
+	player->flags.state.set(player::State::alive);
 
 	bool found_one = false;
 	// only search for door entry if room was not loaded from main menu
@@ -38,7 +38,7 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 			if (portal.destination_map_id == svc.state_controller.source_id) {
 				found_one = true;
 				sf::Vector2<float> spawn_position{portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - player::PLAYER_HEIGHT};
-				svc::playerLocator.get().set_position(spawn_position);
+				player->set_position(spawn_position);
 				svc::cameraLocator.get().center(svc, spawn_position);
 				svc::cameraLocator.get().physics.position = spawn_position - sf::Vector2<float>(svc::cameraLocator.get().bounding_box.width / 2, svc::cameraLocator.get().bounding_box.height / 2);
 			}
@@ -48,15 +48,15 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 		float ppx = svc::dataLocator.get().save["player_data"]["position"]["x"].as<float>();
 		float ppy = svc::dataLocator.get().save["player_data"]["position"]["y"].as<float>();
 		sf::Vector2f player_pos = {ppx, ppy};
-		svc::playerLocator.get().set_position(player_pos);
+		player->set_position(player_pos);
 	}
 
 	// save was loaded from a json, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
 
 	svc::inputStateLocator.get().reset_triggers();
-	svc::playerLocator.get().controller = {};
-	svc::playerLocator.get().controller.prevent_movement();
+	player->controller = {};
+	player->controller.prevent_movement();
 }
 
 void Dojo::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {
@@ -86,11 +86,11 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void Dojo::tick_update(ServiceProvider& svc) {
-	svc::playerLocator.get().update(console);
+	player->update(console);
 
 	map.update(svc, console);
 
-	svc::cameraLocator.get().center(svc, svc::playerLocator.get().anchor_point);
+	svc::cameraLocator.get().center(svc, player->anchor_point);
 	svc::cameraLocator.get().update(svc);
 	svc::cameraLocator.get().restrict_movement(map.real_dimensions);
 	if (map.real_dimensions.x < cam::screen_dimensions.x) { svc::cameraLocator.get().fix_vertically(map.real_dimensions); }
@@ -100,13 +100,13 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	map.debug_mode = debug_mode;
 
 	svc::inputStateLocator.get().reset_triggers();
-	svc::playerLocator.get().controller.clean();
+	player->controller.clean();
 
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {
 	map.background->update(svc);
-	hud.update();
+	hud.update(*player);
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
@@ -116,7 +116,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	map.render(svc, win, svc::cameraLocator.get().physics.position);
 
-	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(win); }
+	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(*player, win); }
 	map.render_console(console, win);
 
 	svc::assetLocator.get().sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
@@ -130,7 +130,6 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 			tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(lookup::STYLE::PROVISIONAL));
 			setTilesetTexture(svc, tileset);
 		} else {
-			//tileset = svc::assetLocator.get().tilesets.at(lookup::get_style_id.at(map.style));
 			tileset = svc.assets.tilesets.at(map.style_id);
 			setTilesetTexture(svc, tileset);
 		}

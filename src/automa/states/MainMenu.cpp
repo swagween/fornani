@@ -4,7 +4,7 @@
 
 namespace automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, int id) {
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, int id) : GameState(svc, player, id) {
 	state = STATE::STATE_MENU;
 	svc::cameraLocator.get().set_position({1, 1});
 
@@ -90,7 +90,7 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			if (selection == MenuSelection::new_game) {
 
-				svc.state_controller.next_state = svc::dataLocator.get().load_blank_save(true);
+				svc.state_controller.next_state = svc::dataLocator.get().load_blank_save(*player, true);
 				svc.state_controller.actions.set(Actions::trigger);
 				svc.state_controller.actions.set(Actions::save_loaded);
 				svc::soundboardLocator.get().flags.menu.set(audio::Menu::select);

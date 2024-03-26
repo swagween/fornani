@@ -40,7 +40,7 @@ class GameState {
 	using Time = std::chrono::duration<float>;
 
 	GameState() = default;
-	GameState(ServiceProvider& svc, player::Player& player, int id = 0) : player(&player) {}
+	GameState(ServiceProvider& svc, player::Player& player, int id = 0) : player(&player), hud(player, {20, 20}) {}
 	GameState& operator=(GameState&&) = delete;
 
 	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
@@ -53,7 +53,6 @@ class GameState {
 	STATE state = STATE::STATE_NULL;
 	bool debug_mode{false};
 
-	gui::HUD hud{{20, 20}};
 	gui::Console console{};
 
 	vfx::Gravitator left_dot{};
@@ -61,6 +60,7 @@ class GameState {
 	sf::Vector2<float> dot_pad{24.f, 8.f};
 
 	player::Player* player;
+	gui::HUD hud;
 };
 
 } // namespace automa

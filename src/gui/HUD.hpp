@@ -8,6 +8,10 @@
 #include "../setup/EnumLookups.hpp"
 #include "../setup/LookupTables.hpp"
 
+namespace player {
+class Player;
+}
+
 namespace gui {
 
 enum HP_ELEMS { HP_LIGHT = 0, HP_FILLED = 1, HP_TAKEN = 2, HP_GONE = 3 };
@@ -37,10 +41,11 @@ int const num_colors = 6;
 class HUD {
 
   public:
-	HUD(sf::Vector2<int> pos);
-	void update();
+	HUD() = default;
+	HUD(player::Player& player, sf::Vector2<int> pos);
+	void update(player::Player& player);
 	void constrain();
-	void render(sf::RenderWindow& win);
+	void render(player::Player& player, sf::RenderWindow& win);
 	void set_corner_pad(bool file_preview = false);
 
 	sf::Vector2<int> position{};

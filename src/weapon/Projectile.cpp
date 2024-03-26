@@ -2,6 +2,7 @@
 #include "Projectile.hpp"
 #include "../setup/LookupTables.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
 
 namespace arms {
@@ -74,7 +75,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, int id) {
 	set_sprite();
 }
 
-void Projectile::update(automa::ServiceProvider& svc) {
+void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	// animation
 	animation.update();
@@ -82,11 +83,11 @@ void Projectile::update(automa::ServiceProvider& svc) {
 	cooldown.update();
 
 	if (stats.spring) {
-		hook.update(svc);
+		hook.update(svc, player);
 		if (hook.grapple_flags.test(arms::GrappleState::probing)) {
 			hook.spring.set_anchor(physics.position);
-			hook.spring.set_bob(svc::playerLocator.get().apparent_position);
-			if (!svc::playerLocator.get().controller.hook_held()) {
+			hook.spring.set_bob(player.apparent_position);
+			if (!player.controller.hook_held()) {
 				hook.grapple_flags.set(arms::GrappleState::snaking);
 				hook.grapple_flags.reset(arms::GrappleState::probing);
 			}
@@ -95,7 +96,7 @@ void Projectile::update(automa::ServiceProvider& svc) {
 		if (hook.grapple_flags.test(arms::GrappleState::snaking)) {
 			physics.position = hook.spring.get_bob();
 			bounding_box.position = physics.position;
-			if (bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+			if (bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 				destroy(true);
 				hook.grapple_flags = {};
 				hook.grapple_triggers = {};
@@ -108,12 +109,12 @@ void Projectile::update(automa::ServiceProvider& svc) {
 
 	// tomahawk-specific stuff
 	if (stats.boomerang) {
-		gravitator.set_target_position(svc::playerLocator.get().apparent_position);
+		gravitator.set_target_position(player.apparent_position);
 		gravitator.update(svc);
 		physics.position = gravitator.collider.physics.position;
 		svc::soundboardLocator.get().flags.weapon.set(lookup::gun_sound.at(type)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
-		if (gravitator.collider.bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+		if (gravitator.collider.bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
 			svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
@@ -145,7 +146,7 @@ void Projectile::update(automa::ServiceProvider& svc) {
 	}
 }
 
-void Projectile::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 	// this is the right idea but needs to be refactored and generalized
 	if (render_type == RENDER_TYPE::MULTI_SPRITE) {
@@ -164,7 +165,7 @@ void Projectile::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 
 			// unconstrained projectiles have to get sprites set here
 			if (stats.boomerang) { sp_proj.at(0).setPosition(gravitator.collider.physics.position - campos); }
-			if (stats.spring) { hook.render(svc, win, campos); }
+			if (stats.spring) { hook.render(svc, player, win, campos); }
 			if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) {
 				sp_proj.at(0).setPosition(hook.spring.get_bob() - campos);
 			} else if (stats.spring) {
