@@ -74,7 +74,7 @@ class Map {
 	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void render_console(gui::Console& console, sf::RenderWindow& win);
+	void render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win);
 	Tile& tile_at(const uint8_t i, const uint8_t j);
 	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos);
@@ -95,7 +95,6 @@ class Map {
 	Vecu16 chunk_dimensions{};	// how many chunks (16x16 squares) in the room
 
 	// entities
-	std::vector<shape::Collider*> colliders{};
 	std::vector<arms::Projectile> active_projectiles{};
 	std::vector<vfx::Emitter> active_emitters{};
 	std::vector<entity::Portal> portals{};

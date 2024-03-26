@@ -117,25 +117,26 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 	if (input.is_open()) {
 		while (!input.eof()) {
 			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
-			entity::Inspectable p{};
-			input >> p.scaled_dimensions.x;
+			sf::Vector2<uint32_t> dim{};
+			sf::Vector2<uint32_t> pos{};
+			std::string key{};
+			bool aoc{};
+			input >> dim.x;
 			input.ignore();
-			input >> p.scaled_dimensions.y;
+			input >> dim.y;
 			input.ignore();
 			input >> value;
-			p.activate_on_contact = (bool)value;
+			aoc = (bool)value;
 			input.ignore();
 			input.ignore();
-			std::getline(input, p.key, '#');
-			input >> p.scaled_position.x;
+			std::getline(input, key, '#');
+			input >> pos.x;
 			input.ignore();
-			input >> p.scaled_position.y;
+			input >> pos.y;
 			input.ignore();
-			p.update();
-			if (p.dimensions.x != 0) { // only push if one was read, otherwise we reached the end of the file
-				inspectables.push_back(p);
-				inspectables.back().update();
-			}
+			inspectables.push_back(entity::Inspectable(dim, pos, key));
+			std::cout << inspectables.back().key << "\n";
+			inspectables.back().activate_on_contact = aoc;
 		}
 		input.close();
 	}
@@ -242,8 +243,6 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		}
 		input.close();
 	}
-
-	colliders.push_back(&player->collider);
 	if (player->animation.state.test(player::AnimState::inspect)) { player->animation.state.set(player::AnimState::idle); }
 
 	transition.fade_in = true;
@@ -272,13 +271,21 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		if (cell.type == lookup::TILE_TYPE::TILE_SPIKES && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(1); }
 		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(64); }
 		for (auto& proj : active_projectiles) {
+
+			
+			// should be, simply:
+			// cell.update(svc, player, proj, *this);
+			// or something similar
+			// breakables could be subclass of tiles that also have an emitter
+
+
 			if (!nearby(cell.bounding_box, proj.bounding_box)) {
 				continue;
 			} else {
 				cell.collision_check = true;
 				if ((proj.bounding_box.overlaps(cell.bounding_box) && cell.is_occupied())) {
 					if (cell.is_breakable() && !proj.stats.transcendent && !proj.destruction_initiated()) {
-						std::cout << "bam\n";
+						// todo: refactor breakables
 						--cell.value;
 						proj.destroy(false);
 						if (cell.value < 244) {
@@ -303,8 +310,11 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
-		svc::stopwatchLocator.get().start();
 		for (auto& enemy : enemy_catalog.enemies) {
+
+			// should be, simply:
+			// enemy.update(proj);
+
 			if (proj.team != arms::TEAMS::SKYCORPS) {
 				if (proj.bounding_box.overlaps(enemy->get_collider().bounding_box)) {
 					enemy->get_flags().state.set(enemy::StateFlags::shot);
@@ -321,7 +331,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 				}
 			}
 		}
-		svc::stopwatchLocator.get().stop();
 		if (proj.bounding_box.overlaps(player->collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
 			player->hurt(proj.stats.base_damage);
 			proj.destroy(false);
@@ -335,36 +344,17 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	enemy_catalog.update();
 
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
-
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
-
-	for (auto& collider : colliders) { collider->reset_ground_flags(); }
-
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
-
 	for (auto& portal : portals) {
 		portal.update();
 		portal.handle_activation(svc, *player, room_id, transition.fade_out, transition.done);
 	}
-
-	for (auto& inspectable : inspectables) {
-		if (player->controller.inspecting() && inspectable.bounding_box.overlaps(player->collider.hurtbox)) {
-			inspectable.activated = true;
-			console.flags.set(gui::ConsoleFlags::active);
-		}
-		if (inspectable.activated && console.flags.test(gui::ConsoleFlags::active)) {
-			console.begin();
-			if (player->controller.transponder_exit()) {
-				inspectable.activated = false;
-				console.end();
-			}
-		}
-	}
-
+	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console); }
 	for (auto& animator : animators) { animator.update(*player); }
-
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
+	player->collider.reset_ground_flags();
 	// check if player died
 	if (!player->flags.state.test(player::State::alive) && !game_over) {
 		svc::assetLocator.get().player_death.play();
@@ -449,10 +439,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	for (auto& portal : portals) { portal.render(win, cam); }
 
-	for (auto& inspectable : inspectables) { inspectable.render(win, cam); }
-
 	for (auto& animator : animators) {
 		if (animator.foreground) { animator.render(svc, win, cam); }
+	}
+
+	if (svc.greyblock_mode()) {
+		for (auto& inspectable : inspectables) { inspectable.render(win, cam); }
 	}
 
 	// render minimap
@@ -497,17 +489,9 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	if (real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(real_dimensions); }
 }
 
-void Map::render_console(gui::Console& console, sf::RenderWindow& win) {
+void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win) {
 	if (console.flags.test(gui::ConsoleFlags::active)) {
 		console.render(win);
-		for (auto& inspectable : inspectables) {
-			if (inspectable.activated) {
-				console.load_and_launch(inspectable.key);
-				console.write(win);
-				// console.write(win, inspectable.message);
-				//  console.write(win, "ab?:-_()#`");
-			}
-		}
 	}
 	console.write(win, false);
 }
@@ -615,26 +599,23 @@ void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& 
 		proj.lock_to_anchor();
 		proj.hook.spring.update(svc);
 
-		// shorthand
-		auto& player_collider = player->collider;
-
 		// update rest length
 		auto next_length = proj.stats.spring_slack * abs(player->collider.physics.position.y - proj.hook.spring.get_anchor().y);
 		next_length = std::clamp(next_length, lookup::min_hook_length, lookup::max_hook_length);
 		proj.hook.spring.set_rest_length(next_length);
 
 		// break out if player is far away from bob. we don't want the player to teleport.
-		auto distance = util::magnitude(player_collider.physics.position - proj.hook.spring.get_bob());
+		auto distance = util::magnitude(player->collider.physics.position - proj.hook.spring.get_bob());
 		if (distance > 32.f) { proj.hook.break_free(*player); }
 
 		// handle map collisions while anchored
-		player_collider.predictive_combined.set_position(proj.hook.spring.variables.physics.position);
-		if (check_cell_collision(player_collider)) {
-			player_collider.physics.zero();
+		player->collider.predictive_combined.set_position(proj.hook.spring.variables.physics.position);
+		if (check_cell_collision(player->collider)) {
+			player->collider.physics.zero();
 		} else {
-			player_collider.physics.position = proj.hook.spring.variables.physics.position - player_collider.dimensions / 2.f;
+			player->collider.physics.position = proj.hook.spring.variables.physics.position - player->collider.dimensions / 2.f;
 		}
-		player_collider.sync_components();
+		player->collider.sync_components();
 	} else if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
 		proj.hook.break_free(*player);
 	}

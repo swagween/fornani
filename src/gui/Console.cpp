@@ -50,6 +50,8 @@ void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
 }
 
+void Console::set_source(dj::Json& json) { text_suite = json; }
+
 void Console::load_and_launch(std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
 		writer.load_message(text_suite, key);

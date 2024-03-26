@@ -41,6 +41,7 @@ class Console {
 	void update();
 	void render(sf::RenderWindow& win);
 
+	void set_source(dj::Json& json);
 	void load_and_launch(std::string_view key);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();

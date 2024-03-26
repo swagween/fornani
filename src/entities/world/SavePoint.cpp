@@ -46,6 +46,7 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 					activated = true;
 					save(svc, player);
 					svc::soundboardLocator.get().flags.world.set(audio::World::soft_sparkle);
+					console.set_source(svc.text.basic);
 					console.load_and_launch("save");
 				}
 			}

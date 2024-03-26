@@ -117,7 +117,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.render(svc, win, svc::cameraLocator.get().physics.position);
 
 	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(*player, win); }
-	map.render_console(console, win);
+	map.render_console(svc, console, win);
 
 	svc::assetLocator.get().sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
 	svc::assetLocator.get().sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);

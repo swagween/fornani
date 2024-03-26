@@ -52,6 +52,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
 		if (player.controller.inspecting()) {
 			activated = true;
+			console.set_source(svc.text.basic);
 			if (!open) {
 				svc.soundboard.flags.world.set(audio::World::chest);
 				console.load_and_launch("chest");
