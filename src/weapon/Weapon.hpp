@@ -47,7 +47,7 @@ class Weapon {
 
   public:
 	Weapon() = default;
-	Weapon(automa::ServiceProvider& svc, int id);
+	Weapon(automa::ServiceProvider& svc, std::string_view label, int id);
 
 	void update(dir::Direction to_direction);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -66,11 +66,11 @@ class Weapon {
 	void set_position(sf::Vector2<float> pos);
 	void set_orientation(dir::Direction to_direction);
 
-	int get_id();
+	[[nodiscard]] auto get_id() const -> int { return id; }
 
 	WeaponAttributes attributes{};
 
-	Projectile projectile{};
+	Projectile projectile;
 
 	//spray
 	sf::Vector2<float> emitter_dimensions{};
@@ -85,7 +85,7 @@ class Weapon {
 	WEAPON_TYPE type{};
 	sf::Vector2<int> sprite_dimensions{};
 	sf::Vector2<int> sprite_offset{};
-	std::string label{};
+	std::string_view label{};
 
 	sf::Sprite sp_gun{};
 

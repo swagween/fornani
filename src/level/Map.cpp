@@ -62,7 +62,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 	// bg;
 	input >> value;
 	bg = value;
-	background = std::make_unique<bg::Background>(bg::bg_behavior_lookup.at(bg), bg);
+	background = std::make_unique<bg::Background>(svc, bg);
 	input.close();
 
 	// get map tiles from text files
@@ -289,7 +289,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 						proj.destroy(false);
 						if (cell.value < 244) {
 							cell.value = 0;
-							svc::assetLocator.get().shatter.play();
+							svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 						}
 						generate_layer_textures(svc);
 					}
@@ -323,7 +323,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 						if (enemy->died()) {
 							active_loot.push_back(
 								item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
-							svc::soundboardLocator.get().flags.frdog.set(audio::Frdog::death);
+							svc.soundboard.flags.frdog.set(audio::Frdog::death);
 						}
 					}
 					if (!proj.stats.persistent) { proj.destroy(false); }
@@ -353,7 +353,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	player->collider.reset_ground_flags();
 	// check if player died
 	if (!player->flags.state.test(player::State::alive) && !game_over) {
-		svc::assetLocator.get().player_death.play();
+		svc.soundboard.flags.player.set(audio::Player::death);
 		game_over = true;
 	}
 

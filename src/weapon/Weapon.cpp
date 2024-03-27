@@ -5,11 +5,11 @@
 
 namespace arms {
 
-Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
+Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id), projectile(svc, label, id) {
 
 	auto const& in_data = svc.data.weapon["weapons"][id];
 
-	label = in_data["label"].as_string();
+	//label = in_data["label"].as_string();
 	type = index_to_type.at(id);
 
 	sprite_dimensions.x = in_data["dimensions"]["x"].as<int>();
@@ -34,7 +34,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : id(id) {
 	} catch (std::out_of_range) { emitter_color = svc.styles.colors.white; }
 	emitter_type = in_data["spray"]["type"].as_string();
 
-	projectile = Projectile(svc, id);
 	attributes.boomerang = projectile.stats.boomerang;
 }
 
@@ -126,7 +125,5 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	}
 	projectile.direction = firing_direction;
 }
-
-int Weapon::get_id() { return id; }
 
 } // namespace arms

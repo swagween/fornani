@@ -1,17 +1,17 @@
 
 #include "Arsenal.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace arms {
 
 Arsenal::Arsenal(automa::ServiceProvider& svc) {
-	for (int i = 0; i < max_weapons; ++i) { armory.at(i) = std::make_shared<Weapon>(svc, i); }
-	default_gun = std::make_shared<Weapon>(svc, 0);
+	for (int i = 0; i < max_weapons; ++i) { armory.at(i) = std::make_shared<Weapon>(svc, svc.tables.gun_label.at(i), i); }
+	default_gun = std::make_shared<Weapon>(svc, "bryn's gun", 0);
 }
 
 void Arsenal::push_to_loadout(int id) { loadout.push_back(armory.at(id)); }
 
-void Arsenal::switch_weapon(float next) {
+void Arsenal::switch_weapon(automa::ServiceProvider& svc, float next) {
 	if (next == 0.f) { return; }
 	if (loadout.empty()) { return; }
 	current_weapon += (int)next;
@@ -19,7 +19,7 @@ void Arsenal::switch_weapon(float next) {
 	if (current_weapon >= loadout.size()) { current_weapon = 0; }
 	if (current_weapon < loadout.size() && current_weapon < extant_projectile_instances.size()) {
 		loadout.at(current_weapon)->active_projectiles = extant_projectile_instances.at(current_weapon);
-		svc::soundboardLocator.get().flags.player.set(audio::Player::arms_switch);
+		svc.soundboard.flags.player.set(audio::Player::arms_switch);
 	}
 }
 

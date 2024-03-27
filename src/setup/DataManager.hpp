@@ -43,6 +43,7 @@ class DataManager {
 
 	dj::Json player_params{};
 	dj::Json map_table{};
+	dj::Json background{};
 
 	ResourceFinder finder{};
 };

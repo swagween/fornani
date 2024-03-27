@@ -43,7 +43,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, int id) : GameS
 
 	for (auto i = 0; i < num_files * 2; ++i) {
 
-		file_text.at(i) = sf::Sprite{svc::assetLocator.get().t_file_text, sf::IntRect({0, i * text_dim.y}, text_dim)};
+		file_text.at(i) = sf::Sprite{svc.assets.t_file_text, sf::IntRect({0, i * text_dim.y}, text_dim)};
 		file_text.at(i).setPosition(text_left, top_buffer + (text_dim.y * (i % num_files)) + (selection_buffer * (i % num_files)));
 	}
 }

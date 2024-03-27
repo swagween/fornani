@@ -103,7 +103,7 @@ class Projectile {
 
   public:
 	Projectile();
-	Projectile(automa::ServiceProvider& svc, int id);
+	Projectile(automa::ServiceProvider& svc, std::string_view label, int id);
 
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -128,6 +128,8 @@ class Projectile {
 	components::PhysicsComponent physics{};
 	ProjectileStats stats{};
 	ProjectileAnimation anim{};
+
+	std::string_view label{};
 
 	WEAPON_TYPE type{WEAPON_TYPE::BRYNS_GUN};
 	TEAMS team{TEAMS::NANI}; // default to player projectile. enemies and bosses will be set separately

@@ -48,7 +48,7 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, int id) : GameS
 		case 2: height = 22; break;
 		}
 
-		title_assets.push_back(sf::Sprite{svc::assetLocator.get().t_title_assets,
+		title_assets.push_back(sf::Sprite{svc.assets.t_title_assets,
 										  sf::IntRect({0, y_height_counter}, {selection_width, height})});
 
 		switch (i % 3) {
@@ -60,7 +60,7 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, int id) : GameS
 		y_height_counter += height;
 	}
 
-	title = sf::Sprite{svc::assetLocator.get().t_title,
+	title = sf::Sprite{svc.assets.t_title,
 					   sf::IntRect({0, 0}, {(int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y})};
 };
 

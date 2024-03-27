@@ -8,10 +8,10 @@
 #include "../components/PhysicsComponent.hpp"
 #include "../entities/player/Player.hpp"
 #include "../graphics/Background.hpp"
+#include "../gui/Console.hpp"
 #include "../gui/HUD.hpp"
 #include "../level/Map.hpp"
 #include "../setup/LookupTables.hpp"
-#include "../gui/Console.hpp"
 
 namespace player {
 class Player;
@@ -40,7 +40,7 @@ class GameState {
 	using Time = std::chrono::duration<float>;
 
 	GameState() = default;
-	GameState(ServiceProvider& svc, player::Player& player, int id = 0) : player(&player), hud(player, {20, 20}) {}
+	GameState(ServiceProvider& svc, player::Player& player, int id = 0) : player(&player), hud(svc, player, {20, 20}) {}
 	GameState& operator=(GameState&&) = delete;
 
 	virtual void init(ServiceProvider& svc, std::string_view room = ""){};

@@ -5,7 +5,7 @@
 
 namespace enemy {
 
-Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, 2) {
+Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, "skycorps ar", 2) {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;

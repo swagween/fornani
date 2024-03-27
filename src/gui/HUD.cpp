@@ -1,17 +1,17 @@
 #include "HUD.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
 
 namespace gui {
 
-HUD::HUD(player::Player& player, sf::Vector2<int> pos) : position(pos) {
+HUD::HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> pos) : position(pos) {
 	update(player);
 	for (int i = 0; i < num_heart_sprites; ++i) {
-		sp_hearts.at(i).setTexture(svc::assetLocator.get().t_hud_hearts);
+		sp_hearts.at(i).setTexture(svc.assets.t_hud_hearts);
 		sp_hearts.at(i).setTextureRect(sf::IntRect({heart_dimensions.x * i, 0}, heart_dimensions));
 	}
 	for (int i = 0; i < num_orb_chars; ++i) {
-		sp_orb_text.at(i).setTexture(svc::assetLocator.get().t_hud_orb_font);
+		sp_orb_text.at(i).setTexture(svc.assets.t_hud_orb_font);
 		if (i < 10) {
 			sp_orb_text.at(i).setTextureRect(sf::IntRect({orb_text_dimensions.x * i, 0}, orb_text_dimensions));
 		} else {
@@ -19,13 +19,13 @@ HUD::HUD(player::Player& player, sf::Vector2<int> pos) : position(pos) {
 		}
 	}
 	for (int i = 0; i < num_guns; ++i) {
-		sp_guns.at(i).setTexture(svc::assetLocator.get().t_hud_gun_color);
+		sp_guns.at(i).setTexture(svc.assets.t_hud_gun_color);
 		sp_guns.at(i).setTextureRect(sf::IntRect({0, i * gun_dimensions.y}, gun_dimensions));
-		sp_guns_shadow.at(i).setTexture(svc::assetLocator.get().t_hud_gun_shadow);
+		sp_guns_shadow.at(i).setTexture(svc.assets.t_hud_gun_shadow);
 		sp_guns_shadow.at(i).setTextureRect(sf::IntRect({0, i * gun_dimensions.y}, gun_dimensions));
 	}
 	for (int i = 0; i < num_colors; ++i) {
-		sp_pointer.at(i).setTexture(svc::assetLocator.get().t_hud_pointer);
+		sp_pointer.at(i).setTexture(svc.assets.t_hud_pointer);
 		sp_pointer.at(i).setTextureRect(sf::IntRect({0, i * pointer_dimensions.y}, pointer_dimensions));
 	}
 }

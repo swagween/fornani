@@ -15,15 +15,15 @@ Game::Game(char** argv) {
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
 	// images
-	svc::assetLocator.get().finder.setResourcePath(argv);
-	svc::assetLocator.get().importTextures();
+	services.assets.finder.setResourcePath(argv);
+	services.assets.importTextures();
 
 	services.assets.finder.setResourcePath(argv);
 	services.assets.importTextures();
 	services.assets.load_audio();
 	// sounds
 	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
-	svc::assetLocator.get().load_audio();
+	services.assets.load_audio();
 	svc::musicPlayerLocator.get().turn_off(); // off by default
 	// player
 	player.init(services);
@@ -459,9 +459,9 @@ void Game::debug_window() {
 					ImGui::Text("Extant Projectiles:");
 					ImGui::NewLine();
 					for (auto& weapon : player.arsenal.loadout) {
-						ImGui::Text("%s", (weapon->label + ": ").c_str());
+						ImGui::Text("%s", weapon->label);
 						ImGui::SameLine();
-						ImGui::Text("%i", player.extant_instances(weapon->get_id()));
+						ImGui::Text(": %i", player.extant_instances(weapon->get_id()));
 					}
 					ImGui::Separator();
 
@@ -473,7 +473,7 @@ void Game::debug_window() {
 					ImGui::Text("Active Projectiles: %i", player.equipped_weapon().active_projectiles);
 
 					ImGui::Separator();
-					ImGui::Text("Equipped Weapon: %s", player.equipped_weapon().label.c_str());
+					ImGui::Text("Equipped Weapon: %s", player.equipped_weapon().label);
 					ImGui::Text("UI color: %i", (int)player.equipped_weapon().attributes.ui_color);
 					ImGui::Text("Sprite Dimensions X: %i", player.equipped_weapon().sprite_dimensions.x);
 					ImGui::Text("Sprite Dimensions Y: %i", player.equipped_weapon().sprite_dimensions.y);
@@ -523,7 +523,7 @@ void Game::debug_window() {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Resources")) {
-					ImGui::Text("Size of Asset Manager (Bytes): %lu", sizeof(svc::assetLocator.get()));
+					ImGui::Text("Size of Asset Manager (Bytes): %lu", sizeof(services.assets));
 					ImGui::Text("Size of Data Manager (Bytes): %lu", sizeof(svc::dataLocator.get()));
 					//ImGui::Text("Size of Text Manager (Bytes): %lu", sizeof(svc::textLocator.get()));
 					ImGui::Text("Size of Music Player (Bytes): %lu", sizeof(svc::musicPlayerLocator.get()));
@@ -541,131 +541,131 @@ void Game::debug_window() {
 					ImGui::SameLine();
 					ImGui::TextUnformatted(game_state.get_current_state_string().c_str());
 					if (ImGui::Button("Under")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/UNDER_LEDGE_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
 					}
 					if (ImGui::Button("House")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/UNDER_HUT_01");
 
 						player.set_position({100, 160});
 					}
 					if (ImGui::Button("Ancient Field")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/ANCIENT_FIELD_01");
 
 						player.set_position({100, 160});
 					}
 					if (ImGui::Button("Base")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/BASE_LIVING_01");
 
 						player.set_position({25 * 32, 10 * 32});
 					}
 					if (ImGui::Button("Base Lab")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/BASE_LAB_01");
 
 						player.set_position({28 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Breakable Test")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/BREAKABLE_TEST_01");
 
 						player.set_position({20 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Skycorps")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/SKYCORPS_YARD_01");
 
 						player.set_position({28 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Sky")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/SKY_CHAMBER_01");
 						player.set_position({7 * 32, 16 * 32});
 					}
 					if (ImGui::Button("Shadow")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/SHADOW_DOJO_01");
 						player.set_position({4 * 32, 11 * 32});
 					}
 					if (ImGui::Button("Stone")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/STONE_CORRIDOR_01");
 						player.set_position({10 * 32, 16 * 32});
 					}
 					if (ImGui::Button("Overturned")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/OVERTURNED_DOJO_01");
 						player.set_position({4 * 32, 11 * 32});
 					}
 					if (ImGui::Button("Glade")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/OVERTURNED_GLADE_01");
 						player.set_position({4 * 32, 4 * 32});
 					}
 					if (ImGui::Button("Woodshine")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/WOODSHINE_VILLAGE_01");
 						player.set_position({32, 1280});
 					}
 					if (ImGui::Button("Collision Room")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/SKY_COLLISIONROOM_01");
 						player.set_position({5 * 32, 5 * 32});
 					}
 					if (ImGui::Button("Grub Dojo")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/GRUB_DOJO_01");
 						player.set_position({3 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Firstwind Dojo")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/BASE_TEST_03");
 						player.set_position({3 * 32, 8 * 32});
 					}
 					/*if (ImGui::Button("Atrium")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
-						game_state.get_current_state().init(services, svc::assetLocator.get().resource_path + "/level/FIRSTWIND_ATRIUM_01");
+						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_ATRIUM_01");
 					}
 					if (ImGui::Button("Hangar")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
-						game_state.get_current_state().init(services, svc::assetLocator.get().resource_path + "/level/FIRSTWIND_HANGAR_01");
+						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_HANGAR_01");
 						player.set_position({ 3080, 790 });
 					}
 					if (ImGui::Button("Corridor 3")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
-						game_state.get_current_state().init(services, svc::assetLocator.get().resource_path + "/level/FIRSTWIND_CORRIDOR_03");
+						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_CORRIDOR_03");
 						player.set_position({ 2327, 360 });
 					}
 					if(ImGui::Button("Lab")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
-						game_state.get_current_state().init(services, svc::assetLocator.get().resource_path + "/level/TOXIC_LAB_01");
+						game_state.get_current_state().init(services, services.assets.resource_path + "/level/TOXIC_LAB_01");
 					}*/
 					if (ImGui::Button("Toxic")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/TOXIC_ARENA_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
@@ -673,20 +673,20 @@ void Game::debug_window() {
 						player.set_position({34, 484});
 					}
 					if (ImGui::Button("Grub")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/GRUB_TUNNEL_01");
 						player.set_position({224, 290});
 					}
 					/*if(ImGui::Button("Night")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
-						game_state.get_current_state().init(services, svc::assetLocator.get().resource_path + "/level/NIGHT_CRANE_01");
+						game_state.get_current_state().init(services, services.assets.resource_path + "/level/NIGHT_CRANE_01");
 						player.set_position({50, 50});
-						player.assign_texture(svc::assetLocator.get().t_nani_dark);
+						player.assign_texture(services.assets.t_nani_dark);
 					}*/
 					if (ImGui::Button("Night 2")) {
-						svc::assetLocator.get().click.play();
+						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
 						game_state.get_current_state().init(services, "/level/NIGHT_CATWALK_01");
 						player.set_position({50, 50});

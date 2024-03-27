@@ -1,0 +1,26 @@
+{
+  "standard_scroll": {
+    "used_layers": 5,
+    "scroll_speed": 0.9,
+    "scrolling": true,
+    "parallax_multiplier": 0.1
+  },
+  "fast_scroll": {
+    "used_layers": 5,
+    "scroll_speed": 3.5,
+    "scrolling": true,
+    "parallax_multiplier": 0.1
+  },
+  "standard_flat": {
+    "used_layers": 1,
+    "scroll_speed": 0.0,
+    "scrolling": false,
+    "parallax_multiplier": 0.8
+  },
+  "distant_flat": {
+    "used_layers": 1,
+    "scroll_speed": 0.0,
+    "scrolling": false,
+    "parallax_multiplier": 0.4
+  }
+}

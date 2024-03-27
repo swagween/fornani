@@ -8,6 +8,10 @@
 #include "../setup/EnumLookups.hpp"
 #include "../setup/LookupTables.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace player {
 class Player;
 }
@@ -42,7 +46,7 @@ class HUD {
 
   public:
 	HUD() = default;
-	HUD(player::Player& player, sf::Vector2<int> pos);
+	HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> pos);
 	void update(player::Player& player);
 	void constrain();
 	void render(player::Player& player, sf::RenderWindow& win);

@@ -49,7 +49,7 @@ void DataManager::load_data() {
 	std::cout << " success!\n";
 	hulmet = dj::Json::from_file((finder.resource_path + "/data/enemy/hulmet.json").c_str());
 	std::cout << "loading hulmet ...";
-	assert(!frdog.is_null());
+	assert(!hulmet.is_null());
 	std::cout << " success!\n";
 
 
@@ -58,6 +58,11 @@ void DataManager::load_data() {
 	std::cout << "loading map data ...";
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) { lookup::get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
+	std::cout << " success!\n";
+
+	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
+	std::cout << "loading background behaviors ...";
+	assert(!background.is_null());
 	std::cout << " success!\n";
 }
 

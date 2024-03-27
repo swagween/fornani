@@ -13,7 +13,7 @@ Projectile::Projectile() {
 	seed();
 };
 
-Projectile::Projectile(automa::ServiceProvider& svc, int id) {
+Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id) : label(label) {
 
 	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id]["projectile"];
 
@@ -72,7 +72,12 @@ Projectile::Projectile(automa::ServiceProvider& svc, int id) {
 	state.set(ProjectileState::initialized);
 	cooldown.start(40);
 	seed();
-	set_sprite();
+
+	for (int i = 0; i < anim.num_sprites; ++i) { sp_proj.push_back(sf::Sprite()); }
+	for (auto& sprite : sp_proj) {
+		set_orientation(sprite);
+		sprite.setTexture(svc.assets.projectile_textures.at(label));
+	}
 }
 
 void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
@@ -232,13 +237,6 @@ void Projectile::seed() {
 }
 
 void Projectile::set_sprite() {
-
-	for (int i = 0; i < anim.num_sprites; ++i) { sp_proj.push_back(sf::Sprite()); }
-
-	for (auto& sprite : sp_proj) {
-		set_orientation(sprite);
-		sprite.setTexture(lookup::type_to_texture_ref.at(type));
-	}
 }
 
 void Projectile::set_orientation(sf::Sprite& sprite) {

@@ -63,6 +63,21 @@ class AssetManager {
 		t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 		t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
 
+		weapon_textures.insert({"bryn's gun", t_bryns_gun});
+		projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
+		weapon_textures.insert({"plasmer", t_plasmer});
+		projectile_textures.insert({"plasmer", t_plasmer_projectile});
+		weapon_textures.insert({"nova", t_nova});
+		projectile_textures.insert({"nova", t_nova_projectile});
+		weapon_textures.insert({"tomahawk", t_tomahawk});
+		projectile_textures.insert({"tomahawk", t_tomahawk_projectile});
+		weapon_textures.insert({"clover", t_clover});
+		projectile_textures.insert({"clover", t_clover_projectile});
+		projectile_textures.insert({"skycorps ar", t_skycorps_ar_projectile});
+		weapon_textures.insert({"grappling hook", t_grappling_hook});
+		projectile_textures.insert({"grappling hook", t_hook});
+
+
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
 
@@ -78,6 +93,25 @@ class AssetManager {
 		t_bg_rosyhaze.loadFromFile(finder.resource_path + "/image/background/rosyhaze.png");
 		t_bg_slime.loadFromFile(finder.resource_path + "/image/background/slime.png");
 		t_bg_dirt.loadFromFile(finder.resource_path + "/image/background/dirt.png");
+
+		background_lookup.insert({0, t_bg_dusk});
+		background_lookup.insert({1, t_bg_sunrise});
+		background_lookup.insert({2, t_bg_opensky});
+		background_lookup.insert({3, t_bg_rosyhaze});
+		background_lookup.insert({4, t_bg_dawn});
+		background_lookup.insert({5, t_bg_night});
+		background_lookup.insert({6, t_bg_overcast});
+		background_lookup.insert({7, t_bg_slime});
+		background_lookup.insert({8, t_bg_black});
+		background_lookup.insert({9, t_bg_navy});
+		background_lookup.insert({10, t_bg_dirt});
+		background_lookup.insert({11, t_bg_gear});
+		background_lookup.insert({12, t_bg_library});
+		background_lookup.insert({13, t_bg_granite});
+		background_lookup.insert({14, t_bg_ruins});
+		background_lookup.insert({15, t_bg_crevasse});
+		background_lookup.insert({16, t_bg_deep});
+		background_lookup.insert({17, t_bg_grove});
 
 		t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators_01.png");
 		t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators_01.png");
@@ -348,6 +382,9 @@ class AssetManager {
 	data::ResourceFinder finder{};
 
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
+	std::unordered_map<int, sf::Texture&> background_lookup{};
+	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
+	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
 };
 
 } // namespace asset

@@ -28,6 +28,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.world.test(World::save)) { svc.assets.save.play(); }
 	if (flags.world.test(World::soft_sparkle)) { svc.assets.soft_sparkle.play(); }
 	if (flags.world.test(World::chest)) { svc.assets.chest.play(); }
+	if (flags.world.test(World::breakable_shatter)) { svc.assets.shatter.play(); }
 
 	//frdog
 	if (flags.frdog.test(Frdog::death)) { svc.assets.enem_death_1.play(); }
@@ -43,6 +44,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.player.test(Player::step)) { randomize(svc, svc.assets.step, 0.1f); }
 	if (flags.player.test(Player::arms_switch)) { svc.assets.arms_switch.play(); }
 	if (flags.player.test(Player::hurt)) { svc.assets.hurt.play(); }
+	if (flags.player.test(Player::death)) { svc.assets.player_death.play(); }
 
 	// gun
 	if (flags.weapon.test(Weapon::bryns_gun)) { svc.assets.bg_shot.play(); }

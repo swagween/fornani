@@ -48,10 +48,10 @@ void Player::init(automa::ServiceProvider& svc) {
 	sprite_dimensions = {48.f, 48.f};
 
 	// sprites
-	sprite.setTexture(svc::assetLocator.get().t_nani);
+	sprite.setTexture(svc.assets.t_nani);
 
-	texture_updater.load_base_texture(svc::assetLocator.get().t_nani);
-	texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
+	texture_updater.load_base_texture(svc.assets.t_nani);
+	texture_updater.load_pixel_map(svc.assets.t_palette_nani);
 }
 
 void Player::update(gui::Console& console) {
@@ -75,7 +75,7 @@ void Player::update(gui::Console& console) {
 	collider.flags.reset(shape::State::just_landed);
 
 	//player-controlled actions
-	arsenal.switch_weapon(controller.arms_switch());
+	arsenal.switch_weapon(*m_services, controller.arms_switch());
 	dash();
 	jump();
 
@@ -155,7 +155,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (!arsenal.loadout.empty()) {
-		equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(equipped_weapon().type));
+		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
 		equipped_weapon().render(svc, win, campos);
 	}
 
