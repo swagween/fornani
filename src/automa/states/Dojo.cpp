@@ -10,7 +10,7 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 
 	console = gui::Console(svc);
 
-	hud.set_corner_pad(false); // reset hud position to corner
+	hud.set_corner_pad(svc, false); // reset hud position to corner
 	player->reset_flags();
 
 	map.load(svc, room);

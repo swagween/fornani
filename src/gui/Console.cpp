@@ -5,10 +5,9 @@
 
 namespace gui {
 
-Console::Console(automa::ServiceProvider& svc) {
+Console::Console(automa::ServiceProvider& svc) : portrait(svc), writer(svc) {
 
 	text_suite = svc.text.console;
-	writer = text::TextWriter(svc);
 
 	for (auto& sprite : sprites) { sprite.setTexture(svc.assets.t_ui); }
 	sprites.at(0).setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
@@ -35,7 +34,7 @@ void Console::begin() {
 	writer.start();
 }
 
-void Console::update() {
+void Console::update(automa::ServiceProvider& svc) {
 	writer.set_bounds(position + sf::Vector2<float>{final_dimensions.x - 2 * border.left, final_dimensions.y - 2 * border.top});
 	writer.set_position(position + sf::Vector2<float>{border.left, border.top});
 	if (flags.test(ConsoleFlags::active)) { extent += speed; }
@@ -44,10 +43,12 @@ void Console::update() {
 	nine_slice(corner_factor, edge_factor);
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 	writer.update();
+	portrait.update(svc);
 }
 
 void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
+	portrait.render(win);
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
@@ -55,6 +56,7 @@ void Console::set_source(dj::Json& json) { text_suite = json; }
 void Console::load_and_launch(std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
 		writer.load_message(text_suite, key);
+		portrait.reset();
 		flags.set(ConsoleFlags::loaded);
 		begin();
 	}

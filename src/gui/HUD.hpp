@@ -1,12 +1,12 @@
 
 #pragma once
 
+#include <array>
 #include <cstdio>
 #include <list>
 #include <memory>
 #include <string>
 #include "../setup/EnumLookups.hpp"
-#include "../setup/LookupTables.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -31,9 +31,6 @@ inline const sf::Vector2<int> heart_dimensions{18, 18};
 inline const sf::Vector2<int> orb_text_dimensions{18, 16};
 inline const sf::Vector2<int> gun_dimensions{66, 18};
 inline const sf::Vector2<int> pointer_dimensions{14, 10};
-inline const sf::Vector2<int> HP_origin{distance_from_edge, static_cast<int>(cam::screen_dimensions.y) - distance_from_edge - heart_dimensions.y};
-inline const sf::Vector2<int> ORB_origin{distance_from_edge, HP_origin.y - PAD - orb_text_dimensions.y};
-inline const sf::Vector2<int> GUN_origin{distance_from_edge, ORB_origin.y - PAD - pointer_dimensions.y - pointer_pad * 2};
 inline int const orb_label_width{44};
 inline int const orb_label_index{10};
 
@@ -50,7 +47,7 @@ class HUD {
 	void update(player::Player& player);
 	void constrain();
 	void render(player::Player& player, sf::RenderWindow& win);
-	void set_corner_pad(bool file_preview = false);
+	void set_corner_pad(automa::ServiceProvider& svc, bool file_preview = false);
 
 	sf::Vector2<int> position{};
 	int total_hp_cells{};
@@ -67,6 +64,10 @@ class HUD {
 	std::array<sf::Sprite, num_colors> sp_pointer{};
 
 	sf::Vector2f corner_pad{}; // for rendering file preview
+  private:
+	sf::Vector2<int> HP_origin{};
+	sf::Vector2<int> ORB_origin{};
+	sf::Vector2<int> GUN_origin{};
 };
 
 } // namespace gui

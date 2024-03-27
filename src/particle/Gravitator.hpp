@@ -19,6 +19,7 @@ class Gravitator {
 	Gravitator() = default;
 	Gravitator(Vec pos, sf::Color col, float agf, Vec size = {4.f, 4.f});
 	void update(automa::ServiceProvider& svc);
+	void set_position(Vec new_position);
 	void set_target_position(Vec new_position);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 

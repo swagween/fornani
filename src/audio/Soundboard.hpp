@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "../utils/BitFlags.hpp"
+#include <unordered_map>
 
 namespace automa {
 struct ServiceProvider;
@@ -42,6 +43,10 @@ struct Soundboard {
 	struct {
 		float save{};
 	} proximities{};
+
+	
+	std::unordered_map<std::string_view, Weapon> gun_sounds {
+		{"bryn's gun", Weapon::bryns_gun}, {"plasmer", Weapon::plasmer}, {"nova", Weapon::nova}, {"clover", Weapon::clover}, {"tomahawk", Weapon::tomahawk}, {"grappling hook", Weapon::hook_probe} };
 };
 
 } // namespace audio

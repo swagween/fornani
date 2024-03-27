@@ -13,7 +13,7 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) {
 	if (bg_id == 0) { type = "fast_scroll"; }
 	else if (bg_id <= 4) { type = "standard_scroll"; }
 	else if (bg_id >= 5) { type = "fast_scroll"; }
-	else if (bg_id > 6) { type = "standard_flat"; }
+	if (bg_id > 6) { type = "standard_flat"; }
 
 	auto const& in_data = svc.data.background[type];
 	behavior.used_layers = in_data["used_layers"].as<int>();

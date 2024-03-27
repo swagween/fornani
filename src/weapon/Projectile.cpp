@@ -1,6 +1,5 @@
 
 #include "Projectile.hpp"
-#include "../setup/LookupTables.hpp"
 #include "../setup/ServiceLocator.hpp"
 #include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
@@ -13,7 +12,7 @@ Projectile::Projectile() {
 	seed();
 };
 
-Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id) : label(label) {
+Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id) {
 
 	auto const& in_data = svc.data.weapon["weapons"][id]["projectile"];
 
@@ -112,7 +111,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		gravitator.set_target_position(player.apparent_position);
 		gravitator.update(svc);
 		physics.position = gravitator.collider.physics.position;
-		svc.soundboard.flags.weapon.set(lookup::gun_sound.at(type)); // repeat sound
+		svc.soundboard.flags.weapon.set(svc.soundboard.gun_sounds.at(label)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
 		if (gravitator.collider.bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
@@ -145,7 +144,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		if (abs(physics.position.y - fired_point.y) >= stats.range) { destroy(false); }
 	}
 
-	if (state.test(arms::ProjectileState::destroyed)) { --player.extant_instances(lookup::type_to_index.at(type)); }
+	if (state.test(arms::ProjectileState::destroyed)) { --player.extant_instances(id); }
 }
 
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos) {

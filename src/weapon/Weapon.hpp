@@ -30,19 +30,6 @@ struct WeaponAttributes {
 	std::array<float, 2> barrel_position{};
 };
 
-inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color{
-	{arms::WEAPON_TYPE::BRYNS_GUN, flcolor::periwinkle},  {arms::WEAPON_TYPE::PLASMER, flcolor::fucshia}, {arms::WEAPON_TYPE::WASP, flcolor::goldenrod},
-	{arms::WEAPON_TYPE::BLIZZARD, flcolor::blue},		  {arms::WEAPON_TYPE::BISMUTH, flcolor::fucshia}, {arms::WEAPON_TYPE::UNDERDOG, flcolor::orange},
-	{arms::WEAPON_TYPE::ELECTRON, flcolor::white},		  {arms::WEAPON_TYPE::CLOVER, flcolor::green},	  {arms::WEAPON_TYPE::TRITON, flcolor::goldenrod},
-	{arms::WEAPON_TYPE::WILLET_585, flcolor::periwinkle}, {arms::WEAPON_TYPE::QUASAR, flcolor::green},	  {arms::WEAPON_TYPE::NOVA, flcolor::white},
-	{arms::WEAPON_TYPE::VENOM, flcolor::goldenrod},		  {arms::WEAPON_TYPE::TWIN, flcolor::fucshia},	  {arms::WEAPON_TYPE::CARISE, flcolor::blue},
-	{arms::WEAPON_TYPE::STINGER, flcolor::goldenrod},	  {arms::WEAPON_TYPE::TUSK, flcolor::white},	  {arms::WEAPON_TYPE::TOMAHAWK, flcolor::white},
-
-	{arms::WEAPON_TYPE::SKYCORPS_AR, flcolor::goldenrod}, {arms::WEAPON_TYPE::STINGER, flcolor::goldenrod}, {arms::WEAPON_TYPE::TUSK, flcolor::white},
-	{arms::WEAPON_TYPE::GRAPPLING_HOOK, flcolor::ui_white}
-
-};
-
 class Weapon {
 
   public:

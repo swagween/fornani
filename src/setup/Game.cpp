@@ -416,7 +416,6 @@ void Game::debug_window() {
 							ImGui::Text("Grounded: %s", player.grounded() ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
-
 						ImGui::EndTabBar();
 					}
 					ImGui::EndTabItem();
@@ -424,9 +423,9 @@ void Game::debug_window() {
 				if (ImGui::BeginTabItem("Weapon")) {
 					if (ImGui::Button("Toggle Weapons")) {
 						if (player.arsenal.loadout.empty()) {
-							player.arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::BRYNS_GUN));
-							player.arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::PLASMER));
-							player.arsenal.push_to_loadout(lookup::type_to_index.at(arms::WEAPON_TYPE::TOMAHAWK));
+							player.arsenal.push_to_loadout(0);
+							player.arsenal.push_to_loadout(1);
+							player.arsenal.push_to_loadout(4);
 						} else {
 							player.arsenal.loadout.clear();
 						}

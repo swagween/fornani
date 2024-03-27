@@ -27,7 +27,7 @@ class Style {
 	} colors{};
 
 	std::unordered_map<std::string_view, sf::Color> spray_colors{{"clover", colors.green},			{"bryn's gun", colors.periwinkle}, {"plasmer", colors.fucshia},
-																 {"skycorps ar", colors.goldenrod}, {"tomahawk", colors.white},		   {"grappling hook", colors.periwinkle}
+																 {"skycorps ar", colors.goldenrod}, {"tomahawk", colors.white},		   {"grappling hook", colors.ui_white}
 	};
 };
 

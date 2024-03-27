@@ -18,8 +18,13 @@ Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size)
 }
 
 void Gravitator::update(automa::ServiceProvider& svc) {
-
+	collider.reset();
 	collider.physics.update_dampen(svc);
+	collider.sync_components();
+}
+
+void Gravitator::set_position(Vec new_position) {
+	collider.physics.position = new_position;
 	collider.sync_components();
 }
 

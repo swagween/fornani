@@ -5,6 +5,9 @@
 namespace gui {
 
 HUD::HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> pos) : position(pos) {
+	HP_origin = {distance_from_edge, (int)svc.constants.screen_dimensions.y - distance_from_edge - heart_dimensions.y};
+	ORB_origin = {distance_from_edge, HP_origin.y - PAD - orb_text_dimensions.y};
+	GUN_origin = {distance_from_edge, ORB_origin.y - PAD - pointer_dimensions.y - pointer_pad * 2};
 	update(player);
 	for (int i = 0; i < num_heart_sprites; ++i) {
 		sp_hearts.at(i).setTexture(svc.assets.t_hud_hearts);
@@ -104,6 +107,6 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	}
 }
 
-void HUD::set_corner_pad(bool file_preview) { file_preview ? corner_pad = {((float)cam::screen_dimensions.x / 2) - 140, -60.f} : corner_pad = {0.f, 0.f}; }
+void HUD::set_corner_pad(automa::ServiceProvider& svc, bool file_preview) { file_preview ? corner_pad = {((float)svc.constants.screen_dimensions.x / 2.f) - 140.f, -60.f} : corner_pad = {0.f, 0.f}; }
 
 } // namespace gui

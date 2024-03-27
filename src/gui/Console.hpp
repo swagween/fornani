@@ -7,10 +7,7 @@
 #include "../utils/BitFlags.hpp"
 #include "../utils/Camera.hpp"
 #include "../graphics/TextWriter.hpp"
-
-namespace automa {
-struct ServiceProvider;
-}
+#include "Portrait.hpp"
 
 namespace gui {
 
@@ -19,7 +16,6 @@ int const edge_factor{2};
 float const height_factor{3.0f};
 
 float const pad{168.f};
-float const pad_y{20};
 float const text_pad{8.0f};
 
 enum class ConsoleFlags { active, loaded, selection_mode };
@@ -38,7 +34,7 @@ class Console {
 	Console(automa::ServiceProvider& svc);
 
 	void begin();
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 
 	void set_source(dj::Json& json);
@@ -57,6 +53,8 @@ class Console {
 	std::array<sf::Sprite, 9> sprites{};
 
 	dj::Json text_suite{};
+
+	gui::Portrait portrait;
 
 	text::TextWriter writer;
 	Border border{

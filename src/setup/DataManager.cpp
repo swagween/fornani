@@ -2,7 +2,6 @@
 #pragma once
 
 #include "DataManager.hpp"
-#include "LookupTables.hpp"
 #include "MapLookups.hpp"
 #include "ServiceLocator.hpp"
 #include "../entities/player/Player.hpp"

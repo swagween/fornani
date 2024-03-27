@@ -11,7 +11,6 @@
 #include "../entities/world/SavePoint.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Transition.hpp"
-#include "../setup/LookupTables.hpp"
 #include "../setup/MapLookups.hpp"
 #include "Grid.hpp"
 #include "../utils/Random.hpp"
@@ -34,6 +33,7 @@ class Player;
 
 namespace gui {
 class Console;
+class Portrait;
 }
 
 namespace world {

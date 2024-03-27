@@ -6,6 +6,7 @@
 #include "../setup/ServiceLocator.hpp"
 #include "../entities/player/Player.hpp"
 #include "../utils/Math.hpp"
+#include "../gui/Portrait.hpp"
 
 namespace world {
 
@@ -254,7 +255,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
-	console.update();
+	console.update(svc);
 
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }

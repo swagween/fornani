@@ -9,9 +9,9 @@
 #include "../entities/player/Player.hpp"
 #include "../graphics/Background.hpp"
 #include "../gui/Console.hpp"
+#include "../gui/Portrait.hpp"
 #include "../gui/HUD.hpp"
 #include "../level/Map.hpp"
-#include "../setup/LookupTables.hpp"
 
 namespace player {
 class Player;

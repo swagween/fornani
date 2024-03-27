@@ -1,7 +1,7 @@
 
 #include "Player.hpp"
 #include "../item/Drop.hpp"
-#include "../../setup/LookupTables.hpp"
+#include "../../gui/Console.hpp"
 #include "../../service/ServiceProvider.hpp"
 
 namespace player {
@@ -369,7 +369,7 @@ bool Player::grounded() const { return collider.flags.test(shape::State::grounde
 bool Player::fire_weapon() {
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		++extant_instances(equipped_weapon().get_id());
-		m_services->soundboard.flags.weapon.set(lookup::gun_sound.at(equipped_weapon().type));
+		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().label));
 		return true;
 	}
 	return false;

@@ -7,9 +7,9 @@
 
 namespace lookup {
 
-	class Tables {
+class Tables {
   public:
-		std::unordered_map<int, std::string_view> gun_label{{0, "bryn's gun"}, {1, "plasmer"}, {2, "skycorps ar"}, {3, "tomahawk"}, {4, "grappling hook"}};
-	};
+	std::unordered_map<int, std::string_view> gun_label{{0, "bryn's gun"}, {1, "plasmer"}, {2, "skycorps ar"}, {3, "tomahawk"}, {4, "grappling hook"}};
+};
 
-}
+} // namespace lookup

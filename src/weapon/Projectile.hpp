@@ -155,5 +155,8 @@ class Projectile {
 
 	std::vector<sf::Color> colors{};
 	std::deque<sf::Vector2<float>> position_history{};
+
+	private:
+	int id{};
 };
 } // namespace arms

@@ -25,6 +25,7 @@ class AssetManager {
 
 	void importTextures() {
 		t_nani.loadFromFile(finder.resource_path + "/image/character/nani.png");
+		t_portraits.loadFromFile(finder.resource_path + "/image/character/portraits.png");
 
 		t_palette_nani.loadFromFile(finder.resource_path + "/image/character/nani_palette_default.png");
 		t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");
@@ -211,6 +212,7 @@ class AssetManager {
 
 	// player and NPCs!
 	sf::Texture t_nani{};
+	sf::Texture t_portraits{};
 
 	//player palettes
 	sf::Texture t_palette_nani{};
