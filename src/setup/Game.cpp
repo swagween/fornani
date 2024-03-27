@@ -447,8 +447,8 @@ void Game::debug_window() {
 					}
 					ImGui::Separator();
 
-					ImGui::Text("Firing Direction LR: %s", player.equipped_weapon().firing_direction.print_lr().c_str());
-					ImGui::Text("Firing Direction UND : %s", player.equipped_weapon().firing_direction.print_und().c_str());
+					ImGui::Text("Firing Direction %s", player.equipped_weapon().firing_direction.print_lr().c_str());
+					ImGui::Text("Firing Direction %s", player.equipped_weapon().firing_direction.print_und().c_str());
 
 					ImGui::Text("Cooling Down? %s", player.equipped_weapon().cooling_down() ? "Yes" : "No");
 					ImGui::Text("Cooldown Time %i", player.equipped_weapon().cooldown.get_cooldown());
