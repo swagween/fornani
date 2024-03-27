@@ -144,6 +144,8 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	} else {
 		if (abs(physics.position.y - fired_point.y) >= stats.range) { destroy(false); }
 	}
+
+	if (state.test(arms::ProjectileState::destroyed)) { --player.extant_instances(lookup::type_to_index.at(type)); }
 }
 
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos) {

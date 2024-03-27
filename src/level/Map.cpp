@@ -135,7 +135,6 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			input >> pos.y;
 			input.ignore();
 			inspectables.push_back(entity::Inspectable(dim, pos, key));
-			std::cout << inspectables.back().key << "\n";
 			inspectables.back().activate_on_contact = aoc;
 		}
 		input.close();
@@ -346,10 +345,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
-	for (auto& portal : portals) {
-		portal.update();
-		portal.handle_activation(svc, *player, room_id, transition.fade_out, transition.done);
-	}
+	for (auto& portal : portals) { portal.handle_activation(svc, *player, room_id, transition.fade_out, transition.done); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console); }
 	for (auto& animator : animators) { animator.update(*player); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
@@ -385,11 +381,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	for (auto& chest : chests) { chest.render(svc, win, cam); }
 
-	// emitters
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 
-	// player
-	player->render(svc, win, svc::cameraLocator.get().physics.position);
+	player->render(svc, win, cam);
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
 
@@ -398,10 +392,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) { proj.hook.spring.render(win, cam); }
 	}
 
-	// loot
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 
-	// foreground animators
 	for (auto& animator : animators) {
 		if (!animator.foreground) { animator.render(svc, win, cam); }
 	}
@@ -418,7 +410,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	if (real_dimensions.y < cam::screen_dimensions.y) {
 		float ydiff = (cam::screen_dimensions.y - real_dimensions.y) / 2;
-		borderbox.setFillColor(flcolor::black);
+		borderbox.setFillColor(svc.styles.colors.ui_black);
 		borderbox.setSize({(float)cam::screen_dimensions.x, ydiff});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
@@ -428,7 +420,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 	if (real_dimensions.x < cam::screen_dimensions.x) {
 		float xdiff = (cam::screen_dimensions.x - real_dimensions.x) / 2;
-		borderbox.setFillColor(flcolor::black);
+		borderbox.setFillColor(svc.styles.colors.ui_black);
 		borderbox.setSize({xdiff, (float)cam::screen_dimensions.y});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
@@ -513,20 +505,10 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 }
 
 void Map::manage_projectiles(automa::ServiceProvider& svc) {
-	for (auto& proj : active_projectiles) {
-		proj.update(svc, *player);
-		if (proj.state.test(arms::ProjectileState::destroyed)) { --player->extant_instances(lookup::type_to_index.at(proj.type)); }
-	}
+	for (auto& proj : active_projectiles) { proj.update(svc, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
-	std::erase_if(active_projectiles, [](auto const& p) {
-		if (p.state.test(arms::ProjectileState::destroyed)) {
-			
-			return true;
-		} else {
-			return false;
-		}
-	});
+	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 
 	if (!player->arsenal.loadout.empty()) {

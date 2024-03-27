@@ -30,7 +30,7 @@ void Portal::render(sf::RenderWindow& win, Vec campos) {
 }
 
 void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& player, int room_id, bool& fade_out, bool& done) {
-
+	update();
 	if (bounding_box.overlaps(player.collider.bounding_box)) {
 		if (activate_on_contact && ready) {
 			activated = true;
