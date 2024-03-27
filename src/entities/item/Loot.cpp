@@ -31,11 +31,11 @@ void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		if (drop.get_collider().bounding_box.overlaps(player.collider.bounding_box) && !drop.is_inactive() && !drop.is_completely_gone()) {
 			player.give_drop(drop.get_type(), drop.get_value());
 			if (drop.get_type() == DropType::heart) {
-				svc::soundboardLocator.get().flags.item.set(audio::Item::heal);
+				svc.soundboard.flags.item.set(audio::Item::heal);
 			} else if(drop.get_value() == 1) {
-				svc::soundboardLocator.get().flags.item.set(audio::Item::orb_1);
+				svc.soundboard.flags.item.set(audio::Item::orb_1);
 			} else if (drop.get_value() == 10) {
-				svc::soundboardLocator.get().flags.item.set(audio::Item::orb_5);
+				svc.soundboard.flags.item.set(audio::Item::orb_5);
 			}
 			drop.deactivate();
 		}

@@ -58,28 +58,28 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		if (event.key.code == sf::Keyboard::Down) {
 			++file_selection;
 			constrain_selection();
-			svc::dataLocator.get().load_blank_save(*player);
-			svc::dataLocator.get().load_progress(*player, file_selection);
-			svc::soundboardLocator.get().flags.menu.set(audio::Menu::shift);
+			svc.data.load_blank_save(*player);
+			svc.data.load_progress(*player, file_selection);
+			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Up) {
 			--file_selection;
 			constrain_selection();
-			svc::dataLocator.get().load_blank_save(*player);
-			svc::dataLocator.get().load_progress(*player, file_selection);
-			svc::soundboardLocator.get().flags.menu.set(audio::Menu::shift);
+			svc.data.load_blank_save(*player);
+			svc.data.load_progress(*player, file_selection);
+			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Left) {
 			svc.state_controller.actions.set(Actions::exit_submenu);
-			svc::soundboardLocator.get().flags.menu.set(audio::Menu::backward_switch);
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			constrain_selection();
-			svc::dataLocator.get().load_progress(*player, file_selection, true);
+			svc.data.load_progress(*player, file_selection, true);
 			svc.state_controller.actions.set(Actions::trigger);
 			svc.state_controller.actions.set(Actions::save_loaded);
-			svc::soundboardLocator.get().flags.menu.set(audio::Menu::select);
-			svc::soundboardLocator.get().flags.world.set(audio::World::load);
+			svc.soundboard.flags.menu.set(audio::Menu::select);
+			svc.soundboard.flags.world.set(audio::World::load);
 		}
 	}
 }

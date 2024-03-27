@@ -31,8 +31,8 @@ enum class global_flags { greyblock_state, greyblock_trigger };
 enum counters { draw_calls = 0 };
 int const num_counters = 1;
 
-inline auto assetLocator = forloop::Service<asset::AssetManager>::Instance{};
-inline auto dataLocator = forloop::Service<data::DataManager>::Instance{};
+//inline auto assetLocator = forloop::Service<asset::AssetManager>::Instance{};
+//inline auto dataLocator = forloop::Service<data::DataManager>::Instance{};
 //inline auto textLocator = forloop::Service<data::TextManager>::Instance{};
 //inline auto playerLocator = forloop::Service<player::Player>::Instance{};
 inline auto cameraLocator = forloop::Service<cam::Camera>::Instance{};
@@ -46,7 +46,7 @@ inline auto inputStateLocator = forloop::Service<util::InputState>::Instance{};
 //inline auto counterLocator = forloop::Service<std::array<uint16_t, num_counters>>::Instance{};
 //inline auto floatReadoutLocator = forloop::Service<float>::Instance{};
 //inline auto loggerLocator = forloop::Service<util::Logger>::Instance {};
-inline auto soundboardLocator = forloop::Service<audio::Soundboard>::Instance{};
+//inline auto soundboardLocator = forloop::Service<audio::Soundboard>::Instance{};
 inline auto musicPlayerLocator = forloop::Service<audio::MusicPlayer>::Instance{};
 
 } // namespace svc

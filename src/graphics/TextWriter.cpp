@@ -6,7 +6,7 @@
 
 namespace text {
 
-TextWriter::TextWriter(automa::ServiceProvider& svc) {
+TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 	font.loadFromFile(svc.text.font);
 	font.setSmooth(false);
 }
@@ -219,7 +219,7 @@ void TextWriter::adjust_selection(int amount) {
 	if (!selection_mode()) { return; }
 	if (iterators.current_response_set >= responses.size()) { return; }
 	iterators.current_selection += amount;
-	svc::soundboardLocator.get().flags.console.set(audio::Console::shift);
+	m_services->soundboard.flags.console.set(audio::Console::shift);
 	if (iterators.current_selection < 0) { iterators.current_selection = responses.at(iterators.current_response_set).size() - 1; }
 	if (iterators.current_selection >= responses.at(iterators.current_response_set).size()) { iterators.current_selection = 0; }
 }
@@ -239,7 +239,7 @@ void TextWriter::process_selection() {
 	}
 	responses.pop_front();
 
-	svc::soundboardLocator.get().flags.console.set(audio::Console::next);
+	m_services->soundboard.flags.console.set(audio::Console::next);
 	flags.set(MessageState::cannot_skip);
 	flags.reset(MessageState::selection_mode);
 	reset();

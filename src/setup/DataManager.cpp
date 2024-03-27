@@ -99,21 +99,21 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	save = dj::Json::from_file((finder.resource_path + "/data/save/file_" + std::to_string(file) + ".json").c_str());
 	assert(!save.is_null());
 
-	int save_pt_id = svc::dataLocator.get().save["save_point_id"].as<int>();
+	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = lookup::save_point_to_room_id.at(save_pt_id);
 
 	// set player data based on save file
-	player.health.set_max(svc::dataLocator.get().save["player_data"]["max_hp"].as<int>());
-	player.health.set_hp(svc::dataLocator.get().save["player_data"]["hp"].as<int>());
-	player.player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
+	player.health.set_max(save["player_data"]["max_hp"].as<int>());
+	player.health.set_hp(save["player_data"]["hp"].as<int>());
+	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
 	player.arsenal.loadout.clear();
-	for (auto& gun_id : svc::dataLocator.get().save["player_data"]["arsenal"].array_view()) {
+	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
 		player.arsenal.push_to_loadout(gun_id.as<int>());
 	}
 	if (!player.arsenal.loadout.empty()) {
-		auto equipped_gun = svc::dataLocator.get().save["player_data"]["equipped_gun"].as<int>();
+		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
 		player.arsenal.set_index(equipped_gun);
 	}
 
@@ -129,9 +129,9 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	assert(!save.is_null());
 
 	// set player data based on save file
-	player.health.set_max(svc::dataLocator.get().save["player_data"]["max_hp"].as<int>());
-	player.health.set_hp(svc::dataLocator.get().save["player_data"]["hp"].as<int>());
-	player.player_stats.orbs = svc::dataLocator.get().save["player_data"]["orbs"].as<int>();
+	player.health.set_max(save["player_data"]["max_hp"].as<int>());
+	player.health.set_hp(save["player_data"]["hp"].as<int>());
+	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
 	player.arsenal.loadout.clear();

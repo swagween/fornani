@@ -1,5 +1,4 @@
 #include "GrapplingHook.hpp"
-#include "../setup/ServiceLocator.hpp"
 #include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../utils/Math.hpp"
@@ -13,7 +12,7 @@ void GrapplingHook::update(automa::ServiceProvider& svc, player::Player& player)
 
 	if (grapple_flags.test(GrappleState::probing)) {
 		spring.set_bob(player.equipped_weapon().barrel_point);
-		svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::hook_probe);
+		svc.soundboard.flags.weapon.set(audio::Weapon::hook_probe);
 	}
 	if (grapple_flags.test(GrappleState::anchored)) {
 		spring.update(svc);
@@ -44,7 +43,7 @@ void GrapplingHook::break_free(player::Player& player) {
 }
 
 void GrapplingHook::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos) {
-	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+	if (svc.greyblock_mode()) {
 		spring.render(win, campos);
 	} else {
 		float distance = util::magnitude(player.collider.physics.position - spring.get_anchor());

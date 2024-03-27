@@ -6,21 +6,14 @@ namespace fornani {
 
 Game::Game(char** argv) {
 	// data
-	svc::dataLocator.get().finder.setResourcePath(argv);
-	svc::dataLocator.get().load_data();
-
 	services.data.finder.setResourcePath(argv);
 	services.data.load_data();
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
-	// images
+	// image
 	services.assets.finder.setResourcePath(argv);
 	services.assets.importTextures();
-
-	services.assets.finder.setResourcePath(argv);
-	services.assets.importTextures();
-	services.assets.load_audio();
 	// sounds
 	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
 	services.assets.load_audio();
@@ -142,7 +135,6 @@ void Game::run() { // load all assets
 		game_state.get_current_state().frame_update(services);
 
 		// play sounds
-		svc::soundboardLocator.get().play_sounds(services);
 		services.soundboard.play_sounds(services);
 
 		// switch states
@@ -420,7 +412,7 @@ void Game::debug_window() {
 							ImGui::SliderFloat("Dash Dampen", &player.physics_stats.dash_dampen, 0.7f, 2.0f);
 
 							ImGui::Separator();
-							if (ImGui::Button("Save Parameters")) { svc::dataLocator.get().save_player_params(player); }
+							if (ImGui::Button("Save Parameters")) { services.data.save_player_params(player); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Misc")) {
@@ -524,7 +516,7 @@ void Game::debug_window() {
 				}
 				if (ImGui::BeginTabItem("Resources")) {
 					ImGui::Text("Size of Asset Manager (Bytes): %lu", sizeof(services.assets));
-					ImGui::Text("Size of Data Manager (Bytes): %lu", sizeof(svc::dataLocator.get()));
+					ImGui::Text("Size of Data Manager (Bytes): %lu", sizeof(services.data));
 					//ImGui::Text("Size of Text Manager (Bytes): %lu", sizeof(svc::textLocator.get()));
 					ImGui::Text("Size of Music Player (Bytes): %lu", sizeof(svc::musicPlayerLocator.get()));
 					ImGui::Text("Size of Camera (Bytes): %lu", sizeof(svc::cameraLocator.get()));

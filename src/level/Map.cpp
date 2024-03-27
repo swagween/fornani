@@ -387,10 +387,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
 
-	for (auto& proj : active_projectiles) {
-		proj.render(svc, *player, win, cam);
-		if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) { proj.hook.spring.render(win, cam); }
-	}
+	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 
@@ -490,7 +487,7 @@ void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos) {
 	active_projectiles.push_back(weapon.projectile);
-	active_projectiles.back().set_sprite();
+	active_projectiles.back().set_sprite(svc);
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed();
 	active_projectiles.back().update(svc, *player);

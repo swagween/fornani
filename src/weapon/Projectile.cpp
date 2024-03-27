@@ -15,7 +15,7 @@ Projectile::Projectile() {
 
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id) : label(label) {
 
-	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id]["projectile"];
+	auto const& in_data = svc.data.weapon["weapons"][id]["projectile"];
 
 	type = index_to_type.at(id);
 
@@ -72,12 +72,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	state.set(ProjectileState::initialized);
 	cooldown.start(40);
 	seed();
-
-	for (int i = 0; i < anim.num_sprites; ++i) { sp_proj.push_back(sf::Sprite()); }
-	for (auto& sprite : sp_proj) {
-		set_orientation(sprite);
-		sprite.setTexture(svc.assets.projectile_textures.at(label));
-	}
+	set_sprite(svc);
 }
 
 void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
@@ -107,7 +102,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 				hook.grapple_triggers = {};
 				hook.spring.reverse_anchor_and_bob();
 				hook.spring.set_rest_length(stats.spring_rest_length);
-				svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::tomahawk_catch);
+				svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
 			} // destroy when player catches it
 		}
 	}
@@ -117,11 +112,11 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		gravitator.set_target_position(player.apparent_position);
 		gravitator.update(svc);
 		physics.position = gravitator.collider.physics.position;
-		svc::soundboardLocator.get().flags.weapon.set(lookup::gun_sound.at(type)); // repeat sound
+		svc.soundboard.flags.weapon.set(lookup::gun_sound.at(type)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
 		if (gravitator.collider.bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
-			svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::tomahawk_catch);
+			svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
 	}
 
@@ -236,7 +231,12 @@ void Projectile::seed() {
 	}
 }
 
-void Projectile::set_sprite() {
+void Projectile::set_sprite(automa::ServiceProvider& svc) {
+	for (int i = 0; i < anim.num_sprites; ++i) { sp_proj.push_back(sf::Sprite()); }
+	for (auto& sprite : sp_proj) {
+		set_orientation(sprite);
+		sprite.setTexture(svc.assets.projectile_textures.at(label));
+	}
 }
 
 void Projectile::set_orientation(sf::Sprite& sprite) {

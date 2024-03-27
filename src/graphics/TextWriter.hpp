@@ -91,6 +91,8 @@ class TextWriter {
 
 	sf::RectangleShape indicator{};
 
+	automa::ServiceProvider* m_services;
+
 	Message zero_option{}; //for debug
 };
 

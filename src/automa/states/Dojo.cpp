@@ -44,8 +44,8 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 		}
 	}
 	if (!found_one) {
-		float ppx = svc::dataLocator.get().save["player_data"]["position"]["x"].as<float>();
-		float ppy = svc::dataLocator.get().save["player_data"]["position"]["y"].as<float>();
+		float ppx = svc.data.save["player_data"]["position"]["x"].as<float>();
+		float ppy = svc.data.save["player_data"]["position"]["y"].as<float>();
 		sf::Vector2f player_pos = {ppx, ppy};
 		player->set_position(player_pos);
 	}
