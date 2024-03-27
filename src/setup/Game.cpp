@@ -49,8 +49,6 @@ void Game::run() { // load all assets
 	while (window.isOpen()) {
 
 		services.ticker.start_frame();
-		// reset global triggers
-		svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_trigger);
 
 		measurements.win_size.x = window.getSize().x;
 		measurements.win_size.y = window.getSize().y;
@@ -105,15 +103,7 @@ void Game::run() { // load all assets
 				}
 				if (event.key.code == sf::Keyboard::P) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {
-					if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-						svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_state);
-						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
-						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
-					} else {
-						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
-						svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
-						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
-					}
+					services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 					services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 				}
 				break;
@@ -451,7 +441,7 @@ void Game::debug_window() {
 					ImGui::Text("Extant Projectiles:");
 					ImGui::NewLine();
 					for (auto& weapon : player.arsenal.loadout) {
-						ImGui::Text("%s", weapon->label);
+						ImGui::Text("%s", weapon->label.data());
 						ImGui::SameLine();
 						ImGui::Text(": %i", player.extant_instances(weapon->get_id()));
 					}
@@ -465,7 +455,7 @@ void Game::debug_window() {
 					ImGui::Text("Active Projectiles: %i", player.equipped_weapon().active_projectiles);
 
 					ImGui::Separator();
-					ImGui::Text("Equipped Weapon: %s", player.equipped_weapon().label);
+					ImGui::Text("Equipped Weapon: %s", player.equipped_weapon().label.data());
 					ImGui::Text("UI color: %i", (int)player.equipped_weapon().attributes.ui_color);
 					ImGui::Text("Sprite Dimensions X: %i", player.equipped_weapon().sprite_dimensions.x);
 					ImGui::Text("Sprite Dimensions Y: %i", player.equipped_weapon().sprite_dimensions.y);
@@ -497,17 +487,6 @@ void Game::debug_window() {
 					ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
 
 					if (ImGui::Button("Save Screenshot")) { take_screenshot(); }
-					ImGui::Separator();
-					if (ImGui::Button("Toggle Greyblock Mode")) {
-						if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-							svc::globalBitFlagsLocator.get().reset(svc::global_flags::greyblock_state);
-							svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
-						} else {
-							svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_state);
-							svc::globalBitFlagsLocator.get().set(svc::global_flags::greyblock_trigger);
-						}
-					}
-					ImGui::Text("Greyblock Mode : %s", svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state) ? "On" : "Off");
 					ImGui::Separator();
 					ImGui::Text("Draw Calls: %u", trackers.draw_calls);
 					trackers.draw_calls = 0;

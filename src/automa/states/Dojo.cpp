@@ -114,7 +114,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	map.render(svc, win, svc::cameraLocator.get().physics.position);
 
-	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) { hud.render(*player, win); }
+	if (!svc.greyblock_mode()) { hud.render(*player, win); }
 	map.render_console(svc, console, win);
 
 	svc.assets.sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
@@ -123,8 +123,8 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.transition.render(win);
 
 
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_trigger)) {
-		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
+		if (svc.greyblock_mode()) {
 			tileset = svc.assets.tilesets.at(lookup::get_style_id.at(lookup::STYLE::PROVISIONAL));
 			setTilesetTexture(svc, tileset);
 		} else {

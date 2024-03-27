@@ -1,5 +1,4 @@
 #include "Tile.hpp"
-#include "../setup/ServiceLocator.hpp"
 
 namespace world {
 
@@ -16,11 +15,10 @@ void Tile::update_polygon(sf::Vector2<float> cam) {
 }
 
 void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (collision_check && svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+	if (collision_check) {
 		update_polygon(cam);
 		if (!surrounded) {
 			win.draw(polygon);
-			
 		}
 	}
 }

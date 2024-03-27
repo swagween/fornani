@@ -143,7 +143,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		if (grounded()) { animation.state.set(AnimState::turn); }
 	}
 	if (flags.state.test(State::alive)) {
-		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		if (svc.greyblock_mode()) {
 			collider.render(win, campos);
 		} else {
 			antennae[1].render(svc, win, campos);
@@ -225,7 +225,7 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	for (auto& sp : sprite_history.sprites) {
 		sp.setColor(sf::Color(255, 255, 255, a));
 		sp.setPosition(sprite_history.positions.at(ctr) - campos);
-		if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		if (!m_services->greyblock_mode()) {
 			win.draw(sp);
 		}
 		a += 20;
