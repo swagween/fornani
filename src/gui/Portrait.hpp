@@ -19,6 +19,7 @@ class Portrait {
 	void reset(automa::ServiceProvider& svc);
 	void bring_in();
 	void send_out();
+	void set_id(int new_id);
 
   private:
 	sf::Sprite sprite{};

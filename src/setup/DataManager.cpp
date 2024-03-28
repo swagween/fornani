@@ -31,6 +31,11 @@ void DataManager::load_data() {
 	assert(!sparkler.is_null());
 	std::cout << " success!\n";
 
+	npc = dj::Json::from_file((finder.resource_path + "/data/npc/npc_data.json").c_str());
+	std::cout << "loading npc data ...";
+	assert(!npc.is_null());
+	std::cout << " success!\n";
+
 	map_styles = dj::Json::from_file((finder.resource_path + "/data/level/map_styles.json").c_str());
 	std::cout << "loading map_styles data ...";
 	assert(!map_styles.is_null());

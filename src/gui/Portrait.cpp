@@ -43,4 +43,9 @@ void Portrait::bring_in() { position = end_position; }
 
 void Portrait::send_out() { position = start_position; }
 
+void Portrait::set_id(int new_id) {
+	id = new_id;
+	sprite.setTextureRect(sf::IntRect({id * (int)dimensions.x, 0}, {(int)dimensions.x, (int)dimensions.y}));
+}
+
 } // namespace gui

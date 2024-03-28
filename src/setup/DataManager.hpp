@@ -19,7 +19,7 @@ class DataManager {
 	public:
 	// game save
 	void load_data();
-	  void save_progress(player::Player& player, int save_point_id);
+	void save_progress(player::Player& player, int save_point_id);
 	std::string_view load_progress(player::Player& player, int const file, bool state_switch = false);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false);
 
@@ -32,6 +32,7 @@ class DataManager {
 	dj::Json particle{};
 	dj::Json sparkler{};
 	dj::Json map_styles{};
+	dj::Json npc{};
 
 	//enemy
 	dj::Json enemy{};

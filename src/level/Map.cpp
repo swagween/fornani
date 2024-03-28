@@ -219,6 +219,27 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		input.close();
 	}
 
+	// get npc data
+	input.open(room_str + "/map_npcs.txt");
+	if (input.is_open()) {
+		while (!input.eof()) {
+			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
+			sf::Vector2<float> pos{};
+			int id{};
+			input >> id;
+			input.ignore();
+			input >> pos.x;
+			input.ignore();
+			input >> pos.y;
+			input.ignore();
+			input.ignore();
+
+			npcs.push_back(entity::NPC(svc, id));
+			npcs.back().set_position_from_scaled(pos);
+		}
+		input.close();
+	}
+
 	// get critter data
 	input.open(room_str + "/map_critters.txt");
 	if (input.is_open()) {
@@ -346,6 +367,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
+	for (auto& npc : npcs) { npc.update(svc, *this, console, *player); }
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, room_id, transition.fade_out, transition.done); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console); }
 	for (auto& animator : animators) { animator.update(*player); }
@@ -381,15 +403,11 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 
 	for (auto& chest : chests) { chest.render(svc, win, cam); }
-
+	for (auto& npc : npcs) { npc.render(svc, win, cam); }
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
-
 	player->render(svc, win, cam);
-
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
-
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
-
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 
 	for (auto& animator : animators) {

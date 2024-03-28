@@ -18,7 +18,7 @@ float const height_factor{3.0f};
 float const pad{168.f};
 float const text_pad{8.0f};
 
-enum class ConsoleFlags { active, loaded, selection_mode };
+enum class ConsoleFlags { active, loaded, selection_mode, portrait_included };
 
 struct Border {
 	float left{};
@@ -35,12 +35,13 @@ class Console {
 
 	void begin();
 	void update(automa::ServiceProvider& svc);
-	void render(sf::RenderWindow& win, bool portrait_included = true);
+	void render(sf::RenderWindow& win);
 
 	void set_source(dj::Json& json);
 	void load_and_launch(std::string_view key);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
+	void include_portrait(int id);
 
 	void nine_slice(int corner_dim, int edge_dim);
 

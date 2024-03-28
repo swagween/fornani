@@ -53,10 +53,10 @@ void Console::update(automa::ServiceProvider& svc) {
 	}
 }
 
-void Console::render(sf::RenderWindow& win, bool portrait_included) {
+void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
-	if (portrait_included) { portrait.render(win); }
-	portrait_included && writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
+	if (flags.test(ConsoleFlags::portrait_included)) { portrait.render(win); }
+	flags.test(ConsoleFlags::portrait_included) && writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
 	nani_portrait.render(win);
 }
 
@@ -82,6 +82,12 @@ void Console::end() {
 	extent = current_dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::loaded);
+	flags.reset(ConsoleFlags::portrait_included);
+}
+
+void Console::include_portrait(int id) {
+	flags.set(ConsoleFlags::portrait_included);
+	portrait.set_id(id);
 }
 
 void Console::nine_slice(int corner_dim, int edge_dim) {

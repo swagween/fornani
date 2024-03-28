@@ -26,6 +26,12 @@ void TextManager::load_data() {
 	assert(!basic.is_null());
 	std::cout << " success!\n";
 
+	// NPCs
+	npc = dj::Json::from_file((finder.resource_path + "/text/console/npc.json").c_str());
+	std::cout << "loading test npc data ...";
+	assert(!npc.is_null());
+	std::cout << " success!\n";
+
 	//set font
 	font = finder.resource_path + "/text/fonts/pixelFJ8pt1.ttf";
 

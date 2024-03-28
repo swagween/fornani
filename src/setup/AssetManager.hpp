@@ -26,6 +26,10 @@ class AssetManager {
 	void importTextures() {
 		t_nani.loadFromFile(finder.resource_path + "/image/character/nani.png");
 		t_portraits.loadFromFile(finder.resource_path + "/image/character/portraits.png");
+		t_bryn.loadFromFile(finder.resource_path + "/image/character/bryn.png");
+		t_gobe.loadFromFile(finder.resource_path + "/image/character/gobe.png");
+		npcs.insert({"bryn", t_bryn});
+		npcs.insert({"gobe", t_gobe});
 
 		t_palette_nani.loadFromFile(finder.resource_path + "/image/character/nani_palette_default.png");
 		t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");
@@ -213,6 +217,8 @@ class AssetManager {
 	// player and NPCs!
 	sf::Texture t_nani{};
 	sf::Texture t_portraits{};
+	sf::Texture t_bryn{};
+	sf::Texture t_gobe{};
 
 	//player palettes
 	sf::Texture t_palette_nani{};
@@ -386,6 +392,7 @@ class AssetManager {
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
 	std::unordered_map<int, sf::Texture&> background_lookup{};
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
+	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
 };
 
