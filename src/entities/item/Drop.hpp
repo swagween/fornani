@@ -3,7 +3,7 @@
 
 #include <string>
 #include "../../utils/Collider.hpp"
-#include "../behavior/Animation.hpp"
+#include "../animation/Animation.hpp"
 #include "../../utils/Cooldown.hpp"
 #include "../../particle/Sparkler.hpp"
 #include "../../graphics/FLColor.hpp"
@@ -31,11 +31,11 @@ class Drop {
   public:
 	Drop() = default;
 	Drop(automa::ServiceProvider& svc, std::string_view key, float probability);
-	void seed(float probability);
+	void seed(automa::ServiceProvider& svc, float probability);
 	void set_value();
 	void set_texture(automa::ServiceProvider& svc);
-	void update(world::Map& map);
-	void render(sf::RenderWindow& win, sf::Vector2<float> campos);
+	void update(automa::ServiceProvider& svc, world::Map& map);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
 	void set_position(sf::Vector2<float> pos);
 
 	void destroy_completely();
@@ -66,7 +66,7 @@ class Drop {
 	util::Cooldown lifespan{};
 	util::Cooldown afterlife{}; // so sparkles remain after destruction
 
-	vfx::Sparkler sparkler{drop_dimensions, flcolor::ui_white};
+	vfx::Sparkler sparkler;
 
 	int cooldown_constant{2500};
 

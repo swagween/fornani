@@ -21,16 +21,12 @@ void Jump::reset_all() {
 
 void Jump::request_jump() { request.start(request_time); }
 
-void Jump::execute() {
-	states.set(player::JumpState::jumping);
-	cooldown.start(cooldown_time);
-}
-
 void Jump::prevent() { request.cancel(); }
 
 void Jump::start() {
+	cooldown.start(cooldown_time);
 	states.set(player::JumpState::jumping);
-	states.reset(player::JumpState::can_jump);
+	//states.reset(player::JumpState::can_jump);
 	triggers.reset(player::JumpTrigger::just_jumped);
 }
 
@@ -50,7 +46,11 @@ void Jump::reset_jumpsquat_trigger() { triggers.reset(player::JumpTrigger::jumps
 
 void Jump::reset_just_jumped() { triggers.reset(player::JumpTrigger::just_jumped); }
 
+void Jump::reset_jumping() { states.reset(player::JumpState::jumping); }
+
 bool Jump::requested() const { return !request.is_complete(); }
+
+bool Jump::launched() const { return !cooldown.is_complete(); }
 
 bool Jump::released() const { return triggers.test(player::JumpTrigger::is_released) && states.test(player::JumpState::jumping); }
 
@@ -69,5 +69,7 @@ bool Jump::jumpsquatting() const { return states.test(player::JumpState::jumpsqu
 bool Jump::jumpsquat_trigger() const { return triggers.test(player::JumpTrigger::jumpsquat); }
 
 int Jump::get_request() const { return request.get_cooldown(); }
+
+int Jump::get_cooldown() const { return cooldown.get_cooldown(); }
 
 } // namespace player

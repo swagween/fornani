@@ -30,34 +30,20 @@ struct WeaponAttributes {
 	std::array<float, 2> barrel_position{};
 };
 
-inline std::unordered_map<arms::WEAPON_TYPE, sf::Color> spray_color{
-	{arms::WEAPON_TYPE::BRYNS_GUN, flcolor::periwinkle},  {arms::WEAPON_TYPE::PLASMER, flcolor::fucshia}, {arms::WEAPON_TYPE::WASP, flcolor::goldenrod},
-	{arms::WEAPON_TYPE::BLIZZARD, flcolor::blue},		  {arms::WEAPON_TYPE::BISMUTH, flcolor::fucshia}, {arms::WEAPON_TYPE::UNDERDOG, flcolor::orange},
-	{arms::WEAPON_TYPE::ELECTRON, flcolor::white},		  {arms::WEAPON_TYPE::CLOVER, flcolor::green},	  {arms::WEAPON_TYPE::TRITON, flcolor::goldenrod},
-	{arms::WEAPON_TYPE::WILLET_585, flcolor::periwinkle}, {arms::WEAPON_TYPE::QUASAR, flcolor::green},	  {arms::WEAPON_TYPE::NOVA, flcolor::white},
-	{arms::WEAPON_TYPE::VENOM, flcolor::goldenrod},		  {arms::WEAPON_TYPE::TWIN, flcolor::fucshia},	  {arms::WEAPON_TYPE::CARISE, flcolor::blue},
-	{arms::WEAPON_TYPE::STINGER, flcolor::goldenrod},	  {arms::WEAPON_TYPE::TUSK, flcolor::white},	  {arms::WEAPON_TYPE::TOMAHAWK, flcolor::white},
-
-	{arms::WEAPON_TYPE::SKYCORPS_AR, flcolor::goldenrod}, {arms::WEAPON_TYPE::STINGER, flcolor::goldenrod}, {arms::WEAPON_TYPE::TUSK, flcolor::white},
-	{arms::WEAPON_TYPE::GRAPPLING_HOOK, flcolor::ui_white}
-
-};
-
 class Weapon {
 
   public:
 	Weapon() = default;
-	Weapon(int id);
+	Weapon(automa::ServiceProvider& svc, std::string_view label, int id);
 
-	void update();
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void update(dir::Direction to_direction);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 
 	void equip();
 	void unequip();
 	void unlock();
 	void lock();
 	void shoot();
-	void cooldown();
 
 	bool is_equipped() const;
 	bool is_unlocked() const;
@@ -65,16 +51,18 @@ class Weapon {
 	bool can_shoot() const;
 
 	void set_position(sf::Vector2<float> pos);
-	void set_orientation();
+	void set_orientation(dir::Direction to_direction);
 
-	int get_id();
+	[[nodiscard]] auto get_id() const -> int { return id; }
 
 	WeaponAttributes attributes{};
 
-	Projectile projectile{};
-	vfx::Emitter spray{};
-	vfx::ElementBehavior spray_behavior{};
-	vfx::EmitterStats spray_stats{};
+	Projectile projectile;
+
+	//spray
+	sf::Vector2<float> emitter_dimensions{};
+	std::string_view emitter_type{};
+	sf::Color emitter_color{};
 
 	sf::Vector2<float> sprite_position{};
 	sf::Vector2<float> gun_offset{};
@@ -84,12 +72,12 @@ class Weapon {
 	WEAPON_TYPE type{};
 	sf::Vector2<int> sprite_dimensions{};
 	sf::Vector2<int> sprite_offset{};
-	std::string label{};
+	std::string_view label{};
 
 	sf::Sprite sp_gun{};
 
 	int active_projectiles{};
-	int cooldown_counter{};
+	util::Cooldown cooldown{};
 	dir::Direction firing_direction{};
 
   private:

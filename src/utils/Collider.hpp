@@ -62,7 +62,7 @@ class Collider {
 	void handle_platform_collision(Shape const& cell);
 	void handle_spike_collision(Shape const& cell);
 	void handle_collider_collision(Shape const& collider);
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void reset();
 	void reset_ground_flags();

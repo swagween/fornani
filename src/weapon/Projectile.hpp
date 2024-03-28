@@ -8,7 +8,7 @@
 #include <memory>
 #include <unordered_map>
 #include "../components/PhysicsComponent.hpp"
-#include "../entities/behavior/Animation.hpp"
+#include "../entities/animation/Animation.hpp"
 #include "../graphics/FLColor.hpp"
 #include "../graphics/SpriteHistory.hpp"
 #include "../particle/Emitter.hpp"
@@ -19,6 +19,14 @@
 #include "../particle/Gravitator.hpp"
 #include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
+
+namespace automa {
+struct ServiceProvider;
+}
+
+namespace player {
+class Player;
+}
 
 namespace arms {
 
@@ -95,13 +103,13 @@ class Projectile {
 
   public:
 	Projectile();
-	Projectile(int id);
+	Projectile(automa::ServiceProvider& svc, std::string_view label, int id);
 
-	void update();
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void update(automa::ServiceProvider& svc, player::Player& player);
+	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void destroy(bool completely);
 	void seed();
-	void set_sprite();
+	void set_sprite(automa::ServiceProvider& svc);
 	void set_orientation(sf::Sprite& sprite);
 	void set_position(sf::Vector2<float>& pos);
 	void set_boomerang_speed();
@@ -113,11 +121,15 @@ class Projectile {
 	void constrain_hitbox_at_destruction_point();
 	void lock_to_anchor();
 
+	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
+
 	dir::Direction direction{};
 	shape::Shape bounding_box{};
 	components::PhysicsComponent physics{};
 	ProjectileStats stats{};
 	ProjectileAnimation anim{};
+
+	std::string_view label{};
 
 	WEAPON_TYPE type{WEAPON_TYPE::BRYNS_GUN};
 	TEAMS team{TEAMS::NANI}; // default to player projectile. enemies and bosses will be set separately
@@ -143,5 +155,8 @@ class Projectile {
 
 	std::vector<sf::Color> colors{};
 	std::deque<sf::Vector2<float>> position_history{};
+
+	private:
+	int id{};
 };
 } // namespace arms

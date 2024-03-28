@@ -11,32 +11,26 @@
 namespace arms {
 
 using Key = WEAPON_TYPE;
-constexpr static int max_weapons{20};
-
-inline Weapon bryns_gun{0};
-inline Weapon plasmer{1};
-inline Weapon skycorps_ar{2};
-inline Weapon tomahawk{3};
-inline Weapon grappling_hook{4};
+constexpr static int max_weapons{5};
 
 struct Arsenal {
 
 	Arsenal() = default;
-	Arsenal& operator=(Arsenal&&) = delete;
+	Arsenal(automa::ServiceProvider& svc);
 
-	void init();
 	void push_to_loadout(int id);
-	void switch_weapon(float next);
+	void switch_weapon(automa::ServiceProvider& svc, float next);
 	Weapon& get_current_weapon();
 	int get_index();
 	void set_index(int index);
 
-	std::array<Weapon, max_weapons> armory{};
-	std::vector<Weapon> loadout{};
+	std::array<std::shared_ptr<Weapon>, max_weapons> armory{};
+	std::vector<std::shared_ptr<Weapon>> loadout{};
 	std::array<int, max_weapons> extant_projectile_instances{};
 
   private:
 	int current_weapon{};
+	std::shared_ptr<Weapon> default_gun{};
 };
 
 } // namespace arms

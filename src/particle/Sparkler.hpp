@@ -9,9 +9,9 @@ namespace vfx {
 class Sparkler {
   public:
 	Sparkler() = default;
-	Sparkler(sf::Vector2<float> dimensions, sf::Color color) : dimensions(dimensions), color(color) {};
-	void update();
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions, sf::Color color, std::string_view type);
+	void update(automa::ServiceProvider& svc);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos);
 	void set_dimensions(sf::Vector2<float> dim);
 	void deactivate();
@@ -20,8 +20,14 @@ class Sparkler {
 	std::vector<Spark> sparkles{};
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> position{};
+	std::string_view type{};
+
+	struct {
+		float rate{};
+	} behavior{};
 
 	sf::Color color{};
+	sf::RectangleShape drawbox{}; // for debug
 	bool active{true};
 };
 

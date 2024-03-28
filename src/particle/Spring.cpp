@@ -1,6 +1,6 @@
 
 #include "Spring.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace vfx {
 
@@ -11,10 +11,10 @@ Spring::Spring(Parameters params) : params(params) {
 
 void Spring::calculate() { calculate_force(); }
 
-void Spring::update() {
+void Spring::update(automa::ServiceProvider& svc) {
 	variables.physics.gravity = 1.5f;
 	calculate();
-	variables.physics.update();
+	variables.physics.update(svc);
 	bob = variables.physics.position;
 }
 

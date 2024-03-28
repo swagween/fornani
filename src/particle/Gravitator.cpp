@@ -1,6 +1,6 @@
 
 #include "Gravitator.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace vfx {
 
@@ -17,9 +17,14 @@ Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size)
 	box.setFillColor(color);
 }
 
-void Gravitator::update() {
+void Gravitator::update(automa::ServiceProvider& svc) {
+	collider.reset();
+	collider.physics.update_dampen(svc);
+	collider.sync_components();
+}
 
-	collider.physics.update_dampen();
+void Gravitator::set_position(Vec new_position) {
+	collider.physics.position = new_position;
 	collider.sync_components();
 }
 
@@ -36,15 +41,17 @@ void Gravitator::set_target_position(Vec new_position) {
 	float str = Gravitator_gravity_force / mag * mag;
 	force_x *= str;
 	force_y *= str;
+
+	if (abs(force_x) > 2048.f || abs(force_y) > 2048.f) { return; }
 	collider.physics.apply_force({force_x, force_y});
 }
 
-void Gravitator::render(sf::RenderWindow& win, Vec campos) {
+void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
 
 	box.setPosition((int)(collider.bounding_box.position.x - campos.x),
 					(int)(collider.bounding_box.position.y - campos.y));
 
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(box);
 	} else {
 		win.draw(box);

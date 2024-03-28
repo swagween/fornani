@@ -1,0 +1,42 @@
+{
+  "gobe_01": {
+    "suite": [
+      [ "...", "Huh?", "Oh! A lost girl wanders my way, hmm?", "Tell me, what are you doing wandering about in a place so perilous as this?%0" ],
+      ["Hah! Well, some say strangers are just friends you haven't met yet.", "You know, there aren't many of your kind buzzing around here these days. Not since Skycorps posted up and turned this whole half of the island into a glorified toxic waste dump."],
+      ["Well, you're in luck, my friend, because just down yonder through those gloomy glades is the gateway to a quaint little village called Woodshine.", "You know, there aren't many of your kind buzzing around here these days. Not since Skycorps posted up and turned this whole half of the island into a glorified toxic waste dump.", "Anyway, I wish you the best of luck, wherever your road leads."],
+      ["A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start in the search for your little brother."]
+    ],
+    "responses": [
+      [ "I don't talk to strangers.%0", "I'm just looking for a place to rest.%1", "I'm looking for my little brother.%2"  ]
+    ]
+  },
+  "gobe_02": {
+    "suite": [
+      [ "Yes?%0" ],
+      [ "Why, how rude of me! I'd forgotten to introduce myself! My name is Gobe, and this here is my dog, Justin. I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember."],
+      [ "I tell you, it is no place for the faint of heart. But I see that, at least, you carry a weapon to defend yourself. Smart!"],
+      ["Sure thing! Here's what I've picked up over the last few weeks..."]
+    ],
+    "responses": [
+      [ "Who are you?%0", "I'd like to trade things with you.%2" ]
+    ]
+  },
+  "bryn_01": {
+    "suite": [
+      [ "Who's there?" ],
+      [ "Wait..." ]
+    ],
+    "responses": [ [] ]
+  },
+  "bryn_02": {
+    "suite": [
+      [ "You're that girl they took prisoner on Firstwind.%0" ],
+      [ "Well, I don't know how you made it down here alive, but I suppose that's neither here nor there.", "As it turns out, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ],
+      [ "Well, in a way, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ],
+      [ "It's our airship. Or, at least, it was our airship. A few weeks ago, Skycorps masqueraded as pirates and hijacked it from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ]      
+    ],
+    "responses": [
+      [ "That's me.%0", "How do you know?%1", "Firstwind...?%2" ]
+    ]
+  }
+}

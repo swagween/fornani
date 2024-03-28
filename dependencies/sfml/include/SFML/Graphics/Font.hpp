@@ -208,7 +208,7 @@ public:
     /// \return Line spacing, in pixels
     ///
     ////////////////////////////////////////////////////////////
-    float getLineSpacing(unsigned int characterSize) const;
+    float get(unsigned int characterSize) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the position of the underline

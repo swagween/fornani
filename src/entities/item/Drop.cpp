@@ -1,14 +1,14 @@
 
 #include "Drop.hpp"
 #include "../../service/ServiceProvider.hpp"
-#include "../../setup/ServiceLocator.hpp"
 
 namespace item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability) {
+Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability) : sparkler(svc, drop_dimensions, flcolor::ui_white, "drop") {
 
 	collider = shape::Collider(drop_dimensions);
 	collider.sync_components();
+	collider.physics.elasticity = 1.0f;
 
 	sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
 	sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();
@@ -27,20 +27,20 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	animation.refresh();
 
 	// randomly seed the animation start frame so drops in the same loot animate out of sync
-	animation.current_frame = svc::randomLocator.get().random_range(0, animation.params.duration - 1);
+	animation.current_frame = svc.random.random_range(0, animation.params.duration - 1);
 
-	int rand_cooldown_offset = svc::randomLocator.get().random_range(0, 50);
+	int rand_cooldown_offset = svc.random.random_range(0, 50);
 	lifespan.start(2500 + rand_cooldown_offset);
-	seed(probability);
+	seed(svc, probability);
 	set_value();
 	set_texture(svc);
 
 	sparkler.set_dimensions(collider.bounding_box.dimensions);
 }
 
-void Drop::seed(float probability) {
+void Drop::seed(automa::ServiceProvider& svc, float probability) {
 
-	float random_sample = svc::randomLocator.get().random_range_float(0.0f, 1.0f);
+	float random_sample = svc.random.random_range_float(0.0f, 1.0f);
 
 	if (random_sample < probability * priceless_constant) {
 		rarity = priceless;
@@ -82,9 +82,9 @@ void Drop::set_texture(automa::ServiceProvider& svc) {
 	}
 }
 
-void Drop::update(world::Map& map) {
+void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 
-	collider.update();
+	collider.update(svc);
 	collider.detect_map_collision(map);
 	collider.reset();
 	collider.reset_ground_flags();
@@ -95,7 +95,7 @@ void Drop::update(world::Map& map) {
 
 	animation.update();
 
-	sparkler.update();
+	sparkler.update(svc);
 	sparkler.set_position(collider.bounding_box.position);
 
 	sprite_offset = drop_dimensions - sprite_dimensions;
@@ -114,17 +114,17 @@ void Drop::update(world::Map& map) {
 	}
 }
 
-void Drop::render(sf::RenderWindow& win, sf::Vector2<float> campos) {
+void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 
-	if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+	if (svc.greyblock_mode()) {
 		collider.render(win, campos);
 	} else {
 		sprite.setPosition(collider.physics.position + sprite_offset - campos);
 		if (!is_inactive() && !is_completely_gone() && (lifespan.get_cooldown() > 500 || (lifespan.get_cooldown() / 20) % 2 == 0)) {
 			win.draw(sprite);
 		}
-		if (parameters.type == DropType::heart) { sparkler.render(win, campos); }
-		sparkler.render(win, campos);
+		if (parameters.type == DropType::heart) { sparkler.render(svc, win, campos); }
+		sparkler.render(svc, win, campos);
 	}
 }
 

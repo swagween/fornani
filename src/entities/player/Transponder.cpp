@@ -1,10 +1,10 @@
 #include "Transponder.hpp"
-#include "../../setup/ServiceLocator.hpp"
+#include "../../service/ServiceProvider.hpp"
 #include "../../gui/Console.hpp"
 
 namespace player {
 
-void Transponder::update(gui::Console& console) {
+void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	// execute action based on the state of the console
 	// all of these functions will be called, but will only be executed
@@ -20,18 +20,18 @@ void Transponder::update(gui::Console& console) {
 		if (console.writer.writing() && console.writer.can_skip()) { console.writer.skip_ahead(); }
 	}
 	if (requested_next()) {
-		if (!console.writer.writing()) { svc::soundboardLocator.get().flags.console.set(audio::Console::next); }
+		if (!console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::next); }
 		console.writer.request_next();
 	}
 	if (exited()) {
 		if (console.writer.complete()) {
-			svc::soundboardLocator.get().flags.console.set(audio::Console::done);
+			svc.soundboard.flags.console.set(audio::Console::done);
 			console.writer.shutdown();
 			console.end();
 		}
 	}
 	if (skip_released()) { console.writer.enable_skip(); }
-	if (console.writer.writing()) { svc::soundboardLocator.get().flags.console.set(audio::Console::speech); }
+	if (console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
 
 	end();
 }

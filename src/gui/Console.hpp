@@ -7,10 +7,7 @@
 #include "../utils/BitFlags.hpp"
 #include "../utils/Camera.hpp"
 #include "../graphics/TextWriter.hpp"
-
-namespace automa {
-struct ServiceProvider;
-}
+#include "Portrait.hpp"
 
 namespace gui {
 
@@ -19,11 +16,9 @@ int const edge_factor{2};
 float const height_factor{3.0f};
 
 float const pad{168.f};
-float const pad_y{20};
 float const text_pad{8.0f};
-inline const sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad_y}; // bottom left corner
 
-enum class ConsoleFlags { active, loaded, selection_mode };
+enum class ConsoleFlags { active, loaded, selection_mode, portrait_included };
 
 struct Border {
 	float left{};
@@ -39,23 +34,31 @@ class Console {
 	Console(automa::ServiceProvider& svc);
 
 	void begin();
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 
+	void set_source(dj::Json& json);
 	void load_and_launch(std::string_view key);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
+	void include_portrait(int id);
 
 	void nine_slice(int corner_dim, int edge_dim);
 
 	sf::Vector2<float> position{};
-	sf::Vector2<float> dimensions{};
+	sf::Vector2<float> current_dimensions{};
+	sf::Vector2<float> final_dimensions{};
 	sf::Vector2<float> text_origin{};
 	util::BitFlags<ConsoleFlags> flags{};
 
 	std::array<sf::Sprite, 9> sprites{};
 
 	dj::Json text_suite{};
+
+	gui::Portrait portrait;
+	gui::Portrait nani_portrait;
+
+	automa::ServiceProvider* m_services;
 
 	text::TextWriter writer;
 	Border border{
@@ -67,6 +70,9 @@ class Console {
 
 	int extent{};
 	int speed{2};
+
+	protected:
+	sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad_y}; // bottom left corner
 };
 
 } // namespace gui

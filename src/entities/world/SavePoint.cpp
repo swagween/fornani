@@ -2,48 +2,51 @@
 #include "SavePoint.hpp"
 #include "../../setup/ServiceLocator.hpp"
 #include "../../service/ServiceProvider.hpp"
+#include "../player/Player.hpp"
 #include "../../gui/Console.hpp"
 
 namespace entity {
 
-SavePoint::SavePoint() {
+SavePoint::SavePoint(automa::ServiceProvider& svc) {
 	id = -1;
 	dimensions = {32, 32};
 	bounding_box = shape::Shape(dimensions);
 	proximity_box = shape::Shape(dimensions * 16.f);
+	drawbox.setFillColor(sf::Color::Transparent);
+	drawbox.setOutlineThickness(-1);
+	drawbox.setSize(dimensions);
 
 	animation.set_params(anim_params);
-	sprite.setTexture(svc::assetLocator.get().savepoint);
+	sprite.setTexture(svc.assets.savepoint);
 
-	sparkle_behavior = {50, 3, 4.3, 0.4, 0.8, -0.3, 0.0, 0.97, 0.97};
-	sparkle_stats = {10, 0, 80, 30};
-	sparkles = vfx::Emitter(sparkle_behavior, sparkle_stats, flcolor::goldenrod);
-	sparkles.set_position(scaled_position.x * 32.f, scaled_position.y * 32.f);
+	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.green, "save_point");
+	sparkler.set_position(position);
 }
 
-void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
+void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) {
 
 	animation.update();
-	sparkles.update();
+	sparkler.update(svc);
 
 	sf::Vector2<float> proximity_offset = proximity_box.dimensions * 0.5f + dimensions * 0.5f;
 	position = static_cast<Vec>(scaled_position) * 32.f;
-	sparkles.set_position(position.x + dimensions.x * 0.5f, position.y + dimensions.y);
+	sparkler.set_position(position);
 	bounding_box.set_position(position);
 	proximity_box.set_position(position - proximity_offset);
 	activated = false;
 
-	if (svc::playerLocator.get().collider.bounding_box.SAT(proximity_box)) {
-		svc::soundboardLocator.get().proximities.save = abs(svc::playerLocator.get().collider.bounding_box.position.x - bounding_box.position.x);
+	if (player.collider.bounding_box.SAT(proximity_box)) {
+		svc.soundboard.proximities.save = abs(player.collider.bounding_box.position.x - bounding_box.position.x);
 
-		if (svc::playerLocator.get().collider.bounding_box.SAT(bounding_box)) {
+		if (player.collider.bounding_box.SAT(bounding_box)) {
 			intensity = 3;
 			if (animation.keyframe_over()) { animation.params.framerate = 16; }
-			if (svc::playerLocator.get().controller.inspecting()) {
+			if (player.controller.inspecting()) {
 				if (can_activate) {
 					activated = true;
-					save();
-					svc::soundboardLocator.get().flags.world.set(audio::World::soft_sparkle);
+					save(svc, player);
+					svc.soundboard.flags.world.set(audio::World::soft_sparkle);
+					console.set_source(svc.text.basic);
 					console.load_and_launch("save");
 				}
 			}
@@ -58,9 +61,9 @@ void SavePoint::update(automa::ServiceProvider& svc, gui::Console& console) {
 	}
 }
 
-void SavePoint::render(sf::RenderWindow& win, Vec campos) {
+void SavePoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
 
-	sparkles.render(win, campos);
+	sparkler.render(svc, win, campos);
 
 	sprite.setPosition((int)(position.x - 16.f - campos.x), (int)(position.y - 32.f - campos.y));
 	// get UV coords (only one row of sprites is supported)
@@ -68,28 +71,18 @@ void SavePoint::render(sf::RenderWindow& win, Vec campos) {
 	int v = (int)(animation.get_frame() * sprite_dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
-	win.draw(sprite);
-	
-	sf::RectangleShape box{};
-	if (activated) {
-		box.setFillColor(sf::Color{80, 180, 120, 100});
+	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
+		drawbox.setPosition(position - campos);
+		activated ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
+		win.draw(drawbox);
 	} else {
-		box.setFillColor(sf::Color{180, 120, 80, 100});
+		win.draw(sprite);
 	}
-	box.setOutlineColor(sf::Color::White);
-	box.setOutlineThickness(-1);
-	box.setPosition(bounding_box.position - campos);
-	box.setSize(bounding_box.dimensions);
-	// win.draw(box);
-	box.setPosition(proximity_box.position - campos);
-	box.setSize(proximity_box.dimensions);
-	// win.draw(box);
-	
 }
 
-void SavePoint::save() {
+void SavePoint::save(automa::ServiceProvider& svc, player::Player& player) {
 
-	svc::dataLocator.get().save_progress(id);
+	svc.data.save_progress(player, id);
 	can_activate = false;
 }
 

@@ -35,7 +35,7 @@ void Logger::run() {
 
 void Logger::handle_flags() {
 
-	if (svc::tickerLocator.get().every_x_frames(20)) { triggers = {}; }
+	//if (svc.ticker.every_x_frames(20)) { triggers = {}; }
 }
 
 void Logger::print_boolean(std::string label, bool test) {}

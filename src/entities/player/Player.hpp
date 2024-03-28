@@ -3,7 +3,6 @@
 
 #include <array>
 #include <memory>
-#include "../../components/BehaviorComponent.hpp"
 #include "../../components/PhysicsComponent.hpp"
 #include "../../particle/Gravitator.hpp"
 #include "../../utils/BitFlags.hpp"
@@ -14,9 +13,14 @@
 #include "PlayerAnimation.hpp"
 #include "Transponder.hpp"
 #include "../../graphics/TextureUpdater.hpp"
+#include "../packages/Health.hpp"
 
 namespace gui {
 class Console;
+}
+
+namespace automa {
+struct ServiceProvider;
 }
 
 namespace item {
@@ -45,8 +49,6 @@ constexpr inline float antenna_force{0.6f};
 constexpr inline float antenna_speed{16.f};
 
 struct PlayerStats {
-	int health{};
-	int max_health{};
 	int orbs{};
 	int max_orbs{};
 };
@@ -79,14 +81,14 @@ struct PlayerFlags {
 
 class Player {
   public:
-
 	Player();
+	Player(automa::ServiceProvider& svc);
 
 	// init (violates RAII but must happen after resource path is set)
-	void init();
+	void init(automa::ServiceProvider& svc);
 	// member functions
 	void update(gui::Console& console);
-	void render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
@@ -110,9 +112,7 @@ class Player {
 	bool fire_weapon();
 
 	// level events
-	void make_invincible();
 	void update_invincibility();
-	bool is_invincible() const;
 	void kill();
 	void start_over();
 	void give_drop(item::DropType type, int value);
@@ -134,10 +134,10 @@ class Player {
 	Transponder transponder{};
 	shape::Collider collider{};
 	PlayerAnimation animation{};
-	behavior::DIR last_dir{};
+	entity::Health health{};
 
 	//weapons
-	arms::Arsenal arsenal{};
+	arms::Arsenal arsenal;
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};
@@ -149,11 +149,13 @@ class Player {
 	std::vector<vfx::Gravitator> antennae{};
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
-	PlayerStats player_stats{3, 3, 0, 99999};
+	PlayerStats player_stats{0, 99999};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 
 	Counters counters{};
+
+	automa::ServiceProvider* m_services;
 
 	// sprites
 	sf::Sprite sprite{};

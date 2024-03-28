@@ -3,18 +3,17 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
-#include "../setup/ServiceLocator.hpp"
+
+namespace automa {
+struct ServiceProvider;
+}
 
 namespace flfx {
 
 class Transition {
 
   public:
-	Transition(int d) : duration(d) {
-		box.setPosition(0, 0);
-		box.setSize(sf::Vector2<float>(cam::screen_dimensions.x, cam::screen_dimensions.y));
-		current_frame = 0;
-	}
+	Transition(automa::ServiceProvider& svc, int d);
 
 	void update();
 	void render(sf::RenderWindow& win);

@@ -25,6 +25,11 @@ class AssetManager {
 
 	void importTextures() {
 		t_nani.loadFromFile(finder.resource_path + "/image/character/nani.png");
+		t_portraits.loadFromFile(finder.resource_path + "/image/character/portraits.png");
+		t_bryn.loadFromFile(finder.resource_path + "/image/character/bryn.png");
+		t_gobe.loadFromFile(finder.resource_path + "/image/character/gobe.png");
+		npcs.insert({"bryn", t_bryn});
+		npcs.insert({"gobe", t_gobe});
 
 		t_palette_nani.loadFromFile(finder.resource_path + "/image/character/nani_palette_default.png");
 		t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");
@@ -35,6 +40,10 @@ class AssetManager {
 
 		t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 		t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
+		t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");
+		texture_lookup.insert({"frdog", t_frdog});
+		texture_lookup.insert({"hulmet", t_hulmet});
+		texture_lookup.insert({"tank", t_tank});
 
 		t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 		t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -59,6 +68,21 @@ class AssetManager {
 		t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 		t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
 
+		weapon_textures.insert({"bryn's gun", t_bryns_gun});
+		projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
+		weapon_textures.insert({"plasmer", t_plasmer});
+		projectile_textures.insert({"plasmer", t_plasmer_projectile});
+		weapon_textures.insert({"nova", t_nova});
+		projectile_textures.insert({"nova", t_nova_projectile});
+		weapon_textures.insert({"tomahawk", t_tomahawk});
+		projectile_textures.insert({"tomahawk", t_tomahawk_projectile});
+		weapon_textures.insert({"clover", t_clover});
+		projectile_textures.insert({"clover", t_clover_projectile});
+		projectile_textures.insert({"skycorps ar", t_skycorps_ar_projectile});
+		weapon_textures.insert({"grappling hook", t_grappling_hook});
+		projectile_textures.insert({"grappling hook", t_hook});
+
+
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
 
@@ -74,6 +98,25 @@ class AssetManager {
 		t_bg_rosyhaze.loadFromFile(finder.resource_path + "/image/background/rosyhaze.png");
 		t_bg_slime.loadFromFile(finder.resource_path + "/image/background/slime.png");
 		t_bg_dirt.loadFromFile(finder.resource_path + "/image/background/dirt.png");
+
+		background_lookup.insert({0, t_bg_dusk});
+		background_lookup.insert({1, t_bg_sunrise});
+		background_lookup.insert({2, t_bg_opensky});
+		background_lookup.insert({3, t_bg_rosyhaze});
+		background_lookup.insert({4, t_bg_dawn});
+		background_lookup.insert({5, t_bg_night});
+		background_lookup.insert({6, t_bg_overcast});
+		background_lookup.insert({7, t_bg_slime});
+		background_lookup.insert({8, t_bg_black});
+		background_lookup.insert({9, t_bg_navy});
+		background_lookup.insert({10, t_bg_dirt});
+		background_lookup.insert({11, t_bg_gear});
+		background_lookup.insert({12, t_bg_library});
+		background_lookup.insert({13, t_bg_granite});
+		background_lookup.insert({14, t_bg_ruins});
+		background_lookup.insert({15, t_bg_crevasse});
+		background_lookup.insert({16, t_bg_deep});
+		background_lookup.insert({17, t_bg_grove});
 
 		t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators_01.png");
 		t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators_01.png");
@@ -97,6 +140,7 @@ class AssetManager {
 		}
 
 		savepoint.loadFromFile(finder.resource_path + "/image/entity/savepoint.png");
+		t_chest.loadFromFile(finder.resource_path + "/image/entity/chest.png");
 	
 	}
 
@@ -158,6 +202,8 @@ class AssetManager {
 		soft_sparkle_high.setBuffer(soft_sparkle_high_buffer);
 		soft_sparkle_buffer.loadFromFile(finder.resource_path + "/audio/sfx/soft_sparkle.wav");
 		soft_sparkle.setBuffer(soft_sparkle_buffer);
+		chest_buffer.loadFromFile(finder.resource_path + "/audio/sfx/chest.wav");
+		chest.setBuffer(chest_buffer);
 
 		brown_noise.openFromFile(finder.resource_path + "/audio/songs/brown_noise.wav");
 		clay_statue.openFromFile(finder.resource_path + "/audio/songs/clay_statue.wav");
@@ -170,6 +216,9 @@ class AssetManager {
 
 	// player and NPCs!
 	sf::Texture t_nani{};
+	sf::Texture t_portraits{};
+	sf::Texture t_bryn{};
+	sf::Texture t_gobe{};
 
 	//player palettes
 	sf::Texture t_palette_nani{};
@@ -185,6 +234,7 @@ class AssetManager {
 	// critters and bosses!
 	sf::Texture t_frdog{};
 	sf::Texture t_hulmet{};
+	sf::Texture t_tank{};
 
 	// gui
 	sf::Texture t_ui{};
@@ -206,6 +256,7 @@ class AssetManager {
 
 	//save
 	sf::Texture savepoint{};
+	sf::Texture t_chest{};
 
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
@@ -323,6 +374,8 @@ class AssetManager {
 	sf::Sound soft_sparkle_high;
 	sf::SoundBuffer soft_sparkle_buffer{};
 	sf::Sound soft_sparkle;
+	sf::SoundBuffer chest_buffer{};
+	sf::Sound chest{};
 
 	// songs!
 	sf::Music brown_noise{};
@@ -335,6 +388,12 @@ class AssetManager {
 	int music_vol{24};
 
 	data::ResourceFinder finder{};
+
+	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
+	std::unordered_map<int, sf::Texture&> background_lookup{};
+	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
+	std::unordered_map<std::string_view, sf::Texture&> npcs{};
+	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
 };
 
 } // namespace asset

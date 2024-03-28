@@ -1,8 +1,9 @@
 {
   "rooms": [
 
-    { "room_id": 101, "label": "FIRSTWIND_PRISON_01"},
-    { "room_id": 102, "label": "FIRSTWIND_CORRIDOR_01"},
+    { "room_id": 100, "label": "FIRSTWIND_PRISON_01"},
+    { "room_id": 101, "label": "FIRSTWIND_CORRIDOR_01"},
+    { "room_id": 102, "label": "FIRSTWIND_ATRIUM_01"},
 
     { "room_id": 305, "label": "WOODSHINE_VILLAGE_01"},
     { "room_id": 306, "label": "WOODSHINE_GAIA_01"},

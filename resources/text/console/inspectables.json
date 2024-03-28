@@ -1,3 +1,32 @@
 {
-  
+  "sign_01": {
+    "suite": [
+      [ "Cargo Room" ]
+    ],
+    "responses": [ [] ]
+  },
+  "spectrum_07": {
+    "suite": [
+      [ "spectrum 07; specimen intact." ]
+    ],
+    "responses": [ [] ]
+  },
+  "spectrum_06": {
+    "suite": [
+      [ "spectrum 06; specimen intact." ]
+    ],
+    "responses": [ [] ]
+  },
+  "spectrum_05": {
+    "suite": [
+      [ "spectrum 05; specimen intact." ]
+    ],
+    "responses": [ [] ]
+  },
+  "spectrum_02": {
+    "suite": [
+      [ "spectrum 02; specimen severely damaged." ]
+    ],
+    "responses": [ [] ]
+  }
 }

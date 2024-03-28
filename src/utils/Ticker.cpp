@@ -1,7 +1,7 @@
 
 #pragma once
-
 #include "Ticker.hpp"
+
 namespace util {
 
 float Ticker::global_tick_rate() { return ft.count() * tick_multiplier; }

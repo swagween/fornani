@@ -4,7 +4,7 @@
 
 namespace automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, int id) {
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, int id) : GameState(svc, player, id) {
 	state = STATE::STATE_MENU;
 	svc::cameraLocator.get().set_position({1, 1});
 
@@ -48,7 +48,7 @@ MainMenu::MainMenu(ServiceProvider& svc, int id) {
 		case 2: height = 22; break;
 		}
 
-		title_assets.push_back(sf::Sprite{svc::assetLocator.get().t_title_assets,
+		title_assets.push_back(sf::Sprite{svc.assets.t_title_assets,
 										  sf::IntRect({0, y_height_counter}, {selection_width, height})});
 
 		switch (i % 3) {
@@ -60,11 +60,11 @@ MainMenu::MainMenu(ServiceProvider& svc, int id) {
 		y_height_counter += height;
 	}
 
-	title = sf::Sprite{svc::assetLocator.get().t_title,
+	title = sf::Sprite{svc.assets.t_title,
 					   sf::IntRect({0, 0}, {(int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y})};
 };
 
-void MainMenu::init(ServiceProvider& svc, std::string const& load_path) {
+void MainMenu::init(ServiceProvider& svc, std::string_view room) {
 	svc::musicPlayerLocator.get().load("clay");
 	svc::musicPlayerLocator.get().play_looped();
 }
@@ -78,47 +78,47 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			selection = (menu_selection_id.at(selection) % 3 == 2)
 							? MenuSelection::new_game
 							: (MenuSelection)(menu_selection_id.at(selection) + 1);
-			svc::soundboardLocator.get().flags.menu.set(audio::Menu::shift);
+			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Up) {
 			selection = (menu_selection_id.at(selection) % 3 == 0)
 							? MenuSelection::options
 							: (MenuSelection)(menu_selection_id.at(selection) - 1);
 
-			svc::soundboardLocator.get().flags.menu.set(audio::Menu::shift);
+			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
 			if (selection == MenuSelection::new_game) {
 
-				svc.state_controller.next_state = svc::dataLocator.get().load_blank_save(true);
+				svc.state_controller.next_state = svc.data.load_blank_save(*player, true);
 				svc.state_controller.actions.set(Actions::trigger);
 				svc.state_controller.actions.set(Actions::save_loaded);
-				svc::soundboardLocator.get().flags.menu.set(audio::Menu::select);
+				svc.soundboard.flags.menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::load_game) {
 
 				svc.state_controller.submenu = menu_type::file_select;
 				svc.state_controller.actions.set(Actions::trigger_submenu);
-				svc::soundboardLocator.get().flags.menu.set(audio::Menu::select);
+				svc.soundboard.flags.menu.set(audio::Menu::select);
 			}
 			if (selection == MenuSelection::options) {
 
 				// todo: make options menu
-				svc::soundboardLocator.get().flags.menu.set(audio::Menu::select);
+				svc.soundboard.flags.menu.set(audio::Menu::select);
 			}
 		}
 		if (event.key.code == sf::Keyboard::Right && selection == MenuSelection::load_game) {
 			svc.state_controller.submenu = menu_type::file_select;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
-			svc::soundboardLocator.get().flags.menu.set(audio::Menu::forward_switch);
+			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
 	}
 }
 
 void MainMenu::tick_update(ServiceProvider& svc) {
-	svc::musicPlayerLocator.get().update();
-	left_dot.update();
-	right_dot.update();
+	svc::musicPlayerLocator.get().update(svc);
+	left_dot.update(svc);
+	right_dot.update(svc);
 	switch (selection) {
 	case MenuSelection::new_game:
 		dot_pad.y = 5.f;
@@ -161,8 +161,8 @@ void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		}
 	}
 
-	left_dot.render(win, {0, 0});
-	right_dot.render(win, {0, 0});
+	left_dot.render(svc, win, {0, 0});
+	right_dot.render(svc, win, {0, 0});
 }
 
 } // namespace automa

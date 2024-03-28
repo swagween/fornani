@@ -2,6 +2,7 @@
 #include "Portal.hpp"
 #include "../../setup/MapLookups.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../player/Player.hpp"
 #include "../../service/ServiceProvider.hpp"
 
 namespace entity {
@@ -28,28 +29,28 @@ void Portal::render(sf::RenderWindow& win, Vec campos) {
 	*/
 }
 
-void Portal::handle_activation(automa::ServiceProvider& svc, int room_id, bool& fade_out, bool& done) {
-
-	if (bounding_box.SAT(svc::playerLocator.get().collider.bounding_box)) {
+void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& player, int room_id, bool& fade_out, bool& done) {
+	update();
+	if (bounding_box.overlaps(player.collider.bounding_box)) {
 		if (activate_on_contact && ready) {
 			activated = true;
-			svc::playerLocator.get().controller.prevent_movement();
-			svc::playerLocator.get().controller.autonomous_walk();
-			svc::playerLocator.get().walk();
-		} else if (svc::playerLocator.get().controller.inspecting()) {
+			player.controller.prevent_movement();
+			player.controller.autonomous_walk();
+			player.walk();
+		} else if (player.controller.inspecting()) {
 			activated = true;
-			svc::playerLocator.get().controller.prevent_movement();
+			player.controller.prevent_movement();
 		}
 		// player just entered room via border portal
 		if (!ready && activate_on_contact) {
-			svc::playerLocator.get().controller.direction.lr = svc::playerLocator.get().entered_from();
-			svc::playerLocator.get().controller.prevent_movement();
-			svc::playerLocator.get().controller.autonomous_walk();
-			svc::playerLocator.get().walk();
+			player.controller.direction.lr = player.entered_from();
+			player.controller.prevent_movement();
+			player.controller.autonomous_walk();
+			player.walk();
 		}
 	} else {
 		if (!ready && activate_on_contact) {
-			svc::playerLocator.get().controller.stop_walking_autonomously();
+			player.controller.stop_walking_autonomously();
 		}
 		ready = true;
 	}

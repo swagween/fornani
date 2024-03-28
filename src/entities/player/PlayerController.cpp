@@ -93,19 +93,19 @@ void PlayerController::update() {
 
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
 
-	bool can_launch = !restricted() && flags.test(MovementState::grounded) && !jump.states.test(player::JumpState::jumping);
-	can_launch ? jump.states.set(player::JumpState::can_jump) : jump.states.reset(player::JumpState::can_jump);
+	bool can_launch = !restricted() && flags.test(MovementState::grounded) && !jump.launched();
+	can_launch ? jump.states.set(JumpState::can_jump) : jump.states.reset(JumpState::can_jump);
 
 	if (jump_started) { jump.request_jump(); }
 	if (jump_held) {
-		jump.states.set(player::JumpState::jump_held);
+		jump.states.set(JumpState::jump_held);
 	} else {
-		jump.states.reset(player::JumpState::jump_held);
+		jump.states.reset(JumpState::jump_held);
 	}
-	if (jump_released) { jump.triggers.set(player::JumpTrigger::is_released); }
+	if (jump_released) { jump.triggers.set(JumpTrigger::is_released); }
 
 	if (jump.requested() && flags.test(MovementState::grounded)) {
-		jump.triggers.set(player::JumpTrigger::jumpsquat);
+		jump.triggers.set(JumpTrigger::jumpsquat);
 		jump.prevent();
 	}
 
@@ -133,6 +133,8 @@ void PlayerController::restrict() { flags.set(MovementState::restricted); }
 
 void PlayerController::unrestrict() { flags.reset(MovementState::restricted); }
 
+void PlayerController::uninspect() { key_map[ControllerInput::inspect] = 0.f; }
+
 void PlayerController::stop_dashing() { key_map[ControllerInput::dash] = 0.f; }
 
 
@@ -159,8 +161,6 @@ void PlayerController::stop_walking_autonomously() { flags.reset(MovementState::
 
 void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = flag ? 1.f : 0.f; }
 
-float PlayerController::arms_switch() { return key_map[ControllerInput::arms_switch]; }
-
 void PlayerController::prevent_movement() {
 	key_map[ControllerInput::move_x] = 0.f;
 	key_map[ControllerInput::move_y] = 0.f;
@@ -184,66 +184,5 @@ std::optional<float> PlayerController::get_controller_state(ControllerInput key)
 	}
 }
 
-bool PlayerController::nothing_pressed() { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::jump] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
-
-bool PlayerController::moving() { return key_map[ControllerInput::move_x] != 0.f; }
-
-bool PlayerController::moving_left() { return key_map[ControllerInput::move_x] < 0.f; }
-
-bool PlayerController::moving_right() { return key_map[ControllerInput::move_x] > 0.f; }
-
-bool PlayerController::facing_left() const { return direction.lr == dir::LR::left; }
-
-bool PlayerController::facing_right() const { return direction.lr == dir::LR::right; }
-
-bool PlayerController::restricted() const { return flags.test(MovementState::restricted); }
-
-bool PlayerController::grounded() const { return flags.test(MovementState::grounded); }
-
-bool PlayerController::walking_autonomously() const { return flags.test(MovementState::walking_autonomously); }
-
-float PlayerController::vertical_movement() { return key_map[ControllerInput::move_y]; }
-
-float PlayerController::horizontal_movement() { return key_map[ControllerInput::move_x]; }
-
-bool PlayerController::dash_requested() const { return dash_request > -1; }
-
-bool PlayerController::shot() { return key_map[ControllerInput::shoot] == 1.f; }
-
-bool PlayerController::released_hook() {
-	bool ret = hook_flags.test(Hook::hook_released);
-	hook_flags.reset(Hook::hook_released);
-	return ret;
-}
-
-bool PlayerController::hook_held() const { return hook_flags.test(Hook::hook_held); }
-
-bool PlayerController::inspecting() { return key_map[ControllerInput::inspect] == 1.f; }
-
-bool PlayerController::dashing() { return key_map[ControllerInput::dash] != 0.f; }
-
-bool PlayerController::can_dash() { return dash_count == 0; }
-
-bool PlayerController::transponder_skip() const { return transponder_flags.test(TransponderInput::skip); }
-
-bool PlayerController::transponder_skip_released() const { return transponder_flags.test(TransponderInput::skip_released); }
-
-bool PlayerController::transponder_next() const { return transponder_flags.test(TransponderInput::next); }
-
-bool PlayerController::transponder_exit() const { return transponder_flags.test(TransponderInput::skip); }
-
-bool PlayerController::transponder_up() const { return transponder_flags.test(TransponderInput::up); }
-
-bool PlayerController::transponder_down() const { return transponder_flags.test(TransponderInput::down); }
-
-bool PlayerController::transponder_select() const { return transponder_flags.test(TransponderInput::select); }
-
-int PlayerController::get_dash_request() const { return dash_request; }
-
-int PlayerController::get_dash_count() const { return dash_count; }
-
-float PlayerController::dash_value() { return key_map[ControllerInput::dash]; }
-
-player::Jump& PlayerController::get_jump() { return jump; }
 
 } // namespace controllers

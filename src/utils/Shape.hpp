@@ -20,7 +20,6 @@ class Shape {
 	using Vec = sf::Vector2<float>;
 
 	Shape();
-	~Shape(){};
 	Shape(std::vector<Vec> verts, std::vector<Vec> edg);
 	Shape(Vec dim);
 

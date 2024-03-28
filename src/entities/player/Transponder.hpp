@@ -6,6 +6,10 @@
 #include <unordered_map>
 #include "../../utils/BitFlags.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace gui {
 class Console;
 }
@@ -20,7 +24,7 @@ enum class TransponderActions { skip_ahead, next, exit, down, up, select, skip_r
 
 class Transponder {
   public:
-	void update(gui::Console& console);
+	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void end();
 
 	void skip_ahead();

@@ -1,71 +1,49 @@
-
 #include "Emitter.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace vfx {
 
-Emitter::Emitter(ElementBehavior behavior, EmitterStats stats, sf::Color bright_color, sf::Color dark_color) : behavior(behavior), stats(stats), bright(bright_color), dark(dark_color) {
-	int var = svc::randomLocator.get().random_range(-stats.lifespan_variance, stats.lifespan_variance);
-	stats.lifespan += var;
+Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, std::string_view type, sf::Color color, dir::Direction direction)
+	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
+	auto const& in_data = svc.data.particle[type];
+	variables.load = in_data["load"].as<int>();
+	variables.rate = in_data["rate"].as<float>();
+	
+	cooldown.start(variables.load);
+	drawbox.setFillColor(sf::Color::Transparent);
+	drawbox.setOutlineThickness(-1);
+	drawbox.setOutlineColor(sf::Color::Red);
+	drawbox.setSize(dimensions);
 }
-Emitter::~Emitter() { particles.clear(); }
 
-void Emitter::update() { // this will tick every element and the generator itself
-	physics.update();
-	if (stats.lifespan > 0) { // make a particle at a certain rate
-		for (int i = 0; i < behavior.rate; ++i) {
-			particles.push_back(Particle(physics, behavior.expulsion_force, behavior.expulsion_variance, behavior.cone, {behavior.x_friction, behavior.y_friction}, stats.part_size, direction));
-			int var = svc::randomLocator.get().random_range(-stats.particle_lifespan_variance, stats.particle_lifespan_variance);
-			particles.back().lifespan = stats.particle_lifespan + var;
-		}
+void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
+	cooldown.update();
+	if (cooldown.is_complete()) { deactivate(); }
+	if (active && (svc.random.percent_chance(variables.rate) || particles.empty())) {
+		auto x = svc.random.random_range_float(0.f, dimensions.x);
+		auto y = svc.random.random_range_float(0.f, dimensions.y);
+		sf::Vector2<float> point{position.x + x, position.y + y};
+		particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
+	
 	}
-
-	for (auto& particle : particles) { particle.update(behavior.expulsion_force, behavior.grav, behavior.grav_variance); }
-
-	std::erase_if(particles, [](auto const& p) { return p.lifespan < 0; });
-
-	--stats.lifespan;
-}
-
-void Emitter::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-		for (auto& particle : particles) {
-			particle.oscillate_between_colors(dark, bright);
-			particle.render(win, cam);
-		}
+	for (auto& particle : particles) {
+		particle.update(svc, map);
+		std::erase_if(particles, [](auto const& p) { return p.done(); });
 	}
 }
 
-bool Emitter::empty() const { return particles.empty(); }
-
-void Emitter::set_position(float x, float y) {
-	physics.position.x = x;
-	physics.position.y = y;
-	for (auto& particle : particles) { particle.physics.position = {x, y}; }
-}
-void Emitter::set_velocity(float x, float y) {
-	physics.velocity.x = x;
-	physics.velocity.y = y;
+void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (svc.greyblock_mode()) {
+		drawbox.setPosition(position - cam);
+		win.draw(drawbox);
+	}
+	for (auto& particle : particles) { particle.render(svc, win, cam); }
 }
 
-void Emitter::apply_force(sf::Vector2<float> force) {
-	physics.apply_force(force);
-	for (auto& particle : particles) { particle.physics.apply_force(force); }
-}
-void Emitter::apply_force_at_angle(float force, float angle) {
-	physics.apply_force_at_angle(force, angle);
-	for (auto& particle : particles) { particle.physics.apply_force_at_angle(force, angle); }
-}
+void Emitter::set_position(sf::Vector2<float> pos) { position = pos; }
 
-components::PhysicsComponent& Emitter::get_physics() { return physics; }
-ElementBehavior& Emitter::get_behavior() { return behavior; }
+void Emitter::set_dimensions(sf::Vector2<float> dim) { dimensions = dim; }
 
-void Emitter::set_rate(float r) { behavior.rate = r; }
-void Emitter::set_expulsion_force(float f) { behavior.expulsion_force = f; }
-void Emitter::set_friction(float f) { physics.set_constant_friction({f, f}); }
-void Emitter::set_lifespan(int l) { stats.lifespan = l; }
-void Emitter::set_direction(dir::Direction d) { direction = d; }
-
-std::vector<Particle>& const Emitter::get_particles() { return particles; }
+void Emitter::deactivate() { active = false; }
 
 } // namespace vfx

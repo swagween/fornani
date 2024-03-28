@@ -4,11 +4,15 @@
 #include <string>
 #include "../../setup/EnumLookups.hpp"
 #include "../../utils/Shape.hpp"
-#include "../behavior/Animation.hpp"
-#include "../../particle/Emitter.hpp"
+#include "../animation/Animation.hpp"
+#include "../../particle/Sparkler.hpp"
 
 namespace automa {
-	struct ServiceProvider;
+struct ServiceProvider;
+}
+
+namespace player {
+class Player;
 }
 
 namespace gui {
@@ -25,12 +29,13 @@ class SavePoint {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
-	SavePoint();
+	SavePoint() = default;
+	SavePoint(automa::ServiceProvider& svc);
 
-	void update(automa::ServiceProvider& svc, gui::Console& console);
-	void render(sf::RenderWindow& win, Vec campos);
+	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 
-	void save(); // talk to SaveDataManager to write current progress to save.json
+	void save(automa::ServiceProvider& svc, player::Player& player); // talk to SaveDataManager to write current progress to save.json
 
 	Vec dimensions{32, 32};
 	Vec sprite_dimensions{64.f, 64.f};
@@ -39,10 +44,9 @@ class SavePoint {
 	shape::Shape bounding_box{};
 	shape::Shape proximity_box{};
 	sf::Sprite sprite{};
+	sf::RectangleShape drawbox{}; // for debug
 	anim::Animation animation{};
-	vfx::Emitter sparkles{};
-	vfx::EmitterStats sparkle_stats{};
-	vfx::ElementBehavior sparkle_behavior{};
+	vfx::Sparkler sparkler{};
 	bool activated{};
 	bool can_activate{true};
 

@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <optional>
 #include "../../utils/StateFunction.hpp"
-#include "../behavior/Animation.hpp"
-#define BIND(f) std::bind(&PlayerAnimation::f, this)
+#include "../animation/Animation.hpp"
+#define PA_BIND(f) std::bind(&PlayerAnimation::f, this)
 
 namespace player {
 

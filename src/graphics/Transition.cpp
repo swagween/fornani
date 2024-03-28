@@ -1,7 +1,14 @@
 
 #include "Transition.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace flfx {
+
+Transition::Transition(automa::ServiceProvider& svc, int d) : duration(d) {
+	box.setPosition(0, 0);
+	box.setSize(sf::Vector2<float>(svc.constants.screen_dimensions.x, svc.constants.screen_dimensions.y));
+	current_frame = 0;
+}
 
 void Transition::update() {
 	if (fade_out) {

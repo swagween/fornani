@@ -1,6 +1,6 @@
-build/
-out/
+build/*
+out/*
 .DS_Store
 LICENSE
 .vs/
-fornani/
+fornani/*

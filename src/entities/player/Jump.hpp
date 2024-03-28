@@ -7,7 +7,7 @@
 namespace player {
 
 constexpr static int request_time{16};
-constexpr static int cooldown_time{16};
+constexpr static int cooldown_time{40};
 
 enum class JumpTrigger { just_jumped, jump_launched, jumpsquat, is_released };
 
@@ -28,6 +28,7 @@ class Jump {
 
 	void request_jump();
 	bool requested() const;
+	bool launched() const;
 	bool released() const;
 	bool began() const;
 	bool can_jump() const;
@@ -40,11 +41,12 @@ class Jump {
 	void stop_jumpsquatting();
 	void reset_jumpsquat_trigger();
 	void reset_just_jumped();
+	void reset_jumping();
 	void start();
 	void reset();
-	void execute();
 	void prevent();
 	int get_request() const;
+	int get_cooldown() const;
 
 	util::BitFlags<JumpTrigger> triggers{};
 	util::BitFlags<JumpState> states{};

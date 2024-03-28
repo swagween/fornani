@@ -1,7 +1,7 @@
 
 #include "Collider.hpp"
 #include "../graphics/FLColor.hpp"
-#include "../setup/ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "../level/Map.hpp"
 
 namespace shape {
@@ -19,6 +19,7 @@ Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimen
 	bounding_box.dimensions = dim;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
 	hurtbox.dimensions = sf::Vector2<float>(dim.x / 2, dim.y / 2);
+	sync_components();
 }
 
 void Collider::sync_components() {
@@ -99,10 +100,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			if (is_ground_ramp) {
 				if (actual_mtv.y < 0.f) { physics.position.y += actual_mtv.y; }
 				// still zero this because of gravity
-				if (!movement_flags.test(Movement::jumping)) {
-					physics.velocity.y = 0.0f;
-					physics.acceleration.y = 0.0f;
-				}
+				if (!movement_flags.test(Movement::jumping)) { physics.zero_y(); }
 			}
 			if (is_ceiling_ramp) { correct_x_y(actual_mtv); }
 			// cancel dash
@@ -148,6 +146,7 @@ void Collider::detect_map_collision(world::Map& map) {
 			continue;
 		} else {
 			// check vicinity so we can escape early
+			if (vicinity.vertices.empty()) { return; }
 			if (!vicinity.overlaps(cell.bounding_box)) {
 				continue;
 			} else {
@@ -162,37 +161,32 @@ void Collider::correct_x(sf::Vector2<float> mtv) {
 	auto xdist = predictive_horizontal.position.x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
 	physics.position.x += correction;
-	physics.acceleration.x = 0.0f;
-	physics.velocity.x = 0.0f;
+	physics.zero_x();
 }
 
 void Collider::correct_y(sf::Vector2<float> mtv) {
 	auto ydist = predictive_vertical.position.y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
 	physics.position.y += correction;
-	physics.acceleration.y = 0.0f;
-	physics.velocity.y = 0.0f;
+	physics.zero_y();
 }
 
 void Collider::correct_x_y(sf::Vector2<float> mtv) {
 	auto xdist = predictive_combined.position.x - physics.position.x;
 	auto correction = xdist + mtv.x;
 	physics.position.x += correction;
-	physics.acceleration.x = 0.0f;
-	physics.velocity.x = 0.0f;
+	physics.zero_x();
 	auto ydist = predictive_combined.position.y - physics.position.y;
 	correction = ydist + mtv.y;
 	physics.position.y += correction;
-	physics.acceleration.y = 0.0f;
-	physics.velocity.y = 0.0f;
+	physics.zero_y();
 }
 
 void Collider::correct_corner(sf::Vector2<float> mtv) {
 	auto ydist = predictive_vertical.position.y - physics.position.y;
 	auto correction = ydist + mtv.y;
 	physics.position.y += correction;
-	physics.acceleration.y = 0.0f;
-	physics.velocity.y = 0.0f;
+	physics.zero_y();
 }
 
 void Collider::handle_platform_collision(Shape const& cell) {}
@@ -242,8 +236,8 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	sync_components();
 }
 
-void Collider::update() {
-	physics.update();
+void Collider::update(automa::ServiceProvider& svc) {
+	physics.update(svc);
 	sync_components();
 	flags.reset(State::just_collided);
 	physics.gravity = flags.test(State::grounded) ? 0.0f : stats.GRAV;
@@ -252,18 +246,11 @@ void Collider::update() {
 
 void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
-	// draw bounding box
-	box.setSize(dimensions);
-	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
-	box.setFillColor(sf::Color{200, 150, 255, 20});
-	box.setOutlineColor(sf::Color{255, 255, 255, 255});
-	box.setOutlineThickness(0);
-	win.draw(box);
 
 	// draw predictive vertical
 	box.setSize(predictive_vertical.dimensions);
 	box.setPosition(predictive_vertical.position.x - cam.x, predictive_vertical.position.y - cam.y);
-	box.setOutlineColor(sf::Color{255, 0, 0, 160});
+	box.setOutlineColor(sf::Color{255, 0, 0, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -271,7 +258,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.dimensions);
 	box.setPosition(predictive_horizontal.position.x - cam.x, predictive_horizontal.position.y - cam.y);
-	box.setOutlineColor(sf::Color{0, 0, 255, 160});
+	box.setOutlineColor(sf::Color{0, 0, 255, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -279,9 +266,17 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive combined
 	box.setSize(predictive_combined.dimensions);
 	box.setPosition(predictive_combined.position.x - cam.x, predictive_combined.position.y - cam.y);
-	box.setOutlineColor(sf::Color{255, 255, 255, 80});
+	box.setOutlineColor(sf::Color{255, 255, 255, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
+	win.draw(box);
+
+	// draw bounding box
+	box.setSize(dimensions);
+	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
+	box.setFillColor(sf::Color{200, 150, 255, 80});
+	box.setOutlineColor(sf::Color{255, 255, 255, 255});
+	box.setOutlineThickness(-1);
 	win.draw(box);
 
 	// draw jump box
@@ -302,7 +297,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});
 	box.setPosition(vicinity.position.x - cam.x, vicinity.position.y - cam.y);
 	box.setFillColor(sf::Color::Transparent);
-	box.setOutlineColor(flcolor::dark_orange);
+	box.setOutlineColor(sf::Color{120, 60, 80, 80});
 	box.setOutlineThickness(-1);
 	win.draw(box);
 

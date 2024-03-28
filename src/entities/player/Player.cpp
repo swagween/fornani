@@ -1,18 +1,23 @@
 
 #include "Player.hpp"
 #include "../item/Drop.hpp"
-#include "../../setup/LookupTables.hpp"
-#include "../../setup/ServiceLocator.hpp"
+#include "../../gui/Console.hpp"
 #include "../../service/ServiceProvider.hpp"
 
 namespace player {
 
 Player::Player() {}
 
-void Player::init() {
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc) {}
 
-	svc::dataLocator.get().load_player_params();
-	arsenal.init();
+void Player::init(automa::ServiceProvider& svc) {
+
+	m_services = &svc;
+
+	svc.data.load_player_params(*this);
+	arsenal = arms::Arsenal(svc);
+
+	health.invincibility_time = 400;
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
@@ -21,11 +26,11 @@ void Player::init() {
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
-	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::dark_orange, antenna_force));
-	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::dark_orange, antenna_force, {2.f, 4.f}));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.dark_orange, antenna_force));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.dark_orange, antenna_force, {2.f, 4.f}));
 
-	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::bright_orange, antenna_force));
-	antennae.push_back(vfx::Gravitator(collider.physics.position, flcolor::bright_orange, antenna_force, {2.f, 4.f}));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force, {2.f, 4.f}));
 
 	float back_fric{0.84f};
 	float front_fric{0.87f};
@@ -43,10 +48,10 @@ void Player::init() {
 	sprite_dimensions = {48.f, 48.f};
 
 	// sprites
-	sprite.setTexture(svc::assetLocator.get().t_nani);
+	sprite.setTexture(svc.assets.t_nani);
 
-	texture_updater.load_base_texture(svc::assetLocator.get().t_nani);
-	texture_updater.load_pixel_map(svc::assetLocator.get().t_palette_nani);
+	texture_updater.load_base_texture(svc.assets.t_nani);
+	texture_updater.load_pixel_map(svc.assets.t_palette_nani);
 }
 
 void Player::update(gui::Console& console) {
@@ -66,11 +71,11 @@ void Player::update(gui::Console& console) {
 	if (grounded()) { controller.reset_dash_count(); }
 
 	// do this elsehwere later
-	if (collider.flags.test(shape::State::just_landed)) { svc::soundboardLocator.get().flags.player.set(audio::Player::land); }
+	if (collider.flags.test(shape::State::just_landed)) { m_services->soundboard.flags.player.set(audio::Player::land); }
 	collider.flags.reset(shape::State::just_landed);
 
 	//player-controlled actions
-	arsenal.switch_weapon(controller.arms_switch());
+	arsenal.switch_weapon(*m_services, controller.arms_switch());
 	dash();
 	jump();
 
@@ -86,7 +91,9 @@ void Player::update(gui::Console& console) {
 
 
 	// for parameter tweaking, remove later
-	collider.update();
+	collider.update(*m_services);
+
+	health.update();
 
 	update_invincibility();
 
@@ -106,15 +113,15 @@ void Player::update(gui::Console& console) {
 
 }
 
-void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 	sf::Vector2<float> player_pos = apparent_position - campos;
 	calculate_sprite_offset();
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
-	if (svc::tickerLocator.get().every_x_frames(8) && animation.state.test(AnimState::dash)) { sprite_history.update(sprite); }
-	if (svc::tickerLocator.get().every_x_frames(8) && !animation.state.test(AnimState::dash)) { sprite_history.flush(); }
+	if (svc.ticker.every_x_frames(8) && animation.state.test(AnimState::dash)) { sprite_history.update(sprite); }
+	if (svc.ticker.every_x_frames(8) && !animation.state.test(AnimState::dash)) { sprite_history.flush(); }
 	drag_sprite(win, campos);
 
 	// get UV coords
@@ -136,20 +143,20 @@ void Player::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 		if (grounded()) { animation.state.set(AnimState::turn); }
 	}
 	if (flags.state.test(State::alive)) {
-		if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		if (svc.greyblock_mode()) {
 			collider.render(win, campos);
 		} else {
-			antennae[1].render(win, campos);
-			antennae[3].render(win, campos);
+			antennae[1].render(svc, win, campos);
+			antennae[3].render(svc, win, campos);
 			win.draw(sprite);
-			antennae[0].render(win, campos);
-			antennae[2].render(win, campos);
+			antennae[0].render(svc, win, campos);
+			antennae[2].render(svc, win, campos);
 		}
 	}
 
 	if (!arsenal.loadout.empty()) {
-		equipped_weapon().sp_gun.setTexture(lookup::weapon_texture.at(equipped_weapon().type));
-		equipped_weapon().render(win, campos);
+		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
+		equipped_weapon().render(svc, win, campos);
 	}
 
 	// texture updater debug
@@ -164,7 +171,7 @@ void Player::update_animation() {
 		if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
 		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
 			if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
-			if (controller.nothing_pressed() && !controller.dashing()) { animation.state.set(AnimState::idle); }
+			if (controller.nothing_pressed() && !controller.dashing() && !animation.state.test(AnimState::inspect)) { animation.state.set(AnimState::idle); }
 			if (controller.moving() && !controller.dashing()) { animation.state.set(AnimState::run); }
 			if (abs(collider.physics.velocity.x) > animation.stop_threshold) { animation.state.test(AnimState::stop); }
 		}
@@ -186,7 +193,7 @@ void Player::update_animation() {
 }
 
 void Player::update_sprite() {
-	svc::playerLocator.get().sprite.setTexture(texture_updater.get_dynamic_texture());
+	sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 
 void Player::update_transponder(gui::Console& console) {
@@ -199,13 +206,13 @@ void Player::update_transponder(gui::Console& console) {
 		if (controller.transponder_up()) { transponder.go_up(); }
 		if (controller.transponder_down()) { transponder.go_down(); }
 		if (controller.transponder_select()) { transponder.select(); }
-		transponder.update(console);
+		transponder.update(*m_services, console);
 	}
 	transponder.end();
 }
 
 void Player::flash_sprite() {
-	if ((counters.invincibility / 10) % 2 == 0) {
+	if ((health.invincibility.get_cooldown() / 30) % 2 == 0) {
 		sprite.setColor(flcolor::red);
 	} else {
 		sprite.setColor(flcolor::blue);
@@ -218,19 +225,18 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	for (auto& sp : sprite_history.sprites) {
 		sp.setColor(sf::Color(255, 255, 255, a));
 		sp.setPosition(sprite_history.positions.at(ctr) - campos);
-		if (!svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
+		if (!m_services->greyblock_mode()) {
 			win.draw(sp);
 		}
 		a += 20;
 		++ctr;
 	}
-	sprite.setColor(sf::Color::White);
 }
 
 void Player::calculate_sprite_offset() {
 	sprite_offset.y = 0.f;
 	if (collider.flags.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
-	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y};
+	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y + 1};
 }
 
 void Player::jump() {
@@ -250,12 +256,13 @@ void Player::jump() {
 		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
 		animation.state.set(AnimState::rise);
-		svc::soundboardLocator.get().flags.player.set(audio::Player::jump);
+		m_services->soundboard.flags.player.set(audio::Player::jump);
 		collider.movement_flags.set(shape::Movement::jumping);
 	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.velocity.y < 0) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 		controller.get_jump().reset();
 	}
+	if (collider.flags.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
 }
 
 void Player::dash() {
@@ -277,7 +284,7 @@ void Player::set_position(sf::Vector2<float> new_pos) {
 	collider.sync_components();
 	int ctr{0};
 	for (auto& a : antennae) {
-		a.update();
+		a.update(*m_services);
 		a.collider.physics.position = collider.physics.position + antenna_offset;
 		antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.0f;
 		++ctr;
@@ -298,16 +305,21 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon() {
+	if (arsenal.armory.empty() || arsenal.loadout.empty()) { return; }
 	// clamp extant projectile instances to the weapon's rate
 	assert(arsenal.extant_projectile_instances.size() >= arsenal.armory.size());
 	for (std::size_t index = 0; index < arsenal.extant_projectile_instances.size(); ++index) {
 		auto& count = arsenal.extant_projectile_instances.at(index);
-		count = std::clamp(count, 0, arsenal.armory.at(index).attributes.rate);
+		if (arsenal.armory.at(index)->attributes.rate < 0) { continue; }
+		count = std::clamp(count, 0, arsenal.armory.at(index)->attributes.rate);
 	}
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.loadout) {
-		weapon.active_projectiles = extant_instances(weapon.get_id());
-		weapon.update();
+		weapon->active_projectiles = extant_instances(weapon->get_id());
+		weapon->firing_direction = controller.direction;
+		weapon->update(controller.direction);
+		sf::Vector2<float> p_pos = {apparent_position.x + weapon->gun_offset.x, apparent_position.y + sprite_offset.y + weapon->gun_offset.y - collider.dimensions.y / 2.f};
+		weapon->set_position(p_pos);
 	}
 	if (controller.facing_right()) {
 		hand_position = {28, 36};
@@ -320,29 +332,28 @@ void Player::walk() {
 	if (controller.moving_right() && !collider.has_right_collision()) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (controller.moving_left() && !collider.has_left_collision()) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
-		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { svc::soundboardLocator.get().flags.player.set(audio::Player::step); }
+		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { m_services->soundboard.flags.player.set(audio::Player::step); }
 	}
 }
 
 void Player::hurt(int amount = 1) {
-
-	if (!is_invincible()) {
-		player_stats.health -= amount;
+	if (!health.invincible()) {
+		health.inflict(amount);
+		collider.physics.velocity.y = 0.0f;
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
-		make_invincible();
-		svc::soundboardLocator.get().flags.player.set(audio::Player::hurt);
+		m_services->soundboard.flags.player.set(audio::Player::hurt);
 		just_hurt = true;
 	}
 
-	if (player_stats.health <= 0) { kill(); }
+	if (health.is_dead()) { kill(); }
 }
 
 void Player::update_antennae() {
 	int ctr{0};
 	for (auto& a : antennae) {
 		a.set_target_position(collider.physics.position + antenna_offset);
-		a.update();
+		a.update(*m_services);
 		a.collider.sync_components();
 		if (controller.facing_right()) {
 			antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;
@@ -358,36 +369,29 @@ bool Player::grounded() const { return collider.flags.test(shape::State::grounde
 bool Player::fire_weapon() {
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		++extant_instances(equipped_weapon().get_id());
-		svc::soundboardLocator.get().flags.weapon.set(lookup::gun_sound.at(equipped_weapon().type));
+		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().label));
 		return true;
 	}
 	return false;
 }
 
-void Player::make_invincible() { counters.invincibility = INVINCIBILITY_TIME; }
-
 void Player::update_invincibility() {
-
-	if (is_invincible()) {
+	if (health.invincible()) {
 		flash_sprite();
 	} else {
 		sprite.setColor(sf::Color::White);
 	}
-	--counters.invincibility;
-	if (counters.invincibility < 0) { counters.invincibility = 0; }
 }
-
-bool Player::is_invincible() const { return counters.invincibility > 0; }
 
 void Player::kill() { flags.state.reset(State::alive); }
 
 void Player::start_over() {
-	player_stats.health = player_stats.max_health;
+	health.reset();
 	flags.state.set(State::alive);
 }
 
 void Player::give_drop(item::DropType type, int value) {
-	if (type == item::DropType::heart) { player_stats.health += value; }
+	if (type == item::DropType::heart) { health.heal(value); }
 	if (type == item::DropType::orb) { player_stats.orbs += value; }
 }
 

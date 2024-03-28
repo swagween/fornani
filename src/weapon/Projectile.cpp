@@ -1,7 +1,8 @@
 
 #include "Projectile.hpp"
-#include "../setup/LookupTables.hpp"
 #include "../setup/ServiceLocator.hpp"
+#include "../entities/player/Player.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace arms {
 
@@ -11,9 +12,9 @@ Projectile::Projectile() {
 	seed();
 };
 
-Projectile::Projectile(int id) {
+Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id) {
 
-	auto const& in_data = svc::dataLocator.get().weapon["weapons"][id]["projectile"];
+	auto const& in_data = svc.data.weapon["weapons"][id]["projectile"];
 
 	type = index_to_type.at(id);
 
@@ -58,6 +59,7 @@ Projectile::Projectile(int id) {
 	gravitator.collider.physics.maximum_velocity = {stats.gravitator_max_speed, stats.gravitator_max_speed};
 
 	// spring
+	hook = GrapplingHook(svc);
 	hook.spring = vfx::Spring({stats.spring_dampen, stats.spring_constant, stats.spring_rest_length});
 
 	anim::Parameters params = {0, anim.num_frames, anim.framerate, -1};
@@ -69,10 +71,10 @@ Projectile::Projectile(int id) {
 	state.set(ProjectileState::initialized);
 	cooldown.start(40);
 	seed();
-	set_sprite();
+	set_sprite(svc);
 }
 
-void Projectile::update() {
+void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	// animation
 	animation.update();
@@ -80,11 +82,11 @@ void Projectile::update() {
 	cooldown.update();
 
 	if (stats.spring) {
-		hook.update();
+		hook.update(svc, player);
 		if (hook.grapple_flags.test(arms::GrappleState::probing)) {
 			hook.spring.set_anchor(physics.position);
-			hook.spring.set_bob(svc::playerLocator.get().apparent_position);
-			if (!svc::playerLocator.get().controller.hook_held()) {
+			hook.spring.set_bob(player.apparent_position);
+			if (!player.controller.hook_held()) {
 				hook.grapple_flags.set(arms::GrappleState::snaking);
 				hook.grapple_flags.reset(arms::GrappleState::probing);
 			}
@@ -93,35 +95,35 @@ void Projectile::update() {
 		if (hook.grapple_flags.test(arms::GrappleState::snaking)) {
 			physics.position = hook.spring.get_bob();
 			bounding_box.position = physics.position;
-			if (bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+			if (bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 				destroy(true);
 				hook.grapple_flags = {};
 				hook.grapple_triggers = {};
 				hook.spring.reverse_anchor_and_bob();
 				hook.spring.set_rest_length(stats.spring_rest_length);
-				svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::tomahawk_catch);
+				svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
 			} // destroy when player catches it
 		}
 	}
 
 	// tomahawk-specific stuff
 	if (stats.boomerang) {
-		gravitator.set_target_position(svc::playerLocator.get().apparent_position);
-		gravitator.update();
+		gravitator.set_target_position(player.apparent_position);
+		gravitator.update(svc);
 		physics.position = gravitator.collider.physics.position;
-		svc::soundboardLocator.get().flags.weapon.set(lookup::gun_sound.at(type)); // repeat sound
+		svc.soundboard.flags.weapon.set(svc.soundboard.gun_sounds.at(label)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
-		if (gravitator.collider.bounding_box.overlaps(svc::playerLocator.get().collider.predictive_combined) && cooldown.is_complete()) {
+		if (gravitator.collider.bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
-			svc::soundboardLocator.get().flags.weapon.set(audio::Weapon::tomahawk_catch);
+			svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
 	}
 
 	constrain_hitbox_at_barrel();
 	if (state.test(ProjectileState::destruction_initiated)) { constrain_hitbox_at_destruction_point(); }
 	if (state.test(ProjectileState::destruction_initiated) && !stats.constrained) { destroy(true); }
-
-	physics.update_euler();
+	
+	physics.update_euler(svc);
 
 	if (direction.lr == dir::LR::left) {
 		bounding_box.set_position(shape::Shape::Vec{physics.position.x, physics.position.y - bounding_box.dimensions.y / 2});
@@ -141,16 +143,17 @@ void Projectile::update() {
 	} else {
 		if (abs(physics.position.y - fired_point.y) >= stats.range) { destroy(false); }
 	}
+
+	if (state.test(arms::ProjectileState::destroyed)) { --player.extant_instances(id); }
 }
 
-void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 	// this is the right idea but needs to be refactored and generalized
 	if (render_type == RENDER_TYPE::MULTI_SPRITE) {
 		for (auto& sprite : sp_proj) {
 			constrain_sprite_at_barrel(sprite, campos);
 			win.draw(sprite);
-			
 		}
 
 	} else if (render_type == RENDER_TYPE::SINGLE_SPRITE) {
@@ -163,7 +166,7 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 			// unconstrained projectiles have to get sprites set here
 			if (stats.boomerang) { sp_proj.at(0).setPosition(gravitator.collider.physics.position - campos); }
-			if (stats.spring) { hook.render(win, campos); }
+			if (stats.spring) { hook.render(svc, player, win, campos); }
 			if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) {
 				sp_proj.at(0).setPosition(hook.spring.get_bob() - campos);
 			} else if (stats.spring) {
@@ -182,13 +185,11 @@ void Projectile::render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 			}
 			box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
 
-			if (svc::globalBitFlagsLocator.get().test(svc::global_flags::greyblock_state)) {
-				gravitator.render(win, campos);
+			if (svc.greyblock_mode()) {
+				gravitator.render(svc, win, campos);
 				win.draw(box);
-				
 			} else {
 				win.draw(sp_proj.at(0));
-				
 			}
 		}
 	}
@@ -229,14 +230,11 @@ void Projectile::seed() {
 	}
 }
 
-void Projectile::set_sprite() {
-
+void Projectile::set_sprite(automa::ServiceProvider& svc) {
 	for (int i = 0; i < anim.num_sprites; ++i) { sp_proj.push_back(sf::Sprite()); }
-
 	for (auto& sprite : sp_proj) {
 		set_orientation(sprite);
-		// sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int> >(bounding_box.dimensions)));
-		sprite.setTexture(lookup::type_to_texture_ref.at(type));
+		sprite.setTexture(svc.assets.projectile_textures.at(label));
 	}
 }
 
