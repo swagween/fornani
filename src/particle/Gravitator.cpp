@@ -41,6 +41,8 @@ void Gravitator::set_target_position(Vec new_position) {
 	float str = Gravitator_gravity_force / mag * mag;
 	force_x *= str;
 	force_y *= str;
+
+	if (abs(force_x) > 2048.f || abs(force_y) > 2048.f) { return; }
 	collider.physics.apply_force({force_x, force_y});
 }
 

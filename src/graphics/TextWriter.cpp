@@ -212,6 +212,7 @@ void TextWriter::check_for_prompt(Message& msg) {
 		msg.target = (int)msg.data.getString().getData()[index + 1] - '0';
 		msg.prompt = true;
 		msg.data.setString(msg.data.getString().substring(0, index));
+		flags.set(MessageState::response_trigger);
 	}
 }
 

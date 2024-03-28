@@ -13,18 +13,22 @@ float const pad_y{20.f};
 class Portrait {
   public:
 	Portrait() = default;
-	Portrait(automa::ServiceProvider& svc);
+	Portrait(automa::ServiceProvider& svc, bool left = true);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
-	void reset();
+	void reset(automa::ServiceProvider& svc);
+	void bring_in();
+	void send_out();
 
   private:
 	sf::Sprite sprite{};
 	std::string_view label{};
 	int id{};
+	bool is_nani{};
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> start_position{};
+	sf::Vector2<float> end_position{};
 
 	vfx::Gravitator gravitator{};
 };

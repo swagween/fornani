@@ -23,7 +23,7 @@ struct Message {
 	int target{};
 };
 
-enum class MessageState { writing, selection_mode, cannot_skip };
+enum class MessageState { writing, selection_mode, cannot_skip, response_trigger };
 static int const default_writing_speed{8};
 static int const fast_writing_speed{1};
 
@@ -57,6 +57,10 @@ class TextWriter {
 	bool complete() const;
 	bool selection_mode() const;
 	bool can_skip() const;
+
+	[[nodiscard]] auto response_triggered() const -> bool { return flags.test(MessageState::response_trigger); }
+	[[nodiscard]] auto responding() const -> bool { return selection_mode(); }
+	void reset_response() { flags.reset(MessageState::response_trigger); }
 
 	Message& const current_message(); //for debug
 	Message& const current_response(); // for debug

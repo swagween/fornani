@@ -5,7 +5,7 @@
 
 namespace gui {
 
-Console::Console(automa::ServiceProvider& svc) : portrait(svc), writer(svc) {
+Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc) {
 
 	text_suite = svc.text.console;
 
@@ -43,12 +43,21 @@ void Console::update(automa::ServiceProvider& svc) {
 	nine_slice(corner_factor, edge_factor);
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 	writer.update();
-	portrait.update(svc);
+	if (flags.test(ConsoleFlags::active)) {
+		portrait.update(svc);
+		nani_portrait.update(svc);
+		if (writer.response_triggered()) {
+			nani_portrait.reset(*m_services);
+			writer.reset_response();
+		}
+	}
 }
 
-void Console::render(sf::RenderWindow& win) {
+void Console::render(sf::RenderWindow& win, bool portrait_included) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
-	portrait.render(win);
+	if (portrait_included) { portrait.render(win); }
+	portrait_included && writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
+	nani_portrait.render(win);
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
@@ -56,7 +65,8 @@ void Console::set_source(dj::Json& json) { text_suite = json; }
 void Console::load_and_launch(std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
 		writer.load_message(text_suite, key);
-		portrait.reset();
+		portrait.reset(*m_services);
+		nani_portrait.reset(*m_services);
 		flags.set(ConsoleFlags::loaded);
 		begin();
 	}

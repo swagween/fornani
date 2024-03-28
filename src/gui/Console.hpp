@@ -35,7 +35,7 @@ class Console {
 
 	void begin();
 	void update(automa::ServiceProvider& svc);
-	void render(sf::RenderWindow& win);
+	void render(sf::RenderWindow& win, bool portrait_included = true);
 
 	void set_source(dj::Json& json);
 	void load_and_launch(std::string_view key);
@@ -55,6 +55,9 @@ class Console {
 	dj::Json text_suite{};
 
 	gui::Portrait portrait;
+	gui::Portrait nani_portrait;
+
+	automa::ServiceProvider* m_services;
 
 	text::TextWriter writer;
 	Border border{
