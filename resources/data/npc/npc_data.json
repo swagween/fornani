@@ -3,11 +3,12 @@
     "dimensions": [24, 24],
     "sprite_dimensions": [48, 48],
     "spritesheet_dimensions": [4, 4],
-    "sprite_offset": [-12, -23],
+    "sprite_offset": [12, -11],
+    "sprite_origin": [24, 12],
     "animation": {
-      "idle": [0, 8, 40, -1, false],
+      "idle": [0, 8, 30, -1, false],
       "walk": [8, 4, 24, -1, false],
-      "turn": [12, 2, 40, 0, false],
+      "turn": [12, 2, 30, 0, false],
       "inspect": [14, 2, 32, -1, true]
     } 
   },
@@ -16,7 +17,8 @@
     "dimensions": [24, 24],
     "sprite_dimensions": [74, 64],
     "spritesheet_dimensions": [4, 4],
-    "sprite_offset": [-40, -39],
+    "sprite_offset": [12, -27],
+    "sprite_origin": [22, 12],
     "animation": {
       "idle": [0, 8, 40, -1, false],
       "walk": [8, 4, 24, -1, false],

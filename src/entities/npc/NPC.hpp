@@ -4,7 +4,7 @@
 #include <string>
 #include "../../utils/Collider.hpp"
 #include "../Entity.hpp"
-#include "../animation/Animation.hpp"
+#include "NPCAnimation.hpp"
 #include <string_view>
 
 namespace automa {
@@ -37,11 +37,7 @@ class NPC : public Entity {
 	void set_id(int new_id);
 
   private:
-	anim::Animation animation{};
-	anim::Parameters idle{};
-	anim::Parameters walk{};
-	anim::Parameters turn{};
-	anim::Parameters inspect{};
+	NPCAnimation animation{};
 
 	shape::Collider collider{};
 	util::BitFlags<NPCState> state_flags{};

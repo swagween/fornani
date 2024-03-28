@@ -124,7 +124,7 @@ void TextWriter::stylize(sf::Text& msg, bool is_suite) {
 	msg.setCharacterSize(text_size);
 	msg.setFillColor(flcolor::ui_white);
 	msg.setFont(font);
-	msg.setLineSpacing(1.2f);
+	msg.setLineSpacing(1.5f);
 	if (is_suite) {
 		msg.setPosition(position);
 	} else {
