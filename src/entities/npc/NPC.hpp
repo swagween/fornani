@@ -23,11 +23,11 @@ namespace player {
 class Player;
 }
 
-namespace entity {
+namespace npc {
 
 enum class NPCState { engaged };
 
-class NPC : public Entity {
+class NPC : public entity::Entity {
   public:
 	NPC(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player);
@@ -37,8 +37,7 @@ class NPC : public Entity {
 	void set_id(int new_id);
 
   private:
-	NPCAnimation animation{};
-
+	std::unique_ptr<NPCAnimation> animation_machine{};
 	shape::Collider collider{};
 	util::BitFlags<NPCState> state_flags{};
 

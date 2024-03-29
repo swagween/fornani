@@ -103,7 +103,7 @@ class Map {
 	std::vector<entity::Animator> animators{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
-	std::vector<entity::NPC> npcs{};
+	std::vector<npc::NPC> npcs{};
 	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};

@@ -4,9 +4,9 @@
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
 
-namespace entity {
+namespace npc {
 
-NPC::NPC(automa::ServiceProvider& svc, int id) : id(id) {
+NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::make_unique<NPCAnimation>(svc, id)) {
 
 	label = svc.tables.npc_label.at(id);
 	conversation = "_01";
@@ -23,12 +23,6 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id) {
 
 	sprite.setOrigin(in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>());
 
-	animation.NPC_idle.lookup = in_data["animation"]["idle"][0].as<int>();
-	animation.NPC_idle.duration = in_data["animation"]["idle"][1].as<int>();
-	animation.NPC_idle.framerate = in_data["animation"]["idle"][2].as<int>();
-	animation.NPC_idle.num_loops = in_data["animation"]["idle"][3].as<int>();
-	animation.NPC_idle.repeat_last_frame = (bool)in_data["animation"]["idle"][4].as_bool();
-
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
 
@@ -40,18 +34,24 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id) {
 	drawbox.setSize(dimensions);
 
 	sprite.setTexture(svc.assets.npcs.at(label));
-	animation.animation.set_params(animation.NPC_idle);
 	direction.lr = dir::LR::left;
 }
 
 void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
-	animation.update();
-
 	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
 	Entity::update(svc, map);
-	if (ent_state.test(entity::State::flip)) {
-		animation.state.set(NPCAnimState::turn);
-		sprite_flip();
+
+	if (player.collider.vicinity.overlaps(collider.vicinity)) { animation_machine->animation_flags.set(NPCAnimState::walk); }
+
+	animation_machine->update();
+
+	if(id == 0 && svc.ticker.every_x_frames(200)) {
+		std::cout << "\nBRYN States: \n";
+		if (animation_machine->animation_flags.test(NPCAnimState::idle)) { std::cout << "idle\n"; }
+		if (animation_machine->animation_flags.test(NPCAnimState::walk)) { std::cout << "walk\n"; }
+		if (animation_machine->animation_flags.test(NPCAnimState::turn)) { std::cout << "turn\n"; }
+		if (animation_machine->animation_flags.test(NPCAnimState::inspect)) { std::cout << "inspect\n"; }
+		std::cout << "_ \n";
 	}
 
 	collider.update(svc);
@@ -75,8 +75,8 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 	sprite.setPosition(collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y);
-	int u = (int)(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-	int v = (int)(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+	int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+	int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
 	if (svc.greyblock_mode()) {
@@ -95,4 +95,4 @@ void NPC::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.phy
 
 void NPC::set_id(int new_id) { id = new_id; }
 
-} // namespace entity
+} // namespace npc

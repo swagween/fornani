@@ -234,7 +234,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			input.ignore();
 			input.ignore();
 
-			npcs.push_back(entity::NPC(svc, id));
+			npcs.push_back(npc::NPC(svc, id));
 			npcs.back().set_position_from_scaled(pos);
 		}
 		input.close();
