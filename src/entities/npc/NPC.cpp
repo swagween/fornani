@@ -45,14 +45,14 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 	animation_machine->update();
 
-	if(id == 0 && svc.ticker.every_x_frames(200)) {
+	/*if(id == 0 && svc.ticker.every_x_frames(200)) {
 		std::cout << "\nBRYN States: \n";
 		if (animation_machine->animation_flags.test(NPCAnimState::idle)) { std::cout << "idle\n"; }
 		if (animation_machine->animation_flags.test(NPCAnimState::walk)) { std::cout << "walk\n"; }
 		if (animation_machine->animation_flags.test(NPCAnimState::turn)) { std::cout << "turn\n"; }
 		if (animation_machine->animation_flags.test(NPCAnimState::inspect)) { std::cout << "inspect\n"; }
 		std::cout << "_ \n";
-	}
+	}*/
 
 	collider.update(svc);
 	collider.detect_map_collision(map);

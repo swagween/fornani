@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <fstream>
 #include <string>
 #include <vector>
 #include "../entities/enemy/EnemyCatalog.hpp"
@@ -94,6 +93,10 @@ class Map {
 	Vec real_dimensions{};		// pixel dimensions (maybe useless)
 	Vecu16 dimensions{};		// points on the 32x32-unit grid
 	Vecu16 chunk_dimensions{};	// how many chunks (16x16 squares) in the room
+
+	// json for data loading
+	dj::Json metadata{};
+	dj::Json tiles{};
 
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};

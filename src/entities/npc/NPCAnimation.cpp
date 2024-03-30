@@ -62,7 +62,7 @@ fsm::StateFunction NPCAnimation::update_idle() {
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::idle);
-	std::cout << "i";
+	//std::cout << "i";
 	return std::move(state_function);
 }
 
@@ -77,7 +77,7 @@ fsm::StateFunction NPCAnimation::update_turn() {
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::turn);
-	std::cout << "t";
+	//std::cout << "t";
 	return std::move(state_function);
 }
 
@@ -95,7 +95,7 @@ fsm::StateFunction NPCAnimation::update_walk() {
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::walk);
-	std::cout << "w";
+	//std::cout << "w";
 	return std::move(state_function);
 }
 

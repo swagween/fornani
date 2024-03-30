@@ -28,5 +28,11 @@
       [ "spectrum 02; specimen severely damaged." ]
     ],
     "responses": [ [] ]
+  },
+  "test_01": {
+    "suite": [
+      [ "key link was successful!" ]
+    ],
+    "responses": [ [] ]
   }
 }

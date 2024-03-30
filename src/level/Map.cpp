@@ -1,12 +1,12 @@
 
 #include "Map.hpp"
 #include <imgui.h>
+#include "../entities/player/Player.hpp"
+#include "../gui/Portrait.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../setup/EnumLookups.hpp"
 #include "../setup/ServiceLocator.hpp"
-#include "../entities/player/Player.hpp"
 #include "../utils/Math.hpp"
-#include "../gui/Portrait.hpp"
 
 namespace world {
 
@@ -14,256 +14,123 @@ Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player)
 
 void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
-	std::string filepath = svc.data.finder.resource_path + room.data() + "/map_data.txt";
 	std::string room_str = svc.data.finder.resource_path + room.data();
 
-	int value{};
-	int counter = 0;
-	std::ifstream input{};
-	input.open(filepath);
-	if (!input.is_open()) {
-		printf("Failed to open file.\n");
-		return;
-	}
+	metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
+	assert(!metadata.is_null());
+	tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
+	assert(!tiles.is_null());
 
-	// dimensions and layers
-	input >> value;
-	room_id = value;
-	input.ignore();
-	input >> value;
-	dimensions.x = value;
-	input.ignore();
-	input >> value;
-	dimensions.y = value;
-	input.ignore();
-	input >> value;
-	chunk_dimensions.x = value;
-	input.ignore();
-	input >> value;
-	chunk_dimensions.y = value;
-	input.ignore();
-	if ((dimensions.x / chunk_dimensions.x != CHUNK_SIZE) || (dimensions.y / chunk_dimensions.y != CHUNK_SIZE)) {
-		printf("File is corrupted: Invalid dimensions.\n");
-		return;
-	}
-	real_dimensions = {(float)dimensions.x * CELL_SIZE, (float)dimensions.y * CELL_SIZE};
-	for (int i = 0; i < NUM_LAYERS; ++i) { layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
-	// style
-	input >> value;
-	input.ignore();
-	if (value >= lookup::get_style.size()) {
-		printf("File is corrupted: Invalid style.\n");
-		return;
-	} else {
-		style_label = svc.data.map_styles["styles"][value]["label"].as_string();
-		style_id = svc.data.map_styles["styles"][value]["id"].as<int>();
+	// get npc data
+	if (!metadata.is_null()) {
+
+		auto const& meta = metadata["meta"];
+		room_id = meta["id"].as<int>();
+		dimensions.x = meta["dimensions"][0].as<int>();
+		dimensions.y = meta["dimensions"][1].as<int>();
+		chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
+		chunk_dimensions.y = meta["chunk_dimensions"][1].as<int>();
+		real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
+		for (int i = 0; i < NUM_LAYERS; ++i) { layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
+
+		auto style_value = meta["style"].as<int>();
+		style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
+		style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 		if (svc.greyblock_mode()) { style_id = 20; }
-		native_style_id = svc.data.map_styles["styles"][value]["id"].as<int>();
-	}
-	// bg;
-	input >> value;
-	bg = value;
-	background = std::make_unique<bg::Background>(svc, bg);
-	input.close();
+		native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
+		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
 
-	// get map tiles from text files
-	for (auto& layer : layers) {
-		input.open(room_str + "/map_tiles_" + std::to_string(counter) + ".txt");
-		for (auto& cell : layer.grid.cells) {
-			input >> value;
-			lookup::TILE_TYPE typ = lookup::tile_lookup.at(value);
-			cell.value = value;
-			cell.type = typ;
-
-			input.ignore(); // ignore the delimiter
+		for (auto& entry : metadata["npcs"].array_view()) {
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<int>();
+			pos.y = entry["position"][1].as<int>();
+			npcs.push_back(npc::NPC(svc, entry["id"].as<int>()));
+			npcs.back().set_position_from_scaled(pos);
 		}
-		layer.grid.update();
-		// close the current file
-		input.close();
-		++counter;
-	}
 
-	// get portal data
-	input.open(room_str + "/map_portals.txt");
-	if (input.is_open()) {
-		while (!input.eof()) {
-			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
-			entity::Portal p{};
-			input >> p.scaled_dimensions.x;
-			input.ignore();
-			input >> p.scaled_dimensions.y;
-			input.ignore();
-			input >> value;
-			p.activate_on_contact = (bool)value;
-			input.ignore();
-			input >> p.source_map_id;
-			input.ignore();
-			input >> p.destination_map_id;
-			input.ignore();
-			input >> p.scaled_position.x;
-			input.ignore();
-			input >> p.scaled_position.y;
-			input.ignore();
-			p.update();
-			if (p.dimensions.x != 0) { // only push if one was read, otherwise we reached the end of the file
-				portals.push_back(p);
-				portals.back().update();
-			}
-		}
-		input.close();
-	}
-
-	// get inspectable data
-	input.open(room_str + "/map_inspectables.txt");
-	if (input.is_open()) {
-		while (!input.eof()) {
-			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
-			sf::Vector2<uint32_t> dim{};
+		for (auto& entry : metadata["portals"].array_view()) {
 			sf::Vector2<uint32_t> pos{};
-			std::string key{};
-			bool aoc{};
-			input >> dim.x;
-			input.ignore();
-			input >> dim.y;
-			input.ignore();
-			input >> value;
-			aoc = (bool)value;
-			input.ignore();
-			input.ignore();
-			std::getline(input, key, '#');
-			input >> pos.x;
-			input.ignore();
-			input >> pos.y;
-			input.ignore();
-			inspectables.push_back(entity::Inspectable(dim, pos, key));
-			inspectables.back().activate_on_contact = aoc;
+			sf::Vector2<uint32_t> dim{};
+			pos.x = entry["position"][0].as<int>();
+			pos.y = entry["position"][1].as<int>();
+			dim.x = entry["dimensions"][0].as<int>();
+			dim.y = entry["dimensions"][1].as<int>();
+			portals.push_back(entity::Portal(dim, pos));
+			portals.back().source_map_id = entry["source_id"].as<int>();
+			portals.back().destination_map_id = entry["destination_id"].as<int>();
+			portals.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
+			portals.back().update();
 		}
-		input.close();
-	}
 
-	// get animator data
-	input.open(room_str + "/map_animators.txt");
-	if (input.is_open()) {
-		while (!input.eof()) {
-			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
+		auto const& savept = metadata["save_point"];
+		save_point.id = savept["id"].as<int>();
+		save_point.scaled_position.x = savept["position"][0].as<int>();
+		save_point.scaled_position.y = savept["position"][1].as<int>();
+
+		for (auto& entry : metadata["chests"].array_view()) {
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<int>();
+			pos.y = entry["position"][1].as<int>();
+			chests.push_back(entity::Chest(svc));
+			chests.back().set_id(entry["id"].as<int>());
+			chests.back().set_position_from_scaled(pos);
+		}
+
+		for (auto& entry : metadata["animators"].array_view()) {
 			sf::Vector2<int> scaled_dim{};
 			sf::Vector2<int> scaled_pos{};
-			int id_val{};
-			bool automatic_val{};
-			bool foreground_val{};
-			input >> scaled_dim.x;
-			input.ignore();
-			input >> scaled_dim.y;
-			input.ignore();
-			input >> value;
-			id_val = value;
-			input.ignore();
-			input >> value;
-			automatic_val = (bool)value;
-			input.ignore();
-			input >> value;
-			foreground_val = (bool)value;
-			input.ignore();
-			input >> scaled_pos.x;
-			input.ignore();
-			input >> scaled_pos.y;
-			input.ignore();
-			input.ignore();
 
+			scaled_pos.x = entry["position"][0].as<int>();
+			scaled_pos.y = entry["position"][1].as<int>();
+			scaled_dim.x = entry["dimensions"][0].as<int>();
+			scaled_dim.y = entry["dimensions"][1].as<int>();
+			
 			auto lg = scaled_dim.x == 2;
 			auto a = entity::Animator(svc, scaled_pos, lg);
-			a.id = id_val;
-			a.automatic = automatic_val;
-			a.foreground = foreground_val;
+
+			a.id = entry["id"].as<int>();
+			a.automatic = (bool)entry["automatic"].as_bool();
+			a.foreground = (bool)entry["foreground"].as_bool();
 
 			animators.push_back(a);
 		}
-		input.close();
-	}
 
-	// get save point data
-	input.open(room_str + "/map_save_point.txt");
-	if (input.is_open()) {
-		while (!input.eof()) {
-			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
-			input >> save_point.id;
-			input.ignore();
-			input >> save_point.scaled_position.x;
-			input.ignore();
-			input >> save_point.scaled_position.y;
-			input.ignore();
+		for (auto& entry : metadata["inspectables"].array_view()) {
+			sf::Vector2<uint32_t> dim{};
+			sf::Vector2<uint32_t> pos{};
+			auto key = entry["key"].as_string();
+			pos.x = entry["position"][0].as<int>();
+			pos.y = entry["position"][1].as<int>();
+			dim.x = entry["dimensions"][0].as<int>();
+			dim.y = entry["dimensions"][1].as<int>();
+			inspectables.push_back(entity::Inspectable(dim, pos, key));
+			inspectables.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
 		}
-		input.close();
-	}
 
-	// get chest data
-	input.open(room_str + "/map_chests.txt");
-	if (input.is_open()) {
-		while (!input.eof()) {
-			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
-			sf::Vector2<float> pos{};
-			int id{};
-			input >> id;
-			input.ignore();
-			input >> pos.x;
-			input.ignore();
-			input >> pos.y;
-			input.ignore();
-			input.ignore();
-			input.ignore();
-
-			chests.push_back(entity::Chest(svc));
-			chests.back().set_id(id);
-			chests.back().set_position_from_scaled(pos);
-		}
-		input.close();
-	}
-
-	// get npc data
-	input.open(room_str + "/map_npcs.txt");
-	if (input.is_open()) {
-		while (!input.eof()) {
-			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
-			sf::Vector2<float> pos{};
-			int id{};
-			input >> id;
-			input.ignore();
-			input >> pos.x;
-			input.ignore();
-			input >> pos.y;
-			input.ignore();
-			input.ignore();
-
-			npcs.push_back(npc::NPC(svc, id));
-			npcs.back().set_position_from_scaled(pos);
-		}
-		input.close();
-	}
-
-	// get critter data
-	input.open(room_str + "/map_critters.txt");
-	if (input.is_open()) {
-		while (!input.eof()) {
-			if (input.peek() == std::ifstream::traits_type::eof()) { break; }
+		for (auto& entry : metadata["enemies"].array_view()) {
 			int id{};
 			sf::Vector2<int> pos{};
-
-			// extract id and position
-			input >> id;
-			input.ignore();
-			input >> pos.x;
-			input.ignore();
-			input >> pos.y;
-			input.ignore();
-			input.ignore();
-
-			enemy_catalog.push_enemy(svc, id);
-			enemy_catalog.enemies.back()->set_position({(float)(pos.x * asset::TILE_WIDTH), (float)(pos.y * asset::TILE_WIDTH)});
+			pos.x = entry["position"][0].as<int>();
+			pos.y = entry["position"][1].as<int>();
+			enemy_catalog.push_enemy(svc, entry["id"].as<int>());
+			enemy_catalog.enemies.back()->set_position({(float)(pos.x * svc.constants.cell_size), (float)(pos.y * svc.constants.cell_size)});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			
 		}
-		input.close();
 	}
+
+	//tiles
+	int layer_counter{};
+	for (auto& layer : layers) {
+		int cell_counter{};
+		for (auto& cell : tiles["layers"][layer_counter].array_view()) {
+			layer.grid.cells.at(cell_counter).value = cell.as<int>();
+			layer.grid.cells.at(cell_counter).type = lookup::tile_lookup.at(cell.as<int>());
+			++cell_counter;
+		}
+		layer.grid.update();
+		++layer_counter;
+	}
+
 	if (player->animation.state.test(player::AnimState::inspect)) { player->animation.state.set(player::AnimState::idle); }
 
 	transition.fade_in = true;
@@ -293,12 +160,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(64); }
 		for (auto& proj : active_projectiles) {
 
-			
 			// should be, simply:
 			// cell.update(svc, player, proj, *this);
 			// or something similar
 			// breakables could be subclass of tiles that also have an emitter
-
 
 			if (!nearby(cell.bounding_box, proj.bounding_box)) {
 				continue;
@@ -343,8 +208,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 						enemy->hurt();
 						enemy->health.inflict(proj.stats.base_damage);
 						if (enemy->died()) {
-							active_loot.push_back(
-								item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
+							active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
 							svc.soundboard.flags.frdog.set(audio::Frdog::death);
 						}
 					}
@@ -395,7 +259,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 
-	//check for a switch to greyblock mode
+	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		style_id = style_id == 20 ? native_style_id : 20;
 		generate_layer_textures(svc);
@@ -498,9 +362,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 }
 
 void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win) {
-	if (console.flags.test(gui::ConsoleFlags::active)) {
-		console.render(win);
-	}
+	if (console.flags.test(gui::ConsoleFlags::active)) { console.render(win); }
 	console.write(win, false);
 }
 
