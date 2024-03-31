@@ -14,7 +14,7 @@ TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 
 void TextWriter::start() {
 
-	// to be replaced with something prettier later
+	// to be replaced with something prettier later (maybe)
 	indicator.setSize({4.f, 4.f});
 	indicator.setOrigin({2.f, 2.f});
 	indicator.setFillColor(flcolor::ui_white);

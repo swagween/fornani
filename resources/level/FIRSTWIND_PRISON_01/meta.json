@@ -9,11 +9,13 @@
   "npcs": [
     {
       "id": 0,
-      "position": [ 18, 4 ]
+      "position": [ 18, 4 ],
+      "suites": ["1", "2", "3"]
     },
     {
       "id": 3,
-      "position": [ 24, 8 ]
+      "position": [ 24, 8 ],
+      "suites": ["1", "2"]
     }
   ],
   "portals":  [

@@ -18,7 +18,7 @@ float const height_factor{3.0f};
 float const pad{168.f};
 float const text_pad{8.0f};
 
-enum class ConsoleFlags { active, loaded, selection_mode, portrait_included };
+enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger };
 
 struct Border {
 	float left{};
@@ -41,9 +41,13 @@ class Console {
 	void load_and_launch(std::string_view key);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
+	void clean_off_trigger();
 	void include_portrait(int id);
 
 	void nine_slice(int corner_dim, int edge_dim);
+
+	[[nodiscard]] auto is_complete() const -> bool { return !flags.test(ConsoleFlags::active); }
+	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
 
 	sf::Vector2<float> position{};
 	sf::Vector2<float> current_dimensions{};

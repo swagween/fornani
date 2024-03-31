@@ -9,7 +9,6 @@ namespace npc {
 NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::make_unique<NPCAnimation>(svc, id)) {
 
 	label = svc.tables.npc_label.at(id);
-	conversation = "_01";
 
 	auto const& in_data = svc.data.npc[label];
 	dimensions.x = in_data["dimensions"][0].as<float>();
@@ -61,15 +60,24 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 	state_flags.reset(NPCState::engaged);
 	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
-		if (player.controller.inspecting()) {
+		if (player.controller.inspecting() && !conversations.empty()) {
 			state_flags.set(NPCState::engaged);
 			console.set_source(svc.text.npc);
 			std::string name = std::string(label);
-			std::string convo = std::string(conversation);
+			std::string convo = std::string(conversations.front());
 			std::string target = name + convo;
 			console.load_and_launch(target);
 			console.include_portrait(id);
 		}
+	}
+
+	if (console.off()) {
+		disengage();
+		if (conversations.size() > 1) { conversations.pop_front(); }
+		console.clean_off_trigger();
+	}
+	if (state_flags.test(NPCState::disengaged)) {
+		state_flags.reset(NPCState::disengaged);
 	}
 }
 
@@ -94,5 +102,9 @@ void NPC::set_position(sf::Vector2<float> pos) { collider.physics.position = pos
 void NPC::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.physics.position = scaled_pos * 32.f; }
 
 void NPC::set_id(int new_id) { id = new_id; }
+
+void NPC::disengage() { state_flags.set(NPCState::disengaged); }
+
+void NPC::push_conversation(std::string_view convo) { conversations.push_back(convo); }
 
 } // namespace npc

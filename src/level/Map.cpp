@@ -44,6 +44,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			pos.x = entry["position"][0].as<int>();
 			pos.y = entry["position"][1].as<int>();
 			npcs.push_back(npc::NPC(svc, entry["id"].as<int>()));
+			for (auto& convo : entry["suites"].array_view()) { npcs.back().push_conversation(convo.as_string()); }
 			npcs.back().set_position_from_scaled(pos);
 		}
 

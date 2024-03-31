@@ -5,6 +5,7 @@
 #include "../../utils/Collider.hpp"
 #include "../Entity.hpp"
 #include "NPCAnimation.hpp"
+#include <deque>
 #include <string_view>
 
 namespace automa {
@@ -25,7 +26,7 @@ class Player;
 
 namespace npc {
 
-enum class NPCState { engaged };
+enum class NPCState { engaged, disengaged };
 
 class NPC : public entity::Entity {
   public:
@@ -35,6 +36,8 @@ class NPC : public entity::Entity {
 	void set_position(sf::Vector2<float> pos);
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
 	void set_id(int new_id);
+	void disengage();
+	void push_conversation(std::string_view convo);
 
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
@@ -42,7 +45,7 @@ class NPC : public entity::Entity {
 	util::BitFlags<NPCState> state_flags{};
 
 	std::string_view label{};
-	std::string_view conversation{};
+	std::deque<std::string_view> conversations{};
 	int id{};
 };
 
