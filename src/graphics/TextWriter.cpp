@@ -7,6 +7,9 @@ namespace text {
 TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 	font.loadFromFile(svc.text.font);
 	font.setSmooth(false);
+	special_characters.insert({Codes::prompt, '%'});
+	special_characters.insert({Codes::quest, '$'});
+	special_characters.insert({Codes::item, '^'});
 }
 
 void TextWriter::start() {
@@ -28,7 +31,9 @@ void TextWriter::start() {
 	auto num_lines = num_glyphs / gpl;
 	for (int i = 0; i < num_lines; ++i) { wrap(); }
 
-	check_for_prompt(suite.at(iterators.current_suite_set).front());
+	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::item);
+	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::quest);
+	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::prompt);
 
 	activate();
 }
@@ -46,6 +51,9 @@ void TextWriter::update() {
 		++glyph_count;
 	}
 	if (glyph_count >= suite.at(iterators.current_suite_set).front().data.getString().getSize()) {
+		if (out_flags.test(Communication::ship_item)) { communicators.out_item = suite.at(iterators.current_suite_set).front().out_key; }
+		if (out_flags.test(Communication::ship_quest)) { communicators.out_quest = suite.at(iterators.current_suite_set).front().out_key; }
+		out_flags = {};
 		reset();
 		deactivate();
 	}
@@ -113,7 +121,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	working_message = suite.at(iterators.current_suite_set).front().data;
 }
 
-void TextWriter::stylize(sf::Text& msg, bool is_suite) {
+void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 	msg.setCharacterSize(text_size);
 	msg.setFillColor(flcolor::ui_white);
 	msg.setFont(font);
@@ -185,7 +193,11 @@ void TextWriter::request_next() {
 	if (suite.at(iterators.current_suite_set).front().prompt) {
 		flags.set(MessageState::selection_mode);
 		if (iterators.current_response_set >= responses.size()) { return; }
-		for (auto& res : responses.at(iterators.current_response_set)) { check_for_prompt(res); }
+		for (auto& res : responses.at(iterators.current_response_set)) {
+			check_for_event(res, Codes::item);
+			check_for_event(res, Codes::quest);
+			check_for_event(res, Codes::prompt);
+		}
 		return;
 	} else {
 		suite.at(iterators.current_suite_set).pop_front();
@@ -199,13 +211,24 @@ void TextWriter::request_next() {
 	}
 }
 
-void TextWriter::check_for_prompt(Message& msg) {
-	auto index = msg.data.getString().find('%');
+void TextWriter::check_for_event(Message& msg, Codes code) {
+	auto index = msg.data.getString().find(special_characters.at(code));
+	// handle item and quest out_keys
+	if (index != std::string::npos && code != Codes::prompt) {
+		auto the_rest = msg.data.getString().substring(index + 1, msg.data.getString().getSize() - 1);
+		std::string end = the_rest;
+		msg.out_key = std::stoi(end);
+		if (code == Codes::item) { out_flags.set(Communication::ship_item); }
+		if (code == Codes::quest) { out_flags.set(Communication::ship_quest); }
+	}
+	// handle prompts
 	if (index != std::string::npos && index < msg.data.getString().getSize() - 1) {
 		msg.target = (int)msg.data.getString().getData()[index + 1] - '0';
-		msg.prompt = true;
 		msg.data.setString(msg.data.getString().substring(0, index));
-		flags.set(MessageState::response_trigger);
+		if (code == Codes::prompt) {
+			flags.set(MessageState::response_trigger);
+			msg.prompt = true;
+		}
 	}
 }
 
@@ -222,9 +245,11 @@ void TextWriter::process_selection() {
 	if (!selection_mode()) { return; }
 	if (iterators.current_response_set >= responses.size()) { return; }
 	if (iterators.current_selection >= responses.at(iterators.current_response_set).size()) { return; }
-	// do something meaningful with the selection.
-	// later, this will store some value on the player or other relevant place
-	// for decisions/quests/items etc.
+
+	//store selection result
+	if (out_flags.test(Communication::ship_item)) { communicators.out_item = responses.at(iterators.current_response_set).at(iterators.current_selection).out_key; }
+	if (out_flags.test(Communication::ship_quest)) { communicators.out_quest = responses.at(iterators.current_response_set).at(iterators.current_selection).out_key; }
+	out_flags = {};
 
 	// flush the suite until we reach the target determined by the selection
 	for (auto i = 0; i <= responses.at(iterators.current_response_set).at(iterators.current_selection).target; ++i) {
@@ -249,14 +274,6 @@ void TextWriter::shutdown() {
 	iterators = {};
 }
 
-bool TextWriter::writing() const { return flags.test(MessageState::writing); }
-
-bool TextWriter::complete() const { return !flags.test(MessageState::writing) && suite.empty(); }
-
-bool TextWriter::selection_mode() const { return flags.test(MessageState::selection_mode); }
-
-bool TextWriter::can_skip() const { return !flags.test(MessageState::cannot_skip); }
-
 Message& const TextWriter::current_message() {
 	if (iterators.current_suite_set >= suite.size()) { return zero_option; }
 	if (suite.at(iterators.current_suite_set).empty()) { return zero_option; }
@@ -269,8 +286,8 @@ Message& const TextWriter::current_response() {
 	return responses.at(iterators.current_response_set).front();
 }
 
-int TextWriter::get_current_selection() { return iterators.current_selection; }
+int TextWriter::get_current_selection() const { return iterators.current_selection; }
 
-int TextWriter::get_current_suite_set() { return iterators.current_suite_set; }
+int TextWriter::get_current_suite_set() const { return iterators.current_suite_set; }
 
 } // namespace text

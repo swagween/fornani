@@ -10,6 +10,9 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 	// all of these functions will be called, but will only be executed
 	// if the TextWriter is in the required state.
 
+	// shipment tracking
+	track_shipments(console);
+
 	// selection mode stuff
 	if (up()) { console.writer.adjust_selection(-1); }
 	if (down()) { console.writer.adjust_selection(1); }
@@ -34,6 +37,12 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 	if (console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
 
 	end();
+}
+
+void Transponder::track_shipments(gui::Console& console) {
+	shipments.item = console.writer.get_item_shipment();
+	shipments.quest = console.writer.get_quest_shipment();
+	console.writer.flush_communicators();
 }
 
 void Transponder::end() { actions = {}; }

@@ -7,7 +7,7 @@
       ["A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start in the search for your little brother."]
     ],
     "responses": [
-      [ "I don't talk to strangers.%0", "I'm just looking for a place to rest.%1", "I'm looking for my little brother.%2"  ]
+      [ "I don't talk to strangers.%0", "I'm just looking for a place to rest.%1", "I'm looking for my little brother.%2$5995"  ]
     ]
   },
   "gobe_02": {

@@ -25,6 +25,7 @@ enum class TransponderActions { skip_ahead, next, exit, down, up, select, skip_r
 class Transponder {
   public:
 	void update(automa::ServiceProvider& svc, gui::Console& console);
+	void track_shipments(gui::Console& console);
 	void end();
 
 	void skip_ahead();
@@ -42,9 +43,16 @@ class Transponder {
 	bool down() const;
 	bool up() const;
 	bool selected() const;
+	
+	[[nodiscard]] auto get_item_shipment() const -> int { return shipments.item; }
+	[[nodiscard]] auto get_quest_shipment() const -> int { return shipments.quest; }
 
   private:
 	util::BitFlags<TransponderActions> actions{};
+	struct {
+		int item{};
+		int quest{};
+	} shipments{};
 };
 
 } // namespace player

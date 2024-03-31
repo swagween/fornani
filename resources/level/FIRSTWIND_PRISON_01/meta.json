@@ -44,20 +44,5 @@
       "activate_on_contact":  false,
       "key": "test_01"
     }
-  ],
- "animators": [
-    {
-      "id": 114,
-      "dimensions": [ 2, 2 ],
-      "position": [ 22, 9 ],
-      "automatic":  false,
-      "foreground":  true
-    }
-  ],
- "enemies": [
-    {
-      "id": 0,
-      "position": [ 20, 4 ]
-    }
   ]
 }
