@@ -97,6 +97,7 @@ class Map {
 	// json for data loading
 	dj::Json metadata{};
 	dj::Json tiles{};
+	dj::Json inspectable_data{};
 
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};

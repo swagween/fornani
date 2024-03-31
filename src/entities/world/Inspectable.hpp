@@ -2,6 +2,7 @@
 #pragma once
 
 #include <string>
+#include <djson/json.hpp>
 #include "../../utils/Shape.hpp"
 
 namespace automa {
@@ -33,7 +34,7 @@ class Inspectable {
 		bounding_box = shape::Shape(dimensions);
 		bounding_box.set_position(position);
 	}
-	void update(automa::ServiceProvider &svc, player::Player & player, gui::Console& console);
+	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set);
 	void render(sf::RenderWindow& win, Vec campos); // for debugging
 
 	Vec dimensions{};

@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "room_id": 1703,
+    "dimensions": [
+      80,
+      32
+    ],
+    "chunk_dimensions": [
+      5,
+      2
+    ],
+    "style": 8,
+    "background": 6
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        3
+      ],
+      "position": [
+        0,
+        14
+      ],
+      "source_id": 1703,
+      "destination_id": 1702,
+      "activate_on_contact": true
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        74,
+        24
+      ],
+      "source_id": 1703,
+      "destination_id": 1705,
+      "activate_on_contact": false
+    },
+    {
+      "dimensions": [
+        4,
+        1
+      ],
+      "position": [
+        34,
+        31
+      ],
+      "source_id": 1703,
+      "destination_id": 1704,
+      "activate_on_contact": true
+    }
+  ]
+}

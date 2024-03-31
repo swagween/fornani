@@ -2,10 +2,15 @@
 
 namespace world {
 
-Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, lookup::TILE_TYPE t) : index(i), position(p), value(val), type(t) { bounding_box = shape::Shape(sf::Vector2<float>(lookup::unit_size_f, lookup::unit_size_f)); }
+Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, lookup::TILE_TYPE t) : index(i), position(p), value(val), type(t) {
+	bounding_box = shape::Shape(sf::Vector2<float>(lookup::unit_size_f, lookup::unit_size_f));
+	drawbox.setOutlineColor(sf::Color::Red);
+	drawbox.setFillColor(sf::Color::Transparent);
+	drawbox.setSize(bounding_box.dimensions);
+	drawbox.setOutlineThickness(-1);
+}
 
 void Tile::update_polygon(sf::Vector2<float> cam) {
-
 	polygon.setPointCount(bounding_box.vertices.size());
 	for (size_t i{0}; i < bounding_box.vertices.size(); ++i) { polygon.setPoint(i, bounding_box.vertices.at(i)); }
 	polygon.setPosition(-cam.x, -cam.y);
@@ -25,7 +30,7 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 bool Tile::is_occupied() const { return value > 0; }
 
-bool Tile::is_collidable() const { return type != lookup::TILE_TYPE::TILE_CEILING_RAMP && type != lookup::TILE_TYPE::TILE_GROUND_RAMP && type != lookup::TILE_TYPE::TILE_SPIKES; }
+bool Tile::is_collidable() const { return type != lookup::TILE_TYPE::TILE_CEILING_RAMP && type != lookup::TILE_TYPE::TILE_GROUND_RAMP && type != lookup::TILE_TYPE::TILE_SPIKES && !is_breakable(); }
 
 bool Tile::is_solid() const { return type == lookup::TILE_TYPE::TILE_BASIC || type == lookup::TILE_TYPE::TILE_BREAKABLE || type == lookup::TILE_TYPE::TILE_CEILING_RAMP || type == lookup::TILE_TYPE::TILE_GROUND_RAMP; }
 

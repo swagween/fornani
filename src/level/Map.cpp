@@ -15,15 +15,14 @@ Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player)
 void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
 	std::string room_str = svc.data.finder.resource_path + room.data();
-
 	metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
 	assert(!metadata.is_null());
 	tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
 	assert(!tiles.is_null());
+	inspectable_data = dj::Json::from_file((room_str + "/inspectables.json").c_str());
 
 	// get npc data
 	if (!metadata.is_null()) {
-
 		auto const& meta = metadata["meta"];
 		room_id = meta["id"].as<int>();
 		dimensions.x = meta["dimensions"][0].as<int>();
@@ -79,19 +78,15 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		for (auto& entry : metadata["animators"].array_view()) {
 			sf::Vector2<int> scaled_dim{};
 			sf::Vector2<int> scaled_pos{};
-
 			scaled_pos.x = entry["position"][0].as<int>();
 			scaled_pos.y = entry["position"][1].as<int>();
 			scaled_dim.x = entry["dimensions"][0].as<int>();
 			scaled_dim.y = entry["dimensions"][1].as<int>();
-			
 			auto lg = scaled_dim.x == 2;
 			auto a = entity::Animator(svc, scaled_pos, lg);
-
 			a.id = entry["id"].as<int>();
 			a.automatic = (bool)entry["automatic"].as_bool();
 			a.foreground = (bool)entry["foreground"].as_bool();
-
 			animators.push_back(a);
 		}
 
@@ -118,7 +113,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		}
 	}
 
-	//tiles
+	// tiles
 	int layer_counter{};
 	for (auto& layer : layers) {
 		int cell_counter{};
@@ -233,7 +228,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
 	for (auto& npc : npcs) { npc.update(svc, *this, console, *player); }
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, room_id, transition.fade_out, transition.done); }
-	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console); }
+	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(*player); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
@@ -279,13 +274,20 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
-
+	
 	for (int i = 4; i < NUM_LAYERS; ++i) {
 		if (svc.greyblock_mode() && i != 4) { continue; }
 		layer_textures.at(i).display();
 		layer_sprite.setTexture(layer_textures.at(i).getTexture());
 		layer_sprite.setPosition(-cam);
 		win.draw(layer_sprite);
+	}
+	if (svc.greyblock_mode()) {
+		for (auto& index : collidable_indeces) {
+			auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
+			cell.drawbox.setPosition(cell.position - cam);
+			win.draw(cell.drawbox);
+		}
 	}
 
 	if (real_dimensions.y < cam::screen_dimensions.y) {
