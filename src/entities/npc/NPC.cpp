@@ -39,29 +39,23 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
 	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
 	Entity::update(svc, map);
-
-	if (player.collider.vicinity.overlaps(collider.vicinity)) { animation_machine->animation_flags.set(NPCAnimState::walk); }
-
+	if (abs(collider.physics.velocity.x) > physical.walk_threshold) { animation_machine->animation_flags.set(NPCAnimState::walk); }
+	if (ent_state.test(entity::State::flip)) { animation_machine->animation_flags.set(NPCAnimState::turn); }
 	animation_machine->update();
 
-	/*if(id == 0 && svc.ticker.every_x_frames(200)) {
-		std::cout << "\nBRYN States: \n";
-		if (animation_machine->animation_flags.test(NPCAnimState::idle)) { std::cout << "idle\n"; }
-		if (animation_machine->animation_flags.test(NPCAnimState::walk)) { std::cout << "walk\n"; }
-		if (animation_machine->animation_flags.test(NPCAnimState::turn)) { std::cout << "turn\n"; }
-		if (animation_machine->animation_flags.test(NPCAnimState::inspect)) { std::cout << "inspect\n"; }
-		std::cout << "_ \n";
-	}*/
+	if (animation_machine->communication_flags.test(NPCCommunication::sprite_flip)) {
+		sprite_flip();
+		animation_machine->communication_flags.reset(NPCCommunication::sprite_flip);
+	}
 
 	collider.update(svc);
 	collider.detect_map_collision(map);
 	collider.reset();
 	collider.physics.acceleration = {};
 
-	state_flags.reset(NPCState::engaged);
 	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
+		state_flags.set(NPCState::engaged);
 		if (player.controller.inspecting() && !conversations.empty()) {
-			state_flags.set(NPCState::engaged);
 			console.set_source(svc.text.npc);
 			std::string name = std::string(label);
 			std::string convo = std::string(conversations.front());
@@ -69,15 +63,15 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 			console.load_and_launch(target);
 			console.include_portrait(id);
 		}
+	} else {
+		state_flags.reset(NPCState::engaged);
 	}
 
-	if (console.off()) {
-		disengage();
-		if (conversations.size() > 1) { conversations.pop_front(); }
+	if (console.off() && state_flags.test(NPCState::engaged)) {
+		if (conversations.size() > 1) {
+			conversations.pop_front();
+		}
 		console.clean_off_trigger();
-	}
-	if (state_flags.test(NPCState::disengaged)) {
-		state_flags.reset(NPCState::disengaged);
 	}
 }
 
@@ -88,10 +82,10 @@ void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
 	if (svc.greyblock_mode()) {
-		drawbox.setPosition(collider.physics.position - campos);
-		state_flags.test(NPCState::engaged) ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
-		win.draw(drawbox);
 		collider.render(win, campos);
+		drawbox.setPosition(collider.physics.position - campos);
+		state_flags.test(NPCState::engaged) ? drawbox.setFillColor(svc.styles.colors.green) : drawbox.setFillColor(svc.styles.colors.dark_orange);
+		win.draw(drawbox);
 	} else {
 		win.draw(sprite);
 	}
@@ -102,8 +96,6 @@ void NPC::set_position(sf::Vector2<float> pos) { collider.physics.position = pos
 void NPC::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.physics.position = scaled_pos * 32.f; }
 
 void NPC::set_id(int new_id) { id = new_id; }
-
-void NPC::disengage() { state_flags.set(NPCState::disengaged); }
 
 void NPC::push_conversation(std::string_view convo) { conversations.push_back(convo); }
 

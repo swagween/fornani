@@ -41,11 +41,7 @@ NPCAnimation::NPCAnimation(automa::ServiceProvider& svc, int id) : label(label) 
 
 void NPCAnimation::update() {
 	animation.update();
-
-	//if (ent_state.test(entity::State::flip)) { animation_flags.set(NPCAnimState::turn); }
-
 	state_function = state_function();
-	// std::cout << animation.label << " ";
 }
 
 fsm::StateFunction NPCAnimation::update_idle() {
@@ -69,7 +65,7 @@ fsm::StateFunction NPCAnimation::update_idle() {
 fsm::StateFunction NPCAnimation::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		//sprite_flip();
+		communication_flags.set(NPCCommunication::sprite_flip);
 		animation_flags = {};
 		animation_flags.set(NPCAnimState::idle);
 		animation.set_params(NPC_idle);
@@ -77,7 +73,6 @@ fsm::StateFunction NPCAnimation::update_turn() {
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::turn);
-	//std::cout << "t";
 	return std::move(state_function);
 }
 

@@ -13,6 +13,7 @@ struct ServiceProvider;
 namespace npc {
 
 enum class NPCAnimState { idle, turn, walk, inspect };
+enum class NPCCommunication { sprite_flip };
 
 class NPCAnimation {
   public:
@@ -26,6 +27,7 @@ class NPCAnimation {
 
 	anim::Animation animation{};
 	util::BitFlags<NPCAnimState> animation_flags{};
+	util::BitFlags<NPCCommunication> communication_flags{};
 	fsm::StateFunction state_function = std::bind(&NPCAnimation::update_idle, this);
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_turn();
