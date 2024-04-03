@@ -124,9 +124,6 @@ void Game::run() { // load all assets
 		services.ticker.tick([this, &svc = services] { game_state.get_current_state().tick_update(svc); });
 		game_state.get_current_state().frame_update(services);
 
-		// play sounds
-		services.soundboard.play_sounds(services);
-
 		// switch states
 		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {
 			switch (services.state_controller.submenu) {

@@ -140,6 +140,7 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 			{options_rect.getPosition().x + options_rect.width + dot_pad.x, options_rect.getPosition().y + dot_pad.y});
 		break;
 	}
+	svc.soundboard.play_sounds(svc);
 }
 
 void MainMenu::frame_update(ServiceProvider& svc) {}

@@ -35,17 +35,18 @@ class Ticker {
 			return;
 		}
 
-		int integrations{0};
+		integrations = 0;
 		while (accumulator >= ft) {
 
 			fn();
 			accumulator -= ft;
 			++integrations;
+			++total_integrations;
+			++ticks;
 		}
 
 		residue = accumulator;
 
-		total_integrations += integrations;
 		accumulator = Tim::zero();
 		++calls_per_frame;
 	};
@@ -74,6 +75,7 @@ class Ticker {
 
 	// for TPS and FPS calculations
 	int integrations{};
+	int ticks{};
 	int calls_per_frame{};
 	int sample_size{256};
 	int num_frames{};

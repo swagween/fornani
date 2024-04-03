@@ -111,6 +111,8 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->apparent_position.y = player->collider.physics.position.y;
 	player->update_animation();
 	player->update_antennae();
+
+	svc.soundboard.play_sounds(svc);
 }
 
 void FileMenu::frame_update(ServiceProvider& svc) {}

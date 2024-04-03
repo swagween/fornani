@@ -99,7 +99,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	svc::inputStateLocator.get().reset_triggers();
 	player->controller.clean();
-
+	svc.soundboard.play_sounds(svc);
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {

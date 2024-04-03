@@ -32,7 +32,7 @@ void Ticker::calculate_fps() {
 
 bool Ticker::every_x_frames(int const freq) { return num_frames % freq == 0; }
 
-bool Ticker::every_x_ticks(int const freq) { return (int)total_integrations % freq == 0; }
+bool Ticker::every_x_ticks(int const freq) { return ticks % freq == 0; }
 
 bool Ticker::every_x_milliseconds(int num_milliseconds) { return false; }
 
