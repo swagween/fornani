@@ -4,12 +4,11 @@
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
 
-namespace entity {
+namespace npc {
 
-NPC::NPC(automa::ServiceProvider& svc, int id) : id(id) {
+NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::make_unique<NPCAnimation>(svc, id)) {
 
 	label = svc.tables.npc_label.at(id);
-	conversation = "_01";
 
 	auto const& in_data = svc.data.npc[label];
 	dimensions.x = in_data["dimensions"][0].as<float>();
@@ -23,12 +22,6 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id) {
 
 	sprite.setOrigin(in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>());
 
-	animation.NPC_idle.lookup = in_data["animation"]["idle"][0].as<int>();
-	animation.NPC_idle.duration = in_data["animation"]["idle"][1].as<int>();
-	animation.NPC_idle.framerate = in_data["animation"]["idle"][2].as<int>();
-	animation.NPC_idle.num_loops = in_data["animation"]["idle"][3].as<int>();
-	animation.NPC_idle.repeat_last_frame = (bool)in_data["animation"]["idle"][4].as_bool();
-
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
 
@@ -40,18 +33,19 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id) {
 	drawbox.setSize(dimensions);
 
 	sprite.setTexture(svc.assets.npcs.at(label));
-	animation.animation.set_params(animation.NPC_idle);
 	direction.lr = dir::LR::left;
 }
 
 void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
-	animation.update();
-
 	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
 	Entity::update(svc, map);
-	if (ent_state.test(entity::State::flip)) {
-		animation.state.set(NPCAnimState::turn);
+	if (abs(collider.physics.velocity.x) > physical.walk_threshold) { animation_machine->animation_flags.set(NPCAnimState::walk); }
+	if (ent_state.test(entity::State::flip)) { animation_machine->animation_flags.set(NPCAnimState::turn); }
+	animation_machine->update();
+
+	if (animation_machine->communication_flags.test(NPCCommunication::sprite_flip)) {
 		sprite_flip();
+		animation_machine->communication_flags.reset(NPCCommunication::sprite_flip);
 	}
 
 	collider.update(svc);
@@ -59,31 +53,39 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	collider.reset();
 	collider.physics.acceleration = {};
 
-	state_flags.reset(NPCState::engaged);
 	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
-		if (player.controller.inspecting()) {
-			state_flags.set(NPCState::engaged);
+		state_flags.set(NPCState::engaged);
+		if (player.controller.inspecting() && !conversations.empty()) {
 			console.set_source(svc.text.npc);
 			std::string name = std::string(label);
-			std::string convo = std::string(conversation);
+			std::string convo = std::string(conversations.front());
 			std::string target = name + convo;
 			console.load_and_launch(target);
 			console.include_portrait(id);
+		}
+	} else {
+		state_flags.reset(NPCState::engaged);
+	}
+
+	if (console.off() && state_flags.test(NPCState::engaged)) {
+		if (conversations.size() > 1) {
+			conversations.pop_front();
+			std::cout << label << " popped!\n";
 		}
 	}
 }
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 	sprite.setPosition(collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y);
-	int u = (int)(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-	int v = (int)(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+	int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+	int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
 	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 
 	if (svc.greyblock_mode()) {
-		drawbox.setPosition(collider.physics.position - campos);
-		state_flags.test(NPCState::engaged) ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
-		win.draw(drawbox);
 		collider.render(win, campos);
+		drawbox.setPosition(collider.physics.position - campos);
+		state_flags.test(NPCState::engaged) ? drawbox.setFillColor(svc.styles.colors.green) : drawbox.setFillColor(svc.styles.colors.dark_orange);
+		win.draw(drawbox);
 	} else {
 		win.draw(sprite);
 	}
@@ -95,4 +97,6 @@ void NPC::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.phy
 
 void NPC::set_id(int new_id) { id = new_id; }
 
-} // namespace entity
+void NPC::push_conversation(std::string_view convo) { conversations.push_back(convo); }
+
+} // namespace npc

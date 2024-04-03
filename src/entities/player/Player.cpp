@@ -209,6 +209,11 @@ void Player::update_transponder(gui::Console& console) {
 		transponder.update(*m_services, console);
 	}
 	transponder.end();
+	if (transponder.get_item_shipment() > 0) {
+		std::cout << transponder.get_item_shipment() << "\n";
+		give_item(transponder.get_item_shipment(), 1);
+	}																									 // push item to inventory!
+	if (transponder.get_quest_shipment() > 0) { std::cout << transponder.get_quest_shipment() << "\n"; } // push item to inventory!
 }
 
 void Player::flash_sprite() {
@@ -394,6 +399,8 @@ void Player::give_drop(item::DropType type, int value) {
 	if (type == item::DropType::heart) { health.heal(value); }
 	if (type == item::DropType::orb) { player_stats.orbs += value; }
 }
+
+void Player::give_item(int item_id, int amount) { catalog.add_item(*m_services, item_id, 1); }
 
 void Player::reset_flags() { flags = {}; }
 

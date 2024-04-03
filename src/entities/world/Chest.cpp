@@ -58,6 +58,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 				console.load_and_launch("chest");
 				open = true;
 				animation.set_params(opened);
+				player.give_item(item_id, 1);
 			} else {
 				console.load_and_launch("open_chest");
 			}
@@ -88,5 +89,7 @@ void Chest::set_position(sf::Vector2<float> pos) { collider.physics.position = p
 void Chest::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.physics.position = scaled_pos * 32.f; }
 
 void Chest::set_id(int new_id) { id = id; }
+
+void Chest::set_item(int id) { item_id = id; }
 
 } // namespace entity

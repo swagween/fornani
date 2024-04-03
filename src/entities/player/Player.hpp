@@ -4,16 +4,17 @@
 #include <array>
 #include <memory>
 #include "../../components/PhysicsComponent.hpp"
+#include "../../graphics/SpriteHistory.hpp"
+#include "../../graphics/TextureUpdater.hpp"
 #include "../../particle/Gravitator.hpp"
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../weapon/Arsenal.hpp"
-#include "../../graphics/SpriteHistory.hpp"
-#include "PlayerController.hpp"
-#include "PlayerAnimation.hpp"
-#include "Transponder.hpp"
-#include "../../graphics/TextureUpdater.hpp"
 #include "../packages/Health.hpp"
+#include "PlayerAnimation.hpp"
+#include "PlayerController.hpp"
+#include "Transponder.hpp"
+#include "Catalog.hpp"
 
 namespace gui {
 class Console;
@@ -97,7 +98,10 @@ class Player {
 	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void calculate_sprite_offset();
 
-	//moves
+	// state
+	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(player::State::alive); }
+
+	// moves
 	void jump();
 	void dash();
 
@@ -116,6 +120,7 @@ class Player {
 	void kill();
 	void start_over();
 	void give_drop(item::DropType type, int value);
+	void give_item(int item_id, int amount);
 
 	void reset_flags();
 	void total_reset();
@@ -129,14 +134,14 @@ class Player {
 	// for debug mode
 	std::string print_direction(bool lr);
 
-	//components
+	// components
 	PlayerController controller{};
 	Transponder transponder{};
 	shape::Collider collider{};
 	PlayerAnimation animation{};
 	entity::Health health{};
 
-	//weapons
+	// weapons
 	arms::Arsenal arsenal;
 
 	sf::Vector2<float> apparent_position{};
@@ -161,7 +166,7 @@ class Player {
 	sf::Sprite sprite{};
 	flfx::SpriteHistory sprite_history{};
 
-	//texture updater
+	// texture updater
 	flfx::TextureUpdater texture_updater{};
 
 	bool grav = true;
@@ -169,6 +174,8 @@ class Player {
 	bool just_hurt{};
 	bool start_cooldown{};
 	bool sprite_flip{};
+
+	Catalog catalog{};
 };
 
 } // namespace player

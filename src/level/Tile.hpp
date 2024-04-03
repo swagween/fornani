@@ -33,5 +33,6 @@ struct Tile {
 	bool surrounded{};
 	
 	sf::ConvexShape polygon{};
+	sf::RectangleShape drawbox{};
 };
 }

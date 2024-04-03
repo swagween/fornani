@@ -33,6 +33,7 @@ class DataManager {
 	dj::Json sparkler{};
 	dj::Json map_styles{};
 	dj::Json npc{};
+	dj::Json item{};
 
 	//enemy
 	dj::Json enemy{};

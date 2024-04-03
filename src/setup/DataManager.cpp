@@ -10,62 +10,34 @@ namespace data {
 
 void DataManager::load_data() {
 
-	//weapon
+	std::cout << "loading json data...";
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
-	std::cout << "loading weapon data ...";
 	assert(!weapon.is_null());
-	std::cout << " success!\n";
-
 	drop = dj::Json::from_file((finder.resource_path + "/data/item/drop.json").c_str());
-	std::cout << "loading drop data ...";
 	assert(!drop.is_null());
-	std::cout << " success!\n";
-
 	particle = dj::Json::from_file((finder.resource_path + "/data/vfx/particle.json").c_str());
-	std::cout << "loading particle data ...";
 	assert(!particle.is_null());
-	std::cout << " success!\n";
-	
 	sparkler = dj::Json::from_file((finder.resource_path + "/data/vfx/sparkler.json").c_str());
-	std::cout << "loading sparkler data ...";
 	assert(!sparkler.is_null());
-	std::cout << " success!\n";
-
 	npc = dj::Json::from_file((finder.resource_path + "/data/npc/npc_data.json").c_str());
-	std::cout << "loading npc data ...";
 	assert(!npc.is_null());
-	std::cout << " success!\n";
-
+	item = dj::Json::from_file((finder.resource_path + "/data/item/item.json").c_str());
+	assert(!item.is_null());
 	map_styles = dj::Json::from_file((finder.resource_path + "/data/level/map_styles.json").c_str());
-	std::cout << "loading map_styles data ...";
 	assert(!map_styles.is_null());
-	std::cout << " success!\n";
 
-	// enemies
 	enemy = dj::Json::from_file((finder.resource_path + "/data/enemy/enemy_params.json").c_str());
-	std::cout << "loading enemy parameters ...";
 	assert(!enemy.is_null());
-	std::cout << " success!\n";
-
 	frdog = dj::Json::from_file((finder.resource_path + "/data/enemy/frdog.json").c_str());
-	std::cout << "loading frdog ...";
 	assert(!frdog.is_null());
-	std::cout << " success!\n";
 	hulmet = dj::Json::from_file((finder.resource_path + "/data/enemy/hulmet.json").c_str());
-	std::cout << "loading hulmet ...";
 	assert(!hulmet.is_null());
-	std::cout << " success!\n";
 
-
-	// map
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
-	std::cout << "loading map data ...";
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) { lookup::get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
-	std::cout << " success!\n";
 
 	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
-	std::cout << "loading background behaviors ...";
 	assert(!background.is_null());
 	std::cout << " success!\n";
 }

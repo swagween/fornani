@@ -30,7 +30,6 @@ class Ticker {
 
 		accumulator = dt + residue;
 		if (accumulator < ft) {
-			std::printf("accumulator exit condition reached.\n");
 			residue += accumulator;
 			accumulator = Tim::zero();
 			return;
@@ -66,7 +65,7 @@ class Ticker {
 	float tick_rate{0.005f};
 	float tick_multiplier{24.f};
 
-	static constexpr Tim tick_limit{0.5f};
+	static constexpr Tim tick_limit{0.8f};
 
 	Tim ft{};
 	Tim dt{};

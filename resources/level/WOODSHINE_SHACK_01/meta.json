@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "room_id": 307,
+    "dimensions": [
+      32,
+      16
+    ],
+    "chunk_dimensions": [
+      2,
+      1
+    ],
+    "style": 1,
+    "background": 4
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        9,
+        11
+      ],
+      "source_id": 307,
+      "destination_id": 305,
+      "activate_on_contact": false
+    }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        4,
+        8
+      ],
+      "activate_on_contact": false,
+      "key": "woodshine_trash"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        24,
+        12
+      ],
+      "activate_on_contact": false,
+      "key": "woodshine_fireplace_01"
+    }
+  ]
+}

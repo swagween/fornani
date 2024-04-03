@@ -1,0 +1,55 @@
+{
+  "bryns_notebook": {
+    "title": "Bryn's Notebook",
+    "naive description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
+    "hidden description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
+    "unique": true
+  },
+  "factory_access_permit": {
+    "title": "Factory Access Permit",
+    "naive description": "A permit that grants you access to the Nimbus III Maintenance Facility.",
+    "unique": true
+  },
+  "bipolar_junction_transistor": {
+    "title": "Bipolar Junction Transistor",
+    "naive description": "It looks like a mechanical part of sorts.",
+    "hidden description": "Beeker says this is required to build a special kind of gun. You should hold on to it.",
+    "unique": true
+  },
+  "willets_floppy_disc": {
+    "title": "Willet's Floppy Disc",
+    "naive description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willet told me to bring it to someone named Spencer in Ashtown.",
+    "hidden description": "Contains schematics for the Greatwing. Spencer needs a track zero sensor and a fresh head motor to access its contents.",
+    "unique": true
+  },
+  "track_zero_sensor": {
+    "title": "Track Zero Sensor",
+    "naive description": "A small sensor that Spencer needs to repair his floppy disc drive. Without it, he can't access the Greatwing schematics.",
+    "unique": true
+  },
+  "head_motor": {
+    "title": "Head Motor",
+    "naive description": "A tiny motor that Spencer needs to access Doc Willet's floppy disc.",
+    "unique": true
+  },
+  "gas_mask": {
+    "title": "Gas Mask",
+    "naive description": "You need this to navigate the Toxic Cavern without dying.",
+    "unique": true
+  },
+  "firstwind_deck_key": {
+    "title": "Firstwind Deck Key",
+    "naive description": "A small iron key that grants you access to the Firstwind's outer deck.",
+    "unique": true
+  },
+  "woodshine_warehouse_key": {
+    "title": "Woodshine Warehouse Key",
+    "naive description": "Allows you to enter Woodshine's warehouse.",
+    "unique": true
+  },
+  "nimbus_iii_boiler_room_key": {
+    "title": "Nimbus III Boiler Room Key",
+    "naive description": "Allows you to enter Nimbus III's boiler room.",
+    "unique": true
+  }
+}

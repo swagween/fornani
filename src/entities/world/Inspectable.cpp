@@ -5,7 +5,7 @@
 
 namespace entity {
 
-void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) {
+void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set) {
 	position = static_cast<Vec>(scaled_position * UNIT_SIZE);
 	dimensions = static_cast<Vec>(scaled_dimensions * UNIT_SIZE);
 	bounding_box.set_position(position);
@@ -14,7 +14,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 		activated = true;
 	}
 	if (activated) {
-		console.set_source(svc.text.inspectables);
+		console.set_source(set);
 		console.load_and_launch(key);
 	}
 }
