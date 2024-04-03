@@ -84,10 +84,12 @@ class AssetManager {
 
 		t_bryns_notebook.loadFromFile(finder.resource_path + "/image/item/bryns_notebook.png");
 		t_factory_access_permit.loadFromFile(finder.resource_path + "/image/item/factory_access_permit.png");
+		t_bipolar_junction_transistor.loadFromFile(finder.resource_path + "/image/item/bipolar_junction_transistor.png");
+		t_willets_floppy_disc.loadFromFile(finder.resource_path + "/image/item/willets_floppy_disc.png");
 		items.insert({"bryns_notebook", t_bryns_notebook});
 		items.insert({"factory_access_permit", t_factory_access_permit});
-		items.insert({"bipolar_junction_transistor", t_bryns_notebook});
-		items.insert({"willets_floppy_disc", t_factory_access_permit});
+		items.insert({"bipolar_junction_transistor", t_bipolar_junction_transistor});
+		items.insert({"willets_floppy_disc", t_willets_floppy_disc});
 
 
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
@@ -219,8 +221,6 @@ class AssetManager {
 		dusken_cove.openFromFile(finder.resource_path + "/audio/songs/dusken_cove.wav");
 	}
 
-	// declare all the textures and sprites as members of the AssetManager
-
 	// player and NPCs!
 	sf::Texture t_nani{};
 	sf::Texture t_portraits{};
@@ -241,6 +241,8 @@ class AssetManager {
 	//items
 	sf::Texture t_bryns_notebook{};
 	sf::Texture t_factory_access_permit{};
+	sf::Texture t_bipolar_junction_transistor{};
+	sf::Texture t_willets_floppy_disc{};
 
 	// critters and bosses!
 	sf::Texture t_frdog{};

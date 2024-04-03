@@ -16,11 +16,11 @@ void Selector::update() {
 }
 
 void Selector::go_down() {
-	current_selection += table_dimensions.x;
+	if (current_selection < table_dimensions.x * table_dimensions.y - table_dimensions.x - 1) { current_selection += table_dimensions.x; }
 	update();
 }
 void Selector::go_up() {
-	current_selection -= table_dimensions.x;
+	if (current_selection >= table_dimensions.x) { current_selection -= table_dimensions.x; }
 	update();
 }
 void Selector::go_left() {
