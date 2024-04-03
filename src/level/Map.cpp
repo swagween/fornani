@@ -75,6 +75,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			pos.y = entry["position"][1].as<int>();
 			chests.push_back(entity::Chest(svc));
 			chests.back().set_id(entry["id"].as<int>());
+			chests.back().set_item(entry["item_id"].as<int>());
 			chests.back().set_position_from_scaled(pos);
 		}
 
@@ -237,7 +238,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	player->collider.reset_ground_flags();
 	// check if player died
-	if (!player->flags.state.test(player::State::alive) && !game_over) {
+	if (!player->is_dead() && !game_over) {
 		svc.soundboard.flags.player.set(audio::Player::death);
 		game_over = true;
 	}
@@ -253,6 +254,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	}
 
 	if (svc.ticker.every_x_frames(1)) { transition.update(); }
+
+	console.clean_off_trigger();
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

@@ -36,6 +36,7 @@
  "chests": [
     {
       "id": 0,
+      "item_id":  1,
       "position": [ 20, 4 ]
     }
   ],

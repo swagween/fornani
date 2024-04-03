@@ -7,7 +7,7 @@
   },
   "chest": {
     "suite": [
-      [ "You open the chest to find an item...^1234" ]
+      [ "You open the chest to find an item..." ]
     ],
     "responses": [ [] ]
   },

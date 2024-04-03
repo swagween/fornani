@@ -70,8 +70,8 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	if (console.off() && state_flags.test(NPCState::engaged)) {
 		if (conversations.size() > 1) {
 			conversations.pop_front();
+			std::cout << label << " popped!\n";
 		}
-		console.clean_off_trigger();
 	}
 }
 

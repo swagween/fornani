@@ -6,6 +6,7 @@
 #include "../../utils/Collider.hpp"
 #include "../Entity.hpp"
 #include "../animation/Animation.hpp"
+#include "../item/Item.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -37,6 +38,7 @@ class Chest : public Entity {
 	void set_position(sf::Vector2<float> pos);
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
 	void set_id(int new_id);
+	void set_item(int id);
 
   private:
 	vfx::Sparkler sparkler{};
@@ -44,6 +46,7 @@ class Chest : public Entity {
 	shape::Collider collider{};
 
 	int id{};
+	int item_id{};
 	bool activated{};
 	bool open{};
 };

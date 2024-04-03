@@ -372,12 +372,19 @@ void Game::debug_window() {
 							ImGui::Text("inspect: %s", player.animation.state.test(player::AnimState::inspect) ? "flag set" : "");
 							ImGui::EndTabItem();
 						}
-						if (ImGui::BeginTabItem("Stats")) {
+						if (ImGui::BeginTabItem("Catalog")) {
 							ImGui::Text("Player Stats");
 							ImGui::SliderFloat("Max HP", &player.health.max_hp, 3, 12);
 							ImGui::SliderFloat("HP", &player.health.hp, 0, 12);
 							ImGui::SliderInt("Max Orbs", &player.player_stats.max_orbs, 99, 99999);
 							ImGui::SliderInt("Orbs", &player.player_stats.orbs, 0, 99999);
+							ImGui::Separator();
+							ImGui::Text("Inventory");
+							for (auto& item : player.catalog.categories.inventory.items) {
+								ImGui::Text(item.label.data());
+								ImGui::SameLine();
+								ImGui::Text(" : %i", item.get_quantity());
+							}
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {
