@@ -15,7 +15,7 @@ namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger };
 struct ServiceProvider {
 	asset::AssetManager assets{};
-	data::DataManager data{};
+	data::DataManager data{*this};
 	data::TextManager text{};
 	audio::Soundboard soundboard{};
 	style::Style styles{};

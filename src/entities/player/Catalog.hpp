@@ -16,6 +16,7 @@ namespace player {
 
 class Catalog {
   public:
+	void update(automa::ServiceProvider& svc);
 	void add_item(automa::ServiceProvider& svc, int item_id, int amount);
   //private:
 	struct {

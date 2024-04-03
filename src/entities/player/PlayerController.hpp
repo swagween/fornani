@@ -40,6 +40,7 @@ class PlayerController {
 	void set_shot(bool flag);
 	void prevent_movement();
 	void release_hook();
+	void nullify_dash();
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 

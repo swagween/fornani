@@ -6,6 +6,7 @@ namespace fornani {
 
 Game::Game(char** argv) {
 	// data
+	services.data = data::DataManager(services);
 	services.data.finder.setResourcePath(argv);
 	services.data.load_data();
 	// text
@@ -382,6 +383,13 @@ void Game::debug_window() {
 								ImGui::SameLine();
 								ImGui::Text(" : %i", item.get_quantity());
 							}
+							ImGui::Separator();
+							ImGui::Text("Abilities");
+							ImGui::Text("Dash: ");
+							ImGui::SameLine();
+							player.catalog.categories.abilities.has_ability(player::Abilities::dash) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
+							if (ImGui::Button("Give Dash")) { player.catalog.categories.abilities.give_ability(player::Abilities::dash); }
+							if (ImGui::Button("Remove Dash")) { player.catalog.categories.abilities.remove_ability(player::Abilities::dash); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {

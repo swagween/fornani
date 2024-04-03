@@ -176,6 +176,11 @@ void PlayerController::prevent_movement() {
 
 void PlayerController::release_hook() { hook_flags.reset(Hook::hook_released); }
 
+void PlayerController::nullify_dash() {
+	cancel_dash_request();
+	stop_dashing();
+}
+
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {
 		return search->second;

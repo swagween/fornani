@@ -20,7 +20,7 @@ class Item : public entity::Entity {
   public:
 	Item() = default;
 	Item(automa::ServiceProvider& svc, std::string_view label);
-	void update(automa::ServiceProvider& svc, world::Map& map);
+	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void add_item(int amount);
 	void set_id(int new_id);

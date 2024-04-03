@@ -57,6 +57,7 @@ void Player::init(automa::ServiceProvider& svc) {
 void Player::update(gui::Console& console) {
 
 	update_sprite();
+	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { controller.nullify_dash(); }
 
 	collider.physics.gravity = physics_stats.grav;
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
@@ -76,7 +77,7 @@ void Player::update(gui::Console& console) {
 
 	//player-controlled actions
 	arsenal.switch_weapon(*m_services, controller.arms_switch());
-	dash();
+	if (catalog.categories.abilities.has_ability(Abilities::dash)) { dash(); }
 	jump();
 
 	// check keystate
@@ -89,23 +90,21 @@ void Player::update(gui::Console& console) {
 		if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
 	}
 
-
-	// for parameter tweaking, remove later
 	collider.update(*m_services);
 
 	health.update();
-
 	update_invincibility();
-
-	apparent_position = collider.physics.position + collider.dimensions / 2.f;
 
 	update_animation();
 	update_weapon();
+	catalog.update(*m_services);
 
-	if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
-		controller.stop_dashing();
-		controller.cancel_dash_request();
-		collider.dash_flags.reset(shape::Dash::dash_cancel_collision);
+	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
+		if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
+			controller.stop_dashing();
+			controller.cancel_dash_request();
+			collider.dash_flags.reset(shape::Dash::dash_cancel_collision);
+		}
 	}
 
 	// antennae!
@@ -186,8 +185,10 @@ void Player::update_animation() {
 	if (collider.physics.velocity.y < -animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::rise); }
 	if (collider.physics.velocity.y > animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::fall); }
 
-	if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
-	if (controller.dash_requested()) { animation.state.set(AnimState::dash); }
+	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
+		if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
+		if (controller.dash_requested()) { animation.state.set(AnimState::dash); }
+	}
 
 	animation.update();
 }
@@ -242,6 +243,7 @@ void Player::calculate_sprite_offset() {
 	sprite_offset.y = 0.f;
 	if (collider.flags.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
 	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y + 1};
+	apparent_position = collider.physics.position + collider.dimensions / 2.f;
 }
 
 void Player::jump() {
@@ -350,7 +352,6 @@ void Player::hurt(int amount = 1) {
 		m_services->soundboard.flags.player.set(audio::Player::hurt);
 		just_hurt = true;
 	}
-
 	if (health.is_dead()) { kill(); }
 }
 

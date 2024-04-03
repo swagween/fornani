@@ -1,6 +1,8 @@
 
 #pragma once
 #include "../../utils/BitFlags.hpp"
+#include <unordered_map>
+#include <string_view>
 
 namespace automa {
 struct ServiceProvider;
@@ -12,10 +14,20 @@ class Console;
 
 namespace player {
 
+enum class Abilities { dash, wall_slide, double_jump, respiration };
+
 class AbilityManager {
   public:
-  private:
+	void update(automa::ServiceProvider& svc);
+	void give_ability(Abilities ability);
+	void give_ability(std::string_view ability);
+	void remove_ability(Abilities ability);
+	void clear();
+	[[nodiscard]] auto has_ability(Abilities ability) const -> bool { return ability_flags.test(ability); }
 
+  private:
+	util::BitFlags<Abilities> ability_flags{};
+	std::unordered_map<std::string_view, Abilities> ability_from_label{{"dash", Abilities::dash}};
 };
 
 } // namespace player

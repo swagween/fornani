@@ -13,7 +13,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	if (in_data["unique"].as_bool()) { flags.set(ItemFlags::unique); }
 }
 
-void Item::update(automa::ServiceProvider& svc, world::Map& map) {
+void Item::update(automa::ServiceProvider& svc) {
 	if (flags.test(ItemFlags::unique)) { variables.quantity = std::clamp(variables.quantity, 0, 1); }
 }
 

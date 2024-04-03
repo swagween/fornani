@@ -8,6 +8,10 @@
 #include <string>
 #include "ResourceFinder.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace player {
 class Player;
 }
@@ -17,6 +21,7 @@ namespace data {
 class DataManager {
 
 	public:
+	DataManager(automa::ServiceProvider& svc);
 	// game save
 	void load_data();
 	void save_progress(player::Player& player, int save_point_id);
@@ -48,6 +53,8 @@ class DataManager {
 	dj::Json background{};
 
 	ResourceFinder finder{};
+
+	automa::ServiceProvider* m_services;
 };
 
 } // namespace data

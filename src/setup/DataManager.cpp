@@ -3,10 +3,12 @@
 
 #include "DataManager.hpp"
 #include "MapLookups.hpp"
-#include "ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
 
 namespace data {
+
+DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 
 void DataManager::load_data() {
 
@@ -63,6 +65,17 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 	save["player_data"]["equipped_gun"] = player.arsenal.get_index();
 
+	//items and abilities
+	save["player_data"]["abilities"] = wipe;
+	save["player_data"]["items"] = wipe;
+	if (player.catalog.categories.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
+	for(auto& item : player.catalog.categories.inventory.items) {
+		dj::Json this_item{};
+		this_item["id"] = item.get_id();
+		this_item["quantity"] = item.get_quantity();
+		save["player_data"]["items"].push_back(this_item);
+	}
+
 	save["save_point_id"] = save_point_id;
 
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
@@ -92,6 +105,12 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
 		player.arsenal.set_index(equipped_gun);
 	}
+
+	// load items and abilities
+	player.catalog.categories.abilities.clear();
+	player.catalog.categories.inventory.clear();
+	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
+	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
 	//reset some things that might be lingering
 	player.arsenal.extant_projectile_instances = {};
