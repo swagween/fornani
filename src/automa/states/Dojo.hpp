@@ -15,6 +15,7 @@ class Dojo : public GameState {
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
+	void toggle_inventory();
 
 	world::Map map;
 	sf::Texture tileset{};

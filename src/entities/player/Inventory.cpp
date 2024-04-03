@@ -18,10 +18,15 @@ Inventory::Inventory() {
 }
 
 void Inventory::update(automa::ServiceProvider& svc) {
-	for (auto& item : items) { item.update(svc); }
+	int index{};
+	for (auto& item : items) {
+		item.update(svc, index);
+		++index;
+	}
 }
 
 void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) {
+	if (item_id == 0) { return; }
 	bool found{};
 	for (auto& item : items) {
 		if (item.get_id() == item_id) {

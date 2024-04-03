@@ -12,6 +12,7 @@
 #include "../gui/Portrait.hpp"
 #include "../gui/HUD.hpp"
 #include "../level/Map.hpp"
+#include "../gui/InventoryWindow.hpp"
 
 namespace player {
 class Player;
@@ -40,7 +41,7 @@ class GameState {
 	using Time = std::chrono::duration<float>;
 
 	GameState() = default;
-	GameState(ServiceProvider& svc, player::Player& player, int id = 0) : player(&player), hud(svc, player, {20, 20}) {}
+	GameState(ServiceProvider& svc, player::Player& player, int id = 0) : player(&player), hud(svc, player, {20, 20}), inventory_window(svc) {}
 	GameState& operator=(GameState&&) = delete;
 
 	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
@@ -54,6 +55,7 @@ class GameState {
 	bool debug_mode{false};
 
 	gui::Console console{};
+	gui::InventoryWindow inventory_window;
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};

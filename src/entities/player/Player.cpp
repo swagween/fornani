@@ -2,6 +2,7 @@
 #include "Player.hpp"
 #include "../item/Drop.hpp"
 #include "../../gui/Console.hpp"
+#include "../../gui/InventoryWindow.hpp"
 #include "../../service/ServiceProvider.hpp"
 
 namespace player {
@@ -54,7 +55,7 @@ void Player::init(automa::ServiceProvider& svc) {
 	texture_updater.load_pixel_map(svc.assets.t_palette_nani);
 }
 
-void Player::update(gui::Console& console) {
+void Player::update(gui::Console& console, gui::InventoryWindow& inventory_window) {
 
 	update_sprite();
 	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { controller.nullify_dash(); }
@@ -67,7 +68,7 @@ void Player::update(gui::Console& console) {
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
 	controller.update();
-	update_transponder(console);
+	update_transponder(console, inventory_window);
 
 	if (grounded()) { controller.reset_dash_count(); }
 
@@ -197,8 +198,28 @@ void Player::update_sprite() {
 	sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 
-void Player::update_transponder(gui::Console& console) {
-	if (console.flags.test(gui::ConsoleFlags::active)) {
+void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window) {
+	if (inventory_window.active()) {
+		controller.prevent_movement();
+		if (controller.transponder_up()) {
+			inventory_window.selector.go_up();
+			std::cout << inventory_window.selector.get_current_selection() << "\n";
+		}
+		if (controller.transponder_down()) {
+			inventory_window.selector.go_down();
+			std::cout << inventory_window.selector.get_current_selection() << "\n";
+		}
+		if (controller.transponder_left()) {
+			inventory_window.selector.go_left();
+			std::cout << inventory_window.selector.get_current_selection() << "\n";
+		}
+		if (controller.transponder_right()) {
+			inventory_window.selector.go_right();
+			std::cout << inventory_window.selector.get_current_selection() << "\n";
+		}
+		transponder.update(*m_services, inventory_window);
+	}
+	if (console.active()) {
 		controller.prevent_movement();
 		if (controller.transponder_skip()) { transponder.skip_ahead(); }
 		if (controller.transponder_skip_released()) { transponder.enable_skip(); }

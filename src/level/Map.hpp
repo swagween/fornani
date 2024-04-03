@@ -34,6 +34,7 @@ class Player;
 namespace gui {
 class Console;
 class Portrait;
+class InventoryWindow;
 }
 
 namespace world {
@@ -71,7 +72,7 @@ class Map {
 
 	// methods
 	void load(automa::ServiceProvider& svc, std::string_view room);
-	void update(automa::ServiceProvider& svc, gui::Console& console);
+	void update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win);

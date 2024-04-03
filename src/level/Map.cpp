@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include "../entities/player/Player.hpp"
 #include "../gui/Portrait.hpp"
+#include "../gui/InventoryWindow.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../setup/EnumLookups.hpp"
 #include "../setup/ServiceLocator.hpp"
@@ -140,9 +141,10 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 	generate_layer_textures(svc);
 }
 
-void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
+void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
 
 	console.update(svc);
+	inventory_window.update(svc, *player);
 
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }

@@ -39,6 +39,8 @@ void PlayerController::update() {
 	auto const& transponder_exit = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
 	auto const& transponder_down = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered);
 	auto const& transponder_up = svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::triggered);
+	auto const& transponder_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::triggered);
+	auto const& transponder_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::triggered);
 	auto const& transponder_select = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
 
 	auto const& hook_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::held);
@@ -74,6 +76,8 @@ void PlayerController::update() {
 	transponder_exit ? transponder_flags.set(TransponderInput::exit) : transponder_flags.reset(TransponderInput::exit);
 	transponder_down ? transponder_flags.set(TransponderInput::down) : transponder_flags.reset(TransponderInput::down);
 	transponder_up ? transponder_flags.set(TransponderInput::up) : transponder_flags.reset(TransponderInput::up);
+	transponder_left ? transponder_flags.set(TransponderInput::left) : transponder_flags.reset(TransponderInput::left);
+	transponder_right ? transponder_flags.set(TransponderInput::right) : transponder_flags.reset(TransponderInput::right);
 	transponder_select ? transponder_flags.set(TransponderInput::select) : transponder_flags.reset(TransponderInput::select);
 
 	//hook

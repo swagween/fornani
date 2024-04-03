@@ -4,7 +4,7 @@
     "hp": 3.000000,
     "orbs": 0,
     "position": {
-      "x": 149.649231,
+      "x": 136.255157,
       "y": 230.999985
     },
     "arsenal": [
@@ -12,17 +12,10 @@
     ],
     "equipped_gun": 0,
     "abilities": [
-      "dash"
+
     ],
     "items": [
-      {
-        "id": 1,
-        "quantity": 1
-      },
-      {
-        "id": 2,
-        "quantity": 1
-      }
+
     ]
   },
   "save_point_id": 0

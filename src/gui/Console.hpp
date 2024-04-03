@@ -46,6 +46,7 @@ class Console {
 
 	void nine_slice(int corner_dim, int edge_dim);
 
+	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
 	[[nodiscard]] auto is_complete() const -> bool { return !flags.test(ConsoleFlags::active); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
 

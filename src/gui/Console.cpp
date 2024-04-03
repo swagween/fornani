@@ -55,9 +55,11 @@ void Console::update(automa::ServiceProvider& svc) {
 
 void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
-	if (flags.test(ConsoleFlags::portrait_included)) { portrait.render(win); }
-	flags.test(ConsoleFlags::portrait_included) && writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
-	nani_portrait.render(win);
+	if (flags.test(ConsoleFlags::portrait_included)) {
+		portrait.render(win);
+		writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
+		nani_portrait.render(win);
+	}
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }

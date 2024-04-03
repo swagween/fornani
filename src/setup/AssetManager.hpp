@@ -82,6 +82,13 @@ class AssetManager {
 		weapon_textures.insert({"grappling hook", t_grappling_hook});
 		projectile_textures.insert({"grappling hook", t_hook});
 
+		t_bryns_notebook.loadFromFile(finder.resource_path + "/image/item/bryns_notebook.png");
+		t_factory_access_permit.loadFromFile(finder.resource_path + "/image/item/factory_access_permit.png");
+		items.insert({"bryns_notebook", t_bryns_notebook});
+		items.insert({"factory_access_permit", t_factory_access_permit});
+		items.insert({"bipolar_junction_transistor", t_bryns_notebook});
+		items.insert({"willets_floppy_disc", t_factory_access_permit});
+
 
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
@@ -230,6 +237,10 @@ class AssetManager {
 	sf::Sprite sp_bryn_test{};
 	sf::Texture t_ui_test{};
 	sf::Sprite sp_ui_test{};
+
+	//items
+	sf::Texture t_bryns_notebook{};
+	sf::Texture t_factory_access_permit{};
 
 	// critters and bosses!
 	sf::Texture t_frdog{};
@@ -394,6 +405,7 @@ class AssetManager {
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
+	std::unordered_map<std::string_view, sf::Texture&> items{};
 };
 
 } // namespace asset

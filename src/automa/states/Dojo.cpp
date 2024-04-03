@@ -81,13 +81,15 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 			if (x % 4 == 0) { x = 0; }
 			svc.assets.sp_bryn_test.setTextureRect(sf::IntRect({x * 128, 0}, {128, 256}));
 		}
+
+		if (event.key.code == sf::Keyboard::E) { toggle_inventory(); }
 	}
 }
 
 void Dojo::tick_update(ServiceProvider& svc) {
-	player->update(console);
+	player->update(console, inventory_window);
 
-	map.update(svc, console);
+	map.update(svc, console, inventory_window);
 
 	svc::cameraLocator.get().center(svc, player->anchor_point);
 	svc::cameraLocator.get().update(svc);
@@ -115,6 +117,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.render(svc, win, svc::cameraLocator.get().physics.position);
 
 	if (!svc.greyblock_mode()) { hud.render(*player, win); }
+	inventory_window.render(svc, *player, win);
 	map.render_console(svc, console, win);
 
 	svc.assets.sp_ui_test.setPosition(20, cam::screen_dimensions.y - 148);
@@ -133,5 +136,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		}
 	}
 }
+
+void Dojo::toggle_inventory() { inventory_window.active() ? inventory_window.close() : inventory_window.open(); }
 
 } // namespace automa
