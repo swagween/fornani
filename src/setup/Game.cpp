@@ -9,6 +9,8 @@ Game::Game(char** argv) {
 	services.data = data::DataManager(services);
 	services.data.finder.setResourcePath(argv);
 	services.data.load_data();
+	//controls
+	services.data.load_contols(services.controller_map);
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();

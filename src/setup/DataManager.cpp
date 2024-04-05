@@ -1,10 +1,9 @@
 
-#pragma once
-
 #include "DataManager.hpp"
 #include "MapLookups.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "ControllerMap.hpp"
 
 namespace data {
 
@@ -182,5 +181,16 @@ void DataManager::save_player_params(player::Player& player) {
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	std::cout << " success!\n";
 }
+
+void DataManager::load_contols(config::ControllerMap& controller) {
+
+	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
+	assert(!controls.is_null());
+
+	controller.key_to_label.insert({controller.string_to_key.at(controls["controls"]["main_action"]["keyboard_key"].as_string()), "main_action"});
+
+}
+
+void DataManager::save_contols(config::ControllerMap& controller) {}
 
 } // namespace data

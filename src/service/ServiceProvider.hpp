@@ -18,7 +18,7 @@ struct ServiceProvider {
 	asset::AssetManager assets{};
 	data::DataManager data{*this};
 	data::TextManager text{};
-	config::ControllerMap controller_map{};
+	config::ControllerMap controller_map{*this};
 	audio::Soundboard soundboard{};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};

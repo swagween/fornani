@@ -12,6 +12,10 @@ namespace automa {
 struct ServiceProvider;
 }
 
+namespace config {
+class ControllerMap;
+}
+
 namespace player {
 class Player;
 }
@@ -32,6 +36,10 @@ class DataManager {
 	void load_player_params(player::Player& player);
 	void save_player_params(player::Player& player);
 
+	// support user-defined control mapping
+	void load_contols(config::ControllerMap& controller);
+	void save_contols(config::ControllerMap& controller);
+
 	dj::Json weapon{};
 	dj::Json drop{};
 	dj::Json particle{};
@@ -49,6 +57,7 @@ class DataManager {
 	int current_save{};
 
 	dj::Json player_params{};
+	dj::Json controls{};
 	dj::Json map_table{};
 	dj::Json background{};
 

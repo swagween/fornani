@@ -1,9 +1,11 @@
 #include "ControllerMap.hpp"
+#include "../service/ServiceProvider.hpp"
 #include <iostream>
 
 namespace config {
 
-ControllerMap::ControllerMap() {
+ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
+
 	label_to_control.insert({"main_action", Control(Action::main_action)});
 	label_to_control.insert({"secondary_action", Control(Action::secondary_action)});
 	label_to_control.insert({"tertiary_action", Control(Action::tertiary_action)});
@@ -17,7 +19,7 @@ ControllerMap::ControllerMap() {
 	label_to_control.insert({"down", Control(Action::down)});
 
 	// we should load this from a json later
-	key_to_label.insert({sf::Keyboard::Z, "main_action"});
+	//key_to_label.insert({sf::Keyboard::Z, "main_action"});
 	key_to_label.insert({sf::Keyboard::X, "secondary_action"});
 	key_to_label.insert({sf::Keyboard::C, "tertiary_action"});
 	key_to_label.insert({sf::Keyboard::LShift, "inspect"});

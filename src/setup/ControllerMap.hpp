@@ -6,6 +6,10 @@
 #include <unordered_map>
 #include "../utils/BitFlags.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace config {
 
 	enum class Action { left, right, up, down, main_action, tertiary_action, secondary_action, inspect, arms_switch_left, arms_switch_right, menu_toggle, menu_toggle_secondary };
@@ -35,7 +39,7 @@ namespace config {
 
 class ControllerMap {
   public:
-	ControllerMap();
+	ControllerMap(automa::ServiceProvider& svc);
 	void handle_press(sf::Keyboard::Key& k);
 	void handle_release(sf::Keyboard::Key& k);
 	void handle_joystick_events(sf::Event& event);
@@ -44,6 +48,8 @@ class ControllerMap {
 
 	std::unordered_map<std::string_view, Control> label_to_control{};
 	std::unordered_map<sf::Keyboard::Key, std::string_view> key_to_label{};
+	std::unordered_map<std::string_view, sf::Keyboard::Key> string_to_key { {"Z", sf::Keyboard::Z} };
+
 	ControllerType type{};
 
   private:
