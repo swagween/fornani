@@ -53,7 +53,6 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	// save was loaded from a json, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
 
-	svc::inputStateLocator.get().reset_triggers();
 	player->controller = {};
 	player->controller.prevent_movement();
 }
@@ -70,19 +69,15 @@ void Dojo::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
-	if (event.type == sf::Event::EventType::KeyPressed) { svc::inputStateLocator.get().handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc::inputStateLocator.get().handle_release(event.key.code); }
+	svc.controller_map.handle_joystick_events(event);
+
+	if (event.type == sf::Event::EventType::KeyPressed) {
+		svc.controller_map.handle_press(event.key.code);
+		if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(); }
+	}
+	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
-	}
-	if (event.type == sf::Event::EventType::KeyPressed) {
-		if (event.key.code == sf::Keyboard::B) {
-			x++;
-			if (x % 4 == 0) { x = 0; }
-			svc.assets.sp_bryn_test.setTextureRect(sf::IntRect({x * 128, 0}, {128, 256}));
-		}
-
-		if (event.key.code == sf::Keyboard::E) { toggle_inventory(); }
 	}
 }
 
@@ -99,7 +94,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	map.debug_mode = debug_mode;
 
-	svc::inputStateLocator.get().reset_triggers();
+	svc.controller_map.reset_triggers();
 	player->controller.clean();
 	svc.soundboard.play_sounds(svc);
 }
@@ -124,7 +119,6 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	svc.assets.sp_bryn_test.setPosition(20, cam::screen_dimensions.y - 276);
 
 	map.transition.render(win);
-
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		if (svc.greyblock_mode()) {

@@ -7,6 +7,10 @@
 #include "../../utils/Direction.hpp"
 #include "Jump.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace player {
 
 constexpr static int dash_time{32};
@@ -22,7 +26,7 @@ class PlayerController {
   public:
 	PlayerController();
 
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void clean();
 	void stop();
 	void ground();

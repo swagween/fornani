@@ -54,26 +54,29 @@ void FileMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
 
 void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
-	if (event.type == sf::Event::EventType::KeyPressed) {
-		if (event.key.code == sf::Keyboard::Down) {
+	svc.controller_map.handle_joystick_events(event);
+	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
+	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+
+		if (svc.controller_map.label_to_control.at("down").triggered()) {
 			++file_selection;
 			constrain_selection();
 			svc.data.load_blank_save(*player);
 			svc.data.load_progress(*player, file_selection);
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (event.key.code == sf::Keyboard::Up) {
+		if (svc.controller_map.label_to_control.at("up").triggered()) {
 			--file_selection;
 			constrain_selection();
 			svc.data.load_blank_save(*player);
 			svc.data.load_progress(*player, file_selection);
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (event.key.code == sf::Keyboard::Left) {
+		if (svc.controller_map.label_to_control.at("left").triggered()) {
 			svc.state_controller.actions.set(Actions::exit_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
-		if (event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Enter) {
+		if (svc.controller_map.label_to_control.at("main_action").triggered()) {
 			constrain_selection();
 			svc.data.load_progress(*player, file_selection, true);
 			svc.state_controller.actions.set(Actions::trigger);
@@ -81,7 +84,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			svc.soundboard.flags.menu.set(audio::Menu::select);
 			svc.soundboard.flags.world.set(audio::World::load);
 		}
-	}
+	if (event.type == sf::Event::EventType::JoystickMoved) { svc.controller_map.reset_triggers(); }
 }
 
 void FileMenu::tick_update(ServiceProvider& svc) {
@@ -113,6 +116,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->update_antennae();
 
 	svc.soundboard.play_sounds(svc);
+	svc.controller_map.reset_triggers();
 }
 
 void FileMenu::frame_update(ServiceProvider& svc) {}

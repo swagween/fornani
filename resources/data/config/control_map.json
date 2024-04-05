@@ -1,0 +1,55 @@
+{
+  "controls": [
+    {
+      "control": "main_action",
+      "keyboard_key": "Z",
+      "gamepad_button": "A"
+    },
+    {
+      "control": "secondary_action",
+      "keyboard_key": "X",
+      "gamepad_button": "B"
+    },
+    {
+      "control": "left",
+      "keyboard_key": "Left",
+      "gamepad_button": ""
+    },
+    {
+      "control": "right",
+      "keyboard_key": "Right",
+      "gamepad_button": ""
+    },
+    {
+      "control": "up",
+      "keyboard_key": "Up",
+      "gamepad_button": ""
+    },
+    {
+      "control": "down",
+      "keyboard_key": "Down",
+      "gamepad_button": ""
+    },
+    {
+      "control": "arms_switch_left",
+      "keyboard_key": "A",
+      "gamepad_button": ""
+    },
+    {
+      "control": "arms_switch_right",
+      "keyboard_key": "S",
+      "gamepad_button": ""
+    },
+    {
+      "control": "menu_toggle",
+      "keyboard_key": "W",
+      "gamepad_button": ""
+    },
+    {
+      "control": "menu_toggle_secondary",
+      "keyboard_key": "E",
+      "gamepad_button": ""
+    }
+
+  ]
+}

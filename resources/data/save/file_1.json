@@ -4,15 +4,17 @@
     "hp": 3.000000,
     "orbs": 0,
     "position": {
-      "x": 133.441864,
-      "y": 230.999985
+      "x": 146.711395,
+      "y": 231.000000
     },
     "arsenal": [
+      0,
+      1,
       4
     ],
-    "equipped_gun": 0,
+    "equipped_gun": 1,
     "abilities": [
-
+      "dash"
     ],
     "items": [
       {

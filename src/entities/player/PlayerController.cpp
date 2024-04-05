@@ -1,5 +1,6 @@
 #include "PlayerController.hpp"
 #include "../../setup/ServiceLocator.hpp"
+#include "../../service/ServiceProvider.hpp"
 
 namespace player {
 
@@ -14,48 +15,58 @@ PlayerController::PlayerController() {
 	direction.lr = dir::LR::right;
 }
 
-void PlayerController::update() {
-
+void PlayerController::update(automa::ServiceProvider& svc) {
 	if (walking_autonomously()) { return; }
 
-	auto const& left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::held);
-	auto const& right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::held);
-	auto const& up = svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::held);
-	auto const& down = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::held);
-	auto const& jump_started = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
-	auto const& jump_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held);
-	auto const& jump_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released);
-	auto const& shoot_pressed = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
-	auto const& shoot_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released);
-	auto const& arms_switch_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::A).key_state.test(util::key_state::triggered);
-	auto const& arms_switch_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::S).key_state.test(util::key_state::triggered);
-	auto const& inspected = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered) && grounded() && !left && !right;
-	auto const& dash_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) && !grounded() && left;
-	auto const& dash_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) && !grounded() && right;
+	auto const& left = svc.controller_map.label_to_control.at("left").held();
+	auto const& right = svc.controller_map.label_to_control.at("right").held();
+	auto const& up = svc.controller_map.label_to_control.at("up").held();
+	auto const& down = svc.controller_map.label_to_control.at("down").held();
 
-	auto const& transponder_skip = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
-	auto const& transponder_skip_released = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released);
-	auto const& transponder_next = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
-	auto const& transponder_exit = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered);
-	auto const& transponder_down = svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered);
-	auto const& transponder_up = svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::triggered);
-	auto const& transponder_left = svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::triggered);
-	auto const& transponder_right = svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::triggered);
-	auto const& transponder_select = svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered);
+	auto const& jump_started = svc.controller_map.label_to_control.at("main_action").triggered();
+	auto const& jump_held = svc.controller_map.label_to_control.at("main_action").held();
+	auto const& jump_released = svc.controller_map.label_to_control.at("main_action").released();
 
-	auto const& hook_held = svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::held);
+	auto const& shoot_pressed = svc.controller_map.label_to_control.at("secondary_action").triggered();
+	auto const& shoot_released = svc.controller_map.label_to_control.at("secondary_action").released();
+
+	auto const& arms_switch_left = svc.controller_map.label_to_control.at("arms_switch_left").triggered();
+	auto const& arms_switch_right = svc.controller_map.label_to_control.at("arms_switch_right").triggered();
+
+	auto const& inspected = (svc.controller_map.label_to_control.at("inspect").triggered() && grounded() && !left && !right) ||
+(svc.controller_map.label_to_control.at("down").triggered() && grounded() && !left && !right);
+	auto const& dash_left = svc.controller_map.label_to_control.at("tertiary_action").triggered() &&!grounded() && left;
+	auto const& dash_right = svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
+
+	auto const& transponder_skip = svc.controller_map.label_to_control.at("main_action").triggered();
+	auto const& transponder_skip_released = svc.controller_map.label_to_control.at("main_action").released();
+	auto const& transponder_next = svc.controller_map.label_to_control.at("main_action").triggered();
+	auto const& transponder_exit = svc.controller_map.label_to_control.at("secondary_action").triggered();
+	auto const& transponder_down = svc.controller_map.label_to_control.at("down").triggered();
+	auto const& transponder_up = svc.controller_map.label_to_control.at("up").triggered();
+	auto const& transponder_left = svc.controller_map.label_to_control.at("left").triggered();
+	auto const& transponder_right = svc.controller_map.label_to_control.at("right").triggered();
+	auto const& transponder_select = svc.controller_map.label_to_control.at("main_action").triggered();
+
+	auto const& hook_held = svc.controller_map.label_to_control.at("secondary_action").held();
+
+
+	if (svc.controller_map.type == config::ControllerType::gamepad) {
+		key_map[ControllerInput::move_x] = svc.controller_map.get_throttle().x;
+		key_map[ControllerInput::move_y] = svc.controller_map.get_throttle().y;
+	} else {
+		key_map[ControllerInput::move_x] = 0.f;
+		key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
+		key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
+		key_map[ControllerInput::move_x] = right && left ? 0.f : key_map[ControllerInput::move_x];
+
+		key_map[ControllerInput::move_y] = 0.f;
+		key_map[ControllerInput::move_y] = up && !down ? -1.f : key_map[ControllerInput::move_y];
+		key_map[ControllerInput::move_y] = down && !up ? 1.f : key_map[ControllerInput::move_y];
+		key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
+	}
 
 	direction.set_intermediate(left, right, up, down);
-
-	key_map[ControllerInput::move_x] = 0.f;
-	key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
-	key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
-	key_map[ControllerInput::move_x] = right && left ? 0.f : key_map[ControllerInput::move_x];
-
-	key_map[ControllerInput::move_y] = 0.f;
-	key_map[ControllerInput::move_y] = up && !down ? -1.f : key_map[ControllerInput::move_y];
-	key_map[ControllerInput::move_y] = down && !up ? 1.f : key_map[ControllerInput::move_y];
-	key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
 
 	key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
 	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
@@ -116,6 +127,8 @@ void PlayerController::update() {
 	flags.reset(MovementState::restricted);
 	decrement_requests();
 	jump.update();
+
+	svc.controller_map.reset_triggers();
 }
 
 void PlayerController::clean() {

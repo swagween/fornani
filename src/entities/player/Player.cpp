@@ -67,7 +67,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
-	controller.update();
+	controller.update(*m_services);
 	update_transponder(console, inventory_window);
 
 	if (grounded()) { controller.reset_dash_count(); }
@@ -357,8 +357,12 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
-	if (controller.moving_right() && !collider.has_right_collision()) { collider.physics.acceleration.x = grounded() ? physics_stats.x_acc : (physics_stats.x_acc / physics_stats.air_multiplier); }
-	if (controller.moving_left() && !collider.has_left_collision()) { collider.physics.acceleration.x = grounded() ? -physics_stats.x_acc : (-physics_stats.x_acc / physics_stats.air_multiplier); }
+	if (controller.moving_right() && !collider.has_right_collision()) {
+		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
+	}
+	if (controller.moving_left() && !collider.has_left_collision()) {
+		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
+	}
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
 		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { m_services->soundboard.flags.player.set(audio::Player::step); }
 	}
