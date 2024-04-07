@@ -69,6 +69,7 @@ void Dojo::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
+	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);
 
 	if (event.type == sf::Event::EventType::KeyPressed) {

@@ -187,7 +187,14 @@ void DataManager::load_contols(config::ControllerMap& controller) {
 	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
 
-	controller.key_to_label.insert({controller.string_to_key.at(controls["controls"]["main_action"]["keyboard_key"].as_string()), "main_action"});
+	for (auto& tag : controller.tags) {
+		auto in_key = controls["controls"][tag]["keyboard_key"].as_string();
+		auto in_button = controls["controls"][tag]["mouse_button"].as_string();
+		auto in_gamepad = controls["controls"][tag]["gamepad_button"].as<int>();
+		if (controller.string_to_key.contains(in_key)) { controller.key_to_label.insert({controller.string_to_key.at(in_key), tag}); }
+		if (controller.string_to_mousebutton.contains(in_button)) { controller.mousebutton_to_label.insert({controller.string_to_mousebutton.at(in_button), tag});}
+		if (in_gamepad != -1) { controller.label_to_gamepad.insert({tag, in_gamepad}); }
+	}
 
 }
 

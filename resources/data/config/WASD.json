@@ -1,0 +1,49 @@
+{
+  "controls": {
+    "main_action": {
+      "keyboard_key": "E",
+      "gamepad_button": 1
+    },
+    "secondary_action": {
+      "mouse_button": "LMB",
+      "gamepad_button": 7
+    },
+    "tertiary_action": {
+      "keyboard_key": "Space",
+      "gamepad_button": 3
+    },
+    "inspect": {
+      "mouse_button": "RMB",
+      "gamepad_button": 2
+    },
+    "left": {
+      "keyboard_key": "A"
+    },
+    "right": {
+      "keyboard_key": "D"
+    },
+    "up": {
+      "keyboard_key": "W"
+    },
+    "down": {
+      "keyboard_key": "S"
+    },
+    "arms_switch_left": {
+      "keyboard_key": "1",
+      "gamepad_button": 4
+    },
+    "arms_switch_right": {
+      "keyboard_key": "2",
+      "gamepad_button": 5
+    },
+    "menu_toggle": {
+      "keyboard_key": "Q",
+      "gamepad_button": 8
+    },
+    "menu_toggle_secondary": {
+      "keyboard_key": "Esc",
+      "gamepad_button": 9
+    }
+
+  }
+}
