@@ -3,6 +3,7 @@
 
 #include "states/MainMenu.hpp"
 #include "states/FileMenu.hpp"
+#include "states/OptionsMenu.hpp"
 #include "states/Dojo.hpp"
 
 namespace automa {

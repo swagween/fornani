@@ -92,6 +92,8 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		}
 		if (selection == MenuSelection::options) {
 			// todo: make options menu
+			svc.state_controller.submenu = menu_type::options;
+			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::select);
 		}
 	}

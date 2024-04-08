@@ -1,5 +1,4 @@
 #include "Game.hpp"
-#include "Game.hpp"
 #include "ServiceLocator.hpp"
 
 namespace fornani {
@@ -133,8 +132,7 @@ void Game::run() { // load all assets
 		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {
 			switch (services.state_controller.submenu) {
 			case automa::menu_type::file_select: game_state.set_current_state(std::make_unique<automa::FileMenu>(services, player)); break;
-			case automa::menu_type::options:
-				// todo
+			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player));
 				break;
 			case automa::menu_type::settings:
 				// todo

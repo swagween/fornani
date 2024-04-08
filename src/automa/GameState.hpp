@@ -63,6 +63,7 @@ class GameState {
 
 	player::Player* player;
 	gui::HUD hud;
+	sf::Font font{};
 };
 
 } // namespace automa
