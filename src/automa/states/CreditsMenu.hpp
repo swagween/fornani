@@ -5,13 +5,10 @@
 
 namespace automa {
 
-class MainMenu : public GameState {
-
+class CreditsMenu : public automa::GameState {
   public:
-
-	MainMenu() = default;
-	MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
-
+	CreditsMenu() = default;
+	CreditsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
 	void init(ServiceProvider& svc, std::string_view room = "");
 	void setTilesetTexture(ServiceProvider& svc, sf::Texture& t);
 	void handle_events(ServiceProvider& svc, sf::Event& event);
@@ -19,8 +16,7 @@ class MainMenu : public GameState {
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 
-	sf::Sprite title{};
-	std::vector<sf::Sprite> title_assets{};
+	
 };
 
-}
+} // namespace automa

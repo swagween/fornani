@@ -33,7 +33,8 @@ void TextManager::load_data() {
 	std::cout << " success!\n";
 
 	//set font
-	font = finder.resource_path + "/text/fonts/pixelFJ8pt1.ttf";
+	text_font = finder.resource_path + "/text/fonts/pixelFJ8pt1.ttf";
+	title_font = finder.resource_path + "/text/fonts/kongtext.ttf";
 
 }
 

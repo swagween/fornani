@@ -8,7 +8,7 @@ Game::Game(char** argv) {
 	services.data = data::DataManager(services);
 	services.data.finder.setResourcePath(argv);
 	services.data.load_data();
-	//controls
+	// controls
 	services.data.load_contols(services.controller_map);
 	// text
 	services.text.finder.setResourcePath(argv);
@@ -27,7 +27,7 @@ Game::Game(char** argv) {
 	lookup::populate_lookup();
 
 	// state manager
-	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player));
+	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 	game_state.get_current_state().init(services);
 
 	window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "Fornani (beta v1.0)");
@@ -50,6 +50,8 @@ Game::Game(char** argv) {
 void Game::run() { // load all assets
 	while (window.isOpen()) {
 
+		if (services.state_controller.actions.test(automa::Actions::shutdown)) { return; }
+
 		services.ticker.start_frame();
 
 		measurements.win_size.x = window.getSize().x;
@@ -57,8 +59,8 @@ void Game::run() { // load all assets
 
 		// check for controller connection
 		sf::Joystick::isConnected(0) ? services.controller_map.type = config::ControllerType::gamepad : config::ControllerType::keyboard;
-		
-	// game loop
+
+		// game loop
 		sf::Clock deltaClock{};
 
 		// SFML event variable
@@ -99,9 +101,9 @@ void Game::run() { // load all assets
 				}
 				if (event.key.code == sf::Keyboard::K) { player.kill(); }
 				if (event.key.code == sf::Keyboard::T) { game_state.get_current_state().console.load_and_launch("bryn_test"); }
-				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
+				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); }
 				if (event.key.code == sf::Keyboard::W) {
-					game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+					game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 					game_state.get_current_state().init(services, "/level/FIRSTWIND_PRISON_01");
 					player.assign_texture(services.assets.t_nani);
 				}
@@ -131,24 +133,22 @@ void Game::run() { // load all assets
 		// switch states
 		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {
 			switch (services.state_controller.submenu) {
-			case automa::menu_type::file_select: game_state.set_current_state(std::make_unique<automa::FileMenu>(services, player)); break;
-			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player));
-				break;
+			case automa::menu_type::file_select: game_state.set_current_state(std::make_unique<automa::FileMenu>(services, player, "file")); break;
+			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player, "options")); break;
 			case automa::menu_type::settings:
 				// todo
 				break;
-			case automa::menu_type::credits:
-				// todo
-				break;
+			case automa::menu_type::controls: game_state.set_current_state(std::make_unique<automa::ControlsMenu>(services, player, "controls")); break;
+			case automa::menu_type::credits: game_state.set_current_state(std::make_unique<automa::CreditsMenu>(services, player, "credits")); break;
 			}
 			services.state_controller.actions.reset(automa::Actions::trigger_submenu);
 		}
 		if (services.state_controller.actions.test(automa::Actions::exit_submenu)) {
-			game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player));
+			game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 			services.state_controller.actions.reset(automa::Actions::exit_submenu);
 		}
 		if (services.state_controller.actions.test(automa::Actions::trigger)) {
-			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 			game_state.get_current_state().init(services, "/level/" + services.state_controller.next_state);
 			services.state_controller.actions.reset(automa::Actions::trigger);
 		}
@@ -264,7 +264,8 @@ void Game::debug_window() {
 				}
 				if (ImGui::BeginTabItem("Key States")) {
 					ImGui::Text("Joystick");
-					ImGui::Text("Status: "); ImGui::SameLine();
+					ImGui::Text("Status: ");
+					ImGui::SameLine();
 					sf::Joystick::isConnected(0) ? ImGui::Text("Connected") : ImGui::Text("Not connected");
 
 					ImGui::Text("Controller Type: ");
@@ -280,7 +281,7 @@ void Game::debug_window() {
 					ImGui::Text("Right  : %s", services.controller_map.label_to_control.at("right").held() ? "Pressed" : "");
 					ImGui::Text("Up     : %s", services.controller_map.label_to_control.at("up").held() ? "Pressed" : "");
 					ImGui::Text("Down   : %s", services.controller_map.label_to_control.at("down").held() ? "Pressed" : "");
-					
+
 					ImGui::Text("SQUARE  : %s", sf::Joystick::isButtonPressed(0, 0) ? "Pressed" : "");
 					ImGui::Text("CROSS   : %s", sf::Joystick::isButtonPressed(0, 1) ? "Pressed" : "");
 					ImGui::Text("CIRCLE  : %s", sf::Joystick::isButtonPressed(0, 2) ? "Pressed" : "");
@@ -511,7 +512,7 @@ void Game::debug_window() {
 				if (ImGui::BeginTabItem("Resources")) {
 					ImGui::Text("Size of Asset Manager (Bytes): %lu", sizeof(services.assets));
 					ImGui::Text("Size of Data Manager (Bytes): %lu", sizeof(services.data));
-					//ImGui::Text("Size of Text Manager (Bytes): %lu", sizeof(svc::textLocator.get()));
+					// ImGui::Text("Size of Text Manager (Bytes): %lu", sizeof(svc::textLocator.get()));
 					ImGui::Text("Size of Music Player (Bytes): %lu", sizeof(svc::musicPlayerLocator.get()));
 					ImGui::Text("Size of Camera (Bytes): %lu", sizeof(svc::cameraLocator.get()));
 					ImGui::Text("Size of Player (Bytes): %lu", sizeof(player));
@@ -528,131 +529,131 @@ void Game::debug_window() {
 					ImGui::TextUnformatted(game_state.get_current_state_string().c_str());
 					if (ImGui::Button("Under")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/UNDER_LEDGE_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
 					}
 					if (ImGui::Button("House")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/UNDER_HUT_01");
 
 						player.set_position({100, 160});
 					}
 					if (ImGui::Button("Ancient Field")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/ANCIENT_FIELD_01");
 
 						player.set_position({100, 160});
 					}
 					if (ImGui::Button("Base")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/BASE_LIVING_01");
 
 						player.set_position({25 * 32, 10 * 32});
 					}
 					if (ImGui::Button("Base Lab")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/BASE_LAB_01");
 
 						player.set_position({28 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Breakable Test")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/BREAKABLE_TEST_01");
 
 						player.set_position({20 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Skycorps")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SKYCORPS_YARD_01");
 
 						player.set_position({28 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Sky")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SKY_CHAMBER_01");
 						player.set_position({7 * 32, 16 * 32});
 					}
 					if (ImGui::Button("Shadow")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SHADOW_DOJO_01");
 						player.set_position({4 * 32, 11 * 32});
 					}
 					if (ImGui::Button("Stone")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/STONE_CORRIDOR_01");
 						player.set_position({10 * 32, 16 * 32});
 					}
 					if (ImGui::Button("Overturned")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/OVERTURNED_DOJO_01");
 						player.set_position({4 * 32, 11 * 32});
 					}
 					if (ImGui::Button("Glade")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/OVERTURNED_GLADE_01");
 						player.set_position({4 * 32, 4 * 32});
 					}
 					if (ImGui::Button("Woodshine")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/WOODSHINE_VILLAGE_01");
 						player.set_position({32, 1280});
 					}
 					if (ImGui::Button("Collision Room")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SKY_COLLISIONROOM_01");
 						player.set_position({5 * 32, 5 * 32});
 					}
 					if (ImGui::Button("Grub Dojo")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/GRUB_DOJO_01");
 						player.set_position({3 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Firstwind Dojo")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/BASE_TEST_03");
 						player.set_position({3 * 32, 8 * 32});
 					}
 					/*if (ImGui::Button("Atrium")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_ATRIUM_01");
 					}
 					if (ImGui::Button("Hangar")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_HANGAR_01");
 						player.set_position({ 3080, 790 });
 					}
 					if (ImGui::Button("Corridor 3")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_CORRIDOR_03");
 						player.set_position({ 2327, 360 });
 					}
 					if(ImGui::Button("Lab")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/TOXIC_LAB_01");
 					}*/
 					if (ImGui::Button("Toxic")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/TOXIC_ARENA_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
 						player.collider.physics.zero();
@@ -660,20 +661,20 @@ void Game::debug_window() {
 					}
 					if (ImGui::Button("Grub")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/GRUB_TUNNEL_01");
 						player.set_position({224, 290});
 					}
 					/*if(ImGui::Button("Night")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/NIGHT_CRANE_01");
 						player.set_position({50, 50});
 						player.assign_texture(services.assets.t_nani_dark);
 					}*/
 					if (ImGui::Button("Night 2")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/NIGHT_CATWALK_01");
 						player.set_position({50, 50});
 					}
@@ -685,7 +686,6 @@ void Game::debug_window() {
 		ImVec2 prev_size = ImGui::GetWindowSize();
 		ImGui::End();
 	}
-
 }
 
 void Game::take_screenshot() {
@@ -697,6 +697,5 @@ void Game::take_screenshot() {
 }
 
 bool Game::debug() { return services.debug_flags.test(automa::DebugFlags::imgui_overlay); }
-
 
 } // namespace fornani

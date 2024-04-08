@@ -38,6 +38,8 @@ void DataManager::load_data() {
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) { lookup::get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
 
+	menu = dj::Json::from_file((finder.resource_path + "/data/gui/menu.json").c_str());
+	assert(!menu.is_null());
 	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
 	std::cout << " success!\n";
@@ -192,8 +194,9 @@ void DataManager::load_contols(config::ControllerMap& controller) {
 		auto in_button = controls["controls"][tag]["mouse_button"].as_string();
 		auto in_gamepad = controls["controls"][tag]["gamepad_button"].as<int>();
 		if (controller.string_to_key.contains(in_key)) { controller.key_to_label.insert({controller.string_to_key.at(in_key), tag}); }
-		if (controller.string_to_mousebutton.contains(in_button)) { controller.mousebutton_to_label.insert({controller.string_to_mousebutton.at(in_button), tag});}
+		if (controller.string_to_mousebutton.contains(in_button)) { controller.mousebutton_to_label.insert({controller.string_to_mousebutton.at(in_button), tag}); }
 		if (in_gamepad != -1) { controller.label_to_gamepad.insert({tag, in_gamepad}); }
+		controller.tag_to_label.insert({tag, in_key});
 	}
 
 }

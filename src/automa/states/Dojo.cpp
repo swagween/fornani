@@ -4,7 +4,7 @@
 
 namespace automa {
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, int id) : GameState(svc, player, id), map(svc, player) {}
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player) {}
 
 void Dojo::init(ServiceProvider& svc, std::string_view room) {
 

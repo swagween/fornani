@@ -57,6 +57,7 @@ class DataManager {
 	int current_save{};
 
 	dj::Json player_params{};
+	dj::Json menu{};
 	dj::Json controls{};
 	dj::Json map_table{};
 	dj::Json background{};

@@ -49,6 +49,7 @@ class ControllerMap {
 
 	std::vector<std::string_view> tags{"main_action", "secondary_action", "tertiary_action", "inspect", "menu_toggle", "menu_toggle_secondary", "arms_switch_left", "arms_switch_right", "left", "right", "up", "down"};
 	std::unordered_map<std::string_view, Control> label_to_control{};
+	std::unordered_map<std::string_view, std::string_view> tag_to_label{};
 	std::unordered_map<sf::Keyboard::Key, std::string_view> key_to_label{};
 	std::unordered_map<sf::Mouse::Button, std::string_view> mousebutton_to_label{};
 	std::unordered_map<std::string_view, int> label_to_gamepad{};

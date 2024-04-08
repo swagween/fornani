@@ -5,7 +5,7 @@
 namespace text {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
-	font.loadFromFile(svc.text.font);
+	font.loadFromFile(svc.text.text_font);
 	font.setSmooth(false);
 	special_characters.insert({Codes::prompt, '%'});
 	special_characters.insert({Codes::quest, '$'});

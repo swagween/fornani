@@ -4,6 +4,8 @@
 #include "states/MainMenu.hpp"
 #include "states/FileMenu.hpp"
 #include "states/OptionsMenu.hpp"
+#include "states/ControlsMenu.hpp"
+#include "states/CreditsMenu.hpp"
 #include "states/Dojo.hpp"
 
 namespace automa {
