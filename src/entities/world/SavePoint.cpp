@@ -27,6 +27,7 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 
 	animation.update();
 	sparkler.update(svc);
+	intensity < 2 ? sparkler.set_color(svc.styles.colors.periwinkle) : sparkler.set_color(svc.styles.colors.ui_white);
 
 	sf::Vector2<float> proximity_offset = proximity_box.dimensions * 0.5f + dimensions * 0.5f;
 	position = static_cast<Vec>(scaled_position) * 32.f;
@@ -40,7 +41,7 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 
 		if (player.collider.bounding_box.SAT(bounding_box)) {
 			intensity = 3;
-			if (animation.keyframe_over()) { animation.params.framerate = 16; }
+			if (animation.keyframe_over()) { animation.params.framerate = 4; }
 			if (player.controller.inspecting()) {
 				if (can_activate) {
 					activated = true;
@@ -52,12 +53,12 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 			}
 		} else {
 			intensity = 2;
-			if (animation.keyframe_over()) { animation.params.framerate = 20; }
+			if (animation.keyframe_over()) { animation.params.framerate = 8; }
 			can_activate = true;
 		}
 	} else {
 		intensity = 1;
-		if (animation.keyframe_over()) { animation.params.framerate = 24; }
+		if (animation.keyframe_over()) { animation.params.framerate = 12; }
 	}
 }
 

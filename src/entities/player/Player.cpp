@@ -310,13 +310,7 @@ void Player::dash() {
 void Player::set_position(sf::Vector2<float> new_pos) {
 	collider.physics.position = new_pos;
 	collider.sync_components();
-	int ctr{0};
-	for (auto& a : antennae) {
-		a.update(*m_services);
-		a.collider.physics.position = collider.physics.position + antenna_offset;
-		antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.0f;
-		++ctr;
-	}
+	update_antennae();
 }
 
 void Player::update_direction() {

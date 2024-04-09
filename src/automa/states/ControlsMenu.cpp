@@ -25,6 +25,11 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	left_dot.set_position(options.at(current_selection).left_offset);
 	right_dot.set_position(options.at(current_selection).right_offset);
 	loading.start(2);
+
+	debug.setFillColor(sf::Color::Transparent);
+	debug.setSize({2.f, (float)svc.constants.screen_dimensions.y});
+	debug.setOutlineColor(svc.styles.colors.blue);
+	debug.setOutlineThickness(-1);
 }
 
 void ControlsMenu::init(ServiceProvider& svc, std::string_view room) {}
@@ -84,6 +89,10 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	int ctr{0};
 	for (auto& option : options) {
 		option.update(svc, current_selection);
+		option.label.setOrigin(0, option.label.getLocalBounds().height * 0.5f);
+		option.left_offset = option.position - sf::Vector2<float>{option.dot_offset.x - 2, -option.dot_offset.y};
+		option.right_offset = option.position + sf::Vector2<float>{option.label.getLocalBounds().width + option.dot_offset.x, option.dot_offset.y};
+	
 		control_list.at(ctr).setFillColor(option.label.getFillColor());
 		++ctr;
 	}
@@ -119,7 +128,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 		if (ctr >= control_list.size() || ctr >= svc.controller_map.tags.size()) { continue; }
 		control_list.at(ctr).setString(svc.controller_map.tag_to_label.at(svc.controller_map.tags.at(ctr)).data());
 		control_list.at(ctr).setCharacterSize(option.label.getCharacterSize());
-		control_list.at(ctr).setOrigin(control_list.at(ctr).getLocalBounds().width * 0.5f, control_list.at(ctr).getLocalBounds().height * 0.5f);
+		control_list.at(ctr).setOrigin(control_list.at(ctr).getLocalBounds().width, control_list.at(ctr).getLocalBounds().height * 0.5f);
 		control_list.at(ctr).setPosition(svc.constants.screen_dimensions.x * 0.5f + center_offset, option.position.y);
 		++ctr;
 	}

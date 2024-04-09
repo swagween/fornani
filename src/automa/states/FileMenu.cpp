@@ -13,6 +13,10 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection);
 	svc::cameraLocator.get().set_position({1, 1});
 	player.set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(0).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(1).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(2).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(3).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
 
 	title.setPosition(0, 0);
 	title.setSize(static_cast<sf::Vector2f>(cam::screen_dimensions));
@@ -46,7 +50,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.data.load_progress(*player, current_selection);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered()) {
+	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
@@ -71,7 +75,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 
 	hud.update(*player);
-	for (auto& a : player->antennae) { a.collider.reset(); }
 
 	player->collider.physics.acceleration = {};
 	player->collider.physics.velocity = {};
@@ -81,14 +84,9 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.autonomous_walk();
 	player->collider.flags.set(shape::State::grounded);
 
-	player->update_weapon();
-	player->update_animation();
-	player->update_sprite();
-	player->update_direction();
-	player->apparent_position.x = player->collider.physics.position.x + player::PLAYER_WIDTH / 2;
-	player->apparent_position.y = player->collider.physics.position.y;
-	player->update_animation();
-	player->update_antennae();
+	player->set_position({svc.constants.screen_dimensions.x * 0.5f + 80, 360});
+	player->update(console, inventory_window);
+	player->controller.direction.lr = dir::LR::left;
 
 	svc.soundboard.play_sounds(svc);
 	svc.controller_map.reset_triggers();

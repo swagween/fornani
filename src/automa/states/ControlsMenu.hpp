@@ -20,11 +20,12 @@ class ControlsMenu : public automa::GameState {
 	void restore_defaults(ServiceProvider& svc);
 
   private:
-	float center_offset{200.f};
+	float center_offset{320.f};
 	std::vector<sf::Text> control_list{};
 	util::Cooldown loading{};
 	sf::Text instruction{};
 	bool binding_mode{};
+	sf::RectangleShape debug{};
 };
 
 } // namespace automa
