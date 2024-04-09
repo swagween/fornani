@@ -184,11 +184,15 @@ void DataManager::save_player_params(player::Player& player) {
 	std::cout << " success!\n";
 }
 
-void DataManager::load_contols(config::ControllerMap& controller) {
+void DataManager::load_controls(config::ControllerMap& controller) {
 
 	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
 
+	controller.key_to_label.clear();
+	controller.mousebutton_to_label.clear();
+	controller.label_to_gamepad.clear();
+	controller.tag_to_label.clear();
 	for (auto& tag : controller.tags) {
 		auto in_key = controls["controls"][tag]["keyboard_key"].as_string();
 		auto in_button = controls["controls"][tag]["mouse_button"].as_string();
@@ -196,11 +200,19 @@ void DataManager::load_contols(config::ControllerMap& controller) {
 		if (controller.string_to_key.contains(in_key)) { controller.key_to_label.insert({controller.string_to_key.at(in_key), tag}); }
 		if (controller.string_to_mousebutton.contains(in_button)) { controller.mousebutton_to_label.insert({controller.string_to_mousebutton.at(in_button), tag}); }
 		if (in_gamepad != -1) { controller.label_to_gamepad.insert({tag, in_gamepad}); }
-		controller.tag_to_label.insert({tag, in_key});
+		if (controller.is_keyboard()) {
+			if (in_button.empty()) {
+				controller.tag_to_label.insert({tag, in_key});
+			} else {
+				controller.tag_to_label.insert({tag, in_button});
+			}
+		}
+		if (controller.is_gamepad()) { controller.tag_to_label.insert({tag, controller.gamepad_button_name.at(in_gamepad)}); }
 	}
-
 }
 
-void DataManager::save_contols(config::ControllerMap& controller) {}
+void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((finder.resource_path + "/data/config/control_map.json").c_str()); }
+
+void DataManager::reset_controls() { controls = dj::Json::from_file((finder.resource_path + "/data/config/defaults.json").c_str()); }
 
 } // namespace data

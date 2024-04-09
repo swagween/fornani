@@ -37,8 +37,9 @@ class DataManager {
 	void save_player_params(player::Player& player);
 
 	// support user-defined control mapping
-	void load_contols(config::ControllerMap& controller);
-	void save_contols(config::ControllerMap& controller);
+	void load_controls(config::ControllerMap& controller);
+	void save_controls(config::ControllerMap& controller);
+	void reset_controls();
 
 	dj::Json weapon{};
 	dj::Json drop{};

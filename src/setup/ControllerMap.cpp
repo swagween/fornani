@@ -17,6 +17,25 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	label_to_control.insert({"right", Control(Action::right)});
 	label_to_control.insert({"up", Control(Action::up)});
 	label_to_control.insert({"down", Control(Action::down)});
+
+	gamepad_button_name.insert({-1, "left analog stick"});
+	gamepad_button_name.insert({0, "square"});
+	gamepad_button_name.insert({1, "cross"});
+	gamepad_button_name.insert({2, "circle"});
+	gamepad_button_name.insert({3, "triangle"});
+	gamepad_button_name.insert({4, "L1"});
+	gamepad_button_name.insert({5, "R1"});
+	gamepad_button_name.insert({6, "L2"});
+	gamepad_button_name.insert({7, "R2"});
+	gamepad_button_name.insert({8, "select"});
+	gamepad_button_name.insert({9, "start"});
+	gamepad_button_name.insert({10, "left analog click"});
+	gamepad_button_name.insert({11, "right analog click"});
+	gamepad_button_name.insert({12, "launch"});
+	gamepad_button_name.insert({13, "home"});
+	gamepad_button_name.insert({14, "unknown"});
+	gamepad_button_name.insert({15, "unknown"});
+	gamepad_button_name.insert({16, "unknown"});
 }
 
 void ControllerMap::handle_mouse_events(sf::Event& event) {
@@ -67,5 +86,9 @@ void ControllerMap::handle_joystick_events(sf::Event& event) {
 void ControllerMap::reset_triggers() {
 	for (auto& tag : tags) { label_to_control.at(tag).reset_triggers(); }
 }
+
+void ControllerMap::switch_to_joystick() {}
+
+void ControllerMap::switch_to_keyboard() {}
 
 } // namespace config

@@ -32,33 +32,33 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
 
-		if (svc.controller_map.label_to_control.at("down").triggered()) {
-			++current_selection;
-			constrain_selection();
-			svc.data.load_blank_save(*player);
-			svc.data.load_progress(*player, current_selection);
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
-		}
-		if (svc.controller_map.label_to_control.at("up").triggered()) {
-			--current_selection;
-			constrain_selection();
-			svc.data.load_blank_save(*player);
-			svc.data.load_progress(*player, current_selection);
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
-		}
-		if (svc.controller_map.label_to_control.at("left").triggered()) {
-			svc.state_controller.actions.set(Actions::exit_submenu);
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		}
-		if (svc.controller_map.label_to_control.at("main_action").triggered()) {
-			constrain_selection();
-			svc.data.load_progress(*player, current_selection, true);
-			svc.state_controller.actions.set(Actions::trigger);
-			svc.state_controller.actions.set(Actions::save_loaded);
-			svc.soundboard.flags.menu.set(audio::Menu::select);
-			svc.soundboard.flags.world.set(audio::World::load);
-		}
-	if (event.type == sf::Event::EventType::JoystickMoved) { svc.controller_map.reset_triggers(); }
+	if (svc.controller_map.label_to_control.at("down").triggered()) {
+		++current_selection;
+		constrain_selection();
+		svc.data.load_blank_save(*player);
+		svc.data.load_progress(*player, current_selection);
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (svc.controller_map.label_to_control.at("up").triggered()) {
+		--current_selection;
+		constrain_selection();
+		svc.data.load_blank_save(*player);
+		svc.data.load_progress(*player, current_selection);
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (svc.controller_map.label_to_control.at("left").triggered()) {
+		svc.state_controller.actions.set(Actions::exit_submenu);
+		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+	}
+	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
+		constrain_selection();
+		svc.data.load_progress(*player, current_selection, true);
+		svc.state_controller.actions.set(Actions::trigger);
+		svc.state_controller.actions.set(Actions::save_loaded);
+		svc.soundboard.flags.menu.set(audio::Menu::select);
+		svc.soundboard.flags.world.set(audio::World::load);
+	}
+	svc.controller_map.reset_triggers();
 }
 
 void FileMenu::tick_update(ServiceProvider& svc) {

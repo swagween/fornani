@@ -30,6 +30,7 @@ void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("left").triggered()) {
+		svc.state_controller.submenu = menu_type::options;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
@@ -39,7 +40,7 @@ void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (event.type == sf::Event::EventType::JoystickMoved) { svc.controller_map.reset_triggers(); }
+	svc.controller_map.reset_triggers();
 }
 
 void CreditsMenu::tick_update(ServiceProvider& svc) {

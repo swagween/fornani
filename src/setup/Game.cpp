@@ -9,7 +9,7 @@ Game::Game(char** argv) {
 	services.data.finder.setResourcePath(argv);
 	services.data.load_data();
 	// controls
-	services.data.load_contols(services.controller_map);
+	services.data.load_controls(services.controller_map);
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
@@ -94,19 +94,11 @@ void Game::run() { // load all assets
 				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::Escape) { return; }
 				if (event.key.code == sf::Keyboard::D) {
 					debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
 					services.assets.sharp_click.play();
 				}
-				if (event.key.code == sf::Keyboard::K) { player.kill(); }
-				if (event.key.code == sf::Keyboard::T) { game_state.get_current_state().console.load_and_launch("bryn_test"); }
 				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); }
-				if (event.key.code == sf::Keyboard::W) {
-					game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
-					game_state.get_current_state().init(services, "/level/FIRSTWIND_PRISON_01");
-					player.assign_texture(services.assets.t_nani);
-				}
 				if (event.key.code == sf::Keyboard::P) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {
 					services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
@@ -144,7 +136,10 @@ void Game::run() { // load all assets
 			services.state_controller.actions.reset(automa::Actions::trigger_submenu);
 		}
 		if (services.state_controller.actions.test(automa::Actions::exit_submenu)) {
-			game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
+			switch (services.state_controller.submenu) {
+			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player, "options")); break;
+			default: game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); break;
+			}
 			services.state_controller.actions.reset(automa::Actions::exit_submenu);
 		}
 		if (services.state_controller.actions.test(automa::Actions::trigger)) {
@@ -290,6 +285,15 @@ void Game::debug_window() {
 					ImGui::Text("5: %s", sf::Joystick::isButtonPressed(0, 5) ? "Pressed" : "");
 					ImGui::Text("6: %s", sf::Joystick::isButtonPressed(0, 6) ? "Pressed" : "");
 					ImGui::Text("7: %s", sf::Joystick::isButtonPressed(0, 7) ? "Pressed" : "");
+					ImGui::Text("8: %s", sf::Joystick::isButtonPressed(0, 8) ? "Pressed" : "");
+					ImGui::Text("9: %s", sf::Joystick::isButtonPressed(0, 9) ? "Pressed" : "");
+					ImGui::Text("10: %s", sf::Joystick::isButtonPressed(0, 10) ? "Pressed" : "");
+					ImGui::Text("11: %s", sf::Joystick::isButtonPressed(0, 11) ? "Pressed" : "");
+					ImGui::Text("12: %s", sf::Joystick::isButtonPressed(0, 12) ? "Pressed" : "");
+					ImGui::Text("13: %s", sf::Joystick::isButtonPressed(0, 13) ? "Pressed" : "");
+					ImGui::Text("14: %s", sf::Joystick::isButtonPressed(0, 14) ? "Pressed" : "");
+					ImGui::Text("15: %s", sf::Joystick::isButtonPressed(0, 15) ? "Pressed" : "");
+					ImGui::Text("16: %s", sf::Joystick::isButtonPressed(0, 16) ? "Pressed" : "");
 
 					ImGui::Text("X Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::X));
 					ImGui::Text("Y Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::Y));

@@ -52,18 +52,13 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			svc.state_controller.actions.set(Actions::shutdown);
 		}
 	}
-	if (svc.controller_map.label_to_control.at("right").triggered() && current_selection == menu_selection_id.at(MenuSelection::play)) {
-		svc.state_controller.submenu = menu_type::file_select;
+	if (!svc.controller_map.is_gamepad() && svc.controller_map.label_to_control.at("right").triggered()) {
+		if (current_selection == menu_selection_id.at(MenuSelection::play)) { svc.state_controller.submenu = menu_type::file_select; }
+		if (current_selection == menu_selection_id.at(MenuSelection::options)) { svc.state_controller.submenu = menu_type::options; }
 		svc.state_controller.actions.set(Actions::trigger_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 	}
-	if (svc.controller_map.label_to_control.at("right").triggered() && current_selection == menu_selection_id.at(MenuSelection::options)) {
-		svc.state_controller.submenu = menu_type::options;
-		svc.state_controller.actions.set(Actions::trigger_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
-	}
-
-	if (event.type == sf::Event::EventType::JoystickMoved) { svc.controller_map.reset_triggers(); }
+	svc.controller_map.reset_triggers();
 }
 
 void MainMenu::tick_update(ServiceProvider& svc) {

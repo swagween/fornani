@@ -29,6 +29,7 @@ enum class MenuSelection { play, options, quit, controls, tutorial, credits };
 constexpr inline float dot_force{0.9f};
 constexpr inline float dot_fric{0.86f};
 constexpr inline float dot_speed{200.f};
+constexpr inline float title_letter_spacing{0.7f};
 
 struct ServiceProvider;
 
@@ -42,6 +43,7 @@ struct Option {
 	int index{};
 	bool highlighted{};
 	bool selected{};
+	bool flagged{};
 	void update(ServiceProvider& svc, int& selection);
 };
 
@@ -79,7 +81,7 @@ class GameState {
 	std::string_view scene{};
 	std::vector<Option> options{};
 	int current_selection{};
-	float spacing{32.f};
+	float spacing{28.f};
 	float top_buffer{80.f};
 };
 

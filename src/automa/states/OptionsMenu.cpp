@@ -29,12 +29,18 @@ void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered()) {
+	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
+		svc.state_controller.submenu = menu_type::main;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (svc.controller_map.label_to_control.at("right").triggered()) {}
-	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
+	if (!svc.controller_map.is_gamepad() && svc.controller_map.label_to_control.at("right").triggered()) {
+		if (current_selection == menu_selection_id.at(MenuSelection::controls)) { svc.state_controller.submenu = menu_type::controls; }
+		if (current_selection == menu_selection_id.at(MenuSelection::credits)) { svc.state_controller.submenu = menu_type::credits; }
+		svc.state_controller.actions.set(Actions::trigger_submenu);
+		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+	}
+	if (svc.controller_map.label_to_control.at("main_action").triggered() || svc.controller_map.label_to_control.at("right").triggered()) {
 		if (current_selection == menu_selection_id.at(MenuSelection::controls)) {
 			svc.state_controller.submenu = menu_type::controls;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
@@ -47,10 +53,11 @@ void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		}
 	}
 	if (svc.controller_map.label_to_control.at("secondary_action").triggered()) {
+		svc.state_controller.submenu = menu_type::main;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (event.type == sf::Event::EventType::JoystickMoved) { svc.controller_map.reset_triggers(); }
+	svc.controller_map.reset_triggers();
 }
 
 void OptionsMenu::tick_update(ServiceProvider& svc) {
@@ -67,7 +74,7 @@ void OptionsMenu::tick_update(ServiceProvider& svc) {
 void OptionsMenu::frame_update(ServiceProvider& svc) {}
 
 void OptionsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-
+	
 	for (auto& option : options) { win.draw(option.label); }
 
 	left_dot.render(svc, win, {0, 0});
