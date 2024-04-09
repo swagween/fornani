@@ -8,12 +8,12 @@
     "secondary_action": {
       "mouse_button": "",
       "keyboard_key": "X",
-      "gamepad_button": 0
+      "gamepad_button": 7
     },
     "tertiary_action": {
       "mouse_button": "",
       "keyboard_key": "C",
-      "gamepad_button": 3
+      "gamepad_button": 0
     },
     "inspect": {
       "mouse_button": "",
@@ -43,17 +43,17 @@
     "arms_switch_left": {
       "mouse_button": "",
       "keyboard_key": "A",
-      "gamepad_button": 6
+      "gamepad_button": 4
     },
     "arms_switch_right": {
       "mouse_button": "",
       "keyboard_key": "S",
-      "gamepad_button": 7
+      "gamepad_button": 5
     },
     "menu_toggle": {
       "mouse_button": "",
       "keyboard_key": "E",
-      "gamepad_button": 9
+      "gamepad_button": 3
     },
     "menu_toggle_secondary": {
       "mouse_button": "",

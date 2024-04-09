@@ -87,6 +87,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->set_position({svc.constants.screen_dimensions.x * 0.5f + 80, 360});
 	player->update(console, inventory_window);
 	player->controller.direction.lr = dir::LR::left;
+	svc.soundboard.flags.player.reset(audio::Player::step);
 
 	svc.soundboard.play_sounds(svc);
 	svc.controller_map.reset_triggers();

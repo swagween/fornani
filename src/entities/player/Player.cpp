@@ -358,7 +358,7 @@ void Player::walk() {
 		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
 	}
 	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
-		if (animation.animation.keyframe_over() && animation.state.test(AnimState::run)) { m_services->soundboard.flags.player.set(audio::Player::step); }
+		if (animation.animation.keyframe_over() && abs(collider.physics.velocity.x) > 3.0f) { m_services->soundboard.flags.player.set(audio::Player::step); }
 	}
 }
 
