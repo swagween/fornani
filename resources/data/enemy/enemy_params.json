@@ -5,63 +5,63 @@
       "variant": "beast"
     },
     "physical": {
-      "dimensions": [32, 32],
-      "sprite_dimensions": [72, 48],
-      "spritesheet_dimensions":  [4, 5],
+      "dimensions": [ 32, 32 ],
+      "sprite_dimensions": [ 72, 48 ],
+      "spritesheet_dimensions": [ 4, 5 ],
       "offset": [],
       "num_colliders": 2,
       "num_hurtboxes": 1,
-      "alert_range":  [200.0, 300.0],
-      "hostile_range":  [100.0, 200.0],
+      "alert_range": [ 200.0, 300.0 ],
+      "hostile_range": [ 100.0, 200.0 ],
       "friction": 0.98,
-      "gravity":  6.5
+      "gravity": 6.5
     },
     "attributes": {
       "base_hp": 20,
       "base_damage": 2.0,
       "speed": 10.0,
       "loot_multiplier": 5.0,
-      "drop_range":  [3, 6]
+      "drop_range": [ 3, 6 ]
     },
     "animation": {
       "duration": 2,
-      "framerate":  20
+      "framerate": 20
     },
-    "general" : {
+    "general": {
       "mobile": true,
       "gravity": true
     }
   },
 
-   "tank": {
+  "tank": {
     "metadata": {
       "id": 1,
       "variant": "skycorps"
     },
     "physical": {
-      "dimensions": [44, 44],
-      "sprite_dimensions": [80, 80],
-      "spritesheet_dimensions":  [4, 4],
-      "offset": [20, -14],
+      "dimensions": [ 44, 44 ],
+      "sprite_dimensions": [ 80, 80 ],
+      "spritesheet_dimensions": [ 4, 4 ],
+      "offset": [ 20, -14 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range":  [200.0, 300.0],
-      "hostile_range":  [400.0, 24.0],
+      "alert_range": [ 200.0, 300.0 ],
+      "hostile_range": [ 400.0, 24.0 ],
       "friction": 0.98,
-      "gravity":  6.5
+      "gravity": 6.5
     },
     "attributes": {
       "base_hp": 40,
       "base_damage": 2.0,
       "speed": 10.0,
       "loot_multiplier": 6.0,
-      "drop_range":  [5, 8]
+      "drop_range": [ 5, 8 ]
     },
     "animation": {
       "duration": 2,
-      "framerate":  20
+      "framerate": 20
     },
-    "general" : {
+    "general": {
       "mobile": true,
       "gravity": true
     }
@@ -69,5 +69,72 @@
 
   "hulmet": {
 
+  },
+
+  "eyebot": {
+    "metadata": {
+      "id": 2,
+      "variant": "skycorps"
+    },
+    "physical": {
+      "dimensions": [ 24, 24 ],
+      "sprite_dimensions": [ 64, 64 ],
+      "spritesheet_dimensions": [ 3, 2 ],
+      "offset": [ 8, -16 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 200.0, 300.0 ],
+      "hostile_range": [ 400.0, 24.0 ],
+      "friction": 0.98,
+      "gravity": 0.0
+    },
+    "attributes": {
+      "base_hp": 8,
+      "base_damage": 1.0,
+      "speed": 10.0,
+      "loot_multiplier": 1.0,
+      "drop_range": [ 1, 2 ]
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": false
+    }
+  },
+  "eyebit": {
+    "metadata": {
+      "id": 3,
+      "variant": "skycorps"
+    },
+    "physical": {
+      "dimensions": [ 20, 20 ],
+      "sprite_dimensions": [ 32, 32 ],
+      "spritesheet_dimensions": [ 3, 2 ],
+      "offset": [ 12, 12 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 200.0, 300.0 ],
+      "hostile_range": [ 400.0, 24.0 ],
+      "friction": 0.99,
+      "gravity": 0.0
+    },
+    "attributes": {
+      "base_hp": 2,
+      "base_damage": 1.0,
+      "speed": 18.0,
+      "loot_multiplier": 0.1,
+      "drop_range": [ 1, 2 ]
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": false
+    }
   }
 }

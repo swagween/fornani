@@ -94,9 +94,9 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	sprite.setPosition(collider.physics.position + sprite_offset - cam);
 	if (svc.greyblock_mode()) {
 		drawbox.setOrigin({0.f, 0.f});
-		drawbox.setSize({(float)sprite_dimensions.x, (float)sprite_dimensions.y});
+		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
 		drawbox.setOutlineColor(svc.styles.colors.ui_white);
-		health.drawbox.setPosition(collider.physics.position + sprite_offset - cam);
+		drawbox.setPosition(collider.hurtbox.position - cam);
 		win.draw(drawbox);
 		drawbox.setPosition(physical.alert_range.position - cam);
 		drawbox.setSize(physical.alert_range.dimensions);

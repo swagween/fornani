@@ -41,9 +41,13 @@ class AssetManager {
 		t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 		t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
 		t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");
+		t_eyebot.loadFromFile(finder.resource_path + "/image/critter/eyebot.png");
+		t_eyebit.loadFromFile(finder.resource_path + "/image/critter/eyebit.png");
 		texture_lookup.insert({"frdog", t_frdog});
 		texture_lookup.insert({"hulmet", t_hulmet});
 		texture_lookup.insert({"tank", t_tank});
+		texture_lookup.insert({"eyebot", t_eyebot});
+		texture_lookup.insert({"eyebit", t_eyebit});
 
 		t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 		t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -248,6 +252,8 @@ class AssetManager {
 	sf::Texture t_frdog{};
 	sf::Texture t_hulmet{};
 	sf::Texture t_tank{};
+	sf::Texture t_eyebot{};
+	sf::Texture t_eyebit{};
 
 	// gui
 	sf::Texture t_ui{};
