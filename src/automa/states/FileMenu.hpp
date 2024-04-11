@@ -20,6 +20,8 @@ class FileMenu : public automa::GameState {
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 
 	sf::RectangleShape title{};
+private:
+	util::Cooldown loading{};
 };
 
 }

@@ -18,6 +18,8 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	player.antennae.at(2).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
 	player.antennae.at(3).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
 
+	loading.start(1);
+
 	title.setPosition(0, 0);
 	title.setSize(static_cast<sf::Vector2f>(cam::screen_dimensions));
 	title.setFillColor(flcolor::ui_black);
@@ -62,7 +64,11 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 		svc.soundboard.flags.world.set(audio::World::load);
 	}
-	svc.controller_map.reset_triggers();
+	if (svc.controller_map.label_to_control.at("secondary_action").triggered()) {
+		svc.state_controller.submenu = menu_type::main;
+		svc.state_controller.actions.set(Actions::exit_submenu);
+		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+	}
 }
 
 void FileMenu::tick_update(ServiceProvider& svc) {
@@ -89,6 +95,8 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.direction.lr = dir::LR::left;
 	svc.soundboard.flags.player.reset(audio::Player::step);
 
+	loading.update();
+
 	svc.soundboard.play_sounds(svc);
 	svc.controller_map.reset_triggers();
 }
@@ -103,8 +111,7 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	right_dot.render(svc, win, {0, 0});
 
 	player->render(svc, win, svc::cameraLocator.get().physics.position);
-
-	hud.render(*player, win);
+	if (loading.is_complete()) { hud.render(*player, win); }
 }
 
 } // namespace automa

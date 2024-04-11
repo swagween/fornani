@@ -8,6 +8,9 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	int ctr{0};
 	for (auto& option : options) {
 		option.position.x = svc.constants.screen_dimensions.x * 0.5 - center_offset;
+		option.update(svc, current_selection);
+		option.left_offset = option.position - sf::Vector2<float>{option.dot_offset.x - 2, -option.dot_offset.y};
+		option.right_offset = option.position + sf::Vector2<float>{option.label.getLocalBounds().width + option.dot_offset.x, option.dot_offset.y};
 		option.label.setLetterSpacing(title_letter_spacing);
 		control_list.push_back(sf::Text());
 		control_list.back().setFont(font);
@@ -116,8 +119,8 @@ void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		win.draw(instruction);
 	}
 
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	left_dot.render(svc, win, {});
+	right_dot.render(svc, win, {});
 }
 
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
