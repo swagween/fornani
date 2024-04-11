@@ -15,7 +15,7 @@ class Player;
 
 namespace enemy {
 
-enum class GeneralFlags { mobile, gravity };
+enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt };
 enum class Variant { beast, soldier, elemental, worker };
 struct Attributes {
@@ -43,6 +43,7 @@ class Enemy : public entity::Entity {
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
+	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
 	void set_position(sf::Vector2<float> pos) {
 		collider.physics.position = pos;
 		collider.sync_components();

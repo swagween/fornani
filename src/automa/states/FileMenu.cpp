@@ -88,7 +88,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->flags.state.set(player::State::alive);
 	player->collider.reset();
 	player->controller.autonomous_walk();
-	player->collider.flags.set(shape::State::grounded);
+	player->collider.flags.state.set(shape::State::grounded);
 
 	player->set_position({svc.constants.screen_dimensions.x * 0.5f + 80, 360});
 	player->update(console, inventory_window);

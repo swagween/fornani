@@ -4,7 +4,7 @@
 
 namespace enemy {
 
-Eyebot::Eyebot(automa::ServiceProvider& svc) : Enemy(svc, "eyebot") {}
+Eyebot::Eyebot(automa::ServiceProvider& svc) : Enemy(svc, "eyebot") { animation.set_params(idle); }
 
 void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	

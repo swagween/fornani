@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "room_id": 104,
+    "dimensions": [
+      96,
+      16
+    ],
+    "chunk_dimensions": [
+      6,
+      1
+    ],
+    "style": 0,
+    "background": 5
+  },
+  "enemies": [
+    {
+      "id": 5,
+      "position": [
+        32,
+        4
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        28,
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        38,
+        8
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        34,
+        6
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        18,
+        5
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        65,
+        5
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        69,
+        8
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        72,
+        5
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        62,
+        10
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        59,
+        7
+      ]
+    }
+  ]
+}

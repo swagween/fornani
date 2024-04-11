@@ -321,12 +321,12 @@ void Game::debug_window() {
 							ImGui::Separator();
 							ImGui::Text("Player Grounded: %s", player.grounded() ? "Yes" : "No");
 							ImGui::Separator();
-							ImGui::Text("Right Collision: %s", player.collider.collision_flags.test(shape::Collision::has_right_collision) ? "Yes" : "No");
-							ImGui::Text("Left Collision: %s", player.collider.collision_flags.test(shape::Collision::has_left_collision) ? "Yes" : "No");
-							ImGui::Text("Top Collision: %s", player.collider.collision_flags.test(shape::Collision::has_top_collision) ? "Yes" : "No");
-							ImGui::Text("Bottom Collision: %s", player.collider.collision_flags.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
+							ImGui::Text("Right Collision: %s", player.collider.flags.collision.test(shape::Collision::has_right_collision) ? "Yes" : "No");
+							ImGui::Text("Left Collision: %s", player.collider.flags.collision.test(shape::Collision::has_left_collision) ? "Yes" : "No");
+							ImGui::Text("Top Collision: %s", player.collider.flags.collision.test(shape::Collision::has_top_collision) ? "Yes" : "No");
+							ImGui::Text("Bottom Collision: %s", player.collider.flags.collision.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
 							ImGui::Separator();
-							ImGui::Text("Dash Cancel Collision: %s", player.collider.dash_flags.test(shape::Dash::dash_cancel_collision) ? "Yes" : "No");
+							ImGui::Text("Dash Cancel Collision: %s", player.collider.flags.dash.test(shape::Dash::dash_cancel_collision) ? "Yes" : "No");
 
 							ImGui::EndTabItem();
 						}
@@ -348,7 +348,7 @@ void Game::debug_window() {
 							ImGui::Text("Can Jump : %s", player.controller.get_jump().can_jump() ? "Yes" : "No");
 							ImGui::Text("Controller Jumping? : %s", player.controller.get_jump().jumping() ? "Yes" : "No");
 							ImGui::Text("Jump Began? : %s", player.controller.get_jump().began() ? "Yes" : "No");
-							ImGui::Text("Collider Jumping? : %s", player.collider.movement_flags.test(shape::Movement::jumping) ? "Yes" : "No");
+							ImGui::Text("Collider Jumping? : %s", player.collider.flags.movement.test(shape::Movement::jumping) ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Dash")) {
@@ -584,6 +584,13 @@ void Game::debug_window() {
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SKY_CHAMBER_01");
 						player.set_position({7 * 32, 16 * 32});
+					}
+
+					if (ImGui::Button("Corridor 2")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/FIRSTWIND_CORRIDOR_02");
+						player.set_position({7 * 32, 7 * 32});
 					}
 					if (ImGui::Button("Shadow")) {
 						services.assets.click.play();

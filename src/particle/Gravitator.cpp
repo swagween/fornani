@@ -4,8 +4,7 @@
 
 namespace vfx {
 
-Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size)
-	: scaled_position(pos), dimensions(size), color(col), gravitator_gravity_force(agf) {
+Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size) : scaled_position(pos), dimensions(size), color(col), attraction_force(agf) {
 
 	collider = shape::Collider(sf::Vector2<float>{4.f, 4.f}, sf::Vector2<float>{pos.x, pos.x});
 	collider.bounding_box.dimensions = Vec(4, 4);
@@ -47,7 +46,7 @@ void Gravitator::set_target_position(Vec new_position) {
 	float force_y = my - gy;
 	float mag = sqrt((force_x * force_x) + (force_y * force_y));
 	mag = std::max(0.0001f, mag);
-	float str = gravitator_gravity_force / mag * mag;
+	float str = attraction_force / mag * mag;
 	force_x *= str;
 	force_y *= str;
 

@@ -19,6 +19,8 @@ float const default_jumpbox_height = 4.0f;
 float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 
+enum class General { ignore_resolution };
+
 enum class State {
 	just_collided,
 	is_any_jump_collision,
@@ -37,9 +39,7 @@ enum class Collision {
 	has_bottom_collision,
 	ramp_collision
 };
-
 enum class Dash { dash_cancel_collision };
-
 enum class Movement { dashing, jumping };
 
 struct PhysicsStats {
@@ -83,10 +83,14 @@ class Collider {
 
 	PhysicsStats stats{};
 	components::PhysicsComponent physics{};
-	util::BitFlags<State> flags{};
-	util::BitFlags<Collision> collision_flags{};
-	util::BitFlags<Movement> movement_flags{};
-	util::BitFlags<Dash> dash_flags{};
+
+	struct {
+		util::BitFlags<General> general{};
+		util::BitFlags<State> state{};
+		util::BitFlags<Collision> collision{};
+		util::BitFlags<Movement> movement{};
+		util::BitFlags<Dash> dash{};
+	} flags{};
 
 	float landed_threshold{6.0f};
 	float horizontal_detector_buffer{2.0f};

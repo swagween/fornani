@@ -73,8 +73,8 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	if (grounded()) { controller.reset_dash_count(); }
 
 	// do this elsehwere later
-	if (collider.flags.test(shape::State::just_landed)) { m_services->soundboard.flags.player.set(audio::Player::land); }
-	collider.flags.reset(shape::State::just_landed);
+	if (collider.flags.state.test(shape::State::just_landed)) { m_services->soundboard.flags.player.set(audio::Player::land); }
+	collider.flags.state.reset(shape::State::just_landed);
 
 	//player-controlled actions
 	arsenal.switch_weapon(*m_services, controller.arms_switch());
@@ -104,7 +104,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 		if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
 			controller.stop_dashing();
 			controller.cancel_dash_request();
-			collider.dash_flags.reset(shape::Dash::dash_cancel_collision);
+			collider.flags.dash.reset(shape::Dash::dash_cancel_collision);
 		}
 	}
 
@@ -179,7 +179,7 @@ void Player::update_animation() {
 		if (collider.physics.velocity.y > -animation.suspension_threshold && collider.physics.velocity.y < animation.suspension_threshold) { animation.state.set(AnimState::suspend); }
 	}
 
-	if (collider.flags.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
+	if (collider.flags.state.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
 
@@ -262,22 +262,22 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 void Player::calculate_sprite_offset() {
 	sprite_offset.y = 0.f;
-	if (collider.flags.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
+	if (collider.flags.state.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
 	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y + 1};
 	apparent_position = collider.physics.position + collider.dimensions / 2.f;
 }
 
 void Player::jump() {
 	if (controller.get_jump().began()) {
-		collider.movement_flags.set(shape::Movement::jumping);
+		collider.flags.movement.set(shape::Movement::jumping);
 	} else {
-		collider.movement_flags.reset(shape::Movement::jumping);
+		collider.flags.movement.reset(shape::Movement::jumping);
 	}
 	if (controller.get_jump().jumpsquat_trigger()) {
 		animation.state.set(AnimState::jumpsquat);
 		controller.get_jump().start_jumpsquat();
 		controller.get_jump().reset_jumpsquat_trigger();
-		collider.movement_flags.set(shape::Movement::jumping);
+		collider.flags.movement.set(shape::Movement::jumping);
 	}
 	if (controller.get_jump().jumpsquatting() && !animation.state.test(AnimState::jumpsquat)) {
 		controller.get_jump().stop_jumpsquatting();
@@ -285,21 +285,21 @@ void Player::jump() {
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
 		animation.state.set(AnimState::rise);
 		m_services->soundboard.flags.player.set(audio::Player::jump);
-		collider.movement_flags.set(shape::Movement::jumping);
+		collider.flags.movement.set(shape::Movement::jumping);
 	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.velocity.y < 0) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 		controller.get_jump().reset();
 	}
-	if (collider.flags.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
+	if (collider.flags.state.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
 }
 
 void Player::dash() {
 	if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
-		collider.movement_flags.set(shape::Movement::dashing);
+		collider.flags.movement.set(shape::Movement::dashing);
 		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 
-		if (!collider.dash_flags.test(shape::Dash::dash_cancel_collision)) {
+		if (!collider.flags.dash.test(shape::Dash::dash_cancel_collision)) {
 			collider.physics.acceleration.x += controller.dash_value() * physics_stats.dash_speed;
 			collider.physics.velocity.x += controller.dash_value() * physics_stats.dash_speed;
 		}
@@ -389,7 +389,7 @@ void Player::update_antennae() {
 	}
 }
 
-bool Player::grounded() const { return collider.flags.test(shape::State::grounded); }
+bool Player::grounded() const { return collider.flags.state.test(shape::State::grounded); }
 
 bool Player::fire_weapon() {
 	if (controller.shot() && equipped_weapon().can_shoot()) {

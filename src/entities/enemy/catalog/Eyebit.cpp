@@ -4,19 +4,37 @@
 
 namespace enemy {
 
-Eyebit::Eyebit(automa::ServiceProvider& svc) : Enemy(svc, "eyebit") {}
+Eyebit::Eyebit(automa::ServiceProvider& svc) : Enemy(svc, "eyebit") {
+	//collider.flags.general.set(shape::General::ignore_resolution);
+	animation.set_params(idle);
+	seeker_cooldown.start(2);
+}
 
 void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	
-	flags.state.set(StateFlags::vulnerable); // frdog is always vulnerable
+	if (!seeker_cooldown.is_complete()) { seeker.set_position(collider.physics.position); }
+	seeker_cooldown.update();
+	flags.state.set(StateFlags::vulnerable); // eyebit is always vulnerable
 
 	// reset animation states to determine next animation state
 	state = {};
 	if (ent_state.test(entity::State::flip)) { state.set(EyebitState::turn); }
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::right : dir::LR::left;
+	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
 
 	state_function = state_function();
+
+	if (collider.has_horizontal_collision()) { seeker.bounce_horiz(); }
+	if (collider.has_vertical_collision()) { seeker.bounce_vert(); }
+
+	if (player.collider.bounding_box.overlaps(physical.hostile_range)) { seeker.set_force(0.005f); }
+	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
+		seeker.update(svc);
+		seeker.seek_player(player);
+		collider.physics.position = seeker.get_position();
+		collider.sync_components();
+	}
+
 	Enemy::update(svc, map);
+	seeker.set_position(collider.physics.position);
 }
 
 fsm::StateFunction Eyebit::update_idle() {
