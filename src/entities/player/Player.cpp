@@ -306,7 +306,7 @@ void Player::dash() {
 void Player::set_position(sf::Vector2<float> new_pos) {
 	collider.physics.position = new_pos;
 	collider.sync_components();
-	update_antennae();
+	sync_antennae();
 }
 
 void Player::update_direction() {
@@ -373,7 +373,28 @@ void Player::hurt(int amount = 1) {
 void Player::update_antennae() {
 	int ctr{0};
 	for (auto& a : antennae) {
+		if (animation.get_frame() == 44 || animation.get_frame() == 46) {
+			antenna_offset.y = -15.f;
+		} else {
+			antenna_offset.y = -13.f;
+		}
+		if (animation.get_frame() == 57) { antenna_offset.y = -1.f; }
 		a.set_target_position(collider.physics.position + antenna_offset);
+		a.update(*m_services);
+		a.collider.sync_components();
+		if (controller.facing_right()) {
+			antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;
+		} else {
+			antenna_offset.x = ctr % 2 == 0 ? 2.f : 13.f;
+		}
+		++ctr;
+	}
+}
+
+void Player::sync_antennae() {
+	int ctr{0};
+	for (auto& a : antennae) {
+		a.set_position(collider.physics.position + antenna_offset);
 		a.update(*m_services);
 		a.collider.sync_components();
 		if (controller.facing_right()) {

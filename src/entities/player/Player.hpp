@@ -112,6 +112,7 @@ class Player {
 	void walk();
 	void hurt(int amount);
 	void update_antennae();
+	void sync_antennae();
 
 	bool grounded() const;
 	bool fire_weapon();
