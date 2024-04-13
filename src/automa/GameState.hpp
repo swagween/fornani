@@ -12,6 +12,7 @@
 #include "../gui/Portrait.hpp"
 #include "../gui/HUD.hpp"
 #include "../level/Map.hpp"
+#include "../gui/InventoryWindow.hpp"
 
 namespace player {
 class Player;
@@ -23,24 +24,36 @@ namespace automa {
 
 enum class STATE { STATE_NULL, STATE_INIT, STATE_EXIT, STATE_MENU, STATE_OPTIONS, STATE_FILE, STATE_MAIN, STATE_DOJO };
 
-enum class MenuSelection { new_game, load_game, options };
+enum class MenuSelection { play, options, quit, controls, tutorial, credits };
 
-inline MenuSelection selection{};
-inline int file_selection{0};
-
-constexpr inline float dot_force{0.09f};
-constexpr inline float dot_fric{0.87f};
-constexpr inline float dot_speed{20.f};
+constexpr inline float dot_force{0.9f};
+constexpr inline float dot_fric{0.86f};
+constexpr inline float dot_speed{200.f};
+constexpr inline float title_letter_spacing{0.7f};
 
 struct ServiceProvider;
+
+struct Option {
+	Option(ServiceProvider& svc, std::string_view lbl);
+	sf::Text label{};
+	sf::Vector2<float> position{};
+	sf::Vector2<float> left_offset{};
+	sf::Vector2<float> right_offset{};
+	sf::Vector2<float> dot_offset{24.f, 2.f};
+	int index{};
+	bool highlighted{};
+	bool selected{};
+	bool flagged{};
+	void update(ServiceProvider& svc, int& selection);
+};
 
 class GameState {
 
   public:
-	using Time = std::chrono::duration<float>;
+	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0}, {MenuSelection::options, 1}, {MenuSelection::quit, 2}, {MenuSelection::controls, 0}, {MenuSelection::tutorial, 1}, {MenuSelection::credits, 2}};
 
 	GameState() = default;
-	GameState(ServiceProvider& svc, player::Player& player, int id = 0) : player(&player), hud(svc, player, {20, 20}) {}
+	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
 	GameState& operator=(GameState&&) = delete;
 
 	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
@@ -49,11 +62,13 @@ class GameState {
 	virtual void tick_update(ServiceProvider& svc){};
 	virtual void frame_update(ServiceProvider& svc){};
 	virtual void render(ServiceProvider& svc, sf::RenderWindow& win){};
+	void constrain_selection();
 
 	STATE state = STATE::STATE_NULL;
 	bool debug_mode{false};
 
 	gui::Console console{};
+	gui::InventoryWindow inventory_window;
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
@@ -61,6 +76,13 @@ class GameState {
 
 	player::Player* player;
 	gui::HUD hud;
+	sf::Font font{};
+
+	std::string_view scene{};
+	std::vector<Option> options{};
+	int current_selection{};
+	float spacing{28.f};
+	float top_buffer{80.f};
 };
 
 } // namespace automa

@@ -1,12 +1,13 @@
 
-#pragma once
-
 #include "DataManager.hpp"
 #include "MapLookups.hpp"
-#include "ServiceLocator.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "ControllerMap.hpp"
 
 namespace data {
+
+DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 
 void DataManager::load_data() {
 
@@ -37,6 +38,8 @@ void DataManager::load_data() {
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) { lookup::get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
 
+	menu = dj::Json::from_file((finder.resource_path + "/data/gui/menu.json").c_str());
+	assert(!menu.is_null());
 	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
 	std::cout << " success!\n";
@@ -62,6 +65,17 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["player_data"]["arsenal"].push_back(this_id);
 	}
 	save["player_data"]["equipped_gun"] = player.arsenal.get_index();
+
+	//items and abilities
+	save["player_data"]["abilities"] = wipe;
+	save["player_data"]["items"] = wipe;
+	if (player.catalog.categories.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
+	for(auto& item : player.catalog.categories.inventory.items) {
+		dj::Json this_item{};
+		this_item["id"] = item.get_id();
+		this_item["quantity"] = item.get_quantity();
+		save["player_data"]["items"].push_back(this_item);
+	}
 
 	save["save_point_id"] = save_point_id;
 
@@ -92,6 +106,12 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
 		player.arsenal.set_index(equipped_gun);
 	}
+
+	// load items and abilities
+	player.catalog.categories.abilities.clear();
+	player.catalog.categories.inventory.clear();
+	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
+	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
 	//reset some things that might be lingering
 	player.arsenal.extant_projectile_instances = {};
@@ -163,5 +183,36 @@ void DataManager::save_player_params(player::Player& player) {
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	std::cout << " success!\n";
 }
+
+void DataManager::load_controls(config::ControllerMap& controller) {
+
+	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
+	assert(!controls.is_null());
+
+	controller.key_to_label.clear();
+	controller.mousebutton_to_label.clear();
+	controller.label_to_gamepad.clear();
+	controller.tag_to_label.clear();
+	for (auto& tag : controller.tags) {
+		auto in_key = controls["controls"][tag]["keyboard_key"].as_string();
+		auto in_button = controls["controls"][tag]["mouse_button"].as_string();
+		auto in_gamepad = controls["controls"][tag]["gamepad_button"].as<int>();
+		if (controller.string_to_key.contains(in_key)) { controller.key_to_label.insert({controller.string_to_key.at(in_key), tag}); }
+		if (controller.string_to_mousebutton.contains(in_button)) { controller.mousebutton_to_label.insert({controller.string_to_mousebutton.at(in_button), tag}); }
+		if (in_gamepad != -1) { controller.label_to_gamepad.insert({tag, in_gamepad}); }
+		if (controller.is_keyboard()) {
+			if (in_button.empty()) {
+				controller.tag_to_label.insert({tag, in_key});
+			} else {
+				controller.tag_to_label.insert({tag, in_button});
+			}
+		}
+		if (controller.is_gamepad()) { controller.tag_to_label.insert({tag, controller.gamepad_button_name.at(in_gamepad)}); }
+	}
+}
+
+void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((finder.resource_path + "/data/config/control_map.json").c_str()); }
+
+void DataManager::reset_controls() { controls = dj::Json::from_file((finder.resource_path + "/data/config/defaults.json").c_str()); }
 
 } // namespace data

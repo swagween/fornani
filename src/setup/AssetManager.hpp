@@ -41,9 +41,13 @@ class AssetManager {
 		t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 		t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
 		t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");
+		t_eyebot.loadFromFile(finder.resource_path + "/image/critter/eyebot.png");
+		t_eyebit.loadFromFile(finder.resource_path + "/image/critter/eyebit.png");
 		texture_lookup.insert({"frdog", t_frdog});
 		texture_lookup.insert({"hulmet", t_hulmet});
 		texture_lookup.insert({"tank", t_tank});
+		texture_lookup.insert({"eyebot", t_eyebot});
+		texture_lookup.insert({"eyebit", t_eyebit});
 
 		t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 		t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -81,6 +85,15 @@ class AssetManager {
 		projectile_textures.insert({"skycorps ar", t_skycorps_ar_projectile});
 		weapon_textures.insert({"grappling hook", t_grappling_hook});
 		projectile_textures.insert({"grappling hook", t_hook});
+
+		t_bryns_notebook.loadFromFile(finder.resource_path + "/image/item/bryns_notebook.png");
+		t_factory_access_permit.loadFromFile(finder.resource_path + "/image/item/factory_access_permit.png");
+		t_bipolar_junction_transistor.loadFromFile(finder.resource_path + "/image/item/bipolar_junction_transistor.png");
+		t_willets_floppy_disc.loadFromFile(finder.resource_path + "/image/item/willets_floppy_disc.png");
+		items.insert({"bryns_notebook", t_bryns_notebook});
+		items.insert({"factory_access_permit", t_factory_access_permit});
+		items.insert({"bipolar_junction_transistor", t_bipolar_junction_transistor});
+		items.insert({"willets_floppy_disc", t_willets_floppy_disc});
 
 
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
@@ -212,8 +225,6 @@ class AssetManager {
 		dusken_cove.openFromFile(finder.resource_path + "/audio/songs/dusken_cove.wav");
 	}
 
-	// declare all the textures and sprites as members of the AssetManager
-
 	// player and NPCs!
 	sf::Texture t_nani{};
 	sf::Texture t_portraits{};
@@ -231,10 +242,18 @@ class AssetManager {
 	sf::Texture t_ui_test{};
 	sf::Sprite sp_ui_test{};
 
+	//items
+	sf::Texture t_bryns_notebook{};
+	sf::Texture t_factory_access_permit{};
+	sf::Texture t_bipolar_junction_transistor{};
+	sf::Texture t_willets_floppy_disc{};
+
 	// critters and bosses!
 	sf::Texture t_frdog{};
 	sf::Texture t_hulmet{};
 	sf::Texture t_tank{};
+	sf::Texture t_eyebot{};
+	sf::Texture t_eyebit{};
 
 	// gui
 	sf::Texture t_ui{};
@@ -394,6 +413,7 @@ class AssetManager {
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
+	std::unordered_map<std::string_view, sf::Texture&> items{};
 };
 
 } // namespace asset

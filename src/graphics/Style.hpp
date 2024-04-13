@@ -20,7 +20,7 @@ class Style {
 		sf::Color navy_blue{25, 35, 65};
 		sf::Color dark_fucshia{148, 40, 84};
 		sf::Color orange{226, 93, 11};
-		sf::Color dark_grey{55, 49, 64};
+		sf::Color dark_grey{70, 67, 97};
 		sf::Color black{14, 6, 11};
 		sf::Color night{19, 18, 16};
 		sf::Color ui_black{12, 12, 20};

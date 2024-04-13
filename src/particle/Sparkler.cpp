@@ -41,4 +41,6 @@ void Sparkler::set_dimensions(sf::Vector2<float> dim) { dimensions = dim; }
 
 void Sparkler::deactivate() { active = false; }
 
+void Sparkler::set_color(sf::Color to_color) { color = to_color; }
+
 } // namespace vfx

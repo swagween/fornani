@@ -1,6 +1,6 @@
 
 #include "Weapon.hpp"
-#include "../setup/ServiceLocator.hpp"
+
 #include "../service/ServiceProvider.hpp"
 
 namespace arms {

@@ -1,7 +1,7 @@
 
 #include "Portal.hpp"
 #include "../../setup/MapLookups.hpp"
-#include "../../setup/ServiceLocator.hpp"
+
 #include "../player/Player.hpp"
 #include "../../service/ServiceProvider.hpp"
 

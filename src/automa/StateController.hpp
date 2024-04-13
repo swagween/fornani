@@ -6,8 +6,8 @@
 
 namespace automa {
 
-enum class menu_type { file_select, options, settings, credits };
-enum class Actions { trigger_submenu, save_loaded, exit_submenu, trigger };
+enum class menu_type { main, file_select, options, settings, credits, controls, tutorial };
+enum class Actions { trigger_submenu, save_loaded, exit_submenu, trigger, shutdown };
 
 class StateController {
 

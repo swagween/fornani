@@ -3,7 +3,6 @@
 
 #include "Soundboard.hpp"
 #include <algorithm>
-#include "../setup/ServiceLocator.hpp"
 #include "../service/ServiceProvider.hpp"
 
 namespace audio {

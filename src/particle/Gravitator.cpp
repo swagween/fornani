@@ -4,8 +4,7 @@
 
 namespace vfx {
 
-Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size)
-	: scaled_position(pos), dimensions(size), color(col), Gravitator_gravity_force(agf) {
+Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size) : scaled_position(pos), dimensions(size), color(col), attraction_force(agf) {
 
 	collider = shape::Collider(sf::Vector2<float>{4.f, 4.f}, sf::Vector2<float>{pos.x, pos.x});
 	collider.bounding_box.dimensions = Vec(4, 4);
@@ -30,6 +29,14 @@ void Gravitator::set_position(Vec new_position) {
 
 void Gravitator::set_target_position(Vec new_position) {
 
+	// close enough; call them equal and escape
+	if (abs(new_position.x - collider.physics.position.x) < 0.1f) { collider.physics.position.x = new_position.x; }
+	if (abs(new_position.y - collider.physics.position.y) < 0.1f) { collider.physics.position.y = new_position.y; }
+	if (collider.physics.position == new_position) {
+		collider.sync_components();
+		return;
+	}
+
 	float gx = collider.physics.position.x;
 	float gy = collider.physics.position.y;
 	float mx = new_position.x - collider.bounding_box.dimensions.x / 2;
@@ -38,11 +45,11 @@ void Gravitator::set_target_position(Vec new_position) {
 	float force_x = mx - gx;
 	float force_y = my - gy;
 	float mag = sqrt((force_x * force_x) + (force_y * force_y));
-	float str = Gravitator_gravity_force / mag * mag;
+	mag = std::max(0.0001f, mag);
+	float str = attraction_force / mag * mag;
 	force_x *= str;
 	force_y *= str;
 
-	if (abs(force_x) > 2048.f || abs(force_y) > 2048.f) { return; }
 	collider.physics.apply_force({force_x, force_y});
 }
 

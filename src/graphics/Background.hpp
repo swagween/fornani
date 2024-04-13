@@ -4,7 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <unordered_map>
-#include "../setup/ServiceLocator.hpp"
+#include "../components/PhysicsComponent.hpp"
+
 
 namespace automa {
 struct ServiceProvider;
@@ -21,7 +22,7 @@ class Background {
 	Background() = default;
 	Background(automa::ServiceProvider& svc, int bg_id);
 
-	void update(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc, sf::Vector2<float> observed_camvel);
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& mapdim);
 
   private:

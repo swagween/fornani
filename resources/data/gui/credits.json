@@ -1,0 +1,58 @@
+{
+  "dev": [
+    {
+      "name": "Karn Kaul",
+      "description": "djson, frequent consulting"
+    },
+    {
+      "name": "Omar Cornut",
+      "description": "DearImGui, imgui-sfml"
+    },
+    {
+      "name": "Elias Daler, Mischa Aster Alff",
+      "description": "imgui-sfml"
+    },
+    {
+      "name": "Laurent Gomila",
+      "description": "sfml"
+    },
+    {
+      "name": "silverweed",
+      "description": "functional animation state machines"
+    }
+  ],
+  "design": [
+  ],
+  "visuals": [
+    {
+      "name": "Codeman38",
+      "description": "Kongtext font (title)"
+    },
+    {
+      "name": "MBommeli",
+      "description": "PixelJFVerdana font (game text)"
+    }
+  ],
+  "sound": [
+    {
+      "name": "tck",
+      "description": "NPC and enemy sfx"
+    },
+    {
+      "name": "rainymage",
+      "description": "NPC and enemy sfx"
+    },
+    {
+      "name": "Vilkas_Sound, newagesoup, Lavacoal123",
+      "description": "gui sfx"
+    }
+  ],
+  "playtesters": [
+    {
+      "name": "Zach Causey",
+      "description": "The reason for keyboard and mouse support"
+    }
+  ],
+  "other": [
+  ]
+}

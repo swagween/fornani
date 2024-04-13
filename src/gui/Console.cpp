@@ -6,9 +6,8 @@
 namespace gui {
 
 Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc) {
-
+	origin = {pad, svc.constants.screen_dimensions.y - pad_y};
 	text_suite = svc.text.console;
-
 	for (auto& sprite : sprites) { sprite.setTexture(svc.assets.t_ui); }
 	sprites.at(0).setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
 	sprites.at(1).setTextureRect(sf::IntRect{{corner_factor, 0}, {edge_factor, corner_factor}});
@@ -55,9 +54,11 @@ void Console::update(automa::ServiceProvider& svc) {
 
 void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
-	if (flags.test(ConsoleFlags::portrait_included)) { portrait.render(win); }
-	flags.test(ConsoleFlags::portrait_included) && writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
-	nani_portrait.render(win);
+	if (flags.test(ConsoleFlags::portrait_included)) {
+		portrait.render(win);
+		writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
+		nani_portrait.render(win);
+	}
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }

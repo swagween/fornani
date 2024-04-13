@@ -21,7 +21,7 @@ class Console;
 
 namespace entity {
 
-	inline anim::Parameters anim_params{0, 10, 30, -1};
+	inline anim::Parameters anim_params{0, 12, 24, -1};
 
 class SavePoint {
 

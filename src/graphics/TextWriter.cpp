@@ -5,7 +5,7 @@
 namespace text {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
-	font.loadFromFile(svc.text.font);
+	font.loadFromFile(svc.text.text_font);
 	font.setSmooth(false);
 	special_characters.insert({Codes::prompt, '%'});
 	special_characters.insert({Codes::quest, '$'});
@@ -17,7 +17,7 @@ void TextWriter::start() {
 	// to be replaced with something prettier later (maybe)
 	indicator.setSize({4.f, 4.f});
 	indicator.setOrigin({2.f, 2.f});
-	indicator.setFillColor(flcolor::ui_white);
+	indicator.setFillColor(flcolor::bright_orange);
 
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }

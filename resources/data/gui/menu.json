@@ -1,0 +1,53 @@
+{
+  "options": {
+    "main": [
+      "play",
+      "options",
+      "quit"
+    ],
+    "file": [
+      "file 1",
+      "file 2",
+      "file 3"
+    ],
+    "options": [
+      "controls",
+      "tutorial",
+      "credits"
+    ],
+    "controls": [
+      "jump/select",
+      "shoot",
+      "special",
+      "inspect",
+      "inventory",
+      "menu",
+      "switch weapon (left)",
+      "switch weapon (right)",
+      "left",
+      "right",
+      "up",
+      "down"
+    ],
+    "credits": [
+      ""
+    ]
+  },
+  "config": {
+    "main": {
+      "top_buffer": 296
+    },
+    "file": {
+      "top_buffer": 186
+    },
+    "options": {
+      "top_buffer": 186
+    },
+    "controls": {
+      "top_buffer": 60
+    },
+    "credits": {
+      "top_buffer": 60
+    }
+  }
+}

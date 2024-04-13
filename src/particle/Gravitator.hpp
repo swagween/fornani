@@ -29,7 +29,7 @@ class Gravitator {
 
 	sf::Color color{};
 	sf::RectangleShape box{};
-	float Gravitator_gravity_force{};
+	float attraction_force{};
 };
 
 } // namespace vfx

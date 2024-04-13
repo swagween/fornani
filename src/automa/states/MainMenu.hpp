@@ -8,11 +8,9 @@ namespace automa {
 class MainMenu : public GameState {
 
   public:
-	std::unordered_map<MenuSelection, int> menu_selection_id{
-		{MenuSelection::new_game, 0}, {MenuSelection::load_game, 1}, {MenuSelection::options, 2}};
 
 	MainMenu() = default;
-	MainMenu(ServiceProvider& svc, player::Player& player, int id = 0);
+	MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
 
 	void init(ServiceProvider& svc, std::string_view room = "");
 	void setTilesetTexture(ServiceProvider& svc, sf::Texture& t);
@@ -23,20 +21,6 @@ class MainMenu : public GameState {
 
 	sf::Sprite title{};
 	std::vector<sf::Sprite> title_assets{};
-
-	int selection_width{};
-	int selection_buffer{};
-	int title_buffer{};
-	int top_buffer{};
-	int middle{};
-
-	sf::IntRect new_rect{};
-	sf::IntRect load_rect{};
-	sf::IntRect options_rect{};
-
-	vfx::Gravitator left_dot{};
-	vfx::Gravitator right_dot{};
-	sf::Vector2<float> dot_pad{24.f, 8.f};
 };
 
 }

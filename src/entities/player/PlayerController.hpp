@@ -7,12 +7,16 @@
 #include "../../utils/Direction.hpp"
 #include "Jump.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+
 namespace player {
 
 constexpr static int dash_time{32};
 
 enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect, dash, move_y };
-enum class TransponderInput { skip, next, exit, down, up, select, skip_released };
+enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released };
 enum class MovementState { restricted, grounded, walking_autonomously };
 
 enum class Hook { hook_released, hook_held };
@@ -22,7 +26,7 @@ class PlayerController {
   public:
 	PlayerController();
 
-	void update();
+	void update(automa::ServiceProvider& svc);
 	void clean();
 	void stop();
 	void ground();
@@ -40,6 +44,7 @@ class PlayerController {
 	void set_shot(bool flag);
 	void prevent_movement();
 	void release_hook();
+	void nullify_dash();
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 
@@ -69,6 +74,8 @@ class PlayerController {
 	[[nodiscard]] auto transponder_exit() const -> bool { return transponder_flags.test(TransponderInput::skip); }
 	[[nodiscard]] auto transponder_up() const -> bool { return transponder_flags.test(TransponderInput::up); }
 	[[nodiscard]] auto transponder_down() const -> bool { return transponder_flags.test(TransponderInput::down); }
+	[[nodiscard]] auto transponder_left() const -> bool { return transponder_flags.test(TransponderInput::left); }
+	[[nodiscard]] auto transponder_right() const -> bool { return transponder_flags.test(TransponderInput::right); }
 	[[nodiscard]] auto transponder_select() const -> bool { return transponder_flags.test(TransponderInput::select); }
 
 	[[nodiscard]] auto get_dash_request() const -> int { return dash_request; }

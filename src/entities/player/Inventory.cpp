@@ -17,7 +17,16 @@ Inventory::Inventory() {
 	item_labels.insert({10, "nimbus_iii_boiler_room_key"});
 }
 
+void Inventory::update(automa::ServiceProvider& svc) {
+	int index{};
+	for (auto& item : items) {
+		item.update(svc, index);
+		++index;
+	}
+}
+
 void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) {
+	if (item_id == 0) { return; }
 	bool found{};
 	for (auto& item : items) {
 		if (item.get_id() == item_id) {
@@ -30,6 +39,9 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 		items.back().set_id(item_id);
 		items.back().add_item(amount);
 	}
+	update(svc);
 }
+
+void Inventory::clear() { items.clear(); }
 
 } // namespace player

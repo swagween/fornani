@@ -18,6 +18,7 @@
 
 namespace gui {
 class Console;
+class InventoryWindow;
 }
 
 namespace automa {
@@ -88,12 +89,12 @@ class Player {
 	// init (violates RAII but must happen after resource path is set)
 	void init(automa::ServiceProvider& svc);
 	// member functions
-	void update(gui::Console& console);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void update(gui::Console& console, gui::InventoryWindow& inventory_window);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
-	void update_transponder(gui::Console& console);
+	void update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void flash_sprite();
 	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void calculate_sprite_offset();
@@ -111,6 +112,7 @@ class Player {
 	void walk();
 	void hurt(int amount);
 	void update_antennae();
+	void sync_antennae();
 
 	bool grounded() const;
 	bool fire_weapon();

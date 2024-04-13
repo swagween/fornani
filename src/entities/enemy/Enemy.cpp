@@ -56,6 +56,9 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 
 	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
 	if (in_general["gravity"].as_bool()) { flags.general.set(GeneralFlags::gravity); }
+	if (in_general["map_collision"].as_bool()) { flags.general.set(GeneralFlags::map_collision); }
+	if (in_general["player_collision"].as_bool()) { flags.general.set(GeneralFlags::player_collision); }
+	if (in_general["hurt_on_contact"].as_bool()) { flags.general.set(GeneralFlags::hurt_on_contact); }
 	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 
 	sprite.setTexture(svc.assets.texture_lookup.at(label));
@@ -68,7 +71,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 	Entity::update(svc, map);
 	collider.update(svc);
-	collider.detect_map_collision(map);
+	if (flags.general.test(GeneralFlags::map_collision)) { collider.detect_map_collision(map); }
 	collider.reset();
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
@@ -94,9 +97,9 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	sprite.setPosition(collider.physics.position + sprite_offset - cam);
 	if (svc.greyblock_mode()) {
 		drawbox.setOrigin({0.f, 0.f});
-		drawbox.setSize({(float)sprite_dimensions.x, (float)sprite_dimensions.y});
+		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
 		drawbox.setOutlineColor(svc.styles.colors.ui_white);
-		health.drawbox.setPosition(collider.physics.position + sprite_offset - cam);
+		drawbox.setPosition(collider.hurtbox.position - cam);
 		win.draw(drawbox);
 		drawbox.setPosition(physical.alert_range.position - cam);
 		drawbox.setSize(physical.alert_range.dimensions);
@@ -113,6 +116,11 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	}
 }
 
-void Enemy::handle_player_collision(player::Player& player) const { player.collider.handle_collider_collision(collider.bounding_box); }
+void Enemy::handle_player_collision(player::Player& player) const {
+	if (player_collision()) { player.collider.handle_collider_collision(collider.bounding_box); }
+	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
+		if (player.collider.hurtbox.overlaps(collider.bounding_box)) { player.hurt(attributes.base_damage); }
+	}
+}
 
 } // namespace enemy

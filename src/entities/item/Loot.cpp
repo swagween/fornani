@@ -1,23 +1,24 @@
 
 #include "Loot.hpp"
 #include "../../service/ServiceProvider.hpp"
-#include "../../setup/ServiceLocator.hpp"
+#include "../player/Player.hpp"
+
 
 namespace item {
 Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos) {
 
-	auto drop_rate = svc::randomLocator.get().random_range(drop_range.x, drop_range.y);
+	auto drop_rate = svc.random.random_range(drop_range.x, drop_range.y);
 	position = pos;
 
 	std::string_view key{};
 	for (int i = 0; i < drop_rate; ++i) {
-		if (svc::randomLocator.get().percent_chance(8)) {
+		if (svc.random.percent_chance(8)) {
 			key = "heart";
 		} else {
 			key = "orb";
 		}
-		float randx = svc::randomLocator.get().random_range_float(-100.0f, 100.0f);
-		float randy = svc::randomLocator.get().random_range_float(-100.0f, 100.0f);
+		float randx = svc.random.random_range_float(-100.0f, 100.0f);
+		float randy = svc.random.random_range_float(-100.0f, 100.0f);
 		drops.push_back(Drop(svc, key, probability));
 		drops.back().set_position(pos);
 		drops.back().get_collider().physics.apply_force({randx, randy});

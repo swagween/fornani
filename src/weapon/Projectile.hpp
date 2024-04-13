@@ -108,7 +108,7 @@ class Projectile {
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void destroy(bool completely);
-	void seed();
+	void seed(automa::ServiceProvider& svc);
 	void set_sprite(automa::ServiceProvider& svc);
 	void set_orientation(sf::Sprite& sprite);
 	void set_position(sf::Vector2<float>& pos);

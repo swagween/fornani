@@ -1,13 +1,15 @@
 #include "Game.hpp"
-#include "Game.hpp"
-#include "ServiceLocator.hpp"
+
 
 namespace fornani {
 
 Game::Game(char** argv) {
 	// data
+	services.data = data::DataManager(services);
 	services.data.finder.setResourcePath(argv);
 	services.data.load_data();
+	// controls
+	services.data.load_controls(services.controller_map);
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
@@ -15,9 +17,9 @@ Game::Game(char** argv) {
 	services.assets.finder.setResourcePath(argv);
 	services.assets.importTextures();
 	// sounds
-	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
+	music_player.finder.setResourcePath(argv);
 	services.assets.load_audio();
-	svc::musicPlayerLocator.get().turn_off(); // off by default
+	music_player.turn_off(); // off by default
 	// player
 	player.init(services);
 	player.init(services);
@@ -25,15 +27,15 @@ Game::Game(char** argv) {
 	lookup::populate_lookup();
 
 	// state manager
-	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player));
+	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 	game_state.get_current_state().init(services);
 
-	window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "Fornani (beta v1.0)");
-	measurements.width_ratio = (float)cam::screen_dimensions.x / (float)cam::screen_dimensions.y;
-	measurements.height_ratio = (float)cam::screen_dimensions.y / (float)cam::screen_dimensions.x;
+	window.create(sf::VideoMode(services.constants.screen_dimensions.x, services.constants.screen_dimensions.y), "Fornani (beta v1.0)");
+	measurements.width_ratio = (float)services.constants.screen_dimensions.x / (float)services.constants.screen_dimensions.y;
+	measurements.height_ratio = (float)services.constants.screen_dimensions.y / (float)services.constants.screen_dimensions.x;
 
 	screencap.create(window.getSize().x, window.getSize().y);
-	background.setSize(static_cast<sf::Vector2<float>>(cam::screen_dimensions));
+	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
 	background.setPosition(0, 0);
 	background.setFillColor(flcolor::ui_black);
 
@@ -48,12 +50,17 @@ Game::Game(char** argv) {
 void Game::run() { // load all assets
 	while (window.isOpen()) {
 
+		if (services.state_controller.actions.test(automa::Actions::shutdown)) { return; }
+
 		services.ticker.start_frame();
 
 		measurements.win_size.x = window.getSize().x;
 		measurements.win_size.y = window.getSize().y;
-		
-	// game loop
+
+		// check for controller connection
+		sf::Joystick::isConnected(0) ? services.controller_map.type = config::ControllerType::gamepad : config::ControllerType::keyboard;
+
+		// game loop
 		sf::Clock deltaClock{};
 
 		// SFML event variable
@@ -62,6 +69,8 @@ void Game::run() { // load all assets
 		bool valid_event{};
 		// check window events
 		while (window.pollEvent(event)) {
+			if (event.type == sf::Event::JoystickDisconnected) { services.controller_map.type = config::ControllerType::keyboard; }
+			if (event.type == sf::Event::JoystickConnected) { services.controller_map.type = config::ControllerType::gamepad; }
 			player.animation.state = {};
 			player.animation.state = {};
 			if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
@@ -85,22 +94,11 @@ void Game::run() { // load all assets
 				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::Escape) { return; }
 				if (event.key.code == sf::Keyboard::D) {
 					debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
 					services.assets.sharp_click.play();
 				}
-				if (event.key.code == sf::Keyboard::K) { player.kill(); }
-				if (event.key.code == sf::Keyboard::T) { game_state.get_current_state().console.load_and_launch("bryn_test"); }
-				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
-				if (event.key.code == sf::Keyboard::W) {
-					game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
-					game_state.get_current_state().init(services, "/level/FIRSTWIND_PRISON_01");
-					services.assets.dusken_cove.play();
-					services.assets.dusken_cove.setLoop(true);
-					player.assign_texture(services.assets.t_nani);
-					player.assign_texture(services.assets.t_nani);
-				}
+				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); }
 				if (event.key.code == sf::Keyboard::P) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {
 					services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
@@ -121,31 +119,31 @@ void Game::run() { // load all assets
 		}
 
 		// game logic and rendering
-		services.ticker.tick([this, &svc = services] { game_state.get_current_state().tick_update(svc); });
+		services.ticker.tick([this, &services = services] { game_state.get_current_state().tick_update(services); });
 		game_state.get_current_state().frame_update(services);
 
 		// switch states
 		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {
 			switch (services.state_controller.submenu) {
-			case automa::menu_type::file_select: game_state.set_current_state(std::make_unique<automa::FileMenu>(services, player)); break;
-			case automa::menu_type::options:
-				// todo
-				break;
+			case automa::menu_type::file_select: game_state.set_current_state(std::make_unique<automa::FileMenu>(services, player, "file")); break;
+			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player, "options")); break;
 			case automa::menu_type::settings:
 				// todo
 				break;
-			case automa::menu_type::credits:
-				// todo
-				break;
+			case automa::menu_type::controls: game_state.set_current_state(std::make_unique<automa::ControlsMenu>(services, player, "controls")); break;
+			case automa::menu_type::credits: game_state.set_current_state(std::make_unique<automa::CreditsMenu>(services, player, "credits")); break;
 			}
 			services.state_controller.actions.reset(automa::Actions::trigger_submenu);
 		}
 		if (services.state_controller.actions.test(automa::Actions::exit_submenu)) {
-			game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player));
+			switch (services.state_controller.submenu) {
+			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player, "options")); break;
+			default: game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); break;
+			}
 			services.state_controller.actions.reset(automa::Actions::exit_submenu);
 		}
 		if (services.state_controller.actions.test(automa::Actions::trigger)) {
-			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 			game_state.get_current_state().init(services, "/level/" + services.state_controller.next_state);
 			services.state_controller.actions.reset(automa::Actions::trigger);
 		}
@@ -201,8 +199,8 @@ void Game::debug_window() {
 			}
 			if (!window.hasFocus()) { window.RenderTarget::setActive(); }
 			ImGui::Separator();
-			ImGui::Text("Screen Dimensions X: %u", cam::screen_dimensions.x);
-			ImGui::Text("Screen Dimensions Y: %u", cam::screen_dimensions.y);
+			ImGui::Text("Screen Dimensions X: %u", services.constants.screen_dimensions.x);
+			ImGui::Text("Screen Dimensions Y: %u", services.constants.screen_dimensions.y);
 			if (ImGui::IsMousePosValid()) {
 				ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
 			} else {
@@ -230,7 +228,7 @@ void Game::debug_window() {
 					}
 					ImGui::Separator();
 					ImGui::Text("Stopwatch");
-					ImGui::Text("average time: %.4f", svc::stopwatchLocator.get().get_snapshot());
+					ImGui::Text("average time: %.4f", services.stopwatch.get_snapshot());
 
 					ImGui::EndTabItem();
 				}
@@ -260,34 +258,46 @@ void Game::debug_window() {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Key States")) {
-					ImGui::Text("Shift held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::held) ? "Yes" : "No");
-					ImGui::Text("Shift triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::triggered) ? "Yes" : "No");
-					ImGui::Text("Shift released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::LShift).key_state.test(util::key_state::released) ? "Yes" : "No");
-					ImGui::Separator();
-					ImGui::Text("Left held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::held) ? "Yes" : "No");
-					ImGui::Text("Left triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::triggered) ? "Yes" : "No");
-					ImGui::Text("Left released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Left).key_state.test(util::key_state::released) ? "Yes" : "No");
-					ImGui::Separator();
-					ImGui::Text("Right held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::held) ? "Yes" : "No");
-					ImGui::Text("Right triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::triggered) ? "Yes" : "No");
-					ImGui::Text("Right released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Right).key_state.test(util::key_state::released) ? "Yes" : "No");
-					ImGui::Separator();
-					ImGui::Text("Up held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::held) ? "Yes" : "No");
-					ImGui::Text("Up triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::triggered) ? "Yes" : "No");
-					ImGui::Text("Up released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Up).key_state.test(util::key_state::released) ? "Yes" : "No");
-					ImGui::Separator();
-					ImGui::Text("Down held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::held) ? "Yes" : "No");
-					ImGui::Text("Down triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::triggered) ? "Yes" : "No");
-					ImGui::Text("Down released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Down).key_state.test(util::key_state::released) ? "Yes" : "No");
-					ImGui::Separator();
-					ImGui::Text("Z held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::held) ? "Yes" : "No");
-					ImGui::Text("Z triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::triggered) ? "Yes" : "No");
-					ImGui::Text("Z released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::Z).key_state.test(util::key_state::released) ? "Yes" : "No");
-					ImGui::Separator();
-					ImGui::Text("X held: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::held) ? "Yes" : "No");
-					ImGui::Text("X triggered: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::triggered) ? "Yes" : "No");
-					ImGui::Text("X released: %s", svc::inputStateLocator.get().keys.at(sf::Keyboard::X).key_state.test(util::key_state::released) ? "Yes" : "No");
-					ImGui::Separator();
+					ImGui::Text("Joystick");
+					ImGui::Text("Status: ");
+					ImGui::SameLine();
+					sf::Joystick::isConnected(0) ? ImGui::Text("Connected") : ImGui::Text("Not connected");
+
+					ImGui::Text("Controller Type: ");
+					ImGui::SameLine();
+					if (services.controller_map.type == config::ControllerType::gamepad) { ImGui::Text("Gamepad"); }
+					if (services.controller_map.type == config::ControllerType::keyboard) { ImGui::Text("Keyboard"); }
+
+					ImGui::Text("Main     : %s", services.controller_map.label_to_control.at("main_action").held() ? "Pressed" : "");
+					ImGui::Text("Secondary: %s", services.controller_map.label_to_control.at("secondary_action").held() ? "Pressed" : "");
+					ImGui::Text("Arms L   : %s", services.controller_map.label_to_control.at("arms_switch_left").held() ? "Pressed" : "");
+					ImGui::Text("Arms R   : %s", services.controller_map.label_to_control.at("arms_switch_right").held() ? "Pressed" : "");
+					ImGui::Text("Left   : %s", services.controller_map.label_to_control.at("left").held() ? "Pressed" : "");
+					ImGui::Text("Right  : %s", services.controller_map.label_to_control.at("right").held() ? "Pressed" : "");
+					ImGui::Text("Up     : %s", services.controller_map.label_to_control.at("up").held() ? "Pressed" : "");
+					ImGui::Text("Down   : %s", services.controller_map.label_to_control.at("down").held() ? "Pressed" : "");
+
+					ImGui::Text("SQUARE  : %s", sf::Joystick::isButtonPressed(0, 0) ? "Pressed" : "");
+					ImGui::Text("CROSS   : %s", sf::Joystick::isButtonPressed(0, 1) ? "Pressed" : "");
+					ImGui::Text("CIRCLE  : %s", sf::Joystick::isButtonPressed(0, 2) ? "Pressed" : "");
+					ImGui::Text("TRIANGLE: %s", sf::Joystick::isButtonPressed(0, 3) ? "Pressed" : "");
+					ImGui::Text("4: %s", sf::Joystick::isButtonPressed(0, 4) ? "Pressed" : "");
+					ImGui::Text("5: %s", sf::Joystick::isButtonPressed(0, 5) ? "Pressed" : "");
+					ImGui::Text("6: %s", sf::Joystick::isButtonPressed(0, 6) ? "Pressed" : "");
+					ImGui::Text("7: %s", sf::Joystick::isButtonPressed(0, 7) ? "Pressed" : "");
+					ImGui::Text("8: %s", sf::Joystick::isButtonPressed(0, 8) ? "Pressed" : "");
+					ImGui::Text("9: %s", sf::Joystick::isButtonPressed(0, 9) ? "Pressed" : "");
+					ImGui::Text("10: %s", sf::Joystick::isButtonPressed(0, 10) ? "Pressed" : "");
+					ImGui::Text("11: %s", sf::Joystick::isButtonPressed(0, 11) ? "Pressed" : "");
+					ImGui::Text("12: %s", sf::Joystick::isButtonPressed(0, 12) ? "Pressed" : "");
+					ImGui::Text("13: %s", sf::Joystick::isButtonPressed(0, 13) ? "Pressed" : "");
+					ImGui::Text("14: %s", sf::Joystick::isButtonPressed(0, 14) ? "Pressed" : "");
+					ImGui::Text("15: %s", sf::Joystick::isButtonPressed(0, 15) ? "Pressed" : "");
+					ImGui::Text("16: %s", sf::Joystick::isButtonPressed(0, 16) ? "Pressed" : "");
+
+					ImGui::Text("X Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::X));
+					ImGui::Text("Y Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
+
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Audio")) {
@@ -311,12 +321,12 @@ void Game::debug_window() {
 							ImGui::Separator();
 							ImGui::Text("Player Grounded: %s", player.grounded() ? "Yes" : "No");
 							ImGui::Separator();
-							ImGui::Text("Right Collision: %s", player.collider.collision_flags.test(shape::Collision::has_right_collision) ? "Yes" : "No");
-							ImGui::Text("Left Collision: %s", player.collider.collision_flags.test(shape::Collision::has_left_collision) ? "Yes" : "No");
-							ImGui::Text("Top Collision: %s", player.collider.collision_flags.test(shape::Collision::has_top_collision) ? "Yes" : "No");
-							ImGui::Text("Bottom Collision: %s", player.collider.collision_flags.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
+							ImGui::Text("Right Collision: %s", player.collider.flags.collision.test(shape::Collision::has_right_collision) ? "Yes" : "No");
+							ImGui::Text("Left Collision: %s", player.collider.flags.collision.test(shape::Collision::has_left_collision) ? "Yes" : "No");
+							ImGui::Text("Top Collision: %s", player.collider.flags.collision.test(shape::Collision::has_top_collision) ? "Yes" : "No");
+							ImGui::Text("Bottom Collision: %s", player.collider.flags.collision.test(shape::Collision::has_bottom_collision) ? "Yes" : "No");
 							ImGui::Separator();
-							ImGui::Text("Dash Cancel Collision: %s", player.collider.dash_flags.test(shape::Dash::dash_cancel_collision) ? "Yes" : "No");
+							ImGui::Text("Dash Cancel Collision: %s", player.collider.flags.dash.test(shape::Dash::dash_cancel_collision) ? "Yes" : "No");
 
 							ImGui::EndTabItem();
 						}
@@ -338,7 +348,7 @@ void Game::debug_window() {
 							ImGui::Text("Can Jump : %s", player.controller.get_jump().can_jump() ? "Yes" : "No");
 							ImGui::Text("Controller Jumping? : %s", player.controller.get_jump().jumping() ? "Yes" : "No");
 							ImGui::Text("Jump Began? : %s", player.controller.get_jump().began() ? "Yes" : "No");
-							ImGui::Text("Collider Jumping? : %s", player.collider.movement_flags.test(shape::Movement::jumping) ? "Yes" : "No");
+							ImGui::Text("Collider Jumping? : %s", player.collider.flags.movement.test(shape::Movement::jumping) ? "Yes" : "No");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Dash")) {
@@ -382,6 +392,13 @@ void Game::debug_window() {
 								ImGui::SameLine();
 								ImGui::Text(" : %i", item.get_quantity());
 							}
+							ImGui::Separator();
+							ImGui::Text("Abilities");
+							ImGui::Text("Dash: ");
+							ImGui::SameLine();
+							player.catalog.categories.abilities.has_ability(player::Abilities::dash) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
+							if (ImGui::Button("Give Dash")) { player.catalog.categories.abilities.give_ability(player::Abilities::dash); }
+							if (ImGui::Button("Remove Dash")) { player.catalog.categories.abilities.remove_ability(player::Abilities::dash); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {
@@ -483,11 +500,6 @@ void Game::debug_window() {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("General")) {
-					ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().position.x, svc::cameraLocator.get().position.y);
-					ImGui::SliderFloat("Camera X Friction", &svc::cameraLocator.get().physics.ground_friction.x, 0.8f, 1.f, "%.5f");
-					ImGui::SliderFloat("Camera Y Friction", &svc::cameraLocator.get().physics.ground_friction.y, 0.8f, 1.f, "%.5f");
-					ImGui::SliderFloat("Camera Grav Force", &svc::cameraLocator.get().grav_force, 0.003f, 0.03f, "%.5f");
-					ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
 
 					if (ImGui::Button("Save Screenshot")) { take_screenshot(); }
 					ImGui::Separator();
@@ -499,9 +511,6 @@ void Game::debug_window() {
 				if (ImGui::BeginTabItem("Resources")) {
 					ImGui::Text("Size of Asset Manager (Bytes): %lu", sizeof(services.assets));
 					ImGui::Text("Size of Data Manager (Bytes): %lu", sizeof(services.data));
-					//ImGui::Text("Size of Text Manager (Bytes): %lu", sizeof(svc::textLocator.get()));
-					ImGui::Text("Size of Music Player (Bytes): %lu", sizeof(svc::musicPlayerLocator.get()));
-					ImGui::Text("Size of Camera (Bytes): %lu", sizeof(svc::cameraLocator.get()));
 					ImGui::Text("Size of Player (Bytes): %lu", sizeof(player));
 					ImGui::Text("Size of TextureUpdater (Bytes): %lu", sizeof(player.texture_updater));
 					ImGui::Text("Size of Collider (Bytes): %lu", sizeof(player.collider));
@@ -516,131 +525,138 @@ void Game::debug_window() {
 					ImGui::TextUnformatted(game_state.get_current_state_string().c_str());
 					if (ImGui::Button("Under")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/UNDER_LEDGE_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
 					}
 					if (ImGui::Button("House")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/UNDER_HUT_01");
 
 						player.set_position({100, 160});
 					}
 					if (ImGui::Button("Ancient Field")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/ANCIENT_FIELD_01");
 
 						player.set_position({100, 160});
 					}
 					if (ImGui::Button("Base")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/BASE_LIVING_01");
 
 						player.set_position({25 * 32, 10 * 32});
 					}
 					if (ImGui::Button("Base Lab")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/BASE_LAB_01");
 
 						player.set_position({28 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Breakable Test")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/BREAKABLE_TEST_01");
 
 						player.set_position({20 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Skycorps")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SKYCORPS_YARD_01");
 
 						player.set_position({28 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Sky")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SKY_CHAMBER_01");
 						player.set_position({7 * 32, 16 * 32});
 					}
+
+					if (ImGui::Button("Corridor 2")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/FIRSTWIND_CORRIDOR_02");
+						player.set_position({7 * 32, 7 * 32});
+					}
 					if (ImGui::Button("Shadow")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SHADOW_DOJO_01");
 						player.set_position({4 * 32, 11 * 32});
 					}
 					if (ImGui::Button("Stone")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/STONE_CORRIDOR_01");
 						player.set_position({10 * 32, 16 * 32});
 					}
 					if (ImGui::Button("Overturned")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/OVERTURNED_DOJO_01");
 						player.set_position({4 * 32, 11 * 32});
 					}
 					if (ImGui::Button("Glade")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/OVERTURNED_GLADE_01");
 						player.set_position({4 * 32, 4 * 32});
 					}
 					if (ImGui::Button("Woodshine")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/WOODSHINE_VILLAGE_01");
 						player.set_position({32, 1280});
 					}
 					if (ImGui::Button("Collision Room")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/SKY_COLLISIONROOM_01");
 						player.set_position({5 * 32, 5 * 32});
 					}
 					if (ImGui::Button("Grub Dojo")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/GRUB_DOJO_01");
 						player.set_position({3 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Firstwind Dojo")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/BASE_TEST_03");
 						player.set_position({3 * 32, 8 * 32});
 					}
 					/*if (ImGui::Button("Atrium")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_ATRIUM_01");
 					}
 					if (ImGui::Button("Hangar")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_HANGAR_01");
 						player.set_position({ 3080, 790 });
 					}
 					if (ImGui::Button("Corridor 3")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/FIRSTWIND_CORRIDOR_03");
 						player.set_position({ 2327, 360 });
 					}
 					if(ImGui::Button("Lab")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/TOXIC_LAB_01");
 					}*/
 					if (ImGui::Button("Toxic")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/TOXIC_ARENA_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
 						player.collider.physics.zero();
@@ -648,20 +664,20 @@ void Game::debug_window() {
 					}
 					if (ImGui::Button("Grub")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/GRUB_TUNNEL_01");
 						player.set_position({224, 290});
 					}
 					/*if(ImGui::Button("Night")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, services.assets.resource_path + "/level/NIGHT_CRANE_01");
 						player.set_position({50, 50});
 						player.assign_texture(services.assets.t_nani_dark);
 					}*/
 					if (ImGui::Button("Night 2")) {
 						services.assets.click.play();
-						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player));
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/NIGHT_CATWALK_01");
 						player.set_position({50, 50});
 					}
@@ -673,7 +689,6 @@ void Game::debug_window() {
 		ImVec2 prev_size = ImGui::GetWindowSize();
 		ImGui::End();
 	}
-
 }
 
 void Game::take_screenshot() {
@@ -685,6 +700,5 @@ void Game::take_screenshot() {
 }
 
 bool Game::debug() { return services.debug_flags.test(automa::DebugFlags::imgui_overlay); }
-
 
 } // namespace fornani

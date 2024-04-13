@@ -23,7 +23,8 @@ class TextManager {
 	dj::Json npc{};
 
 
-	std::string font{};
+	std::string text_font{};
+	std::string title_font{};
 
 	ResourceFinder finder{};
 };

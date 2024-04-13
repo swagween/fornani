@@ -1,9 +1,4 @@
 #include "Portrait.hpp"
-#include "Portrait.hpp"
-#include "Portrait.hpp"
-#include "Portrait.hpp"
-#include "Portrait.hpp"
-#include "Portrait.hpp"
 #include "../service/ServiceProvider.hpp"
 
 namespace gui {
