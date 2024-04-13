@@ -151,8 +151,8 @@
         "attributes": {
           "base_damage": 2,
           "range": 240,
-          "speed": 8.0,
-          "variance": 0.1,
+          "speed": 4.0,
+          "variance": 0.4,
           "stun_time": 0.0,
           "knockback": 0.0,
           "persistent": false,

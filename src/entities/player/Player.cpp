@@ -378,7 +378,7 @@ void Player::update_antennae() {
 		} else {
 			antenna_offset.y = -13.f;
 		}
-		if (animation.get_frame() == 57) { antenna_offset.y = -1.f; }
+		if (animation.get_frame() == 57) { antenna_offset.y = -4.f; }
 		a.set_target_position(collider.physics.position + antenna_offset);
 		a.update(*m_services);
 		a.collider.sync_components();
