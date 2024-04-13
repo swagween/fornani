@@ -6,7 +6,7 @@
 #include "../gui/InventoryWindow.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../setup/EnumLookups.hpp"
-#include "../setup/ServiceLocator.hpp"
+
 #include "../utils/Math.hpp"
 
 namespace world {
@@ -380,7 +380,7 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_sprite(svc);
 	active_projectiles.back().set_position(pos);
-	active_projectiles.back().seed();
+	active_projectiles.back().seed(svc);
 	active_projectiles.back().update(svc, *player);
 	active_projectiles.back().sync_position();
 	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }

@@ -28,7 +28,7 @@ void Camera::restrict_movement(sf::Vector2<float>& bounds) {
 	if (bounds.y < bounding_box.getSize().y) { fix_vertically(bounds); }
 }
 
-void Camera::fix_horizontally(sf::Vector2<float> map_dim) { bounding_box.setPosition((bounding_box.getSize().x - map_dim.x) * 0.5f, bounding_box.getPosition().y); }
+void Camera::fix_horizontally(sf::Vector2<float> map_dim) { bounding_box.setPosition((map_dim.x - bounding_box.getSize().x) * 0.5f, bounding_box.getPosition().y); }
 
 void Camera::fix_vertically(sf::Vector2<float> map_dim) { bounding_box.setPosition(bounding_box.getPosition().x, (map_dim.y - bounding_box.getSize().y) * 0.5f); }
 

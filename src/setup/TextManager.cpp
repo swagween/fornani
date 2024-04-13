@@ -2,7 +2,6 @@
 #pragma once
 
 #include "TextManager.hpp"
-#include "ServiceLocator.hpp"
 
 namespace data {
 

@@ -1,5 +1,5 @@
 #include "PlayerController.hpp"
-#include "../../setup/ServiceLocator.hpp"
+
 #include "../../service/ServiceProvider.hpp"
 
 namespace player {

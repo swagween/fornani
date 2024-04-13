@@ -4,7 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <unordered_map>
-#include "../setup/ServiceLocator.hpp"
+#include "../components/PhysicsComponent.hpp"
+
 
 namespace automa {
 struct ServiceProvider;

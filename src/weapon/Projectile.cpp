@@ -1,6 +1,6 @@
 
 #include "Projectile.hpp"
-#include "../setup/ServiceLocator.hpp"
+
 #include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
 
@@ -9,7 +9,6 @@ namespace arms {
 Projectile::Projectile() {
 	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physics.velocity.x = stats.speed;
-	seed();
 };
 
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id) {
@@ -70,7 +69,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	state.set(ProjectileState::initialized);
 	cooldown.start(40);
-	seed();
+	seed(svc);
 	set_sprite(svc);
 }
 
@@ -213,9 +212,9 @@ void Projectile::destroy(bool completely) {
 	stats.base_damage = 0;
 }
 
-void Projectile::seed() {
+void Projectile::seed(automa::ServiceProvider& svc) {
 
-	float var = svc::randomLocator.get().random_range_float(-stats.variance, stats.variance);
+	float var = svc.random.random_range_float(-stats.variance, stats.variance);
 	if (stats.spring) {
 		physics.velocity = hook.probe_velocity(stats.speed);
 		return;

@@ -1,6 +1,6 @@
 
 #include "SavePoint.hpp"
-#include "../../setup/ServiceLocator.hpp"
+
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
 #include "../../gui/Console.hpp"
