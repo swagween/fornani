@@ -3,6 +3,10 @@
 #include "Console.hpp"
 #include "Selector.hpp"
 
+namespace player {
+class Player;
+}
+
 namespace gui {
 
 class InventoryWindow : public Console {

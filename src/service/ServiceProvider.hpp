@@ -11,6 +11,7 @@
 #include "../utils/Constants.hpp"
 #include "../audio/Soundboard.hpp"
 #include "../setup/ControllerMap.hpp"
+#include "../utils/Stopwatch.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger };
@@ -28,6 +29,8 @@ struct ServiceProvider {
 	lookup::Tables tables{};
 	StateController state_controller{};
 
+	//debug stuff
+	util::Stopwatch stopwatch{};
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 
 };

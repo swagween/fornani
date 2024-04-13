@@ -66,7 +66,8 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		}
 
 		auto const& savept = metadata["save_point"];
-		save_point.id = savept["id"].as<int>();
+		auto id = savept["id"].as<int>();
+		save_point.id = id != 0 ? id : -1;
 		save_point.scaled_position.x = savept["position"][0].as<int>();
 		save_point.scaled_position.y = savept["position"][1].as<int>();
 
@@ -298,20 +299,20 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		}
 	}
 
-	if (real_dimensions.y < cam::screen_dimensions.y) {
-		float ydiff = (cam::screen_dimensions.y - real_dimensions.y) / 2;
+	if (real_dimensions.y < svc.constants.screen_dimensions.y) {
+		float ydiff = (svc.constants.screen_dimensions.y - real_dimensions.y) / 2;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({(float)cam::screen_dimensions.x, ydiff});
+		borderbox.setSize({(float)svc.constants.screen_dimensions.x, ydiff});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
 
 		borderbox.setPosition(0.0f, real_dimensions.y + ydiff);
 		win.draw(borderbox);
 	}
-	if (real_dimensions.x < cam::screen_dimensions.x) {
-		float xdiff = (cam::screen_dimensions.x - real_dimensions.x) / 2;
+	if (real_dimensions.x < svc.constants.screen_dimensions.x) {
+		float xdiff = (svc.constants.screen_dimensions.x - real_dimensions.x) / 2;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({xdiff, (float)cam::screen_dimensions.y});
+		borderbox.setSize({xdiff, (float)svc.constants.screen_dimensions.y});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
 
@@ -348,7 +349,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		minimap_tile.setFillColor(sf::Color{240, 240, 240, 180});
 		win.draw(minimap_tile);
 
-		win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y}));
+		win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y}));
 	}
 }
 
@@ -365,10 +366,9 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		sf::RectangleShape box{};
 		box.setPosition(0, 0);
 		box.setFillColor(flcolor::black);
-		box.setSize({(float)cam::screen_dimensions.x, (float)cam::screen_dimensions.y});
+		box.setSize({(float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y});
 		win.draw(box);
 	}
-	if (real_dimensions.y < cam::screen_dimensions.y) { svc::cameraLocator.get().fix_horizontally(real_dimensions); }
 }
 
 void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win) {

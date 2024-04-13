@@ -11,17 +11,16 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	hud.set_corner_pad(svc, true); // display hud preview for each file in the center of the screen
 	constrain_selection();
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection);
-	svc::cameraLocator.get().set_position({1, 1});
-	player.set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(0).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(1).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(2).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(3).set_position({(float)(cam::screen_dimensions.x / 2) + 80, 360});
+	player.set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(0).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(1).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(2).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(3).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 
 	loading.start(1);
 
 	title.setPosition(0, 0);
-	title.setSize(static_cast<sf::Vector2f>(cam::screen_dimensions));
+	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
 	title.setFillColor(flcolor::ui_black);
 
 	left_dot.set_position(options.at(current_selection).left_offset);
@@ -107,10 +106,10 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
 	for (auto& option : options) { win.draw(option.label); }
 
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	left_dot.render(svc, win, {});
+	right_dot.render(svc, win, {});
 
-	player->render(svc, win, svc::cameraLocator.get().physics.position);
+	player->render(svc, win, {});
 	if (loading.is_complete()) { hud.render(*player, win); }
 }
 

@@ -5,7 +5,6 @@
 #include <array>
 #include <string>
 #include "../utils/BitFlags.hpp"
-#include "../utils/Camera.hpp"
 #include "../graphics/TextWriter.hpp"
 #include "Portrait.hpp"
 
@@ -77,7 +76,7 @@ class Console {
 	int speed{2};
 
 	protected:
-	sf::Vector2<float> origin{pad, cam::screen_dimensions.y - pad_y}; // bottom left corner
+	sf::Vector2<float> origin{}; // bottom left corner
 };
 
 } // namespace gui

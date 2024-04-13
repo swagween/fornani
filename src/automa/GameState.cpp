@@ -1,5 +1,6 @@
 
 #include "GameState.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace automa {
 

@@ -17,9 +17,9 @@ Game::Game(char** argv) {
 	services.assets.finder.setResourcePath(argv);
 	services.assets.importTextures();
 	// sounds
-	svc::musicPlayerLocator.get().finder.setResourcePath(argv);
+	music_player.finder.setResourcePath(argv);
 	services.assets.load_audio();
-	svc::musicPlayerLocator.get().turn_off(); // off by default
+	music_player.turn_off(); // off by default
 	// player
 	player.init(services);
 	player.init(services);
@@ -30,12 +30,12 @@ Game::Game(char** argv) {
 	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 	game_state.get_current_state().init(services);
 
-	window.create(sf::VideoMode(cam::screen_dimensions.x, cam::screen_dimensions.y), "Fornani (beta v1.0)");
-	measurements.width_ratio = (float)cam::screen_dimensions.x / (float)cam::screen_dimensions.y;
-	measurements.height_ratio = (float)cam::screen_dimensions.y / (float)cam::screen_dimensions.x;
+	window.create(sf::VideoMode(services.constants.screen_dimensions.x, services.constants.screen_dimensions.y), "Fornani (beta v1.0)");
+	measurements.width_ratio = (float)services.constants.screen_dimensions.x / (float)services.constants.screen_dimensions.y;
+	measurements.height_ratio = (float)services.constants.screen_dimensions.y / (float)services.constants.screen_dimensions.x;
 
 	screencap.create(window.getSize().x, window.getSize().y);
-	background.setSize(static_cast<sf::Vector2<float>>(cam::screen_dimensions));
+	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
 	background.setPosition(0, 0);
 	background.setFillColor(flcolor::ui_black);
 
@@ -119,7 +119,7 @@ void Game::run() { // load all assets
 		}
 
 		// game logic and rendering
-		services.ticker.tick([this, &svc = services] { game_state.get_current_state().tick_update(svc); });
+		services.ticker.tick([this, &services = services] { game_state.get_current_state().tick_update(services); });
 		game_state.get_current_state().frame_update(services);
 
 		// switch states
@@ -199,8 +199,8 @@ void Game::debug_window() {
 			}
 			if (!window.hasFocus()) { window.RenderTarget::setActive(); }
 			ImGui::Separator();
-			ImGui::Text("Screen Dimensions X: %u", cam::screen_dimensions.x);
-			ImGui::Text("Screen Dimensions Y: %u", cam::screen_dimensions.y);
+			ImGui::Text("Screen Dimensions X: %u", services.constants.screen_dimensions.x);
+			ImGui::Text("Screen Dimensions Y: %u", services.constants.screen_dimensions.y);
 			if (ImGui::IsMousePosValid()) {
 				ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
 			} else {
@@ -228,7 +228,7 @@ void Game::debug_window() {
 					}
 					ImGui::Separator();
 					ImGui::Text("Stopwatch");
-					ImGui::Text("average time: %.4f", svc::stopwatchLocator.get().get_snapshot());
+					ImGui::Text("average time: %.4f", services.stopwatch.get_snapshot());
 
 					ImGui::EndTabItem();
 				}
@@ -500,11 +500,6 @@ void Game::debug_window() {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("General")) {
-					ImGui::Text("Camera Position: (%.8f,%.8f)", svc::cameraLocator.get().position.x, svc::cameraLocator.get().position.y);
-					ImGui::SliderFloat("Camera X Friction", &svc::cameraLocator.get().physics.ground_friction.x, 0.8f, 1.f, "%.5f");
-					ImGui::SliderFloat("Camera Y Friction", &svc::cameraLocator.get().physics.ground_friction.y, 0.8f, 1.f, "%.5f");
-					ImGui::SliderFloat("Camera Grav Force", &svc::cameraLocator.get().grav_force, 0.003f, 0.03f, "%.5f");
-					ImGui::Text("Observed Camera Velocity: (%.8f,%.8f)", svc::cameraLocator.get().observed_velocity.x, svc::cameraLocator.get().observed_velocity.y);
 
 					if (ImGui::Button("Save Screenshot")) { take_screenshot(); }
 					ImGui::Separator();
@@ -516,9 +511,6 @@ void Game::debug_window() {
 				if (ImGui::BeginTabItem("Resources")) {
 					ImGui::Text("Size of Asset Manager (Bytes): %lu", sizeof(services.assets));
 					ImGui::Text("Size of Data Manager (Bytes): %lu", sizeof(services.data));
-					// ImGui::Text("Size of Text Manager (Bytes): %lu", sizeof(svc::textLocator.get()));
-					ImGui::Text("Size of Music Player (Bytes): %lu", sizeof(svc::musicPlayerLocator.get()));
-					ImGui::Text("Size of Camera (Bytes): %lu", sizeof(svc::cameraLocator.get()));
 					ImGui::Text("Size of Player (Bytes): %lu", sizeof(player));
 					ImGui::Text("Size of TextureUpdater (Bytes): %lu", sizeof(player.texture_updater));
 					ImGui::Text("Size of Collider (Bytes): %lu", sizeof(player.collider));

@@ -4,6 +4,7 @@
 #include "../automa/StateManager.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "../audio/MusicPlayer.hpp"
 #include <imgui-SFML.h>
 
 namespace fornani {
@@ -37,6 +38,7 @@ class Game {
 	sf::RenderWindow window{};
 	sf::Texture screencap{};
 	sf::RectangleShape background{};
+	audio::MusicPlayer music_player{};
 };
 
 } // namespace fornani

@@ -12,7 +12,6 @@
 #include "../entities/player/Player.hpp"
 #include "../gui/Console.hpp"
 #include "../service/Service.hpp"
-#include "../utils/Camera.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/Ticker.hpp"
 #include "../utils/Random.hpp"
@@ -34,8 +33,8 @@ int const num_counters = 1;
 //inline auto dataLocator = forloop::Service<data::DataManager>::Instance{};
 //inline auto textLocator = forloop::Service<data::TextManager>::Instance{};
 //inline auto playerLocator = forloop::Service<player::Player>::Instance{};
-inline auto cameraLocator = forloop::Service<cam::Camera>::Instance{};
-inline auto stopwatchLocator = forloop::Service<util::Stopwatch>::Instance{};
+//inline auto cameraLocator = forloop::Service<cam::Camera>::Instance{};
+//inline auto stopwatchLocator = forloop::Service<util::Stopwatch>::Instance{};
 //inline auto tickerLocator = forloop::Service<util::Ticker>::Instance{};
 //inline auto stateControllerLocator = forloop::Service<automa::StateController>::Instance{};
 //inline auto consoleLocator = forloop::Service<gui::Console>::Instance{};
@@ -46,6 +45,6 @@ inline auto randomLocator = forloop::Service<util::Random>::Instance{};
 //inline auto floatReadoutLocator = forloop::Service<float>::Instance{};
 //inline auto loggerLocator = forloop::Service<util::Logger>::Instance {};
 //inline auto soundboardLocator = forloop::Service<audio::Soundboard>::Instance{};
-inline auto musicPlayerLocator = forloop::Service<audio::MusicPlayer>::Instance{};
+//inline auto musicPlayerLocator = forloop::Service<audio::MusicPlayer>::Instance{};
 
 } // namespace svc

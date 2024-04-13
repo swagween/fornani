@@ -6,17 +6,14 @@ namespace automa {
 
 MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
 	state = STATE::STATE_MENU;
-	svc::cameraLocator.get().set_position({1, 1});
 
 	left_dot.set_position(options.at(current_selection).left_offset);
 	right_dot.set_position(options.at(current_selection).right_offset);
 
-	title = sf::Sprite{svc.assets.t_title, sf::IntRect({0, 0}, {(int)cam::screen_dimensions.x, (int)cam::screen_dimensions.y})};
+	title = sf::Sprite{svc.assets.t_title, sf::IntRect({0, 0}, {(int)svc.constants.screen_dimensions.x, (int)svc.constants.screen_dimensions.y})};
 };
 
 void MainMenu::init(ServiceProvider& svc, std::string_view room) {
-	svc::musicPlayerLocator.get().load("clay");
-	svc::musicPlayerLocator.get().play_looped();
 }
 
 void MainMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
@@ -63,7 +60,6 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 void MainMenu::tick_update(ServiceProvider& svc) {
 	for (auto& option : options) { option.update(svc, current_selection); }
-	svc::musicPlayerLocator.get().update(svc);
 	left_dot.update(svc);
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection).left_offset);

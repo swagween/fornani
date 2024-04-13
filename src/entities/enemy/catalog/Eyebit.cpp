@@ -5,7 +5,6 @@
 namespace enemy {
 
 Eyebit::Eyebit(automa::ServiceProvider& svc) : Enemy(svc, "eyebit") {
-	//collider.flags.general.set(shape::General::ignore_resolution);
 	animation.set_params(idle);
 	seeker_cooldown.start(2);
 }

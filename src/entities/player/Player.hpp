@@ -90,7 +90,7 @@ class Player {
 	void init(automa::ServiceProvider& svc);
 	// member functions
 	void update(gui::Console& console, gui::InventoryWindow& inventory_window);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();

@@ -21,7 +21,7 @@ class Background {
 	Background() = default;
 	Background(automa::ServiceProvider& svc, int bg_id);
 
-	void update(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc, sf::Vector2<float> observed_camvel);
 	void render(sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& mapdim);
 
   private:

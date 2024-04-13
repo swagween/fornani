@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Enemy.hpp"
+#include "../../packages/Seeker.hpp"
 #define EYEBOT_BIND(f) std::bind(&Eyebot::f, this)
 
 namespace enemy {
@@ -20,6 +21,10 @@ class Eyebot : public Enemy {
 
 	private:
 	util::BitFlags<EyebotState> state{};
+
+	  // packages
+	  entity::Seeker seeker{0.0005f, 0.99f};
+	  util::Cooldown seeker_cooldown{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 4, 28, -1};

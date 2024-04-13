@@ -113,7 +113,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 }
 
-void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 
 	sf::Vector2<float> player_pos = apparent_position - campos;
 	calculate_sprite_offset();
@@ -203,19 +203,15 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		controller.prevent_movement();
 		if (controller.transponder_up()) {
 			inventory_window.selector.go_up();
-			std::cout << inventory_window.selector.get_current_selection() << "\n";
 		}
 		if (controller.transponder_down()) {
 			inventory_window.selector.go_down();
-			std::cout << inventory_window.selector.get_current_selection() << "\n";
 		}
 		if (controller.transponder_left()) {
 			inventory_window.selector.go_left();
-			std::cout << inventory_window.selector.get_current_selection() << "\n";
 		}
 		if (controller.transponder_right()) {
 			inventory_window.selector.go_right();
-			std::cout << inventory_window.selector.get_current_selection() << "\n";
 		}
 		transponder.update(*m_services, inventory_window);
 	}
@@ -234,7 +230,7 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 	if (transponder.get_item_shipment() > 0) {
 		std::cout << transponder.get_item_shipment() << "\n";
 		give_item(transponder.get_item_shipment(), 1);
-	}																									 // push item to inventory!
+	}
 	if (transponder.get_quest_shipment() > 0) { std::cout << transponder.get_quest_shipment() << "\n"; } // push item to inventory!
 }
 

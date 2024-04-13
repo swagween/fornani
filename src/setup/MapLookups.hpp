@@ -10,7 +10,7 @@ namespace lookup {
     inline std::unordered_map<int, std::string> get_map_label{};
 
     inline std::unordered_map<int, int> save_point_to_room_id {
-        {0, 100}
+        {1, 100}
 
 
     };

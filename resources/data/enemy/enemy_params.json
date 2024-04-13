@@ -81,14 +81,14 @@
       "variant": "skycorps"
     },
     "physical": {
-      "dimensions": [ 24, 24 ],
+      "dimensions": [ 56, 56 ],
       "sprite_dimensions": [ 64, 64 ],
       "spritesheet_dimensions": [ 3, 2 ],
-      "offset": [ 8, -16 ],
+      "offset": [ 16, 16 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [ 200.0, 300.0 ],
-      "hostile_range": [ 400.0, 24.0 ],
+      "alert_range": [ 500.0, 500.0 ],
+      "hostile_range": [ 300.0, 300.0 ],
       "friction": 0.98,
       "gravity": 0.0
     },
@@ -107,7 +107,8 @@
       "mobile": true,
       "gravity": false,
       "map_collision": true,
-      "player_collision": false
+      "player_collision": false,
+      "hurt_on_contact": true
     }
   },
 

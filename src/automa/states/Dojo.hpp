@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../GameState.hpp"
+#include "../../level/Camera.hpp"
 
 namespace automa {
 
@@ -18,6 +19,7 @@ class Dojo : public GameState {
 	void toggle_inventory();
 
 	world::Map map;
+	fornani::Camera camera{};
 	sf::Texture tileset{};
 	std::vector<sf::Sprite> tileset_sprites{};
 	bool show_colliders{false};
