@@ -25,6 +25,7 @@ class Tank : public Enemy {
 
 	//packages
 	entity::WeaponPackage gun;
+	util::Cooldown running_time{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};
