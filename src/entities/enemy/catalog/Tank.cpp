@@ -9,6 +9,7 @@ Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, "skycorp
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
+	collider.physics.maximum_velocity = {3.f, 12.f};
 }
 
 void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -22,7 +23,13 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	Enemy::update(svc, map);
 	if (ent_state.test(entity::State::flip)) { state.set(TankState::turn); }
 
-	if (player.collider.bounding_box.overlaps(physical.hostile_range) && gun.clip_cooldown.is_complete()) { state.set(TankState::shoot); }
+	if (player.collider.bounding_box.overlaps(physical.hostile_range) && gun.clip_cooldown.is_complete()) { 
+		if(svc.random.percent_chance(60)) {
+			state.set(TankState::shoot);
+		} else {
+			state.set(TankState::run);
+		}
+	}
 	if (state.test(TankState::shoot)) {
 		if (!gun.get().cooling_down()) {
 			gun.cycle.update();
@@ -47,6 +54,11 @@ fsm::StateFunction Tank::update_idle() {
 		animation.set_params(shoot);
 		return TANK_BIND(update_shoot);
 	}
+	if (state.test(TankState::run)) {
+		state.reset(TankState::idle);
+		animation.set_params(run);
+		return TANK_BIND(update_run);
+	}
 	state = {};
 	state.set(TankState::idle);
 	return TANK_BIND(update_idle);
@@ -64,7 +76,24 @@ fsm::StateFunction Tank::update_turn() {
 	state.set(TankState::turn);
 	return TANK_BIND(update_turn);
 };
-fsm::StateFunction Tank::update_run() { return TANK_BIND(update_idle); }
+fsm::StateFunction Tank::update_run() {
+	animation.label = "run";
+	auto facing = direction.lr == dir::LR::left ? -1.f : 1.f;
+	collider.physics.apply_force({attributes.speed * facing, 0.f});
+	if (state.test(TankState::turn)) {
+		state.reset(TankState::run);
+		animation.set_params(turn);
+		return TANK_BIND(update_turn);
+	}
+	if (state.test(TankState::idle)) {
+		state.reset(TankState::run);
+		animation.set_params(idle);
+		return TANK_BIND(update_idle);
+	}
+	state = {};
+	state.set(TankState::run);
+	return TANK_BIND(update_run);
+}
 fsm::StateFunction Tank::update_shoot() {
 	animation.label = "shoot";
 	if (animation.complete() && animation.keyframe_over()) {
