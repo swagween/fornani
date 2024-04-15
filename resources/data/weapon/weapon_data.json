@@ -52,10 +52,11 @@
           "num_sprites": 1,
           "num_frames": 1,
           "framerate": 8
-        }
+        },
+        "sparkler_type": "light_trail"
       },
       "spray": {
-        "dimensions": [2.0, 2.0],
+        "dimensions": [ 2.0, 2.0 ],
         "type": "fast_burst",
         "color": "periwinkle"
       }
@@ -113,10 +114,11 @@
           "num_sprites": 1,
           "num_frames": 1,
           "framerate": 8
-        }
+        },
+        "sparkler_type": "dense_trail"
       },
       "spray": {
-        "dimensions": [2.0, 2.0],
+        "dimensions": [ 2.0, 2.0 ],
         "type": "heavy_burst",
         "color": "fucshia"
       }
@@ -151,7 +153,7 @@
         "attributes": {
           "base_damage": 2,
           "range": 240,
-          "speed": 4.0,
+          "speed": 8.0,
           "variance": 0.4,
           "stun_time": 0.0,
           "knockback": 0.0,
@@ -173,11 +175,12 @@
         "animation": {
           "num_sprites": 1,
           "num_frames": 4,
-          "framerate": 8
-        }
+          "framerate": 24
+        },
+        "sparkler_type": "light_trail"
       },
       "spray": {
-        "dimensions": [2.0, 2.0],
+        "dimensions": [ 2.0, 2.0 ],
         "type": "fast_burst",
         "color": "goldenrod"
       }
@@ -238,7 +241,7 @@
         }
       },
       "spray": {
-        "dimensions": [2.0, 2.0],
+        "dimensions": [ 2.0, 2.0 ],
         "type": "twinkle",
         "color": "white"
       }
@@ -297,10 +300,11 @@
           "num_sprites": 1,
           "num_frames": 2,
           "framerate": 24
-        }
+        },
+        "sparkler_type": "light_trail"
       },
       "spray": {
-        "dimensions": [2.0, 2.0],
+        "dimensions": [ 2.0, 2.0 ],
         "type": "twinkle",
         "color": "periwinkle"
       }

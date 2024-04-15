@@ -1,7 +1,7 @@
 #include "Tank.hpp"
+#include "../../../level/Map.hpp"
 #include "../../../service/ServiceProvider.hpp"
 #include "../../player/Player.hpp"
-#include "../../../level/Map.hpp"
 
 namespace enemy {
 
@@ -13,23 +13,11 @@ Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, "skycorp
 }
 
 void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	
+
 	flags.state.set(StateFlags::vulnerable); // tank is always vulnerable
 	gun.update(svc, map, *this);
+	running_time.update();
 
-	// reset animation states to determine next animation state
-	state = {};
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
-	Enemy::update(svc, map);
-	if (ent_state.test(entity::State::flip)) { state.set(TankState::turn); }
-
-	if (player.collider.bounding_box.overlaps(physical.hostile_range) && gun.clip_cooldown.is_complete()) { 
-		if(svc.random.percent_chance(60)) {
-			state.set(TankState::shoot);
-		} else {
-			state.set(TankState::run);
-		}
-	}
 	if (state.test(TankState::shoot)) {
 		if (!gun.get().cooling_down()) {
 			gun.cycle.update();
@@ -38,6 +26,29 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 			map.spawn_projectile_at(svc, gun.get(), gun.barrel_point());
 		}
 	}
+
+	// reset animation states to determine next animation state
+	state = {};
+	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
+	Enemy::update(svc, map);
+
+	if (player.collider.bounding_box.overlaps(physical.hostile_range) && gun.clip_cooldown.is_complete() && running_time.is_complete()) {
+		if (svc.random.percent_chance(90)) {
+			state.set(TankState::shoot);
+		} else {
+			state.set(TankState::run);
+			running_time.start(400);
+		}
+	}
+
+	if (running_time.is_complete() && gun.clip_cooldown.is_complete()) {
+		state.set(TankState::idle);
+	} else if (!running_time.is_complete()) {
+		state = {};
+		state.set(TankState::run);
+	}
+
+	if (ent_state.test(entity::State::flip)) { state.set(TankState::turn); }
 
 	state_function = state_function();
 }
@@ -80,6 +91,7 @@ fsm::StateFunction Tank::update_run() {
 	animation.label = "run";
 	auto facing = direction.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
+	if (running_time.is_complete()) { state.set(TankState::idle); }
 	if (state.test(TankState::turn)) {
 		state.reset(TankState::run);
 		animation.set_params(turn);

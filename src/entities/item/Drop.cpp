@@ -30,7 +30,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	animation.current_frame = svc.random.random_range(0, animation.params.duration - 1);
 
 	int rand_cooldown_offset = svc.random.random_range(0, 50);
-	lifespan.start(2500 + rand_cooldown_offset);
+	lifespan.start(4500 + rand_cooldown_offset);
 	seed(svc, probability);
 	set_value();
 	set_texture(svc);

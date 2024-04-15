@@ -19,6 +19,7 @@
 #include "../particle/Gravitator.hpp"
 #include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
+#include "../particle/Sparkler.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -128,6 +129,7 @@ class Projectile {
 	components::PhysicsComponent physics{};
 	ProjectileStats stats{};
 	ProjectileAnimation anim{};
+	vfx::Sparkler sparkler{};
 
 	std::string_view label{};
 
