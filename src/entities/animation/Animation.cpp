@@ -42,7 +42,7 @@ void Animation::end() {
 	flags.set(State::complete);
 }
 
-void Animation::set_params(Parameters& const new_params) {
+void Animation::set_params(Parameters const new_params) {
 	params = new_params;
 	refresh();
 	start();

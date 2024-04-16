@@ -52,28 +52,32 @@
       "friction": 0.98,
       "gravity": 6.5
     },
-    "attributes": {
-      "base_hp": 40,
-      "base_damage": 2.0,
-      "speed": 1.0,
-      "loot_multiplier": 6.0,
-      "drop_range": [ 5, 8 ]
+    "visual": {
+      "explosion_type": 0,
+      "explosion_size": 1
     },
-    "animation": {
-      "duration": 2,
-      "framerate": 20
+      "attributes": {
+        "base_hp": 40,
+        "base_damage": 2.0,
+        "speed": 1.0,
+        "loot_multiplier": 6.0,
+        "drop_range": [ 5, 8 ]
+      },
+      "animation": {
+        "duration": 2,
+        "framerate": 20
+      },
+      "general": {
+        "mobile": true,
+        "gravity": true,
+        "map_collision": true,
+        "player_collision": true
+      }
     },
-    "general": {
-      "mobile": true,
-      "gravity": true,
-      "map_collision": true,
-      "player_collision": true
-    }
-  },
 
-  "hulmet": {
+    "hulmet": {
 
-  },
+    },
 
   "eyebot": {
     "metadata": {
@@ -91,6 +95,10 @@
       "hostile_range": [ 500.0, 500.0 ],
       "friction": 0.98,
       "gravity": 0.0
+    },
+    "visual": {
+      "explosion_type": 2,
+      "explosion_size": 1
     },
     "attributes": {
       "base_hp": 32,
@@ -129,6 +137,10 @@
       "friction": 0.99,
       "gravity": 0.0
     },
+    "visual": {
+      "explosion_type": 0,
+      "explosion_size": 0
+    },
     "attributes": {
       "base_hp": 2,
       "base_damage": 1.0,
@@ -148,4 +160,4 @@
       "hurt_on_contact": true
     }
   }
-}
+  }

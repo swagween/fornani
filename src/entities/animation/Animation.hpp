@@ -35,7 +35,7 @@ struct Animation {
 	void start();
 	void update();
 	void end();
-	void set_params(Parameters& const new_params);
+	void set_params(Parameters const new_params);
 	int get_frame() const;
 
 	bool active() const;

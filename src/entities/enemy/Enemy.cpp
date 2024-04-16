@@ -1,6 +1,7 @@
 #include "Enemy.hpp"
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
+#include "../../level/Map.hpp"
 
 namespace enemy {
 
@@ -9,6 +10,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	auto const& in_metadata = in_data["metadata"];
 	auto const& in_physical = in_data["physical"];
 	auto const& in_attributes = in_data["attributes"];
+	auto const& in_visual = in_data["visual"];
 	auto const& in_animation = in_data["animation"];
 	auto const& in_general = in_data["general"];
 
@@ -43,6 +45,9 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	attributes.speed = in_attributes["speed"].as<float>();
 	attributes.drop_range.x = in_attributes["drop_range"][0].as<int>();
 	attributes.drop_range.y = in_attributes["drop_range"][1].as<int>();
+
+	visual.explosion_size = in_visual["explosion_size"].as<int>();
+	visual.explosion_type = in_visual["explosion_type"].as<int>();
 	// TODO: load in all the animation data and map them to a set of parameters
 	// let's add this function to services
 	anim::Parameters params{};
@@ -89,6 +94,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 		sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
 	}
 	sprite.setOrigin((float)sprite_dimensions.x / 2.f, (float)dimensions.y / 2.f);
+
+	if (died()) { map.explosions.push_back(entity::Explosion(svc, collider.physics.position, collider.physics.velocity, visual.explosion_type, visual.explosion_size)); }
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

@@ -95,7 +95,6 @@ class AssetManager {
 		items.insert({"bipolar_junction_transistor", t_bipolar_junction_transistor});
 		items.insert({"willets_floppy_disc", t_willets_floppy_disc});
 
-
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
 
@@ -133,6 +132,11 @@ class AssetManager {
 
 		t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators_01.png");
 		t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators_01.png");
+
+		t_large_explosion.loadFromFile(finder.resource_path + "/image/entity/large_explosion.png");
+		t_small_explosion.loadFromFile(finder.resource_path + "/image/entity/small_explosion.png");
+		explosion_lookup.insert({0, t_small_explosion});
+		explosion_lookup.insert({1, t_large_explosion});
 
 		// title stuff
 		t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
@@ -280,6 +284,9 @@ class AssetManager {
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
 
+	sf::Texture t_large_explosion{};
+	sf::Texture t_small_explosion{};
+
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};
 	sf::Texture t_bg_overcast{};
@@ -410,6 +417,7 @@ class AssetManager {
 
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
 	std::unordered_map<int, sf::Texture&> background_lookup{};
+	std::unordered_map<int, sf::Texture&> explosion_lookup{};
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};

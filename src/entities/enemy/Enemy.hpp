@@ -71,6 +71,11 @@ class Enemy : public entity::Entity {
 		shape::Shape alert_range{};
 		shape::Shape hostile_range{};
 	} physical{};
+
+	struct {
+		int explosion_type{};
+		int explosion_size{};
+	} visual{};
 };
 
 } // namespace enemy

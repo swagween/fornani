@@ -19,6 +19,7 @@ class Seeker {
 	void bounce_vert() { gravitator->collider.physics.velocity.y *= -1.f; }
 	void bounce_horiz() { gravitator->collider.physics.velocity.x *= -1.f; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return gravitator->collider.bounding_box.position; }
+	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return gravitator->collider.physics.velocity; }
 
   private:
 	std::unique_ptr<vfx::Gravitator> gravitator{};

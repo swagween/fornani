@@ -237,7 +237,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, room_id, transition.fade_out, transition.done); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(*player); }
+	for (auto& explosion : explosions) { explosion.update(svc, *this); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
+
+	std::erase_if(explosions, [](auto const& e) { return e.done(); });
 
 	player->collider.reset_ground_flags();
 	// check if player died
@@ -277,6 +280,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
+	for (auto& explosion : explosions) { explosion.render(svc, win, cam); }
 
 	for (auto& animator : animators) {
 		if (!animator.foreground) { animator.render(svc, win, cam); }
