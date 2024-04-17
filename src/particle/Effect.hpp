@@ -14,11 +14,12 @@ struct ServiceProvider;
 
 namespace entity {
 
-class Explosion : public Entity {
+class Effect : public Entity {
 	public:
-	Explosion(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type = 0, int size = 0);
+	Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type = 0, int index = 0);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void rotate();
 	[[nodiscard]] auto done() const -> bool { return animation.complete(); }
 
   private:

@@ -14,7 +14,7 @@ class Console;
 
 namespace item {
 
-enum class ItemFlags { unique };
+enum class ItemFlags { unique, revealed };
 enum class UIFlags { selected };
 
 class Item : public entity::Entity {
@@ -30,6 +30,9 @@ class Item : public entity::Entity {
 	[[nodiscard]] auto selected() const -> bool { return ui_flags.test(UIFlags::selected); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_quantity() const -> int { return variables.quantity; }
+	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.title; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return drawbox.getPosition(); }
+	[[nodiscard]] auto get_description() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.hidden_description : metadata.naive_description; }
 
 	std::string_view label{};
 	int selection_index{};
@@ -51,7 +54,7 @@ class Item : public entity::Entity {
 
 	struct {
 		sf::Vector2<float> pad{120.f, 120.f};
-		float spacing{48.f};
+		float spacing{56.f};
 	} ui{};
 };
 

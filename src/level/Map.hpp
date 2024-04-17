@@ -14,7 +14,7 @@
 #include "Grid.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
-#include "../particle/Explosion.hpp"
+#include "../particle/Effect.hpp"
 #include "../weapon/Projectile.hpp"
 #include "../entities/item/Loot.hpp"
 #include "../entities/world/Chest.hpp"
@@ -107,7 +107,7 @@ class Map {
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Animator> animators{};
-	std::vector<entity::Explosion> explosions{};
+	std::vector<entity::Effect> effects{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};

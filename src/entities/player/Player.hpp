@@ -126,6 +126,7 @@ class Player {
 
 	void reset_flags();
 	void total_reset();
+	void map_reset();
 
 	arms::Weapon& equipped_weapon();
 	int& extant_instances(int index);

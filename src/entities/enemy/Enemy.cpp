@@ -46,8 +46,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	attributes.drop_range.x = in_attributes["drop_range"][0].as<int>();
 	attributes.drop_range.y = in_attributes["drop_range"][1].as<int>();
 
-	visual.explosion_size = in_visual["explosion_size"].as<int>();
-	visual.explosion_type = in_visual["explosion_type"].as<int>();
+	visual.effect_size = in_visual["effect_size"].as<int>();
+	visual.effect_type = in_visual["effect_type"].as<int>();
 	// TODO: load in all the animation data and map them to a set of parameters
 	// let's add this function to services
 	anim::Parameters params{};
@@ -95,7 +95,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 	}
 	sprite.setOrigin((float)sprite_dimensions.x / 2.f, (float)dimensions.y / 2.f);
 
-	if (died()) { map.explosions.push_back(entity::Explosion(svc, collider.physics.position, collider.physics.velocity, visual.explosion_type, visual.explosion_size)); }
+	if (died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

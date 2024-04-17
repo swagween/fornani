@@ -93,6 +93,16 @@ void TextWriter::wrap() {
 	}
 }
 
+void TextWriter::load_single_message(std::string_view message) {
+	suite.clear();
+	responses.clear();
+	auto message_container = std::deque<Message>{};
+	message_container.push_back({sf::Text(), false});
+	message_container.back().data.setString(message.data());
+	stylize(message_container.back().data, true);
+	suite.push_back(message_container);
+}
+
 void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	suite.clear();
 	responses.clear();

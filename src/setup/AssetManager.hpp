@@ -55,6 +55,8 @@ class AssetManager {
 		t_hud_pointer.loadFromFile(finder.resource_path + "/image/gui/HUD_pointer.png");
 		t_hud_gun_color.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_color.png");
 		t_hud_gun_shadow.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_shadow.png");
+		t_selector.loadFromFile(finder.resource_path + "/image/gui/selector.png");
+		t_console_outline.loadFromFile(finder.resource_path + "/image/gui/console_outline.png");
 
 		// guns and bullets!
 		t_bryns_gun.loadFromFile(finder.resource_path + "/image/weapon/bg.png");
@@ -86,14 +88,7 @@ class AssetManager {
 		weapon_textures.insert({"grappling hook", t_grappling_hook});
 		projectile_textures.insert({"grappling hook", t_hook});
 
-		t_bryns_notebook.loadFromFile(finder.resource_path + "/image/item/bryns_notebook.png");
-		t_factory_access_permit.loadFromFile(finder.resource_path + "/image/item/factory_access_permit.png");
-		t_bipolar_junction_transistor.loadFromFile(finder.resource_path + "/image/item/bipolar_junction_transistor.png");
-		t_willets_floppy_disc.loadFromFile(finder.resource_path + "/image/item/willets_floppy_disc.png");
-		items.insert({"bryns_notebook", t_bryns_notebook});
-		items.insert({"factory_access_permit", t_factory_access_permit});
-		items.insert({"bipolar_junction_transistor", t_bipolar_junction_transistor});
-		items.insert({"willets_floppy_disc", t_willets_floppy_disc});
+		t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
@@ -135,8 +130,10 @@ class AssetManager {
 
 		t_large_explosion.loadFromFile(finder.resource_path + "/image/entity/large_explosion.png");
 		t_small_explosion.loadFromFile(finder.resource_path + "/image/entity/small_explosion.png");
-		explosion_lookup.insert({0, t_small_explosion});
-		explosion_lookup.insert({1, t_large_explosion});
+		t_wall_hit.loadFromFile(finder.resource_path + "/image/entity/wall_hit.png");
+		effect_lookup.insert({0, t_small_explosion});
+		effect_lookup.insert({1, t_large_explosion});
+		effect_lookup.insert({2, t_wall_hit});
 
 		// title stuff
 		t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
@@ -247,10 +244,7 @@ class AssetManager {
 	sf::Sprite sp_ui_test{};
 
 	//items
-	sf::Texture t_bryns_notebook{};
-	sf::Texture t_factory_access_permit{};
-	sf::Texture t_bipolar_junction_transistor{};
-	sf::Texture t_willets_floppy_disc{};
+	sf::Texture t_items{};
 
 	// critters and bosses!
 	sf::Texture t_frdog{};
@@ -270,6 +264,8 @@ class AssetManager {
 	sf::Texture t_hud_gun_color{};
 	sf::Texture t_hud_gun_shadow{};
 	sf::Texture t_hud_pointer{};
+	sf::Texture t_selector{};
+	sf::Texture t_console_outline{};
 
 	sf::Texture t_alphabet{};
 	std::vector<sf::Sprite> sp_alphabet{};
@@ -286,6 +282,7 @@ class AssetManager {
 
 	sf::Texture t_large_explosion{};
 	sf::Texture t_small_explosion{};
+	sf::Texture t_wall_hit{};
 
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};
@@ -417,11 +414,10 @@ class AssetManager {
 
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
 	std::unordered_map<int, sf::Texture&> background_lookup{};
-	std::unordered_map<int, sf::Texture&> explosion_lookup{};
+	std::unordered_map<int, sf::Texture&> effect_lookup{};
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
-	std::unordered_map<std::string_view, sf::Texture&> items{};
 };
 
 } // namespace asset

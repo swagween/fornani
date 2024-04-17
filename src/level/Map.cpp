@@ -132,7 +132,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		++layer_counter;
 	}
 
-	if (player->animation.state.test(player::AnimState::inspect)) { player->animation.state.set(player::AnimState::idle); }
+	player->map_reset();
 
 	transition.fade_in = true;
 	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2, svc.constants.screen_dimensions.y * 2));
@@ -183,7 +183,13 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 						generate_layer_textures(svc);
 					}
 					if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) { continue; }
-					if (!proj.stats.transcendent) { proj.destroy(false); }
+					if (!proj.stats.transcendent) {
+						if (!proj.destruction_initiated()) {
+							effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, proj.wall_hit_type(), 2));
+							if (proj.direction.lr == dir::LR::neutral) { effects.back().rotate(); }
+						}
+						proj.destroy(false);
+					}
 					if (proj.stats.spring && cell.is_hookable()) {
 						if (proj.hook.grapple_flags.test(arms::GrappleState::probing)) {
 							proj.hook.spring.set_anchor(cell.middle_point());
@@ -237,10 +243,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, room_id, transition.fade_out, transition.done); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(*player); }
-	for (auto& explosion : explosions) { explosion.update(svc, *this); }
+	for (auto& effect : effects) { effect.update(svc, *this); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
-	std::erase_if(explosions, [](auto const& e) { return e.done(); });
+	std::erase_if(effects, [](auto const& e) { return e.done(); });
 
 	player->collider.reset_ground_flags();
 	// check if player died
@@ -280,7 +286,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
-	for (auto& explosion : explosions) { explosion.render(svc, win, cam); }
 
 	for (auto& animator : animators) {
 		if (!animator.foreground) { animator.render(svc, win, cam); }
@@ -288,6 +293,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 	
+	// map foreground tiles
 	for (int i = 4; i < NUM_LAYERS; ++i) {
 		if (svc.greyblock_mode() && i != 4) { continue; }
 		layer_textures.at(i).display();
@@ -295,6 +301,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		layer_sprite.setPosition(-cam);
 		win.draw(layer_sprite);
 	}
+
+	for (auto& effect : effects) { effect.render(svc, win, cam); }
+
 	if (svc.greyblock_mode()) {
 		for (auto& index : collidable_indeces) {
 			auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
@@ -387,7 +396,9 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 	active_projectiles.back().seed(svc);
 	active_projectiles.back().update(svc, *player);
 	active_projectiles.back().sync_position();
-	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
+	if (active_projectiles.back().stats.boomerang) {
+		active_projectiles.back().set_boomerang_speed();
+	}
 	if (active_projectiles.back().stats.spring) {
 		active_projectiles.back().set_hook_speed();
 		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);

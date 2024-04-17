@@ -73,8 +73,8 @@ class Enemy : public entity::Entity {
 	} physical{};
 
 	struct {
-		int explosion_type{};
-		int explosion_size{};
+		int effect_type{};
+		int effect_size{};
 	} visual{};
 };
 

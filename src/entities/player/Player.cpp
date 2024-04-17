@@ -449,6 +449,11 @@ void Player::total_reset() {
 	update_antennae();
 }
 
+void Player::map_reset() {
+	arsenal.extant_projectile_instances = {};
+	if (animation.state.test(player::AnimState::inspect)) { animation.state.set(player::AnimState::idle); }
+}
+
 arms::Weapon& Player::equipped_weapon() {
 	return arsenal.get_current_weapon();
 }

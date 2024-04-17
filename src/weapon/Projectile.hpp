@@ -122,6 +122,7 @@ class Projectile {
 	void constrain_hitbox_at_destruction_point();
 	void lock_to_anchor();
 
+	[[nodiscard]] auto wall_hit_type() const -> int { return visual.wall_hit_type; }
 	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
 
 	dir::Direction direction{};
@@ -160,5 +161,8 @@ class Projectile {
 
 	private:
 	int id{};
+	struct {
+		int wall_hit_type{};
+	} visual{};
 };
 } // namespace arms

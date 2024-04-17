@@ -43,6 +43,8 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	anim.num_frames = in_data["animation"]["num_frames"].as<int>();
 	anim.framerate = in_data["animation"]["framerate"].as<int>();
 
+	visual.wall_hit_type = in_data["visual"]["wall_hit_type"].as<int>();
+
 	sf::Vector2<float> dim{};
 	dim.x = in_data["dimensions"]["x"].as<float>();
 	dim.y = in_data["dimensions"]["y"].as<float>();
@@ -112,9 +114,11 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		gravitator.set_target_position(player.apparent_position);
 		gravitator.update(svc);
 		physics.position = gravitator.collider.physics.position;
+		bounding_box.set_position(physics.position);
+
 		svc.soundboard.flags.weapon.set(svc.soundboard.gun_sounds.at(label)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
-		if (gravitator.collider.bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
+		if (bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
 			svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
@@ -262,6 +266,7 @@ void Projectile::set_orientation(sf::Sprite& sprite) {
 void Projectile::set_position(sf::Vector2<float>& pos) {
 	physics.position = pos;
 	bounding_box.position = pos;
+	gravitator.set_position(pos);
 	fired_point = pos;
 }
 

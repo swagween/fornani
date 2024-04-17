@@ -53,8 +53,8 @@
       "gravity": 6.5
     },
     "visual": {
-      "explosion_type": 0,
-      "explosion_size": 1
+      "effect_type": 0,
+      "effect_size": 1
     },
       "attributes": {
         "base_hp": 40,
@@ -97,8 +97,8 @@
       "gravity": 0.0
     },
     "visual": {
-      "explosion_type": 2,
-      "explosion_size": 1
+      "effect_type": 2,
+      "effect_size": 1
     },
     "attributes": {
       "base_hp": 32,
@@ -138,8 +138,8 @@
       "gravity": 0.0
     },
     "visual": {
-      "explosion_type": 0,
-      "explosion_size": 0
+      "effect_type": 0,
+      "effect_size": 0
     },
     "attributes": {
       "base_hp": 2,

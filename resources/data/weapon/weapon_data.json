@@ -115,6 +115,9 @@
           "num_frames": 1,
           "framerate": 8
         },
+        "visual": {
+          "wall_hit_type": 1
+        },
         "sparkler_type": "dense_trail"
       },
       "spray": {
@@ -213,7 +216,7 @@
           "y": 16.0
         },
         "attributes": {
-          "base_damage": 0.1,
+          "base_damage": 0.2,
           "range": 800,
           "speed": 40.5,
           "variance": 0.0,
