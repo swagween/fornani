@@ -89,6 +89,7 @@ void Console::end() {
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::loaded);
 	flags.reset(ConsoleFlags::portrait_included);
+	flags.reset(ConsoleFlags::extended);
 	flags.set(ConsoleFlags::off_trigger);
 }
 

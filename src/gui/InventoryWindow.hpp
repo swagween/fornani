@@ -19,6 +19,7 @@ class InventoryWindow : public Console {
 	void close();
 
 	Selector selector;
+	Console info;
 
   private:
 	struct {
@@ -38,8 +39,6 @@ class InventoryWindow : public Console {
 
 	sf::Text item_label{};
 	sf::Font item_font{};
-
-	Console info;
 };
 
 } // namespace gui

@@ -73,11 +73,11 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 				}
 			}
 		}
-		selector.render(win);
+		if (!player.catalog.categories.inventory.items.empty()) { selector.render(win); }
 		if (Console::extended()) {
 			info.begin();
 			info.render(win);
-			info.write(win, true);
+			if (info.extended()) { info.write(win, true); }
 		}
 	}
 }

@@ -268,6 +268,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (svc.ticker.every_x_frames(1)) { transition.update(); }
 
 	console.clean_off_trigger();
+	inventory_window.clean_off_trigger();
+	inventory_window.info.clean_off_trigger();
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
