@@ -58,7 +58,7 @@ void Drop::set_value() {
 	// heart
 	if (parameters.type == DropType::heart) {
 		if (rarity == priceless || rarity == rare) {
-			value = 4;
+			value = 3;
 		} else {
 			value = 1;
 		}
@@ -68,8 +68,8 @@ void Drop::set_value() {
 	// orb
 	switch (rarity) {
 	case priceless: value = 100; break;
-	case rare: value = 50; break;
-	case uncommon: value = 10; break;
+	case rare: value = 20; break;
+	case uncommon: value = 5; break;
 	case common: value = 1; break;
 	}
 }

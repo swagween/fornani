@@ -380,8 +380,8 @@ void Game::debug_window() {
 						}
 						if (ImGui::BeginTabItem("Catalog")) {
 							ImGui::Text("Player Stats");
-							ImGui::SliderFloat("Max HP", &player.health.max_hp, 3, 12);
-							ImGui::SliderFloat("HP", &player.health.hp, 0, 12);
+							ImGui::SliderFloat("Max HP", &player.health.max_hp, 3, 8);
+							ImGui::SliderFloat("HP", &player.health.hp, 0, 8);
 							ImGui::SliderInt("Max Orbs", &player.player_stats.max_orbs, 99, 99999);
 							ImGui::SliderInt("Orbs", &player.player_stats.orbs, 0, 99999);
 							ImGui::Separator();

@@ -7,6 +7,7 @@
 #include "../../utils/StateFunction.hpp"
 #include "../packages/Health.hpp"
 #include "../packages/WeaponPackage.hpp"
+#include "../player/Indicator.hpp"
 #include <string_view>
 
 namespace player {
@@ -37,12 +38,15 @@ class Enemy : public entity::Entity {
 	Enemy(automa::ServiceProvider& svc, std::string_view label);
 	void update(automa::ServiceProvider& svc, world::Map& map) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player){};
 	void handle_player_collision(player::Player& player) const;
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
+	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get_cooldown() == afterlife; }
+	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
 	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
 	void set_position(sf::Vector2<float> pos) {
 		collider.physics.position = pos;
@@ -51,6 +55,7 @@ class Enemy : public entity::Entity {
 	void hurt() { flags.state.set(StateFlags::hurt); }
 
 	entity::Health health{};
+	player::Indicator health_indicator{};
 	anim::Animation animation{};
 
   protected:
@@ -59,6 +64,8 @@ class Enemy : public entity::Entity {
 	std::vector<anim::Parameters> animation_parameters{};
 	Flags flags{};
 	Attributes attributes{};
+	util::Cooldown post_death{};
+	int afterlife{200};
 
 	struct {
 		int id{};

@@ -5,7 +5,7 @@
 
 namespace enemy {
 
-Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Entity(svc), label(label) {
+Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Entity(svc), label(label), health_indicator(svc) {
 	auto const& in_data = svc.data.enemy[label];
 	auto const& in_metadata = in_data["metadata"];
 	auto const& in_physical = in_data["physical"];
@@ -56,6 +56,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	animation.set_params(params);
 
 	health.set_max(attributes.base_hp);
+	health_indicator.init(svc, 0);
+	post_death.start(afterlife);
 
 	direction.lr = dir::LR::left;
 
@@ -74,8 +76,15 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 }
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
+	if (just_died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
+	if (died()) {
+		health_indicator.update(svc, collider.physics.position);
+		post_death.update();
+		return;
+	}
 	Entity::update(svc, map);
 	collider.update(svc);
+	health_indicator.update(svc, collider.physics.position);
 	if (flags.general.test(GeneralFlags::map_collision)) { collider.detect_map_collision(map); }
 	collider.reset();
 	collider.reset_ground_flags();
@@ -94,11 +103,10 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 		sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
 	}
 	sprite.setOrigin((float)sprite_dimensions.x / 2.f, (float)dimensions.y / 2.f);
-
-	if (died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (died()) { return; }
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	sprite.setPosition(collider.physics.position + sprite_offset - cam);
@@ -123,7 +131,10 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	}
 }
 
+void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { health_indicator.render(svc, win, cam); }
+
 void Enemy::handle_player_collision(player::Player& player) const {
+	if (died()) { return; }
 	if (player_collision()) { player.collider.handle_collider_collision(collider.bounding_box); }
 	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
 		if (player.collider.hurtbox.overlaps(collider.bounding_box)) { player.hurt(attributes.base_damage); }

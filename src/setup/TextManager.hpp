@@ -22,7 +22,6 @@ class TextManager {
 
 	dj::Json npc{};
 
-
 	std::string text_font{};
 	std::string title_font{};
 

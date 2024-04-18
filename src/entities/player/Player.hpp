@@ -92,6 +92,7 @@ class Player {
 	// member functions
 	void update(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
+	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
@@ -144,6 +145,7 @@ class Player {
 	shape::Collider collider{};
 	PlayerAnimation animation{};
 	entity::Health health{};
+	Indicator health_indicator;
 	Indicator orb_indicator;
 
 	// weapons

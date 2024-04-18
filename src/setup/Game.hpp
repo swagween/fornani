@@ -20,7 +20,6 @@ class Game {
 	void take_screenshot();
 	bool debug();
 
-	//currently not fully used. replace existing inline services with these to clean tech debt.
 	struct automa::ServiceProvider services{};
 
 	struct {

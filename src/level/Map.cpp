@@ -212,10 +212,11 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			if (proj.team != arms::TEAMS::SKYCORPS) {
 				if (proj.bounding_box.overlaps(enemy->get_collider().bounding_box)) {
 					enemy->get_flags().state.set(enemy::StateFlags::shot);
-					if (enemy->get_flags().state.test(enemy::StateFlags::vulnerable)) {
+					if (enemy->get_flags().state.test(enemy::StateFlags::vulnerable) && !enemy->died()) {
 						enemy->hurt();
 						enemy->health.inflict(proj.stats.base_damage);
-						if (enemy->died()) {
+						enemy->health_indicator.add(-proj.stats.base_damage);
+						if (enemy->just_died()) {
 							active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
 							svc.soundboard.flags.frdog.set(audio::Frdog::death);
 						}
@@ -231,6 +232,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) {
+		if (enemy->died()) {
+			enemy->update(svc, *this);
+			continue;
+		}
 		enemy->unique_update(svc, *this, *player);
 		enemy->handle_player_collision(*player);
 	}
@@ -305,6 +310,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 
 	for (auto& effect : effects) { effect.render(svc, win, cam); }
+
+	player->render_indicators(svc, win, cam);
+	for (auto& enemy : enemy_catalog.enemies) { enemy->render_indicators(svc, win, cam); }
 
 	if (svc.greyblock_mode()) {
 		for (auto& index : collidable_indeces) {

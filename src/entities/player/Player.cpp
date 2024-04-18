@@ -9,7 +9,7 @@ namespace player {
 
 Player::Player() {}
 
-Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), orb_indicator(svc) {}
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc) {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -17,6 +17,8 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	svc.data.load_player_params(*this);
 	arsenal = arms::Arsenal(svc);
+	health_indicator.init(svc, 0);
+	orb_indicator.init(svc, 1);
 
 	health.invincibility_time = 400;
 
@@ -94,7 +96,8 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	collider.update(*m_services);
 
 	health.update();
-	orb_indicator.update(*this);
+	health_indicator.update(*m_services, collider.physics.position);
+	orb_indicator.update(*m_services, collider.physics.position);
 	update_invincibility();
 
 	update_animation();
@@ -155,8 +158,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		}
 	}
 
-	orb_indicator.render(svc, win, campos);
-
 	if (!arsenal.loadout.empty()) {
 		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
 		equipped_weapon().render(svc, win, campos);
@@ -164,6 +165,12 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	// texture updater debug
 	// texture_updater.debug_render(win, campos);
+}
+
+void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (orb_indicator.active()) { health_indicator.shift(); }
+	health_indicator.render(svc, win, cam);
+	orb_indicator.render(svc, win, cam);
 }
 
 void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
@@ -364,6 +371,7 @@ void Player::walk() {
 void Player::hurt(int amount = 1) {
 	if (!health.invincible()) {
 		health.inflict(amount);
+		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
@@ -436,7 +444,10 @@ void Player::start_over() {
 }
 
 void Player::give_drop(item::DropType type, int value) {
-	if (type == item::DropType::heart) { health.heal(value); }
+	if (type == item::DropType::heart) {
+		health.heal(value);
+		health_indicator.add(value);
+	}
 	if (type == item::DropType::orb) {
 		player_stats.orbs += value;
 		orb_indicator.add(value);
