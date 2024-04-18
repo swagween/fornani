@@ -29,8 +29,10 @@ void Indicator::shift() { position += {0.f, -20.f}; }
 void Indicator::update(automa::ServiceProvider& svc, sf::Vector2<float> pos) {
 	gravitator.update(svc);
 	gravitator.set_target_position(pos);
-	if (addition_limit.get_cooldown() < 32) { gravitator.set_target_position(pos + sf::Vector2<float>{0.f, -40.f}); }
+	if (addition_limit.get_cooldown() == fadeout_time) { fadeout.start(fadeout_time); }
+	if (fadeout.running()) { gravitator.set_target_position(pos + sf::Vector2<float>{60.f, 0.f}); }
 	addition_limit.update();
+	fadeout.update();
 	color_fade.update();
 	if (addition_limit.is_complete()) { variables.amount = 0; }
 	position = gravitator.collider.physics.position + offset;

@@ -9,8 +9,9 @@ class Cooldown {
 	constexpr void start(int time) { decrementor = time; }
 	constexpr void update() { decrementor = std::clamp(--decrementor, 0, INT_FAST16_MAX); }
 	constexpr void cancel() { decrementor = 0; }
-	constexpr bool is_complete() const { return decrementor == 0; }
-	constexpr int get_cooldown() const { return decrementor; }
+	[[nodiscard]] auto is_complete() const -> bool { return decrementor == 0; }
+	[[nodiscard]] auto running() const -> bool { return decrementor != 0; }
+	[[nodiscard]] auto get_cooldown() const -> int { return decrementor; }
 
   private:
 	int decrementor{};

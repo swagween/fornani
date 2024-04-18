@@ -39,6 +39,8 @@ class Indicator {
 	sf::Text label{};
 	sf::Font font{};
 	util::Cooldown addition_limit{};
+	util::Cooldown fadeout{};
+	int fadeout_time{32};
 	int addition_time{300};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> shadow{2.f, 0.f};
