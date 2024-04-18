@@ -3,7 +3,7 @@
 
 namespace fornani {
 
-Game::Game(char** argv) {
+Game::Game(char** argv) : player(services) {
 	// data
 	services.data = data::DataManager(services);
 	services.data.finder.setResourcePath(argv);
@@ -21,7 +21,6 @@ Game::Game(char** argv) {
 	services.assets.load_audio();
 	music_player.turn_off(); // off by default
 	// player
-	player.init(services);
 	player.init(services);
 	// lookups
 	lookup::populate_lookup();

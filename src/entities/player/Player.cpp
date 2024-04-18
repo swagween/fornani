@@ -9,7 +9,7 @@ namespace player {
 
 Player::Player() {}
 
-Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc) {}
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), orb_indicator(svc) {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -94,6 +94,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	collider.update(*m_services);
 
 	health.update();
+	orb_indicator.update(*this);
 	update_invincibility();
 
 	update_animation();
@@ -153,6 +154,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 			antennae[2].render(svc, win, campos);
 		}
 	}
+
+	orb_indicator.render(svc, win, campos);
 
 	if (!arsenal.loadout.empty()) {
 		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
@@ -434,7 +437,10 @@ void Player::start_over() {
 
 void Player::give_drop(item::DropType type, int value) {
 	if (type == item::DropType::heart) { health.heal(value); }
-	if (type == item::DropType::orb) { player_stats.orbs += value; }
+	if (type == item::DropType::orb) {
+		player_stats.orbs += value;
+		orb_indicator.add(value);
+	}
 }
 
 void Player::give_item(int item_id, int amount) { catalog.add_item(*m_services, item_id, 1); }

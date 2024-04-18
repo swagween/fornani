@@ -15,6 +15,7 @@
 #include "PlayerController.hpp"
 #include "Transponder.hpp"
 #include "Catalog.hpp"
+#include "Indicator.hpp"
 
 namespace gui {
 class Console;
@@ -143,6 +144,7 @@ class Player {
 	shape::Collider collider{};
 	PlayerAnimation animation{};
 	entity::Health health{};
+	Indicator orb_indicator;
 
 	// weapons
 	arms::Arsenal arsenal;

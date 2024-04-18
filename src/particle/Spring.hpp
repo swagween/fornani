@@ -26,7 +26,7 @@ class Spring {
 	void set_force(float force);
 	sf::Vector2<float>& get_bob();
 	sf::Vector2<float>& get_anchor();
-	sf::Vector2<float>& get_rope(int index);
+	sf::Vector2<float> get_rope(int index);
 
 	int num_links{8};
 

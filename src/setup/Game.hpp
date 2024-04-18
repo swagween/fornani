@@ -33,7 +33,7 @@ class Game {
 		int draw_calls{};
 	} trackers{};
 
-	player::Player player{};
+	player::Player player;
 	automa::StateManager game_state{};
 	sf::RenderWindow window{};
 	sf::Texture screencap{};
