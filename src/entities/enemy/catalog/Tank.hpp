@@ -5,7 +5,7 @@
 
 namespace enemy {
 
-	enum class TankState { idle, turn, run, shoot };
+	enum class TankState { idle, turn, run, shoot, alert };
 
 class Tank : public Enemy {
 
@@ -19,6 +19,7 @@ class Tank : public Enemy {
 	fsm::StateFunction update_turn();
 	fsm::StateFunction update_run();
 	fsm::StateFunction update_shoot();
+	fsm::StateFunction update_alert();
 
 	private:
 	util::BitFlags<TankState> state{};
@@ -32,6 +33,9 @@ class Tank : public Enemy {
 	anim::Parameters turn{6, 3, 38, 0};
 	anim::Parameters run{9, 4, 38, -1};
 	anim::Parameters shoot{13, 3, 22, 3};
+	anim::Parameters alert{17, 3, 42, 0};
+
+	automa::ServiceProvider* m_services;
 
 };
 

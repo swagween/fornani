@@ -17,7 +17,7 @@ class Player;
 namespace enemy {
 
 enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking };
 enum class Variant { beast, soldier, elemental, worker };
 struct Attributes {
 	float base_hp{};

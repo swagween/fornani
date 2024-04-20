@@ -20,7 +20,7 @@ void Player::init(automa::ServiceProvider& svc) {
 	health_indicator.init(svc, 0);
 	orb_indicator.init(svc, 1);
 
-	health.invincibility_time = 400;
+	health.set_invincibility(400);
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);

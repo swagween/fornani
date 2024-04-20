@@ -9,14 +9,14 @@ namespace shape {
 Collider::Collider() {
 	dimensions = sf::Vector2<float>{default_dim, default_dim};
 	jumpbox.dimensions = sf::Vector2<float>(dimensions.x, default_jumpbox_height);
-	hurtbox.dimensions = sf::Vector2<float>(dimensions.x / 2, dimensions.y / 2);
+	hurtbox.dimensions = sf::Vector2<float>(dimensions.x, dimensions.y);
 	sync_components();
 }
 
 Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimensions(dim) {
 	bounding_box.dimensions = dim;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
-	hurtbox.dimensions = sf::Vector2<float>(dim.x / 2, dim.y / 2);
+	hurtbox.dimensions = sf::Vector2<float>(dim.x, dim.y);
 	sync_components();
 }
 
@@ -294,7 +294,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});
 	box.setPosition(hurtbox.position.x - cam.x, hurtbox.position.y - cam.y);
 	box.setFillColor(flcolor::goldenrod);
-	// win.draw(box);
+	win.draw(box);
 
 	// draw vicinity
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});

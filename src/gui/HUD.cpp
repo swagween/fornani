@@ -52,19 +52,9 @@ void HUD::constrain() {
 void HUD::render(player::Player& player, sf::RenderWindow& win) {
 
 	// HP
-	for (int i = 0; i < total_hp_cells; ++i) {
-		if (i < filled_hp_cells) {
-			if (i == 0) {
-				sp_hearts.at(HP_FILLED).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x, corner_pad.y + HP_origin.y);
-			} else {
-				sp_hearts.at(HP_FILLED).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
-			}
-			win.draw(sp_hearts.at(HP_FILLED));
-
-		} else {
-			sp_hearts.at(HP_GONE).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
-			win.draw(sp_hearts.at(HP_GONE));
-		}
+	for (int i = 0; i < player.health.get_max(); ++i) {
+		sp_hearts.at(player.health.get_state(i)).setPosition(corner_pad.x + HP_origin.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y + HP_origin.y);
+		win.draw(sp_hearts.at(player.health.get_state(i)));
 	}
 
 	// ORB

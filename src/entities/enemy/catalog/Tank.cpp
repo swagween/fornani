@@ -5,11 +5,12 @@
 
 namespace enemy {
 
-Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, "skycorps ar", 2) {
+Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, "skycorps ar", 2) , m_services(&svc) {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
 	collider.physics.maximum_velocity = {3.f, 12.f};
+	collider.physics.set_constant_friction({0.9f, 0.99f});
 }
 
 void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -33,12 +34,7 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	Enemy::update(svc, map);
 
 	if (player.collider.bounding_box.overlaps(physical.hostile_range) && gun.clip_cooldown.is_complete() && running_time.is_complete()) {
-		if (svc.random.percent_chance(90)) {
-			state.set(TankState::shoot);
-		} else {
-			state.set(TankState::run);
-			running_time.start(400);
-		}
+		state.set(TankState::alert);
 	}
 
 	if (running_time.is_complete() && gun.clip_cooldown.is_complete()) {
@@ -48,6 +44,13 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 		state.set(TankState::run);
 	}
 
+	if (svc.ticker.every_x_ticks(200)) {
+		if (svc.random.percent_chance(4)) {
+			state.set(TankState::run);
+			running_time.start(400);
+		}
+	}
+
 	if (ent_state.test(entity::State::flip)) { state.set(TankState::turn); }
 
 	state_function = state_function();
@@ -55,6 +58,11 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 fsm::StateFunction Tank::update_idle() {
 	animation.label = "idle";
+	if (state.test(TankState::alert)) {
+		state.reset(TankState::idle);
+		animation.set_params(alert);
+		return TANK_BIND(update_alert);
+	}
 	if (state.test(TankState::turn)) {
 		state.reset(TankState::idle);
 		animation.set_params(turn);
@@ -124,6 +132,31 @@ fsm::StateFunction Tank::update_shoot() {
 	state = {};
 	state.set(TankState::shoot);
 	return TANK_BIND(update_shoot);
+}
+
+fsm::StateFunction Tank::update_alert() { 
+	animation.label = "alert";
+	if (animation.complete()) {
+		if (m_services->random.percent_chance(80)) {
+			state.set(TankState::shoot);
+		} else {
+			state.set(TankState::run);
+			running_time.start(400);
+		}
+		if (state.test(TankState::shoot)) {
+			state.reset(TankState::idle);
+			animation.set_params(shoot);
+			return TANK_BIND(update_shoot);
+		}
+		if (state.test(TankState::run)) {
+			state.reset(TankState::idle);
+			animation.set_params(run);
+			return TANK_BIND(update_run);
+		}
+	}
+	state = {};
+	state.set(TankState::alert);
+	return TANK_BIND(update_alert);
 };
 
 } // namespace enemy

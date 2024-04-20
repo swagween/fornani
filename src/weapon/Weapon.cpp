@@ -108,11 +108,13 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	case dir::UND::up:
 		to_direction.lr == dir::LR::right ? sp_gun.rotate(-90) : sp_gun.rotate(90);
 		barrel_point = {sprite_position.x + attributes.barrel_position.at(1), sprite_position.y - attributes.barrel_position.at(0)};
+		if (to_direction.lr == dir::LR::left) { barrel_point.x -= 2.0f * attributes.barrel_position.at(1); }
 		firing_direction.neutralize_lr();
 		break;
 	case dir::UND::down:
 		to_direction.lr == dir::LR::right ? sp_gun.rotate(90) : sp_gun.rotate(-90);
 		barrel_point = {sprite_position.x + sprite_dimensions.y - attributes.barrel_position.at(1) - sprite_dimensions.y, sprite_position.y + sprite_dimensions.x};
+		if (to_direction.lr == dir::LR::right) { barrel_point.x += 2.0f * attributes.barrel_position.at(1); }
 		firing_direction.neutralize_lr();
 		break;
 	case dir::UND::neutral:

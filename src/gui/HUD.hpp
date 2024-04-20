@@ -18,8 +18,6 @@ class Player;
 
 namespace gui {
 
-enum HP_ELEMS { HP_LIGHT = 0, HP_FILLED = 1, HP_TAKEN = 2, HP_GONE = 3 };
-
 inline int const distance_from_edge{20};
 inline int const PAD{4};
 inline int const HP_pad{2};
@@ -34,10 +32,10 @@ inline const sf::Vector2<int> pointer_dimensions{14, 10};
 inline int const orb_label_width{44};
 inline int const orb_label_index{10};
 
-int const num_heart_sprites = 4;
-int const num_orb_chars = 11;
-int const num_guns = 18; // to be changed later, obviously
-int const num_colors = 6;
+int const num_heart_sprites{4};
+int const num_orb_chars{11};
+int const num_guns{18}; // to be changed later, obviously
+int const num_colors{6};
 
 class HUD {
 

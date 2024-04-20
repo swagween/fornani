@@ -109,7 +109,12 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (died()) { return; }
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
-	sprite.setPosition(collider.physics.position + sprite_offset - cam);
+	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
+	if (flags.state.test(StateFlags::shaking)) {
+		sprite_shake(svc);
+	} else {
+		random_offset = {};
+	}
 	if (svc.greyblock_mode()) {
 		drawbox.setOrigin({0.f, 0.f});
 		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
