@@ -526,6 +526,18 @@ void Game::debug_window() {
 						game_state.get_current_state().init(services, "/level/UNDER_LEDGE_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
 					}
+					if (ImGui::Button("Corridor 4")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/FIRSTWIND_CORRIDOR_04");
+						player.set_position({player::PLAYER_START_X * 2.f, player::PLAYER_START_Y * 2.f});
+					}
+					if (ImGui::Button("1x1 TEST")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/1x1_TEST");
+						player.set_position({player::PLAYER_START_X * 2.f, player::PLAYER_START_Y * 2.f});
+					}
 					if (ImGui::Button("House")) {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));

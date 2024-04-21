@@ -11,8 +11,6 @@ OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, std::stri
 
 void OptionsMenu::init(ServiceProvider& svc, std::string_view room) {}
 
-void OptionsMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
-
 void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);

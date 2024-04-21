@@ -29,8 +29,6 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 void FileMenu::init(ServiceProvider& svc, std::string_view room) {}
 
-void FileMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
-
 void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);

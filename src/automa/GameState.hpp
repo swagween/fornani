@@ -57,7 +57,6 @@ class GameState {
 	GameState& operator=(GameState&&) = delete;
 
 	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
-	virtual void setTilesetTexture(ServiceProvider& svc, sf::Texture& t){};
 	virtual void handle_events(ServiceProvider& svc, sf::Event& event){};
 	virtual void tick_update(ServiceProvider& svc){};
 	virtual void frame_update(ServiceProvider& svc){};

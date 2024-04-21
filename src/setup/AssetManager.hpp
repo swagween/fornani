@@ -337,9 +337,6 @@ class AssetManager {
 	sf::Texture t_heart{};
 	sf::Texture t_orb{};
 
-	// condense these into a 2d vector later
-	std::vector<sf::Sprite> sp_tileset_provisional{};
-
 	// sound effects!
 	sf::SoundBuffer click_buffer{};
 	sf::Sound click;

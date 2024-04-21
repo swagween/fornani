@@ -131,18 +131,21 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		layer.grid.update();
 		++layer_counter;
 	}
+	
+	generate_collidable_layer();
+	generate_layer_textures(svc);
 
 	player->map_reset();
 
 	transition.fade_in = true;
 	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2, svc.constants.screen_dimensions.y * 2));
 	minimap.setViewport(sf::FloatRect(0.0f, 0.75f, 0.2f, 0.2f));
-
-	generate_collidable_layer();
-	generate_layer_textures(svc);
+	loading.start(2);
 }
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
+	loading.update();
+	if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
 
 	console.update(svc);
 	inventory_window.update(svc, *player);
@@ -443,16 +446,16 @@ void Map::generate_collidable_layer() {
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	for (auto& layer : layers) {
-		layer_textures.at(layer.render_order).clear(sf::Color::Transparent);
-		layer_textures.at(layer.render_order).create(layer.grid.dimensions.x * svc.constants.cell_size, layer.grid.dimensions.y * svc.constants.cell_size);
+		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
+		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.cell_size, layer.grid.dimensions.y * svc.constants.cell_size);
 		for (auto& cell : layer.grid.cells) {
 			if (cell.is_occupied()) {
 				int x_coord = (cell.value % svc.constants.tileset_scaled.x) * svc.constants.cell_size;
-				int y_coord = (cell.value / svc.constants.tileset_scaled.x) * svc.constants.cell_size;
+				int y_coord = std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.cell_size;
 				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
 				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {(int)svc.constants.cell_size, (int)svc.constants.cell_size}));
-				tile_sprite.setPosition(cell.bounding_box.position);
-				layer_textures.at(layer.render_order).draw(tile_sprite);
+				tile_sprite.setPosition(cell.position);
+				layer_textures.at((int)layer.render_order).draw(tile_sprite);
 			}
 		}
 	}

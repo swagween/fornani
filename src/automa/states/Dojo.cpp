@@ -14,17 +14,6 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	player->reset_flags();
 
 	map.load(svc, room);
-	tileset = svc.assets.tilesets.at(map.style_id);
-	for (int i = 0; i < 16; ++i) {
-		for (int j = 0; j < 16; ++j) {
-			tileset_sprites.push_back(sf::Sprite());
-			tileset_sprites.back().setTexture(tileset);
-			tileset_sprites.back().setTextureRect(sf::IntRect({j * asset::TILE_WIDTH, i * asset::TILE_WIDTH}, {asset::TILE_WIDTH, asset::TILE_WIDTH}));
-
-			svc.assets.sp_bryn_test.setTextureRect(sf::IntRect({0, 0}, {128, 256}));
-			svc.assets.sp_ui_test.setTextureRect(sf::IntRect({0, 0}, {420, 128}));
-		}
-	}
 
 	// TODO: refactor player initialization
 	player->collider.physics.zero();
@@ -54,17 +43,6 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 
 	player->controller = {};
 	player->controller.prevent_movement();
-}
-
-void Dojo::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {
-	tileset_sprites.clear();
-	for (int i = 0; i < 16; ++i) {
-		for (int j = 0; j < 16; ++j) {
-			tileset_sprites.push_back(sf::Sprite());
-			tileset_sprites.back().setTexture(t);
-			tileset_sprites.back().setTextureRect(sf::IntRect({j * asset::TILE_WIDTH, i * asset::TILE_WIDTH}, {asset::TILE_WIDTH, asset::TILE_WIDTH}));
-		}
-	}
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
@@ -105,27 +83,13 @@ void Dojo::frame_update(ServiceProvider& svc) {
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	map.render_background(svc, win, camera.get_position());
-
 	map.render(svc, win, camera.get_position());
 
 	if (!svc.greyblock_mode()) { hud.render(*player, win); }
 	inventory_window.render(svc, *player, win);
 	map.render_console(svc, console, win);
 
-	svc.assets.sp_ui_test.setPosition(20, svc.constants.screen_dimensions.y - 148);
-	svc.assets.sp_bryn_test.setPosition(20, svc.constants.screen_dimensions.y - 276);
-
 	map.transition.render(win);
-
-	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
-		if (svc.greyblock_mode()) {
-			tileset = svc.assets.tilesets.at(lookup::get_style_id.at(lookup::STYLE::PROVISIONAL));
-			setTilesetTexture(svc, tileset);
-		} else {
-			tileset = svc.assets.tilesets.at(map.style_id);
-			setTilesetTexture(svc, tileset);
-		}
-	}
 }
 
 void Dojo::toggle_inventory() { inventory_window.active() ? inventory_window.close() : inventory_window.open(); }

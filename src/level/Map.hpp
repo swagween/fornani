@@ -140,6 +140,8 @@ class Map {
 	bool debug_mode{false};
 
 	player::Player* player;
+
+	util::Cooldown loading{}; // shouldn't exist
 };
 
 } // namespace world

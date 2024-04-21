@@ -17,8 +17,7 @@
     { "room_id": 113, "label": "FIRSTWIND_CLOSET_03"},
     { "room_id": 114, "label": "FIRSTWIND_INFIRMARY_01"},
     { "room_id": 115, "label": "FIRSTWIND_DECK_01"},
-    { "room_id": 115, "label": "FIRSTWIND_CORRIDOR_04"},
-
+    { "room_id": 116, "label": "FIRSTWIND_CORRIDOR_04"},
 
     { "room_id": 305, "label": "WOODSHINE_VILLAGE_01"},
     { "room_id": 306, "label": "WOODSHINE_GAIA_01"},

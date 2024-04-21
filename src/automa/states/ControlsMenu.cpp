@@ -37,8 +37,6 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 
 void ControlsMenu::init(ServiceProvider& svc, std::string_view room) {}
 
-void ControlsMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
-
 void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 	if (event.type == sf::Event::EventType::KeyPressed && event.key.code == sf::Keyboard::Escape) { binding_mode = false; }

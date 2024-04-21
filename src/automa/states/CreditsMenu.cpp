@@ -11,8 +11,6 @@ CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::stri
 
 void CreditsMenu::init(ServiceProvider& svc, std::string_view room) {}
 
-void CreditsMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
-
 void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);
