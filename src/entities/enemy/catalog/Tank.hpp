@@ -9,23 +9,26 @@ namespace enemy {
 
 class Tank : public Enemy {
 
-  public:
-	Tank() = default;
-	Tank(automa::ServiceProvider& svc);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	  public:
+		Tank() = default;
+		Tank(automa::ServiceProvider& svc);
+		void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
-	fsm::StateFunction state_function = std::bind(&Tank::update_idle, this);
-	fsm::StateFunction update_idle();
-	fsm::StateFunction update_turn();
-	fsm::StateFunction update_run();
-	fsm::StateFunction update_shoot();
-	fsm::StateFunction update_alert();
+		fsm::StateFunction state_function = std::bind(&Tank::update_idle, this);
+		fsm::StateFunction update_idle();
+		fsm::StateFunction update_turn();
+		fsm::StateFunction update_run();
+		fsm::StateFunction update_shoot();
+		fsm::StateFunction update_alert();
 
-	private:
-	util::BitFlags<TankState> state{};
+	  private:
+		util::BitFlags<TankState> state{};
+
+	int fire_chance{80};
 
 	//packages
 	entity::WeaponPackage gun;
+	entity::Caution caution{};
 	util::Cooldown running_time{};
 
 	// lookup, duration, framerate, num_loops

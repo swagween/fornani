@@ -29,6 +29,8 @@ enum class State {
 	ceiling_collision,
 	grounded,
 	on_ramp,
+	ledge_left,
+	ledge_right
 };
 
 enum class Collision {
@@ -55,6 +57,7 @@ class Collider {
 	void sync_components();
 	void handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_type);
 	void detect_map_collision(world::Map& map);
+	int detect_ledge_height(world::Map& map);
 	void correct_x(sf::Vector2<float> mtv);
 	void correct_y(sf::Vector2<float> mtv);
 	void correct_x_y(sf::Vector2<float> mtv);

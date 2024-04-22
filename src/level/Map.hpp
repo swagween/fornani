@@ -87,7 +87,7 @@ class Map {
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	Vec get_spawn_position(int portal_source_map_id);
 
-	bool nearby(shape::Shape& first, shape::Shape& second);
+	bool nearby(shape::Shape& first, shape::Shape& second) const;
 
 	// layers
 	std::vector<Layer> layers;
@@ -131,8 +131,7 @@ class Map {
 	int style_id{};
 	int native_style_id{};
 
-	int bg{}; // which background to render
-	float collision_barrier = 1.5f;
+	float collision_barrier{2.5f};
 
 	int room_id{}; // should be assigned to its constituent chunks
 	bool game_over{false};

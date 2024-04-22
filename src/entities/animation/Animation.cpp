@@ -12,10 +12,12 @@ void Animation::refresh() {
 
 void Animation::start() {
 	flags.set(State::active);
+	flags.set(State::just_started);
 	flags.reset(State::complete);
 }
 
 void Animation::update() {
+	if (counter == 0) { flags.reset(State::just_started); }
 	++counter;
 
 	if (keyframe_over()) {

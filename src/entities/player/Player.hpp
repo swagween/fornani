@@ -182,6 +182,8 @@ class Player {
 	bool start_cooldown{};
 	bool sprite_flip{};
 
+	int ledge_height{}; //temp for testing
+
 	Catalog catalog{};
 };
 

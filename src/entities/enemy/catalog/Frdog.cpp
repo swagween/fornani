@@ -20,7 +20,7 @@ void Frdog::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 
 	state_function = state_function();
-	Enemy::update(svc, map);
+	Enemy::update(svc, map, player);
 }
 
 fsm::StateFunction Frdog::update_idle() {

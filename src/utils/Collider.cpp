@@ -136,7 +136,6 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 }
 
 void Collider::detect_map_collision(world::Map& map) {
-
 	for (auto& index : map.collidable_indeces) {
 		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
 		cell.collision_check = false;
@@ -153,6 +152,44 @@ void Collider::detect_map_collision(world::Map& map) {
 			}
 		}
 	}
+}
+
+int Collider::detect_ledge_height(world::Map& map) {
+	int ret{};
+	int total = map.layers.at(world::MIDDLEGROUND).grid.cells.size();
+	for (int index = 0; index < total; ++index) {
+		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
+		if (!map.nearby(cell.bounding_box, bounding_box)) {
+			continue;
+		} else {
+			// check vicinity so we can escape early
+			if (vicinity.vertices.empty()) { return ret; }
+			if (!vicinity.overlaps(cell.bounding_box)) {
+				continue;
+			} else {
+				// we're in the vicinity now, so we check the bottom left and right corners to find a potential ledge
+				if (!cell.is_occupied()) {
+					auto right = cell.bounding_box.contains_point(vicinity.vertices.at(2));
+					auto left = cell.bounding_box.contains_point(vicinity.vertices.at(3));
+					if (left) { flags.state.set(State::ledge_left); }
+					if (right) { flags.state.set(State::ledge_right); }
+						if (left || right) { // left ledge found
+						bool found{};
+						auto next_row = index + map.dimensions.x;
+						while (!found) {
+							if (map.layers.at(world::MIDDLEGROUND).grid.cells.size() <= next_row) { return map.dimensions.y; };
+							if (map.layers.at(world::MIDDLEGROUND).grid.cells.at(next_row).is_occupied()) { found = true; }
+							next_row += map.dimensions.x;
+							++ret;
+							if (ret > map.dimensions.y) { return map.dimensions.y; }
+						}
+						return ret;
+					}
+				}
+			}
+		}
+	}
+	return ret;
 }
 
 void Collider::correct_x(sf::Vector2<float> mtv) {
@@ -300,7 +337,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});
 	box.setPosition(vicinity.position.x - cam.x, vicinity.position.y - cam.y);
 	box.setFillColor(sf::Color::Transparent);
-	box.setOutlineColor(sf::Color{120, 60, 80, 80});
+	box.setOutlineColor(sf::Color{120, 60, 80, 180});
 	box.setOutlineThickness(-1);
 	win.draw(box);
 

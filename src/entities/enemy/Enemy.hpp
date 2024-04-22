@@ -7,6 +7,7 @@
 #include "../../utils/StateFunction.hpp"
 #include "../packages/Health.hpp"
 #include "../packages/WeaponPackage.hpp"
+#include "../packages/Caution.hpp"
 #include "../player/Indicator.hpp"
 #include <string_view>
 
@@ -18,6 +19,7 @@ namespace enemy {
 
 enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking };
+enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker };
 struct Attributes {
 	float base_hp{};
@@ -30,17 +32,22 @@ struct Attributes {
 struct Flags {
 	util::BitFlags<GeneralFlags> general{};
 	util::BitFlags<StateFlags> state{};
+	util::BitFlags<Triggers> triggers{};
 };
 
 class Enemy : public entity::Entity {
   public:
 	Enemy() = default;
 	Enemy(automa::ServiceProvider& svc, std::string_view label);
-	void update(automa::ServiceProvider& svc, world::Map& map) override;
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player){};
 	void handle_player_collision(player::Player& player) const;
+	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
+	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }
+	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
+	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }

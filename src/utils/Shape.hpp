@@ -47,6 +47,7 @@ class Shape {
 	Vec testCollisionGetMTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
 	bool overlaps(Shape const& other);
+	bool contains_point(Vec point);
 
 	bool AABB_handle_left_collision_static(Shape const& immovable);
 	bool AABB_handle_right_collision_static(Shape const& immovable);

@@ -332,6 +332,15 @@ bool Shape::overlaps(Shape const& other) {
 	return ret;
 }
 
+bool Shape::contains_point(Vec point) { 
+	bool ret{true};
+	if (vertices.at(0).x > point.x) { ret = false; }
+	if (vertices.at(1).x < point.x) { ret = false; }
+	if (vertices.at(0).y > point.y) { ret = false; }
+	if (vertices.at(2).y < point.y) { ret = false; }
+	return ret;
+}
+
 bool Shape::AABB_handle_left_collision_static(Shape const& immovable) {
 	bool colliding = false;
 	// check that the shape is an initialized quad

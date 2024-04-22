@@ -25,6 +25,32 @@
       "source_id": 108,
       "destination_id": 116,
       "activate_on_contact": false
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        27,
+        3
+      ],
+      "source_id": 108,
+      "destination_id": 109,
+      "activate_on_contact": false
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        3,
+        6
+      ],
+      "source_id": 108,
+      "destination_id": 110,
+      "activate_on_contact": false
     }
   ],
   "enemies": [

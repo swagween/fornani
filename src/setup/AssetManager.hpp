@@ -208,6 +208,17 @@ class AssetManager {
 		orb_5_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_5.wav");
 		orb_5.setBuffer(orb_5_buffer);
 
+		tank_alert1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_alert_1.wav");
+		tank_alert_1.setBuffer(tank_alert1_buffer);
+		tank_alert2_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_alert_2.wav");
+		tank_alert_2.setBuffer(tank_alert2_buffer);
+		tank_hurt1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_hurt_1.wav");
+		tank_hurt_1.setBuffer(tank_hurt1_buffer);
+		tank_hurt2_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_hurt_2.wav");
+		tank_hurt_2.setBuffer(tank_hurt2_buffer);
+		tank_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_death.wav");
+		tank_death.setBuffer(tank_death_buffer);
+
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
 		load_buffer.loadFromFile(finder.resource_path + "/audio/sfx/load_game.wav");
@@ -384,6 +395,17 @@ class AssetManager {
 	sf::Sound orb_1;
 	sf::SoundBuffer orb_5_buffer{};
 	sf::Sound orb_5;
+
+	sf::SoundBuffer tank_alert1_buffer{};
+	sf::Sound tank_alert_1;
+	sf::SoundBuffer tank_alert2_buffer{};
+	sf::Sound tank_alert_2;
+	sf::SoundBuffer tank_hurt1_buffer{};
+	sf::Sound tank_hurt_1;
+	sf::SoundBuffer tank_hurt2_buffer{};
+	sf::Sound tank_hurt_2;
+	sf::SoundBuffer tank_death_buffer{};
+	sf::Sound tank_death;
 
 	//save/load
 	sf::SoundBuffer save_buffer{};

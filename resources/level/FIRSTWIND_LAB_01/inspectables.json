@@ -1,0 +1,15 @@
+{
+  "lab_shelf_01": {
+    "suite": [
+      [ "You find a diary. Would you like to take it?%0" ],
+      [ "Bryn's Diary added to inventory.^1"]
+    ],
+    "responses": [ [ "Yes%0", "No" ] ]
+  },
+  "lab_shelf_02": {
+    "suite": [
+      [ "You find a book with half its pages torn out. You wonder about their contents." ]
+    ],
+    "responses": [ [] ]
+  }
+}

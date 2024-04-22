@@ -21,7 +21,8 @@ enum class Weapon { bryns_gun, plasmer, nova, clover, tomahawk, tomahawk_catch, 
 
 //critters
 enum class Frdog {hurt, death};
-enum class Hulmet {hurt};
+enum class Hulmet { hurt };
+enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
 
 struct Soundboard {
 	struct {
@@ -34,6 +35,7 @@ struct Soundboard {
 
 		util::BitFlags<Frdog> frdog{};
 		util::BitFlags<Hulmet> hulmet{};
+		util::BitFlags<Tank> tank{};
 	} flags{};
 
 	void play_sounds(automa::ServiceProvider& svc);

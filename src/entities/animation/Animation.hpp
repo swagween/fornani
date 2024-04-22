@@ -24,7 +24,7 @@ struct Parameters {
 	bool interruptible{true};
 };
 
-enum class State {active, complete};
+enum class State {active, complete, just_started};
 
 struct Animation {
 
@@ -41,6 +41,7 @@ struct Animation {
 	bool active() const;
 	bool complete() const;
 	bool keyframe_over() const;
+	[[nodiscard]] auto just_started() const -> bool { return flags.test(State::just_started); }
 
 	int current_frame{};
 	int counter{};

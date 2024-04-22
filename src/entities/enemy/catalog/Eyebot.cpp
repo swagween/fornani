@@ -33,7 +33,7 @@ void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 		collider.sync_components();
 	}
 
-	Enemy::update(svc, map);
+	Enemy::update(svc, map, player);
 	seeker.set_position(collider.physics.position);
 }
 

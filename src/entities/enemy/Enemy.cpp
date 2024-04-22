@@ -75,7 +75,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	drawbox.setOutlineThickness(-1);
 }
 
-void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
+void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	flags.triggers = {};
 	if (just_died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
 	if (died()) {
 		health_indicator.update(svc, collider.physics.position);
@@ -95,6 +96,18 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 	//update ranges
 	physical.alert_range.set_position(collider.bounding_box.position - (physical.alert_range.dimensions * 0.5f) + (collider.dimensions * 0.5f));
 	physical.hostile_range.set_position(collider.bounding_box.position - (physical.hostile_range.dimensions * 0.5f) + (collider.dimensions * 0.5f));
+	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
+		if (!alert()) { flags.triggers.set(Triggers::alert); }
+		flags.state.set(StateFlags::alert);
+	} else {
+		flags.state.reset(StateFlags::alert);
+	}
+	if (player.collider.bounding_box.overlaps(physical.hostile_range)) {
+		if (!hostile()) { flags.triggers.set(Triggers::hostile); }
+		flags.state.set(StateFlags::hostile);
+	} else {
+		flags.state.reset(StateFlags::hostile);
+	}
 
 	// get UV coords
 	if (spritesheet_dimensions.y != 0) {

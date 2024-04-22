@@ -152,6 +152,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
+	player->ledge_height = player->collider.detect_ledge_height(*this);
 
 	manage_projectiles(svc);
 
@@ -236,7 +237,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	for (auto& enemy : enemy_catalog.enemies) {
 		if (enemy->died()) {
-			enemy->update(svc, *this);
+			enemy->update(svc, *this, *player);
 			continue;
 		}
 		enemy->unique_update(svc, *this, *player);
@@ -528,7 +529,7 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 	return Vec(300.f, 390.f);
 }
 
-bool Map::nearby(shape::Shape& first, shape::Shape& second) {
+bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
 }
 

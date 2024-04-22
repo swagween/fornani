@@ -154,14 +154,14 @@
           "y": 14.0
         },
         "attributes": {
-          "base_damage": 2,
+          "base_damage": 1,
           "range": 240,
           "speed": 8.0,
           "variance": 0.4,
           "stun_time": 0.0,
           "knockback": 0.0,
           "persistent": false,
-          "transcendent": true,
+          "transcendent": false,
           "boomerang": false,
           "constrained": true,
           "spring": false,

@@ -10,13 +10,14 @@ Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, "skycorp
 	gun.clip_cooldown_time = 360;
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
 	collider.physics.maximum_velocity = {3.f, 12.f};
-	collider.physics.set_constant_friction({0.9f, 0.99f});
+	collider.physics.air_friction = {0.95f, 0.999f};
 }
 
 void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 
 	flags.state.set(StateFlags::vulnerable); // tank is always vulnerable
 	gun.update(svc, map, *this);
+	caution.avoid_ledges(map, collider, 1);
 	running_time.update();
 
 	if (state.test(TankState::shoot)) {
@@ -31,12 +32,21 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	// reset animation states to determine next animation state
 	state = {};
 	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
-	Enemy::update(svc, map);
+	Enemy::update(svc, map, player);
 
-	if (player.collider.bounding_box.overlaps(physical.hostile_range) && gun.clip_cooldown.is_complete() && running_time.is_complete()) {
+	if (hostility_triggered() && gun.clip_cooldown.is_complete() && running_time.is_complete()) {
 		state.set(TankState::alert);
 	}
+	if (hostile() && !hostility_triggered() && gun.clip_cooldown.is_complete()) {
+		if (m_services->random.percent_chance(fire_chance) || caution.danger(direction)) {
+			state.set(TankState::shoot);
+		} else {
+			state.set(TankState::run);
+			running_time.start(400);
+		}
+	} // player is already in hostile range
 
+	if (caution.danger(direction)) { running_time.cancel(); }
 	if (running_time.is_complete() && gun.clip_cooldown.is_complete()) {
 		state.set(TankState::idle);
 	} else if (!running_time.is_complete()) {
@@ -45,11 +55,21 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	}
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (svc.random.percent_chance(4)) {
+		if (svc.random.percent_chance(4) && !caution.danger(direction)) {
 			state.set(TankState::run);
 			running_time.start(400);
 		}
 	}
+
+	if(flags.state.test(StateFlags::hurt)) {
+		if (m_services->random.percent_chance(50)) {
+			m_services->soundboard.flags.tank.set(audio::Tank::hurt_1);
+		} else {
+			m_services->soundboard.flags.tank.set(audio::Tank::hurt_2);
+		}
+	}
+
+	if (just_died()) { m_services->soundboard.flags.tank.set(audio::Tank::death); }
 
 	if (ent_state.test(entity::State::flip)) { state.set(TankState::turn); }
 
@@ -99,6 +119,7 @@ fsm::StateFunction Tank::update_run() {
 	animation.label = "run";
 	auto facing = direction.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
+	if (caution.danger(direction)) { running_time.cancel(); }
 	if (running_time.is_complete()) { state.set(TankState::idle); }
 	if (state.test(TankState::turn)) {
 		state.reset(TankState::run);
@@ -109,6 +130,11 @@ fsm::StateFunction Tank::update_run() {
 		state.reset(TankState::run);
 		animation.set_params(idle);
 		return TANK_BIND(update_idle);
+	}
+	if (state.test(TankState::alert)) {
+		state.reset(TankState::run);
+		animation.set_params(alert);
+		return TANK_BIND(update_alert);
 	}
 	state = {};
 	state.set(TankState::run);
@@ -136,8 +162,15 @@ fsm::StateFunction Tank::update_shoot() {
 
 fsm::StateFunction Tank::update_alert() { 
 	animation.label = "alert";
+	if (animation.just_started()) {
+		if (m_services->random.percent_chance(50)) {
+			m_services->soundboard.flags.tank.set(audio::Tank::alert_1);
+		} else {
+			m_services->soundboard.flags.tank.set(audio::Tank::alert_2);
+		}
+	}
 	if (animation.complete()) {
-		if (m_services->random.percent_chance(80)) {
+		if (m_services->random.percent_chance(fire_chance) || caution.danger(direction)) {
 			state.set(TankState::shoot);
 		} else {
 			state.set(TankState::run);
