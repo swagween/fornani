@@ -34,14 +34,14 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	//tank
 	if (flags.tank.test(Tank::alert_1)) { svc.assets.tank_alert_1.play(); }
 	if (flags.tank.test(Tank::alert_2)) { svc.assets.tank_alert_2.play(); }
-	if (flags.tank.test(Tank::hurt_1)) { svc.assets.tank_hurt_1.play(); }
+	if (flags.tank.test(Tank::hurt_1)) { randomize(svc, svc.assets.tank_hurt_1, 0.2f); }
 	if (flags.tank.test(Tank::hurt_2)) { svc.assets.tank_hurt_2.play(); }
 	if (flags.tank.test(Tank::death)) { svc.assets.tank_death.play(); }
 
 	//item
 	if (flags.item.test(Item::heal)) { svc.assets.heal.play(); }
-	if (flags.item.test(Item::orb_1)) { svc.assets.orb_1.play(); }
-	if (flags.item.test(Item::orb_5)) { svc.assets.orb_5.play(); }
+	if (flags.item.test(Item::orb_low)) { svc.assets.orb_1.play(); }
+	if (flags.item.test(Item::orb_medium)) { svc.assets.orb_5.play(); }
 
 	// player
 	if (flags.player.test(Player::land)) { svc.assets.landed.play(); }
@@ -54,6 +54,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	// gun
 	if (flags.weapon.test(Weapon::bryns_gun)) { svc.assets.bg_shot.play(); }
 	if (flags.weapon.test(Weapon::plasmer)) { svc.assets.plasmer_shot.play(); }
+	if (flags.weapon.test(Weapon::skycorps_ar)) { svc.assets.skycorps_ar_shot.play(); }
 	if (flags.weapon.test(Weapon::clover)) { repeat(svc, svc.assets.pop_mid, 2, 0.3f);
 	}
 	if (flags.weapon.test(Weapon::nova)) { svc.assets.pop_mid.play(); }

@@ -366,6 +366,8 @@ class AssetManager {
 	sf::Sound bg_shot;
 	sf::SoundBuffer plasmer_shot_buffer{};
 	sf::Sound plasmer_shot;
+	sf::SoundBuffer skycorps_ar_buffer{};
+	sf::Sound skycorps_ar_shot;
 	sf::SoundBuffer tomahawk_flight_buffer{};
 	sf::Sound tomahawk_flight;
 	sf::SoundBuffer tomahawk_catch_buffer{};

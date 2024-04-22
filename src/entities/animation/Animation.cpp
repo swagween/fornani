@@ -17,7 +17,7 @@ void Animation::start() {
 }
 
 void Animation::update() {
-	if (counter == 0) { flags.reset(State::just_started); }
+	if (counter == 1) { flags.reset(State::just_started); }
 	++counter;
 
 	if (keyframe_over()) {

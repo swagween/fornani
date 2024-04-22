@@ -30,6 +30,7 @@ class Tank : public Enemy {
 	entity::WeaponPackage gun;
 	entity::Caution caution{};
 	util::Cooldown running_time{};
+	util::Cooldown hurt_effect{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};
