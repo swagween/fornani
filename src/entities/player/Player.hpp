@@ -103,12 +103,14 @@ class Player {
 
 	// state
 	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(player::State::alive); }
+	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
+	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
 
 	// moves
 	void jump();
 	void dash();
 
-	void set_position(sf::Vector2<float> new_pos);
+	void set_position(sf::Vector2<float> new_pos, bool centered = false);
 	void update_direction();
 	void update_weapon();
 	void walk();
@@ -134,7 +136,7 @@ class Player {
 	int& extant_instances(int index);
 
 	// map helpers
-	dir::LR entered_from();
+	dir::LR entered_from() const;
 
 	// for debug mode
 	std::string print_direction(bool lr);

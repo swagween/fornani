@@ -153,6 +153,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
 	player->ledge_height = player->collider.detect_ledge_height(*this);
+	if (off_the_bottom(player->collider.physics.position)) { player->kill(); }
 
 	manage_projectiles(svc);
 
@@ -270,7 +271,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			player->start_over();
 			svc.state_controller.next_state = lookup::get_map_label.at(100); // temporary. later, we will load the last save
 			svc.state_controller.actions.set(automa::Actions::trigger);
-			player->set_position(sf::Vector2<float>(200.f, 390.f));
 		}
 	}
 

@@ -38,7 +38,7 @@
         6
       ],
       "activate_on_contact": false,
-      "key": "lab_shelf_01"
+      "key": "bookshelf"
     },
     {
       "dimensions": [
@@ -50,7 +50,31 @@
         12
       ],
       "activate_on_contact": false,
-      "key": "lab_shelf_02"
+      "key": "computer"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        14,
+        12
+      ],
+      "activate_on_contact": false,
+      "key": "computer_on"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        27,
+        7
+      ],
+      "activate_on_contact": false,
+      "key": "guest_shelf"
     }
   ],
   "animators": [
@@ -61,21 +85,21 @@
         1
       ],
       "position": [
-        11,
-        6
+        23,
+        7
       ],
       "automatic": false,
       "foreground": false
     },
     {
-      "id": 231,
+      "id": 230,
       "dimensions": [
         1,
         1
       ],
       "position": [
-        23,
-        7
+        15,
+        6
       ],
       "automatic": false,
       "foreground": false

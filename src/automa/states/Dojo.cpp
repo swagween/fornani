@@ -19,15 +19,17 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	player->collider.physics.zero();
 	player->flags.state.set(player::State::alive);
 
-	bool found_one = false;
+	bool found_one{};
 	// only search for door entry if room was not loaded from main menu
 	if (!svc.state_controller.actions.test(Actions::save_loaded)) {
 		for (auto& portal : map.portals) {
 			if (portal.destination_map_id == svc.state_controller.source_id) {
 				found_one = true;
-				sf::Vector2<float> spawn_position{portal.position.x + std::floor(portal.dimensions.x / 2), portal.position.y + portal.dimensions.y - player::PLAYER_HEIGHT};
-				player->set_position(spawn_position);
-				camera.center(svc, spawn_position);
+
+				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player->height()};
+				player->set_position(spawn_position, true);
+				camera.force_center(player->anchor_point);
+				if (portal.activate_on_contact) { enter_room.start(90); }
 			}
 		}
 	}
@@ -60,11 +62,13 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void Dojo::tick_update(ServiceProvider& svc) {
+	enter_room.update();
+	if (enter_room.running()) { player->controller.autonomous_walk(); }
 	player->update(console, inventory_window);
 
 	map.update(svc, console, inventory_window);
 
-	camera.center(svc, player->anchor_point);
+	camera.center(player->anchor_point);
 	camera.update(svc);
 	camera.restrict_movement(map.real_dimensions);
 

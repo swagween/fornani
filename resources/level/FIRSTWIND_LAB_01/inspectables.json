@@ -1,15 +1,50 @@
 {
-  "lab_shelf_01": {
+  "bookshelf": {
     "suite": [
-      [ "You find a diary. Would you like to take it?%0" ],
-      [ "Bryn's Diary added to inventory.^1"]
+      [
+        "You find a small diary sealed with a padlock. Would you like to take it?"
+      ]
     ],
-    "responses": [ [ "Yes%0", "No" ] ]
+    "responses": [
+      [
+
+      ]
+    ]
   },
-  "lab_shelf_02": {
+  "computer": {
     "suite": [
-      [ "You find a book with half its pages torn out. You wonder about their contents." ]
+      [
+        "It's just an unresponsive terminal prompt..."
+      ]
     ],
-    "responses": [ [] ]
+    "responses": [
+      [
+
+      ]
+    ]
+  },
+  "computer_on": {
+    "suite": [
+      [
+        "It's asking for a username and password."
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  },
+  "guest_shelf": {
+    "suite": [
+      [
+        "There's an old instruction manual for assembling airship propellers."
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
   }
 }

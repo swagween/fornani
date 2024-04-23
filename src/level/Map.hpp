@@ -88,6 +88,7 @@ class Map {
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
+	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 
 	// layers
 	std::vector<Layer> layers;
@@ -141,6 +142,9 @@ class Map {
 	player::Player* player;
 
 	util::Cooldown loading{}; // shouldn't exist
+
+	private:
+	int abyss_distance{400};
 };
 
 } // namespace world

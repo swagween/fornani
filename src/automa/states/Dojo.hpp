@@ -21,6 +21,7 @@ class Dojo : public GameState {
 	fornani::Camera camera{};
 	bool show_colliders{false};
 	int x{0};
+	util::Cooldown enter_room{};
 };
 
 } // namespace automa

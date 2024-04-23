@@ -313,9 +313,12 @@ void Player::dash() {
 	}
 }
 
-void Player::set_position(sf::Vector2<float> new_pos) {
-	collider.physics.position = new_pos;
+void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
+	sf::Vector2<float> offset{};
+	offset.x = centered ? collider.dimensions.x * 0.5f : 0.f;
+	collider.physics.position = new_pos - offset;
 	collider.sync_components();
+	update_direction();
 	sync_antennae();
 }
 
@@ -477,7 +480,7 @@ arms::Weapon& Player::equipped_weapon() {
 
 int& Player::extant_instances(int index) { return arsenal.extant_projectile_instances.at(index); }
 
-dir::LR Player::entered_from() { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
+dir::LR Player::entered_from() const { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
 
 std::string Player::print_direction(bool lr) {
 	if (lr) {

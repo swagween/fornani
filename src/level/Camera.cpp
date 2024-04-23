@@ -34,6 +34,13 @@ void Camera::fix_horizontally(sf::Vector2<float> map_dim) { bounding_box.setPosi
 
 void Camera::fix_vertically(sf::Vector2<float> map_dim) { bounding_box.setPosition(bounding_box.getPosition().x, (map_dim.y - bounding_box.getSize().y) * 0.5f); }
 
-void Camera::center(automa::ServiceProvider& svc, sf::Vector2<float> new_position) { gravitator.set_target_position(new_position - bounding_box.getSize() * 0.5f); }
+void Camera::set_position(sf::Vector2<float> new_pos) {
+	gravitator.set_position(new_pos);
+	bounding_box.setPosition(new_pos);
+}
+
+void Camera::center(sf::Vector2<float> new_position) { gravitator.set_target_position(new_position - bounding_box.getSize() * 0.5f); }
+
+void Camera::force_center(sf::Vector2<float> new_position) { set_position(new_position - bounding_box.getSize() * 0.5f); }
 
 } // namespace fornani

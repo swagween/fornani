@@ -77,6 +77,9 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	flags.triggers = {};
+	if (map.off_the_bottom(collider.physics.position)) {
+		if (svc.ticker.every_x_ticks(10)) { health.inflict(4); }
+	}
 	if (just_died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
 	if (died()) {
 		health_indicator.update(svc, collider.physics.position);
