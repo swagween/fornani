@@ -25,7 +25,6 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 		for (auto& portal : map.portals) {
 			if (portal.destination_map_id == svc.state_controller.source_id) {
 				found_one = true;
-
 				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player->height()};
 				player->set_position(spawn_position, true);
 				camera.force_center(player->anchor_point);

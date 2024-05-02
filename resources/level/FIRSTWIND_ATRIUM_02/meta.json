@@ -1,6 +1,6 @@
 {
   "meta": {
-    "room_id": 0,
+    "room_id": 106,
     "dimensions": [
       32,
       64
@@ -22,7 +22,7 @@
         31,
         20
       ],
-      "source_id": 0,
+      "source_id": 106,
       "destination_id": 107,
       "activate_on_contact": true
     },
@@ -35,7 +35,7 @@
         0,
         4
       ],
-      "source_id": 0,
+      "source_id": 106,
       "destination_id": 104,
       "activate_on_contact": true
     }

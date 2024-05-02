@@ -41,6 +41,7 @@ struct Soundboard {
 	void play_sounds(automa::ServiceProvider& svc);
 	void repeat(automa::ServiceProvider& svc, sf::Sound& sound, int frequency, float random_pitch_offset = 0.f);
 	void randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset);
+	void play_at_volume(sf::Sound& sound, int vol);
 
 	struct {
 		float save{};

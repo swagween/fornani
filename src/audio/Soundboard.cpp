@@ -34,8 +34,8 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	//tank
 	if (flags.tank.test(Tank::alert_1)) { svc.assets.tank_alert_1.play(); }
 	if (flags.tank.test(Tank::alert_2)) { svc.assets.tank_alert_2.play(); }
-	if (flags.tank.test(Tank::hurt_1)) { randomize(svc, svc.assets.tank_hurt_1, 0.2f); }
-	if (flags.tank.test(Tank::hurt_2)) { svc.assets.tank_hurt_2.play(); }
+	if (flags.tank.test(Tank::hurt_1)) { svc.assets.tank_hurt_1.play(); }
+	if (flags.tank.test(Tank::hurt_2)) { play_at_volume(svc.assets.tank_hurt_2, 50); }
 	if (flags.tank.test(Tank::death)) { svc.assets.tank_death.play(); }
 
 	//item
@@ -45,7 +45,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 
 	// player
 	if (flags.player.test(Player::land)) { svc.assets.landed.play(); }
-	if (flags.player.test(Player::jump)) { svc.assets.jump.play(); }
+	if (flags.player.test(Player::jump)) { randomize(svc, svc.assets.jump, 0.1f); }
 	if (flags.player.test(Player::step)) { randomize(svc, svc.assets.step, 0.1f); }
 	if (flags.player.test(Player::arms_switch)) { svc.assets.arms_switch.play(); }
 	if (flags.player.test(Player::hurt)) { svc.assets.hurt.play(); }
@@ -77,6 +77,11 @@ void Soundboard::repeat(automa::ServiceProvider& svc, sf::Sound& sound, int freq
 void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset) {
 	float random_pitch = svc.random.random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.setPitch(1.f + random_pitch);
+	sound.play();
+}
+
+void Soundboard::play_at_volume(sf::Sound& sound, int vol) {
+	sound.setVolume(vol);
 	sound.play();
 }
 
