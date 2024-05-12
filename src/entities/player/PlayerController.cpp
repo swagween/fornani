@@ -54,6 +54,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	auto const& hook_held = svc.controller_map.label_to_control.at("secondary_action").held();
 
+	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
+	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
 
 	if (svc.controller_map.type == config::ControllerType::gamepad) {
 		key_map[ControllerInput::move_x] = svc.controller_map.get_throttle().x;

@@ -15,7 +15,7 @@ enum class AnimState { idle, turn, sharp_turn, run, sprint, jumpsquat, rise, sus
 // { lookup, duration, framerate, num_loops (-1 for infinite) }
 inline anim::Parameters idle{20, 8, 28, -1};
 inline anim::Parameters turn{33, 3, 18, 0};
-inline anim::Parameters sharp_turn{36, 1, 48, 0};
+inline anim::Parameters sharp_turn{16, 2, 28, 0};
 inline anim::Parameters run{44, 4, 28, -1};
 inline anim::Parameters sprint{10, 6, 16, -1};
 inline anim::Parameters jumpsquat{61, 1, 16, 0};

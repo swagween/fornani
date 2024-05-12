@@ -136,17 +136,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 
-	// flip the sprite based on the player's direction
-	sf::Vector2<float> right_scale = {1.0f, 1.0f};
-	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-	if (controller.facing_left() && sprite.getScale() == right_scale) {
-		sprite.scale(-1.0f, 1.0f);
-		if (grounded()) { animation.state.set(AnimState::turn); }
-	}
-	if (controller.facing_right() && sprite.getScale() == left_scale) {
-		sprite.scale(-1.0f, 1.0f);
-		if (grounded()) { animation.state.set(AnimState::turn); }
-	}
 	if (flags.state.test(State::alive)) {
 		if (svc.greyblock_mode()) {
 			collider.render(win, campos);
@@ -185,7 +174,7 @@ void Player::update_animation() {
 			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state.set(AnimState::run); }
 			if (controller.moving() && controller.sprinting() && !controller.dashing() && !animation.state.test(AnimState::sharp_turn)) { animation.state.set(AnimState::sprint); }
 			if (abs(collider.physics.velocity.x) > animation.stop_threshold) { animation.state.test(AnimState::stop); }
-			if (controller.moving_right() && collider.physics.velocity.x < -3.8f || controller.moving_left() && collider.physics.velocity.x > 3.8f) {
+			if (quick_direction_switch()) {
 				animation.state = {};
 				animation.state.set(AnimState::sharp_turn);
 			}
@@ -216,6 +205,22 @@ void Player::update_animation() {
 }
 
 void Player::update_sprite() {
+	// flip the sprite based on the player's direction
+	sf::Vector2<float> right_scale = {1.0f, 1.0f};
+	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
+	if (controller.facing_left() && sprite.getScale() == right_scale) {
+		sprite.scale(-1.0f, 1.0f);
+		if (grounded()) { animation.state.set(AnimState::turn); }
+	}
+	if (controller.facing_right() && sprite.getScale() == left_scale) {
+		sprite.scale(-1.0f, 1.0f);
+		if (grounded()) { animation.state.set(AnimState::turn); }
+	}
+
+	// check for quick turn
+	flags.state.reset(State::dir_switch);
+	if (controller.quick_turn()) { flags.state.set(State::dir_switch); }
+
 	sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 

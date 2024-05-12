@@ -3,6 +3,7 @@
 #include <chrono>
 #include <optional>
 #include <unordered_map>
+#include <deque>
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Direction.hpp"
 #include "Jump.hpp"
@@ -15,6 +16,7 @@ struct ServiceProvider;
 namespace player {
 
 constexpr static int dash_time{32};
+constexpr static int quick_turn_sample_size{16};
 
 enum class ControllerInput { move_x, jump, sprint, shoot, arms_switch, inspect, dash, move_y };
 enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released };
@@ -89,6 +91,17 @@ class PlayerController {
 	[[nodiscard]] auto horizontal_movement() -> float { return key_map[ControllerInput::move_x]; }
 	[[nodiscard]] auto arms_switch() -> float { return key_map[ControllerInput::arms_switch]; }
 	[[nodiscard]] auto dash_value() -> float { return key_map[ControllerInput::dash]; }
+	[[nodiscard]] auto quick_turn() const -> bool {
+		bool ret{};
+		bool left{};
+		bool right{};
+		for (auto& state : horizontal_inputs) {
+			if (state == -1.f) { left = true; }
+			if (state == 1.f) { right = true; }
+		}
+		if (left && right) { ret = true; }
+		return ret;
+	}
 
 	[[nodiscard]] auto get_jump() -> Jump& { return jump; }
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
@@ -106,5 +119,7 @@ class PlayerController {
 
 	int dash_request{};
 	int dash_count{};
+
+	std::deque<float> horizontal_inputs{};
 };
 } // namespace player

@@ -78,7 +78,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { alive };
+enum class State { alive, dir_switch };
 
 struct PlayerFlags {
 	util::BitFlags<State> state{};
@@ -107,6 +107,7 @@ class Player {
 	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(player::State::alive); }
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
+	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 
 	// moves
 	void jump();
