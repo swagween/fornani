@@ -84,6 +84,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	jump();
 	wallslide();
 
+	update_animation();
 	// check keystate
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
 	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
@@ -101,7 +102,6 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	orb_indicator.update(*m_services, collider.physics.position);
 	update_invincibility();
 
-	update_animation();
 	update_weapon();
 	catalog.update(*m_services);
 
@@ -177,15 +177,18 @@ void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& w
 void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
 
 void Player::update_animation() {
-
 	if (grounded()) {
 		if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
 		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
 			if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
 			if (controller.nothing_pressed() && !controller.dashing() && !animation.state.test(AnimState::inspect)) { animation.state.set(AnimState::idle); }
 			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state.set(AnimState::run); }
-			if (controller.moving() && controller.sprinting() && !controller.dashing()) { animation.state.set(AnimState::sprint); }
+			if (controller.moving() && controller.sprinting() && !controller.dashing() && !animation.state.test(AnimState::sharp_turn)) { animation.state.set(AnimState::sprint); }
 			if (abs(collider.physics.velocity.x) > animation.stop_threshold) { animation.state.test(AnimState::stop); }
+			if (controller.moving_right() && collider.physics.velocity.x < -3.8f || controller.moving_left() && collider.physics.velocity.x > 3.8f) {
+				animation.state = {};
+				animation.state.set(AnimState::sharp_turn);
+			}
 		}
 	} else {
 		if (collider.physics.velocity.y > -animation.suspension_threshold && collider.physics.velocity.y < animation.suspension_threshold) { animation.state.set(AnimState::suspend); }
@@ -195,8 +198,8 @@ void Player::update_animation() {
 	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
 
-	if (collider.physics.velocity.y < -animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::rise); }
 	if (collider.physics.velocity.y > animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::fall); }
+	if (collider.physics.velocity.y < -animation.suspension_threshold) { animation.state.set(AnimState::rise); }
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
@@ -323,12 +326,13 @@ void Player::dash() {
 
 void Player::wallslide() {
 	if (!catalog.categories.abilities.has_ability(Abilities::wall_slide)) { return; }
-	if (collider.has_wallslide_collision() && !grounded() && controller.moving() && collider.physics.velocity.y > 0.f) {
-		controller.get_wallslide().start();
-		collider.physics.acceleration.y = std::min(collider.physics.acceleration.y, physics_stats.wallslide_speed);
-	} else {
-		controller.get_wallslide().end();
-	}
+	controller.get_wallslide().end();
+	if (!grounded() && collider.physics.velocity.y > 0.f) {
+		if ((collider.has_left_wallslide_collision() && controller.moving_left()) || (collider.has_right_wallslide_collision() && controller.moving_right())) {
+			controller.get_wallslide().start();
+			collider.physics.acceleration.y = std::min(collider.physics.acceleration.y, physics_stats.wallslide_speed);
+		}
+	} 
 }
 
 void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
@@ -378,6 +382,10 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
+	if (animation.state.test(AnimState::sharp_turn)) {
+		collider.physics.acceleration.x = 0.0f;
+		return;
+	}
 	if (controller.moving_right() && !collider.has_right_collision()) {
 		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
 	}

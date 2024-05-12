@@ -371,6 +371,7 @@ void Game::debug_window() {
 							ImGui::Text("run....: %s", player.animation.state.test(player::AnimState::run) ? "flag set" : "");
 							ImGui::Text("stop...: %s", player.animation.state.test(player::AnimState::stop) ? "flag set" : "");
 							ImGui::Text("turn...: %s", player.animation.state.test(player::AnimState::turn) ? "flag set" : "");
+							ImGui::Text("shpturn: %s", player.animation.state.test(player::AnimState::sharp_turn) ? "flag set" : "");
 							ImGui::Text("jsquat.: %s", player.animation.state.test(player::AnimState::jumpsquat) ? "flag set" : "");
 							ImGui::Text("rise...: %s", player.animation.state.test(player::AnimState::rise) ? "flag set" : "");
 							ImGui::Text("suspend: %s", player.animation.state.test(player::AnimState::suspend) ? "flag set" : "");

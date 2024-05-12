@@ -126,7 +126,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		}
 	}
 
-	if (wallslider.overlaps(cell)) { flags.state.set(State::has_wallslide_collision); }
+	if (wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
 	if (jumpbox.SAT(cell)) {
 		flags.state.set(State::grounded);
@@ -291,7 +291,6 @@ void Collider::update(automa::ServiceProvider& svc) {
 
 void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
-
 	// draw predictive vertical
 	box.setSize(predictive_vertical.dimensions);
 	box.setPosition(predictive_vertical.position.x - cam.x, predictive_vertical.position.y - cam.y);
@@ -349,7 +348,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw wallslider
 	box.setSize(sf::Vector2<float>{(float)wallslider.dimensions.x, (float)wallslider.dimensions.y});
 	box.setPosition(wallslider.position.x - cam.x, wallslider.position.y - cam.y);
-	has_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
+	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
 	box.setOutlineThickness(-1);
 	win.draw(box);
@@ -380,6 +379,8 @@ bool Collider::has_right_collision() const { return flags.collision.test(Collisi
 
 bool Collider::has_vertical_collision() const { return flags.collision.test(Collision::has_top_collision) || flags.collision.test(Collision::has_bottom_collision); }
 
-bool Collider::has_wallslide_collision() const { return flags.state.test(State::has_wallslide_collision); }
+bool Collider::has_left_wallslide_collision() const { return flags.state.test(State::left_wallslide_collision); }
+
+bool Collider::has_right_wallslide_collision() const { return flags.state.test(State::right_wallslide_collision); }
 
 } // namespace shape
