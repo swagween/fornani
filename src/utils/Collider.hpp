@@ -14,6 +14,7 @@ namespace shape {
 
 float const default_dim = 24.0f;
 float const vicinity_pad = 16.f;
+float const wallslide_pad = 2.f;
 
 float const default_jumpbox_height = 4.0f;
 float const default_detector_width = 4.f;
@@ -21,17 +22,7 @@ float const default_detector_height = 18.f;
 
 enum class General { ignore_resolution };
 
-enum class State {
-	just_collided,
-	is_any_jump_collision,
-	is_any_collision,
-	just_landed,
-	ceiling_collision,
-	grounded,
-	on_ramp,
-	ledge_left,
-	ledge_right
-};
+enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, on_ramp, ledge_left, ledge_right, has_wallslide_collision };
 
 enum class Collision {
 	any_collision,
@@ -75,12 +66,14 @@ class Collider {
 	bool has_left_collision() const;
 	bool has_right_collision() const;
 	bool has_vertical_collision() const;
+	bool has_wallslide_collision() const;
 
 	Shape bounding_box{};
 	Shape predictive_vertical{};
 	Shape predictive_horizontal{};
 	Shape predictive_combined{};
 	Shape vicinity{};
+	Shape wallslider{};
 	Shape jumpbox{};
 	Shape hurtbox{};
 

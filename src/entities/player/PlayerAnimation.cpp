@@ -30,6 +30,11 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 		animation.set_params(run);
 		return PA_BIND(update_run);
 	}
+	if (state.test(AnimState::sprint)) {
+		state.reset(AnimState::idle);
+		animation.set_params(sprint);
+		return PA_BIND(update_sprint);
+	}
 	if (state.test(AnimState::suspend)) {
 		state.reset(AnimState::idle);
 		animation.set_params(suspend);
@@ -50,8 +55,60 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 	return std::move(state_function);
 }
 
+fsm::StateFunction PlayerAnimation::update_sprint() {
+	animation.label = "sprint";
+	if (state.test(AnimState::turn)) {
+		state.reset(AnimState::sprint);
+		animation.set_params(turn);
+		return PA_BIND(update_turn);
+	}
+	if (state.test(AnimState::stop) && animation.keyframe_over()) {
+		state.reset(AnimState::sprint);
+		animation.set_params(stop);
+		return PA_BIND(update_stop);
+	}
+	if (state.test(AnimState::suspend) && animation.keyframe_over()) {
+		state.reset(AnimState::sprint);
+		animation.set_params(suspend);
+		return PA_BIND(update_suspend);
+	}
+	if (state.test(AnimState::fall) && animation.keyframe_over()) {
+		state.reset(AnimState::sprint);
+		animation.set_params(fall);
+		return PA_BIND(update_fall);
+	}
+	if (state.test(AnimState::jumpsquat)) {
+		state.reset(AnimState::sprint);
+		animation.set_params(jumpsquat);
+		return PA_BIND(update_jumpsquat);
+	}
+	if (state.test(AnimState::idle) && animation.keyframe_over()) {
+		state.reset(AnimState::sprint);
+		animation.set_params(idle);
+		return PA_BIND(update_idle);
+	}
+	if (state.test(AnimState::inspect)) {
+		state.reset(AnimState::sprint);
+		animation.set_params(inspect);
+		return PA_BIND(update_inspect);
+	}
+	if (state.test(AnimState::run)) {
+		state.reset(AnimState::sprint);
+		animation.set_params(run);
+		return PA_BIND(update_run);
+	}
+	state = {};
+	state.set(AnimState::sprint);
+	return std::move(state_function);
+}
+
 fsm::StateFunction PlayerAnimation::update_run() {
 	animation.label = "run";
+	if (state.test(AnimState::sprint)) {
+		state.reset(AnimState::run);
+		animation.set_params(sprint);
+		return PA_BIND(update_sprint);
+	}
 	if (state.test(AnimState::turn)) {
 		state.reset(AnimState::run);
 		animation.set_params(turn);
@@ -123,6 +180,11 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 			animation.set_params(run);
 			return PA_BIND(update_run);
 		}
+		if (state.test(AnimState::sprint)) {
+			state.reset(AnimState::turn);
+			animation.set_params(sprint);
+			return PA_BIND(update_sprint);
+		}
 		if (state.test(AnimState::rise)) {
 			state.reset(AnimState::turn);
 			animation.set_params(rise);
@@ -172,6 +234,11 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 		animation.set_params(fall);
 		return PA_BIND(update_fall);
 	}
+	if (state.test(AnimState::wallslide)) {
+		state.reset(AnimState::suspend);
+		animation.set_params(wallslide);
+		return PA_BIND(update_wallslide);
+	}
 	if (state.test(AnimState::land)) {
 		state.reset(AnimState::suspend);
 		animation.set_params(land);
@@ -181,6 +248,11 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 		state.reset(AnimState::suspend);
 		animation.set_params(run);
 		return PA_BIND(update_run);
+	}
+	if (state.test(AnimState::sprint)) {
+		state.reset(AnimState::suspend);
+		animation.set_params(sprint);
+		return PA_BIND(update_sprint);
 	}
 	if (state.test(AnimState::idle)) {
 		state.reset(AnimState::suspend);
@@ -209,10 +281,20 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 		animation.set_params(jumpsquat);
 		return PA_BIND(update_jumpsquat);
 	}
+	if (state.test(AnimState::wallslide)) {
+		state.reset(AnimState::fall);
+		animation.set_params(wallslide);
+		return PA_BIND(update_wallslide);
+	}
 	if (state.test(AnimState::run)) {
 		state.reset(AnimState::fall);
 		animation.set_params(run);
 		return PA_BIND(update_run);
+	}
+	if (state.test(AnimState::sprint)) {
+		state.reset(AnimState::fall);
+		animation.set_params(sprint);
+		return PA_BIND(update_sprint);
 	}
 	if (state.test(AnimState::rise)) {
 		state.reset(AnimState::fall);
@@ -241,6 +323,11 @@ fsm::StateFunction PlayerAnimation::update_stop() {
 			state.reset(AnimState::stop);
 			animation.set_params(run);
 			return PA_BIND(update_run);
+		}
+		if (state.test(AnimState::sprint)) {
+			state.reset(AnimState::stop);
+			animation.set_params(sprint);
+			return PA_BIND(update_sprint);
 		}
 		if (state.test(AnimState::turn)) {
 			state.reset(AnimState::stop);
@@ -276,6 +363,11 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 			animation.end();
 			return PA_BIND(update_run);
 		}
+		if (state.test(AnimState::sprint)) {
+			state.reset(AnimState::inspect);
+			animation.set_params(sprint);
+			return PA_BIND(update_sprint);
+		}
 		if (state.test(AnimState::idle)) {
 			state.reset(AnimState::inspect);
 			animation.set_params(idle);
@@ -302,6 +394,11 @@ fsm::StateFunction PlayerAnimation::update_land() {
 			state.reset(AnimState::land);
 			animation.set_params(run);
 			return PA_BIND(update_run);
+		}
+		if (state.test(AnimState::sprint)) {
+			state.reset(AnimState::land);
+			animation.set_params(sprint);
+			return PA_BIND(update_sprint);
 		}
 		if (state.test(AnimState::jumpsquat)) {
 			state.reset(AnimState::land);
@@ -343,6 +440,16 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 			animation.set_params(run);
 			return PA_BIND(update_run);
 		}
+		if (state.test(AnimState::sprint)) {
+			state.reset(AnimState::dash);
+			animation.set_params(sprint);
+			return PA_BIND(update_sprint);
+		}
+		if (state.test(AnimState::wallslide)) {
+			state.reset(AnimState::dash);
+			animation.set_params(wallslide);
+			return PA_BIND(update_wallslide);
+		}
 		if (state.test(AnimState::jumpsquat)) {
 			state.reset(AnimState::dash);
 			animation.set_params(jumpsquat);
@@ -371,6 +478,34 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 	state = {};
 	state.set(AnimState::dash);
 	return std::move(state_function);
+}
+
+fsm::StateFunction PlayerAnimation::update_wallslide() {
+	animation.label = "wallslide";
+	if (state.test(AnimState::run)) {
+		state.reset(AnimState::wallslide);
+		animation.set_params(run);
+		return PA_BIND(update_run);
+	}
+	if (state.test(AnimState::fall)) {
+		state.reset(AnimState::wallslide);
+		animation.set_params(fall);
+		return PA_BIND(update_fall);
+	}
+	if (state.test(AnimState::suspend)) {
+		state.reset(AnimState::wallslide);
+		animation.set_params(suspend);
+		return PA_BIND(update_suspend);
+	}
+	if (state.test(AnimState::land)) {
+		state.reset(AnimState::wallslide);
+		animation.set_params(land);
+		return PA_BIND(update_land);
+	}
+
+	state = {};
+	state.set(AnimState::wallslide);
+	return PA_BIND(update_wallslide);
 }
 
 // change_state(AnimState::run, run, update_run());

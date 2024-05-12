@@ -62,6 +62,7 @@ struct PhysicsStats {
 	float air_fric{};
 	float x_acc{};
 	float air_multiplier{};
+	float sprint_multiplier{};
 	float jump_velocity{};
 	float jump_release_multiplier{};
 	float hurt_acc{};
@@ -70,6 +71,7 @@ struct PhysicsStats {
 	float vertical_dash_multiplier{};
 	float dash_speed{};
 	float dash_dampen{};
+	float wallslide_speed{};
 };
 
 struct Counters {
@@ -109,6 +111,7 @@ class Player {
 	// moves
 	void jump();
 	void dash();
+	void wallslide();
 
 	void set_position(sf::Vector2<float> new_pos, bool centered = false);
 	void update_direction();

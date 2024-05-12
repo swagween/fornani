@@ -20,6 +20,11 @@
       "keyboard_key": "Space",
       "gamepad_button": 2
     },
+    "sprint": {
+      "mouse_button": "",
+      "keyboard_key": "LShift",
+      "gamepad_button": 6
+    },
     "left": {
       "keyboard_key": "Left",
       "gamepad_button": -1,

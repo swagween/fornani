@@ -9,6 +9,7 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	label_to_control.insert({"secondary_action", Control(Action::secondary_action)});
 	label_to_control.insert({"tertiary_action", Control(Action::tertiary_action)});
 	label_to_control.insert({"inspect", Control(Action::inspect)});
+	label_to_control.insert({"sprint", Control(Action::sprint)});
 	label_to_control.insert({"menu_toggle", Control(Action::menu_toggle)});
 	label_to_control.insert({"menu_toggle_secondary", Control(Action::menu_toggle)});
 	label_to_control.insert({"arms_switch_left", Control(Action::arms_switch_left)});

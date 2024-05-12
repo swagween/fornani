@@ -20,6 +20,7 @@
       "shoot",
       "special",
       "inspect",
+      "sprint",
       "inventory",
       "menu",
       "switch weapon (left)",

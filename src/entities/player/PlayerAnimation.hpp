@@ -10,12 +10,13 @@
 
 namespace player {
 
-enum class AnimState { idle, turn, run, jumpsquat, rise, suspend, fall, stop, inspect, land, hurt, dash };
+enum class AnimState { idle, turn, run, sprint, jumpsquat, rise, suspend, fall, stop, inspect, land, hurt, dash, wallslide };
 
 // { lookup, duration, framerate, num_loops (-1 for infinite) }
 inline anim::Parameters idle{20, 8, 28, -1};
 inline anim::Parameters turn{33, 3, 18, 0};
 inline anim::Parameters run{44, 4, 28, -1};
+inline anim::Parameters sprint{10, 6, 16, -1};
 inline anim::Parameters jumpsquat{61, 1, 16, 0};
 inline anim::Parameters rise{54, 2, 22, -1};
 inline anim::Parameters suspend{30, 3, 30, -1};
@@ -26,6 +27,7 @@ inline anim::Parameters land{56, 2, 28, 0};
 inline anim::Parameters inspect{37, 2, 30, -1, true};
 inline anim::Parameters hurt{76, 2, 22, 1};
 inline anim::Parameters dash{40, 4, 22, 0};
+inline anim::Parameters wallslide{66, 4, 28, -1};
 
 class PlayerAnimation {
 
@@ -56,6 +58,7 @@ class PlayerAnimation {
 
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_turn();
+	fsm::StateFunction update_sprint();
 	fsm::StateFunction update_run();
 	fsm::StateFunction update_jumpsquat();
 	fsm::StateFunction update_rise();
@@ -66,6 +69,7 @@ class PlayerAnimation {
 	fsm::StateFunction update_land();
 	fsm::StateFunction update_hurt();
 	fsm::StateFunction update_dash();
+	fsm::StateFunction update_wallslide();
 
 	//std::optional<fsm::StateFunction> change_state(AnimState next, anim::Parameters params, fsm::StateFunction fn);
 

@@ -26,6 +26,7 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 			gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{-14.f, 10.f} : sf::Vector2<float>{26.f, 20.f};
 			gun.shoot();
 			map.spawn_projectile_at(svc, gun.get(), gun.barrel_point());
+			m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 		}
 	}
 

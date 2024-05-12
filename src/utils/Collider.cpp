@@ -25,12 +25,15 @@ void Collider::sync_components() {
 	bounding_box.set_position(physics.position);
 	vicinity.dimensions.x = dimensions.x + 2 * vicinity_pad;
 	vicinity.dimensions.y = dimensions.y + 2 * vicinity_pad;
+	wallslider.dimensions.x = dimensions.x + 2 * wallslide_pad;
+	wallslider.dimensions.y = dimensions.y * 0.5;
 	predictive_vertical.dimensions.x = dimensions.x - 2 * vertical_detector_buffer;
 	predictive_vertical.dimensions.y = dimensions.y + 2 * vertical_detector_buffer;
 	predictive_horizontal.dimensions.x = dimensions.x + 2 * horizontal_detector_buffer;
 	predictive_horizontal.dimensions.y = dimensions.y - 3 * horizontal_detector_buffer;
 	predictive_combined.dimensions = dimensions;
 	vicinity.set_position(sf::Vector2<float>{physics.position.x - vicinity_pad + physics.velocity.x, physics.position.y - vicinity_pad + physics.velocity.y});
+	wallslider.set_position(sf::Vector2<float>{physics.position.x - wallslide_pad, physics.position.y + 8.f});
 	predictive_vertical.set_position(sf::Vector2<float>{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.velocity.y});
 	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - horizontal_detector_buffer + physics.velocity.x, physics.position.y + horizontal_detector_buffer});
 	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y});
@@ -122,6 +125,8 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			}
 		}
 	}
+
+	if (wallslider.overlaps(cell)) { flags.state.set(State::has_wallslide_collision); }
 
 	if (jumpbox.SAT(cell)) {
 		flags.state.set(State::grounded);
@@ -341,6 +346,14 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setOutlineThickness(-1);
 	win.draw(box);
 
+	// draw wallslider
+	box.setSize(sf::Vector2<float>{(float)wallslider.dimensions.x, (float)wallslider.dimensions.y});
+	box.setPosition(wallslider.position.x - cam.x, wallslider.position.y - cam.y);
+	has_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
+	box.setOutlineColor(sf::Color{60, 60, 180, 100});
+	box.setOutlineThickness(-1);
+	win.draw(box);
+
 	// draw physics position
 	box.setSize({2.f, 2.f});
 	box.setPosition(physics.position.x - cam.x, physics.position.y - cam.y);
@@ -366,5 +379,7 @@ bool Collider::has_left_collision() const { return flags.collision.test(Collisio
 bool Collider::has_right_collision() const { return flags.collision.test(Collision::has_right_collision); }
 
 bool Collider::has_vertical_collision() const { return flags.collision.test(Collision::has_top_collision) || flags.collision.test(Collision::has_bottom_collision); }
+
+bool Collider::has_wallslide_collision() const { return flags.state.test(State::has_wallslide_collision); }
 
 } // namespace shape

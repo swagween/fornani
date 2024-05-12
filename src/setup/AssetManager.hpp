@@ -175,6 +175,8 @@ class AssetManager {
 		arms_switch.setBuffer(arms_switch_buffer);
 		bg_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bg_shot.wav");
 		bg_shot.setBuffer(bg_shot_buffer);
+		skycorps_ar_buffer.loadFromFile(finder.resource_path + "/audio/sfx/skycorps_ar_shot.wav");
+		skycorps_ar_shot.setBuffer(skycorps_ar_buffer);
 		plasmer_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/plasmer_shot.wav");
 		plasmer_shot.setBuffer(plasmer_shot_buffer);
 		tomahawk_flight_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tomahawk_flight.wav");

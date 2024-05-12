@@ -82,6 +82,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	arsenal.switch_weapon(*m_services, controller.arms_switch());
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) { dash(); }
 	jump();
+	wallslide();
 
 	// check keystate
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
@@ -182,7 +183,8 @@ void Player::update_animation() {
 		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
 			if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
 			if (controller.nothing_pressed() && !controller.dashing() && !animation.state.test(AnimState::inspect)) { animation.state.set(AnimState::idle); }
-			if (controller.moving() && !controller.dashing()) { animation.state.set(AnimState::run); }
+			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state.set(AnimState::run); }
+			if (controller.moving() && controller.sprinting() && !controller.dashing()) { animation.state.set(AnimState::sprint); }
 			if (abs(collider.physics.velocity.x) > animation.stop_threshold) { animation.state.test(AnimState::stop); }
 		}
 	} else {
@@ -199,6 +201,12 @@ void Player::update_animation() {
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
 		if (controller.dash_requested()) { animation.state.set(AnimState::dash); }
+	}
+	if (catalog.categories.abilities.has_ability(Abilities::wall_slide)) {
+		if (controller.get_wallslide().is_wallsliding()) {
+			animation.state = {};
+			animation.state.set(AnimState::wallslide);
+		}
 	}
 
 	animation.update();
@@ -313,6 +321,16 @@ void Player::dash() {
 	}
 }
 
+void Player::wallslide() {
+	if (!catalog.categories.abilities.has_ability(Abilities::wall_slide)) { return; }
+	if (collider.has_wallslide_collision() && !grounded() && controller.moving() && collider.physics.velocity.y > 0.f) {
+		controller.get_wallslide().start();
+		collider.physics.acceleration.y = std::min(collider.physics.acceleration.y, physics_stats.wallslide_speed);
+	} else {
+		controller.get_wallslide().end();
+	}
+}
+
 void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
 	sf::Vector2<float> offset{};
 	offset.x = centered ? collider.dimensions.x * 0.5f : 0.f;
@@ -366,7 +384,8 @@ void Player::walk() {
 	if (controller.moving_left() && !collider.has_left_collision()) {
 		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
 	}
-	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
+	if (controller.sprinting()) { collider.physics.acceleration.x *= physics_stats.sprint_multiplier; }
+	if (animation.get_frame() == 44 || animation.get_frame() == 46 || animation.get_frame() == 10 || animation.get_frame() == 13) {
 		if (animation.animation.keyframe_over() && abs(collider.physics.velocity.x) > 2.5f) { m_services->soundboard.flags.player.set(audio::Player::step); }
 	}
 }
@@ -389,6 +408,8 @@ void Player::update_antennae() {
 	for (auto& a : antennae) {
 		if (animation.get_frame() == 44 || animation.get_frame() == 46) {
 			antenna_offset.y = -15.f;
+		} else if (controller.sprinting()) {
+			antenna_offset.y = -9.f;
 		} else {
 			antenna_offset.y = -13.f;
 		}

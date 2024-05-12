@@ -377,6 +377,8 @@ void Game::debug_window() {
 							ImGui::Text("fall...: %s", player.animation.state.test(player::AnimState::fall) ? "flag set" : "");
 							ImGui::Text("land...: %s", player.animation.state.test(player::AnimState::land) ? "flag set" : "");
 							ImGui::Text("dash...: %s", player.animation.state.test(player::AnimState::dash) ? "flag set" : "");
+							ImGui::Text("sprint.: %s", player.animation.state.test(player::AnimState::sprint) ? "flag set" : "");
+							ImGui::Text("wlslide: %s", player.animation.state.test(player::AnimState::wallslide) ? "flag set" : "");
 							ImGui::Text("inspect: %s", player.animation.state.test(player::AnimState::inspect) ? "flag set" : "");
 							ImGui::EndTabItem();
 						}
@@ -398,6 +400,11 @@ void Game::debug_window() {
 							player.catalog.categories.abilities.has_ability(player::Abilities::dash) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
 							if (ImGui::Button("Give Dash")) { player.catalog.categories.abilities.give_ability(player::Abilities::dash); }
 							if (ImGui::Button("Remove Dash")) { player.catalog.categories.abilities.remove_ability(player::Abilities::dash); }
+							ImGui::Text("Wallslide: ");
+							ImGui::SameLine();
+							player.catalog.categories.abilities.has_ability(player::Abilities::wall_slide) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
+							if (ImGui::Button("Give Wallslide")) { player.catalog.categories.abilities.give_ability(player::Abilities::wall_slide); }
+							if (ImGui::Button("Remove Wallslide")) { player.catalog.categories.abilities.remove_ability(player::Abilities::wall_slide); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {
@@ -413,13 +420,15 @@ void Game::debug_window() {
 							ImGui::SliderFloat("GROUND FRICTION", &player.physics_stats.ground_fric, 0.800f, 1.000f);
 							ImGui::SliderFloat("AIR FRICTION", &player.physics_stats.air_fric, 0.800f, 1.000f);
 							ImGui::SliderFloat("GROUND SPEED", &player.physics_stats.x_acc, 0.0f, 3.f);
+							ImGui::SliderFloat("SPRINT MULTIPLIER", &player.physics_stats.sprint_multiplier, 1.0f, 4.0f);
 							ImGui::SliderFloat("MAX X VELOCITY", &player.physics_stats.maximum_velocity.x, 1.0f, 10.0f);
 
 							ImGui::Separator();
-							ImGui::Text("Dash");
+							ImGui::Text("Abilities");
 							ImGui::SliderFloat("Dash Speed", &player.physics_stats.dash_speed, 1.0f, 30.0f);
 							ImGui::SliderFloat("Vertical Dash Multiplier", &player.physics_stats.vertical_dash_multiplier, 0.0f, 10.0f);
 							ImGui::SliderFloat("Dash Dampen", &player.physics_stats.dash_dampen, 0.7f, 2.0f);
+							ImGui::SliderFloat("Wallslide Speed", &player.physics_stats.wallslide_speed, 0.2f, 3.0f);
 
 							ImGui::Separator();
 							if (ImGui::Button("Save Parameters")) { services.data.save_player_params(player); }

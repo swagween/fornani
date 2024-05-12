@@ -7,6 +7,7 @@ namespace player {
 PlayerController::PlayerController() {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
+	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::arms_switch, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::inspect, 0.f));
@@ -22,6 +23,9 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& right = svc.controller_map.label_to_control.at("right").held();
 	auto const& up = svc.controller_map.label_to_control.at("up").held();
 	auto const& down = svc.controller_map.label_to_control.at("down").held();
+
+	auto const& sprint = svc.controller_map.label_to_control.at("sprint").held();
+	auto const& sprint_release = svc.controller_map.label_to_control.at("sprint").released();
 
 	auto const& jump_started = svc.controller_map.label_to_control.at("main_action").triggered();
 	auto const& jump_held = svc.controller_map.label_to_control.at("main_action").held();
@@ -66,6 +70,9 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
 	}
 
+	key_map[ControllerInput::sprint] = 0.f;
+	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
+
 	direction.set_intermediate(left, right, up, down);
 
 	key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
@@ -93,6 +100,10 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	//hook
 	hook_held ? hook_flags.set(Hook::hook_held) : hook_flags.reset(Hook::hook_held);
+
+	//sprint
+	if (sprint_release) { sprint_flags.set(Sprint::released); }
+	if (grounded()) { sprint_flags = {}; }
 
 	key_map[ControllerInput::jump] = jump_started ? 1.f : 0.f;
 
