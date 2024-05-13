@@ -1,6 +1,6 @@
 
 #include "Animation.hpp"
-
+#include <iostream>
 
 namespace anim {
 

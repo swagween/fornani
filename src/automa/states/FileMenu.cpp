@@ -66,6 +66,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
+	svc.controller_map.reset_triggers();
 }
 
 void FileMenu::tick_update(ServiceProvider& svc) {

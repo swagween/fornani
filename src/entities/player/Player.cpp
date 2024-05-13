@@ -80,11 +80,11 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 	//player-controlled actions
 	arsenal.switch_weapon(*m_services, controller.arms_switch());
-	if (catalog.categories.abilities.has_ability(Abilities::dash)) { dash(); }
+	dash();
 	jump();
 	wallslide();
-
 	update_animation();
+
 	// check keystate
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
 	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
@@ -96,12 +96,10 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	}
 
 	collider.update(*m_services);
-
 	health.update();
 	health_indicator.update(*m_services, collider.physics.position);
 	orb_indicator.update(*m_services, collider.physics.position);
 	update_invincibility();
-
 	update_weapon();
 	catalog.update(*m_services);
 
@@ -113,9 +111,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 		}
 	}
 
-	// antennae!
 	update_antennae();
-
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
@@ -173,22 +169,22 @@ void Player::update_animation() {
 			if (controller.nothing_pressed() && !controller.dashing() && !animation.state.test(AnimState::inspect)) { animation.state.set(AnimState::idle); }
 			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state.set(AnimState::run); }
 			if (controller.moving() && controller.sprinting() && !controller.dashing() && !animation.state.test(AnimState::sharp_turn)) { animation.state.set(AnimState::sprint); }
-			if (abs(collider.physics.velocity.x) > animation.stop_threshold) { animation.state.test(AnimState::stop); }
+			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.state.set(AnimState::stop); }
 			if (quick_direction_switch()) {
 				animation.state = {};
 				animation.state.set(AnimState::sharp_turn);
 			}
 		}
 	} else {
-		if (collider.physics.velocity.y > -animation.suspension_threshold && collider.physics.velocity.y < animation.suspension_threshold) { animation.state.set(AnimState::suspend); }
+		if (collider.physics.velocity.y > -thresholds.suspend && collider.physics.velocity.y < thresholds.suspend) { animation.state.set(AnimState::suspend); }
 	}
 
 	if (collider.flags.state.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
 
-	if (collider.physics.velocity.y > animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::fall); }
-	if (collider.physics.velocity.y < -animation.suspension_threshold) { animation.state.set(AnimState::rise); }
+	if (collider.physics.velocity.y > thresholds.suspend && !grounded()) { animation.state.set(AnimState::fall); }
+	if (collider.physics.velocity.y < -thresholds.suspend) { animation.state.set(AnimState::rise); }
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
@@ -199,6 +195,11 @@ void Player::update_animation() {
 			animation.state = {};
 			animation.state.set(AnimState::wallslide);
 		}
+	}
+
+	if (hurt_cooldown.running()) {
+		animation.state = {};
+		animation.state.set(AnimState::hurt);
 	}
 
 	animation.update();
@@ -316,6 +317,7 @@ void Player::jump() {
 }
 
 void Player::dash() {
+	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { return; }
 	if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
 		collider.flags.movement.set(shape::Movement::dashing);
 		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
@@ -332,7 +334,7 @@ void Player::dash() {
 void Player::wallslide() {
 	if (!catalog.categories.abilities.has_ability(Abilities::wall_slide)) { return; }
 	controller.get_wallslide().end();
-	if (!grounded() && collider.physics.velocity.y > 0.f) {
+	if (!grounded() && collider.physics.velocity.y > thresholds.wallslide) {
 		if ((collider.has_left_wallslide_collision() && controller.moving_left()) || (collider.has_right_wallslide_collision() && controller.moving_right())) {
 			controller.get_wallslide().start();
 			collider.physics.acceleration.y = std::min(collider.physics.acceleration.y, physics_stats.wallslide_speed);
@@ -411,7 +413,7 @@ void Player::hurt(int amount = 1) {
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
 		m_services->soundboard.flags.player.set(audio::Player::hurt);
-		just_hurt = true;
+		hurt_cooldown.start(2);
 	}
 	if (health.is_dead()) { kill(); }
 }
@@ -466,6 +468,7 @@ bool Player::fire_weapon() {
 }
 
 void Player::update_invincibility() {
+	hurt_cooldown.update();
 	if (health.invincible()) {
 		flash_sprite();
 	} else {

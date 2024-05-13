@@ -11,16 +11,16 @@
 #include "../../utils/Collider.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "../packages/Health.hpp"
+#include "Catalog.hpp"
+#include "Indicator.hpp"
 #include "PlayerAnimation.hpp"
 #include "PlayerController.hpp"
 #include "Transponder.hpp"
-#include "Catalog.hpp"
-#include "Indicator.hpp"
 
 namespace gui {
 class Console;
 class InventoryWindow;
-}
+} // namespace gui
 
 namespace automa {
 struct ServiceProvider;
@@ -46,7 +46,6 @@ int const JUMP_BUFFER_TIME = 12;
 int const INVINCIBILITY_TIME = 200;
 int const ANCHOR_BUFFER = 50;
 int const num_sprites{220};
-float const stopped_threshold{0.2f};
 
 constexpr inline float antenna_force{0.6f};
 constexpr inline float antenna_speed{16.f};
@@ -79,9 +78,11 @@ struct Counters {
 };
 
 enum class State { alive, dir_switch };
+enum class Triggers { hurt };
 
 struct PlayerFlags {
 	util::BitFlags<State> state{};
+	util::BitFlags<Triggers> triggers{};
 };
 
 class Player {
@@ -170,7 +171,7 @@ class Player {
 	PlayerStats player_stats{0, 99999};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
-
+	util::Cooldown hurt_cooldown{}; //for animation
 	Counters counters{};
 
 	automa::ServiceProvider* m_services;
@@ -184,13 +185,21 @@ class Player {
 
 	bool grav = true;
 
-	bool just_hurt{};
 	bool start_cooldown{};
 	bool sprite_flip{};
 
-	int ledge_height{}; //temp for testing
+	int ledge_height{}; // temp for testing
 
 	Catalog catalog{};
+
+  private:
+	struct {
+		float stop{0.8f};
+		float wallslide{-1.5f};
+		float suspend{4.4f};
+		float landed{0.004f};
+		float run{0.02f};
+	} thresholds{};
 };
 
 } // namespace player

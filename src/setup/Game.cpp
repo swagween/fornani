@@ -335,6 +335,9 @@ void Game::debug_window() {
 							ImGui::Text("Direction LR	: %s", player.controller.direction.print_lr().c_str());
 							ImGui::Text("Direction UND	: %s", player.controller.direction.print_und().c_str());
 							ImGui::Separator();
+							ImGui::Text("Horizontal Movement.: %.4f", player.controller.horizontal_movement());
+							ImGui::Text("Vertical Movement...: %.4f", player.controller.vertical_movement());
+							ImGui::Separator();
 							ImGui::Text("Controller");
 							ImGui::Text("Move Left : %s", player.controller.get_controller_state(player::ControllerInput::move_x) < 0.f ? "Yes" : "No");
 							ImGui::Text("Move Right : %s", player.controller.get_controller_state(player::ControllerInput::move_x) > 0.f ? "Yes" : "No");
@@ -371,6 +374,7 @@ void Game::debug_window() {
 							ImGui::Text("run....: %s", player.animation.state.test(player::AnimState::run) ? "flag set" : "");
 							ImGui::Text("stop...: %s", player.animation.state.test(player::AnimState::stop) ? "flag set" : "");
 							ImGui::Text("turn...: %s", player.animation.state.test(player::AnimState::turn) ? "flag set" : "");
+							ImGui::Text("hurt...: %s", player.animation.state.test(player::AnimState::hurt) ? "flag set" : "");
 							ImGui::Text("shpturn: %s", player.animation.state.test(player::AnimState::sharp_turn) ? "flag set" : "");
 							ImGui::Text("jsquat.: %s", player.animation.state.test(player::AnimState::jumpsquat) ? "flag set" : "");
 							ImGui::Text("rise...: %s", player.animation.state.test(player::AnimState::rise) ? "flag set" : "");

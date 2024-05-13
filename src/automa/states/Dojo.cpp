@@ -76,6 +76,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	svc.controller_map.reset_triggers();
 	player->controller.clean();
 	svc.soundboard.play_sounds(svc);
+	player->flags.triggers = {};
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {
