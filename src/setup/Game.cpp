@@ -552,7 +552,7 @@ void Game::debug_window() {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/1x1_TEST");
-						player.set_position({player::PLAYER_START_X * 2.f, player::PLAYER_START_Y * 2.f});
+						player.set_position({player::PLAYER_START_X * 2.f + 128, player::PLAYER_START_Y * 2.f});
 					}
 					if (ImGui::Button("House")) {
 						services.assets.click.play();

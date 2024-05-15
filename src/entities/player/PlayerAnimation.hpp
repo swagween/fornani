@@ -2,15 +2,15 @@
 #pragma once
 
 #include <iostream>
-#include <unordered_map>
 #include <optional>
+#include <unordered_map>
 #include "../../utils/StateFunction.hpp"
 #include "../animation/Animation.hpp"
 #define PA_BIND(f) std::bind(&PlayerAnimation::f, this)
 
 namespace player {
 
-enum class AnimState { idle, turn, sharp_turn, run, sprint, jumpsquat, rise, suspend, fall, stop, inspect, land, hurt, dash, wallslide };
+enum class AnimState { idle, turn, sharp_turn, run, sprint, jumpsquat, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide };
 int const rate{5};
 // { lookup, duration, framerate, num_loops (-1 for infinite) }
 inline anim::Parameters idle{20, 8, 7 * rate, -1};
@@ -25,6 +25,7 @@ inline anim::Parameters fall{62, 4, 5 * rate, -1};
 inline anim::Parameters stop{74, 2, 8 * rate, 0};
 inline anim::Parameters land{56, 2, 7 * rate, 0};
 inline anim::Parameters inspect{37, 2, 7 * rate, -1, true};
+inline anim::Parameters sit{50, 4, 6 * rate, -1, true};
 inline anim::Parameters hurt{76, 2, 7 * rate, 0};
 inline anim::Parameters dash{40, 4, 5 * rate, 0};
 inline anim::Parameters wallslide{66, 4, 7 * rate, -1};
@@ -62,6 +63,7 @@ class PlayerAnimation {
 	fsm::StateFunction update_fall();
 	fsm::StateFunction update_stop();
 	fsm::StateFunction update_inspect();
+	fsm::StateFunction update_sit();
 	fsm::StateFunction update_land();
 	fsm::StateFunction update_hurt();
 	fsm::StateFunction update_dash();
@@ -69,6 +71,10 @@ class PlayerAnimation {
 
 	bool change_state(AnimState next, anim::Parameters params);
 
+  private:
+	struct {
+		int sit{2400};
+	} timers{};
 };
 
 } // namespace player

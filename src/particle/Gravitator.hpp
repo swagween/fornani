@@ -21,7 +21,7 @@ class Gravitator {
 	void update(automa::ServiceProvider& svc);
 	void set_position(Vec new_position);
 	void set_target_position(Vec new_position);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos, int history = 0);
 
 	shape::Collider collider{};
 	Vecu16 scaled_position{};

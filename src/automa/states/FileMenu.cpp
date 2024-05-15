@@ -14,8 +14,6 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	player.set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 	player.antennae.at(0).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 	player.antennae.at(1).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(2).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(3).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 
 	loading.start(1);
 

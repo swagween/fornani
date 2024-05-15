@@ -48,6 +48,7 @@ class DataManager {
 	dj::Json map_styles{};
 	dj::Json npc{};
 	dj::Json item{};
+	dj::Json platform{};
 
 	//enemy
 	dj::Json enemy{};

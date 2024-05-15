@@ -15,6 +15,8 @@ bool PlayerAnimation::not_jumping() { return !(state.test(AnimState::jumpsquat) 
 
 fsm::StateFunction PlayerAnimation::update_idle() {
 	animation.label = "idle";
+	if (animation.counter > timers.sit) { state.set(AnimState::sit); }
+	if (change_state(AnimState::sit, sit)) { return PA_BIND(update_sit); }
 	if (change_state(AnimState::turn, turn)) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::sharp_turn, sharp_turn)) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::jumpsquat, jumpsquat)) { return PA_BIND(update_jumpsquat); }
@@ -207,6 +209,26 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 	state = {};
 	state.set(AnimState::inspect);
 	return PA_BIND(update_inspect);
+}
+
+fsm::StateFunction PlayerAnimation::update_sit() {
+	animation.label = "sit";
+	if (animation.complete()) {
+		if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
+		if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
+		if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
+	}
+	if (change_state(AnimState::jumpsquat, jumpsquat)) {
+		animation.end();
+		return PA_BIND(update_jumpsquat);
+	}
+	if (change_state(AnimState::dash, dash)) {
+		animation.end();
+		return PA_BIND(update_dash);
+	}
+	state = {};
+	state.set(AnimState::sit);
+	return PA_BIND(update_sit);
 }
 
 fsm::StateFunction PlayerAnimation::update_land() {

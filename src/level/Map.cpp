@@ -117,6 +117,22 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			enemy_catalog.enemies.back()->set_position({(float)(pos.x * svc.constants.cell_size), (float)(pos.y * svc.constants.cell_size)});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 		}
+
+		for (auto& entry : metadata["platforms"].array_view()) {
+			sf::Vector2<float> dim{};
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<int>();
+			pos.y = entry["position"][1].as<int>();
+			dim.x = entry["dimensions"][0].as<int>();
+			dim.y = entry["dimensions"][1].as<int>();
+			pos *= svc.constants.cell_size;
+			dim *= svc.constants.cell_size;
+			auto start = entry["start"].as<float>();
+			start = std::clamp(start, 0.f, 1.f);
+			auto type = entry["type"].as_string();
+			platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<int>(), type, start));
+		}
+
 	}
 
 	// tiles
@@ -184,6 +200,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 						if (cell.value < 244) {
 							cell.value = 0;
 							svc.soundboard.flags.world.set(audio::World::breakable_shatter);
+							effects.push_back(entity::Effect(svc, cell.position, proj.physics.velocity * 0.1f, 2, 0));
 						}
 						generate_layer_textures(svc);
 					}
@@ -254,6 +271,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(*player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
+	for (auto& platform : platforms) { platform.update(svc, *player); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
 	std::erase_if(effects, [](auto const& e) { return e.done(); });
@@ -297,6 +315,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
+	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 
 	for (auto& animator : animators) {
 		if (!animator.foreground) { animator.render(svc, win, cam); }

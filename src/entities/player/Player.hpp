@@ -47,8 +47,8 @@ int const INVINCIBILITY_TIME = 200;
 int const ANCHOR_BUFFER = 50;
 int const num_sprites{220};
 
-constexpr inline float antenna_force{0.6f};
-constexpr inline float antenna_speed{16.f};
+constexpr inline float antenna_force{0.18f};
+constexpr inline float antenna_speed{136.f};
 
 struct PlayerStats {
 	int orbs{};

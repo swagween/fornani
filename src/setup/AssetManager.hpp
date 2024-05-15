@@ -95,6 +95,8 @@ class AssetManager {
 
 		t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 
+		t_platforms.loadFromFile(finder.resource_path + "/image/tile/platforms.png");
+
 		// backgrounds
 		t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");
 		t_bg_opensky.loadFromFile(finder.resource_path + "/image/background/opensky.png");
@@ -285,6 +287,7 @@ class AssetManager {
 
 	// tiles!
 	std::vector<sf::Texture> tilesets{};
+	sf::Texture t_platforms{};
 
 	//save
 	sf::Texture savepoint{};

@@ -29,24 +29,15 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
-	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.dark_orange, antenna_force));
-	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.dark_orange, antenna_force, {2.f, 4.f}));
-
 	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force));
 	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force, {2.f, 4.f}));
 
-	float back_fric{0.84f};
-	float front_fric{0.87f};
+	float back_fric{0.93f};
 
 	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
 	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
 	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
-
-	antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{front_fric, front_fric}, 1.0f);
-	antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
-	antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{front_fric, front_fric}, 1.0f);
-	antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 
 	sprite_dimensions = {48.f, 48.f};
 
@@ -136,11 +127,9 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		if (svc.greyblock_mode()) {
 			collider.render(win, campos);
 		} else {
-			antennae[1].render(svc, win, campos);
-			antennae[3].render(svc, win, campos);
+			antennae[1].render(svc, win, campos, 1);
 			win.draw(sprite);
-			antennae[0].render(svc, win, campos);
-			antennae[2].render(svc, win, campos);
+			antennae[0].render(svc, win, campos, 1);
 		}
 	}
 
@@ -425,6 +414,10 @@ void Player::update_antennae() {
 			antenna_offset.y = -15.f;
 		} else if (controller.sprinting()) {
 			antenna_offset.y = -9.f;
+		} else if (animation.get_frame() == 52) {
+			antenna_offset.y = -10.f;
+		} else if (animation.get_frame() == 53) {
+			antenna_offset.y = -7.f;
 		} else {
 			antenna_offset.y = -13.f;
 		}

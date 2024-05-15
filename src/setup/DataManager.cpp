@@ -24,6 +24,8 @@ void DataManager::load_data() {
 	assert(!npc.is_null());
 	item = dj::Json::from_file((finder.resource_path + "/data/item/item.json").c_str());
 	assert(!item.is_null());
+	platform = dj::Json::from_file((finder.resource_path + "/data/level/platform.json").c_str());
+	assert(!platform.is_null());
 	map_styles = dj::Json::from_file((finder.resource_path + "/data/level/map_styles.json").c_str());
 	assert(!map_styles.is_null());
 

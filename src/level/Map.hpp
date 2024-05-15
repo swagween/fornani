@@ -19,6 +19,7 @@
 #include "../entities/item/Loot.hpp"
 #include "../entities/world/Chest.hpp"
 #include "../entities/npc/NPC.hpp"
+#include "Platform.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -112,6 +113,7 @@ class Map {
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};
+	std::vector<Platform> platforms{};
 	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};
