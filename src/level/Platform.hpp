@@ -16,7 +16,7 @@ class Player;
 
 namespace world {
 
-	enum class PlatformAttributes { sticky, loop, repeating };
+	enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled };
 
 class Platform : public shape::Collider {
   public:
@@ -48,6 +48,7 @@ class Platform : public shape::Collider {
 	sf::Sprite sprite{};
 	anim::Animation animation{};
 	int style{};
+	int state{};
 	sf::Vector2<int> offset{};
 
 };

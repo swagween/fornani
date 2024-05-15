@@ -3,6 +3,8 @@
     "sticky": true,
     "loop": true,
     "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
     "speed": 0.001,
     "track": [
       [ 0, 0 ],
@@ -13,10 +15,38 @@
     "sticky": true,
     "loop": true,
     "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
     "speed": 0.001,
     "track": [
       [ 0, 0 ],
       [ 32, 0 ]
+    ]
+  },
+  "standard_nonstick": {
+    "sticky": false,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.001,
+    "track": [
+      [ 0, 0 ],
+      [ 32, 0 ]
+    ]
+  },
+  "standard_square": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.001,
+    "track": [
+      [ 0, 0 ],
+      [ 32, 0 ],
+      [ 32, 32 ],
+      [ 0, 32 ]
     ]
   }
 }

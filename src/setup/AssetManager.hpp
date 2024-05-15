@@ -96,6 +96,8 @@ class AssetManager {
 		t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 
 		t_platforms.loadFromFile(finder.resource_path + "/image/tile/platforms.png");
+		t_platform_night.loadFromFile(finder.resource_path + "/image/tile/platform_night.png");
+		platform_lookup.insert({0, t_platform_night});
 
 		// backgrounds
 		t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");
@@ -288,6 +290,7 @@ class AssetManager {
 	// tiles!
 	std::vector<sf::Texture> tilesets{};
 	sf::Texture t_platforms{};
+	sf::Texture t_platform_night{};
 
 	//save
 	sf::Texture savepoint{};
@@ -441,6 +444,7 @@ class AssetManager {
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
 	std::unordered_map<int, sf::Texture&> background_lookup{};
 	std::unordered_map<int, sf::Texture&> effect_lookup{};
+	std::unordered_map<int, sf::Texture&> platform_lookup{};
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};

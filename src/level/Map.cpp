@@ -226,6 +226,17 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
+		for (auto& platform : platforms) {
+			if (proj.bounding_box.overlaps(platform.bounding_box)) {
+				if (!proj.stats.transcendent) {
+					if (!proj.destruction_initiated()) {
+						effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, platform.physics.velocity * 10.f, proj.wall_hit_type(), 2));
+						if (proj.direction.lr == dir::LR::neutral) { effects.back().rotate(); }
+					}
+					proj.destroy(false);
+				}
+			}
+		}
 		for (auto& enemy : enemy_catalog.enemies) {
 
 			// should be, simply:
