@@ -575,10 +575,10 @@ void Game::debug_window() {
 
 						player.set_position({25 * 32, 10 * 32});
 					}
-					if (ImGui::Button("Base Lab")) {
+					if (ImGui::Button("Mayhem")) {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
-						game_state.get_current_state().init(services, "/level/BASE_LAB_01");
+						game_state.get_current_state().init(services, "/level/NIGHT_MAYHEM_01");
 
 						player.set_position({28 * 32, 8 * 32});
 					}
