@@ -311,6 +311,71 @@
         "type": "twinkle",
         "color": "periwinkle"
       }
+    },
+
+    {
+      "label": "grenade launcher",
+      "dimensions": {
+        "x": 40,
+        "y": 12
+      },
+      "gun_offset": {
+        "x": 0,
+        "y": 8
+      },
+      "barrel_point": {
+        "x": 40.0,
+        "y": 3.0
+      },
+      "attributes": {
+        "automatic": false,
+        "grenade": true,
+        "rate": 2,
+        "cooldown_time": 60,
+        "recoil": 0.00,
+        "ui_color": 0,
+        "back_offset": 18
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "attributes": {
+          "base_damage": 0.0,
+          "range": 0,
+          "speed": 0.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": false,
+          "transcendent": false,
+          "boomerang": false,
+          "constrained": false,
+          "spring": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0,
+          "spring_slack": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 1
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 2.0, 2.0 ],
+        "type": "twinkle",
+        "color": "white"
+      }
     }
   ]
 }

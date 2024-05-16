@@ -17,10 +17,13 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 	gun_offset.x = in_data["gun_offset"]["x"].as<int>();
 	gun_offset.y = in_data["gun_offset"]["y"].as<int>();
 
+	attributes.back_offset = in_data["attributes"]["back_offset"].as<int>();
 	attributes.barrel_position.at(0) = in_data["barrel_point"]["x"].as<float>();
 	attributes.barrel_position.at(1) = in_data["barrel_point"]["y"].as<float>();
 
+
 	attributes.automatic = (bool)in_data["attributes"]["automatic"].as_bool();
+	attributes.grenade = (bool)in_data["attributes"]["grenade"].as_bool();
 	attributes.rate = in_data["attributes"]["rate"].as<int>();
 	attributes.cooldown_time = in_data["attributes"]["cooldown_time"].as<int>();
 	attributes.recoil = in_data["attributes"]["recoil"].as<float>();
@@ -35,6 +38,9 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 	emitter_type = in_data["spray"]["type"].as_string();
 
 	attributes.boomerang = projectile.stats.boomerang;
+	sp_gun_back.setOrigin({(float)attributes.back_offset, 0.f});
+	sp_gun.setTextureRect(sf::IntRect({attributes.back_offset, 0}, {sprite_dimensions.x - attributes.back_offset, sprite_dimensions.y}));
+	sp_gun_back.setTextureRect(sf::IntRect({0, 0}, {attributes.back_offset, sprite_dimensions.y}));
 }
 
 void Weapon::update(dir::Direction to_direction) {
@@ -46,6 +52,11 @@ void Weapon::update(dir::Direction to_direction) {
 	} else {
 		flags.set(GunState::cooling_down);
 	}
+}
+
+void Weapon::render_back(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
+	if (attributes.boomerang && active_projectiles == attributes.rate) { return; }
+	if (!svc.greyblock_mode()) { win.draw(sp_gun_back); }
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
@@ -97,9 +108,13 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	sp_gun.setScale(right_scale);
 
 	switch (firing_direction.lr) {
-	case dir::LR::right: barrel_point.x -= 2.0f * attributes.barrel_position.at(1); break;
+	case dir::LR::right:
+		barrel_point.x -= 2.0f * attributes.barrel_position.at(1);
+		barrel_point.x += attributes.back_offset;
+		break;
 	case dir::LR::left:
 		barrel_point.x += 2.0f * attributes.barrel_position.at(1);
+		barrel_point.x -= attributes.back_offset;
 		sp_gun.scale(-1.0f, 1.0f);
 		break;
 	default: break;
@@ -110,22 +125,27 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 		barrel_point = {sprite_position.x + attributes.barrel_position.at(1), sprite_position.y - attributes.barrel_position.at(0)};
 		if (to_direction.lr == dir::LR::left) { barrel_point.x -= 2.0f * attributes.barrel_position.at(1); }
 		firing_direction.neutralize_lr();
+		barrel_point.y += attributes.back_offset;
 		break;
 	case dir::UND::down:
 		to_direction.lr == dir::LR::right ? sp_gun.rotate(90) : sp_gun.rotate(-90);
 		barrel_point = {sprite_position.x + sprite_dimensions.y - attributes.barrel_position.at(1) - sprite_dimensions.y, sprite_position.y + sprite_dimensions.x};
 		if (to_direction.lr == dir::LR::right) { barrel_point.x += 2.0f * attributes.barrel_position.at(1); }
 		firing_direction.neutralize_lr();
+		barrel_point.y -= attributes.back_offset;
 		break;
 	case dir::UND::neutral:
 		switch (firing_direction.lr) {
-		case dir::LR::right: barrel_point = {sprite_position.x + attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)}; break;
-		case dir::LR::left: barrel_point = {sprite_position.x - attributes.barrel_position.at(0), sprite_position.y + attributes.barrel_position.at(1)}; break;
+		case dir::LR::right: barrel_point = {sprite_position.x + attributes.barrel_position.at(0) - attributes.back_offset, sprite_position.y + attributes.barrel_position.at(1)}; break;
+		case dir::LR::left: barrel_point = {sprite_position.x - attributes.barrel_position.at(0) + attributes.back_offset, sprite_position.y + attributes.barrel_position.at(1)}; break;
 		}
 		break;
 	default: break;
 	}
 	projectile.direction = firing_direction;
+	sp_gun_back.setRotation(sp_gun.getRotation());
+	sp_gun_back.setPosition(sp_gun.getPosition());
+	sp_gun_back.setScale(sp_gun.getScale());
 }
 
 } // namespace arms

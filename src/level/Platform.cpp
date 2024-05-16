@@ -119,6 +119,4 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	}
 }
 
-float Platform::compute_length(sf::Vector2<float> const v) { return std::sqrt(v.x * v.x + v.y * v.y); }
-
 } // namespace world

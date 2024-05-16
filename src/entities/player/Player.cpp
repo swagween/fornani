@@ -122,6 +122,11 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setTextureRect(sf::IntRect({u, v}, {asset::NANI_SPRITE_WIDTH, asset::NANI_SPRITE_WIDTH}));
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
+	
+	if (!arsenal.loadout.empty()) {
+		equipped_weapon().sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
+		equipped_weapon().render_back(svc, win, campos);
+	}
 
 	if (flags.state.test(State::alive)) {
 		if (svc.greyblock_mode()) {

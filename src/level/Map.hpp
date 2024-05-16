@@ -20,6 +20,7 @@
 #include "../entities/world/Chest.hpp"
 #include "../entities/npc/NPC.hpp"
 #include "Platform.hpp"
+#include "../weapon/Grenade.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -105,6 +106,7 @@ class Map {
 
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
+	std::vector<arms::Grenade> active_grenades{};
 	std::vector<vfx::Emitter> active_emitters{};
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};

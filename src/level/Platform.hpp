@@ -23,7 +23,6 @@ class Platform : public shape::Collider {
 	Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point = 0.f);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	float compute_length(const sf::Vector2<float> v);
 	dir::Direction direction{};
 	util::Counter counter{};
 

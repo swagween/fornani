@@ -73,6 +73,8 @@ class AssetManager {
 		t_grappling_hook.loadFromFile(finder.resource_path + "/image/weapon/grappling_hook.png");
 		t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 		t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
+		t_grenade_launcher.loadFromFile(finder.resource_path + "/image/weapon/grenade_launcher.png");
+		t_grenade.loadFromFile(finder.resource_path + "/image/weapon/grenade.png");
 
 		weapon_textures.insert({"bryn's gun", t_bryns_gun});
 		projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
@@ -87,6 +89,8 @@ class AssetManager {
 		projectile_textures.insert({"skycorps ar", t_skycorps_ar_projectile});
 		weapon_textures.insert({"grappling hook", t_grappling_hook});
 		projectile_textures.insert({"grappling hook", t_hook});
+		weapon_textures.insert({"grenade launcher", t_grenade_launcher});
+		projectile_textures.insert({"grenade launcher", t_hook});
 
 		t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 
@@ -351,6 +355,8 @@ class AssetManager {
 	sf::Texture t_grappling_hook{};
 	sf::Texture t_rope{};
 	sf::Texture t_hook{};
+	sf::Texture t_grenade_launcher{};
+	sf::Texture t_grenade{};
 
 	//items
 	sf::Texture t_heart{};

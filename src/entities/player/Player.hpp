@@ -194,7 +194,7 @@ class Player {
 
   private:
 	struct {
-		float stop{0.8f};
+		float stop{3.8f};
 		float wallslide{-1.5f};
 		float suspend{4.4f};
 		float landed{0.004f};

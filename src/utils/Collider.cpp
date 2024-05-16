@@ -383,4 +383,6 @@ bool Collider::has_left_wallslide_collision() const { return flags.state.test(St
 
 bool Collider::has_right_wallslide_collision() const { return flags.state.test(State::right_wallslide_collision); }
 
+float Collider::compute_length(sf::Vector2<float> const v) { return std::sqrt(v.x * v.x + v.y * v.y); }
+
 } // namespace shape

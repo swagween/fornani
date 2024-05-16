@@ -16,18 +16,18 @@ struct ServiceProvider;
 
 namespace components {
 
-const sf::Vector2<float> FRICTION_DEFAULT = {0.9f, 0.9f};
+sf::Vector2<float> const FRICTION_DEFAULT = {0.9f, 0.9f};
 float const MASS_DEFAULT = 1.0f;
 float const UNIVERSAL_MAX_SPEED = 64.0f;
 float const TERMINAL_VELOCITY = 1.8f;
 float const default_grav = 1.0f;
+float const elastic_threshold{-0.01f};
 
 enum class State { grounded };
 
 class PhysicsComponent {
   public:
-
-	PhysicsComponent() : ground_friction(FRICTION_DEFAULT), air_friction(FRICTION_DEFAULT), mass(MASS_DEFAULT) {};
+	PhysicsComponent() : ground_friction(FRICTION_DEFAULT), air_friction(FRICTION_DEFAULT), mass(MASS_DEFAULT){};
 	PhysicsComponent(sf::Vector2<float> fric, float ma, sf::Vector2<float> max_vel = sf::Vector2<float>{UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED}, float grav = 0.0f)
 		: ground_friction(fric), air_friction(fric), mass(ma), maximum_velocity(max_vel), gravity(grav) {}
 
@@ -64,6 +64,7 @@ class PhysicsComponent {
 	void hitstun();
 	void set_constant_friction(sf::Vector2<float> fric);
 	void set_global_friction(float fric);
+	[[nodiscard]] auto elastic_collision() const -> bool { return velocity.x * previous_velocity.x < elastic_threshold || velocity.y * previous_velocity.y < elastic_threshold; }
 
 	util::BitFlags<State> flags{};
 	dir::Direction direction{};

@@ -68,6 +68,8 @@ class Collider {
 	bool has_vertical_collision() const;
 	bool has_left_wallslide_collision() const;
 	bool has_right_wallslide_collision() const;
+	
+	float compute_length(sf::Vector2<float> const v);
 
 	Shape bounding_box{};
 	Shape predictive_vertical{};

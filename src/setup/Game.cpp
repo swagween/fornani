@@ -460,6 +460,7 @@ void Game::debug_window() {
 							player.arsenal.push_to_loadout(0);
 							player.arsenal.push_to_loadout(1);
 							player.arsenal.push_to_loadout(4);
+							player.arsenal.push_to_loadout(5);
 						} else {
 							player.arsenal.loadout.clear();
 						}
@@ -561,10 +562,10 @@ void Game::debug_window() {
 
 						player.set_position({100, 160});
 					}
-					if (ImGui::Button("Ancient Field")) {
+					if (ImGui::Button("Night Plat")) {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
-						game_state.get_current_state().init(services, "/level/ANCIENT_FIELD_01");
+						game_state.get_current_state().init(services, "/level/NIGHT_PLATFORMS_01");
 
 						player.set_position({100, 160});
 					}
