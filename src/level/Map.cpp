@@ -169,9 +169,9 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (off_the_bottom(player->collider.physics.position)) { player->kill(); }
 
 	for (auto& grenade : active_grenades) {
-		if (grenade.detonated() && grenade.inside_blast(player->collider.hurtbox)) { player->hurt(grenade.get_damage()); }
+		if (grenade.detonated() && grenade.sensor.within_bounds(player->collider.hurtbox)) { player->hurt(grenade.get_damage()); }
 		for (auto& enemy : enemy_catalog.enemies) {
-			if (grenade.detonated() && grenade.inside_blast(enemy->get_collider().hurtbox)) {
+			if (grenade.detonated() && grenade.sensor.within_bounds(enemy->get_collider().hurtbox)) {
 				enemy->hurt();
 				enemy->health.inflict(grenade.get_damage());
 				enemy->health_indicator.add(grenade.get_damage());
@@ -193,7 +193,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(64); }
 
 		for (auto& grenade : active_grenades) {
-			if (grenade.detonated() && grenade.inside_blast(cell.bounding_box) && cell.is_breakable()) { handle_breakables(cell, {}, 4); }
+			if (grenade.detonated() && grenade.sensor.within_bounds(cell.bounding_box) && cell.is_breakable()) { handle_breakables(cell, {}, 4); }
 		}
 		for (auto& proj : active_projectiles) {
 

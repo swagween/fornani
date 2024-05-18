@@ -410,6 +410,16 @@ void Game::debug_window() {
 							player.catalog.categories.abilities.has_ability(player::Abilities::wall_slide) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
 							if (ImGui::Button("Give Wallslide")) { player.catalog.categories.abilities.give_ability(player::Abilities::wall_slide); }
 							if (ImGui::Button("Remove Wallslide")) { player.catalog.categories.abilities.remove_ability(player::Abilities::wall_slide); }
+							ImGui::Text("Shield: ");
+							ImGui::SameLine();
+							player.catalog.categories.abilities.has_ability(player::Abilities::shield) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
+							if (ImGui::Button("Give Shield")) { player.catalog.categories.abilities.give_ability(player::Abilities::shield); }
+							if (ImGui::Button("Remove Shield")) { player.catalog.categories.abilities.remove_ability(player::Abilities::shield); }
+							ImGui::Text("Double Jump: ");
+							ImGui::SameLine();
+							player.catalog.categories.abilities.has_ability(player::Abilities::double_jump) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
+							if (ImGui::Button("Give Double Jump")) { player.catalog.categories.abilities.give_ability(player::Abilities::double_jump); }
+							if (ImGui::Button("Remove Double Jump")) { player.catalog.categories.abilities.remove_ability(player::Abilities::double_jump); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {

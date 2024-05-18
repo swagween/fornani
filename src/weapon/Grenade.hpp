@@ -6,6 +6,7 @@
 #include "../utils/Cooldown.hpp"
 #include "../utils/Direction.hpp"
 #include "../entities/animation/Animation.hpp"
+#include "../components/CircleSensor.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -29,15 +30,12 @@ class Grenade : public shape::Collider, public entity::Entity {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	[[nodiscard]] auto detonated() const -> bool { return grenade_flags.test(GrenadeFlags::detonated); }
 	[[nodiscard]] auto get_damage() const -> float { return damage; }
-	bool inside_blast(shape::Shape& test);
 
 	sf::CircleShape blast_indicator{};
-
-  private:
 	util::Cooldown detonator{};
 	anim::Animation animation{};
 	util::BitFlags<GrenadeFlags> grenade_flags{};
-	sf::CircleShape blast{};
+	components::CircleSensor sensor{};
 	float damage{24.f};
 };
 

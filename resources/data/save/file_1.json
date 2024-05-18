@@ -14,7 +14,11 @@
     ],
     "equipped_gun": 1,
     "abilities": [
-      "dash"
+      "dash",
+      "wall slide",
+      "shield",
+      "double jump",
+      "respiration"
     ],
     "items": [
       {

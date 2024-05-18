@@ -8,6 +8,7 @@
 #include "../../utils/Direction.hpp"
 #include "Jump.hpp"
 #include "Wallslide.hpp"
+#include "Shield.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -18,7 +19,7 @@ namespace player {
 constexpr static int dash_time{32};
 constexpr static int quick_turn_sample_size{16};
 
-enum class ControllerInput { move_x, jump, sprint, shoot, arms_switch, inspect, dash, move_y };
+enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y };
 enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released };
 enum class MovementState { restricted, grounded, walking_autonomously };
 
@@ -28,7 +29,8 @@ enum class Sprint { released };
 class PlayerController {
 
   public:
-	PlayerController();
+	PlayerController() = default;
+	PlayerController(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc);
 	void clean();
@@ -105,6 +107,7 @@ class PlayerController {
 
 	[[nodiscard]] auto get_jump() -> Jump& { return jump; }
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
+	[[nodiscard]] auto get_shield() -> Shield& { return shield; }
 
 	dir::Direction direction{};
 
@@ -112,10 +115,12 @@ class PlayerController {
 	std::unordered_map<ControllerInput, float> key_map{};
 	util::BitFlags<MovementState> flags{}; // unused
 	util::BitFlags<Sprint> sprint_flags{};
-	Jump jump{};
-	Wallslide wallslide{};
 	util::BitFlags<TransponderInput> transponder_flags{};
 	util::BitFlags<Hook> hook_flags{};
+	
+	Jump jump{};
+	Wallslide wallslide{};
+	Shield shield{};
 
 	int dash_request{};
 	int dash_count{};

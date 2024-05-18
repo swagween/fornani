@@ -32,7 +32,8 @@ Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir:
 	blast_indicator.setRadius(3 * svc.constants.cell_size);
 	blast_indicator.setOrigin({blast_indicator.getRadius(), blast_indicator.getRadius()});
 
-	blast.setRadius(3 * svc.constants.cell_size);
+	sensor.bounds.setRadius(3 * svc.constants.cell_size);
+	sensor.bounds.setRadius(3 * svc.constants.cell_size);
 
 	Entity::dimensions = Collider::bounding_box.dimensions;
 	sprite_dimensions = {16, 22};
@@ -48,7 +49,7 @@ Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir:
 
 void Grenade::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
 	if (detonator.is_complete()) {
-		sf::Vector2<float> explosion_position = blast.getPosition() - sf::Vector2<float>{blast.getRadius(), blast.getRadius()};
+		sf::Vector2<float> explosion_position = sensor.bounds.getPosition() - sf::Vector2<float>{sensor.bounds.getRadius(), sensor.bounds.getRadius()};
 		map.effects.push_back(entity::Effect(svc, explosion_position, {}, 1, 3));
 		svc.soundboard.flags.frdog.set(audio::Frdog::death);
 		grenade_flags.set(GrenadeFlags::detonated);
@@ -60,7 +61,7 @@ void Grenade::update(automa::ServiceProvider& svc, player::Player& player, world
 	reset_ground_flags();
 	physics.acceleration = {};
 
-	blast.setPosition(physics.position + Collider::bounding_box.dimensions * 0.5f);
+	sensor.bounds.setPosition(physics.position + Collider::bounding_box.dimensions * 0.5f);
 
 	detonator.update();
 	animation.update();
@@ -77,7 +78,7 @@ void Grenade::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions}));
 	sprite.setPosition(physics.position + Entity::sprite_offset - cam);
 	drawbox.setPosition(physics.position - cam);
-	blast_indicator.setPosition(blast.getPosition() - cam);
+	blast_indicator.setPosition(sensor.bounds.getPosition() - cam);
 	if(svc.greyblock_mode()) {
 		win.draw(drawbox);
 	} else {
@@ -94,13 +95,6 @@ void Grenade::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		blast_indicator.setOutlineColor(sf::Color{254, 252, 216, alpha});
 		win.draw(blast_indicator);
 	}
-}
-
-bool Grenade::inside_blast(shape::Shape& test) {
-	auto x = std::clamp(blast.getPosition().x, test.position.x, test.position.x + test.dimensions.x);
-	auto y = std::clamp(blast.getPosition().y, test.position.y, test.position.y + test.dimensions.y);
-	sf::Vector2<float> closest = {x, y};
-	return compute_length(closest - blast.getPosition()) < blast.getRadius();
 }
 
 } // namespace arms

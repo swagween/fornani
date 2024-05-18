@@ -14,7 +14,7 @@ class Console;
 
 namespace player {
 
-enum class Abilities { dash, wall_slide, double_jump, respiration };
+enum class Abilities { dash, wall_slide, double_jump, respiration, shield };
 
 class AbilityManager {
   public:
@@ -27,7 +27,7 @@ class AbilityManager {
 
   private:
 	util::BitFlags<Abilities> ability_flags{};
-	std::unordered_map<std::string_view, Abilities> ability_from_label{{"dash", Abilities::dash}};
+	std::unordered_map<std::string_view, Abilities> ability_from_label{{"dash", Abilities::dash}, {"wall slide", Abilities::dash}, {"shield", Abilities::shield}, {"double jump", Abilities::double_jump}, {"respiration", Abilities::respiration}};
 };
 
 } // namespace player

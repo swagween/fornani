@@ -28,6 +28,7 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
 	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
+	if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	state = {};
 	state.set(AnimState::idle);
@@ -47,10 +48,24 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
 	if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
+	if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	state = {};
 	state.set(AnimState::sprint);
 	return std::move(state_function);
+}
+
+fsm::StateFunction PlayerAnimation::update_shield() {
+	animation.label = "shield";
+	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
+	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
+	if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
+	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
+	if (change_state(AnimState::jumpsquat, jumpsquat)) { return PA_BIND(update_jumpsquat); }
+	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
+	state = {};
+	state.set(AnimState::shield);
+	return PA_BIND(update_shield);
 }
 
 fsm::StateFunction PlayerAnimation::update_run() {
@@ -64,6 +79,7 @@ fsm::StateFunction PlayerAnimation::update_run() {
 	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
 	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
+	if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
 	state = {};
@@ -95,6 +111,7 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 		if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 		if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 		if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
+		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 		state = {};
 		state.set(AnimState::idle);
@@ -115,6 +132,7 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 		if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 		if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 		if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
+		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 		state = {};
 		state.set(AnimState::idle);
@@ -185,6 +203,7 @@ fsm::StateFunction PlayerAnimation::update_stop() {
 	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::turn, turn)) { return PA_BIND(update_turn); }
+	if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 	state = {};
 	state.set(AnimState::stop);
 	return PA_BIND(update_stop);
@@ -196,6 +215,7 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 		if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
 		if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
+		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	}
 	if (change_state(AnimState::jumpsquat, jumpsquat)) {
@@ -216,6 +236,7 @@ fsm::StateFunction PlayerAnimation::update_sit() {
 	if (animation.complete()) {
 		if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
+		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	}
 	if (change_state(AnimState::jumpsquat, jumpsquat)) {
@@ -239,6 +260,7 @@ fsm::StateFunction PlayerAnimation::update_land() {
 		if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
 		if (change_state(AnimState::jumpsquat, jumpsquat)) { return PA_BIND(update_jumpsquat); }
+		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 		state = {};
 		state.set(AnimState::idle);
@@ -263,6 +285,7 @@ fsm::StateFunction PlayerAnimation::update_hurt() {
 		if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
 		if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 		if (change_state(AnimState::land, land)) { return PA_BIND(update_land); }
+		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 		state = {};
 		state.set(AnimState::idle);
 		animation.set_params(idle);
@@ -285,6 +308,7 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 		if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 		if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
 		if (change_state(AnimState::land, land)) { return PA_BIND(update_land); }
+		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 		state = {};
 		state.set(AnimState::idle);

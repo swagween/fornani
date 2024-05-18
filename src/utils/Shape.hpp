@@ -31,7 +31,7 @@ class Shape {
 
 	Vec perp(Vec edg);
 
-	float getLength(const Vec v);
+	float getLength(Vec const v);
 	Vec getNormalized(const Vec v);
 	float dotProduct(const Vec a, const Vec b);
 	Vec getNormal(const Vec v);

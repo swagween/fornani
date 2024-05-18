@@ -77,7 +77,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { alive, dir_switch };
+enum class State { alive, dir_switch, show_weapon };
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -114,6 +114,7 @@ class Player {
 	void jump();
 	void dash();
 	void wallslide();
+	void shield();
 
 	void set_position(sf::Vector2<float> new_pos, bool centered = false);
 	void update_direction();
@@ -147,7 +148,7 @@ class Player {
 	std::string print_direction(bool lr);
 
 	// components
-	PlayerController controller{};
+	PlayerController controller;
 	Transponder transponder{};
 	shape::Collider collider{};
 	PlayerAnimation animation{};

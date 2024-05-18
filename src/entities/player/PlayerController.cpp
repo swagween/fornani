@@ -1,13 +1,13 @@
 #include "PlayerController.hpp"
-
 #include "../../service/ServiceProvider.hpp"
 
 namespace player {
 
-PlayerController::PlayerController() {
+PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc) {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
+	key_map.insert(std::make_pair(ControllerInput::shield, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::arms_switch, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::inspect, 0.f));
@@ -26,6 +26,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	auto const& sprint = svc.controller_map.label_to_control.at("sprint").held();
 	auto const& sprint_release = svc.controller_map.label_to_control.at("sprint").released();
+
+	auto const& shielding = svc.controller_map.label_to_control.at("shield").held();
 
 	auto const& jump_started = svc.controller_map.label_to_control.at("main_action").triggered();
 	auto const& jump_held = svc.controller_map.label_to_control.at("main_action").held();
@@ -71,6 +73,10 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		key_map[ControllerInput::move_y] = down && !up ? 1.f : key_map[ControllerInput::move_y];
 		key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
 	}
+
+	key_map[ControllerInput::shield] = 0.f;
+	if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
+	shielding ? shield.start() : shield.end();
 
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
@@ -140,6 +146,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	flags.reset(MovementState::restricted);
 	decrement_requests();
 	jump.update();
+	shield.update();
 
 	svc.controller_map.reset_triggers();
 }

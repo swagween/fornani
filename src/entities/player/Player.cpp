@@ -9,7 +9,7 @@ namespace player {
 
 Player::Player() {}
 
-Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc) {}
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc) {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -125,7 +125,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	
 	if (!arsenal.loadout.empty()) {
 		equipped_weapon().sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
-		equipped_weapon().render_back(svc, win, campos);
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().render_back(svc, win, campos); }
 	}
 
 	if (flags.state.test(State::alive)) {
@@ -140,8 +140,10 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	if (!arsenal.loadout.empty()) {
 		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
-		equipped_weapon().render(svc, win, campos);
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
 	}
+
+	if (controller.get_shield().is_shielding()) { controller.get_shield().render(*m_services, win, campos); }
 
 	// texture updater debug
 	// texture_updater.debug_render(win, campos);
@@ -156,6 +158,9 @@ void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& w
 void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
 
 void Player::update_animation() {
+
+	flags.state.set(State::show_weapon);
+
 	if (grounded()) {
 		if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
 		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
@@ -182,7 +187,10 @@ void Player::update_animation() {
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
-		if (controller.dash_requested()) { animation.state.set(AnimState::dash); }
+		if (controller.dash_requested()) {
+			animation.state.set(AnimState::dash);
+			flags.state.reset(State::show_weapon);
+		}
 	}
 	if (catalog.categories.abilities.has_ability(Abilities::wall_slide)) {
 		if (controller.get_wallslide().is_wallsliding()) {
@@ -190,6 +198,16 @@ void Player::update_animation() {
 			animation.state.set(AnimState::wallslide);
 		}
 	}
+	if (catalog.categories.abilities.has_ability(Abilities::shield)) {
+		if(controller.get_shield().is_shielding() && grounded()) {
+			animation.state = {};
+			animation.state.set(AnimState::shield);
+			controller.prevent_movement();
+			flags.state.reset(State::show_weapon);
+		}
+	}
+
+	if (animation.state.test(AnimState::sit)) { flags.state.reset(State::show_weapon); }
 
 	if (hurt_cooldown.running()) {
 		animation.state = {};
@@ -334,6 +352,11 @@ void Player::wallslide() {
 			collider.physics.acceleration.y = std::min(collider.physics.acceleration.y, physics_stats.wallslide_speed);
 		}
 	} 
+}
+
+void Player::shield() {
+	if (!catalog.categories.abilities.has_ability(Abilities::wall_slide)) { return; }
+	if (controller.get_shield().is_shielding()) { controller.get_shield().sensor.bounds.setPosition(collider.physics.position); }
 }
 
 void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
