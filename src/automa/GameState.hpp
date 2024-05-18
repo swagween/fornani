@@ -80,7 +80,7 @@ class GameState {
 	std::string_view scene{};
 	std::vector<Option> options{};
 	int current_selection{};
-	float spacing{28.f};
+	float spacing{24.f};
 	float top_buffer{80.f};
 };
 

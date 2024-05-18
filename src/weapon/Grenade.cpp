@@ -27,8 +27,8 @@ Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir:
 	drawbox.setOutlineColor(sf::Color::White);
 	drawbox.setOutlineThickness(-1);
 	blast_indicator.setFillColor(sf::Color::Transparent);
-	blast_indicator.setOutlineColor(svc.styles.colors.ui_white);
-	blast_indicator.setOutlineThickness(-1);
+	blast_indicator.setOutlineColor(sf::Color::Transparent);
+	blast_indicator.setOutlineThickness(-2);
 	blast_indicator.setRadius(3 * svc.constants.cell_size);
 	blast_indicator.setOrigin({blast_indicator.getRadius(), blast_indicator.getRadius()});
 
@@ -48,8 +48,8 @@ Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir:
 
 void Grenade::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
 	if (detonator.is_complete()) {
-		sf::Vector2<float> explosion_position = {physics.position.x - 19.f, physics.position.y - 19.f};
-		map.effects.push_back(entity::Effect(svc, explosion_position, {}, 3, 1));
+		sf::Vector2<float> explosion_position = blast.getPosition() - sf::Vector2<float>{blast.getRadius(), blast.getRadius()};
+		map.effects.push_back(entity::Effect(svc, explosion_position, {}, 1, 3));
 		svc.soundboard.flags.frdog.set(audio::Frdog::death);
 		grenade_flags.set(GrenadeFlags::detonated);
 	}
@@ -83,7 +83,17 @@ void Grenade::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	} else {
 		if (!detonator.is_complete()) { win.draw(sprite); }
 	}
-	win.draw(blast_indicator);
+
+	// blast radius fade-in effect
+	float portion = 3.f;
+	float start = (float)detonation_time / portion;
+	float current = (float)detonator.get_cooldown();
+	if (current < start) {
+		float timer = (start - current) / start;
+		uint8_t alpha = std::lerp(0, 255, timer);
+		blast_indicator.setOutlineColor(sf::Color{254, 252, 216, alpha});
+		win.draw(blast_indicator);
+	}
 }
 
 bool Grenade::inside_blast(shape::Shape& test) {

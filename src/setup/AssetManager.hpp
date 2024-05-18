@@ -93,6 +93,7 @@ class AssetManager {
 		projectile_textures.insert({"grenade launcher", t_hook});
 
 		t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
+		t_shield.loadFromFile(finder.resource_path + "/image/entity/shield.png");
 
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
@@ -136,12 +137,14 @@ class AssetManager {
 		t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators_01.png");
 		t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators_01.png");
 
+		t_huge_explosion.loadFromFile(finder.resource_path + "/image/entity/huge_explosion.png");
 		t_large_explosion.loadFromFile(finder.resource_path + "/image/entity/large_explosion.png");
 		t_small_explosion.loadFromFile(finder.resource_path + "/image/entity/small_explosion.png");
 		t_wall_hit.loadFromFile(finder.resource_path + "/image/entity/wall_hit.png");
 		effect_lookup.insert({0, t_small_explosion});
 		effect_lookup.insert({1, t_large_explosion});
 		effect_lookup.insert({2, t_wall_hit});
+		effect_lookup.insert({3, t_huge_explosion});
 
 		// title stuff
 		t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
@@ -298,11 +301,15 @@ class AssetManager {
 
 	//save
 	sf::Texture savepoint{};
+
+	//entities
 	sf::Texture t_chest{};
+	sf::Texture t_shield{};
 
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
 
+	sf::Texture t_huge_explosion{};
 	sf::Texture t_large_explosion{};
 	sf::Texture t_small_explosion{};
 	sf::Texture t_wall_hit{};

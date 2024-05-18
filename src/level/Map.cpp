@@ -11,7 +11,7 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 256) {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 256), m_services(&svc) {}
 
 void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
@@ -169,11 +169,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (off_the_bottom(player->collider.physics.position)) { player->kill(); }
 
 	for (auto& grenade : active_grenades) {
-		if (grenade.inside_blast(player->collider.hurtbox)) {
-			grenade.blast_indicator.setFillColor(sf::Color{100, 200, 100, 50});
-		} else {
-			grenade.blast_indicator.setFillColor(sf::Color::Transparent);
-		}
 		if (grenade.detonated() && grenade.inside_blast(player->collider.hurtbox)) { player->hurt(grenade.get_damage()); }
 		for (auto& enemy : enemy_catalog.enemies) {
 			if (grenade.detonated() && grenade.inside_blast(enemy->get_collider().hurtbox)) {
@@ -188,8 +183,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		}
 	}
 
-	manage_projectiles(svc);
-
 	player->collider.detect_map_collision(*this);
 
 	// i need to refactor this...
@@ -198,6 +191,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		// damage player if spikes
 		if (cell.type == lookup::TILE_TYPE::TILE_SPIKES && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(1); }
 		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(64); }
+
+		for (auto& grenade : active_grenades) {
+			if (grenade.detonated() && grenade.inside_blast(cell.bounding_box) && cell.is_breakable()) { handle_breakables(cell, {}, 4); }
+		}
 		for (auto& proj : active_projectiles) {
 
 			// should be, simply:
@@ -212,14 +209,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 				if ((proj.bounding_box.overlaps(cell.bounding_box) && cell.is_occupied())) {
 					if (cell.is_breakable() && !proj.stats.transcendent && !proj.destruction_initiated()) {
 						// todo: refactor breakables
-						--cell.value;
 						proj.destroy(false);
-						if (cell.value < 244) {
-							cell.value = 0;
-							svc.soundboard.flags.world.set(audio::World::breakable_shatter);
-							effects.push_back(entity::Effect(svc, cell.position, proj.physics.velocity * 0.1f, 2, 0));
-						}
-						generate_layer_textures(svc);
+						handle_breakables(cell, proj.physics.velocity * 0.1f);
 					}
 					if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) { continue; }
 					if (!proj.stats.transcendent) {
@@ -240,6 +231,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			}
 		}
 	}
+
+	manage_projectiles(svc);
 
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
@@ -569,6 +562,20 @@ void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& 
 	}
 
 	if (player->controller.released_hook() && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) { proj.hook.break_free(*player); }
+}
+
+void Map::handle_breakables(Tile& cell, sf::Vector2<float> velocity, uint8_t power) {
+	if (cell.value > 0) {
+		cell.value -= power;
+	} else {
+		return;
+	}
+	if (cell.value < 244) {
+		cell.value = 0;
+		m_services->soundboard.flags.world.set(audio::World::breakable_shatter);
+		effects.push_back(entity::Effect(*m_services, cell.position, velocity, 2, 0));
+	}
+	generate_layer_textures(*m_services);
 }
 
 sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {

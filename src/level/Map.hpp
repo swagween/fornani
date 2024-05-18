@@ -87,6 +87,7 @@ class Map {
 	void generate_layer_textures(automa::ServiceProvider& svc);
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
+	void handle_breakables(Tile& cell, sf::Vector2<float> velocity = {0.f, 0.f}, uint8_t power = 1);
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
@@ -144,6 +145,7 @@ class Map {
 	bool debug_mode{false};
 
 	player::Player* player;
+	automa::ServiceProvider* m_services;
 
 	util::Cooldown loading{}; // shouldn't exist
 

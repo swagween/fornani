@@ -51,7 +51,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
+	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {
 		constrain_selection();
 		svc.data.load_progress(*player, current_selection, true);
 		svc.state_controller.actions.set(Actions::trigger);
@@ -59,7 +59,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 		svc.soundboard.flags.world.set(audio::World::load);
 	}
-	if (svc.controller_map.label_to_control.at("secondary_action").triggered()) {
+	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
 		svc.state_controller.submenu = menu_type::main;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);

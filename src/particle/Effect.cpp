@@ -21,6 +21,10 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		sprite.setOrigin({6, 16});
 		framerate = 8;
 		break;
+	case 3:
+		sprite_dimensions = {192, 192};
+		spritesheet_dimensions = {4, 10};
+		break;
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
 	drawbox.setFillColor(svc.styles.colors.navy_blue);
