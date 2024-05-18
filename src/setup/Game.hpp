@@ -20,7 +20,6 @@ class Game {
 	void take_screenshot();
 	bool debug();
 
-	//currently not fully used. replace existing inline services with these to clean tech debt.
 	struct automa::ServiceProvider services{};
 
 	struct {
@@ -33,7 +32,7 @@ class Game {
 		int draw_calls{};
 	} trackers{};
 
-	player::Player player{};
+	player::Player player;
 	automa::StateManager game_state{};
 	sf::RenderWindow window{};
 	sf::Texture screencap{};

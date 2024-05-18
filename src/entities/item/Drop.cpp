@@ -30,7 +30,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	animation.current_frame = svc.random.random_range(0, animation.params.duration - 1);
 
 	int rand_cooldown_offset = svc.random.random_range(0, 50);
-	lifespan.start(2500 + rand_cooldown_offset);
+	lifespan.start(4500 + rand_cooldown_offset);
 	seed(svc, probability);
 	set_value();
 	set_texture(svc);
@@ -58,7 +58,7 @@ void Drop::set_value() {
 	// heart
 	if (parameters.type == DropType::heart) {
 		if (rarity == priceless || rarity == rare) {
-			value = 4;
+			value = 3;
 		} else {
 			value = 1;
 		}
@@ -68,8 +68,8 @@ void Drop::set_value() {
 	// orb
 	switch (rarity) {
 	case priceless: value = 100; break;
-	case rare: value = 50; break;
-	case uncommon: value = 10; break;
+	case rare: value = 20; break;
+	case uncommon: value = 5; break;
 	case common: value = 1; break;
 	}
 }

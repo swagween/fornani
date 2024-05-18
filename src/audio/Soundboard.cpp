@@ -31,15 +31,21 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 
 	//frdog
 	if (flags.frdog.test(Frdog::death)) { svc.assets.enem_death_1.play(); }
+	//tank
+	if (flags.tank.test(Tank::alert_1)) { svc.assets.tank_alert_1.play(); }
+	if (flags.tank.test(Tank::alert_2)) { svc.assets.tank_alert_2.play(); }
+	if (flags.tank.test(Tank::hurt_1)) { svc.assets.tank_hurt_1.play(); }
+	if (flags.tank.test(Tank::hurt_2)) { play_at_volume(svc.assets.tank_hurt_2, 50); }
+	if (flags.tank.test(Tank::death)) { svc.assets.tank_death.play(); }
 
 	//item
 	if (flags.item.test(Item::heal)) { svc.assets.heal.play(); }
-	if (flags.item.test(Item::orb_1)) { svc.assets.orb_1.play(); }
-	if (flags.item.test(Item::orb_5)) { svc.assets.orb_5.play(); }
+	if (flags.item.test(Item::orb_low)) { svc.assets.orb_1.play(); }
+	if (flags.item.test(Item::orb_medium)) { svc.assets.orb_5.play(); }
 
 	// player
 	if (flags.player.test(Player::land)) { svc.assets.landed.play(); }
-	if (flags.player.test(Player::jump)) { svc.assets.jump.play(); }
+	if (flags.player.test(Player::jump)) { randomize(svc, svc.assets.jump, 0.1f); }
 	if (flags.player.test(Player::step)) { randomize(svc, svc.assets.step, 0.1f); }
 	if (flags.player.test(Player::arms_switch)) { svc.assets.arms_switch.play(); }
 	if (flags.player.test(Player::hurt)) { svc.assets.hurt.play(); }
@@ -48,6 +54,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	// gun
 	if (flags.weapon.test(Weapon::bryns_gun)) { svc.assets.bg_shot.play(); }
 	if (flags.weapon.test(Weapon::plasmer)) { svc.assets.plasmer_shot.play(); }
+	if (flags.weapon.test(Weapon::skycorps_ar)) { svc.assets.skycorps_ar_shot.play(); }
 	if (flags.weapon.test(Weapon::clover)) { repeat(svc, svc.assets.pop_mid, 2, 0.3f);
 	}
 	if (flags.weapon.test(Weapon::nova)) { svc.assets.pop_mid.play(); }
@@ -70,6 +77,11 @@ void Soundboard::repeat(automa::ServiceProvider& svc, sf::Sound& sound, int freq
 void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset) {
 	float random_pitch = svc.random.random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.setPitch(1.f + random_pitch);
+	sound.play();
+}
+
+void Soundboard::play_at_volume(sf::Sound& sound, int vol) {
+	sound.setVolume(vol);
 	sound.play();
 }
 

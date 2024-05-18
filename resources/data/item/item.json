@@ -1,55 +1,65 @@
 {
   "bryns_notebook": {
+    "index": 1,
     "title": "Bryn's Notebook",
-    "naive description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
-    "hidden description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
+    "naive_description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
+    "hidden_description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
     "unique": true
   },
   "factory_access_permit": {
+    "index": 2,
     "title": "Factory Access Permit",
-    "naive description": "A permit that grants you access to the Nimbus III Maintenance Facility.",
+    "naive_description": "A permit that grants you access to the Nimbus III Maintenance Facility.",
     "unique": true
   },
   "bipolar_junction_transistor": {
+    "index": 3,
     "title": "Bipolar Junction Transistor",
-    "naive description": "It looks like a mechanical part of sorts.",
-    "hidden description": "Beeker says this is required to build a special kind of gun. You should hold on to it.",
+    "naive_description": "It looks like a mechanical part of sorts.",
+    "hidden_description": "Beeker says this is required to build a special kind of gun. You should hold on to it.",
     "unique": true
   },
   "willets_floppy_disc": {
+    "index": 4,
     "title": "Willet's Floppy Disc",
-    "naive description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willet told me to bring it to someone named Spencer in Ashtown.",
-    "hidden description": "Contains schematics for the Greatwing. Spencer needs a track zero sensor and a fresh head motor to access its contents.",
+    "naive_description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willet told me to bring it to someone named Spencer in Ashtown.",
+    "hidden_description": "Contains schematics for the Greatwing. Spencer needs a track zero sensor and a fresh head motor to access its contents.",
     "unique": true
   },
   "track_zero_sensor": {
+    "index": 5,
     "title": "Track Zero Sensor",
-    "naive description": "A small sensor that Spencer needs to repair his floppy disc drive. Without it, he can't access the Greatwing schematics.",
+    "naive_description": "A small sensor that Spencer needs to repair his floppy disc drive. Without it, he can't access the Greatwing schematics.",
     "unique": true
   },
   "head_motor": {
+    "index": 6,
     "title": "Head Motor",
-    "naive description": "A tiny motor that Spencer needs to access Doc Willet's floppy disc.",
+    "naive_description": "A tiny motor that Spencer needs to access Doc Willet's floppy disc.",
     "unique": true
   },
   "gas_mask": {
+    "index": 7,
     "title": "Gas Mask",
-    "naive description": "You need this to navigate the Toxic Cavern without dying.",
+    "naive_description": "You need this to navigate the Toxic Cavern without dying.",
     "unique": true
   },
   "firstwind_deck_key": {
+    "index": 8,
     "title": "Firstwind Deck Key",
-    "naive description": "A small iron key that grants you access to the Firstwind's outer deck.",
+    "naive_description": "A small iron key that grants you access to the Firstwind's outer deck.",
     "unique": true
   },
   "woodshine_warehouse_key": {
+    "index": 9,
     "title": "Woodshine Warehouse Key",
-    "naive description": "Allows you to enter Woodshine's warehouse.",
+    "naive_description": "Allows you to enter Woodshine's warehouse.",
     "unique": true
   },
   "nimbus_iii_boiler_room_key": {
+    "index": 10,
     "title": "Nimbus III Boiler Room Key",
-    "naive description": "Allows you to enter Nimbus III's boiler room.",
+    "naive_description": "Allows you to enter Nimbus III's boiler room.",
     "unique": true
   }
 }

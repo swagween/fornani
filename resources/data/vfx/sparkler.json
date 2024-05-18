@@ -19,6 +19,26 @@
     "lifespan_variance": 195
   },
 
+  "light_trail": {
+    "rate": 13.0,
+    "volatility": 0.0,
+    "wobble": 0.0,
+    "frequency": 0.0,
+    "speed": 0.0,
+    "lifespan": 260,
+    "lifespan_variance": 80
+  },
+
+  "dense_trail": {
+    "rate": 12.0,
+    "volatility": 0.05,
+    "wobble": 0.0,
+    "frequency": 0.0,
+    "speed": -0.3,
+    "lifespan": 200,
+    "lifespan_variance": 160
+  },
+
   "chest": {
     "rate": 3.0,
     "volatility": 0.01,

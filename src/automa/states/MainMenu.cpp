@@ -16,8 +16,6 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 void MainMenu::init(ServiceProvider& svc, std::string_view room) {
 }
 
-void MainMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
-
 void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);
@@ -34,7 +32,7 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
+	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {
 		if (current_selection == menu_selection_id.at(MenuSelection::play)) {
 			svc.state_controller.submenu = menu_type::file_select;
 			svc.state_controller.actions.set(Actions::trigger_submenu);

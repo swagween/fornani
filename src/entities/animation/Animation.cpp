@@ -1,6 +1,6 @@
 
 #include "Animation.hpp"
-
+#include <iostream>
 
 namespace anim {
 
@@ -12,10 +12,12 @@ void Animation::refresh() {
 
 void Animation::start() {
 	flags.set(State::active);
+	flags.set(State::just_started);
 	flags.reset(State::complete);
 }
 
 void Animation::update() {
+	if (counter == 1) { flags.reset(State::just_started); }
 	++counter;
 
 	if (keyframe_over()) {
@@ -42,7 +44,7 @@ void Animation::end() {
 	flags.set(State::complete);
 }
 
-void Animation::set_params(Parameters& const new_params) {
+void Animation::set_params(Parameters const new_params) {
 	params = new_params;
 	refresh();
 	start();

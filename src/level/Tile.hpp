@@ -25,7 +25,7 @@ struct Tile {
 	sf::Vector2<float> position{};
 	uint32_t one_d_index{};
 
-	uint32_t value{};
+	uint8_t value{};
 	lookup::TILE_TYPE type{};	 // for assigning attributes
 	shape::Shape bounding_box{}; // for collision
 

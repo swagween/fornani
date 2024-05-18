@@ -1,0 +1,50 @@
+{
+  "bookshelf": {
+    "suite": [
+      [
+        "You find a small diary sealed with a padlock. Would you like to take it?"
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  },
+  "computer": {
+    "suite": [
+      [
+        "It's just an unresponsive terminal prompt..."
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  },
+  "computer_on": {
+    "suite": [
+      [
+        "It's asking for a username and password."
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  },
+  "guest_shelf": {
+    "suite": [
+      [
+        "There's an old instruction manual for assembling airship propellers."
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  }
+}

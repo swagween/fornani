@@ -40,6 +40,7 @@ class TextWriter {
 	void set_position(sf::Vector2<float> pos);
 	void set_bounds(sf::Vector2<float> new_bounds);
 	void wrap();
+	void load_single_message(std::string_view message);
 	void load_message(dj::Json& source, std::string_view key);
 	void stylize(sf::Text& msg, bool is_suite) const;
 	void write_instant_message(sf::RenderWindow& win);

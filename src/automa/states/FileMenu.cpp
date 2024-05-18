@@ -14,8 +14,6 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	player.set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 	player.antennae.at(0).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 	player.antennae.at(1).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(2).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(3).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 
 	loading.start(1);
 
@@ -28,8 +26,6 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 }
 
 void FileMenu::init(ServiceProvider& svc, std::string_view room) {}
-
-void FileMenu::setTilesetTexture(ServiceProvider& svc, sf::Texture& t) {}
 
 void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);
@@ -55,7 +51,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
+	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {
 		constrain_selection();
 		svc.data.load_progress(*player, current_selection, true);
 		svc.state_controller.actions.set(Actions::trigger);
@@ -63,11 +59,12 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 		svc.soundboard.flags.world.set(audio::World::load);
 	}
-	if (svc.controller_map.label_to_control.at("secondary_action").triggered()) {
+	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
 		svc.state_controller.submenu = menu_type::main;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
+	svc.controller_map.reset_triggers();
 }
 
 void FileMenu::tick_update(ServiceProvider& svc) {

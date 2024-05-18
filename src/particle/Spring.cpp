@@ -68,7 +68,7 @@ sf::Vector2<float>& Spring::get_bob() { return bob; }
 
 sf::Vector2<float>& Spring::get_anchor() { return anchor; }
 
-sf::Vector2<float>& Spring::get_rope(int index) {
+sf::Vector2<float> Spring::get_rope(int index) {
 	auto ret = sf::Vector2<float>{};
 	ret = (bob - anchor) / (float)num_links;
 	ret = bob - ret * (float)index;

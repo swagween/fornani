@@ -1,14 +1,16 @@
 #include "Enemy.hpp"
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
+#include "../../level/Map.hpp"
 
 namespace enemy {
 
-Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Entity(svc), label(label) {
+Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Entity(svc), label(label), health_indicator(svc) {
 	auto const& in_data = svc.data.enemy[label];
 	auto const& in_metadata = in_data["metadata"];
 	auto const& in_physical = in_data["physical"];
 	auto const& in_attributes = in_data["attributes"];
+	auto const& in_visual = in_data["visual"];
 	auto const& in_animation = in_data["animation"];
 	auto const& in_general = in_data["general"];
 
@@ -43,6 +45,9 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	attributes.speed = in_attributes["speed"].as<float>();
 	attributes.drop_range.x = in_attributes["drop_range"][0].as<int>();
 	attributes.drop_range.y = in_attributes["drop_range"][1].as<int>();
+
+	visual.effect_size = in_visual["effect_size"].as<int>();
+	visual.effect_type = in_visual["effect_type"].as<int>();
 	// TODO: load in all the animation data and map them to a set of parameters
 	// let's add this function to services
 	anim::Parameters params{};
@@ -51,6 +56,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	animation.set_params(params);
 
 	health.set_max(attributes.base_hp);
+	health_indicator.init(svc, 0);
+	post_death.start(afterlife);
 
 	direction.lr = dir::LR::left;
 
@@ -68,9 +75,20 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	drawbox.setOutlineThickness(-1);
 }
 
-void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
+void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	flags.triggers = {};
+	if (map.off_the_bottom(collider.physics.position)) {
+		if (svc.ticker.every_x_ticks(10)) { health.inflict(4); }
+	}
+	if (just_died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
+	if (died()) {
+		health_indicator.update(svc, collider.physics.position);
+		post_death.update();
+		return;
+	}
 	Entity::update(svc, map);
 	collider.update(svc);
+	health_indicator.update(svc, collider.physics.position);
 	if (flags.general.test(GeneralFlags::map_collision)) { collider.detect_map_collision(map); }
 	collider.reset();
 	collider.reset_ground_flags();
@@ -81,6 +99,18 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 	//update ranges
 	physical.alert_range.set_position(collider.bounding_box.position - (physical.alert_range.dimensions * 0.5f) + (collider.dimensions * 0.5f));
 	physical.hostile_range.set_position(collider.bounding_box.position - (physical.hostile_range.dimensions * 0.5f) + (collider.dimensions * 0.5f));
+	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
+		if (!alert()) { flags.triggers.set(Triggers::alert); }
+		flags.state.set(StateFlags::alert);
+	} else {
+		flags.state.reset(StateFlags::alert);
+	}
+	if (player.collider.bounding_box.overlaps(physical.hostile_range)) {
+		if (!hostile()) { flags.triggers.set(Triggers::hostile); }
+		flags.state.set(StateFlags::hostile);
+	} else {
+		flags.state.reset(StateFlags::hostile);
+	}
 
 	// get UV coords
 	if (spritesheet_dimensions.y != 0) {
@@ -92,9 +122,15 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (died()) { return; }
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
-	sprite.setPosition(collider.physics.position + sprite_offset - cam);
+	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
+	if (flags.state.test(StateFlags::shaking)) {
+		sprite_shake(svc);
+	} else {
+		random_offset = {};
+	}
 	if (svc.greyblock_mode()) {
 		drawbox.setOrigin({0.f, 0.f});
 		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
@@ -116,7 +152,10 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	}
 }
 
+void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { health_indicator.render(svc, win, cam); }
+
 void Enemy::handle_player_collision(player::Player& player) const {
+	if (died()) { return; }
 	if (player_collision()) { player.collider.handle_collider_collision(collider.bounding_box); }
 	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
 		if (player.collider.hurtbox.overlaps(collider.bounding_box)) { player.hurt(attributes.base_damage); }

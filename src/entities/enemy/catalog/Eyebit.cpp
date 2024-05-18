@@ -29,10 +29,11 @@ void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 		seeker.update(svc);
 		seeker.seek_player(player);
 		collider.physics.position = seeker.get_position();
+		collider.physics.velocity = seeker.get_velocity();
 		collider.sync_components();
 	}
 
-	Enemy::update(svc, map);
+	Enemy::update(svc, map, player);
 	seeker.set_position(collider.physics.position);
 }
 

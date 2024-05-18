@@ -3,7 +3,7 @@
 
 namespace fornani {
 
-Game::Game(char** argv) {
+Game::Game(char** argv) : player(services) {
 	// data
 	services.data = data::DataManager(services);
 	services.data.finder.setResourcePath(argv);
@@ -21,7 +21,6 @@ Game::Game(char** argv) {
 	services.assets.load_audio();
 	music_player.turn_off(); // off by default
 	// player
-	player.init(services);
 	player.init(services);
 	// lookups
 	lookup::populate_lookup();
@@ -321,6 +320,8 @@ void Game::debug_window() {
 							ImGui::Separator();
 							ImGui::Text("Player Grounded: %s", player.grounded() ? "Yes" : "No");
 							ImGui::Separator();
+							ImGui::Text("Ledge Height: %i", player.ledge_height);
+							ImGui::Separator();
 							ImGui::Text("Right Collision: %s", player.collider.flags.collision.test(shape::Collision::has_right_collision) ? "Yes" : "No");
 							ImGui::Text("Left Collision: %s", player.collider.flags.collision.test(shape::Collision::has_left_collision) ? "Yes" : "No");
 							ImGui::Text("Top Collision: %s", player.collider.flags.collision.test(shape::Collision::has_top_collision) ? "Yes" : "No");
@@ -333,6 +334,9 @@ void Game::debug_window() {
 						if (ImGui::BeginTabItem("Movement")) {
 							ImGui::Text("Direction LR	: %s", player.controller.direction.print_lr().c_str());
 							ImGui::Text("Direction UND	: %s", player.controller.direction.print_und().c_str());
+							ImGui::Separator();
+							ImGui::Text("Horizontal Movement.: %.4f", player.controller.horizontal_movement());
+							ImGui::Text("Vertical Movement...: %.4f", player.controller.vertical_movement());
 							ImGui::Separator();
 							ImGui::Text("Controller");
 							ImGui::Text("Move Left : %s", player.controller.get_controller_state(player::ControllerInput::move_x) < 0.f ? "Yes" : "No");
@@ -370,19 +374,21 @@ void Game::debug_window() {
 							ImGui::Text("run....: %s", player.animation.state.test(player::AnimState::run) ? "flag set" : "");
 							ImGui::Text("stop...: %s", player.animation.state.test(player::AnimState::stop) ? "flag set" : "");
 							ImGui::Text("turn...: %s", player.animation.state.test(player::AnimState::turn) ? "flag set" : "");
+							ImGui::Text("hurt...: %s", player.animation.state.test(player::AnimState::hurt) ? "flag set" : "");
+							ImGui::Text("shpturn: %s", player.animation.state.test(player::AnimState::sharp_turn) ? "flag set" : "");
 							ImGui::Text("jsquat.: %s", player.animation.state.test(player::AnimState::jumpsquat) ? "flag set" : "");
 							ImGui::Text("rise...: %s", player.animation.state.test(player::AnimState::rise) ? "flag set" : "");
 							ImGui::Text("suspend: %s", player.animation.state.test(player::AnimState::suspend) ? "flag set" : "");
 							ImGui::Text("fall...: %s", player.animation.state.test(player::AnimState::fall) ? "flag set" : "");
 							ImGui::Text("land...: %s", player.animation.state.test(player::AnimState::land) ? "flag set" : "");
 							ImGui::Text("dash...: %s", player.animation.state.test(player::AnimState::dash) ? "flag set" : "");
+							ImGui::Text("sprint.: %s", player.animation.state.test(player::AnimState::sprint) ? "flag set" : "");
+							ImGui::Text("wlslide: %s", player.animation.state.test(player::AnimState::wallslide) ? "flag set" : "");
 							ImGui::Text("inspect: %s", player.animation.state.test(player::AnimState::inspect) ? "flag set" : "");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Catalog")) {
 							ImGui::Text("Player Stats");
-							ImGui::SliderFloat("Max HP", &player.health.max_hp, 3, 12);
-							ImGui::SliderFloat("HP", &player.health.hp, 0, 12);
 							ImGui::SliderInt("Max Orbs", &player.player_stats.max_orbs, 99, 99999);
 							ImGui::SliderInt("Orbs", &player.player_stats.orbs, 0, 99999);
 							ImGui::Separator();
@@ -399,6 +405,21 @@ void Game::debug_window() {
 							player.catalog.categories.abilities.has_ability(player::Abilities::dash) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
 							if (ImGui::Button("Give Dash")) { player.catalog.categories.abilities.give_ability(player::Abilities::dash); }
 							if (ImGui::Button("Remove Dash")) { player.catalog.categories.abilities.remove_ability(player::Abilities::dash); }
+							ImGui::Text("Wallslide: ");
+							ImGui::SameLine();
+							player.catalog.categories.abilities.has_ability(player::Abilities::wall_slide) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
+							if (ImGui::Button("Give Wallslide")) { player.catalog.categories.abilities.give_ability(player::Abilities::wall_slide); }
+							if (ImGui::Button("Remove Wallslide")) { player.catalog.categories.abilities.remove_ability(player::Abilities::wall_slide); }
+							ImGui::Text("Shield: ");
+							ImGui::SameLine();
+							player.catalog.categories.abilities.has_ability(player::Abilities::shield) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
+							if (ImGui::Button("Give Shield")) { player.catalog.categories.abilities.give_ability(player::Abilities::shield); }
+							if (ImGui::Button("Remove Shield")) { player.catalog.categories.abilities.remove_ability(player::Abilities::shield); }
+							ImGui::Text("Double Jump: ");
+							ImGui::SameLine();
+							player.catalog.categories.abilities.has_ability(player::Abilities::double_jump) ? ImGui::Text("Enabled") : ImGui::Text("Disabled");
+							if (ImGui::Button("Give Double Jump")) { player.catalog.categories.abilities.give_ability(player::Abilities::double_jump); }
+							if (ImGui::Button("Remove Double Jump")) { player.catalog.categories.abilities.remove_ability(player::Abilities::double_jump); }
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Parameter Tweaking")) {
@@ -414,13 +435,15 @@ void Game::debug_window() {
 							ImGui::SliderFloat("GROUND FRICTION", &player.physics_stats.ground_fric, 0.800f, 1.000f);
 							ImGui::SliderFloat("AIR FRICTION", &player.physics_stats.air_fric, 0.800f, 1.000f);
 							ImGui::SliderFloat("GROUND SPEED", &player.physics_stats.x_acc, 0.0f, 3.f);
+							ImGui::SliderFloat("SPRINT MULTIPLIER", &player.physics_stats.sprint_multiplier, 1.0f, 4.0f);
 							ImGui::SliderFloat("MAX X VELOCITY", &player.physics_stats.maximum_velocity.x, 1.0f, 10.0f);
 
 							ImGui::Separator();
-							ImGui::Text("Dash");
+							ImGui::Text("Abilities");
 							ImGui::SliderFloat("Dash Speed", &player.physics_stats.dash_speed, 1.0f, 30.0f);
 							ImGui::SliderFloat("Vertical Dash Multiplier", &player.physics_stats.vertical_dash_multiplier, 0.0f, 10.0f);
 							ImGui::SliderFloat("Dash Dampen", &player.physics_stats.dash_dampen, 0.7f, 2.0f);
+							ImGui::SliderFloat("Wallslide Speed", &player.physics_stats.wallslide_speed, 0.2f, 3.0f);
 
 							ImGui::Separator();
 							if (ImGui::Button("Save Parameters")) { services.data.save_player_params(player); }
@@ -447,6 +470,7 @@ void Game::debug_window() {
 							player.arsenal.push_to_loadout(0);
 							player.arsenal.push_to_loadout(1);
 							player.arsenal.push_to_loadout(4);
+							player.arsenal.push_to_loadout(5);
 						} else {
 							player.arsenal.loadout.clear();
 						}
@@ -529,6 +553,18 @@ void Game::debug_window() {
 						game_state.get_current_state().init(services, "/level/UNDER_LEDGE_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
 					}
+					if (ImGui::Button("Corridor 4")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/FIRSTWIND_CORRIDOR_04");
+						player.set_position({player::PLAYER_START_X * 2.f, player::PLAYER_START_Y * 2.f});
+					}
+					if (ImGui::Button("1x1 TEST")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/1x1_TEST");
+						player.set_position({player::PLAYER_START_X * 2.f + 128, player::PLAYER_START_Y * 2.f});
+					}
 					if (ImGui::Button("House")) {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
@@ -536,10 +572,10 @@ void Game::debug_window() {
 
 						player.set_position({100, 160});
 					}
-					if (ImGui::Button("Ancient Field")) {
+					if (ImGui::Button("Night Plat")) {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
-						game_state.get_current_state().init(services, "/level/ANCIENT_FIELD_01");
+						game_state.get_current_state().init(services, "/level/NIGHT_PLATFORMS_01");
 
 						player.set_position({100, 160});
 					}
@@ -550,10 +586,10 @@ void Game::debug_window() {
 
 						player.set_position({25 * 32, 10 * 32});
 					}
-					if (ImGui::Button("Base Lab")) {
+					if (ImGui::Button("Mayhem")) {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
-						game_state.get_current_state().init(services, "/level/BASE_LAB_01");
+						game_state.get_current_state().init(services, "/level/NIGHT_MAYHEM_01");
 
 						player.set_position({28 * 32, 8 * 32});
 					}

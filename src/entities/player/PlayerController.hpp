@@ -3,9 +3,12 @@
 #include <chrono>
 #include <optional>
 #include <unordered_map>
+#include <deque>
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Direction.hpp"
 #include "Jump.hpp"
+#include "Wallslide.hpp"
+#include "Shield.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -14,17 +17,20 @@ struct ServiceProvider;
 namespace player {
 
 constexpr static int dash_time{32};
+constexpr static int quick_turn_sample_size{16};
 
-enum class ControllerInput { move_x, jump, shoot, arms_switch, inspect, dash, move_y };
+enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y };
 enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released };
 enum class MovementState { restricted, grounded, walking_autonomously };
 
 enum class Hook { hook_released, hook_held };
+enum class Sprint { released };
 
 class PlayerController {
 
   public:
-	PlayerController();
+	PlayerController() = default;
+	PlayerController(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc);
 	void clean();
@@ -50,6 +56,7 @@ class PlayerController {
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::jump] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
+	[[nodiscard]] auto sprinting() -> bool { return key_map[ControllerInput::sprint] != 0.f; }
 	[[nodiscard]] auto moving_left() -> bool { return key_map[ControllerInput::move_x] < 0.f; }
 	[[nodiscard]] auto moving_right() -> bool { return key_map[ControllerInput::move_x] > 0.f; }
 	[[nodiscard]] auto facing_left() const -> bool { return direction.lr == dir::LR::left; }
@@ -68,6 +75,7 @@ class PlayerController {
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
 	[[nodiscard]] auto dashing() -> bool { return key_map[ControllerInput::dash] != 0.f; }
 	[[nodiscard]] auto can_dash() const -> bool { return dash_count == 0; }
+	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
 	[[nodiscard]] auto transponder_skip() const -> bool { return transponder_flags.test(TransponderInput::skip); }
 	[[nodiscard]] auto transponder_skip_released() const -> bool { return transponder_flags.test(TransponderInput::skip_released); }
 	[[nodiscard]] auto transponder_next() const -> bool { return transponder_flags.test(TransponderInput::next); }
@@ -85,19 +93,38 @@ class PlayerController {
 	[[nodiscard]] auto horizontal_movement() -> float { return key_map[ControllerInput::move_x]; }
 	[[nodiscard]] auto arms_switch() -> float { return key_map[ControllerInput::arms_switch]; }
 	[[nodiscard]] auto dash_value() -> float { return key_map[ControllerInput::dash]; }
+	[[nodiscard]] auto quick_turn() const -> bool {
+		bool ret{};
+		bool left{};
+		bool right{};
+		for (auto& state : horizontal_inputs) {
+			if (state == -1.f) { left = true; }
+			if (state == 1.f) { right = true; }
+		}
+		if (left && right) { ret = true; }
+		return ret;
+	}
 
 	[[nodiscard]] auto get_jump() -> Jump& { return jump; }
+	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
+	[[nodiscard]] auto get_shield() -> Shield& { return shield; }
 
 	dir::Direction direction{};
 
   private:
 	std::unordered_map<ControllerInput, float> key_map{};
 	util::BitFlags<MovementState> flags{}; // unused
-	Jump jump{};
+	util::BitFlags<Sprint> sprint_flags{};
 	util::BitFlags<TransponderInput> transponder_flags{};
 	util::BitFlags<Hook> hook_flags{};
+	
+	Jump jump{};
+	Wallslide wallslide{};
+	Shield shield{};
 
 	int dash_request{};
 	int dash_count{};
+
+	std::deque<float> horizontal_inputs{};
 };
 } // namespace player

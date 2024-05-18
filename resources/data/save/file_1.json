@@ -1,10 +1,10 @@
 {
   "player_data": {
-    "max_hp": 3.000000,
-    "hp": 3.000000,
-    "orbs": 0,
+    "max_hp": 6.000000,
+    "hp": 6.000000,
+    "orbs": 419,
     "position": {
-      "x": 131.984741,
+      "x": 133.270340,
       "y": 230.999985
     },
     "arsenal": [
@@ -12,9 +12,13 @@
       1,
       4
     ],
-    "equipped_gun": 0,
+    "equipped_gun": 1,
     "abilities": [
-      "dash"
+      "dash",
+      "wall slide",
+      "shield",
+      "double jump",
+      "respiration"
     ],
     "items": [
       {

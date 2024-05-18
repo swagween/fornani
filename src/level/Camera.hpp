@@ -28,8 +28,9 @@ class Camera {
 	void restrict_movement(sf::Vector2<float>& bounds);
 	void fix_horizontally(sf::Vector2<float> map_dim);
 	void fix_vertically(sf::Vector2<float> map_dim);
-	void set_position(sf::Vector2<float> new_pos) { bounding_box.setPosition(new_pos); }
-	void center(automa::ServiceProvider& svc, sf::Vector2<float> new_position);
+	void set_position(sf::Vector2<float> new_pos);
+	void center(sf::Vector2<float> new_position);
+	void force_center(sf::Vector2<float> new_position);
 
 	[[nodiscard]] auto get_observed_velocity() const -> sf::Vector2<float> { return observed_velocity; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return bounding_box.getPosition(); }

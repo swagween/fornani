@@ -3,12 +3,12 @@
     "main_action": {
       "mouse_button": "",
       "keyboard_key": "Z",
-      "gamepad_button": 1
+      "gamepad_button": 3
     },
     "secondary_action": {
       "mouse_button": "",
       "keyboard_key": "X",
-      "gamepad_button": 7
+      "gamepad_button": 1
     },
     "tertiary_action": {
       "mouse_button": "",
@@ -19,6 +19,16 @@
       "mouse_button": "",
       "keyboard_key": "Space",
       "gamepad_button": 2
+    },
+    "shield": {
+      "mouse_button": "",
+      "keyboard_key": "V",
+      "gamepad_button": 7
+    },
+    "sprint": {
+      "mouse_button": "",
+      "keyboard_key": "LShift",
+      "gamepad_button": 6
     },
     "left": {
       "keyboard_key": "Left",
@@ -53,12 +63,22 @@
     "menu_toggle": {
       "mouse_button": "",
       "keyboard_key": "E",
-      "gamepad_button": 3
+      "gamepad_button": 9
     },
     "menu_toggle_secondary": {
       "mouse_button": "",
       "keyboard_key": "W",
       "gamepad_button": 8
+    },
+    "menu_forward": {
+      "mouse_button": "",
+      "keyboard_key": "Z",
+      "gamepad_button": 1
+    },
+    "menu_back": {
+      "mouse_button": "",
+      "keyboard_key": "X",
+      "gamepad_button": 2
     }
   }
 }

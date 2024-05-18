@@ -1,32 +1,43 @@
 {
   "meta": {
-    "room_id": 101, 
-    "dimensions" : [64, 16],
-    "chunk_dimensions": [4, 1],
+    "room_id": 101,
+    "dimensions": [
+      64,
+      16
+    ],
+    "chunk_dimensions": [
+      4,
+      1
+    ],
     "style": 0,
     "background": 4
   },
-  "portals":  [
+  "portals": [
     {
-      "dimensions": [ 1, 1 ],
-      "position": [ 5, 10 ],
-      "activate_on_contact":  false,
-      "source_id":  101,
-      "destination_id":  100,
-      "source_label": "FIRSTWIND_CORRIDOR_01",
-      "destination_label": "FIRSTWIND_PRISON_01"
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        10
+      ],
+      "source_id": 101,
+      "destination_id": 100,
+      "activate_on_contact": false
     },
     {
-      "dimensions": [ 1, 1 ],
-      "position": [ 56, 6 ],
-      "activate_on_contact":  false,
-      "source_id":  101,
-      "destination_id":  102,
-      "source_label": "FIRSTWIND_CORRIDOR_01",
-      "destination_label": "FIRSTWIND_ATRIUM_01"
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        56,
+        6
+      ],
+      "source_id": 101,
+      "destination_id": 102,
+      "activate_on_contact": false
     }
-  ],
-  "save_point": {
-      "id": -1
-  }
+  ]
 }

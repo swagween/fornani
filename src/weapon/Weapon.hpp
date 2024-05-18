@@ -6,6 +6,7 @@
 #include <memory>
 #include "../utils/BitFlags.hpp"
 #include "Projectile.hpp"
+#include "Ammo.hpp"
 
 namespace arms {
 
@@ -23,11 +24,13 @@ inline std::unordered_map<int, arms::WEAPON_TYPE> index_to_type{{0, arms::WEAPON
 struct WeaponAttributes {
 	bool automatic{};
 	bool boomerang{};
+	bool grenade{};
 	int rate{};
 	int cooldown_time{};
 	float recoil{};
 	COLOR_CODE ui_color{};
 	std::array<float, 2> barrel_position{};
+	int back_offset{};
 };
 
 class Weapon {
@@ -37,6 +40,7 @@ class Weapon {
 	Weapon(automa::ServiceProvider& svc, std::string_view label, int id);
 
 	void update(dir::Direction to_direction);
+	void render_back(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 
 	void equip();
@@ -75,6 +79,7 @@ class Weapon {
 	std::string_view label{};
 
 	sf::Sprite sp_gun{};
+	sf::Sprite sp_gun_back{};
 
 	int active_projectiles{};
 	util::Cooldown cooldown{};
@@ -82,6 +87,7 @@ class Weapon {
 
   private:
 	util::BitFlags<GunState> flags{};
+	Ammo ammo{};
 	int id{};
 };
 

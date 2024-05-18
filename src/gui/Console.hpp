@@ -17,7 +17,7 @@ float const height_factor{3.0f};
 float const pad{168.f};
 float const text_pad{8.0f};
 
-enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger };
+enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended };
 
 struct Border {
 	float left{};
@@ -37,6 +37,7 @@ class Console {
 	void render(sf::RenderWindow& win);
 
 	void set_source(dj::Json& json);
+	void set_texture(sf::Texture& tex);
 	void load_and_launch(std::string_view key);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
@@ -47,6 +48,7 @@ class Console {
 
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
 	[[nodiscard]] auto is_complete() const -> bool { return !flags.test(ConsoleFlags::active); }
+	[[nodiscard]] auto extended() const -> bool { return flags.test(ConsoleFlags::extended); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
 
 	sf::Vector2<float> position{};

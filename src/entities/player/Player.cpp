@@ -9,7 +9,7 @@ namespace player {
 
 Player::Player() {}
 
-Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc) {}
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc) {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -17,8 +17,10 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	svc.data.load_player_params(*this);
 	arsenal = arms::Arsenal(svc);
+	health_indicator.init(svc, 0);
+	orb_indicator.init(svc, 1);
 
-	health.invincibility_time = 400;
+	health.set_invincibility(400);
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
@@ -27,24 +29,15 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
-	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.dark_orange, antenna_force));
-	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.dark_orange, antenna_force, {2.f, 4.f}));
-
 	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force));
 	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force, {2.f, 4.f}));
 
-	float back_fric{0.84f};
-	float front_fric{0.87f};
+	float back_fric{0.93f};
 
 	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
 	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
 	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
-
-	antennae[2].collider.physics = components::PhysicsComponent(sf::Vector2<float>{front_fric, front_fric}, 1.0f);
-	antennae[2].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
-	antennae[3].collider.physics = components::PhysicsComponent(sf::Vector2<float>{front_fric, front_fric}, 1.0f);
-	antennae[3].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 
 	sprite_dimensions = {48.f, 48.f};
 
@@ -78,8 +71,10 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 	//player-controlled actions
 	arsenal.switch_weapon(*m_services, controller.arms_switch());
-	if (catalog.categories.abilities.has_ability(Abilities::dash)) { dash(); }
+	dash();
 	jump();
+	wallslide();
+	update_animation();
 
 	// check keystate
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
@@ -92,11 +87,10 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	}
 
 	collider.update(*m_services);
-
 	health.update();
+	health_indicator.update(*m_services, collider.physics.position);
+	orb_indicator.update(*m_services, collider.physics.position);
 	update_invincibility();
-
-	update_animation();
 	update_weapon();
 	catalog.update(*m_services);
 
@@ -108,9 +102,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 		}
 	}
 
-	// antennae!
 	update_antennae();
-
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
@@ -130,7 +122,102 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setTextureRect(sf::IntRect({u, v}, {asset::NANI_SPRITE_WIDTH, asset::NANI_SPRITE_WIDTH}));
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
+	
+	if (!arsenal.loadout.empty()) {
+		equipped_weapon().sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().render_back(svc, win, campos); }
+	}
 
+	if (flags.state.test(State::alive)) {
+		if (svc.greyblock_mode()) {
+			collider.render(win, campos);
+		} else {
+			antennae[1].render(svc, win, campos, 1);
+			win.draw(sprite);
+			antennae[0].render(svc, win, campos, 1);
+		}
+	}
+
+	if (!arsenal.loadout.empty()) {
+		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
+	}
+
+	if (controller.get_shield().is_shielding()) { controller.get_shield().render(*m_services, win, campos); }
+
+	// texture updater debug
+	// texture_updater.debug_render(win, campos);
+}
+
+void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (orb_indicator.active()) { health_indicator.shift(); }
+	health_indicator.render(svc, win, cam);
+	orb_indicator.render(svc, win, cam);
+}
+
+void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
+
+void Player::update_animation() {
+
+	flags.state.set(State::show_weapon);
+
+	if (grounded()) {
+		if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
+		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
+			if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
+			if (controller.nothing_pressed() && !controller.dashing() && !animation.state.test(AnimState::inspect)) { animation.state.set(AnimState::idle); }
+			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state.set(AnimState::run); }
+			if (controller.moving() && controller.sprinting() && !controller.dashing() && !animation.state.test(AnimState::sharp_turn)) { animation.state.set(AnimState::sprint); }
+			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.state.set(AnimState::stop); }
+			if (quick_direction_switch()) {
+				animation.state = {};
+				animation.state.set(AnimState::sharp_turn);
+			}
+		}
+	} else {
+		if (collider.physics.velocity.y > -thresholds.suspend && collider.physics.velocity.y < thresholds.suspend) { animation.state.set(AnimState::suspend); }
+	}
+
+	if (collider.flags.state.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
+	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
+	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
+
+	if (collider.physics.velocity.y > thresholds.suspend && !grounded()) { animation.state.set(AnimState::fall); }
+	if (collider.physics.velocity.y < -thresholds.suspend) { animation.state.set(AnimState::rise); }
+
+	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
+		if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
+		if (controller.dash_requested()) {
+			animation.state.set(AnimState::dash);
+			flags.state.reset(State::show_weapon);
+		}
+	}
+	if (catalog.categories.abilities.has_ability(Abilities::wall_slide)) {
+		if (controller.get_wallslide().is_wallsliding()) {
+			animation.state = {};
+			animation.state.set(AnimState::wallslide);
+		}
+	}
+	if (catalog.categories.abilities.has_ability(Abilities::shield)) {
+		if(controller.get_shield().is_shielding() && grounded()) {
+			animation.state = {};
+			animation.state.set(AnimState::shield);
+			controller.prevent_movement();
+			flags.state.reset(State::show_weapon);
+		}
+	}
+
+	if (animation.state.test(AnimState::sit)) { flags.state.reset(State::show_weapon); }
+
+	if (hurt_cooldown.running()) {
+		animation.state = {};
+		animation.state.set(AnimState::hurt);
+	}
+
+	animation.update();
+}
+
+void Player::update_sprite() {
 	// flip the sprite based on the player's direction
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
@@ -142,59 +229,11 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		sprite.scale(-1.0f, 1.0f);
 		if (grounded()) { animation.state.set(AnimState::turn); }
 	}
-	if (flags.state.test(State::alive)) {
-		if (svc.greyblock_mode()) {
-			collider.render(win, campos);
-		} else {
-			antennae[1].render(svc, win, campos);
-			antennae[3].render(svc, win, campos);
-			win.draw(sprite);
-			antennae[0].render(svc, win, campos);
-			antennae[2].render(svc, win, campos);
-		}
-	}
 
-	if (!arsenal.loadout.empty()) {
-		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
-		equipped_weapon().render(svc, win, campos);
-	}
+	// check for quick turn
+	flags.state.reset(State::dir_switch);
+	if (controller.quick_turn()) { flags.state.set(State::dir_switch); }
 
-	// texture updater debug
-	// texture_updater.debug_render(win, campos);
-}
-
-void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
-
-void Player::update_animation() {
-
-	if (grounded()) {
-		if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
-		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
-			if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
-			if (controller.nothing_pressed() && !controller.dashing() && !animation.state.test(AnimState::inspect)) { animation.state.set(AnimState::idle); }
-			if (controller.moving() && !controller.dashing()) { animation.state.set(AnimState::run); }
-			if (abs(collider.physics.velocity.x) > animation.stop_threshold) { animation.state.test(AnimState::stop); }
-		}
-	} else {
-		if (collider.physics.velocity.y > -animation.suspension_threshold && collider.physics.velocity.y < animation.suspension_threshold) { animation.state.set(AnimState::suspend); }
-	}
-
-	if (collider.flags.state.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
-	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
-	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
-
-	if (collider.physics.velocity.y < -animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::rise); }
-	if (collider.physics.velocity.y > animation.suspension_threshold && !grounded()) { animation.state.set(AnimState::fall); }
-
-	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
-		if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
-		if (controller.dash_requested()) { animation.state.set(AnimState::dash); }
-	}
-
-	animation.update();
-}
-
-void Player::update_sprite() {
 	sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 
@@ -290,6 +329,7 @@ void Player::jump() {
 }
 
 void Player::dash() {
+	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { return; }
 	if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
 		collider.flags.movement.set(shape::Movement::dashing);
 		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
@@ -303,9 +343,28 @@ void Player::dash() {
 	}
 }
 
-void Player::set_position(sf::Vector2<float> new_pos) {
-	collider.physics.position = new_pos;
+void Player::wallslide() {
+	if (!catalog.categories.abilities.has_ability(Abilities::wall_slide)) { return; }
+	controller.get_wallslide().end();
+	if (!grounded() && collider.physics.velocity.y > thresholds.wallslide) {
+		if ((collider.has_left_wallslide_collision() && controller.moving_left()) || (collider.has_right_wallslide_collision() && controller.moving_right())) {
+			controller.get_wallslide().start();
+			collider.physics.acceleration.y = std::min(collider.physics.acceleration.y, physics_stats.wallslide_speed);
+		}
+	} 
+}
+
+void Player::shield() {
+	if (!catalog.categories.abilities.has_ability(Abilities::wall_slide)) { return; }
+	if (controller.get_shield().is_shielding()) { controller.get_shield().sensor.bounds.setPosition(collider.physics.position); }
+}
+
+void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
+	sf::Vector2<float> offset{};
+	offset.x = centered ? collider.dimensions.x * 0.5f : 0.f;
+	collider.physics.position = new_pos - offset;
 	collider.sync_components();
+	update_direction();
 	sync_antennae();
 }
 
@@ -347,13 +406,18 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
+	if (animation.state.test(AnimState::sharp_turn)) {
+		collider.physics.acceleration.x = 0.0f;
+		return;
+	}
 	if (controller.moving_right() && !collider.has_right_collision()) {
 		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
 	}
 	if (controller.moving_left() && !collider.has_left_collision()) {
 		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
 	}
-	if (animation.get_frame() == 44 || animation.get_frame() == 46) {
+	if (controller.sprinting()) { collider.physics.acceleration.x *= physics_stats.sprint_multiplier; }
+	if (animation.get_frame() == 44 || animation.get_frame() == 46 || animation.get_frame() == 10 || animation.get_frame() == 13) {
 		if (animation.animation.keyframe_over() && abs(collider.physics.velocity.x) > 2.5f) { m_services->soundboard.flags.player.set(audio::Player::step); }
 	}
 }
@@ -361,11 +425,12 @@ void Player::walk() {
 void Player::hurt(int amount = 1) {
 	if (!health.invincible()) {
 		health.inflict(amount);
+		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
 		collider.spike_trigger = false;
 		m_services->soundboard.flags.player.set(audio::Player::hurt);
-		just_hurt = true;
+		hurt_cooldown.start(2);
 	}
 	if (health.is_dead()) { kill(); }
 }
@@ -375,10 +440,16 @@ void Player::update_antennae() {
 	for (auto& a : antennae) {
 		if (animation.get_frame() == 44 || animation.get_frame() == 46) {
 			antenna_offset.y = -15.f;
+		} else if (controller.sprinting()) {
+			antenna_offset.y = -9.f;
+		} else if (animation.get_frame() == 52) {
+			antenna_offset.y = -10.f;
+		} else if (animation.get_frame() == 53) {
+			antenna_offset.y = -7.f;
 		} else {
 			antenna_offset.y = -13.f;
 		}
-		if (animation.get_frame() == 57) { antenna_offset.y = -1.f; }
+		if (animation.get_frame() == 57) { antenna_offset.y = -4.f; }
 		a.set_target_position(collider.physics.position + antenna_offset);
 		a.update(*m_services);
 		a.collider.sync_components();
@@ -418,6 +489,7 @@ bool Player::fire_weapon() {
 }
 
 void Player::update_invincibility() {
+	hurt_cooldown.update();
 	if (health.invincible()) {
 		flash_sprite();
 	} else {
@@ -433,8 +505,14 @@ void Player::start_over() {
 }
 
 void Player::give_drop(item::DropType type, int value) {
-	if (type == item::DropType::heart) { health.heal(value); }
-	if (type == item::DropType::orb) { player_stats.orbs += value; }
+	if (type == item::DropType::heart) {
+		health.heal(value);
+		health_indicator.add(value);
+	}
+	if (type == item::DropType::orb) {
+		player_stats.orbs += value;
+		orb_indicator.add(value);
+	}
 }
 
 void Player::give_item(int item_id, int amount) { catalog.add_item(*m_services, item_id, 1); }
@@ -449,13 +527,18 @@ void Player::total_reset() {
 	update_antennae();
 }
 
+void Player::map_reset() {
+	arsenal.extant_projectile_instances = {};
+	if (animation.state.test(player::AnimState::inspect)) { animation.state.set(player::AnimState::idle); }
+}
+
 arms::Weapon& Player::equipped_weapon() {
 	return arsenal.get_current_weapon();
 }
 
 int& Player::extant_instances(int index) { return arsenal.extant_projectile_instances.at(index); }
 
-dir::LR Player::entered_from() { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
+dir::LR Player::entered_from() const { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
 
 std::string Player::print_direction(bool lr) {
 	if (lr) {

@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "room_id": 1707,
+    "dimensions": [
+      48,
+      48
+    ],
+    "chunk_dimensions": [
+      3,
+      3
+    ],
+    "style": 6,
+    "background": 0
+  },
+  "platforms": [
+    {
+      "position": [
+        1,
+        33
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 8,
+      "style": 0,
+      "type": "standard_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        24,
+        29
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 8,
+      "style": 0,
+      "type": "standard_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        29,
+        24
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 8,
+      "style": 0,
+      "type": "standard_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        26,
+        19
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 8,
+      "style": 0,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        11,
+        39
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 8,
+      "style": 0,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        19,
+        24
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 8,
+      "style": 0,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        23,
+        12
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 6,
+      "style": 0,
+      "type": "standard_nonstick",
+      "start": 0.000000
+    }
+  ]
+}

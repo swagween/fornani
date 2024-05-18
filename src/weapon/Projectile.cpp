@@ -11,7 +11,7 @@ Projectile::Projectile() {
 	physics.velocity.x = stats.speed;
 };
 
-Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id) {
+Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id), sparkler(svc) {
 
 	auto const& in_data = svc.data.weapon["weapons"][id]["projectile"];
 
@@ -43,9 +43,13 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	anim.num_frames = in_data["animation"]["num_frames"].as<int>();
 	anim.framerate = in_data["animation"]["framerate"].as<int>();
 
+	visual.wall_hit_type = in_data["visual"]["wall_hit_type"].as<int>();
+
 	sf::Vector2<float> dim{};
 	dim.x = in_data["dimensions"]["x"].as<float>();
 	dim.y = in_data["dimensions"]["y"].as<float>();
+
+	sparkler = vfx::Sparkler(svc, dim, svc.styles.spray_colors.at(label), in_data["sparkler_type"].as_string());
 
 	render_type = anim.num_sprites > 1 ? RENDER_TYPE::MULTI_SPRITE : RENDER_TYPE::SINGLE_SPRITE;
 
@@ -77,7 +81,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	// animation
 	animation.update();
-
+	sparkler.update(svc);
 	cooldown.update();
 
 	if (stats.spring) {
@@ -110,9 +114,11 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		gravitator.set_target_position(player.apparent_position);
 		gravitator.update(svc);
 		physics.position = gravitator.collider.physics.position;
+		bounding_box.set_position(physics.position);
+
 		svc.soundboard.flags.weapon.set(svc.soundboard.gun_sounds.at(label)); // repeat sound
 		// use predictive bounding box so player can "meet up" with the boomerang
-		if (gravitator.collider.bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
+		if (bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
 			svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
 		} // destroy when player catches it
@@ -133,6 +139,9 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	} else if (direction.und == dir::UND::down) {
 		bounding_box.set_position(shape::Shape::Vec{physics.position.x - bounding_box.dimensions.x / 2, physics.position.y - bounding_box.dimensions.y});
 	}
+
+	sparkler.set_position(bounding_box.position);
+	sparkler.set_dimensions(bounding_box.dimensions);
 
 	position_history.push_back(physics.position);
 	if (position_history.size() > history_limit) { position_history.pop_front(); }
@@ -191,6 +200,7 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 				win.draw(sp_proj.at(0));
 			}
 		}
+		//sparkler.render(svc, win, campos);
 	}
 }
 
@@ -256,6 +266,7 @@ void Projectile::set_orientation(sf::Sprite& sprite) {
 void Projectile::set_position(sf::Vector2<float>& pos) {
 	physics.position = pos;
 	bounding_box.position = pos;
+	gravitator.set_position(pos);
 	fired_point = pos;
 }
 
@@ -273,13 +284,14 @@ void Projectile::sync_position() { gravitator.collider.physics.position = fired_
 
 void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos) {
 	if (!stats.constrained) { return; }
+	int u = (int)(animation.get_frame() * max_dimensions.x);
 	if (direction.lr != dir::LR::neutral) {
 		if (abs(physics.position.x - fired_point.x) < max_dimensions.x) {
 			int width = abs(physics.position.x - fired_point.x);
-			sprite.setTextureRect(sf::IntRect({(int)(max_dimensions.x - width), 0}, {width, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({u + (int)(max_dimensions.x - width), 0}, {width, (int)max_dimensions.y}));
 			bounding_box.dimensions.x = width;
 		} else {
-			sprite.setTextureRect(sf::IntRect({0, 0}, {(int)(bounding_box.dimensions.x), (int)(bounding_box.dimensions.y)}));
+			sprite.setTextureRect(sf::IntRect({u, 0}, {(int)(bounding_box.dimensions.x), (int)(bounding_box.dimensions.y)}));
 			bounding_box.dimensions.x = max_dimensions.x;
 		}
 		if (direction.lr == dir::LR::right) {
@@ -292,10 +304,10 @@ void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<floa
 		bounding_box.dimensions.x = max_dimensions.y;
 		if (abs(physics.position.y - fired_point.y) < max_dimensions.x) {
 			int height = abs(physics.position.y - fired_point.y);
-			sprite.setTextureRect(sf::IntRect({(int)(max_dimensions.x - height), 0}, {height, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({u + (int)(max_dimensions.x - height), 0}, {height, (int)max_dimensions.y}));
 			bounding_box.dimensions.y = height;
 		} else {
-			sprite.setTextureRect(sf::IntRect({0, 0}, {(int)(max_dimensions.x), (int)(max_dimensions.y)}));
+			sprite.setTextureRect(sf::IntRect({u, 0}, {(int)(max_dimensions.x), (int)(max_dimensions.y)}));
 			bounding_box.dimensions.y = max_dimensions.x;
 		}
 		if (direction.und == dir::UND::up) {
@@ -368,9 +380,6 @@ void Projectile::constrain_hitbox_at_barrel() {
 			bounding_box.dimensions.y = height;
 		} else {
 			bounding_box.dimensions.y = max_dimensions.x;
-		}
-		if (direction.und == dir::UND::up) {
-		} else if (direction.und == dir::UND::down) {
 		}
 	}
 }

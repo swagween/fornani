@@ -8,7 +8,7 @@ namespace gui {
 Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc) {
 	origin = {pad, svc.constants.screen_dimensions.y - pad_y};
 	text_suite = svc.text.console;
-	for (auto& sprite : sprites) { sprite.setTexture(svc.assets.t_ui); }
+	set_texture(svc.assets.t_ui);
 	sprites.at(0).setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
 	sprites.at(1).setTextureRect(sf::IntRect{{corner_factor, 0}, {edge_factor, corner_factor}});
 	sprites.at(2).setTextureRect(sf::IntRect{{corner_factor + edge_factor, 0}, {corner_factor, corner_factor}});
@@ -37,7 +37,8 @@ void Console::update(automa::ServiceProvider& svc) {
 	writer.set_bounds(position + sf::Vector2<float>{final_dimensions.x - 2 * border.left, final_dimensions.y - 2 * border.top});
 	writer.set_position(position + sf::Vector2<float>{border.left, border.top});
 	if (flags.test(ConsoleFlags::active)) { extent += speed; }
-	extent = std::clamp((float)extent, 0.f, final_dimensions.y);
+	if (final_dimensions.y > 0) { extent = std::clamp((float)extent, 0.f, final_dimensions.y); }
+	if (extent == final_dimensions.y) { flags.set(ConsoleFlags::extended); }
 	current_dimensions.y = extent;
 	nine_slice(corner_factor, edge_factor);
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
@@ -63,6 +64,10 @@ void Console::render(sf::RenderWindow& win) {
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
 
+void Console::set_texture(sf::Texture& tex) {
+	for (auto& sprite : sprites) { sprite.setTexture(tex); }
+}
+
 void Console::load_and_launch(std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
 		writer.load_message(text_suite, key);
@@ -84,6 +89,7 @@ void Console::end() {
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::loaded);
 	flags.reset(ConsoleFlags::portrait_included);
+	flags.reset(ConsoleFlags::extended);
 	flags.set(ConsoleFlags::off_trigger);
 }
 

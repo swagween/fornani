@@ -1,0 +1,26 @@
+{
+  "sign": {
+    "suite": [
+      [
+        "- Cargo Room -"
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  },
+  "computer": {
+    "suite": [
+      [
+        "entering safety mode..."
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  }
+}

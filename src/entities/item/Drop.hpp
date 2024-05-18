@@ -43,6 +43,7 @@ class Drop {
 
 	bool is_completely_gone() const;
 	bool is_inactive() const;
+	[[nodiscard]] auto get_rarity() const -> Rarity { return rarity; }
 
 	shape::Collider& get_collider();
 	DropType get_type() const;

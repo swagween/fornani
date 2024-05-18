@@ -31,7 +31,7 @@ class Shape {
 
 	Vec perp(Vec edg);
 
-	float getLength(const Vec v);
+	float getLength(Vec const v);
 	Vec getNormalized(const Vec v);
 	float dotProduct(const Vec a, const Vec b);
 	Vec getNormal(const Vec v);
@@ -47,6 +47,7 @@ class Shape {
 	Vec testCollisionGetMTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
 	bool overlaps(Shape const& other);
+	bool contains_point(Vec point);
 
 	bool AABB_handle_left_collision_static(Shape const& immovable);
 	bool AABB_handle_right_collision_static(Shape const& immovable);

@@ -9,14 +9,14 @@ namespace shape {
 Collider::Collider() {
 	dimensions = sf::Vector2<float>{default_dim, default_dim};
 	jumpbox.dimensions = sf::Vector2<float>(dimensions.x, default_jumpbox_height);
-	hurtbox.dimensions = sf::Vector2<float>(dimensions.x / 2, dimensions.y / 2);
+	hurtbox.dimensions = sf::Vector2<float>(dimensions.x, dimensions.y);
 	sync_components();
 }
 
 Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimensions(dim) {
 	bounding_box.dimensions = dim;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
-	hurtbox.dimensions = sf::Vector2<float>(dim.x / 2, dim.y / 2);
+	hurtbox.dimensions = sf::Vector2<float>(dim.x, dim.y);
 	sync_components();
 }
 
@@ -25,12 +25,15 @@ void Collider::sync_components() {
 	bounding_box.set_position(physics.position);
 	vicinity.dimensions.x = dimensions.x + 2 * vicinity_pad;
 	vicinity.dimensions.y = dimensions.y + 2 * vicinity_pad;
+	wallslider.dimensions.x = dimensions.x + 2 * wallslide_pad;
+	wallslider.dimensions.y = dimensions.y * 0.5;
 	predictive_vertical.dimensions.x = dimensions.x - 2 * vertical_detector_buffer;
 	predictive_vertical.dimensions.y = dimensions.y + 2 * vertical_detector_buffer;
 	predictive_horizontal.dimensions.x = dimensions.x + 2 * horizontal_detector_buffer;
 	predictive_horizontal.dimensions.y = dimensions.y - 3 * horizontal_detector_buffer;
 	predictive_combined.dimensions = dimensions;
 	vicinity.set_position(sf::Vector2<float>{physics.position.x - vicinity_pad + physics.velocity.x, physics.position.y - vicinity_pad + physics.velocity.y});
+	wallslider.set_position(sf::Vector2<float>{physics.position.x - wallslide_pad, physics.position.y + 8.f});
 	predictive_vertical.set_position(sf::Vector2<float>{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.velocity.y});
 	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - horizontal_detector_buffer + physics.velocity.x, physics.position.y + horizontal_detector_buffer});
 	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y});
@@ -123,6 +126,8 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		}
 	}
 
+	if (wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
+
 	if (jumpbox.SAT(cell)) {
 		flags.state.set(State::grounded);
 		flags.state.set(State::is_any_jump_collision);
@@ -136,7 +141,6 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 }
 
 void Collider::detect_map_collision(world::Map& map) {
-
 	for (auto& index : map.collidable_indeces) {
 		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
 		cell.collision_check = false;
@@ -153,6 +157,44 @@ void Collider::detect_map_collision(world::Map& map) {
 			}
 		}
 	}
+}
+
+int Collider::detect_ledge_height(world::Map& map) {
+	int ret{};
+	int total = map.layers.at(world::MIDDLEGROUND).grid.cells.size();
+	for (int index = 0; index < total; ++index) {
+		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
+		if (!map.nearby(cell.bounding_box, bounding_box)) {
+			continue;
+		} else {
+			// check vicinity so we can escape early
+			if (vicinity.vertices.empty()) { return ret; }
+			if (!vicinity.overlaps(cell.bounding_box)) {
+				continue;
+			} else {
+				// we're in the vicinity now, so we check the bottom left and right corners to find a potential ledge
+				if (!cell.is_occupied()) {
+					auto right = cell.bounding_box.contains_point(vicinity.vertices.at(2));
+					auto left = cell.bounding_box.contains_point(vicinity.vertices.at(3));
+					if (left) { flags.state.set(State::ledge_left); }
+					if (right) { flags.state.set(State::ledge_right); }
+						if (left || right) { // left ledge found
+						bool found{};
+						auto next_row = index + map.dimensions.x;
+						while (!found) {
+							if (map.layers.at(world::MIDDLEGROUND).grid.cells.size() <= next_row) { return map.dimensions.y; };
+							if (map.layers.at(world::MIDDLEGROUND).grid.cells.at(next_row).is_occupied()) { found = true; }
+							next_row += map.dimensions.x;
+							++ret;
+							if (ret > map.dimensions.y) { return map.dimensions.y; }
+						}
+						return ret;
+					}
+				}
+			}
+		}
+	}
+	return ret;
 }
 
 void Collider::correct_x(sf::Vector2<float> mtv) {
@@ -249,7 +291,6 @@ void Collider::update(automa::ServiceProvider& svc) {
 
 void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
-
 	// draw predictive vertical
 	box.setSize(predictive_vertical.dimensions);
 	box.setPosition(predictive_vertical.position.x - cam.x, predictive_vertical.position.y - cam.y);
@@ -294,13 +335,21 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});
 	box.setPosition(hurtbox.position.x - cam.x, hurtbox.position.y - cam.y);
 	box.setFillColor(flcolor::goldenrod);
-	// win.draw(box);
+	win.draw(box);
 
 	// draw vicinity
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});
 	box.setPosition(vicinity.position.x - cam.x, vicinity.position.y - cam.y);
 	box.setFillColor(sf::Color::Transparent);
-	box.setOutlineColor(sf::Color{120, 60, 80, 80});
+	box.setOutlineColor(sf::Color{120, 60, 80, 180});
+	box.setOutlineThickness(-1);
+	win.draw(box);
+
+	// draw wallslider
+	box.setSize(sf::Vector2<float>{(float)wallslider.dimensions.x, (float)wallslider.dimensions.y});
+	box.setPosition(wallslider.position.x - cam.x, wallslider.position.y - cam.y);
+	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
+	box.setOutlineColor(sf::Color{60, 60, 180, 100});
 	box.setOutlineThickness(-1);
 	win.draw(box);
 
@@ -329,5 +378,11 @@ bool Collider::has_left_collision() const { return flags.collision.test(Collisio
 bool Collider::has_right_collision() const { return flags.collision.test(Collision::has_right_collision); }
 
 bool Collider::has_vertical_collision() const { return flags.collision.test(Collision::has_top_collision) || flags.collision.test(Collision::has_bottom_collision); }
+
+bool Collider::has_left_wallslide_collision() const { return flags.state.test(State::left_wallslide_collision); }
+
+bool Collider::has_right_wallslide_collision() const { return flags.state.test(State::right_wallslide_collision); }
+
+float Collider::compute_length(sf::Vector2<float> const v) { return std::sqrt(v.x * v.x + v.y * v.y); }
 
 } // namespace shape

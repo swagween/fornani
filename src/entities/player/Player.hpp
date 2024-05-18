@@ -11,15 +11,16 @@
 #include "../../utils/Collider.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "../packages/Health.hpp"
+#include "Catalog.hpp"
+#include "Indicator.hpp"
 #include "PlayerAnimation.hpp"
 #include "PlayerController.hpp"
 #include "Transponder.hpp"
-#include "Catalog.hpp"
 
 namespace gui {
 class Console;
 class InventoryWindow;
-}
+} // namespace gui
 
 namespace automa {
 struct ServiceProvider;
@@ -45,10 +46,9 @@ int const JUMP_BUFFER_TIME = 12;
 int const INVINCIBILITY_TIME = 200;
 int const ANCHOR_BUFFER = 50;
 int const num_sprites{220};
-float const stopped_threshold{0.2f};
 
-constexpr inline float antenna_force{0.6f};
-constexpr inline float antenna_speed{16.f};
+constexpr inline float antenna_force{0.18f};
+constexpr inline float antenna_speed{136.f};
 
 struct PlayerStats {
 	int orbs{};
@@ -61,6 +61,7 @@ struct PhysicsStats {
 	float air_fric{};
 	float x_acc{};
 	float air_multiplier{};
+	float sprint_multiplier{};
 	float jump_velocity{};
 	float jump_release_multiplier{};
 	float hurt_acc{};
@@ -69,16 +70,19 @@ struct PhysicsStats {
 	float vertical_dash_multiplier{};
 	float dash_speed{};
 	float dash_dampen{};
+	float wallslide_speed{};
 };
 
 struct Counters {
 	int invincibility{};
 };
 
-enum class State { alive };
+enum class State { alive, dir_switch, show_weapon };
+enum class Triggers { hurt };
 
 struct PlayerFlags {
 	util::BitFlags<State> state{};
+	util::BitFlags<Triggers> triggers{};
 };
 
 class Player {
@@ -91,6 +95,7 @@ class Player {
 	// member functions
 	void update(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
+	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
@@ -101,12 +106,17 @@ class Player {
 
 	// state
 	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(player::State::alive); }
+	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
+	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
+	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 
 	// moves
 	void jump();
 	void dash();
+	void wallslide();
+	void shield();
 
-	void set_position(sf::Vector2<float> new_pos);
+	void set_position(sf::Vector2<float> new_pos, bool centered = false);
 	void update_direction();
 	void update_weapon();
 	void walk();
@@ -126,22 +136,25 @@ class Player {
 
 	void reset_flags();
 	void total_reset();
+	void map_reset();
 
 	arms::Weapon& equipped_weapon();
 	int& extant_instances(int index);
 
 	// map helpers
-	dir::LR entered_from();
+	dir::LR entered_from() const;
 
 	// for debug mode
 	std::string print_direction(bool lr);
 
 	// components
-	PlayerController controller{};
+	PlayerController controller;
 	Transponder transponder{};
 	shape::Collider collider{};
 	PlayerAnimation animation{};
 	entity::Health health{};
+	Indicator health_indicator;
+	Indicator orb_indicator;
 
 	// weapons
 	arms::Arsenal arsenal;
@@ -159,7 +172,7 @@ class Player {
 	PlayerStats player_stats{0, 99999};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
-
+	util::Cooldown hurt_cooldown{}; //for animation
 	Counters counters{};
 
 	automa::ServiceProvider* m_services;
@@ -173,11 +186,21 @@ class Player {
 
 	bool grav = true;
 
-	bool just_hurt{};
 	bool start_cooldown{};
 	bool sprite_flip{};
 
+	int ledge_height{}; // temp for testing
+
 	Catalog catalog{};
+
+  private:
+	struct {
+		float stop{3.8f};
+		float wallslide{-1.5f};
+		float suspend{4.4f};
+		float landed{0.004f};
+		float run{0.02f};
+	} thresholds{};
 };
 
 } // namespace player

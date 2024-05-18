@@ -55,6 +55,8 @@ class AssetManager {
 		t_hud_pointer.loadFromFile(finder.resource_path + "/image/gui/HUD_pointer.png");
 		t_hud_gun_color.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_color.png");
 		t_hud_gun_shadow.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_shadow.png");
+		t_selector.loadFromFile(finder.resource_path + "/image/gui/selector.png");
+		t_console_outline.loadFromFile(finder.resource_path + "/image/gui/console_outline.png");
 
 		// guns and bullets!
 		t_bryns_gun.loadFromFile(finder.resource_path + "/image/weapon/bg.png");
@@ -71,6 +73,8 @@ class AssetManager {
 		t_grappling_hook.loadFromFile(finder.resource_path + "/image/weapon/grappling_hook.png");
 		t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 		t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
+		t_grenade_launcher.loadFromFile(finder.resource_path + "/image/weapon/grenade_launcher.png");
+		t_grenade.loadFromFile(finder.resource_path + "/image/weapon/grenade.png");
 
 		weapon_textures.insert({"bryn's gun", t_bryns_gun});
 		projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
@@ -85,21 +89,20 @@ class AssetManager {
 		projectile_textures.insert({"skycorps ar", t_skycorps_ar_projectile});
 		weapon_textures.insert({"grappling hook", t_grappling_hook});
 		projectile_textures.insert({"grappling hook", t_hook});
+		weapon_textures.insert({"grenade launcher", t_grenade_launcher});
+		projectile_textures.insert({"grenade launcher", t_hook});
 
-		t_bryns_notebook.loadFromFile(finder.resource_path + "/image/item/bryns_notebook.png");
-		t_factory_access_permit.loadFromFile(finder.resource_path + "/image/item/factory_access_permit.png");
-		t_bipolar_junction_transistor.loadFromFile(finder.resource_path + "/image/item/bipolar_junction_transistor.png");
-		t_willets_floppy_disc.loadFromFile(finder.resource_path + "/image/item/willets_floppy_disc.png");
-		items.insert({"bryns_notebook", t_bryns_notebook});
-		items.insert({"factory_access_permit", t_factory_access_permit});
-		items.insert({"bipolar_junction_transistor", t_bipolar_junction_transistor});
-		items.insert({"willets_floppy_disc", t_willets_floppy_disc});
-
+		t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
+		t_shield.loadFromFile(finder.resource_path + "/image/entity/shield.png");
 
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
 
 		t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
+
+		t_platforms.loadFromFile(finder.resource_path + "/image/tile/platforms.png");
+		t_platform_night.loadFromFile(finder.resource_path + "/image/tile/platform_night.png");
+		platform_lookup.insert({0, t_platform_night});
 
 		// backgrounds
 		t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");
@@ -133,6 +136,15 @@ class AssetManager {
 
 		t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators_01.png");
 		t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators_01.png");
+
+		t_huge_explosion.loadFromFile(finder.resource_path + "/image/entity/huge_explosion.png");
+		t_large_explosion.loadFromFile(finder.resource_path + "/image/entity/large_explosion.png");
+		t_small_explosion.loadFromFile(finder.resource_path + "/image/entity/small_explosion.png");
+		t_wall_hit.loadFromFile(finder.resource_path + "/image/entity/wall_hit.png");
+		effect_lookup.insert({0, t_small_explosion});
+		effect_lookup.insert({1, t_large_explosion});
+		effect_lookup.insert({2, t_wall_hit});
+		effect_lookup.insert({3, t_huge_explosion});
 
 		// title stuff
 		t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
@@ -174,6 +186,8 @@ class AssetManager {
 		arms_switch.setBuffer(arms_switch_buffer);
 		bg_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bg_shot.wav");
 		bg_shot.setBuffer(bg_shot_buffer);
+		skycorps_ar_buffer.loadFromFile(finder.resource_path + "/audio/sfx/skycorps_ar_shot.wav");
+		skycorps_ar_shot.setBuffer(skycorps_ar_buffer);
 		plasmer_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/plasmer_shot.wav");
 		plasmer_shot.setBuffer(plasmer_shot_buffer);
 		tomahawk_flight_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tomahawk_flight.wav");
@@ -206,6 +220,17 @@ class AssetManager {
 		orb_1.setBuffer(orb_1_buffer);
 		orb_5_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_5.wav");
 		orb_5.setBuffer(orb_5_buffer);
+
+		tank_alert1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_alert_1.wav");
+		tank_alert_1.setBuffer(tank_alert1_buffer);
+		tank_alert2_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_alert_2.wav");
+		tank_alert_2.setBuffer(tank_alert2_buffer);
+		tank_hurt1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_hurt_1.wav");
+		tank_hurt_1.setBuffer(tank_hurt1_buffer);
+		tank_hurt2_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_hurt_2.wav");
+		tank_hurt_2.setBuffer(tank_hurt2_buffer);
+		tank_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_death.wav");
+		tank_death.setBuffer(tank_death_buffer);
 
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
@@ -243,10 +268,7 @@ class AssetManager {
 	sf::Sprite sp_ui_test{};
 
 	//items
-	sf::Texture t_bryns_notebook{};
-	sf::Texture t_factory_access_permit{};
-	sf::Texture t_bipolar_junction_transistor{};
-	sf::Texture t_willets_floppy_disc{};
+	sf::Texture t_items{};
 
 	// critters and bosses!
 	sf::Texture t_frdog{};
@@ -266,19 +288,31 @@ class AssetManager {
 	sf::Texture t_hud_gun_color{};
 	sf::Texture t_hud_gun_shadow{};
 	sf::Texture t_hud_pointer{};
+	sf::Texture t_selector{};
+	sf::Texture t_console_outline{};
 
 	sf::Texture t_alphabet{};
 	std::vector<sf::Sprite> sp_alphabet{};
 
 	// tiles!
 	std::vector<sf::Texture> tilesets{};
+	sf::Texture t_platforms{};
+	sf::Texture t_platform_night{};
 
 	//save
 	sf::Texture savepoint{};
+
+	//entities
 	sf::Texture t_chest{};
+	sf::Texture t_shield{};
 
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
+
+	sf::Texture t_huge_explosion{};
+	sf::Texture t_large_explosion{};
+	sf::Texture t_small_explosion{};
+	sf::Texture t_wall_hit{};
 
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};
@@ -328,13 +362,12 @@ class AssetManager {
 	sf::Texture t_grappling_hook{};
 	sf::Texture t_rope{};
 	sf::Texture t_hook{};
+	sf::Texture t_grenade_launcher{};
+	sf::Texture t_grenade{};
 
 	//items
 	sf::Texture t_heart{};
 	sf::Texture t_orb{};
-
-	// condense these into a 2d vector later
-	std::vector<sf::Sprite> sp_tileset_provisional{};
 
 	// sound effects!
 	sf::SoundBuffer click_buffer{};
@@ -354,6 +387,8 @@ class AssetManager {
 	sf::Sound bg_shot;
 	sf::SoundBuffer plasmer_shot_buffer{};
 	sf::Sound plasmer_shot;
+	sf::SoundBuffer skycorps_ar_buffer{};
+	sf::Sound skycorps_ar_shot;
 	sf::SoundBuffer tomahawk_flight_buffer{};
 	sf::Sound tomahawk_flight;
 	sf::SoundBuffer tomahawk_catch_buffer{};
@@ -384,6 +419,17 @@ class AssetManager {
 	sf::SoundBuffer orb_5_buffer{};
 	sf::Sound orb_5;
 
+	sf::SoundBuffer tank_alert1_buffer{};
+	sf::Sound tank_alert_1;
+	sf::SoundBuffer tank_alert2_buffer{};
+	sf::Sound tank_alert_2;
+	sf::SoundBuffer tank_hurt1_buffer{};
+	sf::Sound tank_hurt_1;
+	sf::SoundBuffer tank_hurt2_buffer{};
+	sf::Sound tank_hurt_2;
+	sf::SoundBuffer tank_death_buffer{};
+	sf::Sound tank_death;
+
 	//save/load
 	sf::SoundBuffer save_buffer{};
 	sf::Sound save;
@@ -410,10 +456,11 @@ class AssetManager {
 
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
 	std::unordered_map<int, sf::Texture&> background_lookup{};
+	std::unordered_map<int, sf::Texture&> effect_lookup{};
+	std::unordered_map<int, sf::Texture&> platform_lookup{};
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
-	std::unordered_map<std::string_view, sf::Texture&> items{};
 };
 
 } // namespace asset

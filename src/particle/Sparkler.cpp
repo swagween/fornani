@@ -13,7 +13,6 @@ Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions, 
 }
 
 void Sparkler::update(automa::ServiceProvider& svc) {
-
 	if (svc.random.percent_chance(behavior.rate)) {
 		auto x = svc.random.random_range_float(0.f, dimensions.x);
 		auto y = svc.random.random_range_float(0.f, dimensions.y);
@@ -29,6 +28,7 @@ void Sparkler::update(automa::ServiceProvider& svc) {
 void Sparkler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (svc.greyblock_mode()) {
 		drawbox.setPosition(position - cam);
+		drawbox.setSize(dimensions);
 		win.draw(drawbox);
 	} else {
 		for (auto& spark : sparkles) { spark.render(win, cam); }

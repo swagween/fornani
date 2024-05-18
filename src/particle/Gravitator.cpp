@@ -53,8 +53,16 @@ void Gravitator::set_target_position(Vec new_position) {
 	collider.physics.apply_force({force_x, force_y});
 }
 
-void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
+void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos, int history) {
 
+	//just for antennae, can be improved a lot
+	auto prev_color = box.getFillColor();
+	if(history > 0) {
+		box.setFillColor(svc.styles.colors.fucshia);
+		win.draw(box);
+	}
+
+	box.setFillColor(prev_color);
 	box.setPosition((int)(collider.bounding_box.position.x - campos.x),
 					(int)(collider.bounding_box.position.y - campos.y));
 

@@ -33,10 +33,14 @@ void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 			player.give_drop(drop.get_type(), drop.get_value());
 			if (drop.get_type() == DropType::heart) {
 				svc.soundboard.flags.item.set(audio::Item::heal);
-			} else if(drop.get_value() == 1) {
-				svc.soundboard.flags.item.set(audio::Item::orb_1);
-			} else if (drop.get_value() == 10) {
-				svc.soundboard.flags.item.set(audio::Item::orb_5);
+			} else if(drop.get_rarity() == common) {
+				svc.soundboard.flags.item.set(audio::Item::orb_low);
+			} else if (drop.get_rarity() == uncommon) {
+				svc.soundboard.flags.item.set(audio::Item::orb_medium);
+			} else if (drop.get_rarity() == rare) {
+				svc.soundboard.flags.item.set(audio::Item::orb_high);
+			} else if (drop.get_rarity() == priceless) {
+				svc.soundboard.flags.item.set(audio::Item::orb_max);
 			}
 			drop.deactivate();
 		}

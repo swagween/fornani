@@ -14,10 +14,13 @@
 #include "Grid.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
+#include "../particle/Effect.hpp"
 #include "../weapon/Projectile.hpp"
 #include "../entities/item/Loot.hpp"
 #include "../entities/world/Chest.hpp"
 #include "../entities/npc/NPC.hpp"
+#include "Platform.hpp"
+#include "../weapon/Grenade.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -84,9 +87,11 @@ class Map {
 	void generate_layer_textures(automa::ServiceProvider& svc);
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
+	void handle_breakables(Tile& cell, sf::Vector2<float> velocity = {0.f, 0.f}, uint8_t power = 1);
 	Vec get_spawn_position(int portal_source_map_id);
 
-	bool nearby(shape::Shape& first, shape::Shape& second);
+	bool nearby(shape::Shape& first, shape::Shape& second) const;
+	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 
 	// layers
 	std::vector<Layer> layers;
@@ -102,13 +107,16 @@ class Map {
 
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
+	std::vector<arms::Grenade> active_grenades{};
 	std::vector<vfx::Emitter> active_emitters{};
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Animator> animators{};
+	std::vector<entity::Effect> effects{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};
+	std::vector<Platform> platforms{};
 	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};
@@ -129,8 +137,7 @@ class Map {
 	int style_id{};
 	int native_style_id{};
 
-	int bg{}; // which background to render
-	float collision_barrier = 1.5f;
+	float collision_barrier{2.5f};
 
 	int room_id{}; // should be assigned to its constituent chunks
 	bool game_over{false};
@@ -138,6 +145,12 @@ class Map {
 	bool debug_mode{false};
 
 	player::Player* player;
+	automa::ServiceProvider* m_services;
+
+	util::Cooldown loading{}; // shouldn't exist
+
+	private:
+	int abyss_distance{400};
 };
 
 } // namespace world

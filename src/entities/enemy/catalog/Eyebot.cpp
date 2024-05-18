@@ -12,12 +12,12 @@ Eyebot::Eyebot(automa::ServiceProvider& svc) : Enemy(svc, "eyebot") {
 void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (!seeker_cooldown.is_complete()) { seeker.set_position(collider.physics.position); }
 	seeker_cooldown.update();
-	flags.state.set(StateFlags::vulnerable); // frdog is always vulnerable
+	flags.state.set(StateFlags::vulnerable); // eyebot is always vulnerable
 
 	// reset animation states to determine next animation state
 	state = {};
 	if (ent_state.test(entity::State::flip)) { state.set(EyebotState::turn); }
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::right : dir::LR::left;
+	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
 
 	state_function = state_function();
 
@@ -29,10 +29,11 @@ void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 		seeker.update(svc);
 		seeker.seek_player(player);
 		collider.physics.position = seeker.get_position();
+		collider.physics.velocity = seeker.get_velocity();
 		collider.sync_components();
 	}
 
-	Enemy::update(svc, map);
+	Enemy::update(svc, map, player);
 	seeker.set_position(collider.physics.position);
 }
 

@@ -10,7 +10,7 @@ namespace enemy {
 EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {}
 
 void EnemyCatalog::update() {
-	std::erase_if(enemies, [this](auto const& e) { return e->died(); });
+	std::erase_if(enemies, [this](auto const& e) { return e->gone(); });
 }
 
 void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, int id) {

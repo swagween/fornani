@@ -11,5 +11,31 @@
     ],
     "style": 0,
     "background": 5
-  }
+  },
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        22,
+        9
+      ],
+      "activate_on_contact": false,
+      "key": "sign"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        6,
+        7
+      ],
+      "activate_on_contact": false,
+      "key": "computer"
+    }
+  ]
 }

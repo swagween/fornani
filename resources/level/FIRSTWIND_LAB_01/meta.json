@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "room_id": 110,
+    "dimensions": [
+      32,
+      16
+    ],
+    "chunk_dimensions": [
+      2,
+      1
+    ],
+    "style": 0,
+    "background": 5
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        25,
+        12
+      ],
+      "source_id": 110,
+      "destination_id": 108,
+      "activate_on_contact": false
+    }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        12,
+        6
+      ],
+      "activate_on_contact": false,
+      "key": "bookshelf"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        13,
+        12
+      ],
+      "activate_on_contact": false,
+      "key": "computer"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        14,
+        12
+      ],
+      "activate_on_contact": false,
+      "key": "computer_on"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        27,
+        7
+      ],
+      "activate_on_contact": false,
+      "key": "guest_shelf"
+    }
+  ],
+  "animators": [
+    {
+      "id": 231,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        23,
+        7
+      ],
+      "automatic": false,
+      "foreground": false
+    },
+    {
+      "id": 230,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        15,
+        6
+      ],
+      "automatic": false,
+      "foreground": false
+    }
+  ]
+}

@@ -19,6 +19,7 @@
 #include "../particle/Gravitator.hpp"
 #include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
+#include "../particle/Sparkler.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -121,6 +122,7 @@ class Projectile {
 	void constrain_hitbox_at_destruction_point();
 	void lock_to_anchor();
 
+	[[nodiscard]] auto wall_hit_type() const -> int { return visual.wall_hit_type; }
 	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
 
 	dir::Direction direction{};
@@ -128,6 +130,7 @@ class Projectile {
 	components::PhysicsComponent physics{};
 	ProjectileStats stats{};
 	ProjectileAnimation anim{};
+	vfx::Sparkler sparkler{};
 
 	std::string_view label{};
 
@@ -158,5 +161,8 @@ class Projectile {
 
 	private:
 	int id{};
+	struct {
+		int wall_hit_type{};
+	} visual{};
 };
 } // namespace arms
