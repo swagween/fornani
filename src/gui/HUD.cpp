@@ -107,7 +107,7 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 		shield_icon.setPosition({corner_pad.x + SHIELD_origin.x, corner_pad.y + SHIELD_origin.y});
 		win.draw(shield_icon);
 		for(auto i{0}; i < shield_bar; ++i) {
-			std::lerp()
+			//std::lerp()
 			win.draw(shield_bit);
 		}
 		flags.set(HUDState::shield);
