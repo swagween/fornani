@@ -29,7 +29,6 @@ enum class Sprint { released };
 class PlayerController {
 
   public:
-	PlayerController() = default;
 	PlayerController(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc);
@@ -120,7 +119,7 @@ class PlayerController {
 	
 	Jump jump{};
 	Wallslide wallslide{};
-	Shield shield{};
+	Shield shield;
 
 	int dash_request{};
 	int dash_count{};

@@ -9,10 +9,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 void Dojo::init(ServiceProvider& svc, std::string_view room) {
 
 	console = gui::Console(svc);
-
-	hud.set_corner_pad(svc, false); // reset hud position to corner
 	player->reset_flags();
-
 	map.load(svc, room);
 
 	// TODO: refactor player initialization
@@ -42,7 +39,6 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	// save was loaded from a json, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
 
-	player->controller = {};
 	player->controller.prevent_movement();
 }
 
@@ -86,6 +82,7 @@ void Dojo::frame_update(ServiceProvider& svc) {
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
+	hud.set_corner_pad(svc, false); // reset hud position to corner
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
 

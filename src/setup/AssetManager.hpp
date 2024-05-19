@@ -55,6 +55,7 @@ class AssetManager {
 		t_hud_pointer.loadFromFile(finder.resource_path + "/image/gui/HUD_pointer.png");
 		t_hud_gun_color.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_color.png");
 		t_hud_gun_shadow.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_shadow.png");
+		t_hud_shield.loadFromFile(finder.resource_path + "/image/gui/HUD_shield.png");
 		t_selector.loadFromFile(finder.resource_path + "/image/gui/selector.png");
 		t_console_outline.loadFromFile(finder.resource_path + "/image/gui/console_outline.png");
 
@@ -210,6 +211,8 @@ class AssetManager {
 		player_death.setBuffer(player_death_buffer);
 		enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/rainy_ouch.wav");
 		enem_hit.setBuffer(enem_hit_buffer);
+		bubble_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bubble_pop.wav");
+		bubble.setBuffer(bubble_buffer);
 
 		enem_death_1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/enemy_death.wav");
 		enem_death_1.setBuffer(enem_death_1_buffer);
@@ -288,6 +291,7 @@ class AssetManager {
 	sf::Texture t_hud_gun_color{};
 	sf::Texture t_hud_gun_shadow{};
 	sf::Texture t_hud_pointer{};
+	sf::Texture t_hud_shield{};
 	sf::Texture t_selector{};
 	sf::Texture t_console_outline{};
 
@@ -395,6 +399,8 @@ class AssetManager {
 	sf::Sound tomahawk_catch;
 	sf::SoundBuffer pop_mid_buffer{};
 	sf::Sound pop_mid;
+	sf::SoundBuffer bubble_buffer{};
+	sf::Sound bubble;
 
 	sf::SoundBuffer jump_buffer{};
 	sf::Sound jump;

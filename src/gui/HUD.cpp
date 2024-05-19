@@ -8,6 +8,7 @@ HUD::HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> 
 	HP_origin = {distance_from_edge, (int)svc.constants.screen_dimensions.y - distance_from_edge - heart_dimensions.y};
 	ORB_origin = {distance_from_edge, HP_origin.y - PAD - orb_text_dimensions.y};
 	GUN_origin = {distance_from_edge, ORB_origin.y - PAD - pointer_dimensions.y - pointer_pad * 2};
+	SHIELD_origin = {distance_from_edge, HP_origin.y + PAD + heart_dimensions.y};
 	update(player);
 	for (int i = 0; i < num_heart_sprites; ++i) {
 		sp_hearts.at(i).setTexture(svc.assets.t_hud_hearts);
@@ -31,6 +32,11 @@ HUD::HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> 
 		sp_pointer.at(i).setTexture(svc.assets.t_hud_pointer);
 		sp_pointer.at(i).setTextureRect(sf::IntRect({0, i * pointer_dimensions.y}, pointer_dimensions));
 	}
+	shield_icon.setTexture(svc.assets.t_hud_shield);
+	shield_bit.setTexture(svc.assets.t_hud_shield);
+	shield_icon.setTextureRect(sf::IntRect{{0, 0}, shield_dimensions});
+	shield_icon.setPosition(sf::Vector2<float>{SHIELD_origin});
+	shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x * 3, 0}, shield_bit_dimensions});
 }
 
 void HUD::update(player::Player& player) {
@@ -95,8 +101,25 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 		sp_pointer.at(player.equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
 		win.draw(sp_pointer.at(player.equipped_weapon().attributes.ui_color));
 	}
+
+	//SHIELD
+	if (player.catalog.categories.abilities.has_ability(player::Abilities::shield)) {
+		shield_icon.setPosition({corner_pad.x + SHIELD_origin.x, corner_pad.y + SHIELD_origin.y});
+		win.draw(shield_icon);
+		for(auto i{0}; i < shield_bar; ++i) {
+			std::lerp()
+			win.draw(shield_bit);
+		}
+		flags.set(HUDState::shield);
+	} else {
+		flags.reset(HUDState::shield);
+	}
 }
 
-void HUD::set_corner_pad(automa::ServiceProvider& svc, bool file_preview) { file_preview ? corner_pad = {((float)svc.constants.screen_dimensions.x / 2.f) - 140.f, -60.f} : corner_pad = {0.f, 0.f}; }
+void HUD::set_corner_pad(automa::ServiceProvider& svc, bool file_preview) {
+	corner_pad = {0.f, 0.f};
+	if (file_preview) { corner_pad = {((float)svc.constants.screen_dimensions.x / 2.f) - 140.f, -60.f}; }
+	if (flags.test(HUDState::shield)) { corner_pad = {0.f, -((float)shield_dimensions.y + PAD)}; }
+}
 
 } // namespace gui

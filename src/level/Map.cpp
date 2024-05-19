@@ -169,6 +169,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (off_the_bottom(player->collider.physics.position)) { player->kill(); }
 
 	for (auto& grenade : active_grenades) {
+		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(grenade.bounding_box)) { grenade.physics.velocity *= -1.f; }
 		if (grenade.detonated() && grenade.sensor.within_bounds(player->collider.hurtbox)) { player->hurt(grenade.get_damage()); }
 		for (auto& enemy : enemy_catalog.enemies) {
 			if (grenade.detonated() && grenade.sensor.within_bounds(enemy->get_collider().hurtbox)) {

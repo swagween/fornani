@@ -87,7 +87,6 @@ struct PlayerFlags {
 
 class Player {
   public:
-	Player();
 	Player(automa::ServiceProvider& svc);
 
 	// init (violates RAII but must happen after resource path is set)
@@ -109,6 +108,7 @@ class Player {
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
+	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
 
 	// moves
 	void jump();

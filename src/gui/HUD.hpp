@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include "../setup/EnumLookups.hpp"
+#include "../utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -27,7 +28,9 @@ inline int const gun_pad_vert{4};
 inline int const pointer_pad{4};
 inline const sf::Vector2<int> heart_dimensions{18, 18};
 inline const sf::Vector2<int> orb_text_dimensions{18, 16};
-inline const sf::Vector2<int> gun_dimensions{66, 18};
+inline sf::Vector2<int> const gun_dimensions{66, 18};
+inline sf::Vector2<int> const shield_dimensions{18, 18};
+inline sf::Vector2<int> const shield_bit_dimensions{6, 18};
 inline const sf::Vector2<int> pointer_dimensions{14, 10};
 inline int const orb_label_width{44};
 inline int const orb_label_index{10};
@@ -36,6 +39,8 @@ int const num_heart_sprites{4};
 int const num_orb_chars{11};
 int const num_guns{18}; // to be changed later, obviously
 int const num_colors{6};
+
+enum class HUDState { shield };
 
 class HUD {
 
@@ -52,6 +57,7 @@ class HUD {
 	int filled_hp_cells{};
 	int max_orbs{};
 	int num_orbs{};
+	int shield_bar{32};
 	std::string_view gun_name{};
 	std::string digits{};
 
@@ -61,11 +67,17 @@ class HUD {
 	std::array<sf::Sprite, num_guns> sp_guns{};
 	std::array<sf::Sprite, num_colors> sp_pointer{};
 
+	sf::Sprite shield_icon{};
+	sf::Sprite shield_bit{};
+
 	sf::Vector2f corner_pad{}; // for rendering file preview
   private:
 	sf::Vector2<int> HP_origin{};
 	sf::Vector2<int> ORB_origin{};
 	sf::Vector2<int> GUN_origin{};
+	sf::Vector2<int> SHIELD_origin{};
+
+	util::BitFlags<HUDState> flags{};
 };
 
 } // namespace gui

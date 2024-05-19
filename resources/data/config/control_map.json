@@ -72,12 +72,12 @@
     },
     "menu_forward": {
       "mouse_button": "",
-      "keyboard_key": "Z",
+      "keyboard_key": "Enter",
       "gamepad_button": 1
     },
     "menu_back": {
       "mouse_button": "",
-      "keyboard_key": "X",
+      "keyboard_key": "Esc",
       "gamepad_button": 2
     }
   }

@@ -78,7 +78,7 @@ class ControllerMap {
 																		  {"Period", sf::Keyboard::Period}, {"1", sf::Keyboard::Num1},
 																		  {"2", sf::Keyboard::Num2},		{"3", sf::Keyboard::Num3},
 																		  {"Space", sf::Keyboard::Space},	{"LControl", sf::Keyboard::LControl},
-																		  {"Esc", sf::Keyboard::Escape}};
+																		  {"Esc", sf::Keyboard::Escape},	{"Enter", sf::Keyboard::Enter}};
 	std::unordered_map<sf::Keyboard::Key, std::string_view> key_to_string{{sf::Keyboard::A, "A"},			{sf::Keyboard::B, "B"},
 																		  {sf::Keyboard::C, "C"},			{sf::Keyboard::D, "D"},
 																		  {sf::Keyboard::E, "E"},			{sf::Keyboard::F, "F"},

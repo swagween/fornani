@@ -27,7 +27,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& sprint = svc.controller_map.label_to_control.at("sprint").held();
 	auto const& sprint_release = svc.controller_map.label_to_control.at("sprint").released();
 
-	auto const& shielding = svc.controller_map.label_to_control.at("shield").held();
+	auto const& shielding = svc.controller_map.label_to_control.at("shield").held() && grounded();
+	auto const& shield_released = svc.controller_map.label_to_control.at("shield").released();
 
 	auto const& jump_started = svc.controller_map.label_to_control.at("main_action").triggered();
 	auto const& jump_held = svc.controller_map.label_to_control.at("main_action").held();
@@ -74,8 +75,10 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
 	}
 
+	//shield
 	key_map[ControllerInput::shield] = 0.f;
 	if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
+	if (shield_released) { shield.pop(); }
 	shielding ? shield.start() : shield.end();
 
 	key_map[ControllerInput::sprint] = 0.f;
@@ -146,7 +149,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	flags.reset(MovementState::restricted);
 	decrement_requests();
 	jump.update();
-	shield.update();
+	shield.update(svc);
 
 	svc.controller_map.reset_triggers();
 }

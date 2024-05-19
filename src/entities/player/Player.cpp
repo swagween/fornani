@@ -7,8 +7,6 @@
 
 namespace player {
 
-Player::Player() {}
-
 Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc) {}
 
 void Player::init(automa::ServiceProvider& svc) {
@@ -74,6 +72,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	dash();
 	jump();
 	wallslide();
+	shield();
 	update_animation();
 
 	// check keystate
@@ -143,7 +142,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
 	}
 
-	if (controller.get_shield().is_shielding()) { controller.get_shield().render(*m_services, win, campos); }
+	if (animation.state.test(AnimState::shield)) { controller.get_shield().render(*m_services, win, campos); }
 
 	// texture updater debug
 	// texture_updater.debug_render(win, campos);
@@ -199,7 +198,7 @@ void Player::update_animation() {
 		}
 	}
 	if (catalog.categories.abilities.has_ability(Abilities::shield)) {
-		if(controller.get_shield().is_shielding() && grounded()) {
+		if(controller.get_shield().is_shielding() && grounded() && !animation.state.test(AnimState::land) && !animation.state.test(AnimState::fall)) {
 			animation.state = {};
 			animation.state.set(AnimState::shield);
 			controller.prevent_movement();
@@ -355,8 +354,8 @@ void Player::wallslide() {
 }
 
 void Player::shield() {
-	if (!catalog.categories.abilities.has_ability(Abilities::wall_slide)) { return; }
-	if (controller.get_shield().is_shielding()) { controller.get_shield().sensor.bounds.setPosition(collider.physics.position); }
+	if (!catalog.categories.abilities.has_ability(Abilities::shield)) { return; }
+	controller.get_shield().sensor.bounds.setPosition(collider.bounding_box.position + collider.bounding_box.dimensions * 0.5f);
 }
 
 void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
@@ -424,6 +423,10 @@ void Player::walk() {
 
 void Player::hurt(int amount = 1) {
 	if (!health.invincible()) {
+		if (shielding()) {
+			controller.get_shield().damage(amount);
+			return;
+		}
 		health.inflict(amount);
 		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;
@@ -458,6 +461,7 @@ void Player::update_antennae() {
 		} else {
 			antenna_offset.x = ctr % 2 == 0 ? 2.f : 13.f;
 		}
+		if (animation.get_frame() == 82) { antenna_offset.x += controller.facing_right() ? 6.f : -6.f; }
 		++ctr;
 	}
 }
