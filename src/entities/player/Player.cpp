@@ -142,7 +142,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
 	}
 
-	if (animation.state.test(AnimState::shield)) { controller.get_shield().render(*m_services, win, campos); }
+	if (controller.get_shield().active()) { controller.get_shield().render(*m_services, win, campos); }
 
 	// texture updater debug
 	// texture_updater.debug_render(win, campos);
@@ -424,7 +424,6 @@ void Player::walk() {
 void Player::hurt(int amount = 1) {
 	if (!health.invincible()) {
 		if (shielding()) {
-			controller.get_shield().damage(amount);
 			return;
 		}
 		health.inflict(amount);

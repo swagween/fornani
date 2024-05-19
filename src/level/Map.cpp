@@ -128,7 +128,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			auto start = entry["start"].as<float>();
 			start = std::clamp(start, 0.f, 1.f);
 			auto type = entry["type"].as_string();
-			platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<int>(), type, start));
+			platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<int>(), type, start, entry["style"].as<int>()));
 		}
 	}
 
@@ -169,7 +169,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (off_the_bottom(player->collider.physics.position)) { player->kill(); }
 
 	for (auto& grenade : active_grenades) {
-		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(grenade.bounding_box)) { grenade.physics.velocity *= -1.f; }
+		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(grenade.bounding_box)) {
+			player->controller.get_shield().damage();
+			grenade.physics.velocity *= -1.f;
+		}
 		if (grenade.detonated() && grenade.sensor.within_bounds(player->collider.hurtbox)) { player->hurt(grenade.get_damage()); }
 		for (auto& enemy : enemy_catalog.enemies) {
 			if (grenade.detonated() && grenade.sensor.within_bounds(enemy->get_collider().hurtbox)) {
@@ -269,6 +272,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 				}
 			}
 		}
+		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
 		if (proj.bounding_box.overlaps(player->collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
 			player->hurt(proj.stats.base_damage);
 			proj.destroy(false);
@@ -425,7 +429,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc.greyblock_mode()) {
-		background->render(win, cam, real_dimensions);
+		background->render(svc, win, cam, real_dimensions);
 		for (int i = 0; i < 4; ++i) {
 			layer_textures.at(i).display();
 			layer_sprite.setTexture(layer_textures.at(i).getTexture());

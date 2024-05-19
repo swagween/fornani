@@ -5,7 +5,7 @@
 
 namespace world {
 
-Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point)
+Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point, int style)
 	: shape::Collider(dimensions, position), path_position(start_point) {
 
 	auto const& in_data = svc.data.platform[specifications];
@@ -14,6 +14,8 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	if (in_data["repeating"].as_bool()) { flags.attributes.set(PlatformAttributes::repeating); }
 	if (in_data["player_activated"].as_bool()) { flags.attributes.set(PlatformAttributes::player_activated); }
 	if (in_data["player_controlled"].as_bool()) { flags.attributes.set(PlatformAttributes::player_controlled); }
+
+	metrics.speed = in_data["speed"].as<float>();
 
 	for (auto& point : in_data["track"].array_view()) { track.push_back({position.x + (point[0].as<float>() * extent), position.y + (point[1].as<float>() * extent)}); }
 	track_shape.setPointCount(track.size());
@@ -32,7 +34,6 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	counter.start();
 
 	// set visuals
-	style = 0;
 	animation.set_params({0, 4, 16, -1});
 	sprite.setTexture(svc.assets.platform_lookup.at(style));
 	auto scaled_dim = dimensions / svc.constants.cell_size;

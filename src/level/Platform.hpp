@@ -20,7 +20,7 @@ namespace world {
 
 class Platform : public shape::Collider {
   public:
-	Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point = 0.f);
+	Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point = 0.f, int style = 0);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	dir::Direction direction{};
@@ -33,7 +33,7 @@ class Platform : public shape::Collider {
 	} range{};
 
 	struct {
-		float speed{0.001f};
+		float speed{};
 	} metrics{};
 
 	struct {

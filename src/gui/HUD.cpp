@@ -70,12 +70,10 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	digits = std::to_string(num_orbs);
 	int ctr{0};
 	for (auto& digit : digits) {
-
 		if (digit - '0' >= 0 && digit - '0' < 10) {
 			sp_orb_text.at(digit - '0').setPosition(corner_pad.x + ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), corner_pad.y + ORB_origin.y);
 			win.draw(sp_orb_text.at(digit - '0'));
 		}
-
 		ctr++;
 	}
 
@@ -104,11 +102,26 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 
 	//SHIELD
 	if (player.catalog.categories.abilities.has_ability(player::Abilities::shield)) {
+		auto const& shield = player.controller.get_shield();
+		shield_icon.setTextureRect(sf::IntRect{{0, shield.hud_animation.get_frame() * shield_dimensions.y}, shield_dimensions});
 		shield_icon.setPosition({corner_pad.x + SHIELD_origin.x, corner_pad.y + SHIELD_origin.y});
 		win.draw(shield_icon);
-		for(auto i{0}; i < shield_bar; ++i) {
-			//std::lerp()
-			win.draw(shield_bit);
+		auto amount = std::lerp(0, num_bits, shield.health.get_hp() / shield.health.get_max());
+		auto switch_point = std::lerp(0, num_bits, shield.switch_point / shield.health.get_max());
+		auto slack = 4.f;
+		auto empty_threshold = shield.is_shielding() ? std::min(amount + slack, switch_point) : std::max(switch_point + slack, amount);
+		for (auto i{shield_bar}; i >= 0; --i) {
+			shield_bit.setPosition({corner_pad.x + SHIELD_origin.x + shield_dimensions.x + shield_pad + i, corner_pad.y + SHIELD_origin.y});
+			if (i <= amount) {
+				shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
+				win.draw(shield_bit);
+			} else if (i > amount && i < empty_threshold) {
+				shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x + shield_bit_dimensions.x * 1, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
+				win.draw(shield_bit);
+			} else if(i > empty_threshold) {
+				shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x + shield_bit_dimensions.x * 2, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
+				win.draw(shield_bit);
+			}
 		}
 		flags.set(HUDState::shield);
 	} else {

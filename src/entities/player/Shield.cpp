@@ -10,11 +10,11 @@ Shield::Shield(automa::ServiceProvider& svc) {
 	animation.set_params(neutral);
 	dimensions = {64, 64};
 	health.set_max(16.f);
+	hud_animation.set_params(hud_animations.not_shielding);
 }
 
 void Shield::start() {
 	timer.start(stats.time);
-	flags.state.set(ShieldState::shielding);
 }
 
 void Shield::pop() {
@@ -29,16 +29,47 @@ void Shield::end() {}
 void Shield::update(automa::ServiceProvider& svc) {
 	timer.update();
 	animation.update();
-	if (flags.state.test(ShieldState::shielding)) { health.inflict(0.01f); }
+	hud_animation.update();
+	health.update();
 	if (flags.state.test(ShieldState::popping)) {
-		if (flags.triggers.test(ShieldTrigger::shield_down)) {
-			svc.soundboard.flags.player.set(audio::Player::shield_drop);
-			flags.triggers.reset(ShieldTrigger::shield_down);
-		}
 		if (animation.complete()) {
-			flags = {};
+			flags.state.reset(ShieldState::popping);
 			animation.set_params(neutral);
 		}
+	}
+
+	// recovery mode
+	if (flags.state.test(ShieldState::recovery)) {
+		if (health.full()) {
+			hud_animation.set_params(hud_animations.not_shielding);
+			flags.state.reset(ShieldState::recovery);
+		}
+		health.inflict(-stats.recovery_regen_rate);
+		return;
+	}
+	// exit early if shield is recovering
+
+	is_shielding() ? health.inflict(stats.depletion_rate) : health.inflict(-stats.regen_rate);
+	if (health.is_dead()) {
+		pop();
+		flags.state.set(ShieldState::recovery);
+	}
+
+	if (flags.triggers.test(ShieldTrigger::shield_up)) {
+		flags.state.set(ShieldState::shielding);
+		hud_animation.set_params(hud_animations.shielding);
+		switch_point = health.get_hp();
+		flags.triggers.reset(ShieldTrigger::shield_up);
+	}
+	if (flags.triggers.test(ShieldTrigger::shield_down)) {
+		svc.soundboard.flags.player.set(audio::Player::shield_drop);
+		hud_animation.set_params(hud_animations.not_shielding);
+		switch_point = health.get_hp();
+		flags.state.reset(ShieldState::shielding);
+		flags.triggers.reset(ShieldTrigger::shield_down);
+	}
+	if (flags.state.test(ShieldState::recovery)) {
+		hud_animation.set_params(hud_animations.recovering);
 	}
 }
 

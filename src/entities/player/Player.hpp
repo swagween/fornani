@@ -53,6 +53,7 @@ constexpr inline float antenna_speed{136.f};
 struct PlayerStats {
 	int orbs{};
 	int max_orbs{};
+	float shield_dampen{0.01f};
 };
 
 struct PhysicsStats {
@@ -169,7 +170,7 @@ class Player {
 	std::vector<vfx::Gravitator> antennae{};
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
-	PlayerStats player_stats{0, 99999};
+	PlayerStats player_stats{0, 99999, 0.06f};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 	util::Cooldown hurt_cooldown{}; //for animation

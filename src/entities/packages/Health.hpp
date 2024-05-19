@@ -23,6 +23,7 @@ class Health : public Entity {
 	[[nodiscard]] auto get_state(int index) const -> int { return (int)health_states.at(index).state; }
 	[[nodiscard]] auto is_dead() const -> bool { return hp <= 0.f; }
 	[[nodiscard]] auto invincible() const -> bool { return !invincibility.is_complete(); }
+	[[nodiscard]] auto full() const -> bool { return hp == max_hp; }
 	void set_max(float amount);
 	void set_hp(float amount);
 	void set_invincibility(float amount);

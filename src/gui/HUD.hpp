@@ -8,6 +8,7 @@
 #include <string>
 #include "../setup/EnumLookups.hpp"
 #include "../utils/BitFlags.hpp"
+#include "../entities/animation/Animation.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -21,6 +22,7 @@ namespace gui {
 
 inline int const distance_from_edge{20};
 inline int const PAD{4};
+inline int const shield_pad{4};
 inline int const HP_pad{2};
 inline int const orb_pad{8};
 inline int const gun_pad_horiz{12};
@@ -34,6 +36,7 @@ inline sf::Vector2<int> const shield_bit_dimensions{6, 18};
 inline const sf::Vector2<int> pointer_dimensions{14, 10};
 inline int const orb_label_width{44};
 inline int const orb_label_index{10};
+inline int const num_bits{64};
 
 int const num_heart_sprites{4};
 int const num_orb_chars{11};
@@ -57,7 +60,7 @@ class HUD {
 	int filled_hp_cells{};
 	int max_orbs{};
 	int num_orbs{};
-	int shield_bar{32};
+	int shield_bar{num_bits};
 	std::string_view gun_name{};
 	std::string digits{};
 

@@ -28,6 +28,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& sprint_release = svc.controller_map.label_to_control.at("sprint").released();
 
 	auto const& shielding = svc.controller_map.label_to_control.at("shield").held() && grounded();
+	auto const& shield_pressed = svc.controller_map.label_to_control.at("shield").triggered();
 	auto const& shield_released = svc.controller_map.label_to_control.at("shield").released();
 
 	auto const& jump_started = svc.controller_map.label_to_control.at("main_action").triggered();
@@ -76,10 +77,12 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	}
 
 	//shield
-	key_map[ControllerInput::shield] = 0.f;
-	if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
-	if (shield_released) { shield.pop(); }
-	shielding ? shield.start() : shield.end();
+	if (!shield.recovering()) {
+		key_map[ControllerInput::shield] = 0.f;
+		if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
+		if (shield_pressed) { shield.flags.triggers.set(ShieldTrigger::shield_up); }
+		if (shield_released && shield.is_shielding()) { shield.pop(); }
+	}
 
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }

@@ -103,7 +103,9 @@ class AssetManager {
 
 		t_platforms.loadFromFile(finder.resource_path + "/image/tile/platforms.png");
 		t_platform_night.loadFromFile(finder.resource_path + "/image/tile/platform_night.png");
+		t_platform_abandoned.loadFromFile(finder.resource_path + "/image/tile/platform_abandoned.png");
 		platform_lookup.insert({0, t_platform_night});
+		platform_lookup.insert({1, t_platform_abandoned});
 
 		// backgrounds
 		t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");
@@ -115,6 +117,7 @@ class AssetManager {
 		t_bg_rosyhaze.loadFromFile(finder.resource_path + "/image/background/rosyhaze.png");
 		t_bg_slime.loadFromFile(finder.resource_path + "/image/background/slime.png");
 		t_bg_dirt.loadFromFile(finder.resource_path + "/image/background/dirt.png");
+		t_bg_grove.loadFromFile(finder.resource_path + "/image/background/glade.png");
 
 		background_lookup.insert({0, t_bg_dusk});
 		background_lookup.insert({1, t_bg_sunrise});
@@ -302,6 +305,7 @@ class AssetManager {
 	std::vector<sf::Texture> tilesets{};
 	sf::Texture t_platforms{};
 	sf::Texture t_platform_night{};
+	sf::Texture t_platform_abandoned{};
 
 	//save
 	sf::Texture savepoint{};

@@ -391,6 +391,7 @@ void Game::debug_window() {
 							ImGui::Text("Player Stats");
 							ImGui::SliderInt("Max Orbs", &player.player_stats.max_orbs, 99, 99999);
 							ImGui::SliderInt("Orbs", &player.player_stats.orbs, 0, 99999);
+							ImGui::Text("Shield: %f", player.controller.get_shield().health.get_hp());
 							ImGui::Separator();
 							ImGui::Text("Inventory");
 							for (auto& item : player.catalog.categories.inventory.items) {
@@ -592,6 +593,20 @@ void Game::debug_window() {
 						game_state.get_current_state().init(services, "/level/NIGHT_MAYHEM_01");
 
 						player.set_position({28 * 32, 8 * 32});
+					}
+					if (ImGui::Button("Abandoned Course")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/ABANDONED_COURSE_01");
+
+						player.set_position({15 * 32 * 4, 8 * 32});
+					}
+					if (ImGui::Button("Abandoned Passage")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/ABANDONED_PASSAGE_01");
+
+						player.set_position({16 * 32 * 6, 8 * 32});
 					}
 					if (ImGui::Button("Breakable Test")) {
 						services.assets.click.play();
