@@ -22,7 +22,7 @@ float const default_detector_height = 18.f;
 
 enum class General { ignore_resolution };
 
-enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
+enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
 
 enum class Collision {
 	any_collision,
@@ -68,6 +68,7 @@ class Collider {
 	bool has_vertical_collision() const;
 	bool has_left_wallslide_collision() const;
 	bool has_right_wallslide_collision() const;
+	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
 	
 	float compute_length(sf::Vector2<float> const v);
 

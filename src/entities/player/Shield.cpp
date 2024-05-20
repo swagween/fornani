@@ -9,13 +9,11 @@ Shield::Shield(automa::ServiceProvider& svc) {
 	sensor.bounds.setOrigin({28, 28});
 	animation.set_params(neutral);
 	dimensions = {64, 64};
-	health.set_max(16.f);
+	health.set_max(16.0f);
 	hud_animation.set_params(hud_animations.not_shielding);
 }
 
-void Shield::start() {
-	timer.start(stats.time);
-}
+void Shield::start() { timer.start(stats.time); }
 
 void Shield::pop() {
 	flags.state.set(ShieldState::popping);
@@ -50,6 +48,7 @@ void Shield::update(automa::ServiceProvider& svc) {
 	// exit early if shield is recovering
 
 	is_shielding() ? health.inflict(stats.depletion_rate) : health.inflict(-stats.regen_rate);
+	health.update();
 	if (health.is_dead()) {
 		pop();
 		flags.state.set(ShieldState::recovery);

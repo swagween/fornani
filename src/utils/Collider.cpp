@@ -130,9 +130,11 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 
 	if (jumpbox.SAT(cell)) {
 		flags.state.set(State::grounded);
+		flags.state.set(State::world_grounded);
 		flags.state.set(State::is_any_jump_collision);
 	} else {
 		flags.state.reset(State::grounded);
+		flags.state.reset(State::world_grounded);
 	}
 
 	flags.movement.reset(Movement::dashing);

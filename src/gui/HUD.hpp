@@ -9,6 +9,8 @@
 #include "../setup/EnumLookups.hpp"
 #include "../utils/BitFlags.hpp"
 #include "../entities/animation/Animation.hpp"
+#include "../particle/Gravitator.hpp"
+#include "Widget.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -50,8 +52,7 @@ class HUD {
   public:
 	HUD() = default;
 	HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> pos);
-	void update(player::Player& player);
-	void constrain();
+	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(player::Player& player, sf::RenderWindow& win);
 	void set_corner_pad(automa::ServiceProvider& svc, bool file_preview = false);
 
@@ -74,11 +75,20 @@ class HUD {
 	sf::Sprite shield_bit{};
 
 	sf::Vector2f corner_pad{}; // for rendering file preview
+
   private:
+
+	  struct {
+		sf::Vector2<float> hp{};
+	} origins{};
+	  std::vector<Widget> hearts{};
+
 	sf::Vector2<int> HP_origin{};
 	sf::Vector2<int> ORB_origin{};
 	sf::Vector2<int> GUN_origin{};
 	sf::Vector2<int> SHIELD_origin{};
+
+	vfx::Gravitator shield_discrepancy{};
 
 	util::BitFlags<HUDState> flags{};
 };

@@ -175,6 +175,8 @@ class Player {
 	PlayerFlags flags{};
 	util::Cooldown hurt_cooldown{}; //for animation
 	Counters counters{};
+	std::vector<sf::Vector2<float>> accumulated_forces{};
+	sf::Vector2<float> forced_momentum{};
 
 	automa::ServiceProvider* m_services;
 

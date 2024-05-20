@@ -67,7 +67,10 @@ void Platform::update(automa::ServiceProvider& svc, player::Player& player) {
 			direction.und = physics.velocity.y > 0.0f ? dir ::UND::down : dir::UND::up;
 
 			if (player.collider.jumpbox.overlaps(bounding_box) && flags.attributes.test(PlatformAttributes::sticky)) {
-				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.collider.physics.position += physics.position - old_position; }
+				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) {
+					//player.collider.physics.position += physics.position - old_position;
+					player.forced_momentum = physics.position - old_position;
+				}
 			}
 			break;
 		} else {

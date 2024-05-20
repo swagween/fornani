@@ -76,7 +76,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection).left_offset);
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 
-	hud.update(*player);
+	hud.update(svc, *player);
 
 	player->collider.physics.acceleration = {};
 	player->collider.physics.velocity = {};

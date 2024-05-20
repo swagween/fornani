@@ -1,5 +1,6 @@
 #include "TextWriter.hpp"
 #include <SFML/Graphics.hpp>
+#include <string>
 #include "../service/ServiceProvider.hpp"
 
 namespace text {
@@ -69,7 +70,7 @@ void TextWriter::wrap() {
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 
-	float horizontal_extent = position.x + suite.at(iterators.current_suite_set).front().data.getLocalBounds().width;
+	auto horizontal_extent = position.x + suite.at(iterators.current_suite_set).front().data.getLocalBounds().width;
 	if (horizontal_extent > bounds.x) {
 
 		// get index of last in-bounds space
@@ -284,13 +285,13 @@ void TextWriter::shutdown() {
 	iterators = {};
 }
 
-Message& const TextWriter::current_message() {
+Message& TextWriter::current_message() {
 	if (iterators.current_suite_set >= suite.size()) { return zero_option; }
 	if (suite.at(iterators.current_suite_set).empty()) { return zero_option; }
 	return suite.at(iterators.current_suite_set).front();
 }
 
-Message& const TextWriter::current_response() {
+Message& TextWriter::current_response() {
 	if (iterators.current_response_set >= responses.size()) { return zero_option; }
 	if (responses.at(iterators.current_response_set).empty()) { return zero_option; }
 	return responses.at(iterators.current_response_set).front();

@@ -11,6 +11,7 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	console = gui::Console(svc);
 	player->reset_flags();
 	map.load(svc, room);
+	hud.set_corner_pad(svc, false); // reset hud position to corner
 
 	// TODO: refactor player initialization
 	player->collider.physics.zero();
@@ -59,8 +60,8 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 void Dojo::tick_update(ServiceProvider& svc) {
 	enter_room.update();
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
-	player->update(console, inventory_window);
 
+	player->update(console, inventory_window);
 	map.update(svc, console, inventory_window);
 
 	camera.center(player->anchor_point);
@@ -77,12 +78,11 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 void Dojo::frame_update(ServiceProvider& svc) {
 	map.background->update(svc, camera.get_observed_velocity());
-	hud.update(*player);
+	hud.update(svc, *player);
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
-	hud.set_corner_pad(svc, false); // reset hud position to corner
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
 

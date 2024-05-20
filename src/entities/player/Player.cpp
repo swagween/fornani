@@ -1,4 +1,3 @@
-
 #include "Player.hpp"
 #include "../item/Drop.hpp"
 #include "../../gui/Console.hpp"
@@ -67,7 +66,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	if (collider.flags.state.test(shape::State::just_landed)) { m_services->soundboard.flags.player.set(audio::Player::land); }
 	collider.flags.state.reset(shape::State::just_landed);
 
-	//player-controlled actions
+	// player-controlled actions
 	arsenal.switch_weapon(*m_services, controller.arms_switch());
 	dash();
 	jump();
@@ -84,6 +83,11 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 		if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -equipped_weapon().attributes.recoil / 80; }
 		if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
 	}
+
+	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
+	accumulated_forces.clear();
+	collider.physics.position += forced_momentum;
+	if (controller.moving() || collider.has_horizontal_collision() || collider.world_grounded()) { forced_momentum = {}; }
 
 	collider.update(*m_services);
 	health.update();
@@ -142,7 +146,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
 	}
 
-	if (controller.get_shield().active()) { controller.get_shield().render(*m_services, win, campos); }
+	if (controller.get_shield().active() && catalog.categories.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
 
 	// texture updater debug
 	// texture_updater.debug_render(win, campos);

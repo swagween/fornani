@@ -71,8 +71,8 @@ class TextWriter {
 	[[nodiscard]] auto get_quest_shipment() const -> int { return communicators.out_quest; }
 	void flush_communicators() { communicators = {}; }
 
-	Message& const current_message(); //for debug
-	Message& const current_response(); // for debug
+	Message& current_message(); //for debug
+	Message& current_response(); // for debug
 	int get_current_selection() const;
 	int get_current_suite_set() const;
 

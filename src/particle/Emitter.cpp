@@ -26,10 +26,8 @@ void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 		particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
 	
 	}
-	for (auto& particle : particles) {
-		particle.update(svc, map);
-		std::erase_if(particles, [](auto const& p) { return p.done(); });
-	}
+	for (auto& particle : particles) { particle.update(svc, map); }
+	std::erase_if(particles, [](auto const& p) { return p.done(); });
 }
 
 void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

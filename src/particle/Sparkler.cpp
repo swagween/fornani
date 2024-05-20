@@ -19,10 +19,8 @@ void Sparkler::update(automa::ServiceProvider& svc) {
 		sf::Vector2<float> point{position.x + x, position.y + y};
 		if (active) { sparkles.push_back(Spark(svc, point, color, type)); }
 	}
-	for (auto& spark : sparkles) {
-		spark.update(svc);
-		std::erase_if(sparkles, [](auto const& s) { return s.done(); });
-	}
+	for (auto& spark : sparkles) { spark.update(svc); }
+	std::erase_if(sparkles, [](auto const& s) { return s.done(); });
 }
 
 void Sparkler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
