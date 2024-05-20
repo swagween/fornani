@@ -20,7 +20,7 @@ float const default_jumpbox_height = 4.0f;
 float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 
-enum class General { ignore_resolution };
+enum class General { ignore_resolution, complex };
 
 enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
 

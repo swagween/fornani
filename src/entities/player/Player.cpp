@@ -47,6 +47,7 @@ void Player::init(automa::ServiceProvider& svc) {
 
 void Player::update(gui::Console& console, gui::InventoryWindow& inventory_window) {
 
+	collider.flags.general.set(shape::General::complex);
 	update_sprite();
 	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { controller.nullify_dash(); }
 
@@ -127,6 +128,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 	
 	if (!arsenal.loadout.empty()) {
+
+		collider.flags.general.set(shape::General::complex);
 		equipped_weapon().sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render_back(svc, win, campos); }
 	}
@@ -183,7 +186,6 @@ void Player::update_animation() {
 
 	if (collider.flags.state.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
 	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
-	if (animation.state.test(AnimState::suspend) && grounded()) { animation.state.set(AnimState::land); }
 
 	if (collider.physics.velocity.y > thresholds.suspend && !grounded()) { animation.state.set(AnimState::fall); }
 	if (collider.physics.velocity.y < -thresholds.suspend) { animation.state.set(AnimState::rise); }

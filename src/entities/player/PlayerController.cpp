@@ -27,7 +27,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& sprint = svc.controller_map.label_to_control.at("sprint").held();
 	auto const& sprint_release = svc.controller_map.label_to_control.at("sprint").released();
 
-	auto const& shielding = svc.controller_map.label_to_control.at("shield").held() && grounded();
+	auto const& shielding = svc.controller_map.label_to_control.at("shield").held();
 	auto const& shield_pressed = svc.controller_map.label_to_control.at("shield").triggered();
 	auto const& shield_released = svc.controller_map.label_to_control.at("shield").released();
 
@@ -77,10 +77,10 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	}
 
 	//shield
-	if (!shield.recovering()) {
+	if (!shield.recovering() && grounded()) {
 		key_map[ControllerInput::shield] = 0.f;
 		if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
-		if (shield_pressed) { shield.flags.triggers.set(ShieldTrigger::shield_up); }
+		if (shielding) { shield.flags.triggers.set(ShieldTrigger::shield_up); }
 		if (shield_released && shield.is_shielding()) { shield.pop(); }
 	}
 

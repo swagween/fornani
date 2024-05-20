@@ -76,6 +76,8 @@ class HUD {
 
 	sf::Vector2f corner_pad{}; // for rendering file preview
 
+	util::BitFlags<HUDState> flags{};
+
   private:
 
 	  struct {
@@ -90,7 +92,6 @@ class HUD {
 
 	vfx::Gravitator shield_discrepancy{};
 
-	util::BitFlags<HUDState> flags{};
 };
 
 } // namespace gui

@@ -11,6 +11,7 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	console = gui::Console(svc);
 	player->reset_flags();
 	map.load(svc, room);
+	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
 	hud.set_corner_pad(svc, false); // reset hud position to corner
 
 	// TODO: refactor player initialization

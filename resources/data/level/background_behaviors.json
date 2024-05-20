@@ -43,7 +43,7 @@
     "used_layers": 6,
     "scroll_speed": 0.0,
     "scrolling": true,
-    "parallax_multiplier": 0.05,
+    "parallax_multiplier": 0.1,
     "dimensions": [ 1920, 1080 ],
     "start_offset": [ 230, 130 ]
   }

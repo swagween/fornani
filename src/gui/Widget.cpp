@@ -18,8 +18,8 @@ void Widget::render(sf::RenderWindow& win) {
 	sprite.setTextureRect(sf::IntRect({{lookup, 0}, dimensions}));
 	draw_position = gravitator.collider.physics.position;
 	auto diff = gravitator.collider.physics.position - position;
-	if (abs(diff.x) < 3.f) { draw_position.x = position.x; }
-	if (abs(diff.y) < 3.f) { draw_position.y = position.y; }
+	if (abs(diff.x) < 1.f) { draw_position.x = position.x; }
+	if (abs(diff.y) < 1.f) { draw_position.y = position.y; }
 	sprite.setPosition(origin + draw_position);
 	if (index < maximum) { win.draw(sprite); }
 }

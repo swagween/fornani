@@ -110,6 +110,7 @@ class Player {
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
+	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(player::Abilities::shield); }
 
 	// moves
 	void jump();
@@ -201,7 +202,7 @@ class Player {
 		float stop{3.8f};
 		float wallslide{-1.5f};
 		float suspend{4.4f};
-		float landed{0.004f};
+		float landed{4.4f};
 		float run{0.02f};
 	} thresholds{};
 };

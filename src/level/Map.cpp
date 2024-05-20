@@ -152,7 +152,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
 	transition.fade_in = true;
 	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2, svc.constants.screen_dimensions.y * 2));
-	minimap.setViewport(sf::FloatRect(0.0f, 0.75f, 0.2f, 0.2f));
+	minimap.setViewport(sf::FloatRect(0.75f, 0.75f, 0.2f, 0.2f));
 	loading.start(2);
 }
 
@@ -327,7 +327,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		style_id = style_id == 20 ? native_style_id : 20;
@@ -411,7 +410,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 			minimap_tile.setPosition(cell.position.x - cam.x, cell.position.y - cam.y);
 			minimap_tile.setSize(sf::Vector2<float>{(float)cell.bounding_box.dimensions.x, (float)cell.bounding_box.dimensions.y});
 			if (cell.value > 0) {
-				minimap_tile.setFillColor(sf::Color{20, 240, 20, 120});
+				auto color = svc.styles.colors.ui_white;
+				color.a = 120;
+				minimap_tile.setFillColor(color);
 				win.draw(minimap_tile);
 
 			} else {

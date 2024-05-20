@@ -128,13 +128,25 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 
 	if (wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
-	if (jumpbox.SAT(cell)) {
-		flags.state.set(State::grounded);
-		flags.state.set(State::world_grounded);
-		flags.state.set(State::is_any_jump_collision);
+	// long-winded, but I want to reserve SAT for colliders that actually need it
+	if (flags.general.test(General::complex)) {
+		if (jumpbox.SAT(cell)) {
+			flags.state.set(State::grounded);
+			flags.state.set(State::world_grounded);
+			flags.state.set(State::is_any_jump_collision);
+		} else {
+			flags.state.reset(State::grounded);
+			flags.state.reset(State::world_grounded);
+		}
 	} else {
-		flags.state.reset(State::grounded);
-		flags.state.reset(State::world_grounded);
+		if (jumpbox.overlaps(cell)) {
+			flags.state.set(State::grounded);
+			flags.state.set(State::world_grounded);
+			flags.state.set(State::is_any_jump_collision);
+		} else {
+			flags.state.reset(State::grounded);
+			flags.state.reset(State::world_grounded);
+		}
 	}
 
 	flags.movement.reset(Movement::dashing);

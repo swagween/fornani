@@ -127,7 +127,7 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	}
 
 	// SHIELD
-	if (player.catalog.categories.abilities.has_ability(player::Abilities::shield)) {
+	if (player.has_shield()) {
 		auto const& shield = player.controller.get_shield();
 		shield_icon.setTextureRect(sf::IntRect{{0, shield.hud_animation.get_frame() * shield_dimensions.y}, shield_dimensions});
 		shield_icon.setPosition({corner_pad.x + SHIELD_origin.x, corner_pad.y + SHIELD_origin.y});

@@ -470,6 +470,8 @@ void Game::debug_window() {
 						if (player.arsenal.loadout.empty()) {
 							player.arsenal.push_to_loadout(0);
 							player.arsenal.push_to_loadout(1);
+							player.arsenal.push_to_loadout(2);
+							player.arsenal.push_to_loadout(3);
 							player.arsenal.push_to_loadout(4);
 							player.arsenal.push_to_loadout(5);
 						} else {
@@ -657,7 +659,7 @@ void Game::debug_window() {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/OVERTURNED_GLADE_01");
-						player.set_position({4 * 32, 4 * 32});
+						player.set_position({8 * 32, 8 * 32});
 					}
 					if (ImGui::Button("Woodshine")) {
 						services.assets.click.play();

@@ -80,6 +80,8 @@ class AssetManager {
 		weapon_textures.insert({"bryn's gun", t_bryns_gun});
 		projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
 		weapon_textures.insert({"plasmer", t_plasmer});
+		weapon_textures.insert({"skycorps ar", t_plasmer});
+		projectile_textures.insert({"skycorps ar", t_skycorps_ar_projectile});
 		projectile_textures.insert({"plasmer", t_plasmer_projectile});
 		weapon_textures.insert({"nova", t_nova});
 		projectile_textures.insert({"nova", t_nova_projectile});
@@ -87,7 +89,6 @@ class AssetManager {
 		projectile_textures.insert({"tomahawk", t_tomahawk_projectile});
 		weapon_textures.insert({"clover", t_clover});
 		projectile_textures.insert({"clover", t_clover_projectile});
-		projectile_textures.insert({"skycorps ar", t_skycorps_ar_projectile});
 		weapon_textures.insert({"grappling hook", t_grappling_hook});
 		projectile_textures.insert({"grappling hook", t_hook});
 		weapon_textures.insert({"grenade launcher", t_grenade_launcher});

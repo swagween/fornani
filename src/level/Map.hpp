@@ -21,6 +21,7 @@
 #include "../entities/npc/NPC.hpp"
 #include "Platform.hpp"
 #include "../weapon/Grenade.hpp"
+#include "../utils/Stopwatch.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -134,6 +135,7 @@ class Map {
 	sf::Sprite tile_sprite{};
 	sf::Sprite layer_sprite{};
 	std::string_view style_label{};
+	
 	int style_id{};
 	int native_style_id{};
 
@@ -148,6 +150,9 @@ class Map {
 	automa::ServiceProvider* m_services;
 
 	util::Cooldown loading{}; // shouldn't exist
+
+	//debug
+	util::Stopwatch stopwatch{};
 
 	private:
 	int abyss_distance{400};
