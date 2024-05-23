@@ -111,7 +111,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			sf::Vector2<int> pos{};
 			pos.x = entry["position"][0].as<int>();
 			pos.y = entry["position"][1].as<int>();
-			enemy_catalog.push_enemy(svc, entry["id"].as<int>());
+			enemy_catalog.push_enemy(svc, *this, entry["id"].as<int>());
 			enemy_catalog.enemies.back()->set_position({(float)(pos.x * svc.constants.cell_size), (float)(pos.y * svc.constants.cell_size)});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 		}

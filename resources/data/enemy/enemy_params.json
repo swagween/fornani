@@ -167,10 +167,10 @@
       "variant": "skycorps"
     },
     "physical": {
-      "dimensions": [ 38, 68 ],
-      "sprite_dimensions": [ 92, 76 ],
-      "spritesheet_dimensions": [ 5, 5 ],
-      "offset": [ 6, 27 ],
+      "dimensions": [ 64, 64 ],
+      "sprite_dimensions": [ 120, 120 ],
+      "spritesheet_dimensions": [ 4, 7 ],
+      "offset": [ 40, -23 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [ 200.0, 300.0 ],
@@ -186,7 +186,7 @@
       "base_hp": 640,
       "base_damage": 1.0,
       "speed": 0.5,
-      "loot_multiplier": 7.0,
+      "loot_multiplier": 25.0,
       "drop_range": [ 25, 30 ]
     },
     "animation": {

@@ -407,7 +407,7 @@
         "attributes": {
           "base_damage": 1,
           "range": 280,
-          "speed": 28.0,
+          "speed": 16.0,
           "variance": 0.4,
           "stun_time": 0.0,
           "knockback": 0.0,

@@ -9,7 +9,7 @@ class EnemyCatalog {
 	EnemyCatalog() = default;
 	EnemyCatalog(automa::ServiceProvider& svc);
 	void update();
-	void push_enemy(automa::ServiceProvider& svc, int id);
+	void push_enemy(automa::ServiceProvider& svc, world::Map& map, int id);
 
 	std::vector<std::unique_ptr<enemy::Enemy>> enemies{};
 };
