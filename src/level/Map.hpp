@@ -49,6 +49,8 @@ enum LAYER_ORDER {
 	FOREGROUND = 7,
 };
 
+enum class LevelState { game_over };
+
 // a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
 
@@ -80,8 +82,8 @@ class Map {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win);
-	Tile& tile_at(const uint8_t i, const uint8_t j);
-	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
+	Tile& tile_at(uint8_t const i, uint8_t const j);
+	shape::Shape& shape_at(uint8_t const i, uint8_t const j);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer();
@@ -96,10 +98,10 @@ class Map {
 
 	// layers
 	std::vector<Layer> layers;
-	std::vector<uint32_t> collidable_indeces{};		// generated on load to reduce collision checks in hot code
-	Vec real_dimensions{};		// pixel dimensions (maybe useless)
-	Vecu16 dimensions{};		// points on the 32x32-unit grid
-	Vecu16 chunk_dimensions{};	// how many chunks (16x16 squares) in the room
+	std::vector<uint32_t> collidable_indeces{}; // generated on load to reduce collision checks in hot code
+	Vec real_dimensions{};						// pixel dimensions (maybe useless)
+	Vecu16 dimensions{};						// points on the 32x32-unit grid
+	Vecu16 chunk_dimensions{};					// how many chunks (16x16 squares) in the room
 
 	// json for data loading
 	dj::Json metadata{};
@@ -130,12 +132,12 @@ class Map {
 	sf::RectangleShape minimap_tile{};
 	sf::RectangleShape borderbox{};
 
-	//layers
+	// layers
 	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};
 	sf::Sprite tile_sprite{};
 	sf::Sprite layer_sprite{};
 	std::string_view style_label{};
-	
+
 	int style_id{};
 	int native_style_id{};
 
@@ -151,11 +153,14 @@ class Map {
 
 	util::Cooldown loading{}; // shouldn't exist
 
-	//debug
+	// debug
 	util::Stopwatch stopwatch{};
 
-	private:
+  private:
 	int abyss_distance{400};
+	struct {
+		util::BitFlags<LevelState> state{};
+	} flags{};
 };
 
 } // namespace world

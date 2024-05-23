@@ -49,7 +49,8 @@ struct Soundboard {
 
 	
 	std::unordered_map<std::string_view, Weapon> gun_sounds{{"bryn's gun", Weapon::bryns_gun}, {"plasmer", Weapon::plasmer},   {"skycorps ar", Weapon::skycorps_ar},   {"nova", Weapon::nova},
-															{"clover", Weapon::clover},		   {"tomahawk", Weapon::tomahawk}, {"grappling hook", Weapon::hook_probe}, {"grenade launcher", Weapon::nova}};
+															{"clover", Weapon::clover},		   {"tomahawk", Weapon::tomahawk}, {"grappling hook", Weapon::hook_probe}, {"grenade launcher", Weapon::nova},
+															{"minigun", Weapon::plasmer}};
 };
 
 } // namespace audio

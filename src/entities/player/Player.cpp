@@ -79,7 +79,8 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
 	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
 
-	// weapon physics
+	// weapon
+	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
 	if (controller.shot() && !arsenal.loadout.empty()) {
 		if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -equipped_weapon().attributes.recoil / 80; }
 		if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
@@ -97,9 +98,11 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	update_invincibility();
 	update_weapon();
 	catalog.update(*m_services);
+	if (m_services->ticker.every_x_ticks(10)) { collider.collision_depths = {}; }
+	if (collider.crushed()) { kill(); }
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
-		if (!animation.state.test(AnimState::dash) && !controller.dash_requested()) {
+		if (!(animation.state == AnimState::dash) && !controller.dash_requested()) {
 			controller.stop_dashing();
 			controller.cancel_dash_request();
 			collider.flags.dash.reset(shape::Dash::dash_cancel_collision);
@@ -116,8 +119,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
-	if (svc.ticker.every_x_frames(8) && animation.state.test(AnimState::dash)) { sprite_history.update(sprite); }
-	if (svc.ticker.every_x_frames(8) && !animation.state.test(AnimState::dash)) { sprite_history.flush(); }
+	if (svc.ticker.every_x_frames(8) && animation.state == AnimState::dash) { sprite_history.update(sprite); }
+	if (svc.ticker.every_x_frames(8) && !(animation.state == AnimState::dash)) { sprite_history.flush(); }
 	drag_sprite(win, campos);
 
 	// get UV coords
@@ -168,78 +171,77 @@ void Player::update_animation() {
 	flags.state.set(State::show_weapon);
 
 	if (grounded()) {
-		if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
-		if (!(animation.state.test(AnimState::jumpsquat) || animation.state.test(AnimState::land) || animation.state.test(AnimState::rise))) {
-			if (controller.inspecting()) { animation.state.set(AnimState::inspect); }
-			if (controller.nothing_pressed() && !controller.dashing() && !animation.state.test(AnimState::inspect)) { animation.state.set(AnimState::idle); }
-			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state.set(AnimState::run); }
-			if (controller.moving() && controller.sprinting() && !controller.dashing() && !animation.state.test(AnimState::sharp_turn)) { animation.state.set(AnimState::sprint); }
-			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.state.set(AnimState::stop); }
-			if (quick_direction_switch()) {
-				animation.state = {};
-				animation.state.set(AnimState::sharp_turn);
-			}
+		if (controller.inspecting()) { animation.state = AnimState::inspect; }
+		if (!(animation.state == AnimState::jumpsquat || animation.state == AnimState::land || animation.state == AnimState::rise)) {
+			if (controller.inspecting()) { animation.state = AnimState::inspect; }
+			if (controller.nothing_pressed() && !controller.dashing() && !(animation.state == AnimState::inspect) && !(animation.state == AnimState::sit)) { animation.state = AnimState::idle; }
+			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state = AnimState::run; }
+			if (controller.moving() && controller.sprinting() && !controller.dashing() && !(animation.state == AnimState::sharp_turn)) { animation.state = AnimState::sprint; }
+			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.state = AnimState::stop; }
+			handle_turning();
 		}
 	} else {
-		if (collider.physics.velocity.y > -thresholds.suspend && collider.physics.velocity.y < thresholds.suspend) { animation.state.set(AnimState::suspend); }
+		if (collider.physics.velocity.y > -thresholds.suspend && collider.physics.velocity.y < thresholds.suspend) { animation.state = AnimState::suspend; }
 	}
 
-	if (collider.flags.state.test(shape::State::just_landed)) { animation.state.set(AnimState::land); }
-	if (animation.state.test(AnimState::fall) && grounded()) { animation.state.set(AnimState::land); }
-
-	if (collider.physics.velocity.y > thresholds.suspend && !grounded()) { animation.state.set(AnimState::fall); }
-	if (collider.physics.velocity.y < -thresholds.suspend) { animation.state.set(AnimState::rise); }
+	if (collider.physics.velocity.y > thresholds.suspend && !grounded()) { animation.state = AnimState::fall; }
+	if (collider.flags.animation.test(shape::Animation::just_landed)) {
+		collider.flags.animation.reset(shape::Animation::just_landed);
+		animation.state = AnimState::land;
+	}
+	if (collider.physics.velocity.y < -thresholds.suspend) { animation.state = AnimState::rise; }
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
-		if (controller.dashing() && controller.can_dash()) { animation.state.set(AnimState::dash); }
+		if (controller.dashing() && controller.can_dash()) { animation.state = AnimState::dash; }
 		if (controller.dash_requested()) {
-			animation.state.set(AnimState::dash);
+			animation.state = AnimState::dash;
 			flags.state.reset(State::show_weapon);
 		}
 	}
 	if (catalog.categories.abilities.has_ability(Abilities::wall_slide)) {
-		if (controller.get_wallslide().is_wallsliding()) {
-			animation.state = {};
-			animation.state.set(AnimState::wallslide);
-		}
+		if (controller.get_wallslide().is_wallsliding()) { animation.state = AnimState::wallslide; }
 	}
 	if (catalog.categories.abilities.has_ability(Abilities::shield)) {
-		if(controller.get_shield().is_shielding() && grounded() && !animation.state.test(AnimState::land) && !animation.state.test(AnimState::fall)) {
-			animation.state = {};
-			animation.state.set(AnimState::shield);
+		if(controller.get_shield().is_shielding() && grounded() && !(animation.state == AnimState::land) && !(animation.state == AnimState::fall)) {
+			animation.state = AnimState::shield;
 			controller.prevent_movement();
 			flags.state.reset(State::show_weapon);
 		}
 	}
-
-	if (animation.state.test(AnimState::sit)) { flags.state.reset(State::show_weapon); }
-
-	if (hurt_cooldown.running()) {
-		animation.state = {};
-		animation.state.set(AnimState::hurt);
-	}
+	if (animation.state == AnimState::sit) { flags.state.reset(State::show_weapon); }
+	if (hurt_cooldown.running()) { animation.state = AnimState::hurt; }
 
 	animation.update();
 }
 
 void Player::update_sprite() {
+
+	if (animation.triggers.test(AnimTriggers::flip)) {
+		sprite.scale(-1.0f, 1.0f);
+		animation.triggers.reset(AnimTriggers::flip);
+	}
+
+	flags.state.reset(State::dir_switch);
 	// flip the sprite based on the player's direction
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-	if (controller.facing_left() && sprite.getScale() == right_scale) {
-		sprite.scale(-1.0f, 1.0f);
-		if (grounded()) { animation.state.set(AnimState::turn); }
-	}
-	if (controller.facing_right() && sprite.getScale() == left_scale) {
-		sprite.scale(-1.0f, 1.0f);
-		if (grounded()) { animation.state.set(AnimState::turn); }
-	}
+	if (controller.facing_left() && sprite.getScale() == right_scale) { sprite.scale(-1.0f, 1.0f); }
+	if (controller.facing_right() && sprite.getScale() == left_scale) { sprite.scale(-1.0f, 1.0f); }
+
+	
 
 	// check for quick turn
-	flags.state.reset(State::dir_switch);
 	if (controller.quick_turn()) { flags.state.set(State::dir_switch); }
 
 	sprite.setTexture(texture_updater.get_dynamic_texture());
+}
+
+void Player::handle_turning() {
+	sf::Vector2<float> right_scale = {1.0f, 1.0f};
+	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
+	if (controller.facing_left() && sprite.getScale() == right_scale) { animation.state = controller.quick_turn() ? AnimState::sharp_turn : AnimState::turn; }
+	if (controller.facing_right() && sprite.getScale() == left_scale) { animation.state = controller.quick_turn() ? AnimState::sharp_turn : AnimState::turn; }
+	if (quick_direction_switch()) { animation.state = controller.quick_turn() ? AnimState::sharp_turn : AnimState::turn; }
 }
 
 void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window) {
@@ -314,16 +316,16 @@ void Player::jump() {
 		collider.flags.movement.reset(shape::Movement::jumping);
 	}
 	if (controller.get_jump().jumpsquat_trigger()) {
-		animation.state.set(AnimState::jumpsquat);
+		animation.state = AnimState::jumpsquat;
 		controller.get_jump().start_jumpsquat();
 		controller.get_jump().reset_jumpsquat_trigger();
 		collider.flags.movement.set(shape::Movement::jumping);
 	}
-	if (controller.get_jump().jumpsquatting() && !animation.state.test(AnimState::jumpsquat)) {
+	if (controller.get_jump().jumpsquatting() && !(animation.state == AnimState::jumpsquat)) {
 		controller.get_jump().stop_jumpsquatting();
 		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
-		animation.state.set(AnimState::rise);
+		animation.state = AnimState::rise;
 		m_services->soundboard.flags.player.set(audio::Player::jump);
 		collider.flags.movement.set(shape::Movement::jumping);
 	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.velocity.y < 0) {
@@ -335,7 +337,7 @@ void Player::jump() {
 
 void Player::dash() {
 	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { return; }
-	if (animation.state.test(AnimState::dash) || controller.dash_requested()) {
+	if (animation.state == AnimState::dash || controller.dash_requested()) {
 		collider.flags.movement.set(shape::Movement::dashing);
 		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
 		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
@@ -360,7 +362,11 @@ void Player::wallslide() {
 }
 
 void Player::shield() {
-	if (!catalog.categories.abilities.has_ability(Abilities::shield)) { return; }
+	if (!catalog.categories.abilities.has_ability(Abilities::shield)) {
+		controller.get_shield().flags = {};
+		return;
+	}
+	controller.get_shield().update(*m_services);
 	controller.get_shield().sensor.bounds.setPosition(collider.bounding_box.position + collider.bounding_box.dimensions * 0.5f);
 }
 
@@ -411,7 +417,7 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
-	if (animation.state.test(AnimState::sharp_turn)) {
+	if (animation.state == AnimState::sharp_turn) {
 		collider.physics.acceleration.x = 0.0f;
 		return;
 	}
@@ -511,6 +517,7 @@ void Player::kill() { flags.state.reset(State::alive); }
 void Player::start_over() {
 	health.reset();
 	flags.state.set(State::alive);
+	collider.collision_depths = {};
 }
 
 void Player::give_drop(item::DropType type, int value) {
@@ -538,7 +545,7 @@ void Player::total_reset() {
 
 void Player::map_reset() {
 	arsenal.extant_projectile_instances = {};
-	if (animation.state.test(player::AnimState::inspect)) { animation.state.set(player::AnimState::idle); }
+	if (animation.state == AnimState::inspect) { animation.state = AnimState::idle; }
 }
 
 arms::Weapon& Player::equipped_weapon() {

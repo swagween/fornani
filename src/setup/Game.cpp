@@ -322,6 +322,12 @@ void Game::debug_window() {
 							ImGui::Separator();
 							ImGui::Text("Ledge Height: %i", player.ledge_height);
 							ImGui::Separator();
+							ImGui::Text("Collision Depths:");
+							ImGui::Text("Top Depth: %.4f", player.collider.collision_depths.top);
+							ImGui::Text("Bottom Depth: %.4f", player.collider.collision_depths.bottom);
+							ImGui::Text("Left Depth: %.4f", player.collider.collision_depths.left);
+							ImGui::Text("Right Depth: %.4f", player.collider.collision_depths.right);
+							ImGui::Separator();
 							ImGui::Text("Right Collision: %s", player.collider.flags.collision.test(shape::Collision::has_right_collision) ? "Yes" : "No");
 							ImGui::Text("Left Collision: %s", player.collider.flags.collision.test(shape::Collision::has_left_collision) ? "Yes" : "No");
 							ImGui::Text("Top Collision: %s", player.collider.flags.collision.test(shape::Collision::has_top_collision) ? "Yes" : "No");
@@ -365,26 +371,29 @@ void Game::debug_window() {
 						if (ImGui::BeginTabItem("Animation")) {
 							ImGui::Text("Animation: %s", player.animation.animation.label.data());
 							ImGui::Separator();
-							ImGui::Text("Current Frame: %i", player.animation.animation.current_frame);
+							ImGui::Text("Current Frame: %i", player.animation.animation.frame.get_count());
+							ImGui::Text("Loop: %i", player.animation.animation.loop.get_count());
+							ImGui::Text("Frame Timer: %i", player.animation.animation.frame_timer.get_cooldown());
 							ImGui::Text("Complete? %s", player.animation.animation.complete() ? "Yes" : "No");
 							ImGui::Text("One Off? %s", player.animation.animation.params.num_loops > -1 ? "Yes" : "No");
 							ImGui::Text("Repeat Last Frame? %s", player.animation.animation.params.repeat_last_frame ? "Yes" : "No");
+							ImGui::Text("Idle Timer: %i", player.animation.idle_timer.get_count());
 							ImGui::Separator();
-							ImGui::Text("idle...: %s", player.animation.state.test(player::AnimState::idle) ? "flag set" : "");
-							ImGui::Text("run....: %s", player.animation.state.test(player::AnimState::run) ? "flag set" : "");
-							ImGui::Text("stop...: %s", player.animation.state.test(player::AnimState::stop) ? "flag set" : "");
-							ImGui::Text("turn...: %s", player.animation.state.test(player::AnimState::turn) ? "flag set" : "");
-							ImGui::Text("hurt...: %s", player.animation.state.test(player::AnimState::hurt) ? "flag set" : "");
-							ImGui::Text("shpturn: %s", player.animation.state.test(player::AnimState::sharp_turn) ? "flag set" : "");
-							ImGui::Text("jsquat.: %s", player.animation.state.test(player::AnimState::jumpsquat) ? "flag set" : "");
-							ImGui::Text("rise...: %s", player.animation.state.test(player::AnimState::rise) ? "flag set" : "");
-							ImGui::Text("suspend: %s", player.animation.state.test(player::AnimState::suspend) ? "flag set" : "");
-							ImGui::Text("fall...: %s", player.animation.state.test(player::AnimState::fall) ? "flag set" : "");
-							ImGui::Text("land...: %s", player.animation.state.test(player::AnimState::land) ? "flag set" : "");
-							ImGui::Text("dash...: %s", player.animation.state.test(player::AnimState::dash) ? "flag set" : "");
-							ImGui::Text("sprint.: %s", player.animation.state.test(player::AnimState::sprint) ? "flag set" : "");
-							ImGui::Text("wlslide: %s", player.animation.state.test(player::AnimState::wallslide) ? "flag set" : "");
-							ImGui::Text("inspect: %s", player.animation.state.test(player::AnimState::inspect) ? "flag set" : "");
+							ImGui::Text("idle...: %s", player.animation.state == player::AnimState::idle ? "flag set" : "");
+							ImGui::Text("run....: %s", player.animation.state == player::AnimState::run ? "flag set" : "");
+							ImGui::Text("stop...: %s", player.animation.state == player::AnimState::stop ? "flag set" : "");
+							ImGui::Text("turn...: %s", player.animation.state == player::AnimState::turn ? "flag set" : "");
+							ImGui::Text("hurt...: %s", player.animation.state == player::AnimState::hurt ? "flag set" : "");
+							ImGui::Text("shpturn: %s", player.animation.state == player::AnimState::sharp_turn ? "flag set" : "");
+							ImGui::Text("jsquat.: %s", player.animation.state == player::AnimState::jumpsquat ? "flag set" : "");
+							ImGui::Text("rise...: %s", player.animation.state == player::AnimState::rise ? "flag set" : "");
+							ImGui::Text("suspend: %s", player.animation.state == player::AnimState::suspend ? "flag set" : "");
+							ImGui::Text("fall...: %s", player.animation.state == player::AnimState::fall ? "flag set" : "");
+							ImGui::Text("land...: %s", player.animation.state == player::AnimState::land ? "flag set" : "");
+							ImGui::Text("dash...: %s", player.animation.state == player::AnimState::dash ? "flag set" : "");
+							ImGui::Text("sprint.: %s", player.animation.state == player::AnimState::sprint ? "flag set" : "");
+							ImGui::Text("wlslide: %s", player.animation.state == player::AnimState::wallslide ? "flag set" : "");
+							ImGui::Text("inspect: %s", player.animation.state == player::AnimState::inspect ? "flag set" : "");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Catalog")) {
@@ -555,6 +564,12 @@ void Game::debug_window() {
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 						game_state.get_current_state().init(services, "/level/UNDER_LEDGE_01");
 						player.set_position({player::PLAYER_START_X, player::PLAYER_START_Y});
+					}
+					if (ImGui::Button("Minigus")) {
+						services.assets.click.play();
+						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+						game_state.get_current_state().init(services, "/level/FIRSTWIND_DECK_01");
+						player.set_position({32 * 4, 32 * 8});
 					}
 					if (ImGui::Button("Corridor 4")) {
 						services.assets.click.play();

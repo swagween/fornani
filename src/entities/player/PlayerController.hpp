@@ -17,7 +17,8 @@ struct ServiceProvider;
 namespace player {
 
 constexpr static int dash_time{32};
-constexpr static int quick_turn_sample_size{16};
+constexpr static int quick_turn_sample_size{24};
+constexpr static float backwards_dampen{0.5f};
 
 enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y };
 enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released };

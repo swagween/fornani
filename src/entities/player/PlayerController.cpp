@@ -77,8 +77,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	}
 
 	//shield
+	key_map[ControllerInput::shield] = 0.f;
 	if (!shield.recovering() && grounded()) {
-		key_map[ControllerInput::shield] = 0.f;
 		if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
 		if (shielding) { shield.flags.triggers.set(ShieldTrigger::shield_up); }
 		if (shield_released && shield.is_shielding()) { shield.pop(); }
@@ -92,14 +92,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
 	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
 	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }
-
-	if (!restricted()) {
-		direction.lr = moving_left() ? dir::LR::left : direction.lr;
-		direction.lr = moving_right() ? dir::LR::right : direction.lr;
-		direction.und = dir::UND::neutral;
-		direction.und = up ? dir::UND::up : direction.und;
-		direction.und = down ? dir::UND::down : direction.und;
-	}
 
 	// transponder flags
 	transponder_skip ? transponder_flags.set(TransponderInput::skip) : transponder_flags.reset(TransponderInput::skip);
@@ -127,6 +119,16 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		hook_flags.set(Hook::hook_released);
 	}
 
+	if (!restricted() && !shot()) {
+		direction.lr = moving_left() ? dir::LR::left : direction.lr;
+		direction.lr = moving_right() ? dir::LR::right : direction.lr;
+		direction.und = dir::UND::neutral;
+		direction.und = up ? dir::UND::up : direction.und;
+		direction.und = down ? dir::UND::down : direction.und;
+	} else if ((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) {
+		key_map[ControllerInput::move_x] *= backwards_dampen;
+	}
+
 	key_map[ControllerInput::arms_switch] = 0.f;
 	key_map[ControllerInput::arms_switch] = arms_switch_left ? -1.f : key_map[ControllerInput::arms_switch];
 	key_map[ControllerInput::arms_switch] = arms_switch_right ? 1.f : key_map[ControllerInput::arms_switch];
@@ -152,7 +154,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	flags.reset(MovementState::restricted);
 	decrement_requests();
 	jump.update();
-	shield.update(svc);
 
 	svc.controller_map.reset_triggers();
 }

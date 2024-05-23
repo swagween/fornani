@@ -5,57 +5,58 @@
 namespace anim {
 
 void Animation::refresh() {
-	counter = 0;
-	current_frame = 0;
-	loop_counter = 0;
-}
-
-void Animation::start() {
-	flags.set(State::active);
-	flags.set(State::just_started);
+	frame.start();
+	loop.start();
+	flags.reset(State::param_switch);
 	flags.reset(State::complete);
-}
-
-void Animation::update() {
-	if (counter == 1) { flags.reset(State::just_started); }
-	++counter;
-
-	if (keyframe_over()) {
-		++current_frame;
-	}
-
-	if (current_frame == params.duration && params.repeat_last_frame) {
-		current_frame = params.duration - 1;
-		end();
-		return;
-	}
-	if (current_frame == params.duration) {
-		if (loop_counter == params.num_loops) { end(); }
-		current_frame = 0;
-		if (params.num_loops != -1) {
-			++loop_counter;
-			// don't increment for infinite loops
-		}
-	}
-}
-
-void Animation::end() {
-	flags.reset(State::active);
-	flags.set(State::complete);
-}
-
-void Animation::set_params(Parameters const new_params) {
-	params = new_params;
-	refresh();
 	start();
 }
 
-int Animation::get_frame() const { return params.lookup + current_frame; }
+void Animation::start() {
+	flags.set(State::just_started);
+	frame.start();
+	global_counter.start();
+	frame_timer.start(params.framerate);
+}
+
+void Animation::update() {
+	if (frame_timer.is_complete()) {
+		frame.update();
+		if (frame.get_count() == params.duration) {
+			if (params.repeat_last_frame) {
+				frame.set(params.duration - 1);
+				end();
+				return;
+			}
+			if(loop.get_count() == params.num_loops) { loop.start(); }
+			frame.start();
+			loop.update();
+			end();
+		}
+		if (!params.repeat_last_frame) { frame_timer.start(params.framerate); }
+	}
+	global_counter.update();
+	frame_timer.update();
+}
+
+void Animation::end() { flags.set(State::complete); }
+
+void Animation::set_params(Parameters const new_params) {
+	next_params = new_params;
+	switch_params();
+}
+
+void Animation::switch_params() {
+	params = next_params;
+	refresh();
+}
+
+int Animation::get_frame() const { return params.lookup + frame.get_count(); }
 
 bool Animation::active() const { return flags.test(State::active); }
 
 bool Animation::complete() const { return flags.test(State::complete); }
 
-bool Animation::keyframe_over() const { return params.framerate != 0 ? counter % params.framerate == 0 : true; } //long-winded to avoid division by 0
+bool Animation::keyframe_over() const { return params.framerate != 0 ? global_counter.get_count() % params.framerate == 0 : true; } //long-winded to avoid division by 0
 
 } // namespace anim

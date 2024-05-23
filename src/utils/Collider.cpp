@@ -63,31 +63,34 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 	}
 
 	// store all four mtvs
-	auto combined_mtv = predictive_combined.testCollisionGetMTV(predictive_combined, cell);
-	auto vert_mtv = predictive_vertical.testCollisionGetMTV(predictive_vertical, cell);
-	auto horiz_mtv = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, cell);
-	auto actual_mtv = bounding_box.testCollisionGetMTV(bounding_box, cell);
+	mtvs.combined = predictive_combined.testCollisionGetMTV(predictive_combined, cell);
+	mtvs.vertical = predictive_vertical.testCollisionGetMTV(predictive_vertical, cell);
+	mtvs.horizontal = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, cell);
+	mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, cell);
 
 	float vert_threshold = 5.5f; // for landing
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
 		bool corner_collision{true};
 		if (predictive_vertical.overlaps(cell)) {
-			vert_mtv.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
-			if (flags.collision.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) { flags.state.set(State::just_landed); } // for landing sound
+			mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
+			if (flags.collision.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) {
+				flags.state.set(State::just_landed);
+				flags.animation.set(Animation::just_landed);
+			} // for landing sound
 			corner_collision = false;
-			correct_y(vert_mtv);
+			correct_y(mtvs.vertical);
 		}
 		if (predictive_horizontal.overlaps(cell)) {
-			horiz_mtv.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
+			mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
 			corner_collision = false;
 			flags.dash.set(Dash::dash_cancel_collision);
-			correct_x(horiz_mtv);
+			correct_x(mtvs.horizontal);
 		}
 		if (predictive_combined.overlaps(cell) && corner_collision) {
 			flags.collision.set(Collision::any_collision);
 			flags.dash.set(Dash::dash_cancel_collision);
-			correct_corner(combined_mtv);
+			correct_corner(mtvs.combined);
 		}
 	}
 
@@ -99,32 +102,35 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 		// only handle ramp collisions if the bounding_box is colliding with it
 		if (bounding_box.SAT(cell)) {
 			if (is_ground_ramp && !flags.general.test(General::ignore_resolution)) {
-				if (actual_mtv.y < 0.f) { physics.position.y += actual_mtv.y; }
+				if (mtvs.actual.y < 0.f) { physics.position.y += mtvs.actual.y; }
 				// still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping)) { physics.zero_y(); }
 			}
-			if (is_ceiling_ramp) { correct_x_y(actual_mtv); }
+			if (is_ceiling_ramp) { correct_x_y(mtvs.actual); }
 			// cancel dash
 			flags.dash.set(Dash::dash_cancel_collision);
 		}
 		// we also need to check if the predictive bounding box is colliding a ramp, just to deal with falling/jumping onto and into ramps
 		if (predictive_combined.SAT(cell)) {
 			if (falls_onto) {
-				correct_x_y(combined_mtv);
+				correct_x_y(mtvs.combined);
 				flags.state.set(State::just_landed);
+				flags.animation.set(Animation::just_landed);
 			}
 			if (is_ceiling_ramp) {
 				if (jumps_into) {
 					if (flags.movement.test(Movement::dashing)) {
-						correct_y(combined_mtv);
+						correct_y(mtvs.combined);
 					} else {
 						flags.collision.set(Collision::any_collision);
-						correct_y(combined_mtv + sf::Vector2<float>{8.f, 8.f}); // to prevent player gliding down ceiling ramps
+						correct_y(mtvs.combined + sf::Vector2<float>{8.f, 8.f}); // to prevent player gliding down ceiling ramps
 					}
 				}
 			}
 		}
 	}
+
+	set_depths();
 
 	if (wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
@@ -247,6 +253,13 @@ void Collider::correct_corner(sf::Vector2<float> mtv) {
 	physics.zero_y();
 }
 
+void Collider::set_depths() {
+	if (flags.collision.test(Collision::has_top_collision)) { collision_depths.top = std::max(collision_depths.top, abs(mtvs.vertical.y)); }
+	if (flags.collision.test(Collision::has_bottom_collision)) { collision_depths.bottom = std::max(collision_depths.bottom, abs(mtvs.vertical.y)); }
+	if (flags.collision.test(Collision::has_left_collision)) { collision_depths.left = std::max(collision_depths.left, abs(mtvs.horizontal.x)); }
+	if (flags.collision.test(Collision::has_right_collision)) { collision_depths.right = std::max(collision_depths.right, abs(mtvs.horizontal.x)); }
+}
+
 void Collider::handle_platform_collision(Shape const& cell) {}
 
 void Collider::handle_spike_collision(Shape const& cell) {
@@ -259,29 +272,32 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	flags.collision = {};
 
 	// store all four mtvs
-	auto combined_mtv = predictive_combined.testCollisionGetMTV(predictive_combined, collider);
-	auto vert_mtv = predictive_vertical.testCollisionGetMTV(predictive_vertical, collider);
-	auto horiz_mtv = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, collider);
-	auto actual_mtv = bounding_box.testCollisionGetMTV(bounding_box, collider);
+	mtvs.combined = predictive_combined.testCollisionGetMTV(predictive_combined, collider);
+	mtvs.vertical = predictive_vertical.testCollisionGetMTV(predictive_vertical, collider);
+	mtvs.horizontal = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, collider);
+	mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, collider);
 
 	float vert_threshold = 5.5f;
 	bool corner_collision{true};
 	if (predictive_vertical.overlaps(collider)) {
-		vert_mtv.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
-		if (flags.collision.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) { flags.state.set(State::just_landed); } // for landing sound
+		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
+		if (flags.collision.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) {
+			flags.state.set(State::just_landed);
+			flags.animation.set(Animation::just_landed);
+		} // for landing sound
 		corner_collision = false;
-		correct_y(vert_mtv);
+		correct_y(mtvs.vertical);
 	}
 	if (predictive_horizontal.overlaps(collider)) {
-		horiz_mtv.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
+		mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
 		corner_collision = false;
 		flags.dash.set(Dash::dash_cancel_collision);
-		correct_x(horiz_mtv);
+		correct_x(mtvs.horizontal);
 	}
 	if (predictive_combined.overlaps(collider) && corner_collision) {
 		flags.collision.set(Collision::any_collision);
 		flags.dash.set(Dash::dash_cancel_collision);
-		correct_corner(combined_mtv);
+		correct_corner(mtvs.combined);
 	}
 	if (jumpbox.SAT(collider)) {
 		flags.state.set(State::grounded);
@@ -289,6 +305,8 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	} else {
 		flags.state.reset(State::grounded);
 	}
+
+	set_depths();
 
 	flags.movement.reset(Movement::dashing);
 
@@ -311,7 +329,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setOutlineColor(sf::Color{255, 0, 0, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	//win.draw(box);
 
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.dimensions);
@@ -319,7 +337,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setOutlineColor(sf::Color{0, 0, 255, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	//win.draw(box);
 
 	// draw predictive combined
 	box.setSize(predictive_combined.dimensions);
@@ -327,7 +345,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setOutlineColor(sf::Color{255, 255, 255, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	//win.draw(box);
 
 	// draw bounding box
 	box.setSize(dimensions);
@@ -365,14 +383,14 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
 	box.setOutlineThickness(-1);
-	win.draw(box);
+	//win.draw(box);
 
 	// draw physics position
 	box.setSize({2.f, 2.f});
 	box.setPosition(physics.position.x - cam.x, physics.position.y - cam.y);
 	box.setFillColor(flcolor::green);
 	box.setOutlineThickness(0);
-	win.draw(box);
+	//win.draw(box);
 }
 void Collider::reset() { flags.state = {}; }
 void Collider::reset_ground_flags() {

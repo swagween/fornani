@@ -200,8 +200,8 @@
         "y": 0
       },
       "barrel_point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": 8.0,
+        "y": 12.0
       },
       "attributes": {
         "automatic": false,
@@ -373,6 +373,68 @@
       },
       "spray": {
         "dimensions": [ 2.0, 2.0 ],
+        "type": "twinkle",
+        "color": "white"
+      }
+    },
+
+    {
+      "label": "minigun",
+      "dimensions": {
+        "x": 78,
+        "y": 30
+      },
+      "gun_offset": {
+        "x": 0,
+        "y": 0
+      },
+      "barrel_point": {
+        "x": 0.0,
+        "y": 20.0
+      },
+      "attributes": {
+        "automatic": true,
+        "rate": 8,
+        "cooldown_time": 20,
+        "recoil": 0.00,
+        "ui_color": 1
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 14.0,
+          "y": 14.0
+        },
+        "attributes": {
+          "base_damage": 1,
+          "range": 280,
+          "speed": 28.0,
+          "variance": 0.4,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": false,
+          "transcendent": false,
+          "boomerang": false,
+          "constrained": true,
+          "spring": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 18
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 8.0, 8.0 ],
         "type": "twinkle",
         "color": "white"
       }

@@ -43,11 +43,13 @@ class AssetManager {
 		t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");
 		t_eyebot.loadFromFile(finder.resource_path + "/image/critter/eyebot.png");
 		t_eyebit.loadFromFile(finder.resource_path + "/image/critter/eyebit.png");
+		t_minigus.loadFromFile(finder.resource_path + "/image/boss/minigus.png");
 		texture_lookup.insert({"frdog", t_frdog});
 		texture_lookup.insert({"hulmet", t_hulmet});
 		texture_lookup.insert({"tank", t_tank});
 		texture_lookup.insert({"eyebot", t_eyebot});
 		texture_lookup.insert({"eyebit", t_eyebit});
+		texture_lookup.insert({"minigus", t_minigus});
 
 		t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 		t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -76,6 +78,7 @@ class AssetManager {
 		t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
 		t_grenade_launcher.loadFromFile(finder.resource_path + "/image/weapon/grenade_launcher.png");
 		t_grenade.loadFromFile(finder.resource_path + "/image/weapon/grenade.png");
+		t_minigun.loadFromFile(finder.resource_path + "/image/boss/minigun.png");
 
 		weapon_textures.insert({"bryn's gun", t_bryns_gun});
 		projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
@@ -93,12 +96,18 @@ class AssetManager {
 		projectile_textures.insert({"grappling hook", t_hook});
 		weapon_textures.insert({"grenade launcher", t_grenade_launcher});
 		projectile_textures.insert({"grenade launcher", t_hook});
+		weapon_textures.insert({"minigun", t_minigun});
+		projectile_textures.insert({"minigun", t_skycorps_ar_projectile});
 
 		t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 		t_shield.loadFromFile(finder.resource_path + "/image/entity/shield.png");
 
 		t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 		t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
+
+		t_twinkle.loadFromFile(finder.resource_path + "/image/vfx/twinkle.png");
+		t_small_flash.loadFromFile(finder.resource_path + "/image/vfx/small_flash.png");
+		particle_textures.insert({"twinkle", t_twinkle});
 
 		t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 
@@ -283,6 +292,7 @@ class AssetManager {
 	sf::Texture t_tank{};
 	sf::Texture t_eyebot{};
 	sf::Texture t_eyebit{};
+	sf::Texture t_minigus{};
 
 	// gui
 	sf::Texture t_ui{};
@@ -318,10 +328,13 @@ class AssetManager {
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
 
+	//vfx
 	sf::Texture t_huge_explosion{};
 	sf::Texture t_large_explosion{};
 	sf::Texture t_small_explosion{};
 	sf::Texture t_wall_hit{};
+	sf::Texture t_twinkle{};
+	sf::Texture t_small_flash{};
 
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};
@@ -373,6 +386,7 @@ class AssetManager {
 	sf::Texture t_hook{};
 	sf::Texture t_grenade_launcher{};
 	sf::Texture t_grenade{};
+	sf::Texture t_minigun{};
 
 	//items
 	sf::Texture t_heart{};
@@ -470,6 +484,7 @@ class AssetManager {
 	std::unordered_map<int, sf::Texture&> effect_lookup{};
 	std::unordered_map<int, sf::Texture&> platform_lookup{};
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
+	std::unordered_map<std::string_view, sf::Texture&> particle_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
 };

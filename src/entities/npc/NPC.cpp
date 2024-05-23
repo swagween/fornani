@@ -32,7 +32,7 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize(dimensions);
 
-	sprite.setTexture(svc.assets.npcs.at(label));
+	if (svc.assets.npcs.contains(label)) { sprite.setTexture(svc.assets.npcs.at(label)); }
 	direction.lr = dir::LR::left;
 }
 

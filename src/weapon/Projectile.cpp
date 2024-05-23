@@ -49,7 +49,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	dim.x = in_data["dimensions"]["x"].as<float>();
 	dim.y = in_data["dimensions"]["y"].as<float>();
 
-	sparkler = vfx::Sparkler(svc, dim, svc.styles.spray_colors.at(label), in_data["sparkler_type"].as_string());
+	if (svc.styles.spray_colors.contains(label)) { sparkler = vfx::Sparkler(svc, dim, svc.styles.spray_colors.at(label), in_data["sparkler_type"].as_string()); }
 
 	render_type = anim.num_sprites > 1 ? RENDER_TYPE::MULTI_SPRITE : RENDER_TYPE::SINGLE_SPRITE;
 

@@ -21,7 +21,7 @@ float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 
 enum class General { ignore_resolution, complex };
-
+enum class Animation { just_landed };
 enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
 
 enum class Collision {
@@ -53,6 +53,7 @@ class Collider {
 	void correct_y(sf::Vector2<float> mtv);
 	void correct_x_y(sf::Vector2<float> mtv);
 	void correct_corner(sf::Vector2<float> mtv);
+	void set_depths();
 	void handle_platform_collision(Shape const& cell);
 	void handle_spike_collision(Shape const& cell);
 	void handle_collider_collision(Shape const& collider);
@@ -69,6 +70,7 @@ class Collider {
 	bool has_left_wallslide_collision() const;
 	bool has_right_wallslide_collision() const;
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
+	[[nodiscard]] auto crushed() const -> bool { return (collision_depths.top > crush_threshold && collision_depths.bottom > crush_threshold) || (collision_depths.left > crush_threshold && collision_depths.right > crush_threshold); }
 	
 	float compute_length(sf::Vector2<float> const v);
 
@@ -87,11 +89,27 @@ class Collider {
 	struct {
 		util::BitFlags<General> general{};
 		util::BitFlags<State> state{};
+		util::BitFlags<Animation> animation{};
 		util::BitFlags<Collision> collision{};
 		util::BitFlags<Movement> movement{};
 		util::BitFlags<Dash> dash{};
 	} flags{};
 
+	struct {
+		sf::Vector2<float> combined{};
+		sf::Vector2<float> horizontal{};
+		sf::Vector2<float> vertical{};
+		sf::Vector2<float> actual{};
+	} mtvs{};
+
+	struct {
+		float top{};
+		float bottom{};
+		float left{};
+		float right{};
+	} collision_depths{};
+
+	float crush_threshold{8.0f};
 	float landed_threshold{6.0f};
 	float horizontal_detector_buffer{2.0f};
 	float vertical_detector_buffer{1.0f};

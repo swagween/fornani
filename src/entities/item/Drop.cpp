@@ -27,7 +27,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	animation.refresh();
 
 	// randomly seed the animation start frame so drops in the same loot animate out of sync
-	animation.current_frame = svc.random.random_range(0, animation.params.duration - 1);
+	animation.frame.set(svc.random.random_range(0, animation.params.duration - 1));
 
 	int rand_cooldown_offset = svc.random.random_range(0, 50);
 	lifespan.start(4500 + rand_cooldown_offset);

@@ -99,6 +99,7 @@ class Player {
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
+	void handle_turning();
 	void update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void flash_sprite();
 	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -202,7 +203,7 @@ class Player {
 		float stop{3.8f};
 		float wallslide{-1.5f};
 		float suspend{4.4f};
-		float landed{4.4f};
+		float landed{0.4f};
 		float run{0.02f};
 	} thresholds{};
 };
