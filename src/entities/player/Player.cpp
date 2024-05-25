@@ -1,8 +1,8 @@
 #include "Player.hpp"
-#include "../item/Drop.hpp"
 #include "../../gui/Console.hpp"
 #include "../../gui/InventoryWindow.hpp"
 #include "../../service/ServiceProvider.hpp"
+#include "../item/Drop.hpp"
 
 namespace player {
 
@@ -77,7 +77,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 	// check keystate
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
-	if (!controller.moving() && !force_cooldown.running()) { collider.physics.acceleration.x = 0.0f; }
+	if (!controller.moving() && (!force_cooldown.running() || grounded())) { collider.physics.acceleration.x = 0.0f; }
 
 	// weapon
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
@@ -130,7 +130,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setTextureRect(sf::IntRect({u, v}, {asset::NANI_SPRITE_WIDTH, asset::NANI_SPRITE_WIDTH}));
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
-	
+
 	if (!arsenal.loadout.empty()) {
 
 		collider.flags.general.set(shape::General::complex);
@@ -203,7 +203,7 @@ void Player::update_animation() {
 		if (controller.get_wallslide().is_wallsliding()) { animation.state = AnimState::wallslide; }
 	}
 	if (catalog.categories.abilities.has_ability(Abilities::shield)) {
-		if(controller.get_shield().is_shielding() && grounded() && !(animation.state == AnimState::land) && !(animation.state == AnimState::fall)) {
+		if (controller.get_shield().is_shielding() && grounded() && !(animation.state == AnimState::land) && !(animation.state == AnimState::fall)) {
 			animation.state = AnimState::shield;
 			controller.prevent_movement();
 			flags.state.reset(State::show_weapon);
@@ -229,8 +229,6 @@ void Player::update_sprite() {
 	if (controller.facing_left() && sprite.getScale() == right_scale) { sprite.scale(-1.0f, 1.0f); }
 	if (controller.facing_right() && sprite.getScale() == left_scale) { sprite.scale(-1.0f, 1.0f); }
 
-	
-
 	// check for quick turn
 	if (controller.quick_turn()) { flags.state.set(State::dir_switch); }
 
@@ -248,18 +246,10 @@ void Player::handle_turning() {
 void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window) {
 	if (inventory_window.active()) {
 		controller.prevent_movement();
-		if (controller.transponder_up()) {
-			inventory_window.selector.go_up();
-		}
-		if (controller.transponder_down()) {
-			inventory_window.selector.go_down();
-		}
-		if (controller.transponder_left()) {
-			inventory_window.selector.go_left();
-		}
-		if (controller.transponder_right()) {
-			inventory_window.selector.go_right();
-		}
+		if (controller.transponder_up()) { inventory_window.selector.go_up(); }
+		if (controller.transponder_down()) { inventory_window.selector.go_down(); }
+		if (controller.transponder_left()) { inventory_window.selector.go_left(); }
+		if (controller.transponder_right()) { inventory_window.selector.go_right(); }
 		transponder.update(*m_services, inventory_window);
 	}
 	if (console.active()) {
@@ -295,9 +285,7 @@ void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	for (auto& sp : sprite_history.sprites) {
 		sp.setColor(sf::Color(255, 255, 255, a));
 		sp.setPosition(sprite_history.positions.at(ctr) - campos);
-		if (!m_services->greyblock_mode()) {
-			win.draw(sp);
-		}
+		if (!m_services->greyblock_mode()) { win.draw(sp); }
 		a += 20;
 		++ctr;
 	}
@@ -359,7 +347,7 @@ void Player::wallslide() {
 			controller.get_wallslide().start();
 			collider.physics.acceleration.y = std::min(collider.physics.acceleration.y, physics_stats.wallslide_speed);
 		}
-	} 
+	}
 }
 
 void Player::shield() {
@@ -389,7 +377,7 @@ void Player::update_direction() {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
 	}
 
-	//set directions for grappling hook
+	// set directions for grappling hook
 	equipped_weapon().projectile.hook.probe_direction = controller.direction;
 }
 
@@ -436,9 +424,7 @@ void Player::walk() {
 
 void Player::hurt(int amount = 1) {
 	if (!health.invincible()) {
-		if (shielding()) {
-			return;
-		}
+		if (shielding()) { return; }
 		health.inflict(amount);
 		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;
@@ -550,9 +536,7 @@ void Player::map_reset() {
 	if (animation.state == AnimState::inspect) { animation.state = AnimState::idle; }
 }
 
-arms::Weapon& Player::equipped_weapon() {
-	return arsenal.get_current_weapon();
-}
+arms::Weapon& Player::equipped_weapon() { return arsenal.get_current_weapon(); }
 
 int& Player::extant_instances(int index) { return arsenal.extant_projectile_instances.at(index); }
 
