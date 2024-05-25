@@ -55,6 +55,7 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
+		if (event.key.code == sf::Keyboard::Num0) { camera.begin_shake(); }
 	}
 }
 
@@ -65,6 +66,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	player->update(console, inventory_window);
 	map.update(svc, console, inventory_window);
 
+	if (map.camera_shake()) { camera.begin_shake(); }
 	camera.center(player->anchor_point);
 	camera.update(svc);
 	camera.restrict_movement(map.real_dimensions);
@@ -75,12 +77,11 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	player->controller.clean();
 	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
+
+	map.background->update(svc, camera.get_observed_velocity());
 }
 
-void Dojo::frame_update(ServiceProvider& svc) {
-	map.background->update(svc, camera.get_observed_velocity());
-	hud.update(svc, *player);
-}
+void Dojo::frame_update(ServiceProvider& svc) { hud.update(svc, *player); }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 

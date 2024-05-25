@@ -5,6 +5,7 @@
 #include <cmath>
 #include <vector>
 #include "../particle/Gravitator.hpp"
+#include "../utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -31,6 +32,7 @@ class Camera {
 	void set_position(sf::Vector2<float> new_pos);
 	void center(sf::Vector2<float> new_position);
 	void force_center(sf::Vector2<float> new_position);
+	void begin_shake();
 
 	[[nodiscard]] auto get_observed_velocity() const -> sf::Vector2<float> { return observed_velocity; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return bounding_box.getPosition(); }
@@ -44,6 +46,15 @@ class Camera {
 	sf::Vector2<float> previous_position{};
 
 	float grav_force{CAM_GRAV};
+
+	struct {
+		util::Cooldown timer{};
+		util::Cooldown dampen{};
+		float energy{0.6f};
+		int dampen_factor{30};
+		int start_time{400};
+		int frequency{24};
+	} shake{};
 };
 
 } // namespace cam

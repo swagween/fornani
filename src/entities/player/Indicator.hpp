@@ -24,18 +24,21 @@ class Indicator {
 	void init(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> pos = {0.f, 0.f});
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void add(int amount);
+	void add(float amount);
 	void set_position(sf::Vector2<float> pos);
 	void shift();
 	[[nodiscard]] auto active() const -> bool { return !addition_limit.is_complete(); }
+	[[nodiscard]] auto get_amount() const -> float { return variables.amount; }
 
   private:
 	struct {
-		int amount{};
+		float amount{};
 	} variables{};
+
 	struct {
 		int id{};
 	} meta{};
+
 	sf::Text label{};
 	sf::Font font{};
 	util::Cooldown addition_limit{};

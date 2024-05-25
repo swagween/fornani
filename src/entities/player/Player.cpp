@@ -77,7 +77,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 	// check keystate
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
-	if (!controller.moving()) { collider.physics.acceleration.x = 0.0f; }
+	if (!controller.moving() && !force_cooldown.running()) { collider.physics.acceleration.x = 0.0f; }
 
 	// weapon
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
@@ -116,6 +116,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	sf::Vector2<float> player_pos = apparent_position - campos;
 	calculate_sprite_offset();
+	force_cooldown.update();
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
@@ -442,6 +443,7 @@ void Player::hurt(int amount = 1) {
 		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
+		force_cooldown.start(60);
 		collider.spike_trigger = false;
 		m_services->soundboard.flags.player.set(audio::Player::hurt);
 		hurt_cooldown.start(2);

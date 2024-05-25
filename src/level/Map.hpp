@@ -49,7 +49,7 @@ enum LAYER_ORDER {
 	FOREGROUND = 7,
 };
 
-enum class LevelState { game_over };
+enum class LevelState { game_over, camera_shake };
 
 // a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
@@ -91,10 +91,12 @@ class Map {
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void handle_breakables(Tile& cell, sf::Vector2<float> velocity = {0.f, 0.f}, uint8_t power = 1);
+	void shake_camera();
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
 	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
+	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 
 	// layers
 	std::vector<Layer> layers;

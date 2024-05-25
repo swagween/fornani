@@ -176,6 +176,7 @@ class Player {
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 	util::Cooldown hurt_cooldown{}; //for animation
+	util::Cooldown force_cooldown{}; //for player hurt forces
 	Counters counters{};
 	std::vector<sf::Vector2<float>> accumulated_forces{};
 	sf::Vector2<float> forced_momentum{};

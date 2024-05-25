@@ -28,10 +28,14 @@ void Animation::update() {
 				end();
 				return;
 			}
-			if(loop.get_count() == params.num_loops) { loop.start(); }
-			frame.start();
-			loop.update();
-			end();
+			if (loop.get_count() == params.num_loops) {
+				loop.start();
+				end();
+				return;
+			} else {
+				frame.start();
+				loop.update();
+			}
 		}
 		if (!params.repeat_last_frame) { frame_timer.start(params.framerate); }
 	}

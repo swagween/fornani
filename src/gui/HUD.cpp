@@ -69,6 +69,7 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 		heart.current_state = flashing ? State::added : heart.current_state;
 		++i;
 	}
+
 	player.health.flags.reset(entity::HPState::hit);
 
 	auto const& shield = player.controller.get_shield();

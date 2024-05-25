@@ -44,6 +44,9 @@ class AssetManager {
 		t_eyebot.loadFromFile(finder.resource_path + "/image/critter/eyebot.png");
 		t_eyebit.loadFromFile(finder.resource_path + "/image/critter/eyebit.png");
 		t_minigus.loadFromFile(finder.resource_path + "/image/boss/minigus.png");
+		t_minigus_inv.loadFromFile(finder.resource_path + "/image/boss/minigus_inv.png");
+		t_minigus_red.loadFromFile(finder.resource_path + "/image/boss/minigus_red.png");
+		t_minigus_blue.loadFromFile(finder.resource_path + "/image/boss/minigus_blue.png");
 		texture_lookup.insert({"frdog", t_frdog});
 		texture_lookup.insert({"hulmet", t_hulmet});
 		texture_lookup.insert({"tank", t_tank});
@@ -293,6 +296,9 @@ class AssetManager {
 	sf::Texture t_eyebot{};
 	sf::Texture t_eyebit{};
 	sf::Texture t_minigus{};
+	sf::Texture t_minigus_inv{};
+	sf::Texture t_minigus_red{};
+	sf::Texture t_minigus_blue{};
 
 	// gui
 	sf::Texture t_ui{};

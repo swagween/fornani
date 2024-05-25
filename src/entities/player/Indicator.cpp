@@ -51,10 +51,11 @@ void Indicator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	}
 }
 
-void Indicator::add(int amount) {
+void Indicator::add(float amount) {
 	variables.amount += amount;
 	std::string sign = variables.amount >= 0 ? "+" : "";
-	label.setString(sign + std::to_string(variables.amount));
+	auto round = static_cast<int>(variables.amount);
+	label.setString(sign + std::to_string(round));
 	addition_limit.start(addition_time);
 	color_fade.start();
 }

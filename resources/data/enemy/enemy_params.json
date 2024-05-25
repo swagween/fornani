@@ -169,7 +169,7 @@
     "physical": {
       "dimensions": [ 64, 64 ],
       "sprite_dimensions": [ 120, 120 ],
-      "spritesheet_dimensions": [ 4, 7 ],
+      "spritesheet_dimensions": [ 5, 7 ],
       "offset": [ 40, -23 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,

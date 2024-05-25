@@ -13,13 +13,23 @@ void Camera::update(automa::ServiceProvider& svc) {
 	screen_dimensions = svc.constants.screen_dimensions;
 	auto screen_dimensions_f = sf::Vector2<float>(screen_dimensions);
 	bounding_box.setSize(screen_dimensions_f);
-	previous_position = bounding_box.getPosition();
 	gravitator.update(svc);
 	bounding_box.setPosition(gravitator.collider.physics.position);
 	observed_velocity = bounding_box.getPosition() - previous_position;
+	shake.timer.update();
+	if (shake.timer.running() && shake.timer.get_cooldown() % shake.frequency == 0) {
+		shake.dampen.update();
+		auto diff = (float)shake.dampen.get_cooldown() * shake.energy;
+		auto randx = svc.random.random_range_float(-diff, diff);
+		auto randy = svc.random.random_range_float(-diff, diff);
+		set_position(previous_position + sf::Vector2<float>{randx, randy});
+	} else {
+		previous_position = bounding_box.getPosition(); //only want to do this when we don't need previous_position stored for shaking
+	}
 }
 
 void Camera::restrict_movement(sf::Vector2<float>& bounds) {
+	if (shake.timer.running()) { return; }
 	auto top_left = bounding_box.getPosition();
 	auto bottom_right = bounds - bounding_box.getSize();
 	bottom_right = {std::max(bottom_right.x, 0.f), std::max(bottom_right.y, 0.f)};
@@ -42,5 +52,10 @@ void Camera::set_position(sf::Vector2<float> new_pos) {
 void Camera::center(sf::Vector2<float> new_position) { gravitator.set_target_position(new_position - bounding_box.getSize() * 0.5f); }
 
 void Camera::force_center(sf::Vector2<float> new_position) { set_position(new_position - bounding_box.getSize() * 0.5f); }
+
+void Camera::begin_shake() {
+	shake.timer.start(shake.start_time);
+	shake.dampen.start(shake.dampen_factor);
+}
 
 } // namespace fornani

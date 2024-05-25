@@ -11,6 +11,7 @@
 #include "../entities/animation/Animation.hpp"
 #include "../particle/Gravitator.hpp"
 #include "Widget.hpp"
+#include "../utils/Stopwatch.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -77,6 +78,9 @@ class HUD {
 	sf::Vector2f corner_pad{}; // for rendering file preview
 
 	util::BitFlags<HUDState> flags{};
+
+	//debug
+	util::Stopwatch stopwatch{};
 
   private:
 

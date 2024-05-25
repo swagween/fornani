@@ -159,6 +159,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
 	loading.update();
 	if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
+	flags.state.reset(LevelState::camera_shake);
 
 	console.update(svc);
 	inventory_window.update(svc, *player);
@@ -584,6 +585,8 @@ void Map::handle_breakables(Tile& cell, sf::Vector2<float> velocity, uint8_t pow
 	}
 	generate_layer_textures(*m_services);
 }
+
+void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 	for (auto& portal : portals) {
