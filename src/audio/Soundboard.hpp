@@ -23,6 +23,8 @@ enum class Weapon { bryns_gun, plasmer, skycorps_ar, nova, clover, tomahawk, tom
 enum class Frdog {hurt, death};
 enum class Hulmet { hurt };
 enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
+enum class Minigus { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost };
+enum class Minigun { charge, reload, neutral, firing};
 
 struct Soundboard {
 	struct {
@@ -36,6 +38,8 @@ struct Soundboard {
 		util::BitFlags<Frdog> frdog{};
 		util::BitFlags<Hulmet> hulmet{};
 		util::BitFlags<Tank> tank{};
+		util::BitFlags<Minigus> minigus{};
+		util::BitFlags<Minigun> minigun{};
 	} flags{};
 
 	void play_sounds(automa::ServiceProvider& svc);

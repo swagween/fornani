@@ -17,7 +17,7 @@
       "attributes": {
         "automatic": false,
         "rate": 42,
-        "cooldown_time": 80,
+        "cooldown_time": 60,
         "recoil": 0.00,
         "ui_color": 1
       },

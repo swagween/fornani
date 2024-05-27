@@ -237,8 +237,12 @@ class AssetManager {
 		heal.setBuffer(heal_buffer);
 		orb_1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_1.wav");
 		orb_1.setBuffer(orb_1_buffer);
-		orb_5_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_5.wav");
-		orb_5.setBuffer(orb_5_buffer);
+		orb_2_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_2.wav");
+		orb_2.setBuffer(orb_2_buffer);
+		orb_3_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_3.wav");
+		orb_3.setBuffer(orb_3_buffer);
+		orb_4_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_4.wav");
+		orb_4.setBuffer(orb_4_buffer);
 
 		tank_alert1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_alert_1.wav");
 		tank_alert_1.setBuffer(tank_alert1_buffer);
@@ -250,6 +254,18 @@ class AssetManager {
 		tank_hurt_2.setBuffer(tank_hurt2_buffer);
 		tank_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_death.wav");
 		tank_death.setBuffer(tank_death_buffer);
+
+		//minigus
+		b_minigus_hurt_1.loadFromFile(finder.resource_path + "/audio/sfx/minigus_hurt.wav");
+		minigus_hurt_1.setBuffer(b_minigus_hurt_1);
+		b_minigus_hurt_2.loadFromFile(finder.resource_path + "/audio/sfx/minigus_hurt_2.wav");
+		minigus_hurt_2.setBuffer(b_minigus_hurt_2);
+		b_minigus_hurt_3.loadFromFile(finder.resource_path + "/audio/sfx/minigus_hurt_3.wav");
+		minigus_hurt_3.setBuffer(b_minigus_hurt_3);
+		b_minigus_laugh.loadFromFile(finder.resource_path + "/audio/sfx/minigus_laugh.wav");
+		minigus_laugh.setBuffer(b_minigus_laugh);
+		b_minigus_laugh_2.loadFromFile(finder.resource_path + "/audio/sfx/minigus_laugh_2.wav");
+		minigus_laugh_2.setBuffer(b_minigus_laugh_2);
 
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
@@ -446,9 +462,13 @@ class AssetManager {
 	sf::SoundBuffer heal_buffer{};
 	sf::Sound heal;
 	sf::SoundBuffer orb_1_buffer{};
-	sf::Sound orb_1;
-	sf::SoundBuffer orb_5_buffer{};
-	sf::Sound orb_5;
+	sf::Sound orb_1{};
+	sf::SoundBuffer orb_2_buffer{};
+	sf::Sound orb_2{};
+	sf::SoundBuffer orb_3_buffer{};
+	sf::Sound orb_3{};
+	sf::SoundBuffer orb_4_buffer{};
+	sf::Sound orb_4{};
 
 	sf::SoundBuffer tank_alert1_buffer{};
 	sf::Sound tank_alert_1;
@@ -460,6 +480,44 @@ class AssetManager {
 	sf::Sound tank_hurt_2;
 	sf::SoundBuffer tank_death_buffer{};
 	sf::Sound tank_death;
+
+	//minigus
+	sf::SoundBuffer b_minigus_laugh{};
+	sf::Sound minigus_laugh{};
+	sf::SoundBuffer b_minigus_laugh_2{};
+	sf::Sound minigus_laugh_2{};
+	sf::SoundBuffer b_minigus_hurt_1{};
+	sf::Sound minigus_hurt_1{};
+	sf::SoundBuffer b_minigus_hurt_2{};
+	sf::Sound minigus_hurt_2{};
+	sf::SoundBuffer b_minigus_hurt_3{};
+	sf::Sound minigus_hurt_3{};
+	sf::SoundBuffer b_minigus_jump{};
+	sf::Sound minigus_jump{};
+	sf::SoundBuffer b_minigus_land{};
+	sf::Sound minigus_land{};
+	sf::SoundBuffer b_minigus_punch{};
+	sf::Sound minigus_punch{};
+	sf::SoundBuffer b_minigus_step{};
+	sf::Sound minigus_step{};
+	sf::SoundBuffer b_minigus_snap{};
+	sf::Sound minigus_snap{};
+	sf::SoundBuffer b_minigus_build{};
+	sf::Sound minigus_build{};
+	sf::SoundBuffer b_minigus_invincibility{};
+	sf::Sound minigus_invincibility{};
+	sf::SoundBuffer b_minigus_lose_inv{};
+	sf::Sound minigus_lose_inv{};
+
+	//minigun
+	sf::SoundBuffer b_minigun_neutral{};
+	sf::Sound minigun_neutral{};
+	sf::SoundBuffer b_minigun_charge{};
+	sf::Sound minigun_charge{};
+	sf::SoundBuffer b_minigun_reload{};
+	sf::Sound minigun_reload{};
+	sf::SoundBuffer b_minigun_firing{};
+	sf::Sound minigun_firing{};
 
 	//save/load
 	sf::SoundBuffer save_buffer{};

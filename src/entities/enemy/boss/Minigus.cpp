@@ -26,6 +26,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	post_direction.lr = dir::LR::left;
 	Enemy::direction.lr = dir::LR::left;
 	Enemy::direction.lr = dir::LR::left;
+	cooldowns.vulnerability.start();
 }
 
 void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -51,6 +52,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	cooldowns.post_punch.update();
 	cooldowns.hurt.update();
 	cooldowns.player_punch.update();
+	cooldowns.vulnerability.update();
 
 	if (svc.ticker.every_x_ticks(32)) { hurt_color.update(); }
 	if (cooldowns.hurt.running()) { flags.state.reset(StateFlags::hurt); }
@@ -100,7 +102,17 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 
 	if (attack.sensor.active() && cooldowns.post_punch.is_complete()) { state = MinigusState::punch; }
 
-	if (flags.state.test(StateFlags::hurt)) { cooldowns.hurt.start(); }
+	if (flags.state.test(StateFlags::hurt)) {
+		cooldowns.hurt.start();
+		if (svc.random.percent_chance(40)) {
+			svc.soundboard.flags.minigus.set(audio::Minigus::hurt_1);
+		} else if (svc.random.percent_chance(40)) {
+			svc.soundboard.flags.minigus.set(audio::Minigus::hurt_2);
+		} else {
+			svc.soundboard.flags.minigus.set(audio::Minigus::hurt_3);
+		}
+		flags.state.reset(StateFlags::hurt);
+	}
 
 	if (just_died()) {}
 
@@ -137,6 +149,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	}
 
 	if (Enemy::health_indicator.get_amount() < -40 && flags.state.test(StateFlags::vulnerable)) { state = MinigusState::build_invincibility; }
+	if (cooldowns.vulnerability.is_complete()) { state = MinigusState::build_invincibility; }
 
 	if (pre_direction.lr != post_direction.lr) { state = MinigusState::turn; }
 
@@ -149,7 +162,9 @@ void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	minigun.sprite.setTextureRect(sf::IntRect({{u, v}, minigun.dimensions}));
 	minigun.sprite.setPosition(Enemy::sprite.getPosition() + minigun.offset);
 	Enemy::sprite.setTexture(flags.state.test(StateFlags::vulnerable) ? svc.assets.t_minigus : svc.assets.t_minigus_inv);
-	if (cooldowns.hurt.running() && !(state == MinigusState::build_invincibility)) { Enemy::sprite.setTexture(hurt_color.get_alternator() % 2 == 0 ? svc.assets.t_minigus_blue : svc.assets.t_minigus_red); }
+	if (cooldowns.hurt.running() && flags.state.test(StateFlags::vulnerable) && !(state == MinigusState::build_invincibility)) {
+		Enemy::sprite.setTexture(hurt_color.get_alternator() % 2 == 0 ? svc.assets.t_minigus_blue : svc.assets.t_minigus_red);
+	}
 	if (!svc.greyblock_mode()) {
 		win.draw(minigun.sprite);
 	} else {
@@ -197,6 +212,7 @@ fsm::StateFunction Minigus::update_shoot() {
 		minigun.flags.set(MinigunFlags::exhausted);
 		minigun.animation.set_params(minigun.deactivated);
 		flags.state.set(StateFlags::vulnerable);
+		cooldowns.vulnerability.start();
 		counters.snap.cancel();
 		Enemy::sprite.setTexture(m_services->assets.t_minigus);
 		cooldowns.firing.start();
@@ -293,6 +309,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		minigun.flags.set(MinigunFlags::exhausted);
 		minigun.animation.set_params(minigun.deactivated);
 		flags.state.set(StateFlags::vulnerable);
+		cooldowns.vulnerability.start();
 		counters.snap.cancel();
 		Enemy::sprite.setTexture(m_services->assets.t_minigus);
 		cooldowns.firing.start();
@@ -414,6 +431,13 @@ fsm::StateFunction Minigus::update_build_invincibility() {
 
 fsm::StateFunction Minigus::update_laugh() {
 	if (animation.just_started() && anim_debug) { std::cout << "laugh\n"; }
+	if (animation.just_started()) { 
+		if (m_services->random.percent_chance(50)) {
+			m_services->soundboard.flags.minigus.set(audio::Minigus::laugh);
+		} else {
+			m_services->soundboard.flags.minigus.set(audio::Minigus::laugh_2);
+		}
+	}
 	if (animation.complete()) {
 		if (change_state(MinigusState::snap, snap)) { return MINIGUS_BIND(update_snap); }
 		state = MinigusState::idle;
@@ -427,7 +451,7 @@ fsm::StateFunction Minigus::update_laugh() {
 fsm::StateFunction Minigus::update_snap() {
 	if (animation.just_started() && anim_debug) { std::cout << "snap\n"; }
 	if (animation.complete()) {
-		for (int i{0}; i < 3; ++i) {
+		for (int i{0}; i < 2; ++i) {
 			auto randx = m_services->random.random_range_float(-80.f, 80.f);
 			auto randy = m_services->random.random_range_float(-120.f, 40.f);
 			sf::Vector2<float> rand_vec{randx, randy};

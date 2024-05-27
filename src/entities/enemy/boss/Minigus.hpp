@@ -89,6 +89,7 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Cooldown hurt{320};
 		util::Cooldown player_punch{80};
 		util::Cooldown pre_jump{380};
+		util::Cooldown vulnerability{12000};
 	} cooldowns{};
 
 	struct {
@@ -99,7 +100,7 @@ class Minigus : public Enemy, public npc::NPC {
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 48, -1};
-	anim::Parameters shoot{18, 1, 38, -1};
+	anim::Parameters shoot{10, 1, 38, -1};
 	anim::Parameters jumpsquat{18, 1, 38, 0};
 	anim::Parameters hurt{21, 4, 24, 2};
 	anim::Parameters jump{14, 1, 22, -1};
@@ -110,7 +111,7 @@ class Minigus : public Enemy, public npc::NPC {
 	anim::Parameters punch{28, 4, 32, 0};
 	anim::Parameters uppercut{35, 4, 32, 0};
 	anim::Parameters build_invincibility{33, 2, 28, 4};
-	anim::Parameters laugh{25, 3, 24, 4};
+	anim::Parameters laugh{25, 3, 44, 4};
 	anim::Parameters snap{39, 3, 42, 0};
 
 	automa::ServiceProvider* m_services;
