@@ -44,6 +44,8 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		attack.hit.bounds.setPosition(Enemy::collider.physics.position + dir_offset - attack.hit_offset);
 	}
 
+	if (svc.ticker.every_x_ticks(100)) { std::cout << cooldowns.vulnerability.get_cooldown() << "\n"; }
+
 	gun.update(svc, map, *this);
 	caution.avoid_ledges(map, Enemy::collider, 1);
 	cooldowns.running_time.update();
@@ -149,7 +151,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	}
 
 	if (Enemy::health_indicator.get_amount() < -40 && flags.state.test(StateFlags::vulnerable)) { state = MinigusState::build_invincibility; }
-	if (cooldowns.vulnerability.is_complete()) { state = MinigusState::build_invincibility; }
+	if (cooldowns.vulnerability.is_complete() && flags.state.test(StateFlags::vulnerable)) { state = MinigusState::build_invincibility; }
 
 	if (pre_direction.lr != post_direction.lr) { state = MinigusState::turn; }
 
@@ -211,8 +213,8 @@ fsm::StateFunction Minigus::update_shoot() {
 	if (minigun.animation.complete() && !minigun.flags.test(MinigunFlags::charging)) {
 		minigun.flags.set(MinigunFlags::exhausted);
 		minigun.animation.set_params(minigun.deactivated);
+		if (!flags.state.test(StateFlags::vulnerable)) { cooldowns.vulnerability.start(); }
 		flags.state.set(StateFlags::vulnerable);
-		cooldowns.vulnerability.start();
 		counters.snap.cancel();
 		Enemy::sprite.setTexture(m_services->assets.t_minigus);
 		cooldowns.firing.start();
@@ -308,8 +310,8 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 	if (minigun.animation.complete() && !minigun.flags.test(MinigunFlags::charging)) {
 		minigun.flags.set(MinigunFlags::exhausted);
 		minigun.animation.set_params(minigun.deactivated);
+		if (!flags.state.test(StateFlags::vulnerable)) { cooldowns.vulnerability.start(); }
 		flags.state.set(StateFlags::vulnerable);
-		cooldowns.vulnerability.start();
 		counters.snap.cancel();
 		Enemy::sprite.setTexture(m_services->assets.t_minigus);
 		cooldowns.firing.start();

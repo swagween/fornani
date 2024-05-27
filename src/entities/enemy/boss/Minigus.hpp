@@ -89,7 +89,7 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Cooldown hurt{320};
 		util::Cooldown player_punch{80};
 		util::Cooldown pre_jump{380};
-		util::Cooldown vulnerability{12000};
+		util::Cooldown vulnerability{300};
 	} cooldowns{};
 
 	struct {
