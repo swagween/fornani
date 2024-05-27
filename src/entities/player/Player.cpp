@@ -77,7 +77,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 	// check keystate
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
-	if (!controller.moving() && (!force_cooldown.running() || grounded())) { collider.physics.acceleration.x = 0.0f; }
+	if (!controller.moving() && (!force_cooldown.running() || collider.world_grounded())) { collider.physics.acceleration.x = 0.0f; }
 
 	// weapon
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
@@ -366,6 +366,8 @@ void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
 	collider.sync_components();
 	update_direction();
 	sync_antennae();
+	health_indicator.set_position(new_pos);
+	orb_indicator.set_position(new_pos);
 }
 
 void Player::update_direction() {

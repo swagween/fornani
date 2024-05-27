@@ -140,6 +140,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
 			flags.state.set(State::is_any_jump_collision);
+			flags.external_state.set(ExternalState::grounded);
 		} else {
 			flags.state.reset(State::grounded);
 			flags.state.reset(State::world_grounded);
@@ -149,6 +150,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
 			flags.state.set(State::is_any_jump_collision);
+			flags.external_state.set(ExternalState::grounded);
 		} else {
 			flags.state.reset(State::grounded);
 			flags.state.reset(State::world_grounded);
@@ -161,6 +163,7 @@ void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_ty
 }
 
 void Collider::detect_map_collision(world::Map& map) {
+	flags.external_state.reset(ExternalState::grounded);
 	for (auto& index : map.collidable_indeces) {
 		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
 		cell.collision_check = false;

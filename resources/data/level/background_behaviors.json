@@ -1,7 +1,7 @@
 {
   "standard_scroll": {
     "used_layers": 5,
-    "scroll_speed": 0.9,
+    "scroll_speed": 0.5,
     "scrolling": true,
     "parallax_multiplier": 0.1,
     "dimensions": [
@@ -11,7 +11,7 @@
   },
   "fast_scroll": {
     "used_layers": 5,
-    "scroll_speed": 3.5,
+    "scroll_speed": 1.0,
     "scrolling": true,
     "parallax_multiplier": 0.1,
     "dimensions": [

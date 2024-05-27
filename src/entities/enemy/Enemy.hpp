@@ -44,6 +44,7 @@ class Enemy : public entity::Entity {
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player){};
 	virtual void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
+	virtual void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
 	void handle_player_collision(player::Player& player) const;
 	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }
@@ -59,6 +60,7 @@ class Enemy : public entity::Entity {
 	void set_position(sf::Vector2<float> pos) {
 		collider.physics.position = pos;
 		collider.sync_components();
+		health_indicator.set_position(pos);
 	}
 	void hurt() { flags.state.set(StateFlags::hurt); }
 

@@ -11,7 +11,7 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 256), m_services(&svc) {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 256), m_services(&svc), m_console(&console) {}
 
 void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
@@ -111,7 +111,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			sf::Vector2<int> pos{};
 			pos.x = entry["position"][0].as<int>();
 			pos.y = entry["position"][1].as<int>();
-			enemy_catalog.push_enemy(svc, *this, entry["id"].as<int>());
+			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>());
 			enemy_catalog.enemies.back()->set_position({(float)(pos.x * svc.constants.cell_size), (float)(pos.y * svc.constants.cell_size)});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 		}
@@ -160,6 +160,17 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	loading.update();
 	if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
 	flags.state.reset(LevelState::camera_shake);
+
+	if(flags.state.test(LevelState::spawn_enemy)) {
+		for (auto& spawn : enemy_spawns) {
+			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id);
+			enemy_catalog.enemies.back()->set_position(spawn.pos);
+			enemy_catalog.enemies.back()->get_collider().physics.zero();
+			effects.push_back(entity::Effect(*m_services, spawn.pos, {}, 2, 0));
+		}
+		enemy_spawns.clear();
+		flags.state.reset(LevelState::spawn_enemy);
+	}
 
 	console.update(svc);
 	inventory_window.update(svc, *player);
@@ -365,6 +376,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	player->render_indicators(svc, win, cam);
 	for (auto& enemy : enemy_catalog.enemies) { enemy->render_indicators(svc, win, cam); }
+	for (auto& enemy : enemy_catalog.enemies) { enemy->gui_render(svc, win, cam); }
 
 	if (svc.greyblock_mode()) {
 		for (auto& index : collidable_indeces) {
@@ -468,6 +480,11 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 	}
 
 	active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.emitter_dimensions, weapon.emitter_type, weapon.emitter_color, weapon.firing_direction));
+}
+
+void Map::spawn_enemy(int id, sf::Vector2<float> pos) {
+	enemy_spawns.push_back({pos, id});
+	flags.state.set(LevelState::spawn_enemy);
 }
 
 void Map::manage_projectiles(automa::ServiceProvider& svc) {

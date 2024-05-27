@@ -23,6 +23,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	num_sprites = svc.data.drop[key]["animation"]["num_sprites"].as<int>();
 	animation.params.duration = svc.data.drop[key]["animation"]["duration"].as<int>();
 	animation.params.framerate = svc.data.drop[key]["animation"]["framerate"].as<int>();
+	animation.params.num_loops = -1;
 	animation.start();
 	animation.refresh();
 

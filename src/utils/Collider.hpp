@@ -23,6 +23,7 @@ float const default_detector_height = 18.f;
 enum class General { ignore_resolution, complex };
 enum class Animation { just_landed };
 enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
+enum class ExternalState { grounded };
 
 enum class Collision {
 	any_collision,
@@ -69,6 +70,7 @@ class Collider {
 	bool has_vertical_collision() const;
 	bool has_left_wallslide_collision() const;
 	bool has_right_wallslide_collision() const;
+	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return (collision_depths.top > crush_threshold && collision_depths.bottom > crush_threshold) || (collision_depths.left > crush_threshold && collision_depths.right > crush_threshold); }
 	
@@ -89,6 +91,7 @@ class Collider {
 	struct {
 		util::BitFlags<General> general{};
 		util::BitFlags<State> state{};
+		util::BitFlags<ExternalState> external_state{};
 		util::BitFlags<Animation> animation{};
 		util::BitFlags<Collision> collision{};
 		util::BitFlags<Movement> movement{};

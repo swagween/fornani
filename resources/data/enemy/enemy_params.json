@@ -169,7 +169,7 @@
     "physical": {
       "dimensions": [ 64, 64 ],
       "sprite_dimensions": [ 120, 120 ],
-      "spritesheet_dimensions": [ 5, 7 ],
+      "spritesheet_dimensions": [ 6, 7 ],
       "offset": [ 40, -23 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
@@ -183,9 +183,9 @@
       "effect_size": 1
     },
     "attributes": {
-      "base_hp": 640,
+      "base_hp": 440,
       "base_damage": 1.0,
-      "speed": 0.5,
+      "speed": 2.5,
       "loot_multiplier": 25.0,
       "drop_range": [ 25, 30 ]
     },

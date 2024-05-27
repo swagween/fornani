@@ -49,7 +49,7 @@ enum LAYER_ORDER {
 	FOREGROUND = 7,
 };
 
-enum class LevelState { game_over, camera_shake };
+enum class LevelState { game_over, camera_shake, spawn_enemy };
 
 // a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
@@ -65,6 +65,11 @@ class Layer {
 	sf::Vector2<uint32_t> dimensions{};
 };
 
+struct EnemySpawn {
+	sf::Vector2<float> pos{};
+	int id{};
+};
+
 // a Map is just a set of layers that will render on top of each other
 
 class Map {
@@ -74,7 +79,7 @@ class Map {
 	using Vecu16 = sf::Vector2<uint32_t>;
 
 	Map() = default;
-	Map(automa::ServiceProvider& svc, player::Player& player);
+	Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
 
 	// methods
 	void load(automa::ServiceProvider& svc, std::string_view room);
@@ -85,6 +90,7 @@ class Map {
 	Tile& tile_at(uint8_t const i, uint8_t const j);
 	shape::Shape& shape_at(uint8_t const i, uint8_t const j);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos);
+	void spawn_enemy(int id, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer();
 	void generate_layer_textures(automa::ServiceProvider& svc);
@@ -122,6 +128,7 @@ class Map {
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};
 	std::vector<Platform> platforms{};
+	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};
@@ -152,8 +159,10 @@ class Map {
 
 	player::Player* player;
 	automa::ServiceProvider* m_services;
+	gui::Console* m_console;
 
 	util::Cooldown loading{}; // shouldn't exist
+	util::Cooldown spawning{2};
 
 	// debug
 	util::Stopwatch stopwatch{};
