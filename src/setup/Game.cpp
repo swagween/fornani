@@ -99,6 +99,7 @@ void Game::run() { // load all assets
 				}
 				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); }
 				if (event.key.code == sf::Keyboard::P) { take_screenshot(); }
+				if (event.key.code == sf::Keyboard::SemiColon) { services.ticker.slow_down(10); }
 				if (event.key.code == sf::Keyboard::H) {
 					services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 					services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
@@ -216,6 +217,7 @@ void Game::debug_window() {
 					ImGui::Text("Accumulator: %.4f", services.ticker.accumulator.count());
 					ImGui::Separator();
 					ImGui::Text("Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
+					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
 					ImGui::Separator();

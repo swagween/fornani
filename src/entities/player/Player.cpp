@@ -427,6 +427,7 @@ void Player::walk() {
 void Player::hurt(int amount = 1) {
 	if (!health.invincible()) {
 		if (shielding()) { return; }
+		m_services->ticker.slow_down(25);
 		health.inflict(amount);
 		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;

@@ -4,11 +4,10 @@
 
 namespace util {
 
-float Ticker::global_tick_rate() { return ft.count() * tick_multiplier; }
-
 void Ticker::start_frame() {
 	++num_frames;
 	total_seconds_passed += dt;
+	total_milliseconds_passed += dt * 1000.f;
 }
 
 void Ticker::end_frame() {
@@ -30,10 +29,8 @@ void Ticker::calculate_fps() {
 	seconds_passed = Tim::zero();
 }
 
-bool Ticker::every_x_frames(int const freq) { return num_frames % freq == 0; }
+void Ticker::slow_down(int time) { slowdown.start(time); }
 
-bool Ticker::every_x_ticks(int const freq) { return ticks % freq == 0; }
-
-bool Ticker::every_x_milliseconds(int num_milliseconds) { return false; }
+void Ticker::freeze_frame(int time) { freezeframe.start(time); }
 
 } // namespace util

@@ -173,7 +173,7 @@
       "offset": [ 40, -23 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [ 200.0, 300.0 ],
+      "alert_range": [ 300.0, 300.0 ],
       "hostile_range": [ 600.0, 24.0 ],
       "friction": 0.98,
       "gravity": 8.5
@@ -185,7 +185,7 @@
     "attributes": {
       "base_hp": 440,
       "base_damage": 1.0,
-      "speed": 2.5,
+      "speed": 0.8,
       "loot_multiplier": 25.0,
       "drop_range": [ 25, 30 ]
     },

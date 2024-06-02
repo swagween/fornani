@@ -8,6 +8,8 @@
 #include "../packages/Health.hpp"
 #include "../packages/WeaponPackage.hpp"
 #include "../packages/Caution.hpp"
+#include "../packages/Attack.hpp"
+#include "../packages/Shockwave.hpp"
 #include "../player/Indicator.hpp"
 #include <string_view>
 

@@ -17,19 +17,25 @@ void Camera::update(automa::ServiceProvider& svc) {
 	bounding_box.setPosition(gravitator.collider.physics.position);
 	observed_velocity = bounding_box.getPosition() - previous_position;
 	shake.timer.update();
+	previous_position = bounding_box.getPosition();
+	if (shake.timer.running()) {
+		flags.set(CamFlags::shake);
+	} else {
+		flags.reset(CamFlags::shake);
+		display_position = bounding_box.getPosition();
+	}
 	if (shake.timer.running() && shake.timer.get_cooldown() % shake.frequency == 0) {
 		shake.dampen.update();
 		auto diff = (float)shake.dampen.get_cooldown() * shake.energy;
+		if (diff < 1.f) { shake.timer.cancel(); }
 		auto randx = svc.random.random_range_float(-diff, diff);
 		auto randy = svc.random.random_range_float(-diff, diff);
-		set_position(previous_position + sf::Vector2<float>{randx, randy});
-	} else {
-		previous_position = bounding_box.getPosition(); //only want to do this when we don't need previous_position stored for shaking
+		display_position = bounding_box.getPosition() + sf::Vector2<float>{randx, randy};
 	}
 }
 
 void Camera::restrict_movement(sf::Vector2<float>& bounds) {
-	if (shake.timer.running()) { return; }
+	if (flags.test(CamFlags::shake)) { return; }
 	auto top_left = bounding_box.getPosition();
 	auto bottom_right = bounds - bounding_box.getSize();
 	bottom_right = {std::max(bottom_right.x, 0.f), std::max(bottom_right.y, 0.f)};
@@ -38,6 +44,7 @@ void Camera::restrict_movement(sf::Vector2<float>& bounds) {
 	gravitator.set_position(clamped_pos);
 	if (bounds.x < bounding_box.getSize().x) { fix_horizontally(bounds); }
 	if (bounds.y < bounding_box.getSize().y) { fix_vertically(bounds); }
+	display_position = bounding_box.getPosition();
 }
 
 void Camera::fix_horizontally(sf::Vector2<float> map_dim) { bounding_box.setPosition((map_dim.x - bounding_box.getSize().x) * 0.5f, bounding_box.getPosition().y); }
@@ -49,7 +56,10 @@ void Camera::set_position(sf::Vector2<float> new_pos) {
 	bounding_box.setPosition(new_pos);
 }
 
-void Camera::center(sf::Vector2<float> new_position) { gravitator.set_target_position(new_position - bounding_box.getSize() * 0.5f); }
+void Camera::center(sf::Vector2<float> new_position) {
+	if (flags.test(CamFlags::shake)) { return; }
+	gravitator.set_target_position(new_position - bounding_box.getSize() * 0.5f);
+}
 
 void Camera::force_center(sf::Vector2<float> new_position) { set_position(new_position - bounding_box.getSize() * 0.5f); }
 
