@@ -75,8 +75,20 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	attacks.left_shockwave.update(svc, map);
 	attacks.right_shockwave.update(svc, map);
 
+	attacks.left_shockwave.handle_player(player);
+	attacks.right_shockwave.handle_player(player);
+	if (attacks.left_shockwave.hit.active()) {
+		player.hurt(1);
+		player.accumulated_forces.push_back({-40.f, -4.f});
+	}
+	if (attacks.right_shockwave.hit.active()) {
+		player.hurt(1);
+		player.accumulated_forces.push_back({40.f, -4.f});
+	}
+
 	if (animation.get_frame() == 30 && attacks.punch.hit.active() && !cooldowns.player_punch.running()) {
 		player.hurt(2);
+		map.shake_camera();
 		auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
 		player.accumulated_forces.push_back({sign * 10.f, -4.f});
 		attacks.punch.sensor.deactivate();
@@ -84,6 +96,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	}
 	if (animation.get_frame() == 37 && attacks.uppercut.hit.active() && !cooldowns.player_punch.running()) {
 		player.hurt(2);
+		map.shake_camera();
 		auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
 		player.accumulated_forces.push_back({sign * 10.f, -4.f});
 		attacks.uppercut.sensor.deactivate();

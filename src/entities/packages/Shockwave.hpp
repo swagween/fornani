@@ -26,6 +26,7 @@ class Shockwave {
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 
 	components::CircleSensor hit{};
+	sf::Vector2<float> position{};
 	sf::Vector2<float> origin{};
 	sf::Vector2<float> speed{};
 	util::Cooldown lifetime{1200};

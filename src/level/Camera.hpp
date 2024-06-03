@@ -48,6 +48,8 @@ class Camera {
 	sf::Vector2<float> display_position{};
 	sf::Vector2<float> observed_velocity{};
 	sf::Vector2<float> previous_position{};
+	sf::Vector2<float> target{};
+	sf::Vector2<float> map_bounds_offset{};
 	util::BitFlags<CamFlags> flags{};
 
 	float grav_force{CAM_GRAV};

@@ -22,43 +22,47 @@ void Camera::update(automa::ServiceProvider& svc) {
 		flags.set(CamFlags::shake);
 	} else {
 		flags.reset(CamFlags::shake);
-		display_position = bounding_box.getPosition();
+		display_position = bounding_box.getPosition() + map_bounds_offset;
 	}
 	if (shake.timer.running() && shake.timer.get_cooldown() % shake.frequency == 0) {
 		shake.dampen.update();
 		auto diff = (float)shake.dampen.get_cooldown() * shake.energy;
-		if (diff < 1.f) { shake.timer.cancel(); }
+		if (abs(diff) < 0.1f) {
+			shake.timer.cancel();
+			diff = 0.f;
+		}
 		auto randx = svc.random.random_range_float(-diff, diff);
 		auto randy = svc.random.random_range_float(-diff, diff);
-		display_position = bounding_box.getPosition() + sf::Vector2<float>{randx, randy};
+		display_position = bounding_box.getPosition() + sf::Vector2<float>{randx, randy} + map_bounds_offset;
 	}
 }
 
 void Camera::restrict_movement(sf::Vector2<float>& bounds) {
-	if (flags.test(CamFlags::shake)) { return; }
 	auto top_left = bounding_box.getPosition();
 	auto bottom_right = bounds - bounding_box.getSize();
 	bottom_right = {std::max(bottom_right.x, 0.f), std::max(bottom_right.y, 0.f)};
 	sf::Vector2<float> clamped_pos = {std::clamp(top_left.x, 0.f, bottom_right.x), std::clamp(top_left.y, 0.f, bottom_right.y)};
 	bounding_box.setPosition(clamped_pos);
 	gravitator.set_position(clamped_pos);
+	target = clamped_pos;
 	if (bounds.x < bounding_box.getSize().x) { fix_horizontally(bounds); }
 	if (bounds.y < bounding_box.getSize().y) { fix_vertically(bounds); }
-	display_position = bounding_box.getPosition();
+	if (!flags.test(CamFlags::shake)) { display_position = bounding_box.getPosition() + map_bounds_offset; }
 }
 
-void Camera::fix_horizontally(sf::Vector2<float> map_dim) { bounding_box.setPosition((map_dim.x - bounding_box.getSize().x) * 0.5f, bounding_box.getPosition().y); }
+void Camera::fix_horizontally(sf::Vector2<float> map_dim) { map_bounds_offset.x = (map_dim.x - bounding_box.getSize().x) * 0.5f; }
 
-void Camera::fix_vertically(sf::Vector2<float> map_dim) { bounding_box.setPosition(bounding_box.getPosition().x, (map_dim.y - bounding_box.getSize().y) * 0.5f); }
+void Camera::fix_vertically(sf::Vector2<float> map_dim) { map_bounds_offset.y = (map_dim.y - bounding_box.getSize().y) * 0.5f; }
 
 void Camera::set_position(sf::Vector2<float> new_pos) {
 	gravitator.set_position(new_pos);
 	bounding_box.setPosition(new_pos);
+	display_position = new_pos;
 }
 
 void Camera::center(sf::Vector2<float> new_position) {
-	if (flags.test(CamFlags::shake)) { return; }
-	gravitator.set_target_position(new_position - bounding_box.getSize() * 0.5f);
+	auto aim = new_position - bounding_box.getSize() * 0.5f;
+	gravitator.set_target_position(aim);
 }
 
 void Camera::force_center(sf::Vector2<float> new_position) { set_position(new_position - bounding_box.getSize() * 0.5f); }
