@@ -280,7 +280,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 							svc.soundboard.flags.frdog.set(audio::Frdog::death);
 						}
 					}
-					if (!proj.stats.persistent) { proj.destroy(false); }
+					if (!proj.stats.persistent && !enemy->died()) { proj.destroy(false); }
 				}
 			}
 		}

@@ -8,7 +8,7 @@
 
 namespace entity {
 
-Shockwave::Shockwave(sf::Vector2<float> speed) : speed(speed) {}
+Shockwave::Shockwave(sf::Vector2<float> speed) : speed(speed) { hit.bounds.setRadius(16.f); }
 
 void Shockwave::start() {
 	lifetime.start();
@@ -18,7 +18,6 @@ void Shockwave::start() {
 
 void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 	lifetime.update();
-	hit.bounds.setOrigin({hit.bounds.getRadius(), hit.bounds.getRadius()});
 	if (lifetime.is_complete()) { return; }
 	position = position + speed;
 	if (svc.ticker.every_x_ticks(70)) {

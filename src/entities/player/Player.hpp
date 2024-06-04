@@ -112,6 +112,7 @@ class Player {
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
 	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(player::Abilities::shield); }
+	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 
 	// moves
 	void jump();
