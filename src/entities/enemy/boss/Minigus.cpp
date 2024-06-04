@@ -104,6 +104,10 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		attacks.uppercut.sensor.deactivate();
 		cooldowns.player_punch.start();
 	}
+	for (auto& index : map.collidable_indeces) {
+		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
+		if (Enemy::collider.jumpbox.overlaps(cell.bounding_box) && cell.is_breakable()) { map.handle_breakables(cell, {}, 4); }
+	}
 
 	minigun.animation.update();
 	if (minigun.sprite.getScale() != Enemy::sprite.getScale()) {

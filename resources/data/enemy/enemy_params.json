@@ -185,7 +185,7 @@
     "attributes": {
       "base_hp": 640,
       "base_damage": 1.0,
-      "speed": 0.8,
+      "speed": 0.5,
       "loot_multiplier": 25.0,
       "drop_range": [ 25, 30 ]
     },
