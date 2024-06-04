@@ -17,6 +17,10 @@ namespace player {
 class Player;
 }
 
+namespace arns {
+class Projectile;
+}
+
 namespace enemy {
 
 enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision };
@@ -48,6 +52,7 @@ class Enemy : public entity::Entity {
 	virtual void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
 	virtual void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
 	void handle_player_collision(player::Player& player) const;
+	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
@@ -73,6 +78,7 @@ class Enemy : public entity::Entity {
   protected:
 	std::string_view label{};
 	shape::Collider collider{};
+	shape::Collider secondary_collider{};
 	std::vector<anim::Parameters> animation_parameters{};
 	Flags flags{};
 	Attributes attributes{};

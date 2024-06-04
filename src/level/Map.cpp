@@ -252,43 +252,15 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
-		for (auto& platform : platforms) {
-			if (proj.bounding_box.overlaps(platform.bounding_box)) {
-				if (!proj.stats.transcendent) {
-					if (!proj.destruction_initiated()) {
-						effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, platform.physics.velocity * 10.f, proj.wall_hit_type(), 2));
-						if (proj.direction.lr == dir::LR::neutral) { effects.back().rotate(); }
-					}
-					proj.destroy(false);
-				}
-			}
-		}
-		for (auto& enemy : enemy_catalog.enemies) {
+		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
+		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 
-			// should be, simply:
-			// enemy.update(proj);
-
-			if (proj.team != arms::TEAMS::SKYCORPS) {
-				if (proj.bounding_box.overlaps(enemy->get_collider().bounding_box)) {
-					enemy->get_flags().state.set(enemy::StateFlags::shot);
-					if (enemy->get_flags().state.test(enemy::StateFlags::vulnerable) && !enemy->died()) {
-						enemy->hurt();
-						enemy->health.inflict(proj.stats.base_damage);
-						enemy->health_indicator.add(-proj.stats.base_damage);
-						if (enemy->just_died()) {
-							active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
-							svc.soundboard.flags.frdog.set(audio::Frdog::death);
-						}
-					}
-					if (!proj.stats.persistent && !enemy->died()) { proj.destroy(false); }
-				}
-			}
-		}
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
 		if (proj.bounding_box.overlaps(player->collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
 			player->hurt(proj.stats.base_damage);
 			proj.destroy(false);
 		}
+
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) {

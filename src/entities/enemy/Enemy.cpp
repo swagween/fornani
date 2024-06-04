@@ -22,6 +22,11 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	collider.physics.set_global_friction(in_physical["friction"].as<float>());
 	collider.stats.GRAV = in_physical["gravity"].as<float>();
 
+	secondary_collider = shape::Collider(dimensions);
+	secondary_collider.sync_components();
+	secondary_collider.physics.set_global_friction(in_physical["friction"].as<float>());
+	secondary_collider.stats.GRAV = in_physical["gravity"].as<float>();
+
 	metadata.id = in_metadata["id"].as<int>();
 	metadata.variant = in_metadata["variant"].as_string();
 
@@ -88,11 +93,19 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 	Entity::update(svc, map);
 	collider.update(svc);
+	secondary_collider.update(svc);
 	health_indicator.update(svc, collider.physics.position);
-	if (flags.general.test(GeneralFlags::map_collision)) { collider.detect_map_collision(map); }
+	if (flags.general.test(GeneralFlags::map_collision)) {
+		collider.detect_map_collision(map);
+		secondary_collider.detect_map_collision(map);
+	}
 	collider.reset();
+	secondary_collider.reset();
 	collider.reset_ground_flags();
+	secondary_collider.reset_ground_flags();
 	collider.physics.acceleration = {};
+	secondary_collider.physics.acceleration = {};
+
 	animation.update();
 	health.update();
 
@@ -160,6 +173,24 @@ void Enemy::handle_player_collision(player::Player& player) const {
 	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
 		if (player.collider.hurtbox.overlaps(collider.bounding_box)) { player.hurt(attributes.base_damage); }
 	}
+}
+
+void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
+
+	if (proj.team == arms::TEAMS::SKYCORPS) { return; }
+	if (!(proj.bounding_box.overlaps(collider.bounding_box) || proj.bounding_box.overlaps(secondary_collider.bounding_box))) { return; }
+
+	flags.state.set(enemy::StateFlags::shot);
+	if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
+		hurt();
+		health.inflict(proj.stats.base_damage);
+		health_indicator.add(-proj.stats.base_damage);
+		if (just_died()) {
+			map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position));
+			svc.soundboard.flags.frdog.set(audio::Frdog::death);
+		}
+	}
+	if (!proj.stats.persistent && (!died() || just_died())) { proj.destroy(false); }
 }
 
 } // namespace enemy

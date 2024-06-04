@@ -19,7 +19,7 @@ class Shockwave {
   public:
 	Shockwave() = default;
 	Shockwave(sf::Vector2<float> speed);
-	void start();
+	void start(int time = 1000);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void set_position(sf::Vector2<float> position);
 	void handle_player(player::Player& player);
@@ -29,7 +29,7 @@ class Shockwave {
 	sf::Vector2<float> position{};
 	sf::Vector2<float> origin{};
 	sf::Vector2<float> speed{};
-	util::Cooldown lifetime{1200};
+	util::Cooldown lifetime{};
 };
 
 } // namespace entity

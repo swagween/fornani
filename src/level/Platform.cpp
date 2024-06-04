@@ -2,6 +2,8 @@
 #include <cmath>
 #include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
+#include "../level/Map.hpp"
+#include "../particle/Effect.hpp"
 
 namespace world {
 
@@ -120,6 +122,17 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		Collider::render(win, cam);
 	} else {
 		win.draw(sprite);
+	}
+}
+
+void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
+	if (proj.stats.transcendent) { return; }
+	if (proj.bounding_box.overlaps(bounding_box)) {
+		if (!proj.destruction_initiated()) {
+			map.effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, physics.velocity * 10.f, proj.wall_hit_type(), 2));
+			if (proj.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+		}
+		proj.destroy(false);
 	}
 }
 

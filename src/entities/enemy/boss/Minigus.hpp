@@ -66,19 +66,16 @@ class Minigus : public Enemy, public npc::NPC {
 	} minigun{};
 
 	struct {
-		shape::Collider head{};
-	} colliders{};
-
-	struct {
 		entity::Attack punch{};
 		entity::Attack uppercut{};
 		entity::Shockwave left_shockwave{{-0.5f, 0.f}};
 		entity::Shockwave right_shockwave{{0.5f, 0.f}};
 	} attacks{};
 
-	int fire_chance{1};
-	int snap_chance{5};
-	int rush_chance{8};
+	int fire_chance{2};
+	int snap_chance{10};
+	int rush_chance{20};
+	float rush_speed{6.f};
 
 	// packages
 	entity::WeaponPackage gun;
@@ -116,7 +113,7 @@ class Minigus : public Enemy, public npc::NPC {
 	anim::Parameters punch{28, 4, 32, 0};
 	anim::Parameters uppercut{35, 4, 32, 0};
 	anim::Parameters build_invincibility{33, 2, 28, 4};
-	anim::Parameters laugh{25, 3, 44, 4};
+	anim::Parameters laugh{25, 3, 24, 4};
 	anim::Parameters snap{39, 3, 42, 0};
 	anim::Parameters rush{14, 4, 22, -1};
 

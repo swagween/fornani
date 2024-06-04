@@ -10,8 +10,8 @@ namespace entity {
 
 Shockwave::Shockwave(sf::Vector2<float> speed) : speed(speed) { hit.bounds.setRadius(16.f); }
 
-void Shockwave::start() {
-	lifetime.start();
+void Shockwave::start(int time) {
+	lifetime.start(time);
 	hit.bounds.setPosition(origin);
 	position = origin;
 }
