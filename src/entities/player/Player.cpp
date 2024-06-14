@@ -99,7 +99,10 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	update_weapon();
 	catalog.update(*m_services);
 	if (m_services->ticker.every_x_ticks(10)) { collider.collision_depths = {}; }
-	if (collider.crushed()) { kill(); }
+	if (collider.crushed()) {
+		if (!just_died()) { health_indicator.add(-64); }
+		kill();
+	}
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (!(animation.state == AnimState::dash) && !controller.dash_requested()) {
@@ -503,7 +506,10 @@ void Player::update_invincibility() {
 	}
 }
 
-void Player::kill() { flags.state.reset(State::alive); }
+void Player::kill() {
+	flags.state.reset(State::alive);
+	flags.state.set(State::killed);
+}
 
 void Player::start_over() {
 	health.reset();
@@ -532,11 +538,15 @@ void Player::total_reset() {
 	reset_flags();
 	arsenal.loadout.clear();
 	update_antennae();
+	flags.state.reset(State::killed);
+	animation.state = AnimState::idle;
 }
 
 void Player::map_reset() {
 	arsenal.extant_projectile_instances = {};
 	if (animation.state == AnimState::inspect) { animation.state = AnimState::idle; }
+	if (flags.state.test(State::killed)) { animation.state = AnimState::idle; }
+	flags.state.reset(State::killed);
 }
 
 arms::Weapon& Player::equipped_weapon() { return arsenal.get_current_weapon(); }

@@ -10,6 +10,7 @@
 #include "../graphics/FLColor.hpp"
 #include "../setup/EnumLookups.hpp"
 #include "ResourceFinder.hpp"
+#include "../audio/SoundEffect.hpp"
 
 namespace asset {
 
@@ -215,6 +216,7 @@ class AssetManager {
 		pop_mid.setBuffer(pop_mid_buffer);
 		jump_buffer.loadFromFile(finder.resource_path + "/audio/sfx/jump.wav");
 		jump.setBuffer(jump_buffer);
+
 		shatter_buffer.loadFromFile(finder.resource_path + "/audio/sfx/shatter.wav");
 		shatter.setBuffer(shatter_buffer);
 		step_buffer.loadFromFile(finder.resource_path + "/audio/sfx/steps.wav");
@@ -255,17 +257,36 @@ class AssetManager {
 		tank_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_death.wav");
 		tank_death.setBuffer(tank_death_buffer);
 
-		//minigus
-		b_minigus_hurt_1.loadFromFile(finder.resource_path + "/audio/sfx/minigus_hurt.wav");
-		minigus_hurt_1.setBuffer(b_minigus_hurt_1);
-		b_minigus_hurt_2.loadFromFile(finder.resource_path + "/audio/sfx/minigus_hurt_2.wav");
-		minigus_hurt_2.setBuffer(b_minigus_hurt_2);
-		b_minigus_hurt_3.loadFromFile(finder.resource_path + "/audio/sfx/minigus_hurt_3.wav");
-		minigus_hurt_3.setBuffer(b_minigus_hurt_3);
+		// minigus
 		b_minigus_laugh.loadFromFile(finder.resource_path + "/audio/sfx/minigus_laugh.wav");
-		minigus_laugh.setBuffer(b_minigus_laugh);
-		b_minigus_laugh_2.loadFromFile(finder.resource_path + "/audio/sfx/minigus_laugh_2.wav");
-		minigus_laugh_2.setBuffer(b_minigus_laugh_2);
+
+		b_minigus_laugh.loadFromFile(finder.resource_path + "/audio/sfx/minigus/minigus_laugh.wav");
+		b_minigus_laugh_2.loadFromFile(finder.resource_path + "/audio/sfx/minigus/minigus_laugh_2.wav");
+		b_minigus_hurt_1.loadFromFile(finder.resource_path + "/audio/sfx/minigus/minigus_hurt.wav");
+		b_minigus_hurt_2.loadFromFile(finder.resource_path + "/audio/sfx/minigus/minigus_hurt_2.wav");
+		b_minigus_hurt_3.loadFromFile(finder.resource_path + "/audio/sfx/minigus/minigus_hurt_3.wav");
+		b_minigus_grunt.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_grunt.wav");
+		b_minigus_aww.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_aww.wav");
+		b_minigus_babyimhome.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_babyimhome.wav");
+		b_minigus_deepspeak.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_deepspeak.wav");
+		b_minigus_doge.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_doge.wav");
+		b_minigus_dontlookatme.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_dontlookatme.wav");
+		b_minigus_exhale.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_exhale.wav");
+		b_minigus_getit.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_getit.wav");
+		b_minigus_greatidea.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_greatidea.wav");
+		b_minigus_itsagreatday.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_itsagreatday.wav");
+		b_minigus_long_death.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_long_death.wav");
+		b_minigus_long_moan.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_long_moan.wav");
+		b_minigus_momma.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_momma.wav");
+		b_minigus_mother.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_mother.wav");
+		b_minigus_ok_1.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_ok.wav");
+		b_minigus_ok_2.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_okayyy.wav");
+		b_minigus_pizza.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_pizza.wav");
+		b_minigus_poh.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_poh.wav");
+		b_minigus_quick_breath.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_quick_breath.wav");
+		b_minigus_thatisverysneeze.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_thatisverysneeze.wav");
+		b_minigus_whatisit.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_whatisit.wav");
+		b_minigus_woob.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_woob.wav");
 
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
@@ -482,16 +503,6 @@ class AssetManager {
 	sf::Sound tank_death;
 
 	//minigus
-	sf::SoundBuffer b_minigus_laugh{};
-	sf::Sound minigus_laugh{};
-	sf::SoundBuffer b_minigus_laugh_2{};
-	sf::Sound minigus_laugh_2{};
-	sf::SoundBuffer b_minigus_hurt_1{};
-	sf::Sound minigus_hurt_1{};
-	sf::SoundBuffer b_minigus_hurt_2{};
-	sf::Sound minigus_hurt_2{};
-	sf::SoundBuffer b_minigus_hurt_3{};
-	sf::Sound minigus_hurt_3{};
 	sf::SoundBuffer b_minigus_jump{};
 	sf::Sound minigus_jump{};
 	sf::SoundBuffer b_minigus_land{};
@@ -508,6 +519,34 @@ class AssetManager {
 	sf::Sound minigus_invincibility{};
 	sf::SoundBuffer b_minigus_lose_inv{};
 	sf::Sound minigus_lose_inv{};
+
+	sf::SoundBuffer b_minigus_laugh{};
+	sf::SoundBuffer b_minigus_laugh_2{};
+	sf::SoundBuffer b_minigus_hurt_1{};
+	sf::SoundBuffer b_minigus_hurt_2{};
+	sf::SoundBuffer b_minigus_hurt_3{};
+	sf::SoundBuffer b_minigus_grunt{};
+	sf::SoundBuffer b_minigus_aww{};
+	sf::SoundBuffer b_minigus_babyimhome{};
+	sf::SoundBuffer b_minigus_deepspeak{};
+	sf::SoundBuffer b_minigus_doge{};
+	sf::SoundBuffer b_minigus_dontlookatme{};
+	sf::SoundBuffer b_minigus_exhale{};
+	sf::SoundBuffer b_minigus_getit{};
+	sf::SoundBuffer b_minigus_greatidea{};
+	sf::SoundBuffer b_minigus_itsagreatday{};
+	sf::SoundBuffer b_minigus_long_death{};
+	sf::SoundBuffer b_minigus_long_moan{};
+	sf::SoundBuffer b_minigus_momma{};
+	sf::SoundBuffer b_minigus_mother{};
+	sf::SoundBuffer b_minigus_ok_1{};
+	sf::SoundBuffer b_minigus_ok_2{};
+	sf::SoundBuffer b_minigus_pizza{};
+	sf::SoundBuffer b_minigus_poh{};
+	sf::SoundBuffer b_minigus_quick_breath{};
+	sf::SoundBuffer b_minigus_thatisverysneeze{};
+	sf::SoundBuffer b_minigus_whatisit{};
+	sf::SoundBuffer b_minigus_woob{};
 
 	//minigun
 	sf::SoundBuffer b_minigun_neutral{};

@@ -1,9 +1,6 @@
 #include "Indicator.hpp"
-#include "Indicator.hpp"
-#include "Indicator.hpp"
 #include "../../gui/Console.hpp"
 #include "../../service/ServiceProvider.hpp"
-#include "Indicator.hpp"
 #include "Player.hpp"
 
 namespace player {
@@ -60,6 +57,9 @@ void Indicator::add(float amount) {
 	color_fade.start();
 }
 
-void Indicator::set_position(sf::Vector2<float> pos) { position = pos; }
+void Indicator::set_position(sf::Vector2<float> pos) {
+	position = pos;
+	gravitator.set_position(pos);
+}
 
 } // namespace player

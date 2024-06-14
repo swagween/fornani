@@ -39,11 +39,6 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.tank.test(Tank::death)) { svc.assets.tank_death.play(); }
 
 	//minigus
-	if (flags.minigus.test(Minigus::hurt_1)) { svc.assets.minigus_hurt_1.play(); }
-	if (flags.minigus.test(Minigus::hurt_2)) { svc.assets.minigus_hurt_2.play(); }
-	if (flags.minigus.test(Minigus::hurt_3)) { svc.assets.minigus_hurt_3.play(); }
-	if (flags.minigus.test(Minigus::laugh)) { svc.assets.minigus_laugh.play(); }
-	if (flags.minigus.test(Minigus::laugh_2)) { svc.assets.minigus_laugh_2.play(); }
 
 	//item
 	if (flags.item.test(Item::heal)) { svc.assets.heal.play(); }

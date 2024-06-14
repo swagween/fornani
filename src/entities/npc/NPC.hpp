@@ -26,7 +26,7 @@ class Player;
 
 namespace npc {
 
-enum class NPCState { engaged };
+enum class NPCState { engaged, force_interact };
 
 class NPC : public entity::Entity {
   public:
@@ -40,10 +40,11 @@ class NPC : public entity::Entity {
 
 	std::string_view label{};
 
+  protected:
+	util::BitFlags<NPCState> state_flags{};
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
 	shape::Collider collider{};
-	util::BitFlags<NPCState> state_flags{};
 
 	std::deque<std::string_view> conversations{};
 	int id{};

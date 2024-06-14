@@ -55,7 +55,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
 		state_flags.set(NPCState::engaged);
-		if (player.controller.inspecting() && !conversations.empty()) {
+		if ((player.controller.inspecting() || state_flags.test(NPCState::force_interact)) && !conversations.empty()) {
 			console.set_source(svc.text.npc);
 			std::string name = std::string(label);
 			std::string convo = std::string(conversations.front());
@@ -77,9 +77,11 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 	sprite.setPosition(collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y);
-	int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-	int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
-	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
+	if (spritesheet_dimensions.y > 0) {
+		int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+		int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+		sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
+	}
 
 	if (svc.greyblock_mode()) {
 		collider.render(win, campos);

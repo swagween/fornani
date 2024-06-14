@@ -78,7 +78,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { alive, dir_switch, show_weapon };
+enum class State { alive, killed, dir_switch, show_weapon };
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -106,12 +106,13 @@ class Player {
 	void calculate_sprite_offset();
 
 	// state
-	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(player::State::alive); }
+	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(State::alive); }
+	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
-	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(player::Abilities::shield); }
+	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(Abilities::shield); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 
 	// moves

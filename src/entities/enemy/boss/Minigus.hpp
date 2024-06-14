@@ -9,7 +9,7 @@
 namespace enemy {
 
 enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush };
-enum class MinigusFlags { recently_hurt, distant_range_activated };
+enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
 
@@ -45,6 +45,7 @@ class Minigus : public Enemy, public npc::NPC {
 	util::BitFlags<MinigusFlags> status{};
 	gui::StatusBar health_bar;
 
+	dir::Direction sprite_direction{};
 	dir::Direction pre_direction{};
 	dir::Direction post_direction{};
 	dir::Direction movement_direction{};
@@ -84,7 +85,6 @@ class Minigus : public Enemy, public npc::NPC {
 	struct {
 		util::Cooldown jump{20};
 		util::Cooldown rush{600};
-		util::Cooldown running_time{40};
 		util::Cooldown firing{1000};
 		util::Cooldown post_charge{600};
 		util::Cooldown post_punch{400};
@@ -98,6 +98,44 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Counter snap{};
 	} counters{};
 
+	struct {
+		sf::Sound jump{};
+		sf::Sound land{};
+		sf::Sound step{};
+		sf::Sound punch{};
+		sf::Sound snap{};
+	} sounds{};
+
+	struct {
+		sf::Sound hurt_1{};
+		sf::Sound hurt_2{};
+		sf::Sound hurt_3{};
+		sf::Sound laugh_1{};
+		sf::Sound laugh_2{};
+		sf::Sound grunt{};
+		sf::Sound aww{};
+		sf::Sound babyimhome{};
+		sf::Sound deepspeak{};
+		sf::Sound doge{};
+		sf::Sound dontlookatme{};
+		sf::Sound exhale{};
+		sf::Sound getit{};
+		sf::Sound greatidea{};
+		sf::Sound itsagreatday{};
+		sf::Sound long_death{};
+		sf::Sound long_moan{};
+		sf::Sound momma{};
+		sf::Sound mother{};
+		sf::Sound ok_1{};
+		sf::Sound ok_2{};
+		sf::Sound pizza{};
+		sf::Sound poh{};
+		sf::Sound quick_breath{};
+		sf::Sound thatisverysneeze{}; //dash cue
+		sf::Sound whatisit{};
+		sf::Sound woob{}; //jumping
+	} voice{};
+
 	util::Cycle hurt_color{2};
 
 	// lookup, duration, framerate, num_loops
@@ -109,7 +147,7 @@ class Minigus : public Enemy, public npc::NPC {
 	anim::Parameters jump_shoot{32, 1, 42, -1};
 	anim::Parameters reload{7, 7, 18, 0};
 	anim::Parameters turn{18, 2, 42, 0};
-	anim::Parameters run{14, 4, 42, -1};
+	anim::Parameters run{14, 4, 42, 3};
 	anim::Parameters punch{28, 4, 32, 0};
 	anim::Parameters uppercut{35, 4, 32, 0};
 	anim::Parameters build_invincibility{33, 2, 28, 4};
