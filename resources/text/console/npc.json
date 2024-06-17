@@ -57,5 +57,19 @@
     "responses": [
       [ "Who are you?%0", "Whatever I need to do.%1", "Where is my brother?%2" ]
     ]
+  },
+  "minigus2": {
+    "suite": [
+      [ "...", "GAH!!!", "My mask!! What have you done?!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "minigus3": {
+    "suite": [
+      [ "This isn't over!" ]
+    ],
+    "responses": [
+    ]
   }
 }

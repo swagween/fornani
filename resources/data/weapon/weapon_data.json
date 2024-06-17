@@ -17,7 +17,7 @@
       "attributes": {
         "automatic": false,
         "rate": 42,
-        "cooldown_time": 60,
+        "cooldown_time": 30,
         "recoil": 0.00,
         "ui_color": 1
       },
@@ -27,7 +27,7 @@
           "y": 12.0
         },
         "attributes": {
-          "base_damage": 6,
+          "base_damage": 600,
           "range": 200,
           "speed": 25.5,
           "variance": 0.1,
@@ -155,7 +155,7 @@
         },
         "attributes": {
           "base_damage": 1,
-          "range": 240,
+          "range": 480,
           "speed": 8.0,
           "variance": 0.4,
           "stun_time": 0.0,

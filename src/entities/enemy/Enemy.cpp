@@ -86,7 +86,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4); }
 	}
 	if (just_died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
-	if (died()) {
+	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();
 		return;
@@ -135,7 +135,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (died()) { return; }
+	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);

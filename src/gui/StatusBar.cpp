@@ -19,6 +19,7 @@ StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim) : dimen
 	debug_rects.gone.setPosition({svc.constants.screen_dimensions.x * 0.5f, 60.f});
 	debug_rects.gone.setSize({200.f, 20.f});
 	debug_rects.gone.setOrigin(debug_rects.filled.getSize() * 0.5f);
+	current_state = BarState::full;
 }
 
 void StatusBar::update(automa::ServiceProvider& svc, float max, float current) {
@@ -31,6 +32,8 @@ void StatusBar::update(automa::ServiceProvider& svc, float max, float current) {
 	debug_rects.filled.setOrigin(debug_rects.gone.getSize() * 0.5f);
 	debug_rects.gone.setOrigin(debug_rects.gone.getSize() * 0.5f);
 	debug_rects.taken.setOrigin(debug_rects.gone.getSize() * 0.5f);
+	current_state = current == max ? BarState::full : current_state;
+	current_state = current <= 0 ? BarState::empty : current_state;
 }
 void StatusBar::render(sf::RenderWindow& win) {
 	win.draw(debug_rects.gone);

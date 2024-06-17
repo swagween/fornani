@@ -23,7 +23,7 @@ class Projectile;
 
 namespace enemy {
 
-enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision };
+enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker };
@@ -70,6 +70,7 @@ class Enemy : public entity::Entity {
 		health_indicator.set_position(pos);
 	}
 	void hurt() { flags.state.set(StateFlags::hurt); }
+	void shake() { flags.state.set(StateFlags::shaking); }
 
 	entity::Health health{};
 	player::Indicator health_indicator{};

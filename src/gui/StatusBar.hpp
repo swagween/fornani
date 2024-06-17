@@ -20,6 +20,7 @@ class StatusBar {
 	sf::Vector2<float> position{};
 	sf::Vector2<float> draw_position{};
 	sf::Vector2<float> origin{};
+	[[nodiscard]] auto empty() const -> bool { return current_state == BarState::empty; }
 
   private:
 	sf::Vector2<int> dimensions{};

@@ -32,6 +32,7 @@ class MusicPlayer {
 	void turn_off();
 	void turn_on();
 	[[nodiscard]] auto global_off() const -> bool { return !flags.player.test(MusicPlayerState::on); }
+	[[nodiscard]] auto playing() const -> bool { return song_first.getStatus() == sf::SoundSource::Status::Playing || song_loop.getStatus() == sf::SoundSource::Status::Playing; }
 
 	data::ResourceFinder finder{};
 

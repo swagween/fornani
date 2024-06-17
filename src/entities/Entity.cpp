@@ -20,11 +20,11 @@ void Entity::sprite_flip() {
 	auto scl = direction.lr == dir::LR::right ? sf::Vector2<float>{-1.0f, 1.0f} : sf::Vector2<float>{1.0f, 1.0f};
 	sprite.setScale(scl);
 }
-void Entity::sprite_shake(automa::ServiceProvider& svc) {
-	if (svc.ticker.every_x_frames(16)) {
-		float shake = svc.random.random_range(-4, 4);
-		random_offset = sf::Vector2<float>{shake, shake};
+void Entity::sprite_shake(automa::ServiceProvider& svc, int rate, int energy) {
+	if (svc.ticker.every_x_ticks(rate)) {
+		auto randx = svc.random.random_range_float(-energy, energy);
+		auto randy = svc.random.random_range_float(-energy, energy);
+		random_offset = sf::Vector2<float>{randx, randy};
 	}
-
 }
 } // namespace entity

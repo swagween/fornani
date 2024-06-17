@@ -19,6 +19,7 @@ void MusicPlayer::play_once(int vol) {
 		stop();
 		return;
 	}
+	if (playing()) { return; }
 	song_first.setLoop(false);
 	song_first.setVolume(vol);
 	song_first.play();
@@ -30,6 +31,7 @@ void MusicPlayer::play_looped(int vol) {
 		stop();
 		return;
 	}
+	if (playing()) { return; }
 	song_first.setLoop(false);
 	song_loop.setLoop(true);
 	song_first.setVolume(vol);

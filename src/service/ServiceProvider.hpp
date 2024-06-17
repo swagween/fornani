@@ -17,12 +17,12 @@
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger };
 struct ServiceProvider {
+	audio::MusicPlayer music{};
 	asset::AssetManager assets{};
 	data::DataManager data{*this};
 	data::TextManager text{};
 	config::ControllerMap controller_map{*this};
 	audio::Soundboard soundboard{};
-	audio::MusicPlayer music{};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::Random random{};

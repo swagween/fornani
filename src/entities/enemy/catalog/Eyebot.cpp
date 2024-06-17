@@ -10,6 +10,7 @@ Eyebot::Eyebot(automa::ServiceProvider& svc) : Enemy(svc, "eyebot") {
 }
 
 void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (died()) { return; }
 	if (!seeker_cooldown.is_complete()) { seeker.set_position(collider.physics.position); }
 	seeker_cooldown.update();
 	flags.state.set(StateFlags::vulnerable); // eyebot is always vulnerable

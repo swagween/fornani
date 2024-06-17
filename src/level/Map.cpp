@@ -269,10 +269,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) {
-		if (enemy->died()) {
-			enemy->update(svc, *this, *player);
-			continue;
-		}
 		enemy->unique_update(svc, *this, *player);
 		enemy->handle_player_collision(*player);
 	}

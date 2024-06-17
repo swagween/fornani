@@ -167,6 +167,10 @@ void Game::run() { // load all assets
 
 		services.ticker.end_frame();
 	}
+
+	//shutdown
+	//explicitly delete music player since it can't be deleted after AssetManager
+	services.music.~MusicPlayer();
 }
 
 void Game::debug_window() {

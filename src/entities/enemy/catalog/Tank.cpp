@@ -14,6 +14,7 @@ Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, "skycorp
 }
 
 void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (died()) { return; }
 
 	flags.state.set(StateFlags::vulnerable); // tank is always vulnerable
 	gun.update(svc, map, *this);

@@ -7,6 +7,7 @@ namespace enemy {
 Frdog::Frdog(automa::ServiceProvider& svc) : Enemy(svc, "frdog") { animation.set_params(idle); }
 
 void Frdog::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (died()) { return; }
 	
 	flags.state.set(StateFlags::vulnerable); // frdog is always vulnerable
 

@@ -8,7 +8,7 @@
 
 namespace enemy {
 
-enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush };
+enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle };
 enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
@@ -38,9 +38,10 @@ class Minigus : public Enemy, public npc::NPC {
 	fsm::StateFunction update_laugh();
 	fsm::StateFunction update_snap();
 	fsm::StateFunction update_rush();
+	fsm::StateFunction update_struggle();
 
   private:
-	bool anim_debug{};
+	bool anim_debug{true};
 	MinigusState state{};
 	util::BitFlags<MinigusFlags> status{};
 	gui::StatusBar health_bar;
@@ -151,6 +152,7 @@ class Minigus : public Enemy, public npc::NPC {
 	anim::Parameters run{14, 4, 42, 3};
 	anim::Parameters punch{28, 4, 32, 0};
 	anim::Parameters uppercut{35, 4, 32, 0};
+	anim::Parameters struggle{35, 1, 32, -1};
 	anim::Parameters build_invincibility{33, 2, 28, 4};
 	anim::Parameters laugh{25, 3, 24, 4};
 	anim::Parameters snap{39, 3, 42, 0};
