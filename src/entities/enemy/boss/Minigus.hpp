@@ -9,7 +9,7 @@
 namespace enemy {
 
 enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush };
-enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode };
+enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
 
@@ -69,8 +69,8 @@ class Minigus : public Enemy, public npc::NPC {
 	struct {
 		entity::Attack punch{};
 		entity::Attack uppercut{};
-		entity::Shockwave left_shockwave{{-0.5f, 0.f}};
-		entity::Shockwave right_shockwave{{0.5f, 0.f}};
+		entity::Shockwave left_shockwave{{-0.6f, 0.f}};
+		entity::Shockwave right_shockwave{{0.6f, 0.f}};
 	} attacks{};
 
 	int fire_chance{2};

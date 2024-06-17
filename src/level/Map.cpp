@@ -33,6 +33,11 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
 		for (int i = 0; i < NUM_LAYERS; ++i) { layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
 
+		if (meta["music"].is_string()) {
+			svc.music.load(meta["music"].as_string());
+			svc.music.play_looped(20);
+		}
+
 		auto style_value = meta["style"].as<int>();
 		style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
 		style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();

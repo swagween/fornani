@@ -53,9 +53,10 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	collider.reset();
 	collider.physics.acceleration = {};
 
-	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
+	if (player.collider.bounding_box.overlaps(collider.bounding_box) || (triggers.test(NPCTrigger::distant_interact) && state_flags.test(NPCState::force_interact))) {
 		state_flags.set(NPCState::engaged);
 		if ((player.controller.inspecting() || state_flags.test(NPCState::force_interact)) && !conversations.empty()) {
+			state_flags.set(NPCState::introduced);
 			console.set_source(svc.text.npc);
 			std::string name = std::string(label);
 			std::string convo = std::string(conversations.front());
@@ -73,6 +74,8 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 			std::cout << label << " popped!\n";
 		}
 	}
+
+	triggers = {};
 }
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {

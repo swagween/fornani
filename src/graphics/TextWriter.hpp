@@ -64,6 +64,7 @@ class TextWriter {
 	[[nodiscard]] auto can_skip() const -> bool { return !flags.test(MessageState::cannot_skip); };
 	[[nodiscard]] auto response_triggered() const -> bool { return flags.test(MessageState::response_trigger); }
 	[[nodiscard]] auto responding() const -> bool { return selection_mode(); }
+	[[nodiscard]] auto suite_size() const -> size_t { return suite.size(); }
 
 	void reset_response() { flags.reset(MessageState::response_trigger); }
 

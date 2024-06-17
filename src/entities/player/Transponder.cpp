@@ -45,6 +45,8 @@ void Transponder::track_shipments(gui::Console& console) {
 	console.writer.flush_communicators();
 }
 
+void Transponder::flush_shipments() { shipments = {}; }
+
 void Transponder::end() { actions = {}; }
 
 void Transponder::skip_ahead() { actions.set(TransponderActions::skip_ahead); }

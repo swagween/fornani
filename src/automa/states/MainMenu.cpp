@@ -11,6 +11,9 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	right_dot.set_position(options.at(current_selection).right_offset);
 
 	title = sf::Sprite{svc.assets.t_title, sf::IntRect({0, 0}, {(int)svc.constants.screen_dimensions.x, (int)svc.constants.screen_dimensions.y})};
+
+	svc.music.load("clay");
+	svc.music.play_looped(20);
 };
 
 void MainMenu::init(ServiceProvider& svc, std::string_view room) {

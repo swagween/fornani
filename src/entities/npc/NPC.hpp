@@ -26,7 +26,8 @@ class Player;
 
 namespace npc {
 
-enum class NPCState { engaged, force_interact };
+enum class NPCState { engaged, force_interact, introduced };
+enum class NPCTrigger { distant_interact };
 
 class NPC : public entity::Entity {
   public:
@@ -42,11 +43,12 @@ class NPC : public entity::Entity {
 
   protected:
 	util::BitFlags<NPCState> state_flags{};
+	util::BitFlags<NPCTrigger> triggers{};
+	std::deque<std::string_view> conversations{};
+	shape::Collider collider{};
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
-	shape::Collider collider{};
 
-	std::deque<std::string_view> conversations{};
 	int id{};
 
 	struct {

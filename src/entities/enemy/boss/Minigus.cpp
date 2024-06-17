@@ -1,5 +1,6 @@
 #include "Minigus.hpp"
 #include "../../../level/Map.hpp"
+#include "../../../gui/Console.hpp"
 #include "../../../service/ServiceProvider.hpp"
 #include "../../player/Player.hpp"
 
@@ -12,6 +13,10 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	gun.cycle.set_order(3);
 	Enemy::collider.physics.maximum_velocity = {8.f, 12.f};
 	Enemy::collider.physics.set_constant_friction({0.97f, 0.985f});
+
+	NPC::dimensions = {24.f, 80.f};
+	state_flags.set(npc::NPCState::force_interact);
+	
 	secondary_collider = shape::Collider({48.f, 36.f});
 	minigun.sprite.setTexture(svc.assets.t_minigun);
 	minigun.sprite.setOrigin({(float)minigun.dimensions.x, minigun.dimensions.y * 0.8f});
@@ -33,6 +38,8 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	sprite_direction.lr = dir::LR::left;
 	Enemy::direction.lr = dir::LR::left;
 	cooldowns.vulnerability.start();
+
+	push_conversation("1");
 
 	voice.hurt_1.setBuffer(svc.assets.b_minigus_hurt_1);
 	voice.hurt_2.setBuffer(svc.assets.b_minigus_hurt_2);
@@ -157,12 +164,13 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		}
 	}
 	Enemy::update(svc, map, player);
+
 	secondary_collider.physics.position = Enemy::collider.physics.position;
 	secondary_collider.physics.position.y -= secondary_collider.dimensions.y;
 	secondary_collider.physics.position.x += Enemy::direction.lr == dir::LR::left ? 0 :  Enemy::collider.dimensions.x - secondary_collider.dimensions.x;
 	secondary_collider.sync_components();
 	player.collider.handle_collider_collision(secondary_collider.bounding_box);
-	distant_range.set_position(Enemy::collider.bounding_box.position - (Enemy::physical.alert_range.dimensions * 0.5f) + (Enemy::collider.dimensions * 0.5f));
+	distant_range.set_position(Enemy::collider.bounding_box.position - (distant_range.dimensions * 0.5f) + (Enemy::collider.dimensions * 0.5f));
 	player.collider.bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
 
 	// state management
@@ -235,17 +243,36 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (!(state == MinigusState::turn) && sprite_direction.lr != post_direction.lr) { Enemy::sprite.scale({-1.f, 1.f}); }
 	movement_direction.lr = Enemy::collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
 
-	if (!status.test(MinigusFlags::battle_mode)) {
-		state = MinigusState::idle;
-		state_flags.set(npc::NPCState::force_interact);
-	} else {
-		state_flags.reset(npc::NPCState::force_interact);
+	// NPC stuff
+
+	
+	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) {
+		triggers.set(npc::NPCTrigger::distant_interact);
+		std::cout << "distance triggered\n";
 	}
+
+	NPC::update(svc, map, *m_console, player);
+	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::theme_song)) {
+		svc.music.load("minigus");
+		svc.music.play_looped(20);
+		status.set(MinigusFlags::theme_song);
+	}
+	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::battle_mode) && m_console->is_complete()) {
+		status.set(MinigusFlags::battle_mode);
+		triggers.reset(npc::NPCTrigger::distant_interact);
+		player.transponder.flush_shipments();
+		state_flags.reset(npc::NPCState::force_interact);
+		svc.music.load("scuffle");
+		svc.music.play_looped(20);
+	// start battle music!{
+	}
+	if (!status.test(MinigusFlags::battle_mode)) { state = MinigusState::idle; }
 
 	state_function = state_function();
 }
 
 void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	NPC::render(svc, win, cam);
 	auto u = minigun.animation.get_frame() >= 13 ? 78 : 0;
 	auto v = (minigun.animation.get_frame() % 13) * 30;
 	minigun.sprite.setTextureRect(sf::IntRect({{u, v}, minigun.dimensions}));
@@ -261,6 +288,8 @@ void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		attacks.punch.render(win, cam);
 		attacks.uppercut.render(win, cam);
 	}
+	//attacks.left_shockwave.render(win, cam);
+	//attacks.right_shockwave.render(win, cam);
 }
 
 void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { health_bar.render(win); }

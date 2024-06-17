@@ -10,6 +10,7 @@
 #include "../utils/Ticker.hpp"
 #include "../utils/Constants.hpp"
 #include "../audio/Soundboard.hpp"
+#include "../audio/MusicPlayer.hpp"
 #include "../setup/ControllerMap.hpp"
 #include "../utils/Stopwatch.hpp"
 
@@ -21,6 +22,7 @@ struct ServiceProvider {
 	data::TextManager text{};
 	config::ControllerMap controller_map{*this};
 	audio::Soundboard soundboard{};
+	audio::MusicPlayer music{};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::Random random{};

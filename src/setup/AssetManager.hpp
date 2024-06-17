@@ -10,7 +10,6 @@
 #include "../graphics/FLColor.hpp"
 #include "../setup/EnumLookups.hpp"
 #include "ResourceFinder.hpp"
-#include "../audio/SoundEffect.hpp"
 
 namespace asset {
 

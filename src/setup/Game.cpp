@@ -17,9 +17,11 @@ Game::Game(char** argv) : player(services) {
 	services.assets.finder.setResourcePath(argv);
 	services.assets.importTextures();
 	// sounds
+	services.music.finder.setResourcePath(argv);
 	music_player.finder.setResourcePath(argv);
 	services.assets.load_audio();
-	music_player.turn_off(); // off by default
+	music_player.turn_on(); // off by default
+	services.music.turn_on();
 	// player
 	player.init(services);
 	// lookups
@@ -118,6 +120,7 @@ void Game::run() { // load all assets
 		}
 
 		// game logic and rendering
+		services.music.update();
 		services.ticker.tick([this, &services = services] { game_state.get_current_state().tick_update(services); });
 		game_state.get_current_state().frame_update(services);
 

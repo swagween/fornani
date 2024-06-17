@@ -19,7 +19,7 @@ class Shockwave {
   public:
 	Shockwave() = default;
 	Shockwave(sf::Vector2<float> speed);
-	void start(int time = 1000);
+	void start(int time = 600);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void set_position(sf::Vector2<float> position);
 	void handle_player(player::Player& player);

@@ -20,7 +20,7 @@ void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 	lifetime.update();
 	if (lifetime.is_complete()) { return; }
 	position = position + speed;
-	if (svc.ticker.every_x_ticks(70)) {
+	if (svc.ticker.every_x_ticks(50)) {
 		map.effects.push_back(entity::Effect(svc, position, {0.f, -1.f}, 0, 0));
 		hit.bounds.setPosition(position);
 	}

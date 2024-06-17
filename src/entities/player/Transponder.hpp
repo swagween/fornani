@@ -26,6 +26,7 @@ class Transponder {
   public:
 	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void track_shipments(gui::Console& console);
+	void flush_shipments();
 	void end();
 
 	void skip_ahead();
