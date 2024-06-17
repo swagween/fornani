@@ -296,7 +296,9 @@ void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	//attacks.right_shockwave.render(win, cam);
 }
 
-void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { health_bar.render(win); }
+void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (status.test(MinigusFlags::battle_mode)) { health_bar.render(win); }
+}
 
 fsm::StateFunction Minigus::update_idle() {
 	if (animation.just_started() && anim_debug) { std::cout << "idle\n"; }
@@ -492,7 +494,6 @@ fsm::StateFunction Minigus::update_turn() {
 	if (animation.complete()) {
 		Enemy::sprite.scale({-1.f, 1.f});
 		post_direction = pre_direction;
-		voice.woob.play();
 		if (change_state(MinigusState::idle, idle)) { return MINIGUS_BIND(update_idle); }
 		if (change_state(MinigusState::jumpsquat, jumpsquat)) { return MINIGUS_BIND(update_jumpsquat); }
 		if (change_state(MinigusState::shoot, shoot)) { return MINIGUS_BIND(update_shoot); }
