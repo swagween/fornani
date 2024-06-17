@@ -101,6 +101,7 @@ class Minigus : public Enemy, public npc::NPC {
 	struct {
 		sf::Sound jump{};
 		sf::Sound land{};
+		sf::Sound crash{};
 		sf::Sound step{};
 		sf::Sound punch{};
 		sf::Sound snap{};

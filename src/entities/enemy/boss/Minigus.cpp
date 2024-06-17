@@ -68,6 +68,10 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	voice.whatisit.setBuffer(svc.assets.b_minigus_whatisit);
 	voice.woob.setBuffer(svc.assets.b_minigus_woob);
 
+	sounds.land.setBuffer(svc.assets.b_heavy_land);
+	sounds.crash.setBuffer(svc.assets.b_delay_crash);
+	sounds.snap.setBuffer(svc.assets.sharp_click_buffer);
+
 }
 
 void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -392,6 +396,8 @@ fsm::StateFunction Minigus::update_jump() {
 	if (cooldowns.jump.running()) { Enemy::collider.physics.apply_force({sign * 36.f, -8.f}); }
 	if (Enemy::collider.grounded() && cooldowns.jump.is_complete()) {
 		m_map->shake_camera();
+		sounds.land.play();
+		sounds.crash.play();
 		attacks.left_shockwave.start();
 		attacks.right_shockwave.start();
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
@@ -609,7 +615,7 @@ fsm::StateFunction Minigus::update_laugh() {
 
 fsm::StateFunction Minigus::update_snap() {
 	if (animation.just_started() && anim_debug) { std::cout << "snap\n"; }
-	if (animation.just_started()) { m_services->assets.click.play(); }
+	if (animation.just_started()) { sounds.snap.play(); }
 	if (animation.complete()) {
 		for (int i{0}; i < 2; ++i) {
 			auto randx = m_services->random.random_range_float(-80.f, 80.f);

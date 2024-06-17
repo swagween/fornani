@@ -287,6 +287,10 @@ class AssetManager {
 		b_minigus_whatisit.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_whatisit.wav");
 		b_minigus_woob.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_woob.wav");
 
+		b_heavy_land.loadFromFile(finder.resource_path + "/audio/sfx/deep/heavy_land.wav");
+		b_delay_crash.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_crash.wav");
+		b_delay_high.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_high.wav");
+
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
 		load_buffer.loadFromFile(finder.resource_path + "/audio/sfx/load_game.wav");
@@ -546,6 +550,10 @@ class AssetManager {
 	sf::SoundBuffer b_minigus_thatisverysneeze{};
 	sf::SoundBuffer b_minigus_whatisit{};
 	sf::SoundBuffer b_minigus_woob{};
+
+	sf::SoundBuffer b_heavy_land{};
+	sf::SoundBuffer b_delay_crash{};
+	sf::SoundBuffer b_delay_high{};
 
 	//minigun
 	sf::SoundBuffer b_minigun_neutral{};
