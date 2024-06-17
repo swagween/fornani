@@ -38,6 +38,7 @@ class NPC : public entity::Entity {
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
 	void set_id(int new_id);
 	void push_conversation(std::string_view convo);
+	void flush_conversations();
 
 	std::string_view label{};
 

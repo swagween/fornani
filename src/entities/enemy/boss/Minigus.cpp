@@ -14,6 +14,8 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	Enemy::collider.physics.maximum_velocity = {8.f, 12.f};
 	Enemy::collider.physics.set_constant_friction({0.97f, 0.985f});
 	cooldowns.vulnerability.start();
+	cooldowns.exit.start();
+	afterlife = 2000;
 
 	NPC::dimensions = {24.f, 80.f};
 	state_flags.set(npc::NPCState::force_interact);
@@ -79,7 +81,6 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 
 	health_bar.update(svc, Enemy::health.get_max(), Enemy::health.get_hp());
 
-
 	if (Enemy::direction.lr == dir::LR::left) {
 		attacks.punch.set_position(Enemy::collider.physics.position);
 		attacks.uppercut.set_position(Enemy::collider.physics.position);
@@ -103,6 +104,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	cooldowns.post_punch.update();
 	cooldowns.hurt.update();
 	cooldowns.player_punch.update();
+	if (status.test(MinigusFlags::exit_scene)) { cooldowns.exit.update(); }
 	if (state_flags.test(npc::NPCState::introduced)) { cooldowns.vulnerability.update(); }
 
 	if (svc.ticker.every_x_ticks(32)) { hurt_color.update(); }
@@ -252,10 +254,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 
 	// NPC stuff
 	
-	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) {
-		triggers.set(npc::NPCTrigger::distant_interact);
-		std::cout << "distance triggered\n";
-	}
+	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) { triggers.set(npc::NPCTrigger::distant_interact); }
 
 	NPC::update(svc, map, *m_console, player);
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::theme_song)) {
@@ -263,19 +262,25 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		svc.music.play_looped(20);
 		status.set(MinigusFlags::theme_song);
 	}
-	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::battle_mode) && m_console->is_complete()) {
+	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::battle_mode) && m_console->is_complete() && !health_bar.empty()) {
 		status.set(MinigusFlags::battle_mode);
 		triggers.reset(npc::NPCTrigger::distant_interact);
 		player.transponder.flush_shipments();
-		state_flags.reset(npc::NPCState::force_interact);
 		svc.music.load("scuffle");
 		svc.music.play_looped(20);
 		cooldowns.vulnerability.start();
 	// start battle music!{
 	}
+	if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
+		triggers.set(npc::NPCTrigger::distant_interact);
+		flush_conversations();
+		push_conversation("3");
+		status.reset(MinigusFlags::exit_scene);
+	}
+
 	if (!status.test(MinigusFlags::battle_mode)) { state = MinigusState::idle; }
 
-	if (health_bar.empty()) { state = MinigusState::struggle; }
+	if (health_bar.empty() && !status.test(MinigusFlags::exit_scene)) { state = MinigusState::struggle; }
 
 	state_function = state_function();
 }
@@ -673,7 +678,10 @@ fsm::StateFunction Minigus::update_struggle() {
 	if (animation.just_started() && anim_debug) { std::cout << "struggle\n"; }
 	if (animation.just_started()) {
 		status.reset(MinigusFlags::battle_mode);
+		triggers.set(npc::NPCTrigger::distant_interact);
+		flush_conversations();
 		push_conversation("2");
+		m_services->music.stop();
 	}
 	auto randx = m_services->random.random_range_float(0.f, 20.f);
 	auto randy = m_services->random.random_range_float(0.f, 20.f);
@@ -681,7 +689,15 @@ fsm::StateFunction Minigus::update_struggle() {
 	if (m_services->ticker.every_x_ticks(200)) { m_map->effects.push_back(entity::Effect(*m_services, pos, {}, 0, 0)); }
 	post_death.start(afterlife);
 	Enemy::shake();
-	Enemy::sprite_shake(*m_services, 20);
+	Enemy::sprite_shake(*m_services, 40, 8);
+
+	if (!animation.just_started() && m_console->is_complete()) {
+		state = MinigusState::jumpsquat;
+		flags.general.reset(GeneralFlags::map_collision);
+		status.set(MinigusFlags::exit_scene);
+		cooldowns.exit.start();
+		return MINIGUS_BIND(update_jumpsquat);
+	}
 
 	state = MinigusState::struggle;
 	return MINIGUS_BIND(update_struggle);

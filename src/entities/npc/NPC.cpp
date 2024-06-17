@@ -104,4 +104,6 @@ void NPC::set_id(int new_id) { id = new_id; }
 
 void NPC::push_conversation(std::string_view convo) { conversations.push_back(convo); }
 
+void NPC::flush_conversations() { conversations.clear(); }
+
 } // namespace npc

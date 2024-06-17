@@ -9,7 +9,7 @@
 namespace enemy {
 
 enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle };
-enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song };
+enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
 
@@ -93,6 +93,7 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Cooldown player_punch{80};
 		util::Cooldown pre_jump{380};
 		util::Cooldown vulnerability{2000};
+		util::Cooldown exit{200};
 	} cooldowns{};
 
 	struct {
