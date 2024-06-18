@@ -1,6 +1,7 @@
 #include "Spark.hpp"
 #include "../service/ServiceProvider.hpp"
 #include <numbers>
+#include <ccmath/math/power/sqrt.hpp>
 
 namespace vfx {
 

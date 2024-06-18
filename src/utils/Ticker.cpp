@@ -33,4 +33,11 @@ void Ticker::slow_down(int time) { slowdown.start(time); }
 
 void Ticker::freeze_frame(int time) { freezeframe.start(time); }
 
+void Ticker::scale_dt() { flags.set(TickerFlags::forced_slowdown); }
+
+void Ticker::reset_dt() {
+	flags.reset(TickerFlags::forced_slowdown);
+	dt_scalar = 1.f;
+}
+
 } // namespace util

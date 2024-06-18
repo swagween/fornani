@@ -19,6 +19,8 @@ class MainMenu : public GameState {
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 
 	sf::Sprite title{};
+	sf::Text subtitle{};
+	sf::Text instruction{};
 	std::vector<sf::Sprite> title_assets{};
 };
 

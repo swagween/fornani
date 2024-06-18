@@ -1,5 +1,6 @@
 
 #include "Shape.hpp"
+#include <ccmath/math/power/sqrt.hpp>
 
 namespace shape {
 
@@ -101,7 +102,7 @@ Shape::Vec Shape::get_center() {
 
 static float const NORMAL_TOLERANCE = 0.0001f;
 
-float Shape::getLength(const Vec v) { return std::sqrt(v.x * v.x + v.y * v.y); }
+float Shape::getLength(const Vec v) { return ccm::sqrt(v.x * v.x + v.y * v.y); }
 
 // Returns normalized vector
 Shape::Vec Shape::getNormalized(const Vec v) {

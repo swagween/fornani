@@ -9,12 +9,15 @@
 #include <thread>
 #include <utility>
 #include "Cooldown.hpp"
+#include "BitFlags.hpp"
 
 namespace util {
 
 using Clk = std::chrono::steady_clock;
 using Tim = std::chrono::duration<float>;
 using Mil = std::chrono::milliseconds;
+
+enum class TickerFlags { forced_slowdown };
 
 class Ticker {
   public:
@@ -23,10 +26,12 @@ class Ticker {
 
 		ft = Tim{tick_rate};
 
-		if (slowdown.running()) { dt_scalar -= 0.05f; }
-		if (slowdown.is_complete()) { dt_scalar += 0.05f; }
-		dt_scalar = std::clamp(dt_scalar, slowdown_rate, 1.f);
-		if (freezeframe.running()) { dt_scalar = 0.1f; }
+		if (!flags.test(TickerFlags::forced_slowdown)) {
+			if (slowdown.running()) { dt_scalar -= 0.05f; }
+			if (slowdown.is_complete()) { dt_scalar += 0.05f; }
+			dt_scalar = std::clamp(dt_scalar, slowdown_rate, 1.f);
+			if (freezeframe.running()) { dt_scalar = 0.1f; }
+		}
 
 		new_time = Clk::now();
 		dt = std::chrono::duration_cast<Tim>(new_time - current_time);
@@ -64,6 +69,8 @@ class Ticker {
 	void calculate_fps();
 	void slow_down(int time);
 	void freeze_frame(int time);
+	void scale_dt();
+	void reset_dt();
 
 	[[nodiscard]] auto global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
 	[[nodiscard]] auto every_x_frames(int const freq) const -> bool { return num_frames % freq == 0; }
@@ -100,6 +107,7 @@ class Ticker {
 
   private:
 	std::deque<Tim> frame_list{};
+	BitFlags<TickerFlags> flags{};
 	float slowdown_rate{0.2f};
 	Cooldown slowdown{};
 	Cooldown freezeframe{};

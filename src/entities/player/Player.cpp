@@ -267,11 +267,7 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		transponder.update(*m_services, console);
 	}
 	transponder.end();
-	if (transponder.get_item_shipment() > 0) {
-		std::cout << transponder.get_item_shipment() << "\n";
-		give_item(transponder.get_item_shipment(), 1);
-	}
-	if (transponder.get_quest_shipment() > 0) { std::cout << transponder.get_quest_shipment() << "\n"; } // push item to inventory!
+	if (transponder.get_item_shipment() > 0) { give_item(transponder.get_item_shipment(), 1); }
 }
 
 void Player::flash_sprite() {

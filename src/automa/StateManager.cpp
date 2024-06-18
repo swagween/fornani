@@ -29,11 +29,6 @@ auto StateManager::set_current_state(std::unique_ptr<automa::GameState> gameStat
 }
 
 std::string StateManager::get_current_state_string() {
-	switch (g_current_state.get()->state) {
-	case STATE::STATE_MENU: return "MENU"; break;
-	case STATE::STATE_DOJO: return "DOJO"; break;
-	default: return "NULL"; break;
-	}
 	return "NULL";
 }
 

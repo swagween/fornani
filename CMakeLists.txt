@@ -15,9 +15,16 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/karnkaul/djson
     GIT_TAG 8d08162f1463ec8a236e65190f5db0a82132682d # 2.0
 )
+FetchContent_Declare(
+        ccmath
+        GIT_REPOSITORY https://github.com/Rinzii/ccmath.git
+        GIT_TAG v0.1.5
+)
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_MakeAvailable(djson)
+FetchContent_MakeAvailable(ccmath)
 target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
+target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
 
 set(BUILD_SHARED_LIBS ON)
 add_subdirectory(dependencies)

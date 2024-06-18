@@ -21,6 +21,7 @@ Game::Game(char** argv) : player(services) {
 	music_player.finder.setResourcePath(argv);
 	services.assets.load_audio();
 	music_player.turn_on(); // off by default
+	playtest.m_musicplayer = true;
 	services.music.turn_on();
 	// player
 	player.init(services);
@@ -28,10 +29,11 @@ Game::Game(char** argv) : player(services) {
 	lookup::populate_lookup();
 
 	// state manager
+
 	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 	game_state.get_current_state().init(services);
 
-	window.create(sf::VideoMode(services.constants.screen_dimensions.x, services.constants.screen_dimensions.y), "Fornani (beta v1.0)");
+	window.create(sf::VideoMode(services.constants.screen_dimensions.x, services.constants.screen_dimensions.y), "Fornani (alpha v0.0.0)");
 	measurements.width_ratio = (float)services.constants.screen_dimensions.x / (float)services.constants.screen_dimensions.y;
 	measurements.height_ratio = (float)services.constants.screen_dimensions.y / (float)services.constants.screen_dimensions.x;
 
@@ -96,14 +98,26 @@ void Game::run() { // load all assets
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::D) {
-					debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
-					services.assets.sharp_click.play();
+					//debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
+					//services.assets.sharp_click.play();
 				}
-				if (event.key.code == sf::Keyboard::Q) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); }
-				if (event.key.code == sf::Keyboard::P) { take_screenshot(); }
+				if (event.key.code == sf::Keyboard::Q) {
+					//game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
+					//flags.set(GameFlags::in_game);
+				}
+				if (event.key.code == sf::Keyboard::P) {
+					if (flags.test(GameFlags::playtest)) {
+						flags.reset(GameFlags::playtest);
+						services.assets.menu_back.play();
+					} else {
+						flags.set(GameFlags::playtest);
+						services.assets.menu_next.play();
+					}
+				}
+				if (event.key.code == sf::Keyboard::F12) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {
-					services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
-					services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
+					//services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
+					//services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 				}
 				break;
 			case sf::Event::KeyReleased:
@@ -127,7 +141,10 @@ void Game::run() { // load all assets
 		// switch states
 		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {
 			switch (services.state_controller.submenu) {
-			case automa::menu_type::file_select: game_state.set_current_state(std::make_unique<automa::FileMenu>(services, player, "file")); break;
+			case automa::menu_type::file_select:
+				game_state.set_current_state(std::make_unique<automa::FileMenu>(services, player, "file"));
+				playtest_sync();
+				break;
 			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player, "options")); break;
 			case automa::menu_type::settings:
 				// todo
@@ -145,9 +162,11 @@ void Game::run() { // load all assets
 			services.state_controller.actions.reset(automa::Actions::exit_submenu);
 		}
 		if (services.state_controller.actions.test(automa::Actions::trigger)) {
+			flags.set(GameFlags::in_game);
 			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 			game_state.get_current_state().init(services, "/level/" + services.state_controller.next_state);
 			services.state_controller.actions.reset(automa::Actions::trigger);
+			playtest_sync();
 		}
 
 		ImGui::SFML::Update(window, deltaClock.restart());
@@ -155,6 +174,7 @@ void Game::run() { // load all assets
 
 		// ImGui stuff
 		if (services.debug_flags.test(automa::DebugFlags::imgui_overlay)) { debug_window(); }
+		if (flags.test(GameFlags::playtest)) { playtester_portal(); }
 
 		// my renders
 		window.clear();
@@ -170,6 +190,7 @@ void Game::run() { // load all assets
 
 	//shutdown
 	//explicitly delete music player since it can't be deleted after AssetManager
+	services.music.stop();
 	services.music.~MusicPlayer();
 }
 
@@ -767,6 +788,186 @@ void Game::debug_window() {
 	}
 }
 
+void Game::playtester_portal() {
+	if (!flags.test(GameFlags::playtest)) { return; }
+	bool* debug{};
+	float const PAD = 10.0f;
+	static int corner = 1;
+	ImGuiIO& io = ImGui::GetIO();
+	io.FontGlobalScale = 1.0;
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	if (corner != -1) {
+		ImGuiViewport const* viewport = ImGui::GetMainViewport();
+		ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar, if any!
+		ImVec2 work_size = viewport->WorkSize;
+		ImVec2 window_pos, window_pos_pivot;
+		window_pos.x = (corner & 1) ? (work_pos.x + work_size.x - PAD) : (work_pos.x + PAD);
+		window_pos.y = (corner & 2) ? (work_pos.y + work_size.y - PAD) : (work_pos.y + PAD);
+		window_pos_pivot.x = (corner & 1) ? 1.0f : 0.0f;
+		window_pos_pivot.y = (corner & 2) ? 1.0f : 0.0f;
+		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+		window_flags |= ImGuiWindowFlags_NoMove;
+		ImGui::SetNextWindowBgAlpha(0.65f); // Transparent background
+		if (ImGui::Begin("Playtester Portal", debug, window_flags)) {
+			ImGui::Text("Playtester Portal");
+			ImGui::Separator();
+			ImGui::Text("Current Input Device: %s", services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard");
+			if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad Identification: %s", sf::Joystick::getIdentification(0).name.getData()); }
+			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
+				if (ImGui::BeginTabItem("General")) {
+					ImGui::Separator();
+					ImGui::Text("Ticker");
+					ImGui::Text("dt: %.8f", services.ticker.dt.count());
+					ImGui::Separator();
+					ImGui::Text("Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
+					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
+					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
+					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
+					ImGui::Separator();
+					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
+					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
+					ImGui::Separator();
+					if (ImGui::Button("Save Screenshot")) { take_screenshot(); }
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Music")) {
+					ImGui::Separator();
+					ImGui::Checkbox("Music Player", &playtest.m_musicplayer);
+					if (playtest.m_musicplayer && services.music.global_off()) {
+						services.music.turn_on();
+					} else if (!playtest.m_musicplayer && !services.music.global_off()) {
+						services.music.turn_off();
+					}
+					ImGui::EndTabItem();
+				}
+				if (flags.test(GameFlags::in_game)) {
+
+					if (ImGui::BeginTabItem("State")) {
+						if (ImGui::Button("Main Menu")) {
+							game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
+							flags.reset(GameFlags::in_game);
+						}
+						if (ImGui::Button("Minigus")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/FIRSTWIND_DECK_01");
+							player.set_position({32 * 3, 32 * 8});
+						}
+						if (ImGui::Button("Corridor 2")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/FIRSTWIND_CORRIDOR_02");
+							player.set_position({7 * 32, 7 * 32});
+						}
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Player")) {
+						if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
+							if (ImGui::BeginTabItem("Weapon")) {
+								ImGui::Text("Loadout Size: %i", player.arsenal.loadout.size());
+								playtest_sync();
+								ImGui::Checkbox("Bryn's Gun", &playtest.weapons.bryn);
+								if (playtest.weapons.bryn && !player.arsenal.has(0)) {
+									player.arsenal.push_to_loadout(0);
+								} else if (!playtest.weapons.bryn && player.arsenal.has(0)) {
+									player.arsenal.pop_from_loadout(0);
+								}
+								ImGui::Checkbox("Plasmer", &playtest.weapons.plasmer);
+								if (playtest.weapons.plasmer && !player.arsenal.has(1)) {
+									player.arsenal.push_to_loadout(1);
+								} else if (!playtest.weapons.plasmer && player.arsenal.has(1)) {
+									player.arsenal.pop_from_loadout(1);
+								}
+								ImGui::Checkbox("Tomahawk", &playtest.weapons.tomahawk);
+								if (playtest.weapons.tomahawk && !player.arsenal.has(3)) {
+									player.arsenal.push_to_loadout(3);
+								} else if (!playtest.weapons.tomahawk && player.arsenal.has(3)) {
+									player.arsenal.pop_from_loadout(3);
+								}
+								ImGui::Checkbox("Grappling Hook", &playtest.weapons.grapple);
+								if (playtest.weapons.grapple && !player.arsenal.has(4)) {
+									player.arsenal.push_to_loadout(4);
+								} else if (!playtest.weapons.grapple && player.arsenal.has(4)) {
+									player.arsenal.pop_from_loadout(4);
+								}
+								ImGui::Checkbox("Grenade Launcher", &playtest.weapons.grenade);
+								if (playtest.weapons.grenade && !player.arsenal.has(5)) {
+									player.arsenal.push_to_loadout(5);
+								} else if (!playtest.weapons.grenade && player.arsenal.has(5)) {
+									player.arsenal.pop_from_loadout(5);
+								}
+								ImGui::Separator();
+
+								if (ImGui::Button("Clear Loadout")) {
+									player.arsenal.loadout.clear();
+									playtest.weapons = {};
+								}
+								ImGui::EndTabItem();
+							}
+							if (ImGui::BeginTabItem("Catalog")) {
+								ImGui::Separator();
+								ImGui::Text("Inventory");
+								for (auto& item : player.catalog.categories.inventory.items) {
+									ImGui::Text(item.label.data());
+									ImGui::SameLine();
+									ImGui::Text(" : %i", item.get_quantity());
+								}
+								ImGui::Separator();
+
+								ImGui::Text("Abilities");
+								ImGui::Checkbox("Dash", &playtest.b_dash);
+								ImGui::Checkbox("Shield", &playtest.b_shield);
+								ImGui::Checkbox("Wallslide", &playtest.b_wallslide);
+								ImGui::Checkbox("Double Jump (not implemented)", &playtest.b_doublejump);
+								playtest.b_dash ? player.catalog.categories.abilities.give_ability(player::Abilities::dash) : player.catalog.categories.abilities.remove_ability(player::Abilities::dash);
+								playtest.b_shield ? player.catalog.categories.abilities.give_ability(player::Abilities::shield) : player.catalog.categories.abilities.remove_ability(player::Abilities::shield);
+								playtest.b_wallslide ? player.catalog.categories.abilities.give_ability(player::Abilities::wall_slide) : player.catalog.categories.abilities.remove_ability(player::Abilities::wall_slide);
+								playtest.b_doublejump ? player.catalog.categories.abilities.give_ability(player::Abilities::double_jump) : player.catalog.categories.abilities.remove_ability(player::Abilities::double_jump);
+
+								ImGui::EndTabItem();
+							}
+							if (ImGui::BeginTabItem("Parameters")) {
+								ImGui::Text("Vertical Movement");
+								ImGui::SliderFloat("GRAVITY", &player.physics_stats.grav, 0.f, 0.8f, "%.5f");
+								ImGui::SliderFloat("JUMP VELOCITY", &player.physics_stats.jump_velocity, 0.5f, 12.0f, "%.5f");
+								ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &player.physics_stats.jump_release_multiplier, 0.005f, 1.f, "%.5f");
+								ImGui::SliderFloat("MAX Y VELOCITY", &player.physics_stats.maximum_velocity.y, 1.0f, 60.0f);
+
+								ImGui::Separator();
+								ImGui::Text("Horizontal Movement");
+								ImGui::SliderFloat("AIR MULTIPLIER", &player.physics_stats.air_multiplier, 0.0f, 5.0f);
+								ImGui::SliderFloat("GROUND FRICTION", &player.physics_stats.ground_fric, 0.800f, 1.000f);
+								ImGui::SliderFloat("AIR FRICTION", &player.physics_stats.air_fric, 0.800f, 1.000f);
+								ImGui::SliderFloat("GROUND SPEED", &player.physics_stats.x_acc, 0.0f, 3.f);
+								ImGui::SliderFloat("SPRINT MULTIPLIER", &player.physics_stats.sprint_multiplier, 1.0f, 4.0f);
+								ImGui::SliderFloat("MAX X VELOCITY", &player.physics_stats.maximum_velocity.x, 1.0f, 10.0f);
+
+								ImGui::Separator();
+								ImGui::Text("Abilities");
+								ImGui::SliderFloat("Dash Speed", &player.physics_stats.dash_speed, 1.0f, 30.0f);
+								ImGui::SliderFloat("Vertical Dash Multiplier", &player.physics_stats.vertical_dash_multiplier, 0.0f, 10.0f);
+								ImGui::SliderFloat("Dash Dampen", &player.physics_stats.dash_dampen, 0.7f, 2.0f);
+								ImGui::SliderFloat("Wallslide Speed", &player.physics_stats.wallslide_speed, 0.2f, 3.0f);
+
+								ImGui::Separator();
+								if (ImGui::Button("Save Parameters")) { services.data.save_player_params(player); }
+								ImGui::EndTabItem();
+							}
+							ImGui::EndTabBar();
+						}
+						ImGui::EndTabItem();
+					}
+				}
+				ImGui::EndTabBar();
+			}
+		}
+		ImVec2 prev_size = ImGui::GetWindowSize();
+		ImGui::End();
+	}
+
+}
+
 void Game::take_screenshot() {
 	std::time_t const now = std::time(nullptr);
 	std::string filedate = std::asctime(std::localtime(&now));
@@ -776,5 +977,13 @@ void Game::take_screenshot() {
 }
 
 bool Game::debug() { return services.debug_flags.test(automa::DebugFlags::imgui_overlay); }
+
+void Game::playtest_sync() {
+	playtest.weapons.bryn = player.arsenal.has(0);
+	playtest.weapons.plasmer = player.arsenal.has(1);
+	playtest.weapons.grapple = player.arsenal.has(4);
+	playtest.weapons.grenade = player.arsenal.has(5);
+	playtest.weapons.tomahawk = player.arsenal.has(3);
+}
 
 } // namespace fornani

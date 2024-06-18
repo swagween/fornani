@@ -5,10 +5,28 @@
 namespace automa {
 
 MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
-	state = STATE::STATE_MENU;
+
+	// playtester edition
+	flags.set(GameStateFlags::playtest);
+	// playtester edition
 
 	left_dot.set_position(options.at(current_selection).left_offset);
 	right_dot.set_position(options.at(current_selection).right_offset);
+
+	if (flags.test(GameStateFlags::playtest)) { subtitle.setString("Playtester Edition"); }
+	subtitle.setLineSpacing(1.5f);
+	subtitle.setFont(subtitle_font);
+	subtitle.setLetterSpacing(1.2f);
+	subtitle.setCharacterSize(options.at(current_selection).label.getCharacterSize());
+	subtitle.setPosition(svc.constants.screen_dimensions.x * 0.5f - subtitle.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 324.f);
+	subtitle.setFillColor(svc.styles.colors.red);
+	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
+	instruction.setLineSpacing(1.5f);
+	instruction.setFont(subtitle_font);
+	instruction.setLetterSpacing(1.2f);
+	instruction.setCharacterSize(options.at(current_selection).label.getCharacterSize());
+	instruction.setPosition(svc.constants.screen_dimensions.x * 0.5f - instruction.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 36.f);
+	instruction.setFillColor(svc.styles.colors.dark_grey);
 
 	title = sf::Sprite{svc.assets.t_title, sf::IntRect({0, 0}, {(int)svc.constants.screen_dimensions.x, (int)svc.constants.screen_dimensions.y})};
 
@@ -73,7 +91,8 @@ void MainMenu::frame_update(ServiceProvider& svc) {}
 
 void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
-
+	win.draw(subtitle);
+	win.draw(instruction);
 	for (auto& option : options) { win.draw(option.label); }
 
 	left_dot.render(svc, win, {0, 0});

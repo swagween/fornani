@@ -22,7 +22,7 @@ namespace automa {
 
 // globals
 
-enum class STATE { STATE_NULL, STATE_INIT, STATE_EXIT, STATE_MENU, STATE_OPTIONS, STATE_FILE, STATE_MAIN, STATE_DOJO };
+enum class GameStateFlags { playtest };
 
 enum class MenuSelection { play, options, quit, controls, tutorial, credits };
 
@@ -63,8 +63,8 @@ class GameState {
 	virtual void render(ServiceProvider& svc, sf::RenderWindow& win){};
 	void constrain_selection();
 
-	STATE state = STATE::STATE_NULL;
 	bool debug_mode{false};
+	util::BitFlags<GameStateFlags> flags{};
 
 	gui::Console console{};
 	gui::InventoryWindow inventory_window;
@@ -76,6 +76,7 @@ class GameState {
 	player::Player* player;
 	gui::HUD hud;
 	sf::Font font{};
+	sf::Font subtitle_font{};
 
 	std::string_view scene{};
 	std::vector<Option> options{};

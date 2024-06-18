@@ -5,6 +5,7 @@
 #include "../service/ServiceProvider.hpp"
 
 namespace audio {
+
 void MusicPlayer::load(std::string_view song_name) {
 	if (global_off()) { return; }
 	if (label == song_name) { return; }
@@ -27,10 +28,7 @@ void MusicPlayer::play_once(int vol) {
 }
 void MusicPlayer::play_looped(int vol) {
 	if (global_off()) { return; }
-	if (!flags.state.test(SongState::on)) {
-		stop();
-		return;
-	}
+	switch_on();
 	if (playing()) { return; }
 	song_first.setLoop(false);
 	song_loop.setLoop(true);
@@ -57,15 +55,26 @@ void MusicPlayer::update() {
 	}
 }
 
-void MusicPlayer::pause() {}
+void MusicPlayer::pause() {
+	song_first.pause();
+	song_loop.pause();
+	switch_off();
+}
 void MusicPlayer::stop() {
 	song_first.stop();
 	song_loop.stop();
+	switch_off();
 }
 void MusicPlayer::fade_out() {}
 void MusicPlayer::fade_in() {}
 void MusicPlayer::switch_off() { flags.state.reset(SongState::on); }
 void MusicPlayer::switch_on() { flags.state.set(SongState::on); }
-void MusicPlayer::turn_off() { flags.player.reset(MusicPlayerState::on); }
-void MusicPlayer::turn_on() { flags.player.set(MusicPlayerState::on); }
+void MusicPlayer::turn_off() {
+	flags.player.reset(MusicPlayerState::on);
+	stop();
+}
+void MusicPlayer::turn_on() {
+	flags.player.set(MusicPlayerState::on);
+	pause();
+}
 } // namespace audio

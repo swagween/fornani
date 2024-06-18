@@ -19,10 +19,12 @@ struct Arsenal {
 	Arsenal(automa::ServiceProvider& svc);
 
 	void push_to_loadout(int id);
+	void pop_from_loadout(int id);
 	void switch_weapon(automa::ServiceProvider& svc, float next);
 	Weapon& get_current_weapon();
 	int get_index();
 	void set_index(int index);
+	bool has(int id);
 
 	std::array<std::shared_ptr<Weapon>, max_weapons> armory{};
 	std::vector<std::shared_ptr<Weapon>> loadout{};

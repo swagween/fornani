@@ -36,7 +36,6 @@ class AssetManager {
 		t_palette_naninight.loadFromFile(finder.resource_path + "/image/character/nani_palette_night.png");
 
 		t_bryn_test.loadFromFile(finder.resource_path + "/image/portrait/bryn_test.png");
-		t_ui_test.loadFromFile(finder.resource_path + "/image/gui/ui_test.png");
 
 		t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 		t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
@@ -165,8 +164,6 @@ class AssetManager {
 
 		// title stuff
 		t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
-		t_title_assets.loadFromFile(finder.resource_path + "/image/gui/title_assets.png");
-		t_file_text.loadFromFile(finder.resource_path + "/image/gui/file_text.png");
 
 		// load all the other textures...
 
@@ -257,7 +254,6 @@ class AssetManager {
 		tank_death.setBuffer(tank_death_buffer);
 
 		// minigus
-		b_minigus_laugh.loadFromFile(finder.resource_path + "/audio/sfx/minigus_laugh.wav");
 
 		b_minigus_laugh.loadFromFile(finder.resource_path + "/audio/sfx/minigus/minigus_laugh.wav");
 		b_minigus_laugh_2.loadFromFile(finder.resource_path + "/audio/sfx/minigus/minigus_laugh_2.wav");
@@ -305,12 +301,6 @@ class AssetManager {
 		soft_sparkle.setBuffer(soft_sparkle_buffer);
 		chest_buffer.loadFromFile(finder.resource_path + "/audio/sfx/chest.wav");
 		chest.setBuffer(chest_buffer);
-
-		brown_noise.openFromFile(finder.resource_path + "/audio/songs/brown_noise.wav");
-		clay_statue.openFromFile(finder.resource_path + "/audio/songs/clay_statue.wav");
-		abandoned.openFromFile(finder.resource_path + "/audio/songs/abandoned.wav");
-		three_pipes.openFromFile(finder.resource_path + "/audio/songs/three_pipes.wav");
-		dusken_cove.openFromFile(finder.resource_path + "/audio/songs/dusken_cove.wav");
 	}
 
 	// player and NPCs!
@@ -582,13 +572,6 @@ class AssetManager {
 	sf::Sound soft_sparkle;
 	sf::SoundBuffer chest_buffer{};
 	sf::Sound chest{};
-
-	// songs!
-	sf::Music brown_noise{};
-	sf::Music clay_statue{};
-	sf::Music abandoned{};
-	sf::Music three_pipes{};
-	sf::Music dusken_cove{};
 
 	// other members
 	int music_vol{24};

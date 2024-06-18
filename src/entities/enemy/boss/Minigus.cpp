@@ -5,7 +5,10 @@
 #include "../../player/Player.hpp"
 
 namespace enemy {
-
+Minigus::~Minigus() {
+	voice = {};
+	sounds = {};
+}
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console)
 	: Enemy(svc, "minigus"), gun(svc, "minigun", 6), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.dimensions, flcolor::ui_white, "minigus") {
 	animation.set_params(idle);
@@ -276,7 +279,6 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (player.transponder.get_voice_shipment() == 1) {
 		voice.greatidea.play();
 		player.transponder.flush_shipments();
-		std::cout << "called\n";
 	}
 	if (player.transponder.get_voice_shipment() == 2) { voice.dontlookatme.play(); }
 	if (player.transponder.get_voice_shipment() == 3) { voice.laugh_1.play(); }
@@ -732,6 +734,7 @@ fsm::StateFunction Minigus::update_struggle() {
 
 	if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
 		triggers.set(npc::NPCTrigger::distant_interact);
+		m_services->music.stop();
 		flush_conversations();
 		push_conversation("3");
 		status.reset(MinigusFlags::exit_scene);

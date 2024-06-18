@@ -23,6 +23,8 @@ void Option::update(ServiceProvider& svc, int& selection) {
 GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : player(&player), hud(svc, player, {20, 20}), inventory_window(svc), scene(scene) {
 	font.loadFromFile(svc.text.title_font);
 	font.setSmooth(false);
+	subtitle_font.loadFromFile(svc.text.text_font);
+	subtitle_font.setSmooth(false);
 	auto const& in_data = svc.data.menu["options"];
 	for (auto& entry : in_data[scene].array_view()) {
 		options.push_back(Option(svc, entry.as_string()));

@@ -11,6 +11,11 @@ Arsenal::Arsenal(automa::ServiceProvider& svc) {
 
 void Arsenal::push_to_loadout(int id) { loadout.push_back(armory.at(id)); }
 
+void Arsenal::pop_from_loadout(int id) {
+	std::erase_if(loadout, [id](auto const& g) { return g->get_id() == id; });
+	current_weapon = 0;
+}
+
 void Arsenal::switch_weapon(automa::ServiceProvider& svc, float next) {
 	if (next == 0.f) { return; }
 	if (loadout.empty()) { return; }
@@ -34,5 +39,12 @@ Weapon& Arsenal::get_current_weapon() {
 int Arsenal::get_index() { return current_weapon; }
 
 void Arsenal::set_index(int index) { current_weapon = index; }
+
+bool Arsenal::has(int id) {
+	for (auto& gun : loadout) {
+		if (gun->get_id() == id) { return true; }
+	}
+	return false;
+}
 
 } // namespace arms

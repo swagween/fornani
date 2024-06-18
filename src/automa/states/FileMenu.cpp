@@ -6,7 +6,6 @@ namespace automa {
 
 FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
 	current_selection = 0;
-	state = STATE::STATE_FILE;
 	svc.data.load_blank_save(player);
 	hud.set_corner_pad(svc, true); // display hud preview for each file in the center of the screen
 	constrain_selection();

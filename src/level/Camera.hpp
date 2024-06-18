@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <cmath>
 #include <vector>
 #include "../particle/Gravitator.hpp"
 #include "../utils/Cooldown.hpp"
