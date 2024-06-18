@@ -11,6 +11,7 @@ TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 	special_characters.insert({Codes::prompt, '%'});
 	special_characters.insert({Codes::quest, '$'});
 	special_characters.insert({Codes::item, '^'});
+	special_characters.insert({Codes::voice, '&'});
 }
 
 void TextWriter::start() {
@@ -35,6 +36,7 @@ void TextWriter::start() {
 	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::item);
 	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::quest);
 	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::prompt);
+	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::voice);
 
 	activate();
 }
@@ -44,6 +46,10 @@ void TextWriter::update() {
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { shutdown(); }
 	if (!writing()) { return; }
+	if (out_flags.test(Communication::ship_voice)) {
+		communicators.out_voice = suite.at(iterators.current_suite_set).front().out_key;
+		out_flags.reset(Communication::ship_voice);
+	}
 
 	if (tick_count % writing_speed == 0) {
 		char const next_char = (char)suite.at(iterators.current_suite_set).front().data.getString().getData()[glyph_count];
@@ -226,11 +232,20 @@ void TextWriter::check_for_event(Message& msg, Codes code) {
 	auto index = msg.data.getString().find(special_characters.at(code));
 	// handle item and quest out_keys
 	if (index != std::string::npos && code != Codes::prompt) {
-		auto the_rest = msg.data.getString().substring(index + 1, msg.data.getString().getSize() - 1);
-		std::string end = the_rest;
-		msg.out_key = std::stoi(end);
-		if (code == Codes::item) { out_flags.set(Communication::ship_item); }
-		if (code == Codes::quest) { out_flags.set(Communication::ship_quest); }
+		if (code == Codes::voice) {
+			std::string the_key = msg.data.getString().substring(index + 1, index + 1);
+			std::string cue = the_key;
+			msg.out_key = std::stoi(cue);
+			msg.data.setString(msg.data.getString().substring(index + 2, msg.data.getString().getSize() - 1));
+			out_flags.set(Communication::ship_voice);
+			return;
+		} else {
+			auto the_rest = msg.data.getString().substring(index + 1, msg.data.getString().getSize() - 1);
+			std::string end = the_rest;
+			msg.out_key = std::stoi(end);
+			if (code == Codes::item) { out_flags.set(Communication::ship_item); }
+			if (code == Codes::quest) { out_flags.set(Communication::ship_quest); }
+		}
 	}
 	// handle prompts
 	if (index != std::string::npos && index < msg.data.getString().getSize() - 1) {

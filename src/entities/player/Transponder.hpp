@@ -47,12 +47,14 @@ class Transponder {
 	
 	[[nodiscard]] auto get_item_shipment() const -> int { return shipments.item; }
 	[[nodiscard]] auto get_quest_shipment() const -> int { return shipments.quest; }
+	[[nodiscard]] auto get_voice_shipment() const -> int { return shipments.voice; }
 
   private:
 	util::BitFlags<TransponderActions> actions{};
 	struct {
 		int item{};
 		int quest{};
+		int voice{};
 	} shipments{};
 };
 

@@ -25,8 +25,8 @@ struct Message {
 	int out_key{};
 };
 
-enum class Codes { prompt, quest, item };
-enum class Communication { ship_item, ship_quest };
+enum class Codes { prompt, quest, item, voice };
+enum class Communication { ship_item, ship_quest, ship_voice };
 enum class MessageState { writing, selection_mode, cannot_skip, response_trigger };
 static int const default_writing_speed{8};
 static int const fast_writing_speed{1};
@@ -70,6 +70,7 @@ class TextWriter {
 
 	[[nodiscard]] auto get_item_shipment() const -> int { return communicators.out_item; }
 	[[nodiscard]] auto get_quest_shipment() const -> int { return communicators.out_quest; }
+	[[nodiscard]] auto get_voice_shipment() const -> int { return communicators.out_voice; }
 	void flush_communicators() { communicators = {}; }
 
 	Message& current_message(); //for debug
@@ -93,6 +94,7 @@ class TextWriter {
 	struct {
 		int out_item{};
 		int out_quest{};
+		int out_voice{};
 	} communicators{};
 
 	std::unordered_map<Codes, char> special_characters{};

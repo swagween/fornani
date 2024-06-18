@@ -183,7 +183,7 @@
       "effect_size": 1
     },
     "attributes": {
-      "base_hp": 640,
+      "base_hp": 840,
       "base_damage": 1.0,
       "speed": 0.5,
       "loot_multiplier": 25.0,

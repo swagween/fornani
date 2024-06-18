@@ -12,7 +12,10 @@ Hauler::Hauler(automa::ServiceProvider& svc) : Enemy(svc, "hauler") , m_services
 }
 
 void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	if (died()) { return; }
+	if (died()) {
+		Enemy::update(svc, map, player);
+		return;
+	}
 
 	flags.state.set(StateFlags::vulnerable); // tank is always vulnerable
 	caution.avoid_ledges(map, collider, 1);

@@ -8,8 +8,8 @@
 
 namespace enemy {
 
-enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle };
-enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene };
+enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle, exit };
+enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene, over_and_out, goodbye };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
 
@@ -39,9 +39,10 @@ class Minigus : public Enemy, public npc::NPC {
 	fsm::StateFunction update_snap();
 	fsm::StateFunction update_rush();
 	fsm::StateFunction update_struggle();
+	fsm::StateFunction update_exit();
 
   private:
-	bool anim_debug{true};
+	bool anim_debug{};
 	MinigusState state{};
 	util::BitFlags<MinigusFlags> status{};
 	gui::StatusBar health_bar;
@@ -93,8 +94,10 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Cooldown player_punch{80};
 		util::Cooldown pre_jump{380};
 		util::Cooldown vulnerability{2000};
-		util::Cooldown exit{200};
+		util::Cooldown exit{500};
 	} cooldowns{};
+
+	vfx::Sparkler sparkler{};
 
 	struct {
 		util::Counter snap{};
@@ -107,6 +110,10 @@ class Minigus : public Enemy, public npc::NPC {
 		sf::Sound step{};
 		sf::Sound punch{};
 		sf::Sound snap{};
+		sf::Sound lose_inv{};
+		sf::Sound charge{};
+		sf::Sound build{};
+		sf::Sound inv{};
 	} sounds{};
 
 	struct {
@@ -154,7 +161,7 @@ class Minigus : public Enemy, public npc::NPC {
 	anim::Parameters punch{28, 4, 32, 0};
 	anim::Parameters uppercut{35, 4, 32, 0};
 	anim::Parameters struggle{35, 1, 32, -1};
-	anim::Parameters build_invincibility{33, 2, 28, 4};
+	anim::Parameters build_invincibility{33, 2, 28, 6};
 	anim::Parameters laugh{25, 3, 24, 4};
 	anim::Parameters snap{39, 3, 42, 0};
 	anim::Parameters rush{14, 4, 22, -1};

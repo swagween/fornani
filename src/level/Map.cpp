@@ -196,7 +196,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 				enemy->hurt();
 				enemy->health.inflict(grenade.get_damage());
 				enemy->health_indicator.add(grenade.get_damage());
-				if (enemy->just_died()) {
+				if (enemy->just_died() && enemy->spawn_loot()) {
 					active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
 					svc.soundboard.flags.frdog.set(audio::Frdog::death);
 				}

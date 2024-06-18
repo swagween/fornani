@@ -41,4 +41,6 @@ void Sparkler::deactivate() { active = false; }
 
 void Sparkler::set_color(sf::Color to_color) { color = to_color; }
 
+void Sparkler::set_rate(float to_rate) { behavior.rate = to_rate; }
+
 } // namespace vfx

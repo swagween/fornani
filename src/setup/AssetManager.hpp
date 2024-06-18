@@ -290,6 +290,10 @@ class AssetManager {
 		b_heavy_land.loadFromFile(finder.resource_path + "/audio/sfx/deep/heavy_land.wav");
 		b_delay_crash.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_crash.wav");
 		b_delay_high.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_high.wav");
+		b_laser.loadFromFile(finder.resource_path + "/audio/sfx/laser1.wav");
+		b_gun_charge.loadFromFile(finder.resource_path + "/audio/sfx/gun_charge.wav");
+		b_minigus_build.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_build.wav");
+		b_minigus_invincibility.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_inv.wav");
 
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
@@ -554,6 +558,8 @@ class AssetManager {
 	sf::SoundBuffer b_heavy_land{};
 	sf::SoundBuffer b_delay_crash{};
 	sf::SoundBuffer b_delay_high{};
+	sf::SoundBuffer b_laser{};
+	sf::SoundBuffer b_gun_charge{};
 
 	//minigun
 	sf::SoundBuffer b_minigun_neutral{};

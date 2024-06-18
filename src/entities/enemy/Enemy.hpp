@@ -23,7 +23,7 @@ class Projectile;
 
 namespace enemy {
 
-enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render };
+enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker };
@@ -64,6 +64,7 @@ class Enemy : public entity::Entity {
 	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get_cooldown() == afterlife; }
 	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
 	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
+	[[nodiscard]] auto spawn_loot() const -> bool { return !flags.general.test(GeneralFlags::no_loot); }
 	void set_position(sf::Vector2<float> pos) {
 		collider.physics.position = pos;
 		collider.sync_components();
@@ -71,6 +72,7 @@ class Enemy : public entity::Entity {
 	}
 	void hurt() { flags.state.set(StateFlags::hurt); }
 	void shake() { flags.state.set(StateFlags::shaking); }
+	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
 	entity::Health health{};
 	player::Indicator health_indicator{};

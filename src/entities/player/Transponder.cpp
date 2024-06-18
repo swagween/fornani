@@ -42,6 +42,7 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 void Transponder::track_shipments(gui::Console& console) {
 	shipments.item = console.writer.get_item_shipment();
 	shipments.quest = console.writer.get_quest_shipment();
+	shipments.voice = console.writer.get_voice_shipment();
 	console.writer.flush_communicators();
 }
 

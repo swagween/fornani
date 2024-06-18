@@ -85,7 +85,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (map.off_the_bottom(collider.physics.position)) {
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4); }
 	}
-	if (just_died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
+	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();
@@ -139,11 +139,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
-	if (flags.state.test(StateFlags::shaking)) {
-		sprite_shake(svc);
-	} else {
-		random_offset = {};
-	}
+	if (!flags.state.test(StateFlags::shaking)) { random_offset = {}; }
 	if (svc.greyblock_mode()) {
 		drawbox.setOrigin({0.f, 0.f});
 		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});

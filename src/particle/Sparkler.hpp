@@ -16,6 +16,7 @@ class Sparkler {
 	void set_dimensions(sf::Vector2<float> dim);
 	void deactivate();
 	void set_color(sf::Color to_color);
+	void set_rate(float to_rate);
 
   private:
 	std::vector<Spark> sparkles{};

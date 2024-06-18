@@ -6,13 +6,14 @@
 
 namespace enemy {
 
-Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console) : Enemy(svc, "minigus"), gun(svc, "minigun", 6), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc) {
+Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console)
+	: Enemy(svc, "minigus"), gun(svc, "minigun", 6), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.dimensions, flcolor::ui_white, "minigus") {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
 	gun.cycle.set_order(3);
-	Enemy::collider.physics.maximum_velocity = {8.f, 12.f};
-	Enemy::collider.physics.set_constant_friction({0.97f, 0.985f});
+	Enemy::collider.physics.maximum_velocity = {8.f, 18.f};
+	Enemy::collider.physics.set_constant_friction({0.97f, 0.989f});
 	cooldowns.vulnerability.start();
 	cooldowns.exit.start();
 	afterlife = 2000;
@@ -57,6 +58,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	voice.exhale.setBuffer(svc.assets.b_minigus_exhale);
 	voice.getit.setBuffer(svc.assets.b_minigus_getit);
 	voice.greatidea.setBuffer(svc.assets.b_minigus_greatidea);
+	voice.greatidea.setVolume(30);
 	voice.itsagreatday.setBuffer(svc.assets.b_minigus_itsagreatday);
 	voice.long_death.setBuffer(svc.assets.b_minigus_long_death);
 	voice.long_moan.setBuffer(svc.assets.b_minigus_long_moan);
@@ -74,12 +76,24 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	sounds.land.setBuffer(svc.assets.b_heavy_land);
 	sounds.crash.setBuffer(svc.assets.b_delay_crash);
 	sounds.snap.setBuffer(svc.assets.sharp_click_buffer);
+	sounds.lose_inv.setBuffer(svc.assets.b_laser);
+	sounds.charge.setBuffer(svc.assets.b_gun_charge);
+	sounds.inv.setBuffer(svc.assets.b_minigus_invincibility);
+	sounds.build.setBuffer(svc.assets.b_minigus_build);
 
+	sparkler.set_dimensions(Enemy::collider.vicinity.dimensions);
 }
 
 void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 
+	sparkler.update(svc);
+	sparkler.set_position(Enemy::collider.vicinity.position);
+
 	health_bar.update(svc, Enemy::health.get_max(), Enemy::health.get_hp());
+	if (map.off_the_bottom(Enemy::collider.physics.position)) {
+		post_death.cancel();
+		flags.general.set(GeneralFlags::no_loot);
+	}
 
 	if (Enemy::direction.lr == dir::LR::left) {
 		attacks.punch.set_position(Enemy::collider.physics.position);
@@ -177,7 +191,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	secondary_collider.physics.position.y -= secondary_collider.dimensions.y;
 	secondary_collider.physics.position.x += Enemy::direction.lr == dir::LR::left ? 0 :  Enemy::collider.dimensions.x - secondary_collider.dimensions.x;
 	secondary_collider.sync_components();
-	player.collider.handle_collider_collision(secondary_collider.bounding_box);
+	if (status.test(MinigusFlags::battle_mode)) { player.collider.handle_collider_collision(secondary_collider.bounding_box); }
 	distant_range.set_position(Enemy::collider.bounding_box.position - (distant_range.dimensions * 0.5f) + (Enemy::collider.dimensions * 0.5f));
 	player.collider.bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
 
@@ -252,35 +266,39 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (!(state == MinigusState::turn) && sprite_direction.lr != post_direction.lr) { Enemy::sprite.scale({-1.f, 1.f}); }
 	movement_direction.lr = Enemy::collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
 
+	if (!status.test(MinigusFlags::battle_mode)) { state = MinigusState::idle; }
+
 	// NPC stuff
 	
 	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) { triggers.set(npc::NPCTrigger::distant_interact); }
 
 	NPC::update(svc, map, *m_console, player);
+	if (player.transponder.get_voice_shipment() == 1) {
+		voice.greatidea.play();
+		player.transponder.flush_shipments();
+		std::cout << "called\n";
+	}
+	if (player.transponder.get_voice_shipment() == 2) { voice.dontlookatme.play(); }
+	if (player.transponder.get_voice_shipment() == 3) { voice.laugh_1.play(); }
+	if (player.transponder.get_voice_shipment() == 4) { voice.pizza.play(); }
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::theme_song)) {
 		svc.music.load("minigus");
 		svc.music.play_looped(20);
 		status.set(MinigusFlags::theme_song);
 	}
-	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::battle_mode) && m_console->is_complete() && !health_bar.empty()) {
+	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::battle_mode) && m_console->is_complete() && !health_bar.empty() && !status.test(MinigusFlags::exit_scene)) {
 		status.set(MinigusFlags::battle_mode);
 		triggers.reset(npc::NPCTrigger::distant_interact);
 		player.transponder.flush_shipments();
 		svc.music.load("scuffle");
-		svc.music.play_looped(20);
+		svc.music.play_looped(30);
 		cooldowns.vulnerability.start();
 	// start battle music!{
 	}
-	if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
-		triggers.set(npc::NPCTrigger::distant_interact);
-		flush_conversations();
-		push_conversation("3");
-		status.reset(MinigusFlags::exit_scene);
-	}
 
-	if (!status.test(MinigusFlags::battle_mode)) { state = MinigusState::idle; }
+	if (health_bar.empty() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { state = MinigusState::struggle; }
 
-	if (health_bar.empty() && !status.test(MinigusFlags::exit_scene)) { state = MinigusState::struggle; }
+	if (player.transponder.get_quest_shipment() == 3 && status.test(MinigusFlags::goodbye)) { status.set(MinigusFlags::over_and_out); }
 
 	state_function = state_function();
 }
@@ -292,6 +310,7 @@ void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	minigun.sprite.setTextureRect(sf::IntRect({{u, v}, minigun.dimensions}));
 	minigun.sprite.setPosition(Enemy::sprite.getPosition() + minigun.offset);
 	Enemy::sprite.setTexture(flags.state.test(StateFlags::vulnerable) ? svc.assets.t_minigus : svc.assets.t_minigus_inv);
+	sparkler.render(svc, win, cam);
 	if (cooldowns.hurt.running() && flags.state.test(StateFlags::vulnerable) && !(state == MinigusState::build_invincibility)) {
 		Enemy::sprite.setTexture(hurt_color.get_alternator() % 2 == 0 ? svc.assets.t_minigus_blue : svc.assets.t_minigus_red);
 	}
@@ -335,6 +354,7 @@ fsm::StateFunction Minigus::update_shoot() {
 		voice.doge.play();
 		minigun.animation.set_params(minigun.charging);
 		minigun.flags.set(MinigunFlags::charging);
+		sounds.charge.play();
 	}
 	if (!gun.get().cooling_down() && !minigun.flags.test(MinigunFlags::charging)) {
 		gun.cycle.update();
@@ -409,8 +429,10 @@ fsm::StateFunction Minigus::update_jump() {
 	cooldowns.jump.update();
 	if (animation.just_started()) { cooldowns.jump.start(); }
 	auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
+	if (status.test(MinigusFlags::over_and_out)) { sign = 0; }
 	if (cooldowns.jump.running()) { Enemy::collider.physics.apply_force({sign * 36.f, -8.f}); }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
+	if (cooldowns.jump.is_complete() && status.test(MinigusFlags::over_and_out)) { flags.general.reset(GeneralFlags::map_collision); }
 	if (Enemy::collider.grounded() && cooldowns.jump.is_complete()) {
 		m_map->shake_camera();
 		sounds.land.play();
@@ -441,6 +463,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		cooldowns.pre_jump.start();
 		minigun.animation.set_params(minigun.charging);
 		minigun.flags.set(MinigunFlags::charging);
+		sounds.charge.play();
 	}
 	if (cooldowns.pre_jump.is_complete() && !cooldowns.jump.running()) {
 		cooldowns.pre_jump.nullify();
@@ -598,13 +621,22 @@ fsm::StateFunction Minigus::update_uppercut() {
 
 fsm::StateFunction Minigus::update_build_invincibility() {
 	if (animation.just_started() && anim_debug) { std::cout << "build_invincibility\n"; }
-	if (animation.just_started()) { voice.grunt.play(); }
-	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
+	if (animation.just_started()) {
+		voice.grunt.play();
+		sounds.build.play();
+		sparkler.set_rate(4.f);
+	}
+	if (change_state(MinigusState::struggle, struggle)) {
+		sparkler.set_rate(0.f);
+		return MINIGUS_BIND(update_struggle);
+	}
 	cooldowns.hurt.cancel();
 	if (animation.complete()) {
 		flags.state.reset(StateFlags::vulnerable);
 		counters.snap.start();
+		sounds.inv.play();
 		Enemy::sprite.setTexture(m_services->assets.t_minigus_inv);
+		sparkler.set_rate(0.f);
 		state = MinigusState::idle;
 		animation.set_params(idle);
 		return MINIGUS_BIND(update_idle);
@@ -682,25 +714,50 @@ fsm::StateFunction Minigus::update_struggle() {
 		flush_conversations();
 		push_conversation("2");
 		m_services->music.stop();
+		sounds.crash.play();	
+		voice.long_moan.play();
 	}
-	auto randx = m_services->random.random_range_float(0.f, 20.f);
-	auto randy = m_services->random.random_range_float(0.f, 20.f);
+	auto randx = m_services->random.random_range_float(0.f, 60.f);
+	auto randy = m_services->random.random_range_float(0.f, 60.f);
 	sf::Vector2<float> pos = secondary_collider.physics.position + sf::Vector2<float>{randx, randy};
-	if (m_services->ticker.every_x_ticks(200)) { m_map->effects.push_back(entity::Effect(*m_services, pos, {}, 0, 0)); }
+	if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, pos, {}, 0, 0)); }
 	post_death.start(afterlife);
 	Enemy::shake();
-	Enemy::sprite_shake(*m_services, 40, 8);
+	Enemy::sprite_shake(*m_services, 20, 8);
 
-	if (!animation.just_started() && m_console->is_complete()) {
-		state = MinigusState::jumpsquat;
-		flags.general.reset(GeneralFlags::map_collision);
+	if (!animation.just_started() && m_console->is_complete() && !status.test(MinigusFlags::exit_scene)) {
 		status.set(MinigusFlags::exit_scene);
 		cooldowns.exit.start();
-		return MINIGUS_BIND(update_jumpsquat);
+	}
+
+	if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
+		triggers.set(npc::NPCTrigger::distant_interact);
+		flush_conversations();
+		push_conversation("3");
+		status.reset(MinigusFlags::exit_scene);
+		status.set(MinigusFlags::goodbye);
+		stop_shaking();
+		state = MinigusState::exit;
+		animation.set_params(idle);
+		return MINIGUS_BIND(update_exit);
 	}
 
 	state = MinigusState::struggle;
 	return MINIGUS_BIND(update_struggle);
+}
+
+fsm::StateFunction Minigus::update_exit() {
+	if (animation.just_started() && anim_debug) { std::cout << "exit\n"; }
+	if (status.test(MinigusFlags::over_and_out) && m_console->is_complete()) {
+		m_map->active_loot.push_back(item::Loot(*m_services, get_attributes().drop_range, get_attributes().loot_multiplier, get_collider().bounding_box.position));
+		state = MinigusState::jumpsquat;
+		animation.set_params(jumpsquat);
+		m_services->music.load("dusken_cove");
+		m_services->music.play_looped(30);
+		return MINIGUS_BIND(update_jumpsquat);
+	}
+	state = MinigusState::exit;
+	return MINIGUS_BIND(update_exit);
 }
 
 bool Minigus::change_state(MinigusState next, anim::Parameters params) {
