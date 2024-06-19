@@ -395,10 +395,7 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
-	if (animation.state == AnimState::sharp_turn) {
-		collider.physics.acceleration.x *= 0.5f;
-		return;
-	}
+	if (animation.state == AnimState::sharp_turn) { collider.physics.acceleration.x *= 0.1f; }
 	if (controller.moving_right() && !collider.has_right_collision()) {
 		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
 	}

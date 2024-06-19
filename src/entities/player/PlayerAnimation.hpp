@@ -17,7 +17,7 @@ int const rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite) }
 inline anim::Parameters idle{20, 8, 7 * rate, -1};
 inline anim::Parameters turn{34, 2, 2 * rate, 0};
-inline anim::Parameters sharp_turn{16, 2, 2 * rate, 0};
+inline anim::Parameters sharp_turn{16, 2, 3 * rate, 0};
 inline anim::Parameters run{44, 4, 7 * rate, -1};
 inline anim::Parameters sprint{10, 6, 4 * rate, -1};
 inline anim::Parameters shield{80, 3, 4 * rate, -1, true};
