@@ -15,6 +15,22 @@
     "colliding": true
   },
 
+  "thick_burst": {
+    "load": 18,
+    "rate": 100.0,
+    "expulsion": 60.0,
+    "expulsion_variance": 55.0,
+    "cone": 0.08,
+    "friction": 0.994,
+    "elasticity": 0.95,
+    "gravity": 2.9,
+    "lifespan": 360,
+    "lifespan_variance": 225,
+    "dimensions": [ 4, 4 ],
+    "animated": false,
+    "colliding": true
+  },
+
   "light_burst": {
     "load": 18,
     "rate": 100.0,
@@ -58,7 +74,7 @@
     "gravity": 0.0,
     "lifespan": 200,
     "lifespan_variance": 0,
-    "dimensions" : [32, 32],
+    "dimensions": [ 32, 32 ],
     "animated": true,
     "colliding": false,
     "animation": {

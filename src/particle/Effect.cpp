@@ -25,9 +25,21 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		sprite_dimensions = {192, 192};
 		spritesheet_dimensions = {4, 10};
 		break;
+	case 4:
+		sprite.setOrigin({16.f, 16.f});
+		sprite_dimensions = {32, 32};
+		spritesheet_dimensions = {1, 4};
+		break;
+	case 5:
+		sprite.setOrigin({32.f, 32.f});
+		sprite_dimensions = {64, 64};
+		spritesheet_dimensions = {1, 5};
+		break;
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
-	drawbox.setFillColor(svc.styles.colors.navy_blue);
+	drawbox.setFillColor(sf::Color::Transparent);
+	drawbox.setOutlineColor(svc.styles.colors.fucshia);
+	drawbox.setOutlineThickness(-1);
 	drawbox.setSize(static_cast<sf::Vector2<float>>(sprite_dimensions));
 	physics = components::PhysicsComponent({0.99f, 0.99f}, 1.f);
 	physics.position = pos;

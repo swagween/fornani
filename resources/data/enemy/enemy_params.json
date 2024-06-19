@@ -132,7 +132,7 @@
       "offset": [ 8, 8 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [ 600.0, 600.0 ],
+      "alert_range": [ 900.0, 900.0 ],
       "hostile_range": [ 400.0, 400.0 ],
       "friction": 0.99,
       "gravity": 0.0
@@ -174,7 +174,7 @@
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [ 300.0, 300.0 ],
-      "hostile_range": [ 600.0, 24.0 ],
+      "hostile_range": [ 600.0, 80.0 ],
       "friction": 0.98,
       "gravity": 8.5
     },
@@ -183,7 +183,7 @@
       "effect_size": 1
     },
     "attributes": {
-      "base_hp": 840,
+      "base_hp": 1280,
       "base_damage": 1.0,
       "speed": 0.5,
       "loot_multiplier": 25.0,

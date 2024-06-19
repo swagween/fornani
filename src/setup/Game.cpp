@@ -790,7 +790,7 @@ void Game::debug_window() {
 
 void Game::playtester_portal() {
 	if (!flags.test(GameFlags::playtest)) { return; }
-	bool* debug{};
+	bool* b_debug{};
 	float const PAD = 10.0f;
 	static int corner = 1;
 	ImGuiIO& io = ImGui::GetIO();
@@ -808,7 +808,7 @@ void Game::playtester_portal() {
 		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
 		window_flags |= ImGuiWindowFlags_NoMove;
 		ImGui::SetNextWindowBgAlpha(0.65f); // Transparent background
-		if (ImGui::Begin("Playtester Portal", debug, window_flags)) {
+		if (ImGui::Begin("Playtester Portal", b_debug, window_flags)) {
 			ImGui::Text("Playtester Portal");
 			ImGui::Separator();
 			ImGui::Text("Current Input Device: %s", services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard");
@@ -816,6 +816,10 @@ void Game::playtester_portal() {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
+					if (ImGui::Button("Toggle Greyblock Mode")) {
+						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
+						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
+					}
 					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());

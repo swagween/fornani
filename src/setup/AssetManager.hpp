@@ -81,6 +81,8 @@ class AssetManager {
 		t_grenade_launcher.loadFromFile(finder.resource_path + "/image/weapon/grenade_launcher.png");
 		t_grenade.loadFromFile(finder.resource_path + "/image/weapon/grenade.png");
 		t_minigun.loadFromFile(finder.resource_path + "/image/boss/minigun.png");
+		t_soda_gun.loadFromFile(finder.resource_path + "/image/weapon/soda_gun.png");
+		t_soda_gun_projectile.loadFromFile(finder.resource_path + "/image/weapon/soda.png");
 
 		weapon_textures.insert({"bryn's gun", t_bryns_gun});
 		projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
@@ -100,6 +102,8 @@ class AssetManager {
 		projectile_textures.insert({"grenade launcher", t_hook});
 		weapon_textures.insert({"minigun", t_minigun});
 		projectile_textures.insert({"minigun", t_skycorps_ar_projectile});
+		weapon_textures.insert({"soda_gun", t_soda_gun});
+		projectile_textures.insert({"soda_gun", t_soda_gun_projectile});
 
 		t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 		t_shield.loadFromFile(finder.resource_path + "/image/entity/shield.png");
@@ -157,10 +161,14 @@ class AssetManager {
 		t_large_explosion.loadFromFile(finder.resource_path + "/image/entity/large_explosion.png");
 		t_small_explosion.loadFromFile(finder.resource_path + "/image/entity/small_explosion.png");
 		t_wall_hit.loadFromFile(finder.resource_path + "/image/entity/wall_hit.png");
+		t_mini_flash.loadFromFile(finder.resource_path + "/image/entity/small_flash.png");
+		t_medium_flash.loadFromFile(finder.resource_path + "/image/entity/medium_flash.png");
 		effect_lookup.insert({0, t_small_explosion});
 		effect_lookup.insert({1, t_large_explosion});
 		effect_lookup.insert({2, t_wall_hit});
 		effect_lookup.insert({3, t_huge_explosion});
+		effect_lookup.insert({4, t_mini_flash});
+		effect_lookup.insert({5, t_medium_flash});
 
 		// title stuff
 		t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
@@ -225,7 +233,7 @@ class AssetManager {
 		player_death.setBuffer(player_death_buffer);
 		enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/rainy_ouch.wav");
 		enem_hit.setBuffer(enem_hit_buffer);
-		bubble_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bubble_pop.wav");
+		bubble_buffer.loadFromFile(finder.resource_path + "/audio/sfx/mid_pop.wav");
 		bubble.setBuffer(bubble_buffer);
 
 		enem_death_1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/enemy_death.wav");
@@ -290,6 +298,7 @@ class AssetManager {
 		b_gun_charge.loadFromFile(finder.resource_path + "/audio/sfx/gun_charge.wav");
 		b_minigus_build.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_build.wav");
 		b_minigus_invincibility.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_inv.wav");
+		b_soda.loadFromFile(finder.resource_path + "/audio/sfx/soda.wav");
 
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
@@ -375,6 +384,8 @@ class AssetManager {
 	sf::Texture t_wall_hit{};
 	sf::Texture t_twinkle{};
 	sf::Texture t_small_flash{};
+	sf::Texture t_mini_flash{};
+	sf::Texture t_medium_flash{};
 
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};
@@ -427,6 +438,8 @@ class AssetManager {
 	sf::Texture t_grenade_launcher{};
 	sf::Texture t_grenade{};
 	sf::Texture t_minigun{};
+	sf::Texture t_soda_gun{};
+	sf::Texture t_soda_gun_projectile{};
 
 	//items
 	sf::Texture t_heart{};
@@ -550,6 +563,7 @@ class AssetManager {
 	sf::SoundBuffer b_delay_high{};
 	sf::SoundBuffer b_laser{};
 	sf::SoundBuffer b_gun_charge{};
+	sf::SoundBuffer b_soda{};
 
 	//minigun
 	sf::SoundBuffer b_minigun_neutral{};

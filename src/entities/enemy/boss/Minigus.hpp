@@ -4,12 +4,13 @@
 #include "../Enemy.hpp"
 #include "../../../components/CircleSensor.hpp"
 #include "../../../gui/StatusBar.hpp"
+#include "../../../graphics/SpriteHistory.hpp"
 #define MINIGUS_BIND(f) std::bind(&Minigus::f, this)
 
 namespace enemy {
 
-enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle, exit };
-enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene, over_and_out, goodbye };
+enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle, exit, drink, throw_can };
+enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene, over_and_out, goodbye, threw_can, punched, soda_pop };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
 
@@ -22,6 +23,9 @@ class Minigus : public Enemy, public npc::NPC {
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
+	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
+	bool player_behind(player::Player& player);
 
 	fsm::StateFunction state_function = std::bind(&Minigus::update_idle, this);
 	fsm::StateFunction update_idle();
@@ -41,12 +45,15 @@ class Minigus : public Enemy, public npc::NPC {
 	fsm::StateFunction update_rush();
 	fsm::StateFunction update_struggle();
 	fsm::StateFunction update_exit();
+	fsm::StateFunction update_drink();
+	fsm::StateFunction update_throw_can();
 
   private:
 	bool anim_debug{};
 	MinigusState state{};
 	util::BitFlags<MinigusFlags> status{};
 	gui::StatusBar health_bar;
+	flfx::SpriteHistory sprite_history{};
 
 	dir::Direction sprite_direction{};
 	dir::Direction pre_direction{};
@@ -72,6 +79,7 @@ class Minigus : public Enemy, public npc::NPC {
 	struct {
 		entity::Attack punch{};
 		entity::Attack uppercut{};
+		entity::Attack rush{};
 		entity::Shockwave left_shockwave{{-0.6f, 0.f}};
 		entity::Shockwave right_shockwave{{0.6f, 0.f}};
 	} attacks{};
@@ -79,15 +87,17 @@ class Minigus : public Enemy, public npc::NPC {
 	int fire_chance{2};
 	int snap_chance{10};
 	int rush_chance{20};
-	float rush_speed{6.f};
+	float rush_speed{8.f};
+	int health_bar_size{600};
 
 	// packages
 	entity::WeaponPackage gun;
+	entity::WeaponPackage soda;
 	entity::Caution caution{};
 
 	struct {
 		util::Cooldown jump{20};
-		util::Cooldown rush{600};
+		util::Cooldown rush{400};
 		util::Cooldown firing{1000};
 		util::Cooldown post_charge{600};
 		util::Cooldown post_punch{400};
@@ -115,6 +125,7 @@ class Minigus : public Enemy, public npc::NPC {
 		sf::Sound charge{};
 		sf::Sound build{};
 		sf::Sound inv{};
+		sf::Sound soda{};
 	} sounds{};
 
 	struct {
@@ -158,14 +169,17 @@ class Minigus : public Enemy, public npc::NPC {
 	anim::Parameters jump_shoot{32, 1, 42, -1};
 	anim::Parameters reload{7, 7, 18, 0};
 	anim::Parameters turn{18, 2, 42, 0};
-	anim::Parameters run{14, 4, 42, 3};
+	anim::Parameters run{14, 4, 42, 2};
 	anim::Parameters punch{28, 4, 32, 0};
 	anim::Parameters uppercut{35, 4, 32, 0};
 	anim::Parameters struggle{35, 1, 32, -1};
-	anim::Parameters build_invincibility{33, 2, 28, 6};
+	anim::Parameters build_invincibility{33, 2, 22, 4};
 	anim::Parameters laugh{25, 3, 24, 4};
 	anim::Parameters snap{39, 3, 42, 0};
-	anim::Parameters rush{14, 4, 22, -1};
+	anim::Parameters rush{66, 4, 22, -1};
+
+	anim::Parameters drink{42, 16, 22, 0};
+	anim::Parameters throw_can{58, 8, 22, 0};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;

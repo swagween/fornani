@@ -15,7 +15,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	auto const& in_data = svc.data.weapon["weapons"][id]["projectile"];
 
-	type = index_to_type.at(id);
+	type = static_cast<WEAPON_TYPE>(id);
 
 	stats.base_damage = in_data["attributes"]["base_damage"].as<float>();
 	stats.range = in_data["attributes"]["range"].as<int>();

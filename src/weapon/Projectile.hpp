@@ -56,7 +56,6 @@ enum class WEAPON_TYPE {
 };
 
 enum class TEAMS { NANI, SKYCORPS, BEASTS };
-
 enum class RENDER_TYPE { ANIMATED, SINGLE_SPRITE, MULTI_SPRITE };
 
 sf::Vector2<float> const DEFAULT_DIMENSIONS{8.0, 8.0};

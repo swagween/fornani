@@ -125,7 +125,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setPosition(sprite_position);
 	if (svc.ticker.every_x_frames(8) && animation.state == AnimState::dash) { sprite_history.update(sprite); }
 	if (svc.ticker.every_x_frames(8) && !(animation.state == AnimState::dash)) { sprite_history.flush(); }
-	drag_sprite(win, campos);
+	sprite_history.drag(win, campos);
 
 	// get UV coords
 	int u = (int)(animation.get_frame() / asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
@@ -278,18 +278,6 @@ void Player::flash_sprite() {
 	}
 }
 
-void Player::drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos) {
-	auto a{100};
-	auto ctr{0};
-	for (auto& sp : sprite_history.sprites) {
-		sp.setColor(sf::Color(255, 255, 255, a));
-		sp.setPosition(sprite_history.positions.at(ctr) - campos);
-		if (!m_services->greyblock_mode()) { win.draw(sp); }
-		a += 20;
-		++ctr;
-	}
-}
-
 void Player::calculate_sprite_offset() {
 	sprite_offset.y = 0.f;
 	if (collider.flags.state.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
@@ -408,7 +396,7 @@ void Player::update_weapon() {
 
 void Player::walk() {
 	if (animation.state == AnimState::sharp_turn) {
-		collider.physics.acceleration.x = 0.0f;
+		collider.physics.acceleration.x *= 0.5f;
 		return;
 	}
 	if (controller.moving_right() && !collider.has_right_collision()) {

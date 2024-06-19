@@ -102,7 +102,6 @@ class Player {
 	void handle_turning();
 	void update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void flash_sprite();
-	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void calculate_sprite_offset();
 
 	// state

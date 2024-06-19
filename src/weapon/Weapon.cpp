@@ -10,7 +10,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 	auto const& in_data = svc.data.weapon["weapons"][id];
 
 	//label = in_data["label"].as_string();
-	type = index_to_type.at(id);
+	type = static_cast<WEAPON_TYPE>(id);
 
 	sprite_dimensions.x = in_data["dimensions"]["x"].as<int>();
 	sprite_dimensions.y = in_data["dimensions"]["y"].as<int>();
