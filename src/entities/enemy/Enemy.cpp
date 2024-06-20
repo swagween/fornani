@@ -201,6 +201,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			svc.soundboard.flags.frdog.set(audio::Frdog::death);
 		}
 	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
+		map.effects.push_back(entity::Effect(svc, proj.physics.position, {}, 0, 6));
 		sounds.inv_hit.play();
 	}
 	if (!proj.stats.persistent && (!died() || just_died())) { proj.destroy(false); }

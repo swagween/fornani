@@ -163,12 +163,14 @@ class AssetManager {
 		t_wall_hit.loadFromFile(finder.resource_path + "/image/entity/wall_hit.png");
 		t_mini_flash.loadFromFile(finder.resource_path + "/image/entity/small_flash.png");
 		t_medium_flash.loadFromFile(finder.resource_path + "/image/entity/medium_flash.png");
+		t_inv_hit.loadFromFile(finder.resource_path + "/image/entity/inv_hit.png");
 		effect_lookup.insert({0, t_small_explosion});
 		effect_lookup.insert({1, t_large_explosion});
 		effect_lookup.insert({2, t_wall_hit});
 		effect_lookup.insert({3, t_huge_explosion});
 		effect_lookup.insert({4, t_mini_flash});
 		effect_lookup.insert({5, t_medium_flash});
+		effect_lookup.insert({6, t_inv_hit});
 
 		// title stuff
 		t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
@@ -392,6 +394,7 @@ class AssetManager {
 	sf::Texture t_small_flash{};
 	sf::Texture t_mini_flash{};
 	sf::Texture t_medium_flash{};
+	sf::Texture t_inv_hit{};
 
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};
