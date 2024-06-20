@@ -12,14 +12,14 @@
 #include "../graphics/FLColor.hpp"
 #include "../graphics/SpriteHistory.hpp"
 #include "../particle/Emitter.hpp"
+#include "../particle/Gravitator.hpp"
+#include "../particle/Sparkler.hpp"
 #include "../utils/BitFlags.hpp"
+#include "../utils/Cooldown.hpp"
 #include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
-#include "../particle/Gravitator.hpp"
-#include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
-#include "../particle/Sparkler.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -121,8 +121,10 @@ class Projectile {
 	void constrain_hitbox_at_destruction_point();
 	void lock_to_anchor();
 
+	void multiply(float factor) { variables.damage_multiplier *= factor; }
 	[[nodiscard]] auto wall_hit_type() const -> int { return visual.wall_hit_type; }
 	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
+	[[nodiscard]] auto get_damage() const -> float { return stats.base_damage * variables.damage_multiplier; }
 
 	dir::Direction direction{};
 	shape::Shape bounding_box{};
@@ -158,8 +160,14 @@ class Projectile {
 	std::vector<sf::Color> colors{};
 	std::deque<sf::Vector2<float>> position_history{};
 
-	private:
+  private:
+
+	struct {
+		float damage_multiplier{1.f};
+	} variables{};
+
 	int id{};
+
 	struct {
 		int wall_hit_type{};
 	} visual{};

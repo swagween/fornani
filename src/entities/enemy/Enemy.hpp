@@ -23,7 +23,7 @@ class Projectile;
 
 namespace enemy {
 
-enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot };
+enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker };
@@ -104,6 +104,11 @@ class Enemy : public entity::Entity {
 		int effect_type{};
 		int effect_size{};
 	} visual{};
+
+	struct {
+		sf::Sound hit{};
+		sf::Sound inv_hit{};
+	} sounds{};
 };
 
 } // namespace enemy

@@ -31,7 +31,12 @@ void Portrait::reset(automa::ServiceProvider& svc) {
 	auto rand_y = svc.random.random_range_float(-60.f, 60.f);
 	start_position = {-128.f, position.y};
 	if (is_nani) { start_position.x = svc.constants.screen_dimensions.x + 132.f; }
-	gravitator.set_position(start_position);
+	set_position(start_position);
+}
+
+void Portrait::set_position(sf::Vector2<float> pos) {
+	sprite.setPosition(pos);
+	gravitator.set_position(pos);
 }
 
 void Portrait::bring_in() { position = end_position; }

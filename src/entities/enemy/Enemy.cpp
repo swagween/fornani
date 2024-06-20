@@ -11,6 +11,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	auto const& in_physical = in_data["physical"];
 	auto const& in_attributes = in_data["attributes"];
 	auto const& in_visual = in_data["visual"];
+	auto const& in_audio = in_data["audio"];
 	auto const& in_animation = in_data["animation"];
 	auto const& in_general = in_data["general"];
 
@@ -59,6 +60,15 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	params.duration = in_animation["duration"].as<int>();
 	params.framerate = in_animation["framerate"].as<int>();
 	animation.set_params(params);
+
+	switch (in_audio["hit"].as<int>()) {
+	case -1: flags.general.set(GeneralFlags::custom_sounds); break;
+	case 0: sounds.hit.setBuffer(svc.assets.b_enemy_hit_low); break;
+	case 1: sounds.hit.setBuffer(svc.assets.b_enemy_hit_medium); break;
+	case 2: sounds.hit.setBuffer(svc.assets.b_enemy_hit_high); break;
+	case 3: sounds.hit.setBuffer(svc.assets.b_enemy_hit_squeak); break;
+	}
+	sounds.inv_hit.setBuffer(svc.assets.b_enemy_hit_inv);
 
 	health.set_max(attributes.base_hp);
 	health_indicator.init(svc, 0);
@@ -176,15 +186,22 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	if (proj.team == arms::TEAMS::SKYCORPS) { return; }
 	if (!(proj.bounding_box.overlaps(collider.bounding_box) || proj.bounding_box.overlaps(secondary_collider.bounding_box))) { return; }
 
+	if (svc.ticker.every_x_ticks(10)) { proj.multiply(1.1f); }
+
 	flags.state.set(enemy::StateFlags::shot);
 	if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
 		hurt();
-		health.inflict(proj.stats.base_damage);
-		health_indicator.add(-proj.stats.base_damage);
+		health.inflict(proj.get_damage());
+		health_indicator.add(-proj.get_damage());
+
+		if (!flags.general.test(GeneralFlags::custom_sounds)) { sounds.hit.play(); }
+
 		if (just_died()) {
 			map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position));
 			svc.soundboard.flags.frdog.set(audio::Frdog::death);
 		}
+	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
+		sounds.inv_hit.play();
 	}
 	if (!proj.stats.persistent && (!died() || just_died())) { proj.destroy(false); }
 }

@@ -1,6 +1,6 @@
 #include "Minigus.hpp"
-#include "../../../level/Map.hpp"
 #include "../../../gui/Console.hpp"
+#include "../../../level/Map.hpp"
 #include "../../../service/ServiceProvider.hpp"
 #include "../../player/Player.hpp"
 
@@ -10,7 +10,8 @@ Minigus::~Minigus() {
 	sounds = {};
 }
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console)
-	: Enemy(svc, "minigus"), gun(svc, "minigun", 6), soda(svc, "soda_gun", 7), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.dimensions, flcolor::ui_white, "minigus") {
+	: Enemy(svc, "minigus"), gun(svc, "minigun", 6), soda(svc, "soda_gun", 7), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc),
+	  sparkler(svc, Enemy::collider.vicinity.dimensions, flcolor::ui_white, "minigus") {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
@@ -25,7 +26,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	NPC::dimensions = {24.f, 80.f};
 	state_flags.set(npc::NPCState::force_interact);
 	flags.general.set(GeneralFlags::post_death_render);
-	
+
 	secondary_collider = shape::Collider({48.f, 36.f});
 	minigun.sprite.setTexture(svc.assets.t_minigun);
 	minigun.sprite.setOrigin({(float)minigun.dimensions.x, minigun.dimensions.y * 0.8f});
@@ -100,9 +101,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 
 	sparkler.update(svc);
 	sparkler.set_position(Enemy::collider.vicinity.position);
-
-	auto filled = std::lerp(0, health_bar_size, Enemy::health.get_normalized());
-	health_bar.update(svc, health_bar_size, filled);
+	health_bar.update(svc, health.get_normalized());
 
 	if (map.off_the_bottom(Enemy::collider.physics.position)) {
 		post_death.cancel();
@@ -143,7 +142,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (state_flags.test(npc::NPCState::introduced)) { cooldowns.vulnerability.update(); }
 
 	if (svc.ticker.every_x_ticks(32)) { hurt_color.update(); }
-	
+
 	attacks.punch.update();
 	attacks.uppercut.update();
 	attacks.rush.update();
@@ -159,40 +158,41 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	attacks.left_shockwave.handle_player(player);
 	attacks.right_shockwave.handle_player(player);
 
-	if (attacks.left_shockwave.hit.active() && !cooldowns.player_punch.running()) {
-		player.hurt(1);
-		if (!player.invincible()) { player.accumulated_forces.push_back({-40.f, -4.f}); }
-		attacks.left_shockwave.hit.deactivate();
-		cooldowns.player_punch.start();
-	}
-	if (attacks.right_shockwave.hit.active() && !cooldowns.player_punch.running()) {
-		player.hurt(1);
-		if (!player.invincible()) { player.accumulated_forces.push_back({40.f, -4.f}); }
-		attacks.right_shockwave.hit.deactivate();
-		cooldowns.player_punch.start();
-	}
-
-	if (animation.get_frame() == 30 && attacks.punch.hit.active() && !cooldowns.player_punch.running()) {
-		player.hurt(1);
-		auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
-		player.accumulated_forces.push_back({sign * 10.f, -4.f});
-		attacks.punch.sensor.deactivate();
-		cooldowns.player_punch.start();
-	}
-	if (animation.get_frame() == 37 && attacks.uppercut.hit.active() && !cooldowns.player_punch.running()) {
-		player.hurt(1);
-		auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
-		player.accumulated_forces.push_back({sign * 10.f, -4.f});
-		attacks.uppercut.sensor.deactivate();
-		cooldowns.player_punch.start();
-	}
-	if (state == MinigusState::rush && attacks.rush.sensor.active() && !cooldowns.player_punch.running()) {
-		auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
-		if (sign == -1.f && player_behind(player) || sign == 1.f && !player_behind(player)) {
+	if (status.test(MinigusFlags::battle_mode)) {
+		if (attacks.left_shockwave.hit.active() && !cooldowns.player_punch.running()) {
 			player.hurt(1);
-			player.accumulated_forces.push_back({sign * 10.f, -4.f});
-			attacks.rush.sensor.deactivate();
+			if (!player.invincible()) { player.accumulated_forces.push_back({-40.f, -4.f}); }
+			attacks.left_shockwave.hit.deactivate();
 			cooldowns.player_punch.start();
+		}
+		if (attacks.right_shockwave.hit.active() && !cooldowns.player_punch.running()) {
+			player.hurt(1);
+			if (!player.invincible()) { player.accumulated_forces.push_back({40.f, -4.f}); }
+			attacks.right_shockwave.hit.deactivate();
+			cooldowns.player_punch.start();
+		}
+		if (animation.get_frame() == 30 && attacks.punch.hit.active() && !cooldowns.player_punch.running()) {
+			player.hurt(1);
+			auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
+			player.accumulated_forces.push_back({sign * 10.f, -4.f});
+			attacks.punch.sensor.deactivate();
+			cooldowns.player_punch.start();
+		}
+		if (animation.get_frame() == 37 && attacks.uppercut.hit.active() && !cooldowns.player_punch.running()) {
+			player.hurt(1);
+			auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
+			player.accumulated_forces.push_back({sign * 10.f, -4.f});
+			attacks.uppercut.sensor.deactivate();
+			cooldowns.player_punch.start();
+		}
+		if (state == MinigusState::rush && attacks.rush.sensor.active() && !cooldowns.player_punch.running()) {
+			auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
+			if (sign == -1.f && player_behind(player) || sign == 1.f && !player_behind(player)) {
+				player.hurt(1);
+				player.accumulated_forces.push_back({sign * 10.f, -4.f});
+				attacks.rush.sensor.deactivate();
+				cooldowns.player_punch.start();
+			}
 		}
 	}
 	for (auto& index : map.collidable_indeces) {
@@ -210,7 +210,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		minigun.sprite.setScale(Enemy::sprite.getScale());
 	}
 	auto gun_base = Enemy::collider.physics.position + Enemy::collider.dimensions * 0.5f;
-	auto gun_point = Enemy::direction.lr == dir::LR::left ? gun_base - sf::Vector2<float>{(float)minigun.dimensions.x, 0.f} : gun_base + sf::Vector2<float>{(float)minigun.dimensions.x, 0.f};
+	auto gun_point = Enemy::direction.lr == dir::LR::left ? gun_base - sf::Vector2<float>{(float)minigun.dimensions.x, -4.f} : gun_base + sf::Vector2<float>{(float)minigun.dimensions.x, -4.f};
 	gun.get().barrel_point = gun_point;
 	gun_point.y -= 60;
 	soda.get().barrel_point = gun_point;
@@ -219,15 +219,15 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 
 	pre_direction.lr = player_behind(player) ? dir::LR::left : dir::LR::right;
 	if (post_direction.lr != pre_direction.lr) {
-		if (svc.ticker.every_x_ticks(100)) { 
-			//std::cout << "mismatch\n";
+		if (svc.ticker.every_x_ticks(100)) {
+			// std::cout << "mismatch\n";
 		}
 	}
 	Enemy::update(svc, map, player);
 
 	secondary_collider.physics.position = Enemy::collider.physics.position;
 	secondary_collider.physics.position.y -= secondary_collider.dimensions.y;
-	secondary_collider.physics.position.x += Enemy::direction.lr == dir::LR::left ? 0 :  Enemy::collider.dimensions.x - secondary_collider.dimensions.x;
+	secondary_collider.physics.position.x += Enemy::direction.lr == dir::LR::left ? 0 : Enemy::collider.dimensions.x - secondary_collider.dimensions.x;
 	secondary_collider.sync_components();
 	if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.collider.handle_collider_collision(secondary_collider.bounding_box); }
 	distant_range.set_position(Enemy::collider.bounding_box.position - (distant_range.dimensions * 0.5f) + (Enemy::collider.dimensions * 0.5f));
@@ -260,7 +260,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	}
 
 	if (gun.clip_cooldown.is_complete() && !minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && hostile()) {
-		//if (m_services->random.percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
+		// if (m_services->random.percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
 		if (m_services->random.percent_chance(fire_chance)) {
 			if (m_services->random.percent_chance(50)) {
 				state = MinigusState::jump_shoot;
@@ -300,7 +300,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (!status.test(MinigusFlags::battle_mode)) { state = MinigusState::idle; }
 
 	// NPC stuff
-	
+
 	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) { triggers.set(npc::NPCTrigger::distant_interact); }
 
 	NPC::update(svc, map, *m_console, player);
@@ -323,12 +323,11 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		svc.music.load("scuffle");
 		svc.music.play_looped(25);
 		cooldowns.vulnerability.start();
-	// start battle music!{
+		// start battle music!{
 	}
 
 	if (health_bar.empty() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { state = MinigusState::struggle; }
-
-	if (player.transponder.get_quest_shipment() == 3 && status.test(MinigusFlags::goodbye)) { status.set(MinigusFlags::over_and_out); }
+	if (status.test(MinigusFlags::goodbye)) { status.set(MinigusFlags::over_and_out); }
 
 	state_function = state_function();
 }
@@ -418,7 +417,11 @@ fsm::StateFunction Minigus::update_shoot() {
 		cooldowns.firing.start();
 
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
-
+		if (invincible()) {
+			state = MinigusState::rush;
+			animation.set_params(rush);
+			return MINIGUS_BIND(update_rush);
+		}
 		if (m_services->random.percent_chance(50)) {
 			state = MinigusState::run;
 			animation.set_params(run);
@@ -495,9 +498,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 	if (cooldowns.pre_jump.get_cooldown() != -1) { cooldowns.pre_jump.update(); }
 	cooldowns.jump.update();
 	auto sign = Enemy::direction.lr == dir::LR::left ? 1.f : -2.f;
-	if (cooldowns.jump.running()) {
-		Enemy::collider.physics.apply_force({sign * 4.f, -8.f});
-	}
+	if (cooldowns.jump.running()) { Enemy::collider.physics.apply_force({sign * 4.f, -8.f}); }
 	if (animation.just_started()) {
 		cooldowns.pre_jump.start();
 		minigun.animation.set_params(minigun.charging);
@@ -529,6 +530,12 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		cooldowns.firing.start();
 
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
+
+		if (invincible()) {
+			state = MinigusState::shoot;
+			animation.set_params(rush);
+			return MINIGUS_BIND(update_rush);
+		}
 
 		if (m_services->random.percent_chance(50)) {
 			state = MinigusState::idle;
@@ -573,9 +580,15 @@ fsm::StateFunction Minigus::update_turn() {
 		Enemy::sprite.scale({-1.f, 1.f});
 		post_direction = pre_direction;
 		if (invincible()) {
-			state = MinigusState::rush;
-			animation.set_params(rush);
-			return MINIGUS_BIND(update_rush);
+			if (m_services->random.percent_chance(50)) {
+				state = MinigusState::shoot;
+				animation.set_params(shoot);
+				return MINIGUS_BIND(update_shoot);
+			} else {
+				state = MinigusState::jump_shoot;
+				animation.set_params(jump_shoot);
+				return MINIGUS_BIND(update_jump_shoot);
+			}
 		}
 		if (change_state(MinigusState::idle, idle)) { return MINIGUS_BIND(update_idle); }
 		if (change_state(MinigusState::jumpsquat, jumpsquat)) { return MINIGUS_BIND(update_jumpsquat); }
@@ -699,7 +712,7 @@ fsm::StateFunction Minigus::update_build_invincibility() {
 
 fsm::StateFunction Minigus::update_laugh() {
 	if (animation.just_started() && anim_debug) { std::cout << "laugh\n"; }
-	if (animation.just_started()) { 
+	if (animation.just_started()) {
 		if (m_services->random.percent_chance(50)) {
 			voice.laugh_1.play();
 		} else {
@@ -708,16 +721,22 @@ fsm::StateFunction Minigus::update_laugh() {
 	}
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.complete()) {
-		if(invincible()) {
-			if(half_health() && counters.snap.get_count() < 2) {
+		if (invincible()) {
+			if (half_health() && counters.snap.get_count() < 2) {
 				state = MinigusState::snap;
 				animation.set_params(snap);
 				return MINIGUS_BIND(update_snap);
 			}
 			if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
-			state = MinigusState::rush;
-			animation.set_params(rush);
-			return MINIGUS_BIND(update_rush);
+			if (m_services->random.percent_chance(50)) {
+				state = MinigusState::shoot;
+				animation.set_params(shoot);
+				return MINIGUS_BIND(update_shoot);
+			} else {
+				state = MinigusState::jump_shoot;
+				animation.set_params(jump_shoot);
+				return MINIGUS_BIND(update_jump_shoot);
+			}
 		}
 		if (change_state(MinigusState::punch, punch)) { return MINIGUS_BIND(update_punch); }
 		if (change_state(MinigusState::uppercut, uppercut)) { return MINIGUS_BIND(update_uppercut); }
@@ -788,7 +807,7 @@ fsm::StateFunction Minigus::update_struggle() {
 	auto randx = m_services->random.random_range_float(0.f, 60.f);
 	auto randy = m_services->random.random_range_float(0.f, 60.f);
 	sf::Vector2<float> pos = secondary_collider.physics.position + sf::Vector2<float>{randx, randy};
-	if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, pos, {}, 0, 0)); }
+	if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, pos, {}, 3, 0)); }
 	post_death.start(afterlife);
 	Enemy::shake();
 	Enemy::sprite_shake(*m_services, 20, 8);

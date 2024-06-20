@@ -15,6 +15,7 @@ void MusicPlayer::load(std::string_view song_name) {
 	switch_on();
 }
 void MusicPlayer::play_once(int vol) {
+	volume.native = vol;
 	if (global_off()) { return; }
 	if (!flags.state.test(SongState::on)) {
 		stop();
@@ -22,24 +23,27 @@ void MusicPlayer::play_once(int vol) {
 	}
 	if (playing()) { return; }
 	song_first.setLoop(false);
-	song_first.setVolume(vol);
+	song_first.setVolume(volume.actual);
 	song_first.play();
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::play_looped(int vol) {
+	volume.native = vol;
 	if (global_off()) { return; }
 	switch_on();
 	if (playing()) { return; }
 	song_first.setLoop(false);
 	song_loop.setLoop(true);
-	song_first.setVolume(vol);
-	song_loop.setVolume(vol);
+	song_first.setVolume(volume.actual);
+	song_loop.setVolume(volume.actual);
 	song_first.play();
 	music_clock.restart();
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::update() {
 	if (global_off()) { return; }
+	volume.actual = volume.native * volume.multiplier;
+	set_volume(volume.actual);
 	if (!flags.state.test(SongState::on)) {
 		stop();
 		return;
@@ -76,5 +80,9 @@ void MusicPlayer::turn_off() {
 void MusicPlayer::turn_on() {
 	flags.player.set(MusicPlayerState::on);
 	pause();
+}
+void MusicPlayer::set_volume(int vol) {
+	song_first.setVolume(vol);
+	song_loop.setVolume(vol);
 }
 } // namespace audio

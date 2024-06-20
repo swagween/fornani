@@ -171,7 +171,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			effects.push_back(entity::Effect(*m_services, spawn.pos, {}, 2, 0));
+			effects.push_back(entity::Effect(*m_services, spawn.pos, {}, 0, 0));
 		}
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);
@@ -571,7 +571,7 @@ void Map::handle_breakables(Tile& cell, sf::Vector2<float> velocity, uint8_t pow
 	if (cell.value < 244) {
 		cell.value = 0;
 		m_services->soundboard.flags.world.set(audio::World::breakable_shatter);
-		effects.push_back(entity::Effect(*m_services, cell.position, velocity, 2, 0));
+		effects.push_back(entity::Effect(*m_services, cell.position, velocity, 0, 0));
 	}
 	generate_layer_textures(*m_services);
 }

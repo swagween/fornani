@@ -838,6 +838,9 @@ void Game::playtester_portal() {
 				if (ImGui::BeginTabItem("Music")) {
 					ImGui::Separator();
 					ImGui::Checkbox("Music Player", &playtest.m_musicplayer);
+					ImGui::Text("Volume: ");
+					ImGui::SameLine();
+					ImGui::SliderFloat("##vol", &services.music.volume.multiplier, 0.f, 1.f, "%.3f");
 					if (playtest.m_musicplayer && services.music.global_off()) {
 						services.music.turn_on();
 					} else if (!playtest.m_musicplayer && !services.music.global_off()) {

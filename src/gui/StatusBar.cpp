@@ -4,7 +4,7 @@
 
 namespace gui {
 
-StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim) : dimensions(dim) {
+StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim, float size) : dimensions(dim), size(size) {
 	gravitator = vfx::Gravitator({0, 0}, svc.styles.colors.bright_orange, 0.9f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.9f, 0.9f}, 1.0f);
 	debug_rects.filled.setFillColor(svc.styles.colors.red);
@@ -22,18 +22,22 @@ StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim) : dimen
 	current_state = BarState::full;
 }
 
-void StatusBar::update(automa::ServiceProvider& svc, float max, float current) {
+void StatusBar::update(automa::ServiceProvider& svc, float current) {
+
+	auto filled = std::lerp(0, size, current);
+	auto f_filled = static_cast<float>(filled);
+
 	gravitator.set_target_position(position);
 	gravitator.update(svc);
 
-	debug_rects.filled.setSize({current, 10.f});
-	debug_rects.gone.setSize({max, 10.f});
-	debug_rects.taken.setSize({current, 10.f});
+	debug_rects.filled.setSize({f_filled, 10.f});
+	debug_rects.gone.setSize({size, 10.f});
+	debug_rects.taken.setSize({f_filled, 10.f});
 	debug_rects.filled.setOrigin(debug_rects.gone.getSize() * 0.5f);
 	debug_rects.gone.setOrigin(debug_rects.gone.getSize() * 0.5f);
 	debug_rects.taken.setOrigin(debug_rects.gone.getSize() * 0.5f);
-	current_state = current == max ? BarState::full : current_state;
-	current_state = current <= 0 ? BarState::empty : current_state;
+	current_state = filled == size ? BarState::full : current_state;
+	current_state = filled <= 0 ? BarState::empty : current_state;
 }
 void StatusBar::render(sf::RenderWindow& win) {
 	win.draw(debug_rects.gone);

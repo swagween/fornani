@@ -231,7 +231,7 @@ class AssetManager {
 		hurt.setBuffer(hurt_buffer);
 		player_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/player_death.wav");
 		player_death.setBuffer(player_death_buffer);
-		enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/rainy_ouch.wav");
+		enem_hit_buffer.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_medium.wav");
 		enem_hit.setBuffer(enem_hit_buffer);
 		bubble_buffer.loadFromFile(finder.resource_path + "/audio/sfx/mid_pop.wav");
 		bubble.setBuffer(bubble_buffer);
@@ -299,6 +299,12 @@ class AssetManager {
 		b_minigus_build.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_build.wav");
 		b_minigus_invincibility.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_inv.wav");
 		b_soda.loadFromFile(finder.resource_path + "/audio/sfx/soda.wav");
+
+		b_enemy_hit_low.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_low.wav");
+		b_enemy_hit_medium.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_medium.wav");
+		b_enemy_hit_high.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_high.wav");
+		b_enemy_hit_squeak.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_squeak.wav");
+		b_enemy_hit_inv.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_inv.wav");
 
 		save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 		save.setBuffer(save_buffer);
@@ -445,90 +451,52 @@ class AssetManager {
 	sf::Texture t_heart{};
 	sf::Texture t_orb{};
 
+	
+	sf::SoundBuffer player_death_buffer{};
+	sf::SoundBuffer enem_hit_buffer{};
+	sf::SoundBuffer enem_death_1_buffer{};
+	sf::SoundBuffer heal_buffer{};
+	sf::SoundBuffer orb_1_buffer{};
+	sf::SoundBuffer orb_2_buffer{};
+	sf::SoundBuffer orb_3_buffer{};
+	sf::SoundBuffer orb_4_buffer{};
+
 	// sound effects!
 	sf::SoundBuffer click_buffer{};
-	sf::Sound click;
 	sf::SoundBuffer sharp_click_buffer{};
-	sf::Sound sharp_click;
 	sf::SoundBuffer menu_shift_buffer{};
-	sf::Sound menu_shift;
 	sf::SoundBuffer menu_back_buffer{};
-	sf::Sound menu_back;
 	sf::SoundBuffer menu_next_buffer{};
-	sf::Sound menu_next;
 
 	sf::SoundBuffer arms_switch_buffer{};
-	sf::Sound arms_switch;
 	sf::SoundBuffer bg_shot_buffer{};
-	sf::Sound bg_shot;
 	sf::SoundBuffer plasmer_shot_buffer{};
-	sf::Sound plasmer_shot;
 	sf::SoundBuffer skycorps_ar_buffer{};
-	sf::Sound skycorps_ar_shot;
 	sf::SoundBuffer tomahawk_flight_buffer{};
-	sf::Sound tomahawk_flight;
 	sf::SoundBuffer tomahawk_catch_buffer{};
-	sf::Sound tomahawk_catch;
 	sf::SoundBuffer pop_mid_buffer{};
-	sf::Sound pop_mid;
 	sf::SoundBuffer bubble_buffer{};
-	sf::Sound bubble;
 
 	sf::SoundBuffer jump_buffer{};
-	sf::Sound jump;
 	sf::SoundBuffer shatter_buffer{};
-	sf::Sound shatter;
 	sf::SoundBuffer step_buffer{};
-	sf::Sound step;
 	sf::SoundBuffer landed_buffer{};
-	sf::Sound landed;
 	sf::SoundBuffer hurt_buffer{};
-	sf::Sound hurt;
-	sf::SoundBuffer player_death_buffer{};
-	sf::Sound player_death;
-	sf::SoundBuffer enem_hit_buffer{};
-	sf::Sound enem_hit;
-	sf::SoundBuffer enem_death_1_buffer{};
-	sf::Sound enem_death_1;
-	sf::SoundBuffer heal_buffer{};
-	sf::Sound heal;
-	sf::SoundBuffer orb_1_buffer{};
-	sf::Sound orb_1{};
-	sf::SoundBuffer orb_2_buffer{};
-	sf::Sound orb_2{};
-	sf::SoundBuffer orb_3_buffer{};
-	sf::Sound orb_3{};
-	sf::SoundBuffer orb_4_buffer{};
-	sf::Sound orb_4{};
 
 	sf::SoundBuffer tank_alert1_buffer{};
-	sf::Sound tank_alert_1;
 	sf::SoundBuffer tank_alert2_buffer{};
-	sf::Sound tank_alert_2;
 	sf::SoundBuffer tank_hurt1_buffer{};
-	sf::Sound tank_hurt_1;
 	sf::SoundBuffer tank_hurt2_buffer{};
-	sf::Sound tank_hurt_2;
 	sf::SoundBuffer tank_death_buffer{};
-	sf::Sound tank_death;
 
 	//minigus
-	sf::SoundBuffer b_minigus_jump{};
-	sf::Sound minigus_jump{};
-	sf::SoundBuffer b_minigus_land{};
-	sf::Sound minigus_land{};
-	sf::SoundBuffer b_minigus_punch{};
-	sf::Sound minigus_punch{};
-	sf::SoundBuffer b_minigus_step{};
-	sf::Sound minigus_step{};
-	sf::SoundBuffer b_minigus_snap{};
-	sf::Sound minigus_snap{};
-	sf::SoundBuffer b_minigus_build{};
-	sf::Sound minigus_build{};
 	sf::SoundBuffer b_minigus_invincibility{};
-	sf::Sound minigus_invincibility{};
 	sf::SoundBuffer b_minigus_lose_inv{};
-	sf::Sound minigus_lose_inv{};
+	sf::SoundBuffer b_minigus_build{};
+	sf::SoundBuffer b_minigus_punch{};
+	sf::SoundBuffer b_minigus_jump{};
+	sf::SoundBuffer b_minigus_step{};
+	sf::SoundBuffer b_minigus_land{};
 
 	sf::SoundBuffer b_minigus_laugh{};
 	sf::SoundBuffer b_minigus_laugh_2{};
@@ -567,25 +535,64 @@ class AssetManager {
 
 	//minigun
 	sf::SoundBuffer b_minigun_neutral{};
-	sf::Sound minigun_neutral{};
 	sf::SoundBuffer b_minigun_charge{};
-	sf::Sound minigun_charge{};
 	sf::SoundBuffer b_minigun_reload{};
-	sf::Sound minigun_reload{};
 	sf::SoundBuffer b_minigun_firing{};
-	sf::Sound minigun_firing{};
+
+	sf::SoundBuffer b_enemy_hit_low{};
+	sf::SoundBuffer b_enemy_hit_medium{};
+	sf::SoundBuffer b_enemy_hit_high{};
+	sf::SoundBuffer b_enemy_hit_squeak{};
+	sf::SoundBuffer b_enemy_hit_inv{};
 
 	//save/load
 	sf::SoundBuffer save_buffer{};
-	sf::Sound save;
 	sf::SoundBuffer load_buffer{};
-	sf::Sound load;
 	sf::SoundBuffer soft_sparkle_high_buffer{};
-	sf::Sound soft_sparkle_high;
 	sf::SoundBuffer soft_sparkle_buffer{};
-	sf::Sound soft_sparkle;
 	sf::SoundBuffer chest_buffer{};
+
+	sf::Sound landed;
+	sf::Sound step;
+	sf::Sound shatter;
+	sf::Sound jump;
+	sf::Sound arms_switch;
+	sf::Sound bg_shot;
+	sf::Sound plasmer_shot;
+	sf::Sound skycorps_ar_shot;
+	sf::Sound tomahawk_flight;
+	sf::Sound tomahawk_catch;
+	sf::Sound pop_mid;
+	sf::Sound bubble;
+
+	sf::Sound minigun_neutral{};
+	sf::Sound minigun_charge{};
+	sf::Sound minigun_reload{};
+	sf::Sound minigun_firing{};
 	sf::Sound chest{};
+	sf::Sound save;
+	sf::Sound load;
+	sf::Sound soft_sparkle_high;
+	sf::Sound soft_sparkle;
+	sf::Sound click;
+	sf::Sound tank_alert_1;
+	sf::Sound tank_alert_2;
+	sf::Sound tank_hurt_1;
+	sf::Sound tank_hurt_2;
+	sf::Sound tank_death;
+	sf::Sound hurt;
+	sf::Sound player_death;
+	sf::Sound enem_hit;
+	sf::Sound enem_death_1;
+	sf::Sound heal;
+	sf::Sound orb_1{};
+	sf::Sound orb_2{};
+	sf::Sound orb_3{};
+	sf::Sound orb_4{};
+	sf::Sound menu_next;
+	sf::Sound menu_back;
+	sf::Sound sharp_click;
+	sf::Sound menu_shift;
 
 	// other members
 	int music_vol{24};

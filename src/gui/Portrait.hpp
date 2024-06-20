@@ -17,6 +17,7 @@ class Portrait {
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 	void reset(automa::ServiceProvider& svc);
+	void set_position(sf::Vector2<float> pos);
 	void bring_in();
 	void send_out();
 	void set_id(int new_id);

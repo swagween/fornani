@@ -11,8 +11,8 @@ enum class BarState { full, empty };
 class StatusBar {
   public:
 	StatusBar() = default;
-	StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim = {8, 2});
-	void update(automa::ServiceProvider& svc, float max, float current);
+	StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim = {8, 2}, float size = 600.f);
+	void update(automa::ServiceProvider& svc, float current);
 	void render(sf::RenderWindow& win);
 	BarState current_state{};
 	vfx::Gravitator gravitator{};
@@ -25,6 +25,7 @@ class StatusBar {
   private:
 	sf::Vector2<int> dimensions{};
 	float maximum{};
+	float size{};
 	struct {
 		sf::RectangleShape gone{};
 		sf::RectangleShape taken{};
