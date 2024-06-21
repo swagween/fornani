@@ -1,6 +1,6 @@
 
 #pragma once
-#include <sfml/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include <ccmath/math/power/sqrt.hpp>
 
 namespace util {
