@@ -55,7 +55,7 @@ class GameState {
 	GameState() = default;
 	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
 	GameState& operator=(GameState&&) = delete;
-	~GameState() { std::cout << "GameState destroyed.\n"; }
+	virtual ~GameState() { std::cout << "GameState destroyed.\n"; }
 
 	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
 	virtual void handle_events(ServiceProvider& svc, sf::Event& event){};
