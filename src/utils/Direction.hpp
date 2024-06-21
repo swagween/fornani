@@ -57,6 +57,7 @@ struct Direction {
 		case Inter::southwest: return "southwest"; break;
 		case Inter::southeast: return "southeast"; break;
 		}
+		return "null";
 	}
 
 };

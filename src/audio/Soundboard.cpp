@@ -1,6 +1,3 @@
-
-#pragma once
-
 #include "Soundboard.hpp"
 #include <algorithm>
 #include "../service/ServiceProvider.hpp"
