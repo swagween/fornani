@@ -24,7 +24,7 @@ namespace automa {
 
 enum class GameStateFlags { playtest };
 
-enum class MenuSelection { play, options, quit, controls, tutorial, credits };
+enum class MenuSelection { play, options, quit, controls, tutorial, credits, settings };
 
 constexpr inline float dot_force{0.9f};
 constexpr inline float dot_fric{0.86f};
@@ -50,12 +50,13 @@ struct Option {
 class GameState {
 
   public:
-	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0}, {MenuSelection::options, 1}, {MenuSelection::quit, 2}, {MenuSelection::controls, 0}, {MenuSelection::tutorial, 1}, {MenuSelection::credits, 2}};
+	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0},	   {MenuSelection::options, 1}, {MenuSelection::quit, 2},	{MenuSelection::controls, 0},
+															 {MenuSelection::tutorial, 2}, {MenuSelection::credits, 3}, {MenuSelection::settings, 1}};
 
 	GameState() = default;
 	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
 	GameState& operator=(GameState&&) = delete;
-	virtual ~GameState() { std::cout << "GameState destroyed.\n"; }
+	virtual ~GameState() {}
 
 	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
 	virtual void handle_events(ServiceProvider& svc, sf::Event& event){};

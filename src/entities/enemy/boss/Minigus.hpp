@@ -18,7 +18,7 @@ class Minigus : public Enemy, public npc::NPC {
 
   public:
 	Minigus() = default;
-	~Minigus() override { std::cout << "Boss destroyed.\n"; }
+	~Minigus() override {}
 	Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;

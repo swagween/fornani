@@ -6,10 +6,7 @@ StateManager::StateManager() {
 	g_current_state = std::make_unique<MainMenu>();
 }
 
-StateManager::~StateManager() {
-	// g_current_state.reset();
-	std::cout << "StateManager destroyed.\n";
-}
+StateManager::~StateManager() {}
 
 auto StateManager::get_current_state() -> automa::GameState& {
 	assert(g_current_state);

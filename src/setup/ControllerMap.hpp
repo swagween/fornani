@@ -15,6 +15,7 @@ namespace config {
 enum class Action { left, right, up, down, main_action, secondary_action, tertiary_action, inspect, sprint, shield, arms_switch_left, arms_switch_right, menu_toggle, menu_toggle_secondary, menu_forward, menu_back };
 enum class ActionState { held, released, triggered };
 enum class ControllerType { keyboard, gamepad };
+enum class Toggles { keyboard, gamepad };
 
 struct Control {
 	Control(Action action) : action(action) {}
@@ -50,6 +51,7 @@ class ControllerMap {
 	[[nodiscard]] auto get_throttle() const -> sf::Vector2<float> { return throttle; }
 	[[nodiscard]] auto is_gamepad() const -> bool { return type == ControllerType::gamepad; }
 	[[nodiscard]] auto is_keyboard() const -> bool { return type == ControllerType::keyboard; }
+	[[nodiscard]] auto joystick_moved() const -> bool { return throttle.x < -throttle_threshold || throttle.x > throttle_threshold || throttle.y < -throttle_threshold || throttle.y > throttle_threshold; }
 
 	std::vector<std::string_view> tags{"main_action", "secondary_action", "tertiary_action", "inspect", "sprint", "shield", "menu_toggle", "menu_toggle_secondary", "arms_switch_left", "arms_switch_right", "left", "right", "up",
 									   "down", "menu_forward", "menu_back"};
@@ -102,6 +104,7 @@ class ControllerMap {
 	std::unordered_map<std::string_view, sf::Mouse::Button> string_to_mousebutton{{"LMB", sf::Mouse::Left}, {"RMB", sf::Mouse::Right}};
 
 	ControllerType type{};
+	util::BitFlags<Toggles> hard_toggles{};
 
   private:
 	sf::Vector2<float> throttle{};

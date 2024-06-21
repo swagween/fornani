@@ -89,7 +89,7 @@ struct PlayerFlags {
 class Player {
   public:
 	Player(automa::ServiceProvider& svc);
-	~Player() { std::cout << "Player destroyed.\n"; }
+	~Player() {}
 
 	// init (violates RAII but must happen after resource path is set)
 	void init(automa::ServiceProvider& svc);

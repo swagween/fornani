@@ -5,6 +5,7 @@
 #include "states/OptionsMenu.hpp"
 #include "states/ControlsMenu.hpp"
 #include "states/CreditsMenu.hpp"
+#include "states/SettingsMenu.hpp"
 #include "states/Dojo.hpp"
 
 namespace automa {

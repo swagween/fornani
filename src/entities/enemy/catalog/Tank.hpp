@@ -11,7 +11,7 @@ class Tank : public Enemy {
 
 	  public:
 		Tank() = default;
-		~Tank() override { std::cout << "Tank destroyed.\n"; }
+		~Tank() override {}
 		Tank& operator = (Tank&&) = delete;
 		Tank(automa::ServiceProvider& svc);
 		void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;

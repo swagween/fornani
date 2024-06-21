@@ -16,7 +16,7 @@ class Game {
   public:
 	Game() = default;
 	Game(char** argv);
-	~Game() { std::cout << "Game destroyed.\n"; }
+	~Game() {}
 	void run();
 
   private:

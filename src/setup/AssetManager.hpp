@@ -22,7 +22,7 @@ inline char const* styles[lookup::NUM_STYLES];
 class AssetManager {
   public:
 	AssetManager() = default;
-	~AssetManager() { std::cout << "AssetManager destroyed.\n"; }
+	~AssetManager() {}
 
 	void import_textures();
 	void load_audio();

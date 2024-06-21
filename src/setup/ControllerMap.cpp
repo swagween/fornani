@@ -40,6 +40,9 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	gamepad_button_name.insert({14, "unknown"});
 	gamepad_button_name.insert({15, "unknown"});
 	gamepad_button_name.insert({16, "unknown"});
+
+	hard_toggles.set(Toggles::keyboard);
+	hard_toggles.set(Toggles::gamepad);
 }
 
 void ControllerMap::handle_mouse_events(sf::Event& event) {
@@ -56,7 +59,7 @@ void ControllerMap::handle_release(sf::Keyboard::Key& k) {
 }
 
 void ControllerMap::handle_joystick_events(sf::Event& event) {
-	if (type != ControllerType::gamepad) { return; }
+
 	// left analog stick
 	throttle.x = sf::Joystick::getAxisPosition(0, sf::Joystick::X) / 100.f;
 	if (abs(throttle.x) < throttle_threshold) { throttle.x = 0.f; }

@@ -80,7 +80,7 @@ class Map {
 
 	Map() = default;
 	Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
-	~Map() { std::cout << "Map destroyed.\n"; }
+	~Map() {}
 
 	// methods
 	void load(automa::ServiceProvider& svc, std::string_view room);

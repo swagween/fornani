@@ -82,6 +82,9 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 	if (event.type == sf::Event::EventType::JoystickDisconnected) { refresh_controls(svc); }
 	if (event.type == sf::Event::EventType::JoystickConnected) { refresh_controls(svc); }
+	if (event.type == sf::Event::JoystickButtonPressed || svc.controller_map.joystick_moved()) { refresh_controls(svc); }
+	if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) { refresh_controls(svc); }
+
 	svc.controller_map.reset_triggers();
 }
 

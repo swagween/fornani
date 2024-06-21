@@ -57,9 +57,6 @@ void Game::run() {
 		measurements.win_size.x = window.getSize().x;
 		measurements.win_size.y = window.getSize().y;
 
-		// check for controller connection
-		sf::Joystick::isConnected(0) ? services.controller_map.type = config::ControllerType::gamepad : config::ControllerType::keyboard;
-
 		// game loop
 		sf::Clock deltaClock{};
 
@@ -69,8 +66,17 @@ void Game::run() {
 		bool valid_event{};
 		// check window events
 		while (window.pollEvent(event)) {
-			if (event.type == sf::Event::JoystickDisconnected) { services.controller_map.type = config::ControllerType::keyboard; }
-			if (event.type == sf::Event::JoystickConnected) { services.controller_map.type = config::ControllerType::gamepad; }
+			if ((event.type == sf::Event::JoystickButtonPressed || services.controller_map.joystick_moved()) && !services.controller_map.is_gamepad()) {
+				services.controller_map.switch_to_joystick();
+				services.data.load_controls(services.controller_map);
+			}
+			if ((event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) && !services.controller_map.is_keyboard()) {
+				services.controller_map.switch_to_keyboard();
+				services.data.load_controls(services.controller_map);
+			}
+			if (event.type == sf::Event::JoystickDisconnected && !services.controller_map.is_keyboard()) { services.controller_map.switch_to_keyboard(); }
+			if (event.type == sf::Event::JoystickConnected && !services.controller_map.is_gamepad()) { services.controller_map.switch_to_joystick(); }
+
 			player.animation.state = {};
 			player.animation.state = {};
 			if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
@@ -143,9 +149,7 @@ void Game::run() {
 				playtest_sync();
 				break;
 			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player, "options")); break;
-			case automa::menu_type::settings:
-				// todo
-				break;
+			case automa::menu_type::settings: game_state.set_current_state(std::make_unique<automa::SettingsMenu>(services, player, "settings")); break;
 			case automa::menu_type::controls: game_state.set_current_state(std::make_unique<automa::ControlsMenu>(services, player, "controls")); break;
 			case automa::menu_type::credits: game_state.set_current_state(std::make_unique<automa::CreditsMenu>(services, player, "credits")); break;
 			}
@@ -290,8 +294,8 @@ void Game::debug_window() {
 
 					ImGui::Text("Controller Type: ");
 					ImGui::SameLine();
-					if (services.controller_map.type == config::ControllerType::gamepad) { ImGui::Text("Gamepad"); }
-					if (services.controller_map.type == config::ControllerType::keyboard) { ImGui::Text("Keyboard"); }
+					if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad"); }
+					if (services.controller_map.is_keyboard()) { ImGui::Text("Keyboard"); }
 
 					ImGui::Text("Main     : %s", services.controller_map.label_to_control.at("main_action").held() ? "Pressed" : "");
 					ImGui::Text("Secondary: %s", services.controller_map.label_to_control.at("secondary_action").held() ? "Pressed" : "");

@@ -21,7 +21,7 @@ enum class State { flip };
 class Entity {
   public:
 	Entity() = default;
-	virtual ~Entity() { std::cout << "Entity destroyed.\n"; };
+	virtual ~Entity() {};
 	Entity(automa::ServiceProvider& svc){};
 	virtual void update(automa::ServiceProvider& svc, world::Map& map);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) = 0;
