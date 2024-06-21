@@ -41,9 +41,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& arms_switch_left = svc.controller_map.label_to_control.at("arms_switch_left").triggered();
 	auto const& arms_switch_right = svc.controller_map.label_to_control.at("arms_switch_right").triggered();
 
-	auto const& inspected = (svc.controller_map.label_to_control.at("inspect").triggered() && grounded() && !left && !right) ||
-(svc.controller_map.label_to_control.at("down").triggered() && grounded() && !left && !right);
-	auto const& dash_left = svc.controller_map.label_to_control.at("tertiary_action").triggered() &&!grounded() && left;
+	auto const& inspected = (svc.controller_map.label_to_control.at("inspect").triggered() && grounded() && !left && !right) || (svc.controller_map.label_to_control.at("down").triggered() && grounded() && !left && !right);
+	auto const& dash_left = svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && left;
 	auto const& dash_right = svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
 
 	auto const& transponder_skip = svc.controller_map.label_to_control.at("main_action").triggered();
@@ -61,22 +60,16 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
 	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
 
-	if (svc.controller_map.type == config::ControllerType::gamepad) {
-		key_map[ControllerInput::move_x] = svc.controller_map.get_throttle().x;
-		key_map[ControllerInput::move_y] = svc.controller_map.get_throttle().y;
-	} else {
-		key_map[ControllerInput::move_x] = 0.f;
-		key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
-		key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
-		key_map[ControllerInput::move_x] = right && left ? 0.f : key_map[ControllerInput::move_x];
+	key_map[ControllerInput::move_x] = svc.controller_map.get_throttle().x;
+	key_map[ControllerInput::move_y] = svc.controller_map.get_throttle().y;
+	key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
+	key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
+	key_map[ControllerInput::move_x] = right && left ? 0.f : key_map[ControllerInput::move_x];
+	key_map[ControllerInput::move_y] = up && !down ? -1.f : key_map[ControllerInput::move_y];
+	key_map[ControllerInput::move_y] = down && !up ? 1.f : key_map[ControllerInput::move_y];
+	key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
 
-		key_map[ControllerInput::move_y] = 0.f;
-		key_map[ControllerInput::move_y] = up && !down ? -1.f : key_map[ControllerInput::move_y];
-		key_map[ControllerInput::move_y] = down && !up ? 1.f : key_map[ControllerInput::move_y];
-		key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
-	}
-
-	//shield
+	// shield
 	key_map[ControllerInput::shield] = 0.f;
 	if (!shield.recovering() && grounded()) {
 		if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
@@ -104,10 +97,10 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	transponder_right ? transponder_flags.set(TransponderInput::right) : transponder_flags.reset(TransponderInput::right);
 	transponder_select ? transponder_flags.set(TransponderInput::select) : transponder_flags.reset(TransponderInput::select);
 
-	//hook
+	// hook
 	hook_held ? hook_flags.set(Hook::hook_held) : hook_flags.reset(Hook::hook_held);
 
-	//sprint
+	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
 	if (grounded()) { sprint_flags = {}; }
 

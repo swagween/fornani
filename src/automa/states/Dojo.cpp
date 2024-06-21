@@ -48,6 +48,7 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
+
 	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);
 

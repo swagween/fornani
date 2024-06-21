@@ -91,8 +91,8 @@ void ControllerMap::reset_triggers() {
 	for (auto& tag : tags) { label_to_control.at(tag).reset_triggers(); }
 }
 
-void ControllerMap::switch_to_joystick() {}
+void ControllerMap::switch_to_joystick() { type = ControllerType::gamepad; }
 
-void ControllerMap::switch_to_keyboard() {}
+void ControllerMap::switch_to_keyboard() { type = ControllerType::keyboard; }
 
 } // namespace config
