@@ -1,5 +1,6 @@
 
 #include "Dojo.hpp"
+#include "../../entities/enemy/catalog/Tank.hpp"
 #include "../../service/ServiceProvider.hpp"
 
 namespace automa {
@@ -13,6 +14,8 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	map.load(svc, room);
 	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
 	hud.set_corner_pad(svc, false); // reset hud position to corner
+
+	std::unique_ptr<entity::Entity> bad = std::make_unique<enemy::Tank>(svc);
 
 	// TODO: refactor player initialization
 	player->collider.physics.zero();

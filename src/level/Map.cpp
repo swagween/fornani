@@ -589,14 +589,4 @@ bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
 }
 
-Tile& Map::tile_at(uint8_t const i, uint8_t const j) {
-	// for checking tile value
-	if (i * j < layers.at(MIDDLEGROUND).grid.cells.size()) { return layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x); }
-}
-
-shape::Shape& Map::shape_at(uint8_t const i, uint8_t const j) {
-	// for testing collision
-	if (i * j < layers.at(MIDDLEGROUND).grid.cells.size()) { return layers.at(MIDDLEGROUND).grid.cells.at(i + j * layers.at(MIDDLEGROUND).grid.dimensions.x).bounding_box; }
-}
-
 } // namespace world

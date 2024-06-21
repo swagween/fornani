@@ -5,12 +5,14 @@
 
 namespace enemy {
 
-	enum class TankState { idle, turn, run, shoot, alert };
+enum class TankState { idle, turn, run, shoot, alert };
 
 class Tank : public Enemy {
 
 	  public:
 		Tank() = default;
+		~Tank() override { std::cout << "Tank destroyed.\n"; }
+		Tank& operator = (Tank&&) = delete;
 		Tank(automa::ServiceProvider& svc);
 		void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 

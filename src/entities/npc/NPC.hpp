@@ -53,7 +53,7 @@ class NPC : public entity::Entity {
 	int id{};
 
 	struct {
-		float const walk_threshold{0.5f};
+		float walk_threshold{0.5f};
 	} physical{};
 };
 

@@ -12,6 +12,7 @@
 #include "../packages/Shockwave.hpp"
 #include "../player/Indicator.hpp"
 #include <string_view>
+#include <iostream>
 
 namespace player {
 class Player;
@@ -44,6 +45,7 @@ struct Flags {
 class Enemy : public entity::Entity {
   public:
 	Enemy() = default;
+	virtual ~Enemy() { std::cout << "Enemy destroyed.\n"; }
 	Enemy(automa::ServiceProvider& svc, std::string_view label);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;

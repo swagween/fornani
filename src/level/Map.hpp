@@ -80,6 +80,7 @@ class Map {
 
 	Map() = default;
 	Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
+	~Map() { std::cout << "Map destroyed.\n"; }
 
 	// methods
 	void load(automa::ServiceProvider& svc, std::string_view room);
@@ -87,8 +88,6 @@ class Map {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win);
-	Tile& tile_at(uint8_t const i, uint8_t const j);
-	shape::Shape& shape_at(uint8_t const i, uint8_t const j);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos);
 	void spawn_enemy(int id, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);

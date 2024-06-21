@@ -89,7 +89,7 @@
           "y": 12.0
         },
         "attributes": {
-          "base_damage": 5,
+          "base_damage": 50,
           "range": 240,
           "speed": 17.0,
           "variance": 0.0,

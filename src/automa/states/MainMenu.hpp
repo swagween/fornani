@@ -11,6 +11,7 @@ class MainMenu : public GameState {
 
 	MainMenu() = default;
 	MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
+	~MainMenu() { std::cout << "MainMenu destroyed.\n"; }
 
 	void init(ServiceProvider& svc, std::string_view room = "");
 	void handle_events(ServiceProvider& svc, sf::Event& event);

@@ -1,6 +1,5 @@
 #include "Game.hpp"
 
-
 namespace fornani {
 
 Game::Game(char** argv) : player(services) {
@@ -15,12 +14,10 @@ Game::Game(char** argv) : player(services) {
 	services.text.load_data();
 	// image
 	services.assets.finder.setResourcePath(argv);
-	services.assets.importTextures();
+	services.assets.import_textures();
 	// sounds
 	services.music.finder.setResourcePath(argv);
-	music_player.finder.setResourcePath(argv);
 	services.assets.load_audio();
-	music_player.turn_on(); // off by default
 	playtest.m_musicplayer = true;
 	services.music.turn_on();
 	// player
@@ -50,7 +47,7 @@ Game::Game(char** argv) : player(services) {
 	ImGui::SFML::Init(window);
 }
 
-void Game::run() { // load all assets
+void Game::run() {
 	while (window.isOpen()) {
 
 		if (services.state_controller.actions.test(automa::Actions::shutdown)) { return; }
@@ -191,7 +188,7 @@ void Game::run() { // load all assets
 	//shutdown
 	//explicitly delete music player since it can't be deleted after AssetManager
 	services.music.stop();
-	services.music.~MusicPlayer();
+	ImGui::SFML::Shutdown();
 }
 
 void Game::debug_window() {
@@ -587,7 +584,6 @@ void Game::debug_window() {
 					ImGui::Text("State");
 					ImGui::Text("Current State: ");
 					ImGui::SameLine();
-					ImGui::TextUnformatted(game_state.get_current_state_string().c_str());
 					if (ImGui::Button("Under")) {
 						services.assets.click.play();
 						game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
@@ -978,7 +974,6 @@ void Game::playtester_portal() {
 		ImVec2 prev_size = ImGui::GetWindowSize();
 		ImGui::End();
 	}
-
 }
 
 void Game::take_screenshot() {

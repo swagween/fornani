@@ -16,6 +16,7 @@ class Game {
   public:
 	Game() = default;
 	Game(char** argv);
+	~Game() { std::cout << "Game destroyed.\n"; }
 	void run();
 
   private:
@@ -27,7 +28,7 @@ class Game {
 
 	util::BitFlags<GameFlags> flags{};
 
-	struct automa::ServiceProvider services{};
+	automa::ServiceProvider services{};
 
 	struct {
 		sf::Vector2<uint32_t> win_size{};
@@ -59,7 +60,6 @@ class Game {
 	sf::RenderWindow window{};
 	sf::Texture screencap{};
 	sf::RectangleShape background{};
-	audio::MusicPlayer music_player{};
 };
 
 } // namespace fornani

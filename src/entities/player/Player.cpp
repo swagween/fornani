@@ -541,6 +541,7 @@ std::string Player::print_direction(bool lr) {
 		if (controller.facing_left()) return "LEFT";
 		if (controller.facing_right()) return "RIGHT";
 	}
+	return "NULL";
 }
 
 } // namespace player

@@ -4,6 +4,7 @@
 #include <SFML/Audio.hpp>
 #include "../utils/Direction.hpp"
 #include "../utils/BitFlags.hpp"
+#include <iostream>
 
 namespace automa {
 struct ServiceProvider;
@@ -20,6 +21,7 @@ enum class State { flip };
 class Entity {
   public:
 	Entity() = default;
+	virtual ~Entity() { std::cout << "Entity destroyed.\n"; };
 	Entity(automa::ServiceProvider& svc){};
 	virtual void update(automa::ServiceProvider& svc, world::Map& map);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) = 0;

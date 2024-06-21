@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "states/MainMenu.hpp"
@@ -11,18 +10,16 @@
 namespace automa {
 
 class StateManager {
-    
-public:
-    
-    StateManager();
-    ~StateManager();
-    StateManager& operator=(StateManager&&) = delete;
-    
-    GameState& get_current_state();
-    GameState& set_current_state(std::unique_ptr<automa::GameState> gameState);
 
-    std::string get_current_state_string();
-    
+  public:
+	StateManager();
+	~StateManager();
+	StateManager& operator=(StateManager&&) = delete;
+
+	GameState& get_current_state();
+	GameState& set_current_state(std::unique_ptr<automa::GameState> gameState);
+
+	std::unique_ptr<automa::GameState> g_current_state{};
 };
 
-}
+} // namespace automa

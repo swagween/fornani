@@ -10,7 +10,7 @@
 namespace enemy {
 
 enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle, exit, drink, throw_can };
-enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene, over_and_out, goodbye, threw_can, punched, soda_pop };
+enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene, over_and_out, goodbye, threw_can, punched, soda_pop, second_phase };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
 
@@ -18,7 +18,7 @@ class Minigus : public Enemy, public npc::NPC {
 
   public:
 	Minigus() = default;
-	~Minigus();
+	~Minigus() override { std::cout << "Boss destroyed.\n"; }
 	Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
@@ -106,6 +106,7 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Cooldown pre_jump{380};
 		util::Cooldown vulnerability{2000};
 		util::Cooldown exit{500};
+		util::Cooldown struggle{400};
 	} cooldowns{};
 
 	vfx::Sparkler sparkler{};

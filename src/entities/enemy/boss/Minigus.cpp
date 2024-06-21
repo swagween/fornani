@@ -5,10 +5,7 @@
 #include "../../player/Player.hpp"
 
 namespace enemy {
-Minigus::~Minigus() {
-	voice = {};
-	sounds = {};
-}
+
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console)
 	: Enemy(svc, "minigus"), gun(svc, "minigun", 6), soda(svc, "soda_gun", 7), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc),
 	  sparkler(svc, Enemy::collider.vicinity.dimensions, flcolor::ui_white, "minigus") {
@@ -210,7 +207,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		minigun.sprite.setScale(Enemy::sprite.getScale());
 	}
 	auto gun_base = Enemy::collider.physics.position + Enemy::collider.dimensions * 0.5f;
-	auto gun_point = Enemy::direction.lr == dir::LR::left ? gun_base - sf::Vector2<float>{(float)minigun.dimensions.x, -4.f} : gun_base + sf::Vector2<float>{(float)minigun.dimensions.x, -4.f};
+	auto gun_point = Enemy::direction.lr == dir::LR::left ? gun_base - sf::Vector2<float>{(float)minigun.dimensions.x, 0.f} : gun_base + sf::Vector2<float>{(float)minigun.dimensions.x, 0.f};
 	gun.get().barrel_point = gun_point;
 	gun_point.y -= 60;
 	soda.get().barrel_point = gun_point;
@@ -298,6 +295,13 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	movement_direction.lr = Enemy::collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
 
 	if (!status.test(MinigusFlags::battle_mode)) { state = MinigusState::idle; }
+
+	if (!status.test(MinigusFlags::second_phase) && half_health()) { state = MinigusState::struggle; }
+
+	if (half_health()) {
+		auto pos = secondary_collider.physics.position + svc.random.random_vector_float(10.f, 40.f);
+		if (svc.ticker.every_x_ticks(10) && svc.random.percent_chance(5)) { map.effects.push_back(entity::Effect(svc, pos, {0.f, 4.f}, 3, 7)); }
+	}
 
 	// NPC stuff
 
@@ -794,40 +798,59 @@ fsm::StateFunction Minigus::update_rush() {
 
 fsm::StateFunction Minigus::update_struggle() {
 	if (animation.just_started() && anim_debug) { std::cout << "struggle\n"; }
-	if (animation.just_started()) {
-		status.reset(MinigusFlags::battle_mode);
-		triggers.set(npc::NPCTrigger::distant_interact);
-		flush_conversations();
-		push_conversation("2");
-		m_services->music.stop();
-		sounds.crash.play();
-		voice.quick_breath.play();
-		voice.long_moan.play();
-	}
-	auto randx = m_services->random.random_range_float(0.f, 60.f);
-	auto randy = m_services->random.random_range_float(0.f, 60.f);
-	sf::Vector2<float> pos = secondary_collider.physics.position + sf::Vector2<float>{randx, randy};
+
+	// always do
+	sf::Vector2<float> pos = secondary_collider.physics.position + m_services->random.random_vector_float(0.f, 50.f);
 	if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, pos, {}, 3, 0)); }
-	post_death.start(afterlife);
 	Enemy::shake();
 	Enemy::sprite_shake(*m_services, 20, 8);
 
-	if (!animation.just_started() && m_console->is_complete() && !status.test(MinigusFlags::exit_scene)) {
-		status.set(MinigusFlags::exit_scene);
-		cooldowns.exit.start();
+	// at half health
+	if (half_health() && !status.test(MinigusFlags::second_phase)) {
+		if (animation.just_started()) {
+			cooldowns.struggle.start();
+			voice.quick_breath.play();
+		}
+		cooldowns.struggle.update();
+		if (cooldowns.struggle.is_complete()) {
+			status.set(MinigusFlags::second_phase);
+			stop_shaking();
+			state = MinigusState::drink;
+			animation.set_params(drink);
+			return MINIGUS_BIND(update_drink);
+		}
 	}
 
-	if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
-		triggers.set(npc::NPCTrigger::distant_interact);
-		m_services->music.stop();
-		flush_conversations();
-		push_conversation("3");
-		status.reset(MinigusFlags::exit_scene);
-		status.set(MinigusFlags::goodbye);
-		stop_shaking();
-		state = MinigusState::exit;
-		animation.set_params(idle);
-		return MINIGUS_BIND(update_exit);
+	// after health is empty
+	if (health_bar.empty()) {
+		if (animation.just_started()) {
+			status.reset(MinigusFlags::battle_mode);
+			triggers.set(npc::NPCTrigger::distant_interact);
+			flush_conversations();
+			push_conversation("2");
+			m_services->music.stop();
+			sounds.crash.play();
+			voice.quick_breath.play();
+			voice.long_moan.play();
+		}
+		if (!animation.just_started() && m_console->is_complete() && !status.test(MinigusFlags::exit_scene)) {
+			status.set(MinigusFlags::exit_scene);
+			cooldowns.exit.start();
+		}
+		post_death.start(afterlife);
+
+		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
+			triggers.set(npc::NPCTrigger::distant_interact);
+			m_services->music.stop();
+			flush_conversations();
+			push_conversation("3");
+			status.reset(MinigusFlags::exit_scene);
+			status.set(MinigusFlags::goodbye);
+			stop_shaking();
+			state = MinigusState::exit;
+			animation.set_params(idle);
+			return MINIGUS_BIND(update_exit);
+		}
 	}
 
 	state = MinigusState::struggle;

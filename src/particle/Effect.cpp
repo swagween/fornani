@@ -40,6 +40,11 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		sprite_dimensions = {32, 32};
 		spritesheet_dimensions = {1, 4};
 		break;
+	case 7:
+		sprite.setOrigin({16.f, 16.f});
+		sprite_dimensions = {32, 32};
+		spritesheet_dimensions = {4, 4};
+		break;
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
 	drawbox.setFillColor(sf::Color::Transparent);
