@@ -1,6 +1,6 @@
 
 #include "Animator.hpp"
-#include "../../service/Serviceprovider.hpp"
+#include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
 
 namespace entity {

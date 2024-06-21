@@ -193,7 +193,7 @@ inline std::unordered_map<char, int> get_character {
     {'>', 41},
     {'?', 42},
     {':', 43},
-    {'—', 44},
+    // {'ï¿½', 44},
     {'_', 45},
     {'-', 46},
     {'(', 47},
@@ -235,7 +235,7 @@ inline std::unordered_map<CONTROLS, sf::Keyboard::Key> control_to_key {
 
 inline std::unordered_map<int, TILE_TYPE> tile_lookup{};
 
-static void populate_lookup() {
+inline void populate_lookup() {
 	for (int i = 0; i < 256; ++i) {
 		if (i < 192 && i >= 0)   { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
         if (i < 208 && i >= 192) { tile_lookup.insert({ i, TILE_TYPE::TILE_CEILING_RAMP }); }

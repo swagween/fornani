@@ -1,6 +1,7 @@
 
 #pragma once
 #include <algorithm>
+#include <limits>
 
 namespace util {
 
@@ -10,7 +11,7 @@ class Cooldown {
 	Cooldown(int time) : native_time(time) {}
 	constexpr void start() { decrementor = native_time; }
 	constexpr void start(int time) { decrementor = time; }
-	constexpr void update() { decrementor = std::clamp(--decrementor, 0, INT_FAST16_MAX); }
+	constexpr void update() { decrementor = std::clamp(decrementor - 1, 0, std::numeric_limits<int>::max()); }
 	constexpr void cancel() { decrementor = 0; }
 	constexpr void nullify() { decrementor = -1; }
 	[[nodiscard]] auto is_complete() const -> bool { return decrementor == 0; }

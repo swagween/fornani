@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <string>
 #include <string_view>
-#include <xstring>
 #include "../utils/BitFlags.hpp"
 
 namespace automa {

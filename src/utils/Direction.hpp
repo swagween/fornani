@@ -48,6 +48,7 @@ struct Direction {
 	std::string print_lr() const { return "LR: " + (std::string)(lr == LR::left ? "LEFT " : (lr == LR::neutral ? "NEUTRAL " : "RIGHT ")); }
 	std::string print_intermediate() const {
 		switch (inter) {
+		default:
 		case Inter::north: return "north"; break;
 		case Inter::south: return "south"; break;
 		case Inter::east: return "east"; break;
