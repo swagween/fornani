@@ -13,7 +13,7 @@ include(FetchContent)
 FetchContent_Declare(
     djson
     GIT_REPOSITORY https://github.com/karnkaul/djson
-    GIT_TAG 8d08162f1463ec8a236e65190f5db0a82132682d # 2.0
+    GIT_TAG v2.1.1
 )
 FetchContent_Declare(
         ccmath
