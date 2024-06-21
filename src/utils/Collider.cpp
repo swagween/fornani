@@ -22,7 +22,6 @@ Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimen
 }
 
 void Collider::sync_components() {
-
 	bounding_box.set_position(physics.position);
 	vicinity.dimensions.x = dimensions.x + 2 * vicinity_pad;
 	vicinity.dimensions.y = dimensions.y + 2 * vicinity_pad;
@@ -40,17 +39,20 @@ void Collider::sync_components() {
 	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y});
 	jumpbox.set_position(sf::Vector2<float>{physics.position.x, physics.position.y + dimensions.y});
 	hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x / 2) - (hurtbox.dimensions.x / 2), physics.position.y + (dimensions.y / 2) - (hurtbox.dimensions.y / 2)));
+
+	draw_hurtbox.setSize(hurtbox.dimensions);
+	draw_hurtbox.setPosition(hurtbox.position);
 }
 
-void Collider::handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_type) {
+void Collider::handle_map_collision(Shape const& cell, world::TileType tile_type) {
 
 	flags.collision = {};
 
 	// tile flags
-	bool is_ground_ramp = tile_type == lookup::TILE_TYPE::TILE_GROUND_RAMP;
-	bool is_ceiling_ramp = tile_type == lookup::TILE_TYPE::TILE_CEILING_RAMP;
-	bool is_plat = tile_type == lookup::TILE_TYPE::TILE_PLATFORM && (jumpbox.position.y > cell.position.y + 4 || physics.acceleration.y < 0.0f);
-	bool is_spike = tile_type == lookup::TILE_TYPE::TILE_SPIKES;
+	bool is_ground_ramp = tile_type == world::TileType::ground_ramp;
+	bool is_ceiling_ramp = tile_type == world::TileType::ceiling_ramp;
+	bool is_plat = tile_type == world::TileType::platform && (jumpbox.position.y > cell.position.y + 4 || physics.acceleration.y < 0.0f);
+	bool is_spike = tile_type == world::TileType::spike;
 	bool is_ramp = (is_ground_ramp || is_ceiling_ramp);
 
 	// special tile types
@@ -368,10 +370,9 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	win.draw(box);
 
 	// draw hurtbox
-	box.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});
-	box.setPosition(hurtbox.position.x - cam.x, hurtbox.position.y - cam.y);
-	box.setFillColor(flcolor::goldenrod);
-	win.draw(box);
+	draw_hurtbox.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});
+	draw_hurtbox.setPosition(hurtbox.position.x - cam.x, hurtbox.position.y - cam.y);
+	win.draw(draw_hurtbox);
 
 	// draw vicinity
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});

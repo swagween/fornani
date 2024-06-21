@@ -116,7 +116,7 @@
           "framerate": 8
         },
         "visual": {
-          "wall_hit_type": 1
+          "effect_type": 1
         },
         "sparkler_type": "dense_trail"
       },

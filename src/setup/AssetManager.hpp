@@ -91,6 +91,7 @@ class AssetManager {
 
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
+	sf::Texture t_breakables{};
 
 	//vfx
 	sf::Texture t_huge_explosion{};
@@ -103,6 +104,7 @@ class AssetManager {
 	sf::Texture t_medium_flash{};
 	sf::Texture t_inv_hit{};
 	sf::Texture t_puff{};
+	sf::Texture t_bullet_hit{};
 
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};
@@ -242,6 +244,7 @@ class AssetManager {
 	sf::SoundBuffer b_laser{};
 	sf::SoundBuffer b_gun_charge{};
 	sf::SoundBuffer b_soda{};
+	sf::SoundBuffer b_breakable_hit{};
 
 	//minigun
 	sf::SoundBuffer b_minigun_neutral{};

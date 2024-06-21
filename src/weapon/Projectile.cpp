@@ -43,7 +43,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	anim.num_frames = in_data["animation"]["num_frames"].as<int>();
 	anim.framerate = in_data["animation"]["framerate"].as<int>();
 
-	visual.wall_hit_type = in_data["visual"]["wall_hit_type"].as<int>();
+	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
 
 	sf::Vector2<float> dim{};
 	dim.x = in_data["dimensions"]["x"].as<float>();
@@ -147,9 +147,15 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (position_history.size() > history_limit) { position_history.pop_front(); }
 
 	if (direction.lr == dir::LR::left || direction.lr == dir::LR::right) {
-		if (abs(physics.position.x - fired_point.x) >= stats.range) { destroy(false); }
+		if (abs(physics.position.x - fired_point.x) >= stats.range) {
+			state.set(ProjectileState::whiffed);
+			destroy(false, true);
+		}
 	} else {
-		if (abs(physics.position.y - fired_point.y) >= stats.range) { destroy(false); }
+		if (abs(physics.position.y - fired_point.y) >= stats.range) {
+			state.set(ProjectileState::whiffed);
+			destroy(false, true);
+		}
 	}
 
 	if (state.test(arms::ProjectileState::destroyed)) { --player.extant_instances(id); }
@@ -204,7 +210,10 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 	}
 }
 
-void Projectile::destroy(bool completely) {
+void Projectile::destroy(bool completely, bool whiffed) {
+
+	if (!whiffed) { state.set(ProjectileState::contact); }
+
 	if (completely) {
 		state.set(ProjectileState::destroyed);
 		return;

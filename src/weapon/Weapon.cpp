@@ -44,7 +44,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 }
 
 void Weapon::update(dir::Direction to_direction) {
-	active_projectiles = std::clamp(active_projectiles, 0, INT_MAX);
+	active_projectiles = std::clamp(active_projectiles, 0, std::numeric_limits<int>::max());
 	set_orientation(to_direction);
 	cooldown.update();
 	if (cooldown.is_complete()) {

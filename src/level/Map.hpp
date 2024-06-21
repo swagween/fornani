@@ -20,6 +20,7 @@
 #include "../entities/world/Chest.hpp"
 #include "../entities/npc/NPC.hpp"
 #include "Platform.hpp"
+#include "Breakable.hpp"
 #include "../weapon/Grenade.hpp"
 #include "../utils/Stopwatch.hpp"
 
@@ -95,7 +96,6 @@ class Map {
 	void generate_layer_textures(automa::ServiceProvider& svc);
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
-	void handle_breakables(Tile& cell, sf::Vector2<float> velocity = {0.f, 0.f}, uint8_t power = 1);
 	void shake_camera();
 	Vec get_spawn_position(int portal_source_map_id);
 
@@ -104,7 +104,7 @@ class Map {
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 
 	// layers
-	std::vector<Layer> layers;
+	std::vector<Layer> layers{};
 	std::vector<uint32_t> collidable_indeces{}; // generated on load to reduce collision checks in hot code
 	Vec real_dimensions{};						// pixel dimensions (maybe useless)
 	Vecu16 dimensions{};						// points on the 32x32-unit grid
@@ -127,6 +127,7 @@ class Map {
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};
 	std::vector<Platform> platforms{};
+	std::vector<Breakable> breakables{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
 
@@ -148,6 +149,9 @@ class Map {
 
 	int style_id{};
 	int native_style_id{};
+	struct {
+		int breakables{};
+	} styles{};
 
 	float collision_barrier{2.5f};
 

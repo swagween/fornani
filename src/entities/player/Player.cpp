@@ -47,6 +47,8 @@ void Player::init(automa::ServiceProvider& svc) {
 
 void Player::update(gui::Console& console, gui::InventoryWindow& inventory_window) {
 
+	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
+
 	collider.flags.general.set(shape::General::complex);
 	update_sprite();
 	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { controller.nullify_dash(); }

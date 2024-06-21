@@ -44,6 +44,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		if (svc.greyblock_mode()) { style_id = 20; }
 		native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
+		styles.breakables = meta["styles"]["breakables"].as<int>();
 
 		for (auto& entry : metadata["npcs"].array_view()) {
 			sf::Vector2<float> pos{};
@@ -141,12 +142,12 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 	int layer_counter{};
 	for (auto& layer : layers) {
 		int cell_counter{};
+		layer.grid = Grid(dimensions);
 		for (auto& cell : tiles["layers"][layer_counter].array_view()) {
 			layer.grid.cells.at(cell_counter).value = cell.as<int>();
-			layer.grid.cells.at(cell_counter).type = lookup::tile_lookup.at(cell.as<int>());
 			++cell_counter;
 		}
-		layer.grid.update();
+		layer.grid.seed_vertices();
 		++layer_counter;
 	}
 
@@ -171,7 +172,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			effects.push_back(entity::Effect(*m_services, spawn.pos, {}, 0, 0));
+			effects.push_back(entity::Effect(*m_services, spawn.pos, {}, 0, 4));
 		}
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);
@@ -210,33 +211,29 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& index : collidable_indeces) {
 		auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
 		// damage player if spikes
-		if (cell.type == lookup::TILE_TYPE::TILE_SPIKES && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(1); }
-		if (cell.type == lookup::TILE_TYPE::TILE_DEATH_SPIKES && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(64); }
+		if (cell.is_spike() && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(1); }
+		if (cell.is_death_spike() && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(64); }
 
 		for (auto& grenade : active_grenades) {
-			if (grenade.detonated() && grenade.sensor.within_bounds(cell.bounding_box) && cell.is_breakable()) { handle_breakables(cell, {}, 4); }
+			for (auto& breakable : breakables) {
+				if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); }
+			}
 		}
 		for (auto& proj : active_projectiles) {
 
 			// should be, simply:
 			// cell.update(svc, player, proj, *this);
 			// or something similar
-			// breakables could be subclass of tiles that also have an emitter
 
 			if (!nearby(cell.bounding_box, proj.bounding_box)) {
 				continue;
 			} else {
 				cell.collision_check = true;
 				if ((proj.bounding_box.overlaps(cell.bounding_box) && cell.is_occupied())) {
-					if (cell.is_breakable() && !proj.stats.transcendent && !proj.destruction_initiated()) {
-						// todo: refactor breakables
-						proj.destroy(false);
-						handle_breakables(cell, proj.physics.velocity * 0.1f);
-					}
-					if (cell.type == lookup::TILE_TYPE::TILE_PLATFORM || cell.type == lookup::TILE_TYPE::TILE_SPIKES) { continue; }
+					if (!cell.is_collidable()) { continue; }
 					if (!proj.stats.transcendent) {
 						if (!proj.destruction_initiated()) {
-							effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, proj.wall_hit_type(), 2));
+							effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, proj.effect_type(), 2));
 							if (proj.direction.lr == dir::LR::neutral) { effects.back().rotate(); }
 						}
 						proj.destroy(false);
@@ -258,6 +255,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
+		for (auto& breakable : breakables) { breakable.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
@@ -265,7 +263,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			player->hurt(proj.stats.base_damage);
 			proj.destroy(false);
 		}
-
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) {
@@ -284,6 +281,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& animator : animators) { animator.update(*player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
 	for (auto& platform : platforms) { platform.update(svc, *player); }
+	for (auto& breakable : breakables) {
+		breakable.update(svc);
+		breakable.handle_collision(player->collider);
+	}
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
 	std::erase_if(effects, [](auto const& e) { return e.done(); });
@@ -329,6 +330,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
+	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 
 	for (auto& animator : animators) {
 		if (!animator.foreground) { animator.render(svc, win, cam); }
@@ -461,7 +463,13 @@ void Map::spawn_enemy(int id, sf::Vector2<float> pos) {
 }
 
 void Map::manage_projectiles(automa::ServiceProvider& svc) {
-	for (auto& proj : active_projectiles) { proj.update(svc, *player); }
+	for (auto& proj : active_projectiles) {
+		proj.update(svc, *player);
+		if (proj.whiffed() && !proj.poofed() && !proj.made_contact()) {
+			effects.push_back(entity::Effect(svc, proj.physics.position, proj.physics.velocity * 0.1f, proj.effect_type(), 8));
+			proj.state.set(arms::ProjectileState::poof);
+		}
+	}
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
 	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
@@ -481,7 +489,8 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 void Map::generate_collidable_layer() {
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-		if ((!cell.surrounded && cell.is_occupied()) || cell.is_breakable()) { collidable_indeces.push_back(cell.one_d_index); }
+		if ((!cell.surrounded && cell.is_occupied() && !cell.is_breakable())) { collidable_indeces.push_back(cell.one_d_index); }
+		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position, styles.breakables)); }
 	}
 }
 
@@ -490,7 +499,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
 		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.cell_size, layer.grid.dimensions.y * svc.constants.cell_size);
 		for (auto& cell : layer.grid.cells) {
-			if (cell.is_occupied()) {
+			if (cell.is_occupied() && !cell.is_breakable()) {
 				int x_coord = (cell.value % svc.constants.tileset_scaled.x) * svc.constants.cell_size;
 				int y_coord = std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.cell_size;
 				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
@@ -560,20 +569,6 @@ void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& 
 	}
 
 	if (player->controller.released_hook() && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) { proj.hook.break_free(*player); }
-}
-
-void Map::handle_breakables(Tile& cell, sf::Vector2<float> velocity, uint8_t power) {
-	if (cell.value > 0) {
-		cell.value -= power;
-	} else {
-		return;
-	}
-	if (cell.value < 244) {
-		cell.value = 0;
-		m_services->soundboard.flags.world.set(audio::World::breakable_shatter);
-		effects.push_back(entity::Effect(*m_services, cell.position, velocity, 0, 0));
-	}
-	generate_layer_textures(*m_services);
 }
 
 void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }

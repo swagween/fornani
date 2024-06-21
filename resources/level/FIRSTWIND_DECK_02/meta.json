@@ -10,7 +10,10 @@
       1
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "styles": {
+      "breakables": 0
+    }
   },
   "portals": [
     {

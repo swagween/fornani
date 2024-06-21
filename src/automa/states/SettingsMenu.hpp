@@ -24,6 +24,12 @@ private:
 		sf::Text enabled{};
 		sf::Text disabled{};
 	} toggle_options{};
+
+	struct {
+		sf::Text keyboard{};
+		sf::Text gamepad{};
+	} toggleables{};
+
 	struct {
 		sf::Text music_volume{};
 	} sliders{};

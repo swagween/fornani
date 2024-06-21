@@ -22,8 +22,6 @@ Game::Game(char** argv) : player(services) {
 	services.music.turn_on();
 	// player
 	player.init(services);
-	// lookups
-	lookup::populate_lookup();
 
 	// state manager
 
@@ -74,6 +72,8 @@ void Game::run() {
 				services.controller_map.switch_to_keyboard();
 				services.data.load_controls(services.controller_map);
 			}
+			if (event.type == sf::Event::JoystickConnected) { services.controller_map.status.set(config::ControllerStatus::gamepad_connected); }
+			if (event.type == sf::Event::JoystickDisconnected) { services.controller_map.status.reset(config::ControllerStatus::gamepad_connected); }
 			if (event.type == sf::Event::JoystickDisconnected && !services.controller_map.is_keyboard()) { services.controller_map.switch_to_keyboard(); }
 			if (event.type == sf::Event::JoystickConnected && !services.controller_map.is_gamepad()) { services.controller_map.switch_to_joystick(); }
 
@@ -811,7 +811,6 @@ void Game::playtester_portal() {
 		if (ImGui::Begin("Playtester Portal", b_debug, window_flags)) {
 			ImGui::Text("Playtester Portal");
 			ImGui::Separator();
-			ImGui::Text("Current Input Device: %s", services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard");
 			if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad Identification: %s", sf::Joystick::getIdentification(0).name.getData()); }
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
@@ -833,6 +832,13 @@ void Game::playtester_portal() {
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::Separator();
 					if (ImGui::Button("Save Screenshot")) { take_screenshot(); }
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Input")) {
+					ImGui::Text("Current Input Device: %s", services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard");
+					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
+					ImGui::Text("Gamepad Enabled? %s", services.controller_map.hard_toggles.test(config::Toggles::gamepad) ? "Yes" : "No");
+					ImGui::Text("Kayboard Enabled? %s", services.controller_map.hard_toggles.test(config::Toggles::keyboard) ? "Yes" : "No");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Music")) {
@@ -872,6 +878,12 @@ void Game::playtester_portal() {
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, "/level/ABANDONED_PASSAGE_01");
 							player.set_position({16 * 32 * 6, 8 * 32});
+						}
+						if (ImGui::Button("Breakable Test")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/BREAKABLE_TEST_01");
+							player.set_position({20 * 32, 8 * 32});
 						}
 						ImGui::EndTabItem();
 					}

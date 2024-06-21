@@ -103,6 +103,8 @@ void AssetManager::import_textures() {
 	platform_lookup.insert({0, t_platform_night});
 	platform_lookup.insert({1, t_platform_abandoned});
 
+	t_breakables.loadFromFile(finder.resource_path + "/image/tile/breakables.png");
+
 	// backgrounds
 	t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");
 	t_bg_opensky.loadFromFile(finder.resource_path + "/image/background/opensky.png");
@@ -145,6 +147,7 @@ void AssetManager::import_textures() {
 	t_medium_flash.loadFromFile(finder.resource_path + "/image/entity/medium_flash.png");
 	t_inv_hit.loadFromFile(finder.resource_path + "/image/entity/inv_hit.png");
 	t_puff.loadFromFile(finder.resource_path + "/image/entity/puff.png");
+	t_bullet_hit.loadFromFile(finder.resource_path + "/image/entity/bullet_hit.png");
 	effect_lookup.insert({0, t_small_explosion});
 	effect_lookup.insert({1, t_large_explosion});
 	effect_lookup.insert({2, t_wall_hit});
@@ -153,6 +156,7 @@ void AssetManager::import_textures() {
 	effect_lookup.insert({5, t_medium_flash});
 	effect_lookup.insert({6, t_inv_hit});
 	effect_lookup.insert({7, t_puff});
+	effect_lookup.insert({8, t_bullet_hit});
 
 	// title stuff
 	t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
@@ -282,6 +286,7 @@ void AssetManager::load_audio() {
 	b_minigus_build.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_build.wav");
 	b_minigus_invincibility.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_inv.wav");
 	b_soda.loadFromFile(finder.resource_path + "/audio/sfx/soda.wav");
+	b_breakable_hit.loadFromFile(finder.resource_path + "/audio/sfx/breakable_hit.wav");
 
 	b_enemy_hit_low.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_low.wav");
 	b_enemy_hit_medium.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_medium.wav");

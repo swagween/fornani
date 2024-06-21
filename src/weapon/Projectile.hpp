@@ -97,7 +97,7 @@ struct ProjectileAnimation {
 	int framerate{};
 };
 
-enum class ProjectileState { initialized, destruction_initiated, destroyed };
+enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
 
 class Projectile {
 
@@ -107,7 +107,7 @@ class Projectile {
 
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
-	void destroy(bool completely);
+	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc);
 	void set_sprite(automa::ServiceProvider& svc);
 	void set_orientation(sf::Sprite& sprite);
@@ -122,9 +122,12 @@ class Projectile {
 	void lock_to_anchor();
 
 	void multiply(float factor) { variables.damage_multiplier *= factor; }
-	[[nodiscard]] auto wall_hit_type() const -> int { return visual.wall_hit_type; }
+	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
 	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
 	[[nodiscard]] auto get_damage() const -> float { return stats.base_damage * variables.damage_multiplier; }
+	[[nodiscard]] auto whiffed() const -> bool { return state.test(ProjectileState::whiffed); }
+	[[nodiscard]] auto poofed() const -> bool { return state.test(ProjectileState::poof); }
+	[[nodiscard]] auto made_contact() const -> bool { return state.test(ProjectileState::contact); }
 
 	dir::Direction direction{};
 	shape::Shape bounding_box{};
@@ -169,7 +172,7 @@ class Projectile {
 	int id{};
 
 	struct {
-		int wall_hit_type{};
+		int effect_type{};
 	} visual{};
 };
 } // namespace arms

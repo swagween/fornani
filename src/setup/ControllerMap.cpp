@@ -51,15 +51,17 @@ void ControllerMap::handle_mouse_events(sf::Event& event) {
 }
 
 void ControllerMap::handle_press(sf::Keyboard::Key& k) {
+	if (!hard_toggles.test(Toggles::keyboard)) { return; }
 	if (key_to_label.contains(k)) { label_to_control.at(key_to_label.at(k)).press(); }
 }
 
 void ControllerMap::handle_release(sf::Keyboard::Key& k) {
+	if (!hard_toggles.test(Toggles::keyboard)) { return; }
 	if (key_to_label.contains(k)) { label_to_control.at(key_to_label.at(k)).release(); }
 }
 
 void ControllerMap::handle_joystick_events(sf::Event& event) {
-
+	if (!hard_toggles.test(Toggles::gamepad)) { return; }
 	// left analog stick
 	throttle.x = sf::Joystick::getAxisPosition(0, sf::Joystick::X) / 100.f;
 	if (abs(throttle.x) < throttle_threshold) { throttle.x = 0.f; }

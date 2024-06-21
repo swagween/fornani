@@ -2,7 +2,7 @@
 #pragma once
 
 #include "../components/PhysicsComponent.hpp"
-#include "../setup/EnumLookups.hpp"
+#include "../level/Tile.hpp"
 #include "BitFlags.hpp"
 #include "Shape.hpp"
 
@@ -47,7 +47,7 @@ class Collider {
 	Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos = {0, 0});
 
 	void sync_components();
-	void handle_map_collision(Shape const& cell, lookup::TILE_TYPE tile_type);
+	void handle_map_collision(Shape const& cell, world::TileType tile_type);
 	void detect_map_collision(world::Map& map);
 	int detect_ledge_height(world::Map& map);
 	void correct_x(sf::Vector2<float> mtv);
@@ -73,6 +73,7 @@ class Collider {
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return (collision_depths.top > crush_threshold && collision_depths.bottom > crush_threshold) || (collision_depths.left > crush_threshold && collision_depths.right > crush_threshold); }
+	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
 	
 	float compute_length(sf::Vector2<float> const v);
 
@@ -123,6 +124,7 @@ class Collider {
 	bool spike_trigger{};
 
 	sf::RectangleShape box{};
+	sf::RectangleShape draw_hurtbox{};
 	std::vector<std::string> inst;
 };
 

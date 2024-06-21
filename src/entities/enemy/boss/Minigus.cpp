@@ -32,12 +32,12 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 	attacks.punch.sensor.bounds.setRadius(60);
 	attacks.punch.sensor.drawable.setFillColor(svc.styles.colors.blue);
-	attacks.punch.hit.bounds.setRadius(32);
+	attacks.punch.hit.bounds.setRadius(28);
 	attacks.punch.origin = {-10.f, -26.f};
 
 	attacks.uppercut.sensor.bounds.setRadius(60);
 	attacks.uppercut.sensor.drawable.setFillColor(svc.styles.colors.blue);
-	attacks.uppercut.hit.bounds.setRadius(32);
+	attacks.uppercut.hit.bounds.setRadius(28);
 	attacks.uppercut.origin = {-8.f, 36.f};
 
 	attacks.rush.sensor.bounds.setRadius(60);
@@ -192,14 +192,13 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 			}
 		}
 	}
-	for (auto& index : map.collidable_indeces) {
-		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
-		if (!cell.is_breakable()) { continue; }
-		if (Enemy::collider.jumpbox.overlaps(cell.bounding_box)) { map.handle_breakables(cell, {}, 4); }
-		if (state == MinigusState::rush && attacks.rush.hit.within_bounds(cell.bounding_box)) {
-			if (svc.ticker.every_x_ticks(18)) { map.handle_breakables(cell, {}, 1); }
+		for (auto& breakable : map.breakables) {
+			if (Enemy::collider.jumpbox.overlaps(breakable.get_bounding_box())) { breakable.on_smash(svc, map, 4); }
+			if (state == MinigusState::rush && attacks.rush.hit.within_bounds(breakable.get_bounding_box())) {
+				if (svc.ticker.every_x_ticks(18)) { breakable.on_smash(svc, map, 1); }
+			}
 		}
-	}
+	
 
 	minigun.animation.update();
 	if (minigun.sprite.getScale() != Enemy::sprite.getScale()) {
@@ -207,9 +206,9 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		minigun.sprite.setScale(Enemy::sprite.getScale());
 	}
 	auto gun_base = Enemy::collider.physics.position + Enemy::collider.dimensions * 0.5f;
-	auto gun_point = Enemy::direction.lr == dir::LR::left ? gun_base - sf::Vector2<float>{(float)minigun.dimensions.x, 0.f} : gun_base + sf::Vector2<float>{(float)minigun.dimensions.x, 0.f};
+	auto gun_point = Enemy::direction.lr == dir::LR::left ? gun_base - sf::Vector2<float>{(float)minigun.dimensions.x, -6.f} : gun_base + sf::Vector2<float>{(float)minigun.dimensions.x, 6.f};
 	gun.get().barrel_point = gun_point;
-	gun_point.y -= 60;
+	gun_point.y -= 64;
 	soda.get().barrel_point = gun_point;
 
 	Enemy::direction = post_direction;
@@ -563,14 +562,27 @@ fsm::StateFunction Minigus::update_reload() {
 		minigun.animation.set_params(minigun.neutral);
 		voice.deepspeak.play();
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
-		if (m_services->random.percent_chance(40)) {
-			state = MinigusState::laugh;
-			animation.set_params(laugh);
-			return MINIGUS_BIND(update_laugh);
+
+		if (invincible()) {
+			if (m_services->random.percent_chance(50)) {
+				state = MinigusState::shoot;
+				animation.set_params(shoot);
+				return MINIGUS_BIND(update_shoot);
+			}
+				state = MinigusState::jump_shoot;
+				animation.set_params(jump_shoot);
+				return MINIGUS_BIND(update_jump_shoot);
+			
 		} else {
-			state = MinigusState::run;
-			animation.set_params(run);
-			return MINIGUS_BIND(update_run);
+			if (m_services->random.percent_chance(40)) {
+				state = MinigusState::laugh;
+				animation.set_params(laugh);
+				return MINIGUS_BIND(update_laugh);
+			}
+				state = MinigusState::run;
+				animation.set_params(run);
+				return MINIGUS_BIND(update_run);
+			
 		}
 	}
 	state = MinigusState::reload;
@@ -584,15 +596,19 @@ fsm::StateFunction Minigus::update_turn() {
 		Enemy::sprite.scale({-1.f, 1.f});
 		post_direction = pre_direction;
 		if (invincible()) {
+			if (minigun.flags.test(MinigunFlags::exhausted)) {
+				state = MinigusState::reload;
+				animation.set_params(reload);
+				return MINIGUS_BIND(update_reload);
+			}
 			if (m_services->random.percent_chance(50)) {
 				state = MinigusState::shoot;
 				animation.set_params(shoot);
 				return MINIGUS_BIND(update_shoot);
-			} else {
-				state = MinigusState::jump_shoot;
-				animation.set_params(jump_shoot);
-				return MINIGUS_BIND(update_jump_shoot);
 			}
+			state = MinigusState::jump_shoot;
+			animation.set_params(jump_shoot);
+			return MINIGUS_BIND(update_jump_shoot);
 		}
 		if (change_state(MinigusState::idle, idle)) { return MINIGUS_BIND(update_idle); }
 		if (change_state(MinigusState::jumpsquat, jumpsquat)) { return MINIGUS_BIND(update_jumpsquat); }
