@@ -929,6 +929,24 @@ void Game::playtester_portal() {
 								} else if (!playtest.weapons.grenade && player.arsenal.has(5)) {
 									player.arsenal.pop_from_loadout(5);
 								}
+								ImGui::Checkbox("Staple Gun", &playtest.weapons.staple_gun);
+								if (playtest.weapons.staple_gun && !player.arsenal.has(8)) {
+									player.arsenal.push_to_loadout(8);
+								} else if (!playtest.weapons.staple_gun && player.arsenal.has(8)) {
+									player.arsenal.pop_from_loadout(8);
+								}
+								ImGui::Checkbox("Indie", &playtest.weapons.indie);
+								if (playtest.weapons.indie && !player.arsenal.has(9)) {
+									player.arsenal.push_to_loadout(9);
+								} else if (!playtest.weapons.indie && player.arsenal.has(9)) {
+									player.arsenal.pop_from_loadout(9);
+								}
+								ImGui::Checkbox("Gnat", &playtest.weapons.gnat);
+								if (playtest.weapons.gnat && !player.arsenal.has(10)) {
+									player.arsenal.push_to_loadout(10);
+								} else if (!playtest.weapons.gnat && player.arsenal.has(10)) {
+									player.arsenal.pop_from_loadout(0);
+								}
 								ImGui::Separator();
 
 								if (ImGui::Button("Clear Loadout")) {

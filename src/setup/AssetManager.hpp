@@ -159,6 +159,13 @@ class AssetManager {
 	sf::Texture t_minigun{};
 	sf::Texture t_soda_gun{};
 	sf::Texture t_soda_gun_projectile{};
+	sf::Texture t_staple_gun{};
+	sf::Texture t_staple{};
+	sf::Texture t_indie{};
+	sf::Texture t_indie_projectile{};
+	sf::Texture t_gnat{};
+	sf::Texture t_gnat_projectile{};
+	
 
 	//items
 	sf::Texture t_heart{};
@@ -188,6 +195,9 @@ class AssetManager {
 	sf::SoundBuffer tomahawk_catch_buffer{};
 	sf::SoundBuffer pop_mid_buffer{};
 	sf::SoundBuffer bubble_buffer{};
+	sf::SoundBuffer b_nova{};
+	sf::SoundBuffer b_staple{};
+	sf::SoundBuffer b_gnat{};
 
 	sf::SoundBuffer jump_buffer{};
 	sf::SoundBuffer shatter_buffer{};
@@ -277,6 +287,9 @@ class AssetManager {
 	sf::Sound tomahawk_catch{};
 	sf::Sound pop_mid{};
 	sf::Sound bubble{};
+	sf::Sound nova_shot{};
+	sf::Sound staple{};
+	sf::Sound gnat{};
 
 	sf::Sound minigun_neutral{};
 	sf::Sound minigun_charge{};

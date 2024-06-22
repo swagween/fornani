@@ -59,6 +59,9 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.weapon.test(Weapon::skycorps_ar)) { svc.assets.skycorps_ar_shot.play(); }
 	if (flags.weapon.test(Weapon::clover)) { repeat(svc, svc.assets.pop_mid, 2, 0.3f); }
 	if (flags.weapon.test(Weapon::nova)) { svc.assets.pop_mid.play(); }
+	if (flags.weapon.test(Weapon::indie)) { svc.assets.nova_shot.play(); }
+	if (flags.weapon.test(Weapon::staple)) { svc.assets.staple.play(); }
+	if (flags.weapon.test(Weapon::gnat)) { repeat(svc, svc.assets.gnat, 2, 0.1f); }
 	if (flags.weapon.test(Weapon::tomahawk)) { repeat(svc, svc.assets.tomahawk_flight, -1, 0.1f); }
 	if (flags.weapon.test(Weapon::tomahawk_catch)) {
 		svc.assets.tomahawk_catch.play();

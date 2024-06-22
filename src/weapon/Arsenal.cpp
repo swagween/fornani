@@ -5,7 +5,13 @@
 namespace arms {
 
 Arsenal::Arsenal(automa::ServiceProvider& svc) {
-	for (int i = 0; i < max_weapons; ++i) { armory.at(i) = std::make_shared<Weapon>(svc, svc.tables.gun_label.at(i), i); }
+	for (int i = 0; i < max_weapons; ++i) {
+		if (svc.tables.gun_label.contains(i)) {
+			armory.at(i) = std::make_shared<Weapon>(svc, svc.tables.gun_label.at(i), i);
+		} else {
+			std::cout << "Gun with id " << i << " missing from Tables.hpp.\n"; 
+		}
+	}
 	default_gun = std::make_shared<Weapon>(svc, "bryn's gun", 0);
 }
 

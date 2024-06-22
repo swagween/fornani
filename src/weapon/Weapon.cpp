@@ -1,6 +1,4 @@
-
 #include "Weapon.hpp"
-
 #include "../service/ServiceProvider.hpp"
 
 namespace arms {

@@ -44,7 +44,7 @@ inline int const num_bits{64};
 int const num_heart_sprites{4};
 int const num_orb_chars{11};
 int const num_guns{18}; // to be changed later, obviously
-int const num_colors{6};
+int const num_colors{7};
 
 enum class HUDState { shield };
 

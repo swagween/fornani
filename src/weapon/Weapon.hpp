@@ -10,7 +10,7 @@
 
 namespace arms {
 
-enum COLOR_CODE { WHITE = 0, PERIWINKLE = 1, GREEN = 2, ORANGE = 3, FUCSHIA = 4, PURPLE = 5 };
+enum COLOR_CODE { WHITE = 0, PERIWINKLE = 1, GREEN = 2, ORANGE = 3, FUCSHIA = 4, PURPLE = 5, MYTHIC = 6 };
 enum class GunState { unlocked, equipped, cooling_down, reloading };
 
 struct WeaponAttributes {

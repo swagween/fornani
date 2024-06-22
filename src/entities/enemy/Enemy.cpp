@@ -187,7 +187,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	if (proj.team == arms::TEAMS::SKYCORPS) { return; }
 	if (!(proj.bounding_box.overlaps(collider.bounding_box) || proj.bounding_box.overlaps(secondary_collider.bounding_box))) { return; }
 
-	if (svc.ticker.every_x_ticks(10)) { proj.multiply(1.1f); }
+	if (svc.ticker.every_x_ticks(10)) { proj.multiply(1.2f); }
 
 	flags.state.set(enemy::StateFlags::shot);
 	if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {

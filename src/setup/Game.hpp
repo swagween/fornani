@@ -52,6 +52,9 @@ class Game {
 			bool plasmer{};
 			bool tomahawk{};
 			bool grapple{};
+			bool staple_gun{};
+			bool indie{};
+			bool gnat{};
 		} weapons{};
 	} playtest{};
 

@@ -440,7 +440,7 @@
       }
     },
     {
-      "label": "soda_gun",
+      "label": "soda gun",
       "dimensions": {
         "x": 78,
         "y": 30
@@ -498,6 +498,189 @@
         "dimensions": [ 8.0, 8.0 ],
         "type": "thick_burst",
         "color": "white"
+      }
+    },
+    {
+      "label": "staple gun",
+      "dimensions": {
+        "x": 16,
+        "y": 12
+      },
+      "gun_offset": {
+        "x": -2,
+        "y": 9
+      },
+      "barrel_point": {
+        "x": 16.0,
+        "y": 6.0
+      },
+      "attributes": {
+        "automatic": false,
+        "rate": 22,
+        "cooldown_time": 10,
+        "recoil": 0.00,
+        "ui_color": 4
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "attributes": {
+          "base_damage": 5,
+          "range": 360,
+          "speed": 35.5,
+          "variance": 0.0,
+          "stun_time": 0.2,
+          "knockback": 0.0,
+          "boomerang": false,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": true,
+          "spring": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.99,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 8
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 4.0, 4.0 ],
+        "type": "fast_burst",
+        "color": "white"
+      }
+    },
+    {
+      "label": "indie",
+      "dimensions": {
+        "x": 28,
+        "y": 14
+      },
+      "gun_offset": {
+        "x": 0,
+        "y": 8
+      },
+      "barrel_point": {
+        "x": 28.0,
+        "y": 5.0
+      },
+      "attributes": {
+        "automatic": false,
+        "rate": 2,
+        "cooldown_time": 4,
+        "recoil": 4.00,
+        "ui_color": 0
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 32.0,
+          "y": 14.0
+        },
+        "attributes": {
+          "base_damage": 12,
+          "range": 260,
+          "speed": 17.5,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "boomerang": false,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": true,
+          "spring": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 8
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 4.0, 4.0 ],
+        "type": "thick_burst",
+        "color": "white"
+      }
+    },
+    {
+      "label": "gnat",
+      "dimensions": {
+        "x": 26,
+        "y": 10
+      },
+      "gun_offset": {
+        "x": 0,
+        "y": 8
+      },
+      "barrel_point": {
+        "x": 26.0,
+        "y": 3.0
+      },
+      "attributes": {
+        "automatic": true,
+        "rate": 64,
+        "cooldown_time": 5,
+        "recoil": 0.0,
+        "ui_color": 6
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 6.0,
+          "y": 4.0
+        },
+        "attributes": {
+          "base_damage": 0.5,
+          "range": 160,
+          "speed": 24.5,
+          "variance": 0.2,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "boomerang": false,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": true,
+          "spring": false,
+          "range_variance": 8.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.998,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
+        },
+        "animation": {
+          "num_sprites": 5,
+          "num_frames": 1,
+          "framerate": 8
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 2.0, 2.0 ],
+        "type": "twinkle",
+        "color": "mythic_green"
       }
     }
   ]

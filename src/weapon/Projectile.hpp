@@ -121,7 +121,7 @@ class Projectile {
 	void constrain_hitbox_at_destruction_point();
 	void lock_to_anchor();
 
-	void multiply(float factor) { variables.damage_multiplier *= factor; }
+	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
 	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
 	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
 	[[nodiscard]] auto get_damage() const -> float { return stats.base_damage * variables.damage_multiplier; }
@@ -148,10 +148,11 @@ class Projectile {
 	sf::Vector2<float> fired_point{};
 	sf::Vector2<float> destruction_point{};
 
-	std::vector<sf::Sprite> sp_proj{};
+	sf::Sprite sprite{};
 
 	anim::Animation animation{};
 	flfx::SpriteHistory sprite_history{};
+	int sprite_index{};
 
 	util::Cooldown cooldown{};
 

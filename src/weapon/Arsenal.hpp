@@ -11,7 +11,7 @@
 namespace arms {
 
 using Key = WEAPON_TYPE;
-constexpr static int max_weapons{8};
+constexpr static int max_weapons{11};
 
 struct Arsenal {
 

@@ -63,6 +63,12 @@ void AssetManager::import_textures() {
 	t_minigun.loadFromFile(finder.resource_path + "/image/boss/minigun.png");
 	t_soda_gun.loadFromFile(finder.resource_path + "/image/weapon/soda_gun.png");
 	t_soda_gun_projectile.loadFromFile(finder.resource_path + "/image/weapon/soda.png");
+	t_staple_gun.loadFromFile(finder.resource_path + "/image/weapon/staple_gun.png");
+	t_staple.loadFromFile(finder.resource_path + "/image/weapon/staple.png");
+	t_indie.loadFromFile(finder.resource_path + "/image/weapon/indie.png");
+	t_indie_projectile.loadFromFile(finder.resource_path + "/image/weapon/indie_proj.png");
+	t_gnat.loadFromFile(finder.resource_path + "/image/weapon/gnat.png");
+	t_gnat_projectile.loadFromFile(finder.resource_path + "/image/weapon/gnat_proj.png");
 
 	weapon_textures.insert({"bryn's gun", t_bryns_gun});
 	projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
@@ -82,8 +88,14 @@ void AssetManager::import_textures() {
 	projectile_textures.insert({"grenade launcher", t_hook});
 	weapon_textures.insert({"minigun", t_minigun});
 	projectile_textures.insert({"minigun", t_skycorps_ar_projectile});
-	weapon_textures.insert({"soda_gun", t_soda_gun});
-	projectile_textures.insert({"soda_gun", t_soda_gun_projectile});
+	weapon_textures.insert({"soda gun", t_soda_gun});
+	projectile_textures.insert({"soda gun", t_soda_gun_projectile});
+	weapon_textures.insert({"staple gun", t_staple_gun});
+	projectile_textures.insert({"staple gun", t_staple});
+	weapon_textures.insert({"indie", t_indie});
+	projectile_textures.insert({"indie", t_indie_projectile});
+	weapon_textures.insert({"gnat", t_gnat});
+	projectile_textures.insert({"gnat", t_gnat_projectile});
 
 	t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 	t_shield.loadFromFile(finder.resource_path + "/image/entity/shield.png");
@@ -205,6 +217,12 @@ void AssetManager::load_audio() {
 	tomahawk_catch.setBuffer(tomahawk_catch_buffer);
 	pop_mid_buffer.loadFromFile(finder.resource_path + "/audio/sfx/clover.wav");
 	pop_mid.setBuffer(pop_mid_buffer);
+	b_nova.loadFromFile(finder.resource_path + "/audio/sfx/nova_shot.wav");
+	nova_shot.setBuffer(b_nova);
+	b_staple.loadFromFile(finder.resource_path + "/audio/sfx/staple.wav");
+	staple.setBuffer(b_staple);
+	b_gnat.loadFromFile(finder.resource_path + "/audio/sfx/gnat.wav");
+	gnat.setBuffer(b_gnat);
 	jump_buffer.loadFromFile(finder.resource_path + "/audio/sfx/jump.wav");
 	jump.setBuffer(jump_buffer);
 

@@ -476,6 +476,10 @@ bool Player::grounded() const { return collider.flags.state.test(shape::State::g
 bool Player::fire_weapon() {
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		++extant_instances(equipped_weapon().get_id());
+		if (!m_services->soundboard.gun_sounds.contains(equipped_weapon().label)) {
+			m_services->soundboard.flags.weapon.set(audio::Weapon::bryns_gun);
+			return true;
+		}
 		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().label));
 		return true;
 	}
