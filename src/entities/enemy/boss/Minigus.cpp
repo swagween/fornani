@@ -307,12 +307,13 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) { triggers.set(npc::NPCTrigger::distant_interact); }
 
 	NPC::update(svc, map, *m_console, player);
-	if (player.transponder.get_voice_shipment() == 1) { voice.greatidea.play(); }
-	if (player.transponder.get_voice_shipment() == 2) { voice.dontlookatme.play(); }
-	if (player.transponder.get_voice_shipment() == 3) { voice.laugh_1.play(); }
-	if (player.transponder.get_voice_shipment() == 4) { voice.pizza.play(); }
-	if (player.transponder.get_voice_shipment() == 5) { voice.grunt.play(); }
-	if (player.transponder.get_voice_shipment() == 6) { voice.getit.play(); }
+	auto voice_cue = player.transponder.shipments.voice.consume_pulse();
+	if (voice_cue == 1) { voice.greatidea.play(); }
+	if (voice_cue == 2) { voice.dontlookatme.play(); }
+	if (voice_cue == 3) { voice.laugh_1.play(); }
+	if (voice_cue == 4) { voice.pizza.play(); }
+	if (voice_cue == 5) { voice.grunt.play(); }
+	if (voice_cue == 6) { voice.getit.play(); }
 
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::theme_song)) {
 		svc.music.load("minigus");
@@ -322,7 +323,6 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::battle_mode) && m_console->is_complete() && !health_bar.empty() && !status.test(MinigusFlags::exit_scene)) {
 		status.set(MinigusFlags::battle_mode);
 		triggers.reset(npc::NPCTrigger::distant_interact);
-		player.transponder.flush_shipments();
 		svc.music.load("scuffle");
 		svc.music.play_looped(25);
 		cooldowns.vulnerability.start();
@@ -342,7 +342,6 @@ void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	minigun.sprite.setTextureRect(sf::IntRect({{u, v}, minigun.dimensions}));
 	minigun.sprite.setPosition(Enemy::sprite.getPosition() + minigun.offset);
 	Enemy::sprite.setTexture(flags.state.test(StateFlags::vulnerable) ? svc.assets.t_minigus : svc.assets.t_minigus_inv);
-	sparkler.render(svc, win, cam);
 	if (cooldowns.hurt.running() && flags.state.test(StateFlags::vulnerable) && !(state == MinigusState::build_invincibility)) {
 		Enemy::sprite.setTexture(hurt_color.get_alternator() % 2 == 0 ? svc.assets.t_minigus_blue : svc.assets.t_minigus_red);
 	}
@@ -352,6 +351,8 @@ void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	if (svc.ticker.every_x_frames(8) && state != MinigusState::rush) { sprite_history.flush(); }
 	Enemy::sprite.setPosition(Enemy::sprite.getPosition() - cam);
 	win.draw(Enemy::sprite);
+
+	sparkler.render(svc, win, cam);
 
 	if (!svc.greyblock_mode()) {
 		win.draw(minigun.sprite);
@@ -596,10 +597,17 @@ fsm::StateFunction Minigus::update_turn() {
 		Enemy::sprite.scale({-1.f, 1.f});
 		post_direction = pre_direction;
 		if (invincible()) {
+			counters.invincible_turn.update();
 			if (minigun.flags.test(MinigunFlags::exhausted)) {
 				state = MinigusState::reload;
 				animation.set_params(reload);
 				return MINIGUS_BIND(update_reload);
+			}
+			if(counters.invincible_turn.get_count() > 3) {
+				counters.invincible_turn.start();
+				state = MinigusState::rush;
+				animation.set_params(rush);
+				return MINIGUS_BIND(update_rush);
 			}
 			if (m_services->random.percent_chance(50)) {
 				state = MinigusState::shoot;

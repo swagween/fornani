@@ -51,16 +51,18 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);
-
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		svc.controller_map.handle_press(event.key.code);
-		if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(); }
 	}
 	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
 		if (event.key.code == sf::Keyboard::Num0) { camera.begin_shake(); }
 	}
+
+	if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(svc); }
+	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) { toggle_pause_menu(svc); }
 }
 
 void Dojo::tick_update(ServiceProvider& svc) {
@@ -85,7 +87,12 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	map.background->update(svc, camera.get_observed_velocity());
 }
 
-void Dojo::frame_update(ServiceProvider& svc) { hud.update(svc, *player); }
+void Dojo::frame_update(ServiceProvider& svc) {
+	pause_window.update(svc, *player);
+	hud.update(svc, *player);
+	svc.controller_map.reset_triggers();
+	pause_window.clean_off_trigger();
+}
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
@@ -94,11 +101,21 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!svc.greyblock_mode()) { hud.render(*player, win); }
 	inventory_window.render(svc, *player, win);
+	pause_window.render(svc, *player, win);
 	map.render_console(svc, console, win);
 
 	map.transition.render(win);
 }
 
-void Dojo::toggle_inventory() { inventory_window.active() ? inventory_window.close() : inventory_window.open(); }
+void Dojo::toggle_inventory(ServiceProvider& svc) {
+	inventory_window.active() ? inventory_window.close() : inventory_window.open();
+	svc.controller_map.reset_triggers();
+}
+
+void Dojo::toggle_pause_menu(ServiceProvider& svc) {
+	pause_window.active() ? pause_window.close() : pause_window.open();
+	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();
+	svc.controller_map.reset_triggers();
+}
 
 } // namespace automa

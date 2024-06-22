@@ -17,7 +17,7 @@ using Clk = std::chrono::steady_clock;
 using Tim = std::chrono::duration<float>;
 using Mil = std::chrono::milliseconds;
 
-enum class TickerFlags { forced_slowdown };
+enum class TickerFlags { forced_slowdown, paused };
 
 class Ticker {
   public:
@@ -49,8 +49,7 @@ class Ticker {
 
 		integrations = 0;
 		while (accumulator >= ft) {
-
-			fn();
+			if (!flags.test(TickerFlags::paused)) { fn(); }
 			accumulator -= ft;
 			++integrations;
 			++total_integrations;
@@ -71,6 +70,9 @@ class Ticker {
 	void freeze_frame(int time);
 	void scale_dt();
 	void reset_dt();
+	void pause() { flags.set(TickerFlags::paused); }
+	void unpause() { flags.reset(TickerFlags::paused); }
+	[[nodiscard]] auto paused() const -> bool { return flags.test(TickerFlags::paused); }
 
 	[[nodiscard]] auto global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
 	[[nodiscard]] auto every_x_frames(int const freq) const -> bool { return num_frames % freq == 0; }

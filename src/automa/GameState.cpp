@@ -20,7 +20,7 @@ void Option::update(ServiceProvider& svc, int& selection) {
 	if (flagged) { label.setFillColor(svc.styles.colors.red); }
 	label.setOrigin(label.getLocalBounds().width * 0.5f, label.getLocalBounds().height * 0.5f);
 }
-GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : player(&player), hud(svc, player, {20, 20}), inventory_window(svc), scene(scene) {
+GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : player(&player), hud(svc, player, {20, 20}), inventory_window(svc), pause_window(svc), scene(scene) {
 	font.loadFromFile(svc.text.title_font);
 	font.setSmooth(false);
 	subtitle_font.loadFromFile(svc.text.text_font);

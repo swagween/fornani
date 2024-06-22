@@ -15,7 +15,8 @@ class Dojo : public GameState {
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
-	void toggle_inventory();
+	void toggle_inventory(ServiceProvider& svc);
+	void toggle_pause_menu(ServiceProvider& svc);
 
 	world::Map map;
 	fornani::Camera camera{};

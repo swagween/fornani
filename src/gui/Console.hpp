@@ -46,8 +46,6 @@ class Console {
 
 	void nine_slice(int corner_dim, int edge_dim);
 
-	int voice_cue();
-
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
 	[[nodiscard]] auto is_complete() const -> bool { return !flags.test(ConsoleFlags::active); }
 	[[nodiscard]] auto extended() const -> bool { return flags.test(ConsoleFlags::extended); }
@@ -72,7 +70,8 @@ class Console {
 
 	struct {
 		int out_voice{};
-	} communicators;
+		int out_emotion{};
+	} communicators{};
 
 	Border border{
 		48.f,

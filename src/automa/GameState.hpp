@@ -13,6 +13,7 @@
 #include "../gui/HUD.hpp"
 #include "../level/Map.hpp"
 #include "../gui/InventoryWindow.hpp"
+#include "../gui/PauseWindow.hpp"
 
 namespace player {
 class Player;
@@ -70,6 +71,7 @@ class GameState {
 
 	gui::Console console{};
 	gui::InventoryWindow inventory_window;
+	gui::PauseWindow pause_window;
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};

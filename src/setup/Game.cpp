@@ -841,6 +841,13 @@ void Game::playtester_portal() {
 					ImGui::Text("Kayboard Enabled? %s", services.controller_map.hard_toggles.test(config::Toggles::keyboard) ? "Yes" : "No");
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("Transponder")) {
+					ImGui::Text("Voice Shipment..: %i", player.transponder.shipments.voice.get_residue());
+					ImGui::Text("Emotion Shipment: %i", player.transponder.shipments.emotion.get_residue());
+					ImGui::Text("Item Shipment...: %i", player.transponder.shipments.item.get_residue());
+					ImGui::Text("Quest Shipment..: %i", player.transponder.shipments.quest.get_residue());
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Music")) {
 					ImGui::Separator();
 					ImGui::Checkbox("Music Player", &playtest.m_musicplayer);

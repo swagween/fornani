@@ -34,7 +34,6 @@ void Console::begin() {
 }
 
 void Console::update(automa::ServiceProvider& svc) {
-	communicators.out_voice = writer.get_voice_shipment();
 	writer.set_bounds(position + sf::Vector2<float>{final_dimensions.x - 2 * border.left, final_dimensions.y - 2 * border.top});
 	writer.set_position(position + sf::Vector2<float>{border.left, border.top});
 	if (flags.test(ConsoleFlags::active)) { extent += speed; }
@@ -44,6 +43,7 @@ void Console::update(automa::ServiceProvider& svc) {
 	nine_slice(corner_factor, edge_factor);
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 	writer.update();
+
 	if (flags.test(ConsoleFlags::active)) {
 		portrait.update(svc);
 		nani_portrait.update(svc);
@@ -86,6 +86,7 @@ void Console::write(sf::RenderWindow& win, bool instant) {
 }
 
 void Console::end() {
+	writer.flush_communicators();
 	extent = current_dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::loaded);
@@ -122,12 +123,6 @@ void Console::nine_slice(int corner_dim, int edge_dim) {
 	sprites.at(6).setPosition(position.x, position.y + current_dimensions.y - corner_dim);
 	sprites.at(7).setPosition(position.x + corner_dim, position.y + current_dimensions.y - corner_dim);
 	sprites.at(8).setPosition(position.x + current_dimensions.x - corner_dim, position.y + current_dimensions.y - corner_dim);
-}
-
-int Console::voice_cue() {
-	auto ret = communicators.out_voice;
-	communicators.out_voice = 0;
-	return ret;
 }
 
 } // namespace gui

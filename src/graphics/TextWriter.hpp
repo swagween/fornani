@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include "../utils/BitFlags.hpp"
+#include "../utils/Shipment.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -21,11 +22,9 @@ struct Message {
 	sf::Text data{};
 	bool prompt{};
 	int target{};
-	int out_key{};
 };
 
-enum class Codes { prompt, quest, item, voice };
-enum class Communication { ship_item, ship_quest, ship_voice };
+enum class Codes { prompt, quest, item, voice, emotion };
 enum class MessageState { writing, selection_mode, cannot_skip, response_trigger };
 static int const default_writing_speed{8};
 static int const fast_writing_speed{1};
@@ -66,13 +65,9 @@ class TextWriter {
 	[[nodiscard]] auto suite_size() const -> size_t { return suite.size(); }
 
 	void reset_response() { flags.reset(MessageState::response_trigger); }
-
-	[[nodiscard]] auto get_item_shipment() const -> int { return communicators.out_item; }
-	[[nodiscard]] auto get_quest_shipment() const -> int { return communicators.out_quest; }
-	[[nodiscard]] auto get_voice_shipment() const -> int { return communicators.out_voice; }
 	void flush_communicators() { communicators = {}; }
 
-	Message& current_message(); //for debug
+	Message& current_message();	 // for debug
 	Message& current_response(); // for debug
 	int get_current_selection() const;
 	int get_current_suite_set() const;
@@ -80,21 +75,22 @@ class TextWriter {
 	// public for debugging
 	int text_size{16};
 
+	struct {
+		util::Shipment out_item{};
+		util::Shipment out_quest{};
+		util::Shipment out_voice{};
+		util::Shipment out_emotion{};
+	} communicators{};
+
   private:
-	std::deque<std::deque<Message> > suite{};
-	std::deque<std::deque<Message> > responses{};
+	std::deque<std::deque<Message>> suite{};
+	std::deque<std::deque<Message>> responses{};
 
 	struct {
 		int current_suite_set{};
 		int current_response_set{};
 		int current_selection{};
 	} iterators{};
-
-	struct {
-		int out_item{};
-		int out_quest{};
-		int out_voice{};
-	} communicators{};
 
 	std::unordered_map<Codes, char> special_characters{};
 
@@ -105,7 +101,6 @@ class TextWriter {
 	int tick_count{};
 	int writing_speed{default_writing_speed};
 	util::BitFlags<MessageState> flags{};
-	util::BitFlags<Communication> out_flags{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> bounds{};
 	sf::Vector2<float> response_position{300.f, 200.f};
@@ -116,7 +111,7 @@ class TextWriter {
 
 	automa::ServiceProvider* m_services;
 
-	Message zero_option{}; //for debug
+	Message zero_option{}; // for debug
 };
 
 } // namespace text

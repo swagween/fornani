@@ -113,6 +113,7 @@ class Minigus : public Enemy, public npc::NPC {
 
 	struct {
 		util::Counter snap{};
+		util::Counter invincible_turn{};
 	} counters{};
 
 	struct {

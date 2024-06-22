@@ -173,9 +173,9 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 	} else if (render_type == RENDER_TYPE::SINGLE_SPRITE) {
 		if (!sp_proj.empty()) {
 
-			// get UV coords (only one row of sprites is supported)
-			int u = (int)(animation.get_frame() * max_dimensions.x);
-			int v = 0;
+			// get UV coords (only one column of sprites is supported)
+			int u = 0;
+			int v = (int)(animation.get_frame() * max_dimensions.y);
 			sp_proj.at(0).setTextureRect(sf::IntRect({u, v}, {(int)max_dimensions.x, (int)max_dimensions.y}));
 
 			// unconstrained projectiles have to get sprites set here
@@ -293,14 +293,14 @@ void Projectile::sync_position() { gravitator.collider.physics.position = fired_
 
 void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos) {
 	if (!stats.constrained) { return; }
-	int u = (int)(animation.get_frame() * max_dimensions.x);
+	int v = (int)(animation.get_frame() * max_dimensions.y);
 	if (direction.lr != dir::LR::neutral) {
 		if (abs(physics.position.x - fired_point.x) < max_dimensions.x) {
 			int width = abs(physics.position.x - fired_point.x);
-			sprite.setTextureRect(sf::IntRect({u + (int)(max_dimensions.x - width), 0}, {width, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({(int)(max_dimensions.x - width), v}, {width, (int)max_dimensions.y}));
 			bounding_box.dimensions.x = width;
 		} else {
-			sprite.setTextureRect(sf::IntRect({u, 0}, {(int)(bounding_box.dimensions.x), (int)(bounding_box.dimensions.y)}));
+			sprite.setTextureRect(sf::IntRect({0, v}, {(int)(bounding_box.dimensions.x), (int)(bounding_box.dimensions.y)}));
 			bounding_box.dimensions.x = max_dimensions.x;
 		}
 		if (direction.lr == dir::LR::right) {
@@ -313,10 +313,10 @@ void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<floa
 		bounding_box.dimensions.x = max_dimensions.y;
 		if (abs(physics.position.y - fired_point.y) < max_dimensions.x) {
 			int height = abs(physics.position.y - fired_point.y);
-			sprite.setTextureRect(sf::IntRect({u + (int)(max_dimensions.x - height), 0}, {height, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({(int)(max_dimensions.x - height), v}, {height, (int)max_dimensions.y}));
 			bounding_box.dimensions.y = height;
 		} else {
-			sprite.setTextureRect(sf::IntRect({u, 0}, {(int)(max_dimensions.x), (int)(max_dimensions.y)}));
+			sprite.setTextureRect(sf::IntRect({0, v}, {(int)(max_dimensions.x), (int)(max_dimensions.y)}));
 			bounding_box.dimensions.y = max_dimensions.x;
 		}
 		if (direction.und == dir::UND::up) {
@@ -329,11 +329,12 @@ void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<floa
 
 void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos) {
 	if (!stats.constrained) { return; }
+	int v = (int)(animation.get_frame() * max_dimensions.y);
 	if (direction.lr != dir::LR::neutral) {
 		if (direction.lr == dir::LR::left) {
 			float rear = bounding_box.dimensions.x + physics.position.x;
 			int width = abs(rear - destruction_point.x);
-			sprite.setTextureRect(sf::IntRect({0, 0}, {width, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({0, v}, {width, (int)max_dimensions.y}));
 			bounding_box.dimensions.x = width;
 			bounding_box.position.x = destruction_point.x;
 			sprite.setPosition(bounding_box.position.x + bounding_box.dimensions.x - campos.x, bounding_box.position.y - campos.y);
@@ -341,7 +342,7 @@ void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::V
 		} else {
 			float rear = physics.position.x - bounding_box.dimensions.x;
 			int width = abs(rear - destruction_point.x);
-			sprite.setTextureRect(sf::IntRect({0, 0}, {width, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({0, v}, {width, (int)max_dimensions.y}));
 			bounding_box.dimensions.x = width;
 			bounding_box.position.x = destruction_point.x - width;
 			sprite.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
@@ -352,7 +353,7 @@ void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::V
 		if (direction.und == dir::UND::up) {
 			float rear = bounding_box.dimensions.y + physics.position.y;
 			int height = abs(rear - destruction_point.y);
-			sprite.setTextureRect(sf::IntRect({0, 0}, {height, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({0, v}, {height, (int)max_dimensions.y}));
 			bounding_box.dimensions.y = height;
 			bounding_box.position.y = destruction_point.y;
 			sprite.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y + bounding_box.dimensions.y - campos.y);
@@ -360,7 +361,7 @@ void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::V
 		} else {
 			float rear = physics.position.y - bounding_box.dimensions.y;
 			int height = abs(rear - destruction_point.y);
-			sprite.setTextureRect(sf::IntRect({0, 0}, {height, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({0, v}, {height, (int)max_dimensions.y}));
 			bounding_box.dimensions.y = height;
 			bounding_box.position.y = destruction_point.y - height;
 			sprite.setPosition(bounding_box.position.x + bounding_box.dimensions.x - campos.x, bounding_box.position.y - campos.y);

@@ -267,9 +267,11 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		if (controller.transponder_down()) { transponder.go_down(); }
 		if (controller.transponder_select()) { transponder.select(); }
 		transponder.update(*m_services, console);
+		auto emotion = transponder.shipments.emotion.get_residue();
+		if (console.portrait.get_emotion() != emotion && emotion != 0) { console.portrait.set_emotion(emotion); }
 	}
 	transponder.end();
-	if (transponder.get_item_shipment() > 0) { give_item(transponder.get_item_shipment(), 1); }
+	if (transponder.shipments.item.consume_pulse() > 0) { give_item(transponder.shipments.item.consume_pulse(), 1); }
 }
 
 void Player::flash_sprite() {

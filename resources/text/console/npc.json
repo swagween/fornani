@@ -51,7 +51,7 @@
     "suite": [
       [ "&1Well, would you look at that!", "The sorry little Kariba has escaped her cell.", "You know, I'm not exactly surprised. The storms up here are getting worse, and the crew are more interested in staying alive than retaining prisoners.", "And yet a prisoner you shall remain, if I have anything to say about it.", "Now tell me, girl, what do you plan to do with that pathetic little pistol of yours?%0" ],
       [ "&2I asked you a question.", "But I'll be kind, considering you haven't much longer to live. My name is Gus, and I lead Lady Numbus's feared Harpoon Squad.", "You see, we do whatever cleaning up needs to be done on this island.", "But anyway, I'm tired of talkin' to you. Get ready to die!$2" ],
-      [ "&3Hah! Tough talk for a scrawny little girl, but I respect it.", "So, let's see what you've got, then.$2" ],
+      [ "&3@2Hah! Tough talk for a scrawny little girl, but I respect it.", "@1So, let's see what you've got, then.$2" ],
       [ "...", "&4Your brother...?", "I guess even my trusty little gadget can't completely erase your memories.", "&6But either way, you'll get no further information from me on that front.", "Now, I'm tired of talkin' to you. Get ready to die!$2" ]
     ],
     "responses": [
@@ -60,7 +60,7 @@
   },
   "minigus2": {
     "suite": [
-      [ "...", "GAH!!!", "My mask!! What have you done?!" ]
+      [ "@3...", "GAH!!!", "My mask!! What have you done?!" ]
     ],
     "responses": [
     ]
