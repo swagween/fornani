@@ -50,6 +50,6 @@ GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_v
 // helper
 void GameState::constrain_selection() {
 	if (current_selection >= (int)options.size()) { current_selection = 0; }
-	if (current_selection < 0) { current_selection = options.size() - 1; }
+	if (current_selection < 0) { current_selection = static_cast<int>(options.size() - 1); }
 }
 } // namespace automa

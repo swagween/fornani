@@ -28,6 +28,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 		track_shape.setPoint(x, track[x] + dimensions * 0.5f);
 	}
 
+	track_shape.setFillColor(sf::Color::Transparent);
 	track_shape.setOutlineColor(sf::Color(135, 132, 149, 140));
 	track_shape.setOutlineThickness(2);
 

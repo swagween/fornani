@@ -80,7 +80,7 @@ class Console {
 		26.f
 	};
 
-	int extent{};
+	float extent{};
 	int speed{2};
 
 	protected:

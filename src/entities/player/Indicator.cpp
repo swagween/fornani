@@ -40,9 +40,9 @@ void Indicator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 		return;
 	} else if (!addition_limit.is_complete()) {
 		label.setPosition(position + shadow - cam);
-		meta.id == 0 ? label.setColor(svc.styles.colors.ui_black) : label.setColor(svc.styles.colors.dark_fucshia);
+		meta.id == 0 ? label.setFillColor(svc.styles.colors.ui_black) : label.setFillColor(svc.styles.colors.dark_fucshia);
 		win.draw(label);
-		label.setColor(color_fade.color());
+		label.setFillColor(color_fade.color());
 		label.setPosition(position - cam);
 		win.draw(label);
 	}

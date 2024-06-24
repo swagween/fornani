@@ -23,8 +23,9 @@
         2
       ],
       "extent": 6,
+      "style": 0,
       "type": "standard_nonstick",
-      "start": 0.0
+      "start": 0.000000
     },
     {
       "position": [
@@ -36,8 +37,9 @@
         1
       ],
       "extent": 6,
+      "style": 0,
       "type": "standard_side_to_side",
-      "start": 0.5
+      "start": 0.500000
     },
     {
       "position": [
@@ -49,8 +51,9 @@
         1
       ],
       "extent": 6,
+      "style": 0,
       "type": "standard_side_to_side",
-      "start": 0.5
+      "start": 0.500000
     },
     {
       "position": [
@@ -62,8 +65,9 @@
         1
       ],
       "extent": 6,
+      "style": 0,
       "type": "standard_up_down",
-      "start": 0.2
+      "start": 0.200000
     }
   ]
 }

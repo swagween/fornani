@@ -4,16 +4,19 @@
     "hp": 3.000000,
     "orbs": 0,
     "position": {
-      "x": 136.195236,
+      "x": 129.171829,
       "y": 231.000000
     },
-    "arsenal": [ 0
+    "arsenal": [
+      0
     ],
     "equipped_gun": 0,
     "abilities": [
+
     ],
     "items": [
+
     ]
   },
-  "save_point_id": 1
+  "save_point_id": 100
 }

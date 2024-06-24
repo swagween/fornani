@@ -679,7 +679,7 @@
       },
       "spray": {
         "dimensions": [ 2.0, 2.0 ],
-        "type": "twinkle",
+        "type": "spritz",
         "color": "mythic_green"
       }
     }

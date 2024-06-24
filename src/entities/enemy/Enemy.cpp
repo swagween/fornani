@@ -35,8 +35,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	sprite_dimensions.y = in_physical["sprite_dimensions"][1].as<int>();
 	spritesheet_dimensions.x = in_physical["spritesheet_dimensions"][0].as<int>();
 	spritesheet_dimensions.y = in_physical["spritesheet_dimensions"][1].as<int>();
-	sprite_offset.x = in_physical["offset"][0].as<int>();
-	sprite_offset.y = in_physical["offset"][1].as<int>();
+	sprite_offset.x = in_physical["offset"][0].as<float>();
+	sprite_offset.y = in_physical["offset"][1].as<float>();
 
 	// TODO: load hurtboxes and colliders
 
@@ -45,7 +45,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	physical.hostile_range.dimensions.x = in_physical["hostile_range"][0].as<float>();
 	physical.hostile_range.dimensions.y = in_physical["hostile_range"][1].as<float>();
 
-	attributes.base_damage = in_attributes["base_damage"].as<int>();
+	attributes.base_damage = in_attributes["base_damage"].as<float>();
 	attributes.base_hp = in_attributes["base_hp"].as<float>();
 	attributes.loot_multiplier = in_attributes["loot_multiplier"].as<float>();
 	attributes.speed = in_attributes["speed"].as<float>();

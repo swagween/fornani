@@ -10,14 +10,14 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	title_font.loadFromFile(svc.text.title_font);
 	title_font.setSmooth(false);
 	title.setFont(title_font);
-	title.setColor(svc.styles.colors.ui_white);
+	title.setFillColor(svc.styles.colors.ui_white);
 	title.setLetterSpacing(2.f);
 
 	widget_font.loadFromFile(svc.text.title_font);
 	widget_font.setSmooth(false);
 	widget_label.setCharacterSize(ui.widget_size);
 	widget_label.setFont(widget_font);
-	widget_label.setColor(svc.styles.colors.ui_white);
+	widget_label.setFillColor(svc.styles.colors.ui_white);
 
 	origin = {ui.corner_pad * 0.5f, ui.corner_pad * 0.5f};
 	title.setPosition(origin + ui.title_offset);

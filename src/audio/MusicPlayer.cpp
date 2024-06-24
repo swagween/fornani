@@ -14,7 +14,7 @@ void MusicPlayer::load(std::string_view song_name) {
 	song_loop.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_loop.wav");
 	switch_on();
 }
-void MusicPlayer::play_once(int vol) {
+void MusicPlayer::play_once(float vol) {
 	volume.native = vol;
 	if (global_off()) { return; }
 	if (!flags.state.test(SongState::on)) {
@@ -27,7 +27,7 @@ void MusicPlayer::play_once(int vol) {
 	song_first.play();
 	status = sf::SoundSource::Status::Playing;
 }
-void MusicPlayer::play_looped(int vol) {
+void MusicPlayer::play_looped(float vol) {
 	volume.native = vol;
 	if (global_off()) { return; }
 	switch_on();

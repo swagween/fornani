@@ -52,5 +52,77 @@
       "destination_id": 116,
       "activate_on_contact": true
     }
+  ],
+  "platforms": [
+    {
+      "position": [
+        11,
+        48
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 27,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        11,
+        5
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 27,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        2,
+        69
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 21,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.400000
+    },
+    {
+      "position": [
+        10,
+        69
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 16,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.600000
+    },
+    {
+      "position": [
+        14,
+        69
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 16,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.600000
+    }
   ]
 }

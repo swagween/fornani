@@ -18,7 +18,7 @@ class Player;
 namespace entity {
 
 const int A_UNIT_SIZE = 32;
-const sf::Vector2<int> large_animator_offset{16, 16};
+const sf::Vector2<float> large_animator_offset{16.f, 16.f};
 
 class Animator : public Entity {
 

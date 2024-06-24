@@ -24,7 +24,8 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.world.test(World::save)) { svc.assets.save.play(); }
 	if (flags.world.test(World::soft_sparkle)) { svc.assets.soft_sparkle.play(); }
 	if (flags.world.test(World::chest)) { svc.assets.chest.play(); }
-	if (flags.world.test(World::breakable_shatter)) { svc.assets.shatter.play(); }
+	if (flags.world.test(World::breakable_shatter)) { svc.assets.breakable_shatter.play(); }
+	if (flags.world.test(World::breakable_hit)) { randomize(svc, svc.assets.breakable_hit, 0.1f); }
 
 	//frdog
 	if (flags.frdog.test(Frdog::death)) { svc.assets.enem_death_1.play(); }
@@ -84,14 +85,14 @@ void Soundboard::repeat(automa::ServiceProvider& svc, sf::Sound& sound, int freq
 	if (svc.ticker.every_x_ticks(frequency)) { randomize(svc, sound, random_pitch_offset); }
 }
 
-void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset, int vol) {
+void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset, float vol) {
 	float random_pitch = svc.random.random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.setPitch(1.f + random_pitch);
 	sound.setVolume(vol);
 	sound.play();
 }
 
-void Soundboard::play_at_volume(sf::Sound& sound, int vol) {
+void Soundboard::play_at_volume(sf::Sound& sound, float vol) {
 	sound.setVolume(vol);
 	sound.play();
 }

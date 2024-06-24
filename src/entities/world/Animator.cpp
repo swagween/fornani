@@ -34,7 +34,7 @@ void Animator::update(player::Player& player) {
 		}
 	}
 	position = static_cast<sf::Vector2<float>>(scaled_position * A_UNIT_SIZE);
-	sf::Vector2<float> adjusted_pos = sf::Vector2<float>(scaled_position.x * A_UNIT_SIZE + large_animator_offset.x, scaled_position.y * A_UNIT_SIZE + large_animator_offset.y);
+	sf::Vector2<float> adjusted_pos = sf::Vector2<float>((float)scaled_position.x * A_UNIT_SIZE + large_animator_offset.x, (float)scaled_position.y * A_UNIT_SIZE + large_animator_offset.y);
 	bounding_box.set_position(adjusted_pos);
 	int converted_id = large ? id - 100 : id - 200;
 	auto x_scale = large ? 2 : 1;

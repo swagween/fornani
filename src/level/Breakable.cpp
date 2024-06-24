@@ -15,8 +15,6 @@ Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, 
 	collider.sync_components();
 	sprite.setTexture(svc.assets.t_breakables);
 	sprite.setTextureRect(sf::IntRect{{state * 32, style * 32}, {32, 32}});
-	sounds.hit.setBuffer(svc.assets.b_breakable_hit);
-	sounds.shatter.setBuffer(svc.assets.shatter_buffer);
 }
 
 void Breakable::update(automa::ServiceProvider& svc) {
@@ -49,11 +47,11 @@ void Breakable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proj
 		if (!proj.destruction_initiated()) {
 			state -= power;
 			energy = hit_energy;
-			sounds.hit.play();
+			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 		}
 		if (destroyed()) {
 			map.effects.push_back(entity::Effect(svc, collider.physics.position, {}, 0, 0));
-			sounds.shatter.play();
+			svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 		}
 		proj.destroy(false);
 	}
@@ -63,10 +61,10 @@ void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, int powe
 	if (destroyed()) { return; }
 	state -= power;
 	energy = hit_energy;
-	sounds.hit.play();
+	svc.soundboard.flags.world.set(audio::World::breakable_hit);
 	if (destroyed()) {
 		map.effects.push_back(entity::Effect(svc, collider.physics.position, {}, 0, 0));
-		sounds.shatter.play();
+		svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 	}
 }
 

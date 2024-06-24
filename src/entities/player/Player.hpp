@@ -125,7 +125,7 @@ class Player {
 	void update_direction();
 	void update_weapon();
 	void walk();
-	void hurt(int amount);
+	void hurt(float amount);
 	void update_antennae();
 	void sync_antennae();
 
@@ -136,7 +136,7 @@ class Player {
 	void update_invincibility();
 	void kill();
 	void start_over();
-	void give_drop(item::DropType type, int value);
+	void give_drop(item::DropType type, float value);
 	void give_item(int item_id, int amount);
 
 	void reset_flags();

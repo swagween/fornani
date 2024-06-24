@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cstdio>
 #include <memory>
+#include <filesystem>
 #include "../components/PhysicsComponent.hpp"
 #include "../entities/player/Player.hpp"
 #include "../graphics/Background.hpp"
@@ -48,6 +49,17 @@ struct Option {
 	void update(ServiceProvider& svc, int& selection);
 };
 
+struct Scene {
+	struct {
+		std::filesystem::path scene{};
+		std::filesystem::path region{};
+		std::filesystem::path room{};
+		std::filesystem::path next_region{};
+		std::filesystem::path next_room{};
+	} paths{};
+	std::string_view label{};
+};
+
 class GameState {
 
   public:
@@ -69,6 +81,7 @@ class GameState {
 	bool debug_mode{false};
 	util::BitFlags<GameStateFlags> flags{};
 
+	std::string_view scene{};
 	gui::Console console{};
 	gui::InventoryWindow inventory_window;
 	gui::PauseWindow pause_window;
@@ -82,7 +95,7 @@ class GameState {
 	sf::Font font{};
 	sf::Font subtitle_font{};
 
-	std::string_view scene{};
+	Scene target_folder{};
 	std::vector<Option> options{};
 	int current_selection{};
 	float spacing{24.f};

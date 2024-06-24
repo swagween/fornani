@@ -15,7 +15,7 @@
 #include "../utils/Stopwatch.hpp"
 
 namespace automa {
-enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger };
+enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
 struct ServiceProvider {
 	asset::AssetManager assets{};
 	data::DataManager data{*this};
@@ -33,6 +33,8 @@ struct ServiceProvider {
 
 	//debug stuff
 	util::Stopwatch stopwatch{};
+
+	[[nodiscard]] auto demo_mode() const -> bool { return debug_flags.test(DebugFlags::demo_mode); }
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 
 };

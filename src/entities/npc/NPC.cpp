@@ -17,8 +17,8 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 	sprite_dimensions.y = in_data["sprite_dimensions"][1].as<int>();
 	spritesheet_dimensions.x = in_data["spritesheet_dimensions"][0].as<int>();
 	spritesheet_dimensions.y = in_data["spritesheet_dimensions"][1].as<int>();
-	sprite_offset.x = in_data["sprite_offset"][0].as<int>();
-	sprite_offset.y = in_data["sprite_offset"][1].as<int>();
+	sprite_offset.x = in_data["sprite_offset"][0].as<float>();
+	sprite_offset.y = in_data["sprite_offset"][1].as<float>();
 
 	sprite.setOrigin(in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>());
 

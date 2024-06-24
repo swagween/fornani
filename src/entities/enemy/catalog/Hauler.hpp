@@ -26,7 +26,7 @@ class Hauler : public Enemy {
 	  private:
 		util::BitFlags<HaulerState> state{};
 
-	int fire_chance{80};
+	float fire_chance{80.f};
 
 	//packages
 	entity::Caution caution{};

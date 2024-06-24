@@ -39,10 +39,6 @@ class Breakable {
 	shape::Collider collider{};
 	util::BitFlags<BreakableAttributes> attributes{};
 	sf::Sprite sprite{};
-	struct {
-		sf::Sound hit{};
-		sf::Sound shatter{};
-	} sounds{};
 	int style{};
 	int state{};
 	float energy{};

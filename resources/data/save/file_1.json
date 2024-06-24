@@ -2,10 +2,10 @@
   "player_data": {
     "max_hp": 6.000000,
     "hp": 6.000000,
-    "orbs": 419,
+    "orbs": 467,
     "position": {
-      "x": 133.270340,
-      "y": 230.999985
+      "x": 214.016159,
+      "y": 359.000000
     },
     "arsenal": [
       0,
@@ -14,11 +14,7 @@
     ],
     "equipped_gun": 1,
     "abilities": [
-      "dash",
-      "wall slide",
-      "shield",
-      "double jump",
-      "respiration"
+      "dash"
     ],
     "items": [
       {
@@ -35,5 +31,5 @@
       }
     ]
   },
-  "save_point_id": 1
+  "save_point_id": 117
 }

@@ -26,7 +26,7 @@ class Tank : public Enemy {
 	  private:
 		util::BitFlags<TankState> state{};
 
-	int fire_chance{80};
+	float fire_chance{100.f};
 
 	//packages
 	entity::WeaponPackage gun;

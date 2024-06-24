@@ -1,31 +1,37 @@
 {
   "meta": {
-    "room_id": 0,
-    "dimensions": [
-      32,
-      16
-    ],
-    "chunk_dimensions": [
-      2,
-      1
-    ],
+    "room_id": 100,
+    "dimensions": [ 32, 16 ],
+    "chunk_dimensions": [ 2, 1 ],
     "style": 0,
-    "background": 7,
+    "background": 4,
     "music": "dusken_cove"
   },
-  "portals": [
+  "npcs": [
     {
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        25,
-        9
-      ],
-      "source_id": 100,
-      "destination_id": 101,
-      "activate_on_contact": false
+      "id": 0,
+      "position": [ 18, 4 ],
+      "suites": ["1", "2", "3"]
+    },
+    {
+      "id": 3,
+      "position": [ 24, 8 ],
+      "suites": ["1", "2"]
     }
-  ]
+  ],
+  "portals":  [
+    {
+      "dimensions": [ 1, 1 ],
+      "position": [ 25, 9 ],
+      "activate_on_contact":  false,
+      "source_id":  100,
+      "destination_id":  101,
+      "source_label": "FIRSTWIND_PRISON_01",
+      "destination_label": "FIRSTWIND_CORRIDOR_01"
+    }
+  ],
+  "save_point": {
+      "id": 0,
+      "position": [ 4, 7 ]
+  }
 }

@@ -10,6 +10,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	collider.sync_components();
 	box.setFillColor(color);
 	box.setSize(dimensions);
+	box.setOrigin(dimensions * 0.5f);
 
 	auto const& in_data = svc.data.particle[type];
 	auto expulsion = in_data["expulsion"].as<float>();
@@ -22,11 +23,11 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	if ((dj::Boolean)in_data["colliding"].as_bool()) { flags.set(ParticleType::colliding); }
 
 	auto angle = svc.random.random_range_float(-angle_range, angle_range);
-	if (direction.lr == dir::LR::left) { angle += std::numbers::pi; }
-	if (direction.und == dir::UND::up) { angle += std::numbers::pi * 1.5; }
-	if (direction.und == dir::UND::down) { angle += std::numbers::pi * 0.5; }
+	if (direction.lr == dir::LR::left) { angle += (float)std::numbers::pi; }
+	if (direction.und == dir::UND::up) { angle += std::numbers::pi * 1.5f; }
+	if (direction.und == dir::UND::down) { angle += std::numbers::pi * 0.5f; }
 
-	expulsion += svc.random.random_range(-expulsion_variance, expulsion_variance);
+	expulsion += svc.random.random_range_float(-expulsion_variance, expulsion_variance);
 
 	collider.physics.apply_force_at_angle(expulsion, angle);
 	collider.physics.position = position;

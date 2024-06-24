@@ -412,7 +412,7 @@ void Player::walk() {
 	}
 }
 
-void Player::hurt(int amount = 1) {
+void Player::hurt(float amount = 1.f) {
 	if (!health.invincible()) {
 		if (shielding()) { return; }
 		m_services->ticker.slow_down(25);
@@ -506,7 +506,7 @@ void Player::start_over() {
 	collider.collision_depths = {};
 }
 
-void Player::give_drop(item::DropType type, int value) {
+void Player::give_drop(item::DropType type, float value) {
 	if (type == item::DropType::heart) {
 		health.heal(value);
 		health_indicator.add(value);

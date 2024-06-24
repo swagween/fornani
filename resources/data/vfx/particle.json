@@ -16,14 +16,14 @@
   },
 
   "thick_burst": {
-    "load": 18,
+    "load": 12,
     "rate": 100.0,
-    "expulsion": 60.0,
-    "expulsion_variance": 55.0,
+    "expulsion": 40.0,
+    "expulsion_variance": 40.0,
     "cone": 0.08,
-    "friction": 0.994,
+    "friction": 0.99,
     "elasticity": 0.95,
-    "gravity": 2.9,
+    "gravity": 2.5,
     "lifespan": 360,
     "lifespan_variance": 225,
     "dimensions": [ 4, 4 ],
@@ -76,6 +76,28 @@
     "lifespan_variance": 0,
     "dimensions": [ 32, 32 ],
     "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 4,
+      "framerate": 28,
+      "loop": 0
+    }
+  },
+
+  "spritz": {
+    "load": 2,
+    "rate": 100.0,
+    "expulsion": 20.0,
+    "expulsion_variance": 15.0,
+    "cone": 0.9,
+    "friction": 0.99,
+    "elasticity": 0.0,
+    "gravity": 0.0,
+    "lifespan": 100,
+    "lifespan_variance": 0,
+    "dimensions": [ 3, 3 ],
+    "animated": false,
     "colliding": false,
     "animation": {
       "lookup": 0,

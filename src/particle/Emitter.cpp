@@ -8,8 +8,8 @@ Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::
 	auto const& in_data = svc.data.particle[type];
 	variables.load = in_data["load"].as<int>();
 	variables.rate = in_data["rate"].as<float>();
-	particle_dimensions.x = in_data["dimensions"][0].as<int>();
-	particle_dimensions.y = in_data["dimensions"][1].as<int>();
+	particle_dimensions.x = in_data["dimensions"][0].as<float>();
+	particle_dimensions.y = in_data["dimensions"][1].as<float>();
 	
 	cooldown.start(variables.load);
 	drawbox.setFillColor(sf::Color::Transparent);

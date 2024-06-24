@@ -14,7 +14,7 @@ class Collider;
 }
 
 namespace dir {
-class Direction;
+struct Direction;
 }
 
 namespace entity {

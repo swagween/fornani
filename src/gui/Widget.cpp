@@ -11,7 +11,7 @@ Widget::Widget(automa::ServiceProvider& svc, sf::Vector2<int> dim, int index) : 
 void Widget::update(automa::ServiceProvider& svc, player::Player& player) {
 	gravitator.set_target_position(position);
 	gravitator.update(svc);
-	maximum = player.health.get_max();
+	maximum = static_cast<int>(player.health.get_max());
 }
 void Widget::render(sf::RenderWindow& win) {
 	int lookup = static_cast<int>(current_state) * dimensions.x;

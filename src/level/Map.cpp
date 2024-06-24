@@ -48,8 +48,8 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
 		for (auto& entry : metadata["npcs"].array_view()) {
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
+			pos.x = entry["position"][0].as<float>();
+			pos.y = entry["position"][1].as<float>();
 			npcs.push_back(npc::NPC(svc, entry["id"].as<int>()));
 			for (auto& convo : entry["suites"].array_view()) { npcs.back().push_conversation(convo.as_string()); }
 			npcs.back().set_position_from_scaled(pos);
@@ -70,15 +70,14 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		}
 
 		auto const& savept = metadata["save_point"];
-		auto id = savept["id"].as<int>();
-		save_point.id = id != 0 ? id : -1;
+		save_point.id = savept.contains("position") ? room_id : -1;
 		save_point.scaled_position.x = savept["position"][0].as<int>();
 		save_point.scaled_position.y = savept["position"][1].as<int>();
 
 		for (auto& entry : metadata["chests"].array_view()) {
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
+			pos.x = entry["position"][0].as<float>();
+			pos.y = entry["position"][1].as<float>();
 			chests.push_back(entity::Chest(svc));
 			chests.back().set_id(entry["id"].as<int>());
 			chests.back().set_item(entry["item_id"].as<int>());
@@ -125,16 +124,16 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		for (auto& entry : metadata["platforms"].array_view()) {
 			sf::Vector2<float> dim{};
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
-			dim.x = entry["dimensions"][0].as<int>();
-			dim.y = entry["dimensions"][1].as<int>();
+			pos.x = entry["position"][0].as<float>();
+			pos.y = entry["position"][1].as<float>();
+			dim.x = entry["dimensions"][0].as<float>();
+			dim.y = entry["dimensions"][1].as<float>();
 			pos *= svc.constants.cell_size;
 			dim *= svc.constants.cell_size;
 			auto start = entry["start"].as<float>();
 			start = std::clamp(start, 0.f, 1.f);
 			auto type = entry["type"].as_string();
-			platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<int>(), type, start, entry["style"].as<int>()));
+			platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
 		}
 	}
 
@@ -157,7 +156,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 	player->map_reset();
 
 	transition.fade_in = true;
-	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2, svc.constants.screen_dimensions.y * 2));
+	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2.f, svc.constants.screen_dimensions.y * 2.f));
 	minimap.setViewport(sf::FloatRect(0.75f, 0.75f, 0.2f, 0.2f));
 	loading.start(2);
 }
@@ -300,7 +299,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		transition.fade_out = true;
 		if (transition.done) {
 			player->start_over();
-			svc.state_controller.next_state = lookup::get_map_label.at(100); // temporary. later, we will load the last save
+			svc.state_controller.actions.set(automa::Actions::player_death);
 			svc.state_controller.actions.set(automa::Actions::trigger);
 		}
 	}

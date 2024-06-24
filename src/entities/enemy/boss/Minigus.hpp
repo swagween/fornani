@@ -84,9 +84,9 @@ class Minigus : public Enemy, public npc::NPC {
 		entity::Shockwave right_shockwave{{0.6f, 0.f}};
 	} attacks{};
 
-	int fire_chance{2};
-	int snap_chance{10};
-	int rush_chance{20};
+	float fire_chance{2.f};
+	float snap_chance{10.f};
+	float rush_chance{20.f};
 	float rush_speed{8.f};
 	int health_bar_size{600};
 

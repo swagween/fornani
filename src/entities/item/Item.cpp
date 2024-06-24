@@ -14,7 +14,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	if (in_data["unique"].as_bool()) { flags.set(ItemFlags::unique); }
 	dimensions = {32.f, 32.f};
 	sprite.setTexture(svc.assets.t_items);
-	int u = (metadata.id - 1) * dimensions.x;
+	int u = static_cast<int>((metadata.id - 1) * dimensions.x);
 	int v = 0;
 	sprite.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
 

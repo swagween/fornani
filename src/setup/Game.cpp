@@ -6,7 +6,16 @@ Game::Game(char** argv) : player(services) {
 	// data
 	services.data = data::DataManager(services);
 	services.data.finder.setResourcePath(argv);
+	services.data.finder.set_scene_path(argv);
 	services.data.load_data();
+	// metadata
+	auto const& in_info = services.data.game_info;
+	metadata.title = in_info["title"].as_string();
+	metadata.build = in_info["build"].as_string();
+	metadata.major = in_info["version"]["major"].as<int>();
+	metadata.minor = in_info["version"]["minor"].as<int>();
+	metadata.hotfix = in_info["version"]["hotfix"].as<int>();
+
 	// controls
 	services.data.load_controls(services.controller_map);
 	// text
@@ -28,7 +37,7 @@ Game::Game(char** argv) : player(services) {
 	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 	game_state.get_current_state().init(services);
 
-	window.create(sf::VideoMode(services.constants.screen_dimensions.x, services.constants.screen_dimensions.y), "Fornani (alpha v0.0.0)");
+	window.create(sf::VideoMode(services.constants.screen_dimensions.x, services.constants.screen_dimensions.y), metadata.long_title());
 	measurements.width_ratio = (float)services.constants.screen_dimensions.x / (float)services.constants.screen_dimensions.y;
 	measurements.height_ratio = (float)services.constants.screen_dimensions.y / (float)services.constants.screen_dimensions.x;
 
@@ -45,7 +54,25 @@ Game::Game(char** argv) : player(services) {
 	ImGui::SFML::Init(window);
 }
 
-void Game::run() {
+void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+
+	// for editor demo. should be excluded for releases.
+	if (demo) {
+		services.debug_flags.set(automa::DebugFlags::demo_mode);
+		flags.set(GameFlags::in_game);
+		game_state.get_current_state().target_folder.paths.scene = levelpath;
+		services.music.turn_off();
+		services.data.load_blank_save(player);
+		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+		game_state.get_current_state().init(services, "/level/" + levelpath.filename().string());
+		services.state_controller.demo_level = levelpath.filename().string();
+		services.state_controller.player_position = player_position;
+		player.set_position(player_position);
+	} else {
+		game_state.get_current_state().target_folder.paths.scene = services.data.finder.scene_path;
+		game_state.get_current_state().target_folder.paths.region = services.data.finder.scene_path + "/firstwind";
+	}
+
 	while (window.isOpen()) {
 
 		if (services.state_controller.actions.test(automa::Actions::shutdown)) { return; }
@@ -88,9 +115,9 @@ void Game::run() {
 				measurements.win_size.x = window.getSize().x;
 				measurements.win_size.y = window.getSize().y;
 				if (measurements.win_size.y * measurements.width_ratio <= measurements.win_size.x) {
-					measurements.win_size.x = measurements.win_size.y * measurements.width_ratio;
+					measurements.win_size.x = static_cast<uint32_t>(measurements.win_size.y * measurements.width_ratio);
 				} else if (measurements.win_size.x * measurements.height_ratio <= measurements.win_size.y) {
-					measurements.win_size.y = measurements.win_size.x * measurements.height_ratio;
+					measurements.win_size.y = static_cast<uint32_t>(measurements.win_size.x * measurements.height_ratio);
 				}
 				window.setSize(sf::Vector2u{measurements.win_size.x, measurements.win_size.y});
 				screencap.create(window.getSize().x, window.getSize().y);
@@ -140,35 +167,7 @@ void Game::run() {
 		services.music.update();
 		services.ticker.tick([this, &services = services] { game_state.get_current_state().tick_update(services); });
 		game_state.get_current_state().frame_update(services);
-
-		// switch states
-		if (services.state_controller.actions.test(automa::Actions::trigger_submenu)) {
-			switch (services.state_controller.submenu) {
-			case automa::menu_type::file_select:
-				game_state.set_current_state(std::make_unique<automa::FileMenu>(services, player, "file"));
-				playtest_sync();
-				break;
-			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player, "options")); break;
-			case automa::menu_type::settings: game_state.set_current_state(std::make_unique<automa::SettingsMenu>(services, player, "settings")); break;
-			case automa::menu_type::controls: game_state.set_current_state(std::make_unique<automa::ControlsMenu>(services, player, "controls")); break;
-			case automa::menu_type::credits: game_state.set_current_state(std::make_unique<automa::CreditsMenu>(services, player, "credits")); break;
-			}
-			services.state_controller.actions.reset(automa::Actions::trigger_submenu);
-		}
-		if (services.state_controller.actions.test(automa::Actions::exit_submenu)) {
-			switch (services.state_controller.submenu) {
-			case automa::menu_type::options: game_state.set_current_state(std::make_unique<automa::OptionsMenu>(services, player, "options")); break;
-			default: game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); break;
-			}
-			services.state_controller.actions.reset(automa::Actions::exit_submenu);
-		}
-		if (services.state_controller.actions.test(automa::Actions::trigger)) {
-			flags.set(GameFlags::in_game);
-			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
-			game_state.get_current_state().init(services, "/level/" + services.state_controller.next_state);
-			services.state_controller.actions.reset(automa::Actions::trigger);
-			playtest_sync();
-		}
+		game_state.process_state(services, player, *this);
 
 		ImGui::SFML::Update(window, deltaClock.restart());
 		screencap.update(window);
@@ -815,6 +814,11 @@ void Game::playtester_portal() {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
+					ImGui::Separator();
+					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
+					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
+					ImGui::Text(metadata.long_title().c_str());
+					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
 					if (ImGui::Button("Toggle Greyblock Mode")) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
@@ -1030,9 +1034,12 @@ bool Game::debug() { return services.debug_flags.test(automa::DebugFlags::imgui_
 void Game::playtest_sync() {
 	playtest.weapons.bryn = player.arsenal.has(0);
 	playtest.weapons.plasmer = player.arsenal.has(1);
+	playtest.weapons.tomahawk = player.arsenal.has(3);
 	playtest.weapons.grapple = player.arsenal.has(4);
 	playtest.weapons.grenade = player.arsenal.has(5);
-	playtest.weapons.tomahawk = player.arsenal.has(3);
+	playtest.weapons.staple_gun = player.arsenal.has(8);
+	playtest.weapons.indie = player.arsenal.has(9);
+	playtest.weapons.gnat = player.arsenal.has(10);
 }
 
 } // namespace fornani

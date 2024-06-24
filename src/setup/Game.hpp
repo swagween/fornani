@@ -6,7 +6,9 @@
 #include "../entities/player/Player.hpp"
 #include "../audio/MusicPlayer.hpp"
 #include "../utils/BitFlags.hpp"
+#include "../setup/Version.hpp"
 #include <imgui-SFML.h>
+#include <filesystem>
 
 namespace fornani {
 
@@ -17,17 +19,17 @@ class Game {
 	Game() = default;
 	Game(char** argv);
 	~Game() {}
-	void run();
+	void run(bool demo = false, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+
+	void playtest_sync();
+	util::BitFlags<GameFlags> flags{};
 
   private:
+
 	void debug_window();
 	void playtester_portal();
 	void take_screenshot();
 	bool debug();
-	void playtest_sync();
-
-	util::BitFlags<GameFlags> flags{};
-
 	automa::ServiceProvider services{};
 
 	struct {
@@ -63,6 +65,8 @@ class Game {
 	sf::RenderWindow window{};
 	sf::Texture screencap{};
 	sf::RectangleShape background{};
+
+	Version metadata{};
 };
 
 } // namespace fornani

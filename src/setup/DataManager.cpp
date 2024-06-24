@@ -12,6 +12,8 @@ DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 void DataManager::load_data() {
 
 	std::cout << "loading json data...";
+	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
+	assert(!game_info.is_null());
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
 	drop = dj::Json::from_file((finder.resource_path + "/data/item/drop.json").c_str());
@@ -92,7 +94,8 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	assert(!save.is_null());
 
 	int save_pt_id = save["save_point_id"].as<int>();
-	int room_id = lookup::save_point_to_room_id.at(save_pt_id);
+	int room_id = save_pt_id;
+	m_services->state_controller.save_point_id = save_pt_id;
 
 	// set player data based on save file
 	player.health.set_max(save["player_data"]["max_hp"].as<int>());

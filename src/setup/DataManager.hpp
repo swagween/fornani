@@ -42,6 +42,8 @@ class DataManager {
 	void save_controls(config::ControllerMap& controller);
 	void reset_controls();
 
+	dj::Json game_info{};
+
 	dj::Json weapon{};
 	dj::Json drop{};
 	dj::Json particle{};

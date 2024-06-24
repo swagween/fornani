@@ -36,14 +36,14 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		++current_selection;
 		constrain_selection();
 		svc.data.load_blank_save(*player);
-		svc.data.load_progress(*player, current_selection);
+		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("up").triggered()) {
 		--current_selection;
 		constrain_selection();
 		svc.data.load_blank_save(*player);
-		svc.data.load_progress(*player, current_selection);
+		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
@@ -52,7 +52,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	}
 	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {
 		constrain_selection();
-		svc.data.load_progress(*player, current_selection, true);
+		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection, true);
 		svc.state_controller.actions.set(Actions::trigger);
 		svc.state_controller.actions.set(Actions::save_loaded);
 		svc.soundboard.flags.menu.set(audio::Menu::select);

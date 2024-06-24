@@ -26,7 +26,7 @@ void Collider::sync_components() {
 	vicinity.dimensions.x = dimensions.x + 2 * vicinity_pad;
 	vicinity.dimensions.y = dimensions.y + 2 * vicinity_pad;
 	wallslider.dimensions.x = dimensions.x + 2 * wallslide_pad;
-	wallslider.dimensions.y = dimensions.y * 0.5;
+	wallslider.dimensions.y = dimensions.y * 0.5f;
 	predictive_vertical.dimensions.x = dimensions.x - 2 * vertical_detector_buffer;
 	predictive_vertical.dimensions.y = dimensions.y + 2 * vertical_detector_buffer;
 	predictive_horizontal.dimensions.x = dimensions.x + 2 * horizontal_detector_buffer;
@@ -187,7 +187,7 @@ void Collider::detect_map_collision(world::Map& map) {
 
 int Collider::detect_ledge_height(world::Map& map) {
 	int ret{};
-	int total = map.layers.at(world::MIDDLEGROUND).grid.cells.size();
+	auto total = map.layers.at(world::MIDDLEGROUND).grid.cells.size();
 	for (int index = 0; index < total; ++index) {
 		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
 		if (!map.nearby(cell.bounding_box, bounding_box)) {
@@ -212,7 +212,7 @@ int Collider::detect_ledge_height(world::Map& map) {
 							if (map.layers.at(world::MIDDLEGROUND).grid.cells.at(next_row).is_occupied()) { found = true; }
 							next_row += map.dimensions.x;
 							++ret;
-							if (ret > map.dimensions.y) { return map.dimensions.y; }
+							if (ret > (int)map.dimensions.y) { return map.dimensions.y; }
 						}
 						return ret;
 					}

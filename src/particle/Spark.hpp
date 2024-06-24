@@ -26,9 +26,9 @@ class Spark {
 	std::string_view type{};
 
 	struct {
-		float wobble{0.1};
+		float wobble{0.1f};
 		float frequency{0.02f};
-		float speed{0.1};
+		float speed{0.1f};
 		float volatility{0.0f};
 	} parameters{};
 

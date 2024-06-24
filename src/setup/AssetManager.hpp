@@ -81,6 +81,7 @@ class AssetManager {
 	sf::Texture t_platforms{};
 	sf::Texture t_platform_night{};
 	sf::Texture t_platform_abandoned{};
+	sf::Texture t_platform_firstwind{};
 
 	//save
 	sf::Texture savepoint{};
@@ -319,6 +320,9 @@ class AssetManager {
 	sf::Sound menu_back{};
 	sf::Sound sharp_click{};
 	sf::Sound menu_shift{};
+
+	sf::Sound breakable_hit{};
+	sf::Sound breakable_shatter{};
 
 	// other members
 	int music_vol{24};

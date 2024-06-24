@@ -20,8 +20,8 @@ enum class MusicPlayerState { on };
 class MusicPlayer {
   public:
 	void load(std::string_view song_name);
-	void play_once(int vol = 100);
-	void play_looped(int vol = 100);
+	void play_once(float vol = 100.f);
+	void play_looped(float vol = 100.f);
 	void update();
 	void pause();
 	void stop();
@@ -32,15 +32,15 @@ class MusicPlayer {
 	void turn_off();
 	void turn_on();
 	void set_volume(int vol);
-	[[nodiscard]] auto get_volume() const -> int { return song_first.getStatus() == sf::SoundSource::Status::Playing ? song_first.getVolume() : song_loop.getStatus() == sf::SoundSource::Status::Playing ? song_loop.getVolume() : 0; }
+	[[nodiscard]] auto get_volume() const -> float { return song_first.getStatus() == sf::SoundSource::Status::Playing ? song_first.getVolume() : song_loop.getStatus() == sf::SoundSource::Status::Playing ? song_loop.getVolume() : 0.f; }
 	[[nodiscard]] auto global_off() const -> bool { return !flags.player.test(MusicPlayerState::on); }
 	[[nodiscard]] auto playing() const -> bool { return song_first.getStatus() == sf::SoundSource::Status::Playing || song_loop.getStatus() == sf::SoundSource::Status::Playing; }
 
 	data::ResourceFinder finder{};
 
 	struct {
-		int native{};
-		int actual{};
+		float native{};
+		float actual{};
 		float multiplier{1.0f};
 	} volume{};
 

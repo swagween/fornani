@@ -14,7 +14,7 @@ class Health : public Entity {
 	[[nodiscard]] auto get_hp() const -> float { return hp; }
 	[[nodiscard]] auto get_max() const -> float { return max_hp; }
 	[[nodiscard]] auto get_limit() const -> float { return hp_limit; }
-	[[nodiscard]] auto get_taken_point() const -> float { return taken_point; }
+	[[nodiscard]] auto get_taken_point() const -> float { return static_cast<float>(taken_point); }
 	[[nodiscard]] auto is_dead() const -> bool { return hp <= 0.f; }
 	[[nodiscard]] auto invincible() const -> bool { return !invincibility.is_complete(); }
 	[[nodiscard]] auto full() const -> bool { return hp == max_hp; }
@@ -29,7 +29,7 @@ class Health : public Entity {
 	util::BitFlags<HPState> flags{};
 	util::Cooldown invincibility{};
 	util::Cooldown restored{};
-	int taken_point{};
+	float taken_point{};
 
   private:
 	float hp_limit{24.f};
