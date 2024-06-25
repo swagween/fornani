@@ -40,7 +40,7 @@ void Animator::update(player::Player& player) {
 	auto x_scale = large ? 2 : 1;
 	// get UV coords
 	int u = converted_id * x_scale * A_UNIT_SIZE;
-	int v = get_frame() * dimensions.y;
+	int v = get_frame() * static_cast<int>(dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
 }
 void Animator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

@@ -4,47 +4,44 @@
 
 namespace arms {
 
-Arsenal::Arsenal(automa::ServiceProvider& svc) {
-	for (int i = 0; i < max_weapons; ++i) {
-		if (svc.tables.gun_label.contains(i)) {
-			armory.at(i) = std::make_shared<Weapon>(svc, svc.tables.gun_label.at(i), i);
-		} else {
-			std::cout << "Gun with id " << i << " missing from Tables.hpp.\n"; 
-		}
-	}
-	default_gun = std::make_shared<Weapon>(svc, "bryn's gun", 0);
-}
+Arsenal::Arsenal(automa::ServiceProvider& svc) : m_services(&svc) {}
 
-void Arsenal::push_to_loadout(int id) { loadout.push_back(armory.at(id)); }
+void Arsenal::push_to_loadout(int id) {
+	if (loadout.empty()) {
+		loadout.push_back(std::make_unique<Weapon>(*m_services, m_services->tables.gun_label.at(id), id));
+		current_weapon = util::Circuit(static_cast<int>(loadout.size()));
+		return;
+	}
+	loadout.push_back(std::make_unique<Weapon>(*m_services, m_services->tables.gun_label.at(id), id));
+	current_weapon = util::Circuit(static_cast<int>(loadout.size()), current_weapon.value().get());
+}
 
 void Arsenal::pop_from_loadout(int id) {
 	std::erase_if(loadout, [id](auto const& g) { return g->get_id() == id; });
-	current_weapon = 0;
-}
-
-void Arsenal::switch_weapon(automa::ServiceProvider& svc, float next) {
-	if (next == 0.f) { return; }
-	if (loadout.empty()) { return; }
-	current_weapon += (int)next;
-	if (current_weapon <= -1) { current_weapon = loadout.size() - 1; }
-	if (current_weapon >= loadout.size()) { current_weapon = 0; }
-	if (current_weapon < loadout.size() && current_weapon < extant_projectile_instances.size()) {
-		loadout.at(current_weapon)->active_projectiles = extant_projectile_instances.at(current_weapon);
-		svc.soundboard.flags.player.set(audio::Player::arms_switch);
+	if (loadout.empty()) {
+		current_weapon = {};
+		return;
 	}
+	current_weapon = util::Circuit(static_cast<int>(loadout.size()), current_weapon.value().get());
 }
 
-Weapon& Arsenal::get_current_weapon() {
-	if (current_weapon < loadout.size()) {
-		return *loadout.at(current_weapon);
-	} else {
-		return *default_gun;
-	}
+void Arsenal::switch_weapon(automa::ServiceProvider& svc, int next) {
+	if (next == 0 || loadout.size() < 2) { return; }
+	current_weapon.value().modulate(next);
+	svc.soundboard.flags.player.set(audio::Player::arms_switch);
 }
 
-int Arsenal::get_index() { return current_weapon; }
+std::optional<std::reference_wrapper<std::unique_ptr<Weapon>>> Arsenal::get_weapon_at(int id) {
+	if (loadout.empty() || current_weapon.value().get() >= loadout.size()) { return {}; }
+	return loadout.at(id);
+}
 
-void Arsenal::set_index(int index) { current_weapon = index; }
+std::optional<std::reference_wrapper<std::unique_ptr<Weapon>>> Arsenal::get_current_weapon() {
+	if (loadout.empty() || current_weapon.value().get() >= loadout.size()) { return {}; }
+	return loadout.at(current_weapon.value().get());
+}
+
+void Arsenal::set_index(int index) { current_weapon.value() = util::Circuit(static_cast<int>(loadout.size()), index); }
 
 bool Arsenal::has(int id) {
 	for (auto& gun : loadout) {

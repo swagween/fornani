@@ -30,7 +30,7 @@ void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	for (auto& drop : drops) {
 		drop.update(svc, map);
 		if (drop.get_collider().bounding_box.overlaps(player.collider.bounding_box) && !drop.is_inactive() && !drop.is_completely_gone()) {
-			player.give_drop(drop.get_type(), drop.get_value());
+			player.give_drop(drop.get_type(), static_cast<float>(drop.get_value()));
 			if (drop.get_type() == DropType::heart) {
 				svc.soundboard.flags.item.set(audio::Item::heal);
 			} else if(drop.get_rarity() == common) {

@@ -5,9 +5,9 @@ namespace world {
 
 Grid::Grid(sf::Vector2<uint32_t> d) : dimensions(d) {
 	cells.clear();
-	for (int i = 0; i < dimensions.x * dimensions.y; i++) {
-		uint32_t xidx = std::floor(i % dimensions.x);
-		uint32_t yidx = std::floor(i / dimensions.x);
+	for (uint32_t i{0}; i < dimensions.x * dimensions.y; i++) {
+		auto xidx = static_cast<uint32_t>(std::floor(i % dimensions.x));
+		auto yidx = static_cast<uint32_t>(std::floor(i / dimensions.x));
 		auto xpos = xidx * spacing;
 		auto ypos = yidx * spacing;
 		cells.push_back(Tile({xidx, yidx}, {xpos, ypos}, 0));
@@ -19,9 +19,10 @@ Grid::Grid(sf::Vector2<uint32_t> d) : dimensions(d) {
 }
 
 void Grid::check_neighbors() {
-	for (auto i{0}; i < cells.size(); ++i) {
+	for (size_t i{0}; i < cells.size(); ++i) {
 		if (cells.at(i).is_occupied()) {
 			bool surrounded{true};
+			auto ui = static_cast<uint32_t>(i);
 			// right neighbor
 			if (!(i == cells.size() - 1)) {
 				if (!cells.at(i + 1).is_solid()) { surrounded = false; }
@@ -31,11 +32,11 @@ void Grid::check_neighbors() {
 				if (!cells.at(i - 1).is_solid()) { surrounded = false; }
 			}
 			// top neighbor
-			if (!(i < dimensions.x)) {
+			if (!(ui < dimensions.x)) {
 				if (!cells.at(i - dimensions.x).is_solid()) { surrounded = false; }
 			}
 			// bottom neighbor
-			if (!(i > cells.size() - dimensions.x - 1)) {
+			if (!(ui > cells.size() - dimensions.x - 1)) {
 				if (!cells.at(i + dimensions.x).is_solid()) { surrounded = false; }
 			}
 			cells.at(i).surrounded = surrounded;

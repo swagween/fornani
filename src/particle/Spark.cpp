@@ -20,7 +20,7 @@ Spark::Spark(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Color col
 
 	//seed variables
 	variables.energy = svc.random.random_range_float(1.0f - parameters.volatility, 1.0f + parameters.volatility);
-	variables.offset = svc.random.random_range_float(0, std::numbers::pi * 2.f);
+	variables.offset = svc.random.random_range_float(0.f, static_cast<float>(std::numbers::pi) * 2.f);
 
 }
 

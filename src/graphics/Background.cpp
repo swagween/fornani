@@ -57,7 +57,7 @@ void Background::update(automa::ServiceProvider& svc, sf::Vector2<float> observe
 
 			if (physics.at(idx).position.x < -scroll_size) { physics.at(idx).position.x = 0.f; }
 
-			sprite.setPosition(physics.at(idx).position.x - start_offset.x, -start_offset.y);
+			sprite.setPosition(physics.at(idx).position.x - static_cast<float>(start_offset.x), static_cast<float>(-start_offset.y));
 			++idx;
 		}
 	}

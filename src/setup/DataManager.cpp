@@ -64,7 +64,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto const wipe = dj::Json::parse(empty_array);
 	save["player_data"]["arsenal"] = wipe;
 	// push player arsenal
-	for (auto& gun : player.arsenal.loadout) {
+	for (auto& gun : player.arsenal.get_loadout()) {
 		int this_id = gun->get_id();
 		save["player_data"]["arsenal"].push_back(this_id);
 	}
@@ -100,16 +100,16 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	m_services->state_controller.save_point_id = save_pt_id;
 
 	// set player data based on save file
-	player.health.set_max(save["player_data"]["max_hp"].as<int>());
-	player.health.set_hp(save["player_data"]["hp"].as<int>());
+	player.health.set_max(save["player_data"]["max_hp"].as<float>());
+	player.health.set_hp(save["player_data"]["hp"].as<float>());
 	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	player.arsenal.loadout.clear();
+	player.arsenal.clear();
 	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
 		player.arsenal.push_to_loadout(gun_id.as<int>());
 	}
-	if (!player.arsenal.loadout.empty()) {
+	if (!player.arsenal.empty()) {
 		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
 		player.arsenal.set_index(equipped_gun);
 	}
@@ -120,9 +120,6 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
 	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
-	//reset some things that might be lingering
-	player.arsenal.extant_projectile_instances = {};
-
 	return lookup::get_map_label.at(room_id);
 }
 
@@ -132,12 +129,12 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	assert(!save.is_null());
 
 	// set player data based on save file
-	player.health.set_max(save["player_data"]["max_hp"].as<int>());
-	player.health.set_hp(save["player_data"]["hp"].as<int>());
+	player.health.set_max(save["player_data"]["max_hp"].as<float>());
+	player.health.set_hp(save["player_data"]["hp"].as<float>());
 	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	player.arsenal.loadout.clear();
+	player.arsenal.clear();
 
 	return lookup::get_map_label.at(100);
 }

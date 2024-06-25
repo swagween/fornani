@@ -18,7 +18,7 @@ FetchContent_Declare(
 FetchContent_Declare(
         ccmath
         GIT_REPOSITORY https://github.com/Rinzii/ccmath.git
-        GIT_TAG v0.1.5
+        GIT_TAG 26a0e1845eebc775121964b17a3fc5bd9c330831
 )
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_MakeAvailable(djson)

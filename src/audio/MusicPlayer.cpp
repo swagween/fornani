@@ -81,7 +81,7 @@ void MusicPlayer::turn_on() {
 	flags.player.set(MusicPlayerState::on);
 	pause();
 }
-void MusicPlayer::set_volume(int vol) {
+void MusicPlayer::set_volume(float vol) {
 	song_first.setVolume(vol);
 	song_loop.setVolume(vol);
 }

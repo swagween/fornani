@@ -457,7 +457,7 @@
         "automatic": false,
         "rate": 8,
         "cooldown_time": 30,
-        "recoil": 6.00,
+        "recoil": 0.1,
         "ui_color": 1
       },
       "projectile": {
@@ -579,7 +579,7 @@
         "automatic": false,
         "rate": 2,
         "cooldown_time": 4,
-        "recoil": 4.00,
+        "recoil": 1.8,
         "ui_color": 0
       },
       "projectile": {
@@ -640,7 +640,7 @@
         "automatic": true,
         "rate": 64,
         "cooldown_time": 5,
-        "recoil": 0.0,
+        "recoil": 0.0375,
         "ui_color": 6
       },
       "projectile": {

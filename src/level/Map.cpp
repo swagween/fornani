@@ -72,8 +72,6 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		auto const& savept = metadata["save_point"];
 		auto save_id = svc.state_controller.save_point_id;
 		save_point.id = savept.contains("position") ? room_id : -1;
-		std::cout << "Save Point ID loaded to map: " << save_point.id << "\n";
-		std::cout << "Room ID (should match above): " << room_id << "\n";
 		save_point.scaled_position.x = savept["position"][0].as<int>();
 		save_point.scaled_position.y = savept["position"][1].as<int>();
 
@@ -483,12 +481,12 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 
-	if (!player->arsenal.loadout.empty()) {
+	if (!player->arsenal.empty()) {
 		if (player->fire_weapon()) {
-			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point);
-			++player->equipped_weapon().active_projectiles;
-			player->equipped_weapon().shoot();
-			if (!player->equipped_weapon().attributes.automatic) { player->controller.set_shot(false); }
+			spawn_projectile_at(svc, *player->equipped_weapon().value().get(), player->equipped_weapon().value().get()->barrel_point);
+			++player->equipped_weapon().value().get()->active_projectiles;
+			player->equipped_weapon().value().get()->shoot();
+			if (!player->equipped_weapon().value().get()->attributes.automatic) { player->controller.set_shot(false); }
 		}
 	}
 }
@@ -504,13 +502,13 @@ void Map::generate_collidable_layer() {
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	for (auto& layer : layers) {
 		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
-		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.cell_size, layer.grid.dimensions.y * svc.constants.cell_size);
+		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
 		for (auto& cell : layer.grid.cells) {
 			if (cell.is_occupied() && !cell.is_breakable()) {
-				int x_coord = (cell.value % svc.constants.tileset_scaled.x) * svc.constants.cell_size;
-				int y_coord = std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.cell_size;
+				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
+				auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
-				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {(int)svc.constants.cell_size, (int)svc.constants.cell_size}));
+				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
 				tile_sprite.setPosition(cell.position);
 				layer_textures.at((int)layer.render_order).draw(tile_sprite);
 			}

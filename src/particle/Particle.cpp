@@ -23,9 +23,10 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	if ((dj::Boolean)in_data["colliding"].as_bool()) { flags.set(ParticleType::colliding); }
 
 	auto angle = svc.random.random_range_float(-angle_range, angle_range);
-	if (direction.lr == dir::LR::left) { angle += (float)std::numbers::pi; }
-	if (direction.und == dir::UND::up) { angle += std::numbers::pi * 1.5f; }
-	if (direction.und == dir::UND::down) { angle += std::numbers::pi * 0.5f; }
+	auto f_pi = static_cast<float>(std::numbers::pi);
+	if (direction.lr == dir::LR::left) { angle += f_pi; }
+	if (direction.und == dir::UND::up) { angle += f_pi * 1.5f; }
+	if (direction.und == dir::UND::down) { angle += f_pi * 0.5f; }
 
 	expulsion += svc.random.random_range_float(-expulsion_variance, expulsion_variance);
 
@@ -37,7 +38,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	int rand_diff = svc.random.random_range(-lifespan_variance, lifespan_variance);
 	lifespan.start(lifespan_time + rand_diff);
 
-	//for animated particles
+	// for animated particles
 	sprite.setOrigin(dimensions * 0.5f);
 	if (svc.assets.particle_textures.contains(type)) { sprite.setTexture(svc.assets.particle_textures.at(type)); }
 	auto const& in_animation = in_data["animation"];

@@ -70,7 +70,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	collider.flags.state.reset(shape::State::just_landed);
 
 	// player-controlled actions
-	arsenal.switch_weapon(*m_services, controller.arms_switch());
+	arsenal.switch_weapon(*m_services, static_cast<int>(controller.arms_switch()));
 	dash();
 	jump();
 	wallslide();
@@ -83,9 +83,10 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 	// weapon
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
-	if (controller.shot() && !arsenal.loadout.empty()) {
-		if (controller.direction.und == dir::UND::down) { collider.physics.acceleration.y += -equipped_weapon().attributes.recoil / 80; }
-		if (controller.direction.und == dir::UND::up) { collider.physics.acceleration.y += equipped_weapon().attributes.recoil; }
+	if (flags.state.test(State::impart_recoil) && !arsenal.empty()) {
+		if (controller.direction.und == dir::UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().value().get()->attributes.recoil}); }
+		if (controller.direction.und == dir::UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().value().get()->attributes.recoil}); }
+		flags.state.reset(State::impart_recoil);
 	}
 
 	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
@@ -136,11 +137,10 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 
-	if (!arsenal.loadout.empty()) {
-
+	if (!arsenal.empty()) {
 		collider.flags.general.set(shape::General::complex);
-		equipped_weapon().sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
-		if (flags.state.test(State::show_weapon)) { equipped_weapon().render_back(svc, win, campos); }
+		equipped_weapon().value().get()->sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().value().get()->label));
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().value().get()->render_back(svc, win, campos); }
 	}
 
 	if (flags.state.test(State::alive)) {
@@ -153,15 +153,12 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		}
 	}
 
-	if (!arsenal.loadout.empty()) {
-		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
-		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
+	if (!arsenal.empty()) {
+		equipped_weapon().value().get()->sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().value().get()->label));
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().value().get()->render(svc, win, campos); }
 	}
 
 	if (controller.get_shield().active() && catalog.categories.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
-
-	// texture updater debug
-	// texture_updater.debug_render(win, campos);
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -371,21 +368,13 @@ void Player::update_direction() {
 	}
 
 	// set directions for grappling hook
-	equipped_weapon().projectile.hook.probe_direction = controller.direction;
+	if (!arsenal.empty()) { equipped_weapon().value().get()->projectile.hook.probe_direction = controller.direction; }
 }
 
 void Player::update_weapon() {
-	if (arsenal.armory.empty() || arsenal.loadout.empty()) { return; }
-	// clamp extant projectile instances to the weapon's rate
-	assert(arsenal.extant_projectile_instances.size() >= arsenal.armory.size());
-	for (std::size_t index = 0; index < arsenal.extant_projectile_instances.size(); ++index) {
-		auto& count = arsenal.extant_projectile_instances.at(index);
-		if (arsenal.armory.at(index)->attributes.rate < 0) { continue; }
-		count = std::clamp(count, 0, arsenal.armory.at(index)->attributes.rate);
-	}
+	if (arsenal.empty()) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
-	for (auto& weapon : arsenal.loadout) {
-		weapon->active_projectiles = extant_instances(weapon->get_id());
+	for (auto& weapon : arsenal.get_loadout()) {
 		weapon->firing_direction = controller.direction;
 		weapon->update(controller.direction);
 		sf::Vector2<float> p_pos = {apparent_position.x + weapon->gun_offset.x, apparent_position.y + sprite_offset.y + weapon->gun_offset.y - collider.dimensions.y / 2.f};
@@ -474,13 +463,14 @@ void Player::sync_antennae() {
 bool Player::grounded() const { return collider.flags.state.test(shape::State::grounded); }
 
 bool Player::fire_weapon() {
-	if (controller.shot() && equipped_weapon().can_shoot()) {
-		++extant_instances(equipped_weapon().get_id());
-		if (!m_services->soundboard.gun_sounds.contains(equipped_weapon().label)) {
+	if (controller.shot() && equipped_weapon().value().get()->can_shoot()) {
+		if (!m_services->soundboard.gun_sounds.contains(equipped_weapon().value().get()->label)) {
 			m_services->soundboard.flags.weapon.set(audio::Weapon::bryns_gun);
+			flags.state.set(State::impart_recoil);
 			return true;
 		}
-		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().label));
+		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().value().get()->label));
+		flags.state.set(State::impart_recoil);
 		return true;
 	}
 	return false;
@@ -512,7 +502,7 @@ void Player::give_drop(item::DropType type, float value) {
 		health_indicator.add(value);
 	}
 	if (type == item::DropType::orb) {
-		player_stats.orbs += value;
+		player_stats.orbs += static_cast<int>(value);
 		orb_indicator.add(value);
 	}
 }
@@ -525,22 +515,19 @@ void Player::total_reset() {
 	start_over();
 	collider.physics.zero();
 	reset_flags();
-	arsenal.loadout.clear();
+	arsenal.clear();
 	update_antennae();
 	flags.state.reset(State::killed);
 	animation.state = AnimState::idle;
 }
 
 void Player::map_reset() {
-	arsenal.extant_projectile_instances = {};
 	if (animation.state == AnimState::inspect) { animation.state = AnimState::idle; }
 	if (flags.state.test(State::killed)) { animation.state = AnimState::idle; }
 	flags.state.reset(State::killed);
 }
 
-arms::Weapon& Player::equipped_weapon() { return arsenal.get_current_weapon(); }
-
-int& Player::extant_instances(int index) { return arsenal.extant_projectile_instances.at(index); }
+std::optional<std::reference_wrapper<std::unique_ptr<arms::Weapon>>> Player::equipped_weapon() { return arsenal.get_current_weapon(); }
 
 dir::LR Player::entered_from() const { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
 

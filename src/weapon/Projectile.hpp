@@ -31,6 +31,8 @@ class Player;
 
 namespace arms {
 
+class Weapon;
+
 enum class WEAPON_TYPE {
 	BRYNS_GUN,
 	PLASMER,
@@ -103,7 +105,7 @@ class Projectile {
 
   public:
 	Projectile();
-	Projectile(automa::ServiceProvider& svc, std::string_view label, int id);
+	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon);
 
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -163,6 +165,7 @@ class Projectile {
 
 	std::vector<sf::Color> colors{};
 	std::deque<sf::Vector2<float>> position_history{};
+	Weapon* m_weapon;
 
   private:
 

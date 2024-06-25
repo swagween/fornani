@@ -24,7 +24,7 @@ void PhysicsComponent::update_euler(automa::ServiceProvider& svc) {
 
 void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 
-	float dt = svc.ticker.global_tick_rate();
+	auto dt = svc.ticker.global_tick_rate();
 	previous_acceleration = acceleration;
 	previous_velocity = velocity;
 	previous_position = position;
@@ -61,11 +61,10 @@ void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
 }
 
 void PhysicsComponent::calculate_maximum_acceleration() {
-	float max = acceleration.x;
+	auto max = acceleration.x;
 	for (auto& acc : x_acc_history) {
 		if (acc > max) { max = acc; }
 	}
-
 }
 
 void PhysicsComponent::calculate_jerk() {
@@ -85,8 +84,8 @@ void PhysicsComponent::calculate_jerk() {
 }
 
 void PhysicsComponent::zero() {
-	acceleration = {0.0f, 0.0f};
-	velocity = {0.0f, 0.0f};
+	acceleration = {};
+	velocity = {};
 }
 
 void PhysicsComponent::zero_x() {

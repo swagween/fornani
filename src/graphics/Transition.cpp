@@ -6,7 +6,7 @@ namespace flfx {
 
 Transition::Transition(automa::ServiceProvider& svc, int d) : duration(d) {
 	box.setPosition(0, 0);
-	box.setSize(sf::Vector2<float>(svc.constants.screen_dimensions.x, svc.constants.screen_dimensions.y));
+	box.setSize(sf::Vector2<float>(static_cast<float>(svc.constants.screen_dimensions.x), static_cast<float>(svc.constants.screen_dimensions.y)));
 	current_frame = 0;
 }
 

@@ -11,7 +11,7 @@ GrapplingHook::GrapplingHook(automa::ServiceProvider& svc) {
 void GrapplingHook::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	if (grapple_flags.test(GrappleState::probing)) {
-		spring.set_bob(player.equipped_weapon().barrel_point);
+		spring.set_bob(player.equipped_weapon().value().get()->barrel_point);
 		svc.soundboard.flags.weapon.set(audio::Weapon::hook_probe);
 	}
 	if (grapple_flags.test(GrappleState::anchored)) {
@@ -47,7 +47,7 @@ void GrapplingHook::render(automa::ServiceProvider& svc, player::Player& player,
 		spring.render(win, campos);
 	} else {
 		float distance = util::magnitude(player.collider.physics.position - spring.get_anchor());
-		spring.num_links = distance / 20;
+		spring.num_links = static_cast<int>(distance / 20.f);
 		for (int i = 0; i < spring.num_links; ++i) {
 			rope.setPosition(spring.get_rope(i) - campos);
 			win.draw(rope);

@@ -12,7 +12,7 @@
 
 namespace shape {
 
-double const error = 0.0001f;
+float const error = 0.0001f;
 
 class Shape {
 

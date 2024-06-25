@@ -107,14 +107,14 @@ void flfx::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float
 	int i{};
 	for (auto& color : map_colors) {
 		debug.setFillColor(color);
-		debug.setPosition(i * 8, 0);
+		debug.setPosition(i * 8.f, 0.f);
 		win.draw(debug);
 		++i;
 	}
 	i = 0;
 	for (auto& color : palette_colors) {
 		debug.setFillColor(color);
-		debug.setPosition(i * 8, 10);
+		debug.setPosition(i * 8.f, 10.f);
 		win.draw(debug);
 		++i;
 	}

@@ -3,7 +3,7 @@
 
 namespace arms {
 
-Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id), projectile(svc, label, id) {
+Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id), projectile(svc, label, id, *this) {
 
 	auto const& in_data = svc.data.weapon["weapons"][id];
 
@@ -12,8 +12,8 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 
 	sprite_dimensions.x = in_data["dimensions"]["x"].as<int>();
 	sprite_dimensions.y = in_data["dimensions"]["y"].as<int>();
-	gun_offset.x = in_data["gun_offset"]["x"].as<int>();
-	gun_offset.y = in_data["gun_offset"]["y"].as<int>();
+	gun_offset.x = in_data["gun_offset"]["x"].as<float>();
+	gun_offset.y = in_data["gun_offset"]["y"].as<float>();
 
 	attributes.back_offset = in_data["attributes"]["back_offset"].as<int>();
 	attributes.barrel_position.at(0) = in_data["barrel_point"]["x"].as<float>();

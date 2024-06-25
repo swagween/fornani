@@ -269,7 +269,7 @@ void TextWriter::adjust_selection(int amount) {
 	if (iterators.current_response_set >= responses.size()) { return; }
 	iterators.current_selection += amount;
 	m_services->soundboard.flags.console.set(audio::Console::shift);
-	if (iterators.current_selection < 0) { iterators.current_selection = responses.at(iterators.current_response_set).size() - 1; }
+	if (iterators.current_selection < 0) { iterators.current_selection = static_cast<int>(responses.at(iterators.current_response_set).size() - 1); }
 	if (iterators.current_selection >= responses.at(iterators.current_response_set).size()) { iterators.current_selection = 0; }
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_map>
 #include "Weapon.hpp"
+#include "../utils/Circuit.hpp"
 
 namespace arms {
 
@@ -20,19 +21,21 @@ struct Arsenal {
 
 	void push_to_loadout(int id);
 	void pop_from_loadout(int id);
-	void switch_weapon(automa::ServiceProvider& svc, float next);
-	Weapon& get_current_weapon();
-	int get_index();
+	void switch_weapon(automa::ServiceProvider& svc, int next);
 	void set_index(int index);
+	constexpr void clear() { loadout.clear(); }
+	std::optional<std::reference_wrapper<std::unique_ptr<Weapon>>> get_weapon_at(int id);
+	std::optional<std::reference_wrapper<std::unique_ptr<Weapon>>> get_current_weapon();
+	constexpr std::vector<std::unique_ptr<Weapon>>& get_loadout() { return loadout; }
+	[[nodiscard]] auto get_index() const -> size_t { return current_weapon.value().get(); }
+	[[nodiscard]] auto size() const -> size_t { return loadout.size(); }
+	[[nodiscard]] auto empty() const -> bool { return loadout.empty(); }
 	bool has(int id);
 
-	std::array<std::shared_ptr<Weapon>, max_weapons> armory{};
-	std::vector<std::shared_ptr<Weapon>> loadout{};
-	std::array<int, max_weapons> extant_projectile_instances{};
-
   private:
-	int current_weapon{};
-	std::shared_ptr<Weapon> default_gun{};
+	std::vector<std::unique_ptr<Weapon>> loadout{};
+	std::optional<util::Circuit> current_weapon{};
+	automa::ServiceProvider* m_services{};
 };
 
 } // namespace arms

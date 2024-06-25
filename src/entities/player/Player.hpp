@@ -78,7 +78,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { alive, killed, dir_switch, show_weapon };
+enum class State { alive, killed, dir_switch, show_weapon, impart_recoil };
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -143,8 +143,7 @@ class Player {
 	void total_reset();
 	void map_reset();
 
-	arms::Weapon& equipped_weapon();
-	int& extant_instances(int index);
+	std::optional<std::reference_wrapper<std::unique_ptr<arms::Weapon>>> equipped_weapon();
 
 	// map helpers
 	dir::LR entered_from() const;
