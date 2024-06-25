@@ -40,5 +40,12 @@
       "activate_on_contact": false,
       "key": "firstwind_closet_3"
     }
-  ]
+  ],
+  "save_point": {
+    "id": 117,
+    "position": [
+      6,
+      7
+    ]
+  }
 }

@@ -61,7 +61,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 				animation.set_params(opened);
 				if (type == ChestType::gun) { player.arsenal.push_to_loadout(item_id); }
 				if (type == ChestType::item) { player.give_item(item_id, 1); }
-				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, loot.amount, loot.rarity, collider.bounding_box.position)); }
+				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.position)); }
 			} else {
 				console.load_and_launch("open_chest");
 			}
@@ -78,7 +78,7 @@ void Chest::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		drawbox.setPosition(collider.physics.position - campos);
-		activated ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
+		state.test(ChestState::activated) ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
 		win.draw(drawbox);
 		collider.render(win, campos);
 	} else {
@@ -94,5 +94,11 @@ void Chest::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.p
 void Chest::set_id(int new_id) { id = id; }
 
 void Chest::set_item(int id) { item_id = id; }
+
+void Chest::set_amount(int to_amount) { loot.amount = to_amount; }
+
+void Chest::set_rarity(float to_rarity) { loot.rarity = to_rarity; }
+
+void Chest::set_type(ChestType to_type) { type = to_type; }
 
 } // namespace entity

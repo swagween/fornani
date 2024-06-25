@@ -2,9 +2,9 @@
   "player_data": {
     "max_hp": 3.000000,
     "hp": 3.000000,
-    "orbs": 0,
+    "orbs": 514,
     "position": {
-      "x": 129.171829,
+      "x": 198.762222,
       "y": 231.000000
     },
     "arsenal": [
@@ -18,5 +18,5 @@
 
     ]
   },
-  "save_point_id": 100
+  "save_point_id": 117
 }

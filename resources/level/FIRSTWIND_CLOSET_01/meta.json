@@ -12,13 +12,6 @@
     "style": 0,
     "background": 4
   },
-  "chests": [
-    {
-      "id": 0,
-      "item_id": 1,
-      "position": [ 4, 4 ]
-    }
-  ],
   "portals": [
     {
       "dimensions": [
@@ -40,6 +33,19 @@
       "position": [
         3,
         7
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 0,
+      "item_id": 0,
+      "type": 2,
+      "amount": 15,
+      "rarity": 2.000000,
+      "position": [
+        4,
+        3
       ]
     }
   ]

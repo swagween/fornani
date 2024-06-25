@@ -819,6 +819,7 @@ void Game::playtester_portal() {
 					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
 					ImGui::Text(metadata.long_title().c_str());
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
+					if (ImGui::Button("Toggle Demo Mode")) { services.debug_flags.test(automa::DebugFlags::demo_mode) ? services.debug_flags.reset(automa::DebugFlags::demo_mode) : services.debug_flags.set(automa::DebugFlags::demo_mode); }
 					if (ImGui::Button("Toggle Greyblock Mode")) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
@@ -883,6 +884,12 @@ void Game::playtester_portal() {
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, "/level/FIRSTWIND_CORRIDOR_02");
 							player.set_position({7 * 32, 7 * 32});
+						}
+						if (ImGui::Button("Lab")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/FIRSTWIND_LAB_01");
+							player.set_position({7 * 32, 9 * 32});
 						}
 						if (ImGui::Button("Abandoned Passage")) {
 							services.assets.click.play();

@@ -152,5 +152,18 @@
       "automatic": false,
       "foreground": false
     }
+  ],
+  "chests": [
+    {
+      "id": 3,
+      "item_id": 0,
+      "type": 0,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        9,
+        6
+      ]
+    }
   ]
 }

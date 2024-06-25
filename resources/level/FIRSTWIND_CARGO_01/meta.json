@@ -12,6 +12,21 @@
     "style": 0,
     "background": 5
   },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        26,
+        8
+      ],
+      "source_id": 103,
+      "destination_id": 102,
+      "activate_on_contact": false
+    }
+  ],
   "platforms": [
     {
       "position": [
@@ -111,5 +126,36 @@
       "type": "standard_up_down",
       "start": 0.400000
     }
-  ]
+  ],
+  "chests": [
+    {
+      "id": 2,
+      "item_id": 0,
+      "type": 2,
+      "amount": 16,
+      "rarity": 3.000000,
+      "position": [
+        22,
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "item_id": 8,
+      "type": 3,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        25,
+        21
+      ]
+    }
+  ],
+  "save_point": {
+    "id": 103,
+    "position": [
+      27,
+      21
+    ]
+  }
 }

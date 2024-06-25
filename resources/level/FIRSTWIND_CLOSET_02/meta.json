@@ -12,6 +12,16 @@
     "style": 0,
     "background": 4
   },
+  "chests": [
+    {
+      "id": 2,
+      "item_id": 1,
+      "type": 2,
+      "amount": 12,
+      "rarity": 2.0,
+      "position": [ 6, 4 ]
+    }
+  ],
   "portals": [
     {
       "dimensions": [

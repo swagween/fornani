@@ -1,6 +1,6 @@
 {
   "meta": {
-    "room_id": 100,
+    "room_id": 114,
     "dimensions": [
       32,
       16
@@ -10,7 +10,7 @@
       1
     ],
     "style": 0,
-    "background": 4
+    "background": 5
   },
   "portals": [
     {
@@ -19,19 +19,19 @@
         1
       ],
       "position": [
-        25,
-        9
+        5,
+        12
       ],
-      "source_id": 100,
-      "destination_id": 101,
+      "source_id": 114,
+      "destination_id": 112,
       "activate_on_contact": false
     }
   ],
   "save_point": {
-    "id": 100,
+    "id": 114,
     "position": [
-      3,
-      7
+      10,
+      12
     ]
   }
 }

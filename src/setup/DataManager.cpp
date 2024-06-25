@@ -82,6 +82,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 
 	save["save_point_id"] = save_point_id;
+	std::cout << "Save Point ID written to save: " << save_point_id << "\n";
 
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
@@ -95,6 +96,7 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
+	std::cout << "Save Point ID loaded from json: " << save_pt_id << "\n";
 	m_services->state_controller.save_point_id = save_pt_id;
 
 	// set player data based on save file

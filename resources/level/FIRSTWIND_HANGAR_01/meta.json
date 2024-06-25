@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "room_id": 112,
+    "dimensions": [
+      48,
+      48
+    ],
+    "chunk_dimensions": [
+      3,
+      3
+    ],
+    "style": 0,
+    "background": 5
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        2
+      ],
+      "position": [
+        0,
+        8
+      ],
+      "source_id": 112,
+      "destination_id": 107,
+      "activate_on_contact": true
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        41,
+        7
+      ],
+      "source_id": 112,
+      "destination_id": 113,
+      "activate_on_contact": false
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        41,
+        43
+      ],
+      "source_id": 112,
+      "destination_id": 115,
+      "activate_on_contact": false
+    }
+  ],
+  "platforms": [
+    {
+      "position": [
+        9,
+        6
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 18,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        26,
+        6
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 13,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        17,
+        13
+      ],
+      "dimensions": [
+        3,
+        2
+      ],
+      "extent": 24,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.700000
+    },
+    {
+      "position": [
+        26,
+        30
+      ],
+      "dimensions": [
+        3,
+        2
+      ],
+      "extent": 12,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.700000
+    },
+    {
+      "position": [
+        26,
+        30
+      ],
+      "dimensions": [
+        3,
+        2
+      ],
+      "extent": 12,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.700000
+    }
+  ],
+  "enemies": [
+    {
+      "id": 5,
+      "position": [
+        27,
+        18
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        27,
+        43
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        5,
+        16
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        5,
+        22
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        31,
+        33
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        31,
+        14
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        18,
+        5
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        30,
+        5
+      ]
+    }
+  ]
+}

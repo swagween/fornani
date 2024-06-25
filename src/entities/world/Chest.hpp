@@ -42,6 +42,9 @@ class Chest : public Entity {
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
 	void set_id(int new_id);
 	void set_item(int id);
+	void set_amount(int to_amount);
+	void set_rarity(float to_rarity);
+	void set_type(ChestType to_type);
 
   private:
 	vfx::Sparkler sparkler{};

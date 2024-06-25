@@ -25,7 +25,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 	// get npc data
 	if (!metadata.is_null()) {
 		auto const& meta = metadata["meta"];
-		room_id = meta["id"].as<int>();
+		room_id = meta["room_id"].as<int>();
 		dimensions.x = meta["dimensions"][0].as<int>();
 		dimensions.y = meta["dimensions"][1].as<int>();
 		chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
@@ -70,7 +70,10 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		}
 
 		auto const& savept = metadata["save_point"];
+		auto save_id = svc.state_controller.save_point_id;
 		save_point.id = savept.contains("position") ? room_id : -1;
+		std::cout << "Save Point ID loaded to map: " << save_point.id << "\n";
+		std::cout << "Room ID (should match above): " << room_id << "\n";
 		save_point.scaled_position.x = savept["position"][0].as<int>();
 		save_point.scaled_position.y = savept["position"][1].as<int>();
 
@@ -81,6 +84,11 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			chests.push_back(entity::Chest(svc));
 			chests.back().set_id(entry["id"].as<int>());
 			chests.back().set_item(entry["item_id"].as<int>());
+			chests.back().set_amount(entry["amount"].as<int>());
+			chests.back().set_rarity(entry["rarity"].as<float>());
+			if (entry["type"].as<int>() == 1) { chests.back().set_type(entity::ChestType::gun); }
+			if (entry["type"].as<int>() == 2) { chests.back().set_type(entity::ChestType::orbs); }
+			if (entry["type"].as<int>() == 3) { chests.back().set_type(entity::ChestType::item); }
 			chests.back().set_position_from_scaled(pos);
 		}
 
