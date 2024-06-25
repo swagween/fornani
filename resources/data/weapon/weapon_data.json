@@ -640,7 +640,7 @@
         "automatic": true,
         "rate": 64,
         "cooldown_time": 5,
-        "recoil": 0.0375,
+        "recoil": 0.15,
         "ui_color": 6
       },
       "projectile": {

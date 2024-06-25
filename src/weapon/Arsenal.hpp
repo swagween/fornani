@@ -11,11 +11,8 @@
 
 namespace arms {
 
-using Key = WEAPON_TYPE;
-constexpr static int max_weapons{11};
-
-struct Arsenal {
-
+class Arsenal {
+  public:
 	Arsenal() = default;
 	Arsenal(automa::ServiceProvider& svc);
 
