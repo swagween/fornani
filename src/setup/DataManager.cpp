@@ -64,11 +64,13 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto const wipe = dj::Json::parse(empty_array);
 	save["player_data"]["arsenal"] = wipe;
 	// push player arsenal
-	for (auto& gun : player.arsenal.get_loadout()) {
-		int this_id = gun->get_id();
-		save["player_data"]["arsenal"].push_back(this_id);
+	if (player.arsenal) {
+		for (auto& gun : player.arsenal.value().get_loadout()) {
+			int this_id = gun->get_id();
+			save["player_data"]["arsenal"].push_back(this_id);
+		}
+		save["player_data"]["equipped_gun"] = player.arsenal.value().get_index();
 	}
-	save["player_data"]["equipped_gun"] = player.arsenal.get_index();
 
 	//items and abilities
 	save["player_data"]["abilities"] = wipe;
@@ -105,13 +107,14 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	player.arsenal.clear();
+	player.arsenal = {};
+	if (!save["player_data"]["arsenal"].array_view().empty()) { player.arsenal = arms::Arsenal(*m_services); }
 	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
-		player.arsenal.push_to_loadout(gun_id.as<int>());
+		player.arsenal.value().push_to_loadout(gun_id.as<int>());
 	}
-	if (!player.arsenal.empty()) {
+	if (!player.arsenal.value().empty()) {
 		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
-		player.arsenal.set_index(equipped_gun);
+		player.arsenal.value().set_index(equipped_gun);
 	}
 
 	// load items and abilities
@@ -134,7 +137,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	player.arsenal.clear();
+	player.arsenal = {};
 
 	return lookup::get_map_label.at(100);
 }

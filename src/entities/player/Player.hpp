@@ -143,7 +143,9 @@ class Player {
 	void total_reset();
 	void map_reset();
 
-	std::optional<std::reference_wrapper<std::unique_ptr<arms::Weapon>>> equipped_weapon();
+	arms::Weapon& equipped_weapon();
+	void push_to_loadout(int id);
+	void pop_from_loadout(int id);
 
 	// map helpers
 	dir::LR entered_from() const;
@@ -161,7 +163,7 @@ class Player {
 	Indicator orb_indicator;
 
 	// weapons
-	arms::Arsenal arsenal;
+	std::optional<arms::Arsenal> arsenal{};
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};

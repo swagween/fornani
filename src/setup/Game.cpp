@@ -506,55 +506,55 @@ void Game::debug_window() {
 				}
 				if (ImGui::BeginTabItem("Weapon")) {
 					if (ImGui::Button("Toggle Weapons")) {
-						if (player.arsenal.empty()) {
-							player.arsenal.push_to_loadout(0);
-							player.arsenal.push_to_loadout(1);
-							player.arsenal.push_to_loadout(2);
-							player.arsenal.push_to_loadout(3);
-							player.arsenal.push_to_loadout(4);
-							player.arsenal.push_to_loadout(5);
+						if (player.arsenal.value().empty()) {
+							player.arsenal.value().push_to_loadout(0);
+							player.arsenal.value().push_to_loadout(1);
+							player.arsenal.value().push_to_loadout(2);
+							player.arsenal.value().push_to_loadout(3);
+							player.arsenal.value().push_to_loadout(4);
+							player.arsenal.value().push_to_loadout(5);
 						} else {
-							player.arsenal.clear();
+							player.arsenal.value().clear();
 						}
 					}
 
 					ImGui::Separator();
 					ImGui::Text("Grappling Hook:");
 					ImGui::Text("Hook held: %s", player.controller.hook_held() ? "Yes" : "No");
-					ImGui::Text("Direction: %s", player.equipped_weapon().value().get()->projectile.hook.probe_direction.print_intermediate().c_str());
+					ImGui::Text("Direction: %s", player.equipped_weapon().projectile.hook.probe_direction.print_intermediate().c_str());
 
 					ImGui::Separator();
 
-					ImGui::Text("Firing Direction %s", player.equipped_weapon().value().get()->firing_direction.print_lr().c_str());
-					ImGui::Text("Firing Direction %s", player.equipped_weapon().value().get()->firing_direction.print_und().c_str());
+					ImGui::Text("Firing Direction %s", player.equipped_weapon().firing_direction.print_lr().c_str());
+					ImGui::Text("Firing Direction %s", player.equipped_weapon().firing_direction.print_und().c_str());
 
-					ImGui::Text("Cooling Down? %s", player.equipped_weapon().value().get()->cooling_down() ? "Yes" : "No");
-					ImGui::Text("Cooldown Time %i", player.equipped_weapon().value().get()->cooldown.get_cooldown());
-					ImGui::Text("Active Projectiles: %i", player.equipped_weapon().value().get()->active_projectiles);
+					ImGui::Text("Cooling Down? %s", player.equipped_weapon().cooling_down() ? "Yes" : "No");
+					ImGui::Text("Cooldown Time %i", player.equipped_weapon().cooldown.get_cooldown());
+					ImGui::Text("Active Projectiles: %i", player.equipped_weapon().active_projectiles);
 
 					ImGui::Separator();
-					ImGui::Text("Equipped Weapon: %s", player.equipped_weapon().value().get()->label.data());
-					ImGui::Text("UI color: %i", (int)player.equipped_weapon().value().get()->attributes.ui_color);
-					ImGui::Text("Sprite Dimensions X: %i", player.equipped_weapon().value().get()->sprite_dimensions.x);
-					ImGui::Text("Sprite Dimensions Y: %i", player.equipped_weapon().value().get()->sprite_dimensions.y);
-					ImGui::Text("Barrel Point X: %.1f", player.equipped_weapon().value().get()->barrel_point.x);
-					ImGui::Text("Barrel Point Y: %.1f", player.equipped_weapon().value().get()->barrel_point.y);
+					ImGui::Text("Equipped Weapon: %s", player.equipped_weapon().label.data());
+					ImGui::Text("UI color: %i", (int)player.equipped_weapon().attributes.ui_color);
+					ImGui::Text("Sprite Dimensions X: %i", player.equipped_weapon().sprite_dimensions.x);
+					ImGui::Text("Sprite Dimensions Y: %i", player.equipped_weapon().sprite_dimensions.y);
+					ImGui::Text("Barrel Point X: %.1f", player.equipped_weapon().barrel_point.x);
+					ImGui::Text("Barrel Point Y: %.1f", player.equipped_weapon().barrel_point.y);
 					ImGui::Separator();
 					ImGui::Text("Weapon Stats: ");
 					ImGui::Indent();
-					ImGui::Text("Rate: (%i)", player.equipped_weapon().value().get()->attributes.rate);
-					ImGui::Text("Cooldown: (%i)", player.equipped_weapon().value().get()->attributes.cooldown_time);
-					ImGui::Text("Recoil: (%.2f)", player.equipped_weapon().value().get()->attributes.recoil);
+					ImGui::Text("Rate: (%i)", player.equipped_weapon().attributes.rate);
+					ImGui::Text("Cooldown: (%i)", player.equipped_weapon().attributes.cooldown_time);
+					ImGui::Text("Recoil: (%.2f)", player.equipped_weapon().attributes.recoil);
 
 					ImGui::Separator();
 					ImGui::Unindent();
 					ImGui::Text("Projectile Stats: ");
 					ImGui::Indent();
-					ImGui::Text("Damage: (%f)", player.equipped_weapon().value().get()->projectile.stats.base_damage);
-					ImGui::Text("Range: (%i)", player.equipped_weapon().value().get()->projectile.stats.range);
-					ImGui::Text("Speed: (%.2f)", player.equipped_weapon().value().get()->projectile.stats.speed);
-					ImGui::Text("Velocity: (%.4f,%.4f)", player.equipped_weapon().value().get()->projectile.physics.velocity.x, player.equipped_weapon().value().get()->projectile.physics.velocity.y);
-					ImGui::Text("Position: (%.4f,%.4f)", player.equipped_weapon().value().get()->projectile.physics.position.x, player.equipped_weapon().value().get()->projectile.physics.position.y);
+					ImGui::Text("Damage: (%f)", player.equipped_weapon().projectile.stats.base_damage);
+					ImGui::Text("Range: (%i)", player.equipped_weapon().projectile.stats.range);
+					ImGui::Text("Speed: (%.2f)", player.equipped_weapon().projectile.stats.speed);
+					ImGui::Text("Velocity: (%.4f,%.4f)", player.equipped_weapon().projectile.physics.velocity.x, player.equipped_weapon().projectile.physics.velocity.y);
+					ImGui::Text("Position: (%.4f,%.4f)", player.equipped_weapon().projectile.physics.position.x, player.equipped_weapon().projectile.physics.position.y);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("General")) {
@@ -901,60 +901,29 @@ void Game::playtester_portal() {
 					if (ImGui::BeginTabItem("Player")) {
 						if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
 							if (ImGui::BeginTabItem("Weapon")) {
-								ImGui::Text("Loadout Size: %i", player.arsenal.size());
+								ImGui::Text("Player has arsenal? %s", player.arsenal ? "Yes" : "No");
+								ImGui::Text("Loadout Size: %i", player.arsenal ? player.arsenal.value().size() : 0);
 								playtest_sync();
 								ImGui::Checkbox("Bryn's Gun", &playtest.weapons.bryn);
-								if (playtest.weapons.bryn && !player.arsenal.has(0)) {
-									player.arsenal.push_to_loadout(0);
-								} else if (!playtest.weapons.bryn && player.arsenal.has(0)) {
-									player.arsenal.pop_from_loadout(0);
-								}
+								toggle_weapon(playtest.weapons.bryn, 0);
 								ImGui::Checkbox("Plasmer", &playtest.weapons.plasmer);
-								if (playtest.weapons.plasmer && !player.arsenal.has(1)) {
-									player.arsenal.push_to_loadout(1);
-								} else if (!playtest.weapons.plasmer && player.arsenal.has(1)) {
-									player.arsenal.pop_from_loadout(1);
-								}
+								toggle_weapon(playtest.weapons.plasmer, 1);
 								ImGui::Checkbox("Tomahawk", &playtest.weapons.tomahawk);
-								if (playtest.weapons.tomahawk && !player.arsenal.has(3)) {
-									player.arsenal.push_to_loadout(3);
-								} else if (!playtest.weapons.tomahawk && player.arsenal.has(3)) {
-									player.arsenal.pop_from_loadout(3);
-								}
+								toggle_weapon(playtest.weapons.tomahawk, 3);
 								ImGui::Checkbox("Grappling Hook", &playtest.weapons.grapple);
-								if (playtest.weapons.grapple && !player.arsenal.has(4)) {
-									player.arsenal.push_to_loadout(4);
-								} else if (!playtest.weapons.grapple && player.arsenal.has(4)) {
-									player.arsenal.pop_from_loadout(4);
-								}
+								toggle_weapon(playtest.weapons.grapple, 4);
 								ImGui::Checkbox("Grenade Launcher", &playtest.weapons.grenade);
-								if (playtest.weapons.grenade && !player.arsenal.has(5)) {
-									player.arsenal.push_to_loadout(5);
-								} else if (!playtest.weapons.grenade && player.arsenal.has(5)) {
-									player.arsenal.pop_from_loadout(5);
-								}
+								toggle_weapon(playtest.weapons.grenade, 5);
 								ImGui::Checkbox("Staple Gun", &playtest.weapons.staple_gun);
-								if (playtest.weapons.staple_gun && !player.arsenal.has(8)) {
-									player.arsenal.push_to_loadout(8);
-								} else if (!playtest.weapons.staple_gun && player.arsenal.has(8)) {
-									player.arsenal.pop_from_loadout(8);
-								}
+								toggle_weapon(playtest.weapons.staple_gun, 8);
 								ImGui::Checkbox("Indie", &playtest.weapons.indie);
-								if (playtest.weapons.indie && !player.arsenal.has(9)) {
-									player.arsenal.push_to_loadout(9);
-								} else if (!playtest.weapons.indie && player.arsenal.has(9)) {
-									player.arsenal.pop_from_loadout(9);
-								}
+								toggle_weapon(playtest.weapons.indie, 9);
 								ImGui::Checkbox("Gnat", &playtest.weapons.gnat);
-								if (playtest.weapons.gnat && !player.arsenal.has(10)) {
-									player.arsenal.push_to_loadout(10);
-								} else if (!playtest.weapons.gnat && player.arsenal.has(10)) {
-									player.arsenal.pop_from_loadout(10);
-								}
+								toggle_weapon(playtest.weapons.gnat, 10);
 								ImGui::Separator();
 
 								if (ImGui::Button("Clear Loadout")) {
-									player.arsenal.clear();
+									if (player.arsenal) { player.arsenal = {}; }
 									playtest.weapons = {};
 								}
 								ImGui::EndTabItem();
@@ -1032,14 +1001,32 @@ void Game::take_screenshot() {
 bool Game::debug() { return services.debug_flags.test(automa::DebugFlags::imgui_overlay); }
 
 void Game::playtest_sync() {
-	playtest.weapons.bryn = player.arsenal.has(0);
-	playtest.weapons.plasmer = player.arsenal.has(1);
-	playtest.weapons.tomahawk = player.arsenal.has(3);
-	playtest.weapons.grapple = player.arsenal.has(4);
-	playtest.weapons.grenade = player.arsenal.has(5);
-	playtest.weapons.staple_gun = player.arsenal.has(8);
-	playtest.weapons.indie = player.arsenal.has(9);
-	playtest.weapons.gnat = player.arsenal.has(10);
+	if (!player.arsenal) {
+		playtest.weapons = {};
+		return;
+	}
+	playtest.weapons.bryn = player.arsenal.value().has(0);
+	playtest.weapons.plasmer = player.arsenal.value().has(1);
+	playtest.weapons.tomahawk = player.arsenal.value().has(3);
+	playtest.weapons.grapple = player.arsenal.value().has(4);
+	playtest.weapons.grenade = player.arsenal.value().has(5);
+	playtest.weapons.staple_gun = player.arsenal.value().has(8);
+	playtest.weapons.indie = player.arsenal.value().has(9);
+	playtest.weapons.gnat = player.arsenal.value().has(10);
+}
+
+void Game::toggle_weapon(bool flag, int id) {
+	if (!player.arsenal && flag) {
+		player.push_to_loadout(id);
+		return;
+	}
+	if (player.arsenal) {
+		if (flag && !player.arsenal.value().has(id)) {
+			player.push_to_loadout(id);
+		} else if (!flag && player.arsenal.value().has(id)) {
+			player.pop_from_loadout(id);
+		}
+	}
 }
 
 } // namespace fornani

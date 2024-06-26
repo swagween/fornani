@@ -59,7 +59,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 				console.load_and_launch("chest");
 				state.set(ChestState::open);
 				animation.set_params(opened);
-				if (type == ChestType::gun) { player.arsenal.push_to_loadout(item_id); }
+				if (type == ChestType::gun) { player.push_to_loadout(item_id); }
 				if (type == ChestType::item) { player.give_item(item_id, 1); }
 				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.position)); }
 			} else {

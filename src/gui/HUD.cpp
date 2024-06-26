@@ -83,7 +83,7 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	num_orbs = player.player_stats.orbs;
 	total_hp_cells = static_cast<int>(player.health.get_max());
 	max_orbs = player.player_stats.max_orbs;
-	if (!player.arsenal.empty()) { gun_name = player.equipped_weapon().value().get()->label; }
+	if (player.arsenal) { gun_name = player.equipped_weapon().label; }
 }
 
 void HUD::render(player::Player& player, sf::RenderWindow& win) {
@@ -105,14 +105,14 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	}
 
 	// GUN
-	if (!player.arsenal.empty()) {
+	if (player.arsenal) {
 		auto pointer_index{0};
-		auto loadout_size = player.arsenal.size();
+		auto loadout_size = player.arsenal.value().size();
 		for (int i = 0; i < loadout_size; ++i) {
-			int gun_index = player.arsenal.get_weapon_at(i).value().get()->get_id();
+			auto gun_index = player.arsenal.value().get_weapon_at(i).get_id();
 			sp_guns.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-			if (i == player.arsenal.get_index()) {
+			if (i == player.arsenal.value().get_index()) {
 				win.draw(sp_guns_shadow.at(gun_index));
 
 				win.draw(sp_guns.at(gun_index));
@@ -122,9 +122,9 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 				win.draw(sp_guns_shadow.at(gun_index));
 			}
 		}
-		arms::WEAPON_TYPE curr_type = player.equipped_weapon().value().get()->type;
-		sp_pointer.at(player.equipped_weapon().value().get()->attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
-		win.draw(sp_pointer.at(player.equipped_weapon().value().get()->attributes.ui_color));
+		arms::WEAPON_TYPE curr_type = player.equipped_weapon().type;
+		sp_pointer.at(player.equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
+		win.draw(sp_pointer.at(player.equipped_weapon().attributes.ui_color));
 	}
 
 	// SHIELD

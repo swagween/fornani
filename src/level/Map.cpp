@@ -481,12 +481,12 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 
-	if (!player->arsenal.empty()) {
+	if (player->arsenal) {
 		if (player->fire_weapon()) {
-			spawn_projectile_at(svc, *player->equipped_weapon().value().get(), player->equipped_weapon().value().get()->barrel_point);
-			++player->equipped_weapon().value().get()->active_projectiles;
-			player->equipped_weapon().value().get()->shoot();
-			if (!player->equipped_weapon().value().get()->attributes.automatic) { player->controller.set_shot(false); }
+			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point);
+			++player->equipped_weapon().active_projectiles;
+			player->equipped_weapon().shoot();
+			if (!player->equipped_weapon().attributes.automatic) { player->controller.set_shot(false); }
 		}
 	}
 }

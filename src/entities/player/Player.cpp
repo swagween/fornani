@@ -13,7 +13,7 @@ void Player::init(automa::ServiceProvider& svc) {
 	m_services = &svc;
 
 	svc.data.load_player_params(*this);
-	arsenal = arms::Arsenal(svc);
+	//arsenal = arms::Arsenal(svc);
 	health_indicator.init(svc, 0);
 	orb_indicator.init(svc, 1);
 
@@ -70,7 +70,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	collider.flags.state.reset(shape::State::just_landed);
 
 	// player-controlled actions
-	arsenal.switch_weapon(*m_services, static_cast<int>(controller.arms_switch()));
+	if (arsenal) { arsenal.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
 	dash();
 	jump();
 	wallslide();
@@ -83,9 +83,9 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 
 	// weapon
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
-	if (flags.state.test(State::impart_recoil) && !arsenal.empty()) {
-		if (controller.direction.und == dir::UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().value().get()->attributes.recoil}); }
-		if (controller.direction.und == dir::UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().value().get()->attributes.recoil}); }
+	if (flags.state.test(State::impart_recoil) && arsenal) {
+		if (controller.direction.und == dir::UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().attributes.recoil}); }
+		if (controller.direction.und == dir::UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().attributes.recoil}); }
 		flags.state.reset(State::impart_recoil);
 	}
 
@@ -137,10 +137,10 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 
-	if (!arsenal.empty()) {
+	if (arsenal) {
 		collider.flags.general.set(shape::General::complex);
-		equipped_weapon().value().get()->sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().value().get()->label));
-		if (flags.state.test(State::show_weapon)) { equipped_weapon().value().get()->render_back(svc, win, campos); }
+		equipped_weapon().sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().render_back(svc, win, campos); }
 	}
 
 	if (flags.state.test(State::alive)) {
@@ -153,9 +153,9 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		}
 	}
 
-	if (!arsenal.empty()) {
-		equipped_weapon().value().get()->sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().value().get()->label));
-		if (flags.state.test(State::show_weapon)) { equipped_weapon().value().get()->render(svc, win, campos); }
+	if (arsenal) {
+		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
 	}
 
 	if (controller.get_shield().active() && catalog.categories.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
@@ -368,13 +368,13 @@ void Player::update_direction() {
 	}
 
 	// set directions for grappling hook
-	if (!arsenal.empty()) { equipped_weapon().value().get()->projectile.hook.probe_direction = controller.direction; }
+	if (arsenal) { equipped_weapon().projectile.hook.probe_direction = controller.direction; }
 }
 
 void Player::update_weapon() {
-	if (arsenal.empty()) { return; }
+	if (!arsenal) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
-	for (auto& weapon : arsenal.get_loadout()) {
+	for (auto& weapon : arsenal.value().get_loadout()) {
 		weapon->firing_direction = controller.direction;
 		weapon->update(controller.direction);
 		sf::Vector2<float> p_pos = {apparent_position.x + weapon->gun_offset.x, apparent_position.y + sprite_offset.y + weapon->gun_offset.y - collider.dimensions.y / 2.f};
@@ -463,13 +463,13 @@ void Player::sync_antennae() {
 bool Player::grounded() const { return collider.flags.state.test(shape::State::grounded); }
 
 bool Player::fire_weapon() {
-	if (controller.shot() && equipped_weapon().value().get()->can_shoot()) {
-		if (!m_services->soundboard.gun_sounds.contains(equipped_weapon().value().get()->label)) {
+	if (controller.shot() && equipped_weapon().can_shoot()) {
+		if (!m_services->soundboard.gun_sounds.contains(equipped_weapon().label)) {
 			m_services->soundboard.flags.weapon.set(audio::Weapon::bryns_gun);
 			flags.state.set(State::impart_recoil);
 			return true;
 		}
-		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().value().get()->label));
+		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().label));
 		flags.state.set(State::impart_recoil);
 		return true;
 	}
@@ -515,7 +515,7 @@ void Player::total_reset() {
 	start_over();
 	collider.physics.zero();
 	reset_flags();
-	arsenal.clear();
+	arsenal = {};
 	update_antennae();
 	flags.state.reset(State::killed);
 	animation.state = AnimState::idle;
@@ -527,7 +527,18 @@ void Player::map_reset() {
 	flags.state.reset(State::killed);
 }
 
-std::optional<std::reference_wrapper<std::unique_ptr<arms::Weapon>>> Player::equipped_weapon() { return arsenal.get_current_weapon(); }
+arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_current_weapon(); }
+
+void Player::push_to_loadout(int id) {
+	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
+	arsenal.value().push_to_loadout(id);
+}
+
+void Player::pop_from_loadout(int id) {
+	if (!arsenal) { throw std::runtime_error("Cannot pop weapon from empty Arsenal."); }
+	arsenal.value().pop_from_loadout(id);
+	if (arsenal.value().empty()) { arsenal = {}; }
+}
 
 dir::LR Player::entered_from() const { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
 
