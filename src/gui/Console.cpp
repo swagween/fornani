@@ -43,6 +43,7 @@ void Console::update(automa::ServiceProvider& svc) {
 	nine_slice(corner_factor, edge_factor);
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 	writer.update();
+
 	if (flags.test(ConsoleFlags::active)) {
 		portrait.update(svc);
 		nani_portrait.update(svc);
@@ -85,6 +86,7 @@ void Console::write(sf::RenderWindow& win, bool instant) {
 }
 
 void Console::end() {
+	writer.flush_communicators();
 	extent = current_dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::loaded);

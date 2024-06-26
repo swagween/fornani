@@ -38,7 +38,7 @@ namespace
     sf::Vector2f computeNormal(const sf::Vector2f& p1, const sf::Vector2f& p2)
     {
         sf::Vector2f normal(p1.y - p2.y, p2.x - p1.x);
-        float length = std::sqrt(normal.x * normal.x + normal.y * normal.y);
+        float length = ccm::sqrt(normal.x * normal.x + normal.y * normal.y);
         if (length != 0.f)
             normal /= length;
         return normal;

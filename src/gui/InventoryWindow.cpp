@@ -10,14 +10,14 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	title_font.loadFromFile(svc.text.title_font);
 	title_font.setSmooth(false);
 	title.setFont(title_font);
-	title.setColor(svc.styles.colors.ui_white);
+	title.setFillColor(svc.styles.colors.ui_white);
 	title.setLetterSpacing(2.f);
 
 	item_font.loadFromFile(svc.text.title_font);
 	item_font.setSmooth(false);
 	item_label.setCharacterSize(ui.desc_size);
 	item_label.setFont(item_font);
-	item_label.setColor(svc.styles.colors.ui_white);
+	item_label.setFillColor(svc.styles.colors.ui_white);
 
 	info.set_texture(svc.assets.t_console_outline);
 
@@ -41,6 +41,8 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (active()) {
+		extent = final_dimensions.y;
+		info.extent = info.final_dimensions.y;
 		Console::update(svc);
 		if (Console::extended()) {
 			info.update(svc);
@@ -61,24 +63,21 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 }
 
 void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
-	if (active()) {
-		Console::render(win);
-		win.draw(title);
-		for (auto& item : player.catalog.categories.inventory.items) {
-			item.render(svc, win, {0.f, 0.f});
-			if (item.selected()) {
-				item_label.setString(item.get_label().data());
-				if (Console::extended()) {
-					win.draw(item_label);
-				}
-			}
+	if (!active()) { return; }
+	Console::render(win);
+	win.draw(title);
+	for (auto& item : player.catalog.categories.inventory.items) {
+		item.render(svc, win, {0.f, 0.f});
+		if (item.selected()) {
+			item_label.setString(item.get_label().data());
+			if (Console::extended()) { win.draw(item_label); }
 		}
-		if (!player.catalog.categories.inventory.items.empty()) { selector.render(win); }
-		if (Console::extended()) {
-			info.begin();
-			info.render(win);
-			if (info.extended()) { info.write(win, true); }
-		}
+	}
+	if (!player.catalog.categories.inventory.items.empty()) { selector.render(win); }
+	if (Console::extended()) {
+		info.begin();
+		info.render(win);
+		if (info.extended()) { info.write(win, true); }
 	}
 }
 

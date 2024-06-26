@@ -1,5 +1,6 @@
 #include "TextWriter.hpp"
 #include <SFML/Graphics.hpp>
+#include <string>
 #include "../service/ServiceProvider.hpp"
 
 namespace text {
@@ -10,6 +11,8 @@ TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 	special_characters.insert({Codes::prompt, '%'});
 	special_characters.insert({Codes::quest, '$'});
 	special_characters.insert({Codes::item, '^'});
+	special_characters.insert({Codes::voice, '&'});
+	special_characters.insert({Codes::emotion, '@'});
 }
 
 void TextWriter::start() {
@@ -31,9 +34,11 @@ void TextWriter::start() {
 	auto num_lines = num_glyphs / gpl;
 	for (int i = 0; i < num_lines; ++i) { wrap(); }
 
+	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::prompt);
+	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::voice);
+	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::emotion);
 	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::item);
 	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::quest);
-	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::prompt);
 
 	activate();
 }
@@ -51,9 +56,6 @@ void TextWriter::update() {
 		++glyph_count;
 	}
 	if (glyph_count >= suite.at(iterators.current_suite_set).front().data.getString().getSize()) {
-		if (out_flags.test(Communication::ship_item)) { communicators.out_item = suite.at(iterators.current_suite_set).front().out_key; }
-		if (out_flags.test(Communication::ship_quest)) { communicators.out_quest = suite.at(iterators.current_suite_set).front().out_key; }
-		out_flags = {};
 		reset();
 		deactivate();
 	}
@@ -69,7 +71,7 @@ void TextWriter::wrap() {
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 
-	float horizontal_extent = position.x + suite.at(iterators.current_suite_set).front().data.getLocalBounds().width;
+	auto horizontal_extent = position.x + suite.at(iterators.current_suite_set).front().data.getLocalBounds().width;
 	if (horizontal_extent > bounds.x) {
 
 		// get index of last in-bounds space
@@ -223,22 +225,42 @@ void TextWriter::request_next() {
 
 void TextWriter::check_for_event(Message& msg, Codes code) {
 	auto index = msg.data.getString().find(special_characters.at(code));
-	// handle item and quest out_keys
-	if (index != std::string::npos && code != Codes::prompt) {
-		auto the_rest = msg.data.getString().substring(index + 1, msg.data.getString().getSize() - 1);
-		std::string end = the_rest;
-		msg.out_key = std::stoi(end);
-		if (code == Codes::item) { out_flags.set(Communication::ship_item); }
-		if (code == Codes::quest) { out_flags.set(Communication::ship_quest); }
-	}
+	if (index == std::string::npos) { return; }
+
 	// handle prompts
-	if (index != std::string::npos && index < msg.data.getString().getSize() - 1) {
-		msg.target = (int)msg.data.getString().getData()[index + 1] - '0';
-		msg.data.setString(msg.data.getString().substring(0, index));
-		if (code == Codes::prompt) {
+	if (code == Codes::prompt) {
+		if (index < msg.data.getString().getSize() - 1) {
+			msg.target = (int)msg.data.getString().getData()[index + 1] - '0';
+			msg.data.setString(msg.data.getString().substring(0, index));
 			flags.set(MessageState::response_trigger);
 			msg.prompt = true;
 		}
+		return;
+	}
+	// handle item and quest out_keys
+	if (code == Codes::voice) {
+		std::string cue = msg.data.getString().substring(index + 1, index + 1);
+		communicators.out_voice.set(std::stoi(cue));
+		msg.data.setString(msg.data.getString().substring(index + 2, msg.data.getString().getSize() - 1));
+		return;
+	}
+	if (code == Codes::emotion) {
+		std::string cue = msg.data.getString().substring(index + 1, index + 1);
+		communicators.out_emotion.set(std::stoi(cue));
+		msg.data.setString(msg.data.getString().substring(index + 2, msg.data.getString().getSize() - 1));
+		return;
+	}
+	if (code == Codes::item) {
+		std::string cue = msg.data.getString().substring(index + 1, index + 1);
+		communicators.out_item.set(std::stoi(cue));
+		msg.data.setString(msg.data.getString().substring(0, index));
+		return;
+	}
+	if (code == Codes::quest) {
+		std::string cue = msg.data.getString().substring(index + 1, index + 1);
+		communicators.out_quest.set(std::stoi(cue));
+		msg.data.setString(msg.data.getString().substring(0, index));
+		return;
 	}
 }
 
@@ -247,7 +269,7 @@ void TextWriter::adjust_selection(int amount) {
 	if (iterators.current_response_set >= responses.size()) { return; }
 	iterators.current_selection += amount;
 	m_services->soundboard.flags.console.set(audio::Console::shift);
-	if (iterators.current_selection < 0) { iterators.current_selection = responses.at(iterators.current_response_set).size() - 1; }
+	if (iterators.current_selection < 0) { iterators.current_selection = static_cast<int>(responses.at(iterators.current_response_set).size() - 1); }
 	if (iterators.current_selection >= responses.at(iterators.current_response_set).size()) { iterators.current_selection = 0; }
 }
 
@@ -255,11 +277,6 @@ void TextWriter::process_selection() {
 	if (!selection_mode()) { return; }
 	if (iterators.current_response_set >= responses.size()) { return; }
 	if (iterators.current_selection >= responses.at(iterators.current_response_set).size()) { return; }
-
-	//store selection result
-	if (out_flags.test(Communication::ship_item)) { communicators.out_item = responses.at(iterators.current_response_set).at(iterators.current_selection).out_key; }
-	if (out_flags.test(Communication::ship_quest)) { communicators.out_quest = responses.at(iterators.current_response_set).at(iterators.current_selection).out_key; }
-	out_flags = {};
 
 	// flush the suite until we reach the target determined by the selection
 	for (auto i = 0; i <= responses.at(iterators.current_response_set).at(iterators.current_selection).target; ++i) {
@@ -284,13 +301,13 @@ void TextWriter::shutdown() {
 	iterators = {};
 }
 
-Message& const TextWriter::current_message() {
+Message& TextWriter::current_message() {
 	if (iterators.current_suite_set >= suite.size()) { return zero_option; }
 	if (suite.at(iterators.current_suite_set).empty()) { return zero_option; }
 	return suite.at(iterators.current_suite_set).front();
 }
 
-Message& const TextWriter::current_response() {
+Message& TextWriter::current_response() {
 	if (iterators.current_response_set >= responses.size()) { return zero_option; }
 	if (responses.at(iterators.current_response_set).empty()) { return zero_option; }
 	return responses.at(iterators.current_response_set).front();

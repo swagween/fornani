@@ -47,5 +47,15 @@
     "speed": 0.3,
     "lifespan": 120,
     "lifespan_variance": 70
+  },
+
+  "minigus": {
+    "rate": 0.0,
+    "volatility": 0.01,
+    "wobble": 0.1,
+    "frequency": 0.1,
+    "speed": 0.1,
+    "lifespan": 320,
+    "lifespan_variance": 100
   }
 }

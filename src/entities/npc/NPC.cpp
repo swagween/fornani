@@ -17,8 +17,8 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 	sprite_dimensions.y = in_data["sprite_dimensions"][1].as<int>();
 	spritesheet_dimensions.x = in_data["spritesheet_dimensions"][0].as<int>();
 	spritesheet_dimensions.y = in_data["spritesheet_dimensions"][1].as<int>();
-	sprite_offset.x = in_data["sprite_offset"][0].as<int>();
-	sprite_offset.y = in_data["sprite_offset"][1].as<int>();
+	sprite_offset.x = in_data["sprite_offset"][0].as<float>();
+	sprite_offset.y = in_data["sprite_offset"][1].as<float>();
 
 	sprite.setOrigin(in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>());
 
@@ -32,7 +32,7 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize(dimensions);
 
-	sprite.setTexture(svc.assets.npcs.at(label));
+	if (svc.assets.npcs.contains(label)) { sprite.setTexture(svc.assets.npcs.at(label)); }
 	direction.lr = dir::LR::left;
 }
 
@@ -53,9 +53,10 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	collider.reset();
 	collider.physics.acceleration = {};
 
-	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
+	if (player.collider.bounding_box.overlaps(collider.bounding_box) || (triggers.test(NPCTrigger::distant_interact) && state_flags.test(NPCState::force_interact))) {
 		state_flags.set(NPCState::engaged);
-		if (player.controller.inspecting() && !conversations.empty()) {
+		if ((player.controller.inspecting() || state_flags.test(NPCState::force_interact)) && !conversations.empty()) {
+			state_flags.set(NPCState::introduced);
 			console.set_source(svc.text.npc);
 			std::string name = std::string(label);
 			std::string convo = std::string(conversations.front());
@@ -70,16 +71,19 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	if (console.off() && state_flags.test(NPCState::engaged)) {
 		if (conversations.size() > 1) {
 			conversations.pop_front();
-			std::cout << label << " popped!\n";
 		}
 	}
+
+	triggers = {};
 }
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 	sprite.setPosition(collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y);
-	int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-	int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
-	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
+	if (spritesheet_dimensions.y > 0) {
+		int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+		int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+		sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
+	}
 
 	if (svc.greyblock_mode()) {
 		collider.render(win, campos);
@@ -98,5 +102,7 @@ void NPC::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.phy
 void NPC::set_id(int new_id) { id = new_id; }
 
 void NPC::push_conversation(std::string_view convo) { conversations.push_back(convo); }
+
+void NPC::flush_conversations() { conversations.clear(); }
 
 } // namespace npc

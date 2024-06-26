@@ -53,6 +53,7 @@ constexpr inline float antenna_speed{136.f};
 struct PlayerStats {
 	int orbs{};
 	int max_orbs{};
+	float shield_dampen{0.01f};
 };
 
 struct PhysicsStats {
@@ -77,7 +78,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { alive, dir_switch, show_weapon };
+enum class State { alive, killed, dir_switch, show_weapon, impart_recoil };
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -87,8 +88,8 @@ struct PlayerFlags {
 
 class Player {
   public:
-	Player();
 	Player(automa::ServiceProvider& svc);
+	~Player() {}
 
 	// init (violates RAII but must happen after resource path is set)
 	void init(automa::ServiceProvider& svc);
@@ -99,16 +100,20 @@ class Player {
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
+	void handle_turning();
 	void update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void flash_sprite();
-	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void calculate_sprite_offset();
 
 	// state
-	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(player::State::alive); }
+	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(State::alive); }
+	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
+	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
+	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(Abilities::shield); }
+	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 
 	// moves
 	void jump();
@@ -120,7 +125,7 @@ class Player {
 	void update_direction();
 	void update_weapon();
 	void walk();
-	void hurt(int amount);
+	void hurt(float amount);
 	void update_antennae();
 	void sync_antennae();
 
@@ -131,7 +136,7 @@ class Player {
 	void update_invincibility();
 	void kill();
 	void start_over();
-	void give_drop(item::DropType type, int value);
+	void give_drop(item::DropType type, float value);
 	void give_item(int item_id, int amount);
 
 	void reset_flags();
@@ -139,7 +144,8 @@ class Player {
 	void map_reset();
 
 	arms::Weapon& equipped_weapon();
-	int& extant_instances(int index);
+	void push_to_loadout(int id);
+	void pop_from_loadout(int id);
 
 	// map helpers
 	dir::LR entered_from() const;
@@ -157,7 +163,7 @@ class Player {
 	Indicator orb_indicator;
 
 	// weapons
-	arms::Arsenal arsenal;
+	std::optional<arms::Arsenal> arsenal{};
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};
@@ -169,11 +175,14 @@ class Player {
 	std::vector<vfx::Gravitator> antennae{};
 	sf::Vector2<float> antenna_offset{4.f, -13.f};
 
-	PlayerStats player_stats{0, 99999};
+	PlayerStats player_stats{0, 99999, 0.06f};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 	util::Cooldown hurt_cooldown{}; //for animation
+	util::Cooldown force_cooldown{}; //for player hurt forces
 	Counters counters{};
+	std::vector<sf::Vector2<float>> accumulated_forces{};
+	sf::Vector2<float> forced_momentum{};
 
 	automa::ServiceProvider* m_services;
 
@@ -198,7 +207,7 @@ class Player {
 		float stop{3.8f};
 		float wallslide{-1.5f};
 		float suspend{4.4f};
-		float landed{0.004f};
+		float landed{0.4f};
 		float run{0.02f};
 	} thresholds{};
 };

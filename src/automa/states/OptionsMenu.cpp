@@ -35,6 +35,7 @@ void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (!svc.controller_map.is_gamepad() && svc.controller_map.label_to_control.at("right").triggered()) {
 		if (current_selection == menu_selection_id.at(MenuSelection::controls)) { svc.state_controller.submenu = menu_type::controls; }
 		if (current_selection == menu_selection_id.at(MenuSelection::credits)) { svc.state_controller.submenu = menu_type::credits; }
+		if (current_selection == menu_selection_id.at(MenuSelection::settings)) { svc.state_controller.submenu = menu_type::settings; }
 		svc.state_controller.actions.set(Actions::trigger_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 	}
@@ -46,6 +47,11 @@ void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		}
 		if (current_selection == menu_selection_id.at(MenuSelection::credits)) {
 			svc.state_controller.submenu = menu_type::credits;
+			svc.state_controller.actions.set(Actions::trigger_submenu);
+			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+		}
+		if (current_selection == menu_selection_id.at(MenuSelection::settings)) {
+			svc.state_controller.submenu = menu_type::settings;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}

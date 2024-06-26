@@ -2,10 +2,12 @@
 #include <cmath>
 #include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
+#include "../level/Map.hpp"
+#include "../particle/Effect.hpp"
 
 namespace world {
 
-Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point)
+Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point, int style)
 	: shape::Collider(dimensions, position), path_position(start_point) {
 
 	auto const& in_data = svc.data.platform[specifications];
@@ -14,6 +16,8 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	if (in_data["repeating"].as_bool()) { flags.attributes.set(PlatformAttributes::repeating); }
 	if (in_data["player_activated"].as_bool()) { flags.attributes.set(PlatformAttributes::player_activated); }
 	if (in_data["player_controlled"].as_bool()) { flags.attributes.set(PlatformAttributes::player_controlled); }
+
+	metrics.speed = in_data["speed"].as<float>();
 
 	for (auto& point : in_data["track"].array_view()) { track.push_back({position.x + (point[0].as<float>() * extent), position.y + (point[1].as<float>() * extent)}); }
 	track_shape.setPointCount(track.size());
@@ -24,6 +28,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 		track_shape.setPoint(x, track[x] + dimensions * 0.5f);
 	}
 
+	track_shape.setFillColor(sf::Color::Transparent);
 	track_shape.setOutlineColor(sf::Color(135, 132, 149, 140));
 	track_shape.setOutlineThickness(2);
 
@@ -32,7 +37,6 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	counter.start();
 
 	// set visuals
-	style = 0;
 	animation.set_params({0, 4, 16, -1});
 	sprite.setTexture(svc.assets.platform_lookup.at(style));
 	auto scaled_dim = dimensions / svc.constants.cell_size;
@@ -66,7 +70,10 @@ void Platform::update(automa::ServiceProvider& svc, player::Player& player) {
 			direction.und = physics.velocity.y > 0.0f ? dir ::UND::down : dir::UND::up;
 
 			if (player.collider.jumpbox.overlaps(bounding_box) && flags.attributes.test(PlatformAttributes::sticky)) {
-				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.collider.physics.position += physics.position - old_position; }
+				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) {
+					//player.collider.physics.position += physics.position - old_position;
+					player.forced_momentum = physics.position - old_position;
+				}
 			}
 			break;
 		} else {
@@ -116,6 +123,17 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		Collider::render(win, cam);
 	} else {
 		win.draw(sprite);
+	}
+}
+
+void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
+	if (proj.stats.transcendent) { return; }
+	if (proj.bounding_box.overlaps(bounding_box)) {
+		if (!proj.destruction_initiated()) {
+			map.effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, physics.velocity * 10.f, proj.effect_type(), 2));
+			if (proj.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+		}
+		proj.destroy(false);
 	}
 }
 

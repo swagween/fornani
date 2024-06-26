@@ -75,22 +75,57 @@
       ],
       "activate_on_contact": false,
       "key": "guest_shelf"
-    }
-  ],
-  "animators": [
+    },
     {
-      "id": 231,
       "dimensions": [
         1,
         1
       ],
       "position": [
-        23,
+        11,
+        12
+      ],
+      "activate_on_contact": false,
+      "key": "comp3"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        19,
         7
       ],
-      "automatic": false,
-      "foreground": false
+      "activate_on_contact": false,
+      "key": "book3"
     },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        8,
+        12
+      ],
+      "activate_on_contact": false,
+      "key": "open_book"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        11,
+        6
+      ],
+      "activate_on_contact": false,
+      "key": "open_book_2"
+    }
+  ],
+  "animators": [
     {
       "id": 230,
       "dimensions": [
@@ -103,6 +138,32 @@
       ],
       "automatic": false,
       "foreground": false
+    },
+    {
+      "id": 230,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        23,
+        7
+      ],
+      "automatic": false,
+      "foreground": false
+    }
+  ],
+  "chests": [
+    {
+      "id": 3,
+      "item_id": 0,
+      "type": 0,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        9,
+        6
+      ]
     }
   ]
 }

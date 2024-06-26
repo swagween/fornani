@@ -281,7 +281,7 @@ float getElevation(float x, float y)
 
     elevation = (elevation + 1.f) / 2.f;
 
-    float distance = 2.0f * std::sqrt(x * x + y * y);
+    float distance = 2.0f * ccm::sqrt(x * x + y * y);
     elevation = (elevation + heightBase) * (1.0f - edgeFactor * std::pow(distance, edgeDropoffExponent));
     elevation = std::min(std::max(elevation, 0.0f), 1.0f);
 

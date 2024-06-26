@@ -47,7 +47,7 @@ void GrapplingHook::render(automa::ServiceProvider& svc, player::Player& player,
 		spring.render(win, campos);
 	} else {
 		float distance = util::magnitude(player.collider.physics.position - spring.get_anchor());
-		spring.num_links = distance / 20;
+		spring.num_links = static_cast<int>(distance / 20.f);
 		for (int i = 0; i < spring.num_links; ++i) {
 			rope.setPosition(spring.get_rope(i) - campos);
 			win.draw(rope);

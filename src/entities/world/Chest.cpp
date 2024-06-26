@@ -1,6 +1,7 @@
 
 #include "Chest.hpp"
 #include "../../gui/Console.hpp"
+#include "../../level/Map.hpp"
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
 
@@ -30,9 +31,9 @@ Chest::Chest(automa::ServiceProvider& svc) {
 
 void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
 
-	if (!open) {
+	if (!state.test(ChestState::open)) {
 		if (svc.ticker.every_x_frames(400)) { animation.set_params(shine); }
-		if (animation.complete() && !activated) { animation.set_params(unopened); }
+		if (animation.complete() && !state.test(ChestState::activated)) { animation.set_params(unopened); }
 	} else {
 		animation.set_params(opened); 
 	}
@@ -47,18 +48,20 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 	collider.physics.acceleration = {};
 
 	sparkler.set_position(collider.physics.position);
-	activated = false;
+	state.reset(ChestState::activated);
 
 	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
 		if (player.controller.inspecting()) {
-			activated = true;
+			state.set(ChestState::activated);
 			console.set_source(svc.text.basic);
-			if (!open) {
+			if (!state.test(ChestState::open)) {
 				svc.soundboard.flags.world.set(audio::World::chest);
 				console.load_and_launch("chest");
-				open = true;
+				state.set(ChestState::open);
 				animation.set_params(opened);
-				player.give_item(item_id, 1);
+				if (type == ChestType::gun) { player.push_to_loadout(item_id); }
+				if (type == ChestType::item) { player.give_item(item_id, 1); }
+				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.position)); }
 			} else {
 				console.load_and_launch("open_chest");
 			}
@@ -75,7 +78,7 @@ void Chest::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		drawbox.setPosition(collider.physics.position - campos);
-		activated ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
+		state.test(ChestState::activated) ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
 		win.draw(drawbox);
 		collider.render(win, campos);
 	} else {
@@ -91,5 +94,11 @@ void Chest::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.p
 void Chest::set_id(int new_id) { id = id; }
 
 void Chest::set_item(int id) { item_id = id; }
+
+void Chest::set_amount(int to_amount) { loot.amount = to_amount; }
+
+void Chest::set_rarity(float to_rarity) { loot.rarity = to_rarity; }
+
+void Chest::set_type(ChestType to_type) { type = to_type; }
 
 } // namespace entity

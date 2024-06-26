@@ -5,21 +5,23 @@
 #include <optional>
 #include <unordered_map>
 #include "../../utils/StateFunction.hpp"
+#include "../../utils/Counter.hpp"
 #include "../animation/Animation.hpp"
 #define PA_BIND(f) std::bind(&PlayerAnimation::f, this)
 
 namespace player {
 
 enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, jumpsquat, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide };
-int const rate{5};
+enum class AnimTriggers { flip };
+int const rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite) }
 inline anim::Parameters idle{20, 8, 7 * rate, -1};
-inline anim::Parameters turn{33, 3, 4 * rate, 0};
-inline anim::Parameters sharp_turn{16, 2, 4 * rate, 0};
+inline anim::Parameters turn{34, 2, 2 * rate, 0};
+inline anim::Parameters sharp_turn{16, 2, 3 * rate, 0};
 inline anim::Parameters run{44, 4, 7 * rate, -1};
 inline anim::Parameters sprint{10, 6, 4 * rate, -1};
-inline anim::Parameters shield{80, 3, 6 * rate, -1, true};
-inline anim::Parameters jumpsquat{61, 1, 4 * rate, 0};
+inline anim::Parameters shield{80, 3, 4 * rate, -1, true};
+inline anim::Parameters jumpsquat{61, 1, 1 * rate, 0};
 inline anim::Parameters rise{54, 2, 5 * rate, -1};
 inline anim::Parameters suspend{30, 3, 7 * rate, -1};
 inline anim::Parameters fall{62, 4, 5 * rate, -1};
@@ -38,11 +40,13 @@ class PlayerAnimation {
 		state_function = state_function();
 		animation.set_params(idle);
 		animation.start();
-		state.set(AnimState::idle);
+		state = AnimState::idle;
 	}
 
 	anim::Animation animation{};
-	util::BitFlags<AnimState> state{};
+	AnimState state{};
+	util::BitFlags<AnimTriggers> triggers{};
+	util::Counter idle_timer{};
 
 	void update();
 	void start();
@@ -73,7 +77,6 @@ class PlayerAnimation {
 
 	bool change_state(AnimState next, anim::Parameters params);
 
-  private:
 	struct {
 		int sit{2400};
 	} timers{};

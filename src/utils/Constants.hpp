@@ -5,7 +5,8 @@
 namespace util {
 
 struct Constants {
-	const sf::Vector2<int> tileset_scaled{16, 16};
+	sf::Vector2<int> const tileset_scaled{16, 16};
+	int const i_cell_size{32};
 	float const cell_size{32.0f};
 	float const chunk_size{16.0f};
 	const sf::Vector2<int> aspect_ratio{3840, 2160};

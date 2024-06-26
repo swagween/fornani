@@ -12,14 +12,14 @@
 #include "../graphics/FLColor.hpp"
 #include "../graphics/SpriteHistory.hpp"
 #include "../particle/Emitter.hpp"
+#include "../particle/Gravitator.hpp"
+#include "../particle/Sparkler.hpp"
 #include "../utils/BitFlags.hpp"
+#include "../utils/Cooldown.hpp"
 #include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
-#include "../particle/Gravitator.hpp"
-#include "../utils/Cooldown.hpp"
 #include "GrapplingHook.hpp"
-#include "../particle/Sparkler.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -30,6 +30,8 @@ class Player;
 }
 
 namespace arms {
+
+class Weapon;
 
 enum class WEAPON_TYPE {
 	BRYNS_GUN,
@@ -56,7 +58,6 @@ enum class WEAPON_TYPE {
 };
 
 enum class TEAMS { NANI, SKYCORPS, BEASTS };
-
 enum class RENDER_TYPE { ANIMATED, SINGLE_SPRITE, MULTI_SPRITE };
 
 sf::Vector2<float> const DEFAULT_DIMENSIONS{8.0, 8.0};
@@ -98,17 +99,17 @@ struct ProjectileAnimation {
 	int framerate{};
 };
 
-enum class ProjectileState { initialized, destruction_initiated, destroyed };
+enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
 
 class Projectile {
 
   public:
 	Projectile();
-	Projectile(automa::ServiceProvider& svc, std::string_view label, int id);
+	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon);
 
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
-	void destroy(bool completely);
+	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc);
 	void set_sprite(automa::ServiceProvider& svc);
 	void set_orientation(sf::Sprite& sprite);
@@ -122,8 +123,13 @@ class Projectile {
 	void constrain_hitbox_at_destruction_point();
 	void lock_to_anchor();
 
-	[[nodiscard]] auto wall_hit_type() const -> int { return visual.wall_hit_type; }
+	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
+	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
 	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
+	[[nodiscard]] auto get_damage() const -> float { return stats.base_damage * variables.damage_multiplier; }
+	[[nodiscard]] auto whiffed() const -> bool { return state.test(ProjectileState::whiffed); }
+	[[nodiscard]] auto poofed() const -> bool { return state.test(ProjectileState::poof); }
+	[[nodiscard]] auto made_contact() const -> bool { return state.test(ProjectileState::contact); }
 
 	dir::Direction direction{};
 	shape::Shape bounding_box{};
@@ -144,10 +150,11 @@ class Projectile {
 	sf::Vector2<float> fired_point{};
 	sf::Vector2<float> destruction_point{};
 
-	std::vector<sf::Sprite> sp_proj{};
+	sf::Sprite sprite{};
 
 	anim::Animation animation{};
 	flfx::SpriteHistory sprite_history{};
+	int sprite_index{};
 
 	util::Cooldown cooldown{};
 
@@ -158,11 +165,18 @@ class Projectile {
 
 	std::vector<sf::Color> colors{};
 	std::deque<sf::Vector2<float>> position_history{};
+	Weapon* m_weapon;
 
-	private:
-	int id{};
+  private:
+
 	struct {
-		int wall_hit_type{};
+		float damage_multiplier{1.f};
+	} variables{};
+
+	int id{};
+
+	struct {
+		int effect_type{};
 	} visual{};
 };
 } // namespace arms

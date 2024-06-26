@@ -11,6 +11,7 @@ class MainMenu : public GameState {
 
 	MainMenu() = default;
 	MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
+	~MainMenu() {}
 
 	void init(ServiceProvider& svc, std::string_view room = "");
 	void handle_events(ServiceProvider& svc, sf::Event& event);
@@ -19,6 +20,8 @@ class MainMenu : public GameState {
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 
 	sf::Sprite title{};
+	sf::Text subtitle{};
+	sf::Text instruction{};
 	std::vector<sf::Sprite> title_assets{};
 };
 

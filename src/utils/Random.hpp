@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <cstdio>
 #include <memory>
 #include <random>
@@ -13,6 +14,12 @@ class Random {
 	int random_range(int lo, int hi) { return std::uniform_int_distribution<int>{lo, hi}(engine); }
 
 	float random_range_float(float lo, float hi) { return std::uniform_real_distribution<float>{lo, hi}(engine); }
+
+	sf::Vector2<float> random_vector_float(float lo, float hi) {
+		auto randx = random_range_float(lo, hi);
+		auto randy = random_range_float(lo, hi);
+		return {randx, randy};
+	}
 
 	int unsigned_coin_flip() {
 		auto result = std::uniform_real_distribution<float>{-1.0f, 1.0f}(engine);

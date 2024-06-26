@@ -1,0 +1,9 @@
+{
+  "title": "Fornani",
+  "build": "alpha",
+  "version": {
+    "major": 0,
+    "minor": 0,
+    "hotfix": 4
+  }
+}

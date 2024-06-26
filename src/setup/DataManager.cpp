@@ -12,6 +12,8 @@ DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 void DataManager::load_data() {
 
 	std::cout << "loading json data...";
+	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
+	assert(!game_info.is_null());
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
 	drop = dj::Json::from_file((finder.resource_path + "/data/item/drop.json").c_str());
@@ -62,11 +64,13 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto const wipe = dj::Json::parse(empty_array);
 	save["player_data"]["arsenal"] = wipe;
 	// push player arsenal
-	for (auto& gun : player.arsenal.loadout) {
-		int this_id = gun->get_id();
-		save["player_data"]["arsenal"].push_back(this_id);
+	if (player.arsenal) {
+		for (auto& gun : player.arsenal.value().get_loadout()) {
+			int this_id = gun->get_id();
+			save["player_data"]["arsenal"].push_back(this_id);
+		}
+		save["player_data"]["equipped_gun"] = player.arsenal.value().get_index();
 	}
-	save["player_data"]["equipped_gun"] = player.arsenal.get_index();
 
 	//items and abilities
 	save["player_data"]["abilities"] = wipe;
@@ -80,6 +84,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 
 	save["save_point_id"] = save_point_id;
+	std::cout << "Save Point ID written to save: " << save_point_id << "\n";
 
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
@@ -92,21 +97,24 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	assert(!save.is_null());
 
 	int save_pt_id = save["save_point_id"].as<int>();
-	int room_id = lookup::save_point_to_room_id.at(save_pt_id);
+	int room_id = save_pt_id;
+	std::cout << "Save Point ID loaded from json: " << save_pt_id << "\n";
+	m_services->state_controller.save_point_id = save_pt_id;
 
 	// set player data based on save file
-	player.health.set_max(save["player_data"]["max_hp"].as<int>());
-	player.health.set_hp(save["player_data"]["hp"].as<int>());
+	player.health.set_max(save["player_data"]["max_hp"].as<float>());
+	player.health.set_hp(save["player_data"]["hp"].as<float>());
 	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	player.arsenal.loadout.clear();
+	player.arsenal = {};
+	if (!save["player_data"]["arsenal"].array_view().empty()) { player.arsenal = arms::Arsenal(*m_services); }
 	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
-		player.arsenal.push_to_loadout(gun_id.as<int>());
+		player.arsenal.value().push_to_loadout(gun_id.as<int>());
 	}
-	if (!player.arsenal.loadout.empty()) {
+	if (!player.arsenal.value().empty()) {
 		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
-		player.arsenal.set_index(equipped_gun);
+		player.arsenal.value().set_index(equipped_gun);
 	}
 
 	// load items and abilities
@@ -114,9 +122,6 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	player.catalog.categories.inventory.clear();
 	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
 	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
-
-	//reset some things that might be lingering
-	player.arsenal.extant_projectile_instances = {};
 
 	return lookup::get_map_label.at(room_id);
 }
@@ -127,12 +132,12 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	assert(!save.is_null());
 
 	// set player data based on save file
-	player.health.set_max(save["player_data"]["max_hp"].as<int>());
-	player.health.set_hp(save["player_data"]["hp"].as<int>());
+	player.health.set_max(save["player_data"]["max_hp"].as<float>());
+	player.health.set_hp(save["player_data"]["hp"].as<float>());
 	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
 
 	// load player's arsenal
-	player.arsenal.loadout.clear();
+	player.arsenal = {};
 
 	return lookup::get_map_label.at(100);
 }

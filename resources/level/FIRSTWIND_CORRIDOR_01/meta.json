@@ -39,5 +39,21 @@
       "destination_id": 102,
       "activate_on_contact": false
     }
+  ],
+  "enemies": [
+    {
+      "id": 1,
+      "position": [
+        36,
+        10
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        15,
+        7
+      ]
+    }
   ]
 }

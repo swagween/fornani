@@ -5,12 +5,14 @@
 
 namespace enemy {
 
-	enum class TankState { idle, turn, run, shoot, alert };
+enum class TankState { idle, turn, run, shoot, alert };
 
 class Tank : public Enemy {
 
 	  public:
 		Tank() = default;
+		~Tank() override {}
+		Tank& operator = (Tank&&) = delete;
 		Tank(automa::ServiceProvider& svc);
 		void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
@@ -24,7 +26,7 @@ class Tank : public Enemy {
 	  private:
 		util::BitFlags<TankState> state{};
 
-	int fire_chance{80};
+	float fire_chance{100.f};
 
 	//packages
 	entity::WeaponPackage gun;

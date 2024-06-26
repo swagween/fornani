@@ -12,6 +12,7 @@
     ],
     "options": [
       "controls",
+      "settings",
       "tutorial",
       "credits"
     ],
@@ -31,6 +32,11 @@
       "up",
       "down"
     ],
+    "settings": [
+      "Keyboard Input: ",
+      "Gamepad Input: ",
+      "Music Volume: "
+    ],
     "credits": [
       ""
     ]
@@ -46,6 +52,9 @@
       "top_buffer": 186
     },
     "controls": {
+      "top_buffer": 60
+    },
+    "settings": {
       "top_buffer": 60
     },
     "credits": {

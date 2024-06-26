@@ -15,6 +15,8 @@ namespace config {
 enum class Action { left, right, up, down, main_action, secondary_action, tertiary_action, inspect, sprint, shield, arms_switch_left, arms_switch_right, menu_toggle, menu_toggle_secondary, menu_forward, menu_back };
 enum class ActionState { held, released, triggered };
 enum class ControllerType { keyboard, gamepad };
+enum class ControllerStatus { gamepad_connected };
+enum class Toggles { keyboard, gamepad };
 
 struct Control {
 	Control(Action action) : action(action) {}
@@ -48,8 +50,11 @@ class ControllerMap {
 	void switch_to_joystick();
 	void switch_to_keyboard();
 	[[nodiscard]] auto get_throttle() const -> sf::Vector2<float> { return throttle; }
+	[[nodiscard]] auto gamepad_connected() const -> bool { return status.test(ControllerStatus::gamepad_connected); }
 	[[nodiscard]] auto is_gamepad() const -> bool { return type == ControllerType::gamepad; }
 	[[nodiscard]] auto is_keyboard() const -> bool { return type == ControllerType::keyboard; }
+	[[nodiscard]] auto joystick_moved() const -> bool { return throttle.x < -throttle_threshold || throttle.x > throttle_threshold || throttle.y < -throttle_threshold || throttle.y > throttle_threshold; }
+	[[nodiscard]] auto hard_toggles_off() const -> bool { return !hard_toggles.test(config::Toggles::keyboard) && !hard_toggles.test(config::Toggles::gamepad); }
 
 	std::vector<std::string_view> tags{"main_action", "secondary_action", "tertiary_action", "inspect", "sprint", "shield", "menu_toggle", "menu_toggle_secondary", "arms_switch_left", "arms_switch_right", "left", "right", "up",
 									   "down", "menu_forward", "menu_back"};
@@ -78,7 +83,7 @@ class ControllerMap {
 																		  {"Period", sf::Keyboard::Period}, {"1", sf::Keyboard::Num1},
 																		  {"2", sf::Keyboard::Num2},		{"3", sf::Keyboard::Num3},
 																		  {"Space", sf::Keyboard::Space},	{"LControl", sf::Keyboard::LControl},
-																		  {"Esc", sf::Keyboard::Escape}};
+																		  {"Esc", sf::Keyboard::Escape},	{"Enter", sf::Keyboard::Enter}};
 	std::unordered_map<sf::Keyboard::Key, std::string_view> key_to_string{{sf::Keyboard::A, "A"},			{sf::Keyboard::B, "B"},
 																		  {sf::Keyboard::C, "C"},			{sf::Keyboard::D, "D"},
 																		  {sf::Keyboard::E, "E"},			{sf::Keyboard::F, "F"},
@@ -102,6 +107,8 @@ class ControllerMap {
 	std::unordered_map<std::string_view, sf::Mouse::Button> string_to_mousebutton{{"LMB", sf::Mouse::Left}, {"RMB", sf::Mouse::Right}};
 
 	ControllerType type{};
+	util::BitFlags<Toggles> hard_toggles{};
+	util::BitFlags<ControllerStatus> status{};
 
   private:
 	sf::Vector2<float> throttle{};

@@ -24,11 +24,17 @@ class Style {
 		sf::Color black{14, 6, 11};
 		sf::Color night{19, 18, 16};
 		sf::Color ui_black{12, 12, 20};
+		sf::Color mythic_green{175, 227, 125};
 	} colors{};
 
-	std::unordered_map<std::string_view, sf::Color> spray_colors{{"clover", colors.green},			{"bryn's gun", colors.periwinkle}, {"plasmer", colors.fucshia},
-																 {"skycorps ar", colors.goldenrod}, {"tomahawk", colors.white},		   {"grappling hook", colors.ui_white}, {"grenade launcher", colors.goldenrod}
-	};
+	std::unordered_map<std::string_view, sf::Color> spray_colors{{"clover", colors.green},
+																 {"bryn's gun", colors.periwinkle},
+																 {"plasmer", colors.fucshia},
+																 {"skycorps ar", colors.goldenrod},
+																 {"tomahawk", colors.white},
+																 {"grappling hook", colors.ui_white},
+																 {"grenade launcher", colors.goldenrod},
+																 {"gnat", colors.mythic_green}};
 };
 
 } // namespace style

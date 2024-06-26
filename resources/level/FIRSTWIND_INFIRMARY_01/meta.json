@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "room_id": 114,
+    "dimensions": [
+      32,
+      16
+    ],
+    "chunk_dimensions": [
+      2,
+      1
+    ],
+    "style": 0,
+    "background": 5
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        12
+      ],
+      "source_id": 114,
+      "destination_id": 112,
+      "activate_on_contact": false
+    }
+  ],
+  "save_point": {
+    "id": 114,
+    "position": [
+      10,
+      12
+    ]
+  }
+}

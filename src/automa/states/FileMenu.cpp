@@ -6,7 +6,6 @@ namespace automa {
 
 FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
 	current_selection = 0;
-	state = STATE::STATE_FILE;
 	svc.data.load_blank_save(player);
 	hud.set_corner_pad(svc, true); // display hud preview for each file in the center of the screen
 	constrain_selection();
@@ -37,14 +36,14 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		++current_selection;
 		constrain_selection();
 		svc.data.load_blank_save(*player);
-		svc.data.load_progress(*player, current_selection);
+		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("up").triggered()) {
 		--current_selection;
 		constrain_selection();
 		svc.data.load_blank_save(*player);
-		svc.data.load_progress(*player, current_selection);
+		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
@@ -53,7 +52,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	}
 	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {
 		constrain_selection();
-		svc.data.load_progress(*player, current_selection, true);
+		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection, true);
 		svc.state_controller.actions.set(Actions::trigger);
 		svc.state_controller.actions.set(Actions::save_loaded);
 		svc.soundboard.flags.menu.set(audio::Menu::select);
@@ -76,7 +75,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection).left_offset);
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 
-	hud.update(*player);
+	hud.update(svc, *player);
 
 	player->collider.physics.acceleration = {};
 	player->collider.physics.velocity = {};

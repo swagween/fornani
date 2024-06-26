@@ -14,15 +14,20 @@ namespace player {
 class Player;
 }
 
+namespace arms {
+class Projectile;
+}
+
 namespace world {
 
 	enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled };
 
 class Platform : public shape::Collider {
   public:
-	Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point = 0.f);
+	Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point = 0.f, int style = 0);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	dir::Direction direction{};
 	util::Counter counter{};
 
@@ -33,7 +38,7 @@ class Platform : public shape::Collider {
 	} range{};
 
 	struct {
-		float speed{0.001f};
+		float speed{};
 	} metrics{};
 
 	struct {

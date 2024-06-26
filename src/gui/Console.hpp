@@ -67,6 +67,12 @@ class Console {
 	automa::ServiceProvider* m_services;
 
 	text::TextWriter writer;
+
+	struct {
+		int out_voice{};
+		int out_emotion{};
+	} communicators{};
+
 	Border border{
 		48.f,
 		40.f,
@@ -74,7 +80,7 @@ class Console {
 		26.f
 	};
 
-	int extent{};
+	float extent{};
 	int speed{2};
 
 	protected:

@@ -26,7 +26,8 @@ class Player;
 
 namespace npc {
 
-enum class NPCState { engaged };
+enum class NPCState { engaged, force_interact, introduced };
+enum class NPCTrigger { distant_interact };
 
 class NPC : public entity::Entity {
   public:
@@ -37,19 +38,22 @@ class NPC : public entity::Entity {
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
 	void set_id(int new_id);
 	void push_conversation(std::string_view convo);
+	void flush_conversations();
 
 	std::string_view label{};
 
+  protected:
+	util::BitFlags<NPCState> state_flags{};
+	util::BitFlags<NPCTrigger> triggers{};
+	std::deque<std::string_view> conversations{};
+	shape::Collider collider{};
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
-	shape::Collider collider{};
-	util::BitFlags<NPCState> state_flags{};
 
-	std::deque<std::string_view> conversations{};
 	int id{};
 
 	struct {
-		float const walk_threshold{0.5f};
+		float walk_threshold{0.5f};
 	} physical{};
 };
 

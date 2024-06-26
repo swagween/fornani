@@ -1,4 +1,5 @@
 
+
 #pragma once
 
 #include <assert.h>
@@ -40,6 +41,8 @@ class DataManager {
 	void load_controls(config::ControllerMap& controller);
 	void save_controls(config::ControllerMap& controller);
 	void reset_controls();
+
+	dj::Json game_info{};
 
 	dj::Json weapon{};
 	dj::Json drop{};

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "room_id": 0,
+    "room_id": 100,
     "dimensions": [
       32,
       16
@@ -26,5 +26,12 @@
       "destination_id": 101,
       "activate_on_contact": false
     }
-  ]
+  ],
+  "save_point": {
+    "id": 100,
+    "position": [
+      3,
+      7
+    ]
+  }
 }

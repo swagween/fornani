@@ -1,6 +1,6 @@
 
 #include "Animator.hpp"
-#include "../../service/Serviceprovider.hpp"
+#include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
 
 namespace entity {
@@ -34,13 +34,13 @@ void Animator::update(player::Player& player) {
 		}
 	}
 	position = static_cast<sf::Vector2<float>>(scaled_position * A_UNIT_SIZE);
-	sf::Vector2<float> adjusted_pos = sf::Vector2<float>(scaled_position.x * A_UNIT_SIZE + large_animator_offset.x, scaled_position.y * A_UNIT_SIZE + large_animator_offset.y);
+	sf::Vector2<float> adjusted_pos = sf::Vector2<float>((float)scaled_position.x * A_UNIT_SIZE + large_animator_offset.x, (float)scaled_position.y * A_UNIT_SIZE + large_animator_offset.y);
 	bounding_box.set_position(adjusted_pos);
 	int converted_id = large ? id - 100 : id - 200;
 	auto x_scale = large ? 2 : 1;
 	// get UV coords
 	int u = converted_id * x_scale * A_UNIT_SIZE;
-	int v = get_frame() * dimensions.y;
+	int v = get_frame() * static_cast<int>(dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
 }
 void Animator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

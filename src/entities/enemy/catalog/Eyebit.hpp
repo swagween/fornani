@@ -23,7 +23,7 @@ class Eyebit : public Enemy {
 	util::BitFlags<EyebitState> state{};
 
 	//packages
-	entity::Seeker seeker{0.001f, 0.992f};
+	entity::Seeker seeker{0.001f, 0.99f};
 	util::Cooldown seeker_cooldown{};
 
 	// lookup, duration, framerate, num_loops

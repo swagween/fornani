@@ -4,16 +4,15 @@
 
 namespace automa {
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player) {}
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console) {}
 
 void Dojo::init(ServiceProvider& svc, std::string_view room) {
 
 	console = gui::Console(svc);
-
-	hud.set_corner_pad(svc, false); // reset hud position to corner
 	player->reset_flags();
-
 	map.load(svc, room);
+	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
+	hud.set_corner_pad(svc, false); // reset hud position to corner
 
 	// TODO: refactor player initialization
 	player->collider.physics.zero();
@@ -42,31 +41,35 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	// save was loaded from a json, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
 
-	player->controller = {};
 	player->controller.prevent_movement();
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
+
 	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);
-
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		svc.controller_map.handle_press(event.key.code);
-		if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(); }
 	}
 	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+
 	if (event.type == sf::Event::EventType::KeyPressed) {
 		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
+		if (event.key.code == sf::Keyboard::Num0) { camera.begin_shake(); }
 	}
+
+	if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(svc); }
+	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) { toggle_pause_menu(svc); }
 }
 
 void Dojo::tick_update(ServiceProvider& svc) {
 	enter_room.update();
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
-	player->update(console, inventory_window);
 
+	player->update(console, inventory_window);
 	map.update(svc, console, inventory_window);
 
+	if (map.camera_shake()) { camera.begin_shake(); }
 	camera.center(player->anchor_point);
 	camera.update(svc);
 	camera.restrict_movement(map.real_dimensions);
@@ -77,11 +80,15 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	player->controller.clean();
 	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
+
+	map.background->update(svc, camera.get_observed_velocity());
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {
-	map.background->update(svc, camera.get_observed_velocity());
-	hud.update(*player);
+	pause_window.update(svc, *player);
+	hud.update(svc, *player);
+	svc.controller_map.reset_triggers();
+	pause_window.clean_off_trigger();
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
@@ -91,11 +98,21 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!svc.greyblock_mode()) { hud.render(*player, win); }
 	inventory_window.render(svc, *player, win);
+	pause_window.render(svc, *player, win);
 	map.render_console(svc, console, win);
 
 	map.transition.render(win);
 }
 
-void Dojo::toggle_inventory() { inventory_window.active() ? inventory_window.close() : inventory_window.open(); }
+void Dojo::toggle_inventory(ServiceProvider& svc) {
+	inventory_window.active() ? inventory_window.close() : inventory_window.open();
+	svc.controller_map.reset_triggers();
+}
+
+void Dojo::toggle_pause_menu(ServiceProvider& svc) {
+	pause_window.active() ? pause_window.close() : pause_window.open();
+	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();
+	svc.controller_map.reset_triggers();
+}
 
 } // namespace automa

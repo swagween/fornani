@@ -30,6 +30,9 @@ static inline anim::Parameters unopened{0, 1, 80, -1};
 static inline anim::Parameters shine{1, 5, 24, 0};
 static inline anim::Parameters opened{6, 1, 8, -1};
 
+enum class ChestState {activated, open};
+enum class ChestType {gun, item, orbs};
+
 class Chest : public Entity {
   public:
 	Chest(automa::ServiceProvider& svc);
@@ -39,16 +42,25 @@ class Chest : public Entity {
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
 	void set_id(int new_id);
 	void set_item(int id);
+	void set_amount(int to_amount);
+	void set_rarity(float to_rarity);
+	void set_type(ChestType to_type);
 
   private:
 	vfx::Sparkler sparkler{};
 	anim::Animation animation{};
 	shape::Collider collider{};
 
+	util::BitFlags<ChestState> state{};
+	ChestType type{};
+
 	int id{};
 	int item_id{};
-	bool activated{};
-	bool open{};
+
+	struct {
+		int amount{};
+		float rarity{};
+	} loot{};
 };
 
 } // namespace entity
