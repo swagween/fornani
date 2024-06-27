@@ -32,8 +32,8 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 		}
 	}
 	if (!found_one) {
-		float ppx = svc.data.save["player_data"]["position"]["x"].as<float>();
-		float ppy = svc.data.save["player_data"]["position"]["y"].as<float>();
+		float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
+		float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
 		sf::Vector2f player_pos = {ppx, ppy};
 		player->set_position(player_pos);
 	}
@@ -82,6 +82,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	player->flags.triggers = {};
 
 	map.background->update(svc, camera.get_observed_velocity());
+	console.end_tick();
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {

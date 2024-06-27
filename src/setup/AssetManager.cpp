@@ -118,6 +118,7 @@ void AssetManager::import_textures() {
 	platform_lookup.insert({2, t_platform_firstwind});
 
 	t_breakables.loadFromFile(finder.resource_path + "/image/tile/breakables.png");
+	t_inspectable.loadFromFile(finder.resource_path + "/image/entity/inspectable.png");
 
 	// backgrounds
 	t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");

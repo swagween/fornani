@@ -1,14 +1,17 @@
 {
+  "status": {
+    "new": true
+  },
   "player_data": {
     "max_hp": 3.000000,
     "hp": 3.000000,
-    "orbs": 514,
+    "orbs": 0,
     "position": {
-      "x": 198.762222,
+      "x": 102.501831,
       "y": 231.000000
     },
     "arsenal": [
-      0
+
     ],
     "equipped_gun": 0,
     "abilities": [
@@ -18,5 +21,5 @@
 
     ]
   },
-  "save_point_id": 117
+  "save_point_id": 100
 }

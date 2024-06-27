@@ -6,6 +6,7 @@
 #include "states/ControlsMenu.hpp"
 #include "states/CreditsMenu.hpp"
 #include "states/SettingsMenu.hpp"
+#include "states/Intro.hpp"
 #include "states/Dojo.hpp"
 
 namespace fornani {

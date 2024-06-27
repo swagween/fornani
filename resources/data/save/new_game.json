@@ -1,4 +1,7 @@
 {
+  "status": {
+    "new": true
+  },
   "player_data": {
     "max_hp": 3,
     "hp": 3,
@@ -12,5 +15,5 @@
     "abilities": [],
     "items": []
   },
-  "save_point_id": 1
+  "save_point_id": 100
 }

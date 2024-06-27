@@ -8,6 +8,7 @@ namespace arms {
 Arsenal::Arsenal(automa::ServiceProvider& svc) : m_services(&svc) {}
 
 void Arsenal::push_to_loadout(int id) {
+	if (has(id)) { return; }
 	if (loadout.empty()) {
 		loadout.push_back(std::make_unique<Weapon>(*m_services, m_services->tables.gun_label.at(id), id));
 		current_weapon = util::Circuit(static_cast<int>(loadout.size()));
@@ -18,6 +19,7 @@ void Arsenal::push_to_loadout(int id) {
 }
 
 void Arsenal::pop_from_loadout(int id) {
+	if (!has(id)) { return; }
 	if (loadout.size() == 1) {
 		loadout.clear();
 		return;

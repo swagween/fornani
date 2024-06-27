@@ -10,7 +10,7 @@ enum class TankState { idle, turn, run, shoot, alert };
 class Tank : public Enemy {
 
 	  public:
-		Tank() = default;
+		Tank() = delete;
 		~Tank() override {}
 		Tank& operator = (Tank&&) = delete;
 		Tank(automa::ServiceProvider& svc);

@@ -1,5 +1,5 @@
 #include "Game.hpp"
-#include <time.h>
+#include <ctime>
 
 namespace fornani {
 
@@ -992,9 +992,14 @@ void Game::playtester_portal() {
 
 void Game::take_screenshot() {
 	std::time_t const now = std::time(nullptr);
-	std::string filedate = std::asctime(std::localtime(&now));
-	std::erase_if(filedate, [](auto const& c) { return c == ':' || isspace(c); });
-	std::string filename = "screenshot_" + filedate + ".png";
+
+	std::time_t time = std::time({});
+	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
+	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
+	std::string time_str = time_string;
+
+	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
+	std::string filename = "screenshot_" + time_str + ".png";
 	if (screencap.copyToImage().saveToFile(filename)) { std::cout << "screenshot saved to " << filename << std::endl; }
 }
 

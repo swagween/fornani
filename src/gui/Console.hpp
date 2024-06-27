@@ -41,13 +41,14 @@ class Console {
 	void load_and_launch(std::string_view key);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
+	void end_tick();
 	void clean_off_trigger();
 	void include_portrait(int id);
 
 	void nine_slice(int corner_dim, int edge_dim);
 
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
-	[[nodiscard]] auto is_complete() const -> bool { return !flags.test(ConsoleFlags::active); }
+	[[nodiscard]] auto is_complete() const -> bool { return writer.empty(); }
 	[[nodiscard]] auto extended() const -> bool { return flags.test(ConsoleFlags::extended); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
 

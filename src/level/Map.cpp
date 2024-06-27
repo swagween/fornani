@@ -113,7 +113,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			pos.y = entry["position"][1].as<int>();
 			dim.x = entry["dimensions"][0].as<int>();
 			dim.y = entry["dimensions"][1].as<int>();
-			inspectables.push_back(entity::Inspectable(dim, pos, key));
+			inspectables.push_back(entity::Inspectable(svc, dim, pos, key));
 			inspectables.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
 		}
 
@@ -393,9 +393,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		if (animator.foreground) { animator.render(svc, win, cam); }
 	}
 
-	if (svc.greyblock_mode()) {
-		for (auto& inspectable : inspectables) { inspectable.render(win, cam); }
-	}
+	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
+	
 
 	// render minimap
 	if (show_minimap) {

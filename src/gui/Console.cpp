@@ -89,13 +89,16 @@ void Console::end() {
 	writer.flush_communicators();
 	extent = current_dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
-	flags.reset(ConsoleFlags::loaded);
 	flags.reset(ConsoleFlags::portrait_included);
 	flags.reset(ConsoleFlags::extended);
 	flags.set(ConsoleFlags::off_trigger);
 }
 
 void Console::clean_off_trigger() { flags.reset(ConsoleFlags::off_trigger); }
+
+void Console::end_tick() {
+	if (!flags.test(ConsoleFlags::active)) { flags.reset(ConsoleFlags::loaded); }
+}
 
 void Console::include_portrait(int id) {
 	flags.set(ConsoleFlags::portrait_included);

@@ -20,6 +20,13 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
 	title.setFillColor(flcolor::ui_black);
 
+	auto ctr{0};
+	for (auto& save : svc.data.files) {
+		if (save.is_new()) { options.at(ctr).label.setString(options.at(ctr).label.getString() + " (new)"); }
+		++ctr;
+	}
+	for (auto& option : options) { option.update(svc, current_selection); }
+
 	left_dot.set_position(options.at(current_selection).left_offset);
 	right_dot.set_position(options.at(current_selection).right_offset);
 }
@@ -101,12 +108,12 @@ void FileMenu::frame_update(ServiceProvider& svc) {}
 void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
 	for (auto& option : options) { win.draw(option.label); }
-
-	left_dot.render(svc, win, {});
-	right_dot.render(svc, win, {});
-
 	player->render(svc, win, {});
-	if (loading.is_complete()) { hud.render(*player, win); }
+	if (loading.is_complete()) {
+		left_dot.render(svc, win, {});
+		right_dot.render(svc, win, {});
+		hud.render(*player, win);
+	}
 }
 
 } // namespace automa

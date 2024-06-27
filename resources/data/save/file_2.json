@@ -1,4 +1,7 @@
 {
+  "status": {
+    "new": false
+  },
   "player_data": {
     "max_hp": 12.000000,
     "hp": 12.000000,

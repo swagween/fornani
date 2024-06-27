@@ -93,6 +93,7 @@ class AssetManager {
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
 	sf::Texture t_breakables{};
+	sf::Texture t_inspectable{};
 
 	//vfx
 	sf::Texture t_huge_explosion{};

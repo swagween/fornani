@@ -11,6 +11,16 @@ DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 
 void DataManager::load_data() {
 
+	auto ctr{0};
+	for (auto& file : files) {
+		file.id = ctr;
+		file.label = "file_" + std::to_string(ctr);
+		file.save_data = dj::Json::from_file((finder.resource_path + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
+		if ((dj::Boolean)file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::FileFlags::new_file); }
+		++ctr;
+	}
+	blank_file.save_data = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
+
 	std::cout << "loading json data...";
 	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
 	assert(!game_info.is_null());
@@ -51,6 +61,8 @@ void DataManager::load_data() {
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
 
+	auto& save = files.at(current_save).save_data;
+	files.at(current_save).write();
 	// set file data based on player state
 	save["player_data"]["max_hp"] = player.health.get_max();
 	save["player_data"]["hp"] = player.health.get_hp();
@@ -84,7 +96,6 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 
 	save["save_point_id"] = save_point_id;
-	std::cout << "Save Point ID written to save: " << save_point_id << "\n";
 
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
@@ -92,13 +103,11 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 std::string_view DataManager::load_progress(player::Player& player, int const file, bool state_switch) {
 
 	current_save = file;
-
-	save = dj::Json::from_file((finder.resource_path + "/data/save/file_" + std::to_string(file) + ".json").c_str());
+	auto const& save = files.at(file).save_data;
 	assert(!save.is_null());
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
-	std::cout << "Save Point ID loaded from json: " << save_pt_id << "\n";
 	m_services->state_controller.save_point_id = save_pt_id;
 
 	// set player data based on save file
@@ -112,7 +121,7 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
 		player.arsenal.value().push_to_loadout(gun_id.as<int>());
 	}
-	if (!player.arsenal.value().empty()) {
+	if (player.arsenal) {
 		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
 		player.arsenal.value().set_index(equipped_gun);
 	}
@@ -128,7 +137,7 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) {
 
-	save = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
+	auto const& save = blank_file.save_data;
 	assert(!save.is_null());
 
 	// set player data based on save file

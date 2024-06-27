@@ -40,5 +40,11 @@
     "responses": [
       [ "Yes%0", "No%1" ]
     ]
+  },
+  "intro": {
+    "suite": [
+      [ "You are lost and you are cold.", "There is not much you remember from the last days, but you know well that they were filled with anguish.", "You awaken now after a slumber of unknown length. The world shakes around you.", "...", "You are looking for your brother." ]
+    ],
+    "responses": [ [] ]
   }
 }

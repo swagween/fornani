@@ -63,6 +63,7 @@ class TextWriter {
 	[[nodiscard]] auto response_triggered() const -> bool { return flags.test(MessageState::response_trigger); }
 	[[nodiscard]] auto responding() const -> bool { return selection_mode(); }
 	[[nodiscard]] auto suite_size() const -> size_t { return suite.size(); }
+	[[nodiscard]] auto empty() const -> bool { return suite.empty() && responses.empty(); }
 
 	void reset_response() { flags.reset(MessageState::response_trigger); }
 	void flush_communicators() { communicators = {}; }
