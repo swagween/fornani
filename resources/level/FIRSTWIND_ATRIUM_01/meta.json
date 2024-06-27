@@ -80,6 +80,36 @@
       "key": "sign1"
     }
   ],
+  "platforms": [
+    {
+      "position": [
+        14,
+        35
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        22,
+        39
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.500000
+    }
+  ],
   "enemies": [
     {
       "id": 1,
@@ -102,12 +132,18 @@
         16
       ]
     },
-    
     {
       "id": 1,
       "position": [
         31,
         16
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        33,
+        40
       ]
     }
   ]

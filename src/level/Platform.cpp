@@ -19,7 +19,11 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 
 	metrics.speed = in_data["speed"].as<float>();
 
-	for (auto& point : in_data["track"].array_view()) { track.push_back({position.x + (point[0].as<float>() * extent), position.y + (point[1].as<float>() * extent)}); }
+	for (auto& point : in_data["track"].array_view()) {
+		track.push_back({position.x + (point[0].as<float>() * extent), position.y + (point[1].as<float>() * extent)});
+		if (point[0].as<float>() > 0.f) { flags.attributes.set(PlatformAttributes::side_to_side); }
+		if (point[1].as<float>() > 0.f) { flags.attributes.set(PlatformAttributes::up_down); }
+	}
 	track_shape.setPointCount(track.size());
 	if (flags.attributes.test(PlatformAttributes::loop)) { track.push_back(track.at(0)); }
 
@@ -34,6 +38,13 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 
 	direction.lr = dir::LR::neutral;
 	direction.und = dir::UND::neutral;
+
+	// for collision handling
+	if (track.size() > 1) {
+		native_direction.lr = flags.attributes.test(PlatformAttributes::side_to_side) ? dir::LR::left : dir::LR::neutral;
+		native_direction.und = flags.attributes.test(PlatformAttributes::up_down) ? dir::UND::down : dir::UND::neutral;
+	}
+
 	counter.start();
 
 	// set visuals
@@ -45,13 +56,36 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	if (scaled_dim.x == 3) { offset = {0, 32}; }
 	if (scaled_dim.y == 2) { offset = {0, 64}; }
 	if (scaled_dim.y == 3) { offset = {0, 128}; }
+	switch_up.start();
 }
 
-void Platform::update(automa::ServiceProvider& svc, player::Player& player) {
+void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	auto old_position = physics.position;
 	auto skip_value{16.f};
 	auto edge_start = 0.f;
 	player.collider.handle_collider_collision(bounding_box);
+	switch_up.update();
+
+	//map changes
+
+	//platform changes
+	for (auto& breakable : map.breakables) { handle_collider_collision(breakable.get_bounding_box()); }
+	for (auto& platform : map.platforms) {
+		if (&platform != this && native_direction.lr != platform.native_direction.lr) { handle_collider_collision(platform.hurtbox); }
+	}
+	if (flags.state.test(PlatformState::moving)) {
+		if (native_direction.lr == dir::LR::left) {
+			if (Collider::flags.external_state.consume(shape::ExternalState::horiz_collider_collision) && !switch_up.running()) {
+				switch_directions();
+				switch_up.start();
+			}
+		} else {
+			if (Collider::flags.external_state.consume(shape::ExternalState::vert_collider_collision) && !switch_up.running()) {
+				switch_directions();
+				switch_up.start();
+			}
+		}
+	}
 	// init direction to oppose player
 	direction.lr = player.controller.direction.lr == dir::LR::left ? dir::LR::right : dir::LR::left;
 
@@ -70,10 +104,7 @@ void Platform::update(automa::ServiceProvider& svc, player::Player& player) {
 			direction.und = physics.velocity.y > 0.0f ? dir ::UND::down : dir::UND::up;
 
 			if (player.collider.jumpbox.overlaps(bounding_box) && flags.attributes.test(PlatformAttributes::sticky)) {
-				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) {
-					//player.collider.physics.position += physics.position - old_position;
-					player.forced_momentum = physics.position - old_position;
-				}
+				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.forced_momentum = physics.position - old_position; }
 			}
 			break;
 		} else {
@@ -81,7 +112,7 @@ void Platform::update(automa::ServiceProvider& svc, player::Player& player) {
 		}
 	}
 
-	if (player.controller.direction.lr != direction.lr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { metrics.speed *= -1; }
+	if (player.controller.direction.lr != direction.lr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
 	if (flags.attributes.test(PlatformAttributes::player_controlled)) {
 		state = 2;
 		if (player.collider.jumpbox.overlaps(bounding_box)) {
@@ -106,6 +137,12 @@ void Platform::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (path_position < 0.0f) { path_position = 0.0f; }
 
 	sync_components();
+
+	if (old_position != physics.position) {
+		flags.state.set(PlatformState::moving);
+	} else {
+		flags.state.reset(PlatformState::moving);
+	}
 
 	counter.update();
 	animation.update();
@@ -135,6 +172,11 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 		}
 		proj.destroy(false);
 	}
+}
+
+void Platform::switch_directions() {
+	std::reverse(std::begin(track), std::end(track));
+	path_position = 1.0f - path_position;
 }
 
 } // namespace world

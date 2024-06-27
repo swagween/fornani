@@ -10,7 +10,8 @@
       1
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "music": "abandoned"
   },
   "portals": [
     {
@@ -165,5 +166,12 @@
         6
       ]
     }
-  ]
+  ],
+  "save_point": {
+    "id": 110,
+    "position": [
+      5,
+      12
+    ]
+  }
 }

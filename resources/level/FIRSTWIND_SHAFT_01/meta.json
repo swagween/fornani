@@ -53,35 +53,45 @@
       "activate_on_contact": true
     }
   ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        8,
+        4
+      ],
+      "activate_on_contact": false,
+      "key": "beware"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        7,
+        36
+      ],
+      "activate_on_contact": false,
+      "key": "beware2"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        2,
+        94
+      ],
+      "activate_on_contact": false,
+      "key": "abandon"
+    }
+  ],
   "platforms": [
-    {
-      "position": [
-        11,
-        48
-      ],
-      "dimensions": [
-        3,
-        1
-      ],
-      "extent": 27,
-      "style": 2,
-      "type": "standard_up_down",
-      "start": 0.000000
-    },
-    {
-      "position": [
-        11,
-        5
-      ],
-      "dimensions": [
-        3,
-        1
-      ],
-      "extent": 27,
-      "style": 2,
-      "type": "standard_up_down",
-      "start": 0.000000
-    },
     {
       "position": [
         10,
@@ -113,58 +123,166 @@
     {
       "position": [
         3,
-        37
-      ],
-      "dimensions": [
-        2,
-        2
-      ],
-      "extent": 16,
-      "style": 2,
-      "type": "standard_activated_up_down",
-      "start": 0.000000
-    },
-    {
-      "position": [
-        3,
-        18
-      ],
-      "dimensions": [
-        2,
-        2
-      ],
-      "extent": 16,
-      "style": 2,
-      "type": "standard_activated_up_down",
-      "start": 0.000000
-    },
-    {
-      "position": [
-        3,
         56
       ],
       "dimensions": [
         2,
-        2
+        1
       ],
-      "extent": 16,
+      "extent": 12,
       "style": 2,
       "type": "standard_activated_up_down",
       "start": 0.000000
     },
     {
       "position": [
-        3,
-        75
+        10,
+        31
       ],
       "dimensions": [
         2,
-        2
+        1
       ],
-      "extent": 16,
+      "extent": 6,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        13,
+        31
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        3,
+        37
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        3,
+        45
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 10,
       "style": 2,
       "type": "standard_activated_up_down",
       "start": 0.000000
+    },
+    {
+      "position": [
+        11,
+        48
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 27,
+      "style": 2,
+      "type": "slow_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        11,
+        5
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 27,
+      "style": 2,
+      "type": "slow_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        3,
+        83
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 7,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        3,
+        74
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 7,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        4,
+        9
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    }
+  ],
+  "chests": [
+    {
+      "id": 0,
+      "item_id": 0,
+      "type": 2,
+      "amount": 10,
+      "rarity": 0.000000,
+      "position": [
+        14,
+        89
+      ]
+    },
+    {
+      "id": 0,
+      "item_id": 0,
+      "type": 2,
+      "amount": 8,
+      "rarity": 4.000000,
+      "position": [
+        6,
+        71
+      ]
     }
   ]
 }

@@ -77,7 +77,7 @@
         21
       ],
       "activate_on_contact": false,
-      "key": "sign_atrium_02"
+      "key": "elevator2"
     },
     {
       "dimensions": [
@@ -89,29 +89,52 @@
         21
       ],
       "activate_on_contact": false,
-      "key": "atrium_2_sign"
+      "key": "rest"
+    }
+  ],
+  "platforms": [
+    {
+      "position": [
+        12,
+        5
+      ],
+      "dimensions": [
+        3,
+        3
+      ],
+      "extent": 5,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.300000
+    },
+    {
+      "position": [
+        15,
+        9
+      ],
+      "dimensions": [
+        3,
+        3
+      ],
+      "extent": 5,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.300000
     }
   ],
   "enemies": [
     {
       "id": 1,
       "position": [
-        13,
-        6
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
-        16,
-        6
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
         15,
         20
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        25,
+        8
       ]
     }
   ]

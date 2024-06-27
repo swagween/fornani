@@ -39,5 +39,19 @@
       "destination_id": 108,
       "activate_on_contact": false
     }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        11
+      ],
+      "activate_on_contact": false,
+      "key": "outer"
+    }
   ]
 }

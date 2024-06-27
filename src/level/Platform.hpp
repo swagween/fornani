@@ -20,14 +20,16 @@ class Projectile;
 
 namespace world {
 
-	enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled };
+	enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side };
+enum class PlatformState { moving };
 
 class Platform : public shape::Collider {
   public:
 	Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point = 0.f, int style = 0);
-	void update(automa::ServiceProvider& svc, player::Player& player);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
+	void switch_directions();
 	dir::Direction direction{};
 	util::Counter counter{};
 
@@ -43,7 +45,10 @@ class Platform : public shape::Collider {
 
 	struct {
 		util::BitFlags<PlatformAttributes> attributes{};
+		util::BitFlags<PlatformState> state{};
 	} flags{};
+
+	dir::Direction native_direction{};
 
 	sf::ConvexShape track_shape{};
 	std::vector<sf::Vector2<float>> track{};
@@ -51,6 +56,7 @@ class Platform : public shape::Collider {
 	float path_position{};
 	sf::Sprite sprite{};
 	anim::Animation animation{};
+	util::Cooldown switch_up{3};
 	int style{};
 	int state{};
 	sf::Vector2<int> offset{};

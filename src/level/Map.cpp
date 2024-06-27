@@ -285,14 +285,14 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(*player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
-	for (auto& platform : platforms) { platform.update(svc, *player); }
+	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& breakable : breakables) {
 		breakable.update(svc);
 		breakable.handle_collision(player->collider);
 	}
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
-	std::erase_if(effects, [](auto const& e) { return e.done(); });
+	std::erase_if(effects, [](auto& e) { return e.done(); });
 
 	player->collider.reset_ground_flags();
 	// check if player died
@@ -479,6 +479,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
 	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
+	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
 
 	if (player->arsenal) {
 		if (player->fire_weapon()) {

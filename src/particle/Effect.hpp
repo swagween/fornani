@@ -20,7 +20,7 @@ class Effect : public Entity {
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void rotate();
-	[[nodiscard]] auto done() const -> bool { return animation.complete(); }
+	[[nodiscard]] auto done() -> bool { return animation.complete(); }
 
   private:
 	anim::Animation animation{};

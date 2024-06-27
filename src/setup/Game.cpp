@@ -872,6 +872,12 @@ void Game::playtester_portal() {
 							game_state.get_current_state().init(services, "/level/FIRSTWIND_DECK_01");
 							player.set_position({32 * 3, 32 * 8});
 						}
+						if (ImGui::Button("Hangar")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/FIRSTWIND_HANGAR_01");
+							player.set_position({32 * 2, 32 * 8});
+						}
 						if (ImGui::Button("Corridor 2")) {
 							services.assets.click.play();
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));

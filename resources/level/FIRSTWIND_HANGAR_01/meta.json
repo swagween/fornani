@@ -36,7 +36,7 @@
         7
       ],
       "source_id": 112,
-      "destination_id": 113,
+      "destination_id": 114,
       "activate_on_contact": false
     },
     {
@@ -53,21 +53,21 @@
       "activate_on_contact": false
     }
   ],
-  "platforms": [
+  "inspectables": [
     {
-      "position": [
-        9,
-        6
-      ],
       "dimensions": [
-        3,
+        1,
         1
       ],
-      "extent": 18,
-      "style": 2,
-      "type": "standard_up_down",
-      "start": 0.000000
-    },
+      "position": [
+        14,
+        24
+      ],
+      "activate_on_contact": false,
+      "key": "dropoff"
+    }
+  ],
+  "platforms": [
     {
       "position": [
         26,
@@ -84,6 +84,20 @@
     },
     {
       "position": [
+        13,
+        30
+      ],
+      "dimensions": [
+        3,
+        2
+      ],
+      "extent": 5,
+      "style": 2,
+      "type": "standard_activated_side_to_side",
+      "start": 0.500000
+    },
+    {
+      "position": [
         17,
         13
       ],
@@ -93,8 +107,50 @@
       ],
       "extent": 24,
       "style": 2,
-      "type": "standard_up_down",
-      "start": 0.700000
+      "type": "slow_up_down",
+      "start": 0.200000
+    },
+    {
+      "position": [
+        8,
+        7
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 8,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        4,
+        10
+      ],
+      "dimensions": [
+        3,
+        3
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        4,
+        13
+      ],
+      "dimensions": [
+        3,
+        3
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.000000
     },
     {
       "position": [
@@ -108,21 +164,7 @@
       "extent": 12,
       "style": 2,
       "type": "standard_up_down",
-      "start": 0.700000
-    },
-    {
-      "position": [
-        26,
-        30
-      ],
-      "dimensions": [
-        3,
-        2
-      ],
-      "extent": 12,
-      "style": 2,
-      "type": "standard_up_down",
-      "start": 0.700000
+      "start": 0.000000
     }
   ],
   "enemies": [
@@ -138,20 +180,6 @@
       "position": [
         27,
         43
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
-        5,
-        16
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
-        5,
-        22
       ]
     },
     {
@@ -180,6 +208,13 @@
       "position": [
         30,
         5
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        34,
+        7
       ]
     }
   ]

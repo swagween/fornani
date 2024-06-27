@@ -23,6 +23,18 @@
       [ 32, 0 ]
     ]
   },
+  "slow_side_to_side": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0002,
+    "track": [
+      [ 0, 0 ],
+      [ 32, 0 ]
+    ]
+  },
   "standard_nonstick": {
     "sticky": false,
     "loop": true,
@@ -55,7 +67,7 @@
     "repeating": false,
     "player_activated": false,
     "player_controlled": false,
-    "speed": 0.0005,
+    "speed": 0.0002,
     "track": [
       [ 0, 0 ],
       [ 0, 32 ]
@@ -68,6 +80,18 @@
     "player_activated": true,
     "player_controlled": false,
     "speed": 0.001,
+    "track": [
+      [ 0, 0 ],
+      [ 32, 0 ]
+    ]
+  },
+  "standard_activated_side_to_side": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": true,
+    "player_controlled": false,
+    "speed": 0.0005,
     "track": [
       [ 0, 0 ],
       [ 32, 0 ]

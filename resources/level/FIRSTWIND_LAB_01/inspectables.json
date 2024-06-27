@@ -62,7 +62,7 @@
   "book3": {
     "suite": [
       [
-        "You find an coffee-stained paper. It appears to be an acceptance letter to Grand Island University, whatever that is."
+        "You find a coffee-stained paper. It appears to be an acceptance letter to Grand Island University, whatever that is."
       ]
     ],
     "responses": [
@@ -86,7 +86,7 @@
   "open_book_2": {
     "suite": [
       [
-        "The writings of Jonathan Peckett, who was supposedly a revered pioneer who mysteriously disappeared decades ago."
+        "The writings of Jonathan Peckett, a revered pioneer who mysteriously disappeared decades ago."
       ]
     ],
     "responses": [

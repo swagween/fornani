@@ -23,10 +23,10 @@ struct Parameters {
 	int framerate{};
 	int num_loops{};
 	bool repeat_last_frame{};
-	bool interruptible{true};
+	bool interruptible{};
 };
 
-enum class State {active, complete, just_started, param_switch};
+enum class State { param_switch, keyframe, oneoff_complete };
 
 struct Animation {
 
@@ -37,14 +37,20 @@ struct Animation {
 	void refresh();
 	void start();
 	void update();
-	void end();
-	void set_params(Parameters const new_params);
+	void set_params(Parameters const new_params, bool hard = true);
 	void switch_params();
+	void end() { frame.cancel(); }
 	int get_frame() const;
 
-	bool active() const;
-	bool complete() const;
-	bool keyframe_over() const;
+	[[nodiscard]] auto active() const -> bool { return frame_timer.running(); }
+	[[nodiscard]] auto synced() const -> bool { return params.lookup == next_params.lookup; }
+	[[nodiscard]] auto complete() -> bool {
+		auto ret = (params.repeat_last_frame ? (frame.get_count() == params.duration - 1) : frame.canceled());
+		if (params.num_loops == 0) { ret = flags.consume(State::oneoff_complete); }
+		if (frame.canceled()) { ret = true; }
+		return ret;
+	}
+	[[nodiscard]] auto keyframe_over() -> bool { return flags.consume(State::keyframe); }
 	[[nodiscard]] auto just_started() const -> bool { return global_counter.get_count() == 1; }
 
 	util::Cooldown frame_timer{};

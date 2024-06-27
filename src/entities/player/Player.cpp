@@ -13,7 +13,6 @@ void Player::init(automa::ServiceProvider& svc) {
 	m_services = &svc;
 
 	svc.data.load_player_params(*this);
-	//arsenal = arms::Arsenal(svc);
 	health_indicator.init(svc, 0);
 	orb_indicator.init(svc, 1);
 
@@ -46,11 +45,12 @@ void Player::init(automa::ServiceProvider& svc) {
 }
 
 void Player::update(gui::Console& console, gui::InventoryWindow& inventory_window) {
+	
+	//std::cout << "=======Tick Start===========\n";
 
 	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
 
 	collider.flags.general.set(shape::General::complex);
-	update_sprite();
 	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { controller.nullify_dash(); }
 
 	collider.physics.gravity = physics_stats.grav;
@@ -76,6 +76,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	wallslide();
 	shield();
 	update_animation();
+	update_sprite();
 
 	// check keystate
 	if (!controller.get_jump().jumpsquatting()) { walk(); }
@@ -219,17 +220,21 @@ void Player::update_animation() {
 
 void Player::update_sprite() {
 
-	if (animation.triggers.test(AnimTriggers::flip)) {
+	if (animation.triggers.consume(AnimTriggers::flip)) {
 		sprite.scale(-1.0f, 1.0f);
-		animation.triggers.reset(AnimTriggers::flip);
+		if (animation.animation.label == "turn" || animation.animation.label == "sharp_turn") {
+			animation.animation.set_params(idle);
+		}
 	}
 
 	flags.state.reset(State::dir_switch);
 	// flip the sprite based on the player's direction
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-	if (controller.facing_left() && sprite.getScale() == right_scale) { sprite.scale(-1.0f, 1.0f); }
-	if (controller.facing_right() && sprite.getScale() == left_scale) { sprite.scale(-1.0f, 1.0f); }
+	if (!grounded()) {
+		if (controller.facing_left() && sprite.getScale() == right_scale) { sprite.scale(-1.0f, 1.0f); }
+		if (controller.facing_right() && sprite.getScale() == left_scale) { sprite.scale(-1.0f, 1.0f); }
+	}
 
 	// check for quick turn
 	if (controller.quick_turn()) { flags.state.set(State::dir_switch); }

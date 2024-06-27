@@ -1,8 +1,8 @@
 {
-  "sign_atrium_02": {
+  "elevator2": {
     "suite": [
       [
-
+        "Elevator >"
       ]
     ],
     "responses": [
@@ -11,10 +11,10 @@
       ]
     ]
   },
-  "atrium_2_sign": {
+  "rest": {
     "suite": [
       [
-        "<-- Rest Area"
+        "< Rest Area"
       ]
     ],
     "responses": [

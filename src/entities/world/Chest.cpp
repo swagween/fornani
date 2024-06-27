@@ -13,10 +13,10 @@ Chest::Chest(automa::ServiceProvider& svc) {
 	spritesheet_dimensions = {224, 28};
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
-	collider.physics.elasticity = 1.0f;
+	collider.physics.elasticity = 0.6f;
 
-	collider.physics.set_global_friction(0.99f);
-	collider.stats.GRAV = 4.2f;
+	collider.physics.set_global_friction(0.999f);
+	collider.stats.GRAV = 6.2f;
 
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
@@ -31,17 +31,18 @@ Chest::Chest(automa::ServiceProvider& svc) {
 
 void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
 
+	animation.update();
 	if (!state.test(ChestState::open)) {
-		if (svc.ticker.every_x_frames(400)) { animation.set_params(shine); }
+		if (svc.ticker.every_x_ticks(1200)) { animation.set_params(shine); }
 		if (animation.complete() && !state.test(ChestState::activated)) { animation.set_params(unopened); }
 	} else {
 		animation.set_params(opened); 
 	}
-
-	animation.update();
 	sparkler.update(svc);
 
 	collider.update(svc);
+	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
+	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
 	collider.detect_map_collision(map);
 	collider.reset();
 	collider.reset_ground_flags();

@@ -10,14 +10,14 @@ namespace shape {
 Collider::Collider() {
 	dimensions = sf::Vector2<float>{default_dim, default_dim};
 	jumpbox.dimensions = sf::Vector2<float>(dimensions.x, default_jumpbox_height);
-	hurtbox.dimensions = sf::Vector2<float>(dimensions.x, dimensions.y);
+	hurtbox.dimensions = sf::Vector2<float>(dimensions.x - 8.f, dimensions.y - 8.f);
 	sync_components();
 }
 
 Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimensions(dim) {
 	bounding_box.dimensions = dim;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
-	hurtbox.dimensions = sf::Vector2<float>(dim.x, dim.y);
+	hurtbox.dimensions = sf::Vector2<float>(dim.x - 8.f, dim.y - 8.f);
 	sync_components();
 }
 
@@ -40,6 +40,9 @@ void Collider::sync_components() {
 	jumpbox.set_position(sf::Vector2<float>{physics.position.x, physics.position.y + dimensions.y});
 	hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x / 2) - (hurtbox.dimensions.x / 2), physics.position.y + (dimensions.y / 2) - (hurtbox.dimensions.y / 2)));
 
+	draw_hurtbox.setFillColor(sf::Color::Transparent);
+	draw_hurtbox.setOutlineColor(sf::Color::Blue);
+	draw_hurtbox.setOutlineThickness(-1);
 	draw_hurtbox.setSize(hurtbox.dimensions);
 	draw_hurtbox.setPosition(hurtbox.position);
 }
@@ -292,17 +295,23 @@ void Collider::handle_collider_collision(Shape const& collider) {
 			flags.animation.set(Animation::just_landed);
 		} // for landing sound
 		corner_collision = false;
+		flags.external_state.set(ExternalState::collider_collision);
+		flags.external_state.set(ExternalState::vert_collider_collision);
 		correct_y(mtvs.vertical);
 	}
 	if (predictive_horizontal.overlaps(collider)) {
 		mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
 		corner_collision = false;
+		flags.external_state.set(ExternalState::collider_collision);
+		flags.external_state.set(ExternalState::horiz_collider_collision);
+		flags.external_state.reset(ExternalState::vert_collider_collision);
 		flags.dash.set(Dash::dash_cancel_collision);
 		correct_x(mtvs.horizontal);
 	}
 	if (predictive_combined.overlaps(collider) && corner_collision) {
 		flags.collision.set(Collision::any_collision);
 		flags.dash.set(Dash::dash_cancel_collision);
+		flags.external_state.set(ExternalState::collider_collision);
 		correct_corner(mtvs.combined);
 	}
 	if (jumpbox.SAT(collider)) {
@@ -311,6 +320,7 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	} else {
 		flags.state.reset(State::grounded);
 	}
+	if (flags.external_state.test(ExternalState::vert_collider_collision)) { flags.external_state.reset(ExternalState::horiz_collider_collision); }
 
 	set_depths();
 

@@ -95,7 +95,6 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 }
 
 void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-
 	sparkler.update(svc);
 	sparkler.set_position(Enemy::collider.vicinity.position);
 	health_bar.update(svc, health.get_normalized());
@@ -258,7 +257,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (gun.clip_cooldown.is_complete() && !minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && hostile()) {
 		// if (m_services->random.percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
 		if (m_services->random.percent_chance(fire_chance)) {
-			if (m_services->random.percent_chance(50)) {
+			if (m_services->random.percent_chance(90)) {
 				state = MinigusState::jump_shoot;
 			} else {
 				state = MinigusState::shoot;
@@ -472,6 +471,7 @@ fsm::StateFunction Minigus::update_hurt() {
 fsm::StateFunction Minigus::update_jump() {
 	if (animation.just_started() && anim_debug) { std::cout << "jump\n"; }
 	if (animation.just_started()) { voice.woob.play(); }
+	//std::cout << animation.global_counter.get_count() << "\n";
 	cooldowns.jump.update();
 	if (animation.just_started()) { cooldowns.jump.start(); }
 	auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
@@ -497,7 +497,6 @@ fsm::StateFunction Minigus::update_jump() {
 fsm::StateFunction Minigus::update_jump_shoot() {
 	if (animation.just_started() && anim_debug) { std::cout << "jump_shoot\n"; }
 	if (animation.just_started()) { voice.getit.play(); }
-	if (minigun.animation.complete() && minigun.flags.test(MinigunFlags::charging)) {}
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (cooldowns.pre_jump.get_cooldown() != -1) { cooldowns.pre_jump.update(); }
 	cooldowns.jump.update();
@@ -536,7 +535,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
 
 		if (invincible()) {
-			state = MinigusState::shoot;
+			state = MinigusState::rush;
 			animation.set_params(rush);
 			return MINIGUS_BIND(update_rush);
 		}

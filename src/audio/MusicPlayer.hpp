@@ -62,7 +62,7 @@ class MusicPlayer {
 	sf::Time current_time{};
 	sf::Clock music_clock{};
 
-	std::string_view label{};
+	std::string label{};
 
 };
 
