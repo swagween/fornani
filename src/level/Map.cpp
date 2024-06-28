@@ -62,11 +62,13 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			pos.y = entry["position"][1].as<int>();
 			dim.x = entry["dimensions"][0].as<int>();
 			dim.y = entry["dimensions"][1].as<int>();
-			portals.push_back(entity::Portal(dim, pos));
-			portals.back().source_map_id = entry["source_id"].as<int>();
-			portals.back().destination_map_id = entry["destination_id"].as<int>();
-			portals.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
-			portals.back().update();
+			auto src_id = entry["source_id"].as<int>();
+			auto dest_id = entry["destination_id"].as<int>();
+			auto aoc = (bool)entry["activate_on_contact"].as_bool();
+			auto locked = (bool)entry["locked"].as_bool();
+			auto key_id = entry["key_id"].as<int>();
+			portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, key_id));
+			portals.back().update(svc);
 		}
 
 		auto const& savept = metadata["save_point"];
@@ -79,8 +81,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
-			chests.push_back(entity::Chest(svc));
-			chests.back().set_id(entry["id"].as<int>());
+			chests.push_back(entity::Chest(svc, entry["id"].as<int>()));
 			chests.back().set_item(entry["item_id"].as<int>());
 			chests.back().set_amount(entry["amount"].as<int>());
 			chests.back().set_rarity(entry["rarity"].as<float>());
@@ -171,6 +172,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	loading.update();
 	if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
 	flags.state.reset(LevelState::camera_shake);
+
+	transition.update(*player);
 
 	if(flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
@@ -281,7 +284,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
 	for (auto& npc : npcs) { npc.update(svc, *this, console, *player); }
-	for (auto& portal : portals) { portal.handle_activation(svc, *player, room_id, transition.fade_out, transition.done); }
+	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition.fade_out, transition.done); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(*player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
@@ -309,8 +312,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			svc.state_controller.actions.set(automa::Actions::trigger);
 		}
 	}
-
-	if (svc.ticker.every_x_frames(1)) { transition.update(); }
 
 	console.clean_off_trigger();
 	inventory_window.clean_off_trigger();
@@ -368,7 +369,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	if (real_dimensions.y < svc.constants.screen_dimensions.y) {
 		float ydiff = (svc.constants.screen_dimensions.y - real_dimensions.y) / 2;
-		borderbox.setFillColor(svc.styles.colors.ui_black);
+		borderbox.setFillColor(sf::Color::Black);
 		borderbox.setSize({(float)svc.constants.screen_dimensions.x, ydiff});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
@@ -378,7 +379,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 	if (real_dimensions.x < svc.constants.screen_dimensions.x) {
 		float xdiff = (svc.constants.screen_dimensions.x - real_dimensions.x) / 2;
-		borderbox.setFillColor(svc.styles.colors.ui_black);
+		borderbox.setFillColor(sf::Color::Black);
 		borderbox.setSize({xdiff, (float)svc.constants.screen_dimensions.y});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
@@ -387,7 +388,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		win.draw(borderbox);
 	}
 
-	for (auto& portal : portals) { portal.render(win, cam); }
+	for (auto& portal : portals) { portal.render(svc, win, cam); }
 
 	for (auto& animator : animators) {
 		if (animator.foreground) { animator.render(svc, win, cam); }
@@ -480,6 +481,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
+	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
 
 	if (player->arsenal) {
 		if (player->fire_weapon()) {
@@ -580,7 +582,7 @@ void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 	for (auto& portal : portals) {
-		if (portal.source_map_id == portal_source_map_id) { return (portal.position); }
+		if (portal.get_source() == portal_source_map_id) { return (portal.position); }
 	}
 	return Vec(300.f, 390.f);
 }

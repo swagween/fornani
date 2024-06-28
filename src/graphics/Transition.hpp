@@ -8,6 +8,10 @@ namespace automa {
 struct ServiceProvider;
 }
 
+namespace player {
+class Player;
+}
+
 namespace flfx {
 
 class Transition {
@@ -15,7 +19,7 @@ class Transition {
   public:
 	Transition(automa::ServiceProvider& svc, int d);
 
-	void update();
+	void update(player::Player& player);
 	void render(sf::RenderWindow& win);
 
 	int const duration{};

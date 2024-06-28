@@ -7,7 +7,7 @@
 
 namespace entity {
 
-Chest::Chest(automa::ServiceProvider& svc) {
+Chest::Chest(automa::ServiceProvider& svc, int id) : id(id) {
 	dimensions = {32, 28};
 	sprite_dimensions = {32, 28};
 	spritesheet_dimensions = {224, 28};
@@ -27,6 +27,7 @@ Chest::Chest(automa::ServiceProvider& svc) {
 
 	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.ui_white, "chest");
 	sparkler.set_position(collider.physics.position);
+	if (svc.data.chest_is_open(id)) { state.set(ChestState::open); }
 }
 
 void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
@@ -57,12 +58,20 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 			console.set_source(svc.text.basic);
 			if (!state.test(ChestState::open)) {
 				svc.soundboard.flags.world.set(audio::World::chest);
-				console.load_and_launch("chest");
 				state.set(ChestState::open);
 				animation.set_params(opened);
-				if (type == ChestType::gun) { player.push_to_loadout(item_id); }
-				if (type == ChestType::item) { player.give_item(item_id, 1); }
+				svc.data.open_chest(id);
+				if (type == ChestType::gun) {
+					player.push_to_loadout(item_id);
+					console.display_gun(item_id);
+					console.load_and_launch("chest");
+				}
 				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.position)); }
+				if (type == ChestType::item) {
+					player.give_item(item_id, 1);
+					console.display_item(item_id);
+					console.load_and_launch("chest");
+				}
 			} else {
 				console.load_and_launch("open_chest");
 			}
@@ -92,9 +101,9 @@ void Chest::set_position(sf::Vector2<float> pos) { collider.physics.position = p
 
 void Chest::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.physics.position = scaled_pos * 32.f; }
 
-void Chest::set_id(int new_id) { id = id; }
+void Chest::set_id(int new_id) { id = new_id; }
 
-void Chest::set_item(int id) { item_id = id; }
+void Chest::set_item(int to_id) { item_id = to_id; }
 
 void Chest::set_amount(int to_amount) { loot.amount = to_amount; }
 

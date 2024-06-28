@@ -15,5 +15,9 @@
     "abilities": [],
     "items": []
   },
-  "save_point_id": 100
+  "save_point_id": 100,
+  "unlocked_doors": [
+  ],
+  "opened_chests": [
+  ]
 }

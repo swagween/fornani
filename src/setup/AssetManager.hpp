@@ -46,6 +46,7 @@ class AssetManager {
 
 	//items
 	sf::Texture t_items{};
+	sf::Texture t_guns{};
 
 	// critters and bosses!
 	sf::Texture t_frdog{};

@@ -5,7 +5,7 @@
 
 namespace gui {
 
-Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc) {
+Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc), item_widget(svc) {
 	origin = {pad, svc.constants.screen_dimensions.y - pad_y};
 	text_suite = svc.text.console;
 	set_texture(svc.assets.t_ui);
@@ -47,6 +47,7 @@ void Console::update(automa::ServiceProvider& svc) {
 	if (flags.test(ConsoleFlags::active)) {
 		portrait.update(svc);
 		nani_portrait.update(svc);
+		if (flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
 		if (writer.response_triggered()) {
 			nani_portrait.reset(*m_services);
 			writer.reset_response();
@@ -56,6 +57,7 @@ void Console::update(automa::ServiceProvider& svc) {
 
 void Console::render(sf::RenderWindow& win) {
 	for (auto& sprite : sprites) { win.draw(sprite); }
+	if (flags.test(ConsoleFlags::display_item)) { item_widget.render(*m_services, win); }
 	if (flags.test(ConsoleFlags::portrait_included)) {
 		portrait.render(win);
 		writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
@@ -74,9 +76,20 @@ void Console::load_and_launch(std::string_view key) {
 		writer.load_message(text_suite, key);
 		portrait.reset(*m_services);
 		nani_portrait.reset(*m_services);
+		item_widget.reset(*m_services);
 		flags.set(ConsoleFlags::loaded);
 		begin();
 	}
+}
+
+void Console::display_item(int item_id) {
+	flags.set(ConsoleFlags::display_item);
+	item_widget.set_id(item_id);
+}
+
+void Console::display_gun(int gun_id) {
+	flags.set(ConsoleFlags::display_item);
+	item_widget.set_id(gun_id, true);
 }
 
 void Console::write(sf::RenderWindow& win, bool instant) {
@@ -91,6 +104,7 @@ void Console::end() {
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::portrait_included);
 	flags.reset(ConsoleFlags::extended);
+	flags.reset(ConsoleFlags::display_item);
 	flags.set(ConsoleFlags::off_trigger);
 }
 

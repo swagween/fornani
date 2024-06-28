@@ -1,6 +1,7 @@
 
 #include "Transition.hpp"
 #include "../service/ServiceProvider.hpp"
+#include "../entities/player/Player.hpp"
 
 namespace flfx {
 
@@ -10,7 +11,8 @@ Transition::Transition(automa::ServiceProvider& svc, int d) : duration(d) {
 	current_frame = 0;
 }
 
-void Transition::update() {
+void Transition::update(player::Player& player) {
+	if (fade_in || fade_out) { player.controller.restrict(); }
 	if (fade_out) {
 		if (current_frame > 0) { current_frame -= rate; }
 		if (alpha < 255) { alpha += rate; }
@@ -28,6 +30,7 @@ void Transition::update() {
 		alpha = 255;
 	} else if (!(fade_in || fade_out)) {
 		alpha = 0;
+		player.controller.unrestrict();
 	}
 }
 

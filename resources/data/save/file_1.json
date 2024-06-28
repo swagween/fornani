@@ -3,36 +3,38 @@
     "new": false
   },
   "player_data": {
-    "max_hp": 6.000000,
-    "hp": 6.000000,
-    "orbs": 467,
+    "max_hp": 3.000000,
+    "hp": 3.000000,
+    "orbs": 568,
     "position": {
-      "x": 207.659393,
-      "y": 231.000015
+      "x": 325.948090,
+      "y": 390.000000
     },
     "arsenal": [
-      0,
-      1,
-      4
+      0
     ],
-    "equipped_gun": 1,
+    "equipped_gun": 0,
     "abilities": [
-      "dash"
+
     ],
     "items": [
       {
-        "id": 2,
-        "quantity": 1
-      },
-      {
-        "id": 1,
-        "quantity": 1
-      },
-      {
-        "id": 3,
+        "id": 8,
         "quantity": 1
       }
     ]
   },
-  "save_point_id": 117
+  "save_point_id": 114,
+  "unlocked_doors": [
+    8
+  ],
+  "opened_chests": [
+    7880,
+    5768,
+    377,
+    56790,
+    257658,
+    323,
+    211
+  ]
 }

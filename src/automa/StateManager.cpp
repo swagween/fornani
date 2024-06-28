@@ -34,8 +34,9 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		if (svc.demo_mode()) {
 			svc.state_controller.next_state = svc.state_controller.demo_level;
 		} else {
-			svc.state_controller.next_state = lookup::get_map_label.at(svc.state_controller.save_point_id);
+			svc.state_controller.next_state = svc.tables.get_map_label.at(svc.state_controller.save_point_id);
 			svc.data.load_progress(player, svc.data.current_save);
+			svc.music.stop();
 		}
 		svc.state_controller.actions.reset(Actions::player_death);
 	}

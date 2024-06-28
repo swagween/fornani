@@ -277,6 +277,7 @@ void Collider::handle_spike_collision(Shape const& cell) {
 
 void Collider::handle_collider_collision(Shape const& collider) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
+	if (!vicinity.overlaps(collider)) { return; }
 
 	flags.collision = {};
 

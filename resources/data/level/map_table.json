@@ -35,6 +35,9 @@
 
     { "room_id": 800, "label": "UNDER_LEDGE_01"},
     { "room_id": 801, "label": "UNDER_HOME_01"},
+    
+    { "room_id": 6600, "label": "TESTLAB_01"},
+    { "room_id": 6601, "label": "TESTLAB_02"},
 
     { "room_id": 1101, "label": "STONE_CORRIDOR_01"},
     { "room_id": 1102, "label": "STONE_CHAMBER_01"},

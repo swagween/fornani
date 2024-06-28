@@ -101,7 +101,7 @@
   ],
   "chests": [
     {
-      "id": 2,
+      "id": 211,
       "item_id": 0,
       "type": 2,
       "amount": 16,
@@ -112,7 +112,7 @@
       ]
     },
     {
-      "id": 3,
+      "id": 323,
       "item_id": 8,
       "type": 3,
       "amount": 0,

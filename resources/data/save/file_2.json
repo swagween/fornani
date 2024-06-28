@@ -7,13 +7,12 @@
     "hp": 12.000000,
     "orbs": 501,
     "position": {
-      "x": 192.801956,
-      "y": 231.000000
+      "x": 236.732407,
+      "y": 358.000000
     },
     "arsenal": [
-      0,
-      1,
-      3
+      3,
+      0
     ],
     "equipped_gun": 0,
     "abilities": [
@@ -23,8 +22,19 @@
       {
         "id": 1,
         "quantity": 1
+      },
+      {
+        "id": 11,
+        "quantity": 1
       }
     ]
   },
-  "save_point_id": 117
+  "save_point_id": 6601,
+  "unlocked_doors": [
+    11
+  ],
+  "opened_chests": [
+    455,
+    11
+  ]
 }

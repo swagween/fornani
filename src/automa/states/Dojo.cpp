@@ -22,12 +22,12 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	// only search for door entry if room was not loaded from main menu
 	if (!svc.state_controller.actions.test(Actions::save_loaded)) {
 		for (auto& portal : map.portals) {
-			if (portal.destination_map_id == svc.state_controller.source_id) {
+			if (portal.get_destination() == svc.state_controller.source_id) {
 				found_one = true;
 				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player->height()};
 				player->set_position(spawn_position, true);
 				camera.force_center(player->anchor_point);
-				if (portal.activate_on_contact) { enter_room.start(90); }
+				if (portal.activate_on_contact()) { enter_room.start(90); }
 			}
 		}
 	}

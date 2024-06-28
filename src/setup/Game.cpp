@@ -902,6 +902,12 @@ void Game::playtester_portal() {
 							game_state.get_current_state().init(services, "/level/BREAKABLE_TEST_01");
 							player.set_position({20 * 32, 8 * 32});
 						}
+						if (ImGui::Button("Test Lab")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/TESTLAB_01");
+							player.set_position({32 * 2, 32 * 10});
+						}
 						ImGui::EndTabItem();
 					}
 					if (ImGui::BeginTabItem("Player")) {

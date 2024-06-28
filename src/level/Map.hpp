@@ -10,7 +10,6 @@
 #include "../entities/world/SavePoint.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Transition.hpp"
-#include "../setup/MapLookups.hpp"
 #include "Grid.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"

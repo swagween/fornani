@@ -21,6 +21,7 @@ class Inventory {
 	void update(automa::ServiceProvider& svc);
 	void add_item(automa::ServiceProvider& svc, int item_id, int amount);
 	void clear();
+	bool has_item(int id) const;
 	std::vector<item::Item> items{};
 	std::unordered_map<int, std::string_view> item_labels{};
 

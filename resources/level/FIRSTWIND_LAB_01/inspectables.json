@@ -2,12 +2,14 @@
   "bookshelf": {
     "suite": [
       [
-        "You find a small diary sealed with a padlock. Would you like to take it?"
-      ]
+        "You find a small diary sealed with a padlock. Would you like to take it?%0"
+      ],
+      [ "Bryn's Notebook added to inventory!$1^1" ],
+      ["That's probably the polite thing to do..."]
     ],
     "responses": [
       [
-
+        "Yes%0", "No%1"
       ]
     ]
   },
@@ -26,12 +28,12 @@
   "computer_on": {
     "suite": [
       [
-        "It's asking for a username and password."
+        "Enter your username and password:"
       ]
     ],
     "responses": [
       [
-
+ 
       ]
     ]
   },

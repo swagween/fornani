@@ -257,7 +257,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (gun.clip_cooldown.is_complete() && !minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && hostile()) {
 		// if (m_services->random.percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
 		if (m_services->random.percent_chance(fire_chance)) {
-			if (m_services->random.percent_chance(90)) {
+			if (m_services->random.percent_chance(50)) {
 				state = MinigusState::jump_shoot;
 			} else {
 				state = MinigusState::shoot;

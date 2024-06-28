@@ -25,6 +25,7 @@ class Style {
 		sf::Color night{19, 18, 16};
 		sf::Color ui_black{12, 12, 20};
 		sf::Color mythic_green{175, 227, 125};
+		sf::Color console_blue{24, 34, 67};
 	} colors{};
 
 	std::unordered_map<std::string_view, sf::Color> spray_colors{{"clover", colors.green},

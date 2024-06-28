@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Drop.hpp"
+#include "../../utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -13,6 +14,8 @@ class Player;
 }
 
 namespace item {
+
+enum class LootState { heart_dropped };
 
 class Loot {
 
@@ -30,6 +33,7 @@ class Loot {
   private:
 	sf::Vector2<float> position{};
 	std::vector<Drop> drops{};
+	util::BitFlags<LootState> flags{};
 };
 
 } // namespace item

@@ -17,6 +17,18 @@
     ],
     "responses": [ [] ]
   },
+  "locked_door": {
+    "suite": [
+      [ "It's locked." ]
+    ],
+    "responses": [ [] ]
+  },
+  "unlocked_door": {
+    "suite": [
+      [ "You used a key to unlock the door." ]
+    ],
+    "responses": [ [] ]
+  },
   "test_selector": {
     "suite": [
       [ "Hello.", "Are you tired?%0" ],

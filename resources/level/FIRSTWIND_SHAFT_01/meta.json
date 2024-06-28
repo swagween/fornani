@@ -32,25 +32,27 @@
         2
       ],
       "position": [
-        15,
-        42
-      ],
-      "source_id": 107,
-      "destination_id": 112,
-      "activate_on_contact": true
-    },
-    {
-      "dimensions": [
-        1,
-        2
-      ],
-      "position": [
         0,
         88
       ],
       "source_id": 107,
       "destination_id": 116,
       "activate_on_contact": true
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        14,
+        43
+      ],
+      "source_id": 107,
+      "destination_id": 112,
+      "activate_on_contact": false,
+      "locked": true,
+      "key_id": 8
     }
   ],
   "inspectables": [
@@ -263,7 +265,7 @@
   ],
   "chests": [
     {
-      "id": 0,
+      "id": 56790,
       "item_id": 0,
       "type": 2,
       "amount": 10,
@@ -274,7 +276,7 @@
       ]
     },
     {
-      "id": 0,
+      "id": 7880,
       "item_id": 0,
       "type": 2,
       "amount": 8,

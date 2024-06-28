@@ -31,12 +31,11 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 	if (activated) {
 		console.set_source(set);
 		console.load_and_launch(key);
-	} else {
 	}
-
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) {
 		animation.set_params(params);
 	}
+	if (player.transponder.shipments.quest.get_residue() == 1) { flags.set(InspectableFlags::destroy); }
 }
 
 void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {

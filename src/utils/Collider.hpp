@@ -126,7 +126,6 @@ class Collider {
 
 	sf::RectangleShape box{};
 	sf::RectangleShape draw_hurtbox{};
-	std::vector<std::string> inst;
 };
 
 } // namespace shape

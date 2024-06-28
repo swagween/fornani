@@ -17,7 +17,7 @@ PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc) {
 }
 
 void PlayerController::update(automa::ServiceProvider& svc) {
-	if (walking_autonomously()) { return; }
+	if (walking_autonomously() || hard_state.test(HardState::no_move)) { return; }
 
 	auto const& left = svc.controller_map.label_to_control.at("left").held();
 	auto const& right = svc.controller_map.label_to_control.at("right").held();
@@ -148,7 +148,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		jump.prevent();
 	}
 
-	flags.reset(MovementState::restricted);
 	decrement_requests();
 	jump.update();
 
@@ -170,15 +169,19 @@ void PlayerController::ground() { flags.set(MovementState::grounded); }
 
 void PlayerController::unground() { flags.reset(MovementState::grounded); }
 
-void PlayerController::restrict() { flags.set(MovementState::restricted); }
+void PlayerController::restrict() {
+	flags.set(MovementState::restricted);
+	hard_state.set(HardState::no_move);
+}
 
-void PlayerController::unrestrict() { flags.reset(MovementState::restricted); }
+void PlayerController::unrestrict() {
+	flags.reset(MovementState::restricted);
+	hard_state.reset(HardState::no_move);
+}
 
 void PlayerController::uninspect() { key_map[ControllerInput::inspect] = 0.f; }
 
 void PlayerController::stop_dashing() { key_map[ControllerInput::dash] = 0.f; }
-
-
 
 void PlayerController::decrement_requests() {
 	--dash_request;
@@ -210,6 +213,7 @@ void PlayerController::prevent_movement() {
 	key_map[ControllerInput::inspect] = 0.f;
 	key_map[ControllerInput::shoot] = 0.f;
 	key_map[ControllerInput::jump] = 0.f;
+	key_map[ControllerInput::sprint] = 0.f;
 	jump.reset_all();
 	jump.prevent();
 	flags.set(MovementState::restricted);

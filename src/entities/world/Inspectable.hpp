@@ -19,7 +19,7 @@ class Console;
 
 namespace entity {
 
-enum class InspectableFlags { hovered, hovered_trigger, activated };
+enum class InspectableFlags { hovered, hovered_trigger, activated, destroy };
 
 class Inspectable {
   public:
@@ -30,6 +30,7 @@ class Inspectable {
 	Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key);
 	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
+	[[nodiscard]] auto destroyed() const -> bool { return flags.test(InspectableFlags::destroy); }
 
 	Vec dimensions{};
 	Vec position{};
@@ -47,7 +48,7 @@ class Inspectable {
 	util::BitFlags<InspectableFlags> flags{};
 	sf::Sprite sprite{};
 	anim::Animation animation{};
-	anim::Parameters params{0, 13, 18, 0};
+	anim::Parameters params{0, 14, 18, 0};
 };
 
 } // namespace entity

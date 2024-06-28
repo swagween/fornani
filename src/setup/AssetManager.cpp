@@ -98,6 +98,7 @@ void AssetManager::import_textures() {
 	projectile_textures.insert({"gnat", t_gnat_projectile});
 
 	t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
+	t_guns.loadFromFile(finder.resource_path + "/image/item/guns.png");
 	t_shield.loadFromFile(finder.resource_path + "/image/entity/shield.png");
 
 	t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");

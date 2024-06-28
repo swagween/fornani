@@ -61,5 +61,11 @@
     "title": "Nimbus III Boiler Room Key",
     "naive_description": "Allows you to enter Nimbus III's boiler room.",
     "unique": true
+  },
+  "testlab_key": {
+    "index": 11,
+    "title": "Testlab Key",
+    "naive_description": "For testing purposes only.",
+    "unique": true
   }
 }

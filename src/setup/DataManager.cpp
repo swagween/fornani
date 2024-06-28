@@ -1,6 +1,5 @@
 
 #include "DataManager.hpp"
-#include "MapLookups.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
 #include "ControllerMap.hpp"
@@ -50,7 +49,7 @@ void DataManager::load_data() {
 
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
-	for (auto const& room : map_table["rooms"].array_view()) { lookup::get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
+	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
 
 	menu = dj::Json::from_file((finder.resource_path + "/data/gui/menu.json").c_str());
 	assert(!menu.is_null());
@@ -70,10 +69,17 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["player_data"]["position"]["x"] = player.collider.physics.position.x;
 	save["player_data"]["position"]["y"] = player.collider.physics.position.y;
 
-	// save arsenal
-	// wipe it first
+	// create empty json array
 	constexpr auto empty_array = R"([])";
 	auto const wipe = dj::Json::parse(empty_array);
+
+	// write opened chests and doors
+	save["unlocked_doors"] = wipe;
+	save["opened_chests"] = wipe;
+	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
+	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
+
+	// save arsenal
 	save["player_data"]["arsenal"] = wipe;
 	// push player arsenal
 	if (player.arsenal) {
@@ -106,6 +112,11 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	auto const& save = files.at(file).save_data;
 	assert(!save.is_null());
 
+	unlocked_doors.clear();
+	opened_chests.clear();
+	for (auto& door : save["unlocked_doors"].array_view()) { unlocked_doors.push_back(door.as<int>()); }
+	for (auto& chest : save["opened_chests"].array_view()) { opened_chests.push_back(chest.as<int>()); }
+
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
 	m_services->state_controller.save_point_id = save_pt_id;
@@ -119,7 +130,7 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	player.arsenal = {};
 	if (!save["player_data"]["arsenal"].array_view().empty()) { player.arsenal = arms::Arsenal(*m_services); }
 	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
-		player.arsenal.value().push_to_loadout(gun_id.as<int>());
+		if (player.arsenal) { player.arsenal.value().push_to_loadout(gun_id.as<int>()); }
 	}
 	if (player.arsenal) {
 		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
@@ -132,7 +143,7 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
 	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
-	return lookup::get_map_label.at(room_id);
+	return m_services->tables.get_map_label.at(room_id);
 }
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) {
@@ -148,7 +159,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	// load player's arsenal
 	player.arsenal = {};
 
-	return lookup::get_map_label.at(100);
+	return m_services->tables.get_map_label.at(100);
 }
 
 void DataManager::load_player_params(player::Player& player) {
@@ -202,6 +213,24 @@ void DataManager::save_player_params(player::Player& player) {
 
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	std::cout << " success!\n";
+}
+
+void DataManager::open_chest(int id) { opened_chests.push_back(id); }
+
+void DataManager::unlock_door(int id) { unlocked_doors.push_back(id); }
+
+bool DataManager::door_is_unlocked(int id) const {
+	for (auto& door : unlocked_doors) {
+		if (door == id) return true;
+	}
+	return false;
+}
+
+bool DataManager::chest_is_open(int id) const {
+	for (auto& chest : opened_chests) {
+		if (chest == id) return true;
+	}
+	return false;
 }
 
 void DataManager::load_controls(config::ControllerMap& controller) {

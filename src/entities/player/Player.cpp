@@ -273,7 +273,11 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		if (console.portrait.get_emotion() != emotion && emotion != 0) { console.portrait.set_emotion(emotion); }
 	}
 	transponder.end();
-	if (transponder.shipments.item.consume_pulse() > 0) { give_item(transponder.shipments.item.consume_pulse(), 1); }
+	if (transponder.shipments.item.get_residue() > 0) {
+		give_item(transponder.shipments.item.get_residue(), 1);
+		console.display_item(transponder.shipments.item.get_residue());
+	}
+	if (transponder.shipments.quest.get_residue() > 0) { /* do something with quest tracker */ }
 }
 
 void Player::flash_sprite() {

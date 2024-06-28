@@ -9,6 +9,16 @@
     "lifespan_variance": 100
   },
 
+  "item": {
+    "rate": 2.0,
+    "volatility": 0.01,
+    "wobble": 0.1,
+    "frequency": 0.01,
+    "speed": 0.2,
+    "lifespan": 120,
+    "lifespan_variance": 100
+  },
+
   "save_point": {
     "rate": 3.0,
     "volatility": 0.5,

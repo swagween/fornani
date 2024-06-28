@@ -94,13 +94,14 @@ fsm::StateFunction PlayerAnimation::update_run() {
 }
 
 fsm::StateFunction PlayerAnimation::update_jumpsquat() {
+	//no jumpsquat for now
+	state = AnimState::rise;
+	animation.set_params(rise);
+	return PA_BIND(update_rise);
 	animation.label = "jumpsquat";
 	if (animation.complete()) {
 		if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
 
-		state = AnimState::rise;
-		animation.set_params(rise);
-		return PA_BIND(update_rise);
 	}
 
 	state = AnimState::jumpsquat;

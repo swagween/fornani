@@ -23,6 +23,7 @@ constexpr static float backwards_dampen{0.5f};
 enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y };
 enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released };
 enum class MovementState { restricted, grounded, walking_autonomously };
+enum class HardState { no_move };
 
 enum class Hook { hook_released, hook_held };
 enum class Sprint { released };
@@ -114,6 +115,7 @@ class PlayerController {
   private:
 	std::unordered_map<ControllerInput, float> key_map{};
 	util::BitFlags<MovementState> flags{}; // unused
+	util::BitFlags<HardState> hard_state{}; // unused
 	util::BitFlags<Sprint> sprint_flags{};
 	util::BitFlags<TransponderInput> transponder_flags{};
 	util::BitFlags<Hook> hook_flags{};

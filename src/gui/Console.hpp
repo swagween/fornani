@@ -7,6 +7,7 @@
 #include "../utils/BitFlags.hpp"
 #include "../graphics/TextWriter.hpp"
 #include "Portrait.hpp"
+#include "ItemWidget.hpp"
 
 namespace gui {
 
@@ -17,7 +18,7 @@ float const height_factor{3.0f};
 float const pad{168.f};
 float const text_pad{8.0f};
 
-enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended };
+enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item };
 
 struct Border {
 	float left{};
@@ -39,6 +40,8 @@ class Console {
 	void set_source(dj::Json& json);
 	void set_texture(sf::Texture& tex);
 	void load_and_launch(std::string_view key);
+	void display_item(int item_id);
+	void display_gun(int gun_id);
 	void write(sf::RenderWindow& win, bool instant = true);
 	void end();
 	void end_tick();
@@ -62,8 +65,10 @@ class Console {
 
 	dj::Json text_suite{};
 
-	gui::Portrait portrait;
-	gui::Portrait nani_portrait;
+	Portrait portrait;
+	Portrait nani_portrait;
+	ItemWidget item_widget;
+	
 
 	automa::ServiceProvider* m_services;
 

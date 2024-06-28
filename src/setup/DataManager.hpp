@@ -41,6 +41,11 @@ class DataManager {
 	void load_player_params(player::Player& player);
 	void save_player_params(player::Player& player);
 
+	void open_chest(int id);
+	void unlock_door(int id);
+	bool door_is_unlocked(int id) const;
+	bool chest_is_open(int id) const;
+
 	// support user-defined control mapping
 	void load_controls(config::ControllerMap& controller);
 	void save_controls(config::ControllerMap& controller);
@@ -75,6 +80,10 @@ class DataManager {
 	ResourceFinder finder{};
 
 	automa::ServiceProvider* m_services;
+
+  private:
+	std::vector<int> opened_chests{};
+	std::vector<int> unlocked_doors{};
 };
 
 } // namespace data

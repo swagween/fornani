@@ -15,6 +15,7 @@ Inventory::Inventory() {
 	item_labels.insert({8, "firstwind_deck_key"});
 	item_labels.insert({9, "woodshine_warehouse_key"});
 	item_labels.insert({10, "nimbus_iii_boiler_room_key"});
+	item_labels.insert({11, "testlab_key"});
 }
 
 void Inventory::update(automa::ServiceProvider& svc) {
@@ -43,5 +44,13 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 }
 
 void Inventory::clear() { items.clear(); }
+
+bool Inventory::has_item(int id) const {
+	auto ret{false};
+	for (auto& item : items) {
+		if (item.get_id() == id) { ret = true; }
+	}
+	return ret;
+}
 
 } // namespace player
