@@ -51,7 +51,9 @@
       ],
       "source_id": 108,
       "destination_id": 110,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": true,
+      "key_id": 11
     }
   ],
   "enemies": [

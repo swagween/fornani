@@ -8,8 +8,14 @@ void AssetManager::import_textures() {
 	t_portraits.loadFromFile(finder.resource_path + "/image/character/portraits.png");
 	t_bryn.loadFromFile(finder.resource_path + "/image/character/bryn.png");
 	t_gobe.loadFromFile(finder.resource_path + "/image/character/gobe.png");
+	t_dr_go.loadFromFile(finder.resource_path + "/image/character/dr_go.png");
+	t_carl.loadFromFile(finder.resource_path + "/image/character/carl.png");
+	t_mirin.loadFromFile(finder.resource_path + "/image/character/mirin.png");
 	npcs.insert({"bryn", t_bryn});
 	npcs.insert({"gobe", t_gobe});
+	npcs.insert({"dr_go", t_dr_go});
+	npcs.insert({"carl", t_carl});
+	npcs.insert({"mirin", t_mirin});
 
 	t_palette_nani.loadFromFile(finder.resource_path + "/image/character/nani_palette_default.png");
 	t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");

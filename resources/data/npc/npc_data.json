@@ -28,6 +28,40 @@
   },
   "minigus": {
     "dimensions": [ 24, 24 ]
+  },
+
+  "dr_go": {
+    "dimensions": [ 24, 24 ],
+    "sprite_dimensions": [ 40, 40 ],
+    "spritesheet_dimensions": [ 1, 8 ],
+    "sprite_offset": [ 20, -14 ],
+    "sprite_origin": [ 20, 0 ],
+    "animation": {
+      "idle": [ 0, 6, 40, -1, false ],
+      "turn": [ 6, 2, 40, 0, false ]
+    }
+  },
+  "mirin": {
+    "dimensions": [ 24, 24 ],
+    "sprite_dimensions": [ 40, 40 ],
+    "spritesheet_dimensions": [ 1, 8 ],
+    "sprite_offset": [ 20, -14 ],
+    "sprite_origin": [ 20, 0 ],
+    "animation": {
+      "idle": [ 0, 6, 40, -1, false ],
+      "turn": [ 6, 2, 40, 0, false ]
+    }
+  },
+  "carl": {
+    "dimensions": [ 24, 24 ],
+    "sprite_dimensions": [ 40, 40 ],
+    "spritesheet_dimensions": [ 1, 8 ],
+    "sprite_offset": [ 20, -14 ],
+    "sprite_origin": [ 20, 0 ],
+    "animation": {
+      "idle": [ 0, 6, 40, -1, false ],
+      "turn": [ 6, 2, 40, 0, false ]
+    }
   }
 
 }

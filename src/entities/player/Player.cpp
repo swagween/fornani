@@ -45,8 +45,6 @@ void Player::init(automa::ServiceProvider& svc) {
 }
 
 void Player::update(gui::Console& console, gui::InventoryWindow& inventory_window) {
-	
-	//std::cout << "=======Tick Start===========\n";
 
 	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
 
@@ -252,6 +250,7 @@ void Player::handle_turning() {
 
 void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window) {
 	if (inventory_window.active()) {
+		controller.restrict();
 		controller.prevent_movement();
 		if (controller.transponder_up()) { inventory_window.selector.go_up(); }
 		if (controller.transponder_down()) { inventory_window.selector.go_down(); }
@@ -260,6 +259,7 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		transponder.update(*m_services, inventory_window);
 	}
 	if (console.active()) {
+		controller.restrict();
 		controller.prevent_movement();
 		if (controller.transponder_skip()) { transponder.skip_ahead(); }
 		if (controller.transponder_skip_released()) { transponder.enable_skip(); }

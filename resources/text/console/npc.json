@@ -71,5 +71,70 @@
     ],
     "responses": [
     ]
+  },
+  "dr_go1": {
+    "suite": [
+      [ "Oh!", "I wasn't expecting a Kariba to stroll in here.", "I suspect we are in our final hours, merely waiting for the Firstwind to lose her ability to fly and spiral down into the gas giant.", "It will be a graceless end, that's for certain.%0" ],
+      [ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
+      [ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
+      [ "This is the infirmary.", "Here, I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
+    ],
+    "responses": [
+      [ "Who are you?%0", "What's going on?%1", "Where am I?%2" ]
+    ]
+  },
+  "dr_go2": {
+    "suite": [
+      [ "Hello again.%0" ],
+      [ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
+      [ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
+      [ "This is the infirmary.", "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
+     ],
+    "responses": [
+      [ "Who are you?%0", "What's going on?%1", "Where am I?%2" ]
+    ]
+  },
+  "mirin1": {
+    "suite": [
+      [ "You must be one of the prisoners we scooped up some months back.", "You know, despite everything that's happened between our tribes, I would never wish any of this upon you.", "There's something about being so high up in the sky that tends to bring our people together." ]
+    ],
+    "responses": [
+    ]
+  },
+  "mirin2": {
+    "suite": [
+      [ "I'm not sure what you want me to tell you. I'm not exactly itching to chit-chat at a time like this.", "...", "Okay, that was a bit rude. Sorry.", "I've just been trying to come to terms with my impending death. I hope you understand." ]
+    ],
+    "responses": [
+    ]
+  },
+  "mirin3": {
+    "suite": [
+      [ "What's up?%0" ],
+      [ "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am." ],
+      [ "If I knew the answer to that, we wouldn't be having this conversation.", "We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds." ],
+      [ "Godspeed, girl. If we somehow all make it out of this alive, I'll buy you a drink." ]
+    ],
+    "responses": [
+      [ "Who are you?%0", "How can I get back to the island?%1", "See you later.%2" ]
+    ]
+  },
+  "carl1": {
+    "suite": [
+      [ "What in the heck are my eyes seein' right now...?", "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea.", "The ship's goin' down, little lady.", "If I was you I'd find the nearest escape hatch and go for a swim in the clouds.", "Say, would you grab me a soda if you got nothin' else to do?" ]
+    ],
+    "responses": [
+    ]
+  },
+  "carl2": {
+    "suite": [
+      [ "So... Any updates on that soda?%0" ],
+      [ "Name's Carl. I'm guarding the cargo here, and my shift doesn't end for another six months.", "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me." ],
+      [ "Why, it's the cargo room! Unless you were speaking in more general terms, in which case, this is the Firstwind.", "She's an old research vessel that Skycorps... er... borrowed." ],
+      [ "Say, would you grab me a soda if you got nothin' else to do?" ]
+    ],
+    "responses": [
+      [ "Who are you?%0", "What is this place?%1" ]
+    ]
   }
 }

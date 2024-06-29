@@ -29,6 +29,7 @@ class ItemWidget {
 		sf::Sprite item{};
 		sf::Sprite gun{};
 	} sprites{};
+	sf::CircleShape sticker{};
 	
 	std::string_view label{};
 	int id{};

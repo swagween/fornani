@@ -32,6 +32,9 @@ class AssetManager {
 	sf::Texture t_portraits{};
 	sf::Texture t_bryn{};
 	sf::Texture t_gobe{};
+	sf::Texture t_dr_go{};
+	sf::Texture t_mirin{};
+	sf::Texture t_carl{};
 
 	//player palettes
 	sf::Texture t_palette_nani{};

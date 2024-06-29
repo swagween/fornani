@@ -44,10 +44,10 @@
     "naive_description": "You need this to navigate the Toxic Cavern without dying.",
     "unique": true
   },
-  "firstwind_deck_key": {
+  "firstwind_hangar_key": {
     "index": 8,
-    "title": "Firstwind Deck Key",
-    "naive_description": "A small iron key that grants you access to the Firstwind's outer deck.",
+    "title": "Firstwind Hangar Key",
+    "naive_description": "A small iron key that grants you access to the Firstwind's hangar shafts.",
     "unique": true
   },
   "woodshine_warehouse_key": {
@@ -62,10 +62,10 @@
     "naive_description": "Allows you to enter Nimbus III's boiler room.",
     "unique": true
   },
-  "testlab_key": {
+  "laboratory_key": {
     "index": 11,
-    "title": "Testlab Key",
-    "naive_description": "For testing purposes only.",
+    "title": "Laboratory Key",
+    "naive_description": "Grants access to Firstwind's research lab.",
     "unique": true
   }
 }

@@ -15,6 +15,9 @@ Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& con
 
 void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
+	// for debugging
+	center_box.setSize(svc.constants.f_screen_dimensions * 0.5f);
+
 	std::string room_str = svc.data.finder.resource_path + room.data();
 	metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
 	assert(!metadata.is_null());
@@ -35,7 +38,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
 		if (meta["music"].is_string()) {
 			svc.music.load(meta["music"].as_string());
-			svc.music.play_looped(20);
+			svc.music.play_looped(10);
 		}
 
 		auto style_value = meta["style"].as<int>();
@@ -338,10 +341,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 
-	for (auto& animator : animators) {
-		if (!animator.foreground) { animator.render(svc, win, cam); }
-	}
-
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
 	// map foreground tiles
@@ -420,6 +419,19 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 		win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y}));
 	}
+
+	if (svc.greyblock_mode()) {
+		center_box.setPosition(0.f, 0.f);
+		center_box.setFillColor(sf::Color(80, 80, 80, 60));
+		win.draw(center_box);
+		center_box.setPosition(svc.constants.f_screen_dimensions * 0.5f);
+		win.draw(center_box);
+		center_box.setFillColor(sf::Color(100, 100, 100, 60));
+		center_box.setPosition(svc.constants.f_screen_dimensions.x * 0.5f, 0.f);
+		win.draw(center_box);
+		center_box.setPosition(0.f, svc.constants.f_screen_dimensions.y * 0.5f);
+		win.draw(center_box);
+	}
 }
 
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -437,6 +449,9 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		box.setFillColor(flcolor::black);
 		box.setSize({(float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y});
 		win.draw(box);
+	}
+	for (auto& animator : animators) {
+		if (!animator.foreground) { animator.render(svc, win, cam); }
 	}
 }
 

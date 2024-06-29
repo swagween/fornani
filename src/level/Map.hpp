@@ -139,6 +139,7 @@ class Map {
 	sf::View minimap{};
 	sf::RectangleShape minimap_tile{};
 	sf::RectangleShape borderbox{};
+	sf::RectangleShape center_box{};
 
 	// layers
 	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};

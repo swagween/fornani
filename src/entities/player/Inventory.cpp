@@ -12,10 +12,10 @@ Inventory::Inventory() {
 	item_labels.insert({5, "track_zero_sensor"});
 	item_labels.insert({6, "head_motor"});
 	item_labels.insert({7, "gas_mask"});
-	item_labels.insert({8, "firstwind_deck_key"});
+	item_labels.insert({8, "firstwind_hangar_key"});
 	item_labels.insert({9, "woodshine_warehouse_key"});
 	item_labels.insert({10, "nimbus_iii_boiler_room_key"});
-	item_labels.insert({11, "testlab_key"});
+	item_labels.insert({11, "laboratory_key"});
 }
 
 void Inventory::update(automa::ServiceProvider& svc) {

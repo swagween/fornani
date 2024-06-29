@@ -17,6 +17,7 @@ class Sparkler {
 	void deactivate();
 	void set_color(sf::Color to_color);
 	void set_rate(float to_rate);
+	[[nodiscard]] auto get_dimensions() const -> sf::Vector2<float> { return dimensions; }
 
   private:
 	std::vector<Spark> sparkles{};
