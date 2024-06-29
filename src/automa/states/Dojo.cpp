@@ -106,7 +106,12 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {
-	inventory_window.active() ? inventory_window.close() : inventory_window.open();
+	if (inventory_window.active()) {
+		inventory_window.close();
+	} else {
+		inventory_window.open();
+		inventory_window.set_item_size(static_cast<int>(player->catalog.categories.inventory.items.size()));
+	}
 	svc.controller_map.reset_triggers();
 }
 

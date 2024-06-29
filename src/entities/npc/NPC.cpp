@@ -25,8 +25,8 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
 
-	collider.physics.set_global_friction(0.97f);
-	collider.stats.GRAV = 4.2f;
+	collider.physics.set_global_friction(0.99f);
+	collider.stats.GRAV = 6.2f;
 
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);

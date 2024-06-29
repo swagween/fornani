@@ -18,7 +18,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 	title.setPosition(0, 0);
 	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
-	title.setFillColor(flcolor::ui_black);
+	title.setFillColor(svc.styles.colors.ui_black);
 
 	auto ctr{0};
 	for (auto& save : svc.data.files) {

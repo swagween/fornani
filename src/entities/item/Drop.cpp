@@ -5,7 +5,7 @@
 
 namespace item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability) : sparkler(svc, drop_dimensions, flcolor::ui_white, "drop") {
+Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop") {
 
 	collider = shape::Collider(drop_dimensions);
 	collider.sync_components();

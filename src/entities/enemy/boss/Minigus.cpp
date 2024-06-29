@@ -8,7 +8,7 @@ namespace enemy {
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console)
 	: Enemy(svc, "minigus"), gun(svc, "minigun", 6), soda(svc, "soda gun", 7), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc),
-	  sparkler(svc, Enemy::collider.vicinity.dimensions, flcolor::ui_white, "minigus") {
+	  sparkler(svc, Enemy::collider.vicinity.dimensions, svc.styles.colors.ui_white, "minigus") {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;

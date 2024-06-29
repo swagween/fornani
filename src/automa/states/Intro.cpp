@@ -7,7 +7,7 @@ namespace automa {
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console) {
 	title.setPosition(0, 0);
 	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
-	title.setFillColor(flcolor::ui_black);
+	title.setFillColor(svc.styles.colors.ui_black);
 	console = gui::Console(svc);
 	map.load(svc, "/level/FIRSTWIND_CLOSET_03");
 	svc.music.load("respite");

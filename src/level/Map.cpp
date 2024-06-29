@@ -56,6 +56,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			npcs.push_back(npc::NPC(svc, entry["id"].as<int>()));
 			for (auto& convo : entry["suites"].array_view()) { npcs.back().push_conversation(convo.as_string()); }
 			npcs.back().set_position_from_scaled(pos);
+			if ((bool)entry["background"].as_bool()) { npcs.back().push_to_background(); }
 		}
 
 		for (auto& entry : metadata["portals"].array_view()) {
@@ -330,7 +331,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 
 	for (auto& chest : chests) { chest.render(svc, win, cam); }
-	for (auto& npc : npcs) { npc.render(svc, win, cam); }
+	for (auto& npc : npcs) {
+		if (!npc.background()) { npc.render(svc, win, cam); }
+	}
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 	for (auto& grenade : active_grenades) { grenade.render(svc, win, cam); }
 	player->render(svc, win, cam);
@@ -362,13 +365,14 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		for (auto& index : collidable_indeces) {
 			auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
 			cell.drawbox.setPosition(cell.position - cam);
+			if (cell.ramp_adjacent()) { cell.drawbox.setOutlineColor(sf::Color::Red); }
 			win.draw(cell.drawbox);
 		}
 	}
 
 	if (real_dimensions.y < svc.constants.screen_dimensions.y) {
 		float ydiff = (svc.constants.screen_dimensions.y - real_dimensions.y) / 2;
-		borderbox.setFillColor(sf::Color::Black);
+		borderbox.setFillColor(svc.styles.colors.ui_black);
 		borderbox.setSize({(float)svc.constants.screen_dimensions.x, ydiff});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
@@ -378,7 +382,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 	if (real_dimensions.x < svc.constants.screen_dimensions.x) {
 		float xdiff = (svc.constants.screen_dimensions.x - real_dimensions.x) / 2;
-		borderbox.setFillColor(sf::Color::Black);
+		borderbox.setFillColor(svc.styles.colors.ui_black);
 		borderbox.setSize({xdiff, (float)svc.constants.screen_dimensions.y});
 		borderbox.setPosition(0.0f, 0.0f);
 		win.draw(borderbox);
@@ -442,11 +446,16 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			layer_sprite.setTexture(layer_textures.at(i).getTexture());
 			layer_sprite.setPosition(-cam);
 			win.draw(layer_sprite);
+			if (i == 0) {
+				for (auto& npc : npcs) {
+					if (npc.background()) { npc.render(svc, win, cam); }
+				}
+			}
 		}
 	} else {
 		sf::RectangleShape box{};
 		box.setPosition(0, 0);
-		box.setFillColor(flcolor::black);
+		box.setFillColor(svc.styles.colors.black);
 		box.setSize({(float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y});
 		win.draw(box);
 	}

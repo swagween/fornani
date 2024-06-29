@@ -10,7 +10,7 @@
 namespace world {
 
 Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int state) : style(style), state(state) {
-	collider = shape::Collider();
+	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();
 	sprite.setTexture(svc.assets.t_breakables);

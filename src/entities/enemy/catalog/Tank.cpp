@@ -79,12 +79,12 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	hurt_effect.update();
 	if (hurt_effect.running()) {
 		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			sprite.setColor(flcolor::red);
+			sprite.setColor(svc.styles.colors.red);
 		} else {
-			sprite.setColor(flcolor::periwinkle);
+			sprite.setColor(svc.styles.colors.periwinkle);
 		}
 	} else {
-		sprite.setColor(flcolor::white);
+		sprite.setColor(svc.styles.colors.white);
 	}
 
 	if (just_died()) { m_services->soundboard.flags.tank.set(audio::Tank::death); }

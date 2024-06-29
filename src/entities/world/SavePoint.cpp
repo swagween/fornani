@@ -47,7 +47,6 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 					activated = true;
 					save(svc, player);
 					svc.state_controller.save_point_id = id;
-					std::cout << "Save Point ID stored in Save Point: " << id << "\n";
 					svc.soundboard.flags.world.set(audio::World::soft_sparkle);
 					console.set_source(svc.text.basic);
 					console.load_and_launch("save");

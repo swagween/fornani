@@ -89,7 +89,7 @@
       [ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
       [ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
       [ "This is the infirmary.", "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
-     ],
+    ],
     "responses": [
       [ "Who are you?%0", "What's going on?%1", "Where am I?%2" ]
     ]
@@ -129,12 +129,38 @@
   "carl2": {
     "suite": [
       [ "So... Any updates on that soda?%0" ],
-      [ "Name's Carl. I'm guarding the cargo here, and my shift doesn't end for another six months.", "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me." ],
-      [ "Why, it's the cargo room! Unless you were speaking in more general terms, in which case, this is the Firstwind.", "She's an old research vessel that Skycorps... er... borrowed." ],
+      [ "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months.", "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me." ],
+      [ "Why, it's the cargo room! Unless you were speakin' in more general terms, in which case, this is the Firstwind.", "She's an old research vessel that Skycorps... er... borrowed.", "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it." ],
       [ "Say, would you grab me a soda if you got nothin' else to do?" ]
     ],
     "responses": [
       [ "Who are you?%0", "What is this place?%1" ]
+    ]
+  },
+  "bit1": {
+    "suite": [
+      [ "...", "Psst... Hey!", "Hey, you!", "I don't know how you managed to escape your cell, but, er... I'm in a bit of a bind here, as you can see.", "Would you help me out?%0" ],
+      [ "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.", "You might find the key to this cell lying around somewhere.", "If you find it, you should be able to use it on that there door and let me free!" ],
+      [ "Well uh... okay. If you change your mind, you'll know where to find me." ]
+    ],
+    "responses": [
+      [ "Sure%0", "I had better get going...%1" ]
+    ]
+  },
+  "bit2": {
+    "suite": [
+      [ "Listen, I don't wanna rush you, but...", "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days...%0" ],
+      [ "I'm not gonna sugarcoat it. We're in prison.", "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason.", "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.", "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here." ]
+    ],
+    "responses": [
+      ["Where are we?%0"]
+    ]
+  },
+  "bit3": {
+    "suite": [
+      [ "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya." ]
+    ],
+    "responses": [
     ]
   }
 }

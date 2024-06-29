@@ -17,6 +17,7 @@ class InventoryWindow : public Console {
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win);
 	void open();
 	void close();
+	void set_item_size(int sz) { selector.current_selection = util::Circuit(sz); }
 
 	Selector selector;
 	Console info;

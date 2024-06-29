@@ -155,8 +155,8 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	auto v = animation.get_frame() * 224;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
 	sprite.setTextureRect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(dimensions)));
-	win.draw(track_shape);
 	if (svc.greyblock_mode()) {
+		win.draw(track_shape);
 		Collider::render(win, cam);
 	} else {
 		win.draw(sprite);

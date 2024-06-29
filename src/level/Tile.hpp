@@ -2,10 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include "../setup/EnumLookups.hpp"
 #include "../utils/Shape.hpp"
+#include "../utils/BitFlags.hpp"
 
 namespace world {
 
 enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable };
+enum class TileState { ramp_adjacent, big_ramp };
 
 struct Tile {
 
@@ -20,9 +22,14 @@ struct Tile {
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
 	[[nodiscard]] auto is_hookable() const -> bool { return type == TileType::solid; }
 	[[nodiscard]] auto is_ramp() const -> bool { return type == TileType::ground_ramp || type == TileType::ceiling_ramp; }
+	[[nodiscard]] auto is_big_ramp() const -> bool { return flags.test(TileState::big_ramp); }
+	[[nodiscard]] auto is_ground_ramp() const -> bool { return type == TileType::ground_ramp; }
+	[[nodiscard]] auto is_ceiling_ramp() const -> bool { return type == TileType::ceiling_ramp; }
+	[[nodiscard]] auto is_platform() const -> bool { return type == TileType::platform; }
 	[[nodiscard]] auto is_spike() const -> bool { return type == TileType::spike; }
 	[[nodiscard]] auto is_death_spike() const -> bool { return type == TileType::death_spike; }
 	[[nodiscard]] auto is_breakable() const -> bool { return type == TileType::breakable; }
+	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 
 	sf::Vector2<float> middle_point();
 
@@ -36,6 +43,7 @@ struct Tile {
 
 	bool collision_check{};
 	bool surrounded{};
+	util::BitFlags<TileState> flags{};
 	
 	sf::ConvexShape polygon{};
 	sf::RectangleShape drawbox{};

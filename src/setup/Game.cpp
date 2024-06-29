@@ -45,7 +45,7 @@ Game::Game(char** argv) : player(services) {
 	screencap.create(window.getSize().x, window.getSize().y);
 	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
 	background.setPosition(0, 0);
-	background.setFillColor(flcolor::ui_black);
+	background.setFillColor(services.styles.colors.ui_black);
 
 	// some SFML variables for drawing a basic window + background
 	window.setVerticalSyncEnabled(true);
@@ -129,8 +129,8 @@ void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> pl
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::D) {
-					//debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
-					//services.assets.sharp_click.play();
+					debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
+					services.assets.sharp_click.play();
 				}
 				if (event.key.code == sf::Keyboard::Q) {
 					//game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));

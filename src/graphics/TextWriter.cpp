@@ -20,7 +20,7 @@ void TextWriter::start() {
 	// to be replaced with something prettier later (maybe)
 	indicator.setSize({4.f, 4.f});
 	indicator.setOrigin({2.f, 2.f});
-	indicator.setFillColor(flcolor::bright_orange);
+	indicator.setFillColor(m_services->styles.colors.bright_orange);
 
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
@@ -44,6 +44,12 @@ void TextWriter::start() {
 }
 
 void TextWriter::update() {
+
+	delay.update();
+	if (flags.test(MessageState::done_writing) && !flags.test(MessageState::started_delay)) {
+		delay.start();
+		flags.set(MessageState::started_delay);
+	}
 
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { shutdown(); }
@@ -135,7 +141,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 
 void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 	msg.setCharacterSize(text_size);
-	msg.setFillColor(flcolor::ui_white);
+	msg.setFillColor(m_services->styles.colors.ui_white);
 	msg.setFont(font);
 	msg.setLineSpacing(1.5f);
 	if (is_suite) {
@@ -156,6 +162,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	if (!writing()) {
 		win.draw(suite.at(iterators.current_suite_set).front().data);
+		flags.set(MessageState::done_writing);
 		return;
 	}
 	win.draw(working_message);
@@ -202,6 +209,7 @@ void TextWriter::request_next() {
 		reset();
 		return;
 	}
+
 	if (suite.at(iterators.current_suite_set).front().prompt) {
 		flags.set(MessageState::selection_mode);
 		if (iterators.current_response_set >= responses.size()) { return; }

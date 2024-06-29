@@ -169,7 +169,7 @@ class Player {
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};
 	sf::Vector2<float> hand_position{};
-	sf::Vector2<float> sprite_offset{};
+	sf::Vector2<float> sprite_offset{9.f, 1.f};
 	sf::Vector2<float> sprite_dimensions{};
 	sf::Vector2<float> sprite_position{};
 

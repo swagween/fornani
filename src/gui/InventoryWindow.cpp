@@ -50,6 +50,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	}
 	for (auto& item : player.catalog.categories.inventory.items) {
 		item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
+		if (player.catalog.categories.inventory.items.size() == 1) { item.select(); }
 		if (item.selected()) {
 			selector.set_position(item.get_position());
 			info.writer.load_single_message(item.get_description());

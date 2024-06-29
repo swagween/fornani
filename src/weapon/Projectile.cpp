@@ -58,7 +58,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (stats.dampen_factor != 0.f) { physics.set_global_friction(stats.dampen_factor); }
 
 	// Gravitator
-	gravitator = vfx::Gravitator(physics.position, flcolor::goldenrod, stats.gravitator_force);
+	gravitator = vfx::Gravitator(physics.position, svc.styles.colors.goldenrod, stats.gravitator_force);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{stats.gravitator_friction, stats.gravitator_friction}, 1.0f);
 	gravitator.collider.physics.maximum_velocity = {stats.gravitator_max_speed, stats.gravitator_max_speed};
 

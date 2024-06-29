@@ -91,7 +91,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
 	accumulated_forces.clear();
 	collider.physics.position += forced_momentum;
-	if (controller.moving() || collider.has_horizontal_collision() || collider.world_grounded()) { forced_momentum = {}; }
+	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { forced_momentum = {}; }
 
 	collider.update(*m_services);
 	health.update();
@@ -158,6 +158,9 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (controller.get_shield().active() && catalog.categories.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
+
+	collider.flush_positions();
+
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -282,17 +285,15 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 
 void Player::flash_sprite() {
 	if ((health.invincibility.get_cooldown() / 30) % 2 == 0) {
-		sprite.setColor(flcolor::red);
+		sprite.setColor(m_services->styles.colors.red);
 	} else {
-		sprite.setColor(flcolor::blue);
+		sprite.setColor(m_services->styles.colors.blue);
 	}
 }
 
 void Player::calculate_sprite_offset() {
-	sprite_offset.y = 0.f;
-	if (collider.flags.state.test(shape::State::on_ramp)) { sprite_offset.y = -2.f; }
-	sprite_position = {collider.physics.position.x + 9.f, collider.physics.position.y + sprite_offset.y + 1};
-	apparent_position = collider.physics.position + collider.dimensions / 2.f;
+	sprite_position = {collider.get_average_tick_position() + sprite_offset};
+	apparent_position = collider.get_average_tick_position() + collider.dimensions / 2.f;
 }
 
 void Player::jump() {

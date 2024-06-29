@@ -22,9 +22,10 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 	if (skipped_ahead()) {
 		if (console.writer.writing() && console.writer.can_skip()) { console.writer.skip_ahead(); }
 	}
-	if (requested_next()) {
+	if (requested_next() && !console.writer.delaying()) {
 		if (!console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::next); }
 		console.writer.request_next();
+		console.writer.reset_delay();
 	}
 	if (exited()) {
 		if (console.writer.complete()) {

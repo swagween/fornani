@@ -23,7 +23,7 @@ float const default_detector_height = 18.f;
 enum class General { ignore_resolution, complex };
 enum class Animation { just_landed };
 enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
-enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision };
+enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision, world_collision, horiz_world_collision, vert_world_collision };
 
 enum class Collision {
 	any_collision,
@@ -44,10 +44,10 @@ class Collider {
 
   public:
 	Collider();
-	Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos = {0, 0});
+	Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos = {});
 
 	void sync_components();
-	void handle_map_collision(Shape const& cell, world::TileType tile_type);
+	void handle_map_collision(world::Tile const& tile);
 	void detect_map_collision(world::Map& map);
 	int detect_ledge_height(world::Map& map);
 	void correct_x(sf::Vector2<float> mtv);
@@ -70,6 +70,10 @@ class Collider {
 	bool has_vertical_collision() const;
 	bool has_left_wallslide_collision() const;
 	bool has_right_wallslide_collision() const;
+
+	void flush_positions() { position_history.clear(); }
+	sf::Vector2<float> get_average_tick_position();
+
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return (collision_depths.top > crush_threshold && collision_depths.bottom > crush_threshold) || (collision_depths.left > crush_threshold && collision_depths.right > crush_threshold); }
@@ -116,11 +120,13 @@ class Collider {
 
 	float crush_threshold{8.0f};
 	float landed_threshold{6.0f};
-	float horizontal_detector_buffer{2.0f};
+	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{2.0f};
 
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> sprite_offset{};
+	std::deque<sf::Vector2<float>> position_history{};
+
 
 	bool spike_trigger{};
 

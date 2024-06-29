@@ -20,7 +20,11 @@ void Animation::start() {
 void Animation::update() {
 	frame_timer.update();
 	global_counter.update();
-	if(frame_timer.is_complete() || params.interruptible) { // next frame of animation
+	if (params.interruptible && flags.test(State::param_switch)) {
+		switch_params();
+		return;
+	}
+	if (frame_timer.is_complete()) { // next frame of animation
 
 		// reset the timers
 		flags.set(State::keyframe);

@@ -1,4 +1,5 @@
 #include "Tile.hpp"
+#include <iostream>
 
 namespace world {
 
@@ -7,7 +8,7 @@ Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val) : index(
 	drawbox.setOutlineColor(sf::Color::Blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setSize(bounding_box.dimensions);
-	drawbox.setOutlineThickness(-4);
+	drawbox.setOutlineThickness(-2);
 	set_type();
 }
 
@@ -17,18 +18,21 @@ void Tile::update_polygon(sf::Vector2<float> cam) {
 	polygon.setPosition(-cam.x, -cam.y);
 	polygon.setFillColor(sf::Color{40, 200, 130, 120});
 	polygon.setOutlineColor(sf::Color(235, 232, 249, 140));
-	polygon.setOutlineThickness(-1);
+	polygon.setOutlineThickness(0);
 }
 
 void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (collision_check) {
 		update_polygon(cam);
 		if (!surrounded) {
-			win.draw(polygon);
+			//win.draw(polygon);
 		}
 	}
 	drawbox.setPosition(bounding_box.position);
-	if (is_solid()) { win.draw(drawbox); }
+	if (ramp_adjacent()) { 
+		drawbox.setOutlineColor(sf::Color::Red);
+		win.draw(drawbox);
+	}
 }
 
 void Tile::set_type() {

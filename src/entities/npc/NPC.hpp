@@ -26,7 +26,7 @@ class Player;
 
 namespace npc {
 
-enum class NPCState { engaged, force_interact, introduced };
+enum class NPCState { engaged, force_interact, introduced, background };
 enum class NPCTrigger { distant_interact };
 
 class NPC : public entity::Entity {
@@ -39,6 +39,8 @@ class NPC : public entity::Entity {
 	void set_id(int new_id);
 	void push_conversation(std::string_view convo);
 	void flush_conversations();
+	void push_to_background() { state_flags.set(NPCState::background); }
+	[[nodiscard]] auto background() const -> bool { return state_flags.test(NPCState::background); }
 
 	std::string_view label{};
 

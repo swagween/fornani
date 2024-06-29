@@ -11,11 +11,13 @@ void AssetManager::import_textures() {
 	t_dr_go.loadFromFile(finder.resource_path + "/image/character/dr_go.png");
 	t_carl.loadFromFile(finder.resource_path + "/image/character/carl.png");
 	t_mirin.loadFromFile(finder.resource_path + "/image/character/mirin.png");
+	t_bit.loadFromFile(finder.resource_path + "/image/character/bit.png");
 	npcs.insert({"bryn", t_bryn});
 	npcs.insert({"gobe", t_gobe});
 	npcs.insert({"dr_go", t_dr_go});
 	npcs.insert({"carl", t_carl});
 	npcs.insert({"mirin", t_mirin});
+	npcs.insert({"bit", t_bit});
 
 	t_palette_nani.loadFromFile(finder.resource_path + "/image/character/nani_palette_default.png");
 	t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");

@@ -11,6 +11,7 @@
 #include <string_view>
 #include "../utils/BitFlags.hpp"
 #include "../utils/Shipment.hpp"
+#include "../utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -25,7 +26,7 @@ struct Message {
 };
 
 enum class Codes { prompt, quest, item, voice, emotion };
-enum class MessageState { writing, selection_mode, cannot_skip, response_trigger };
+enum class MessageState { writing, selection_mode, cannot_skip, response_trigger, done_writing, started_delay };
 static int const default_writing_speed{8};
 static int const fast_writing_speed{1};
 
@@ -64,7 +65,12 @@ class TextWriter {
 	[[nodiscard]] auto responding() const -> bool { return selection_mode(); }
 	[[nodiscard]] auto suite_size() const -> size_t { return suite.size(); }
 	[[nodiscard]] auto empty() const -> bool { return suite.empty() && responses.empty(); }
+	[[nodiscard]] auto delaying() const -> bool { return delay.running(); }
 
+	void reset_delay() {
+		flags.reset(MessageState::done_writing);
+		flags.reset(MessageState::started_delay);
+	}
 	void reset_response() { flags.reset(MessageState::response_trigger); }
 	void flush_communicators() { communicators = {}; }
 
@@ -101,6 +107,7 @@ class TextWriter {
 	int glyph_count{};
 	int tick_count{};
 	int writing_speed{default_writing_speed};
+	util::Cooldown delay{24};
 	util::BitFlags<MessageState> flags{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> bounds{};
