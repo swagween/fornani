@@ -1,0 +1,17 @@
+{
+  "bit1": {
+    "suite": [
+      [
+        "You find an old playing card. Would you like to take it?%0"
+      ],
+      [ "Four of Diamonds added to inventory!$1^13" ],
+      [ "It's' probably worthless anyway..." ]
+    ],
+    "responses": [
+      [
+        "Yes%0",
+        "No%1"
+      ]
+    ]
+  }
+}

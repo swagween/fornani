@@ -24,7 +24,9 @@
       ],
       "source_id": 106,
       "destination_id": 107,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -37,7 +39,9 @@
       ],
       "source_id": 106,
       "destination_id": 105,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -50,7 +54,9 @@
       ],
       "source_id": 106,
       "destination_id": 117,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -63,22 +69,12 @@
       ],
       "source_id": 106,
       "destination_id": 104,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "inspectables": [
-    {
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        29,
-        21
-      ],
-      "activate_on_contact": false,
-      "key": "elevator2"
-    },
     {
       "dimensions": [
         1,

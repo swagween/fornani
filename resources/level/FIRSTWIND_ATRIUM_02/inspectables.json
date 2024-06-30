@@ -1,16 +1,4 @@
 {
-  "elevator2": {
-    "suite": [
-      [
-        "Elevator >"
-      ]
-    ],
-    "responses": [
-      [
-
-      ]
-    ]
-  },
   "rest": {
     "suite": [
       [

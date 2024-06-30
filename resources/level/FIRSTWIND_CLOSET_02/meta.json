@@ -12,16 +12,6 @@
     "style": 0,
     "background": 4
   },
-  "chests": [
-    {
-      "id": 257658,
-      "item_id": 1,
-      "type": 2,
-      "amount": 12,
-      "rarity": 2.0,
-      "position": [ 6, 4 ]
-    }
-  ],
   "portals": [
     {
       "dimensions": [
@@ -34,7 +24,23 @@
       ],
       "source_id": 111,
       "destination_id": 105,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        24,
+        13
+      ],
+      "activate_on_contact": false,
+      "key": "warning1"
     }
   ],
   "platforms": [
@@ -93,6 +99,19 @@
       "style": 2,
       "type": "standard_up_down",
       "start": 0.500000
+    }
+  ],
+  "chests": [
+    {
+      "id": 338223,
+      "item_id": 12,
+      "type": 3,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        6,
+        4
+      ]
     }
   ]
 }

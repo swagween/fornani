@@ -1,1 +1,14 @@
-null
+{
+  "warning1": {
+    "suite": [
+      [
+        "This area is for authorized personnel only. You WILL get crushed to death if you do not heed this warning!"
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  }
+}

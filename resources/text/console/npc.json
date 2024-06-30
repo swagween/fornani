@@ -153,12 +153,47 @@
       [ "I'm not gonna sugarcoat it. We're in prison.", "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason.", "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.", "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here." ]
     ],
     "responses": [
-      ["Where are we?%0"]
+      [ "Where are we?%0" ]
     ]
   },
   "bit3": {
     "suite": [
       [ "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya." ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit4": {
+    "suite": [
+      [ "I can't believe it... You actually did it!$212", "I really can't thank you enough...", "Heh, like I said... I owe you big time!$320" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit5": {
+    "suite": [
+      [ "...", "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit6": {
+    "suite": [
+      [ "Listen, I don't exactly have much to give you right now.", "I'm sure you understand...", "But! Fear not! If we bump into each other agian someday, I'll have something for you!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit7": {
+    "suite": [
+      [ "Heh... See ya around!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit8": {
+    "suite": [
+      [ "Thanks again for helping me. Stay safe out there!" ]
     ],
     "responses": [
     ]

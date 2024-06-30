@@ -27,10 +27,11 @@ class Item : public entity::Entity {
 	void set_id(int new_id);
 	void select();
 	void deselect();
+	void reveal() { flags.set(ItemFlags::revealed); }
 	[[nodiscard]] auto selected() const -> bool { return ui_flags.test(UIFlags::selected); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_quantity() const -> int { return variables.quantity; }
-	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.title; }
+	[[nodiscard]] auto get_label() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.title : metadata.naive_title; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return drawbox.getPosition(); }
 	[[nodiscard]] auto get_description() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.hidden_description : metadata.naive_description; }
 
@@ -39,8 +40,9 @@ class Item : public entity::Entity {
 
   private:
 	struct {
-		int id;
+		int id{};
 		std::string_view title{};
+		std::string_view naive_title{};
 		std::string_view naive_description{};
 		std::string_view hidden_description{};
 	} metadata{};

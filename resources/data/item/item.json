@@ -67,5 +67,20 @@
     "title": "Laboratory Key",
     "naive_description": "Grants access to Firstwind's research lab.",
     "unique": true
+  },
+  "bit_cell_key": {
+    "index": 12,
+    "naive_title": "Mysterious Key",
+    "title": "Bit's Cell Key",
+    "naive_description": "Looks like just an ordinary key. There's no reason not to hold on to it.",
+    "hidden_description": "The key to Bit's prison cell. He said he owes you big time for freeing him...",
+    "unique": true
+  },
+  "four_of_diamonds": {
+    "index": 13,
+    "title": "Four of Diamonds",
+    "naive_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
+    "hidden_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
+    "unique": true
   }
 }

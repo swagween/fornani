@@ -1,12 +1,12 @@
 {
   "meta": {
-    "room_id": 114,
+    "room_id": 118,
     "dimensions": [
-      32,
+      16,
       16
     ],
     "chunk_dimensions": [
-      2,
+      1,
       1
     ],
     "style": 0,
@@ -19,39 +19,39 @@
         1
       ],
       "position": [
-        5,
-        12
+        11,
+        9
       ],
-      "source_id": 114,
-      "destination_id": 112,
+      "source_id": 118,
+      "destination_id": 100,
       "activate_on_contact": false,
       "locked": false,
       "key_id": 0
     }
   ],
-  "save_point": {
-    "id": 114,
-    "position": [
-      10,
-      12
-    ]
-  },
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        2,
+        7
+      ],
+      "activate_on_contact": false,
+      "key": "bit1"
+    }
+  ],
   "npcs": [
     {
-      "id": 16,
+      "id": 20,
       "position": [
-        13,
-        12
+        7,
+        9
       ],
-      "suites": [ [ "1", "2" ] ]
-    },
-    {
-      "id": 18,
-      "position": [
-        16,
-        12
-      ],
-      "suites": [ [ "1", "2", "3" ] ]
+      "suites": [ "4", "5", "6", "7" ],
+      "background": false
     }
   ]
 }

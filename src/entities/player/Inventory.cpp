@@ -16,6 +16,8 @@ Inventory::Inventory() {
 	item_labels.insert({9, "woodshine_warehouse_key"});
 	item_labels.insert({10, "nimbus_iii_boiler_room_key"});
 	item_labels.insert({11, "laboratory_key"});
+	item_labels.insert({12, "bit_cell_key"});
+	item_labels.insert({13, "four_of_diamonds"});
 }
 
 void Inventory::update(automa::ServiceProvider& svc) {
@@ -41,6 +43,12 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 		items.back().add_item(amount);
 	}
 	update(svc);
+}
+
+void Inventory::reveal_item(int item_id) {
+	for (auto& item : items) {
+		if (item.get_id() == item_id) { item.reveal(); }
+	}
 }
 
 void Inventory::clear() { items.clear(); }

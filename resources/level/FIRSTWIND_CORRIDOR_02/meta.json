@@ -24,7 +24,9 @@
       ],
       "source_id": 104,
       "destination_id": 102,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -37,7 +39,9 @@
       ],
       "source_id": 104,
       "destination_id": 106,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "platforms": [

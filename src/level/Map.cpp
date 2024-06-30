@@ -53,8 +53,10 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
-			npcs.push_back(npc::NPC(svc, entry["id"].as<int>()));
-			for (auto& convo : entry["suites"].array_view()) { npcs.back().push_conversation(convo.as_string()); }
+			auto id = entry["id"].as<int>();
+			npcs.push_back(npc::NPC(svc, id));
+			auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, id);
+			for (auto& convo : entry["suites"][npc_state].array_view()) { npcs.back().push_conversation(convo.as_string()); }
 			npcs.back().set_position_from_scaled(pos);
 			if ((bool)entry["background"].as_bool()) { npcs.back().push_to_background(); }
 		}

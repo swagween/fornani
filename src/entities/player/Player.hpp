@@ -8,6 +8,7 @@
 #include "../../graphics/TextureUpdater.hpp"
 #include "../../particle/Gravitator.hpp"
 #include "../../utils/BitFlags.hpp"
+#include "../../utils/QuestCode.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "../packages/Health.hpp"
@@ -184,6 +185,7 @@ class Player {
 	Counters counters{};
 	std::vector<sf::Vector2<float>> accumulated_forces{};
 	sf::Vector2<float> forced_momentum{};
+	std::optional<util::QuestCode> quest_code{};
 
 	automa::ServiceProvider* m_services;
 

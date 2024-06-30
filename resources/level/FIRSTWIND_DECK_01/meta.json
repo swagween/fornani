@@ -12,11 +12,28 @@
     "style": 0,
     "background": 5
   },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        2,
+        9
+      ],
+      "source_id": 115,
+      "destination_id": 112,
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
   "enemies": [
     {
       "id": 6,
       "position": [
-        49,
+        60,
         10
       ]
     }

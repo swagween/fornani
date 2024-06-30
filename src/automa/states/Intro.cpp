@@ -9,14 +9,14 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
 	title.setFillColor(svc.styles.colors.ui_black);
 	console = gui::Console(svc);
-	map.load(svc, "/level/FIRSTWIND_CLOSET_03");
+	map.load(svc, "/level/INTRO");
 	svc.music.load("respite");
 	svc.music.play_looped(20);
 	console.set_source(svc.text.basic);
 	float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
 	float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
 	sf::Vector2f player_pos = {ppx, ppy};
-	player.set_position(player_pos);
+	player.set_position({100, 100});
 }
 
 void Intro::init(ServiceProvider& svc, std::string_view room) {}
