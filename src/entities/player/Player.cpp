@@ -103,24 +103,6 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	update_weapon();
 	catalog.update(*m_services);
 
-	if (m_services->ticker.every_x_ticks(4)) { collider.collision_depths = {}; }
-	if (collider.crushed() && alive()) {
-		hurt(64.f, true);
-		directions.left_squish.und = collider.horizontal_squish() ? dir::UND::up : dir::UND::neutral;
-		directions.left_squish.lr = collider.vertical_squish() ? dir::LR::left : dir::LR::neutral;
-		directions.right_squish.und = collider.horizontal_squish() ? dir::UND::down : dir::UND::neutral;
-		directions.right_squish.lr = collider.vertical_squish() ? dir::LR::right : dir::LR::neutral;
-		std::cout << "-Collision Depth Conclusion-\n";
-		std::cout << "Left..: " << collider.collision_depths.left << "\n";
-		std::cout << "Right.: " << collider.collision_depths.right << "\n";
-		std::cout << "Top...: " << collider.collision_depths.top << "\n";
-		std::cout << "Bottom: " << collider.collision_depths.bottom << "\n";
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.left_squish));
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.right_squish));
-		collider.collision_depths = {};
-		flags.state.set(State::crushed);
-	}
-
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (!(animation.state == AnimState::dash) && !controller.dash_requested()) {
 			controller.stop_dashing();
@@ -456,6 +438,28 @@ void Player::hurt(float amount, bool force) {
 		m_services->soundboard.flags.player.set(audio::Player::hurt);
 		hurt_cooldown.start(2);
 	}
+}
+
+void Player::on_crush(world::Map& map) {
+	return;
+	//collider.set_depths();
+	if (collider.crushed() && alive()) {
+		hurt(64.f, true);
+		directions.left_squish.und = collider.horizontal_squish() ? dir::UND::up : dir::UND::neutral;
+		directions.left_squish.lr = collider.vertical_squish() ? dir::LR::left : dir::LR::neutral;
+		directions.right_squish.und = collider.horizontal_squish() ? dir::UND::down : dir::UND::neutral;
+		directions.right_squish.lr = collider.vertical_squish() ? dir::LR::right : dir::LR::neutral;
+		std::cout << "-Collision Depth Conclusion-\n";
+		std::cout << "Left..: " << collider.collision_depths.left << "\n";
+		std::cout << "Right.: " << collider.collision_depths.right << "\n";
+		std::cout << "Top...: " << collider.collision_depths.top << "\n";
+		std::cout << "Bottom: " << collider.collision_depths.bottom << "\n";
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.left_squish));
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.right_squish));
+		collider.collision_depths = {};
+		flags.state.set(State::crushed);
+	}
+	//if (m_services->ticker.every_x_ticks(8)) { collider.collision_depths = {}; }
 }
 
 void Player::update_antennae() {

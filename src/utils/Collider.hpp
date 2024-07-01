@@ -49,6 +49,7 @@ class Collider {
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
 	void detect_map_collision(world::Map& map);
+	void calculate_depths(Shape const& cell);
 	int detect_ledge_height(world::Map& map);
 	void correct_x(sf::Vector2<float> mtv);
 	void correct_y(sf::Vector2<float> mtv);
@@ -126,7 +127,7 @@ class Collider {
 	} collision_depths{};
 
 	float crush_threshold{2.0f};
-	float depth_throwaway{8.0f};
+	float depth_throwaway{12.0f};
 	float landed_threshold{6.0f};
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{2.0f};
@@ -139,6 +140,7 @@ class Collider {
 	bool spike_trigger{};
 
 	sf::RectangleShape box{};
+	sf::RectangleShape collision_ray{};
 	sf::RectangleShape draw_hurtbox{};
 };
 

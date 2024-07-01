@@ -64,6 +64,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	auto skip_value{16.f};
 	auto edge_start = 0.f;
 	player.collider.handle_collider_collision(bounding_box);
+	player.on_crush(map);
 	switch_up.update();
 
 	//map changes

@@ -891,6 +891,12 @@ void Game::playtester_portal() {
 							game_state.get_current_state().init(services, "/level/FIRSTWIND_LAB_01");
 							player.set_position({7 * 32, 9 * 32});
 						}
+						if (ImGui::Button("CRUSH")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/CRUSH_TEST");
+							player.set_position({2 * 32, 9 * 32});
+						}
 						if (ImGui::Button("Abandoned Passage")) {
 							services.assets.click.play();
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
