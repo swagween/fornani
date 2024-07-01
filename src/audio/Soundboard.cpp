@@ -19,6 +19,13 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.console.test(Console::shift)) { svc.assets.menu_shift.play(); }
 	if (flags.console.test(Console::speech)) { repeat(svc, svc.assets.menu_shift, 16, 0.2f); }
 
+	// always play console and menu sounds
+	if (status == SoundboardState::off) {
+		flags = {};
+		proximities = {};
+		return;
+	}
+
 	// world
 	if (flags.world.test(World::load)) { svc.assets.load.play(); }
 	if (flags.world.test(World::save)) { svc.assets.save.play(); }

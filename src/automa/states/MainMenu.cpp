@@ -30,6 +30,12 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 	title = sf::Sprite{svc.assets.t_title, sf::IntRect({0, 0}, {(int)svc.constants.screen_dimensions.x, (int)svc.constants.screen_dimensions.y})};
 
+	svc.data.load_blank_save(player);
+	player.controller.autonomous_walk();
+	player.set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(0).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+	player.antennae.at(1).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+
 	svc.music.load("clay");
 	svc.music.play_looped(20);
 };
@@ -85,6 +91,7 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 	svc.soundboard.play_sounds(svc);
 	svc.controller_map.reset_triggers();
+	player->animation.state = player::AnimState::run;
 }
 
 void MainMenu::frame_update(ServiceProvider& svc) {}

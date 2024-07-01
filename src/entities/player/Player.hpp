@@ -23,6 +23,10 @@ class Console;
 class InventoryWindow;
 } // namespace gui
 
+namespace world {
+class Map;
+}
+
 namespace automa {
 struct ServiceProvider;
 }
@@ -79,7 +83,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { alive, killed, dir_switch, show_weapon, impart_recoil };
+enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed};
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -95,7 +99,7 @@ class Player {
 	// init (violates RAII but must happen after resource path is set)
 	void init(automa::ServiceProvider& svc);
 	// member functions
-	void update(gui::Console& console, gui::InventoryWindow& inventory_window);
+	void update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void assign_texture(sf::Texture& tex);
@@ -107,7 +111,9 @@ class Player {
 	void calculate_sprite_offset();
 
 	// state
-	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(State::alive); }
+	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
+	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
+	[[nodiscard]] auto death_animation_over() -> bool { return animation.death_over(); }
 	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
@@ -124,10 +130,11 @@ class Player {
 	void shield();
 
 	void set_position(sf::Vector2<float> new_pos, bool centered = false);
+	void freeze_position();
 	void update_direction();
 	void update_weapon();
 	void walk();
-	void hurt(float amount);
+	void hurt(float amount = 1.f, bool force = false);
 	void update_antennae();
 	void sync_antennae();
 
@@ -136,7 +143,6 @@ class Player {
 
 	// level events
 	void update_invincibility();
-	void kill();
 	void start_over();
 	void give_drop(item::DropType type, float value);
 	void give_item(int item_id, int amount);
@@ -159,7 +165,7 @@ class Player {
 	PlayerController controller;
 	Transponder transponder{};
 	shape::Collider collider{};
-	PlayerAnimation animation{};
+	PlayerAnimation animation;
 	entity::Health health{};
 	Indicator health_indicator;
 	Indicator orb_indicator;
@@ -213,6 +219,10 @@ class Player {
 		float landed{0.4f};
 		float run{0.02f};
 	} thresholds{};
+	struct {
+		dir::Direction left_squish{};
+		dir::Direction right_squish{};
+	} directions{};
 };
 
 } // namespace player

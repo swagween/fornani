@@ -29,6 +29,14 @@
     ],
     "responses": [ [] ]
   },
+  "death": {
+    "suite": [
+      [ "You died.", "Would you like to retry?%0" ],
+      [ "Loading last save...$4" ],
+      [ "Returning to Main Menu..." ]
+    ],
+    "responses": [ [ "Yes%0", "No%1"] ]
+  },
   "test_selector": {
     "suite": [
       [ "Hello.", "Are you tired?%0" ],

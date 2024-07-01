@@ -11,12 +11,14 @@
 
   "item": {
     "rate": 2.0,
-    "volatility": 0.01,
+    "volatility": 0.2,
     "wobble": 0.1,
     "frequency": 0.01,
-    "speed": 0.2,
-    "lifespan": 120,
-    "lifespan_variance": 100
+    "speed": 0.4,
+    "lifespan": 220,
+    "lifespan_variance": 80,
+    "fader": true,
+    "color": "standard"
   },
 
   "save_point": {
@@ -24,9 +26,11 @@
     "volatility": 0.5,
     "wobble": 0.02,
     "frequency": 0.005,
-    "speed": 0.3,
+    "speed": 0.2,
     "lifespan": 260,
-    "lifespan_variance": 195
+    "lifespan_variance": 195,
+    "fader": true,
+    "color": "save"
   },
 
   "light_trail": {

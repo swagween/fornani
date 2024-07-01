@@ -39,8 +39,8 @@ void Health::heal(float amount) {
 	restored.start(128);
 }
 
-void Health::inflict(float amount) {
-	if (invincibility.is_complete()) {
+void Health::inflict(float amount, bool force) {
+	if (invincibility.is_complete() || force) {
 		taken_point = hp;
 		taken.start();
 		hp -= amount;

@@ -81,6 +81,10 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		bool corner_collision{true};
 		if (predictive_vertical.SAT(cell)) {
 			mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
+			if (cell.left() < hurtbox.right() && cell.right() > hurtbox.left()) {
+				if (hurtbox.top() > cell.top()) { collision_depths.top = std::max(collision_depths.top, abs(bounding_box.top() - cell.bottom())); }
+				if (hurtbox.bottom() < cell.bottom()) { collision_depths.bottom = std::max(collision_depths.bottom, abs(cell.top() - bounding_box.bottom())); }
+			}
 			//if (abs(mtvs.combined.x > 0.0001f)) { std::cout << "Combined MTV reading: " << mtvs.combined.x << "\n"; }
 			if (flags.collision.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) {
 				flags.state.set(State::just_landed);
@@ -93,6 +97,10 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		}
 		if (predictive_horizontal.SAT(cell) && !tile.ramp_adjacent()) {
 			mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
+			if (cell.top() < hurtbox.bottom() && cell.bottom() < hurtbox.top()) {
+				if (hurtbox.left() > cell.left()) { collision_depths.left = std::max(collision_depths.left, abs(cell.right() - bounding_box.left())); }
+				if (hurtbox.right() < cell.right()) { collision_depths.right = std::max(collision_depths.right, abs(bounding_box.right() - cell.left())); }
+			}
 			corner_collision = false;
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
@@ -150,7 +158,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	}
 
 	set_depths();
-
 	if (wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
 	// long-winded, but I want to reserve SAT for colliders that actually need it
@@ -275,11 +282,24 @@ void Collider::correct_corner(sf::Vector2<float> mtv) {
 	physics.zero_y();
 }
 
+void Collider::resolve_depths() {
+	auto downward = collision_depths.top > collision_depths.bottom;
+	auto rightward = collision_depths.left > collision_depths.right;
+	sf::Vector2<float> depth_diff{};
+	depth_diff.y = (collision_depths.top + collision_depths.bottom) * 0.5f;
+	depth_diff.x = (collision_depths.left + collision_depths.right) * 0.5f;
+	if (depth_diff.x < 14.f && depth_diff.y < 14.f) { return; }
+	depth_diff.y *= downward ? 1.f : -1.f;
+	depth_diff.x *= rightward ? 1.f : -1.f;
+	physics.position.x += depth_diff.x;
+	physics.position.y += depth_diff.y;
+}
+
 void Collider::set_depths() {
-	if (flags.collision.test(Collision::has_top_collision)) { collision_depths.top = std::max(collision_depths.top, abs(mtvs.vertical.y)); }
-	if (flags.collision.test(Collision::has_bottom_collision)) { collision_depths.bottom = std::max(collision_depths.bottom, abs(mtvs.vertical.y)); }
-	if (flags.collision.test(Collision::has_left_collision)) { collision_depths.left = std::max(collision_depths.left, abs(mtvs.horizontal.x)); }
-	if (flags.collision.test(Collision::has_right_collision)) { collision_depths.right = std::max(collision_depths.right, abs(mtvs.horizontal.x)); }
+	if (collision_depths.left > depth_throwaway) { collision_depths.left = 0.f; }
+	if (collision_depths.right > depth_throwaway) { collision_depths.right = 0.f; }
+	if (collision_depths.top > depth_throwaway) { collision_depths.top = 0.f; }
+	if (collision_depths.bottom > depth_throwaway) { collision_depths.bottom = 0.f; }
 }
 
 void Collider::handle_platform_collision(Shape const& cell) {}
@@ -304,6 +324,11 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	bool corner_collision{true};
 	if (predictive_vertical.SAT(collider)) {
 		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
+		if (collider.left() < hurtbox.right() && collider.right() > hurtbox.left()) {
+			if (hurtbox.top() > collider.top()) { collision_depths.top = std::max(collision_depths.top, abs(bounding_box.top() - collider.bottom())); }
+			if (hurtbox.bottom() < collider.bottom()) { collision_depths.bottom = std::max(collision_depths.bottom, abs(collider.top() - bounding_box.bottom())); }
+		}
+
 		//if (abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
 		if (flags.collision.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) {
 			flags.state.set(State::just_landed);
@@ -317,6 +342,10 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	}
 	if (predictive_horizontal.SAT(collider)) {
 		mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
+		if (collider.top() < hurtbox.bottom() && collider.bottom() < hurtbox.top()) {
+			if (hurtbox.left() > collider.left()) { collision_depths.left = std::max(collision_depths.left, abs(collider.right() - bounding_box.left())); }
+			if (hurtbox.right() < collider.right()) { collision_depths.right = std::max(collision_depths.right, abs(bounding_box.right() - collider.left())); }
+		}
 		//if (abs(mtvs.horizontal.x > 0.001f)) { std::cout << "Horizontal MTV reading: " << mtvs.horizontal.x << "\n"; }
 		corner_collision = false;
 		flags.dash.set(Dash::dash_cancel_collision);
@@ -339,6 +368,7 @@ void Collider::handle_collider_collision(Shape const& collider) {
 		flags.state.reset(State::grounded);
 	}
 
+	set_depths();
 	if (flags.external_state.test(ExternalState::vert_collider_collision)) { flags.external_state.reset(ExternalState::horiz_collider_collision); }
 	set_depths();
 	flags.movement.reset(Movement::dashing);
@@ -447,6 +477,10 @@ bool Collider::has_vertical_collision() const { return flags.collision.test(Coll
 bool Collider::has_left_wallslide_collision() const { return flags.state.test(State::left_wallslide_collision); }
 
 bool Collider::has_right_wallslide_collision() const { return flags.state.test(State::right_wallslide_collision); }
+
+bool Collider::horizontal_squish() const { return collision_depths.top + collision_depths.bottom < collision_depths.left + collision_depths.right; }
+
+bool Collider::vertical_squish() const { return collision_depths.top + collision_depths.bottom > collision_depths.left + collision_depths.right; }
 
 sf::Vector2<float> Collider::get_average_tick_position() {
 	sf::Vector2<float> ret{};

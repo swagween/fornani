@@ -2,11 +2,12 @@
 #include "../../gui/Console.hpp"
 #include "../../gui/InventoryWindow.hpp"
 #include "../../service/ServiceProvider.hpp"
+#include "../../level/Map.hpp"
 #include "../item/Drop.hpp"
 
 namespace player {
 
-Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc) {}
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this) {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -44,7 +45,7 @@ void Player::init(automa::ServiceProvider& svc) {
 	texture_updater.load_pixel_map(svc.assets.t_palette_nani);
 }
 
-void Player::update(gui::Console& console, gui::InventoryWindow& inventory_window) {
+void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window) {
 
 	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
 
@@ -88,6 +89,7 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 		flags.state.reset(State::impart_recoil);
 	}
 
+	force_cooldown.update();
 	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
 	accumulated_forces.clear();
 	collider.physics.position += forced_momentum;
@@ -100,10 +102,23 @@ void Player::update(gui::Console& console, gui::InventoryWindow& inventory_windo
 	update_invincibility();
 	update_weapon();
 	catalog.update(*m_services);
-	if (m_services->ticker.every_x_ticks(10)) { collider.collision_depths = {}; }
-	if (collider.crushed()) {
-		if (!just_died()) { health_indicator.add(-64); }
-		kill();
+
+	if (m_services->ticker.every_x_ticks(4)) { collider.collision_depths = {}; }
+	if (collider.crushed() && alive()) {
+		hurt(64.f, true);
+		directions.left_squish.und = collider.horizontal_squish() ? dir::UND::up : dir::UND::neutral;
+		directions.left_squish.lr = collider.vertical_squish() ? dir::LR::left : dir::LR::neutral;
+		directions.right_squish.und = collider.horizontal_squish() ? dir::UND::down : dir::UND::neutral;
+		directions.right_squish.lr = collider.vertical_squish() ? dir::LR::right : dir::LR::neutral;
+		std::cout << "-Collision Depth Conclusion-\n";
+		std::cout << "Left..: " << collider.collision_depths.left << "\n";
+		std::cout << "Right.: " << collider.collision_depths.right << "\n";
+		std::cout << "Top...: " << collider.collision_depths.top << "\n";
+		std::cout << "Bottom: " << collider.collision_depths.bottom << "\n";
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.left_squish));
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.right_squish));
+		collider.collision_depths = {};
+		flags.state.set(State::crushed);
 	}
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
@@ -121,7 +136,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	sf::Vector2<float> player_pos = apparent_position - campos;
 	calculate_sprite_offset();
-	force_cooldown.update();
+
+	if (flags.state.test(State::crushed)) { return; }
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
@@ -142,14 +158,12 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render_back(svc, win, campos); }
 	}
 
-	if (flags.state.test(State::alive)) {
-		if (svc.greyblock_mode()) {
-			collider.render(win, campos);
-		} else {
-			antennae[1].render(svc, win, campos, 1);
-			win.draw(sprite);
-			antennae[0].render(svc, win, campos, 1);
-		}
+	if (svc.greyblock_mode()) {
+		collider.render(win, campos);
+	} else {
+		antennae[1].render(svc, win, campos, 1);
+		win.draw(sprite);
+		antennae[0].render(svc, win, campos, 1);
 	}
 
 	if (arsenal) {
@@ -160,7 +174,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (controller.get_shield().active() && catalog.categories.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
 
 	collider.flush_positions();
-
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -215,6 +228,7 @@ void Player::update_animation() {
 	}
 	if (animation.state == AnimState::sit) { flags.state.reset(State::show_weapon); }
 	if (hurt_cooldown.running()) { animation.state = AnimState::hurt; }
+	if (is_dead()) { animation.state = AnimState::die; }
 
 	animation.update();
 }
@@ -253,7 +267,7 @@ void Player::handle_turning() {
 
 void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window) {
 	if (inventory_window.active()) {
-		controller.restrict();
+		controller.restrict_movement();
 		controller.prevent_movement();
 		if (controller.transponder_up()) { inventory_window.selector.go_up(); }
 		if (controller.transponder_down()) { inventory_window.selector.go_down(); }
@@ -262,7 +276,7 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		transponder.update(*m_services, inventory_window);
 	}
 	if (console.active()) {
-		controller.restrict();
+		controller.restrict_movement();
 		controller.prevent_movement();
 		if (controller.transponder_skip()) { transponder.skip_ahead(); }
 		if (controller.transponder_skip_released()) { transponder.enable_skip(); }
@@ -285,6 +299,11 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		quest_code = util::QuestCode(qs);
 		if (quest_code.value().reveal_item()) { catalog.categories.inventory.reveal_item(quest_code.value().get_id()); }
 		if (quest_code.value().progress_quest()) { m_services->quest.progress(static_cast<fornani::QuestType>(quest_code.value().get_type()), quest_code.value().get_id()); }
+		if (quest_code.value().retry()) {
+			m_services->state_controller.actions.set(automa::Actions::retry);
+			std::cout << qs << "\n";
+		}
+		
 		// handle other quest code types
 		quest_code = {};
 	}
@@ -375,6 +394,11 @@ void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
 	orb_indicator.set_position(new_pos);
 }
 
+void Player::freeze_position() {
+	set_position(collider.physics.previous_position);
+	collider.physics.zero();
+}
+
 void Player::update_direction() {
 	if (controller.facing_left()) {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
@@ -418,11 +442,12 @@ void Player::walk() {
 	}
 }
 
-void Player::hurt(float amount = 1.f) {
-	if (!health.invincible()) {
-		if (shielding()) { return; }
+void Player::hurt(float amount, bool force) {
+	if (health.is_dead()) { return; }
+	if (!health.invincible() || force) {
+		if (shielding() && !force) { return; }
 		m_services->ticker.slow_down(25);
-		health.inflict(amount);
+		health.inflict(amount, force);
 		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;
 		collider.physics.acceleration.y = -physics_stats.hurt_acc;
@@ -431,7 +456,6 @@ void Player::hurt(float amount = 1.f) {
 		m_services->soundboard.flags.player.set(audio::Player::hurt);
 		hurt_cooldown.start(2);
 	}
-	if (health.is_dead()) { kill(); }
 }
 
 void Player::update_antennae() {
@@ -502,14 +526,13 @@ void Player::update_invincibility() {
 	}
 }
 
-void Player::kill() {
-	flags.state.reset(State::alive);
-	flags.state.set(State::killed);
-}
-
 void Player::start_over() {
 	health.reset();
-	flags.state.set(State::alive);
+	controller.unrestrict();
+	health.invincibility.start(8);
+	flags.state.reset(State::killed);
+	animation.triggers.reset(AnimTriggers::end_death);
+	animation.post_death.cancel();
 	collider.collision_depths = {};
 }
 
@@ -541,6 +564,7 @@ void Player::total_reset() {
 void Player::map_reset() {
 	if (animation.state == AnimState::inspect) { animation.state = AnimState::idle; }
 	if (flags.state.test(State::killed)) { animation.state = AnimState::idle; }
+	animation.state = AnimState::idle;
 	flags.state.reset(State::killed);
 }
 

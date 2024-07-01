@@ -12,6 +12,8 @@ struct ServiceProvider;
 
 namespace audio {
 
+enum class SoundboardState { on, off };
+
 enum class Menu { select, shift, forward_switch, backward_switch };
 enum class Console { next, done, shift, select, speech, menu_open };
 enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit };
@@ -42,10 +44,14 @@ struct Soundboard {
 		util::BitFlags<Minigun> minigun{};
 	} flags{};
 
+	SoundboardState status{SoundboardState::on};
+
 	void play_sounds(automa::ServiceProvider& svc);
 	void repeat(automa::ServiceProvider& svc, sf::Sound& sound, int frequency, float random_pitch_offset = 0.f);
 	void randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset, float vol = 100.f);
 	void play_at_volume(sf::Sound& sound, float vol);
+	void turn_on() { status = SoundboardState::on; }
+	void turn_off() { status = SoundboardState::off; }
 
 	struct {
 		float save{};

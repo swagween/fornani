@@ -17,7 +17,15 @@ PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc) {
 }
 
 void PlayerController::update(automa::ServiceProvider& svc) {
-	if (walking_autonomously() || hard_state.test(HardState::no_move)) { return; }
+	if (walking_autonomously()) {
+		prevent_movement();
+		key_map[ControllerInput::move_x] = direction.lr == dir::LR::left ? -1.f : 1.f;
+		return;
+	}
+	if (hard_state.test(HardState::no_move)) {
+		prevent_movement();
+		return;
+	}
 
 	auto const& left = svc.controller_map.label_to_control.at("left").held();
 	auto const& right = svc.controller_map.label_to_control.at("right").held();
@@ -169,7 +177,7 @@ void PlayerController::ground() { flags.set(MovementState::grounded); }
 
 void PlayerController::unground() { flags.reset(MovementState::grounded); }
 
-void PlayerController::restrict() {
+void PlayerController::restrict_movement() {
 	flags.set(MovementState::restricted);
 	hard_state.set(HardState::no_move);
 }

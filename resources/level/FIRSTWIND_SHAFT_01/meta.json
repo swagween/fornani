@@ -198,34 +198,6 @@
     },
     {
       "position": [
-        11,
-        48
-      ],
-      "dimensions": [
-        3,
-        1
-      ],
-      "extent": 27,
-      "style": 2,
-      "type": "slow_up_down",
-      "start": 0.500000
-    },
-    {
-      "position": [
-        11,
-        5
-      ],
-      "dimensions": [
-        3,
-        1
-      ],
-      "extent": 27,
-      "style": 2,
-      "type": "slow_up_down",
-      "start": 0.000000
-    },
-    {
-      "position": [
         3,
         83
       ],
@@ -265,6 +237,34 @@
       "style": 2,
       "type": "standard_activated_up_down",
       "start": 0.500000
+    },
+    {
+      "position": [
+        11,
+        5
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 27,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        11,
+        48
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 27,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.000000
     }
   ],
   "chests": [

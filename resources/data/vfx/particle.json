@@ -15,6 +15,22 @@
     "colliding": true
   },
 
+  "player_crush": {
+    "load": 18,
+    "rate": 120.0,
+    "expulsion": 90.0,
+    "expulsion_variance": 70.0,
+    "cone": 0.1,
+    "friction": 0.99,
+    "elasticity": 0.9,
+    "gravity": 3.9,
+    "lifespan": 490,
+    "lifespan_variance": 205,
+    "dimensions": [ 4, 4 ],
+    "animated": false,
+    "colliding": true
+  },
+
   "thick_burst": {
     "load": 12,
     "rate": 100.0,
@@ -63,6 +79,24 @@
     "colliding": true
   },
 
+  "bryns_gun": {
+    "load": 9,
+    "rate": 100.0,
+    "expulsion": 130.0,
+    "expulsion_variance": 80.0,
+    "cone": 0.2,
+    "friction": 0.97,
+    "elasticity": 0.8,
+    "gravity": 2.0,
+    "lifespan": 120,
+    "lifespan_variance": 80,
+    "dimensions": [ 3, 3 ],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "periwinkle"
+  },
+
   "twinkle": {
     "load": 2,
     "rate": 100.0,
@@ -79,7 +113,7 @@
     "colliding": false,
     "animation": {
       "lookup": 0,
-      "duration": 4,
+      "duration": 5,
       "framerate": 28,
       "loop": 0
     }
@@ -99,11 +133,7 @@
     "dimensions": [ 3, 3 ],
     "animated": false,
     "colliding": false,
-    "animation": {
-      "lookup": 0,
-      "duration": 4,
-      "framerate": 28,
-      "loop": 0
-    }
+    "fader": true,
+    "color": "mythic"
   }
 }

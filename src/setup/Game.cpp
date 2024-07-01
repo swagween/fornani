@@ -77,6 +77,7 @@ void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> pl
 	while (window.isOpen()) {
 
 		if (services.state_controller.actions.test(automa::Actions::shutdown)) { return; }
+		if (services.death_mode()) { flags.reset(GameFlags::in_game); }
 
 		services.ticker.start_frame();
 
@@ -491,7 +492,7 @@ void Game::debug_window() {
 						}
 						if (ImGui::BeginTabItem("Misc")) {
 
-							ImGui::Text("Alive? %s", player.flags.state.test(player::State::alive) ? "Yes" : "No");
+							ImGui::Text("Alive? %s", player.alive() ? "Yes" : "No");
 
 							ImGui::Text("Invincibility Counter: %i", player.counters.invincibility);
 							ImGui::Text("Spike Trigger: %s", player.collider.spike_trigger ? "True" : "False");

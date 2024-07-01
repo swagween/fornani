@@ -57,7 +57,7 @@
       },
       "spray": {
         "dimensions": [ 2.0, 2.0 ],
-        "type": "fast_burst",
+        "type": "bryns_gun",
         "color": "periwinkle"
       }
     },
@@ -157,7 +157,7 @@
           "base_damage": 1,
           "range": 480,
           "speed": 8.0,
-          "variance": 0.4,
+          "variance": 0.2,
           "stun_time": 0.0,
           "knockback": 0.0,
           "persistent": false,

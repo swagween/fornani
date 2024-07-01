@@ -10,7 +10,8 @@
       1
     ],
     "style": 0,
-    "background": 4
+    "background": 4,
+    "music": "dusken_cove"
   },
   "portals": [
     {
@@ -75,6 +76,7 @@
       ],
       "suites": [
         [ "1", "2", "3" ],
+        [ "2", "3" ],
         [ "8" ]
       ],
       "background": true

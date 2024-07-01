@@ -4,7 +4,7 @@
 
 namespace automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console) {
 	current_selection = 0;
 	svc.data.load_blank_save(player);
 	hud.set_corner_pad(svc, true); // display hud preview for each file in the center of the screen
@@ -84,16 +84,16 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 
 	hud.update(svc, *player);
 
+	player->animation.state = player::AnimState::run;
 	player->collider.physics.acceleration = {};
 	player->collider.physics.velocity = {};
 	player->collider.physics.zero();
-	player->flags.state.set(player::State::alive);
 	player->collider.reset();
 	player->controller.autonomous_walk();
 	player->collider.flags.state.set(shape::State::grounded);
 
 	player->set_position({svc.constants.screen_dimensions.x * 0.5f + 80, 360});
-	player->update(console, inventory_window);
+	player->update(map, console, inventory_window);
 	player->controller.direction.lr = dir::LR::left;
 	svc.soundboard.flags.player.reset(audio::Player::step);
 

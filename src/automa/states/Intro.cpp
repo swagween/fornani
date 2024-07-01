@@ -16,7 +16,7 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
 	float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
 	sf::Vector2f player_pos = {ppx, ppy};
-	player.set_position({100, 100});
+	player.set_position({300, 260});
 }
 
 void Intro::init(ServiceProvider& svc, std::string_view room) {}
@@ -30,7 +30,7 @@ void Intro::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void Intro::tick_update(ServiceProvider& svc) {
-	player->update(console, inventory_window);
+	player->update(map, console, inventory_window);
 	player->controller.prevent_movement();
 	map.update(svc, console, inventory_window);
 

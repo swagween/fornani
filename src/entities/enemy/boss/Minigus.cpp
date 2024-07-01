@@ -782,9 +782,9 @@ fsm::StateFunction Minigus::update_snap() {
 	if (animation.complete()) {
 		for (int i{0}; i < 2; ++i) {
 			auto randx = m_services->random.random_range_float(-80.f, 80.f);
-			auto randy = m_services->random.random_range_float(-120.f, 40.f);
+			auto randy = m_services->random.random_range_float(-160.f, 0.f);
 			sf::Vector2<float> rand_vec{randx, randy};
-			sf::Vector2<float> spawn = Enemy::collider.physics.position + rand_vec;
+			sf::Vector2<float> spawn = Enemy::collider.get_center() + rand_vec;
 			m_map->spawn_enemy(5, spawn);
 		}
 		counters.snap.update();

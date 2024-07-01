@@ -10,7 +10,8 @@
       3
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "music":  "dusken_cove"
   },
   "portals": [
     {
@@ -132,6 +133,20 @@
     },
     {
       "position": [
+        26,
+        30
+      ],
+      "dimensions": [
+        3,
+        2
+      ],
+      "extent": 12,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
         4,
         10
       ],
@@ -156,20 +171,6 @@
       "extent": 6,
       "style": 2,
       "type": "standard_side_to_side",
-      "start": 0.000000
-    },
-    {
-      "position": [
-        26,
-        30
-      ],
-      "dimensions": [
-        3,
-        2
-      ],
-      "extent": 12,
-      "style": 2,
-      "type": "standard_up_down",
       "start": 0.000000
     }
   ],

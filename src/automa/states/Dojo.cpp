@@ -13,14 +13,14 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 	map.load(svc, room);
 	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
 	hud.set_corner_pad(svc, false); // reset hud position to corner
+	svc.soundboard.turn_on();
 
 	// TODO: refactor player initialization
 	player->collider.physics.zero();
-	player->flags.state.set(player::State::alive);
 
 	bool found_one{};
-	// only search for door entry if room was not loaded from main menu
-	if (!svc.state_controller.actions.test(Actions::save_loaded)) {
+	// only search for door entry if room was not loaded from main menu and player didn't die
+	if (!svc.state_controller.actions.test(Actions::save_loaded) && !svc.state_controller.actions.test(Actions::player_death)) {
 		for (auto& portal : map.portals) {
 			if (portal.get_destination() == svc.state_controller.source_id) {
 				found_one = true;
@@ -38,8 +38,9 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 		player->set_position(player_pos);
 	}
 
-	// save was loaded from a json, so we successfully skipped door search
+	// save was loaded from a json, or player died, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
+	svc.state_controller.actions.reset(Actions::player_death);
 
 	player->controller.prevent_movement();
 }
@@ -66,7 +67,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	enter_room.update();
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
 
-	player->update(console, inventory_window);
+	player->update(map, console, inventory_window);
 	map.update(svc, console, inventory_window);
 
 	if (map.camera_shake()) { camera.begin_shake(); }

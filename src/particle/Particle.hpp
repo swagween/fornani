@@ -3,8 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string_view>
+#include <optional>
 #include "../utils/Collider.hpp"
 #include "../utils/Cooldown.hpp"
+#include "../utils/Fader.hpp"
 #include "../entities/animation/Animation.hpp"
 
 namespace automa {
@@ -33,6 +35,7 @@ class Particle {
 	shape::Collider collider{};
 	int frame{};
 	sf::Sprite sprite{};
+	std::optional<util::Fader> fader{};
 	anim::Animation animation{};
 	util::BitFlags<ParticleType> flags{};
 };

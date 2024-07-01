@@ -47,6 +47,9 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	auto framerate = in_animation["framerate"].as<int>();
 	auto loop = in_animation["loop"].as<int>();
 	animation.set_params({lookup, duration, framerate, loop});
+
+	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get_cooldown(), in_data["color"].as_string()); }
+	if (fader) { fader.value().get_sprite().setScale(dim); }
 }
 
 void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
@@ -58,6 +61,7 @@ void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 	collider.physics.acceleration = {};
 	animation.update();
 	lifespan.update();
+	if (fader) { fader.value().update(); }
 }
 
 void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { 
@@ -67,7 +71,10 @@ void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		if (flags.test(ParticleType::animated)) {
 			sprite.setTextureRect(sf::IntRect{{0, animation.get_frame() * sprite_dimensions.y}, sprite_dimensions});
 			sprite.setPosition(collider.physics.position - cam);
-			if (!animation.complete()) { win.draw(sprite); }
+			win.draw(sprite);
+		} else if (fader) {
+			fader.value().get_sprite().setPosition(collider.physics.position - cam);
+			win.draw(fader.value().get_sprite());
 		} else {
 			box.setPosition(collider.physics.position - cam);
 			win.draw(box);

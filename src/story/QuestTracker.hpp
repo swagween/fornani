@@ -23,8 +23,8 @@ struct Quest {
 };
 
 struct QuestSuite {
-	std::vector<Quest> quests{};
-	int get_progression(int id) { return quests.at(id).progression.get_count(); };
+	std::unordered_map<int, Quest> quests{};
+	int get_progression(int id) { return quests.contains(id) ? quests.at(id).progression.get_count() : 0; };
 };
 
 class QuestTracker {
@@ -34,7 +34,9 @@ class QuestTracker {
 	void progress(QuestType type, int id);
 
   private:
-	QuestSuite npc_quests{};
+	struct {
+		QuestSuite npc{};
+	} suites{};
 };
 
 } // namespace fornani

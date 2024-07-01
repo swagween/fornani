@@ -19,7 +19,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 	attributes.barrel_position.at(0) = in_data["barrel_point"]["x"].as<float>();
 	attributes.barrel_position.at(1) = in_data["barrel_point"]["y"].as<float>();
 
-
 	attributes.automatic = (bool)in_data["attributes"]["automatic"].as_bool();
 	attributes.grenade = (bool)in_data["attributes"]["grenade"].as_bool();
 	attributes.rate = in_data["attributes"]["rate"].as<int>();

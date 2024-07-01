@@ -12,7 +12,7 @@ Transition::Transition(automa::ServiceProvider& svc, int d) : duration(d) {
 }
 
 void Transition::update(player::Player& player) {
-	if (fade_in || fade_out) { player.controller.restrict(); }
+	if (fade_in || fade_out) { player.controller.prevent_movement(); }
 	if (fade_out) {
 		if (current_frame > 0) { current_frame -= rate; }
 		if (alpha < 255) { alpha += rate; }

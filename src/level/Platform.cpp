@@ -69,7 +69,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	//map changes
 
 	//platform changes
-	for (auto& breakable : map.breakables) { handle_collider_collision(breakable.get_bounding_box()); }
+	for (auto& breakable : map.breakables) { handle_collider_collision(breakable.get_hurtbox()); }
 	for (auto& platform : map.platforms) {
 		if (&platform != this && native_direction.lr != platform.native_direction.lr) { handle_collider_collision(platform.hurtbox); }
 	}

@@ -140,17 +140,17 @@
   "bit1": {
     "suite": [
       [ "...", "Psst... Hey!", "Hey, you!", "I don't know how you managed to escape your cell, but, er... I'm in a bit of a bind here, as you can see.", "Would you help me out?%0" ],
-      [ "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.", "You might find the key to this cell lying around somewhere.", "If you find it, you should be able to use it on that there door and let me free!" ],
-      [ "Well uh... okay. If you change your mind, you'll know where to find me." ]
+      [ "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.", "You might find the key to this cell lying around the ship somewhere.", "If you do, you should be able to use it on that there door and let me free!" ],
+      [ "Well uh... okay. If you change your mind, you'll know where to find me.$320" ]
     ],
     "responses": [
-      [ "Sure%0", "I had better get going...%1" ]
+      [ "Sure.%0", "I had better get going...%1" ]
     ]
   },
   "bit2": {
     "suite": [
       [ "Listen, I don't wanna rush you, but...", "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days...%0" ],
-      [ "I'm not gonna sugarcoat it. We're in prison.", "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason.", "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.", "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here." ]
+      [ "I'm not gonna sugarcoat it. We're in prison.", "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!", "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.", "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here." ]
     ],
     "responses": [
       [ "Where are we?%0" ]
@@ -179,7 +179,7 @@
   },
   "bit6": {
     "suite": [
-      [ "Listen, I don't exactly have much to give you right now.", "I'm sure you understand...", "But! Fear not! If we bump into each other agian someday, I'll have something for you!" ]
+      [ "Listen, I don't exactly have much to give you right now.", "I'm sure you understand...", "But! Fear not! If we bump into each other again someday, I'll have something for you!" ]
     ],
     "responses": [
     ]

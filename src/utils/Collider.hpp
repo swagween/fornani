@@ -54,6 +54,7 @@ class Collider {
 	void correct_y(sf::Vector2<float> mtv);
 	void correct_x_y(sf::Vector2<float> mtv);
 	void correct_corner(sf::Vector2<float> mtv);
+	void resolve_depths();
 	void set_depths();
 	void handle_platform_collision(Shape const& cell);
 	void handle_spike_collision(Shape const& cell);
@@ -70,6 +71,8 @@ class Collider {
 	bool has_vertical_collision() const;
 	bool has_left_wallslide_collision() const;
 	bool has_right_wallslide_collision() const;
+	bool horizontal_squish() const;
+	bool vertical_squish() const;
 
 	void flush_positions() { position_history.clear(); }
 	sf::Vector2<float> get_average_tick_position();
@@ -79,6 +82,10 @@ class Collider {
 	[[nodiscard]] auto crushed() const -> bool { return (collision_depths.top > crush_threshold && collision_depths.bottom > crush_threshold) || (collision_depths.left > crush_threshold && collision_depths.right > crush_threshold); }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
 	[[nodiscard]] auto platform_collision() const -> bool { return flags.external_state.test(ExternalState::collider_collision); }
+	[[nodiscard]] auto left() const -> float { return bounding_box.left(); }
+	[[nodiscard]] auto right() const -> float { return bounding_box.right(); }
+	[[nodiscard]] auto top() const -> float { return bounding_box.top(); }
+	[[nodiscard]] auto bottom() const -> float { return bounding_box.bottom(); }
 	
 	float compute_length(sf::Vector2<float> const v);
 
@@ -118,7 +125,8 @@ class Collider {
 		float right{};
 	} collision_depths{};
 
-	float crush_threshold{8.0f};
+	float crush_threshold{2.0f};
+	float depth_throwaway{8.0f};
 	float landed_threshold{6.0f};
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{2.0f};

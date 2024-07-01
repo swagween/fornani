@@ -17,6 +17,8 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 
 	// for debugging
 	center_box.setSize(svc.constants.f_screen_dimensions * 0.5f);
+	flags.state.reset(LevelState::game_over);
+	svc.state_controller.actions.reset(automa::Actions::death_mode);
 
 	std::string room_str = svc.data.finder.resource_path + room.data();
 	metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
@@ -171,7 +173,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 	transition.fade_in = true;
 	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2.f, svc.constants.screen_dimensions.y * 2.f));
 	minimap.setViewport(sf::FloatRect(0.75f, 0.75f, 0.2f, 0.2f));
-	loading.start(2);
+	loading.start(4);
 }
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
@@ -198,7 +200,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
 	player->ledge_height = player->collider.detect_ledge_height(*this);
-	if (off_the_bottom(player->collider.physics.position)) { player->kill(); }
+	if (off_the_bottom(player->collider.physics.position) && loading.is_complete()) {
+		player->hurt(64.f);
+		player->freeze_position();
+	}
 
 	for (auto& grenade : active_grenades) {
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(grenade.bounding_box)) {
@@ -218,8 +223,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			}
 		}
 	}
-
-	player->collider.detect_map_collision(*this);
 
 	// i need to refactor this...
 	for (auto& index : collidable_indeces) {
@@ -299,18 +302,26 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		breakable.update(svc);
 		breakable.handle_collision(player->collider);
 	}
+	player->collider.detect_map_collision(*this);
+	player->collider.resolve_depths();
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
 	std::erase_if(effects, [](auto& e) { return e.done(); });
 
 	player->collider.reset_ground_flags();
+
 	// check if player died
-	if (!player->is_dead() && !game_over) {
-		svc.soundboard.flags.player.set(audio::Player::death);
-		game_over = true;
+	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && loading.is_complete()) {
+		std::cout << "Launch death console.\n";
+		console.set_source(svc.text.basic);
+		console.load_and_launch("death");
+		flags.state.set(LevelState::game_over);
+		svc.music.load("mortem");
+		svc.music.play_looped(10);
+		svc.soundboard.turn_off();
 	}
 
-	if (game_over) {
+	if (console.is_complete() && flags.state.test(LevelState::game_over)) {
 		transition.fade_out = true;
 		if (transition.done) {
 			player->start_over();

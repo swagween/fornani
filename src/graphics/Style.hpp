@@ -7,6 +7,7 @@ namespace style {
 class Style {
   public:
 	struct {
+		sf::Color nani_white{234, 227, 255};
 		sf::Color white{235, 232, 249};
 		sf::Color ui_white{254, 252, 216};
 		sf::Color green{81, 186, 155};

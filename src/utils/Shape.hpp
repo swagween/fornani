@@ -49,6 +49,11 @@ class Shape {
 	bool overlaps(Shape const& other);
 	bool contains_point(Vec point);
 
+	[[nodiscard]] auto left() const -> float { return position.x; }
+	[[nodiscard]] auto right() const -> float { return position.x + dimensions.x; }
+	[[nodiscard]] auto top() const -> float { return position.y; }
+	[[nodiscard]] auto bottom() const -> float { return position.y + dimensions.y; }
+
 	bool AABB_handle_left_collision_static(Shape const& immovable);
 	bool AABB_handle_right_collision_static(Shape const& immovable);
 	bool AABB_is_left_collision(Shape const& immovable);

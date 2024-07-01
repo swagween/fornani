@@ -21,6 +21,7 @@ class FileMenu : public automa::GameState {
 	sf::RectangleShape title{};
 private:
 	util::Cooldown loading{};
+	world::Map map;
 };
 
 }
