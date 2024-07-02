@@ -87,8 +87,8 @@ void CollisionDepth::try_push() {
 		// ignore negative depths (positive for left and top)
 		//if (candidate.left < crush_threshold) { candidate.left = 0.f; }
 		//if (candidate.right > -crush_threshold) { candidate.right = 0.f; }
-		//if (candidate.top < crush_threshold) { candidate.top = 0.f; }
-		//if (candidate.bottom > -crush_threshold) { candidate.bottom = 0.f; }
+		if (candidate.top < crush_threshold) { candidate.top = 0.f; }
+		if (candidate.bottom > -crush_threshold) { candidate.bottom = 0.f; }
 	}
 
 	stream.push_back(candidate);
