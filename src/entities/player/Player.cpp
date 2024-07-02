@@ -23,6 +23,8 @@ void Player::init(automa::ServiceProvider& svc) {
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
+	collider.collision_depths = util::CollisionDepth();
+	if (collider.collision_depths) { std::cout << "Depth instantiated.\n"; }
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
@@ -46,6 +48,8 @@ void Player::init(automa::ServiceProvider& svc) {
 }
 
 void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window) {
+
+	if (m_services->ticker.every_x_ticks(1000) && collider.collision_depths) { collider.collision_depths.value().print(); }
 
 	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
 
@@ -441,8 +445,7 @@ void Player::hurt(float amount, bool force) {
 }
 
 void Player::on_crush(world::Map& map) {
-	return;
-	//collider.set_depths();
+	if (!collider.collision_depths) { return; }
 	if (collider.crushed() && alive()) {
 		hurt(64.f, true);
 		directions.left_squish.und = collider.horizontal_squish() ? dir::UND::up : dir::UND::neutral;
@@ -450,16 +453,15 @@ void Player::on_crush(world::Map& map) {
 		directions.right_squish.und = collider.horizontal_squish() ? dir::UND::down : dir::UND::neutral;
 		directions.right_squish.lr = collider.vertical_squish() ? dir::LR::right : dir::LR::neutral;
 		std::cout << "-Collision Depth Conclusion-\n";
-		std::cout << "Left..: " << collider.collision_depths.left << "\n";
-		std::cout << "Right.: " << collider.collision_depths.right << "\n";
-		std::cout << "Top...: " << collider.collision_depths.top << "\n";
-		std::cout << "Bottom: " << collider.collision_depths.bottom << "\n";
+		std::cout << "Left..: " << collider.collision_depths.value().get().left << "\n";
+		std::cout << "Right.: " << collider.collision_depths.value().get().right << "\n";
+		std::cout << "Top...: " << collider.collision_depths.value().get().top << "\n";
+		std::cout << "Bottom: " << collider.collision_depths.value().get().bottom << "\n";
 		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.left_squish));
 		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.right_squish));
 		collider.collision_depths = {};
 		flags.state.set(State::crushed);
 	}
-	//if (m_services->ticker.every_x_ticks(8)) { collider.collision_depths = {}; }
 }
 
 void Player::update_antennae() {
@@ -537,7 +539,7 @@ void Player::start_over() {
 	flags.state.reset(State::killed);
 	animation.triggers.reset(AnimTriggers::end_death);
 	animation.post_death.cancel();
-	collider.collision_depths = {};
+	collider.collision_depths = util::CollisionDepth();
 }
 
 void Player::give_drop(item::DropType type, float value) {

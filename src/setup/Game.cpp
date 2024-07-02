@@ -354,10 +354,12 @@ void Game::debug_window() {
 							ImGui::Text("Ledge Height: %i", player.ledge_height);
 							ImGui::Separator();
 							ImGui::Text("Collision Depths:");
-							ImGui::Text("Top Depth: %.4f", player.collider.collision_depths.top);
-							ImGui::Text("Bottom Depth: %.4f", player.collider.collision_depths.bottom);
-							ImGui::Text("Left Depth: %.4f", player.collider.collision_depths.left);
-							ImGui::Text("Right Depth: %.4f", player.collider.collision_depths.right);
+							if (player.collider.collision_depths) {
+								ImGui::Text("Top Depth: %.4f", player.collider.collision_depths.value().top_depth());
+								ImGui::Text("Bottom Depth: %.4f", player.collider.collision_depths.value().bottom_depth());
+								ImGui::Text("Left Depth: %.4f", player.collider.collision_depths.value().left_depth());
+								ImGui::Text("Right Depth: %.4f", player.collider.collision_depths.value().right_depth());
+							}
 							ImGui::Separator();
 							ImGui::Text("Right Collision: %s", player.collider.flags.collision.test(shape::Collision::has_right_collision) ? "Yes" : "No");
 							ImGui::Text("Left Collision: %s", player.collider.flags.collision.test(shape::Collision::has_left_collision) ? "Yes" : "No");

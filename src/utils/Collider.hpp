@@ -5,6 +5,8 @@
 #include "../level/Tile.hpp"
 #include "BitFlags.hpp"
 #include "Shape.hpp"
+#include "CollisionDepth.hpp"
+#include <optional>
 
 namespace world{
 class Map;
@@ -49,14 +51,12 @@ class Collider {
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
 	void detect_map_collision(world::Map& map);
-	void calculate_depths(Shape const& cell);
 	int detect_ledge_height(world::Map& map);
 	void correct_x(sf::Vector2<float> mtv);
 	void correct_y(sf::Vector2<float> mtv);
 	void correct_x_y(sf::Vector2<float> mtv);
 	void correct_corner(sf::Vector2<float> mtv);
 	void resolve_depths();
-	void set_depths();
 	void handle_platform_collision(Shape const& cell);
 	void handle_spike_collision(Shape const& cell);
 	void handle_collider_collision(Shape const& collider);
@@ -80,14 +80,14 @@ class Collider {
 
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
-	[[nodiscard]] auto crushed() const -> bool { return (collision_depths.top > crush_threshold && collision_depths.bottom > crush_threshold) || (collision_depths.left > crush_threshold && collision_depths.right > crush_threshold); }
+	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
 	[[nodiscard]] auto platform_collision() const -> bool { return flags.external_state.test(ExternalState::collider_collision); }
 	[[nodiscard]] auto left() const -> float { return bounding_box.left(); }
 	[[nodiscard]] auto right() const -> float { return bounding_box.right(); }
 	[[nodiscard]] auto top() const -> float { return bounding_box.top(); }
 	[[nodiscard]] auto bottom() const -> float { return bounding_box.bottom(); }
-	
+
 	float compute_length(sf::Vector2<float> const v);
 
 	Shape bounding_box{};
@@ -101,6 +101,8 @@ class Collider {
 
 	PhysicsStats stats{};
 	components::PhysicsComponent physics{};
+
+	std::optional<util::CollisionDepth> collision_depths{};
 
 	struct {
 		util::BitFlags<General> general{};
@@ -119,15 +121,6 @@ class Collider {
 		sf::Vector2<float> actual{};
 	} mtvs{};
 
-	struct {
-		float top{};
-		float bottom{};
-		float left{};
-		float right{};
-	} collision_depths{};
-
-	float crush_threshold{2.0f};
-	float depth_throwaway{12.0f};
 	float landed_threshold{6.0f};
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{2.0f};
@@ -140,7 +133,6 @@ class Collider {
 	bool spike_trigger{};
 
 	sf::RectangleShape box{};
-	sf::RectangleShape collision_ray{};
 	sf::RectangleShape draw_hurtbox{};
 };
 
