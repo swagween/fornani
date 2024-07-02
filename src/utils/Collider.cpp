@@ -49,6 +49,9 @@ void Collider::sync_components() {
 }
 
 void Collider::handle_map_collision(world::Tile const& tile) {
+	if (collision_depths) {
+		if (collision_depths.value().crushed()) { return; }
+	}
 
 	flags.collision = {};
 	auto const& cell = tile.bounding_box;
@@ -70,8 +73,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		return;
 	}
 
-	if (collision_depths && !is_ramp) { collision_depths.value().calculate(this->bounding_box, cell); }
-
 	// store all four mtvs
 	mtvs.combined = predictive_combined.testCollisionGetMTV(predictive_combined, cell);
 	mtvs.vertical = predictive_vertical.testCollisionGetMTV(predictive_vertical, cell);
@@ -81,6 +82,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	float vert_threshold = 5.5f; // for landing
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
+		if (collision_depths) { collision_depths.value().calculate(*this, cell); }
 		bool corner_collision{true};
 		if (predictive_vertical.SAT(cell)) {
 			mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
@@ -276,16 +278,17 @@ void Collider::correct_corner(sf::Vector2<float> mtv) {
 }
 
 void Collider::resolve_depths() {
-	/*auto downward = collision_depths.top > collision_depths.bottom;
-	auto rightward = collision_depths.left > collision_depths.right;
+	if (!collision_depths) { return; }
+	auto downward = collision_depths.value().top_depth() > collision_depths.value().bottom_depth();
+	auto rightward = collision_depths.value().left_depth() > collision_depths.value().right_depth();
 	sf::Vector2<float> depth_diff{};
-	depth_diff.y = (collision_depths.top + collision_depths.bottom) * 0.5f;
-	depth_diff.x = (collision_depths.left + collision_depths.right) * 0.5f;
+	depth_diff.y = (collision_depths.value().top_depth() + collision_depths.value().bottom_depth()) * 0.5f;
+	depth_diff.x = (collision_depths.value().left_depth() + collision_depths.value().right_depth()) * 0.5f;
 	if (depth_diff.x < 8.f && depth_diff.y < 8.f) { return; }
 	depth_diff.y *= downward ? 1.f : -1.f;
 	depth_diff.x *= rightward ? 1.f : -1.f;
 	physics.position.x += depth_diff.x;
-	physics.position.y += depth_diff.y;*/
+	physics.position.y += depth_diff.y;
 }
 
 void Collider::handle_platform_collision(Shape const& cell) {}
@@ -297,6 +300,9 @@ void Collider::handle_spike_collision(Shape const& cell) {
 void Collider::handle_collider_collision(Shape const& collider) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	if (!vicinity.overlaps(collider)) { return; }
+	if (collision_depths) {
+		if (collision_depths.value().crushed()) { return; }
+	}
 
 	flags.collision = {};
 
@@ -306,9 +312,9 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	mtvs.horizontal = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, collider);
 	mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, collider);
 
-	if (collision_depths) { collision_depths.value().calculate(this->bounding_box, collider); }
-
 	float vert_threshold = 5.5f;
+	if (collision_depths) { collision_depths.value().calculate(*this, collider); }
+
 	bool corner_collision{true};
 	if (predictive_vertical.SAT(collider)) {
 		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
@@ -325,7 +331,6 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	}
 	if (predictive_horizontal.SAT(collider)) {
 		mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
-		//if (abs(mtvs.horizontal.x > 0.001f)) { std::cout << "Horizontal MTV reading: " << mtvs.horizontal.x << "\n"; }
 		corner_collision = false;
 		flags.dash.set(Dash::dash_cancel_collision);
 		flags.external_state.set(ExternalState::collider_collision);
@@ -354,7 +359,6 @@ void Collider::handle_collider_collision(Shape const& collider) {
 
 void Collider::update(automa::ServiceProvider& svc) {
 	flags.external_state = {};
-	if (collision_depths) { collision_depths.value().update(); }
 	physics.update(svc);
 	position_history.push_back(physics.position);
 	sync_components();
@@ -459,9 +463,9 @@ bool Collider::has_left_wallslide_collision() const { return flags.state.test(St
 
 bool Collider::has_right_wallslide_collision() const { return flags.state.test(State::right_wallslide_collision); }
 
-bool Collider::horizontal_squish() const { return abs(collision_depths.value().bottom_depth() + collision_depths.value().top_depth()) < abs(collision_depths.value().left_depth() + collision_depths.value().right_depth()); }
+bool Collider::horizontal_squish() const { return collision_depths ? collision_depths.value().horizontal_squish() : false; }
 
-bool Collider::vertical_squish() const { return abs(collision_depths.value().bottom_depth() + collision_depths.value().top_depth()) >= abs(collision_depths.value().left_depth() + collision_depths.value().right_depth()); }
+bool Collider::vertical_squish() const { return collision_depths ? collision_depths.value().vertical_squish() : false; }
 
 sf::Vector2<float> Collider::get_average_tick_position() {
 	sf::Vector2<float> ret{};

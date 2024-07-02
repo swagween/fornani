@@ -303,6 +303,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		breakable.handle_collision(player->collider);
 	}
 	player->collider.detect_map_collision(*this);
+	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
 	std::erase_if(effects, [](auto& e) { return e.done(); });

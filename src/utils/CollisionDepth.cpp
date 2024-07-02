@@ -1,34 +1,29 @@
 #include "CollisionDepth.hpp"
-#include "CollisionDepth.hpp"
-#include "CollisionDepth.hpp"
 #include "Shape.hpp"
+#include "Collider.hpp"
 #include <iostream>
 
 namespace util {
 
-void CollisionDepth::calculate(shape::Shape const& native, shape::Shape const& other) {
-	if (other.top() < native.bottom() && other.bottom() > native.top() && other.get_center().x < native.get_center().x) { candidate.left = other.right() - native.left(); }
-	if (other.top() < native.bottom() && other.bottom() > native.top() && other.get_center().x > native.get_center().x) { candidate.right = other.left() - native.right(); }
-	if (other.left() < native.right() && other.right() > native.left() && other.get_center().y < native.get_center().y) { candidate.top = other.bottom() - native.top(); }
-	if (other.left() < native.right() && other.right() > native.left() && other.get_center().y > native.get_center().y) { candidate.bottom = other.top() - native.bottom(); }
-
+void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const& other) {
+	if (other.top() < native.hurtbox.bottom() && other.bottom() > native.hurtbox.top() && other.get_center().x < native.get_center().x) { candidate.left = other.right() - native.left(); }
+	if (other.top() < native.hurtbox.bottom() && other.bottom() > native.hurtbox.top() && other.get_center().x > native.get_center().x) { candidate.right = other.left() - native.right(); }
+	if (other.left() < native.hurtbox.right() && other.right() > native.hurtbox.left() && other.get_center().y < native.get_center().y) { candidate.top = other.bottom() - native.top(); }
+	if (other.left() < native.hurtbox.right() && other.right() > native.hurtbox.left() && other.get_center().y > native.get_center().y) { candidate.bottom = other.top() - native.bottom(); }
 	try_push();
+	iterations.update();
 }
 
 void CollisionDepth::update() {
 	if (stream.empty()) { return; }
-	while (stream.size() > stream_size) { stream.pop_front(); }
-	out_depth = {};
+	out_depth = candidate;
 	for (auto& depth : stream) {
-		out_depth.left += depth.left;
-		out_depth.right += depth.right;
-		out_depth.top += depth.top;
-		out_depth.bottom += depth.bottom;
+		out_depth.left = std::max(depth.left, out_depth.left);
+		out_depth.right = std::min(depth.right, out_depth.right);
+		out_depth.top = std::max(depth.top, out_depth.top);
+		out_depth.bottom = std::min(depth.bottom, out_depth.bottom);
 	}
-	out_depth.left /= static_cast<float>(stream.size());
-	out_depth.right /= static_cast<float>(stream.size());
-	out_depth.top /= static_cast<float>(stream.size());
-	out_depth.bottom /= static_cast<float>(stream.size());
+	stream.clear();
 }
 
 void CollisionDepth::print() {
@@ -78,20 +73,21 @@ void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& 
 void CollisionDepth::try_push() {
 	if (!stream.empty()) {
 		// don't allow for large delta
-		if (abs(abs(stream.back().left) - abs(candidate.left)) > depth_throwaway) { candidate.left = stream.back().left; }
-		if (abs(abs(stream.back().right) - abs(candidate.right)) > depth_throwaway) { candidate.right = stream.back().right; }
-		if (abs(abs(stream.back().top) - abs(candidate.top)) > depth_throwaway) { candidate.top = stream.back().top; }
-		if (abs(abs(stream.back().bottom) - abs(candidate.bottom)) > depth_throwaway) { candidate.bottom = stream.back().bottom; }
+		//if (abs(abs(stream.back().left) - abs(candidate.left)) > depth_throwaway) { candidate.left = stream.back().left; }
+		//if (abs(abs(stream.back().right) - abs(candidate.right)) > depth_throwaway) { candidate.right = stream.back().right; }
+		//if (abs(abs(stream.back().top) - abs(candidate.top)) > depth_throwaway) { candidate.top = stream.back().top; }
+		//if (abs(abs(stream.back().bottom) - abs(candidate.bottom)) > depth_throwaway) { candidate.bottom = stream.back().bottom; }
 		//if (abs(stream.back().top - candidate.top) > depth_throwaway) { return; }
 		//if (abs(stream.back().bottom - candidate.bottom) > depth_throwaway) { return; }
 		// ignore negative depths (positive for left and top)
 		//if (candidate.left < crush_threshold) { candidate.left = 0.f; }
 		//if (candidate.right > -crush_threshold) { candidate.right = 0.f; }
-		if (candidate.top < crush_threshold) { candidate.top = 0.f; }
-		if (candidate.bottom > -crush_threshold) { candidate.bottom = 0.f; }
+		//if (candidate.top < crush_threshold) { candidate.top = 0.f; }
+		//if (candidate.bottom > -crush_threshold) { candidate.bottom = 0.f; }
 	}
 
 	stream.push_back(candidate);
+	//while (stream.size() > stream_size) { stream.pop_front(); }
 }
 
 } // namespace util

@@ -48,8 +48,7 @@ void Player::init(automa::ServiceProvider& svc) {
 }
 
 void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window) {
-
-	if (m_services->ticker.every_x_ticks(1000) && collider.collision_depths) { collider.collision_depths.value().print(); }
+	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 
 	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
 
