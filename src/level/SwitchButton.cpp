@@ -18,11 +18,12 @@ SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> posi
 	collider.sync_components();
 	collider.collision_depths = util::CollisionDepth();
 	collider.flags.general.set(shape::General::soft);
-	sensor.dimensions = {28.f, 2.f};
+	sensor.dimensions = {32.f, 16.f};
+	sensor.set_position(position);
 	sprite.push_params("neutral", {0, 1, 28, -1});
 	sprite.push_params("shine", {1, 4, 28, 0});
 	sprite.push_params("squished", {5, 1, 28, 0});
-	sprite.push_params("pressed", {6, 1, 28, 0});
+	sprite.push_params("pressed", {5, 2, 28, 0, true});
 	sprite.push_params("rising", {7, 1, 28, 0});
 	sprite.set_params("neutral");
 }
@@ -31,52 +32,28 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	released_cooldown.update();
 	pressed_cooldown.update();
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
-	sensor.set_position(collider.physics.position + sf::Vector2<float>{2.f, 0.f});
 	sprite.update(collider.physics.position + sprite_offset, static_cast<int>(type), static_cast<int>(state));
 
 	for (auto& block : map.switch_blocks) {
 		if (block.get_id() == id) { pressed() ? block.turn_off() : block.turn_on(); }
 	}
-
-	if (state == SwitchButtonState::unpressed && !triggers.test(SwitchTriggers::released) && !pressed_cooldown.running()) {
-		sprite.set_params("neutral");
-		collider.dimensions.y = 16.f;
-		collider.physics.position.y -= 10.f;
-		triggers.set(SwitchTriggers::released);
-		triggers.reset(SwitchTriggers::pressed);
-	}
-	if (state == SwitchButtonState::pressed && !triggers.test(SwitchTriggers::pressed) && !released_cooldown.running()) {
-		sprite.set_params("pressed");
-		collider.dimensions.y = 6.f;
-		collider.physics.position.y += 10.f;
-		triggers.set(SwitchTriggers::pressed);
-		triggers.reset(SwitchTriggers::released);
-	}
-
 	if (player.collider.predictive_horizontal.overlaps(collider.bounding_box)) { collider.physics.velocity.x = player.collider.physics.acceleration.x * 0.5f; }
 	collider.update(svc);
 	
 	collider.handle_collider_collision(player.collider.bounding_box);
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& platform : map.platforms) {
-		collider.handle_collider_collision(platform.bounding_box);
-		if (platform.jumpbox.overlaps(sensor)) {
+		if (platform.bounding_box.overlaps(sensor)) {
 			state = SwitchButtonState::pressed;
-			pressed_cooldown.start();
 		}
 	}
 	for (auto& chest : map.chests) {
 		if (chest.get_jumpbox().overlaps(sensor)) {
 			state = SwitchButtonState::pressed;
-			pressed_cooldown.start();
 		}
 	}
 	if (player.collider.jumpbox.overlaps(sensor)) {
 		state = SwitchButtonState::pressed;
-		pressed_cooldown.start();
-	} else if(!pressed_cooldown.running()) {
-		state = SwitchButtonState::unpressed;
-		released_cooldown.start();
 	}
 
 	collider.detect_map_collision(map);
@@ -88,13 +65,21 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 		if (collider.collision_depths.value().vertical_squish()) { state = SwitchButtonState::pressed; }
 		collider.collision_depths.value().update();
 	}
+
+	state_function = state_function();
 }
 
 void SwitchButton::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider.bounding_box); }
 
 void SwitchButton::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (svc.greyblock_mode()) {
-		collider.render(win, cam);
+		//collider.render(win, cam);
+		sensorbox.setPosition(sensor.position - cam);
+		sensorbox.setSize(sensor.dimensions);
+		sensorbox.setFillColor(sf::Color::Transparent);
+		sensorbox.setOutlineThickness(-4);
+		pressed() ? sensorbox.setOutlineColor(svc.styles.colors.dark_fucshia) : sensorbox.setOutlineColor(svc.styles.colors.mythic_green);
+		win.draw(sensorbox);
 		return;
 	}
 	sprite.render(svc, win, cam);
@@ -110,6 +95,75 @@ void SwitchButton::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::P
 		}
 		proj.destroy(false);
 	}
+}
+
+fsm::StateFunction SwitchButton::update_unpressed() {
+	if (sprite.just_started()) {
+		std::cout << "called\n";
+		collider.dimensions.y = 16.f;
+		collider.physics.position.y -= -(16.f - collider.physics.position.y);
+		sensor.set_position(collider.physics.position + sf::Vector2<float>{0.f, -(16.f - collider.dimensions.y)});
+	}
+	if (change_state(SwitchButtonState::pressed, "squished")) { return SWITCH_BIND(update_squished); }
+	if (change_state(SwitchButtonState::shining, "shine")) { return SWITCH_BIND(update_shining); }
+	state = SwitchButtonState::unpressed;
+	return SWITCH_BIND(update_unpressed);
+}
+
+fsm::StateFunction SwitchButton::update_shining() {
+	std::cout << "called\n";
+	if (sprite.just_started()) {
+		collider.dimensions.y = 16.f;
+		collider.physics.position.y -= -(16.f - collider.physics.position.y);
+		sensor.set_position(collider.physics.position + sf::Vector2<float>{0.f, -(16.f - collider.dimensions.y)});
+	}
+	if (change_state(SwitchButtonState::unpressed, "neutral")) { return SWITCH_BIND(update_unpressed); }
+	state = SwitchButtonState::shining;
+	return SWITCH_BIND(update_shining);
+}
+
+fsm::StateFunction SwitchButton::update_squished() {
+	std::cout << "called\n";
+	if (sprite.just_started()) {
+		collider.dimensions.y = 12.f;
+		collider.physics.position.y -= -(12.f - collider.physics.position.y);
+		sensor.set_position(collider.physics.position + sf::Vector2<float>{0.f, -(12.f - collider.dimensions.y)});
+	}
+	if (change_state(SwitchButtonState::pressed, "pressed")) { return SWITCH_BIND(update_pressed); }
+	state = SwitchButtonState::squishing;
+	return SWITCH_BIND(update_squished);
+}
+
+fsm::StateFunction SwitchButton::update_pressed() {
+	std::cout << "called\n";
+	if (sprite.just_started()) {
+		collider.dimensions.y = 6.f;
+		collider.physics.position.y -= -(6.f - collider.physics.position.y);
+		sensor.set_position(collider.physics.position + sf::Vector2<float>{0.f, -(6.f - collider.dimensions.y)});
+	}
+	if (change_state(SwitchButtonState::unpressed, "rising")) { return SWITCH_BIND(update_rising); }
+	state = SwitchButtonState::pressed;
+	return SWITCH_BIND(update_pressed);
+}
+
+fsm::StateFunction SwitchButton::update_rising() {
+	std::cout << "called\n";
+	if (sprite.just_started()) {
+		collider.dimensions.y = 12.f;
+		collider.physics.position.y -= -(12.f - collider.physics.position.y);
+		sensor.set_position(collider.physics.position + sf::Vector2<float>{0.f, -(12.f - collider.dimensions.y)});
+	}
+	if (change_state(SwitchButtonState::unpressed, "unpressed")) { return SWITCH_BIND(update_unpressed); }
+	state = SwitchButtonState::rising;
+	return SWITCH_BIND(update_rising);
+}
+
+bool SwitchButton::change_state(SwitchButtonState next, std::string_view tag) {
+	if (state == next) {
+		sprite.set_params(tag, true);
+		return true;
+	}
+	return false;
 }
 
 } // namespace world

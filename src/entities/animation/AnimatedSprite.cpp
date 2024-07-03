@@ -19,9 +19,9 @@ void AnimatedSprite::update(sf::Vector2<float> pos, int u, int v) {
 
 void AnimatedSprite::push_params(std::string_view label, Parameters in_params) { params.insert({label, in_params}); }
 
-void AnimatedSprite::set_params(std::string_view label) {
+void AnimatedSprite::set_params(std::string_view label, bool force) {
 	if (params.contains(label)) {
-		animation.set_params(params.at(label));
+		animation.set_params(params.at(label), force);
 	} else {
 		std::cout << "Invalid animation parameterization request in AnimatedSprite.cpp\n";
 	}

@@ -37,11 +37,12 @@ class SwitchBlock {
 	void turn_on() { state = SwitchBlockState::full; }
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
-	[[nodiscard]] auto switched() -> bool { return triggers.consume(SwitchTriggers::on); }
 	[[nodiscard]] auto get_id() const -> int { return button_id; }
+	[[nodiscard]] auto switched() const -> bool { return false; }
+	[[nodiscard]] auto on() const -> bool { return state != SwitchBlockState::empty; }
+	[[nodiscard]] auto off() const -> bool { return state == SwitchBlockState::empty; }
 
   private:
-	util::BitFlags<SwitchTriggers> triggers{};
 	shape::Collider collider{};
 	sf::Sprite sprite{};
 	SwitchType type{};

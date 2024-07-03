@@ -22,9 +22,11 @@ class AnimatedSprite {
 	AnimatedSprite(sf::Texture& texture, sf::Vector2<int> dimensions = {32, 32});
 	void update(sf::Vector2<float> pos, int u = 0, int v = 0);
 	void push_params(std::string_view label, Parameters in_params);
-	void set_params(std::string_view label);
+	void set_params(std::string_view label, bool force = false);
 	void set_dimensions(sf::Vector2<int> dim);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
+	[[nodiscard]] auto just_started() const -> bool { return animation.just_started(); }
 
   private:
 	sf::Sprite sprite{};

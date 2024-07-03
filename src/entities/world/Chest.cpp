@@ -13,7 +13,7 @@ Chest::Chest(automa::ServiceProvider& svc, int id) : id(id) {
 	spritesheet_dimensions = {224, 28};
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
-	collider.physics.elasticity = 0.6f;
+	collider.physics.elasticity = 0.1f;
 
 	collider.physics.set_global_friction(0.999f);
 	collider.stats.GRAV = 6.2f;
@@ -45,7 +45,9 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
 	for (auto& button : map.switch_buttons) { collider.handle_collider_collision(button.get_bounding_box()); }
-	for (auto& block : map.switch_blocks) { collider.handle_collider_collision(block.get_bounding_box()); }
+	for (auto& block : map.switch_blocks) {
+		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
+	}
 	collider.detect_map_collision(map);
 	collider.reset();
 	collider.reset_ground_flags();

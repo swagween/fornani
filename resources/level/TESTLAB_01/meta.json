@@ -25,20 +25,47 @@
       "source_id": 6600,
       "destination_id": 6601,
       "activate_on_contact": false,
-      "locked": true,
-      "key_id": 11
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "platforms": [
+    {
+      "position": [
+        0,
+        7
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 3,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.000000
     }
   ],
   "chests": [
     {
-      "id": 11,
-      "item_id": 11,
-      "type": 3,
+      "id": 66,
+      "item_id": 66,
+      "type": 2,
       "amount": 0,
       "rarity": 0.000000,
       "position": [
-        4,
-        10
+        5,
+        8
+      ]
+    },
+    {
+      "id": 45345,
+      "item_id": 0,
+      "type": 2,
+      "amount": 16,
+      "rarity": 70.000000,
+      "position": [
+        9,
+        5
       ]
     }
   ],
@@ -55,7 +82,7 @@
       "type": 0,
       "position": [
         5,
-        10
+        9
       ]
     }
   ],
