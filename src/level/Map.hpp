@@ -20,6 +20,7 @@
 #include "../entities/npc/NPC.hpp"
 #include "Platform.hpp"
 #include "Breakable.hpp"
+#include "SwitchBlock.hpp"
 #include "../weapon/Grenade.hpp"
 #include "../utils/Stopwatch.hpp"
 
@@ -127,6 +128,8 @@ class Map {
 	std::vector<npc::NPC> npcs{};
 	std::vector<Platform> platforms{};
 	std::vector<Breakable> breakables{};
+	std::vector<SwitchButton> switch_buttons{};
+	std::vector<SwitchBlock> switch_blocks{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
 

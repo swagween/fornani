@@ -10,6 +10,8 @@ class Collider;
 
 namespace util {
 
+	enum class CollisionDirection { none, vertical, horizontal };
+
 struct Depth {
 	float left{};
 	float right{};
@@ -28,8 +30,8 @@ class CollisionDepth {
 	void reset() { iterations.start(); }
 	void render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2<float> cam);
 	[[nodiscard]] auto crushed() const -> bool { return (out_depth.bottom < -crush_threshold && out_depth.top > crush_threshold) || (out_depth.left > crush_threshold && out_depth.right < -crush_threshold); }
-	[[nodiscard]] auto horizontal_squish() const -> bool { return out_depth.left > crush_threshold || out_depth.right < -crush_threshold; }
-	[[nodiscard]] auto vertical_squish() const -> bool { return out_depth.bottom < -crush_threshold || out_depth.top > crush_threshold; }
+	[[nodiscard]] bool horizontal_squish() const;
+	[[nodiscard]] bool vertical_squish() const;
 
 	[[nodiscard]] auto left_depth() const -> float { return out_depth.left; }
 	[[nodiscard]] auto right_depth() const -> float { return out_depth.right; }
@@ -39,13 +41,14 @@ class CollisionDepth {
   private:
 	void try_push();
 
+	CollisionDirection collision_direction{};
 	Counter iterations{};
 	Depth candidate{};
 	Depth out_depth{};
 	std::deque<Depth> stream{};
 	size_t stream_size{16};
-	float crush_threshold{4.0f};
-	float depth_throwaway{4.0f};
+	float crush_threshold{2.0f};
+	float depth_throwaway{12.0f};
 	float depth_maximum{12.0f};
 	sf::RectangleShape collision_ray{};
 };

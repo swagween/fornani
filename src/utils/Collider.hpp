@@ -23,7 +23,7 @@ float const default_jumpbox_height = 4.0f;
 float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 
-enum class General { ignore_resolution, complex };
+enum class General { ignore_resolution, complex, pushable, soft };
 enum class Animation { just_landed };
 enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
 enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision, world_collision, horiz_world_collision, vert_world_collision };
@@ -99,6 +99,8 @@ class Collider {
 	Shape wallslider{};
 	Shape jumpbox{};
 	Shape hurtbox{};
+	Shape horizontal{};
+	Shape vertical{};
 
 	PhysicsStats stats{};
 	components::PhysicsComponent physics{};
@@ -125,6 +127,7 @@ class Collider {
 	float landed_threshold{6.0f};
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{2.0f};
+	float depth_buffer{1.0f};
 
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> sprite_offset{};

@@ -46,7 +46,7 @@ class Shape {
 	bool testCollision(Shape const& obb1, Shape const& obb2, Vec& mtv);
 	Vec testCollisionGetMTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
-	bool overlaps(Shape const& other);
+	bool overlaps(Shape const& other) const;
 	bool contains_point(Vec point);
 
 	[[nodiscard]] auto left() const -> float { return position.x; }

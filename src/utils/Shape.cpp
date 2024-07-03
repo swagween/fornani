@@ -324,7 +324,7 @@ bool Shape::SAT(Shape const& other) {
 	return true;
 }
 
-bool Shape::overlaps(Shape const& other) {
+bool Shape::overlaps(Shape const& other) const {
 	bool ret{true};
 	if (vertices.at(0).x > other.vertices.at(1).x) { ret = false; }
 	if (vertices.at(1).x < other.vertices.at(0).x) { ret = false; }

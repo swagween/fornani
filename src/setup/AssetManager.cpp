@@ -130,6 +130,8 @@ void AssetManager::import_textures() {
 
 	t_breakables.loadFromFile(finder.resource_path + "/image/tile/breakables.png");
 	t_inspectable.loadFromFile(finder.resource_path + "/image/entity/inspectable.png");
+	t_switches.loadFromFile(finder.resource_path + "/image/tile/switches.png");
+	t_switch_blocks.loadFromFile(finder.resource_path + "/image/tile/switch_blocks.png");
 
 	// backgrounds
 	t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");

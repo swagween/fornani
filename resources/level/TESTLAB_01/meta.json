@@ -48,5 +48,25 @@
       7,
       10
     ]
-  }
+  },
+  "switch_blocks": [
+    {
+      "button_id": 11,
+      "type": 0,
+      "position": [
+        5,
+        10
+      ]
+    }
+  ],
+  "switches": [
+    {
+      "button_id": 11,
+      "type": 0,
+      "position": [
+        9,
+        10
+      ]
+    }
+  ]
 }

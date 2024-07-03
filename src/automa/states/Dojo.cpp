@@ -69,7 +69,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	player->update(map, console, inventory_window);
 	map.update(svc, console, inventory_window);
-	if (svc.ticker.every_x_ticks(1000) && player->collider.collision_depths) { player->collider.collision_depths.value().print(); }
 
 	if (map.camera_shake()) { camera.begin_shake(); }
 	camera.center(player->anchor_point);

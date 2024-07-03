@@ -6,12 +6,15 @@
 namespace util {
 
 void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const& other) {
+	if (iterations.get_count() == 0) { collision_direction = CollisionDirection::none; }
 	if (other.top() < native.hurtbox.bottom() && other.bottom() > native.hurtbox.top() && other.get_center().x < native.get_center().x) { candidate.left = other.right() - native.left(); }
 	if (other.top() < native.hurtbox.bottom() && other.bottom() > native.hurtbox.top() && other.get_center().x > native.get_center().x) { candidate.right = other.left() - native.right(); }
 	if (other.left() < native.hurtbox.right() && other.right() > native.hurtbox.left() && other.get_center().y < native.get_center().y) { candidate.top = other.bottom() - native.top(); }
 	if (other.left() < native.hurtbox.right() && other.right() > native.hurtbox.left() && other.get_center().y > native.get_center().y) { candidate.bottom = other.top() - native.bottom(); }
 	try_push();
 	iterations.update();
+	collision_direction = other.overlaps(native.horizontal) ? CollisionDirection::horizontal : collision_direction;
+	collision_direction = other.overlaps(native.vertical) && !horizontal_squish() ? CollisionDirection::vertical : collision_direction;
 }
 
 void CollisionDepth::update() {
@@ -70,24 +73,10 @@ void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& 
 	win.draw(collision_ray);
 }
 
-void CollisionDepth::try_push() {
-	if (!stream.empty()) {
-		// don't allow for large delta
-		//if (abs(abs(stream.back().left) - abs(candidate.left)) > depth_throwaway) { candidate.left = stream.back().left; }
-		//if (abs(abs(stream.back().right) - abs(candidate.right)) > depth_throwaway) { candidate.right = stream.back().right; }
-		//if (abs(abs(stream.back().top) - abs(candidate.top)) > depth_throwaway) { candidate.top = stream.back().top; }
-		//if (abs(abs(stream.back().bottom) - abs(candidate.bottom)) > depth_throwaway) { candidate.bottom = stream.back().bottom; }
-		//if (abs(stream.back().top - candidate.top) > depth_throwaway) { return; }
-		//if (abs(stream.back().bottom - candidate.bottom) > depth_throwaway) { return; }
-		// ignore negative depths (positive for left and top)
-		//if (candidate.left < crush_threshold) { candidate.left = 0.f; }
-		//if (candidate.right > -crush_threshold) { candidate.right = 0.f; }
-		//if (candidate.top < crush_threshold) { candidate.top = 0.f; }
-		//if (candidate.bottom > -crush_threshold) { candidate.bottom = 0.f; }
-	}
+bool CollisionDepth::horizontal_squish() const { return collision_direction == CollisionDirection::horizontal; }
 
-	stream.push_back(candidate);
-	//while (stream.size() > stream_size) { stream.pop_front(); }
-}
+bool CollisionDepth::vertical_squish() const { return collision_direction == CollisionDirection::vertical; }
+
+void CollisionDepth::try_push() { stream.push_back(candidate); }
 
 } // namespace util
