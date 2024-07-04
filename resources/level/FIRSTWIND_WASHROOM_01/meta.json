@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "room_id": 199,
+    "dimensions": [
+      16,
+      16
+    ],
+    "chunk_dimensions": [
+      1,
+      1
+    ],
+    "style": 0,
+    "background": 5
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        9,
+        10
+      ],
+      "source_id": 199,
+      "destination_id": 105,
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "save_point": {
+    "id": 199,
+    "position": [
+      6,
+      10
+    ]
+  }
+}

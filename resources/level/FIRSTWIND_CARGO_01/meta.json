@@ -10,8 +10,7 @@
       2
     ],
     "style": 0,
-    "background": 5,
-    "music": "dusken_cove"
+    "background": 5
   },
   "portals": [
     {
@@ -25,7 +24,23 @@
       ],
       "source_id": 103,
       "destination_id": 102,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        17,
+        8
+      ],
+      "activate_on_contact": false,
+      "key": "comp2"
     }
   ],
   "platforms": [
@@ -42,62 +57,22 @@
       "style": 2,
       "type": "standard_up_down",
       "start": 0.400000
-    },
+    }
+  ],
+  "npcs": [
     {
+      "id": 17,
       "position": [
-        9,
-        3
+        27,
+        21
       ],
-      "dimensions": [
-        3,
-        3
-      ],
-      "extent": 3,
-      "style": 2,
-      "type": "standard_up_down",
-      "start": 0.500000
-    },
-    {
-      "position": [
-        15,
-        3
-      ],
-      "dimensions": [
-        3,
-        3
-      ],
-      "extent": 3,
-      "style": 2,
-      "type": "standard_up_down",
-      "start": 0.500000
-    },
-    {
-      "position": [
-        12,
-        3
-      ],
-      "dimensions": [
-        3,
-        1
-      ],
-      "extent": 5,
-      "style": 2,
-      "type": "standard_up_down",
-      "start": 0.000000
-    },
-    {
-      "position": [
-        18,
-        3
-      ],
-      "dimensions": [
-        3,
-        1
-      ],
-      "extent": 5,
-      "style": 2,
-      "type": "standard_up_down",
-      "start": 0.000000
+      "background": false,
+      "suites": [
+        [
+          "1",
+          "2"
+        ]
+      ]
     }
   ],
   "chests": [
@@ -127,18 +102,8 @@
   "save_point": {
     "id": 103,
     "position": [
-      27,
-      21
+      18,
+      8
     ]
-  },
-  "npcs": [
-    {
-      "id": 17,
-      "position": [
-        28,
-        21
-      ],
-      "suites": [ [ "1", "2" ] ]
-    }
-  ]
+  }
 }

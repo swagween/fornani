@@ -4,14 +4,15 @@
   },
   "player_data": {
     "max_hp": 3.000000,
-    "hp": 3.000000,
-    "orbs": 167,
+    "hp": 2.000000,
+    "orbs": 183,
     "position": {
-      "x": 203.825821,
-      "y": 230.000000
+      "x": 595.856445,
+      "y": 262.000000
     },
     "arsenal": [
-      0
+      0,
+      10
     ],
     "equipped_gun": 0,
     "abilities": [
@@ -28,7 +29,7 @@
       }
     ]
   },
-  "save_point_id": 117,
+  "save_point_id": 103,
   "unlocked_doors": [
     11
   ],

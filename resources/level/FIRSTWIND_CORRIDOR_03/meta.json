@@ -24,7 +24,9 @@
       ],
       "source_id": 105,
       "destination_id": 106,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -37,7 +39,9 @@
       ],
       "source_id": 105,
       "destination_id": 102,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -50,7 +54,24 @@
       ],
       "source_id": 105,
       "destination_id": 111,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        36,
+        4
+      ],
+      "source_id": 105,
+      "destination_id": 199,
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "platforms": [
@@ -95,6 +116,20 @@
       "style": 2,
       "type": "standard_side_to_side",
       "start": 1.000000
+    },
+    {
+      "position": [
+        61,
+        2
+      ],
+      "dimensions": [
+        3,
+        3
+      ],
+      "extent": 10,
+      "style": 2,
+      "type": "standard_square",
+      "start": 0.500000
     }
   ]
 }

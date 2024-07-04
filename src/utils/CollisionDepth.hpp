@@ -47,7 +47,7 @@ class CollisionDepth {
 	Depth out_depth{};
 	std::deque<Depth> stream{};
 	size_t stream_size{16};
-	float crush_threshold{2.0f};
+	float crush_threshold{8.0f};
 	float depth_throwaway{12.0f};
 	float depth_maximum{12.0f};
 	sf::RectangleShape collision_ray{};

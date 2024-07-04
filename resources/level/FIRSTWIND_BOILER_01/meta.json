@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "room_id": 120,
+    "dimensions": [
+      16,
+      16
+    ],
+    "chunk_dimensions": [
+      1,
+      1
+    ],
+    "style": 0,
+    "background": 5
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        11,
+        12
+      ],
+      "source_id": 120,
+      "destination_id": 102,
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "chests": [
+    {
+      "id": 45560,
+      "item_id": 14,
+      "type": 3,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        11,
+        5
+      ]
+    }
+  ],
+  "save_point": {
+    "id": 120,
+    "position": [
+      4,
+      5
+    ]
+  }
+}

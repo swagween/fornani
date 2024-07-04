@@ -22,6 +22,8 @@
     { "room_id": 116, "label": "FIRSTWIND_CORRIDOR_04"},
     { "room_id": 117, "label": "FIRSTWIND_CLOSET_03"},
     { "room_id": 118, "label": "FIRSTWIND_CELL_01"},
+    { "room_id": 199, "label": "FIRSTWIND_WASHROOM_01"},
+    { "room_id": 120, "label": "FIRSTWIND_BOILER_01"},
 
     { "room_id": 305, "label": "WOODSHINE_VILLAGE_01"},
     { "room_id": 306, "label": "WOODSHINE_GAIA_01"},

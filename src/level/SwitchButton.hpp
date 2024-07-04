@@ -24,8 +24,8 @@ class Projectile;
 
 namespace world {
 
-enum class SwitchType { toggler, permanent, timed, alternator };
-enum class SwitchButtonState { unpressed, shining, squishing, pressed, rising };
+enum class SwitchType { toggler, permanent, movable, alternator };
+enum class SwitchButtonState { unpressed, pressed };
 
 class SwitchButton {
   public:
@@ -36,10 +36,8 @@ class SwitchButton {
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
-	[[nodiscard]] auto pressed() const -> bool { return state == SwitchButtonState::pressed; }
-	[[nodiscard]] auto released() const -> bool { return state == SwitchButtonState::unpressed; }
-	[[nodiscard]] auto squished() const -> bool { return state == SwitchButtonState::squishing; }
-	[[nodiscard]] auto rising() const -> bool { return state == SwitchButtonState::rising; }
+	[[nodiscard]] auto pressed() const -> bool { return external == SwitchButtonState::pressed; }
+	[[nodiscard]] auto released() const -> bool { return external == SwitchButtonState::unpressed; }
 
 	fsm::StateFunction state_function = std::bind(&SwitchButton::update_unpressed, this);
 	fsm::StateFunction update_unpressed();
@@ -52,14 +50,10 @@ class SwitchButton {
   private:
 	int id{};
 	sf::Vector2<float> sprite_dimensions{};
-	sf::Vector2<float> sprite_offset{0.f, 2.f};
-	sf::Vector2<float> root{};
-	util::Cooldown released_cooldown{10};
-	util::Cooldown pressed_cooldown{10};
-	util::Cooldown squished_cooldown{10};
-	util::Cooldown rising_cooldown{10};
+	util::Cooldown shine_cooldown{800};
 	SwitchType type{};
 	SwitchButtonState state{};
+	SwitchButtonState external{};
 	shape::Collider collider{};
 	shape::Shape sensor{};
 	anim::AnimatedSprite sprite{};
