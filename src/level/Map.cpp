@@ -166,7 +166,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			pos *= svc.constants.cell_size;
 			auto type = entry["type"].as<int>();
 			auto button_id = entry["button_id"].as<int>();
-			switch_buttons.push_back(SwitchButton(svc, pos, button_id, type));
+			switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type));
 		}
 	}
 
@@ -317,7 +317,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& effect : effects) { effect.update(svc, *this); }
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
-	for (auto& switch_button : switch_buttons) { switch_button.update(svc, *this, *player); }
+	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& breakable : breakables) {
 		breakable.update(svc);
 		breakable.handle_collision(player->collider);
@@ -377,7 +377,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
-	for (auto& switch_button : switch_buttons) { switch_button.render(svc, win, cam); }
+	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 

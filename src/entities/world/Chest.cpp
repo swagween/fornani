@@ -44,7 +44,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 	collider.update(svc);
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
-	for (auto& button : map.switch_buttons) { collider.handle_collider_collision(button.get_bounding_box()); }
+	for (auto& button : map.switch_buttons) { collider.handle_collider_collision(button->get_bounding_box()); }
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
 	}

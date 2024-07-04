@@ -62,7 +62,7 @@ class SwitchButton {
 	SwitchButtonState state{};
 	shape::Collider collider{};
 	shape::Shape sensor{};
-	anim::AnimatedSprite sprite;
+	anim::AnimatedSprite sprite{};
 	sf::RectangleShape sensorbox{};
 };
 
