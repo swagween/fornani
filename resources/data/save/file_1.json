@@ -1,23 +1,57 @@
 {
   "status": {
-    "new": true
+    "new": false
   },
   "player_data": {
-    "max_hp": 3,
-    "hp": 3,
-    "orbs": 0,
+    "max_hp": 3.000000,
+    "hp": 3.000000,
+    "orbs": 522,
     "position": {
-      "x": 102.0,
-      "y": 327.0
+      "x": 330.993256,
+      "y": 390.000000
     },
-    "arsenal": [],
+    "arsenal": [
+      0
+    ],
     "equipped_gun": 0,
-    "abilities": [],
-    "items": []
+    "abilities": [
+
+    ],
+    "items": [
+      {
+        "id": 11,
+        "quantity": 1
+      },
+      {
+        "id": 1,
+        "quantity": 1
+      },
+      {
+        "id": 12,
+        "quantity": 1
+      },
+      {
+        "id": 8,
+        "quantity": 1
+      },
+      {
+        "id": 13,
+        "quantity": 1
+      }
+    ]
   },
-  "save_point_id": 100,
+  "save_point_id": 114,
   "unlocked_doors": [
+    11,
+    12,
+    8
   ],
   "opened_chests": [
+    7880,
+    5768,
+    377,
+    56790,
+    338223,
+    323
   ]
 }

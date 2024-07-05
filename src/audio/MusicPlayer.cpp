@@ -9,29 +9,31 @@ namespace audio {
 void MusicPlayer::load(std::string_view song_name) {
 	if (global_off()) { return; }
 	if (label == song_name && playing()) { return; }
+	if (song_name == "none") {
+		stop();
+		std::cout << "music stopped.\n";
+		return;
+	}
 	label = song_name;
 	song_first.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_first.wav");
 	song_loop.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_loop.wav");
 	switch_on();
 }
 void MusicPlayer::play_once(float vol) {
-	volume.native = vol;
 	if (global_off()) { return; }
-	if (!flags.state.test(SongState::on)) {
-		stop();
-		return;
-	}
+	if (switched_off()) { return; }
 	if (playing()) { return; }
+	volume.native = vol;
 	song_first.setLoop(false);
 	song_first.setVolume(volume.actual);
 	song_first.play();
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::play_looped(float vol) {
-	volume.native = vol;
 	if (global_off()) { return; }
-	switch_on();
+	if (switched_off()) { return; }
 	if (playing()) { return; }
+	volume.native = vol;
 	song_first.setLoop(false);
 	song_loop.setLoop(true);
 	song_first.setVolume(volume.actual);

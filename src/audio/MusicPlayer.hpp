@@ -13,7 +13,6 @@ struct ServiceProvider;
 
 namespace audio {
 
-enum class Song { clay_statue };
 enum class SongState { playing, paused, on };
 enum class MusicPlayerState { on };
 
@@ -34,6 +33,8 @@ class MusicPlayer {
 	void set_volume(float vol);
 	[[nodiscard]] auto get_volume() const -> float { return song_first.getStatus() == sf::SoundSource::Status::Playing ? song_first.getVolume() : song_loop.getStatus() == sf::SoundSource::Status::Playing ? song_loop.getVolume() : 0.f; }
 	[[nodiscard]] auto global_off() const -> bool { return !flags.player.test(MusicPlayerState::on); }
+	[[nodiscard]] auto switched_off() const -> bool { return !flags.state.test(SongState::on); }
+	
 	[[nodiscard]] auto playing() const -> bool { return song_first.getStatus() == sf::SoundSource::Status::Playing || song_loop.getStatus() == sf::SoundSource::Status::Playing; }
 
 	data::ResourceFinder finder{};
@@ -46,7 +47,6 @@ class MusicPlayer {
 
   private:
 	struct {
-		util::BitFlags<Song> song{};
 		util::BitFlags<SongState> state{};
 		util::BitFlags<MusicPlayerState> player{};
 	} flags{};
