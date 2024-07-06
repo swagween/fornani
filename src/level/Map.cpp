@@ -57,7 +57,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			pos.y = entry["position"][1].as<float>();
 			auto id = entry["id"].as<int>();
 			npcs.push_back(npc::NPC(svc, id));
-			auto npc_state = svc.quest.get_progression(fornani::QuestType::standard, id);
+			auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, id);
 			for (auto& convo : entry["suites"][npc_state].array_view()) { npcs.back().push_conversation(convo.as_string()); }
 			npcs.back().set_position_from_scaled(pos);
 			if ((bool)entry["background"].as_bool()) { npcs.back().push_to_background(); }
@@ -122,7 +122,8 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			pos.y = entry["position"][1].as<int>();
 			dim.x = entry["dimensions"][0].as<int>();
 			dim.y = entry["dimensions"][1].as<int>();
-			inspectables.push_back(entity::Inspectable(svc, dim, pos, key, room_id));
+			auto alt = entry["alternates"].as<int>();
+			inspectables.push_back(entity::Inspectable(svc, dim, pos, key, room_id, alt));
 			inspectables.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
 			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) {
 				inspectables.back().destroy();

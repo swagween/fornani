@@ -7,7 +7,7 @@
   },
   "chest": {
     "suite": [
-      [ "You open the chest to find an item..." ]
+      [ "Obtained $199#2#1" ]
     ],
     "responses": [ [] ]
   },
@@ -25,14 +25,14 @@
   },
   "unlocked_door": {
     "suite": [
-      [ "You used a key to unlock the door." ]
+      [ "Used $200#1#1" ]
     ],
     "responses": [ [] ]
   },
   "death": {
     "suite": [
       [ "You died.", "Would you like to retry?%0" ],
-      [ "Loading last save...$4" ],
+      [ "Loading last save...$27#1#1#" ],
       [ "Returning to Main Menu..." ]
     ],
     "responses": [ [ "Yes%0", "No%1"] ]

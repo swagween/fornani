@@ -6,7 +6,7 @@
 
 namespace entity {
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id) : scaled_dimensions(dim), scaled_position(pos), key(key) {
+Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates) : scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates) {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
@@ -14,7 +14,7 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, s
 	sprite.setTexture(svc.assets.t_inspectable);
 	animation.end();
 	id = key.data() + std::to_string(room_id);
-	std::cout << id << "\n";
+	iid = room_id;
 }
 
 void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set) {
@@ -23,6 +23,11 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 	bounding_box.set_position(position);
 	activated = false;
 	animation.update();
+
+	//check for quest-based alternates
+	auto quest_status = svc.quest.get_progression(fornani::QuestType::inspectable, iid);
+	if (quest_status > 0) { current_alt = quest_status; }
+
 	if (bounding_box.overlaps(player.collider.hurtbox)) {
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
 		flags.set(InspectableFlags::hovered);
@@ -32,14 +37,19 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 	}
 	if (activated) {
 		console.set_source(set);
-		console.load_and_launch(key);
+		if (alternates < 1) { console.load_and_launch(key); } else {
+			std::string new_key = key + std::to_string(current_alt);
+			std::cout << "New key: " << new_key << "\n";
+			std::cout << "Current alt: " << current_alt << "\n";
+			console.load_and_launch(new_key);
+		}
 	}
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) {
 		animation.set_params(params);
 	}
 	if (console.get_key() == key) { flags.set(InspectableFlags::engaged); }
 	if (flags.test(InspectableFlags::engaged)) {
-		if (player.transponder.shipments.quest.get_residue() == 1) {
+		if (player.transponder.shipments.quest.get_residue() == 9) {
 			flags.set(InspectableFlags::destroy);
 			svc.data.destroy_inspectable(id);
 		}

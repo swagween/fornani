@@ -63,7 +63,8 @@
         12
       ],
       "activate_on_contact": false,
-      "key": "computer_on"
+      "key": "computer_on",
+      "alternates": 2
     },
     {
       "dimensions": [

@@ -282,14 +282,13 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 	auto qs = transponder.shipments.quest.consume_pulse();
 	if (qs > 0) { /* do something with quest tracker */
 		quest_code = util::QuestCode(qs);
-		if (quest_code.value().destroy_inspectable()) { m_services->quest.progress(static_cast<fornani::QuestType>(quest_code.value().get_type()), quest_code.value().get_id(), 1); }
-		if (quest_code.value().reveal_item()) { catalog.categories.inventory.reveal_item(quest_code.value().get_id()); }
-		if (quest_code.value().retry()) {
-			m_services->state_controller.actions.set(automa::Actions::retry);
-			std::cout << qs << "\n";
-		}
+		if (quest_code.value().destroy_inspectable()) { m_services->quest.progress(static_cast<fornani::QuestType>(transponder.out_quest.type), transponder.out_quest.id, 1); }
+		if (transponder.out_quest.type == 33) { catalog.categories.inventory.reveal_item(transponder.out_quest.id); }
+		if (transponder.out_quest.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
+		std::cout << "Transponded: " << transponder.out_quest.type << ", " << transponder.out_quest.id << ", " << transponder.out_quest.source_id << "\n";
 		// handle other quest code types
 		quest_code = {};
+		transponder.out_quest = {};
 	}
 }
 

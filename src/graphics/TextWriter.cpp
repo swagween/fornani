@@ -273,10 +273,11 @@ void TextWriter::check_for_event(Message& msg, Codes code) {
 		std::cout << "Quest key read: " << hash << "\n";
 
 		auto push = decoder.decode(hash, '#');
-		if (push.size() > 2) { out_quest = util::QuestKey{push[0], push[1], push[2]}; }
-		std::cout << "Decoded: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << "\n";
+		if (push.size() == 3) { out_quest = util::QuestKey{push[0], push[1], push[2]}; }
+		if (push.size() == 4) { out_quest = util::QuestKey{push[0], push[1], push[2], push[3]}; } // progression amount provided
+		if (push.size() == 5) { out_quest = util::QuestKey{push[0], push[1], push[2], push[3], push[4]}; } // hard set provided
+		std::cout << "Decoded: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << ", " << out_quest.amount << ", " << out_quest.hard_set << "\n";
 		m_services->quest.process(out_quest);
-		out_quest = {};
 
 		msg.data.setString(msg.data.getString().substring(0, index));
 		return;

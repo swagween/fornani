@@ -139,9 +139,9 @@
   },
   "bit1": {
     "suite": [
-      [ "...", "Psst... Hey!", "Hey, you!", "I don't know how you managed to escape your cell, but, er... I'm in a bit of a bind here, as you can see.", "Would you help me out?%0" ],
+      [ "...$3#20#1#", "Psst... Hey!", "Hey, you!", "I don't know how you managed to escape your cell, but, er... I'm in a bit of a bind here, as you can see.", "Would you help me out?%0" ],
       [ "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.", "You might find the key to this cell lying around the ship somewhere.", "If you do, you should be able to use it on that there door and let me free!" ],
-      [ "Well uh... okay. If you change your mind, you'll know where to find me.$320" ]
+      [ "Well uh... okay. If you change your mind, you'll know where to find me." ]
     ],
     "responses": [
       [ "Sure.%0", "I had better get going...%1" ]
@@ -165,7 +165,14 @@
   },
   "bit4": {
     "suite": [
-      [ "I can't believe it... You actually did it!$212", "I really can't thank you enough...", "Heh, like I said... I owe you big time!$320" ]
+      [ "I can't believe it... You actually did it!$33#12#2#", "I really can't thank you enough...", "Heh, like I said... I owe you big time!$3#20#2#1#2#" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit9": {
+    "suite": [
+      [ "I can't believe it... You actually did it!$33#12#2#", "I really can't thank you enough, stranger!", "Heh, I guess I owe you big time!$3#20#2#1#2#" ]
     ],
     "responses": [
     ]

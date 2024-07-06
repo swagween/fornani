@@ -46,9 +46,14 @@ void Transponder::track_shipments(gui::Console& console) {
 	shipments.quest.set(console.writer.communicators.out_quest.get_residue());
 	shipments.voice.set(console.writer.communicators.out_voice.get_residue());
 	shipments.emotion.set(console.writer.communicators.out_emotion.get_residue());
+	out_quest = console.writer.out_quest;
+	console.writer.out_quest = {};
 }
 
-void Transponder::flush_shipments() { shipments = {}; }
+void Transponder::flush_shipments() {
+	shipments = {};
+	out_quest = {};
+}
 
 void Transponder::end() { actions = {}; }
 

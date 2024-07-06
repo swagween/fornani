@@ -1,15 +1,15 @@
 {
-  "cargo_comp1": {
+  "upstairs_computer": {
     "suite": [
       [
         "Days since last incident: 447"
       ]
     ]
   },
-  "cargo_comp2": {
+  "downstairs_computer": {
     "suite": [
       [
-        "Laboratory username: bfoster585$3#15#1#"
+        "Laboratory username: bfoster585$1#110#1#"
       ]
     ]
   }

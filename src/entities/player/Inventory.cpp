@@ -18,6 +18,8 @@ Inventory::Inventory() {
 	item_labels.insert({11, "laboratory_key"});
 	item_labels.insert({12, "bit_cell_key"});
 	item_labels.insert({13, "four_of_diamonds"});
+	item_labels.insert({14, "staple_box"});
+	item_labels.insert({15, "boiler_key"});
 }
 
 void Inventory::update(automa::ServiceProvider& svc) {

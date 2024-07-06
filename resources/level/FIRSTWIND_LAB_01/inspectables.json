@@ -4,12 +4,13 @@
       [
         "You find a small diary sealed with a padlock. Would you like to take it?%0"
       ],
-      [ "Bryn's Notebook added to inventory!$1#1#1#^1" ],
+      [ "Bryn's Notebook added to inventory!$9#1#1#^1" ],
       [ "That's probably the polite thing to do..." ]
     ],
     "responses": [
       [
-        "Yes%0", "No%1"
+        "Yes%0",
+        "No%1"
       ]
     ]
   },
@@ -25,12 +26,38 @@
       ]
     ]
   },
-  "computer_on": {
+  "computer_on0": {
     "suite": [
       [
         "Enter your username and password:%0A15"
       ],
-      [ "Access granted.$315$100"]
+      [ "Access denied." ]
+    ],
+    "responses": [
+      [
+        "(Try guessing...)%0"
+      ]
+    ]
+  },
+  "computer_on1": {
+    "suite": [
+      [
+        "Enter your username and password:%0A15"
+      ],
+      [ "Access denied." ]
+    ],
+    "responses": [
+      [
+        "(Try guessing the second input...)%0"
+      ]
+    ]
+  },
+  "computer_on2": {
+    "suite": [
+      [
+        "Enter your username and password:%0"
+      ],
+      [ "Access granted.$3#15#1" ]
     ],
     "responses": [
       [

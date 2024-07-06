@@ -2,8 +2,10 @@
 
 #include <djson/json.hpp>
 #include <string>
+#include <optional>
 #include "../../utils/Shape.hpp"
 #include "../animation/Animation.hpp"
+#include "../../utils/Circuit.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -27,7 +29,7 @@ class Inspectable {
 	using Vecu16 = sf::Vector2<uint32_t>;
 
 	Inspectable() = default;
-	Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id);
+	Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates = 0);
 	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 	void destroy() { flags.set(InspectableFlags::destroy); } 
@@ -45,9 +47,12 @@ class Inspectable {
 	bool activate_on_contact{};
 
 	std::string key{};
+	int alternates{};
+	int current_alt{};
 
   private:
 	std::string id{};
+	int iid{};
 	util::BitFlags<InspectableFlags> flags{};
 	sf::Sprite sprite{};
 	anim::Animation animation{};

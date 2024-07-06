@@ -9,6 +9,7 @@ namespace util {
 	int id{};
 	int source_id{};
 	int amount{1};
+	int hard_set{};
 	};
 
 class QuestCode {

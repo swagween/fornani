@@ -865,9 +865,9 @@ void Game::playtester_portal() {
 				if (ImGui::BeginTabItem("Story")) {
 					ImGui::Separator();
 					ImGui::Text("Quest Progress:");
-					ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::standard, 20));
+					ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::npc, 20));
 					ImGui::Text("Bryn's Notebook: %i", services.quest.get_progression(QuestType::inspectable, 1));
-					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::standard, 15));
+					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::inspectable, 110));
 					ImGui::EndTabItem();
 				}
 				if (flags.test(GameFlags::in_game)) {
@@ -893,6 +893,18 @@ void Game::playtester_portal() {
 							services.assets.click.play();
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, "/level/FIRSTWIND_CORRIDOR_02");
+							player.set_position({7 * 32, 7 * 32});
+						}
+						if (ImGui::Button("Cargo")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/FIRSTWIND_CARGO_01");
+							player.set_position({7 * 32, 7 * 32});
+						}
+						if (ImGui::Button("Prison")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, "/level/FIRSTWIND_PRISON_01");
 							player.set_position({7 * 32, 7 * 32});
 						}
 						if (ImGui::Button("Lab")) {
