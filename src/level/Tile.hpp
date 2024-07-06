@@ -35,6 +35,7 @@ struct Tile {
 
 	sf::Vector2<uint32_t> index{};
 	sf::Vector2<float> position{};
+	sf::Vector2<int> scaled_position{};
 	uint32_t one_d_index{};
 
 	uint8_t value{};

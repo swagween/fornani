@@ -43,6 +43,7 @@ class TextWriter {
 	void wrap();
 	void load_single_message(std::string_view message);
 	void load_message(dj::Json& source, std::string_view key);
+	void append(std::string_view content);
 	void stylize(sf::Text& msg, bool is_suite) const;
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);

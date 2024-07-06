@@ -44,6 +44,7 @@ class Console {
 	void display_item(int item_id);
 	void display_gun(int gun_id);
 	void write(sf::RenderWindow& win, bool instant = true);
+	void append(std::string_view key);
 	void end();
 	void end_tick();
 	void clean_off_trigger();

@@ -23,6 +23,7 @@ class Grid {
 
 	void check_neighbors();
 	void seed_vertices();
+	void destroy_cell(sf::Vector2<int> pos);
 
   private:
 	float spacing{32.f};

@@ -12,6 +12,7 @@ QuestTracker::QuestTracker() {
 	suites.standard.quests.insert({15, Quest{15, "boiler"}});
 	suites.inspectables.quests.insert({1, Quest{1, "bryns_notebook"}});
 	suites.inspectables.quests.insert({110, Quest{110, "firstwind_lab_computer"}});
+	suites.destroyers.quests.insert({110, Quest{110, "firstwind_lab_destroyers"}});
 }
 
 int QuestTracker::get_progression(QuestType type, int id) { 
@@ -20,6 +21,7 @@ int QuestTracker::get_progression(QuestType type, int id) {
 	if (type == QuestType::item) { ret = suites.item.get_progression(id); }
 	if (type == QuestType::inspectable) { ret = suites.inspectables.get_progression(id); }
 	if (type == QuestType::standard) { ret = suites.standard.get_progression(id); }
+	if (type == QuestType::destroyers) { ret = suites.destroyers.get_progression(id); }
 	return ret; 
 }
 void QuestTracker::progress(QuestType type, int id, int source, int amount, bool hard_set) {
@@ -27,6 +29,7 @@ void QuestTracker::progress(QuestType type, int id, int source, int amount, bool
 	if (type == QuestType::item && suites.item.quests.contains(id)) { suites.item.quests.at(id).progress(source, amount, hard_set); }
 	if (type == QuestType::standard && suites.standard.quests.contains(id)) { suites.standard.quests.at(id).progress(source, amount, hard_set); }
 	if (type == QuestType::inspectable && suites.inspectables.quests.contains(id)) { suites.inspectables.quests.at(id).progress(source, amount, hard_set); }
+	if (type == QuestType::destroyers && suites.destroyers.quests.contains(id)) { suites.destroyers.quests.at(id).progress(source, amount, hard_set); }
 }
 
 void QuestTracker::process(util::QuestKey key) {

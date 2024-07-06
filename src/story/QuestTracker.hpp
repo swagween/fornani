@@ -13,7 +13,7 @@ namespace fornani {
 // needs some further thinking
 
 enum class QuestStatus { not_started, started, complete };
-enum class QuestType { null, inspectable, item, npc, standard };
+enum class QuestType { null, inspectable, item, npc, standard, destroyers };
 
 struct Quest {
 	int id{};
@@ -50,6 +50,7 @@ class QuestTracker {
 		QuestSuite inspectables{};
 		QuestSuite npc{};
 		QuestSuite item{};
+		QuestSuite destroyers{};
 	} suites{};
 };
 

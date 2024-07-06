@@ -10,7 +10,8 @@
       6
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "music": "dusken_cove"
   },
   "portals": [
     {
@@ -144,7 +145,7 @@
       "extent": 8,
       "style": 2,
       "type": "standard_activated_up_down",
-      "start": 0.000000
+      "start": 0.500000
     }
   ],
   "enemies": [

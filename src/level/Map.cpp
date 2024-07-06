@@ -164,6 +164,13 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			auto button_id = entry["button_id"].as<int>();
 			switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
 		}
+		for (auto& entry : metadata["destroyers"].array_view()) {
+			sf::Vector2<int> pos{};
+			pos.x = entry["position"][0].as<int>();
+			pos.y = entry["position"][1].as<int>();
+			auto quest_id = entry["quest_id"].as<int>();
+			destroyers.push_back(BlockDestroyer(pos, quest_id));
+		}
 		for (auto& entry : metadata["switches"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>();
@@ -323,6 +330,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
+	for (auto& destroyer : destroyers) { destroyer.update(svc, *this); }
 	for (auto& breakable : breakables) {
 		breakable.update(svc);
 		breakable.handle_collision(player->collider);
@@ -547,6 +555,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
+	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
 
 	if (player->arsenal) {
 		if (player->fire_weapon()) {

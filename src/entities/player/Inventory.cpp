@@ -53,6 +53,13 @@ void Inventory::reveal_item(int item_id) {
 	}
 }
 
+item::Item& Inventory::get_item(int id) {
+	for (auto& item : items) {
+		if (item.get_id() == id) { return item; }
+	}
+	return items.at(0);
+}
+
 void Inventory::clear() { items.clear(); }
 
 bool Inventory::has_item(int id) const {

@@ -140,6 +140,13 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	working_message = suite.at(iterators.current_suite_set).front().data;
 }
 
+void TextWriter::append(std::string_view content) {
+	if (suite.empty()) { return; }
+	if (suite.back().empty()) { return; }
+	auto msg = suite.back().back().data.getString();
+	suite.back().back().data.setString(msg + content.data());
+}
+
 void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 	msg.setCharacterSize(text_size);
 	msg.setFillColor(m_services->styles.colors.ui_white);

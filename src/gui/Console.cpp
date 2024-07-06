@@ -99,6 +99,8 @@ void Console::write(sf::RenderWindow& win, bool instant) {
 	writer.write_responses(win);
 }
 
+void Console::append(std::string_view key) { writer.append(key); }
+
 void Console::end() {
 	writer.flush_communicators();
 	extent = current_dimensions.y = corner_factor * 2;
