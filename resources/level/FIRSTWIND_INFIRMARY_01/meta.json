@@ -10,8 +10,7 @@
       1
     ],
     "style": 0,
-    "background": 5,
-    "music": "abandoned"
+    "background": 5
   },
   "portals": [
     {
@@ -30,13 +29,32 @@
       "key_id": 0
     }
   ],
-  "save_point": {
-    "id": 114,
-    "position": [
-      10,
-      12
-    ]
-  },
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        27,
+        8
+      ],
+      "activate_on_contact": false,
+      "key": "inf_comp"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        12,
+        5
+      ],
+      "activate_on_contact": false,
+      "key": "inf_shelf1"
+    }
+  ],
   "npcs": [
     {
       "id": 16,
@@ -44,7 +62,13 @@
         13,
         12
       ],
-      "suites": [ [ "1", "2" ] ]
+      "background": false,
+      "suites": [
+        [
+          "1",
+          "2"
+        ]
+      ]
     },
     {
       "id": 18,
@@ -52,7 +76,21 @@
         16,
         12
       ],
-      "suites": [ [ "1", "2", "3" ] ]
+      "background": false,
+      "suites": [
+        [
+          "1",
+          "2",
+          "3"
+        ]
+      ]
     }
-  ]
+  ],
+  "save_point": {
+    "id": 114,
+    "position": [
+      9,
+      12
+    ]
+  }
 }

@@ -10,8 +10,7 @@
       2
     ],
     "style": 0,
-    "background": 5,
-    "music": "dusken_cove"
+    "background": 5
   },
   "portals": [
     {
@@ -41,7 +40,19 @@
         8
       ],
       "activate_on_contact": false,
-      "key": "comp2"
+      "key": "cargo_comp1"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        7,
+        23
+      ],
+      "activate_on_contact": false,
+      "key": "cargo_comp2"
     }
   ],
   "platforms": [
@@ -103,7 +114,7 @@
   "save_point": {
     "id": 103,
     "position": [
-      18,
+      19,
       8
     ]
   }

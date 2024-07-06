@@ -1,13 +1,15 @@
 {
-  "comp2": {
+  "cargo_comp1": {
     "suite": [
       [
-        "Lab username: bfoster585"
+        "Days since last incident: 447"
       ]
-    ],
-    "responses": [
+    ]
+  },
+  "cargo_comp2": {
+    "suite": [
       [
-
+        "Laboratory username: bfoster585$3#15#1#"
       ]
     ]
   }

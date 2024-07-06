@@ -862,6 +862,14 @@ void Game::playtester_portal() {
 					}
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("Story")) {
+					ImGui::Separator();
+					ImGui::Text("Quest Progress:");
+					ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::standard, 20));
+					ImGui::Text("Bryn's Notebook: %i", services.quest.get_progression(QuestType::inspectable, 1));
+					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::standard, 15));
+					ImGui::EndTabItem();
+				}
 				if (flags.test(GameFlags::in_game)) {
 
 					if (ImGui::BeginTabItem("State")) {

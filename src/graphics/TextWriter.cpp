@@ -13,6 +13,7 @@ TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 	special_characters.insert({Codes::item, '^'});
 	special_characters.insert({Codes::voice, '&'});
 	special_characters.insert({Codes::emotion, '@'});
+	special_characters.insert({Codes::hash, '#'});
 }
 
 void TextWriter::start() {
@@ -267,6 +268,16 @@ void TextWriter::check_for_event(Message& msg, Codes code) {
 	if (code == Codes::quest) {
 		std::string cue = msg.data.getString().substring(index + 1, index + 1);
 		communicators.out_quest.set(std::stoi(cue));
+
+		std::string hash = msg.data.getString().substring(index + 1, msg.data.getString().getSize() - 1);
+		std::cout << "Quest key read: " << hash << "\n";
+
+		auto push = decoder.decode(hash, '#');
+		if (push.size() > 2) { out_quest = util::QuestKey{push[0], push[1], push[2]}; }
+		std::cout << "Decoded: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << "\n";
+		m_services->quest.process(out_quest);
+		out_quest = {};
+
 		msg.data.setString(msg.data.getString().substring(0, index));
 		return;
 	}

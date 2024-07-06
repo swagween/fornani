@@ -6,13 +6,15 @@
 
 namespace entity {
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key) : scaled_dimensions(dim), scaled_position(pos), key(key) {
+Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id) : scaled_dimensions(dim), scaled_position(pos), key(key) {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
 	bounding_box.set_position(position);
 	sprite.setTexture(svc.assets.t_inspectable);
 	animation.end();
+	id = key.data() + std::to_string(room_id);
+	std::cout << id << "\n";
 }
 
 void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set) {
@@ -35,7 +37,14 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) {
 		animation.set_params(params);
 	}
-	if (player.transponder.shipments.quest.consume_pulse() == 1) { flags.set(InspectableFlags::destroy); }
+	if (console.get_key() == key) { flags.set(InspectableFlags::engaged); }
+	if (flags.test(InspectableFlags::engaged)) {
+		if (player.transponder.shipments.quest.get_residue() == 1) {
+			flags.set(InspectableFlags::destroy);
+			svc.data.destroy_inspectable(id);
+		}
+	}
+	if (console.is_complete()) { flags.reset(InspectableFlags::engaged); }
 }
 
 void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {

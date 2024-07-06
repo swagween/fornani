@@ -4,8 +4,8 @@
       [
         "You find a small diary sealed with a padlock. Would you like to take it?%0"
       ],
-      [ "Bryn's Notebook added to inventory!$1^1" ],
-      ["That's probably the polite thing to do..."]
+      [ "Bryn's Notebook added to inventory!$1#1#1#^1" ],
+      [ "That's probably the polite thing to do..." ]
     ],
     "responses": [
       [
@@ -28,12 +28,13 @@
   "computer_on": {
     "suite": [
       [
-        "Enter your username and password:"
-      ]
+        "Enter your username and password:%0A15"
+      ],
+      [ "Access granted.$315$100"]
     ],
     "responses": [
       [
- 
+        "bfoster585 - carise7QQ4%0"
       ]
     ]
   },

@@ -82,5 +82,20 @@
     "naive_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
     "hidden_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
     "unique": true
+  },
+  "staple_box": {
+    "index": 14,
+    "title": "Staple Box",
+    "naive_description": "A box of staples.",
+    "hidden_description": "A box of staples.",
+    "unique": true
+  },
+  "boiler_key": {
+    "index": 15,
+    "naive_title": "Mysterious Key",
+    "title": "Boiler Key",
+    "naive_description": "A key of unknown use. Might as well keep it.",
+    "hidden_description": "The key to Firstwind's boiler room.",
+    "unique": true
   }
 }

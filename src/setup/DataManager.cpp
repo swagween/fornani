@@ -76,8 +76,10 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	// write opened chests and doors
 	save["unlocked_doors"] = wipe;
 	save["opened_chests"] = wipe;
+	save["destroyed_inspectables"] = wipe;
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
+	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
 
 	// save arsenal
 	save["player_data"]["arsenal"] = wipe;
@@ -114,8 +116,10 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 
 	unlocked_doors.clear();
 	opened_chests.clear();
+	destroyed_inspectables.clear();
 	for (auto& door : save["unlocked_doors"].array_view()) { unlocked_doors.push_back(door.as<int>()); }
 	for (auto& chest : save["opened_chests"].array_view()) { opened_chests.push_back(chest.as<int>()); }
+	for (auto& inspectable : save["destroyed_inspectables"].array_view()) { destroyed_inspectables.push_back(inspectable.as_string().data()); }
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
@@ -219,16 +223,25 @@ void DataManager::open_chest(int id) { opened_chests.push_back(id); }
 
 void DataManager::unlock_door(int id) { unlocked_doors.push_back(id); }
 
+void DataManager::destroy_inspectable(std::string_view id) { destroyed_inspectables.push_back(id.data()); }
+
 bool DataManager::door_is_unlocked(int id) const {
 	for (auto& door : unlocked_doors) {
-		if (door == id) return true;
+		if (door == id) { return true; }
 	}
 	return false;
 }
 
 bool DataManager::chest_is_open(int id) const {
 	for (auto& chest : opened_chests) {
-		if (chest == id) return true;
+		if (chest == id) { return true; }
+	}
+	return false;
+}
+
+bool DataManager::inspectable_is_destroyed(std::string_view id) const {
+	for (auto& i : destroyed_inspectables) {
+		if (i == id) { return true; }
 	}
 	return false;
 }

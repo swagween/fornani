@@ -17,7 +17,7 @@ class File {
 	}
 	int id{};
 	dj::Json save_data{};
-	std::string_view label{};
+	std::string label{};
 	util::BitFlags<FileFlags> flags{};
 };
 

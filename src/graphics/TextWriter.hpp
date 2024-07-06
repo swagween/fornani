@@ -12,6 +12,8 @@
 #include "../utils/BitFlags.hpp"
 #include "../utils/Shipment.hpp"
 #include "../utils/Cooldown.hpp"
+#include "../utils/QuestCode.hpp"
+#include "../utils/Decoder.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -25,7 +27,7 @@ struct Message {
 	int target{};
 };
 
-enum class Codes { prompt, quest, item, voice, emotion };
+enum class Codes { prompt, quest, item, voice, emotion, hash };
 enum class MessageState { writing, selection_mode, cannot_skip, response_trigger, done_writing, started_delay };
 static int const default_writing_speed{8};
 static int const fast_writing_speed{1};
@@ -88,6 +90,9 @@ class TextWriter {
 		util::Shipment out_voice{};
 		util::Shipment out_emotion{};
 	} communicators{};
+
+	util::QuestKey out_quest{};
+	util::Decoder decoder{};
 
   private:
 	std::deque<std::deque<Message>> suite{};
