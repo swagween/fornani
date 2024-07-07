@@ -18,6 +18,7 @@ class HelpText {
 	void set_color(sf::Color color);
 	void set_string(std::string string);
 	void set_alpha(uint8_t a);
+	void set_position(sf::Vector2<float> pos);
 	void start() { delay.start(); }
 	void reset();
 	[[nodiscard]] auto ready() const -> bool { return delay.is_complete(); }

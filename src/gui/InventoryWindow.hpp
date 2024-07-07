@@ -2,12 +2,15 @@
 #pragma once
 #include "Console.hpp"
 #include "Selector.hpp"
+#include "MiniMap.hpp"
 
 namespace player {
 class Player;
 }
 
 namespace gui {
+
+	enum class Mode{inventory, minimap};
 
 class InventoryWindow : public Console {
   public:
@@ -20,9 +23,13 @@ class InventoryWindow : public Console {
 	void set_item_size(int sz) {
 		if (sz > 0) { selector.current_selection = util::Circuit(sz); }
 	}
+	void switch_modes(automa::ServiceProvider& svc);
 
 	Selector selector;
 	Console info;
+	MiniMap minimap{};
+	Mode mode{};
+	text::HelpText help_marker;
 
   private:
 	struct {

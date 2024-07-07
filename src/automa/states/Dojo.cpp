@@ -61,6 +61,10 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 	}
 
 	if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(svc); }
+	if ((svc.controller_map.label_to_control.at("arms_switch_right").triggered() || svc.controller_map.label_to_control.at("arms_switch_left").triggered()) && inventory_window.active()) {
+		inventory_window.switch_modes(svc);
+		svc.controller_map.reset_triggers();
+	}
 	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) { toggle_pause_menu(svc); }
 }
 

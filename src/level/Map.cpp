@@ -201,8 +201,6 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 	player->map_reset();
 
 	transition.fade_in = true;
-	minimap = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2.f, svc.constants.screen_dimensions.y * 2.f));
-	minimap.setViewport(sf::FloatRect(0.75f, 0.75f, 0.2f, 0.2f));
 	loading.start(4);
 }
 
@@ -247,6 +245,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 				enemy->health.inflict(grenade.get_damage());
 				enemy->health_indicator.add(grenade.get_damage());
 				if (enemy->just_died() && enemy->spawn_loot()) {
+					svc.stats.enemy.enemies_killed.update();
 					active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
 					svc.soundboard.flags.frdog.set(audio::Frdog::death);
 				}
@@ -444,33 +443,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& animator : animators) {
 		if (animator.foreground) { animator.render(svc, win, cam); }
 	}
-
 	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
-	
-
-	// render minimap
-	if (show_minimap) {
-		win.setView(minimap);
-		for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-			minimap_tile.setPosition(cell.position.x - cam.x, cell.position.y - cam.y);
-			minimap_tile.setSize(sf::Vector2<float>{(float)cell.bounding_box.dimensions.x, (float)cell.bounding_box.dimensions.y});
-			if (cell.value > 0) {
-				auto color = svc.styles.colors.ui_white;
-				color.a = 120;
-				minimap_tile.setFillColor(color);
-				win.draw(minimap_tile);
-
-			} else {
-				minimap_tile.setFillColor(sf::Color{20, 20, 20, 120});
-				win.draw(minimap_tile);
-			}
-		}
-		minimap_tile.setPosition(player->collider.physics.position.x - cam.x, player->collider.physics.position.y - cam.y);
-		minimap_tile.setFillColor(sf::Color{240, 240, 240, 180});
-		win.draw(minimap_tile);
-
-		win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y}));
-	}
 
 	if (svc.greyblock_mode()) {
 		center_box.setPosition(0.f, 0.f);
@@ -559,6 +532,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 
 	if (player->arsenal) {
 		if (player->fire_weapon()) {
+			svc.stats.player.bullets_fired.update();
 			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point);
 			++player->equipped_weapon().active_projectiles;
 			player->equipped_weapon().shoot();

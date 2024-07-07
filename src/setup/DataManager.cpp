@@ -119,6 +119,19 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 
 	save["save_point_id"] = save_point_id;
 
+	// stat tracker
+	auto& out_stat = save["player_data"]["stats"];
+	auto const& s = m_services->stats;
+	out_stat["death_count"] = s.player.death_count.get_count();
+	out_stat["bullets_fired"] = s.player.bullets_fired.get_count();
+	out_stat["guns_collected"] = s.player.guns_collected.get_count();
+	out_stat["items_collected"] = s.player.items_collected.get_count();
+	out_stat["orbs_collected"] = s.treasure.total_orbs_collected.get_count();
+	out_stat["blue_orbs"] = s.treasure.blue_orbs.get_count();
+	out_stat["highest_indicator_amount"] = s.treasure.highest_indicator_amount.get_count();
+	out_stat["enemies_killed"] = s.enemy.enemies_killed.get_count();
+	out_stat["rooms_discovered"] = s.world.rooms_discovered.get_count();
+
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
@@ -176,6 +189,20 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	player.catalog.categories.inventory.clear();
 	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
 	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
+
+	//stat tracker
+	m_services->stats = {};
+	auto const& in_stat = save["player_data"]["stats"];
+	auto& s = m_services->stats;
+	s.player.death_count.set(in_stat["death_count"].as<int>());
+	s.player.bullets_fired.set(in_stat["bullets_fired"].as<int>());
+	s.player.guns_collected.set(in_stat["guns_collected"].as<int>());
+	s.player.items_collected.set(in_stat["items_collected"].as<int>());
+	s.treasure.total_orbs_collected.set(in_stat["orbs_collected"].as<int>());
+	s.treasure.blue_orbs.set(in_stat["blue_orbs"].as<int>());
+	s.treasure.highest_indicator_amount.set(in_stat["highest_indicator_amount"].as<int>());
+	s.enemy.enemies_killed.set(in_stat["enemies_killed"].as<int>());
+	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
 
 	return m_services->tables.get_map_label.at(room_id);
 }

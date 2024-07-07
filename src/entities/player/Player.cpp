@@ -553,10 +553,16 @@ void Player::give_drop(item::DropType type, float value) {
 	if (type == item::DropType::orb) {
 		player_stats.orbs += static_cast<int>(value);
 		orb_indicator.add(value);
+		m_services->stats.treasure.total_orbs_collected.update(value);
+		if (value == 100) { m_services->stats.treasure.blue_orbs.update(); }
+		if (orb_indicator.get_amount() > m_services->stats.treasure.highest_indicator_amount.get_count()) { m_services->stats.treasure.highest_indicator_amount.set(orb_indicator.get_amount()); }
 	}
 }
 
-void Player::give_item(int item_id, int amount) { catalog.add_item(*m_services, item_id, 1); }
+void Player::give_item(int item_id, int amount) {
+	catalog.add_item(*m_services, item_id, 1);
+	m_services->stats.player.items_collected.update();
+}
 
 void Player::reset_flags() { flags = {}; }
 
@@ -582,6 +588,7 @@ arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_current_wea
 void Player::push_to_loadout(int id) {
 	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
 	arsenal.value().push_to_loadout(id);
+	m_services->stats.player.guns_collected.update();
 }
 
 void Player::pop_from_loadout(int id) {

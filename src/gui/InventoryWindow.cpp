@@ -37,48 +37,65 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	info.speed = 8;
 	info.flags.reset(ConsoleFlags::portrait_included);
 
+	mode = Mode::inventory;
+
+	help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.");
+	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
+
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player) {
-	if (active()) {
-		extent = final_dimensions.y;
-		info.extent = info.final_dimensions.y;
-		Console::update(svc);
-		if (Console::extended()) {
-			info.update(svc);
+	if (mode == Mode::inventory) {
+		title.setString("INVENTORY");
+		if (active()) {
+			extent = final_dimensions.y;
+			info.extent = info.final_dimensions.y;
+			Console::update(svc);
+			if (Console::extended()) { info.update(svc); }
 		}
-	}
-	for (auto& item : player.catalog.categories.inventory.items) {
-		item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
-		if (player.catalog.categories.inventory.items.size() == 1) { item.select(); }
-		if (item.selected()) {
-			selector.set_position(item.get_position());
-			info.writer.load_single_message(item.get_description());
+		for (auto& item : player.catalog.categories.inventory.items) {
+			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
+			if (player.catalog.categories.inventory.items.size() == 1) { item.select(); }
+			if (item.selected()) {
+				selector.set_position(item.get_position());
+				info.writer.load_single_message(item.get_description());
+			}
 		}
-	}
-	auto x_dim = std::min((int)player.catalog.categories.inventory.items.size(), ui.items_per_row);
-	auto y_dim = (int)std::ceil((float)player.catalog.categories.inventory.items.size() / (float)ui.items_per_row);
+		auto x_dim = std::min((int)player.catalog.categories.inventory.items.size(), ui.items_per_row);
+		auto y_dim = (int)std::ceil((float)player.catalog.categories.inventory.items.size() / (float)ui.items_per_row);
 
-	selector.set_dimensions({x_dim, y_dim});
-	selector.update();
+		selector.set_dimensions({x_dim, y_dim});
+		selector.update();
+	}
+	if (mode == Mode::minimap) {
+		title.setString("MAP");
+		minimap.update(svc);
+	}
 }
 
 void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
 	if (!active()) { return; }
 	Console::render(win);
 	win.draw(title);
-	for (auto& item : player.catalog.categories.inventory.items) {
-		item.render(svc, win, {0.f, 0.f});
-		if (item.selected()) {
-			item_label.setString(item.get_label().data());
-			if (Console::extended()) { win.draw(item_label); }
+	if (mode == Mode::inventory) {
+		for (auto& item : player.catalog.categories.inventory.items) {
+			item.render(svc, win, {0.f, 0.f});
+			if (item.selected()) {
+				item_label.setString(item.get_label().data());
+				if (Console::extended()) { win.draw(item_label); }
+			}
 		}
+		if (!player.catalog.categories.inventory.items.empty()) { selector.render(win); }
+		if (Console::extended()) {
+			info.begin();
+			info.render(win);
+			if (info.extended()) { info.write(win, true); }
+		}
+		help_marker.render(win);
 	}
-	if (!player.catalog.categories.inventory.items.empty()) { selector.render(win); }
-	if (Console::extended()) {
-		info.begin();
-		info.render(win);
-		if (info.extended()) { info.write(win, true); }
+	if (mode == Mode::minimap) {
+		help_marker.render(win);
+		minimap.render(svc, win);
 	}
 }
 
@@ -88,5 +105,16 @@ void InventoryWindow::close() {
 	Console::end();
 	info.end();
 }
+
+void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
+	mode = (mode == Mode::inventory) ? Mode::minimap : Mode::inventory;
+	if (mode == Mode::inventory) {
+		help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.");
+	} else {
+		help_marker.init(svc, "Press [", "arms_switch_left", "] to view Inventory.");
+	}
+	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
+}
+
 
 } // namespace gui

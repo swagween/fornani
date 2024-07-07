@@ -140,9 +140,7 @@ class Map {
 
 	enemy::EnemyCatalog enemy_catalog;
 
-	// minimap
-	sf::View minimap{};
-	sf::RectangleShape minimap_tile{};
+	sf::RectangleShape tile{};
 	sf::RectangleShape borderbox{};
 	sf::RectangleShape center_box{};
 

@@ -4,16 +4,17 @@
   },
   "player_data": {
     "max_hp": 3.000000,
-    "hp": 2.000000,
-    "orbs": 194,
+    "hp": 3.000000,
+    "orbs": 931,
     "position": {
-      "x": 604.002563,
-      "y": 266.000000
+      "x": 206.000900,
+      "y": 234.000015
     },
     "arsenal": [
-      0
+      0,
+      10
     ],
-    "equipped_gun": 0,
+    "equipped_gun": 1,
     "abilities": [
 
     ],
@@ -26,9 +27,20 @@
         "id": 8,
         "quantity": 1
       }
-    ]
+    ],
+    "stats": {
+      "death_count": 2,
+      "bullets_fired": 5061,
+      "guns_collected": 1,
+      "items_collected": 0,
+      "orbs_collected": 737,
+      "blue_orbs": 2,
+      "highest_indicator_amount": 188,
+      "enemies_killed": 7,
+      "rooms_discovered": 0
+    }
   },
-  "save_point_id": 103,
+  "save_point_id": 117,
   "unlocked_doors": [
 
   ],
@@ -63,6 +75,13 @@
       0,
       0,
       0,
+      1,
+      0
+    ],
+    [
+      1,
+      110,
+      1,
       1,
       0
     ]

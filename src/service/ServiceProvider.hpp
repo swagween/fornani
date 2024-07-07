@@ -14,6 +14,7 @@
 #include "../setup/ControllerMap.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../story/QuestTracker.hpp"
+#include "../story/StatTracker.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
@@ -32,6 +33,7 @@ struct ServiceProvider {
 	audio::Soundboard soundboard{};
 	audio::MusicPlayer music{};
 	fornani::QuestTracker quest{};
+	fornani::StatTracker stats{};
 
 	//debug stuff
 	util::Stopwatch stopwatch{};

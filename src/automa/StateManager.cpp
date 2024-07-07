@@ -40,6 +40,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				svc.state_controller.actions.reset(Actions::retry);
 				player.animation.state = player::AnimState::idle;
 				player.animation.triggers.reset(player::AnimTriggers::end_death);
+				svc.stats.player.death_count.update();
 			} else {
 				set_current_state(std::make_unique<MainMenu>(svc, player, "main"));
 				svc.state_controller.actions.reset(Actions::player_death);
@@ -47,6 +48,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				svc.state_controller.actions.reset(Actions::retry);
 				player.start_over();
 				player.animation.state = player::AnimState::run;
+				svc.stats.player.death_count.update();
 				return;
 			}
 			svc.music.stop();

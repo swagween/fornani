@@ -198,6 +198,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		if (!flags.general.test(GeneralFlags::custom_sounds)) { sounds.hit.play(); }
 
 		if (just_died()) {
+			svc.stats.enemy.enemies_killed.update();
 			map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position));
 			svc.soundboard.flags.frdog.set(audio::Frdog::death);
 		}

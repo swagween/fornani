@@ -868,6 +868,17 @@ void Game::playtester_portal() {
 					ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::npc, 20));
 					ImGui::Text("Bryn's Notebook: %i", services.quest.get_progression(QuestType::inspectable, 1));
 					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::inspectable, 110));
+					ImGui::Separator();
+					ImGui::Text("Stats:");
+					ImGui::Text("Death count: %i", services.stats.player.death_count.get_count());
+					ImGui::Text("Bullets fired: %i", services.stats.player.bullets_fired.get_count());
+					ImGui::Text("Guns collected: %i", services.stats.player.guns_collected.get_count());
+					ImGui::Text("Items collected: %i", services.stats.player.items_collected.get_count());
+					ImGui::Text("Orbs collected: %i", services.stats.treasure.total_orbs_collected.get_count());
+					ImGui::Text("Blue orbs collected: %i", services.stats.treasure.blue_orbs.get_count());
+					ImGui::Text("Highest indicator amount: %i", services.stats.treasure.highest_indicator_amount.get_count());
+					ImGui::Text("Rooms discovered: %i", services.stats.world.rooms_discovered.get_count());
+					ImGui::Text("Enemies killed: %i", services.stats.enemy.enemies_killed.get_count());
 					ImGui::EndTabItem();
 				}
 				if (flags.test(GameFlags::in_game)) {
