@@ -281,10 +281,11 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		console.display_item(transponder.shipments.item.get_residue());
 	}
 	auto qs = transponder.shipments.quest.consume_pulse();
+	auto ri = transponder.shipments.reveal_item.consume_pulse();
 	if (qs > 0) { /* do something with quest tracker */
 		quest_code = util::QuestCode(qs);
 		if (quest_code.value().destroy_inspectable()) { m_services->quest.progress(static_cast<fornani::QuestType>(transponder.out_quest.type), transponder.out_quest.id, 1); }
-		if (transponder.out_quest.type == 33) { catalog.categories.inventory.reveal_item(transponder.out_quest.id); }
+		if (ri > 0) { catalog.categories.inventory.reveal_item(ri); }
 		//std::cout << "Transponded: " << transponder.out_quest.type << ", " << transponder.out_quest.id << ", " << transponder.out_quest.source_id << "\n";
 		// handle other quest code types
 		quest_code = {};

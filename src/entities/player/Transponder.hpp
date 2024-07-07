@@ -52,6 +52,7 @@ class Transponder {
 		util::Shipment quest{};
 		util::Shipment voice{};
 		util::Shipment emotion{};
+		util::Shipment reveal_item{};
 	} shipments{};
 	util::QuestKey out_quest{};
 

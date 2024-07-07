@@ -92,6 +92,7 @@ class TextWriter {
 		util::Shipment out_quest{};
 		util::Shipment out_voice{};
 		util::Shipment out_emotion{};
+		util::Shipment reveal_item{};
 	} communicators{};
 
 	util::QuestKey out_quest{};
