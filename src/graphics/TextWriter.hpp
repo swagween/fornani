@@ -12,8 +12,10 @@
 #include "../utils/BitFlags.hpp"
 #include "../utils/Shipment.hpp"
 #include "../utils/Cooldown.hpp"
+#include "../utils/Counter.hpp"
 #include "../utils/QuestCode.hpp"
 #include "../utils/Decoder.hpp"
+#include "../graphics/HelpText.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -108,12 +110,15 @@ class TextWriter {
 	std::unordered_map<Codes, char> special_characters{};
 
 	sf::Text working_message{};
+
+	HelpText help_marker;
+
 	std::string working_str{};
 	sf::Font font{};
 	int glyph_count{};
 	int tick_count{};
 	int writing_speed{default_writing_speed};
-	util::Cooldown delay{24};
+	util::Cooldown delay{32};
 	util::BitFlags<MessageState> flags{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> bounds{};

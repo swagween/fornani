@@ -10,6 +10,7 @@
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/QuestCode.hpp"
 #include "../../utils/Collider.hpp"
+#include "../../graphics/Tutorial.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "../packages/Health.hpp"
 #include "Catalog.hpp"
@@ -38,7 +39,7 @@ enum class DropType;
 namespace player {
 
 float const PLAYER_WIDTH = 18.0f;
-float const PLAYER_HEIGHT = 24.0f;
+float const PLAYER_HEIGHT = 20.0f;
 float const head_height{8.f};
 float const PLAYER_START_X = 100.0f;
 float const PLAYER_START_Y = 100.0f;
@@ -171,18 +172,20 @@ class Player {
 	Indicator health_indicator;
 	Indicator orb_indicator;
 
+	text::Tutorial tutorial{};
+
 	// weapons
 	std::optional<arms::Arsenal> arsenal{};
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};
 	sf::Vector2<float> hand_position{};
-	sf::Vector2<float> sprite_offset{9.f, 1.f};
+	sf::Vector2<float> sprite_offset{9.f, -3.f};
 	sf::Vector2<float> sprite_dimensions{};
 	sf::Vector2<float> sprite_position{};
 
 	std::vector<vfx::Gravitator> antennae{};
-	sf::Vector2<float> antenna_offset{4.f, -13.f};
+	sf::Vector2<float> antenna_offset{4.f, -17.f};
 
 	PlayerStats player_stats{0, 99999, 0.06f};
 	PhysicsStats physics_stats{};

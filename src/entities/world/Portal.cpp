@@ -78,6 +78,7 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 				flags.state.reset(PortalState::locked);
 				flags.state.set(PortalState::unlocked);
 				console.load_and_launch("unlocked_door");
+				console.append(player.catalog.categories.inventory.get_item(meta.key_id).get_label());
 				console.display_item(meta.key_id);
 				svc.data.unlock_door(meta.key_id);
 			} else {

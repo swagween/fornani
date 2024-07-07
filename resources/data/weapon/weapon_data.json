@@ -649,7 +649,7 @@
           "y": 4.0
         },
         "attributes": {
-          "base_damage": 0.6,
+          "base_damage": 1.0,
           "range": 160,
           "speed": 24.5,
           "variance": 0.2,

@@ -16,6 +16,7 @@ void Player::init(automa::ServiceProvider& svc) {
 	svc.data.load_player_params(*this);
 	health_indicator.init(svc, 0);
 	orb_indicator.init(svc, 1);
+	tutorial.update(svc);
 
 	health.set_invincibility(400);
 
@@ -24,7 +25,7 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
 	collider.collision_depths = util::CollisionDepth();
-	if (collider.collision_depths) { std::cout << "Depth instantiated.\n"; }
+	//if (collider.collision_depths) { std::cout << "Depth instantiated.\n"; }
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
@@ -284,8 +285,7 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		quest_code = util::QuestCode(qs);
 		if (quest_code.value().destroy_inspectable()) { m_services->quest.progress(static_cast<fornani::QuestType>(transponder.out_quest.type), transponder.out_quest.id, 1); }
 		if (transponder.out_quest.type == 33) { catalog.categories.inventory.reveal_item(transponder.out_quest.id); }
-		if (transponder.out_quest.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
-		std::cout << "Transponded: " << transponder.out_quest.type << ", " << transponder.out_quest.id << ", " << transponder.out_quest.source_id << "\n";
+		//std::cout << "Transponded: " << transponder.out_quest.type << ", " << transponder.out_quest.id << ", " << transponder.out_quest.source_id << "\n";
 		// handle other quest code types
 		quest_code = {};
 		transponder.out_quest = {};
@@ -308,6 +308,7 @@ void Player::calculate_sprite_offset() {
 void Player::jump() {
 	if (controller.get_jump().began()) {
 		collider.flags.movement.set(shape::Movement::jumping);
+		tutorial.flags.set(text::TutorialFlags::jump);
 	} else {
 		collider.flags.movement.reset(shape::Movement::jumping);
 	}
@@ -469,17 +470,17 @@ void Player::update_antennae() {
 	int ctr{0};
 	for (auto& a : antennae) {
 		if (animation.get_frame() == 44 || animation.get_frame() == 46) {
-			antenna_offset.y = -15.f;
+			antenna_offset.y = -19.f;
 		} else if (controller.sprinting()) {
-			antenna_offset.y = -9.f;
-		} else if (animation.get_frame() == 52) {
-			antenna_offset.y = -10.f;
-		} else if (animation.get_frame() == 53) {
-			antenna_offset.y = -7.f;
-		} else {
 			antenna_offset.y = -13.f;
+		} else if (animation.get_frame() == 52) {
+			antenna_offset.y = -14.f;
+		} else if (animation.get_frame() == 53) {
+			antenna_offset.y = -11.f;
+		} else {
+			antenna_offset.y = -17.f;
 		}
-		if (animation.get_frame() == 57) { antenna_offset.y = -4.f; }
+		if (animation.get_frame() == 57) { antenna_offset.y = -8.f; }
 		a.set_target_position(collider.physics.position + antenna_offset);
 		a.update(*m_services);
 		a.collider.sync_components();

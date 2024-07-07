@@ -102,6 +102,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	inventory_window.render(svc, *player, win);
 	pause_window.render(svc, *player, win);
 	map.render_console(svc, console, win);
+	player->tutorial.render(win);
 
 	map.transition.render(win);
 }

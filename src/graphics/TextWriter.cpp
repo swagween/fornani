@@ -14,6 +14,8 @@ TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 	special_characters.insert({Codes::voice, '&'});
 	special_characters.insert({Codes::emotion, '@'});
 	special_characters.insert({Codes::hash, '#'});
+	help_marker.set_color(svc.styles.colors.ui_white);
+	help_marker.set_alpha(0);
 }
 
 void TextWriter::start() {
@@ -138,6 +140,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	}
 
 	working_message = suite.at(iterators.current_suite_set).front().data;
+	help_marker.init(*m_services, "Press [", "main_action", "] to continue.");
 }
 
 void TextWriter::append(std::string_view content) {
@@ -158,8 +161,7 @@ void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 		msg.setPosition(response_position);
 	}
 }
-
-void TextWriter::write_instant_message(sf::RenderWindow& win) {
+	void TextWriter::write_instant_message(sf::RenderWindow& win) {
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	win.draw(suite.at(iterators.current_suite_set).front().data);
@@ -170,9 +172,11 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	if (!writing()) {
 		win.draw(suite.at(iterators.current_suite_set).front().data);
+		if (!selection_mode()) { help_marker.render(win); }
 		flags.set(MessageState::done_writing);
 		return;
 	}
+	help_marker.start();
 	win.draw(working_message);
 }
 
@@ -192,6 +196,7 @@ void TextWriter::write_responses(sf::RenderWindow& win) {
 
 void TextWriter::reset() {
 	writing_speed = default_writing_speed;
+	help_marker.reset();
 	glyph_count = 0;
 	tick_count = 0;
 	working_message = {};
@@ -277,14 +282,17 @@ void TextWriter::check_for_event(Message& msg, Codes code) {
 		communicators.out_quest.set(std::stoi(cue));
 
 		std::string hash = msg.data.getString().substring(index + 1, msg.data.getString().getSize() - 1);
-		std::cout << "Quest key read: " << hash << "\n";
+		//std::cout << "Quest key read: " << hash << "\n";
 
 		auto push = decoder.decode(hash, '#');
 		if (push.size() == 3) { out_quest = util::QuestKey{push[0], push[1], push[2]}; }
 		if (push.size() == 4) { out_quest = util::QuestKey{push[0], push[1], push[2], push[3]}; } // progression amount provided
 		if (push.size() == 5) { out_quest = util::QuestKey{push[0], push[1], push[2], push[3], push[4]}; } // hard set provided
-		std::cout << "Decoded: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << ", " << out_quest.amount << ", " << out_quest.hard_set << "\n";
+		//std::cout << "Decoded: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << ", " << out_quest.amount << ", " << out_quest.hard_set << "\n";
 		m_services->quest.process(out_quest);
+		m_services->data.push_quest(out_quest);
+		if (out_quest.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
+		out_quest = {};
 
 		msg.data.setString(msg.data.getString().substring(0, index));
 		return;

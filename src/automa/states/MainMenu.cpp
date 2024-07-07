@@ -10,6 +10,8 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	flags.set(GameStateFlags::playtest);
 	// playtester edition
 
+	svc.state_controller.actions.reset(Actions::intro_done);
+
 	left_dot.set_position(options.at(current_selection).left_offset);
 	right_dot.set_position(options.at(current_selection).right_offset);
 

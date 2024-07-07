@@ -3,51 +3,83 @@
     "new": false
   },
   "player_data": {
-    "max_hp": 12.000000,
-    "hp": 9.000000,
-    "orbs": 550,
+    "max_hp": 3.000000,
+    "hp": 1.000000,
+    "orbs": 107,
     "position": {
-      "x": 609.642212,
-      "y": 262.000000
+      "x": 209.972580,
+      "y": 234.000015
     },
     "arsenal": [
-      0,
-      10,
-      4
+      0
     ],
-    "equipped_gun": 1,
+    "equipped_gun": 0,
     "abilities": [
 
     ],
     "items": [
       {
-        "id": 1,
-        "quantity": 1
-      },
-      {
         "id": 11,
         "quantity": 1
       },
       {
-        "id": 12,
-        "quantity": 1
-      },
-      {
-        "id": 8,
+        "id": 1,
         "quantity": 1
       }
     ]
   },
-  "save_point_id": 103,
+  "save_point_id": 117,
   "unlocked_doors": [
     11
   ],
   "opened_chests": [
-    455,
-    11,
-    323
+    5768,
+    377,
+    56790
+  ],
+  "quest_progressions": [
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      9,
+      1,
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      110,
+      2,
+      1,
+      0
+    ]
   ],
   "destroyed_inspectables": [
-    "cargo_comp1103"
-  ]
+    "bookshelf110"
+  ],
+  "tutorial": {
+    "jump": true,
+    "shoot": false,
+    "sprint": false
+  }
 }

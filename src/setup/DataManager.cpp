@@ -77,9 +77,23 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["unlocked_doors"] = wipe;
 	save["opened_chests"] = wipe;
 	save["destroyed_inspectables"] = wipe;
+	save["quest_progressions"] = wipe;
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
+	for (auto& q : quest_progressions) {
+		auto out_quest = wipe;
+		out_quest.push_back(q.type);
+		out_quest.push_back(q.id);
+		out_quest.push_back(q.source_id);
+		out_quest.push_back(q.amount);
+		out_quest.push_back(q.hard_set);
+		save["quest_progressions"].push_back(out_quest);
+	}
+
+	save["tutorial"]["jump"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::jump);
+	save["tutorial"]["shoot"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::shoot);
+	save["tutorial"]["sprint"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::sprint);
 
 	// save arsenal
 	save["player_data"]["arsenal"] = wipe;
@@ -114,12 +128,28 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	auto const& save = files.at(file).save_data;
 	assert(!save.is_null());
 
+	m_services->quest = {};
 	unlocked_doors.clear();
 	opened_chests.clear();
 	destroyed_inspectables.clear();
+	quest_progressions.clear();
 	for (auto& door : save["unlocked_doors"].array_view()) { unlocked_doors.push_back(door.as<int>()); }
 	for (auto& chest : save["opened_chests"].array_view()) { opened_chests.push_back(chest.as<int>()); }
 	for (auto& inspectable : save["destroyed_inspectables"].array_view()) { destroyed_inspectables.push_back(inspectable.as_string().data()); }
+	for (auto& q : save["quest_progressions"].array_view()) {
+		auto type = q[0].as<int>();
+		auto id = q[1].as<int>();
+		auto srcid = q[2].as<int>();
+		auto amt = q[3].as<int>();
+		auto hard = q[4].as<int>();
+		quest_progressions.push_back(util::QuestKey{type, id, srcid, amt, hard});
+		m_services->quest.process(quest_progressions.back());
+	}
+
+	player.tutorial.flags = {};
+	if (save["tutorial"]["jump"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::jump); }
+	if (save["tutorial"]["shoot"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::shoot); }
+	if (save["tutorial"]["sprint"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::sprint); }
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
@@ -224,6 +254,8 @@ void DataManager::open_chest(int id) { opened_chests.push_back(id); }
 void DataManager::unlock_door(int id) { unlocked_doors.push_back(id); }
 
 void DataManager::destroy_inspectable(std::string_view id) { destroyed_inspectables.push_back(id.data()); }
+
+void DataManager::push_quest(util::QuestKey key) { quest_progressions.push_back(key); }
 
 bool DataManager::door_is_unlocked(int id) const {
 	for (auto& door : unlocked_doors) {

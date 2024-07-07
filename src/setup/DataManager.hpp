@@ -10,6 +10,7 @@
 #include <array>
 #include "ResourceFinder.hpp"
 #include "File.hpp"
+#include "../utils/QuestCode.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -44,6 +45,7 @@ class DataManager {
 	void open_chest(int id);
 	void unlock_door(int id);
 	void destroy_inspectable(std::string_view id);
+	void push_quest(util::QuestKey key);
 	bool door_is_unlocked(int id) const;
 	bool chest_is_open(int id) const;
 	bool inspectable_is_destroyed(std::string_view id) const;
@@ -87,7 +89,7 @@ class DataManager {
 	std::vector<int> opened_chests{};
 	std::vector<int> unlocked_doors{};
 	std::vector<std::string> destroyed_inspectables{};
-	std::vector<std::vector<int>> quest_progressions{};
+	std::vector<util::QuestKey> quest_progressions{};
 };
 
 } // namespace data
