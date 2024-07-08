@@ -1,25 +1,96 @@
 {
   "status": {
-    "new": true
+    "new": false
   },
   "player_data": {
-    "max_hp": 3,
-    "hp": 3,
-    "orbs": 0,
+    "max_hp": 3.000000,
+    "hp": 2.000000,
+    "orbs": 141,
     "position": {
-      "x": 102.0,
-      "y": 327.0
+      "x": 209.889328,
+      "y": 234.000000
     },
-    "arsenal": [],
+    "arsenal": [
+      0
+    ],
     "equipped_gun": 0,
-    "abilities": [],
-    "items": []
+    "abilities": [
+
+    ],
+    "items": [
+      {
+        "id": 11,
+        "quantity": 1
+      },
+      {
+        "id": 1,
+        "quantity": 1
+      }
+    ],
+    "stats": {
+      "death_count": 1,
+      "bullets_fired": 73,
+      "guns_collected": 1,
+      "items_collected": 179,
+      "orbs_collected": 141,
+      "blue_orbs": 0,
+      "highest_indicator_amount": 52,
+      "enemies_killed": 4,
+      "rooms_discovered": 0
+    }
   },
-  "save_point_id": 100,
+  "save_point_id": 117,
   "unlocked_doors": [
+    11
   ],
   "opened_chests": [
+    5768,
+    377,
+    56790
   ],
   "quest_progressions": [
-  ]
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      9,
+      1,
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      110,
+      2,
+      1,
+      0
+    ]
+  ],
+  "destroyed_inspectables": [
+    "bookshelf110"
+  ],
+  "tutorial": {
+    "jump": true,
+    "shoot": false,
+    "sprint": false
+  }
 }

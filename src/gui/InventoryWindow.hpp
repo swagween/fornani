@@ -27,7 +27,7 @@ class InventoryWindow : public Console {
 
 	Selector selector;
 	Console info;
-	MiniMap minimap{};
+	MiniMap minimap;
 	Mode mode{};
 	text::HelpText help_marker;
 

@@ -38,7 +38,7 @@ enum class DropType;
 
 namespace player {
 
-float const PLAYER_WIDTH = 18.0f;
+float const PLAYER_WIDTH = 20.0f;
 float const PLAYER_HEIGHT = 20.0f;
 float const head_height{8.f};
 float const PLAYER_START_X = 100.0f;

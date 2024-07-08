@@ -20,7 +20,7 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	health.set_invincibility(400);
 
-	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
+	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y}, {0.f, 8.f});
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});

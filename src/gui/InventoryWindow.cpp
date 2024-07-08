@@ -4,7 +4,7 @@
 
 namespace gui {
 
-InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}) {
+InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc) {
 	title.setString("INVENTORY");
 	title.setCharacterSize(ui.title_size);
 	title_font.loadFromFile(svc.text.title_font);

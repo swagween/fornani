@@ -11,6 +11,7 @@ namespace gui {
 
 class MiniMap {
   public:
+	MiniMap() = default;
 	MiniMap(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);

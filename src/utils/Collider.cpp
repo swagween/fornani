@@ -14,10 +14,10 @@ Collider::Collider() {
 	sync_components();
 }
 
-Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos) : dimensions(dim) {
+Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos, sf::Vector2<float> hbx_offset) : dimensions(dim), hurtbox_offset(hbx_offset) {
 	bounding_box.dimensions = dim;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
-	hurtbox.dimensions = sf::Vector2<float>(dim.x - 8.f, dim.y - 8.f);
+	hurtbox.dimensions = sf::Vector2<float>(dim.x - 8.f, dim.y - 8.f - hurtbox_offset.y);
 	sync_components();
 }
 
@@ -46,7 +46,7 @@ void Collider::sync_components() {
 	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - horizontal_detector_buffer + physics.velocity.x, physics.position.y + horizontal_detector_buffer});
 	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y});
 	jumpbox.set_position(sf::Vector2<float>{physics.position.x, physics.position.y + dimensions.y});
-	hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.dimensions.x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.dimensions.y * 0.5f)));
+	hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.dimensions.x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.dimensions.y * 0.5f) - hurtbox_offset.y));
 	vertical.set_position(sf::Vector2<float>{physics.position.x + dimensions.x * 0.5f - 0.5f, physics.position.y + depth_buffer});
 	horizontal.set_position(sf::Vector2<float>{physics.position.x + depth_buffer, physics.position.y + dimensions.y * 0.5f - 0.5f});
 
@@ -426,7 +426,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw hurtbox
 	draw_hurtbox.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});
 	draw_hurtbox.setPosition(hurtbox.position.x - cam.x, hurtbox.position.y - cam.y);
-	// win.draw(draw_hurtbox);
+	win.draw(draw_hurtbox);
 
 	// draw vicinity
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});

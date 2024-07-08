@@ -46,7 +46,7 @@ class Collider {
 
   public:
 	Collider();
-	Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos = {});
+	Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos = {}, sf::Vector2<float> hbx_offset = {});
 
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
@@ -130,6 +130,7 @@ class Collider {
 
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> sprite_offset{};
+	sf::Vector2<float> hurtbox_offset{};
 	std::deque<sf::Vector2<float>> position_history{};
 
 

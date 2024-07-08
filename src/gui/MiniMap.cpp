@@ -4,7 +4,7 @@
 
 namespace gui {
 
-	MiniMap::MiniMap(automa::ServiceProvider& svc) { background.setFillColor() }
+	MiniMap::MiniMap(automa::ServiceProvider& svc) { background.setFillColor(svc.styles.colors.ui_black); }
 
 void MiniMap::update(automa::ServiceProvider& svc) {
 	view = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x * 2.f, svc.constants.screen_dimensions.y * 2.f));
