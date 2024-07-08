@@ -1,6 +1,7 @@
 #include "InventoryWindow.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "../level/Map.hpp"
 
 namespace gui {
 
@@ -44,7 +45,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 
 }
 
-void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player) {
+void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
 	if (mode == Mode::inventory) {
 		title.setString("INVENTORY");
 		if (active()) {
@@ -69,11 +70,11 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	}
 	if (mode == Mode::minimap) {
 		title.setString("MAP");
-		minimap.update(svc);
+		minimap.update(svc, map, player);
 	}
 }
 
-void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
+void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!active()) { return; }
 	Console::render(win);
 	win.draw(title);
@@ -95,7 +96,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 	}
 	if (mode == Mode::minimap) {
 		help_marker.render(win);
-		minimap.render(svc, win);
+		minimap.render(svc, win, cam);
 	}
 }
 

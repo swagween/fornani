@@ -4,17 +4,17 @@
   },
   "player_data": {
     "max_hp": 3.000000,
-    "hp": 3.000000,
-    "orbs": 931,
+    "hp": 2.000000,
+    "orbs": 1368,
     "position": {
-      "x": 206.000900,
-      "y": 234.000015
+      "x": 206.673538,
+      "y": 233.999985
     },
     "arsenal": [
       0,
       10
     ],
-    "equipped_gun": 1,
+    "equipped_gun": 0,
     "abilities": [
 
     ],
@@ -26,17 +26,21 @@
       {
         "id": 8,
         "quantity": 1
+      },
+      {
+        "id": 11,
+        "quantity": 1
       }
     ],
     "stats": {
-      "death_count": 2,
-      "bullets_fired": 5061,
+      "death_count": 4,
+      "bullets_fired": 6794,
       "guns_collected": 1,
-      "items_collected": 0,
-      "orbs_collected": 737,
-      "blue_orbs": 2,
+      "items_collected": 1,
+      "orbs_collected": 1174,
+      "blue_orbs": 4,
       "highest_indicator_amount": 188,
-      "enemies_killed": 7,
+      "enemies_killed": 16,
       "rooms_discovered": 0
     }
   },
@@ -47,7 +51,9 @@
   "opened_chests": [
     338223,
     323,
-    211
+    211,
+    5768,
+    56790
   ],
   "quest_progressions": [
     [
@@ -82,6 +88,13 @@
       1,
       110,
       1,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
       1,
       0
     ]

@@ -47,7 +47,7 @@ void Dojo::init(ServiceProvider& svc, std::string_view room) {
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
-
+	
 	svc.controller_map.handle_mouse_events(event);
 	svc.controller_map.handle_joystick_events(event);
 	if (event.type == sf::Event::EventType::KeyPressed) {
@@ -70,6 +70,7 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 void Dojo::tick_update(ServiceProvider& svc) {
 	enter_room.update();
+
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
 
 	player->update(map, console, inventory_window);
@@ -104,7 +105,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.render(svc, win, camera.get_position());
 
 	if (!svc.greyblock_mode()) { hud.render(*player, win); }
-	inventory_window.render(svc, *player, win);
+	inventory_window.render(svc, *player, win, camera.get_position());
 	pause_window.render(svc, *player, win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);

@@ -16,14 +16,16 @@ class InventoryWindow : public Console {
   public:
 	InventoryWindow() = default;
 	InventoryWindow(automa::ServiceProvider& svc);
-	void update(automa::ServiceProvider& svc, player::Player& player);
-	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win);
+	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
+	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void open();
 	void close();
 	void set_item_size(int sz) {
 		if (sz > 0) { selector.current_selection = util::Circuit(sz); }
 	}
 	void switch_modes(automa::ServiceProvider& svc);
+	[[nodiscard]] auto is_inventory() const -> bool { return mode == Mode::inventory; }
+	[[nodiscard]] auto is_minimap() const -> bool { return mode == Mode::minimap; }
 
 	Selector selector;
 	Console info;

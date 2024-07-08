@@ -17,6 +17,7 @@ class Cooldown {
 	[[nodiscard]] auto is_complete() const -> bool { return decrementor == 0; }
 	[[nodiscard]] auto running() const -> bool { return decrementor != 0; }
 	[[nodiscard]] auto get_cooldown() const -> int { return decrementor; }
+	[[nodiscard]] auto null() const -> bool { return decrementor == -1; }
 
   private:
 	int decrementor{};

@@ -223,7 +223,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	}
 
 	console.update(svc);
-	inventory_window.update(svc, *player);
+	inventory_window.update(svc, *player, *this);
 
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
@@ -238,7 +238,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			player->controller.get_shield().damage();
 			grenade.physics.velocity *= -1.f;
 		}
-		if (grenade.detonated() && grenade.sensor.within_bounds(player->collider.hurtbox)) { player->hurt(grenade.get_damage()); }
+		if (grenade.detonated() && grenade.sensor.within_bounds(player->hurtbox)) { player->hurt(grenade.get_damage()); }
 		for (auto& enemy : enemy_catalog.enemies) {
 			if (grenade.detonated() && grenade.sensor.within_bounds(enemy->get_collider().hurtbox)) {
 				enemy->hurt();
@@ -305,7 +305,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
-		if (proj.bounding_box.overlaps(player->collider.hurtbox) && proj.team != arms::TEAMS::NANI) {
+		if (proj.bounding_box.overlaps(player->hurtbox) && proj.team != arms::TEAMS::NANI) {
 			player->hurt(proj.stats.base_damage);
 			proj.destroy(false);
 		}
@@ -344,7 +344,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && loading.is_complete()) {
-		std::cout << "Launch death console.\n";
+		//std::cout << "Launch death console.\n";
 		console.set_source(svc.text.basic);
 		console.load_and_launch("death");
 		flags.state.set(LevelState::game_over);

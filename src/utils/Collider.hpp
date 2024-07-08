@@ -15,7 +15,7 @@ class Map;
 namespace shape {
 
 float const default_dim = 24.0f;
-float const vicinity_pad = 16.f;
+float const vicinity_pad = 24.f;
 float const wallslide_pad = 2.f;
 
 float const default_jumpbox_height = 4.0f;

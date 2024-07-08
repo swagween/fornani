@@ -17,7 +17,7 @@ Collider::Collider() {
 Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos, sf::Vector2<float> hbx_offset) : dimensions(dim), hurtbox_offset(hbx_offset) {
 	bounding_box.dimensions = dim;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
-	hurtbox.dimensions = sf::Vector2<float>(dim.x - 8.f, dim.y - 8.f - hurtbox_offset.y);
+	hurtbox.dimensions = sf::Vector2<float>(dim.x - 8.f, dim.y - 8.f + hurtbox_offset.y);
 	sync_components();
 }
 
@@ -46,7 +46,7 @@ void Collider::sync_components() {
 	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - horizontal_detector_buffer + physics.velocity.x, physics.position.y + horizontal_detector_buffer});
 	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y});
 	jumpbox.set_position(sf::Vector2<float>{physics.position.x, physics.position.y + dimensions.y});
-	hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.dimensions.x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.dimensions.y * 0.5f) - hurtbox_offset.y));
+	hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.dimensions.x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.dimensions.y * 0.5f) - (hurtbox_offset.y * 0.5f)));
 	vertical.set_position(sf::Vector2<float>{physics.position.x + dimensions.x * 0.5f - 0.5f, physics.position.y + depth_buffer});
 	horizontal.set_position(sf::Vector2<float>{physics.position.x + depth_buffer, physics.position.y + dimensions.y * 0.5f - 0.5f});
 
@@ -280,11 +280,19 @@ void Collider::correct_x_y(sf::Vector2<float> mtv) {
 
 void Collider::correct_corner(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
-	auto xdist = predictive_combined.position.x - physics.position.x;
-	auto correction = xdist + mtv.x;
-	physics.position.x += correction;
-	physics.zero_x();
-	//std::cout << "Corner correction: " << correction << "\n";
+	if (abs(mtv.x) > mtv.y) {
+		auto xdist = predictive_combined.position.x - physics.position.x;
+		auto correction = xdist + mtv.x;
+		physics.position.x += correction;
+		physics.zero_x();
+		//std::cout << "X Corner correction: " << correction << "\n";
+	} else {
+		auto ydist = predictive_combined.position.y - physics.position.y;
+		auto correction = ydist + mtv.y;
+		physics.position.y += correction;
+		if (mtv.y > 0) { physics.zero_y(); }
+		//std::cout << "Y Corner correction: " << correction << "\n";
+	}
 }
 
 void Collider::resolve_depths() {

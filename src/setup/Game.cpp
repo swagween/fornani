@@ -1004,8 +1004,8 @@ void Game::playtester_portal() {
 							}
 							if (ImGui::BeginTabItem("Parameters")) {
 								ImGui::Text("Vertical Movement");
-								ImGui::SliderFloat("GRAVITY", &player.physics_stats.grav, 0.f, 0.8f, "%.5f");
-								ImGui::SliderFloat("JUMP VELOCITY", &player.physics_stats.jump_velocity, 0.5f, 12.0f, "%.5f");
+								ImGui::SliderFloat("GRAVITY", &player.physics_stats.grav, 0.f, 2.8f, "%.5f");
+								ImGui::SliderFloat("JUMP VELOCITY", &player.physics_stats.jump_velocity, 0.5f, 18.0f, "%.5f");
 								ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &player.physics_stats.jump_release_multiplier, 0.005f, 1.f, "%.5f");
 								ImGui::SliderFloat("MAX Y VELOCITY", &player.physics_stats.maximum_velocity.y, 1.0f, 60.0f);
 

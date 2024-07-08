@@ -167,6 +167,7 @@ class Player {
 	PlayerController controller;
 	Transponder transponder{};
 	shape::Collider collider{};
+	shape::Shape hurtbox{};
 	PlayerAnimation animation;
 	entity::Health health{};
 	Indicator health_indicator;

@@ -152,6 +152,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
 	if (!flags.state.test(StateFlags::shaking)) { random_offset = {}; }
 	if (svc.greyblock_mode()) {
+		win.draw(sprite);
 		drawbox.setOrigin({0.f, 0.f});
 		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
 		drawbox.setOutlineColor(svc.styles.colors.ui_white);
@@ -166,6 +167,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		drawbox.setOutlineColor(sf::Color{140, 30, 60, 110});
 		win.draw(drawbox);
 		collider.render(win, cam);
+		secondary_collider.render(win, cam);
 		health.render(svc, win, cam);
 	} else {
 		win.draw(sprite);

@@ -18,6 +18,10 @@ namespace player {
 class Player;
 }
 
+namespace world {
+class Map;
+}
+
 namespace arns {
 class Projectile;
 }
@@ -79,6 +83,11 @@ class Enemy : public entity::Entity {
 	entity::Health health{};
 	player::Indicator health_indicator{};
 	anim::Animation animation{};
+	struct {
+		dir::Direction actual{};
+		dir::Direction desired{};
+		dir::Direction movement{};
+	} directions{};
 
   protected:
 	std::string_view label{};

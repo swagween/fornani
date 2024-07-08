@@ -3,6 +3,7 @@
 
 #include "../GameState.hpp"
 #include "../../level/Camera.hpp"
+#include "../../utils/Collider.hpp"
 
 namespace automa {
 

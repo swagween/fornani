@@ -20,7 +20,8 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	health.set_invincibility(400);
 
-	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y}, {0.f, 8.f});
+	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
+	hurtbox.dimensions = sf::Vector2<float>{12.f, 26.f};
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
@@ -100,6 +101,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { forced_momentum = {}; }
 
 	collider.update(*m_services);
+	hurtbox.set_position(collider.hurtbox.position - sf::Vector2<float>{0.f, 14.f});
 	health.update();
 	health_indicator.update(*m_services, collider.physics.position);
 	orb_indicator.update(*m_services, collider.physics.position);
@@ -145,7 +147,15 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (svc.greyblock_mode()) {
+		win.draw(sprite);
 		collider.render(win, campos);
+		sf::RectangleShape box{};
+		box.setFillColor(sf::Color::Transparent);
+		box.setOutlineColor(svc.styles.colors.green);
+		box.setOutlineThickness(-1);
+		box.setPosition(hurtbox.position - campos);
+		box.setSize(hurtbox.dimensions);
+		win.draw(box);
 	} else {
 		antennae[1].render(svc, win, campos, 1);
 		win.draw(sprite);
@@ -214,7 +224,10 @@ void Player::update_animation() {
 	}
 	if (animation.state == AnimState::sit) { flags.state.reset(State::show_weapon); }
 	if (hurt_cooldown.running()) { animation.state = AnimState::hurt; }
-	if (is_dead()) { animation.state = AnimState::die; }
+	if (is_dead()) {
+		animation.state = AnimState::die;
+		flags.state.reset(State::show_weapon);
+	}
 
 	animation.update();
 }
@@ -259,6 +272,7 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		if (controller.transponder_down()) { inventory_window.selector.go_down(); }
 		if (controller.transponder_left()) { inventory_window.selector.go_left(); }
 		if (controller.transponder_right()) { inventory_window.selector.go_right(); }
+		if (controller.transponder_select() && inventory_window.is_minimap()) { inventory_window.minimap.toggle_scale(); }
 		transponder.update(*m_services, inventory_window);
 	}
 	if (console.active()) {

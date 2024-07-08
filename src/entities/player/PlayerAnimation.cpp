@@ -375,7 +375,7 @@ fsm::StateFunction PlayerAnimation::update_die() {
 		post_death.start();
 		triggers.reset(AnimTriggers::end_death);
 		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); //set here, reset on map load
-		std::cout << "Death animation started.\n";
+		//std::cout << "Death animation started.\n";
 	}
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
