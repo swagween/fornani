@@ -102,6 +102,18 @@
       ],
       "activate_on_contact": false,
       "key": "sign1"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        41,
+        41
+      ],
+      "activate_on_contact": false,
+      "key": "comp_down"
     }
   ],
   "platforms": [

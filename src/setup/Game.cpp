@@ -130,8 +130,8 @@ void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> pl
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::D) {
-					debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
-					services.assets.sharp_click.play();
+					//debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
+					//services.assets.sharp_click.play();
 				}
 				if (event.key.code == sf::Keyboard::Q) {
 					//game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
@@ -785,6 +785,7 @@ void Game::debug_window() {
 
 void Game::playtester_portal() {
 	if (!flags.test(GameFlags::playtest)) { return; }
+	if (flags.test(GameFlags::in_game)) { return; }
 	bool* b_debug{};
 	float const PAD = 10.0f;
 	static int corner = 1;

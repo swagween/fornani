@@ -95,6 +95,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 }
 
 void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	directions.actual = post_direction;
 	sparkler.update(svc);
 	sparkler.set_position(Enemy::collider.vicinity.position);
 	health_bar.update(svc, health.get_normalized());
@@ -227,6 +228,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.collider.handle_collider_collision(secondary_collider.bounding_box); }
 	distant_range.set_position(Enemy::collider.bounding_box.position - (distant_range.dimensions * 0.5f) + (Enemy::collider.dimensions * 0.5f));
 	player.collider.bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
+	player.on_crush(map);
 
 	// state management
 

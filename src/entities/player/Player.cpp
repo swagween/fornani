@@ -465,15 +465,6 @@ void Player::on_crush(world::Map& map) {
 		directions.left_squish.lr = collider.vertical_squish() ? dir::LR::left : dir::LR::neutral;
 		directions.right_squish.und = collider.horizontal_squish() ? dir::UND::down : dir::UND::neutral;
 		directions.right_squish.lr = collider.vertical_squish() ? dir::LR::right : dir::LR::neutral;
-		/*std::cout << "-Collision Depth Conclusion-\n";
-		if (collider.horizontal_squish()) { std::cout << "Squished horizontally.\n"; }
-		if (collider.vertical_squish()) { std::cout << "Squished vertically.\n"; }
-		std::cout << "Left Squish Direction: LR: " << directions.left_squish.print_lr() << "UND: " << directions.left_squish.print_und() << "\n";
-		std::cout << "Right Squish Direction: LR: " << directions.right_squish.print_lr() << "UND: " << directions.right_squish.print_und() << "\n";
-		std::cout << "Left..: " << collider.collision_depths.value().get().left << "\n";
-		std::cout << "Right.: " << collider.collision_depths.value().get().right << "\n";
-		std::cout << "Top...: " << collider.collision_depths.value().get().top << "\n";
-		std::cout << "Bottom: " << collider.collision_depths.value().get().bottom << "\n";*/
 		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.left_squish));
 		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.right_squish));
 		collider.collision_depths = {};
@@ -573,10 +564,7 @@ void Player::give_drop(item::DropType type, float value) {
 	}
 }
 
-void Player::give_item(int item_id, int amount) {
-	catalog.add_item(*m_services, item_id, 1);
-	m_services->stats.player.items_collected.update();
-}
+void Player::give_item(int item_id, int amount) { catalog.add_item(*m_services, item_id, 1); }
 
 void Player::reset_flags() { flags = {}; }
 

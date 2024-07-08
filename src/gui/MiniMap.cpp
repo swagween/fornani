@@ -26,6 +26,7 @@ void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	view.setViewport(sf::FloatRect(0.2f, 0.2f, 0.8f, 0.8f));
 	background.setPosition(svc.constants.f_center_screen);
 
+	//for (auto& portal : map.portals) { draw_that_map(svc, portal); }
 	auto const& middleground = map.layers.at(world::MIDDLEGROUND);
 	map_texture.clear(sf::Color::Transparent);
 	map_texture.create(middleground.grid.dimensions.x * 4.f, middleground.grid.dimensions.y * 4.f);
@@ -54,6 +55,51 @@ void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	player_box.setPosition(player.collider.physics.position / scale);
 	if (svc.ticker.every_x_ticks(40)) { player_box.getFillColor() == svc.styles.colors.dark_orange ? player_box.setFillColor(svc.styles.colors.bright_orange) : player_box.setFillColor(svc.styles.colors.dark_orange); }
 	map_texture.draw(player_box);
+}
+
+void MiniMap::draw_that_map(automa::ServiceProvider& svc, entity::Portal& portal) {
+
+	sf::Vector2<uint32_t> dimensions{};
+	dj::Json metadata{};
+	dj::Json tiles{};
+	std::string room_str = svc.data.finder.resource_path + "/level/" + svc.tables.get_map_label.at(portal.get_destination());
+	metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
+	assert(!metadata.is_null());
+	auto const& meta = metadata["meta"];
+	dimensions.x = meta["dimensions"][0].as<int>();
+	dimensions.y = meta["dimensions"][1].as<int>();
+	auto map = world::Layer(4, true, dimensions);
+	tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
+	int layer_counter{};
+	int cell_counter{};
+	map.grid = world::Grid(map.dimensions);
+	for (auto& cell : tiles["layers"][4].array_view()) {
+		map.grid.cells.at(cell_counter).value = cell.as<int>();
+		++cell_counter;
+	}
+	map.grid.seed_vertices();
+
+	sf::Vector2<float> this_offset{(float)-map.dimensions.x, (float)-map.dimensions.y * 0.66f};
+	auto const& middleground = map;
+	map_texture.clear(sf::Color::Transparent);
+	map_texture.create(middleground.grid.dimensions.x * 4.f, middleground.grid.dimensions.y * 4.f);
+	for (auto& cell : middleground.grid.cells) {
+		if (cell.is_occupied() && !cell.is_breakable()) {
+			tile_box.setPosition((cell.position / scale) - this_offset);
+			sf::Color diff = tile_color;
+			auto g_diff = cell.value / 3;
+			diff.g = std::clamp(diff.g + g_diff, 0, 255);
+			auto r_diff = cell.value / 4;
+			diff.r = std::clamp(diff.r + r_diff, 0, 255);
+			auto b_diff = cell.value / 8;
+			diff.b = std::clamp(diff.b + b_diff, 0, 255);
+			if (cell.surrounded) { diff.b = std::clamp(diff.b - 40, 0, 255); }
+			if (cell.surrounded) { diff.g = std::clamp(diff.g - 60, 0, 255); }
+			if (cell.surrounded) { diff.r = std::clamp(diff.r - 20, 0, 255); }
+			tile_box.setFillColor(diff);
+			map_texture.draw(tile_box);
+		}
+	}
 }
 
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

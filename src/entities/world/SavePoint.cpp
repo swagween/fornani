@@ -44,6 +44,8 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 			if (animation.keyframe_over()) { animation.params.framerate = 4; }
 			if (player.controller.inspecting()) {
 				if (can_activate) {
+					player.health.heal(64);
+					player.health.update();
 					activated = true;
 					save(svc, player);
 					svc.state_controller.save_point_id = id;

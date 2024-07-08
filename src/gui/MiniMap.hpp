@@ -8,6 +8,10 @@ namespace player {
 class Player;
 }
 
+namespace entity {
+class Portal;
+}
+
 namespace gui {
 
 enum class ChunkType { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
@@ -25,6 +29,7 @@ class MiniMap {
 	MiniMap() = default;
 	MiniMap(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void draw_that_map(automa::ServiceProvider& svc, entity::Portal& portal);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void toggle_scale();
 

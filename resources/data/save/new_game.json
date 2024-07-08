@@ -13,7 +13,18 @@
     "arsenal": [],
     "equipped_gun": 0,
     "abilities": [],
-    "items": []
+    "items": [],
+    "stats": {
+      "death_count": 0,
+      "bullets_fired": 0,
+      "guns_collected": 0,
+      "items_collected": 0,
+      "orbs_collected": 0,
+      "blue_orbs": 0,
+      "highest_indicator_amount": 0,
+      "enemies_killed": 0,
+      "rooms_discovered": 0
+    }
   },
   "save_point_id": 100,
   "unlocked_doors": [
@@ -21,5 +32,13 @@
   "opened_chests": [
   ],
   "quest_progressions": [
-  ]
+  ],
+  "destroyed_inspectables": [
+
+  ],
+  "tutorial": {
+    "jump": false,
+    "shoot": false,
+    "sprint": false
+  }
 }

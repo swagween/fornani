@@ -10,7 +10,8 @@
       1
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "music": "dusken_cove"
   },
   "portals": [
     {
@@ -37,5 +38,12 @@
         10
       ]
     }
-  ]
+  ],
+  "save_point": {
+    "id": 115,
+    "position": [
+      14,
+      3
+    ]
+  }
 }

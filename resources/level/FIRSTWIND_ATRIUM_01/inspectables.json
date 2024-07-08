@@ -3,11 +3,16 @@
     "suite": [
       [
         "< Prison"
-      ]
-    ],
-    "responses": [
+      ],
       [
 
+      ]
+    ]
+  },
+  "comp_down": {
+    "suite": [
+      [
+        "The way favors not the overly-destructive."
       ]
     ]
   }

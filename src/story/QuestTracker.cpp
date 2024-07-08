@@ -34,10 +34,7 @@ void QuestTracker::progress(QuestType type, int id, int source, int amount, bool
 
 void QuestTracker::process(util::QuestKey key) {
 	if (key.hard_set > 0) {
-		while (get_progression(static_cast<QuestType>(key.type), key.id) < key.hard_set) {
-			progress(static_cast<QuestType>(key.type), key.id, key.source_id, key.amount, true);
-			std::cout << get_progression(static_cast<QuestType>(key.type), key.id) << "\n";
-		}
+		while (get_progression(static_cast<QuestType>(key.type), key.id) < key.hard_set) { progress(static_cast<QuestType>(key.type), key.id, key.source_id, key.amount, true); }
 	} else {
 		progress(static_cast<QuestType>(key.type), key.id, key.source_id, key.amount);
 	}

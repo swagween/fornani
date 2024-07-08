@@ -24,7 +24,9 @@
       ],
       "source_id": 101,
       "destination_id": 100,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -37,7 +39,9 @@
       ],
       "source_id": 101,
       "destination_id": 102,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "enemies": [

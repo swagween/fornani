@@ -114,7 +114,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.external_state.reset(ExternalState::vert_world_collision);
 			correct_x(mtvs.horizontal);
 		}
-		if (predictive_combined.SAT(cell) && corner_collision) {
+		if (predictive_combined.SAT(cell) && corner_collision && !tile.ramp_adjacent()) {
 			//if (abs(mtvs.combined.x > 0.0001f)) { std::cout << "Combined MTV reading: " << mtvs.combined.x << "\n"; }
 			flags.collision.set(Collision::any_collision);
 			flags.dash.set(Dash::dash_cancel_collision);

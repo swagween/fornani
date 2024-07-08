@@ -127,7 +127,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			inspectables.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
 			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) {
 				inspectables.back().destroy();
-				std::cout << "Destroyed inspectable " << inspectables.back().get_id() << ".\n";
+				//std::cout << "Destroyed inspectable " << inspectables.back().get_id() << ".\n";
 			}
 		}
 

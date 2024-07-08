@@ -43,6 +43,7 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 		items.push_back(item::Item(svc, item_labels.at(item_id)));
 		items.back().set_id(item_id);
 		items.back().add_item(amount);
+		svc.stats.player.items_collected.update();
 	}
 	update(svc);
 }
