@@ -186,8 +186,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
 	}
 
+	generate_collidable_layer();
 	if (!soft) {
-		generate_collidable_layer();
 		generate_layer_textures(svc);
 
 		player->map_reset();

@@ -50,6 +50,7 @@ class MiniMap {
 	sf::RectangleShape player_box{};
 	sf::Sprite map_sprite{};
 	sf::RectangleShape background{};
+	sf::RectangleShape border{};
 	sf::Color background_color{};
 	std::vector<Chunk> grid{};
 	std::vector<std::unique_ptr<MapTexture>> atlas{};

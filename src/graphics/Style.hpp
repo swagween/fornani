@@ -16,6 +16,7 @@ class Style {
 		sf::Color periwinkle{159, 138, 247};
 		sf::Color fucshia{215, 53, 180};
 		sf::Color goldenrod{247, 199, 74};
+		sf::Color dark_goldenrod{208, 119, 0};
 		sf::Color red{255, 7, 100};
 		sf::Color blue{110, 98, 173};
 		sf::Color navy_blue{25, 35, 65};

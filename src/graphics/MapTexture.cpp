@@ -14,7 +14,7 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) {
 	plat_box.setSize({4.f, 4.f});
 	portal_box.setFillColor(svc.styles.colors.green);
 	portal_box.setSize({4.f, 4.f});
-	breakable_box.setFillColor(svc.styles.colors.goldenrod);
+	breakable_box.setFillColor(svc.styles.colors.dark_goldenrod);
 	breakable_box.setSize({4.f, 4.f});
 	save_box.setFillColor(svc.styles.colors.periwinkle);
 	save_box.setSize({4.f, 4.f});

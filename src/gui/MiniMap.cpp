@@ -8,7 +8,11 @@ namespace gui {
 MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc) {
 	background_color = svc.styles.colors.ui_black;
 	background_color.a = 120;
-	player_box.setFillColor(svc.styles.colors.bright_orange);
+	background.setFillColor(background_color);
+	border.setOutlineColor(svc.styles.colors.ui_white);
+	border.setOutlineThickness(-4.f);
+	border.setFillColor(sf::Color::Transparent);
+	player_box.setFillColor(svc.styles.colors.periwinkle);
 	player_box.setSize({8.f, 8.f});
 	player_box.setOrigin({4.f, 4.f});
 	ratio = 32.f / scale;
@@ -24,7 +28,8 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	view = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x, svc.constants.screen_dimensions.y));
 	view.setViewport(sf::FloatRect(0.2f, 0.2f, 0.6f, 0.6f));
-	background.setPosition(svc.constants.f_center_screen);
+	background.setSize(svc.constants.f_screen_dimensions);
+	border.setSize(svc.constants.f_screen_dimensions);
 	speed = 10.f / scale;
 	ratio = 32.f / scale;
 	player_position = player.collider.physics.position;
@@ -34,10 +39,10 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	// render minimap
 	global_ratio = ratio * 0.25f;
 	win.setView(view);
-
+	win.draw(background);
+	if (svc.ticker.every_x_frames(10)) { player_box.getFillColor() == svc.styles.colors.periwinkle ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.periwinkle); }
 	for (auto& room : atlas) {
 		if (room->is_current()) { player_box.setPosition((player_position / scale) + room->get_position() * ratio + position); }
-		if (svc.ticker.every_x_frames(10)) { player_box.getFillColor() == svc.styles.colors.dark_orange ? player_box.setFillColor(svc.styles.colors.bright_orange) : player_box.setFillColor(svc.styles.colors.dark_orange); }
 		map_sprite.setTexture(room->get().getTexture());
 		map_sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int>>(room->get().getSize())));
 		map_sprite.setScale({global_ratio, global_ratio});
@@ -45,11 +50,12 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		win.draw(map_sprite);
 		win.draw(player_box);
 	}
+	win.draw(border);
 	win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y}));
 }
 
 void MiniMap::toggle_scale() {
-	std::cout << "xpos: " << position.x << "\nypos: " << position.y << "\n";
+	//std::cout << "xpos: " << position.x << "\nypos: " << position.y << "\n";
 	scalar.modulate(1);
 	scale = std::pow(2, scalar.get() + 2);
 	speed = 10.f / scale;
@@ -60,7 +66,7 @@ void MiniMap::toggle_scale() {
 	texture.save_box.setSize({ratio, ratio});
 	texture.breakable_box.setSize({ratio, ratio});
 	player_box.setSize({ratio * 2.f, ratio * 2.f});
-	position = position;
+	player_box.setOrigin(player_box.getLocalBounds().getSize() * 0.5f);
 }
 
 void MiniMap::move(sf::Vector2<float> direction) { position -= direction * speed; }
