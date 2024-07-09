@@ -66,21 +66,6 @@
     {
       "dimensions": [
         1,
-        3
-      ],
-      "position": [
-        47,
-        44
-      ],
-      "source_id": 102,
-      "destination_id": 105,
-      "activate_on_contact": true,
-      "locked": false,
-      "key_id": 0
-    },
-    {
-      "dimensions": [
-        1,
         1
       ],
       "position": [
@@ -92,6 +77,21 @@
       "activate_on_contact": false,
       "locked": true,
       "key_id": 15
+    },
+    {
+      "dimensions": [
+        1,
+        3
+      ],
+      "position": [
+        47,
+        55
+      ],
+      "source_id": 102,
+      "destination_id": 105,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "inspectables": [
@@ -198,6 +198,19 @@
       "position": [
         33,
         40
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 77122,
+      "item_id": 0,
+      "type": 2,
+      "amount": 55,
+      "rarity": 16.000000,
+      "position": [
+        27,
+        48
       ]
     }
   ]

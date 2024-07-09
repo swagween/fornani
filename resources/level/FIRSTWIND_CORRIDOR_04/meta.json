@@ -14,22 +14,10 @@
       1
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "music": ""
   },
   "portals": [
-    {
-      "dimensions": [
-        1,
-        2
-      ],
-      "position": [
-        15,
-        7
-      ],
-      "source_id": 116,
-      "destination_id": 107,
-      "activate_on_contact": true
-    },
     {
       "dimensions": [
         1,
@@ -41,7 +29,24 @@
       ],
       "source_id": 116,
       "destination_id": 108,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        2
+      ],
+      "position": [
+        15,
+        8
+      ],
+      "source_id": 116,
+      "destination_id": 107,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "inspectables": [
