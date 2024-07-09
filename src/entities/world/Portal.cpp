@@ -96,8 +96,8 @@ void Portal::change_states(automa::ServiceProvider& svc, int room_id, bool& fade
 	fade_out = true;
 	if (done) {
 		try {
-			svc.state_controller.next_state = svc.tables.get_map_label.at(meta.destination_map_id);
-		} catch (std::out_of_range) { svc.state_controller.next_state = svc.tables.get_map_label.at(room_id); }
+			svc.state_controller.next_state = meta.destination_map_id;
+		} catch (std::out_of_range) { svc.state_controller.next_state = room_id; }
 		svc.state_controller.actions.set(automa::Actions::trigger);
 		svc.state_controller.refresh(meta.source_map_id);
 	}

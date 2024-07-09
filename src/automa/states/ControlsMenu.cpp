@@ -35,7 +35,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	debug.setOutlineThickness(-1);
 }
 
-void ControlsMenu::init(ServiceProvider& svc, std::string_view room) {}
+void ControlsMenu::init(ServiceProvider& svc, int room_number) {}
 
 void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 

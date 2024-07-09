@@ -196,6 +196,7 @@ class AssetManager {
 	sf::SoundBuffer menu_shift_buffer{};
 	sf::SoundBuffer menu_back_buffer{};
 	sf::SoundBuffer menu_next_buffer{};
+	sf::SoundBuffer menu_open_buffer{};
 
 	sf::SoundBuffer arms_switch_buffer{};
 	sf::SoundBuffer bg_shot_buffer{};
@@ -329,6 +330,7 @@ class AssetManager {
 	sf::Sound menu_back{};
 	sf::Sound sharp_click{};
 	sf::Sound menu_shift{};
+	sf::Sound menu_open{};
 
 	sf::Sound breakable_hit{};
 	sf::Sound breakable_shatter{};

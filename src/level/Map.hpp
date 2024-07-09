@@ -85,7 +85,7 @@ class Map {
 	~Map() {}
 
 	// methods
-	void load(automa::ServiceProvider& svc, std::string_view room);
+	void load(automa::ServiceProvider& svc, int room_number, bool soft = false);
 	void update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -98,6 +98,8 @@ class Map {
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void shake_camera();
+	void clear();
+	std::vector<Layer>& get_layers();
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
@@ -105,15 +107,13 @@ class Map {
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 
 	// layers
-	std::vector<Layer> layers{};
+	sf::Vector2<int> metagrid_coordinates{};
+	//std::vector<Layer> layers{};
 	std::vector<uint32_t> collidable_indeces{}; // generated on load to reduce collision checks in hot code
 	Vec real_dimensions{};						// pixel dimensions (maybe useless)
 	Vecu16 dimensions{};						// points on the 32x32-unit grid
 	Vecu16 chunk_dimensions{};					// how many chunks (16x16 squares) in the room
 
-	// json for data loading
-	dj::Json metadata{};
-	dj::Json tiles{};
 	dj::Json inspectable_data{};
 
 	// entities

@@ -17,6 +17,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.console.test(Console::done)) { svc.assets.menu_back.play(); }
 	if (flags.console.test(Console::next)) { svc.assets.menu_next.play(); }
 	if (flags.console.test(Console::shift)) { svc.assets.menu_shift.play(); }
+	if (flags.console.test(Console::menu_open)) { svc.assets.menu_open.play(); }
 	if (flags.console.test(Console::speech)) { repeat(svc, svc.assets.menu_shift, 16, 0.2f); }
 
 	// always play console and menu sounds

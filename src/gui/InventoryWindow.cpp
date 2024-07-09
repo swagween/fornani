@@ -71,6 +71,9 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	if (mode == Mode::minimap) {
 		title.setString("MAP");
 		minimap.update(svc, map, player);
+
+		selector.update();
+
 	}
 }
 

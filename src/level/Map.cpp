@@ -13,31 +13,36 @@ namespace world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 256), m_services(&svc), m_console(&console) {}
 
-void Map::load(automa::ServiceProvider& svc, std::string_view room) {
+void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	// for debugging
 	center_box.setSize(svc.constants.f_screen_dimensions * 0.5f);
 	flags.state.reset(LevelState::game_over);
 	svc.state_controller.actions.reset(automa::Actions::death_mode);
 
-	std::string room_str = svc.data.finder.resource_path + room.data();
-	metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
-	assert(!metadata.is_null());
-	tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
-	assert(!tiles.is_null());
-	inspectable_data = dj::Json::from_file((room_str + "/inspectables.json").c_str());
+	int lookup{};
+	int ctr{};
+	for (auto& room : svc.data.map_jsons) {
+		if (room.id == room_number) { lookup = ctr; }
+		++ctr;
+	}
+	auto const& metadata = svc.data.map_jsons.at(lookup).metadata;
+	auto const& tiles = svc.data.map_jsons.at(lookup).tiles;
+	inspectable_data = svc.data.map_jsons.at(lookup).inspectable_data;
 
 	// get npc data
-	if (!metadata.is_null()) {
-		auto const& meta = metadata["meta"];
-		room_id = meta["room_id"].as<int>();
-		dimensions.x = meta["dimensions"][0].as<int>();
-		dimensions.y = meta["dimensions"][1].as<int>();
-		chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
-		chunk_dimensions.y = meta["chunk_dimensions"][1].as<int>();
-		real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
-		for (int i = 0; i < NUM_LAYERS; ++i) { layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
+	auto const& meta = metadata["meta"];
+	room_id = meta["room_id"].as<int>();
+	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
+	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
+	dimensions.x = meta["dimensions"][0].as<int>();
+	dimensions.y = meta["dimensions"][1].as<int>();
+	chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
+	chunk_dimensions.y = meta["chunk_dimensions"][1].as<int>();
+	real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
+	// for (int i = 0; i < NUM_LAYERS; ++i) { layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
 
+	if (!soft) {
 		if (meta["music"].is_string()) {
 			svc.music.load(meta["music"].as_string());
 			svc.music.play_looped(10);
@@ -62,29 +67,6 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			npcs.back().set_position_from_scaled(pos);
 			if ((bool)entry["background"].as_bool()) { npcs.back().push_to_background(); }
 		}
-
-		for (auto& entry : metadata["portals"].array_view()) {
-			sf::Vector2<uint32_t> pos{};
-			sf::Vector2<uint32_t> dim{};
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
-			dim.x = entry["dimensions"][0].as<int>();
-			dim.y = entry["dimensions"][1].as<int>();
-			auto src_id = entry["source_id"].as<int>();
-			auto dest_id = entry["destination_id"].as<int>();
-			auto aoc = (bool)entry["activate_on_contact"].as_bool();
-			auto locked = (bool)entry["locked"].as_bool();
-			auto key_id = entry["key_id"].as<int>();
-			portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, key_id));
-			portals.back().update(svc);
-		}
-
-		auto const& savept = metadata["save_point"];
-		auto save_id = svc.state_controller.save_point_id;
-		save_point.id = savept.contains("position") ? room_id : -1;
-		save_point.scaled_position.x = savept["position"][0].as<int>();
-		save_point.scaled_position.y = savept["position"][1].as<int>();
-
 		for (auto& entry : metadata["chests"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>();
@@ -127,7 +109,7 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			inspectables.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
 			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) {
 				inspectables.back().destroy();
-				//std::cout << "Destroyed inspectable " << inspectables.back().get_id() << ".\n";
+				// std::cout << "Destroyed inspectable " << inspectables.back().get_id() << ".\n";
 			}
 		}
 
@@ -139,30 +121,6 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>());
 			enemy_catalog.enemies.back()->set_position({(float)(pos.x * svc.constants.cell_size), (float)(pos.y * svc.constants.cell_size)});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-		}
-
-		for (auto& entry : metadata["platforms"].array_view()) {
-			sf::Vector2<float> dim{};
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			dim.x = entry["dimensions"][0].as<float>();
-			dim.y = entry["dimensions"][1].as<float>();
-			pos *= svc.constants.cell_size;
-			dim *= svc.constants.cell_size;
-			auto start = entry["start"].as<float>();
-			start = std::clamp(start, 0.f, 1.f);
-			auto type = entry["type"].as_string();
-			platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
-		}
-		for (auto& entry : metadata["switch_blocks"].array_view()) {
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			pos *= svc.constants.cell_size;
-			auto type = entry["type"].as<int>();
-			auto button_id = entry["button_id"].as<int>();
-			switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
 		}
 		for (auto& entry : metadata["destroyers"].array_view()) {
 			sf::Vector2<int> pos{};
@@ -182,36 +140,72 @@ void Map::load(automa::ServiceProvider& svc, std::string_view room) {
 		}
 	}
 
-	// tiles
-	int layer_counter{};
-	for (auto& layer : layers) {
-		int cell_counter{};
-		layer.grid = Grid(dimensions);
-		for (auto& cell : tiles["layers"][layer_counter].array_view()) {
-			layer.grid.cells.at(cell_counter).value = cell.as<int>();
-			++cell_counter;
-		}
-		layer.grid.seed_vertices();
-		++layer_counter;
+	for (auto& entry : metadata["portals"].array_view()) {
+		sf::Vector2<uint32_t> pos{};
+		sf::Vector2<uint32_t> dim{};
+		pos.x = entry["position"][0].as<int>();
+		pos.y = entry["position"][1].as<int>();
+		dim.x = entry["dimensions"][0].as<int>();
+		dim.y = entry["dimensions"][1].as<int>();
+		auto src_id = entry["source_id"].as<int>();
+		auto dest_id = entry["destination_id"].as<int>();
+		auto aoc = (bool)entry["activate_on_contact"].as_bool();
+		auto locked = (bool)entry["locked"].as_bool();
+		auto key_id = entry["key_id"].as<int>();
+		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, key_id));
+		portals.back().update(svc);
 	}
 
-	generate_collidable_layer();
-	generate_layer_textures(svc);
+	auto const& savept = metadata["save_point"];
+	auto save_id = svc.state_controller.save_point_id;
+	save_point.id = savept.contains("position") ? room_id : -1;
+	save_point.scaled_position.x = savept["position"][0].as<int>();
+	save_point.scaled_position.y = savept["position"][1].as<int>();
 
-	player->map_reset();
+	for (auto& entry : metadata["platforms"].array_view()) {
+		sf::Vector2<float> dim{};
+		sf::Vector2<float> pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		dim.x = entry["dimensions"][0].as<float>();
+		dim.y = entry["dimensions"][1].as<float>();
+		pos *= svc.constants.cell_size;
+		dim *= svc.constants.cell_size;
+		auto start = entry["start"].as<float>();
+		start = std::clamp(start, 0.f, 1.f);
+		auto type = entry["type"].as_string();
+		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
+	}
+	for (auto& entry : metadata["switch_blocks"].array_view()) {
+		sf::Vector2<float> pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		pos *= svc.constants.cell_size;
+		auto type = entry["type"].as<int>();
+		auto button_id = entry["button_id"].as<int>();
+		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
+	}
 
-	transition.fade_in = true;
-	loading.start(4);
+	if (!soft) {
+		generate_collidable_layer();
+		generate_layer_textures(svc);
+
+		player->map_reset();
+
+		transition.fade_in = true;
+		loading.start(4);
+	}
 }
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
+	auto& layers = svc.data.get_layers(room_id);
 	loading.update();
 	if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
 	flags.state.reset(LevelState::camera_shake);
 
 	transition.update(*player);
 
-	if(flags.state.test(LevelState::spawn_enemy)) {
+	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
 			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
@@ -344,7 +338,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && loading.is_complete()) {
-		//std::cout << "Launch death console.\n";
+		// std::cout << "Launch death console.\n";
 		console.set_source(svc.text.basic);
 		console.load_and_launch("death");
 		flags.state.set(LevelState::game_over);
@@ -368,6 +362,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	auto& layers = svc.data.get_layers(room_id);
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		style_id = style_id == 20 ? native_style_id : 20;
@@ -542,6 +537,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 }
 
 void Map::generate_collidable_layer() {
+	auto& layers = m_services->data.get_layers(room_id);
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
 		if ((!cell.surrounded && cell.is_occupied() && !cell.is_breakable())) { collidable_indeces.push_back(cell.one_d_index); }
@@ -550,6 +546,7 @@ void Map::generate_collidable_layer() {
 }
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
+	auto& layers = svc.data.get_layers(room_id);
 	for (auto& layer : layers) {
 		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
 		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
@@ -567,6 +564,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 }
 
 bool Map::check_cell_collision(shape::Collider collider) {
+	auto& layers = m_services->data.get_layers(room_id);
 	for (auto& index : collidable_indeces) {
 		auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
 		if (!nearby(cell.bounding_box, collider.bounding_box)) {
@@ -627,6 +625,19 @@ void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& 
 }
 
 void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
+
+void Map::clear() {
+	dimensions = {};
+	portals.clear();
+	platforms.clear();
+	breakables.clear();
+	switch_blocks.clear();
+	switch_buttons.clear();
+	chests.clear();
+	npcs.clear();
+}
+
+std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
 
 sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 	for (auto& portal : portals) {

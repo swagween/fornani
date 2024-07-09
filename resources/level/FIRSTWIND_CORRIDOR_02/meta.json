@@ -1,6 +1,10 @@
 {
   "meta": {
     "room_id": 104,
+    "metagrid": [
+      9,
+      -1
+    ],
     "dimensions": [
       96,
       16

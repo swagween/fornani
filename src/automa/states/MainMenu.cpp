@@ -42,8 +42,7 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	svc.music.play_looped(20);
 };
 
-void MainMenu::init(ServiceProvider& svc, std::string_view room) {
-}
+void MainMenu::init(ServiceProvider& svc, int room_number) {}
 
 void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);

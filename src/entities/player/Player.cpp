@@ -64,8 +64,8 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
-	controller.update(*m_services);
 	update_transponder(console, inventory_window);
+	controller.update(*m_services);
 
 	if (grounded()) { controller.reset_dash_count(); }
 
@@ -272,6 +272,10 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		if (controller.transponder_down()) { inventory_window.selector.go_down(); }
 		if (controller.transponder_left()) { inventory_window.selector.go_left(); }
 		if (controller.transponder_right()) { inventory_window.selector.go_right(); }
+		if (controller.transponder_hold_up() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, -1.f}); }
+		if (controller.transponder_hold_down() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, 1.f}); }
+		if (controller.transponder_hold_left() && inventory_window.is_minimap()) { inventory_window.minimap.move({-1.f, 0.f}); }
+		if (controller.transponder_hold_right() && inventory_window.is_minimap()) { inventory_window.minimap.move({1.f, 0.f}); }
 		if (controller.transponder_select() && inventory_window.is_minimap()) { inventory_window.minimap.toggle_scale(); }
 		transponder.update(*m_services, inventory_window);
 	}

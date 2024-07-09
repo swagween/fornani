@@ -4,14 +4,21 @@
 
 namespace automa {
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console) {}
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console), gui_map(svc, player, console) {}
 
-void Dojo::init(ServiceProvider& svc, std::string_view room) {
+void Dojo::init(ServiceProvider& svc, int room_number) {
 
+	if (!svc.data.room_discovered(room_number)) {
+		svc.data.discovered_rooms.push_back(room_number);
+		svc.stats.world.rooms_discovered.update();
+	}
 	console = gui::Console(svc);
 	player->reset_flags();
 	player->tutorial.help_marker.start();
-	map.load(svc, room);
+	map.load(svc, room_number);
+	bake_maps(svc, {map.room_id}, true);
+	auto m_id = map.room_id;
+	bake_maps(svc, svc.data.discovered_rooms);
 	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
 	hud.set_corner_pad(svc, false); // reset hud position to corner
 	svc.soundboard.turn_on();
@@ -63,6 +70,7 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(svc); }
 	if ((svc.controller_map.label_to_control.at("arms_switch_right").triggered() || svc.controller_map.label_to_control.at("arms_switch_left").triggered()) && inventory_window.active()) {
 		inventory_window.switch_modes(svc);
+		svc.soundboard.flags.console.set(audio::Console::next);
 		svc.controller_map.reset_triggers();
 	}
 	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) { toggle_pause_menu(svc); }
@@ -115,9 +123,11 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {
 	if (inventory_window.active()) {
+		svc.soundboard.flags.console.set(audio::Console::done);
 		inventory_window.close();
 	} else {
 		inventory_window.open();
+		svc.soundboard.flags.console.set(audio::Console::menu_open);
 		inventory_window.set_item_size(static_cast<int>(player->catalog.categories.inventory.items.size()));
 	}
 	svc.controller_map.reset_triggers();
@@ -127,6 +137,13 @@ void Dojo::toggle_pause_menu(ServiceProvider& svc) {
 	pause_window.active() ? pause_window.close() : pause_window.open();
 	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();
 	svc.controller_map.reset_triggers();
+}
+
+void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
+	for (auto& id : ids) {
+		gui_map.clear();
+		inventory_window.minimap.bake(svc, gui_map, id, current);
+	}
 }
 
 } // namespace automa

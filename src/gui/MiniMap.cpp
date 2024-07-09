@@ -5,122 +5,65 @@
 
 namespace gui {
 
-MiniMap::MiniMap(automa::ServiceProvider& svc) {
+MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc) {
 	background_color = svc.styles.colors.ui_black;
 	background_color.a = 120;
-	tile_color = svc.styles.colors.blue;
-	tile_color.a = 225;
-	background.setFillColor(background_color);
-	background.setSize(static_cast<sf::Vector2<float>>(svc.constants.screen_dimensions) - sf::Vector2<float>{140.f, 140.f});
-	background.setOrigin(background.getSize() * 0.5f);
-	tile_box.setFillColor(svc.styles.colors.blue);
-	tile_box.setSize({4.f, 4.f});
 	player_box.setFillColor(svc.styles.colors.bright_orange);
-	player_box.setSize({4.f, 4.f});
-	plat_box.setFillColor(svc.styles.colors.periwinkle);
-	plat_box.setSize({4.f, 4.f});
+	player_box.setSize({8.f, 8.f});
+	player_box.setOrigin({4.f, 4.f});
+	ratio = 32.f / scale;
+	toggle_scale();
+}
+
+void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current) {
+	atlas.push_back(std::make_unique<MapTexture>(svc));
+	if (current) { atlas.back()->set_current(); }
+	atlas.back()->bake(svc, map, room, scale, current);
 }
 
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	view = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.screen_dimensions.x, svc.constants.screen_dimensions.y));
-	view.setViewport(sf::FloatRect(0.2f, 0.2f, 0.8f, 0.8f));
+	view.setViewport(sf::FloatRect(0.2f, 0.2f, 0.6f, 0.6f));
 	background.setPosition(svc.constants.f_center_screen);
-
-	//for (auto& portal : map.portals) { draw_that_map(svc, portal); }
-	auto const& middleground = map.layers.at(world::MIDDLEGROUND);
-	map_texture.clear(sf::Color::Transparent);
-	map_texture.create(middleground.grid.dimensions.x * 4.f, middleground.grid.dimensions.y * 4.f);
-	for (auto& cell : middleground.grid.cells) {
-		if (cell.is_occupied() && !cell.is_breakable()) {
-			tile_box.setPosition(cell.position / scale);
-			sf::Color diff = tile_color;
-			auto g_diff = cell.value / 3;
-			diff.g = std::clamp(diff.g + g_diff, 0, 255);
-			auto r_diff = cell.value / 4;
-			diff.r = std::clamp(diff.r + r_diff, 0, 255);
-			auto b_diff = cell.value / 8;
-			diff.b = std::clamp(diff.b + b_diff, 0, 255);
-			if (cell.surrounded) { diff.b = std::clamp(diff.b - 40, 0, 255); }
-			if (cell.surrounded) { diff.g = std::clamp(diff.g - 60, 0, 255); }
-			if (cell.surrounded) { diff.r = std::clamp(diff.r - 20, 0, 255); }
-			tile_box.setFillColor(diff);
-			map_texture.draw(tile_box);
-		}
-	}
-	for (auto& plat : map.platforms) {
-		plat_box.setPosition(plat.physics.position / scale);
-		plat_box.setSize(plat.dimensions / scale);
-		map_texture.draw(plat_box);
-	}
-	player_box.setPosition(player.collider.physics.position / scale);
-	if (svc.ticker.every_x_ticks(40)) { player_box.getFillColor() == svc.styles.colors.dark_orange ? player_box.setFillColor(svc.styles.colors.bright_orange) : player_box.setFillColor(svc.styles.colors.dark_orange); }
-	map_texture.draw(player_box);
-}
-
-void MiniMap::draw_that_map(automa::ServiceProvider& svc, entity::Portal& portal) {
-
-	sf::Vector2<uint32_t> dimensions{};
-	dj::Json metadata{};
-	dj::Json tiles{};
-	std::string room_str = svc.data.finder.resource_path + "/level/" + svc.tables.get_map_label.at(portal.get_destination());
-	metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
-	assert(!metadata.is_null());
-	auto const& meta = metadata["meta"];
-	dimensions.x = meta["dimensions"][0].as<int>();
-	dimensions.y = meta["dimensions"][1].as<int>();
-	auto map = world::Layer(4, true, dimensions);
-	tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
-	int layer_counter{};
-	int cell_counter{};
-	map.grid = world::Grid(map.dimensions);
-	for (auto& cell : tiles["layers"][4].array_view()) {
-		map.grid.cells.at(cell_counter).value = cell.as<int>();
-		++cell_counter;
-	}
-	map.grid.seed_vertices();
-
-	sf::Vector2<float> this_offset{(float)-map.dimensions.x, (float)-map.dimensions.y * 0.66f};
-	auto const& middleground = map;
-	map_texture.clear(sf::Color::Transparent);
-	map_texture.create(middleground.grid.dimensions.x * 4.f, middleground.grid.dimensions.y * 4.f);
-	for (auto& cell : middleground.grid.cells) {
-		if (cell.is_occupied() && !cell.is_breakable()) {
-			tile_box.setPosition((cell.position / scale) - this_offset);
-			sf::Color diff = tile_color;
-			auto g_diff = cell.value / 3;
-			diff.g = std::clamp(diff.g + g_diff, 0, 255);
-			auto r_diff = cell.value / 4;
-			diff.r = std::clamp(diff.r + r_diff, 0, 255);
-			auto b_diff = cell.value / 8;
-			diff.b = std::clamp(diff.b + b_diff, 0, 255);
-			if (cell.surrounded) { diff.b = std::clamp(diff.b - 40, 0, 255); }
-			if (cell.surrounded) { diff.g = std::clamp(diff.g - 60, 0, 255); }
-			if (cell.surrounded) { diff.r = std::clamp(diff.r - 20, 0, 255); }
-			tile_box.setFillColor(diff);
-			map_texture.draw(tile_box);
-		}
-	}
+	speed = 10.f / scale;
+	ratio = 32.f / scale;
+	player_position = player.collider.physics.position;
 }
 
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// render minimap
-	//win.setView(view);
-	//win.draw(background);
-	map_texture.display();
-	map_sprite.setTexture(map_texture.getTexture());
-	map_sprite.setOrigin(map_sprite.getLocalBounds().getSize() * 0.5f);
-	map_sprite.setPosition(svc.constants.f_center_screen);
-	//map_sprite.setPosition(-cam);
-	win.draw(map_sprite);
-	//win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y}));
+	global_ratio = ratio * 0.25f;
+	win.setView(view);
+
+	for (auto& room : atlas) {
+		if (room->is_current()) { player_box.setPosition((player_position / scale) + room->get_position() * ratio + position); }
+		if (svc.ticker.every_x_frames(10)) { player_box.getFillColor() == svc.styles.colors.dark_orange ? player_box.setFillColor(svc.styles.colors.bright_orange) : player_box.setFillColor(svc.styles.colors.dark_orange); }
+		map_sprite.setTexture(room->get().getTexture());
+		map_sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int>>(room->get().getSize())));
+		map_sprite.setScale({global_ratio, global_ratio});
+		map_sprite.setPosition(room->get_position() * ratio + position);
+		win.draw(map_sprite);
+		win.draw(player_box);
+	}
+	win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y}));
 }
 
 void MiniMap::toggle_scale() {
-	scale = (scale == 16.f) ? 8.f : 16.f;
-	tile_box.setSize({32.f / scale, 32.f / scale});
-	plat_box.setSize({32.f / scale, 32.f / scale});
-	player_box.setSize({32.f / scale, 32.f / scale});
+	std::cout << "xpos: " << position.x << "\nypos: " << position.y << "\n";
+	scalar.modulate(1);
+	scale = std::pow(2, scalar.get() + 2);
+	speed = 10.f / scale;
+	ratio = 32.f / scale;
+	texture.tile_box.setSize({ratio, ratio});
+	texture.plat_box.setSize({ratio, ratio});
+	texture.portal_box.setSize({ratio, ratio});
+	texture.save_box.setSize({ratio, ratio});
+	texture.breakable_box.setSize({ratio, ratio});
+	player_box.setSize({ratio * 2.f, ratio * 2.f});
+	position = position;
 }
+
+void MiniMap::move(sf::Vector2<float> direction) { position -= direction * speed; }
 
 void Chunk::generate() {
 	switch (type) {

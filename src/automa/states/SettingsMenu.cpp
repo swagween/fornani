@@ -16,7 +16,7 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 	options.at(1).label.setString(toggleables.gamepad.getString() +(svc.controller_map.hard_toggles.test(config::Toggles::gamepad) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 }
 
-void SettingsMenu::init(ServiceProvider& svc, std::string_view room) {}
+void SettingsMenu::init(ServiceProvider& svc, int room_number) {}
 
 void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);

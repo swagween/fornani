@@ -71,7 +71,7 @@ class GameState {
 	GameState& operator=(GameState&&) = delete;
 	virtual ~GameState() {}
 
-	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
+	virtual void init(ServiceProvider& svc, int room_number){};
 	virtual void handle_events(ServiceProvider& svc, sf::Event& event){};
 	virtual void tick_update(ServiceProvider& svc){};
 	virtual void frame_update(ServiceProvider& svc){};

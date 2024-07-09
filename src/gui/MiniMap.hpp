@@ -3,6 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include "Console.hpp"
 #include "Selector.hpp"
+#include "../level/Map.hpp"
+#include "../graphics/MapTexture.hpp"
+#include "../utils/Circuit.hpp"
 
 namespace player {
 class Player;
@@ -28,23 +31,29 @@ class MiniMap {
   public:
 	MiniMap() = default;
 	MiniMap(automa::ServiceProvider& svc);
+	void bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void draw_that_map(automa::ServiceProvider& svc, entity::Portal& portal);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void toggle_scale();
+	void move(sf::Vector2<float> direction);
 
   private:
 	float scale{8.f};
+	float global_ratio{};
+	float ratio{};
+	float speed{};
+	sf::Vector2<float> position{};
+	sf::Vector2<float> player_position{};
 	sf::View view{};
-	sf::RenderTexture map_texture{};
-	sf::RectangleShape background{};
-	sf::RectangleShape tile_box{};
-	sf::RectangleShape plat_box{};
+	MapTexture texture;
+	sf::RenderTexture minimap_texture{};
 	sf::RectangleShape player_box{};
 	sf::Sprite map_sprite{};
+	sf::RectangleShape background{};
 	sf::Color background_color{};
-	sf::Color tile_color{};
 	std::vector<Chunk> grid{};
+	std::vector<std::unique_ptr<MapTexture>> atlas{};
+	util::Circuit scalar{3};
 };
 
 } // namespace gui

@@ -31,7 +31,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	right_dot.set_position(options.at(current_selection).right_offset);
 }
 
-void FileMenu::init(ServiceProvider& svc, std::string_view room) {}
+void FileMenu::init(ServiceProvider& svc, int room_number) {}
 
 void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);

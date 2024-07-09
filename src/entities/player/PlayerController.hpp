@@ -21,7 +21,7 @@ constexpr static int quick_turn_sample_size{24};
 constexpr static float backwards_dampen{0.5f};
 
 enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y };
-enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released };
+enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released, hold_left, hold_right, hold_up, hold_down };
 enum class MovementState { restricted, grounded, walking_autonomously };
 enum class HardState { no_move };
 
@@ -86,6 +86,10 @@ class PlayerController {
 	[[nodiscard]] auto transponder_left() const -> bool { return transponder_flags.test(TransponderInput::left); }
 	[[nodiscard]] auto transponder_right() const -> bool { return transponder_flags.test(TransponderInput::right); }
 	[[nodiscard]] auto transponder_select() const -> bool { return transponder_flags.test(TransponderInput::select); }
+	[[nodiscard]] auto transponder_hold_up() const -> bool { return transponder_flags.test(TransponderInput::hold_up); }
+	[[nodiscard]] auto transponder_hold_down() const -> bool { return transponder_flags.test(TransponderInput::hold_down); }
+	[[nodiscard]] auto transponder_hold_left() const -> bool { return transponder_flags.test(TransponderInput::hold_left); }
+	[[nodiscard]] auto transponder_hold_right() const -> bool { return transponder_flags.test(TransponderInput::hold_right); }
 
 	[[nodiscard]] auto get_dash_request() const -> int { return dash_request; }
 	[[nodiscard]] auto get_dash_count() const -> int { return dash_count; }

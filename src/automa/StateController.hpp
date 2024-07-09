@@ -13,8 +13,8 @@ class StateController {
 
   public:
 	inline void refresh(int id) { source_id = id; }
-	std::string next_state{};
-	std::string demo_level{};
+	int next_state{};
+	int demo_level{};
 	int source_id{};
 	int save_point_id{};
 	menu_type submenu{};

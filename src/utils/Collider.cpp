@@ -195,7 +195,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 void Collider::detect_map_collision(world::Map& map) {
 	flags.external_state.reset(ExternalState::grounded);
 	for (auto& index : map.collidable_indeces) {
-		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
+		auto& cell = map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(index);
 		cell.collision_check = false;
 		if (!map.nearby(cell.bounding_box, bounding_box)) {
 			continue;
@@ -214,9 +214,9 @@ void Collider::detect_map_collision(world::Map& map) {
 
 int Collider::detect_ledge_height(world::Map& map) {
 	int ret{};
-	auto total = map.layers.at(world::MIDDLEGROUND).grid.cells.size();
+	auto total = map.get_layers().at(world::MIDDLEGROUND).grid.cells.size();
 	for (int index = 0; index < total; ++index) {
-		auto& cell = map.layers.at(world::MIDDLEGROUND).grid.cells.at(index);
+		auto& cell = map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(index);
 		if (!map.nearby(cell.bounding_box, bounding_box)) {
 			continue;
 		} else {
@@ -235,8 +235,8 @@ int Collider::detect_ledge_height(world::Map& map) {
 						bool found{};
 						auto next_row = index + map.dimensions.x;
 						while (!found) {
-							if (map.layers.at(world::MIDDLEGROUND).grid.cells.size() <= next_row) { return map.dimensions.y; };
-							if (map.layers.at(world::MIDDLEGROUND).grid.cells.at(next_row).is_occupied()) { found = true; }
+							if (map.get_layers().at(world::MIDDLEGROUND).grid.cells.size() <= next_row) { return map.dimensions.y; };
+							if (map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(next_row).is_occupied()) { found = true; }
 							next_row += map.dimensions.x;
 							++ret;
 							if (ret > (int)map.dimensions.y) { return map.dimensions.y; }

@@ -217,6 +217,8 @@ void AssetManager::load_audio() {
 	menu_back.setBuffer(menu_back_buffer);
 	menu_next_buffer.loadFromFile(finder.resource_path + "/audio/sfx/menu_shift_3.wav");
 	menu_next.setBuffer(menu_next_buffer);
+	menu_open_buffer.loadFromFile(finder.resource_path + "/audio/sfx/gui_upward_select.wav");
+	menu_open.setBuffer(menu_open_buffer);
 	sharp_click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/click.wav");
 	sharp_click.setBuffer(sharp_click_buffer);
 	arms_switch_buffer.loadFromFile(finder.resource_path + "/audio/sfx/arms_switch.wav");

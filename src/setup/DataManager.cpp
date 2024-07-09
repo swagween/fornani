@@ -10,6 +10,41 @@ DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 
 void DataManager::load_data() {
 
+	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
+	assert(!map_table.is_null());
+	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
+
+	//load map
+	int room_counter{};
+	for(auto& room : rooms) {
+		map_jsons.push_back(MapData());
+		map_jsons.back().id = room;
+		std::string room_str = finder.resource_path + "/level/" + m_services->tables.get_map_label.at(room);
+		map_jsons.back().metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
+		assert(!map_jsons.back().metadata.is_null());
+		map_jsons.back().tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
+		assert(!map_jsons.back().tiles.is_null());
+		map_jsons.back().inspectable_data = dj::Json::from_file((room_str + "/inspectables.json").c_str());
+		// cache map layers
+		int layer_counter{};
+		sf::Vector2<uint32_t> dimensions{};
+		dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
+		dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
+		map_layers.push_back(std::vector<world::Layer>());
+		for (int i = 0; i < num_layers; ++i) { map_layers.at(room_counter).push_back(world::Layer(i, (i == world::MIDDLEGROUND), dimensions)); }
+		for (auto& layer : map_layers.at(room_counter)) {
+			int cell_counter{};
+			layer.grid = world::Grid(dimensions);
+			for (auto& cell : map_jsons.back().tiles["layers"][layer_counter].array_view()) {
+				layer.grid.cells.at(cell_counter).value = cell.as<int>();
+				++cell_counter;
+			}
+			layer.grid.seed_vertices();
+			++layer_counter;
+		}
+		++room_counter;
+	}
+
 	auto ctr{0};
 	for (auto& file : files) {
 		file.id = ctr;
@@ -47,10 +82,6 @@ void DataManager::load_data() {
 	hulmet = dj::Json::from_file((finder.resource_path + "/data/enemy/hulmet.json").c_str());
 	assert(!hulmet.is_null());
 
-	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
-	assert(!map_table.is_null());
-	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
-
 	menu = dj::Json::from_file((finder.resource_path + "/data/gui/menu.json").c_str());
 	assert(!menu.is_null());
 	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
@@ -74,10 +105,12 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto const wipe = dj::Json::parse(empty_array);
 
 	// write opened chests and doors
+	save["discovered_rooms"] = wipe;
 	save["unlocked_doors"] = wipe;
 	save["opened_chests"] = wipe;
 	save["destroyed_inspectables"] = wipe;
 	save["quest_progressions"] = wipe;
+	for (auto& room : discovered_rooms) { save["discovered_rooms"].push_back(room); }
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
@@ -135,17 +168,19 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
-std::string_view DataManager::load_progress(player::Player& player, int const file, bool state_switch) {
+int DataManager::load_progress(player::Player& player, int const file, bool state_switch) {
 
 	current_save = file;
 	auto const& save = files.at(file).save_data;
 	assert(!save.is_null());
 
 	m_services->quest = {};
+	discovered_rooms.clear();
 	unlocked_doors.clear();
 	opened_chests.clear();
 	destroyed_inspectables.clear();
 	quest_progressions.clear();
+	for (auto& room : save["discovered_rooms"].array_view()) { discovered_rooms.push_back(room.as<int>()); }
 	for (auto& door : save["unlocked_doors"].array_view()) { unlocked_doors.push_back(door.as<int>()); }
 	for (auto& chest : save["opened_chests"].array_view()) { opened_chests.push_back(chest.as<int>()); }
 	for (auto& inspectable : save["destroyed_inspectables"].array_view()) { destroyed_inspectables.push_back(inspectable.as_string().data()); }
@@ -204,7 +239,7 @@ std::string_view DataManager::load_progress(player::Player& player, int const fi
 	s.enemy.enemies_killed.set(in_stat["enemies_killed"].as<int>());
 	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
 
-	return m_services->tables.get_map_label.at(room_id);
+	return room_id;
 }
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) {
@@ -305,6 +340,13 @@ bool DataManager::inspectable_is_destroyed(std::string_view id) const {
 	return false;
 }
 
+bool DataManager::room_discovered(int id) const {
+	for (auto& room : discovered_rooms) {
+		if (id == room) { return true; }
+	}
+	return false;
+}
+
 void DataManager::load_controls(config::ControllerMap& controller) {
 
 	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
@@ -335,5 +377,16 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((finder.resource_path + "/data/config/control_map.json").c_str()); }
 
 void DataManager::reset_controls() { controls = dj::Json::from_file((finder.resource_path + "/data/config/defaults.json").c_str()); }
+
+int DataManager::get_room_index(int id) {
+	auto ctr{0};
+	for (auto& room : rooms) {
+		if (room == id) { return ctr; }
+		++ctr;
+	}
+	return ctr;
+}
+
+std::vector<world::Layer>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }
 
 } // namespace data

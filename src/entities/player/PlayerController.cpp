@@ -23,6 +23,33 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		return;
 	}
 	if (hard_state.test(HardState::no_move)) {
+		auto const& transponder_skip = svc.controller_map.label_to_control.at("main_action").triggered();
+		auto const& transponder_skip_released = svc.controller_map.label_to_control.at("main_action").released();
+		auto const& transponder_next = svc.controller_map.label_to_control.at("main_action").triggered();
+		auto const& transponder_exit = svc.controller_map.label_to_control.at("secondary_action").triggered();
+		auto const& transponder_down = svc.controller_map.label_to_control.at("down").triggered();
+		auto const& transponder_up = svc.controller_map.label_to_control.at("up").triggered();
+		auto const& transponder_left = svc.controller_map.label_to_control.at("left").triggered();
+		auto const& transponder_right = svc.controller_map.label_to_control.at("right").triggered();
+		auto const& transponder_hold_down = svc.controller_map.label_to_control.at("down").held();
+		auto const& transponder_hold_up = svc.controller_map.label_to_control.at("up").held();
+		auto const& transponder_hold_left = svc.controller_map.label_to_control.at("left").held();
+		auto const& transponder_hold_right = svc.controller_map.label_to_control.at("right").held();
+		auto const& transponder_select = svc.controller_map.label_to_control.at("main_action").triggered();
+		// transponder flags
+		transponder_skip ? transponder_flags.set(TransponderInput::skip) : transponder_flags.reset(TransponderInput::skip);
+		transponder_skip_released ? transponder_flags.set(TransponderInput::skip_released) : transponder_flags.reset(TransponderInput::skip_released);
+		transponder_next ? transponder_flags.set(TransponderInput::next) : transponder_flags.reset(TransponderInput::next);
+		transponder_exit ? transponder_flags.set(TransponderInput::exit) : transponder_flags.reset(TransponderInput::exit);
+		transponder_down ? transponder_flags.set(TransponderInput::down) : transponder_flags.reset(TransponderInput::down);
+		transponder_up ? transponder_flags.set(TransponderInput::up) : transponder_flags.reset(TransponderInput::up);
+		transponder_left ? transponder_flags.set(TransponderInput::left) : transponder_flags.reset(TransponderInput::left);
+		transponder_right ? transponder_flags.set(TransponderInput::right) : transponder_flags.reset(TransponderInput::right);
+		transponder_select ? transponder_flags.set(TransponderInput::select) : transponder_flags.reset(TransponderInput::select);
+		transponder_hold_down ? transponder_flags.set(TransponderInput::hold_down) : transponder_flags.reset(TransponderInput::hold_down);
+		transponder_hold_up ? transponder_flags.set(TransponderInput::hold_up) : transponder_flags.reset(TransponderInput::hold_up);
+		transponder_hold_left ? transponder_flags.set(TransponderInput::hold_left) : transponder_flags.reset(TransponderInput::hold_left);
+		transponder_hold_right ? transponder_flags.set(TransponderInput::hold_right) : transponder_flags.reset(TransponderInput::hold_right);
 		prevent_movement();
 		return;
 	}
@@ -53,16 +80,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 (svc.controller_map.label_to_control.at("down").triggered() && grounded() && !left && !right);
 	auto const& dash_left = svc.controller_map.label_to_control.at("tertiary_action").triggered() &&!grounded() && left;
 	auto const& dash_right = svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
-
-	auto const& transponder_skip = svc.controller_map.label_to_control.at("main_action").triggered();
-	auto const& transponder_skip_released = svc.controller_map.label_to_control.at("main_action").released();
-	auto const& transponder_next = svc.controller_map.label_to_control.at("main_action").triggered();
-	auto const& transponder_exit = svc.controller_map.label_to_control.at("secondary_action").triggered();
-	auto const& transponder_down = svc.controller_map.label_to_control.at("down").triggered();
-	auto const& transponder_up = svc.controller_map.label_to_control.at("up").triggered();
-	auto const& transponder_left = svc.controller_map.label_to_control.at("left").triggered();
-	auto const& transponder_right = svc.controller_map.label_to_control.at("right").triggered();
-	auto const& transponder_select = svc.controller_map.label_to_control.at("main_action").triggered();
 
 	auto const& hook_held = svc.controller_map.label_to_control.at("secondary_action").held();
 
@@ -97,17 +114,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
 	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
 	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }
-
-	// transponder flags
-	transponder_skip ? transponder_flags.set(TransponderInput::skip) : transponder_flags.reset(TransponderInput::skip);
-	transponder_skip_released ? transponder_flags.set(TransponderInput::skip_released) : transponder_flags.reset(TransponderInput::skip_released);
-	transponder_next ? transponder_flags.set(TransponderInput::next) : transponder_flags.reset(TransponderInput::next);
-	transponder_exit ? transponder_flags.set(TransponderInput::exit) : transponder_flags.reset(TransponderInput::exit);
-	transponder_down ? transponder_flags.set(TransponderInput::down) : transponder_flags.reset(TransponderInput::down);
-	transponder_up ? transponder_flags.set(TransponderInput::up) : transponder_flags.reset(TransponderInput::up);
-	transponder_left ? transponder_flags.set(TransponderInput::left) : transponder_flags.reset(TransponderInput::left);
-	transponder_right ? transponder_flags.set(TransponderInput::right) : transponder_flags.reset(TransponderInput::right);
-	transponder_select ? transponder_flags.set(TransponderInput::select) : transponder_flags.reset(TransponderInput::select);
 
 	//hook
 	hook_held ? hook_flags.set(Hook::hook_held) : hook_flags.reset(Hook::hook_held);

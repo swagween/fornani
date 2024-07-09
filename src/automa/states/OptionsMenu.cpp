@@ -9,7 +9,7 @@ OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, std::stri
 	right_dot.set_position(options.at(current_selection).right_offset);
 }
 
-void OptionsMenu::init(ServiceProvider& svc, std::string_view room) {}
+void OptionsMenu::init(ServiceProvider& svc, int room_number) {}
 
 void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.handle_mouse_events(event);

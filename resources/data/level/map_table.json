@@ -1,7 +1,7 @@
 {
   "rooms": [
     
-    { "room_id": 0, "label": "FIRSTWIND_PRISON_01"},
+    { "room_id": 0, "label": "INTRO"},
 
     { "room_id": 100, "label": "FIRSTWIND_PRISON_01"},
     { "room_id": 101, "label": "FIRSTWIND_CORRIDOR_01"},
