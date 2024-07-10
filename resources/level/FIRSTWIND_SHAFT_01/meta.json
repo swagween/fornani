@@ -14,7 +14,8 @@
       6
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "music": ""
   },
   "portals": [
     {
@@ -99,6 +100,50 @@
       ],
       "activate_on_contact": false,
       "key": "abandon"
+    }
+  ],
+  "animators": [
+    {
+      "id": 5,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        3,
+        94
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 1,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        2,
+        93
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 6,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        1,
+        94
+      ],
+      "automatic": true,
+      "foreground": false
     }
   ],
   "platforms": [

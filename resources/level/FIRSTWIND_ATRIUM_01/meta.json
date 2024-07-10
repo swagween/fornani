@@ -120,6 +120,22 @@
       "key": "comp_down"
     }
   ],
+  "animators": [
+    {
+      "id": 1,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        41,
+        40
+      ],
+      "automatic": true,
+      "foreground": false
+    }
+  ],
   "platforms": [
     {
       "position": [

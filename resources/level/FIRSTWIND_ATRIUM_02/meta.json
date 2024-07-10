@@ -105,6 +105,22 @@
       "key": "atrium_comp"
     }
   ],
+  "animators": [
+    {
+      "id": 2,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        24,
+        27
+      ],
+      "automatic": true,
+      "foreground": false
+    }
+  ],
   "platforms": [
     {
       "position": [

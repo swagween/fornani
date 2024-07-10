@@ -30,6 +30,8 @@ struct StatTracker {
 	struct {
 		util::Counter rooms_discovered{};
 	} world{};
+	struct {
+	} general{};
 
 };
 

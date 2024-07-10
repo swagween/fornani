@@ -60,6 +60,50 @@
       "key": "inf_shelf1"
     }
   ],
+  "animators": [
+    {
+      "id": 3,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        15,
+        12
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 1,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        27,
+        7
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 5,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        26,
+        8
+      ],
+      "automatic": true,
+      "foreground": false
+    }
+  ],
   "npcs": [
     {
       "id": 16,

@@ -828,6 +828,7 @@ void Game::playtester_portal() {
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());
 					ImGui::Separator();
 					ImGui::Text("Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
+					ImGui::Text("Seconds Passed In-Game: %.2f", services.ticker.in_game_seconds_passed.count());
 					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);

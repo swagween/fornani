@@ -27,12 +27,12 @@ void Grid::check_neighbors() {
 			// right neighbor
 			if (!(i == cells.size() - 1)) {
 				if (!cells.at(i + 1).is_solid()) { surrounded = false; }
-				if (cells.at(i + 1).is_big_ramp() && !cells.at(i).is_ramp()) { cells.at(i).flags.set(TileState::ramp_adjacent); }
+				if (cells.at(i + 1).is_big_ramp() && cells.at(i + 1).is_ground_ramp() && !cells.at(i).is_ramp()) { cells.at(i).flags.set(TileState::ramp_adjacent); }
 			}
 			// left neighbor
 			if (!(i == 0)) {
 				if (!cells.at(i - 1).is_solid()) { surrounded = false; }
-				if (cells.at(i - 1).is_big_ramp() && !cells.at(i).is_ramp()) { cells.at(i).flags.set(TileState::ramp_adjacent); }
+				if (cells.at(i - 1).is_big_ramp() && cells.at(i - 1).is_ground_ramp() && !cells.at(i).is_ramp()) { cells.at(i).flags.set(TileState::ramp_adjacent); }
 			}
 			// top neighbor
 			if (!(ui < dimensions.x)) {

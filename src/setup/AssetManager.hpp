@@ -88,6 +88,9 @@ class AssetManager {
 	sf::Texture t_platform_abandoned{};
 	sf::Texture t_platform_firstwind{};
 
+	//animators
+	sf::Texture t_automatic_animators_firstwind{};
+
 	//save
 	sf::Texture savepoint{};
 
@@ -344,6 +347,7 @@ class AssetManager {
 	std::unordered_map<int, sf::Texture&> background_lookup{};
 	std::unordered_map<int, sf::Texture&> effect_lookup{};
 	std::unordered_map<int, sf::Texture&> platform_lookup{};
+	std::unordered_map<int, sf::Texture&> animator_lookup{};
 	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> particle_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};

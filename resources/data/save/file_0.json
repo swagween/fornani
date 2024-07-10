@@ -23,7 +23,8 @@
       "blue_orbs": 0,
       "highest_indicator_amount": 0,
       "enemies_killed": 0,
-      "rooms_discovered": 0
+      "rooms_discovered": 0,
+      "seconds_played": 0.0
     }
   },
   "save_point_id": 100,
@@ -34,8 +35,7 @@
   "quest_progressions": [
   ],
   "destroyed_inspectables": [
-  ],
-  "discovered_rooms": [
+
   ],
   "tutorial": {
     "jump": false,

@@ -29,7 +29,9 @@
       ],
       "source_id": 117,
       "destination_id": 106,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "inspectables": [
@@ -44,6 +46,36 @@
       ],
       "activate_on_contact": false,
       "key": "firstwind_closet_3"
+    }
+  ],
+  "animators": [
+    {
+      "id": 6,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        4,
+        10
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 1,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        10
+      ],
+      "automatic": true,
+      "foreground": false
     }
   ],
   "save_point": {

@@ -60,6 +60,64 @@
       "key": "downstairs_computer"
     }
   ],
+  "animators": [
+    {
+      "id": 2,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        7,
+        22
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 1,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        17,
+        7
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 6,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        16,
+        8
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 4,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        12,
+        8
+      ],
+      "automatic": true,
+      "foreground": false
+    }
+  ],
   "platforms": [
     {
       "position": [

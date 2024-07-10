@@ -10,6 +10,7 @@ namespace util {
 	int source_id{};
 	int amount{1};
 	int hard_set{};
+	friend bool operator==(QuestKey const& lhs, QuestKey const& rhs) { return lhs.type == rhs.type && lhs.id == rhs.id && lhs.source_id == rhs.source_id; }
 	};
 
 class QuestCode {

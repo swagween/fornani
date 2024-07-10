@@ -104,6 +104,7 @@ class Ticker {
 
 	Tim seconds_passed{};
 	Tim total_seconds_passed{};
+	Tim in_game_seconds_passed{};
 	Tim total_milliseconds_passed{};
 	float fps{60.f};
 

@@ -88,11 +88,12 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			scaled_pos.y = entry["position"][1].as<int>();
 			scaled_dim.x = entry["dimensions"][0].as<int>();
 			scaled_dim.y = entry["dimensions"][1].as<int>();
+			auto automatic = (bool)entry["automatic"].as_bool();
+			auto astyle = (bool)entry["style"].as<int>();
 			auto lg = scaled_dim.x == 2;
-			auto a = entity::Animator(svc, scaled_pos, lg);
-			a.id = entry["id"].as<int>();
-			a.automatic = (bool)entry["automatic"].as_bool();
-			a.foreground = (bool)entry["foreground"].as_bool();
+			auto foreground = (bool)entry["foreground"].as_bool();
+			auto aid = entry["id"].as<int>();
+			auto a = entity::Animator(svc, scaled_pos, aid, lg, automatic, foreground, astyle);
 			animators.push_back(a);
 		}
 
@@ -318,7 +319,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& npc : npcs) { npc.update(svc, *this, console, *player); }
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition.fade_out, transition.done); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
-	for (auto& animator : animators) { animator.update(*player); }
+	for (auto& animator : animators) { animator.update(svc, *player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
@@ -436,7 +437,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& portal : portals) { portal.render(svc, win, cam); }
 
 	for (auto& animator : animators) {
-		if (animator.foreground) { animator.render(svc, win, cam); }
+		if (animator.foreground()) { animator.render(svc, win, cam); }
 	}
 	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
 
@@ -477,7 +478,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		win.draw(box);
 	}
 	for (auto& animator : animators) {
-		if (!animator.foreground) { animator.render(svc, win, cam); }
+		if (!animator.foreground()) { animator.render(svc, win, cam); }
 	}
 }
 

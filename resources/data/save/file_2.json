@@ -4,11 +4,11 @@
   },
   "player_data": {
     "max_hp": 3.000000,
-    "hp": 1.000000,
-    "orbs": 107,
+    "hp": 3.000000,
+    "orbs": 539,
     "position": {
-      "x": 209.972580,
-      "y": 234.000015
+      "x": 613.033691,
+      "y": 266.000000
     },
     "arsenal": [
       0
@@ -25,17 +25,36 @@
       {
         "id": 1,
         "quantity": 1
+      },
+      {
+        "id": 8,
+        "quantity": 1
       }
-    ]
+    ],
+    "stats": {
+      "death_count": 4,
+      "bullets_fired": 379,
+      "guns_collected": 0,
+      "items_collected": 1,
+      "orbs_collected": 432,
+      "blue_orbs": 0,
+      "highest_indicator_amount": 50,
+      "enemies_killed": 23,
+      "rooms_discovered": 13,
+      "seconds_played": 1188.206421
+    }
   },
-  "save_point_id": 117,
+  "save_point_id": 103,
   "unlocked_doors": [
-    11
+    11,
+    8
   ],
   "opened_chests": [
     5768,
     377,
-    56790
+    56790,
+    323,
+    211
   ],
   "quest_progressions": [
     [
@@ -72,6 +91,34 @@
       2,
       1,
       0
+    ],
+    [
+      1,
+      110,
+      1,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      3,
+      20,
+      1,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0
     ]
   ],
   "destroyed_inspectables": [
@@ -81,5 +128,20 @@
     "jump": true,
     "shoot": false,
     "sprint": false
-  }
+  },
+  "discovered_rooms": [
+    117,
+    106,
+    105,
+    199,
+    102,
+    103,
+    101,
+    100,
+    104,
+    107,
+    112,
+    114,
+    115
+  ]
 }

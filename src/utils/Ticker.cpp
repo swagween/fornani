@@ -7,6 +7,7 @@ namespace util {
 void Ticker::start_frame() {
 	++num_frames;
 	total_seconds_passed += dt;
+	in_game_seconds_passed += dt;
 	total_milliseconds_passed += dt * 1000.f;
 }
 

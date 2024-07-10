@@ -14,7 +14,8 @@
       1
     ],
     "style": 0,
-    "background": 4
+    "background": 4,
+    "music": ""
   },
   "portals": [
     {
@@ -45,6 +46,50 @@
       ],
       "activate_on_contact": false,
       "key": "warning1"
+    }
+  ],
+  "animators": [
+    {
+      "id": 2,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        24,
+        12
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 6,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        25,
+        13
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 8,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        23,
+        12
+      ],
+      "automatic": true,
+      "foreground": false
     }
   ],
   "platforms": [

@@ -5,9 +5,9 @@
   "player_data": {
     "max_hp": 3.000000,
     "hp": 3.000000,
-    "orbs": 923,
+    "orbs": 1562,
     "position": {
-      "x": 295.406891,
+      "x": 181.475632,
       "y": 394.000000
     },
     "arsenal": [
@@ -38,21 +38,26 @@
       {
         "id": 15,
         "quantity": 1
+      },
+      {
+        "id": 1,
+        "quantity": 1
       }
     ],
     "stats": {
-      "death_count": 1,
-      "bullets_fired": 3199,
+      "death_count": 4,
+      "bullets_fired": 7813,
       "guns_collected": 2,
-      "items_collected": 5,
-      "orbs_collected": 923,
+      "items_collected": 6,
+      "orbs_collected": 1562,
       "blue_orbs": 1,
-      "highest_indicator_amount": 125,
-      "enemies_killed": 44,
-      "rooms_discovered": 20
+      "highest_indicator_amount": 320,
+      "enemies_killed": 59,
+      "rooms_discovered": 20,
+      "seconds_played": 1552.331421
     }
   },
-  "save_point_id": 114,
+  "save_point_id": 110,
   "unlocked_doors": [
     11,
     12,
@@ -66,34 +71,14 @@
     323,
     211,
     8883,
-    45560
+    45560,
+    77122
   ],
   "quest_progressions": [
     [
-      3,
-      20,
       1,
+      110,
       1,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
       1,
       0
     ],
@@ -103,53 +88,11 @@
       2,
       1,
       0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      1,
-      110,
-      1,
-      1,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      33,
-      12,
-      2,
-      1,
-      0
-    ],
-    [
-      3,
-      20,
-      2,
-      1,
-      2
     ],
     [
       9,
       1,
-      2,
+      1,
       1,
       0
     ],
@@ -159,38 +102,11 @@
       1,
       1,
       0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      1,
-      0
     ]
   ],
   "destroyed_inspectables": [
-    "bit1118"
+    "bit1118",
+    "bookshelf110"
   ],
   "discovered_rooms": [
     100,

@@ -14,9 +14,10 @@ void DataManager::load_data() {
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
 
-	//load map
+	// load map
+	std::cout << "loading map data...";
 	int room_counter{};
-	for(auto& room : rooms) {
+	for (auto& room : rooms) {
 		map_jsons.push_back(MapData());
 		map_jsons.back().id = room;
 		std::string room_str = finder.resource_path + "/level/" + m_services->tables.get_map_label.at(room);
@@ -54,6 +55,7 @@ void DataManager::load_data() {
 		++ctr;
 	}
 	blank_file.save_data = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
+	std::cout << " success!\n";
 
 	std::cout << "loading json data...";
 	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
@@ -109,6 +111,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["unlocked_doors"] = wipe;
 	save["opened_chests"] = wipe;
 	save["destroyed_inspectables"] = wipe;
+	for (auto& entry : save["quest_progressions"].array_view()) { entry = wipe; }
 	save["quest_progressions"] = wipe;
 	for (auto& room : discovered_rooms) { save["discovered_rooms"].push_back(room); }
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
@@ -139,11 +142,11 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["player_data"]["equipped_gun"] = player.arsenal.value().get_index();
 	}
 
-	//items and abilities
+	// items and abilities
 	save["player_data"]["abilities"] = wipe;
 	save["player_data"]["items"] = wipe;
 	if (player.catalog.categories.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
-	for(auto& item : player.catalog.categories.inventory.items) {
+	for (auto& item : player.catalog.categories.inventory.items) {
 		dj::Json this_item{};
 		this_item["id"] = item.get_id();
 		this_item["quantity"] = item.get_quantity();
@@ -164,6 +167,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	out_stat["highest_indicator_amount"] = s.treasure.highest_indicator_amount.get_count();
 	out_stat["enemies_killed"] = s.enemy.enemies_killed.get_count();
 	out_stat["rooms_discovered"] = s.world.rooms_discovered.get_count();
+	out_stat["seconds_played"] = out_stat["seconds_played"].as<float>() + m_services->ticker.in_game_seconds_passed.count();
+	m_services->ticker.in_game_seconds_passed = {};
 
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
@@ -225,7 +230,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
 	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
-	//stat tracker
+	// stat tracker
 	m_services->stats = {};
 	auto const& in_stat = save["player_data"]["stats"];
 	auto& s = m_services->stats;
@@ -317,7 +322,12 @@ void DataManager::unlock_door(int id) { unlocked_doors.push_back(id); }
 
 void DataManager::destroy_inspectable(std::string_view id) { destroyed_inspectables.push_back(id.data()); }
 
-void DataManager::push_quest(util::QuestKey key) { quest_progressions.push_back(key); }
+void DataManager::push_quest(util::QuestKey key) {
+	for (auto& entry : quest_progressions) {
+		if (entry == key) { return; }
+	}
+	quest_progressions.push_back(key);
+}
 
 bool DataManager::door_is_unlocked(int id) const {
 	for (auto& door : unlocked_doors) {

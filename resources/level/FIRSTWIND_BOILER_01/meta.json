@@ -34,6 +34,106 @@
       "key_id": 0
     }
   ],
+  "animators": [
+    {
+      "id": 9,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        4,
+        3
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 9,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        3
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 9,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        9,
+        3
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 8,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        8,
+        3
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 8,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        10,
+        3
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 7,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        11,
+        3
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 6,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        3,
+        12
+      ],
+      "automatic": true,
+      "foreground": false
+    }
+  ],
   "chests": [
     {
       "id": 45560,

@@ -127,6 +127,8 @@ void AssetManager::import_textures() {
 	platform_lookup.insert({0, t_platform_night});
 	platform_lookup.insert({1, t_platform_abandoned});
 	platform_lookup.insert({2, t_platform_firstwind});
+	t_automatic_animators_firstwind.loadFromFile(finder.resource_path + "/image/tile/automatic_animators_firstwind.png");
+	animator_lookup.insert({0, t_automatic_animators_firstwind});
 
 	t_breakables.loadFromFile(finder.resource_path + "/image/tile/breakables.png");
 	t_inspectable.loadFromFile(finder.resource_path + "/image/entity/inspectable.png");
