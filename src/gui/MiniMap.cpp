@@ -13,9 +13,10 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc) {
 	border.setOutlineThickness(-4.f);
 	border.setFillColor(sf::Color::Transparent);
 	player_box.setFillColor(svc.styles.colors.periwinkle);
-	player_box.setSize({8.f, 8.f});
-	player_box.setOrigin({4.f, 4.f});
-	ratio = 32.f / scale;
+	player_box.setOutlineColor(svc.styles.colors.ui_white);
+	player_box.setOutlineThickness(2.f);
+	player_box.setSize({16.f, 16.f});
+	player_box.setOrigin({8.f, 8.f});
 	toggle_scale();
 }
 
@@ -65,11 +66,26 @@ void MiniMap::toggle_scale() {
 	texture.portal_box.setSize({ratio, ratio});
 	texture.save_box.setSize({ratio, ratio});
 	texture.breakable_box.setSize({ratio, ratio});
-	player_box.setSize({ratio * 2.f, ratio * 2.f});
-	player_box.setOrigin(player_box.getLocalBounds().getSize() * 0.5f);
+	//as scale goes up, position must increase
+	// -221 ->> 139
+
+	// -951, -224 (4)
+	// -221, 14 (8)
+	// 134, 153 (16)
+	// diffs: 720, 360
+	if (scale == 4.f) {
+		position = previous_position;
+		previous_position = position;
+	} else {
+		position.x += 90 * scale;
+		position.y += 90 * scale;
+	}
 }
 
-void MiniMap::move(sf::Vector2<float> direction) { position -= direction * speed; }
+void MiniMap::move(sf::Vector2<float> direction) {
+	position -= direction * speed;
+	previous_position = position;
+}
 
 void Chunk::generate() {
 	switch (type) {

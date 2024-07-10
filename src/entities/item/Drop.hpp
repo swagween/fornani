@@ -30,7 +30,7 @@ class Drop {
 
   public:
 	Drop() = default;
-	Drop(automa::ServiceProvider& svc, std::string_view key, float probability);
+	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0);
 	void seed(automa::ServiceProvider& svc, float probability);
 	void set_value();
 	void set_texture(automa::ServiceProvider& svc);
@@ -44,6 +44,7 @@ class Drop {
 	bool is_completely_gone() const;
 	bool is_inactive() const;
 	[[nodiscard]] auto get_rarity() const -> Rarity { return rarity; }
+	[[nodiscard]] auto delay_over() const -> bool { return delay.is_complete(); }
 
 	shape::Collider& get_collider();
 	DropType get_type() const;
@@ -66,6 +67,7 @@ class Drop {
 
 	util::Cooldown lifespan{};
 	util::Cooldown afterlife{}; // so sparkles remain after destruction
+	util::Cooldown delay{};
 
 	vfx::Sparkler sparkler;
 

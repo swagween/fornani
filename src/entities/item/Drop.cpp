@@ -5,7 +5,7 @@
 
 namespace item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop") {
+Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop") {
 
 	collider = shape::Collider(drop_dimensions);
 	collider.sync_components();
@@ -33,6 +33,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 
 	int rand_cooldown_offset = svc.random.random_range(0, 50);
 	lifespan.start(4500 + rand_cooldown_offset);
+	delay.start(delay_time);
 	seed(svc, probability);
 	set_value();
 	set_texture(svc);
@@ -85,7 +86,7 @@ void Drop::set_texture(automa::ServiceProvider& svc) {
 }
 
 void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
-
+	delay.update();
 	collider.update(svc);
 	collider.detect_map_collision(map);
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }

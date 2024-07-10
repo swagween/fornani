@@ -9,6 +9,7 @@ namespace audio {
 void MusicPlayer::load(std::string_view song_name) {
 	if (global_off()) { return; }
 	if (label == song_name && playing()) { return; }
+	if (song_name == "") { return; }
 	if (song_name == "none") {
 		stop();
 		std::cout << "music stopped.\n";

@@ -36,6 +36,8 @@ class MiniMap {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void toggle_scale();
 	void move(sf::Vector2<float> direction);
+	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
+	[[nodiscard]] auto get_scale() const -> float{ return scale; }
 
   private:
 	float scale{8.f};
@@ -43,6 +45,7 @@ class MiniMap {
 	float ratio{};
 	float speed{};
 	sf::Vector2<float> position{};
+	sf::Vector2<float> previous_position{};
 	sf::Vector2<float> player_position{};
 	sf::View view{};
 	MapTexture texture;

@@ -851,6 +851,10 @@ void Game::playtester_portal() {
 					ImGui::Text("Emotion Shipment: %i", player.transponder.shipments.emotion.get_residue());
 					ImGui::Text("Item Shipment...: %i", player.transponder.shipments.item.get_residue());
 					ImGui::Text("Quest Shipment..: %i", player.transponder.shipments.quest.get_residue());
+
+					ImGui::Text("MiniMap Scale..: %f", game_state.get_current_state().inventory_window.minimap.get_scale());
+					ImGui::Text("MiniMap X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().x);
+					ImGui::Text("MiniMap Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().y);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Music")) {
