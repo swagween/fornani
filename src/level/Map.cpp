@@ -367,6 +367,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		transition.fade_out = true;
 		if (transition.done && console.is_complete()) {
 			player->health.heal(64.f);
+			player->health.update();
 			svc.soundboard.flags.item.set(audio::Item::heal);
 			svc.music.switch_on();
 			svc.music.play_looped(10);

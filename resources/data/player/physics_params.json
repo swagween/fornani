@@ -1,6 +1,6 @@
 {
   "physics": {
-    "grav": 1.068040,
+    "grav": 1.053610,
     "ground_fric": 0.938000,
     "air_fric": 0.929000,
     "x_acc": 2.675000,
@@ -11,7 +11,7 @@
     "hurt_acc": 2.150000,
     "maximum_velocity": {
       "x": 9.490000,
-      "y": 21.680000
+      "y": 15.598000
     },
     "mass": 1.000000,
     "vertical_dash_multiplier": 1.237000,
