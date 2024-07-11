@@ -38,6 +38,10 @@ void Intro::tick_update(ServiceProvider& svc) {
 	if (console.is_complete()) {
 		svc.state_controller.actions.set(automa::Actions::intro_done);
 		svc.state_controller.actions.set(automa::Actions::trigger);
+		player->cooldowns.tutorial.start();
+		player->tutorial.current_state = text::TutorialFlags::jump;
+		player->tutorial.turn_on();
+		player->tutorial.trigger();
 	}
 	map.debug_mode = debug_mode;
 

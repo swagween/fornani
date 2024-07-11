@@ -123,6 +123,7 @@ class Player {
 	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(Abilities::shield); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.categories.inventory.has_item(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
+	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
 
 	// moves
 	void jump();
@@ -193,6 +194,10 @@ class Player {
 	PlayerFlags flags{};
 	util::Cooldown hurt_cooldown{}; //for animation
 	util::Cooldown force_cooldown{}; //for player hurt forces
+	struct {
+		util::Cooldown tutorial{400};
+		util::Cooldown sprint_tutorial{800};
+	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2<float>> accumulated_forces{};
 	sf::Vector2<float> forced_momentum{};

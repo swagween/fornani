@@ -35,11 +35,14 @@
   "quest_progressions": [
   ],
   "destroyed_inspectables": [
-
   ],
   "tutorial": {
+    "state": 0,
+    "closed": false,
     "jump": false,
     "shoot": false,
-    "sprint": false
+    "sprint": false,
+    "map": false,
+    "inventory": false
   }
 }

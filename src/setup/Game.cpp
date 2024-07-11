@@ -846,15 +846,26 @@ void Game::playtester_portal() {
 					ImGui::Text("Kayboard Enabled? %s", services.controller_map.hard_toggles.test(config::Toggles::keyboard) ? "Yes" : "No");
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("Tutorial")) {
+					ImGui::Text("Jump..: %s", player.tutorial.flags.test(text::TutorialFlags::jump) ? "Yes" : "No");
+					ImGui::Text("Shoot.: %s", player.tutorial.flags.test(text::TutorialFlags::shoot) ? "Yes" : "No");
+					ImGui::Text("Sprint: %s", player.tutorial.flags.test(text::TutorialFlags::sprint) ? "Yes" : "No");
+					ImGui::Text("Inv...: %s", player.tutorial.flags.test(text::TutorialFlags::inventory) ? "Yes" : "No");
+					ImGui::Text("Map...: %s", player.tutorial.flags.test(text::TutorialFlags::map) ? "Yes" : "No");
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Transponder")) {
 					ImGui::Text("Voice Shipment..: %i", player.transponder.shipments.voice.get_residue());
 					ImGui::Text("Emotion Shipment: %i", player.transponder.shipments.emotion.get_residue());
 					ImGui::Text("Item Shipment...: %i", player.transponder.shipments.item.get_residue());
 					ImGui::Text("Quest Shipment..: %i", player.transponder.shipments.quest.get_residue());
-
+					ImGui::Separator();
 					ImGui::Text("MiniMap Scale..: %f", game_state.get_current_state().inventory_window.minimap.get_scale());
 					ImGui::Text("MiniMap X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().x);
 					ImGui::Text("MiniMap Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().y);
+					ImGui::Separator();
+					ImGui::Text("MiniMap Center X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().x);
+					ImGui::Text("MiniMap Center Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().y);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Music")) {

@@ -319,9 +319,9 @@
   "chests": [
     {
       "id": 56790,
-      "item_id": 0,
-      "type": 2,
-      "amount": 10,
+      "item_id": 16,
+      "type": 3,
+      "amount": 1,
       "rarity": 0.000000,
       "position": [
         14,
@@ -333,7 +333,7 @@
       "item_id": 0,
       "type": 2,
       "amount": 8,
-      "rarity": 4.000000,
+      "rarity": 8.000000,
       "position": [
         6,
         71

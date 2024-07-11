@@ -37,6 +37,7 @@ class MiniMap {
 	void toggle_scale();
 	void move(sf::Vector2<float> direction);
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
+	[[nodiscard]] auto get_center_position() const -> sf::Vector2<float> { return center_position; }
 	[[nodiscard]] auto get_scale() const -> float{ return scale; }
 
   private:
@@ -46,6 +47,7 @@ class MiniMap {
 	float speed{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> previous_position{};
+	sf::Vector2<float> center_position{};
 	sf::Vector2<float> player_position{};
 	sf::View view{};
 	MapTexture texture;
@@ -54,6 +56,11 @@ class MiniMap {
 	sf::Sprite map_sprite{};
 	sf::RectangleShape background{};
 	sf::RectangleShape border{};
+	sf::RectangleShape room_border{};
+	struct {
+		sf::RectangleShape vert{};
+		sf::RectangleShape horiz{};
+	} cursor{};
 	sf::Color background_color{};
 	std::vector<Chunk> grid{};
 	std::vector<std::unique_ptr<MapTexture>> atlas{};

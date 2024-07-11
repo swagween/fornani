@@ -130,6 +130,11 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["tutorial"]["jump"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::jump);
 	save["tutorial"]["shoot"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::shoot);
 	save["tutorial"]["sprint"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::sprint);
+	save["tutorial"]["map"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::map);
+	save["tutorial"]["inventory"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::inventory);
+	save["tutorial"]["state"] = static_cast<int>(player.tutorial.current_state);
+	save["tutorial"]["closed"] = (dj::Boolean)player.tutorial.closed();
+	save["tutorial"]["on"] = (dj::Boolean)player.tutorial.on();
 
 	// save arsenal
 	save["player_data"]["arsenal"] = wipe;
@@ -203,6 +208,15 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	if (save["tutorial"]["jump"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::jump); }
 	if (save["tutorial"]["shoot"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::shoot); }
 	if (save["tutorial"]["sprint"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::sprint); }
+	if (save["tutorial"]["map"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::map); }
+	if (save["tutorial"]["inventory"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::inventory); }
+	player.tutorial.current_state = static_cast<text::TutorialFlags>(save["tutorial"]["state"].as<int>());
+	if (save["tutorial"]["closed"].as_bool()) { player.tutorial.close_for_good(); }
+	player.cooldowns.tutorial.start();
+	if (save["tutorial"]["on"].as_bool()) {
+		player.tutorial.turn_on();
+		player.tutorial.trigger();
+	}
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;

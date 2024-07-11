@@ -48,7 +48,7 @@ void Animator::update(automa::ServiceProvider& svc, player::Player& player) {
 	auto x_scale = attributes.test(AnimatorAttributes::large) ? 2 : 1;
 	if (attributes.test(AnimatorAttributes::automatic)) { converted_id = id; }
 	// get UV coords
-	int u = converted_id * x_scale * svc.constants.cell_size;
+	int u = converted_id * x_scale * svc.constants.i_cell_size;
 	int v = get_frame() * static_cast<int>(dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
 }

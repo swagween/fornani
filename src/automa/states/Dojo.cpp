@@ -14,7 +14,6 @@ void Dojo::init(ServiceProvider& svc, int room_number) {
 	}
 	console = gui::Console(svc);
 	player->reset_flags();
-	player->tutorial.help_marker.start();
 	map.load(svc, room_number);
 	bake_maps(svc, {map.room_id}, true);
 	auto m_id = map.room_id;
@@ -68,7 +67,7 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 	}
 
 	if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(svc); }
-	if ((svc.controller_map.label_to_control.at("arms_switch_right").triggered() || svc.controller_map.label_to_control.at("arms_switch_left").triggered()) && inventory_window.active()) {
+	if ((svc.controller_map.label_to_control.at("arms_switch_right").triggered() || svc.controller_map.label_to_control.at("arms_switch_left").triggered()) && inventory_window.active() && player->has_map()) {
 		inventory_window.switch_modes(svc);
 		svc.soundboard.flags.console.set(audio::Console::next);
 		svc.controller_map.reset_triggers();
