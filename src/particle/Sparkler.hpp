@@ -14,6 +14,7 @@ class Sparkler {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos);
 	void set_dimensions(sf::Vector2<float> dim);
+	void activate();
 	void deactivate();
 	void set_color(sf::Color to_color);
 	void set_rate(float to_rate);

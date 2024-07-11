@@ -37,6 +37,8 @@ void Sparkler::set_position(sf::Vector2<float> pos) { position = pos; }
 
 void Sparkler::set_dimensions(sf::Vector2<float> dim) { dimensions = dim; }
 
+void Sparkler::activate() { active = true; }
+
 void Sparkler::deactivate() { active = false; }
 
 void Sparkler::set_color(sf::Color to_color) { color = to_color; }

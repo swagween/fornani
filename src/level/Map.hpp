@@ -18,6 +18,7 @@
 #include "../entities/item/Loot.hpp"
 #include "../entities/world/Chest.hpp"
 #include "../entities/npc/NPC.hpp"
+#include "../entities/world/Bed.hpp"
 #include "Platform.hpp"
 #include "Breakable.hpp"
 #include "SwitchBlock.hpp"
@@ -122,6 +123,7 @@ class Map {
 	std::vector<vfx::Emitter> active_emitters{};
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
+	std::vector<entity::Bed> beds{};
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
 	std::vector<item::Loot> active_loot{};

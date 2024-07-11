@@ -33,6 +33,18 @@
     "color": "save"
   },
 
+  "bed": {
+    "rate": 0.8,
+    "volatility": 0.2,
+    "wobble": 0.02,
+    "frequency": 0.005,
+    "speed": 0.02,
+    "lifespan": 460,
+    "lifespan_variance": 295,
+    "fader": true,
+    "color": "save"
+  },
+
   "light_trail": {
     "rate": 13.0,
     "volatility": 0.0,

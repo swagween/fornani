@@ -6,6 +6,7 @@ namespace fornani {
 
 QuestTracker::QuestTracker() {
 	suites.temporaries.quests.insert({4, {4, "player_retry"}});
+	suites.temporaries.quests.insert({88, {88, "bed"}});
 	suites.npc.quests.insert({20, Quest{20, "bit"}});
 	suites.item.quests.insert({12, {12, "bit_cell_key"}});
 	suites.item.quests.insert({199, {199, "obtained"}});

@@ -119,6 +119,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.collision.set(Collision::any_collision);
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
+
 			correct_corner(mtvs.combined);
 		}
 		if (flags.external_state.test(ExternalState::vert_world_collision)) { flags.external_state.reset(ExternalState::horiz_world_collision); }
@@ -280,9 +281,9 @@ void Collider::correct_x_y(sf::Vector2<float> mtv) {
 
 void Collider::correct_corner(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
-	if (abs(mtv.x) > mtv.y) {
+	if (abs(mtv.x) > abs(mtv.y)) {
 		auto xdist = predictive_combined.position.x - physics.position.x;
-		auto correction = xdist + mtv.x;
+		auto correction = xdist + mtv.x * 1.5f;
 		physics.position.x += correction;
 		physics.zero_x();
 		//std::cout << "X Corner correction: " << correction << "\n";

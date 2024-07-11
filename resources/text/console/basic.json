@@ -5,6 +5,13 @@
     ],
     "responses": [ [] ]
   },
+  "bed": {
+    "suite": [
+      [ "Would you like to sleep?%0" ],
+      [ "Getting cozy...$88#1#1#", "...", "You awaken feeling well-rested." ]
+    ],
+    "responses": [ [ "Yes%0", "No%1" ] ]
+  },
   "chest": {
     "suite": [
       [ "Obtained $199#2#1" ]
@@ -35,7 +42,7 @@
       [ "Loading last save...$27#1#1#" ],
       [ "Returning to Main Menu..." ]
     ],
-    "responses": [ [ "Yes%0", "No%1"] ]
+    "responses": [ [ "Yes%0", "No%1" ] ]
   },
   "test_selector": {
     "suite": [

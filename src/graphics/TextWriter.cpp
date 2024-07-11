@@ -293,6 +293,7 @@ void TextWriter::check_for_event(Message& msg, Codes code) {
 		m_services->data.push_quest(out_quest);
 		if (out_quest.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
 		if (out_quest.type == 33) { communicators.reveal_item.set(out_quest.id); }
+		if (out_quest.type == 88) { m_services->state_controller.actions.set(automa::Actions::console_transition); }
 		out_quest = {};
 
 		msg.data.setString(msg.data.getString().substring(0, index));
@@ -316,8 +317,15 @@ void TextWriter::process_selection() {
 
 	// flush the suite until we reach the target determined by the selection
 	for (auto i = 0; i <= responses.at(iterators.current_response_set).at(iterators.current_selection).target; ++i) {
-		if (suite.empty()) { return; }
+		if (suite.empty()) {
+			return;
+		}
 		suite.pop_front();
+		if (suite.empty()) {
+			m_services->soundboard.flags.console.set(audio::Console::done);
+			shutdown();
+			return;
+		}
 	}
 	responses.pop_front();
 

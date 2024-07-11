@@ -12,7 +12,6 @@ void MusicPlayer::load(std::string_view song_name) {
 	if (song_name == "") { return; }
 	if (song_name == "none") {
 		stop();
-		std::cout << "music stopped.\n";
 		return;
 	}
 	label = song_name;

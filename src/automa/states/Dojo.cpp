@@ -114,10 +114,9 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!svc.greyblock_mode()) { hud.render(*player, win); }
 	inventory_window.render(svc, *player, win, camera.get_position());
 	pause_window.render(svc, *player, win);
+	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
-
-	map.transition.render(win);
 }
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {

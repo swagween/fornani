@@ -96,7 +96,12 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto a = entity::Animator(svc, scaled_pos, aid, lg, automatic, foreground, astyle);
 			animators.push_back(a);
 		}
-
+		for (auto& entry : metadata["beds"].array_view()) {
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
+			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
+			beds.push_back(entity::Bed(svc, pos));
+		}
 		for (auto& entry : metadata["inspectables"].array_view()) {
 			sf::Vector2<uint32_t> dim{};
 			sf::Vector2<uint32_t> pos{};
@@ -325,6 +330,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this); }
+	for (auto& bed : beds) { bed.update(svc, *this, console, *player); }
 	for (auto& breakable : breakables) {
 		breakable.update(svc);
 		breakable.handle_collision(player->collider);
@@ -354,6 +360,18 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			player->start_over();
 			svc.state_controller.actions.set(automa::Actions::player_death);
 			svc.state_controller.actions.set(automa::Actions::trigger);
+		}
+	}
+	if(svc.state_controller.actions.test(automa::Actions::console_transition)) {
+		svc.music.switch_off();
+		transition.fade_out = true;
+		if (transition.done && console.is_complete()) {
+			player->health.heal(64.f);
+			svc.soundboard.flags.item.set(audio::Item::heal);
+			svc.music.switch_on();
+			svc.music.play_looped(10);
+			transition.fade_in = true;
+			svc.state_controller.actions.reset(automa::Actions::console_transition);
 		}
 	}
 
@@ -386,6 +404,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
+	for (auto& bed : beds) { bed.render(svc, win, cam); }
 
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 

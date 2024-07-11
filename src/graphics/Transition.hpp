@@ -31,6 +31,7 @@ class Transition {
 	int rate{4};
 
 	sf::RectangleShape box{};
+	sf::Color color{};
 };
 
 } // namespace flfx

@@ -120,7 +120,6 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
-
 	if (svc.greyblock_mode()) {
 		collider.render(win, campos);
 	} else {

@@ -5,10 +5,10 @@
   "player_data": {
     "max_hp": 3.000000,
     "hp": 3.000000,
-    "orbs": 539,
+    "orbs": 556,
     "position": {
-      "x": 613.033691,
-      "y": 266.000000
+      "x": 208.338287,
+      "y": 234.000000
     },
     "arsenal": [
       0
@@ -33,18 +33,18 @@
     ],
     "stats": {
       "death_count": 4,
-      "bullets_fired": 379,
+      "bullets_fired": 387,
       "guns_collected": 0,
       "items_collected": 1,
-      "orbs_collected": 432,
+      "orbs_collected": 449,
       "blue_orbs": 0,
       "highest_indicator_amount": 50,
-      "enemies_killed": 23,
+      "enemies_killed": 24,
       "rooms_discovered": 13,
-      "seconds_played": 1188.206421
+      "seconds_played": 1232.867920
     }
   },
-  "save_point_id": 103,
+  "save_point_id": 117,
   "unlocked_doors": [
     11,
     8
@@ -119,6 +119,13 @@
       0,
       1,
       0
+    ],
+    [
+      88,
+      1,
+      1,
+      1,
+      0
     ]
   ],
   "destroyed_inspectables": [
@@ -127,7 +134,12 @@
   "tutorial": {
     "jump": true,
     "shoot": false,
-    "sprint": false
+    "sprint": true,
+    "map": false,
+    "inventory": false,
+    "state": 1,
+    "closed": true,
+    "on": false
   },
   "discovered_rooms": [
     117,
