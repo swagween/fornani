@@ -152,6 +152,7 @@ class Map {
 	sf::Sprite layer_sprite{};
 	std::string_view style_label{};
 
+	int room_lookup{};
 	int style_id{};
 	int native_style_id{};
 	struct {

@@ -12,7 +12,7 @@ enum class UND { up, neutral, down };
 enum class Inter { north, south, east, west, northeast, northwest, southeast, southwest };
 
 struct Direction {
-
+	Direction(dir::UND und_preset = dir::UND::neutral, dir::LR lr_preset = dir::LR::neutral) : und(und_preset), lr(lr_preset) {}
 	LR lr{LR::neutral};
 	UND und{UND::neutral};
 	Inter inter{Inter::north};

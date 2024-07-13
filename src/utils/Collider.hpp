@@ -15,7 +15,7 @@ class Map;
 namespace shape {
 
 float const default_dim = 24.0f;
-float const vicinity_pad = 24.f;
+float const vicinity_pad = 32.f;
 float const wallslide_pad = 2.f;
 
 float const default_jumpbox_height = 4.0f;
@@ -125,7 +125,7 @@ class Collider {
 
 	float landed_threshold{6.0f};
 	float horizontal_detector_buffer{1.0f};
-	float vertical_detector_buffer{2.0f};
+	float vertical_detector_buffer{1.0f};
 	float depth_buffer{1.0f};
 
 	sf::Vector2<float> dimensions{};

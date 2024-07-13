@@ -23,7 +23,7 @@ void Dojo::init(ServiceProvider& svc, int room_number) {
 	map.load(svc, room_number);
 	bake_maps(svc, {map.room_id}, true);
 	auto m_id = map.room_id;
-	bake_maps(svc, svc.data.discovered_rooms);
+	bake_maps(svc, svc.data.rooms);
 	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
 	hud.set_corner_pad(svc, false); // reset hud position to corner
 	svc.soundboard.turn_on();
@@ -95,7 +95,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	//A.update(svc);
 	//B.update(svc);
 	//auto mtv = A.bounding_box.testCollisionGetMTV(B.bounding_box, A.bounding_box);
-	//if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT y: " << mtv.y << "\n"; }
+	//if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT x: " << mtv.x << "\n"; }
 
 	player->update(map, console, inventory_window);
 	map.update(svc, console, inventory_window);
@@ -169,8 +169,11 @@ void Dojo::toggle_pause_menu(ServiceProvider& svc) {
 
 void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
 	for (auto& id : ids) {
+		if (id == 0) { continue; } //intro
 		gui_map.clear();
-		inventory_window.minimap.bake(svc, gui_map, id, current);
+		if (svc.data.room_discovered(id)) { inventory_window.minimap.bake(svc, gui_map, id, current); } else {
+			inventory_window.minimap.bake(svc, gui_map, id, current, true);
+		}
 	}
 }
 

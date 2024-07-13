@@ -132,8 +132,8 @@ void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> pl
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::D) {
-					//debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
-					//services.assets.sharp_click.play();
+					debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
+					services.assets.sharp_click.play();
 				}
 				if (event.key.code == sf::Keyboard::Q) {
 					//game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
@@ -420,7 +420,6 @@ void Game::debug_window() {
 							ImGui::Text("turn...: %s", player.animation.state == player::AnimState::turn ? "flag set" : "");
 							ImGui::Text("hurt...: %s", player.animation.state == player::AnimState::hurt ? "flag set" : "");
 							ImGui::Text("shpturn: %s", player.animation.state == player::AnimState::sharp_turn ? "flag set" : "");
-							ImGui::Text("jsquat.: %s", player.animation.state == player::AnimState::jumpsquat ? "flag set" : "");
 							ImGui::Text("rise...: %s", player.animation.state == player::AnimState::rise ? "flag set" : "");
 							ImGui::Text("suspend: %s", player.animation.state == player::AnimState::suspend ? "flag set" : "");
 							ImGui::Text("fall...: %s", player.animation.state == player::AnimState::fall ? "flag set" : "");
@@ -429,6 +428,7 @@ void Game::debug_window() {
 							ImGui::Text("sprint.: %s", player.animation.state == player::AnimState::sprint ? "flag set" : "");
 							ImGui::Text("wlslide: %s", player.animation.state == player::AnimState::wallslide ? "flag set" : "");
 							ImGui::Text("inspect: %s", player.animation.state == player::AnimState::inspect ? "flag set" : "");
+							ImGui::Text("die....: %s", player.animation.state == player::AnimState::die ? "flag set" : "");
 							ImGui::EndTabItem();
 						}
 						if (ImGui::BeginTabItem("Catalog")) {

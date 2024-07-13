@@ -24,10 +24,13 @@
       "highest_indicator_amount": 0,
       "enemies_killed": 0,
       "rooms_discovered": 0,
-      "seconds_played": 0.0
+      "seconds_played": 0.0,
+      "time_trials": {
+        "bryns_gun": 0.0
+      }
     }
   },
-  "save_point_id": 100,
+  "save_point_id": 110,
   "unlocked_doors": [
   ],
   "opened_chests": [
@@ -45,5 +48,7 @@
     "sprint": false,
     "map": false,
     "inventory": false
-  }
+  },
+  "discovered_rooms": [
+  ]
 }

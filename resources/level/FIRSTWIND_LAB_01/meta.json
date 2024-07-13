@@ -57,7 +57,8 @@
         12
       ],
       "activate_on_contact": false,
-      "key": "computer"
+      "key": "computer",
+      "alternates": 0
     },
     {
       "dimensions": [

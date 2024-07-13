@@ -78,7 +78,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	// player-controlled actions
 	if (arsenal) { arsenal.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
 	dash();
-	jump();
+	jump(map);
 	wallslide();
 	shield();
 	update_animation();
@@ -188,7 +188,7 @@ void Player::update_animation() {
 
 	if (grounded()) {
 		if (controller.inspecting()) { animation.state = AnimState::inspect; }
-		if (!(animation.state == AnimState::jumpsquat || animation.state == AnimState::land || animation.state == AnimState::rise)) {
+		if (!(animation.state == AnimState::land || animation.state == AnimState::rise)) {
 			if (controller.inspecting()) { animation.state = AnimState::inspect; }
 			if (controller.nothing_pressed() && !controller.dashing() && !(animation.state == AnimState::inspect) && !(animation.state == AnimState::sit)) { animation.state = AnimState::idle; }
 			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state = AnimState::run; }
@@ -205,7 +205,6 @@ void Player::update_animation() {
 		collider.flags.animation.reset(shape::Animation::just_landed);
 		animation.state = AnimState::land;
 	}
-	if (collider.physics.velocity.y < -thresholds.suspend) { animation.state = AnimState::rise; }
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (controller.dashing() && controller.can_dash()) { animation.state = AnimState::dash; }
@@ -338,9 +337,12 @@ void Player::calculate_sprite_offset() {
 	apparent_position = collider.get_average_tick_position() + collider.dimensions / 2.f;
 }
 
-void Player::jump() {
+void Player::jump(world::Map& map) {
 	if (controller.get_jump().began()) {
 		collider.flags.movement.set(shape::Movement::jumping);
+		if (m_services->ticker.every_x_ticks(20)) {
+			map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
+		}
 		if (tutorial.current_state == text::TutorialFlags::jump) {
 			tutorial.flags.set(text::TutorialFlags::jump);
 			tutorial.current_state = text::TutorialFlags::sprint;
@@ -351,12 +353,13 @@ void Player::jump() {
 		collider.flags.movement.reset(shape::Movement::jumping);
 	}
 	if (controller.get_jump().jumpsquat_trigger()) {
-		animation.state = AnimState::jumpsquat;
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
 		controller.get_jump().start_jumpsquat();
 		controller.get_jump().reset_jumpsquat_trigger();
 		collider.flags.movement.set(shape::Movement::jumping);
 	}
-	if (controller.get_jump().jumpsquatting() && !(animation.state == AnimState::jumpsquat)) {
+	if (controller.get_jump().jumpsquatting()) {
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
 		controller.get_jump().stop_jumpsquatting();
 		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
@@ -641,6 +644,7 @@ arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_current_wea
 void Player::push_to_loadout(int id) {
 	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
 	if (id == 0) {
+		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
 		tutorial.flags.set(text::TutorialFlags::inventory); //set this in case the player never opened inventory
 		tutorial.current_state = text::TutorialFlags::shoot;
 		tutorial.trigger();

@@ -12,8 +12,10 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 
 	toggleables.keyboard = options.at(0).label;
 	toggleables.gamepad = options.at(1).label;
+	music_label = options.at(2).label;
 	options.at(0).label.setString(toggleables.keyboard.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::keyboard) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-	options.at(1).label.setString(toggleables.gamepad.getString() +(svc.controller_map.hard_toggles.test(config::Toggles::gamepad) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(1).label.setString(toggleables.gamepad.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::gamepad) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(2).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 }
 
 void SettingsMenu::init(ServiceProvider& svc, int room_number) {}
@@ -27,19 +29,24 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
 		++current_selection;
 		constrain_selection();
+		mode_flags.reset(MenuMode::adjust);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("up").triggered()) {
 		--current_selection;
 		constrain_selection();
+		mode_flags.reset(MenuMode::adjust);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("left").triggered()) {
-		svc.state_controller.submenu = menu_type::options;
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		if (adjust_mode()) {
+		} else {
+			svc.state_controller.submenu = menu_type::options;
+			svc.state_controller.actions.set(Actions::exit_submenu);
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		}
 	}
-	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
+	if (svc.controller_map.label_to_control.at("main_action").triggered() && !adjust_mode()) {
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		switch (current_selection) {
 		case 0:
@@ -57,6 +64,8 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			} else {
 				svc.controller_map.hard_toggles.set(config::Toggles::gamepad);
 			}
+			break;
+		case 2: adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust);
 			break;
 		}
 		if (!svc.controller_map.gamepad_connected()) { svc.controller_map.hard_toggles.set(config::Toggles::keyboard); }
@@ -77,7 +86,10 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {for (auto& option : option
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection).left_offset);
 	right_dot.set_target_position(options.at(current_selection).right_offset);
-
+	if (svc.ticker.every_x_ticks(40)) {
+		if (svc.controller_map.label_to_control.at("left").held() && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
+		if (svc.controller_map.label_to_control.at("right").held() && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
+	}
 	svc.soundboard.play_sounds(svc);
 	svc.controller_map.reset_triggers();
 }
@@ -86,6 +98,8 @@ void SettingsMenu::frame_update(ServiceProvider& svc) {}
 
 void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
+	adjust_mode() ? options.at(2).label.setColor(svc.styles.colors.red) : options.at(2).label.setColor(options.at(2).label.getFillColor());
+	options.at(2).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 	for (auto& option : options) { win.draw(option.label); }
 
 	left_dot.render(svc, win, {0, 0});

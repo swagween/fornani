@@ -31,7 +31,7 @@ class MiniMap {
   public:
 	MiniMap() = default;
 	MiniMap(automa::ServiceProvider& svc);
-	void bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current = false);
+	void bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current = false, bool undiscovered = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void toggle_scale();

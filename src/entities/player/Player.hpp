@@ -126,7 +126,7 @@ class Player {
 	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
 
 	// moves
-	void jump();
+	void jump(world::Map& map);
 	void dash();
 	void wallslide();
 	void shield();

@@ -8,7 +8,7 @@ void Tutorial::update(automa::ServiceProvider& svc) {
 	if (!helpers.consume(TutorialHelpers::trigger)) { return; }
 	if (!flags.test(TutorialFlags::jump)) {
 		help_marker.init(svc, "Press [", "main_action", "] to jump.", 80, true);
-		std::cout << "Jump Tutorial initialized.\n";
+		//std::cout << "Jump Tutorial initialized.\n";
 		return;
 	}
 	if (!flags.test(TutorialFlags::sprint)) {
@@ -18,17 +18,17 @@ void Tutorial::update(automa::ServiceProvider& svc) {
 	}
 	if (!flags.test(TutorialFlags::inventory)) {
 		help_marker.init(svc, "Press [", "menu_toggle", "] to open inventory.", 200, true);
-		std::cout << "Inventory Tutorial initialized.\n";
+		//std::cout << "Inventory Tutorial initialized.\n";
 		return;
 	}
 	if (!flags.test(TutorialFlags::shoot)) {
 		help_marker.init(svc, "Press [", "secondary_action", "] to shoot.", 200, true);
-		std::cout << "Shoot Tutorial initialized.\n";
+		//std::cout << "Shoot Tutorial initialized.\n";
 		return;
 	}
 	if (!flags.test(TutorialFlags::map)) {
 		help_marker.init(svc, "View map from inventory by pressing [", "menu_toggle", "].", 200, true);
-		std::cout << "Map Tutorial initialized.\n";
+		//std::cout << "Map Tutorial initialized.\n";
 		return;
 	}
 }

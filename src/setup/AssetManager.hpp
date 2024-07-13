@@ -42,12 +42,6 @@ class AssetManager {
 	sf::Texture t_palette_nanidiv{};
 	sf::Texture t_palette_naninight{};
 
-	// portraits!
-	sf::Texture t_bryn_test{};
-	sf::Sprite sp_bryn_test{};
-	sf::Texture t_ui_test{};
-	sf::Sprite sp_ui_test{};
-
 	//items
 	sf::Texture t_items{};
 	sf::Texture t_guns{};

@@ -39,8 +39,8 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 		console.set_source(set);
 		if (alternates < 1) { console.load_and_launch(key); } else {
 			std::string new_key = key + std::to_string(current_alt);
-			std::cout << "New key: " << new_key << "\n";
-			std::cout << "Current alt: " << current_alt << "\n";
+			//std::cout << "New key: " << new_key << "\n";
+			//std::cout << "Current alt: " << current_alt << "\n";
 			console.load_and_launch(new_key);
 		}
 	}

@@ -6,6 +6,7 @@
 namespace automa {
 
 enum class Toggles { keyboard, gamepad };
+enum class MenuMode { adjust };
 
 class SettingsMenu : public automa::GameState {
   public:
@@ -16,10 +17,11 @@ class SettingsMenu : public automa::GameState {
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
+	[[nodiscard]] auto adjust_mode() const -> bool { return mode_flags.test(MenuMode::adjust); }
 
-private:
-
+  private:
 	util::BitFlags<Toggles> toggles{};
+	util::BitFlags<MenuMode> mode_flags{};
 	struct {
 		sf::Text enabled{};
 		sf::Text disabled{};
@@ -33,6 +35,8 @@ private:
 	struct {
 		sf::Text music_volume{};
 	} sliders{};
+
+	sf::Text music_label{};
 };
 
 } // namespace automa

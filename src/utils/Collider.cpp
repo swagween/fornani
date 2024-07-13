@@ -136,6 +136,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				if (mtvs.actual.y < 0.f) { physics.position.y += mtvs.actual.y; }
 				// still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping)) { physics.zero_y(); }
+				//std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
+				if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
 			}
 			if (is_ceiling_ramp) { correct_x_y(mtvs.actual); }
 			// cancel dash
@@ -145,7 +147,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		// we also need to check if the predictive bounding box is colliding a ramp, just to deal with falling/jumping onto and into ramps
 		if (predictive_combined.SAT(cell)) {
 			if (falls_onto) {
-				correct_x_y(mtvs.combined);
+				correct_corner(mtvs.combined);
 				flags.state.set(State::just_landed);
 				flags.animation.set(Animation::just_landed);
 				flags.external_state.set(ExternalState::world_collision);
@@ -285,22 +287,15 @@ void Collider::correct_x_y(sf::Vector2<float> mtv) {
 
 void Collider::correct_corner(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
-	// for large mtv values, overcorrect to prevent clipping
-	if (abs(mtv.x) > 12.f || abs(mtv.y) > 12.f) {
-		mtv.x = abs(mtv.y) > 0 ? mtv.y : mtv.x;
-		mtv.y = abs(mtv.x) > 0 ? mtv.x : mtv.y;
-	}
-	if (abs(mtv.x) > abs(mtv.y)) {
-		auto xdist = predictive_combined.position.x - physics.position.x;
-		auto correction = xdist + mtv.x * 1.5f;
-		physics.position.x += correction;
+	if (abs(mtv.x) >= abs(mtv.y)) {
+		physics.position.x = predictive_combined.position.x + mtv.x;
 		physics.zero_x();
-		//std::cout << "X Corner correction: " << correction << "\n";
+		//std::cout << "X Corner correction: " << mtv.x << "\n";
 	} else {
 		auto ydist = predictive_combined.position.y - physics.position.y;
 		auto correction = ydist + mtv.y;
-		physics.position.y += correction;
-		if (mtv.y > 0) { physics.zero_y(); }
+		physics.position.y = predictive_combined.position.y + mtv.y;
+		physics.zero_y();
 		//std::cout << "Y Corner correction: " << correction << "\n";
 	}
 }
@@ -404,7 +399,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive vertical
 	box.setSize(predictive_vertical.dimensions);
 	box.setPosition(predictive_vertical.position.x - cam.x, predictive_vertical.position.y - cam.y);
-	box.setOutlineColor(sf::Color{255, 0, 0, 120});
+	box.setOutlineColor(sf::Color{255, 0, 0, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -412,7 +407,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.dimensions);
 	box.setPosition(predictive_horizontal.position.x - cam.x, predictive_horizontal.position.y - cam.y);
-	box.setOutlineColor(sf::Color{80, 0, 255, 120});
+	box.setOutlineColor(sf::Color{80, 0, 255, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
 	win.draw(box);
@@ -431,7 +426,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setFillColor(sf::Color{200, 150, 255, 20});
 	box.setOutlineColor(sf::Color{255, 255, 255, 190});
 	box.setOutlineThickness(-1);
-	win.draw(box);
+	//win.draw(box);
 
 	// draw jump box
 	box.setSize(jumpbox.dimensions);
@@ -444,7 +439,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw hurtbox
 	draw_hurtbox.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});
 	draw_hurtbox.setPosition(hurtbox.position.x - cam.x, hurtbox.position.y - cam.y);
-	win.draw(draw_hurtbox);
+	//win.draw(draw_hurtbox);
 
 	// draw vicinity
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});

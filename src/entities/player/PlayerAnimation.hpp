@@ -13,18 +13,17 @@ namespace player {
 
 class Player;
 
-enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, jumpsquat, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, die };
+enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, die };
 enum class AnimTriggers { flip, end_death };
 int const rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
 inline anim::Parameters idle{20, 8, 7 * rate, -1, false, true};
-inline anim::Parameters turn{33, 3, 2 * rate, 0};
+inline anim::Parameters turn{33, 3, 4 * rate, 0};
 inline anim::Parameters sharp_turn{16, 2, 4 * rate, 0};
 inline anim::Parameters run{44, 4, 6 * rate, -1};
 inline anim::Parameters sprint{10, 6, 4 * rate, -1};
 inline anim::Parameters shield{80, 3, 4 * rate, -1, true};
-inline anim::Parameters jumpsquat{61, 1, 1 * rate, 0};
-inline anim::Parameters rise{54, 2, 5 * rate, -1};
+inline anim::Parameters rise{40, 4, 6 * rate, 0};
 inline anim::Parameters suspend{30, 3, 7 * rate, -1};
 inline anim::Parameters fall{62, 4, 5 * rate, -1};
 inline anim::Parameters stop{74, 2, 4 * rate, 0};
@@ -63,7 +62,6 @@ class PlayerAnimation {
 	fsm::StateFunction update_sprint();
 	fsm::StateFunction update_shield();
 	fsm::StateFunction update_run();
-	fsm::StateFunction update_jumpsquat();
 	fsm::StateFunction update_rise();
 	fsm::StateFunction update_suspend();
 	fsm::StateFunction update_fall();

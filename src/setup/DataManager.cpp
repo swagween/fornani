@@ -15,7 +15,7 @@ void DataManager::load_data() {
 	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
 
 	// load map
-	std::cout << "loading map data...";
+	//std::cout << "loading map data...";
 	int room_counter{};
 	for (auto& room : rooms) {
 		map_jsons.push_back(MapData());
@@ -55,9 +55,9 @@ void DataManager::load_data() {
 		++ctr;
 	}
 	blank_file.save_data = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
-	std::cout << " success!\n";
+	//std::cout << " success!\n";
 
-	std::cout << "loading json data...";
+	//std::cout << "loading json data...";
 	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
 	assert(!game_info.is_null());
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
@@ -88,7 +88,7 @@ void DataManager::load_data() {
 	assert(!menu.is_null());
 	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
-	std::cout << " success!\n";
+	//std::cout << " success!\n";
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
@@ -173,7 +173,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	out_stat["enemies_killed"] = s.enemy.enemies_killed.get_count();
 	out_stat["rooms_discovered"] = s.world.rooms_discovered.get_count();
 	out_stat["seconds_played"] = out_stat["seconds_played"].as<float>() + m_services->ticker.in_game_seconds_passed.count();
-	m_services->ticker.in_game_seconds_passed = {};
+	out_stat["time_trials"]["bryns_gun"] = s.time_trials.bryns_gun;
 
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
@@ -257,6 +257,8 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	s.treasure.highest_indicator_amount.set(in_stat["highest_indicator_amount"].as<int>());
 	s.enemy.enemies_killed.set(in_stat["enemies_killed"].as<int>());
 	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
+	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
+	m_services->ticker.in_game_seconds_passed = m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>());
 
 	return room_id;
 }
@@ -279,7 +281,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 
 void DataManager::load_player_params(player::Player& player) {
 
-	std::cout << "loading player params ...";
+	//std::cout << "loading player params ...";
 	player_params = dj::Json::from_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
@@ -301,12 +303,12 @@ void DataManager::load_player_params(player::Player& player) {
 	player.physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
 	player.physics_stats.dash_dampen = player_params["physics"]["dash_dampen"].as<float>();
 	player.physics_stats.wallslide_speed = player_params["physics"]["wallslide_speed"].as<float>();
-	std::cout << " success!\n";
+	//std::cout << " success!\n";
 }
 
 void DataManager::save_player_params(player::Player& player) {
 
-	std::cout << "saving player params ...";
+	//std::cout << "saving player params ...";
 	player_params["physics"]["grav"] = player.physics_stats.grav;
 	player_params["physics"]["ground_fric"] = player.physics_stats.ground_fric;
 	player_params["physics"]["air_fric"] = player.physics_stats.air_fric;
@@ -327,7 +329,7 @@ void DataManager::save_player_params(player::Player& player) {
 	player_params["physics"]["wallslide_speed"] = player.physics_stats.wallslide_speed;
 
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
-	std::cout << " success!\n";
+	//std::cout << " success!\n";
 }
 
 void DataManager::open_chest(int id) { opened_chests.push_back(id); }

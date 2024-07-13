@@ -20,11 +20,11 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) {
 	save_box.setSize({4.f, 4.f});
 }
 
-void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current) {
+void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
 	map.load(svc, room, true);
 	global_offset = map.metagrid_coordinates * 16;
 	auto const& middleground = map.get_layers().at(world::MIDDLEGROUND);
-	map_texture.create(static_cast<float>(map.dimensions.x) * (32.f / scale), static_cast<float>(map.dimensions.y) * (32.f / scale));
+	map_texture.create(map.dimensions.x * static_cast<unsigned int>((32.f / scale)), map.dimensions.y * static_cast<unsigned int>(32.f / scale));
 	map_texture.clear(sf::Color::Transparent);
 	for (auto& cell : middleground.grid.cells) {
 		if (cell.is_occupied() && !cell.is_breakable()) {
@@ -57,6 +57,11 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 	if (map.save_point.id > 0) {
 		save_box.setPosition(sf::Vector2 <float>(map.save_point.scaled_position) * 32.f / scale);
 		map_texture.draw(save_box);
+	}
+	if (undiscovered) { 
+		curtain.setSize({static_cast<float>(map.dimensions.x) * (32.f / scale), static_cast<float>(map.dimensions.y) * (32.f / scale)});
+		curtain.setFillColor(svc.styles.colors.navy_blue);
+		map_texture.draw(curtain);
 	}
 
 	map_texture.display();

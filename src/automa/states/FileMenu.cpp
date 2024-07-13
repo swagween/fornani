@@ -57,14 +57,13 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {
+	if (svc.controller_map.label_to_control.at("menu_forward").triggered() || svc.controller_map.label_to_control.at("main_action").triggered()) {
 		constrain_selection();
 		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection, true);
 		svc.state_controller.actions.set(Actions::trigger);
 		svc.state_controller.actions.set(Actions::save_loaded);
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 		svc.soundboard.flags.world.set(audio::World::load);
-		svc.ticker.in_game_seconds_passed = {};
 	}
 	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
 		svc.state_controller.submenu = menu_type::main;

@@ -23,8 +23,6 @@ void AssetManager::import_textures() {
 	t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");
 	t_palette_naninight.loadFromFile(finder.resource_path + "/image/character/nani_palette_night.png");
 
-	t_bryn_test.loadFromFile(finder.resource_path + "/image/portrait/bryn_test.png");
-
 	t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 	t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
 	t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");

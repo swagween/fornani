@@ -32,7 +32,14 @@ struct StatTracker {
 	} world{};
 	struct {
 	} general{};
+	struct {
+		float bryns_gun{};
+	} time_trials{};
 
+	constexpr auto float_to_seconds(float const time) {
+		using namespace std::chrono;
+		return round<nanoseconds>(duration<float>{time});
+	}
 };
 
 } // namespace fornani

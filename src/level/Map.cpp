@@ -20,15 +20,14 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
 
-	int lookup{};
 	int ctr{};
 	for (auto& room : svc.data.map_jsons) {
-		if (room.id == room_number) { lookup = ctr; }
+		if (room.id == room_number) { room_lookup = ctr; }
 		++ctr;
 	}
-	auto const& metadata = svc.data.map_jsons.at(lookup).metadata;
-	auto const& tiles = svc.data.map_jsons.at(lookup).tiles;
-	inspectable_data = svc.data.map_jsons.at(lookup).inspectable_data;
+	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
+	auto const& tiles = svc.data.map_jsons.at(room_lookup).tiles;
+	inspectable_data = svc.data.map_jsons.at(room_lookup).inspectable_data;
 
 	// get npc data
 	auto const& meta = metadata["meta"];
@@ -364,13 +363,14 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		}
 	}
 	if(svc.state_controller.actions.test(automa::Actions::console_transition)) {
-		svc.music.switch_off();
+		svc.music.load("brown");
+		svc.music.play_looped(10);
 		transition.fade_out = true;
 		if (transition.done && console.is_complete()) {
 			player->health.heal(64.f);
 			player->health.update();
 			svc.soundboard.flags.item.set(audio::Item::heal);
-			svc.music.switch_on();
+			svc.music.load(svc.data.map_jsons.at(room_lookup).metadata["meta"]["music"].as_string());
 			svc.music.play_looped(10);
 			transition.fade_in = true;
 			svc.state_controller.actions.reset(automa::Actions::console_transition);

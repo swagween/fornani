@@ -29,10 +29,10 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc) {
 	toggle_scale();
 }
 
-void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current) {
+void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current, bool undiscovered) {
 	atlas.push_back(std::make_unique<MapTexture>(svc));
 	if (current) { atlas.back()->set_current(); }
-	atlas.back()->bake(svc, map, room, scale, current);
+	atlas.back()->bake(svc, map, room, scale, current, undiscovered);
 }
 
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {

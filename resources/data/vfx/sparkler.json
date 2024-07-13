@@ -34,11 +34,11 @@
   },
 
   "bed": {
-    "rate": 0.8,
+    "rate": 1.8,
     "volatility": 0.2,
     "wobble": 0.02,
     "frequency": 0.005,
-    "speed": 0.02,
+    "speed": 0.04,
     "lifespan": 460,
     "lifespan_variance": 295,
     "fader": true,
