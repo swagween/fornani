@@ -8,6 +8,12 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 
 void Dojo::init(ServiceProvider& svc, int room_number) {
 
+	//A = shape::Collider({32.f, 32.f});
+	//B = shape::Collider({24.f, 24.f});
+	//A.stats.GRAV = 0.f;
+	//B.stats.GRAV = 0.f;
+	//A.physics.position = {200.f, 200.f};
+
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
 		svc.stats.world.rooms_discovered.update();
@@ -47,7 +53,7 @@ void Dojo::init(ServiceProvider& svc, int room_number) {
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
-	svc.state_controller.actions.reset(Actions::player_death);
+	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 
 	player->controller.prevent_movement();
 }
@@ -62,6 +68,11 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
 
 	if (event.type == sf::Event::EventType::KeyPressed) {
+		if (event.key.code == sf::Keyboard::Enter && pause_window.active()) {
+			console.set_source(svc.text.basic);
+			console.load_and_launch("menu_return");
+			toggle_pause_menu(svc);
+		}
 		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
 		if (event.key.code == sf::Keyboard::Num0) { camera.begin_shake(); }
 	}
@@ -77,8 +88,14 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 void Dojo::tick_update(ServiceProvider& svc) {
 	enter_room.update();
+	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
+
+	//A.update(svc);
+	//B.update(svc);
+	//auto mtv = A.bounding_box.testCollisionGetMTV(B.bounding_box, A.bounding_box);
+	//if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT y: " << mtv.y << "\n"; }
 
 	player->update(map, console, inventory_window);
 	map.update(svc, console, inventory_window);
@@ -108,6 +125,8 @@ void Dojo::frame_update(ServiceProvider& svc) {
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
+	//B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
+
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
 
@@ -117,9 +136,13 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
+
+	//A.render(win, {});
+	//B.render(win, {});
 }
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {
+	if (pause_window.active()) { return; }
 	if (inventory_window.active()) {
 		svc.soundboard.flags.console.set(audio::Console::done);
 		inventory_window.close();
@@ -132,7 +155,14 @@ void Dojo::toggle_inventory(ServiceProvider& svc) {
 }
 
 void Dojo::toggle_pause_menu(ServiceProvider& svc) {
-	pause_window.active() ? pause_window.close() : pause_window.open();
+	if (pause_window.active()) {
+		pause_window.close();
+		svc.soundboard.flags.console.set(audio::Console::done);
+	} else {
+		pause_window.open();
+		svc.soundboard.flags.console.set(audio::Console::menu_open);
+		svc.soundboard.play_sounds(svc);
+	}
 	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();
 	svc.controller_map.reset_triggers();
 }

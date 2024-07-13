@@ -42,19 +42,18 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				player.animation.triggers.reset(player::AnimTriggers::end_death);
 				svc.stats.player.death_count.update();
 			} else {
-				set_current_state(std::make_unique<MainMenu>(svc, player, "main"));
-				svc.state_controller.actions.reset(Actions::player_death);
-				svc.state_controller.actions.reset(Actions::trigger);
-				svc.state_controller.actions.reset(Actions::retry);
-				player.start_over();
-				player.animation.state = player::AnimState::run;
-				svc.stats.player.death_count.update();
+				return_to_main_menu(svc, player);
 				return;
 			}
 			svc.music.stop();
 		}
 	}
 	if (svc.state_controller.actions.consume(Actions::trigger)) {
+		if (svc.state_controller.actions.test(Actions::main_menu)) {
+			return_to_main_menu(svc, player);
+			svc.state_controller.actions.reset(Actions::main_menu);
+			return;
+		}
 		if (svc.data.get_file().is_new() && !svc.state_controller.actions.test(Actions::intro_done)) {
 			set_current_state(std::make_unique<Intro>(svc, player, "intro"));
 		} else {
@@ -65,6 +64,15 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			game.playtest_sync();
 		}
 	}
+}
+
+void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& player) {
+	set_current_state(std::make_unique<MainMenu>(svc, player, "main"));
+	svc.state_controller.actions.reset(Actions::player_death);
+	svc.state_controller.actions.reset(Actions::trigger);
+	svc.state_controller.actions.reset(Actions::retry);
+	player.start_over();
+	player.animation.state = player::AnimState::run;
 }
 
 auto StateManager::get_current_state() const -> GameState& {

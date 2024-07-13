@@ -18,7 +18,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	// for debugging
 	center_box.setSize(svc.constants.f_screen_dimensions * 0.5f);
 	flags.state.reset(LevelState::game_over);
-	svc.state_controller.actions.reset(automa::Actions::death_mode);
+	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
 
 	int lookup{};
 	int ctr{};
@@ -352,6 +352,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		svc.music.load("mortem");
 		svc.music.play_looped(10);
 		svc.soundboard.turn_off();
+		svc.stats.player.death_count.update();
 	}
 
 	if (console.is_complete() && flags.state.test(LevelState::game_over)) {

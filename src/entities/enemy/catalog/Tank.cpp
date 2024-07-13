@@ -11,7 +11,7 @@ Tank::Tank(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "tank"), 
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
 	collider.physics.maximum_velocity = {3.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
-	secondary_collider = shape::Collider({24.f, 14.f});
+	secondary_collider = shape::Collider({28.f, 28.f});
 	directions.desired.lr = dir::LR::left;
 	directions.actual.lr = dir::LR::left;
 	directions.movement.lr = dir::LR::neutral;
@@ -34,8 +34,8 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	if (directions.actual.lr == dir::LR::right && sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
 	if (directions.actual.lr == dir::LR::left && sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
-	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, secondary_collider.dimensions.y};
-	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 8.f : collider.dimensions.x - secondary_collider.dimensions.x - 8.f;
+	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
+	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
 	secondary_collider.sync_components();
 	player.collider.handle_collider_collision(secondary_collider.bounding_box);
 

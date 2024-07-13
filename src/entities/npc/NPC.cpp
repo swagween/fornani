@@ -6,10 +6,12 @@
 
 namespace npc {
 
-NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::make_unique<NPCAnimation>(svc, id)) {
+NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::make_unique<NPCAnimation>(svc, id)), indicator(svc.assets.t_indicator, {32, 32}) {
 
 	label = svc.tables.npc_label.at(id);
-
+	indicator.set_origin({0.f, 48.f});
+	indicator.push_params("neutral", {0, 15, 16, 0, true});
+	indicator.end();
 	auto const& in_data = svc.data.npc[label];
 	dimensions.x = in_data["dimensions"][0].as<float>();
 	dimensions.y = in_data["dimensions"][1].as<float>();
@@ -48,12 +50,16 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 		animation_machine->communication_flags.reset(NPCCommunication::sprite_flip);
 	}
 
+	indicator.update(collider.physics.position);
+
 	collider.update(svc);
 	collider.detect_map_collision(map);
 	collider.reset();
 	collider.physics.acceleration = {};
 
+	console.active() ? state_flags.set(NPCState::talking) : state_flags.reset(NPCState::talking);
 	if (player.collider.bounding_box.overlaps(collider.bounding_box) || (triggers.test(NPCTrigger::distant_interact) && state_flags.test(NPCState::force_interact))) {
+		if (!state_flags.test(NPCState::engaged)) { triggers.set(NPCTrigger::engaged); }
 		state_flags.set(NPCState::engaged);
 		if ((player.controller.inspecting() || state_flags.test(NPCState::force_interact)) && !conversations.empty()) {
 			state_flags.set(NPCState::introduced);
@@ -67,6 +73,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	} else {
 		state_flags.reset(NPCState::engaged);
 	}
+	if (state_flags.test(NPCState::engaged) && triggers.consume(NPCTrigger::engaged) && indicator.complete()) { indicator.set_params("neutral", true); }
 
 	if (console.off() && state_flags.test(NPCState::engaged)) {
 		if (conversations.size() > 1) {
@@ -93,6 +100,7 @@ void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	} else {
 		win.draw(sprite);
 	}
+	indicator.render(svc, win, campos);
 }
 
 void NPC::set_position(sf::Vector2<float> pos) { collider.physics.position = pos; }

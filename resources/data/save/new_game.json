@@ -39,6 +39,7 @@
   "tutorial": {
     "state": 0,
     "closed": false,
+    "on": true,
     "jump": false,
     "shoot": false,
     "sprint": false,

@@ -40,6 +40,7 @@ void Tutorial::render(sf::RenderWindow& win) {
 
 void Tutorial::turn_on() {
 	helpers.set(TutorialHelpers::render);
+	helpers.reset(TutorialHelpers::closed);
 	help_marker.reset();
 }
 

@@ -44,6 +44,13 @@
     ],
     "responses": [ [ "Yes%0", "No%1" ] ]
   },
+  "menu_return": {
+    "suite": [
+      [ "You will lose unsaved progress. Are you sure?%0" ],
+      [ "Returning to Main Menu...$89#1#1#" ]
+    ],
+    "responses": [ [ "Yes%0", "No%1" ] ]
+  },
   "test_selector": {
     "suite": [
       [ "Hello.", "Are you tired?%0" ],

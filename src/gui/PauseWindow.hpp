@@ -21,15 +21,16 @@ class PauseWindow : public Console {
 
   private:
 	struct {
-		float corner_pad{400.f};
+		float corner_pad{410.f};
 		int title_size{16};
 		int widget_size{16};
-		sf::Vector2<float> widget_label_offset{(float)corner_factor, 16.f};
+		sf::Vector2<float> widget_label_offset{(float)corner_factor, 48.f};
 		sf::Vector2<float> title_offset{(float)corner_factor, 16.f};
 	} ui{};
 
 	sf::Text title{};
 	sf::Font title_font{};
+	text::HelpText help_marker;
 
 	sf::Text widget_label{};
 	sf::Font widget_font{};

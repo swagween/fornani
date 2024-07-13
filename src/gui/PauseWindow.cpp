@@ -13,11 +13,15 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	title.setFillColor(svc.styles.colors.ui_white);
 	title.setLetterSpacing(2.f);
 
-	widget_font.loadFromFile(svc.text.title_font);
+	widget_font.loadFromFile(svc.text.text_font);
 	widget_font.setSmooth(false);
+	widget_label.setString("Press [Enter] to return to Main Menu.");
 	widget_label.setCharacterSize(ui.widget_size);
 	widget_label.setFont(widget_font);
 	widget_label.setFillColor(svc.styles.colors.ui_white);
+
+	help_marker.init(svc, "Press [", "menu_toggle_secondary", "] to resume game.", 20, true);
+	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 
 	origin = {ui.corner_pad * 0.5f, ui.corner_pad * 0.5f};
 	title.setPosition(origin + ui.title_offset);
@@ -35,7 +39,6 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 void PauseWindow::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (!active()) { return; }
 	Console::update(svc);
-
 	selector.update();
 }
 
@@ -43,6 +46,8 @@ void PauseWindow::render(automa::ServiceProvider& svc, player::Player& player, s
 	if (!active()) { return; }
 	Console::render(win);
 	win.draw(title);
+	win.draw(widget_label);
+	help_marker.render(win);
 }
 
 void PauseWindow::open() { flags.set(ConsoleFlags::active); }

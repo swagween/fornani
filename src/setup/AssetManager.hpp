@@ -77,6 +77,7 @@ class AssetManager {
 	sf::Texture t_hud_shield{};
 	sf::Texture t_selector{};
 	sf::Texture t_console_outline{};
+	sf::Texture t_indicator{};
 
 	sf::Texture t_alphabet{};
 	std::vector<sf::Sprite> sp_alphabet{};
@@ -178,7 +179,6 @@ class AssetManager {
 	sf::Texture t_indie_projectile{};
 	sf::Texture t_gnat{};
 	sf::Texture t_gnat_projectile{};
-	
 
 	//items
 	sf::Texture t_heart{};

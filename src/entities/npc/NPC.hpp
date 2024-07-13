@@ -5,6 +5,7 @@
 #include "../../utils/Collider.hpp"
 #include "../Entity.hpp"
 #include "NPCAnimation.hpp"
+#include "../animation/AnimatedSprite.hpp"
 #include <deque>
 #include <string_view>
 
@@ -26,8 +27,8 @@ class Player;
 
 namespace npc {
 
-enum class NPCState { engaged, force_interact, introduced, background };
-enum class NPCTrigger { distant_interact };
+enum class NPCState { engaged, force_interact, introduced, background, talking };
+enum class NPCTrigger { distant_interact, engaged };
 
 class NPC : public entity::Entity {
   public:
@@ -51,7 +52,7 @@ class NPC : public entity::Entity {
 	shape::Collider collider{};
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
-
+	anim::AnimatedSprite indicator;
 	int id{};
 
 	struct {

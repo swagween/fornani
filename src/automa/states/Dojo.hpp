@@ -26,6 +26,9 @@ class Dojo : public GameState {
 	bool show_colliders{false};
 	int x{0};
 	util::Cooldown enter_room{};
+
+	//shape::Collider A{};
+	//shape::Collider B{};
 };
 
 } // namespace automa

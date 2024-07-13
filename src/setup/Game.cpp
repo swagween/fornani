@@ -49,7 +49,7 @@ Game::Game(char** argv) : player(services) {
 
 	// some SFML variables for drawing a basic window + background
 	window.setVerticalSyncEnabled(true);
-	// window.setFramerateLimit(20);
+	window.setFramerateLimit(60);
 	window.setKeyRepeatEnabled(false);
 
 	ImGui::SFML::Init(window);

@@ -27,6 +27,7 @@ class StateManager {
 	~StateManager();
 	StateManager& operator=(StateManager&&) = delete;
 	void process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game);
+	void return_to_main_menu(ServiceProvider& svc, player::Player& player);
 
 	GameState& get_current_state() const;
 	GameState& set_current_state(std::unique_ptr<automa::GameState> gameState);

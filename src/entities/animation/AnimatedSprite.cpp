@@ -29,6 +29,10 @@ void AnimatedSprite::set_params(std::string_view label, bool force) {
 
 void AnimatedSprite::set_dimensions(sf::Vector2<int> dim) { dimensions = dim; }
 
+void AnimatedSprite::set_origin(sf::Vector2<float> origin) { sprite.setOrigin(origin); }
+
+void AnimatedSprite::end() { animation.end(); }
+
 void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc.greyblock_mode()) {
 		sprite.setPosition(position - cam);

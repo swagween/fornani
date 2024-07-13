@@ -294,6 +294,7 @@ void TextWriter::check_for_event(Message& msg, Codes code) {
 		if (out_quest.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
 		if (out_quest.type == 33) { communicators.reveal_item.set(out_quest.id); }
 		if (out_quest.type == 88) { m_services->state_controller.actions.set(automa::Actions::console_transition); }
+		if (out_quest.type == 89) { m_services->state_controller.actions.set(automa::Actions::main_menu); }
 		out_quest = {};
 
 		msg.data.setString(msg.data.getString().substring(0, index));

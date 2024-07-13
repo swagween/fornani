@@ -187,9 +187,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.state.reset(State::world_grounded);
 		}
 	}
-
 	flags.movement.reset(Movement::dashing);
-
 	sync_components();
 }
 
@@ -261,6 +259,12 @@ void Collider::correct_x(sf::Vector2<float> mtv) {
 
 void Collider::correct_y(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
+	// for large mtv values, overcorrect to prevent clipping
+	if (abs(mtv.x) > 12.f || abs(mtv.y) > 12.f) {
+		mtv.x = abs(mtv.y) > 0 ? mtv.y : mtv.x;
+		mtv.y = abs(mtv.x) > 0 ? mtv.x : mtv.y;
+		//std::cout << "large MTV!\n";
+	}
 	auto ydist = predictive_vertical.position.y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
 	physics.position.y += correction;
@@ -281,6 +285,11 @@ void Collider::correct_x_y(sf::Vector2<float> mtv) {
 
 void Collider::correct_corner(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
+	// for large mtv values, overcorrect to prevent clipping
+	if (abs(mtv.x) > 12.f || abs(mtv.y) > 12.f) {
+		mtv.x = abs(mtv.y) > 0 ? mtv.y : mtv.x;
+		mtv.y = abs(mtv.x) > 0 ? mtv.x : mtv.y;
+	}
 	if (abs(mtv.x) > abs(mtv.y)) {
 		auto xdist = predictive_combined.position.x - physics.position.x;
 		auto correction = xdist + mtv.x * 1.5f;
@@ -398,7 +407,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setOutlineColor(sf::Color{255, 0, 0, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	//win.draw(box);
+	win.draw(box);
 
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.dimensions);
@@ -406,7 +415,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setOutlineColor(sf::Color{80, 0, 255, 120});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	//win.draw(box);
+	win.draw(box);
 
 	// draw predictive combined
 	box.setSize(predictive_combined.dimensions);
