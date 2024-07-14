@@ -12,7 +12,7 @@ enum class UND { up, neutral, down };
 enum class Inter { north, south, east, west, northeast, northwest, southeast, southwest };
 
 struct Direction {
-
+	Direction(dir::UND und_preset = dir::UND::neutral, dir::LR lr_preset = dir::LR::neutral) : und(und_preset), lr(lr_preset) {}
 	LR lr{LR::neutral};
 	UND und{UND::neutral};
 	Inter inter{Inter::north};
@@ -48,6 +48,7 @@ struct Direction {
 	std::string print_lr() const { return "LR: " + (std::string)(lr == LR::left ? "LEFT " : (lr == LR::neutral ? "NEUTRAL " : "RIGHT ")); }
 	std::string print_intermediate() const {
 		switch (inter) {
+		default:
 		case Inter::north: return "north"; break;
 		case Inter::south: return "south"; break;
 		case Inter::east: return "east"; break;
@@ -57,6 +58,7 @@ struct Direction {
 		case Inter::southwest: return "southwest"; break;
 		case Inter::southeast: return "southeast"; break;
 		}
+		return "null";
 	}
 
 };

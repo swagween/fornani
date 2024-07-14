@@ -7,6 +7,8 @@
 #include "../utils/BitFlags.hpp"
 #include "../graphics/TextWriter.hpp"
 #include "Portrait.hpp"
+#include "ItemWidget.hpp"
+#include "../utils/QuestCode.hpp"
 
 namespace gui {
 
@@ -17,7 +19,7 @@ float const height_factor{3.0f};
 float const pad{168.f};
 float const text_pad{8.0f};
 
-enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended };
+enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item };
 
 struct Border {
 	float left{};
@@ -39,15 +41,21 @@ class Console {
 	void set_source(dj::Json& json);
 	void set_texture(sf::Texture& tex);
 	void load_and_launch(std::string_view key);
+	void display_item(int item_id);
+	void display_gun(int gun_id);
 	void write(sf::RenderWindow& win, bool instant = true);
+	void append(std::string_view key);
 	void end();
+	void end_tick();
 	void clean_off_trigger();
 	void include_portrait(int id);
 
 	void nine_slice(int corner_dim, int edge_dim);
 
+	std::string get_key();
+
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
-	[[nodiscard]] auto is_complete() const -> bool { return !flags.test(ConsoleFlags::active); }
+	[[nodiscard]] auto is_complete() const -> bool { return writer.empty(); }
 	[[nodiscard]] auto extended() const -> bool { return flags.test(ConsoleFlags::extended); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
 
@@ -61,12 +69,20 @@ class Console {
 
 	dj::Json text_suite{};
 
-	gui::Portrait portrait;
-	gui::Portrait nani_portrait;
+	Portrait portrait;
+	Portrait nani_portrait;
+	ItemWidget item_widget;
 
 	automa::ServiceProvider* m_services;
 
 	text::TextWriter writer;
+	std::string native_key{};
+
+	struct {
+		int out_voice{};
+		int out_emotion{};
+	} communicators{};
+
 	Border border{
 		48.f,
 		40.f,
@@ -74,7 +90,7 @@ class Console {
 		26.f
 	};
 
-	int extent{};
+	float extent{};
 	int speed{2};
 
 	protected:

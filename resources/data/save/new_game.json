@@ -1,4 +1,7 @@
 {
+  "status": {
+    "new": true
+  },
   "player_data": {
     "max_hp": 3,
     "hp": 3,
@@ -10,7 +13,42 @@
     "arsenal": [],
     "equipped_gun": 0,
     "abilities": [],
-    "items": []
+    "items": [],
+    "stats": {
+      "death_count": 0,
+      "bullets_fired": 0,
+      "guns_collected": 0,
+      "items_collected": 0,
+      "orbs_collected": 0,
+      "blue_orbs": 0,
+      "highest_indicator_amount": 0,
+      "enemies_killed": 0,
+      "rooms_discovered": 0,
+      "seconds_played": 0.0,
+      "time_trials": {
+        "bryns_gun": 0.0
+      }
+    }
   },
-  "save_point_id": 1
+  "save_point_id": 110,
+  "unlocked_doors": [
+  ],
+  "opened_chests": [
+  ],
+  "quest_progressions": [
+  ],
+  "destroyed_inspectables": [
+  ],
+  "tutorial": {
+    "state": 0,
+    "closed": false,
+    "on": true,
+    "jump": false,
+    "shoot": false,
+    "sprint": false,
+    "map": false,
+    "inventory": false
+  },
+  "discovered_rooms": [
+  ]
 }

@@ -5,57 +5,106 @@
 namespace anim {
 
 void Animation::refresh() {
-	counter = 0;
-	current_frame = 0;
-	loop_counter = 0;
+	frame.start();
+	loop.start();
+	flags.reset(State::param_switch);
+	flags.reset(State::keyframe);
 }
 
 void Animation::start() {
-	flags.set(State::active);
-	flags.set(State::just_started);
-	flags.reset(State::complete);
+	frame.start();
+	global_counter.start();
+	loop.start();
 }
 
 void Animation::update() {
-	if (counter == 1) { flags.reset(State::just_started); }
-	++counter;
-
-	if (keyframe_over()) {
-		++current_frame;
-	}
-
-	if (current_frame == params.duration && params.repeat_last_frame) {
-		current_frame = params.duration - 1;
-		end();
+	frame_timer.update();
+	global_counter.update();
+	if (params.interruptible && flags.test(State::param_switch)) {
+		switch_params();
 		return;
 	}
-	if (current_frame == params.duration) {
-		if (loop_counter == params.num_loops) { end(); }
-		current_frame = 0;
-		if (params.num_loops != -1) {
-			++loop_counter;
-			// don't increment for infinite loops
+	if (frame_timer.is_complete()) { // next frame of animation
+
+		// reset the timers
+		flags.set(State::keyframe);
+		frame_timer.start(params.framerate);
+		frame.update(); // increment frame
+
+		// frame is over, so we can switch params if requested
+		if (flags.test(State::param_switch)) {
+			switch_params();
+			return;
+		}
+
+		if (frame.get_count() == params.duration) { // we hit the end of the animation
+
+			// for one-off animations, set oneoff flag and leave
+			if (params.num_loops == 0) {
+				frame.set(params.duration - 1);
+				flags.set(State::oneoff_complete);
+			} else {
+				// for animations that loop indefinitely, just reset
+				frame.start();
+			}
+
+			// for animations with multiple loops, increment the loop counter and start over
+			if (params.num_loops > 0) {
+				if(params.num_loops == loop.get_count()) { // final loop ended
+					frame.cancel();
+				}
+				loop.update();
+			}
+
+			// for animations where we repeat the last frame, fix it to the last frame
+			// we do this at the end to overwrite the state of `frame`
+			if (params.repeat_last_frame) {
+				frame.set(params.duration - 1);
+			}
 		}
 	}
 }
 
-void Animation::end() {
-	flags.reset(State::active);
-	flags.set(State::complete);
+/*void Animation::update() {
+	if (frame_timer.is_complete()) {
+		frame.update();
+		if (frame.get_count() == params.duration) {
+			if (params.repeat_last_frame) {
+				frame.set(params.duration - 1);
+				end();
+				return;
+			}
+			if (loop.get_count() == params.num_loops) {
+				loop.start();
+				end();
+				return;
+			} else {
+				frame.start();
+				loop.update();
+			}
+		}
+		if (!params.repeat_last_frame) { frame_timer.start(params.framerate); }
+	}
+	global_counter.update();
+	frame_timer.update();
+}*/
+
+void Animation::set_params(Parameters const new_params, bool hard) {
+	next_params = new_params;
+	if (hard) {
+		switch_params();
+		return;
+	}
+	flags.set(State::param_switch);
 }
 
-void Animation::set_params(Parameters const new_params) {
-	params = new_params;
+void Animation::switch_params() {
+	params = next_params;
+	global_counter.start();
+	frame_timer.start(params.framerate);
 	refresh();
-	start();
 }
 
-int Animation::get_frame() const { return params.lookup + current_frame; }
-
-bool Animation::active() const { return flags.test(State::active); }
-
-bool Animation::complete() const { return flags.test(State::complete); }
-
-bool Animation::keyframe_over() const { return params.framerate != 0 ? counter % params.framerate == 0 : true; } //long-winded to avoid division by 0
+int Animation::get_frame() const { return frame.canceled() ? params.lookup : params.lookup + frame.get_count(); }
 
 } // namespace anim

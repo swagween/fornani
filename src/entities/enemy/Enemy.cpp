@@ -11,6 +11,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	auto const& in_physical = in_data["physical"];
 	auto const& in_attributes = in_data["attributes"];
 	auto const& in_visual = in_data["visual"];
+	auto const& in_audio = in_data["audio"];
 	auto const& in_animation = in_data["animation"];
 	auto const& in_general = in_data["general"];
 
@@ -22,6 +23,11 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	collider.physics.set_global_friction(in_physical["friction"].as<float>());
 	collider.stats.GRAV = in_physical["gravity"].as<float>();
 
+	secondary_collider = shape::Collider(dimensions);
+	secondary_collider.sync_components();
+	secondary_collider.physics.set_global_friction(in_physical["friction"].as<float>());
+	secondary_collider.stats.GRAV = in_physical["gravity"].as<float>();
+
 	metadata.id = in_metadata["id"].as<int>();
 	metadata.variant = in_metadata["variant"].as_string();
 
@@ -29,8 +35,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	sprite_dimensions.y = in_physical["sprite_dimensions"][1].as<int>();
 	spritesheet_dimensions.x = in_physical["spritesheet_dimensions"][0].as<int>();
 	spritesheet_dimensions.y = in_physical["spritesheet_dimensions"][1].as<int>();
-	sprite_offset.x = in_physical["offset"][0].as<int>();
-	sprite_offset.y = in_physical["offset"][1].as<int>();
+	sprite_offset.x = in_physical["offset"][0].as<float>();
+	sprite_offset.y = in_physical["offset"][1].as<float>();
 
 	// TODO: load hurtboxes and colliders
 
@@ -39,7 +45,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	physical.hostile_range.dimensions.x = in_physical["hostile_range"][0].as<float>();
 	physical.hostile_range.dimensions.y = in_physical["hostile_range"][1].as<float>();
 
-	attributes.base_damage = in_attributes["base_damage"].as<int>();
+	attributes.base_damage = in_attributes["base_damage"].as<float>();
 	attributes.base_hp = in_attributes["base_hp"].as<float>();
 	attributes.loot_multiplier = in_attributes["loot_multiplier"].as<float>();
 	attributes.speed = in_attributes["speed"].as<float>();
@@ -54,6 +60,15 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	params.duration = in_animation["duration"].as<int>();
 	params.framerate = in_animation["framerate"].as<int>();
 	animation.set_params(params);
+
+	switch (in_audio["hit"].as<int>()) {
+	case -1: flags.general.set(GeneralFlags::custom_sounds); break;
+	case 0: sounds.hit.setBuffer(svc.assets.b_enemy_hit_low); break;
+	case 1: sounds.hit.setBuffer(svc.assets.b_enemy_hit_medium); break;
+	case 2: sounds.hit.setBuffer(svc.assets.b_enemy_hit_high); break;
+	case 3: sounds.hit.setBuffer(svc.assets.b_enemy_hit_squeak); break;
+	}
+	sounds.inv_hit.setBuffer(svc.assets.b_enemy_hit_inv);
 
 	health.set_max(attributes.base_hp);
 	health_indicator.init(svc, 0);
@@ -80,19 +95,28 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (map.off_the_bottom(collider.physics.position)) {
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4); }
 	}
-	if (just_died()) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
-	if (died()) {
+	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
+	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();
 		return;
 	}
 	Entity::update(svc, map);
 	collider.update(svc);
+	secondary_collider.update(svc);
 	health_indicator.update(svc, collider.physics.position);
-	if (flags.general.test(GeneralFlags::map_collision)) { collider.detect_map_collision(map); }
+	if (flags.general.test(GeneralFlags::map_collision)) {
+		for (auto& breakable : map.breakables) { breakable.handle_collision(collider); }
+		collider.detect_map_collision(map);
+		secondary_collider.detect_map_collision(map);
+	}
 	collider.reset();
+	secondary_collider.reset();
 	collider.reset_ground_flags();
+	secondary_collider.reset_ground_flags();
 	collider.physics.acceleration = {};
+	secondary_collider.physics.acceleration = {};
+
 	animation.update();
 	health.update();
 
@@ -122,16 +146,13 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (died()) { return; }
+	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
-	if (flags.state.test(StateFlags::shaking)) {
-		sprite_shake(svc);
-	} else {
-		random_offset = {};
-	}
+	if (!flags.state.test(StateFlags::shaking)) { random_offset = {}; }
 	if (svc.greyblock_mode()) {
+		win.draw(sprite);
 		drawbox.setOrigin({0.f, 0.f});
 		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
 		drawbox.setOutlineColor(svc.styles.colors.ui_white);
@@ -146,6 +167,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		drawbox.setOutlineColor(sf::Color{140, 30, 60, 110});
 		win.draw(drawbox);
 		collider.render(win, cam);
+		secondary_collider.render(win, cam);
 		health.render(svc, win, cam);
 	} else {
 		win.draw(sprite);
@@ -160,6 +182,33 @@ void Enemy::handle_player_collision(player::Player& player) const {
 	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
 		if (player.collider.hurtbox.overlaps(collider.bounding_box)) { player.hurt(attributes.base_damage); }
 	}
+}
+
+void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
+
+	if (proj.team == arms::TEAMS::SKYCORPS) { return; }
+	if (!(proj.bounding_box.overlaps(collider.bounding_box) || proj.bounding_box.overlaps(secondary_collider.bounding_box))) { return; }
+
+	if (svc.ticker.every_x_ticks(10)) { proj.multiply(1.2f); }
+
+	flags.state.set(enemy::StateFlags::shot);
+	if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
+		hurt();
+		health.inflict(proj.get_damage());
+		health_indicator.add(-proj.get_damage());
+
+		if (!flags.general.test(GeneralFlags::custom_sounds)) { sounds.hit.play(); }
+
+		if (just_died()) {
+			svc.stats.enemy.enemies_killed.update();
+			map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position));
+			svc.soundboard.flags.frdog.set(audio::Frdog::death);
+		}
+	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
+		map.effects.push_back(entity::Effect(svc, proj.physics.position, {}, 0, 6));
+		sounds.inv_hit.play();
+	}
+	if (!proj.stats.persistent && (!died() || just_died())) { proj.destroy(false); }
 }
 
 } // namespace enemy

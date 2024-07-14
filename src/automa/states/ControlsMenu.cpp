@@ -7,7 +7,7 @@ namespace automa {
 ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
 	int ctr{0};
 	for (auto& option : options) {
-		option.position.x = svc.constants.screen_dimensions.x * 0.5 - center_offset;
+		option.position.x = svc.constants.screen_dimensions.x * 0.5f - center_offset;
 		option.update(svc, current_selection);
 		option.left_offset = option.position - sf::Vector2<float>{option.dot_offset.x - 2, -option.dot_offset.y};
 		option.right_offset = option.position + sf::Vector2<float>{option.label.getLocalBounds().width + option.dot_offset.x, option.dot_offset.y};
@@ -35,7 +35,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	debug.setOutlineThickness(-1);
 }
 
-void ControlsMenu::init(ServiceProvider& svc, std::string_view room) {}
+void ControlsMenu::init(ServiceProvider& svc, int room_number) {}
 
 void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
@@ -82,6 +82,9 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 	if (event.type == sf::Event::EventType::JoystickDisconnected) { refresh_controls(svc); }
 	if (event.type == sf::Event::EventType::JoystickConnected) { refresh_controls(svc); }
+	if (event.type == sf::Event::JoystickButtonPressed || svc.controller_map.joystick_moved()) { refresh_controls(svc); }
+	if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) { refresh_controls(svc); }
+
 	svc.controller_map.reset_triggers();
 }
 

@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "room_id": 108,
+    "dimensions": [
+      64,
+      16
+    ],
+    "chunk_dimensions": [
+      4,
+      1
+    ],
+    "style": 0,
+    "background": 5,
+    "styles": {
+      "breakables": 0
+    }
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        58,
+        9
+      ],
+      "source_id": 108,
+      "destination_id": 116,
+      "activate_on_contact": false
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        27,
+        3
+      ],
+      "source_id": 108,
+      "destination_id": 109,
+      "activate_on_contact": false
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        3,
+        6
+      ],
+      "source_id": 108,
+      "destination_id": 110,
+      "activate_on_contact": false
+    }
+  ],
+  "enemies": [
+    {
+      "id": 1,
+      "position": [
+        43,
+        8
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        23,
+        9
+      ]
+    }
+  ]
+}

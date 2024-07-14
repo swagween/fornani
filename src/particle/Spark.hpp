@@ -2,8 +2,10 @@
 #pragma once
 #include <vector>
 #include <string_view>
+#include <optional>
 #include <SFML/Graphics.hpp>
 #include "../utils/Cooldown.hpp"
+#include "../utils/Fader.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -20,15 +22,16 @@ class Spark {
 
   private:
 	sf::RectangleShape box{};
+	std::optional<util::Fader> fader{};
 	sf::Vector2<float> position{};
 	util::Cooldown lifespan{};
 	int frame{};
 	std::string_view type{};
 
 	struct {
-		float wobble{0.1};
+		float wobble{0.1f};
 		float frequency{0.02f};
-		float speed{0.1};
+		float speed{0.1f};
 		float volatility{0.0f};
 	} parameters{};
 

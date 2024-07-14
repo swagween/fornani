@@ -12,9 +12,15 @@ Inventory::Inventory() {
 	item_labels.insert({5, "track_zero_sensor"});
 	item_labels.insert({6, "head_motor"});
 	item_labels.insert({7, "gas_mask"});
-	item_labels.insert({8, "firstwind_deck_key"});
+	item_labels.insert({8, "firstwind_hangar_key"});
 	item_labels.insert({9, "woodshine_warehouse_key"});
 	item_labels.insert({10, "nimbus_iii_boiler_room_key"});
+	item_labels.insert({11, "laboratory_key"});
+	item_labels.insert({12, "bit_cell_key"});
+	item_labels.insert({13, "four_of_diamonds"});
+	item_labels.insert({14, "staple_box"});
+	item_labels.insert({15, "boiler_key"});
+	item_labels.insert({16, "radar_device"});
 }
 
 void Inventory::update(automa::ServiceProvider& svc) {
@@ -38,10 +44,32 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 		items.push_back(item::Item(svc, item_labels.at(item_id)));
 		items.back().set_id(item_id);
 		items.back().add_item(amount);
+		svc.stats.player.items_collected.update();
 	}
 	update(svc);
 }
 
+void Inventory::reveal_item(int item_id) {
+	for (auto& item : items) {
+		if (item.get_id() == item_id) { item.reveal(); }
+	}
+}
+
+item::Item& Inventory::get_item(int id) {
+	for (auto& item : items) {
+		if (item.get_id() == id) { return item; }
+	}
+	return items.at(0);
+}
+
 void Inventory::clear() { items.clear(); }
+
+bool Inventory::has_item(int id) const {
+	auto ret{false};
+	for (auto& item : items) {
+		if (item.get_id() == id) { ret = true; }
+	}
+	return ret;
+}
 
 } // namespace player

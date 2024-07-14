@@ -1,26 +1,50 @@
 {
   "standard_scroll": {
     "used_layers": 5,
-    "scroll_speed": 0.9,
+    "scroll_speed": 0.5,
     "scrolling": true,
-    "parallax_multiplier": 0.1
+    "parallax_multiplier": 0.1,
+    "dimensions": [
+      3840,
+      540
+    ]
   },
   "fast_scroll": {
     "used_layers": 5,
-    "scroll_speed": 3.5,
+    "scroll_speed": 1.0,
     "scrolling": true,
-    "parallax_multiplier": 0.1
+    "parallax_multiplier": 0.1,
+    "dimensions": [
+      3840,
+      540
+    ]
   },
   "standard_flat": {
     "used_layers": 1,
     "scroll_speed": 0.0,
     "scrolling": false,
-    "parallax_multiplier": 0.8
+    "parallax_multiplier": 0.8,
+    "dimensions": [
+      3840,
+      540
+    ]
   },
   "distant_flat": {
     "used_layers": 1,
     "scroll_speed": 0.0,
     "scrolling": false,
-    "parallax_multiplier": 0.4
+    "parallax_multiplier": 0.4,
+    "dimensions": [
+      3840,
+      540
+    ]
+  },
+  "slow_static": {
+    "used_layers": 6,
+    "scroll_speed": 0.0,
+    "scrolling": true,
+    "parallax_multiplier": 0.1,
+    "dimensions": [ 1920, 1080 ],
+    "start_offset": [ 230, 130 ]
   }
 }

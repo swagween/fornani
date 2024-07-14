@@ -2,20 +2,20 @@
   "gobe1": {
     "suite": [
       [ "...", "Huh?", "Oh! A lost girl wanders my way, hmm?", "Tell me, what are you doing wandering about in a place so perilous as this?%0" ],
-      ["Hah! Well, some say strangers are just friends you haven't met yet.", "You know, there aren't many of your kind buzzing around here these days. Not since Skycorps posted up and turned this whole half of the island into a glorified toxic waste dump."],
-      ["Well, you're in luck, my friend, because just down yonder through those gloomy glades is the gateway to a quaint little village called Woodshine.", "You know, there aren't many of your kind buzzing around here these days. Not since Skycorps posted up and turned this whole half of the island into a glorified toxic waste dump.", "Anyway, I wish you the best of luck, wherever your road leads."],
-      ["A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start in the search for your little brother."]
+      [ "Hah! Well, some say strangers are just friends you haven't met yet.", "You know, there aren't many of your kind buzzing around here these days. Not since Skycorps posted up and turned this whole half of the island into a glorified toxic waste dump." ],
+      [ "Well, you're in luck, my friend, because just down yonder through those gloomy glades is the gateway to a quaint little village called Woodshine.", "You know, there aren't many of your kind buzzing around here these days. Not since Skycorps posted up and turned this whole half of the island into a glorified toxic waste dump.", "Anyway, I wish you the best of luck, wherever your road leads." ],
+      [ "A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start in the search for your little brother." ]
     ],
     "responses": [
-      [ "I don't talk to strangers.%0", "I'm just looking for a place to rest.%1", "I'm looking for my little brother.%2$5995"  ]
+      [ "I don't talk to strangers.%0", "I'm just looking for a place to rest.%1", "I'm looking for my little brother.%2$5995" ]
     ]
   },
   "gobe2": {
     "suite": [
       [ "Yes?%0" ],
-      [ "Why, how rude of me! I'd forgotten to introduce myself! My name is Gobe, and this here is my dog, Justin. I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember."],
-      [ "I tell you, it is no place for the faint of heart. But I see that, at least, you carry a weapon to defend yourself. Smart!"],
-      ["Sure thing! Here's what I've picked up over the last few weeks..."]
+      [ "Why, how rude of me! I'd forgotten to introduce myself! My name is Gobe, and this here is my dog, Justin. I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember." ],
+      [ "I tell you, it is no place for the faint of heart. But I see that, at least, you carry a weapon to defend yourself. Smart!" ],
+      [ "Sure thing! Here's what I've picked up over the last few weeks..." ]
     ],
     "responses": [
       [ "Who are you?%0", "I'd like to trade things with you.%2" ]
@@ -33,7 +33,7 @@
       [ "You're that girl they took prisoner on Firstwind.%0" ],
       [ "Well, I don't know how you made it down here alive, but I suppose that's neither here nor there.", "As it turns out, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ],
       [ "Well, in a way, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ],
-      [ "It's our airship. Or, at least, it was our airship. A few weeks ago, Skycorps masqueraded as pirates and hijacked it from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ]      
+      [ "It's our airship. Or, at least, it was our airship. A few weeks ago, Skycorps masqueraded as pirates and hijacked it from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ]
     ],
     "responses": [
       [ "That's me.%0", "How do you know?%1", "Firstwind...?%2" ]
@@ -41,10 +41,168 @@
   },
   "bryn3": {
     "suite": [
-      [ "If you're looking for a place to rest, you're welcome to use my bedroom. It's the second door on the left." ]      
+      [ "If you're looking for a place to rest, you're welcome to use my bedroom. It's the second door on the left." ]
     ],
     "responses": [
       []
+    ]
+  },
+  "minigus1": {
+    "suite": [
+      [ "&1Well, would you look at that!", "The sorry little Kariba has escaped her cell.", "You know, I'm not exactly surprised. The storms up here are getting worse, and the crew are more interested in staying alive than retaining prisoners.", "And yet a prisoner you shall remain, if I have anything to say about it.", "Now tell me, girl, what do you plan to do with that pathetic little pistol of yours?%0" ],
+      [ "&2I asked you a question.", "But I'll be kind, considering you haven't much longer to live. My name is Gus, and I lead Lady Numbus's feared Harpoon Squad.", "You see, we do whatever cleaning up needs to be done on this island.", "But anyway, I'm tired of talkin' to you. Get ready to die!$2" ],
+      [ "&3@2Hah! Tough talk for a scrawny little girl, but I respect it.", "@1So, let's see what you've got, then.$2" ],
+      [ "...", "&4Your brother...?", "I guess even my trusty little gadget can't completely erase your memories.", "&6But either way, you'll get no further information from me on that front.", "Now, I'm tired of talkin' to you. Get ready to die!$2" ]
+    ],
+    "responses": [
+      [ "Who are you?%0", "Whatever I need to do.%1", "Where is my brother?%2" ]
+    ]
+  },
+  "minigus2": {
+    "suite": [
+      [ "@3...", "GAH!!!", "My mask!! What have you done?!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "minigus3": {
+    "suite": [
+      [ "&5This isn't over!$3" ]
+    ],
+    "responses": [
+    ]
+  },
+  "dr_go1": {
+    "suite": [
+      [ "Oh!", "I wasn't expecting a Kariba to stroll in here.", "I suspect we are in our final hours, merely waiting for the Firstwind to lose her ability to fly and spiral down into the gas giant.", "It will be a graceless end, that's for certain.%0" ],
+      [ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
+      [ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
+      [ "This is the infirmary.", "Here, I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
+    ],
+    "responses": [
+      [ "Who are you?%0", "What's going on?%1", "Where am I?%2" ]
+    ]
+  },
+  "dr_go2": {
+    "suite": [
+      [ "Hello again.%0" ],
+      [ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
+      [ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
+      [ "This is the infirmary.", "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
+    ],
+    "responses": [
+      [ "Who are you?%0", "What's going on?%1", "Where am I?%2" ]
+    ]
+  },
+  "mirin1": {
+    "suite": [
+      [ "You must be one of the prisoners we scooped up some months back.", "You know, despite everything that's happened between our tribes, I would never wish any of this upon you.", "There's something about being so high up in the sky that tends to bring our people together." ]
+    ],
+    "responses": [
+    ]
+  },
+  "mirin2": {
+    "suite": [
+      [ "I'm not sure what you want me to tell you. I'm not exactly itching to chit-chat at a time like this.", "...", "Okay, that was a bit rude. Sorry.", "I've just been trying to come to terms with my impending death. I hope you understand." ]
+    ],
+    "responses": [
+    ]
+  },
+  "mirin3": {
+    "suite": [
+      [ "What's up?%0" ],
+      [ "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am." ],
+      [ "If I knew the answer to that, we wouldn't be having this conversation.", "We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds." ],
+      [ "Godspeed, girl. If we somehow all make it out of this alive, I'll buy you a drink." ]
+    ],
+    "responses": [
+      [ "Who are you?%0", "How can I get back to the island?%1", "See you later.%2" ]
+    ]
+  },
+  "carl1": {
+    "suite": [
+      [ "What in the heck are my eyes seein' right now...?", "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea.", "The ship's goin' down, little lady.", "If I was you I'd find the nearest escape hatch and go for a swim in the clouds.", "Say, would you grab me a soda if you got nothin' else to do?" ]
+    ],
+    "responses": [
+    ]
+  },
+  "carl2": {
+    "suite": [
+      [ "So... Any updates on that soda?%0" ],
+      [ "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months.", "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me." ],
+      [ "Why, it's the cargo room! Unless you were speakin' in more general terms, in which case, this is the Firstwind.", "She's an old research vessel that Skycorps... er... borrowed.", "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it." ],
+      [ "Say, would you grab me a soda if you got nothin' else to do?" ]
+    ],
+    "responses": [
+      [ "Who are you?%0", "What is this place?%1" ]
+    ]
+  },
+  "bit1": {
+    "suite": [
+      [ "...$3#20#1#", "Psst... Hey!", "Hey, you!", "I don't know how you managed to escape your cell, but, er... I'm in a bit of a bind here, as you can see.", "Would you help me out?%0" ],
+      [ "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.", "You might find the key to this cell lying around the ship somewhere.", "If you do, you should be able to use it on that there door and let me free!" ],
+      [ "Well uh... okay. If you change your mind, you'll know where to find me." ]
+    ],
+    "responses": [
+      [ "Sure.%0", "I had better get going...%1" ]
+    ]
+  },
+  "bit2": {
+    "suite": [
+      [ "Listen, I don't wanna rush you, but...", "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days...%0" ],
+      [ "I'm not gonna sugarcoat it. We're in prison.", "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!", "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.", "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here." ]
+    ],
+    "responses": [
+      [ "Where are we?%0" ]
+    ]
+  },
+  "bit3": {
+    "suite": [
+      [ "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya." ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit4": {
+    "suite": [
+      [ "I can't believe it... You actually did it!$33#12#2#", "I really can't thank you enough...", "Heh, like I said... I owe you big time!$3#20#2#1#2#" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit9": {
+    "suite": [
+      [ "I can't believe it... You actually did it!$33#12#2#", "I really can't thank you enough, stranger!", "Heh, I guess I owe you big time!$3#20#2#1#2#" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit5": {
+    "suite": [
+      [ "...", "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit6": {
+    "suite": [
+      [ "Listen, I don't exactly have much to give you right now.", "I'm sure you understand...", "But! Fear not! If we bump into each other again someday, I'll have something for you!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit7": {
+    "suite": [
+      [ "Heh... See ya around!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "bit8": {
+    "suite": [
+      [ "Thanks again for helping me. Stay safe out there!" ]
+    ],
+    "responses": [
     ]
   }
 }

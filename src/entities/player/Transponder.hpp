@@ -5,6 +5,8 @@
 #include <optional>
 #include <unordered_map>
 #include "../../utils/BitFlags.hpp"
+#include "../../utils/Shipment.hpp"
+#include "../../utils/QuestCode.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -26,6 +28,7 @@ class Transponder {
   public:
 	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void track_shipments(gui::Console& console);
+	void flush_shipments();
 	void end();
 
 	void skip_ahead();
@@ -43,16 +46,18 @@ class Transponder {
 	bool down() const;
 	bool up() const;
 	bool selected() const;
-	
-	[[nodiscard]] auto get_item_shipment() const -> int { return shipments.item; }
-	[[nodiscard]] auto get_quest_shipment() const -> int { return shipments.quest; }
+
+	struct {
+		util::Shipment item{};
+		util::Shipment quest{};
+		util::Shipment voice{};
+		util::Shipment emotion{};
+		util::Shipment reveal_item{};
+	} shipments{};
+	util::QuestKey out_quest{};
 
   private:
 	util::BitFlags<TransponderActions> actions{};
-	struct {
-		int item{};
-		int quest{};
-	} shipments{};
 };
 
 } // namespace player

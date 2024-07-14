@@ -1,23 +1,24 @@
 #include "InventoryWindow.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "../level/Map.hpp"
 
 namespace gui {
 
-InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}) {
+InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc) {
 	title.setString("INVENTORY");
 	title.setCharacterSize(ui.title_size);
 	title_font.loadFromFile(svc.text.title_font);
 	title_font.setSmooth(false);
 	title.setFont(title_font);
-	title.setColor(svc.styles.colors.ui_white);
+	title.setFillColor(svc.styles.colors.ui_white);
 	title.setLetterSpacing(2.f);
 
 	item_font.loadFromFile(svc.text.title_font);
 	item_font.setSmooth(false);
 	item_label.setCharacterSize(ui.desc_size);
 	item_label.setFont(item_font);
-	item_label.setColor(svc.styles.colors.ui_white);
+	item_label.setFillColor(svc.styles.colors.ui_white);
 
 	info.set_texture(svc.assets.t_console_outline);
 
@@ -37,40 +38,55 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	info.speed = 8;
 	info.flags.reset(ConsoleFlags::portrait_included);
 
+	mode = Mode::inventory;
+
+	help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
+	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
+
 }
 
-void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player) {
-	if (active()) {
-		Console::update(svc);
-		if (Console::extended()) {
-			info.update(svc);
+void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
+	if (mode == Mode::inventory) {
+		title.setString("INVENTORY");
+		if (active()) {
+			extent = final_dimensions.y;
+			info.extent = info.final_dimensions.y;
+			Console::update(svc);
+			if (Console::extended()) { info.update(svc); }
 		}
-	}
-	for (auto& item : player.catalog.categories.inventory.items) {
-		item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
-		if (item.selected()) {
-			selector.set_position(item.get_position());
-			info.writer.load_single_message(item.get_description());
+		for (auto& item : player.catalog.categories.inventory.items) {
+			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
+			if (player.catalog.categories.inventory.items.size() == 1) { item.select(); }
+			if (item.selected()) {
+				selector.set_position(item.get_position());
+				info.writer.load_single_message(item.get_description());
+			}
 		}
-	}
-	auto x_dim = std::min((int)player.catalog.categories.inventory.items.size(), ui.items_per_row);
-	auto y_dim = (int)std::ceil((float)player.catalog.categories.inventory.items.size() / (float)ui.items_per_row);
+		auto x_dim = std::min((int)player.catalog.categories.inventory.items.size(), ui.items_per_row);
+		auto y_dim = (int)std::ceil((float)player.catalog.categories.inventory.items.size() / (float)ui.items_per_row);
 
-	selector.set_dimensions({x_dim, y_dim});
-	selector.update();
+		selector.set_dimensions({x_dim, y_dim});
+		selector.update();
+	}
+	if (mode == Mode::minimap) {
+		title.setString("MAP");
+		minimap.update(svc, map, player);
+
+		selector.update();
+
+	}
 }
 
-void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
-	if (active()) {
-		Console::render(win);
-		win.draw(title);
+void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (!active()) { return; }
+	Console::render(win);
+	win.draw(title);
+	if (mode == Mode::inventory) {
 		for (auto& item : player.catalog.categories.inventory.items) {
 			item.render(svc, win, {0.f, 0.f});
 			if (item.selected()) {
 				item_label.setString(item.get_label().data());
-				if (Console::extended()) {
-					win.draw(item_label);
-				}
+				if (Console::extended()) { win.draw(item_label); }
 			}
 		}
 		if (!player.catalog.categories.inventory.items.empty()) { selector.render(win); }
@@ -79,6 +95,11 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 			info.render(win);
 			if (info.extended()) { info.write(win, true); }
 		}
+		if (player.has_map()) { help_marker.render(win); }
+	}
+	if (mode == Mode::minimap) {
+		help_marker.render(win);
+		minimap.render(svc, win, cam);
 	}
 }
 
@@ -88,5 +109,16 @@ void InventoryWindow::close() {
 	Console::end();
 	info.end();
 }
+
+void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
+	mode = (mode == Mode::inventory) ? Mode::minimap : Mode::inventory;
+	if (mode == Mode::inventory) {
+		help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
+	} else {
+		help_marker.init(svc, "Press [", "arms_switch_left", "] to view Inventory.", 20, true);
+	}
+	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
+}
+
 
 } // namespace gui

@@ -10,7 +10,6 @@
 #include "../entities/world/SavePoint.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Transition.hpp"
-#include "../setup/MapLookups.hpp"
 #include "Grid.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
@@ -19,8 +18,13 @@
 #include "../entities/item/Loot.hpp"
 #include "../entities/world/Chest.hpp"
 #include "../entities/npc/NPC.hpp"
+#include "../entities/world/Bed.hpp"
 #include "Platform.hpp"
+#include "Breakable.hpp"
+#include "SwitchBlock.hpp"
+#include "BlockDestroyer.hpp"
 #include "../weapon/Grenade.hpp"
+#include "../utils/Stopwatch.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -48,6 +52,8 @@ enum LAYER_ORDER {
 	FOREGROUND = 7,
 };
 
+enum class LevelState { game_over, camera_shake, spawn_enemy };
+
 // a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
 
@@ -62,6 +68,11 @@ class Layer {
 	sf::Vector2<uint32_t> dimensions{};
 };
 
+struct EnemySpawn {
+	sf::Vector2<float> pos{};
+	int id{};
+};
+
 // a Map is just a set of layers that will render on top of each other
 
 class Map {
@@ -71,38 +82,39 @@ class Map {
 	using Vecu16 = sf::Vector2<uint32_t>;
 
 	Map() = default;
-	Map(automa::ServiceProvider& svc, player::Player& player);
+	Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
+	~Map() {}
 
 	// methods
-	void load(automa::ServiceProvider& svc, std::string_view room);
+	void load(automa::ServiceProvider& svc, int room_number, bool soft = false);
 	void update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win);
-	Tile& tile_at(const uint8_t i, const uint8_t j);
-	shape::Shape& shape_at(const uint8_t i, const uint8_t j);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos);
+	void spawn_enemy(int id, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer();
 	void generate_layer_textures(automa::ServiceProvider& svc);
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
-	void handle_breakables(Tile& cell, sf::Vector2<float> velocity = {0.f, 0.f}, uint8_t power = 1);
+	void shake_camera();
+	void clear();
+	std::vector<Layer>& get_layers();
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
 	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
+	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 
 	// layers
-	std::vector<Layer> layers;
-	std::vector<uint32_t> collidable_indeces{};		// generated on load to reduce collision checks in hot code
-	Vec real_dimensions{};		// pixel dimensions (maybe useless)
-	Vecu16 dimensions{};		// points on the 32x32-unit grid
-	Vecu16 chunk_dimensions{};	// how many chunks (16x16 squares) in the room
+	sf::Vector2<int> metagrid_coordinates{};
+	//std::vector<Layer> layers{};
+	std::vector<uint32_t> collidable_indeces{}; // generated on load to reduce collision checks in hot code
+	Vec real_dimensions{};						// pixel dimensions (maybe useless)
+	Vecu16 dimensions{};						// points on the 32x32-unit grid
+	Vecu16 chunk_dimensions{};					// how many chunks (16x16 squares) in the room
 
-	// json for data loading
-	dj::Json metadata{};
-	dj::Json tiles{};
 	dj::Json inspectable_data{};
 
 	// entities
@@ -111,12 +123,18 @@ class Map {
 	std::vector<vfx::Emitter> active_emitters{};
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
+	std::vector<entity::Bed> beds{};
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};
 	std::vector<Platform> platforms{};
+	std::vector<Breakable> breakables{};
+	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
+	std::vector<SwitchBlock> switch_blocks{};
+	std::vector<BlockDestroyer> destroyers{};
+	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};
@@ -124,18 +142,22 @@ class Map {
 
 	enemy::EnemyCatalog enemy_catalog;
 
-	// minimap
-	sf::View minimap{};
-	sf::RectangleShape minimap_tile{};
+	sf::RectangleShape tile{};
 	sf::RectangleShape borderbox{};
+	sf::RectangleShape center_box{};
 
-	//layers
+	// layers
 	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};
 	sf::Sprite tile_sprite{};
 	sf::Sprite layer_sprite{};
 	std::string_view style_label{};
+
+	int room_lookup{};
 	int style_id{};
 	int native_style_id{};
+	struct {
+		int breakables{};
+	} styles{};
 
 	float collision_barrier{2.5f};
 
@@ -146,11 +168,21 @@ class Map {
 
 	player::Player* player;
 	automa::ServiceProvider* m_services;
+	gui::Console* m_console;
 
 	util::Cooldown loading{}; // shouldn't exist
+	util::Cooldown spawning{2};
 
-	private:
+	// debug
+	util::Stopwatch stopwatch{};
+
+	util::Cooldown end_demo{1600};
+
+  private:
 	int abyss_distance{400};
+	struct {
+		util::BitFlags<LevelState> state{};
+	} flags{};
 };
 
 } // namespace world

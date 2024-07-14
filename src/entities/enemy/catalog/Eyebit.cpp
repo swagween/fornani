@@ -10,6 +10,10 @@ Eyebit::Eyebit(automa::ServiceProvider& svc) : Enemy(svc, "eyebit") {
 }
 
 void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (died()) {
+		Enemy::update(svc, map, player);
+		return;
+	}
 	if (!seeker_cooldown.is_complete()) { seeker.set_position(collider.physics.position); }
 	seeker_cooldown.update();
 	flags.state.set(StateFlags::vulnerable); // eyebit is always vulnerable
@@ -24,7 +28,7 @@ void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	if (collider.has_horizontal_collision()) { seeker.bounce_horiz(); }
 	if (collider.has_vertical_collision()) { seeker.bounce_vert(); }
 
-	if (player.collider.bounding_box.overlaps(physical.hostile_range)) { seeker.set_force(0.005f); }
+	if (player.collider.bounding_box.overlaps(physical.hostile_range)) { seeker.set_force(0.003f); }
 	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
 		seeker.update(svc);
 		seeker.seek_player(player);

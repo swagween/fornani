@@ -16,6 +16,9 @@
       "friction": 0.98,
       "gravity": 6.5
     },
+    "audio": {
+      "hit": 2
+    },
     "attributes": {
       "base_hp": 20,
       "base_damage": 2.0,
@@ -44,7 +47,7 @@
       "dimensions": [ 44, 44 ],
       "sprite_dimensions": [ 80, 80 ],
       "spritesheet_dimensions": [ 5, 4 ],
-      "offset": [ 20, -14 ],
+      "offset": [ 22, -14 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [ 200.0, 300.0 ],
@@ -56,28 +59,31 @@
       "effect_type": 0,
       "effect_size": 1
     },
-      "attributes": {
-        "base_hp": 40,
-        "base_damage": 2.0,
-        "speed": 1.0,
-        "loot_multiplier": 6.0,
-        "drop_range": [ 5, 8 ]
-      },
-      "animation": {
-        "duration": 2,
-        "framerate": 20
-      },
-      "general": {
-        "mobile": true,
-        "gravity": true,
-        "map_collision": true,
-        "player_collision": true
-      }
+    "audio": {
+      "hit": -1
     },
-
-    "hulmet": {
-
+    "attributes": {
+      "base_hp": 40,
+      "base_damage": 2.0,
+      "speed": 1.0,
+      "loot_multiplier": 6.0,
+      "drop_range": [ 5, 8 ]
     },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": true
+    }
+  },
+
+  "hulmet": {
+
+  },
 
   "eyebot": {
     "metadata": {
@@ -100,12 +106,15 @@
       "effect_type": 2,
       "effect_size": 1
     },
+    "audio": {
+      "hit": 1
+    },
     "attributes": {
       "base_hp": 32,
-      "base_damage": 2.0,
+      "base_damage": 1.0,
       "speed": 10.0,
-      "loot_multiplier": 4.0,
-      "drop_range": [ 3, 4 ]
+      "loot_multiplier": 0.0,
+      "drop_range": [ 0, 0 ]
     },
     "animation": {
       "duration": 2,
@@ -132,7 +141,7 @@
       "offset": [ 8, 8 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [ 600.0, 600.0 ],
+      "alert_range": [ 900.0, 900.0 ],
       "hostile_range": [ 400.0, 400.0 ],
       "friction": 0.99,
       "gravity": 0.0
@@ -140,6 +149,9 @@
     "visual": {
       "effect_type": 0,
       "effect_size": 0
+    },
+    "audio": {
+      "hit": 3
     },
     "attributes": {
       "base_hp": 2,
@@ -159,5 +171,88 @@
       "player_collision": false,
       "hurt_on_contact": true
     }
+  },
+
+  "minigus": {
+    "metadata": {
+      "id": 6,
+      "variant": "skycorps"
+    },
+    "physical": {
+      "dimensions": [ 64, 64 ],
+      "sprite_dimensions": [ 120, 120 ],
+      "spritesheet_dimensions": [ 6, 7 ],
+      "offset": [ 40, -23 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 300.0, 300.0 ],
+      "hostile_range": [ 600.0, 80.0 ],
+      "friction": 0.98,
+      "gravity": 8.5
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 1280,
+      "base_damage": 1.0,
+      "speed": 0.5,
+      "loot_multiplier": 25.0,
+      "drop_range": [ 25, 30 ]
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": true
+    }
+  },
+  "hauler": {
+    "metadata": {
+      "id": 6,
+      "variant": "skycorps"
+    },
+    "physical": {
+      "dimensions": [ 44, 44 ],
+      "sprite_dimensions": [ 80, 80 ],
+      "spritesheet_dimensions": [ 5, 4 ],
+      "offset": [ 20, -14 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 200.0, 300.0 ],
+      "hostile_range": [ 600.0, 24.0 ],
+      "friction": 0.98,
+      "gravity": 6.5
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "attributes": {
+      "base_hp": 40,
+      "base_damage": 2.0,
+      "speed": 1.0,
+      "loot_multiplier": 6.0,
+      "drop_range": [ 5, 8 ]
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": true
+    }
   }
-  }
+
+}

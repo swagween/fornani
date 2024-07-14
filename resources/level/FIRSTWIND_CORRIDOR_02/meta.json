@@ -1,6 +1,10 @@
 {
   "meta": {
     "room_id": 104,
+    "metagrid": [
+      9,
+      -1
+    ],
     "dimensions": [
       96,
       16
@@ -10,7 +14,8 @@
       1
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "music": "dusken_cove"
   },
   "portals": [
     {
@@ -24,7 +29,9 @@
       ],
       "source_id": 104,
       "destination_id": 102,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -37,7 +44,25 @@
       ],
       "source_id": 104,
       "destination_id": 106,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "platforms": [
+    {
+      "position": [
+        75,
+        8
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 4,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
     }
   ],
   "enemies": [
@@ -49,20 +74,6 @@
       ]
     },
     {
-      "id": 1,
-      "position": [
-        33,
-        10
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
-        35,
-        10
-      ]
-    },
-    {
       "id": 4,
       "position": [
         51,
@@ -70,10 +81,17 @@
       ]
     },
     {
-      "id": 4,
+      "id": 1,
       "position": [
-        69,
-        9
+        32,
+        5
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        36,
+        6
       ]
     }
   ]

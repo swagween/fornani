@@ -1,0 +1,32 @@
+{
+  "beware": {
+    "suite": [
+      [
+        "Beware spikes!"
+      ],
+      [
+
+      ]
+    ]
+  },
+  "beware2": {
+    "suite": [
+      [
+        "DANGER! Being crushed causes instant death!"
+      ],
+      [
+
+      ]
+    ]
+  },
+  "abandon": {
+    "suite": [
+      [
+        "Abandon Ship Warning: Code H2. This is not a drill! Severe high-altitude storms for the next ninety hours."
+      ],
+      [
+
+      ]
+    ]
+  }
+}

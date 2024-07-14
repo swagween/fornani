@@ -40,6 +40,9 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	gamepad_button_name.insert({14, "unknown"});
 	gamepad_button_name.insert({15, "unknown"});
 	gamepad_button_name.insert({16, "unknown"});
+
+	hard_toggles.set(Toggles::keyboard);
+	hard_toggles.set(Toggles::gamepad);
 }
 
 void ControllerMap::handle_mouse_events(sf::Event& event) {
@@ -48,15 +51,17 @@ void ControllerMap::handle_mouse_events(sf::Event& event) {
 }
 
 void ControllerMap::handle_press(sf::Keyboard::Key& k) {
+	if (!hard_toggles.test(Toggles::keyboard)) { return; }
 	if (key_to_label.contains(k)) { label_to_control.at(key_to_label.at(k)).press(); }
 }
 
 void ControllerMap::handle_release(sf::Keyboard::Key& k) {
+	if (!hard_toggles.test(Toggles::keyboard)) { return; }
 	if (key_to_label.contains(k)) { label_to_control.at(key_to_label.at(k)).release(); }
 }
 
 void ControllerMap::handle_joystick_events(sf::Event& event) {
-	if (type != ControllerType::gamepad) { return; }
+	if (!hard_toggles.test(Toggles::gamepad)) { return; }
 	// left analog stick
 	throttle.x = sf::Joystick::getAxisPosition(0, sf::Joystick::X) / 100.f;
 	if (abs(throttle.x) < throttle_threshold) { throttle.x = 0.f; }
@@ -91,8 +96,8 @@ void ControllerMap::reset_triggers() {
 	for (auto& tag : tags) { label_to_control.at(tag).reset_triggers(); }
 }
 
-void ControllerMap::switch_to_joystick() {}
+void ControllerMap::switch_to_joystick() { type = ControllerType::gamepad; }
 
-void ControllerMap::switch_to_keyboard() {}
+void ControllerMap::switch_to_keyboard() { type = ControllerType::keyboard; }
 
 } // namespace config

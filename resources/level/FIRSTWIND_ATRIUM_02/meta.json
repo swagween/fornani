@@ -1,6 +1,10 @@
 {
   "meta": {
     "room_id": 106,
+    "metagrid": [
+      15,
+      -1
+    ],
     "dimensions": [
       32,
       64
@@ -10,9 +14,25 @@
       4
     ],
     "style": 0,
-    "background": 4
+    "background": 4,
+    "music": "dusken_cove"
   },
   "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        19
+      ],
+      "source_id": 106,
+      "destination_id": 117,
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    },
     {
       "dimensions": [
         1,
@@ -20,11 +40,28 @@
       ],
       "position": [
         31,
-        20
+        18
       ],
       "source_id": 106,
       "destination_id": 107,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        3
+      ],
+      "position": [
+        0,
+        54
+      ],
+      "source_id": 106,
+      "destination_id": 105,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -33,11 +70,13 @@
       ],
       "position": [
         0,
-        4
+        5
       ],
       "source_id": 106,
       "destination_id": 104,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "inspectables": [
@@ -47,33 +86,84 @@
         1
       ],
       "position": [
-        29,
+        14,
         21
       ],
       "activate_on_contact": false,
-      "key": "sign_atrium_02"
+      "key": "rest"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        24,
+        28
+      ],
+      "activate_on_contact": false,
+      "key": "atrium_comp"
+    }
+  ],
+  "animators": [
+    {
+      "id": 2,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        24,
+        27
+      ],
+      "automatic": true,
+      "foreground": false
+    }
+  ],
+  "platforms": [
+    {
+      "position": [
+        12,
+        5
+      ],
+      "dimensions": [
+        3,
+        3
+      ],
+      "extent": 5,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.300000
+    },
+    {
+      "position": [
+        15,
+        9
+      ],
+      "dimensions": [
+        3,
+        3
+      ],
+      "extent": 5,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.300000
     }
   ],
   "enemies": [
     {
       "id": 1,
       "position": [
-        13,
-        6
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
-        16,
-        6
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
         15,
         20
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        25,
+        8
       ]
     }
   ]

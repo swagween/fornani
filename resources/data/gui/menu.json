@@ -10,10 +10,13 @@
       "file 2",
       "file 3"
     ],
+    "stat": [
+      "save screenshot",
+      "exit to menu"
+    ],
     "options": [
       "controls",
-      "tutorial",
-      "credits"
+      "settings"
     ],
     "controls": [
       "jump/select",
@@ -31,6 +34,11 @@
       "up",
       "down"
     ],
+    "settings": [
+      "keyboard input: ",
+      "gamepad input: ",
+      "music volume: "
+    ],
     "credits": [
       ""
     ]
@@ -46,6 +54,9 @@
       "top_buffer": 186
     },
     "controls": {
+      "top_buffer": 60
+    },
+    "settings": {
       "top_buffer": 60
     },
     "credits": {

@@ -44,10 +44,10 @@
     "naive_description": "You need this to navigate the Toxic Cavern without dying.",
     "unique": true
   },
-  "firstwind_deck_key": {
+  "firstwind_hangar_key": {
     "index": 8,
-    "title": "Firstwind Deck Key",
-    "naive_description": "A small iron key that grants you access to the Firstwind's outer deck.",
+    "title": "Firstwind Hangar Key",
+    "naive_description": "A small iron key that grants you access to the Firstwind's hangar shafts.",
     "unique": true
   },
   "woodshine_warehouse_key": {
@@ -60,6 +60,48 @@
     "index": 10,
     "title": "Nimbus III Boiler Room Key",
     "naive_description": "Allows you to enter Nimbus III's boiler room.",
+    "unique": true
+  },
+  "laboratory_key": {
+    "index": 11,
+    "title": "Laboratory Key",
+    "naive_description": "Grants access to Firstwind's research lab.",
+    "unique": true
+  },
+  "bit_cell_key": {
+    "index": 12,
+    "naive_title": "Mysterious Key",
+    "title": "Bit's Cell Key",
+    "naive_description": "Looks like just an ordinary key. There's no reason not to hold on to it.",
+    "hidden_description": "The key to Bit's prison cell. He said he owes you big time for freeing him...",
+    "unique": true
+  },
+  "four_of_diamonds": {
+    "index": 13,
+    "title": "Four of Diamonds",
+    "naive_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
+    "hidden_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
+    "unique": true
+  },
+  "staple_box": {
+    "index": 14,
+    "title": "Staple Box",
+    "naive_description": "A box of staples.",
+    "hidden_description": "A box of staples.",
+    "unique": true
+  },
+  "boiler_key": {
+    "index": 15,
+    "naive_title": "Mysterious Key",
+    "title": "Boiler Key",
+    "naive_description": "A key of unknown use. Might as well keep it.",
+    "hidden_description": "The key to Firstwind's boiler room.",
+    "unique": true
+  },
+  "radar_device": {
+    "index": 16,
+    "title": "Radar Device",
+    "naive_description": "A map system. You can view the map by toggling left or right in this window.",
     "unique": true
   }
 }

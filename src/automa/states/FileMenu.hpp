@@ -12,7 +12,7 @@ class FileMenu : public automa::GameState {
   public:
 	FileMenu() = default;
 	FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
-	void init(ServiceProvider& svc, std::string_view room = "");
+	void init(ServiceProvider& svc, int room_number);
 	void handle_events(ServiceProvider& svc, sf::Event& event);
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
@@ -21,6 +21,7 @@ class FileMenu : public automa::GameState {
 	sf::RectangleShape title{};
 private:
 	util::Cooldown loading{};
+	world::Map map;
 };
 
 }

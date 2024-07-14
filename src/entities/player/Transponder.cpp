@@ -22,13 +22,15 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 	if (skipped_ahead()) {
 		if (console.writer.writing() && console.writer.can_skip()) { console.writer.skip_ahead(); }
 	}
-	if (requested_next()) {
+	if (requested_next() && !console.writer.delaying()) {
 		if (!console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::next); }
 		console.writer.request_next();
+		console.writer.reset_delay();
 	}
 	if (exited()) {
 		if (console.writer.complete()) {
 			svc.soundboard.flags.console.set(audio::Console::done);
+			flush_shipments();
 			console.writer.shutdown();
 			console.end();
 		}
@@ -40,9 +42,18 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 }
 
 void Transponder::track_shipments(gui::Console& console) {
-	shipments.item = console.writer.get_item_shipment();
-	shipments.quest = console.writer.get_quest_shipment();
-	console.writer.flush_communicators();
+	shipments.item.set(console.writer.communicators.out_item.get_residue());
+	shipments.quest.set(console.writer.communicators.out_quest.get_residue());
+	shipments.voice.set(console.writer.communicators.out_voice.get_residue());
+	shipments.emotion.set(console.writer.communicators.out_emotion.get_residue());
+	shipments.reveal_item.set(console.writer.communicators.reveal_item.get_residue());
+	out_quest = console.writer.out_quest;
+	console.writer.out_quest = {};
+}
+
+void Transponder::flush_shipments() {
+	shipments = {};
+	out_quest = {};
 }
 
 void Transponder::end() { actions = {}; }

@@ -8,7 +8,9 @@
 #include "../../graphics/TextureUpdater.hpp"
 #include "../../particle/Gravitator.hpp"
 #include "../../utils/BitFlags.hpp"
+#include "../../utils/QuestCode.hpp"
 #include "../../utils/Collider.hpp"
+#include "../../graphics/Tutorial.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "../packages/Health.hpp"
 #include "Catalog.hpp"
@@ -22,6 +24,10 @@ class Console;
 class InventoryWindow;
 } // namespace gui
 
+namespace world {
+class Map;
+}
+
 namespace automa {
 struct ServiceProvider;
 }
@@ -32,8 +38,8 @@ enum class DropType;
 
 namespace player {
 
-float const PLAYER_WIDTH = 18.0f;
-float const PLAYER_HEIGHT = 24.0f;
+float const PLAYER_WIDTH = 20.0f;
+float const PLAYER_HEIGHT = 20.0f;
 float const head_height{8.f};
 float const PLAYER_START_X = 100.0f;
 float const PLAYER_START_Y = 100.0f;
@@ -53,6 +59,7 @@ constexpr inline float antenna_speed{136.f};
 struct PlayerStats {
 	int orbs{};
 	int max_orbs{};
+	float shield_dampen{0.01f};
 };
 
 struct PhysicsStats {
@@ -77,7 +84,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { alive, dir_switch, show_weapon };
+enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed};
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -87,40 +94,51 @@ struct PlayerFlags {
 
 class Player {
   public:
-	Player();
 	Player(automa::ServiceProvider& svc);
+	~Player() {}
 
 	// init (violates RAII but must happen after resource path is set)
 	void init(automa::ServiceProvider& svc);
 	// member functions
-	void update(gui::Console& console, gui::InventoryWindow& inventory_window);
+	void update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
+	void handle_turning();
 	void update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void flash_sprite();
-	void drag_sprite(sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void calculate_sprite_offset();
 
 	// state
-	[[nodiscard]] auto is_dead() const -> bool { return flags.state.test(player::State::alive); }
+	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
+	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
+	[[nodiscard]] auto death_animation_over() -> bool { return animation.death_over(); }
+	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
+	[[nodiscard]] auto arsenal_size() const -> size_t { return arsenal ? arsenal.value().size() : 0; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
+	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
+	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(Abilities::shield); }
+	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.categories.inventory.has_item(id); }
+	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
+	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
 
 	// moves
-	void jump();
+	void jump(world::Map& map);
 	void dash();
 	void wallslide();
 	void shield();
 
 	void set_position(sf::Vector2<float> new_pos, bool centered = false);
+	void freeze_position();
 	void update_direction();
 	void update_weapon();
 	void walk();
-	void hurt(int amount);
+	void hurt(float amount = 1.f, bool force = false);
+	void on_crush(world::Map& map);
 	void update_antennae();
 	void sync_antennae();
 
@@ -129,9 +147,8 @@ class Player {
 
 	// level events
 	void update_invincibility();
-	void kill();
 	void start_over();
-	void give_drop(item::DropType type, int value);
+	void give_drop(item::DropType type, float value);
 	void give_item(int item_id, int amount);
 
 	void reset_flags();
@@ -139,7 +156,8 @@ class Player {
 	void map_reset();
 
 	arms::Weapon& equipped_weapon();
-	int& extant_instances(int index);
+	void push_to_loadout(int id);
+	void pop_from_loadout(int id);
 
 	// map helpers
 	dir::LR entered_from() const;
@@ -151,29 +169,40 @@ class Player {
 	PlayerController controller;
 	Transponder transponder{};
 	shape::Collider collider{};
-	PlayerAnimation animation{};
+	shape::Shape hurtbox{};
+	PlayerAnimation animation;
 	entity::Health health{};
 	Indicator health_indicator;
 	Indicator orb_indicator;
 
+	text::Tutorial tutorial{};
+
 	// weapons
-	arms::Arsenal arsenal;
+	std::optional<arms::Arsenal> arsenal{};
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};
 	sf::Vector2<float> hand_position{};
-	sf::Vector2<float> sprite_offset{};
+	sf::Vector2<float> sprite_offset{9.f, -3.f};
 	sf::Vector2<float> sprite_dimensions{};
 	sf::Vector2<float> sprite_position{};
 
 	std::vector<vfx::Gravitator> antennae{};
-	sf::Vector2<float> antenna_offset{4.f, -13.f};
+	sf::Vector2<float> antenna_offset{4.f, -17.f};
 
-	PlayerStats player_stats{0, 99999};
+	PlayerStats player_stats{0, 99999, 0.06f};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 	util::Cooldown hurt_cooldown{}; //for animation
+	util::Cooldown force_cooldown{}; //for player hurt forces
+	struct {
+		util::Cooldown tutorial{400};
+		util::Cooldown sprint_tutorial{800};
+	} cooldowns{};
 	Counters counters{};
+	std::vector<sf::Vector2<float>> accumulated_forces{};
+	sf::Vector2<float> forced_momentum{};
+	std::optional<util::QuestCode> quest_code{};
 
 	automa::ServiceProvider* m_services;
 
@@ -195,12 +224,16 @@ class Player {
 
   private:
 	struct {
-		float stop{3.8f};
+		float stop{5.8f};
 		float wallslide{-1.5f};
 		float suspend{4.4f};
-		float landed{0.004f};
+		float landed{0.4f};
 		float run{0.02f};
 	} thresholds{};
+	struct {
+		dir::Direction left_squish{};
+		dir::Direction right_squish{};
+	} directions{};
 };
 
 } // namespace player

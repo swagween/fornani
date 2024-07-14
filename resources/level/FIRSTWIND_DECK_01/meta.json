@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "room_id": 115,
+    "metagrid": [
+      21,
+      3
+    ],
+    "dimensions": [
+      80,
+      16
+    ],
+    "chunk_dimensions": [
+      5,
+      1
+    ],
+    "style": 0,
+    "background": 5,
+    "music": "dusken_cove"
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        2,
+        9
+      ],
+      "source_id": 115,
+      "destination_id": 112,
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "enemies": [
+    {
+      "id": 6,
+      "position": [
+        60,
+        10
+      ]
+    }
+  ],
+  "save_point": {
+    "id": 115,
+    "position": [
+      14,
+      3
+    ]
+  }
+}

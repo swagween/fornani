@@ -21,13 +21,12 @@ class Grid {
 	sf::Vector2<uint32_t> dimensions{};
 	std::vector<Tile> cells{};
 
-	void update();
 	void check_neighbors();
+	void seed_vertices();
+	void destroy_cell(sf::Vector2<int> pos);
 
   private:
-	void init_shape_vertices();
-	void push_cells(int i);
-	float spacing{};
+	float spacing{32.f};
 };
 
 } // namespace squid

@@ -1,6 +1,10 @@
 {
   "meta": {
     "room_id": 101,
+    "metagrid": [
+      2,
+      0
+    ],
     "dimensions": [
       64,
       16
@@ -24,7 +28,9 @@
       ],
       "source_id": 101,
       "destination_id": 100,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -37,7 +43,25 @@
       ],
       "source_id": 101,
       "destination_id": 102,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "enemies": [
+    {
+      "id": 1,
+      "position": [
+        36,
+        10
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        15,
+        7
+      ]
     }
   ]
 }

@@ -1,13 +1,14 @@
 
 #include "Shape.hpp"
+#include <ccmath/math/power/sqrt.hpp>
 
 namespace shape {
 
 Shape::Vec Shape::perp(Vec edg) {
 	Vec temp = Vec(-edg.y, edg.x);
-	double mag;
-	double a_squared = temp.x * temp.x;
-	double b_squared = temp.y * temp.y;
+	float mag;
+	float a_squared = temp.x * temp.x;
+	float b_squared = temp.y * temp.y;
 	mag = sqrt(a_squared + b_squared);
 	if (abs(mag) > 0) {
 		temp.x = temp.x / mag;
@@ -87,21 +88,21 @@ void Shape::update() {
 }
 
 Shape::Vec Shape::get_center() {
-	Vec result = Vec(0, 0);
+	Vec result{};
 	if (!vertices.empty()) {
-		int x1 = vertices.front().x;
-		int y1 = vertices.front().y;
-		int x2 = vertices.back().x;
-		int y2 = vertices.back().y;
-		result.x = (x1 + x2) / 2;
-		result.y = (y1 + y2) / 2;
+		float x1 = vertices.front().x;
+		float y1 = vertices.front().y;
+		float x2 = vertices.back().x;
+		float y2 = vertices.back().y;
+		result.x = (x1 + x2) / 2.f;
+		result.y = (y1 + y2) / 2.f;
 	}
 	return result;
 }
 
 static float const NORMAL_TOLERANCE = 0.0001f;
 
-float Shape::getLength(const Vec v) { return std::sqrt(v.x * v.x + v.y * v.y); }
+float Shape::getLength(const Vec v) { return ccm::sqrt(v.x * v.x + v.y * v.y); }
 
 // Returns normalized vector
 Shape::Vec Shape::getNormalized(const Vec v) {
@@ -323,7 +324,7 @@ bool Shape::SAT(Shape const& other) {
 	return true;
 }
 
-bool Shape::overlaps(Shape const& other) {
+bool Shape::overlaps(Shape const& other) const {
 	bool ret{true};
 	if (vertices.at(0).x > other.vertices.at(1).x) { ret = false; }
 	if (vertices.at(1).x < other.vertices.at(0).x) { ret = false; }

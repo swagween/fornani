@@ -1,6 +1,7 @@
 #include "Eyebot.hpp"
 #include "../../../service/ServiceProvider.hpp"
 #include "../../player/Player.hpp"
+#include "../../../level/Map.hpp"
 
 namespace enemy {
 
@@ -10,6 +11,21 @@ Eyebot::Eyebot(automa::ServiceProvider& svc) : Enemy(svc, "eyebot") {
 }
 
 void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+
+	if (just_died()) {
+		for (int i{0}; i < 3; ++i) {
+			auto randx = svc.random.random_range_float(-60.f, 60.f);
+			auto randy = svc.random.random_range_float(-60.f, 60.f);
+			sf::Vector2<float> rand_vec{randx, randy};
+			sf::Vector2<float> spawn = collider.physics.position + rand_vec;
+			map.spawn_enemy(5, spawn);
+		}
+	}
+
+	if (died()) {
+		Enemy::update(svc, map, player);
+		return;
+	}
 	if (!seeker_cooldown.is_complete()) { seeker.set_position(collider.physics.position); }
 	seeker_cooldown.update();
 	flags.state.set(StateFlags::vulnerable); // eyebot is always vulnerable

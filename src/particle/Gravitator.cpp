@@ -63,8 +63,8 @@ void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec
 	}
 
 	box.setFillColor(prev_color);
-	box.setPosition((int)(collider.bounding_box.position.x - campos.x),
-					(int)(collider.bounding_box.position.y - campos.y));
+	box.setPosition(collider.bounding_box.position.x - campos.x,
+					collider.bounding_box.position.y - campos.y);
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(box);

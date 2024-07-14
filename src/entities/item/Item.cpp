@@ -8,14 +8,15 @@ namespace item {
 Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) {
 	auto const& in_data = svc.data.item[label];
 	metadata.id = in_data["index"].as<int>();
+	metadata.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string() : metadata.naive_title = in_data["title"].as_string();
 	metadata.title = in_data["title"].as_string();
+	metadata.hidden_description = in_data["hidden_description"] ? in_data["hidden_description"].as_string() : in_data["naive_description"].as_string();
 	metadata.naive_description = in_data["naive_description"].as_string();
-	metadata.hidden_description = in_data["hidden_description"].as_string();
 	if (in_data["unique"].as_bool()) { flags.set(ItemFlags::unique); }
 	dimensions = {32.f, 32.f};
 	sprite.setTexture(svc.assets.t_items);
-	int u = (metadata.id - 1) * dimensions.x;
-	int v = 0;
+	auto u = static_cast<int>((metadata.id - 1) * dimensions.x);
+	auto v = 0;
 	sprite.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
 
 	//for debug

@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cstdio>
 #include <memory>
+#include <filesystem>
 #include "../components/PhysicsComponent.hpp"
 #include "../entities/player/Player.hpp"
 #include "../graphics/Background.hpp"
@@ -13,6 +14,7 @@
 #include "../gui/HUD.hpp"
 #include "../level/Map.hpp"
 #include "../gui/InventoryWindow.hpp"
+#include "../gui/PauseWindow.hpp"
 
 namespace player {
 class Player;
@@ -22,9 +24,9 @@ namespace automa {
 
 // globals
 
-enum class STATE { STATE_NULL, STATE_INIT, STATE_EXIT, STATE_MENU, STATE_OPTIONS, STATE_FILE, STATE_MAIN, STATE_DOJO };
+enum class GameStateFlags { playtest };
 
-enum class MenuSelection { play, options, quit, controls, tutorial, credits };
+enum class MenuSelection { play, options, quit, controls, tutorial, credits, settings };
 
 constexpr inline float dot_force{0.9f};
 constexpr inline float dot_fric{0.86f};
@@ -47,27 +49,42 @@ struct Option {
 	void update(ServiceProvider& svc, int& selection);
 };
 
+struct Scene {
+	struct {
+		std::filesystem::path scene{};
+		std::filesystem::path region{};
+		std::filesystem::path room{};
+		std::filesystem::path next_region{};
+		std::filesystem::path next_room{};
+	} paths{};
+	std::string_view label{};
+};
+
 class GameState {
 
   public:
-	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0}, {MenuSelection::options, 1}, {MenuSelection::quit, 2}, {MenuSelection::controls, 0}, {MenuSelection::tutorial, 1}, {MenuSelection::credits, 2}};
+	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0},	   {MenuSelection::options, 1}, {MenuSelection::quit, 2},	{MenuSelection::controls, 0},
+															 {MenuSelection::tutorial, 2}, {MenuSelection::credits, 3}, {MenuSelection::settings, 1}};
 
 	GameState() = default;
 	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
 	GameState& operator=(GameState&&) = delete;
+	virtual ~GameState() {}
 
-	virtual void init(ServiceProvider& svc, std::string_view room = ""){};
+	virtual void init(ServiceProvider& svc, int room_number){};
 	virtual void handle_events(ServiceProvider& svc, sf::Event& event){};
 	virtual void tick_update(ServiceProvider& svc){};
 	virtual void frame_update(ServiceProvider& svc){};
 	virtual void render(ServiceProvider& svc, sf::RenderWindow& win){};
 	void constrain_selection();
 
-	STATE state = STATE::STATE_NULL;
 	bool debug_mode{false};
+	util::BitFlags<GameStateFlags> flags{};
 
+	std::string_view scene{};
 	gui::Console console{};
 	gui::InventoryWindow inventory_window;
+	gui::PauseWindow pause_window;
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
@@ -76,8 +93,9 @@ class GameState {
 	player::Player* player;
 	gui::HUD hud;
 	sf::Font font{};
+	sf::Font subtitle_font{};
 
-	std::string_view scene{};
+	Scene target_folder{};
 	std::vector<Option> options{};
 	int current_selection{};
 	float spacing{24.f};

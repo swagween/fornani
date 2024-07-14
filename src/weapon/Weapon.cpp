@@ -1,26 +1,23 @@
-
 #include "Weapon.hpp"
-
 #include "../service/ServiceProvider.hpp"
 
 namespace arms {
 
-Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id), projectile(svc, label, id) {
+Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id), projectile(svc, label, id, *this) {
 
 	auto const& in_data = svc.data.weapon["weapons"][id];
 
 	//label = in_data["label"].as_string();
-	type = index_to_type.at(id);
+	type = static_cast<WEAPON_TYPE>(id);
 
 	sprite_dimensions.x = in_data["dimensions"]["x"].as<int>();
 	sprite_dimensions.y = in_data["dimensions"]["y"].as<int>();
-	gun_offset.x = in_data["gun_offset"]["x"].as<int>();
-	gun_offset.y = in_data["gun_offset"]["y"].as<int>();
+	gun_offset.x = in_data["gun_offset"]["x"].as<float>();
+	gun_offset.y = in_data["gun_offset"]["y"].as<float>();
 
 	attributes.back_offset = in_data["attributes"]["back_offset"].as<int>();
 	attributes.barrel_position.at(0) = in_data["barrel_point"]["x"].as<float>();
 	attributes.barrel_position.at(1) = in_data["barrel_point"]["y"].as<float>();
-
 
 	attributes.automatic = (bool)in_data["attributes"]["automatic"].as_bool();
 	attributes.grenade = (bool)in_data["attributes"]["grenade"].as_bool();
@@ -44,7 +41,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 }
 
 void Weapon::update(dir::Direction to_direction) {
-	active_projectiles = std::clamp(active_projectiles, 0, INT_MAX);
+	active_projectiles = std::clamp(active_projectiles, 0, std::numeric_limits<int>::max());
 	set_orientation(to_direction);
 	cooldown.update();
 	if (cooldown.is_complete()) {
@@ -71,7 +68,7 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		// fire point debug
 		sf::RectangleShape box{};
 		box.setPosition(barrel_point.x - campos.x - 1, barrel_point.y - campos.y - 1);
-		box.setFillColor(flcolor::fucshia);
+		box.setFillColor(svc.styles.colors.fucshia);
 		box.setSize(sf::Vector2<float>{2.0f, 2.0f});
 		win.draw(box);
 	} else {

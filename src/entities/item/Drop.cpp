@@ -1,10 +1,11 @@
 
 #include "Drop.hpp"
 #include "../../service/ServiceProvider.hpp"
+#include "../../level/Map.hpp"
 
 namespace item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability) : sparkler(svc, drop_dimensions, flcolor::ui_white, "drop") {
+Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop") {
 
 	collider = shape::Collider(drop_dimensions);
 	collider.sync_components();
@@ -23,14 +24,16 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	num_sprites = svc.data.drop[key]["animation"]["num_sprites"].as<int>();
 	animation.params.duration = svc.data.drop[key]["animation"]["duration"].as<int>();
 	animation.params.framerate = svc.data.drop[key]["animation"]["framerate"].as<int>();
+	animation.params.num_loops = -1;
 	animation.start();
 	animation.refresh();
 
 	// randomly seed the animation start frame so drops in the same loot animate out of sync
-	animation.current_frame = svc.random.random_range(0, animation.params.duration - 1);
+	animation.frame.set(svc.random.random_range(0, animation.params.duration - 1));
 
 	int rand_cooldown_offset = svc.random.random_range(0, 50);
 	lifespan.start(4500 + rand_cooldown_offset);
+	delay.start(delay_time);
 	seed(svc, probability);
 	set_value();
 	set_texture(svc);
@@ -83,9 +86,11 @@ void Drop::set_texture(automa::ServiceProvider& svc) {
 }
 
 void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
-
+	delay.update();
 	collider.update(svc);
 	collider.detect_map_collision(map);
+	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
+	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
 	collider.reset();
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
@@ -115,7 +120,6 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
-
 	if (svc.greyblock_mode()) {
 		collider.render(win, campos);
 	} else {

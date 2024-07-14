@@ -5,61 +5,42 @@
 
 namespace enemy {
 
-Tank::Tank(automa::ServiceProvider& svc) : Enemy(svc, "tank"), gun(svc, "skycorps ar", 2) , m_services(&svc) {
+Tank::Tank(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "tank"), gun(svc, "skycorps ar", 2), m_services(&svc), m_map(&map) {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
 	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
 	collider.physics.maximum_velocity = {3.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
+	secondary_collider = shape::Collider({28.f, 28.f});
+	directions.desired.lr = dir::LR::left;
+	directions.actual.lr = dir::LR::left;
+	directions.movement.lr = dir::LR::neutral;
 }
 
 void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (died()) {
+		Enemy::update(svc, map, player);
+		return;
+	}
 
 	flags.state.set(StateFlags::vulnerable); // tank is always vulnerable
 	gun.update(svc, map, *this);
 	caution.avoid_ledges(map, collider, 1);
-	running_time.update();
-
-	if (state.test(TankState::shoot)) {
-		if (!gun.get().cooling_down()) {
-			gun.cycle.update();
-			gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{-14.f, 10.f} : sf::Vector2<float>{26.f, 20.f};
-			gun.shoot();
-			map.spawn_projectile_at(svc, gun.get(), gun.barrel_point());
-			m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
-		}
-	}
 
 	// reset animation states to determine next animation state
 	state = {};
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
+	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
+	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
+	if (directions.actual.lr == dir::LR::right && sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lr == dir::LR::left && sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
-
-	if (hostility_triggered() && gun.clip_cooldown.is_complete() && running_time.is_complete()) {
-		state.set(TankState::alert);
-	}
-	if (hostile() && !hostility_triggered() && gun.clip_cooldown.is_complete()) {
-		if (m_services->random.percent_chance(fire_chance) || caution.danger(direction)) {
-			state.set(TankState::shoot);
-		} else {
-			state.set(TankState::run);
-			running_time.start(400);
-		}
-	} // player is already in hostile range
-
-	if (caution.danger(direction)) { running_time.cancel(); }
-	if (running_time.is_complete() && gun.clip_cooldown.is_complete()) {
-		state.set(TankState::idle);
-	} else if (!running_time.is_complete()) {
-		state = {};
-		state.set(TankState::run);
-	}
+	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
+	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
+	secondary_collider.sync_components();
+	player.collider.handle_collider_collision(secondary_collider.bounding_box);
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (svc.random.percent_chance(4) && !caution.danger(direction)) {
-			state.set(TankState::run);
-			running_time.start(400);
-		}
+		if (svc.random.percent_chance(4) && !caution.danger(directions.actual)) { state = TankState::run; }
 	}
 
 	if(flags.state.test(StateFlags::hurt)) {
@@ -75,102 +56,83 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	hurt_effect.update();
 	if (hurt_effect.running()) {
 		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			sprite.setColor(flcolor::red);
+			sprite.setColor(svc.styles.colors.red);
 		} else {
-			sprite.setColor(flcolor::periwinkle);
+			sprite.setColor(svc.styles.colors.periwinkle);
 		}
 	} else {
-		sprite.setColor(flcolor::white);
+		sprite.setColor(svc.styles.colors.white);
 	}
+
+	if (hostility_triggered()) { state = TankState::alert; }
+	if (hostile() && !hostility_triggered()) {
+		if (m_services->random.percent_chance(fire_chance) || caution.danger(directions.actual)) {
+			state = TankState::shoot;
+		} else {
+			state = TankState::run;
+		}
+	} // player is already in hostile range
 
 	if (just_died()) { m_services->soundboard.flags.tank.set(audio::Tank::death); }
 
-	if (ent_state.test(entity::State::flip)) { state.set(TankState::turn); }
+	if (directions.actual.lr != directions.desired.lr) { state = TankState::turn; }
 
 	state_function = state_function();
 }
 
 fsm::StateFunction Tank::update_idle() {
 	animation.label = "idle";
-	if (state.test(TankState::alert)) {
-		state.reset(TankState::idle);
-		animation.set_params(alert);
-		return TANK_BIND(update_alert);
-	}
-	if (state.test(TankState::turn)) {
-		state.reset(TankState::idle);
-		animation.set_params(turn);
-		return TANK_BIND(update_turn);
-	}
-	if (state.test(TankState::shoot)) {
-		state.reset(TankState::idle);
-		animation.set_params(shoot);
-		return TANK_BIND(update_shoot);
-	}
-	if (state.test(TankState::run)) {
-		state.reset(TankState::idle);
-		animation.set_params(run);
-		return TANK_BIND(update_run);
-	}
-	state = {};
-	state.set(TankState::idle);
+	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
+	if (change_state(TankState::alert, alert)) { return TANK_BIND(update_alert); }
+	if (change_state(TankState::run, run)) { return TANK_BIND(update_run); }
+	if (change_state(TankState::shoot, shoot)) { return TANK_BIND(update_shoot); }
+	state = TankState::idle;
 	return TANK_BIND(update_idle);
 };
 fsm::StateFunction Tank::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		sprite_flip();
-		state = {};
-		state.set(TankState::idle);
-		animation.set_params(idle);
+		Enemy::sprite.scale({-1.f, 1.f});
+		directions.actual = directions.desired;
+		state = TankState::idle;
+		animation.set_params(idle, false);
 		return TANK_BIND(update_idle);
 	}
-	state = {};
-	state.set(TankState::turn);
+	state = TankState::turn;
 	return TANK_BIND(update_turn);
 };
 fsm::StateFunction Tank::update_run() {
 	animation.label = "run";
-	auto facing = direction.lr == dir::LR::left ? -1.f : 1.f;
+	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
-	if (caution.danger(direction)) { running_time.cancel(); }
-	if (running_time.is_complete()) { state.set(TankState::idle); }
-	if (state.test(TankState::turn)) {
-		state.reset(TankState::run);
-		animation.set_params(turn);
-		return TANK_BIND(update_turn);
-	}
-	if (state.test(TankState::idle)) {
-		state.reset(TankState::run);
+	if (caution.danger(directions.movement) || animation.complete()) {
+		state = TankState::idle;
 		animation.set_params(idle);
 		return TANK_BIND(update_idle);
 	}
-	if (state.test(TankState::alert)) {
-		state.reset(TankState::run);
-		animation.set_params(alert);
-		return TANK_BIND(update_alert);
-	}
-	state = {};
-	state.set(TankState::run);
+	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
+	if (change_state(TankState::alert, alert)) { return TANK_BIND(update_alert); }
+	state = TankState::run;
 	return TANK_BIND(update_run);
 }
 fsm::StateFunction Tank::update_shoot() {
 	animation.label = "shoot";
+	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
+	if (!gun.get().cooling_down()) {
+		gun.cycle.update();
+		if (directions.actual.lr == dir::LR::left) { gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{-14.f, 10.f} : sf::Vector2<float>{26.f, 20.f}; }
+		if (directions.actual.lr == dir::LR::right) { gun.barrel_offset = gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{52.f, 10.f} : sf::Vector2<float>{14.f, 20.f}; }
+		gun.shoot();
+		m_map->spawn_projectile_at(*m_services, gun.get(), gun.barrel_point());
+		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
+	}
 	if (animation.complete() && animation.keyframe_over()) {
 		gun.clip_cooldown.start(gun.clip_cooldown_time);
-		state = {};
-		state.set(TankState::idle);
-		state.reset(TankState::shoot);
+		state = TankState::idle;
 		animation.set_params(idle);
 		return TANK_BIND(update_idle);
 	}
-	if (state.test(TankState::turn)) {
-		state.reset(TankState::shoot);
-		animation.set_params(turn);
-		return TANK_BIND(update_turn);
-	}
-	state = {};
-	state.set(TankState::shoot);
+	state = TankState::shoot;
 	return TANK_BIND(update_shoot);
 }
 
@@ -184,26 +146,25 @@ fsm::StateFunction Tank::update_alert() {
 		}
 	}
 	if (animation.complete()) {
-		if (m_services->random.percent_chance(fire_chance) || caution.danger(direction)) {
-			state.set(TankState::shoot);
-		} else {
-			state.set(TankState::run);
-			running_time.start(400);
+		if (directions.actual.lr != directions.desired.lr) {
+			state = TankState::turn;
+			animation.set_params(turn);
+			return TANK_BIND(update_turn);
 		}
-		if (state.test(TankState::shoot)) {
-			state.reset(TankState::idle);
-			animation.set_params(shoot);
-			return TANK_BIND(update_shoot);
-		}
-		if (state.test(TankState::run)) {
-			state.reset(TankState::idle);
-			animation.set_params(run);
-			return TANK_BIND(update_run);
-		}
+		state = TankState::shoot;
+		animation.set_params(shoot);
+		return TANK_BIND(update_shoot);
 	}
-	state = {};
-	state.set(TankState::alert);
+	state = TankState::alert;
 	return TANK_BIND(update_alert);
-};
+}
+
+bool Tank::change_state(TankState next, anim::Parameters params) {
+	if (state == next) {
+		animation.set_params(params, false);
+		return true;
+	}
+	return false;
+}
 
 } // namespace enemy

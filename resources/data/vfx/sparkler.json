@@ -9,14 +9,40 @@
     "lifespan_variance": 100
   },
 
+  "item": {
+    "rate": 2.0,
+    "volatility": 0.2,
+    "wobble": 0.1,
+    "frequency": 0.01,
+    "speed": 0.4,
+    "lifespan": 220,
+    "lifespan_variance": 80,
+    "fader": true,
+    "color": "standard"
+  },
+
   "save_point": {
     "rate": 3.0,
     "volatility": 0.5,
     "wobble": 0.02,
     "frequency": 0.005,
-    "speed": 0.3,
+    "speed": 0.2,
     "lifespan": 260,
-    "lifespan_variance": 195
+    "lifespan_variance": 195,
+    "fader": true,
+    "color": "save"
+  },
+
+  "bed": {
+    "rate": 1.8,
+    "volatility": 0.2,
+    "wobble": 0.02,
+    "frequency": 0.005,
+    "speed": 0.04,
+    "lifespan": 460,
+    "lifespan_variance": 295,
+    "fader": true,
+    "color": "save"
   },
 
   "light_trail": {
@@ -47,5 +73,15 @@
     "speed": 0.3,
     "lifespan": 120,
     "lifespan_variance": 70
+  },
+
+  "minigus": {
+    "rate": 0.0,
+    "volatility": 0.01,
+    "wobble": 0.1,
+    "frequency": 0.1,
+    "speed": 0.1,
+    "lifespan": 320,
+    "lifespan_variance": 100
   }
 }

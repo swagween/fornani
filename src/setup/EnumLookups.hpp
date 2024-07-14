@@ -56,19 +56,6 @@ enum class STYLE {
     PROVISIONAL
 };
 
-enum class TILE_TYPE {
-    TILE_BASIC,
-    TILE_GROUND_RAMP,
-    TILE_CEILING_RAMP,
-    TILE_MOVEABLE,
-    TILE_PLATFORM,
-    TILE_DEATH_SPIKES,
-    TILE_BREAKABLE,
-    TILE_LADDER,
-    TILE_SPIKES,
-    TILE_ICY
-};
-
 enum class ALPHABET {
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
     ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, ZERO, APOSTROPHE, PERIOD,
@@ -193,7 +180,7 @@ inline std::unordered_map<char, int> get_character {
     {'>', 41},
     {'?', 42},
     {':', 43},
-    {'—', 44},
+    // {'ï¿½', 44},
     {'_', 45},
     {'-', 46},
     {'(', 47},
@@ -215,40 +202,5 @@ inline std::unordered_map<char, int> get_orb_number{
     {'8', 8},
     {'9', 9}
 };
-
-
-inline std::unordered_map<CONTROLS, sf::Keyboard::Key> control_to_key {
-    {CONTROLS::JUMP, sf::Keyboard::Z},
-    {CONTROLS::SHOOT, sf::Keyboard::X},
-    {CONTROLS::DASH, sf::Keyboard::Z},
-	{CONTROLS::MOVE_LEFT, sf::Keyboard::Left},
-	{CONTROLS::MOVE_RIGHT, sf::Keyboard::Right},
-	{CONTROLS::LOOK_UP, sf::Keyboard::Up},
-	{CONTROLS::LOOK_DOWN, sf::Keyboard::Down},
-    {CONTROLS::ARMS_SWITCH_LEFT, sf::Keyboard::A},
-	{CONTROLS::ARMS_SWITCH_RIGHT, sf::Keyboard::S},
-	{CONTROLS::INSPECT, sf::Keyboard::Down},
-	{CONTROLS::SELECT, sf::Keyboard::Z},
-    {CONTROLS::PAUSE, sf::Keyboard::Q}
-
-};
-
-inline std::unordered_map<int, TILE_TYPE> tile_lookup{};
-
-static void populate_lookup() {
-	for (int i = 0; i < 256; ++i) {
-		if (i < 192 && i >= 0)   { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
-        if (i < 208 && i >= 192) { tile_lookup.insert({ i, TILE_TYPE::TILE_CEILING_RAMP }); }
-		if (i < 224 && i >= 208) { tile_lookup.insert({ i, TILE_TYPE::TILE_GROUND_RAMP });         }
-		if (i < 228 && i >= 224) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
-		if (i < 232 && i >= 228) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
-		if (i < 236 && i >= 232) { tile_lookup.insert({ i, TILE_TYPE::TILE_BASIC });        }
-		if (i < 240 && i >= 236) { tile_lookup.insert({ i, TILE_TYPE::TILE_PLATFORM });     }
-		if (i < 244 && i >= 240) { tile_lookup.insert({ i, TILE_TYPE::TILE_DEATH_SPIKES });        }
-		if (i < 248 && i >= 244) { tile_lookup.insert({ i, TILE_TYPE::TILE_BREAKABLE });    }
-		if (i < 252 && i >= 248) { tile_lookup.insert({ i, TILE_TYPE::TILE_LADDER });       }
-		if (i < 256 && i >= 252) { tile_lookup.insert({ i, TILE_TYPE::TILE_SPIKES });       }
-	}
-}
 
 }

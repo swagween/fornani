@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "room_id": 109,
+    "metagrid": [
+      14,
+      3
+    ],
+    "dimensions": [
+      16,
+      16
+    ],
+    "chunk_dimensions": [
+      1,
+      1
+    ],
+    "style": 0,
+    "background": 4
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        12,
+        13
+      ],
+      "source_id": 109,
+      "destination_id": 108,
+      "activate_on_contact": false
+    }
+  ],
+  "enemies": [
+    {
+      "id": 1,
+      "position": [
+        3,
+        7
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 5768,
+      "item_id": 11,
+      "type": 3,
+      "amount": 0,
+      "rarity": 2.000000,
+      "position": [
+        4,
+        3
+      ]
+    }
+  ]
+}

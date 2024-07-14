@@ -1,0 +1,184 @@
+{
+  "meta": {
+    "room_id": 103,
+    "metagrid": [
+      4,
+      1
+    ],
+    "dimensions": [
+      32,
+      32
+    ],
+    "chunk_dimensions": [
+      2,
+      2
+    ],
+    "style": 0,
+    "background": 5,
+    "music": "dusken_cove"
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        26,
+        8
+      ],
+      "source_id": 103,
+      "destination_id": 102,
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        17,
+        8
+      ],
+      "activate_on_contact": false,
+      "key": "upstairs_computer"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        7,
+        23
+      ],
+      "activate_on_contact": false,
+      "key": "downstairs_computer"
+    }
+  ],
+  "animators": [
+    {
+      "id": 2,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        7,
+        22
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 1,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        17,
+        7
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 6,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        16,
+        8
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 4,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        12,
+        8
+      ],
+      "automatic": true,
+      "foreground": false
+    }
+  ],
+  "platforms": [
+    {
+      "position": [
+        3,
+        8
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 8,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.400000
+    }
+  ],
+  "npcs": [
+    {
+      "id": 17,
+      "position": [
+        27,
+        21
+      ],
+      "background": false,
+      "suites": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 211,
+      "item_id": 0,
+      "type": 2,
+      "amount": 16,
+      "rarity": 3.000000,
+      "position": [
+        22,
+        11
+      ]
+    },
+    {
+      "id": 323,
+      "item_id": 8,
+      "type": 3,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        25,
+        21
+      ]
+    }
+  ],
+  "save_point": {
+    "id": 103,
+    "position": [
+      19,
+      8
+    ]
+  }
+}

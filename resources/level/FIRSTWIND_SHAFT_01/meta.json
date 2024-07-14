@@ -1,6 +1,10 @@
 {
   "meta": {
     "room_id": 107,
+    "metagrid": [
+      17,
+      -1
+    ],
     "dimensions": [
       16,
       96
@@ -10,7 +14,8 @@
       6
     ],
     "style": 0,
-    "background": 5
+    "background": 5,
+    "music": ""
   },
   "portals": [
     {
@@ -24,20 +29,9 @@
       ],
       "source_id": 107,
       "destination_id": 106,
-      "activate_on_contact": true
-    },
-    {
-      "dimensions": [
-        1,
-        2
-      ],
-      "position": [
-        15,
-        42
-      ],
-      "source_id": 107,
-      "destination_id": 112,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     },
     {
       "dimensions": [
@@ -50,7 +44,300 @@
       ],
       "source_id": 107,
       "destination_id": 116,
-      "activate_on_contact": true
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        14,
+        43
+      ],
+      "source_id": 107,
+      "destination_id": 112,
+      "activate_on_contact": false,
+      "locked": true,
+      "key_id": 8
+    }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        8,
+        4
+      ],
+      "activate_on_contact": false,
+      "key": "beware"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        7,
+        36
+      ],
+      "activate_on_contact": false,
+      "key": "beware2"
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        2,
+        94
+      ],
+      "activate_on_contact": false,
+      "key": "abandon"
+    }
+  ],
+  "animators": [
+    {
+      "id": 5,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        3,
+        94
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 1,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        2,
+        93
+      ],
+      "automatic": true,
+      "foreground": false
+    },
+    {
+      "id": 6,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        1,
+        94
+      ],
+      "automatic": true,
+      "foreground": false
+    }
+  ],
+  "platforms": [
+    {
+      "position": [
+        10,
+        69
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 16,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.600000
+    },
+    {
+      "position": [
+        14,
+        69
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 16,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.600000
+    },
+    {
+      "position": [
+        3,
+        56
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 12,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        10,
+        31
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        13,
+        31
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        3,
+        37
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        3,
+        45
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 10,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.000000
+    },
+    {
+      "position": [
+        3,
+        83
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 7,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        3,
+        74
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 7,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        4,
+        9
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 6,
+      "style": 2,
+      "type": "standard_activated_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        11,
+        5
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 27,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.500000
+    },
+    {
+      "position": [
+        11,
+        48
+      ],
+      "dimensions": [
+        3,
+        1
+      ],
+      "extent": 27,
+      "style": 2,
+      "type": "standard_up_down",
+      "start": 0.000000
+    }
+  ],
+  "chests": [
+    {
+      "id": 56790,
+      "item_id": 16,
+      "type": 3,
+      "amount": 1,
+      "rarity": 0.000000,
+      "position": [
+        14,
+        89
+      ]
+    },
+    {
+      "id": 7880,
+      "item_id": 0,
+      "type": 2,
+      "amount": 8,
+      "rarity": 8.000000,
+      "position": [
+        6,
+        71
+      ]
     }
   ]
 }

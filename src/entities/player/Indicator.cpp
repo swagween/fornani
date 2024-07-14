@@ -1,9 +1,6 @@
 #include "Indicator.hpp"
-#include "Indicator.hpp"
-#include "Indicator.hpp"
 #include "../../gui/Console.hpp"
 #include "../../service/ServiceProvider.hpp"
-#include "Indicator.hpp"
 #include "Player.hpp"
 
 namespace player {
@@ -43,22 +40,26 @@ void Indicator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 		return;
 	} else if (!addition_limit.is_complete()) {
 		label.setPosition(position + shadow - cam);
-		meta.id == 0 ? label.setColor(svc.styles.colors.ui_black) : label.setColor(svc.styles.colors.dark_fucshia);
+		meta.id == 0 ? label.setFillColor(svc.styles.colors.ui_black) : label.setFillColor(svc.styles.colors.dark_fucshia);
 		win.draw(label);
-		label.setColor(color_fade.color());
+		label.setFillColor(color_fade.color());
 		label.setPosition(position - cam);
 		win.draw(label);
 	}
 }
 
-void Indicator::add(int amount) {
+void Indicator::add(float amount) {
 	variables.amount += amount;
 	std::string sign = variables.amount >= 0 ? "+" : "";
-	label.setString(sign + std::to_string(variables.amount));
+	auto round = static_cast<int>(variables.amount);
+	label.setString(sign + std::to_string(round));
 	addition_limit.start(addition_time);
 	color_fade.start();
 }
 
-void Indicator::set_position(sf::Vector2<float> pos) { position = pos; }
+void Indicator::set_position(sf::Vector2<float> pos) {
+	position = pos;
+	gravitator.set_position(pos);
+}
 
 } // namespace player

@@ -1,13 +1,15 @@
 #include "Tile.hpp"
+#include <iostream>
 
 namespace world {
 
-Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, lookup::TILE_TYPE t) : index(i), position(p), value(val), type(t) {
+Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val) : index(i), position(p), value(val) {
 	bounding_box = shape::Shape(sf::Vector2<float>(lookup::unit_size_f, lookup::unit_size_f));
-	drawbox.setOutlineColor(sf::Color::Red);
+	drawbox.setOutlineColor(sf::Color::Blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setSize(bounding_box.dimensions);
-	drawbox.setOutlineThickness(-1);
+	drawbox.setOutlineThickness(-2);
+	set_type();
 }
 
 void Tile::update_polygon(sf::Vector2<float> cam) {
@@ -16,29 +18,33 @@ void Tile::update_polygon(sf::Vector2<float> cam) {
 	polygon.setPosition(-cam.x, -cam.y);
 	polygon.setFillColor(sf::Color{40, 200, 130, 120});
 	polygon.setOutlineColor(sf::Color(235, 232, 249, 140));
-	polygon.setOutlineThickness(-1);
+	polygon.setOutlineThickness(0);
 }
 
 void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (collision_check) {
 		update_polygon(cam);
 		if (!surrounded) {
-			win.draw(polygon);
+			//win.draw(polygon);
 		}
+	}
+	drawbox.setPosition(bounding_box.position);
+	if (ramp_adjacent()) { 
+		drawbox.setOutlineColor(sf::Color::Red);
+		win.draw(drawbox);
 	}
 }
 
-bool Tile::is_occupied() const { return value > 0; }
-
-bool Tile::is_collidable() const { return type != lookup::TILE_TYPE::TILE_CEILING_RAMP && type != lookup::TILE_TYPE::TILE_GROUND_RAMP && type != lookup::TILE_TYPE::TILE_SPIKES && !is_breakable(); }
-
-bool Tile::is_solid() const { return type == lookup::TILE_TYPE::TILE_BASIC || type == lookup::TILE_TYPE::TILE_BREAKABLE || type == lookup::TILE_TYPE::TILE_CEILING_RAMP || type == lookup::TILE_TYPE::TILE_GROUND_RAMP; }
-
-bool Tile::is_hookable() const { return type == lookup::TILE_TYPE::TILE_BASIC || type == lookup::TILE_TYPE::TILE_BREAKABLE; }
-
-bool Tile::is_breakable() const { return type == lookup::TILE_TYPE::TILE_BREAKABLE; }
-
-bool Tile::is_ramp() const { return type == lookup::TILE_TYPE::TILE_CEILING_RAMP || type == lookup::TILE_TYPE::TILE_GROUND_RAMP; }
+void Tile::set_type() {
+	type = TileType::empty;
+	if (value < 192 && value > 0) { type = TileType::solid; }
+	if (value < 208 && value >= 192) { type = TileType::ceiling_ramp; }
+	if (value < 224 && value >= 208) { type = TileType::ground_ramp; }
+	if (value < 240 && value >= 236) { type = TileType::platform; }
+	if (value < 244 && value >= 240) { type = TileType::death_spike; }
+	if (value < 248 && value >= 244) { type = TileType::breakable; }
+	if (value < 256 && value >= 252) { type = TileType::spike; }
+}
 
 sf::Vector2<float> Tile::middle_point() { return {position.x + bounding_box.dimensions.x / 2, position.y + bounding_box.dimensions.y / 2}; }
 
