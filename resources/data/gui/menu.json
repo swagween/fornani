@@ -10,11 +10,13 @@
       "file 2",
       "file 3"
     ],
+    "stat": [
+      "save screenshot",
+      "exit to menu"
+    ],
     "options": [
       "controls",
-      "settings",
-      "tutorial",
-      "credits"
+      "settings"
     ],
     "controls": [
       "jump/select",
@@ -33,9 +35,9 @@
       "down"
     ],
     "settings": [
-      "Keyboard Input: ",
-      "Gamepad Input: ",
-      "Music Volume: "
+      "keyboard input: ",
+      "gamepad input: ",
+      "music volume: "
     ],
     "credits": [
       ""

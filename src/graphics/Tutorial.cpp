@@ -13,7 +13,7 @@ void Tutorial::update(automa::ServiceProvider& svc) {
 	}
 	if (!flags.test(TutorialFlags::sprint)) {
 		help_marker.init(svc, "Hold [", "sprint", "] to sprint.", 80, true);
-		std::cout << "Sprint Tutorial initialized.\n";
+		//std::cout << "Sprint Tutorial initialized.\n";
 		return;
 	}
 	if (!flags.test(TutorialFlags::inventory)) {

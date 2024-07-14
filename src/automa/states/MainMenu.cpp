@@ -100,7 +100,7 @@ void MainMenu::frame_update(ServiceProvider& svc) {}
 void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
 	win.draw(subtitle);
-	win.draw(instruction);
+	//win.draw(instruction);
 	for (auto& option : options) { win.draw(option.label); }
 
 	left_dot.render(svc, win, {0, 0});

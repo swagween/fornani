@@ -172,7 +172,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	out_stat["highest_indicator_amount"] = s.treasure.highest_indicator_amount.get_count();
 	out_stat["enemies_killed"] = s.enemy.enemies_killed.get_count();
 	out_stat["rooms_discovered"] = s.world.rooms_discovered.get_count();
-	out_stat["seconds_played"] = out_stat["seconds_played"].as<float>() + m_services->ticker.in_game_seconds_passed.count();
+	out_stat["seconds_played"] = m_services->ticker.in_game_seconds_passed.count();
 	out_stat["time_trials"]["bryns_gun"] = s.time_trials.bryns_gun;
 
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());

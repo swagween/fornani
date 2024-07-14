@@ -132,21 +132,22 @@ void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> pl
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::D) {
-					debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
-					services.assets.sharp_click.play();
+					//debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
+					//services.assets.sharp_click.play();
+					//services.state_controller.actions.set(automa::Actions::print_stats);
 				}
 				if (event.key.code == sf::Keyboard::Q) {
 					//game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 					//flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
-					if (flags.test(GameFlags::playtest)) {
+					/*if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
 						services.assets.menu_back.play();
 					} else {
 						flags.set(GameFlags::playtest);
 						services.assets.menu_next.play();
-					}
+					}*/
 				}
 				if (event.key.code == sf::Keyboard::F12) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {
@@ -172,6 +173,7 @@ void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> pl
 		services.ticker.tick([this, &services = services] { game_state.get_current_state().tick_update(services); });
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
+		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(); }
 
 		ImGui::SFML::Update(window, deltaClock.restart());
 		screencap.update(window);

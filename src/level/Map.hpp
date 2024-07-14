@@ -176,6 +176,8 @@ class Map {
 	// debug
 	util::Stopwatch stopwatch{};
 
+	util::Cooldown end_demo{1600};
+
   private:
 	int abyss_distance{400};
 	struct {

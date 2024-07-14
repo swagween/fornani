@@ -81,12 +81,16 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	svc.controller_map.reset_triggers();
 }
 
-void SettingsMenu::tick_update(ServiceProvider& svc) {for (auto& option : options) { option.update(svc, current_selection); }
+void SettingsMenu::tick_update(ServiceProvider& svc) {
 	left_dot.update(svc);
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection).left_offset);
 	right_dot.set_target_position(options.at(current_selection).right_offset);
-	if (svc.ticker.every_x_ticks(40)) {
+	for (auto& option : options) {
+		option.update(svc, current_selection);
+		option.label.setLetterSpacing(1.2f);
+	}
+	if (svc.ticker.every_x_ticks(16)) {
 		if (svc.controller_map.label_to_control.at("left").held() && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
 		if (svc.controller_map.label_to_control.at("right").held() && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
 	}

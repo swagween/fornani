@@ -49,6 +49,10 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		}
 	}
 	if (svc.state_controller.actions.consume(Actions::trigger)) {
+		if (svc.state_controller.actions.test(Actions::print_stats)) {
+			print_stats(svc, player);
+			return;
+		}
 		if (svc.state_controller.actions.test(Actions::main_menu)) {
 			return_to_main_menu(svc, player);
 			svc.state_controller.actions.reset(Actions::main_menu);
@@ -73,6 +77,12 @@ void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& pla
 	svc.state_controller.actions.reset(Actions::retry);
 	player.start_over();
 	player.animation.state = player::AnimState::run;
+}
+
+void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {
+	set_current_state(std::make_unique<StatSheet>(svc, player, "stat"));
+	svc.state_controller.actions.reset(Actions::print_stats);
+	svc.state_controller.actions.reset(Actions::trigger);
 }
 
 auto StateManager::get_current_state() const -> GameState& {

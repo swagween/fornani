@@ -338,6 +338,7 @@ void Player::calculate_sprite_offset() {
 }
 
 void Player::jump(world::Map& map) {
+	if (is_dead()) { return; }
 	if (controller.get_jump().began()) {
 		collider.flags.movement.set(shape::Movement::jumping);
 		if (m_services->ticker.every_x_ticks(20)) {

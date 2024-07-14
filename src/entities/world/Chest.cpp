@@ -8,7 +8,7 @@
 namespace entity {
 
 Chest::Chest(automa::ServiceProvider& svc, int id) : id(id) {
-	dimensions = {32, 28};
+	dimensions = {28, 28};
 	sprite_dimensions = {32, 28};
 	spritesheet_dimensions = {224, 28};
 	collider = shape::Collider(dimensions);

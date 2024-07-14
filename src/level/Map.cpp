@@ -353,7 +353,16 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		svc.soundboard.turn_off();
 		svc.stats.player.death_count.update();
 	}
+	// demo only
+	end_demo.update();
+	if (end_demo.get_cooldown() == 1) {
+		m_console->set_source(svc.text.basic);
+		m_console->load_and_launch("end_demo");
+	}
+	if (svc.state_controller.actions.test(automa::Actions::print_stats) && console.is_complete()) { svc.state_controller.actions.set(automa::Actions::trigger); }
+	// demo only
 
+	if (svc.state_controller.actions.test(automa::Actions::retry)) { flags.state.set(LevelState::game_over); }
 	if (console.is_complete() && flags.state.test(LevelState::game_over)) {
 		transition.fade_out = true;
 		if (transition.done) {
@@ -570,8 +579,8 @@ void Map::generate_collidable_layer() {
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
 	for (auto& layer : layers) {
-		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
 		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
+		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
 		for (auto& cell : layer.grid.cells) {
 			if (cell.is_occupied() && !cell.is_breakable()) {
 				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);

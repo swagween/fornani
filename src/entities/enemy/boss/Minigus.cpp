@@ -327,7 +327,6 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		svc.music.load("scuffle");
 		svc.music.play_looped(25);
 		cooldowns.vulnerability.start();
-		// start battle music!{
 	}
 
 	if (health_bar.empty() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { state = MinigusState::struggle; }
@@ -409,32 +408,36 @@ fsm::StateFunction Minigus::update_shoot() {
 		m_map->shake_camera();
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}
-	if (minigun.animation.complete() && minigun.flags.test(MinigunFlags::charging)) {
-		minigun.flags.reset(MinigunFlags::charging);
-		minigun.animation.set_params(minigun.firing);
-		cooldowns.post_charge.start();
-	}
-	if (minigun.animation.complete() && !minigun.flags.test(MinigunFlags::charging)) {
-		minigun.flags.set(MinigunFlags::exhausted);
-		minigun.animation.set_params(minigun.deactivated);
-		counters.snap.cancel();
-		Enemy::sprite.setTexture(m_services->assets.t_minigus);
-		cooldowns.firing.start();
-
-		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
-		if (invincible()) {
-			state = MinigusState::rush;
-			animation.set_params(rush);
-			return MINIGUS_BIND(update_rush);
+	if (minigun.flags.test(MinigunFlags::charging)) {
+		if (minigun.animation.complete()) {
+			minigun.flags.reset(MinigunFlags::charging);
+			minigun.animation.set_params(minigun.firing);
+			cooldowns.post_charge.start();
 		}
-		if (m_services->random.percent_chance(50)) {
-			state = MinigusState::run;
-			animation.set_params(run);
-			return MINIGUS_BIND(update_run);
-		} else {
-			state = MinigusState::laugh;
-			animation.set_params(laugh);
-			return MINIGUS_BIND(update_laugh);
+	}
+	if (!minigun.flags.test(MinigunFlags::charging)) {
+		if (minigun.animation.complete()) {
+			minigun.flags.set(MinigunFlags::exhausted);
+			minigun.animation.set_params(minigun.deactivated);
+			counters.snap.cancel();
+			Enemy::sprite.setTexture(m_services->assets.t_minigus);
+			cooldowns.firing.start();
+
+			if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
+			if (invincible()) {
+				state = MinigusState::rush;
+				animation.set_params(rush);
+				return MINIGUS_BIND(update_rush);
+			}
+			if (m_services->random.percent_chance(50)) {
+				state = MinigusState::run;
+				animation.set_params(run);
+				return MINIGUS_BIND(update_run);
+			} else {
+				state = MinigusState::laugh;
+				animation.set_params(laugh);
+				return MINIGUS_BIND(update_laugh);
+			}
 		}
 	}
 	state = MinigusState::shoot;
@@ -890,6 +893,7 @@ fsm::StateFunction Minigus::update_exit() {
 		animation.set_params(jumpsquat);
 		m_services->music.load("dusken_cove");
 		m_services->music.play_looped(30);
+		m_map->end_demo.start();
 		return MINIGUS_BIND(update_jumpsquat);
 	}
 	state = MinigusState::exit;

@@ -42,6 +42,7 @@ void Intro::tick_update(ServiceProvider& svc) {
 		player->tutorial.current_state = text::TutorialFlags::jump;
 		player->tutorial.turn_on();
 		player->tutorial.trigger();
+		svc.ticker.in_game_seconds_passed = {};
 	}
 	map.debug_mode = debug_mode;
 
