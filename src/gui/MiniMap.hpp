@@ -36,6 +36,7 @@ class MiniMap {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void toggle_scale();
 	void move(sf::Vector2<float> direction);
+	void center();
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
 	[[nodiscard]] auto get_center_position() const -> sf::Vector2<float> { return center_position; }
 	[[nodiscard]] auto get_scale() const -> float{ return scale; }

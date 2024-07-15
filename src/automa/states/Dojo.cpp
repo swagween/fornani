@@ -77,7 +77,8 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 		if (event.key.code == sf::Keyboard::Num0) { camera.begin_shake(); }
 	}
 
-	if (svc.controller_map.label_to_control.at("menu_toggle").triggered()) { toggle_inventory(svc); }
+	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered() && inventory_window.active()) { toggle_inventory(svc); }
+	if (svc.controller_map.label_to_control.at("menu_toggle").triggered() && !console.active()) { toggle_inventory(svc); }
 	if ((svc.controller_map.label_to_control.at("arms_switch_right").triggered() || svc.controller_map.label_to_control.at("arms_switch_left").triggered()) && inventory_window.active() && player->has_map()) {
 		inventory_window.switch_modes(svc);
 		svc.soundboard.flags.console.set(audio::Console::next);
@@ -147,6 +148,7 @@ void Dojo::toggle_inventory(ServiceProvider& svc) {
 		svc.soundboard.flags.console.set(audio::Console::done);
 		inventory_window.close();
 	} else {
+		inventory_window.minimap.update(svc, map, *player);
 		inventory_window.open();
 		svc.soundboard.flags.console.set(audio::Console::menu_open);
 		inventory_window.set_item_size(static_cast<int>(player->catalog.categories.inventory.items.size()));

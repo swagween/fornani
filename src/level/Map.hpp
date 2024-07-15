@@ -21,6 +21,7 @@
 #include "../entities/world/Bed.hpp"
 #include "Platform.hpp"
 #include "Breakable.hpp"
+#include "Spike.hpp"
 #include "SwitchBlock.hpp"
 #include "BlockDestroyer.hpp"
 #include "../weapon/Grenade.hpp"
@@ -131,6 +132,7 @@ class Map {
 	std::vector<npc::NPC> npcs{};
 	std::vector<Platform> platforms{};
 	std::vector<Breakable> breakables{};
+	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
 	std::vector<BlockDestroyer> destroyers{};

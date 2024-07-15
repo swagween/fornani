@@ -826,6 +826,9 @@ void Game::playtester_portal() {
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
 					ImGui::Separator();
+					ImGui::Text("Player");
+					ImGui::Text("world grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
+					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());
 					ImGui::Separator();

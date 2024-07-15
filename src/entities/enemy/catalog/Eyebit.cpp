@@ -7,6 +7,7 @@ namespace enemy {
 Eyebit::Eyebit(automa::ServiceProvider& svc) : Enemy(svc, "eyebit") {
 	animation.set_params(idle);
 	seeker_cooldown.start(2);
+	collider.flags.general.set(shape::General::ignore_resolution);
 }
 
 void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -24,9 +25,6 @@ void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
 
 	state_function = state_function();
-
-	if (collider.has_horizontal_collision()) { seeker.bounce_horiz(); }
-	if (collider.has_vertical_collision()) { seeker.bounce_vert(); }
 
 	if (player.collider.bounding_box.overlaps(physical.hostile_range)) { seeker.set_force(0.003f); }
 	if (player.collider.bounding_box.overlaps(physical.alert_range)) {

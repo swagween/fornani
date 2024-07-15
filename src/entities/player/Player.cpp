@@ -26,7 +26,7 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
 	collider.collision_depths = util::CollisionDepth();
-	//if (collider.collision_depths) { std::cout << "Depth instantiated.\n"; }
+	// if (collider.collision_depths) { std::cout << "Depth instantiated.\n"; }
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
@@ -237,9 +237,7 @@ void Player::update_sprite() {
 
 	if (animation.triggers.consume(AnimTriggers::flip)) {
 		sprite.scale(-1.0f, 1.0f);
-		if (animation.animation.label == "turn" || animation.animation.label == "sharp_turn") {
-			animation.animation.set_params(idle);
-		}
+		if (animation.animation.label == "turn" || animation.animation.label == "sharp_turn") { animation.animation.set_params(idle); }
 	}
 
 	flags.state.reset(State::dir_switch);
@@ -317,8 +315,8 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 		quest_code = util::QuestCode(qs);
 		if (quest_code.value().destroy_inspectable()) { m_services->quest.progress(static_cast<fornani::QuestType>(transponder.out_quest.type), transponder.out_quest.id, 1); }
 		if (ri > 0) { catalog.categories.inventory.reveal_item(ri); }
-		//std::cout << "Transponded: " << transponder.out_quest.type << ", " << transponder.out_quest.id << ", " << transponder.out_quest.source_id << "\n";
-		// handle other quest code types
+		// std::cout << "Transponded: " << transponder.out_quest.type << ", " << transponder.out_quest.id << ", " << transponder.out_quest.source_id << "\n";
+		//  handle other quest code types
 		quest_code = {};
 		transponder.out_quest = {};
 	}
@@ -338,7 +336,7 @@ void Player::calculate_sprite_offset() {
 }
 
 void Player::jump(world::Map& map) {
-	if (is_dead()) { return; }
+	if (is_dead() || animation.state == AnimState::die) { return; }
 	if (controller.get_jump().began()) {
 		collider.flags.movement.set(shape::Movement::jumping);
 		if (m_services->ticker.every_x_ticks(20)) {
@@ -526,6 +524,7 @@ void Player::update_antennae() {
 		}
 		if (animation.get_frame() == 57) { antenna_offset.y = -8.f; }
 		a.set_target_position(collider.physics.position + antenna_offset);
+		//a.add_force(collider.physics.apparent_velocity() * 0.5f);
 		a.update(*m_services);
 		a.collider.sync_components();
 		if (controller.facing_right()) {

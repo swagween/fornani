@@ -92,6 +92,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	}
 	// init direction to oppose player
 	direction.lr = player.controller.direction.lr == dir::LR::left ? dir::LR::right : dir::LR::left;
+	if (player.collider.external_world_grounded()) { std::cout << "baba\n"; }
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
 		auto start = track[x];
@@ -107,7 +108,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			direction.lr = physics.velocity.x > 0.0f ? dir ::LR::right : dir::LR::left;
 			direction.und = physics.velocity.y > 0.0f ? dir ::UND::down : dir::UND::up;
 
-			if (player.collider.jumpbox.overlaps(bounding_box) && flags.attributes.test(PlatformAttributes::sticky)) {
+			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky)) {
 				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.forced_momentum = physics.position - old_position; }
 			}
 			break;

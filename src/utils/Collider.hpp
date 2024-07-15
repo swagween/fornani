@@ -25,7 +25,8 @@ float const default_detector_height = 18.f;
 enum class General { ignore_resolution, complex, pushable, soft };
 enum class Animation { just_landed };
 enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
-enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision, world_collision, horiz_world_collision, vert_world_collision };
+enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision, world_collision, horiz_world_collision, vert_world_collision, world_grounded };
+enum class PermaFlags { world_grounded };
 
 enum class Collision {
 	any_collision,
@@ -80,6 +81,8 @@ class Collider {
 
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
+	[[nodiscard]] auto external_world_grounded() const -> bool { return flags.external_state.test(ExternalState::world_grounded); }
+	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
 	[[nodiscard]] auto platform_collision() const -> bool { return flags.external_state.test(ExternalState::collider_collision); }
@@ -110,6 +113,7 @@ class Collider {
 		util::BitFlags<General> general{};
 		util::BitFlags<State> state{};
 		util::BitFlags<ExternalState> external_state{};
+		util::BitFlags<PermaFlags> perma_state{};
 		util::BitFlags<Animation> animation{};
 		util::BitFlags<Collision> collision{};
 		util::BitFlags<Movement> movement{};

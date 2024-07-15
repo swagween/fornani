@@ -155,6 +155,8 @@ fsm::StateFunction PlayerAnimation::update_rise() {
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
+	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
+	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 	if (animation.complete()) {
 		state = AnimState::suspend;
 		animation.set_params(suspend);
@@ -355,11 +357,15 @@ fsm::StateFunction PlayerAnimation::update_die() {
 	m_player->controller.prevent_movement();
 	post_death.update();
 	if (!m_player->m_services->death_mode()) {
-		if (change_state(AnimState::idle, idle, true)) { return PA_BIND(update_idle); }
+		state = AnimState::idle;
+		animation.set_params(idle);
+		return PA_BIND(update_idle);
 	}
 	if (post_death.is_complete()) {
 		if (change_state(AnimState::idle, idle, true)) { return PA_BIND(update_idle); }
 		if (change_state(AnimState::run, run, true)) { return PA_BIND(update_run); }
+		if (change_state(AnimState::sprint, sprint, true)) { return PA_BIND(update_sprint); }
+		if (change_state(AnimState::rise, rise, true)) { return PA_BIND(update_rise); }
 		triggers.set(AnimTriggers::end_death);
 	}
 	state = AnimState::die;

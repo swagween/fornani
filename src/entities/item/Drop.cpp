@@ -91,6 +91,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	collider.detect_map_collision(map);
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
+	for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
 	collider.reset();
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
