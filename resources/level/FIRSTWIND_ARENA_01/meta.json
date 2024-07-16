@@ -40,7 +40,7 @@
       ],
       "position": [
         0,
-        6
+        10
       ],
       "source_id": 121,
       "destination_id": 102,
@@ -146,7 +146,7 @@
     {
       "id": 9981,
       "item_id": 0,
-      "type": 1,
+      "type": 2,
       "amount": 45,
       "rarity": 8.000000,
       "position": [
