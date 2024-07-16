@@ -26,6 +26,7 @@ void AssetManager::import_textures() {
 	t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 	t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
 	t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");
+	t_thug.loadFromFile(finder.resource_path + "/image/critter/thug.png");
 	t_eyebot.loadFromFile(finder.resource_path + "/image/critter/eyebot.png");
 	t_eyebit.loadFromFile(finder.resource_path + "/image/critter/eyebit.png");
 	t_minigus.loadFromFile(finder.resource_path + "/image/boss/minigus.png");
@@ -35,6 +36,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
+	texture_lookup.insert({"thug", t_thug});
 	texture_lookup.insert({"eyebot", t_eyebot});
 	texture_lookup.insert({"eyebit", t_eyebit});
 	texture_lookup.insert({"minigus", t_minigus});

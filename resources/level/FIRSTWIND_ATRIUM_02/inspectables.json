@@ -1,15 +1,22 @@
 {
-  "rest": {
+  "atrium_comp": {
+    "suite": [
+      [
+        "Laboratory password: carise7QQ4$1#110#2#"
+      ]
+    ]
+  },
+  "restarea": {
     "suite": [
       [
         "< Rest Area"
       ]
     ]
   },
-  "atrium_comp": {
+  "laboratory": {
     "suite": [
       [
-        "Laboratory password: carise7QQ4$1#110#2#"
+        "To Laboratory and Hangar >"
       ]
     ]
   }

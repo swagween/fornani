@@ -96,7 +96,7 @@ class DataManager {
 	std::vector<MapData> map_jsons{};
 	std::vector<std::vector<world::Layer>> map_layers{};
 	int num_layers{8};
-	std::vector<int> rooms{0, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 199, 120};
+	std::vector<int> rooms{0, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 199, 120, 121};
 	std::vector<int> discovered_rooms{};
 
 	ResourceFinder finder{};

@@ -25,7 +25,6 @@ class Minigus : public Enemy, public npc::NPC {
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
 	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
-	bool player_behind(player::Player& player);
 
 	fsm::StateFunction state_function = std::bind(&Minigus::update_idle, this);
 	fsm::StateFunction update_idle();

@@ -43,6 +43,12 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.tank.test(Tank::hurt_1)) { svc.assets.tank_hurt_1.play(); }
 	if (flags.tank.test(Tank::hurt_2)) { play_at_volume(svc.assets.tank_hurt_2, 50); }
 	if (flags.tank.test(Tank::death)) { svc.assets.tank_death.play(); }
+	// thug
+	if (flags.thug.test(Thug::alert_1)) { svc.assets.tank_alert_1.play(); }
+	if (flags.thug.test(Thug::alert_2)) { svc.assets.tank_alert_2.play(); }
+	if (flags.thug.test(Thug::hurt_1)) { svc.assets.tank_hurt_1.play(); }
+	if (flags.thug.test(Thug::hurt_2)) { play_at_volume(svc.assets.tank_hurt_2, 50); }
+	if (flags.thug.test(Thug::death)) { svc.assets.tank_death.play(); }
 
 	//minigus
 
