@@ -41,6 +41,7 @@ void Dojo::init(ServiceProvider& svc, int room_number) {
 				player->set_position(spawn_position, true);
 				camera.force_center(player->anchor_point);
 				if (portal.activate_on_contact()) { enter_room.start(90); }
+				if (portal.dimensions.x > 33.f) { player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity; }
 			}
 		}
 	}

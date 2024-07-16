@@ -40,7 +40,7 @@
       ],
       "position": [
         0,
-        10
+        9
       ],
       "source_id": 121,
       "destination_id": 102,
@@ -50,13 +50,6 @@
     }
   ],
   "enemies": [
-    {
-      "id": 4,
-      "position": [
-        11,
-        7
-      ]
-    },
     {
       "id": 4,
       "position": [
@@ -90,13 +83,6 @@
       "position": [
         39,
         2
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
-        32,
-        12
       ]
     },
     {
@@ -146,7 +132,7 @@
     {
       "id": 9981,
       "item_id": 0,
-      "type": 2,
+      "type": 1,
       "amount": 45,
       "rarity": 8.000000,
       "position": [

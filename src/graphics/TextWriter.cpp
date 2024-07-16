@@ -226,11 +226,6 @@ void TextWriter::request_next() {
 	if (suite.at(iterators.current_suite_set).front().prompt) {
 		flags.set(MessageState::selection_mode);
 		if (iterators.current_response_set >= responses.size()) { return; }
-		for (auto& res : responses.at(iterators.current_response_set)) {
-			check_for_event(res, Codes::item);
-			check_for_event(res, Codes::quest);
-			check_for_event(res, Codes::prompt);
-		}
 		return;
 	} else {
 		suite.at(iterators.current_suite_set).pop_front();
@@ -318,6 +313,15 @@ void TextWriter::process_selection() {
 	if (iterators.current_response_set >= responses.size()) { return; }
 	if (iterators.current_selection >= responses.at(iterators.current_response_set).size()) { return; }
 
+	// check for response events
+	auto ctr{0};
+	for (auto& res : responses.at(iterators.current_response_set)) {
+		if (ctr == get_current_selection()) {
+			check_for_event(res, Codes::item);
+			check_for_event(res, Codes::quest);
+			check_for_event(res, Codes::prompt);
+		}
+	}
 	// flush the suite until we reach the target determined by the selection
 	for (auto i = 0; i <= responses.at(iterators.current_response_set).at(iterators.current_selection).target; ++i) {
 		if (suite.empty()) {

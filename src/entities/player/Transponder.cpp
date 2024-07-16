@@ -26,6 +26,7 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 		if (!console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::next); }
 		console.writer.request_next();
 		console.writer.reset_delay();
+
 	}
 	if (exited()) {
 		if (console.writer.complete()) {
