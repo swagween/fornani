@@ -12,6 +12,7 @@ void BlockDestroyer::update(automa::ServiceProvider& svc, Map& map) {
 	if (flags.test(DestroyerState::detonated)) {
 		svc.data.get_layers(map.room_id).at(MIDDLEGROUND).grid.destroy_cell(position);
 		map.generate_layer_textures(svc);
+		map.generate_collidable_layer(true);
 		map.effects.push_back(entity::Effect(svc, static_cast<sf::Vector2<float>>(position) * svc.constants.cell_size, {}, 0, 0));
 		svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 	}

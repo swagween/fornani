@@ -5,6 +5,6 @@ int main(int argc, char** argv) {
 	fornani::Game game{argv};
 	game.run();
 	//for demo testing
-	//game.run(true, "FIRSTWIND_ATRIUM_01", {100, 100});
+	//game.run(true, 200, "OVERTURNED_CANOPY_01", {100, 100});
 	return 0;
 }

@@ -83,6 +83,7 @@ class AssetManager {
 	sf::Texture t_platform_night{};
 	sf::Texture t_platform_abandoned{};
 	sf::Texture t_platform_firstwind{};
+	sf::Texture t_platform_overturned{};
 
 	//animators
 	sf::Texture t_automatic_animators_firstwind{};

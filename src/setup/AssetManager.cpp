@@ -124,9 +124,11 @@ void AssetManager::import_textures() {
 	t_platform_night.loadFromFile(finder.resource_path + "/image/tile/platform_night.png");
 	t_platform_abandoned.loadFromFile(finder.resource_path + "/image/tile/platform_abandoned.png");
 	t_platform_firstwind.loadFromFile(finder.resource_path + "/image/tile/platform_firstwind.png");
+	t_platform_overturned.loadFromFile(finder.resource_path + "/image/tile/platform_overturned.png");
 	platform_lookup.insert({0, t_platform_night});
 	platform_lookup.insert({1, t_platform_abandoned});
 	platform_lookup.insert({2, t_platform_firstwind});
+	platform_lookup.insert({3, t_platform_overturned});
 	t_automatic_animators_firstwind.loadFromFile(finder.resource_path + "/image/tile/automatic_animators_firstwind.png");
 	animator_lookup.insert({0, t_automatic_animators_firstwind});
 

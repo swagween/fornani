@@ -11,7 +11,7 @@ class Dojo : public GameState {
   public:
 	Dojo() = default;
 	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
-	void init(ServiceProvider& svc, int room_number = 100);
+	void init(ServiceProvider& svc, int room_number = 100, std::string room_name = "");
 	void handle_events(ServiceProvider& svc, sf::Event& event);
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);

@@ -17,6 +17,7 @@ QuestTracker::QuestTracker() {
 	suites.inspectables.quests.insert({1, Quest{1, "bryns_notebook"}});
 	suites.inspectables.quests.insert({110, Quest{110, "firstwind_lab_computer"}});
 	suites.destroyers.quests.insert({110, Quest{110, "firstwind_lab_destroyers"}});
+	suites.destroyers.quests.insert({115, Quest{115, "firstwind_deck_destroyers"}});
 }
 
 int QuestTracker::get_progression(QuestType type, int id) { 

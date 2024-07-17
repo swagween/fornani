@@ -6,8 +6,8 @@ namespace automa {
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console), gui_map(svc, player, console) {}
 
-void Dojo::init(ServiceProvider& svc, int room_number) {
-
+void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
+	std::cout << "\n" << room_number;
 	//A = shape::Collider({32.f, 32.f});
 	//B = shape::Collider({24.f, 24.f});
 	//A.stats.GRAV = 0.f;
@@ -20,6 +20,12 @@ void Dojo::init(ServiceProvider& svc, int room_number) {
 	}
 	console = gui::Console(svc);
 	player->reset_flags();
+	// the following should only happen for the editor demo
+	if (!svc.data.exists(room_number)) {
+		svc.data.rooms.push_back(room_number);
+		svc.data.load_data(room_name);
+		std::cout << "Loading New Room...\n";
+	}
 	map.load(svc, room_number);
 	bake_maps(svc, {map.room_id}, true);
 	auto m_id = map.room_id;
@@ -30,7 +36,7 @@ void Dojo::init(ServiceProvider& svc, int room_number) {
 
 	// TODO: refactor player initialization
 	player->collider.physics.zero();
-
+	
 	bool found_one{};
 	// only search for door entry if room was not loaded from main menu and player didn't die
 	if (!svc.state_controller.actions.test(Actions::save_loaded) && !svc.state_controller.actions.test(Actions::player_death)) {
@@ -41,7 +47,7 @@ void Dojo::init(ServiceProvider& svc, int room_number) {
 				player->set_position(spawn_position, true);
 				camera.force_center(player->anchor_point);
 				if (portal.activate_on_contact()) { enter_room.start(90); }
-				if (portal.dimensions.x > 33.f) { player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity; }
+				if (portal.dimensions.x > 33.f && portal.position.y > 1.f) { player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity; }
 			}
 		}
 	}

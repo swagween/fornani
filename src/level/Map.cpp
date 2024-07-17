@@ -354,7 +354,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		svc.stats.player.death_count.update();
 	}
 	// demo only
-	end_demo.update();
+	//end_demo.update();
 	if (end_demo.get_cooldown() == 1) {
 		m_console->set_source(svc.text.basic);
 		m_console->load_and_launch("end_demo");
@@ -568,11 +568,12 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	}
 }
 
-void Map::generate_collidable_layer() {
+void Map::generate_collidable_layer(bool live) {
 	auto& layers = m_services->data.get_layers(room_id);
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
 		if ((!cell.surrounded && cell.is_occupied() && !cell.is_breakable())) { collidable_indeces.push_back(cell.one_d_index); }
+		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position, styles.breakables)); }
 		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position, cell.value)); }
 	}

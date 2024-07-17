@@ -26,7 +26,6 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 		if (!console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::next); }
 		console.writer.request_next();
 		console.writer.reset_delay();
-
 	}
 	if (exited()) {
 		if (console.writer.complete()) {
@@ -49,12 +48,10 @@ void Transponder::track_shipments(gui::Console& console) {
 	shipments.emotion.set(console.writer.communicators.out_emotion.get_residue());
 	shipments.reveal_item.set(console.writer.communicators.reveal_item.get_residue());
 	out_quest = console.writer.out_quest;
-	console.writer.out_quest = {};
 }
 
 void Transponder::flush_shipments() {
 	shipments = {};
-	out_quest = {};
 }
 
 void Transponder::end() { actions = {}; }

@@ -2,7 +2,7 @@
   "meta": {
     "room_id": 121,
     "metagrid": [
-      0,
+      9,
       0
     ],
     "dimensions": [
@@ -15,7 +15,7 @@
     ],
     "style": 0,
     "background": 5,
-    "music": ""
+    "music": "dusken_cove"
   },
   "portals": [
     {
@@ -51,80 +51,73 @@
   ],
   "enemies": [
     {
-      "id": 4,
+      "id": 1,
       "position": [
-        19,
-        3
+        30,
+        7
       ]
     },
     {
-      "id": 4,
+      "id": 3,
       "position": [
-        32,
-        3
+        34,
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        29,
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        21,
+        12
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        9,
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        15,
+        11
       ]
     },
     {
       "id": 1,
       "position": [
-        6,
-        10
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
-        19,
+        16,
         6
       ]
     },
     {
-      "id": 1,
+      "id": 5,
       "position": [
-        39,
-        2
+        44,
+        6
       ]
     },
     {
-      "id": 3,
+      "id": 5,
       "position": [
-        26,
-        12
+        34,
+        4
       ]
     },
     {
-      "id": 3,
+      "id": 5,
       "position": [
-        20,
-        12
-      ]
-    },
-    {
-      "id": 3,
-      "position": [
-        11,
-        10
-      ]
-    },
-    {
-      "id": 3,
-      "position": [
-        38,
-        8
-      ]
-    },
-    {
-      "id": 3,
-      "position": [
-        32,
-        8
-      ]
-    },
-    {
-      "id": 3,
-      "position": [
-        40,
-        12
+        22,
+        9
       ]
     }
   ],
@@ -132,7 +125,7 @@
     {
       "id": 9981,
       "item_id": 0,
-      "type": 1,
+      "type": 2,
       "amount": 45,
       "rarity": 8.000000,
       "position": [

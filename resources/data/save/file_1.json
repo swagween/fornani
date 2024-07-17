@@ -1,54 +1,165 @@
 {
   "status": {
-    "new": true
+    "new": false
   },
   "player_data": {
-    "max_hp": 3,
-    "hp": 3,
-    "orbs": 0,
+    "max_hp": 3.000000,
+    "hp": 3.000000,
+    "orbs": 2036,
     "position": {
-      "x": 102.0,
-      "y": 327.0
+      "x": 163.420197,
+      "y": 1387.000000
     },
-    "arsenal": [],
-    "equipped_gun": 0,
-    "abilities": [],
-    "items": [],
+    "arsenal": [
+      0,
+      10
+    ],
+    "equipped_gun": 1,
+    "abilities": [
+
+    ],
+    "items": [
+      {
+        "id": 11,
+        "quantity": 1
+      },
+      {
+        "id": 16,
+        "quantity": 1
+      },
+      {
+        "id": 12,
+        "quantity": 1
+      },
+      {
+        "id": 8,
+        "quantity": 1
+      },
+      {
+        "id": 15,
+        "quantity": 1
+      }
+    ],
     "stats": {
-      "death_count": 0,
-      "bullets_fired": 0,
-      "guns_collected": 0,
-      "items_collected": 0,
-      "orbs_collected": 0,
-      "blue_orbs": 0,
-      "highest_indicator_amount": 0,
-      "enemies_killed": 0,
-      "rooms_discovered": 0,
-      "seconds_played": 0.0,
+      "death_count": 3,
+      "bullets_fired": 5833,
+      "guns_collected": 2,
+      "items_collected": 5,
+      "orbs_collected": 2036,
+      "blue_orbs": 3,
+      "highest_indicator_amount": 375,
+      "enemies_killed": 54,
+      "rooms_discovered": 21,
+      "seconds_played": 1227.675659,
       "time_trials": {
-        "bryns_gun": 0.0
+        "bryns_gun": 167.537613
       }
     }
   },
-  "save_point_id": 100,
+  "save_point_id": 200,
   "unlocked_doors": [
+    11,
+    15,
+    8
   ],
   "opened_chests": [
+    5768,
+    377,
+    56790,
+    7880,
+    338223,
+    323,
+    211,
+    8883,
+    45560,
+    77122,
+    9981
   ],
   "quest_progressions": [
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      88,
+      1,
+      1,
+      1,
+      0
+    ],
+    [
+      63,
+      1,
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      110,
+      2,
+      1,
+      0
+    ],
+    [
+      1,
+      110,
+      1,
+      1,
+      0
+    ],
+    [
+      5,
+      110,
+      1,
+      1,
+      0
+    ],
+    [
+      5,
+      115,
+      2,
+      1,
+      0
+    ]
   ],
   "destroyed_inspectables": [
+
   ],
   "tutorial": {
-    "state": 0,
-    "closed": false,
-    "on": true,
-    "jump": false,
-    "shoot": false,
-    "sprint": false,
-    "map": false,
-    "inventory": false
+    "state": 4,
+    "closed": true,
+    "on": false,
+    "jump": true,
+    "shoot": true,
+    "sprint": true,
+    "map": true,
+    "inventory": true
   },
   "discovered_rooms": [
+    100,
+    101,
+    102,
+    104,
+    106,
+    117,
+    107,
+    116,
+    108,
+    109,
+    110,
+    112,
+    105,
+    111,
+    199,
+    103,
+    121,
+    120,
+    115,
+    122,
+    200
   ]
 }

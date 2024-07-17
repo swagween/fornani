@@ -95,7 +95,7 @@ class Map {
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos);
 	void spawn_enemy(int id, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
-	void generate_collidable_layer();
+	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
