@@ -1,11 +1,8 @@
 {
-  "dropoff": {
+  "dropoffs": {
     "suite": [
       [
-        "Beware steep drop-offs. Shafts drain to exterior of the ship."
-      ],
-      [
-
+        "Beware! steep drop-offs drain to exterior of the ship."
       ]
     ]
   }

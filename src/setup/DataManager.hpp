@@ -39,7 +39,7 @@ class DataManager {
 	public:
 	DataManager(automa::ServiceProvider& svc);
 	// game save
-	void load_data();
+	void load_data(std::string in_room = "");
 	void save_progress(player::Player& player, int save_point_id);
 	int load_progress(player::Player& player, int const file, bool state_switch = false);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false);
@@ -63,6 +63,13 @@ class DataManager {
 	void load_controls(config::ControllerMap& controller);
 	void save_controls(config::ControllerMap& controller);
 	void reset_controls();
+
+	[[nodiscard]] auto exists(int candidate) const -> bool {
+		for (auto& room : rooms) {
+			if (room == candidate) { return true; }
+		}
+		return false;
+	}
 
 	int get_room_index(int id);
 	std::vector<world::Layer>& get_layers(int id);
@@ -96,7 +103,7 @@ class DataManager {
 	std::vector<MapData> map_jsons{};
 	std::vector<std::vector<world::Layer>> map_layers{};
 	int num_layers{8};
-	std::vector<int> rooms{0, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 199, 120};
+	std::vector<int> rooms{0, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 199, 120, 121, 122, 200, 299};
 	std::vector<int> discovered_rooms{};
 
 	ResourceFinder finder{};

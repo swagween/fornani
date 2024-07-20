@@ -92,6 +92,21 @@
       "activate_on_contact": true,
       "locked": false,
       "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        2
+      ],
+      "position": [
+        47,
+        25
+      ],
+      "source_id": 102,
+      "destination_id": 121,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "inspectables": [
@@ -105,7 +120,8 @@
         22
       ],
       "activate_on_contact": false,
-      "key": "sign1"
+      "key": "sign1",
+      "alternates": 0
     },
     {
       "dimensions": [
@@ -117,12 +133,13 @@
         41
       ],
       "activate_on_contact": false,
-      "key": "comp_down"
+      "key": "comp_down",
+      "alternates": 0
     }
   ],
   "animators": [
     {
-      "id": 1,
+      "id": 2,
       "style": 0,
       "dimensions": [
         1,

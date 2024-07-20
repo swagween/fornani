@@ -26,6 +26,7 @@ void AssetManager::import_textures() {
 	t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 	t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
 	t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");
+	t_thug.loadFromFile(finder.resource_path + "/image/critter/thug.png");
 	t_eyebot.loadFromFile(finder.resource_path + "/image/critter/eyebot.png");
 	t_eyebit.loadFromFile(finder.resource_path + "/image/critter/eyebit.png");
 	t_minigus.loadFromFile(finder.resource_path + "/image/boss/minigus.png");
@@ -35,6 +36,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
+	texture_lookup.insert({"thug", t_thug});
 	texture_lookup.insert({"eyebot", t_eyebot});
 	texture_lookup.insert({"eyebit", t_eyebit});
 	texture_lookup.insert({"minigus", t_minigus});
@@ -122,9 +124,11 @@ void AssetManager::import_textures() {
 	t_platform_night.loadFromFile(finder.resource_path + "/image/tile/platform_night.png");
 	t_platform_abandoned.loadFromFile(finder.resource_path + "/image/tile/platform_abandoned.png");
 	t_platform_firstwind.loadFromFile(finder.resource_path + "/image/tile/platform_firstwind.png");
+	t_platform_overturned.loadFromFile(finder.resource_path + "/image/tile/platform_overturned.png");
 	platform_lookup.insert({0, t_platform_night});
 	platform_lookup.insert({1, t_platform_abandoned});
 	platform_lookup.insert({2, t_platform_firstwind});
+	platform_lookup.insert({3, t_platform_overturned});
 	t_automatic_animators_firstwind.loadFromFile(finder.resource_path + "/image/tile/automatic_animators_firstwind.png");
 	animator_lookup.insert({0, t_automatic_animators_firstwind});
 

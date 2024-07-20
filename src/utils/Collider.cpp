@@ -172,6 +172,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		if (jumpbox.SAT(cell)) {
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
+			flags.external_state.set(ExternalState::world_grounded);
+			flags.perma_state.set(PermaFlags::world_grounded); 
 			flags.state.set(State::is_any_jump_collision);
 			flags.external_state.set(ExternalState::grounded);
 		} else {
@@ -182,6 +184,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		if (jumpbox.overlaps(cell)) {
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
+			flags.external_state.set(ExternalState::world_grounded);
+			flags.perma_state.set(PermaFlags::world_grounded); 
 			flags.state.set(State::is_any_jump_collision);
 			flags.external_state.set(ExternalState::grounded);
 		} else {
@@ -195,6 +199,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 
 void Collider::detect_map_collision(world::Map& map) {
 	flags.external_state.reset(ExternalState::grounded);
+	flags.perma_state = {};
 	for (auto& index : map.collidable_indeces) {
 		auto& cell = map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(index);
 		cell.collision_check = false;

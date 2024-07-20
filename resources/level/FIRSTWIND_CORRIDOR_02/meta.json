@@ -47,6 +47,21 @@
       "activate_on_contact": true,
       "locked": false,
       "key_id": 0
+    },
+    {
+      "dimensions": [
+        2,
+        1
+      ],
+      "position": [
+        43,
+        15
+      ],
+      "source_id": 104,
+      "destination_id": 121,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "platforms": [
@@ -74,13 +89,6 @@
       ]
     },
     {
-      "id": 4,
-      "position": [
-        51,
-        9
-      ]
-    },
-    {
       "id": 1,
       "position": [
         32,
@@ -92,6 +100,41 @@
       "position": [
         36,
         6
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        18,
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        57,
+        12
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        50,
+        12
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        71,
+        11
+      ]
+    },
+    {
+      "id": 4,
+      "position": [
+        69,
+        5
       ]
     }
   ]

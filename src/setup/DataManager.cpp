@@ -8,7 +8,7 @@ namespace data {
 
 DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 
-void DataManager::load_data() {
+void DataManager::load_data(std::string in_room) {
 
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
@@ -20,7 +20,7 @@ void DataManager::load_data() {
 	for (auto& room : rooms) {
 		map_jsons.push_back(MapData());
 		map_jsons.back().id = room;
-		std::string room_str = finder.resource_path + "/level/" + m_services->tables.get_map_label.at(room);
+		std::string room_str = m_services->tables.get_map_label.contains(room) ? finder.resource_path + "/level/" + m_services->tables.get_map_label.at(room) : finder.resource_path + "/level/" + in_room;
 		map_jsons.back().metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
 		assert(!map_jsons.back().metadata.is_null());
 		map_jsons.back().tiles = dj::Json::from_file((room_str + "/tile.json").c_str());

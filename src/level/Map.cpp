@@ -208,8 +208,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
 	flags.state.reset(LevelState::camera_shake);
 
-	transition.update(*player);
-
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
 			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id);
@@ -334,7 +332,9 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		breakable.update(svc);
 		breakable.handle_collision(player->collider);
 	}
+	for (auto& spike : spikes) { spike.handle_collision(player->collider); }
 	player->collider.detect_map_collision(*this);
+	transition.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
@@ -354,7 +354,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		svc.stats.player.death_count.update();
 	}
 	// demo only
-	end_demo.update();
+	//end_demo.update();
 	if (end_demo.get_cooldown() == 1) {
 		m_console->set_source(svc.text.basic);
 		m_console->load_and_launch("end_demo");
@@ -413,6 +413,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
+	for (auto& spike : spikes) { spike.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
@@ -567,12 +568,14 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	}
 }
 
-void Map::generate_collidable_layer() {
+void Map::generate_collidable_layer(bool live) {
 	auto& layers = m_services->data.get_layers(room_id);
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
 		if ((!cell.surrounded && cell.is_occupied() && !cell.is_breakable())) { collidable_indeces.push_back(cell.one_d_index); }
+		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position, styles.breakables)); }
+		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position, cell.value)); }
 	}
 }
 
@@ -662,6 +665,8 @@ void Map::clear() {
 	portals.clear();
 	platforms.clear();
 	breakables.clear();
+	spikes.clear();
+	destroyers.clear();
 	switch_blocks.clear();
 	switch_buttons.clear();
 	chests.clear();

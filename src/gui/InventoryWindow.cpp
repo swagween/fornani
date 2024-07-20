@@ -116,6 +116,7 @@ void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
 		help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
 	} else {
 		help_marker.init(svc, "Press [", "arms_switch_left", "] to view Inventory.", 20, true);
+		minimap.center();
 	}
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 }

@@ -22,33 +22,15 @@ HUD::HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> 
 		hearts.back().origin = origins.hp;
 	}
 
-	for (int i = 0; i < num_heart_sprites; ++i) {
-		sp_hearts.at(i).setTexture(svc.assets.t_hud_hearts);
-		sp_hearts.at(i).setTextureRect(sf::IntRect({heart_dimensions.x * i, 0}, heart_dimensions));
-	}
-	for (int i = 0; i < num_orb_chars; ++i) {
-		sp_orb_text.at(i).setTexture(svc.assets.t_hud_orb_font);
-		if (i < 10) {
-			sp_orb_text.at(i).setTextureRect(sf::IntRect({orb_text_dimensions.x * i, 0}, orb_text_dimensions));
-		} else {
-			sp_orb_text.at(i).setTextureRect(sf::IntRect({orb_text_dimensions.x * i, 0}, {orb_label_width, orb_text_dimensions.y}));
-		}
-	}
-	for (int i = 0; i < num_guns; ++i) {
-		sp_guns.at(i).setTexture(svc.assets.t_hud_gun_color);
-		sp_guns.at(i).setTextureRect(sf::IntRect({0, i * gun_dimensions.y}, gun_dimensions));
-		sp_guns_shadow.at(i).setTexture(svc.assets.t_hud_gun_shadow);
-		sp_guns_shadow.at(i).setTextureRect(sf::IntRect({0, i * gun_dimensions.y}, gun_dimensions));
-	}
-	for (int i = 0; i < num_colors; ++i) {
-		sp_pointer.at(i).setTexture(svc.assets.t_hud_pointer);
-		sp_pointer.at(i).setTextureRect(sf::IntRect({0, i * pointer_dimensions.y}, pointer_dimensions));
-	}
-	shield_icon.setTexture(svc.assets.t_hud_shield);
-	shield_bit.setTexture(svc.assets.t_hud_shield);
-	shield_icon.setTextureRect(sf::IntRect{{0, 0}, shield_dimensions});
-	shield_icon.setPosition(sf::Vector2<float>{SHIELD_origin});
-	shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x * 3, 0}, shield_bit_dimensions});
+	sprites.orb.setTexture(svc.assets.t_hud_orb_font);
+	sprites.gun.setTexture(svc.assets.t_hud_gun_color);
+	sprites.gun_shadow.setTexture(svc.assets.t_hud_gun_shadow);
+	sprites.pointer.setTexture(svc.assets.t_hud_pointer);
+	sprites.shield_icon.setTexture(svc.assets.t_hud_shield);
+	sprites.shield_bit.setTexture(svc.assets.t_hud_shield);
+	sprites.shield_icon.setTextureRect(sf::IntRect{{0, 0}, shield_dimensions});
+	sprites.shield_icon.setPosition(sf::Vector2<float>{SHIELD_origin});
+	sprites.shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x * 3, 0}, shield_bit_dimensions});
 }
 
 void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
@@ -73,7 +55,6 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	player.health.flags.reset(entity::HPState::hit);
 
 	auto const& shield = player.controller.get_shield();
-	// shield_discrepancy.set_position({std::clamp(shield_discrepancy.collider.physics.position.x, 0.f, shield.health.get_max()), 0.f});
 	auto amount = std::lerp(0, num_bits, shield.health.get_hp() / shield.health.get_max());
 	shield_discrepancy.set_target_position({(float)amount, 0.f});
 	if (shield.health.full()) { shield_discrepancy.set_position({(float)amount, 0.f}); }
@@ -88,18 +69,22 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 
 void HUD::render(player::Player& player, sf::RenderWindow& win) {
 
+	// HEARTS
 	for (auto& heart : hearts) { heart.render(win); }
 
 	// ORB
-	sp_orb_text.at(orb_label_index).setPosition(corner_pad.x + ORB_origin.x, corner_pad.y + ORB_origin.y);
-	win.draw(sp_orb_text.at(orb_label_index));
+	sprites.orb.setTextureRect(sf::IntRect({orb_text_dimensions.x * 10, 0}, {orb_label_width, orb_text_dimensions.y}));
+	sprites.orb.setPosition(corner_pad.x + ORB_origin.x, corner_pad.y + ORB_origin.y);
+	win.draw(sprites.orb);
 
 	digits = std::to_string(num_orbs);
 	int ctr{0};
 	for (auto& digit : digits) {
-		if (digit - '0' >= 0 && digit - '0' < 10) {
-			sp_orb_text.at(digit - '0').setPosition(corner_pad.x + ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), corner_pad.y + ORB_origin.y);
-			win.draw(sp_orb_text.at(digit - '0'));
+		auto index = static_cast<int>(digit - '0');
+		if (index >= 0 && index < 10) {
+			sprites.orb.setTextureRect(sf::IntRect({orb_text_dimensions.x * index, 0}, orb_text_dimensions));
+			sprites.orb.setPosition(corner_pad.x + ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), corner_pad.y + ORB_origin.y);
+			win.draw(sprites.orb);
 		}
 		ctr++;
 	}
@@ -107,46 +92,45 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	// GUN
 	if (player.arsenal) {
 		auto pointer_index{0};
-		auto loadout_size = player.arsenal.value().size();
+		auto const loadout_size = player.arsenal.value().size();
 		for (int i = 0; i < loadout_size; ++i) {
 			auto gun_index = player.arsenal.value().get_weapon_at(i).get_id();
-			sp_guns.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-			sp_guns_shadow.at(gun_index).setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
+			sprites.gun.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
+			sprites.gun_shadow.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
+			sprites.gun.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
+			sprites.gun_shadow.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
+			win.draw(sprites.gun_shadow);
 			if (i == player.arsenal.value().get_index()) {
-				win.draw(sp_guns_shadow.at(gun_index));
-
-				win.draw(sp_guns.at(gun_index));
-
+				win.draw(sprites.gun);
 				pointer_index = i;
-			} else {
-				win.draw(sp_guns_shadow.at(gun_index));
 			}
 		}
 		arms::WEAPON_TYPE curr_type = player.equipped_weapon().type;
-		sp_pointer.at(player.equipped_weapon().attributes.ui_color).setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
-		win.draw(sp_pointer.at(player.equipped_weapon().attributes.ui_color));
+		sprites.pointer.setTextureRect(sf::IntRect({0, player.equipped_weapon().attributes.ui_color * pointer_dimensions.y}, pointer_dimensions));
+		sprites.pointer.setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
+		win.draw(sprites.pointer);
 	}
 
 	// SHIELD
 	if (player.has_shield()) {
 		auto const& shield = player.controller.get_shield();
-		shield_icon.setTextureRect(sf::IntRect{{0, shield.hud_animation.get_frame() * shield_dimensions.y}, shield_dimensions});
-		shield_icon.setPosition({corner_pad.x + SHIELD_origin.x, corner_pad.y + SHIELD_origin.y});
-		win.draw(shield_icon);
+		sprites.shield_icon.setTextureRect(sf::IntRect{{0, shield.hud_animation.get_frame() * shield_dimensions.y}, shield_dimensions});
+		sprites.shield_icon.setPosition({corner_pad.x + SHIELD_origin.x, corner_pad.y + SHIELD_origin.y});
+		win.draw(sprites.shield_icon);
 		auto amount = std::lerp(0, num_bits, shield.health.get_hp() / shield.health.get_max());
 		auto discrepancy_position = shield_discrepancy.collider.physics.position.x;
 
 		for (auto i{shield_bar}; i >= 0; --i) {
-			shield_bit.setPosition({corner_pad.x + SHIELD_origin.x + shield_dimensions.x + shield_pad + i, corner_pad.y + SHIELD_origin.y});
+			sprites.shield_bit.setPosition({corner_pad.x + SHIELD_origin.x + shield_dimensions.x + shield_pad + i, corner_pad.y + SHIELD_origin.y});
 			if (i <= amount) {
-				shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
-				win.draw(shield_bit);
+				sprites.shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
+				win.draw(sprites.shield_bit);
 			} else if (i > amount && i < discrepancy_position) {
-				shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x + shield_bit_dimensions.x * 1, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
-				win.draw(shield_bit);
+				sprites.shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x + shield_bit_dimensions.x * 1, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
+				win.draw(sprites.shield_bit);
 			} else if (i > discrepancy_position) {
-				shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x + shield_bit_dimensions.x * 2, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
-				win.draw(shield_bit);
+				sprites.shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x + shield_bit_dimensions.x * 2, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
+				win.draw(sprites.shield_bit);
 			}
 		}
 		flags.set(HUDState::shield);

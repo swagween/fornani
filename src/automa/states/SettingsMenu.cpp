@@ -10,12 +10,14 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 	toggle_options.enabled.setString("Enabled");
 	toggle_options.disabled.setString("Disabled");
 
-	toggleables.keyboard = options.at(0).label;
-	toggleables.gamepad = options.at(1).label;
-	music_label = options.at(2).label;
-	options.at(0).label.setString(toggleables.keyboard.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::keyboard) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-	options.at(1).label.setString(toggleables.gamepad.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::gamepad) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-	options.at(2).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
+	toggleables.autosprint = options.at(0).label;
+	toggleables.keyboard = options.at(1).label;
+	toggleables.gamepad = options.at(2).label;
+	music_label = options.at(3).label;
+	options.at(0).label.setString(toggleables.autosprint.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::autosprint) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(1).label.setString(toggleables.keyboard.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::keyboard) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(2).label.setString(toggleables.gamepad.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::gamepad) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(3).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 }
 
 void SettingsMenu::init(ServiceProvider& svc, int room_number) {}
@@ -50,6 +52,13 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		switch (current_selection) {
 		case 0:
+			if (svc.controller_map.hard_toggles.test(config::Toggles::autosprint)) {
+				svc.controller_map.hard_toggles.reset(config::Toggles::autosprint);
+			} else {
+				svc.controller_map.hard_toggles.set(config::Toggles::autosprint);
+			}
+			break;
+		case 1:
 			if (svc.controller_map.hard_toggles.test(config::Toggles::keyboard)) {
 				svc.controller_map.hard_toggles.reset(config::Toggles::keyboard);
 				if (svc.controller_map.hard_toggles_off()) { svc.controller_map.hard_toggles.set(config::Toggles::keyboard); }
@@ -57,7 +66,7 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 				svc.controller_map.hard_toggles.set(config::Toggles::keyboard);
 			}
 			break;
-		case 1:
+		case 2:
 			if (svc.controller_map.hard_toggles.test(config::Toggles::gamepad)) {
 				svc.controller_map.hard_toggles.reset(config::Toggles::gamepad);
 				if (svc.controller_map.hard_toggles_off()) { svc.controller_map.hard_toggles.set(config::Toggles::gamepad); }
@@ -65,12 +74,13 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 				svc.controller_map.hard_toggles.set(config::Toggles::gamepad);
 			}
 			break;
-		case 2: adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust);
+		case 3: adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust);
 			break;
 		}
 		if (!svc.controller_map.gamepad_connected()) { svc.controller_map.hard_toggles.set(config::Toggles::keyboard); }
-		options.at(0).label.setString(toggleables.keyboard.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::keyboard) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-		options.at(1).label.setString(toggleables.gamepad.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::gamepad) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+		options.at(0).label.setString(toggleables.autosprint.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::autosprint) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+		options.at(1).label.setString(toggleables.keyboard.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::keyboard) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+		options.at(2).label.setString(toggleables.gamepad.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::gamepad) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	}
 	if (svc.controller_map.label_to_control.at("right").triggered()) {}
 	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {}
@@ -102,8 +112,8 @@ void SettingsMenu::frame_update(ServiceProvider& svc) {}
 
 void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
-	adjust_mode() ? options.at(2).label.setColor(svc.styles.colors.red) : options.at(2).label.setColor(options.at(2).label.getFillColor());
-	options.at(2).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
+	adjust_mode() ? options.at(3).label.setColor(svc.styles.colors.red) : options.at(3).label.setColor(options.at(3).label.getFillColor());
+	options.at(3).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 	for (auto& option : options) { win.draw(option.label); }
 
 	left_dot.render(svc, win, {0, 0});

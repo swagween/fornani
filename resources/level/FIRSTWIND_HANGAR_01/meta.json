@@ -71,11 +71,12 @@
         1
       ],
       "position": [
-        14,
-        24
+        3,
+        9
       ],
       "activate_on_contact": false,
-      "key": "dropoff"
+      "key": "dropoffs",
+      "alternates": 0
     }
   ],
   "platforms": [

@@ -19,7 +19,7 @@ class Game {
 	Game() = default;
 	Game(char** argv);
 	~Game() {}
-	void run(bool demo = false, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
 
 	void playtest_sync();
 	void toggle_weapon(bool flag, int id);

@@ -53,9 +53,10 @@ class TextWriter {
 	void activate();
 	void deactivate();
 	void request_next();
-	void check_for_event(Message& msg, Codes code);
+	void check_for_event(Message& msg, Codes code, bool response = false);
 	void adjust_selection(int amount);
 	void process_selection();
+	void process_quest();
 	void shutdown();
 
 	void skip_ahead();

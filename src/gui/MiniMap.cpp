@@ -52,7 +52,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	win.setView(view);
 	win.draw(background);
 	if (svc.ticker.every_x_frames(10)) {
-		player_box.getFillColor() == svc.styles.colors.ui_white ? room_border.setOutlineColor(svc.styles.colors.periwinkle) : room_border.setOutlineColor(svc.styles.colors.ui_white);
+		room_border.getFillColor() == svc.styles.colors.ui_white ? room_border.setOutlineColor(svc.styles.colors.periwinkle) : room_border.setOutlineColor(svc.styles.colors.ui_white);
 		player_box.getFillColor() == svc.styles.colors.periwinkle ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.periwinkle);
 	}
 	for (auto& room : atlas) {
@@ -101,6 +101,15 @@ void MiniMap::toggle_scale() {
 void MiniMap::move(sf::Vector2<float> direction) {
 	position -= direction * speed;
 	previous_position = position;
+}
+
+void MiniMap::center() {
+	for (auto& room : atlas) {
+		if (room->is_current()) {
+			position = -room->get_position() * ratio + view.getCenter() - (player_position / scale);
+			return;
+		}
+	}
 }
 
 void Chunk::generate() {

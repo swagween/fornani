@@ -50,6 +50,7 @@ class AssetManager {
 	sf::Texture t_frdog{};
 	sf::Texture t_hulmet{};
 	sf::Texture t_tank{};
+	sf::Texture t_thug{};
 	sf::Texture t_eyebot{};
 	sf::Texture t_eyebit{};
 	sf::Texture t_minigus{};
@@ -82,6 +83,7 @@ class AssetManager {
 	sf::Texture t_platform_night{};
 	sf::Texture t_platform_abandoned{};
 	sf::Texture t_platform_firstwind{};
+	sf::Texture t_platform_overturned{};
 
 	//animators
 	sf::Texture t_automatic_animators_firstwind{};

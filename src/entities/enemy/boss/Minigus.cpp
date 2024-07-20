@@ -371,8 +371,6 @@ void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 	if (status.test(MinigusFlags::battle_mode)) { health_bar.render(win); }
 }
 
-bool Minigus::player_behind(player::Player& player) { return player.collider.physics.position.x + player.collider.bounding_box.dimensions.x * 0.5f < Enemy::collider.physics.position.x + Enemy::collider.dimensions.x * 0.5f; }
-
 fsm::StateFunction Minigus::update_idle() {
 	if (animation.just_started() && anim_debug) { std::cout << "idle\n"; }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }

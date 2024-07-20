@@ -38,11 +38,9 @@
   },
   "death": {
     "suite": [
-      [ "You died.", "Would you like to retry?%0" ],
-      [ "Loading last save...$27#1#1#" ],
-      [ "Returning to Main Menu..." ]
+      [ "You died.", "Would you like to retry?%0" ]
     ],
-    "responses": [ [ "Yes%0", "No%1" ] ]
+    "responses": [ [ "Yes$27#1#1#", "No%1" ] ]
   },
   "menu_return": {
     "suite": [

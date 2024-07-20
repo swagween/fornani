@@ -59,8 +59,13 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& up = svc.controller_map.label_to_control.at("up").held();
 	auto const& down = svc.controller_map.label_to_control.at("down").held();
 
-	auto const& sprint = svc.controller_map.label_to_control.at("sprint").held();
-	auto const& sprint_release = svc.controller_map.label_to_control.at("sprint").released();
+	auto sprint = svc.controller_map.label_to_control.at("sprint").held();
+	auto sprint_release = svc.controller_map.label_to_control.at("sprint").released();
+	auto sprint_pressed = svc.controller_map.label_to_control.at("sprint").triggered();
+	if (svc.controller_map.autosprint()) {
+		sprint = !sprint;
+		sprint_release = sprint_pressed;
+	}
 
 	auto const& shielding = svc.controller_map.label_to_control.at("shield").held();
 	auto const& shield_pressed = svc.controller_map.label_to_control.at("shield").triggered();
@@ -212,6 +217,7 @@ void PlayerController::dash() { dash_count = 1; }
 
 void PlayerController::autonomous_walk() {
 	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = 1.f : key_map[ControllerInput::move_x] = -1.f;
+	if (sprinting()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
 	flags.set(MovementState::walking_autonomously);
 }
 

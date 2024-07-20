@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "room_id": 121,
+    "metagrid": [
+      9,
+      0
+    ],
+    "dimensions": [
+      48,
+      16
+    ],
+    "chunk_dimensions": [
+      3,
+      1
+    ],
+    "style": 0,
+    "background": 5,
+    "music": "dusken_cove"
+  },
+  "portals": [
+    {
+      "dimensions": [
+        2,
+        1
+      ],
+      "position": [
+        43,
+        0
+      ],
+      "source_id": 121,
+      "destination_id": 104,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        2
+      ],
+      "position": [
+        0,
+        9
+      ],
+      "source_id": 121,
+      "destination_id": 102,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "enemies": [
+    {
+      "id": 1,
+      "position": [
+        30,
+        7
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        34,
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        29,
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        21,
+        12
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        9,
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "position": [
+        15,
+        11
+      ]
+    },
+    {
+      "id": 1,
+      "position": [
+        16,
+        6
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        44,
+        6
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        34,
+        4
+      ]
+    },
+    {
+      "id": 5,
+      "position": [
+        22,
+        9
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 9981,
+      "item_id": 0,
+      "type": 2,
+      "amount": 45,
+      "rarity": 8.000000,
+      "position": [
+        23,
+        3
+      ]
+    }
+  ]
+}

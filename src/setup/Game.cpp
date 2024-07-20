@@ -55,7 +55,7 @@ Game::Game(char** argv) : player(services) {
 	ImGui::SFML::Init(window);
 }
 
-void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 
 	// for editor demo. should be excluded for releases.
 	if (demo) {
@@ -66,8 +66,8 @@ void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> pl
 		services.data.load_blank_save(player);
 		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 		//TODO: fix this
-		game_state.get_current_state().init(services, 100);
-		services.state_controller.demo_level = 100;
+		game_state.get_current_state().init(services, room_id, levelpath.filename().string());
+		services.state_controller.demo_level = room_id;
 		//
 		services.state_controller.player_position = player_position;
 		player.set_position(player_position);
@@ -141,13 +141,13 @@ void Game::run(bool demo, std::filesystem::path levelpath, sf::Vector2<float> pl
 					//flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
-					/*if (flags.test(GameFlags::playtest)) {
+					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
 						services.assets.menu_back.play();
 					} else {
 						flags.set(GameFlags::playtest);
 						services.assets.menu_next.play();
-					}*/
+					}
 				}
 				if (event.key.code == sf::Keyboard::F12) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {
@@ -825,6 +825,9 @@ void Game::playtester_portal() {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
+					ImGui::Separator();
+					ImGui::Text("Player");
+					ImGui::Text("world grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());

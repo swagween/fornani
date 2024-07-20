@@ -22,6 +22,8 @@ void Gravitator::update(automa::ServiceProvider& svc) {
 	collider.sync_components();
 }
 
+void Gravitator::add_force(sf::Vector2<float> force) { collider.physics.apply_force(force); }
+
 void Gravitator::set_position(Vec new_position) {
 	collider.physics.position = new_position;
 	collider.sync_components();

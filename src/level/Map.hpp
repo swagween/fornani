@@ -21,6 +21,7 @@
 #include "../entities/world/Bed.hpp"
 #include "Platform.hpp"
 #include "Breakable.hpp"
+#include "Spike.hpp"
 #include "SwitchBlock.hpp"
 #include "BlockDestroyer.hpp"
 #include "../weapon/Grenade.hpp"
@@ -94,7 +95,7 @@ class Map {
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos);
 	void spawn_enemy(int id, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
-	void generate_collidable_layer();
+	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
 	bool check_cell_collision(shape::Collider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
@@ -131,6 +132,7 @@ class Map {
 	std::vector<npc::NPC> npcs{};
 	std::vector<Platform> platforms{};
 	std::vector<Breakable> breakables{};
+	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
 	std::vector<BlockDestroyer> destroyers{};

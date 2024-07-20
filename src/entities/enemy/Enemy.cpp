@@ -211,4 +211,6 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	if (!proj.stats.persistent && (!died() || just_died())) { proj.destroy(false); }
 }
 
+bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.dimensions.x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
+
 } // namespace enemy
