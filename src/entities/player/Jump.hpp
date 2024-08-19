@@ -26,6 +26,10 @@ class Jump {
 	void reset_triggers();
 	void reset_all();
 
+	void start_coyote() { coyote_time.start(); }
+	[[nodiscard]] auto coyote() const -> bool { return coyote_time.running(); }
+	[[nodiscard]] auto get_coyote() const -> int { return coyote_time.get_cooldown(); }
+
 	void request_jump();
 	bool requested() const;
 	bool launched() const;
@@ -54,6 +58,7 @@ class Jump {
 	private:
 	util::Cooldown cooldown{};
 	util::Cooldown request{};
+	util::Cooldown coyote_time{12};
 };
 
 } // namespace player

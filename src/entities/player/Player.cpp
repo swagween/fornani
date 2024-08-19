@@ -65,9 +65,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	collider.physics.air_friction = {physics_stats.air_fric, physics_stats.air_fric};
 
 	update_direction();
-	grounded() ? cooldowns.coyote_time.start() : cooldowns.coyote_time.update();
-	if (grounded()) { controller.ground(); }
-	if (cooldowns.coyote_time.is_complete()) { controller.unground(); }
+	grounded() ? controller.ground() : controller.unground();
 
 	update_transponder(console, inventory_window);
 	controller.update(*m_services);
@@ -133,7 +131,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (flags.state.test(State::crushed)) { return; }
 
 	//debug
-	collider.colors.local = controller.grounded() ? svc.styles.colors.green : svc.styles.colors.red;
+	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.red;
 
 	// dashing effect
 	sprite.setPosition(sprite_position);

@@ -76,6 +76,7 @@ class PlayerController {
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
 	[[nodiscard]] auto dashing() -> bool { return key_map[ControllerInput::dash] != 0.f; }
 	[[nodiscard]] auto can_dash() const -> bool { return dash_count == 0; }
+	[[nodiscard]] auto can_jump() const -> bool { return (flags.test(MovementState::grounded) || jump.coyote()); }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
 	[[nodiscard]] auto transponder_skip() const -> bool { return transponder_flags.test(TransponderInput::skip); }
 	[[nodiscard]] auto transponder_skip_released() const -> bool { return transponder_flags.test(TransponderInput::skip_released); }

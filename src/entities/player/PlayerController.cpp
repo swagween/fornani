@@ -162,11 +162,11 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	}
 	if (jump_released) { jump.triggers.set(JumpTrigger::is_released); }
 
-	if (jump.requested() && flags.test(MovementState::grounded)) {
+	if (jump.requested() && can_jump()) {
 		jump.triggers.set(JumpTrigger::jumpsquat);
 		jump.prevent();
 	}
-
+	if (grounded()) { jump.start_coyote(); }
 	decrement_requests();
 	jump.update();
 
