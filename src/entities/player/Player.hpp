@@ -198,6 +198,8 @@ class Player {
 	struct {
 		util::Cooldown tutorial{400};
 		util::Cooldown sprint_tutorial{800};
+		util::Cooldown push{48};
+		util::Cooldown coyote_time{64};
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2<float>> accumulated_forces{};

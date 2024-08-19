@@ -22,7 +22,10 @@ void PlayerAnimation::start() { animation.start(); }
 fsm::StateFunction PlayerAnimation::update_idle() {
 	animation.label = "idle";
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
-	if (animation.just_started()) { idle_timer.start(); }
+	if (animation.just_started()) {
+		idle_timer.start();
+		m_player->cooldowns.push.start();
+	}
 	idle_timer.update();
 	if (idle_timer.get_count() > timers.sit) { state = AnimState::sit; }
 	if (change_state(AnimState::sit, sit)) {

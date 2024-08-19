@@ -829,6 +829,8 @@ void Game::playtester_portal() {
 					ImGui::Text("Player");
 					ImGui::Text("world grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
 					ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
+					ImGui::Text("Coyote Time: %i", player.cooldowns.coyote_time.get_cooldown());
+					ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
 					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());

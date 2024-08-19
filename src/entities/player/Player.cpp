@@ -65,7 +65,10 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	collider.physics.air_friction = {physics_stats.air_fric, physics_stats.air_fric};
 
 	update_direction();
-	grounded() ? controller.ground() : controller.unground();
+	grounded() ? cooldowns.coyote_time.start() : cooldowns.coyote_time.update();
+	if (grounded()) { controller.ground(); }
+	if (cooldowns.coyote_time.is_complete()) { controller.unground(); }
+
 	update_transponder(console, inventory_window);
 	controller.update(*m_services);
 
@@ -128,6 +131,9 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	calculate_sprite_offset();
 
 	if (flags.state.test(State::crushed)) { return; }
+
+	//debug
+	collider.colors.local = controller.grounded() ? svc.styles.colors.green : svc.styles.colors.red;
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
@@ -217,8 +223,9 @@ void Player::update_animation() {
 		if (controller.get_wallslide().is_wallsliding()) { animation.state = AnimState::wallslide; }
 	}
 	if (controller.moving() && grounded()) {
-		if (collider.has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { animation.state = AnimState::push; }
-		if (collider.has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { animation.state = AnimState::push; }
+		if (collider.has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { cooldowns.push.update(); }
+		if (collider.has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
+		if (cooldowns.push.is_complete() && (collider.has_right_wallslide_collision() || collider.has_left_wallslide_collision())) { animation.state = AnimState::push; }
 	}
 	if (catalog.categories.abilities.has_ability(Abilities::shield)) {
 		if (controller.get_shield().is_shielding() && grounded() && !(animation.state == AnimState::land) && !(animation.state == AnimState::fall)) {

@@ -127,6 +127,10 @@ class Collider {
 		sf::Vector2<float> actual{};
 	} mtvs{};
 
+	struct {
+		sf::Color local{};
+	} colors{};
+
 	float landed_threshold{6.0f};
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{1.0f};

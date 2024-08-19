@@ -26,7 +26,6 @@ void Jump::prevent() { request.cancel(); }
 void Jump::start() {
 	cooldown.start(cooldown_time);
 	states.set(player::JumpState::jumping);
-	//states.reset(player::JumpState::can_jump);
 	triggers.reset(player::JumpTrigger::just_jumped);
 }
 

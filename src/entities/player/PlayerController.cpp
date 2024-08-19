@@ -213,8 +213,6 @@ void PlayerController::cancel_dash_request() { dash_request = -1; }
 
 void PlayerController::dash() { dash_count = 1; }
 
-
-
 void PlayerController::autonomous_walk() {
 	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = 1.f : key_map[ControllerInput::move_x] = -1.f;
 	if (sprinting()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }

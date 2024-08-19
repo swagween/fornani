@@ -428,10 +428,10 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw bounding box
 	box.setSize(dimensions);
 	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
-	box.setFillColor(sf::Color{200, 150, 255, 20});
+	box.setFillColor(colors.local);
 	box.setOutlineColor(sf::Color{255, 255, 255, 190});
 	box.setOutlineThickness(-1);
-	//win.draw(box);
+	win.draw(box);
 
 	// draw jump box
 	box.setSize(jumpbox.dimensions);
@@ -460,7 +460,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
 	box.setOutlineThickness(-1);
-	// win.draw(box);
+	win.draw(box);
 
 	// draw physics position
 	if (collision_depths) {
