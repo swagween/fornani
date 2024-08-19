@@ -32,6 +32,7 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 	if (change_state(AnimState::sharp_turn, sharp_turn)) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
 	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
 	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
