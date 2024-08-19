@@ -67,7 +67,8 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (svc.greyblock_mode()) {
 		// fire point debug
 		sf::RectangleShape box{};
-		box.setPosition(barrel_point.x - campos.x - 1, barrel_point.y - campos.y - 1);
+		box.setOrigin(1.f, 1.f);
+		box.setPosition(barrel_point.x - campos.x, barrel_point.y - campos.y);
 		box.setFillColor(svc.styles.colors.fucshia);
 		box.setSize(sf::Vector2<float>{2.0f, 2.0f});
 		win.draw(box);

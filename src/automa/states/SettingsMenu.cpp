@@ -112,7 +112,7 @@ void SettingsMenu::frame_update(ServiceProvider& svc) {}
 
 void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
-	adjust_mode() ? options.at(3).label.setColor(svc.styles.colors.red) : options.at(3).label.setColor(options.at(3).label.getFillColor());
+	adjust_mode() ? options.at(3).label.setFillColor(svc.styles.colors.red) : options.at(3).label.setFillColor(options.at(3).label.getFillColor());
 	options.at(3).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 	for (auto& option : options) { win.draw(option.label); }
 

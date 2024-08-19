@@ -827,10 +827,12 @@ void Game::playtester_portal() {
 					}
 					ImGui::Separator();
 					ImGui::Text("Player");
-					ImGui::Text("world grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
+					ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
 					ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 					ImGui::Text("Coyote Time: %i", player.controller.get_jump().get_coyote());
 					ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
+					ImGui::Text("Can Doublejump? %s", player.controller.get_jump().can_doublejump() ? "Yes" : "No");
+					ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
 					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());
@@ -997,7 +999,7 @@ void Game::playtester_portal() {
 								ImGui::Checkbox("Dash", &playtest.b_dash);
 								ImGui::Checkbox("Shield", &playtest.b_shield);
 								ImGui::Checkbox("Wallslide", &playtest.b_wallslide);
-								ImGui::Checkbox("Double Jump (not implemented)", &playtest.b_doublejump);
+								ImGui::Checkbox("Double Jump", &playtest.b_doublejump);
 								playtest.b_dash ? player.catalog.categories.abilities.give_ability(player::Abilities::dash) : player.catalog.categories.abilities.remove_ability(player::Abilities::dash);
 								playtest.b_shield ? player.catalog.categories.abilities.give_ability(player::Abilities::shield) : player.catalog.categories.abilities.remove_ability(player::Abilities::shield);
 								playtest.b_wallslide ? player.catalog.categories.abilities.give_ability(player::Abilities::wall_slide) : player.catalog.categories.abilities.remove_ability(player::Abilities::wall_slide);

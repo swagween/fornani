@@ -178,7 +178,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
-int DataManager::load_progress(player::Player& player, int const file, bool state_switch) {
+int DataManager::load_progress(player::Player& player, int const file, bool state_switch, bool from_menu) {
 
 	current_save = file;
 	auto const& save = files.at(file).save_data;
@@ -245,10 +245,12 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
 	// stat tracker
-	m_services->stats = {};
-	auto const& in_stat = save["player_data"]["stats"];
 	auto& s = m_services->stats;
-	s.player.death_count.set(in_stat["death_count"].as<int>());
+	auto deaths = s.player.death_count.get_count();
+	s = {};
+	if (!from_menu) { s.player.death_count.set(deaths); }
+	auto const& in_stat = save["player_data"]["stats"];
+	if (from_menu) { s.player.death_count.set(in_stat["death_count"].as<int>()); }
 	s.player.bullets_fired.set(in_stat["bullets_fired"].as<int>());
 	s.player.guns_collected.set(in_stat["guns_collected"].as<int>());
 	s.player.items_collected.set(in_stat["items_collected"].as<int>());
@@ -261,6 +263,14 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	m_services->ticker.in_game_seconds_passed = m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>());
 
 	return room_id;
+}
+
+void DataManager::write_death_count(player::Player& player) {
+	auto& save = files.at(current_save).save_data;
+	auto& out_stat = save["player_data"]["stats"];
+	auto const& s = m_services->stats;
+	out_stat["death_count"] = s.player.death_count.get_count();
+	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) {

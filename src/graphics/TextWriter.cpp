@@ -288,8 +288,9 @@ void TextWriter::check_for_event(Message& msg, Codes code, bool response) {
 		if (push.size() == 5) { out_quest = util::QuestKey{push[0], push[1], push[2], push[3], push[4]}; } // hard set provided
 		//std::cout << "Decoded: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << ", " << out_quest.amount << ", " << out_quest.hard_set << "\n";
 		if(response) {
+			response_keys.push_back(out_quest);
 		} else {
-			process_quest();
+			process_quest(out_quest);
 		}
 
 		msg.data.setString(msg.data.getString().substring(0, index));
@@ -318,8 +319,9 @@ void TextWriter::process_selection() {
 	auto ctr{0};
 	for (auto& res : responses.at(iterators.current_response_set)) {
 		if (ctr == get_current_selection()) {
-			process_quest();
+			if (ctr < response_keys.size()) { process_quest(response_keys.at(ctr)); }
 			out_quest = {};
+			response_keys.clear();
 		}
 		++ctr;
 	}
@@ -345,15 +347,15 @@ void TextWriter::process_selection() {
 	start();
 }
 
-void TextWriter::process_quest() {
-	m_services->quest.process(out_quest);
-	m_services->data.push_quest(out_quest);
-	if (out_quest.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
-	if (out_quest.type == 33) { communicators.reveal_item.set(out_quest.id); }
-	if (out_quest.type == 88) { m_services->state_controller.actions.set(automa::Actions::console_transition); }
-	if (out_quest.type == 89) { m_services->state_controller.actions.set(automa::Actions::main_menu); }
-	if (out_quest.type == 69) { m_services->state_controller.actions.set(automa::Actions::print_stats); }
-	//std::cout << "Processed: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << ", " << out_quest.amount << ", " << out_quest.hard_set << "\n";
+void TextWriter::process_quest(util::QuestKey out) {
+	m_services->quest.process(out);
+	m_services->data.push_quest(out);
+	if (out.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
+	if (out.type == 33) { communicators.reveal_item.set(out.id); }
+	if (out.type == 88) { m_services->state_controller.actions.set(automa::Actions::console_transition); }
+	if (out.type == 89) { m_services->state_controller.actions.set(automa::Actions::main_menu); }
+	if (out.type == 69) { m_services->state_controller.actions.set(automa::Actions::print_stats); }
+	//std::cout << "Processed: " << out.type << ", " << out.id << ", " << out.source_id << ", " << out.amount << ", " << out.hard_set << "\n";
 }
 
 void TextWriter::shutdown() {

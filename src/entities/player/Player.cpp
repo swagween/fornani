@@ -68,6 +68,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	grounded() ? controller.ground() : controller.unground();
 
 	update_transponder(console, inventory_window);
+	if (!catalog.categories.abilities.has_ability(Abilities::double_jump)) { controller.get_jump().jump_counter.cancel(); }
 	controller.update(*m_services);
 
 	if (grounded()) { controller.reset_dash_count(); }
@@ -341,6 +342,7 @@ void Player::flash_sprite() {
 
 void Player::calculate_sprite_offset() {
 	sprite_position = {collider.get_average_tick_position() + sprite_offset};
+	sprite_position.x += controller.facing_left() ? -1.f : 1.f;
 	apparent_position = collider.get_average_tick_position() + collider.dimensions / 2.f;
 }
 
@@ -379,6 +381,15 @@ void Player::jump(world::Map& map) {
 		controller.get_jump().reset();
 	}
 	if (collider.flags.state.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
+	if (catalog.categories.abilities.has_ability(Abilities::double_jump)) {
+		if (controller.get_jump().just_doublejumped()) {
+			collider.physics.velocity.y = 0.f;
+			controller.get_jump().doublejump();
+			m_services->soundboard.flags.player.set(audio::Player::jump);
+			map.effects.push_back(entity::Effect(*m_services, sprite_position, sf::Vector2<float>{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
+		}
+		if (controller.get_jump().is_doublejump()) { animation.state = AnimState::backflip; }
+	}
 }
 
 void Player::dash() {
@@ -451,13 +462,9 @@ void Player::update_weapon() {
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		weapon->firing_direction = controller.direction;
 		weapon->update(controller.direction);
-		sf::Vector2<float> p_pos = {apparent_position.x + weapon->gun_offset.x, apparent_position.y + sprite_offset.y + weapon->gun_offset.y - collider.dimensions.y / 2.f};
+		auto tweak = controller.facing_left() ? -1.f : 1.f;
+		sf::Vector2<float> p_pos = {apparent_position.x + weapon->gun_offset.x + tweak, apparent_position.y + sprite_offset.y + weapon->gun_offset.y - collider.dimensions.y / 2.f};
 		weapon->set_position(p_pos);
-	}
-	if (controller.facing_right()) {
-		hand_position = {28, 36};
-	} else {
-		hand_position = {20, 36};
 	}
 }
 
@@ -537,7 +544,7 @@ void Player::update_antennae() {
 		a.update(*m_services);
 		a.collider.sync_components();
 		if (controller.facing_right()) {
-			antenna_offset.x = ctr % 2 == 0 ? 18.0f : 7.f;
+			antenna_offset.x = ctr % 2 == 0 ? 20.0f : 7.f;
 		} else {
 			antenna_offset.x = ctr % 2 == 0 ? 2.f : 13.f;
 		}

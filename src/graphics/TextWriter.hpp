@@ -56,7 +56,7 @@ class TextWriter {
 	void check_for_event(Message& msg, Codes code, bool response = false);
 	void adjust_selection(int amount);
 	void process_selection();
-	void process_quest();
+	void process_quest(util::QuestKey out);
 	void shutdown();
 
 	void skip_ahead();
@@ -96,6 +96,7 @@ class TextWriter {
 		util::Shipment reveal_item{};
 	} communicators{};
 
+	std::vector<util::QuestKey> response_keys{};
 	util::QuestKey out_quest{};
 	util::Decoder decoder{};
 

@@ -23,9 +23,9 @@ void Jump::reset_all() {
 
 void Jump::request_jump() { request.start(request_time); }
 
-void Jump::prevent() {
-	request.cancel();
-}
+void Jump::prevent() { request.cancel(); }
+
+void Jump::doublejump() { jump_counter.update(); }
 
 void Jump::start() {
 	cooldown.start(cooldown_time);

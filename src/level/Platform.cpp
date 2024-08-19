@@ -64,6 +64,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	auto skip_value{16.f};
 	auto edge_start = 0.f;
 	player.collider.handle_collider_collision(bounding_box);
+	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
 	player.on_crush(map);
 	switch_up.update();
 
@@ -92,7 +93,6 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	}
 	// init direction to oppose player
 	direction.lr = player.controller.direction.lr == dir::LR::left ? dir::LR::right : dir::LR::left;
-	if (player.collider.external_world_grounded()) { std::cout << "baba\n"; }
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
 		auto start = track[x];
@@ -103,7 +103,6 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
 			physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
 			physics.velocity = physics.position - old_position;
-
 			// set direction
 			direction.lr = physics.velocity.x > 0.0f ? dir ::LR::right : dir::LR::left;
 			direction.und = physics.velocity.y > 0.0f ? dir ::UND::down : dir::UND::up;

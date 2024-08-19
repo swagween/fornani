@@ -181,6 +181,7 @@ void AssetManager::import_textures() {
 	t_inv_hit.loadFromFile(finder.resource_path + "/image/entity/inv_hit.png");
 	t_puff.loadFromFile(finder.resource_path + "/image/entity/puff.png");
 	t_bullet_hit.loadFromFile(finder.resource_path + "/image/entity/bullet_hit.png");
+	t_doublejump.loadFromFile(finder.resource_path + "/image/entity/doublejump.png");
 	effect_lookup.insert({0, t_small_explosion});
 	effect_lookup.insert({1, t_large_explosion});
 	effect_lookup.insert({2, t_wall_hit});
@@ -190,6 +191,7 @@ void AssetManager::import_textures() {
 	effect_lookup.insert({6, t_inv_hit});
 	effect_lookup.insert({7, t_puff});
 	effect_lookup.insert({8, t_bullet_hit});
+	effect_lookup.insert({9, t_doublejump});
 
 	// title stuff
 	t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");

@@ -13,7 +13,7 @@ namespace player {
 
 class Player;
 
-enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, between_push, push, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, die };
+enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, between_push, push, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, die, backflip };
 enum class AnimTriggers { flip, end_death };
 int const rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
@@ -23,7 +23,7 @@ inline anim::Parameters sharp_turn{16, 2, 4 * rate, 0};
 inline anim::Parameters run{44, 4, 6 * rate, -1};
 inline anim::Parameters sprint{10, 6, 4 * rate, -1};
 inline anim::Parameters shield{80, 3, 4 * rate, -1, true};
-inline anim::Parameters between_push{85, 1, 5 * rate, 0};
+inline anim::Parameters between_push{85, 1, 4 * rate, 0};
 inline anim::Parameters push{86, 4, 7 * rate, -1};
 inline anim::Parameters rise{40, 4, 6 * rate, 0};
 inline anim::Parameters suspend{30, 3, 7 * rate, -1};
@@ -36,6 +36,7 @@ inline anim::Parameters hurt{76, 2, 7 * rate, 0};
 inline anim::Parameters dash{40, 4, 5 * rate, 0};
 inline anim::Parameters wallslide{66, 4, 7 * rate, -1};
 inline anim::Parameters die{76, 4, 8 * rate, -1, true};
+inline anim::Parameters backflip{90, 6, 5 * rate, 0};
 
 class PlayerAnimation {
 
@@ -75,6 +76,7 @@ class PlayerAnimation {
 	fsm::StateFunction update_dash();
 	fsm::StateFunction update_wallslide();
 	fsm::StateFunction update_die();
+	fsm::StateFunction update_backflip();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 

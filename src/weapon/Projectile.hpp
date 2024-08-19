@@ -113,12 +113,12 @@ class Projectile {
 	void seed(automa::ServiceProvider& svc);
 	void set_sprite(automa::ServiceProvider& svc);
 	void set_orientation(sf::Sprite& sprite);
-	void set_position(sf::Vector2<float>& pos);
+	void set_position(sf::Vector2<float> pos);
 	void set_boomerang_speed();
 	void set_hook_speed();
 	void sync_position();
-	void constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos);
-	void constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos);
+	void constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float> campos);
+	void constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float> campos);
 	void constrain_hitbox_at_barrel();
 	void constrain_hitbox_at_destruction_point();
 	void lock_to_anchor();

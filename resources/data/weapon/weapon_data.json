@@ -19,7 +19,8 @@
         "rate": 42,
         "cooldown_time": 30,
         "recoil": 0.00,
-        "ui_color": 1
+        "ui_color": 1,
+        "back_offset": 0
       },
       "projectile": {
         "dimensions": {

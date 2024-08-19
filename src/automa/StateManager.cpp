@@ -36,13 +36,14 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		} else {
 			if (svc.state_controller.actions.test(Actions::retry)) {
 				svc.state_controller.next_state = svc.state_controller.save_point_id;
-				svc.data.load_progress(player, svc.data.current_save);
+				svc.data.load_progress(player, svc.data.current_save, false, false);
 				svc.state_controller.actions.reset(Actions::retry);
 				player.animation.state = player::AnimState::idle;
 				player.animation.triggers.reset(player::AnimTriggers::end_death);
-				svc.stats.player.death_count.update();
+				svc.data.write_death_count(player);
 			} else {
 				return_to_main_menu(svc, player);
+				svc.data.write_death_count(player);
 				return;
 			}
 			svc.music.stop();

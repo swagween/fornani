@@ -51,6 +51,12 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		sprite_dimensions = {32, 32};
 		spritesheet_dimensions = {4, 4};
 		break;
+	case 9:
+		// doublejump
+		sprite.setOrigin({24.f, 24.f});
+		sprite_dimensions = {48, 48};
+		spritesheet_dimensions = {1, 6};
+		break;
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
 	drawbox.setFillColor(sf::Color::Transparent);

@@ -274,7 +274,7 @@ void Projectile::set_orientation(sf::Sprite& sprite) {
 	}
 }
 
-void Projectile::set_position(sf::Vector2<float>& pos) {
+void Projectile::set_position(sf::Vector2<float> pos) {
 	physics.position = pos;
 	bounding_box.position = pos;
 	gravitator.set_position(pos);
@@ -293,7 +293,7 @@ void Projectile::set_hook_speed() {
 
 void Projectile::sync_position() { gravitator.collider.physics.position = fired_point; }
 
-void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float>& campos) {
+void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float> campos) {
 	if (!stats.constrained) { return; }
 	int u = (int)(sprite_index * max_dimensions.x);
 	int v = (int)(animation.get_frame() * max_dimensions.y);
@@ -332,7 +332,7 @@ void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<floa
 	}
 }
 
-void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float>& campos) {
+void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float> campos) {
 	if (!stats.constrained) { return; }
 	auto u = static_cast<int>(sprite_index * max_dimensions.x);
 	auto v = static_cast<int>(animation.get_frame() * max_dimensions.y);

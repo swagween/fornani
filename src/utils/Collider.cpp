@@ -360,6 +360,7 @@ void Collider::handle_collider_collision(Shape const& collider) {
 		} else {
 			flags.collision.test(Collision::has_top_collision) ? correct_y(mtvs.vertical) : correct_y(mtvs.vertical);
 		}
+		if (flags.collision.test(Collision::has_top_collision)) { flags.external_state.set(ExternalState::jumped_into); }
 	}
 	if (predictive_horizontal.SAT(collider)) {
 		mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);

@@ -115,6 +115,7 @@ class AssetManager {
 	sf::Texture t_inv_hit{};
 	sf::Texture t_puff{};
 	sf::Texture t_bullet_hit{};
+	sf::Texture t_doublejump{};
 
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};

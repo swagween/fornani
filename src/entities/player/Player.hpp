@@ -182,13 +182,12 @@ class Player {
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};
-	sf::Vector2<float> hand_position{};
 	sf::Vector2<float> sprite_offset{10.f, -3.f};
 	sf::Vector2<float> sprite_dimensions{};
 	sf::Vector2<float> sprite_position{};
 
 	std::vector<vfx::Gravitator> antennae{};
-	sf::Vector2<float> antenna_offset{4.f, -17.f};
+	sf::Vector2<float> antenna_offset{6.f, -17.f};
 
 	PlayerStats player_stats{0, 99999, 0.06f};
 	PhysicsStats physics_stats{};
@@ -198,7 +197,7 @@ class Player {
 	struct {
 		util::Cooldown tutorial{400};
 		util::Cooldown sprint_tutorial{800};
-		util::Cooldown push{48};
+		util::Cooldown push{32};
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2<float>> accumulated_forces{};

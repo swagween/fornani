@@ -41,7 +41,8 @@ class DataManager {
 	// game save
 	void load_data(std::string in_room = "");
 	void save_progress(player::Player& player, int save_point_id);
-	int load_progress(player::Player& player, int const file, bool state_switch = false);
+	int load_progress(player::Player& player, int const file, bool state_switch = false, bool from_menu = true);
+	void write_death_count(player::Player& player);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false);
 	dj::Json& get_save() { return files.at(current_save).save_data; }
 	fornani::File& get_file() { return files.at(current_save); }
