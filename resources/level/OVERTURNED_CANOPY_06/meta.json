@@ -1,0 +1,789 @@
+{
+  "meta": {
+    "room_id": 224,
+    "metagrid": [
+      26,
+      11
+    ],
+    "dimensions": [
+      80,
+      16
+    ],
+    "chunk_dimensions": [
+      5,
+      1
+    ],
+    "style": 1,
+    "background": 3,
+    "music": "",
+    "styles":  {"breakables": 2}
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        3
+      ],
+      "position": [
+        0,
+        5
+      ],
+      "source_id": 224,
+      "destination_id": 299,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        3,
+        1
+      ],
+      "position": [
+        71,
+        15
+      ],
+      "source_id": 224,
+      "destination_id": 225,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "animators": [
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        6,
+        8
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        3,
+        7
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 214,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        22,
+        13
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 111,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        16,
+        12
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 111,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        50,
+        12
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 111,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        56,
+        12
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        65,
+        11
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 115,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        76,
+        7
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        43,
+        6
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 115,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        24,
+        10
+      ],
+      "automatic": false,
+      "foreground": true
+    }
+  ],
+  "enemies": [
+    {
+      "id": 0,
+      "position": [
+        38,
+        10
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 11443,
+      "item_id": 0,
+      "type": 2,
+      "amount": 40,
+      "rarity": 2.000000,
+      "position": [
+        55,
+        2
+      ]
+    }
+  ],
+  "switch_blocks": [
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        6
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        6
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        6
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        6
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        6
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        5
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        5
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        5
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        5
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        5
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        5
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        5
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        4
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        3
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        3
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        3
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        3
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        3
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        3
+      ]
+    },
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        22,
+        3
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        11
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        11
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        11
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        11
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        11
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        11
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        11
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        12
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        13
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        13
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        13
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        13
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        13
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        13
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        13
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        53,
+        13
+      ]
+    }
+  ],
+  "switches": [
+    {
+      "button_id": 0,
+      "type": 1,
+      "position": [
+        20,
+        13
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 0,
+      "position": [
+        55,
+        5
+      ]
+    }
+  ]
+}

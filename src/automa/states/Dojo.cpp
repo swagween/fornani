@@ -7,7 +7,7 @@ namespace automa {
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console), gui_map(svc, player, console) {}
 
 void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
-	std::cout << "\n" << room_number;
+	//std::cout << "\n" << room_number;
 	//A = shape::Collider({32.f, 32.f});
 	//B = shape::Collider({24.f, 24.f});
 	//A.stats.GRAV = 0.f;

@@ -828,6 +828,7 @@ void Game::playtester_portal() {
 					ImGui::Separator();
 					ImGui::Text("Player");
 					ImGui::Text("world grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
+					ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());

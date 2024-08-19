@@ -216,6 +216,10 @@ void Player::update_animation() {
 	if (catalog.categories.abilities.has_ability(Abilities::wall_slide)) {
 		if (controller.get_wallslide().is_wallsliding()) { animation.state = AnimState::wallslide; }
 	}
+	if (controller.moving() && grounded()) {
+		if (collider.has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { animation.state = AnimState::push; }
+		if (collider.has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { animation.state = AnimState::push; }
+	}
 	if (catalog.categories.abilities.has_ability(Abilities::shield)) {
 		if (controller.get_shield().is_shielding() && grounded() && !(animation.state == AnimState::land) && !(animation.state == AnimState::fall)) {
 			animation.state = AnimState::shield;

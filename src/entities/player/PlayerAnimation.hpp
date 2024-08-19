@@ -13,7 +13,7 @@ namespace player {
 
 class Player;
 
-enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, die };
+enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, between_push, push, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, die };
 enum class AnimTriggers { flip, end_death };
 int const rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
@@ -23,6 +23,8 @@ inline anim::Parameters sharp_turn{16, 2, 4 * rate, 0};
 inline anim::Parameters run{44, 4, 6 * rate, -1};
 inline anim::Parameters sprint{10, 6, 4 * rate, -1};
 inline anim::Parameters shield{80, 3, 4 * rate, -1, true};
+inline anim::Parameters between_push{85, 1, 5 * rate, 0};
+inline anim::Parameters push{86, 4, 7 * rate, -1};
 inline anim::Parameters rise{40, 4, 6 * rate, 0};
 inline anim::Parameters suspend{30, 3, 7 * rate, -1};
 inline anim::Parameters fall{62, 4, 5 * rate, -1};
@@ -48,11 +50,9 @@ class PlayerAnimation {
 
 	void update();
 	void start();
-	int get_frame() const;
 	[[nodiscard]] auto death_over() -> bool { return triggers.consume(AnimTriggers::end_death); }
-
-	// animation helpers
-	bool not_jumping();
+	[[nodiscard]] auto not_jumping() -> bool { return state != AnimState::rise; }
+	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
 
 	fsm::StateFunction state_function = std::bind(&PlayerAnimation::update_idle, this);
 
@@ -61,6 +61,8 @@ class PlayerAnimation {
 	fsm::StateFunction update_sharp_turn();
 	fsm::StateFunction update_sprint();
 	fsm::StateFunction update_shield();
+	fsm::StateFunction update_between_push();
+	fsm::StateFunction update_push();
 	fsm::StateFunction update_run();
 	fsm::StateFunction update_rise();
 	fsm::StateFunction update_suspend();

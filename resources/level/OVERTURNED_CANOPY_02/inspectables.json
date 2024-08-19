@@ -1,1 +1,16 @@
-null
+{
+  "toupper": {
+    "suite": [
+      [
+        "Upper Canopies >"
+      ]
+    ]
+  },
+  "tolower": {
+    "suite": [
+      [
+        "To Lower Glades"
+      ]
+    ]
+  }
+}

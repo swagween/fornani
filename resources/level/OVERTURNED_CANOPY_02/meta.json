@@ -2,8 +2,8 @@
   "meta": {
     "room_id": 299,
     "metagrid": [
-      0,
-      0
+      25,
+      8
     ],
     "dimensions": [
       16,
@@ -15,7 +15,8 @@
     ],
     "style": 1,
     "background": 3,
-    "music": ""
+    "music": "",
+    "styles":  {"breakables": 2}
   },
   "portals": [
     {
@@ -47,6 +48,49 @@
       "activate_on_contact": true,
       "locked": false,
       "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        3
+      ],
+      "position": [
+        15,
+        54
+      ],
+      "source_id": 299,
+      "destination_id": 224,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        12,
+        56
+      ],
+      "activate_on_contact": false,
+      "key": "toupper",
+      "alternates": 0
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        6,
+        109
+      ],
+      "activate_on_contact": false,
+      "key": "tolower",
+      "alternates": 0
     }
   ],
   "animators": [
@@ -311,20 +355,6 @@
       ],
       "position": [
         12,
-        55
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 115,
-      "style": 0,
-      "dimensions": [
-        2,
-        2
-      ],
-      "position": [
-        12,
         67
       ],
       "automatic": false,
@@ -471,34 +501,6 @@
       "foreground": false
     },
     {
-      "id": 210,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        11,
-        29
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 209,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        10,
-        29
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
       "id": 215,
       "style": 0,
       "dimensions": [
@@ -530,17 +532,31 @@
   "platforms": [
     {
       "position": [
-        6,
+        7,
         79
       ],
       "dimensions": [
-        2,
-        2
+        1,
+        1
       ],
-      "extent": 7,
+      "extent": 6,
       "style": 3,
       "type": "standard_side_to_side",
       "start": 0.000000
+    },
+    {
+      "position": [
+        7,
+        80
+      ],
+      "dimensions": [
+        1,
+        1
+      ],
+      "extent": 6,
+      "style": 3,
+      "type": "standard_side_to_side",
+      "start": 0.500000
     }
   ]
 }

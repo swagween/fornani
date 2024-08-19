@@ -214,11 +214,6 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	Enemy::direction = post_direction;
 
 	pre_direction.lr = player_behind(player) ? dir::LR::left : dir::LR::right;
-	if (post_direction.lr != pre_direction.lr) {
-		if (svc.ticker.every_x_ticks(100)) {
-			// std::cout << "mismatch\n";
-		}
-	}
 	Enemy::update(svc, map, player);
 
 	secondary_collider.physics.position = Enemy::collider.physics.position;
@@ -825,6 +820,8 @@ fsm::StateFunction Minigus::update_rush() {
 fsm::StateFunction Minigus::update_struggle() {
 	if (animation.just_started() && anim_debug) { std::cout << "struggle\n"; }
 
+	minigun.animation.set_params(minigun.neutral);
+	minigun.state = MinigunState::neutral;
 	// always do
 	sf::Vector2<float> pos = secondary_collider.physics.position + m_services->random.random_vector_float(0.f, 50.f);
 	if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, pos, {}, 3, 0)); }

@@ -173,13 +173,13 @@ class Minigus : public Enemy, public npc::NPC {
 	anim::Parameters run{14, 4, 42, 2};
 	anim::Parameters punch{28, 4, 32, 0};
 	anim::Parameters uppercut{35, 4, 32, 0};
-	anim::Parameters struggle{35, 1, 32, -1};
+	anim::Parameters struggle{35, 1, 24, -1};
 	anim::Parameters build_invincibility{33, 2, 22, 4};
 	anim::Parameters laugh{25, 3, 24, 4};
 	anim::Parameters snap{39, 3, 42, 0};
 	anim::Parameters rush{66, 4, 22, -1};
 
-	anim::Parameters drink{42, 16, 22, 0};
+	anim::Parameters drink{42, 16, 20, 0};
 	anim::Parameters throw_can{58, 8, 22, 0};
 
 	automa::ServiceProvider* m_services;
