@@ -54,6 +54,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
 		styles.breakables = meta["styles"]["breakables"].as<int>();
+		styles.pushables = meta["styles"]["pushables"].as<int>();
 
 		for (auto& entry : metadata["npcs"].array_view()) {
 			sf::Vector2<float> pos{};
@@ -299,6 +300,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
 		for (auto& breakable : breakables) { breakable.on_hit(svc, *this, proj); }
+		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
@@ -332,6 +334,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		breakable.update(svc);
 		breakable.handle_collision(player->collider);
 	}
+	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.handle_collision(player->collider); }
 	player->collider.detect_map_collision(*this);
 	transition.update(*player);
@@ -413,6 +416,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
+	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
 	for (auto& spike : spikes) { spike.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
@@ -573,9 +577,10 @@ void Map::generate_collidable_layer(bool live) {
 	auto& layers = m_services->data.get_layers(room_id);
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-		if ((!cell.surrounded && cell.is_occupied() && !cell.is_breakable())) { collidable_indeces.push_back(cell.one_d_index); }
+		if ((!cell.surrounded && cell.is_occupied() && !cell.is_special())) { collidable_indeces.push_back(cell.one_d_index); }
 		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position, styles.breakables)); }
+		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position, styles.pushables, cell.value - 227)); }
 		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position, cell.value)); }
 	}
 }
@@ -586,7 +591,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
 		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
 		for (auto& cell : layer.grid.cells) {
-			if (cell.is_occupied() && !cell.is_breakable()) {
+			if (cell.is_occupied() && !cell.is_special()) {
 				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
@@ -666,6 +671,7 @@ void Map::clear() {
 	portals.clear();
 	platforms.clear();
 	breakables.clear();
+	pushables.clear();
 	spikes.clear();
 	destroyers.clear();
 	switch_blocks.clear();

@@ -21,6 +21,7 @@
 #include "../entities/world/Bed.hpp"
 #include "Platform.hpp"
 #include "Breakable.hpp"
+#include "Pushable.hpp"
 #include "Spike.hpp"
 #include "SwitchBlock.hpp"
 #include "BlockDestroyer.hpp"
@@ -132,6 +133,7 @@ class Map {
 	std::vector<npc::NPC> npcs{};
 	std::vector<Platform> platforms{};
 	std::vector<Breakable> breakables{};
+	std::vector<Pushable> pushables{};
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
@@ -159,6 +161,7 @@ class Map {
 	int native_style_id{};
 	struct {
 		int breakables{};
+		int pushables{};
 	} styles{};
 
 	float collision_barrier{2.5f};

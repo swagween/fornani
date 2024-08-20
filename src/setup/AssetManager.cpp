@@ -133,6 +133,7 @@ void AssetManager::import_textures() {
 	animator_lookup.insert({0, t_automatic_animators_firstwind});
 
 	t_breakables.loadFromFile(finder.resource_path + "/image/tile/breakables.png");
+	t_pushables.loadFromFile(finder.resource_path + "/image/tile/pushables.png");
 	t_inspectable.loadFromFile(finder.resource_path + "/image/entity/inspectable.png");
 	t_switches.loadFromFile(finder.resource_path + "/image/tile/switches.png");
 	t_switch_blocks.loadFromFile(finder.resource_path + "/image/tile/switch_blocks.png");
@@ -182,6 +183,7 @@ void AssetManager::import_textures() {
 	t_puff.loadFromFile(finder.resource_path + "/image/entity/puff.png");
 	t_bullet_hit.loadFromFile(finder.resource_path + "/image/entity/bullet_hit.png");
 	t_doublejump.loadFromFile(finder.resource_path + "/image/entity/doublejump.png");
+	t_dust.loadFromFile(finder.resource_path + "/image/entity/dust.png");
 	effect_lookup.insert({0, t_small_explosion});
 	effect_lookup.insert({1, t_large_explosion});
 	effect_lookup.insert({2, t_wall_hit});
@@ -192,6 +194,7 @@ void AssetManager::import_textures() {
 	effect_lookup.insert({7, t_puff});
 	effect_lookup.insert({8, t_bullet_hit});
 	effect_lookup.insert({9, t_doublejump});
+	effect_lookup.insert({10, t_dust});
 
 	// title stuff
 	t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
@@ -336,6 +339,9 @@ void AssetManager::load_audio() {
 	b_enemy_hit_high.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_high.wav");
 	b_enemy_hit_squeak.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_squeak.wav");
 	b_enemy_hit_inv.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_inv.wav");
+	b_thud.loadFromFile(finder.resource_path + "/audio/sfx/thud.wav");
+	hard_hit.setBuffer(b_enemy_hit_inv);
+	thud.setBuffer(b_thud);
 
 	save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 	save.setBuffer(save_buffer);

@@ -221,7 +221,7 @@ void Player::update_animation() {
 	if (catalog.categories.abilities.has_ability(Abilities::wall_slide)) {
 		if (controller.get_wallslide().is_wallsliding()) { animation.state = AnimState::wallslide; }
 	}
-	if (controller.moving() && grounded()) {
+	if (controller.moving() && grounded() && controller.can_jump()) {
 		if (collider.has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { cooldowns.push.update(); }
 		if (collider.has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
 		if (cooldowns.push.is_complete() && (collider.has_right_wallslide_collision() || collider.has_left_wallslide_collision())) { animation.state = AnimState::push; }
@@ -350,6 +350,7 @@ void Player::jump(world::Map& map) {
 	if (is_dead() || animation.state == AnimState::die) { return; }
 	if (controller.get_jump().began()) {
 		collider.flags.movement.set(shape::Movement::jumping);
+		animation.state = AnimState::rise;
 		if (m_services->ticker.every_x_ticks(20)) {
 			map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
 		}

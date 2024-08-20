@@ -16,7 +16,7 @@ enum class SoundboardState { on, off };
 
 enum class Menu { select, shift, forward_switch, backward_switch };
 enum class Console { next, done, shift, select, speech, menu_open };
-enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit };
+enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud };
 enum class Item { heal, orb_low, orb_medium, orb_high, orb_max };
 enum class Player { jump, step, land, arms_switch, shoot, hurt, dash, death, shield_drop };
 enum class Weapon { bryns_gun, plasmer, skycorps_ar, nova, clover, tomahawk, tomahawk_catch, hook_probe, staple, indie, gnat };

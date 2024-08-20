@@ -107,6 +107,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	health_indicator.update(svc, collider.physics.position);
 	if (flags.general.test(GeneralFlags::map_collision)) {
 		for (auto& breakable : map.breakables) { breakable.handle_collision(collider); }
+		for (auto& pushable : map.pushables) { pushable.handle_collision(collider); }
 		collider.detect_map_collision(map);
 		secondary_collider.detect_map_collision(map);
 	}

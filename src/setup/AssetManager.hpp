@@ -98,6 +98,7 @@ class AssetManager {
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
 	sf::Texture t_breakables{};
+	sf::Texture t_pushables{};
 	sf::Texture t_inspectable{};
 	sf::Texture t_switches{};
 	sf::Texture t_switch_blocks{};
@@ -116,6 +117,7 @@ class AssetManager {
 	sf::Texture t_puff{};
 	sf::Texture t_bullet_hit{};
 	sf::Texture t_doublejump{};
+	sf::Texture t_dust{};
 
 	// load scrollingbackground sheets
 	sf::Texture t_bg_opensky{};
@@ -278,6 +280,7 @@ class AssetManager {
 	sf::SoundBuffer b_enemy_hit_high{};
 	sf::SoundBuffer b_enemy_hit_squeak{};
 	sf::SoundBuffer b_enemy_hit_inv{};
+	sf::SoundBuffer b_thud{};
 
 	//save/load
 	sf::SoundBuffer save_buffer{};
@@ -301,6 +304,9 @@ class AssetManager {
 	sf::Sound nova_shot{};
 	sf::Sound staple{};
 	sf::Sound gnat{};
+
+	sf::Sound hard_hit{};
+	sf::Sound thud{};
 
 	sf::Sound minigun_neutral{};
 	sf::Sound minigun_charge{};

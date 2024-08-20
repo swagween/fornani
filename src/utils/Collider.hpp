@@ -16,7 +16,7 @@ namespace shape {
 
 float const default_dim = 24.0f;
 float const vicinity_pad = 32.f;
-float const wallslide_pad = 2.f;
+float const wallslide_pad = 4.f;
 
 float const default_jumpbox_height = 4.0f;
 float const default_detector_width = 4.f;
@@ -78,6 +78,7 @@ class Collider {
 
 	void flush_positions() { position_history.clear(); }
 	sf::Vector2<float> get_average_tick_position();
+	sf::Vector2<float> snap_to_grid(float size = 1.f, float scale = 32.f, float factor = 2.f);
 
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }

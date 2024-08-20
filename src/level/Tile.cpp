@@ -42,6 +42,7 @@ void Tile::set_type() {
 	if (value < 224 && value >= 208) { type = TileType::ground_ramp; }
 	if (value < 240 && value >= 236) { type = TileType::platform; }
 	if (value < 244 && value >= 240) { type = TileType::death_spike; }
+	if (value < 230 && value >= 228) { type = TileType::pushable; }
 	if (value < 248 && value >= 244) { type = TileType::breakable; }
 	if (value < 256 && value >= 252) { type = TileType::spike; }
 }

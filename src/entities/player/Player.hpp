@@ -121,6 +121,7 @@ class Player {
 	[[nodiscard]] auto arsenal_size() const -> size_t { return arsenal ? arsenal.value().size() : 0; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
+	[[nodiscard]] auto pushing() const -> bool { return animation.state == AnimState::push || animation.state == AnimState::between_push; }
 	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(Abilities::shield); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.categories.inventory.has_item(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }

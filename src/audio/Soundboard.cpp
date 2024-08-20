@@ -34,6 +34,8 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.world.test(World::chest)) { svc.assets.chest.play(); }
 	if (flags.world.test(World::breakable_shatter)) { svc.assets.breakable_shatter.play(); }
 	if (flags.world.test(World::breakable_hit)) { randomize(svc, svc.assets.breakable_hit, 0.1f); }
+	if (flags.world.test(World::hard_hit)) { randomize(svc, svc.assets.hard_hit, 0.1f); }
+	if (flags.world.test(World::thud)) { randomize(svc, svc.assets.thud, 0.1f); }
 
 	//frdog
 	if (flags.frdog.test(Frdog::death)) { svc.assets.enem_death_1.play(); }

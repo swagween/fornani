@@ -6,7 +6,7 @@
 
 namespace world {
 
-enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable, pushable };
 enum class TileState { ramp_adjacent, big_ramp };
 
 struct Tile {
@@ -29,6 +29,8 @@ struct Tile {
 	[[nodiscard]] auto is_spike() const -> bool { return type == TileType::spike; }
 	[[nodiscard]] auto is_death_spike() const -> bool { return type == TileType::death_spike; }
 	[[nodiscard]] auto is_breakable() const -> bool { return type == TileType::breakable; }
+	[[nodiscard]] auto is_pushable() const -> bool { return type == TileType::pushable; }
+	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 
 	sf::Vector2<float> middle_point();

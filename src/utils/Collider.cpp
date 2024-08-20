@@ -377,6 +377,7 @@ void Collider::handle_collider_collision(Shape const& collider) {
 		flags.external_state.set(ExternalState::collider_collision);
 		correct_corner(mtvs.combined);
 	}
+	if (wallslider.overlaps(collider)) { wallslider.vertices.at(0).x > collider.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
 	if (jumpbox.SAT(collider)) {
 		flags.state.set(State::grounded);
@@ -515,6 +516,11 @@ sf::Vector2<float> Collider::get_average_tick_position() {
 	ret.x /= size;
 	ret.y /= size;
 	return ret;
+}
+
+sf::Vector2<float> Collider::snap_to_grid(float size, float scale, float factor) {
+	return sf::Vector2<float>{std::round((physics.position.x * size / factor) / (size * (scale / factor))), std::round((physics.position.y * size / factor) / (size * (scale / factor)))} *
+		   scale;
 }
 
 float Collider::compute_length(sf::Vector2<float> const v) { return ccm::sqrt(v.x * v.x + v.y * v.y); }

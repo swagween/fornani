@@ -57,6 +57,12 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		sprite_dimensions = {48, 48};
 		spritesheet_dimensions = {1, 6};
 		break;
+	case 10:
+		// dust
+		sprite.setOrigin({32.f, 32.f});
+		sprite_dimensions = {64, 64};
+		spritesheet_dimensions = {1, 6};
+		break;
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
 	drawbox.setFillColor(sf::Color::Transparent);
