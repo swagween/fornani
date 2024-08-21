@@ -504,6 +504,8 @@ bool Collider::has_left_wallslide_collision() const { return flags.state.test(St
 
 bool Collider::has_right_wallslide_collision() const { return flags.state.test(State::right_wallslide_collision); }
 
+bool Collider::has_jump_collision() const { return grounded(); }
+
 bool Collider::horizontal_squish() const { return collision_depths ? collision_depths.value().horizontal_squish() : false; }
 
 bool Collider::vertical_squish() const { return collision_depths ? collision_depths.value().vertical_squish() : false; }

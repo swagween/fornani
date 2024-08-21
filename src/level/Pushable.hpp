@@ -4,6 +4,7 @@
 #include <string_view>
 #include "../setup/EnumLookups.hpp"
 #include "../utils/Collider.hpp"
+#include "../utils/Cooldown.hpp"
 #include "../utils/Counter.hpp"
 #include "../entities/animation/Animation.hpp"
 
@@ -31,12 +32,14 @@ class Pushable {
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
+	void reset(automa::ServiceProvider& svc, world::Map& map);
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
 	[[nodiscard]] auto unmoved() { return !state.test(PushableState::moved); }
+	shape::Collider collider{};
+	sf::Vector2<float> forced_momentum{};
 
   private:
-	shape::Collider collider{};
 	util::BitFlags<PushableAttributes> attributes{};
 	util::BitFlags<PushableState> state{};
 	sf::Sprite sprite{};
@@ -45,5 +48,11 @@ class Pushable {
 	float mass{};
 	float dampen{4.f};
 	float speed{64.f};
+	float energy{};
+	float hit_energy{16.f};
+	sf::Vector2<float> random_offset{};
+	sf::Vector2<float> start_position{};
+	util::Counter hit_count{};
+	util::Cooldown weakened{64};
 };
 } // namespace world

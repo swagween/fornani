@@ -15,7 +15,10 @@
     ],
     "style": 0,
     "background": 4,
-    "music": "dusken_cove"
+    "music": "dusken_cove",
+    "styles": {
+      "breakables": 0
+    }
   },
   "portals": [
     {
@@ -82,20 +85,6 @@
   "platforms": [
     {
       "position": [
-        61,
-        2
-      ],
-      "dimensions": [
-        3,
-        3
-      ],
-      "extent": 10,
-      "style": 2,
-      "type": "standard_square",
-      "start": 0.000000
-    },
-    {
-      "position": [
         12,
         8
       ],
@@ -124,17 +113,17 @@
     },
     {
       "position": [
-        61,
-        2
+        52,
+        6
       ],
       "dimensions": [
-        3,
-        3
+        1,
+        1
       ],
-      "extent": 10,
+      "extent": 16,
       "style": 2,
-      "type": "standard_square",
-      "start": 0.500000
+      "type": "standard_side_to_side",
+      "start": 0.000000
     }
   ]
 }

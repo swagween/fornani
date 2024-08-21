@@ -340,8 +340,10 @@ void AssetManager::load_audio() {
 	b_enemy_hit_squeak.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_squeak.wav");
 	b_enemy_hit_inv.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_inv.wav");
 	b_thud.loadFromFile(finder.resource_path + "/audio/sfx/thud.wav");
+	b_small_crash.loadFromFile(finder.resource_path + "/audio/sfx/small_crash.wav");
 	hard_hit.setBuffer(b_enemy_hit_inv);
 	thud.setBuffer(b_thud);
+	small_crash.setBuffer(b_small_crash);
 
 	save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 	save.setBuffer(save_buffer);

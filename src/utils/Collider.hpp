@@ -73,6 +73,7 @@ class Collider {
 	bool has_vertical_collision() const;
 	bool has_left_wallslide_collision() const;
 	bool has_right_wallslide_collision() const;
+	bool has_jump_collision() const;
 	bool horizontal_squish() const;
 	bool vertical_squish() const;
 	bool pushes(Collider& other) const;

@@ -37,12 +37,12 @@ class AssetManager {
 	sf::Texture t_carl{};
 	sf::Texture t_bit{};
 
-	//player palettes
+	// player palettes
 	sf::Texture t_palette_nani{};
 	sf::Texture t_palette_nanidiv{};
 	sf::Texture t_palette_naninight{};
 
-	//items
+	// items
 	sf::Texture t_items{};
 	sf::Texture t_guns{};
 
@@ -85,13 +85,13 @@ class AssetManager {
 	sf::Texture t_platform_firstwind{};
 	sf::Texture t_platform_overturned{};
 
-	//animators
+	// animators
 	sf::Texture t_automatic_animators_firstwind{};
 
-	//save
+	// save
 	sf::Texture savepoint{};
 
-	//entities
+	// entities
 	sf::Texture t_chest{};
 	sf::Texture t_shield{};
 
@@ -104,7 +104,7 @@ class AssetManager {
 	sf::Texture t_switch_blocks{};
 	sf::Texture t_fader{};
 
-	//vfx
+	// vfx
 	sf::Texture t_huge_explosion{};
 	sf::Texture t_large_explosion{};
 	sf::Texture t_small_explosion{};
@@ -179,7 +179,7 @@ class AssetManager {
 	sf::Texture t_gnat{};
 	sf::Texture t_gnat_projectile{};
 
-	//items
+	// items
 	sf::Texture t_heart{};
 	sf::Texture t_orb{};
 
@@ -224,7 +224,7 @@ class AssetManager {
 	sf::SoundBuffer tank_hurt2_buffer{};
 	sf::SoundBuffer tank_death_buffer{};
 
-	//minigus
+	// minigus
 	sf::SoundBuffer b_minigus_invincibility{};
 	sf::SoundBuffer b_minigus_lose_inv{};
 	sf::SoundBuffer b_minigus_build{};
@@ -263,13 +263,14 @@ class AssetManager {
 
 	sf::SoundBuffer b_heavy_land{};
 	sf::SoundBuffer b_delay_crash{};
+	sf::SoundBuffer b_small_crash{};
 	sf::SoundBuffer b_delay_high{};
 	sf::SoundBuffer b_laser{};
 	sf::SoundBuffer b_gun_charge{};
 	sf::SoundBuffer b_soda{};
 	sf::SoundBuffer b_breakable_hit{};
 
-	//minigun
+	// minigun
 	sf::SoundBuffer b_minigun_neutral{};
 	sf::SoundBuffer b_minigun_charge{};
 	sf::SoundBuffer b_minigun_reload{};
@@ -282,7 +283,7 @@ class AssetManager {
 	sf::SoundBuffer b_enemy_hit_inv{};
 	sf::SoundBuffer b_thud{};
 
-	//save/load
+	// save/load
 	sf::SoundBuffer save_buffer{};
 	sf::SoundBuffer load_buffer{};
 	sf::SoundBuffer soft_sparkle_high_buffer{};
@@ -307,6 +308,7 @@ class AssetManager {
 
 	sf::Sound hard_hit{};
 	sf::Sound thud{};
+	sf::Sound small_crash{};
 
 	sf::Sound minigun_neutral{};
 	sf::Sound minigun_charge{};

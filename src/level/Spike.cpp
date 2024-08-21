@@ -10,9 +10,13 @@ namespace world {
 
 Spike::Spike(automa::ServiceProvider& svc, sf::Vector2<float> position, int lookup) {
 	collider = shape::Collider({32.f, 32.f});
+	auto adjustment = 22.f;
 	facing.und = (lookup == 255 || lookup == 254) ? dir::UND::up : facing.und;
 	facing.und = (lookup == 253 || lookup == 252) ? dir::UND::down : facing.und;
-	offset = (facing.und == dir::UND::up) ? sf::Vector2<float>{0.f, 22.f} : facing.und == dir::UND::down ? sf::Vector2<float>{0.f, -22.f} : offset; 
+	offset.y = (facing.und == dir::UND::up) ? adjustment : facing.und == dir::UND::down ? -adjustment : offset.y;
+	facing.lr = (lookup == 251 || lookup == 250) ? dir::LR::left : facing.lr;
+	facing.lr = (lookup == 249 || lookup == 248) ? dir::LR::right : facing.lr;
+	offset.x = (facing.lr == dir::LR::left) ? adjustment : facing.lr == dir::LR::right ? -adjustment : offset.x;
 	collider.physics.position = position + offset;
 	collider.sync_components();
 }

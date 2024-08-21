@@ -8,6 +8,7 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 	auto framerate{16};
 	switch (index) {
 	case 0:
+		//smoke
 		sprite_dimensions = {36, 36};
 		spritesheet_dimensions = {4, 7};
 		break;
