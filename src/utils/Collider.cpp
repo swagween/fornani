@@ -27,7 +27,7 @@ void Collider::sync_components() {
 	vicinity.dimensions.x = dimensions.x + 2.f * vicinity_pad;
 	vicinity.dimensions.y = dimensions.y + 2.f * vicinity_pad;
 	wallslider.dimensions.x = dimensions.x + 2.f * wallslide_pad;
-	wallslider.dimensions.y = dimensions.y * 0.5f;
+	wallslider.dimensions.y = dimensions.y * 0.7f;
 
 	vertical.dimensions.x = 1.f;
 	vertical.dimensions.y = dimensions.y - 2.f * depth_buffer;
@@ -41,7 +41,7 @@ void Collider::sync_components() {
 	predictive_combined.dimensions = dimensions;
 
 	vicinity.set_position(sf::Vector2<float>{physics.position.x - vicinity_pad + physics.velocity.x, physics.position.y - vicinity_pad + physics.velocity.y});
-	wallslider.set_position(sf::Vector2<float>{physics.position.x - wallslide_pad, physics.position.y + 8.f});
+	wallslider.set_position(sf::Vector2<float>{physics.position.x - wallslide_pad, physics.position.y + 2.f});
 	predictive_vertical.set_position(sf::Vector2<float>{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.velocity.y});
 	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - horizontal_detector_buffer + physics.velocity.x, physics.position.y + horizontal_detector_buffer});
 	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y});
@@ -507,6 +507,10 @@ bool Collider::has_right_wallslide_collision() const { return flags.state.test(S
 bool Collider::horizontal_squish() const { return collision_depths ? collision_depths.value().horizontal_squish() : false; }
 
 bool Collider::vertical_squish() const { return collision_depths ? collision_depths.value().vertical_squish() : false; }
+
+bool Collider::pushes(Collider& other) const {
+	return (physics.position.x < other.physics.position.x && physics.velocity.x > 0.f) || (physics.position.x > other.physics.position.x && physics.velocity.x < 0.f);
+}
 
 sf::Vector2<float> Collider::get_average_tick_position() {
 	sf::Vector2<float> ret{};

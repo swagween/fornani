@@ -44,6 +44,6 @@ class Pushable {
 	int size{};
 	float mass{};
 	float dampen{4.f};
-	float speed{32.f};
+	float speed{64.f};
 };
 } // namespace world
