@@ -478,7 +478,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 		//win.draw(box);
 	}
 
-	//if (collision_depths) { collision_depths.value().render(bounding_box, win, cam); }
+	if (collision_depths) { collision_depths.value().render(bounding_box, win, cam); }
 
 }
 void Collider::reset() { flags.state = {}; }

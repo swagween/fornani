@@ -309,12 +309,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			proj.destroy(false);
 		}
 	}
-
 	for (auto& enemy : enemy_catalog.enemies) {
 		enemy->unique_update(svc, *this, *player);
-		enemy->handle_player_collision(*player);
+		enemy->post_update(svc, *this, *player);
 	}
-	enemy_catalog.update();
 
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& grenade : active_grenades) { grenade.update(svc, *player, *this); }
@@ -575,12 +573,13 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 
 void Map::generate_collidable_layer(bool live) {
 	auto& layers = m_services->data.get_layers(room_id);
+	auto pushable_offset = sf::Vector2<float>{1.f, 0.f};
 	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
 		if ((!cell.surrounded && cell.is_occupied() && !cell.is_special())) { collidable_indeces.push_back(cell.one_d_index); }
 		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position, styles.breakables)); }
-		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position, styles.pushables, cell.value - 227)); }
+		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position + pushable_offset, styles.pushables, cell.value - 227)); }
 		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position, cell.value)); }
 	}
 }

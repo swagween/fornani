@@ -29,6 +29,13 @@ void CollisionDepth::update() {
 	stream.clear();
 }
 
+void CollisionDepth::maximize(CollisionDepth& other) {
+	out_depth.left = std::max(other.out_depth.left, out_depth.left);
+	out_depth.right = std::min(other.out_depth.right, out_depth.right);
+	out_depth.top = std::max(other.out_depth.top, out_depth.top);
+	out_depth.bottom = std::min(other.out_depth.bottom, out_depth.bottom);
+}
+
 void CollisionDepth::print() {
 	std::cout << "Stream size: " << stream.size() << "\n";
 	std::cout << ">>>\n";

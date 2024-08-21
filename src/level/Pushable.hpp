@@ -37,6 +37,7 @@ class Pushable {
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
 	[[nodiscard]] auto unmoved() { return !state.test(PushableState::moved); }
 	shape::Collider collider{};
+	shape::Shape start_box{};
 	sf::Vector2<float> forced_momentum{};
 
   private:
@@ -46,11 +47,12 @@ class Pushable {
 	int style{};
 	int size{};
 	float mass{};
-	float dampen{4.f};
+	float dampen{0.1f};
 	float speed{64.f};
 	float energy{};
-	float hit_energy{16.f};
+	float hit_energy{8.f};
 	sf::Vector2<float> random_offset{};
+	sf::Vector2<float> sprite_offset{0.f, 2.f};
 	sf::Vector2<float> start_position{};
 	util::Counter hit_count{};
 	util::Cooldown weakened{64};

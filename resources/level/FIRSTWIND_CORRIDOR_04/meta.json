@@ -15,7 +15,10 @@
     ],
     "style": 0,
     "background": 5,
-    "music": ""
+    "music": "",
+    "styles": {
+      "breakables": 0
+    }
   },
   "portals": [
     {
@@ -60,7 +63,8 @@
         11
       ],
       "activate_on_contact": false,
-      "key": "outer"
+      "key": "outer",
+      "alternates": 0
     }
   ]
 }

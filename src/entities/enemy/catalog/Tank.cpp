@@ -37,6 +37,7 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
 	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
 	secondary_collider.sync_components();
+
 	player.collider.handle_collider_collision(secondary_collider.bounding_box);
 
 	if (svc.ticker.every_x_ticks(200)) {

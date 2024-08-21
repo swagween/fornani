@@ -113,14 +113,14 @@
     },
     {
       "position": [
-        52,
+        54,
         6
       ],
       "dimensions": [
         1,
         1
       ],
-      "extent": 16,
+      "extent": 14,
       "style": 2,
       "type": "standard_side_to_side",
       "start": 0.000000

@@ -1,14 +1,4 @@
 {
-  "beware": {
-    "suite": [
-      [
-        "Beware spikes!"
-      ],
-      [
-
-      ]
-    ]
-  },
   "beware2": {
     "suite": [
       [
@@ -26,6 +16,13 @@
       ],
       [
 
+      ]
+    ]
+  },
+  "push": {
+    "suite": [
+      [
+        "Blocks with a hand symbol can be pushed. Beware, large blocks can crush the careless!"
       ]
     ]
   }

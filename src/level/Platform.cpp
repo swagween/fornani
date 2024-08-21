@@ -66,12 +66,17 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	player.collider.handle_collider_collision(bounding_box);
 	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
 	player.on_crush(map);
+	for (auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
 	switch_up.update();
 
 	//map changes
 
 	//platform changes
 	for (auto& breakable : map.breakables) { handle_collider_collision(breakable.get_hurtbox()); }
+	for (auto& pushable : map.pushables) {
+		// platform should reverse direction upon hitting the sides or top of a pushable
+		if (!pushable.collider.jumpbox.overlaps(bounding_box)) { handle_collider_collision(pushable.get_hurtbox()); }
+	}
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
 	}

@@ -9,7 +9,7 @@
 namespace world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size) {
-	collider = shape::Collider({svc.constants.cell_size * 0.99f * static_cast<float>(size), svc.constants.cell_size * 0.99f * static_cast<float>(size)});
+	collider = shape::Collider({svc.constants.cell_size * static_cast<float>(size) - 2.f, svc.constants.cell_size * static_cast<float>(size) - 2.f});
 	collider.physics.position = position;
 	start_position = position;
 	collider.physics.set_constant_friction({0.95f, 0.98f});
@@ -19,6 +19,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, in
 	collider.sync_components();
 	auto snap = collider.snap_to_grid(static_cast<float>(size));
 	collider.physics.position = snap;
+	start_box = collider.bounding_box;
 	sprite.setTexture(svc.assets.t_pushables);
 	sf::IntRect lookup = size == 1 ? sf::IntRect{{style * 2 * svc.constants.i_cell_size, 0}, svc.constants.i_cell_vec} : sf::IntRect{{style * 2 * svc.constants.i_cell_size, svc.constants.i_cell_size}, 2 * svc.constants.i_cell_vec};
 	sprite.setTextureRect(lookup);
@@ -30,18 +31,37 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (svc.ticker.every_x_ticks(20)) { random_offset = svc.random.random_vector_float(-energy, energy); }
 	weakened.update();
 	if (weakened.is_complete()) { hit_count.start(); }
+	player.on_crush(map);
+	for (auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
+
+	//reset position if it's far away, and if the player isn't overlapping the start position
 	if (hit_count.get_count() > 3 || map.off_the_bottom(collider.physics.position)) {
-		reset(svc, map);
-		svc.soundboard.flags.world.set(audio::World::small_crash);
+		bool can_respawn = true;
+		if (player.collider.bounding_box.overlaps(start_box)) { can_respawn = false; }
+		for (auto& p : map.pushables) {
+			if (p.get_bounding_box().overlaps(start_box)) { can_respawn = false; }
+		}
+		if (can_respawn) {
+			reset(svc, map);
+			svc.soundboard.flags.world.set(audio::World::small_crash);
+		}
 		hit_count.start();
 	}
+
 	if (player.collider.wallslider.overlaps(collider.bounding_box) && player.pushing()) {
 		if (player.controller.moving_left() && player.collider.physics.position.x > collider.physics.position.x) { collider.physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.collider.physics.position.x < collider.physics.position.x) { collider.physics.acceleration.x = speed / mass; }
 		state.set(PushableState::moved);
 	}
 	player.collider.handle_collider_collision(collider.bounding_box);
-	collider.handle_collider_collision(player.collider.bounding_box);
+	for (auto& enemy : map.enemy_catalog.enemies) {
+		enemy->get_collider().handle_collider_collision(collider.bounding_box);
+		if (size == 1) {
+			collider.handle_collider_collision(enemy->get_collider().bounding_box);
+			collider.handle_collider_collision(enemy->get_secondary_collider().bounding_box);
+		}
+	}
+	if (size == 1) { collider.handle_collider_collision(player.collider.bounding_box); } // big ones should crush the player
 	collider.physics.position += forced_momentum;
 	if (!collider.has_jump_collision()) { forced_momentum = {}; }
 	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { forced_momentum = {}; }
@@ -56,7 +76,10 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	}
 	for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
-	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
+	// pushable should only be moved by a platform if it's on top of one
+	for (auto& platform : map.platforms) {
+		if (platform.bounding_box.overlaps(collider.jumpbox)) { collider.handle_collider_collision(platform.bounding_box); }
+	}
 	if (collider.flags.state.test(shape::State::just_landed)) {
 		map.effects.push_back(entity::Effect(svc, {collider.physics.position.x + 32.f * (size / 2.f), collider.physics.position.y + (size - 1) * 32.f}, {}, 0, 10));
 		svc.soundboard.flags.world.set(audio::World::thud);
@@ -70,9 +93,17 @@ void Pushable::handle_collision(shape::Collider& other) const { other.handle_col
 
 void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	auto snap = collider.snap_to_grid(static_cast<float>(size), 2.f, 2.f);
-	sprite.setPosition(snap - cam + random_offset);
+	if (abs(random_offset.x) > 0.f || abs(random_offset.y) > 0.f) { snap = collider.physics.position; } // don't snap if shaking
+	sprite.setPosition(snap - cam + random_offset - sprite_offset);
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
+		sf::RectangleShape box{};
+		box.setSize(start_box.dimensions);
+		box.setFillColor(sf::Color::Transparent);
+		box.setOutlineColor(sf::Color::Green);
+		box.setOutlineThickness(-1);
+		box.setPosition(start_box.position - cam);
+		win.draw(box);
 	} else {
 		win.draw(sprite);
 	}
@@ -92,13 +123,11 @@ void Pushable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 }
 
 void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
-	for (int i = 0; i < size; ++i) {
-		for (int j = 0; j < size; ++j) { map.effects.push_back(entity::Effect(svc, collider.physics.position + sf::Vector2<float>{32.f * i, 32.f * j}, {}, 0, 0)); }
-	}
+	auto index = size == 1 ? 0 : 1;
+	auto offset = size == 1 ? sf::Vector2<float>{} : sf::Vector2<float>{5.f, 5.f};
+	map.effects.push_back(entity::Effect(svc, collider.physics.position + offset, {}, 0, index));
 	collider.physics.position = start_position;
-	for (int i = 0; i < size; ++i) {
-		for (int j = 0; j < size; ++j) { map.effects.push_back(entity::Effect(svc, collider.physics.position + sf::Vector2<float>{32.f * i, 32.f * j}, {}, 0, 0)); }
-	}
+	map.effects.push_back(entity::Effect(svc, collider.physics.position + offset, {}, 0, index));
 }
 
 } // namespace world

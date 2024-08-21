@@ -26,6 +26,7 @@ class CollisionDepth {
 	void calculate(shape::Collider const& native, shape::Shape const& other);
 	Depth get() const { return out_depth; }
 	void update();
+	void maximize(CollisionDepth& other);
 	void print();
 	void reset() { iterations.start(); }
 	void render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2<float> cam);

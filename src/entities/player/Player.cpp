@@ -63,6 +63,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
 	collider.physics.ground_friction = {physics_stats.ground_fric, physics_stats.ground_fric};
 	collider.physics.air_friction = {physics_stats.air_fric, physics_stats.air_fric};
+	if (flags.state.test(State::crushed)) { collider.physics.gravity = 0.f; }
 
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
@@ -511,7 +512,7 @@ void Player::hurt(float amount, bool force) {
 void Player::on_crush(world::Map& map) {
 	if (!collider.collision_depths) { return; }
 	if (collider.crushed() && alive()) {
-		hurt(64.f, true);
+		hurt(1024.f, true);
 		directions.left_squish.und = collider.horizontal_squish() ? dir::UND::up : dir::UND::neutral;
 		directions.left_squish.lr = collider.vertical_squish() ? dir::LR::left : dir::LR::neutral;
 		directions.right_squish.und = collider.horizontal_squish() ? dir::UND::down : dir::UND::neutral;

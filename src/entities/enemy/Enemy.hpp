@@ -28,7 +28,7 @@ class Projectile;
 
 namespace enemy {
 
-enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds };
+enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker };
@@ -52,6 +52,7 @@ class Enemy : public entity::Entity {
 	virtual ~Enemy() {}
 	Enemy(automa::ServiceProvider& svc, std::string_view label);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player){};
@@ -59,6 +60,7 @@ class Enemy : public entity::Entity {
 	virtual void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
 	void handle_player_collision(player::Player& player) const;
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
+	void on_crush(world::Map& map);
 	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
@@ -66,6 +68,7 @@ class Enemy : public entity::Entity {
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
+	[[nodiscard]] auto get_secondary_collider() -> shape::Collider& { return secondary_collider; }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get_cooldown() == afterlife; }
 	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
