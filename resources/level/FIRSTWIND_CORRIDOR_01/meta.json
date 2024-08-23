@@ -14,7 +14,11 @@
       1
     ],
     "style": 0,
-    "background": 4
+    "background": 4,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    }
   },
   "portals": [
     {
@@ -61,6 +65,450 @@
       "position": [
         15,
         7
+      ]
+    }
+  ],
+  "switch_blocks": [
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        4
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        5
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    },
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        52,
+        6
+      ]
+    }
+  ],
+  "switches": [
+    {
+      "button_id": 445,
+      "type": 1,
+      "position": [
+        56,
+        10
       ]
     }
   ]

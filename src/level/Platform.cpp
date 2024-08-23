@@ -183,6 +183,7 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 		if (!proj.destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, physics.velocity * 10.f, proj.effect_type(), 2));
 			if (proj.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+			svc.soundboard.flags.world.set(audio::World::wall_hit);
 		}
 		proj.destroy(false);
 	}

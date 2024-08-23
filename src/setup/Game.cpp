@@ -833,6 +833,9 @@ void Game::playtester_portal() {
 					ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
 					ImGui::Text("Can Doublejump? %s", player.controller.get_jump().can_doublejump() ? "Yes" : "No");
 					ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
+					ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
+					ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
+
 					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());
@@ -934,6 +937,12 @@ void Game::playtester_portal() {
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 107);
 							player.set_position({32 * 6, 32 * 4});
+						}
+						if (ImGui::Button("Atrium 1")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 102);
+							player.set_position({32 * 45, 32 * 56});
 						}
 						if (ImGui::Button("Corridor 2")) {
 							services.assets.click.play();

@@ -94,7 +94,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
-	if (just_died()) {
+	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position));
 		svc.soundboard.flags.frdog.set(audio::Frdog::death);

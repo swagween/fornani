@@ -51,8 +51,9 @@ class Pushable {
 	float speed{64.f};
 	float energy{};
 	float hit_energy{8.f};
+	sf::Vector2<float> snap{};
 	sf::Vector2<float> random_offset{};
-	sf::Vector2<float> sprite_offset{0.f, 2.f};
+	sf::Vector2<float> sprite_offset{0.f, 0.f};
 	sf::Vector2<float> start_position{};
 	util::Counter hit_count{};
 	util::Cooldown weakened{64};

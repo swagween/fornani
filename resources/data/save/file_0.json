@@ -4,17 +4,16 @@
   },
   "player_data": {
     "max_hp": 3.000000,
-    "hp": 3.000000,
-    "orbs": 617,
+    "hp": 1.000000,
+    "orbs": 933,
     "position": {
-      "x": 454.946045,
-      "y": 107.000008
+      "x": 317.890350,
+      "y": 395.000000
     },
     "arsenal": [
-      0,
-      9
+      0
     ],
-    "equipped_gun": 1,
+    "equipped_gun": 0,
     "abilities": [
 
     ],
@@ -26,32 +25,62 @@
       {
         "id": 16,
         "quantity": 1
+      },
+      {
+        "id": 12,
+        "quantity": 1
+      },
+      {
+        "id": 8,
+        "quantity": 1
+      },
+      {
+        "id": 13,
+        "quantity": 1
+      },
+      {
+        "id": 1,
+        "quantity": 1
+      },
+      {
+        "id": 15,
+        "quantity": 1
       }
     ],
     "stats": {
-      "death_count": 6,
-      "bullets_fired": 246,
-      "guns_collected": 2,
-      "items_collected": 2,
-      "orbs_collected": 617,
-      "blue_orbs": 0,
-      "highest_indicator_amount": 228,
-      "enemies_killed": 29,
-      "rooms_discovered": 13,
-      "seconds_played": 432.565582,
+      "death_count": 7,
+      "bullets_fired": 488,
+      "guns_collected": 1,
+      "items_collected": 7,
+      "orbs_collected": 933,
+      "blue_orbs": 3,
+      "highest_indicator_amount": 125,
+      "enemies_killed": 31,
+      "rooms_discovered": 20,
+      "seconds_played": 1204.561035,
       "time_trials": {
-        "bryns_gun": 126.453796
+        "bryns_gun": 178.044754
       }
     }
   },
-  "save_point_id": 115,
+  "save_point_id": 114,
   "unlocked_doors": [
-    11
+    11,
+    12,
+    8
   ],
   "opened_chests": [
     5768,
     377,
-    56790
+    567911,
+    338223,
+    211,
+    323,
+    8883,
+    7880
+  ],
+  "activated_switches": [
+    1
   ],
   "quest_progressions": [
     [
@@ -74,10 +103,60 @@
       1,
       1,
       0
+    ],
+    [
+      1,
+      110,
+      2,
+      1,
+      0
+    ],
+    [
+      1,
+      110,
+      1,
+      1,
+      0
+    ],
+    [
+      33,
+      12,
+      2,
+      1,
+      0
+    ],
+    [
+      3,
+      20,
+      2,
+      1,
+      2
+    ],
+    [
+      9,
+      1,
+      2,
+      1,
+      0
+    ],
+    [
+      9,
+      1,
+      1,
+      1,
+      0
+    ],
+    [
+      5,
+      110,
+      1,
+      1,
+      0
     ]
   ],
   "destroyed_inspectables": [
-
+    "bit1118",
+    "bookshelf110"
   ],
   "tutorial": {
     "state": 4,
@@ -100,8 +179,15 @@
     108,
     109,
     110,
-    121,
     117,
-    115
+    105,
+    111,
+    199,
+    103,
+    118,
+    112,
+    114,
+    115,
+    123
   ]
 }

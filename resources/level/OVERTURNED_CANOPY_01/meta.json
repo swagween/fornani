@@ -373,12 +373,5 @@
       "automatic": false,
       "foreground": true
     }
-  ],
-  "save_point": {
-    "id": 200,
-    "position": [
-      5,
-      43
-    ]
-  }
+  ]
 }

@@ -230,6 +230,7 @@ class Player {
 		float suspend{4.4f};
 		float landed{0.4f};
 		float run{0.02f};
+		float quick_turn{0.9f};
 	} thresholds{};
 	struct {
 		dir::Direction left_squish{};

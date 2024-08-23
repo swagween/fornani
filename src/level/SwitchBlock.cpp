@@ -19,6 +19,11 @@ SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> positi
 
 void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (state != SwitchBlockState::empty) { handle_collision(player.collider); }
+	if (switched()) {
+		map.effects.push_back(entity::Effect(svc, collider.physics.position, {}, 0, 0));
+		svc.soundboard.flags.world.set(audio::World::block_toggle);
+	}
+	previous_state = state;
 }
 
 void SwitchBlock::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider.bounding_box); }
@@ -36,13 +41,11 @@ void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 
 void SwitchBlock::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power) {
 	if (proj.stats.transcendent) { return; }
+	if (state == SwitchBlockState::empty) { return; }
 	if (proj.bounding_box.overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			svc.soundboard.flags.world.set(audio::World::breakable_hit);
-		}
-		if (switched()) {
-			map.effects.push_back(entity::Effect(svc, collider.physics.position, {}, 0, 0));
-			svc.soundboard.flags.world.set(audio::World::breakable_shatter);
+			map.effects.push_back(entity::Effect(svc, proj.physics.position, {}, 0, 6));
+			svc.soundboard.flags.world.set(audio::World::hard_hit);
 		}
 		proj.destroy(false);
 	}

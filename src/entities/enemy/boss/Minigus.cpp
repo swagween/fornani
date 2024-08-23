@@ -861,6 +861,7 @@ fsm::StateFunction Minigus::update_struggle() {
 			cooldowns.exit.start();
 		}
 		post_death.start(afterlife);
+		flags.state.set(StateFlags::special_death_mode);
 
 		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
 			triggers.set(npc::NPCTrigger::distant_interact);
@@ -888,7 +889,6 @@ fsm::StateFunction Minigus::update_exit() {
 		animation.set_params(jumpsquat);
 		m_services->music.load("dusken_cove");
 		m_services->music.play_looped(30);
-		m_map->end_demo.start();
 		return MINIGUS_BIND(update_jumpsquat);
 	}
 	state = MinigusState::exit;

@@ -301,6 +301,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
 		for (auto& breakable : breakables) { breakable.on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
+		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
@@ -355,7 +356,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		svc.stats.player.death_count.update();
 	}
 	// demo only
-	//end_demo.update();
+	if (svc.state_controller.actions.consume(automa::Actions::end_demo)) { end_demo.start(); }
+	end_demo.update();
 	if (end_demo.get_cooldown() == 1) {
 		m_console->set_source(svc.text.basic);
 		m_console->load_and_launch("end_demo");

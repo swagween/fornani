@@ -110,6 +110,21 @@
       "activate_on_contact": true,
       "locked": false,
       "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        7
+      ],
+      "source_id": 102,
+      "destination_id": 123,
+      "activate_on_contact": false,
+      "locked": false,
+      "key_id": 0
     }
   ],
   "inspectables": [
@@ -198,6 +213,20 @@
       "style": 2,
       "type": "standard_activated_up_down",
       "start": 0.500000
+    },
+    {
+      "position": [
+        30,
+        61
+      ],
+      "dimensions": [
+        3,
+        3
+      ],
+      "extent": 9,
+      "style": 2,
+      "type": "standard_side_to_side",
+      "start": 0.500000
     }
   ],
   "enemies": [
@@ -247,6 +276,818 @@
       "position": [
         27,
         48
+      ]
+    }
+  ],
+  "switch_blocks": [
+    {
+      "button_id": 1,
+      "type": 1,
+      "position": [
+        45,
+        51
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 1,
+      "position": [
+        45,
+        52
+      ]
+    },
+    {
+      "button_id": 1,
+      "type": 1,
+      "position": [
+        45,
+        53
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        27
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        24,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        23,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        28
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        22,
+        28
+      ]
+    }
+  ],
+  "switches": [
+    {
+      "button_id": 1,
+      "type": 1,
+      "position": [
+        42,
+        46
+      ]
+    },
+    {
+      "button_id": 233,
+      "type": 1,
+      "position": [
+        28,
+        33
       ]
     }
   ]

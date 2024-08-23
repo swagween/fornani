@@ -96,24 +96,24 @@
   },
   "mirin1": {
     "suite": [
-      [ "You must be one of the prisoners we scooped up some months back.", "You know, despite everything that's happened between our tribes, I would never wish any of this upon you.", "There's something about being so high up in the sky that tends to bring our people together." ]
+      [ "&1You must be one of the prisoners we scooped up some months back.", "@2You know, despite everything that's happened between our tribes, I would never wish any of this upon you.", "@1There's something about being so high up in the sky that tends to bring our people together." ]
     ],
     "responses": [
     ]
   },
   "mirin2": {
     "suite": [
-      [ "I'm not sure what you want me to tell you. I'm not exactly itching to chit-chat at a time like this.", "...", "Okay, that was a bit rude. Sorry.", "I've just been trying to come to terms with my impending death. I hope you understand." ]
+      [ "@2I'm not sure what you want me to tell you. I'm not exactly itching to chit-chat at a time like this.", "@1...", "&2@2Okay, that was a bit rude. Sorry.", "@1I've just been trying to come to terms with my impending death. I hope you understand." ]
     ],
     "responses": [
     ]
   },
   "mirin3": {
     "suite": [
-      [ "What's up?%0" ],
-      [ "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am." ],
-      [ "If I knew the answer to that, we wouldn't be having this conversation.", "We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds." ],
-      [ "Godspeed, girl. If we somehow all make it out of this alive, I'll buy you a drink." ]
+      [ "&1@1What's up?%0" ],
+      [ "@2I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am." ],
+      [ "&3@3If I knew the answer to that, we wouldn't be having this conversation.", "@1We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds." ],
+      [ "&3@3Godspeed, girl. If we somehow all make it out of this alive, I'll buy you a drink." ]
     ],
     "responses": [
       [ "Who are you?%0", "How can I get back to the island?%1", "See you later.%2" ]

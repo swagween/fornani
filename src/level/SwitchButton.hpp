@@ -54,6 +54,7 @@ class SwitchButton {
 	SwitchType type{};
 	SwitchButtonState state{};
 	SwitchButtonState external{};
+	util::BitFlags<SwitchButtonState> triggers{};
 	shape::Collider collider{};
 	shape::Shape sensor{};
 	anim::AnimatedSprite sprite{};

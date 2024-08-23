@@ -34,9 +34,17 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.world.test(World::chest)) { svc.assets.chest.play(); }
 	if (flags.world.test(World::breakable_shatter)) { svc.assets.breakable_shatter.play(); }
 	if (flags.world.test(World::breakable_hit)) { randomize(svc, svc.assets.breakable_hit, 0.1f); }
-	if (flags.world.test(World::hard_hit)) { randomize(svc, svc.assets.hard_hit, 0.1f); }
+	cooldowns.hard_hit.update();
+	if (flags.world.test(World::hard_hit) && !cooldowns.hard_hit.running()) {
+		randomize(svc, svc.assets.hard_hit, 0.1f, 60.f);
+		cooldowns.hard_hit.start();
+	}
+	if (flags.world.test(World::wall_hit)) { randomize(svc, svc.assets.wall_hit, 0.1f); }
 	if (flags.world.test(World::thud)) { randomize(svc, svc.assets.thud, 0.1f); }
 	if (flags.world.test(World::small_crash)) { randomize(svc, svc.assets.small_crash, 0.1f); }
+	if (flags.world.test(World::switch_press)) { svc.assets.switch_press.play(); }
+	if (flags.world.test(World::block_toggle)) { svc.assets.block_toggle.play(); }
+	if (flags.world.test(World::pushable)) { repeat(svc, svc.assets.heavy_move, 80); }
 
 	//frdog
 	if (flags.frdog.test(Frdog::death)) { svc.assets.enem_death_1.play(); }

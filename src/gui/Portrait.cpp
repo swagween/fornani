@@ -35,6 +35,7 @@ void Portrait::reset(automa::ServiceProvider& svc) {
 	start_position = {-128.f, position.y};
 	if (is_nani) { start_position.x = svc.constants.screen_dimensions.x + 132.f; }
 	set_position(start_position);
+	emotion = 1;
 }
 
 void Portrait::set_position(sf::Vector2<float> pos) {

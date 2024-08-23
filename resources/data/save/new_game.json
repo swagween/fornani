@@ -30,10 +30,12 @@
       }
     }
   },
-  "save_point_id": 110,
+  "save_point_id": 100,
   "unlocked_doors": [
   ],
   "opened_chests": [
+  ],
+  "activated_switches": [
   ],
   "quest_progressions": [
   ],

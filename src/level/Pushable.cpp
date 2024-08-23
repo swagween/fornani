@@ -48,11 +48,25 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		hit_count.start();
 	}
 
+	//player pushes block
 	if (player.collider.wallslider.overlaps(collider.bounding_box) && player.pushing()) {
 		if (player.controller.moving_left() && player.collider.physics.position.x > collider.physics.position.x) { collider.physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.collider.physics.position.x < collider.physics.position.x) { collider.physics.acceleration.x = speed / mass; }
+		if (abs(collider.physics.acceleration.x) > 0.f) { svc.soundboard.flags.world.set(audio::World::pushable); }
 		state.set(PushableState::moved);
 	}
+
+	//debug
+	if(state.test(PushableState::moved)) {
+		/*if (svc.ticker.every_x_ticks(400)) {
+			std::cout << "X: " << collider.physics.position.x << "\n";
+			std::cout << "Y: " << collider.physics.position.y << "\n";
+			std::cout << "Snap X: " << snap.x << "\n";
+			std::cout << "Snap Y: " << snap.y << "\n";
+			std::cout << "---\n";
+		}*/
+	}
+
 	player.collider.handle_collider_collision(collider.bounding_box);
 	for (auto& enemy : map.enemy_catalog.enemies) {
 		enemy->get_collider().handle_collider_collision(collider.bounding_box);
@@ -92,8 +106,10 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 void Pushable::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider.bounding_box); }
 
 void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	auto snap = collider.snap_to_grid(static_cast<float>(size), 2.f, 2.f);
+	snap = collider.snap_to_grid(1, 4.f, 2.f);
 	if (abs(random_offset.x) > 0.f || abs(random_offset.y) > 0.f) { snap = collider.physics.position; } // don't snap if shaking
+	if (abs(collider.physics.velocity.x) > 0.5f) { snap.x = collider.physics.position.x; } // don't snap if moving
+	if (abs(collider.physics.velocity.y) > 0.5f) { snap.y = collider.physics.position.y; }
 	sprite.setPosition(snap - cam + random_offset - sprite_offset);
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);

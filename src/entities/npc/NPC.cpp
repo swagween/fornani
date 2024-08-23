@@ -75,6 +75,20 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	}
 	if (state_flags.test(NPCState::engaged) && triggers.consume(NPCTrigger::engaged) && indicator.complete()) { indicator.set_params("neutral", true); }
 
+	if (state_flags.test(NPCState::engaged)) {
+		// voice cues
+		auto voice_cue = player.transponder.shipments.voice.consume_pulse();
+		if (voice_cue != 0) {
+			if (svc.assets.npc_sounds.contains(label)) {
+				auto index = voice_cue - 1;
+				if (index < svc.assets.npc_sounds.at(label).size()) {
+					voice_sound.setBuffer(svc.assets.npc_sounds.at(label).at(index));
+				}
+			}
+			voice_sound.play();
+		}
+	}
+
 	if (console.off() && state_flags.test(NPCState::engaged)) {
 		if (conversations.size() > 1) {
 			conversations.pop_front();

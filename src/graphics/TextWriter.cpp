@@ -355,6 +355,7 @@ void TextWriter::process_quest(util::QuestKey out) {
 	if (out.type == 88) { m_services->state_controller.actions.set(automa::Actions::console_transition); }
 	if (out.type == 89) { m_services->state_controller.actions.set(automa::Actions::main_menu); }
 	if (out.type == 69) { m_services->state_controller.actions.set(automa::Actions::print_stats); }
+	if (out.type == 299) { m_services->state_controller.actions.set(automa::Actions::end_demo); }
 	//std::cout << "Processed: " << out.type << ", " << out.id << ", " << out.source_id << ", " << out.amount << ", " << out.hard_set << "\n";
 }
 

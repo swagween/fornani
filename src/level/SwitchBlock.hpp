@@ -38,7 +38,7 @@ class SwitchBlock {
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
 	[[nodiscard]] auto get_id() const -> int { return button_id; }
-	[[nodiscard]] auto switched() const -> bool { return false; }
+	[[nodiscard]] auto switched() const -> bool { return state != previous_state; }
 	[[nodiscard]] auto on() const -> bool { return state != SwitchBlockState::empty; }
 	[[nodiscard]] auto off() const -> bool { return state == SwitchBlockState::empty; }
 
@@ -47,6 +47,7 @@ class SwitchBlock {
 	sf::Sprite sprite{};
 	SwitchType type{};
 	SwitchBlockState state{};
+	SwitchBlockState previous_state{};
 	int button_id{};
 };
 } // namespace world

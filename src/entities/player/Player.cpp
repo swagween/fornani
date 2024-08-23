@@ -269,9 +269,8 @@ void Player::update_sprite() {
 void Player::handle_turning() {
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-	if (controller.facing_left() && sprite.getScale() == right_scale) { animation.state = controller.quick_turn() ? AnimState::sharp_turn : AnimState::turn; }
-	if (controller.facing_right() && sprite.getScale() == left_scale) { animation.state = controller.quick_turn() ? AnimState::sharp_turn : AnimState::turn; }
-	if (quick_direction_switch()) { animation.state = controller.quick_turn() ? AnimState::sharp_turn : AnimState::turn; }
+	if (controller.facing_left() && sprite.getScale() == right_scale) { animation.state = collider.physics.velocity.x > thresholds.quick_turn ? AnimState::sharp_turn : AnimState::turn; }
+	if (controller.facing_right() && sprite.getScale() == left_scale) { animation.state = collider.physics.velocity.x < -thresholds.quick_turn ? AnimState::sharp_turn : AnimState::turn; }
 }
 
 void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window) {

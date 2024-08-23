@@ -324,6 +324,14 @@ void AssetManager::load_audio() {
 	b_minigus_whatisit.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_whatisit.wav");
 	b_minigus_woob.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_woob.wav");
 
+	b_mirin_ah.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_ah.wav");
+	b_mirin_oh.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_oh.wav");
+	b_mirin_laugh.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_laugh.wav");
+	vs_mirin.push_back(b_mirin_ah);
+	vs_mirin.push_back(b_mirin_oh);
+	vs_mirin.push_back(b_mirin_laugh);
+	npc_sounds.insert({"mirin", vs_mirin});
+
 	b_heavy_land.loadFromFile(finder.resource_path + "/audio/sfx/deep/heavy_land.wav");
 	b_delay_crash.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_crash.wav");
 	b_delay_high.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_high.wav");
@@ -339,11 +347,15 @@ void AssetManager::load_audio() {
 	b_enemy_hit_high.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_high.wav");
 	b_enemy_hit_squeak.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_squeak.wav");
 	b_enemy_hit_inv.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_inv.wav");
+	b_wall_hit.loadFromFile(finder.resource_path + "/audio/sfx/wall_hit.wav");
 	b_thud.loadFromFile(finder.resource_path + "/audio/sfx/thud.wav");
 	b_small_crash.loadFromFile(finder.resource_path + "/audio/sfx/small_crash.wav");
+	b_heavy_move.loadFromFile(finder.resource_path + "/audio/sfx/heavy_move.wav");
 	hard_hit.setBuffer(b_enemy_hit_inv);
+	wall_hit.setBuffer(b_wall_hit);
 	thud.setBuffer(b_thud);
 	small_crash.setBuffer(b_small_crash);
+	heavy_move.setBuffer(b_heavy_move);
 
 	save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 	save.setBuffer(save_buffer);
@@ -354,9 +366,13 @@ void AssetManager::load_audio() {
 	soft_sparkle_buffer.loadFromFile(finder.resource_path + "/audio/sfx/soft_sparkle.wav");
 	soft_sparkle.setBuffer(soft_sparkle_buffer);
 	chest_buffer.loadFromFile(finder.resource_path + "/audio/sfx/chest.wav");
+	b_switch_press.loadFromFile(finder.resource_path + "/audio/sfx/switch_press.wav");
+	b_block_toggle.loadFromFile(finder.resource_path + "/audio/sfx/block_toggle.wav");
 	chest.setBuffer(chest_buffer);
 	breakable_hit.setBuffer(b_breakable_hit);
 	breakable_shatter.setBuffer(shatter_buffer);
+	switch_press.setBuffer(b_switch_press);
+	block_toggle.setBuffer(b_block_toggle);
 }
 
 } // namespace data

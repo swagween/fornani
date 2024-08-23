@@ -40,7 +40,6 @@ void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	view.setViewport(sf::FloatRect(0.2f, 0.2f, 0.6f, 0.6f));
 	background.setSize(svc.constants.f_screen_dimensions);
 	border.setSize(svc.constants.f_screen_dimensions);
-	speed = 10.f / scale;
 	ratio = 32.f / scale;
 	player_position = player.collider.physics.position;
 	center_position = (position - view.getCenter()) / ratio;
@@ -84,7 +83,6 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 void MiniMap::toggle_scale() {
 	scalar.modulate(1);
 	scale = std::pow(2.f, static_cast<float>(scalar.get()) + 2.f);
-	speed = 10.f / scale;
 	ratio = 32.f / scale;
 	texture.tile_box.setSize({ratio, ratio});
 	texture.plat_box.setSize({ratio, ratio});

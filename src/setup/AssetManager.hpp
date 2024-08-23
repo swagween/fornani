@@ -261,6 +261,10 @@ class AssetManager {
 	sf::SoundBuffer b_minigus_whatisit{};
 	sf::SoundBuffer b_minigus_woob{};
 
+	sf::SoundBuffer b_mirin_ah{};
+	sf::SoundBuffer b_mirin_oh{};
+	sf::SoundBuffer b_mirin_laugh{};
+
 	sf::SoundBuffer b_heavy_land{};
 	sf::SoundBuffer b_delay_crash{};
 	sf::SoundBuffer b_small_crash{};
@@ -269,6 +273,8 @@ class AssetManager {
 	sf::SoundBuffer b_gun_charge{};
 	sf::SoundBuffer b_soda{};
 	sf::SoundBuffer b_breakable_hit{};
+	sf::SoundBuffer b_switch_press{};
+	sf::SoundBuffer b_block_toggle{};
 
 	// minigun
 	sf::SoundBuffer b_minigun_neutral{};
@@ -282,6 +288,8 @@ class AssetManager {
 	sf::SoundBuffer b_enemy_hit_squeak{};
 	sf::SoundBuffer b_enemy_hit_inv{};
 	sf::SoundBuffer b_thud{};
+	sf::SoundBuffer b_wall_hit{};
+	sf::SoundBuffer b_heavy_move{};
 
 	// save/load
 	sf::SoundBuffer save_buffer{};
@@ -309,6 +317,7 @@ class AssetManager {
 	sf::Sound hard_hit{};
 	sf::Sound thud{};
 	sf::Sound small_crash{};
+	sf::Sound heavy_move{};
 
 	sf::Sound minigun_neutral{};
 	sf::Sound minigun_charge{};
@@ -342,6 +351,9 @@ class AssetManager {
 
 	sf::Sound breakable_hit{};
 	sf::Sound breakable_shatter{};
+	sf::Sound switch_press{};
+	sf::Sound block_toggle{};
+	sf::Sound wall_hit{};
 
 	// other members
 	int music_vol{24};
@@ -357,6 +369,8 @@ class AssetManager {
 	std::unordered_map<std::string_view, sf::Texture&> particle_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
+	std::vector<sf::SoundBuffer> vs_mirin{};
+	std::unordered_map<std::string_view, std::vector<sf::SoundBuffer>> npc_sounds{};
 };
 
 } // namespace asset

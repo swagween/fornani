@@ -41,7 +41,7 @@
       }
     ],
     "stats": {
-      "death_count": 6,
+      "death_count": 7,
       "bullets_fired": 6517,
       "guns_collected": 2,
       "items_collected": 5,
@@ -74,6 +74,9 @@
     45560,
     77122,
     9981
+  ],
+  "activated_switches": [
+
   ],
   "quest_progressions": [
     [
