@@ -52,7 +52,7 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	attacks.rush.handle_player(player);
 	if (state == ThugState::rush && attacks.rush.sensor.active() && !cooldowns.rush_hit.running()) {
 		auto sign = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
-		if (sign == -1.f && player_behind(player) || sign == 1.f && !player_behind(player)) {
+		if ((sign == -1.f && player_behind(player)) || (sign == 1.f && !player_behind(player))) {
 			player.hurt(1);
 			player.accumulated_forces.push_back({sign * 2.f, -2.f});
 			attacks.rush.sensor.deactivate();

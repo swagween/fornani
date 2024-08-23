@@ -1,6 +1,3 @@
-
-#pragma once
-
 #include "PhysicsComponent.hpp"
 #include "../service/ServiceProvider.hpp"
 #include <algorithm>

@@ -184,7 +184,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		}
 		if (state == MinigusState::rush && attacks.rush.sensor.active() && !cooldowns.player_punch.running()) {
 			auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
-			if (sign == -1.f && player_behind(player) || sign == 1.f && !player_behind(player)) {
+			if ((sign == -1.f && player_behind(player)) || (sign == 1.f && !player_behind(player))) {
 				player.hurt(1);
 				player.accumulated_forces.push_back({sign * 10.f, -4.f});
 				attacks.rush.sensor.deactivate();

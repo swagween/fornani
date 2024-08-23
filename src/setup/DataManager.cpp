@@ -129,14 +129,14 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["quest_progressions"].push_back(out_quest);
 	}
 
-	save["tutorial"]["jump"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::jump);
-	save["tutorial"]["shoot"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::shoot);
-	save["tutorial"]["sprint"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::sprint);
-	save["tutorial"]["map"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::map);
-	save["tutorial"]["inventory"] = (dj::Boolean)player.tutorial.flags.test(text::TutorialFlags::inventory);
+	save["tutorial"]["jump"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::jump)};
+	save["tutorial"]["shoot"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::shoot)};
+	save["tutorial"]["sprint"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::sprint)};
+	save["tutorial"]["map"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::map)};
+	save["tutorial"]["inventory"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::inventory)};
 	save["tutorial"]["state"] = static_cast<int>(player.tutorial.current_state);
-	save["tutorial"]["closed"] = (dj::Boolean)player.tutorial.closed();
-	save["tutorial"]["on"] = (dj::Boolean)player.tutorial.on();
+	save["tutorial"]["closed"] = dj::Boolean{player.tutorial.closed()};
+	save["tutorial"]["on"] = dj::Boolean{player.tutorial.on()};
 
 	// save arsenal
 	save["player_data"]["arsenal"] = wipe;

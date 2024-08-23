@@ -1,5 +1,4 @@
 
-#pragma once
 #include "Ticker.hpp"
 
 namespace util {

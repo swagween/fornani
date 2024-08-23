@@ -1,5 +1,3 @@
-
-#pragma once
 #include "TextManager.hpp"
 
 namespace data {
@@ -32,7 +30,6 @@ void TextManager::load_data() {
 	//set font
 	text_font = finder.resource_path + "/text/fonts/pixelFJ8pt1.ttf";
 	title_font = finder.resource_path + "/text/fonts/kongtext.ttf";
-
 }
 
 } // namespace data
