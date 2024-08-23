@@ -26,10 +26,10 @@ FetchContent_MakeAvailable(ccmath)
 target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
 target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
 
-set(BUILD_SHARED_LIBS ON)
 add_subdirectory(dependencies)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
+set(BUILD_SHARED_LIBS ON)
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-audio)
 
 file(GLOB_RECURSE sources LIST_DIRECTORIES false CONFIGURE_DEPENDS "src/*.?pp")
@@ -38,17 +38,3 @@ target_sources(${PROJECT_NAME} PRIVATE
 main.cpp
 ${sources}
 )
-
-# Copy DLLs needed for runtime on Windows
-if(WIN32)
-  if (BUILD_SHARED_LIBS)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-          $<TARGET_FILE:ImGui-SFML::ImGui-SFML>
-          $<TARGET_FILE:sfml-graphics>
-	      $<TARGET_FILE:sfml-audio>
-          $<TARGET_FILE:sfml-window>
-          $<TARGET_FILE:sfml-system>
-          $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-  endif()
-endif()
