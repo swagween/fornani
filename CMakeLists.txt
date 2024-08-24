@@ -20,18 +20,11 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/Rinzii/ccmath.git
         GIT_TAG 26a0e1845eebc775121964b17a3fc5bd9c330831
 )
-FetchContent_Declare(
-        freetype
-        GIT_REPOSITORY https://github.com/freetype/freetype
-        GIT_TAG f92c96550ad763639158587974cf11067ace743d
-)
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_MakeAvailable(djson)
 FetchContent_MakeAvailable(ccmath)
-FetchContent_MakeAvailable(freetype)
 target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
 target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
-target_link_libraries(${PROJECT_NAME} PRIVATE freetype)
 
 add_subdirectory(dependencies)
 

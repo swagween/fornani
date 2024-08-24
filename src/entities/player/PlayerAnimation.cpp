@@ -203,6 +203,11 @@ fsm::StateFunction PlayerAnimation::update_rise() {
 	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 	if (animation.complete()) {
+		if (m_player->grounded()) {
+			state = AnimState::idle;
+			animation.set_params(idle);
+			return PA_BIND(update_idle);
+		}
 		state = AnimState::suspend;
 		animation.set_params(suspend);
 		return PA_BIND(update_suspend);

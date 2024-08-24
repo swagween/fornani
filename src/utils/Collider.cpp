@@ -165,7 +165,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			}
 		}
 	}
-	if (wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
+	if (!is_ramp && wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
 	// long-winded, but I want to reserve SAT for colliders that actually need it
 	if (flags.general.test(General::complex)) {
