@@ -42,6 +42,7 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		spritesheet_dimensions = {1, 4};
 		break;
 	case 7:
+		//smoke puff
 		sprite.setOrigin({16.f, 16.f});
 		sprite_dimensions = {32, 32};
 		spritesheet_dimensions = {4, 4};

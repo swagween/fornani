@@ -327,6 +327,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& animator : animators) { animator.update(svc, *player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
+	for (auto& spawner : spawners) { spawner.update(svc, *this); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
@@ -412,8 +413,13 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 	for (auto& grenade : active_grenades) { grenade.render(svc, win, cam); }
 	player->render(svc, win, cam);
-	for (auto& enemy : enemy_catalog.enemies) { enemy->render(svc, win, cam); }
-	for (auto& enemy : enemy_catalog.enemies) { enemy->unique_render(svc, win, cam); }
+	for (auto& enemy : enemy_catalog.enemies) {
+		if (!enemy->is_foreground()) {
+			enemy->render(svc, win, cam);
+			enemy->unique_render(svc, win, cam);
+		}
+	}
+	for (auto& enemy : enemy_catalog.enemies) { }
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
@@ -434,6 +440,14 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		layer_sprite.setTexture(layer_textures.at(i).getTexture());
 		layer_sprite.setPosition(-cam);
 		win.draw(layer_sprite);
+	}
+
+	//foreground enemies
+	for (auto& enemy : enemy_catalog.enemies) {
+		if (enemy->is_foreground()) {
+			enemy->render(svc, win, cam);
+			enemy->unique_render(svc, win, cam);
+		}
 	}
 
 	for (auto& effect : effects) { effect.render(svc, win, cam); }
@@ -586,6 +600,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position, styles.breakables)); }
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position + pushable_offset, styles.pushables, cell.value - 227)); }
 		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position, cell.value)); }
+		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position, 5)); }
 	}
 }
 

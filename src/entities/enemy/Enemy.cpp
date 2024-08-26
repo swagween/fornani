@@ -82,6 +82,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Ent
 	if (in_general["player_collision"].as_bool()) { flags.general.set(GeneralFlags::player_collision); }
 	if (in_general["hurt_on_contact"].as_bool()) { flags.general.set(GeneralFlags::hurt_on_contact); }
 	if (in_general["uncrushable"].as_bool()) { flags.general.set(GeneralFlags::uncrushable); }
+	if (in_general["foreground"].as_bool()) { flags.general.set(GeneralFlags::foreground); }
 	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 	if (!flags.general.test(GeneralFlags::uncrushable)) { collider.collision_depths = util::CollisionDepth(); }
 

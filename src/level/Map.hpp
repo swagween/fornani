@@ -22,6 +22,7 @@
 #include "Platform.hpp"
 #include "Breakable.hpp"
 #include "Pushable.hpp"
+#include "Spawner.hpp"
 #include "Spike.hpp"
 #include "SwitchBlock.hpp"
 #include "Destroyable.hpp"
@@ -134,6 +135,7 @@ class Map {
 	std::vector<Platform> platforms{};
 	std::vector<Breakable> breakables{};
 	std::vector<Pushable> pushables{};
+	std::vector<Spawner> spawners{};
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};

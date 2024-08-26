@@ -28,7 +28,7 @@ class Projectile;
 
 namespace enemy {
 
-enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable };
+enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker };
@@ -74,6 +74,7 @@ class Enemy : public entity::Entity {
 	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
 	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
 	[[nodiscard]] auto spawn_loot() const -> bool { return !flags.general.test(GeneralFlags::no_loot); }
+	[[nodiscard]] auto is_foreground() const -> bool { return flags.general.test(GeneralFlags::foreground); }
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 	void set_position(sf::Vector2<float> pos) {
 		collider.physics.position = pos;

@@ -211,7 +211,8 @@
       "map_collision": true,
       "player_collision": false,
       "hurt_on_contact": true,
-      "uncrushable": true
+      "uncrushable": true,
+      "foreground": true
     }
   },
 

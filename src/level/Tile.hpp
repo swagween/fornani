@@ -6,7 +6,7 @@
 
 namespace world {
 
-enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable, pushable };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable, pushable, spawner };
 enum class TileState { ramp_adjacent, big_ramp };
 
 struct Tile {
@@ -18,7 +18,7 @@ struct Tile {
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_type();
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
-	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || type == TileType::ground_ramp || type == TileType::ceiling_ramp; }
+	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner(); }
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
 	[[nodiscard]] auto is_hookable() const -> bool { return type == TileType::solid; }
 	[[nodiscard]] auto is_ramp() const -> bool { return type == TileType::ground_ramp || type == TileType::ceiling_ramp; }
@@ -30,6 +30,7 @@ struct Tile {
 	[[nodiscard]] auto is_death_spike() const -> bool { return type == TileType::death_spike; }
 	[[nodiscard]] auto is_breakable() const -> bool { return type == TileType::breakable; }
 	[[nodiscard]] auto is_pushable() const -> bool { return type == TileType::pushable; }
+	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 

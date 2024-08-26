@@ -43,6 +43,7 @@ void Tile::set_type() {
 	if (value < 240 && value >= 236) { type = TileType::platform; }
 	if (value < 244 && value >= 240) { type = TileType::death_spike; }
 	if (value < 230 && value >= 228) { type = TileType::pushable; }
+	if (value == 231) { type = TileType::spawner; }
 	if (value < 248 && value >= 244) { type = TileType::breakable; }
 	if (value >= 248) { type = TileType::spike; }
 }
