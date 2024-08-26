@@ -46,6 +46,7 @@ class Chest : public Entity {
 	void set_rarity(float to_rarity);
 	void set_type(ChestType to_type);
 	shape::Shape& get_jumpbox() { return collider.jumpbox; }
+	shape::Collider& get_collider() { return collider; }
 
   private:
 	vfx::Sparkler sparkler{};

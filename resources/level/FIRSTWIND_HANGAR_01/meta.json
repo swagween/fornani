@@ -15,7 +15,10 @@
     ],
     "style": 0,
     "background": 5,
-    "music": "dusken_cove"
+    "music": "dusken_cove",
+    "styles": {
+      "breakables": 0
+    }
   },
   "portals": [
     {
@@ -199,13 +202,6 @@
       "position": [
         27,
         18
-      ]
-    },
-    {
-      "id": 1,
-      "position": [
-        31,
-        33
       ]
     },
     {

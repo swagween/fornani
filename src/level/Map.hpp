@@ -24,7 +24,7 @@
 #include "Pushable.hpp"
 #include "Spike.hpp"
 #include "SwitchBlock.hpp"
-#include "BlockDestroyer.hpp"
+#include "Destroyable.hpp"
 #include "../weapon/Grenade.hpp"
 #include "../utils/Stopwatch.hpp"
 
@@ -137,7 +137,7 @@ class Map {
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
-	std::vector<BlockDestroyer> destroyers{};
+	std::vector<Destroyable> destroyers{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
 

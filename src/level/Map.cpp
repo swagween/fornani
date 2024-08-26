@@ -111,7 +111,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			dim.x = entry["dimensions"][0].as<int>();
 			dim.y = entry["dimensions"][1].as<int>();
 			auto alt = entry["alternates"].as<int>();
-			inspectables.push_back(entity::Inspectable(svc, dim, pos, key, room_id, alt));
+			auto native = entry["native_id"].as<int>();
+			inspectables.push_back(entity::Inspectable(svc, dim, pos, key, room_id, alt, native));
 			inspectables.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
 			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) {
 				inspectables.back().destroy();
@@ -133,7 +134,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			pos.x = entry["position"][0].as<int>();
 			pos.y = entry["position"][1].as<int>();
 			auto quest_id = entry["quest_id"].as<int>();
-			destroyers.push_back(BlockDestroyer(pos, quest_id));
+			destroyers.push_back(Destroyable(svc, pos, quest_id));
 		}
 		for (auto& entry : metadata["switches"].array_view()) {
 			sf::Vector2<float> pos{};
@@ -301,6 +302,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
 		for (auto& breakable : breakables) { breakable.on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
+		for (auto& destroyer : destroyers) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 
@@ -327,7 +329,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
-	for (auto& destroyer : destroyers) { destroyer.update(svc, *this); }
+	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player); }
 	for (auto& breakable : breakables) {
 		breakable.update(svc);
@@ -417,6 +419,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
+	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
 	for (auto& spike : spikes) { spike.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }

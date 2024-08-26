@@ -14,7 +14,19 @@
       ]
     ]
   },
-  "computer": {
+  "computer0": {
+    "suite": [
+      [
+        "It's displaying a running timer."
+      ]
+    ],
+    "responses": [
+      [
+
+      ]
+    ]
+  },
+  "computer1": {
     "suite": [
       [
         "Bryn's Gun retrieved in: $63#1#1#"

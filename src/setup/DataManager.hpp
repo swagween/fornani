@@ -51,14 +51,17 @@ class DataManager {
 	void load_player_params(player::Player& player);
 	void save_player_params(player::Player& player);
 
+	// map-related save data helpers
 	void open_chest(int id);
 	void unlock_door(int id);
 	void activate_switch(int id);
+	void destroy_block(int id);
 	void destroy_inspectable(std::string_view id);
 	void push_quest(util::QuestKey key);
 	bool door_is_unlocked(int id) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
+	bool block_is_destroyed(int id) const;
 	bool inspectable_is_destroyed(std::string_view id) const;
 	bool room_discovered(int id) const;
 
@@ -117,6 +120,7 @@ class DataManager {
 	std::vector<int> opened_chests{};
 	std::vector<int> unlocked_doors{};
 	std::vector<int> activated_switches{};
+	std::vector<int> destroyed_blocks{};
 	std::vector<std::string> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
 };

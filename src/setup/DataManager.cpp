@@ -111,6 +111,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["unlocked_doors"] = wipe;
 	save["opened_chests"] = wipe;
 	save["activated_switches"] = wipe;
+	save["destroyed_blocks"] = wipe;
 	save["destroyed_inspectables"] = wipe;
 	for (auto& entry : save["quest_progressions"].array_view()) { entry = wipe; }
 	save["quest_progressions"] = wipe;
@@ -118,6 +119,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
 	for (auto& s : activated_switches) { save["activated_switches"].push_back(s); }
+	for (auto& block : destroyed_blocks) { save["destroyed_blocks"].push_back(block); }
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
 	for (auto& q : quest_progressions) {
 		auto out_quest = wipe;
@@ -190,6 +192,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	discovered_rooms.clear();
 	unlocked_doors.clear();
 	opened_chests.clear();
+	destroyed_blocks.clear();
 	activated_switches.clear();
 	destroyed_inspectables.clear();
 	quest_progressions.clear();
@@ -197,6 +200,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	for (auto& door : save["unlocked_doors"].array_view()) { unlocked_doors.push_back(door.as<int>()); }
 	for (auto& chest : save["opened_chests"].array_view()) { opened_chests.push_back(chest.as<int>()); }
 	for (auto& s : save["activated_switches"].array_view()) { activated_switches.push_back(s.as<int>()); }
+	for (auto& block : save["destroyed_blocks"].array_view()) { destroyed_blocks.push_back(block.as<int>()); }
 	for (auto& inspectable : save["destroyed_inspectables"].array_view()) { destroyed_inspectables.push_back(inspectable.as_string().data()); }
 	for (auto& q : save["quest_progressions"].array_view()) {
 		auto type = q[0].as<int>();
@@ -354,6 +358,8 @@ void DataManager::activate_switch(int id) {
 	if (!switch_is_activated(id)) { activated_switches.push_back(id); }
 }
 
+void DataManager::destroy_block(int id) { destroyed_blocks.push_back(id); }
+
 void DataManager::destroy_inspectable(std::string_view id) { destroyed_inspectables.push_back(id.data()); }
 
 void DataManager::push_quest(util::QuestKey key) {
@@ -380,6 +386,13 @@ bool DataManager::chest_is_open(int id) const {
 bool DataManager::switch_is_activated(int id) const {
 	for (auto& s : activated_switches) {
 		if (s == id) { return true; }
+	}
+	return false;
+}
+
+bool DataManager::block_is_destroyed(int id) const {
+	for (auto& b : destroyed_blocks) {
+		if (b == id) { return true; }
 	}
 	return false;
 }

@@ -34,6 +34,9 @@ struct Quest {
 struct QuestSuite {
 	std::unordered_map<int, Quest> quests{};
 	int get_progression(int id) { return quests.contains(id) ? quests.at(id).progression.get_count() : 0; };
+	void reset(int id) {
+		if (quests.contains(id)) { quests.at(id).progression.start(); }
+	};
 };
 
 class QuestTracker {
@@ -41,6 +44,7 @@ class QuestTracker {
 	QuestTracker();
 	int get_progression(QuestType type, int id);
 	void progress(QuestType type, int id, int source, int amount = 1, bool hard_set = false);
+	void reset(QuestType type, int id);
 	void process(util::QuestKey key);
 
   private:

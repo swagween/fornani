@@ -58,7 +58,8 @@
       ],
       "activate_on_contact": false,
       "key": "computer",
-      "alternates": 0
+      "alternates": 1,
+      "native_id": 111
     },
     {
       "dimensions": [

@@ -662,6 +662,7 @@ void Player::push_to_loadout(int id) {
 	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
 	if (id == 0) {
 		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
+		m_services->quest.process(util::QuestKey{1, 111, 1});
 		tutorial.flags.set(text::TutorialFlags::inventory); //set this in case the player never opened inventory
 		tutorial.current_state = text::TutorialFlags::shoot;
 		tutorial.trigger();

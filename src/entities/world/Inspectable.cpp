@@ -6,7 +6,7 @@
 
 namespace entity {
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates) : scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates) {
+Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates, int native) : scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates) {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
@@ -14,7 +14,7 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, s
 	sprite.setTexture(svc.assets.t_inspectable);
 	animation.end();
 	id = key.data() + std::to_string(room_id);
-	iid = room_id;
+	native_id = native == 0 ? room_id : native;
 }
 
 void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set) {
@@ -25,7 +25,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 	animation.update();
 
 	//check for quest-based alternates
-	auto quest_status = svc.quest.get_progression(fornani::QuestType::inspectable, iid);
+	auto quest_status = svc.quest.get_progression(fornani::QuestType::inspectable, native_id);
 	if (quest_status > 0) { current_alt = quest_status; }
 
 	if (bounding_box.overlaps(player.collider.hurtbox)) {

@@ -69,7 +69,21 @@
     {
       "quest_id": 115,
       "position": [
+        46,
+        13
+      ]
+    },
+    {
+      "quest_id": 115,
+      "position": [
         47,
+        13
+      ]
+    },
+    {
+      "quest_id": 115,
+      "position": [
+        48,
         13
       ]
     }

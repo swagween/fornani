@@ -5,5 +5,18 @@
         "Skycorps Employee of the Month: Gus Hazard"
       ]
     ]
+  },
+  "caplog": {
+    "suite": [
+      [
+        "You find a captain's log. Would you like to read it?%0"
+      ], ["Wednesday, November 22. Clear skies today."]
+    ],
+    "responses": [
+      [
+        "Yes%0",
+        "No%1"
+      ]
+    ]
   }
 }
