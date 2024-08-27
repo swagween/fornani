@@ -635,6 +635,10 @@ void Player::give_item(int item_id, int amount) {
 		tutorial.trigger();
 		tutorial.turn_on();
 	}
+	if (item_id == 29) {
+		health.increase_max_hp(1.f);
+		m_services->soundboard.flags.item.set(audio::Item::health_increase);
+	}
 }
 
 void Player::reset_flags() { flags = {}; }

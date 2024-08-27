@@ -9,7 +9,7 @@
 
 namespace world {
 
-SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> position, int id, int type) : sprite(svc.assets.t_switches, {32, 16}), id(id), type(static_cast<SwitchType>(type)) {
+SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> position, int id, int type, Map& map) : sprite(svc.assets.t_switches, {32, 16}), id(id), type(static_cast<SwitchType>(type)) {
 	collider = shape::Collider({32.f, 14.f});
 	collider.physics.position = position;
 	collider.physics.position.y += 18.f;
@@ -27,7 +27,13 @@ SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> posi
 	sprite.push_params("pressed", {6, 1, 28, 0, true});
 	sprite.push_params("rising", {7, 1, 28, 0, false, true});
 	sprite.set_params("neutral");
-	if (svc.data.switch_is_activated(id)) { state = SwitchButtonState::pressed; }
+	if (svc.data.switch_is_activated(id)) {
+		state = SwitchButtonState::pressed;
+		state_function = std::bind(&SwitchButton::update_pressed, this);
+		for (auto& block : map.switch_blocks) {
+			if (block.get_id() == id && pressed()) { block.turn_off(); }
+		}
+	}
 }
 
 void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {

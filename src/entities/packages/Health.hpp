@@ -24,6 +24,7 @@ class Health : public Entity {
 	void set_invincibility(float amount);
 	void heal(float amount);
 	void inflict(float amount, bool force = false);
+	void increase_max_hp(float amount);
 	void reset();
 
 	util::BitFlags<HPState> flags{};

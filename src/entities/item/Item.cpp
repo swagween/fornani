@@ -15,8 +15,8 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	if (in_data["unique"].as_bool()) { flags.set(ItemFlags::unique); }
 	dimensions = {32.f, 32.f};
 	sprite.setTexture(svc.assets.t_items);
-	auto u = static_cast<int>((metadata.id - 1) * dimensions.x);
-	auto v = 0;
+	auto u = static_cast<int>(((metadata.id - 1) % 16) * dimensions.x);
+	auto v = static_cast<int>(std::floor((static_cast<float>(metadata.id - 1) / 16.f)) * dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
 
 	//for debug
@@ -27,11 +27,9 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 }
 
 void Item::update(automa::ServiceProvider& svc, int index) {
-	if (flags.test(ItemFlags::unique)) {
-		variables.quantity = std::clamp(variables.quantity, 0, 1);
-		sprite.setPosition({index * ui.spacing + ui.pad.x, ui.pad.y});
-		drawbox.setPosition(sprite.getPosition());
-	}
+	if (flags.test(ItemFlags::unique)) { variables.quantity = std::clamp(variables.quantity, 0, 1); }
+	sprite.setPosition({index * ui.spacing + ui.pad.x, ui.pad.y});
+	drawbox.setPosition(sprite.getPosition());
 	selection_index = index;
 	selected() ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.blue);
 }

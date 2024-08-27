@@ -49,6 +49,8 @@ void Health::inflict(float amount, bool force) {
 	}
 }
 
+void Health::increase_max_hp(float amount) { set_max(max_hp + amount); }
+
 void Health::reset() { hp = max_hp; }
 
 } // namespace entity

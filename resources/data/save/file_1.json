@@ -1,68 +1,89 @@
 {
   "status": {
-    "new": true
+    "new": false
   },
   "player_data": {
-    "max_hp": 3,
-    "hp": 3,
-    "orbs": 0,
+    "max_hp": 3.000000,
+    "hp": 1.000000,
+    "orbs": 74,
     "position": {
-      "x": 102.0,
-      "y": 327.0
+      "x": 168.504059,
+      "y": 395.000000
     },
     "arsenal": [
-
+      10
     ],
     "equipped_gun": 0,
     "abilities": [
 
     ],
     "items": [
-
+      {
+        "id": 16,
+        "quantity": 1
+      }
     ],
     "stats": {
-      "death_count": 1,
-      "bullets_fired": 0,
-      "guns_collected": 0,
-      "items_collected": 0,
-      "orbs_collected": 0,
+      "death_count": 12,
+      "bullets_fired": 560,
+      "guns_collected": 1,
+      "items_collected": 2,
+      "orbs_collected": 74,
       "blue_orbs": 0,
-      "highest_indicator_amount": 0,
-      "enemies_killed": 0,
-      "rooms_discovered": 0,
-      "seconds_played": 0.0,
+      "highest_indicator_amount": 33,
+      "enemies_killed": 29,
+      "rooms_discovered": 7,
+      "seconds_played": 227.729065,
       "time_trials": {
-        "bryns_gun": 0.0
+        "bryns_gun": 0.000000
       }
     }
   },
-  "save_point_id": 100,
+  "save_point_id": 110,
   "unlocked_doors": [
 
   ],
   "opened_chests": [
-
+    7880,
+    567911
   ],
   "activated_switches": [
-
+    4367,
+    4368,
+    4369
   ],
   "quest_progressions": [
-
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ]
   ],
   "destroyed_inspectables": [
 
   ],
   "tutorial": {
-    "state": 0,
-    "closed": false,
-    "on": true,
-    "jump": false,
+    "state": 4,
+    "closed": true,
+    "on": false,
+    "jump": true,
     "shoot": false,
-    "sprint": false,
-    "map": false,
+    "sprint": true,
+    "map": true,
     "inventory": false
   },
   "discovered_rooms": [
+    100,
+    107,
+    104,
+    102,
+    110,
+    121,
+    124
+  ],
+  "destroyed_blocks": [
 
   ]
 }

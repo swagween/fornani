@@ -191,6 +191,7 @@ class AssetManager {
 	sf::SoundBuffer orb_2_buffer{};
 	sf::SoundBuffer orb_3_buffer{};
 	sf::SoundBuffer orb_4_buffer{};
+	sf::SoundBuffer b_health_increase{};
 
 	// sound effects!
 	sf::SoundBuffer click_buffer{};
@@ -339,6 +340,7 @@ class AssetManager {
 	sf::Sound enem_hit{};
 	sf::Sound enem_death_1{};
 	sf::Sound heal{};
+	sf::Sound health_increase{};
 	sf::Sound orb_1{};
 	sf::Sound orb_2{};
 	sf::Sound orb_3{};

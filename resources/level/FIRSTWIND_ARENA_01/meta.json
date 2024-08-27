@@ -50,33 +50,95 @@
       "activate_on_contact": true,
       "locked": false,
       "key_id": 0
+    },
+    {
+      "dimensions": [
+        3,
+        1
+      ],
+      "position": [
+        20,
+        15
+      ],
+      "source_id": 121,
+      "destination_id": 124,
+      "activate_on_contact": true,
+      "locked": false,
+      "key_id": 0
     }
   ],
-  "enemies": [
+  "switch_blocks": [
     {
-      "id": 3,
+      "button_id": 4367,
+      "type": 1,
       "position": [
-        15,
-        11
+        40,
+        8
       ]
     },
     {
-      "id": 1,
+      "button_id": 4368,
+      "type": 1,
       "position": [
-        16,
-        6
+        13,
+        3
+      ]
+    },
+    {
+      "button_id": 4368,
+      "type": 1,
+      "position": [
+        13,
+        2
+      ]
+    },
+    {
+      "button_id": 4369,
+      "type": 1,
+      "position": [
+        20,
+        14
+      ]
+    },
+    {
+      "button_id": 4369,
+      "type": 1,
+      "position": [
+        21,
+        14
+      ]
+    },
+    {
+      "button_id": 4369,
+      "type": 1,
+      "position": [
+        22,
+        14
       ]
     }
   ],
-  "chests": [
+  "switches": [
     {
-      "id": 9981,
-      "item_id": 0,
-      "type": 2,
-      "amount": 45,
-      "rarity": 8.000000,
+      "button_id": 4367,
+      "type": 1,
       "position": [
         23,
+        3
+      ]
+    },
+    {
+      "button_id": 4368,
+      "type": 1,
+      "position": [
+        28,
+        8
+      ]
+    },
+    {
+      "button_id": 4369,
+      "type": 1,
+      "position": [
+        7,
         3
       ]
     }

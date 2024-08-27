@@ -103,5 +103,11 @@
     "title": "Radar Device",
     "naive_description": "A map system. You can view the map by toggling left or right in this window.",
     "unique": true
+  },
+  "heart_keychain": {
+    "index": 29,
+    "title": "Heart Keychain",
+    "naive_description": "A heart keychain. You attach it to your belt and it gives you extra life.",
+    "unique": false
   }
 }

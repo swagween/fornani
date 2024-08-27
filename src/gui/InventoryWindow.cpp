@@ -62,8 +62,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 				info.writer.load_single_message(item.get_description());
 			}
 		}
-		auto x_dim = std::min((int)player.catalog.categories.inventory.items.size(), ui.items_per_row);
-		auto y_dim = (int)std::ceil((float)player.catalog.categories.inventory.items.size() / (float)ui.items_per_row);
+		auto x_dim = std::min(static_cast<int>(player.catalog.categories.inventory.items.size()), ui.items_per_row);
+		auto y_dim = static_cast<int>(std::ceil(static_cast<float>(player.catalog.categories.inventory.items.size()) / static_cast<float>(ui.items_per_row)));
 
 		selector.set_dimensions({x_dim, y_dim});
 		selector.update();

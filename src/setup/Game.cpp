@@ -950,6 +950,18 @@ void Game::playtester_portal() {
 							game_state.get_current_state().init(services, 104);
 							player.set_position({7 * 32, 7 * 32});
 						}
+						if (ImGui::Button("Arena")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 121);
+							player.set_position({3 * 32, 9 * 32});
+						}
+						if (ImGui::Button("Bunker")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 124);
+							player.set_position({4 * 32, 3 * 32});
+						}
 						if (ImGui::Button("Cargo")) {
 							services.assets.click.play();
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));

@@ -27,6 +27,7 @@
     { "room_id": 121, "label": "FIRSTWIND_ARENA_01"},
     { "room_id": 122, "label": "FIRSTWIND_FALL_01"},
     { "room_id": 123, "label": "FIRSTWIND_BRIDGE_01"},
+    { "room_id": 124, "label": "FIRSTWIND_BUNKER_01"},
     
     { "room_id": 200, "label": "OVERTURNED_CANOPY_01"},
     { "room_id": 299, "label": "OVERTURNED_CANOPY_02"},

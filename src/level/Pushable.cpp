@@ -39,7 +39,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		bool can_respawn = true;
 		if (player.collider.bounding_box.overlaps(start_box)) { can_respawn = false; }
 		for (auto& p : map.pushables) {
-			if (p.get_bounding_box().overlaps(start_box)) { can_respawn = false; }
+			if (p.get_bounding_box().overlaps(start_box) && &p != this) { can_respawn = false; }
 		}
 		if (can_respawn) {
 			reset(svc, map);
@@ -90,6 +90,9 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	}
 	for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
+	for (auto& block : map.switch_blocks) {
+		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
+	}
 	// pushable should only be moved by a platform if it's on top of one
 	for (auto& platform : map.platforms) {
 		if (platform.bounding_box.overlaps(collider.jumpbox)) { collider.handle_collider_collision(platform.bounding_box); }

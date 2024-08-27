@@ -136,15 +136,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto quest_id = entry["quest_id"].as<int>();
 			destroyers.push_back(Destroyable(svc, pos, quest_id));
 		}
-		for (auto& entry : metadata["switches"].array_view()) {
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			pos *= svc.constants.cell_size;
-			auto type = entry["type"].as<int>();
-			auto button_id = entry["button_id"].as<int>();
-			switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type));
-		}
 	}
 
 	for (auto& entry : metadata["portals"].array_view()) {
@@ -192,6 +183,15 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto button_id = entry["button_id"].as<int>();
 		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
 	}
+	for (auto& entry : metadata["switches"].array_view()) {
+		sf::Vector2<float> pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		pos *= svc.constants.cell_size;
+		auto type = entry["type"].as<int>();
+		auto button_id = entry["button_id"].as<int>();
+		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
+	}
 
 	generate_collidable_layer();
 	if (!soft) {
@@ -215,7 +215,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			effects.push_back(entity::Effect(*m_services, spawn.pos, {}, 0, 4));
+			effects.push_back(entity::Effect(*m_services, spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0, 4));
 		}
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);

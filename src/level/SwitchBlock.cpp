@@ -15,6 +15,7 @@ SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> positi
 	collider.sync_components();
 	sprite.setTexture(svc.assets.t_switch_blocks);
 	sprite.setTextureRect(sf::IntRect{{static_cast<int>(type) * 32, static_cast<int>(state) * 32}, {32, 32}});
+	if (svc.data.switch_is_activated(button_id)) { state = SwitchBlockState::empty; }
 }
 
 void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {

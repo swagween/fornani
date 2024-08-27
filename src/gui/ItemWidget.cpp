@@ -38,7 +38,9 @@ void ItemWidget::update(automa::ServiceProvider& svc) {
 
 void ItemWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(sticker);
-	sprites.item.setTextureRect(sf::IntRect({(id - 1) * (int)dimensions.x, 0}, {(int)dimensions.x, (int)dimensions.y}));
+	auto u = static_cast<int>(((id - 1) % 16) * dimensions.x);
+	auto v = static_cast<int>(std::floor((static_cast<float>(id - 1) / 16.f)) * dimensions.y);
+	sprites.item.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
 	sprites.gun.setTextureRect(sf::IntRect({id * (int)gun_dimensions.x, 0}, {(int)gun_dimensions.x, (int)gun_dimensions.y}));
 	if (flags.test(WidgetFlags::gun)) {
 		win.draw(sprites.gun);

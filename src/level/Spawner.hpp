@@ -34,7 +34,7 @@ class Spawner {
 	util::BitFlags<SpawnerAttributes> attributes{};
 	int enemy_id{};
 	util::Counter spawn_count{};
-	util::Cooldown spawn_timer{256};
+	util::Cooldown spawn_timer{512};
 
 };
 } // namespace world

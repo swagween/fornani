@@ -69,6 +69,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.item.test(Item::orb_medium)) { svc.assets.orb_2.play(); }
 	if (flags.item.test(Item::orb_high)) { svc.assets.orb_3.play(); }
 	if (flags.item.test(Item::orb_max)) { svc.assets.orb_4.play(); }
+	if (flags.item.test(Item::health_increase)) { svc.assets.health_increase.play(); }
 
 	// player
 	if (flags.player.test(Player::land)) { svc.assets.landed.play(); }

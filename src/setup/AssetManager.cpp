@@ -273,6 +273,8 @@ void AssetManager::load_audio() {
 
 	heal_buffer.loadFromFile(finder.resource_path + "/audio/sfx/heal.wav");
 	heal.setBuffer(heal_buffer);
+	b_health_increase.loadFromFile(finder.resource_path + "/audio/sfx/health_increase.wav");
+	health_increase.setBuffer(b_health_increase);
 	orb_1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_1.wav");
 	orb_1.setBuffer(orb_1_buffer);
 	orb_2_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_2.wav");
