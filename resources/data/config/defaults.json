@@ -67,7 +67,7 @@
     },
     "menu_toggle_secondary": {
       "mouse_button": "",
-      "keyboard_key": "W",
+      "keyboard_key": "Esc",
       "gamepad_button": 8
     },
     "menu_forward": {
