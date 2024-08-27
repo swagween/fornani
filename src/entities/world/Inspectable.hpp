@@ -21,6 +21,7 @@ class Console;
 
 namespace entity {
 
+enum class InspectableAttributes { activate_on_contact };
 enum class InspectableFlags { hovered, hovered_trigger, activated, destroy, engaged };
 
 class Inspectable {
@@ -29,7 +30,7 @@ class Inspectable {
 	using Vecu16 = sf::Vector2<uint32_t>;
 
 	Inspectable() = default;
-	Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates = 0, int native = 0);
+	Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates = 0, int native = 0, bool aoc = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 	void destroy() { flags.set(InspectableFlags::destroy); } 
@@ -43,9 +44,6 @@ class Inspectable {
 	Vecu16 scaled_position{};
 	shape::Shape bounding_box{};
 
-	bool activated{};
-	bool activate_on_contact{};
-
 	std::string key{};
 	int alternates{};
 	int current_alt{};
@@ -53,6 +51,7 @@ class Inspectable {
   private:
 	std::string id{};
 	int native_id{};
+	util::BitFlags<InspectableAttributes> attributes{};
 	util::BitFlags<InspectableFlags> flags{};
 	sf::Sprite sprite{};
 	anim::Animation animation{};

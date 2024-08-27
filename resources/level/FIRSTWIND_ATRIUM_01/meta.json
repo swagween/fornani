@@ -229,6 +229,29 @@
       "start": 0.500000
     }
   ],
+  "destroyers": [
+    {
+      "quest_id": 122,
+      "position": [
+        13,
+        51
+      ]
+    },
+    {
+      "quest_id": 122,
+      "position": [
+        13,
+        52
+      ]
+    },
+    {
+      "quest_id": 122,
+      "position": [
+        13,
+        53
+      ]
+    }
+  ],
   "enemies": [
     {
       "id": 1,

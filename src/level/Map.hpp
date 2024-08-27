@@ -179,11 +179,11 @@ class Map {
 
 	util::Cooldown loading{}; // shouldn't exist
 	util::Cooldown spawning{2};
+	util::Counter spawn_counter{};
 
 	// debug
 	util::Stopwatch stopwatch{};
-
-	util::Cooldown end_demo{1600};
+	util::Cooldown end_demo{500};
 
   private:
 	int abyss_distance{400};

@@ -15,7 +15,10 @@
     ],
     "style": 0,
     "background": 5,
-    "music": "dusken_cove"
+    "music": "dusken_cove",
+    "styles": {
+      "breakables": 0
+    }
   },
   "portals": [
     {
@@ -45,7 +48,8 @@
         8
       ],
       "activate_on_contact": false,
-      "key": "upstairs_computer"
+      "key": "upstairs_computer",
+      "alternates": 0
     },
     {
       "dimensions": [
@@ -57,7 +61,8 @@
         23
       ],
       "activate_on_contact": false,
-      "key": "downstairs_computer"
+      "key": "downstairs_computer",
+      "alternates": 0
     }
   ],
   "animators": [
@@ -171,6 +176,17 @@
       "position": [
         25,
         21
+      ]
+    },
+    {
+      "id": 42069,
+      "item_id": 30,
+      "type": 3,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        25,
+        16
       ]
     }
   ],

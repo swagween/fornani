@@ -28,7 +28,7 @@ class Projectile;
 
 namespace enemy {
 
-enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground };
+enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker };
@@ -50,7 +50,7 @@ class Enemy : public entity::Entity {
   public:
 	Enemy() = default;
 	virtual ~Enemy() {}
-	Enemy(automa::ServiceProvider& svc, std::string_view label);
+	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;

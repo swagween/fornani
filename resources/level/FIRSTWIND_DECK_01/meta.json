@@ -15,7 +15,10 @@
     ],
     "style": 0,
     "background": 5,
-    "music": "dusken_cove"
+    "music": "dusken_cove",
+    "styles": {
+      "breakables": 0
+    }
   },
   "portals": [
     {
@@ -35,11 +38,11 @@
     },
     {
       "dimensions": [
-        26,
+        6,
         1
       ],
       "position": [
-        42,
+        73,
         15
       ],
       "source_id": 115,
@@ -47,6 +50,44 @@
       "activate_on_contact": true,
       "locked": false,
       "key_id": 0
+    }
+  ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        10
+      ],
+      "position": [
+        72,
+        0
+      ],
+      "activate_on_contact": true,
+      "key": "leap",
+      "alternates": 0
+    }
+  ],
+  "destroyers": [
+    {
+      "quest_id": 115,
+      "position": [
+        68,
+        7
+      ]
+    },
+    {
+      "quest_id": 115,
+      "position": [
+        68,
+        8
+      ]
+    },
+    {
+      "quest_id": 115,
+      "position": [
+        68,
+        9
+      ]
     }
   ],
   "enemies": [
@@ -64,28 +105,5 @@
       14,
       3
     ]
-  },
-  "destroyers": [
-    {
-      "quest_id": 115,
-      "position": [
-        46,
-        13
-      ]
-    },
-    {
-      "quest_id": 115,
-      "position": [
-        47,
-        13
-      ]
-    },
-    {
-      "quest_id": 115,
-      "position": [
-        48,
-        13
-      ]
-    }
-  ]
+  }
 }

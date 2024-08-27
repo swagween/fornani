@@ -5,7 +5,10 @@
 
 namespace enemy {
 
-Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label) : entity::Entity(svc), label(label), health_indicator(svc) {
+Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned) : entity::Entity(svc), label(label), health_indicator(svc) {
+
+	if (spawned) { flags.general.set(GeneralFlags::spawned); }
+
 	auto const& in_data = svc.data.enemy[label];
 	auto const& in_metadata = in_data["metadata"];
 	auto const& in_physical = in_data["physical"];
@@ -99,6 +102,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position));
 		svc.soundboard.flags.frdog.set(audio::Frdog::death);
+		map.spawn_counter.update(-1);
 	}
 	flags.triggers = {};
 	if (map.off_the_bottom(collider.physics.position)) {

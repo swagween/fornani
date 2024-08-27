@@ -22,6 +22,7 @@ Inventory::Inventory() {
 	item_labels.insert({15, "boiler_key"});
 	item_labels.insert({16, "radar_device"});
 	item_labels.insert({29, "heart_keychain"});
+	item_labels.insert({30, "stationary_rat"});
 }
 
 void Inventory::update(automa::ServiceProvider& svc) {

@@ -4,7 +4,7 @@
 
 namespace enemy {
 
-Eyebit::Eyebit(automa::ServiceProvider& svc) : Enemy(svc, "eyebit") {
+Eyebit::Eyebit(automa::ServiceProvider& svc, bool spawned) : Enemy(svc, "eyebit", spawned) {
 	animation.set_params(idle);
 	seeker_cooldown.start(2);
 	collider.flags.general.set(shape::General::ignore_resolution);

@@ -672,6 +672,7 @@ void Player::push_to_loadout(int id) {
 		tutorial.trigger();
 		tutorial.turn_on();
 	}
+	if (id == 10) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
 	arsenal.value().push_to_loadout(id);
 	m_services->stats.player.guns_collected.update();
 }

@@ -6,7 +6,7 @@
 
 namespace entity {
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates, int native) : scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates) {
+Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates, int native, bool aoc) : scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates) {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
@@ -15,13 +15,14 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, s
 	animation.end();
 	id = key.data() + std::to_string(room_id);
 	native_id = native == 0 ? room_id : native;
+	if (aoc) { attributes.set(InspectableAttributes::activate_on_contact); }
 }
 
 void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set) {
 	position = static_cast<Vec>(scaled_position * svc.constants.u32_cell_size);
 	dimensions = static_cast<Vec>(scaled_dimensions * svc.constants.u32_cell_size);
 	bounding_box.set_position(position);
-	activated = false;
+	flags.reset(InspectableFlags::activated);
 	animation.update();
 
 	//check for quest-based alternates
@@ -31,16 +32,14 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 	if (bounding_box.overlaps(player.collider.hurtbox)) {
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
 		flags.set(InspectableFlags::hovered);
-		if (player.controller.inspecting()) { activated = true; }
+		if (player.controller.inspecting() || attributes.test(InspectableAttributes::activate_on_contact)) { flags.set(InspectableFlags::activated); }
 	} else {
 		flags.reset(InspectableFlags::hovered);
 	}
-	if (activated) {
+	if (flags.test(InspectableFlags::activated)) {
 		console.set_source(set);
 		if (alternates < 1) { console.load_and_launch(key); } else {
 			std::string new_key = key + std::to_string(current_alt);
-			//std::cout << "New key: " << new_key << "\n";
-			//std::cout << "Current alt: " << current_alt << "\n";
 			console.load_and_launch(new_key);
 		}
 	}
@@ -65,7 +64,7 @@ void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Ve
 	sprite.setTextureRect(sf::IntRect{{u, v}, {32, 32}});
 
 	if (svc.greyblock_mode()) {
-		if (activated) {
+		if (flags.test(InspectableFlags::activated)) {
 			box.setFillColor(sf::Color{80, 180, 120, 100});
 		} else {
 			box.setFillColor(sf::Color{180, 120, 80, 100});
@@ -75,7 +74,7 @@ void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Ve
 		box.setPosition(bounding_box.position - campos);
 		box.setSize(dimensions);
 		win.draw(box);
-	} else {
+	} else if (!attributes.test(InspectableAttributes::activate_on_contact)) {
 		win.draw(sprite);
 	}
 }

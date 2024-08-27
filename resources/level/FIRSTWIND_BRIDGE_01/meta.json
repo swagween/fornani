@@ -2,8 +2,8 @@
   "meta": {
     "room_id": 123,
     "metagrid": [
-      0,
-      0
+      4,
+      -1
     ],
     "dimensions": [
       32,
@@ -15,7 +15,7 @@
     ],
     "style": 0,
     "background": 5,
-    "music": "",
+    "music": "dusken_cove",
     "styles": {
       "breakables": 0
     }

@@ -30,6 +30,9 @@ SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> posi
 	if (svc.data.switch_is_activated(id)) {
 		state = SwitchButtonState::pressed;
 		state_function = std::bind(&SwitchButton::update_pressed, this);
+		collider.dimensions.y = 4.f;
+		collider.physics.position.y += 6.f;
+		sprite.set_params("pressed", true);
 		for (auto& block : map.switch_blocks) {
 			if (block.get_id() == id && pressed()) { block.turn_off(); }
 		}

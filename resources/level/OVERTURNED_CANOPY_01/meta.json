@@ -2,7 +2,7 @@
   "meta": {
     "room_id": 200,
     "metagrid": [
-      24,
+      25,
       7
     ],
     "dimensions": [
@@ -15,7 +15,10 @@
     ],
     "style": 1,
     "background": 3,
-    "music": "whispering_island"
+    "music": "whispering_island",
+    "styles": {
+      "breakables": 0
+    }
   },
   "portals": [
     {
@@ -326,20 +329,6 @@
       ],
       "position": [
         2,
-        43
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        14,
         43
       ],
       "automatic": false,

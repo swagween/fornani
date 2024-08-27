@@ -19,6 +19,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	center_box.setSize(svc.constants.f_screen_dimensions * 0.5f);
 	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
+	spawn_counter.start();
 
 	int ctr{};
 	for (auto& room : svc.data.map_jsons) {
@@ -112,12 +113,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			dim.y = entry["dimensions"][1].as<int>();
 			auto alt = entry["alternates"].as<int>();
 			auto native = entry["native_id"].as<int>();
-			inspectables.push_back(entity::Inspectable(svc, dim, pos, key, room_id, alt, native));
-			inspectables.back().activate_on_contact = (bool)entry["activate_on_contact"].as_bool();
-			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) {
-				inspectables.back().destroy();
-				// std::cout << "Destroyed inspectable " << inspectables.back().get_id() << ".\n";
-			}
+			auto aoc = static_cast<bool>(entry["activate_on_contact"].as_bool());
+			inspectables.push_back(entity::Inspectable(svc, dim, pos, key, room_id, alt, native, aoc));
+			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 		}
 
 		for (auto& entry : metadata["enemies"].array_view()) {
@@ -212,7 +210,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
-			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id);
+			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id, true);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			effects.push_back(entity::Effect(*m_services, spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0, 4));
@@ -358,6 +356,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		svc.soundboard.turn_off();
 		svc.stats.player.death_count.update();
 	}
+
 	// demo only
 	if (svc.state_controller.actions.consume(automa::Actions::end_demo)) { end_demo.start(); }
 	end_demo.update();
@@ -558,6 +557,7 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 
 void Map::spawn_enemy(int id, sf::Vector2<float> pos) {
 	enemy_spawns.push_back({pos, id});
+	spawn_counter.update();
 	flags.state.set(LevelState::spawn_enemy);
 }
 

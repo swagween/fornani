@@ -18,9 +18,8 @@ void Spawner::update(automa::ServiceProvider& svc, Map& map) {
 	if (spawn_timer.is_complete()) {
 		auto random_offset = svc.random.random_vector_float(-16.f, 16.f);
 		map.effects.push_back(entity::Effect(svc, position + sf::Vector2<float>{16.f, 16.f}, {0.f, 4.f}, 2, 7));
-		map.spawn_enemy(enemy_id, position + random_offset);
+		if (map.spawn_counter.get_count() < 9) { map.spawn_enemy(enemy_id, position + random_offset); }
 		spawn_timer.start();
-		spawn_count.update();
 	}
 }
 

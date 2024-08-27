@@ -14,7 +14,7 @@
       1
     ],
     "style": 0,
-    "background": 4,
+    "background": 5,
     "music": "dusken_cove",
     "styles": {
       "breakables": 0
@@ -77,22 +77,6 @@
       ]
     },
     {
-      "button_id": 4368,
-      "type": 1,
-      "position": [
-        13,
-        3
-      ]
-    },
-    {
-      "button_id": 4368,
-      "type": 1,
-      "position": [
-        13,
-        2
-      ]
-    },
-    {
       "button_id": 4369,
       "type": 1,
       "position": [
@@ -115,6 +99,22 @@
         22,
         14
       ]
+    },
+    {
+      "button_id": 12311,
+      "type": 0,
+      "position": [
+        13,
+        2
+      ]
+    },
+    {
+      "button_id": 12311,
+      "type": 0,
+      "position": [
+        13,
+        3
+      ]
     }
   ],
   "switches": [
@@ -127,19 +127,19 @@
       ]
     },
     {
-      "button_id": 4368,
-      "type": 1,
-      "position": [
-        28,
-        8
-      ]
-    },
-    {
       "button_id": 4369,
       "type": 1,
       "position": [
         7,
         3
+      ]
+    },
+    {
+      "button_id": 12311,
+      "type": 0,
+      "position": [
+        28,
+        8
       ]
     }
   ]
