@@ -44,10 +44,10 @@
       "variant": "skycorps"
     },
     "physical": {
-      "dimensions": [ 44, 44 ],
+      "dimensions": [ 44, 40 ],
       "sprite_dimensions": [ 80, 80 ],
       "spritesheet_dimensions": [ 5, 4 ],
-      "offset": [ 22, -14 ],
+      "offset": [ 22, -19 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [ 200.0, 300.0 ],
