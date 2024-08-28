@@ -10,7 +10,7 @@
     "suite": [
       [
         "You find a captain's log. Would you like to read it?%0"
-      ], ["Wednesday, November 22. Clear skies today."]
+      ], ["Wednesday, August 22. Clear skies today, and hot.", "We received a transmission from Grand Island about a storm system rolling in from the northeast in the coming days, so we're redirecting our course southward.", "Hopefully the storm will change course and miss us."]
     ],
     "responses": [
       [

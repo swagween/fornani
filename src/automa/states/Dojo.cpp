@@ -24,7 +24,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	if (!svc.data.exists(room_number)) {
 		svc.data.rooms.push_back(room_number);
 		svc.data.load_data(room_name);
-		std::cout << "Loading New Room...\n";
+		//std::cout << "Loading New Room...\n";
 	}
 	map.load(svc, room_number);
 	bake_maps(svc, {map.room_id}, true);

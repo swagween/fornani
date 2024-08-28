@@ -69,6 +69,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 	player.collider.handle_collider_collision(collider.bounding_box);
 	for (auto& enemy : map.enemy_catalog.enemies) {
+		if (enemy->is_transcendent()) { continue; }
 		enemy->get_collider().handle_collider_collision(collider.bounding_box);
 		if (size == 1) {
 			collider.handle_collider_collision(enemy->get_collider().bounding_box);

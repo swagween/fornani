@@ -10,18 +10,12 @@
       "x": 102.0,
       "y": 327.0
     },
-    "arsenal": [
-
-    ],
+    "arsenal": [],
     "equipped_gun": 0,
-    "abilities": [
-
-    ],
-    "items": [
-
-    ],
+    "abilities": [],
+    "items": [],
     "stats": {
-      "death_count": 2,
+      "death_count": 0,
       "bullets_fired": 0,
       "guns_collected": 0,
       "items_collected": 0,
@@ -38,22 +32,16 @@
   },
   "save_point_id": 100,
   "unlocked_doors": [
-
   ],
   "opened_chests": [
-
   ],
   "activated_switches": [
-
   ],
   "destroyed_blocks": [
-
   ],
   "quest_progressions": [
-
   ],
   "destroyed_inspectables": [
-
   ],
   "tutorial": {
     "state": 0,
@@ -66,6 +54,5 @@
     "inventory": false
   },
   "discovered_rooms": [
-
   ]
 }
