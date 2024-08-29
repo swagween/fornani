@@ -118,7 +118,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 			if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 			switch (event.type) {
-			case sf::Event::Closed: break;
+			case sf::Event::Closed: goto shutdown;
 			case sf::Event::Resized:
 				measurements.win_size.x = window.getSize().x;
 				measurements.win_size.y = window.getSize().y;
@@ -198,6 +198,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.ticker.end_frame();
 	}
 
+shutdown:
 	// shutdown
 	// explicitly delete music player since it can't be deleted after AssetManager
 	services.music.stop();
