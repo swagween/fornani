@@ -44,6 +44,8 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.world.test(World::small_crash)) { randomize(svc, svc.assets.small_crash, 0.1f); }
 	if (flags.world.test(World::switch_press)) { svc.assets.switch_press.play(); }
 	if (flags.world.test(World::block_toggle)) { svc.assets.block_toggle.play(); }
+	if (flags.world.test(World::door_open)) { svc.assets.door_open.play(); }
+	if (flags.world.test(World::door_unlock)) { svc.assets.door_unlock.play(); }
 	if (flags.world.test(World::pushable)) { repeat(svc, svc.assets.heavy_move, 80); }
 
 	//frdog

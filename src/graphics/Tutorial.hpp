@@ -30,6 +30,7 @@ class Tutorial {
 	util::BitFlags<TutorialHelpers> helpers{};
 	TutorialFlags current_state{};
 	text::HelpText help_marker;
+	util::Cooldown maximum_display_time{4800};
 };
 
 } // namespace flfx

@@ -1,10 +1,9 @@
 #include "HelpText.hpp"
-#include "HelpText.hpp"
 #include "../service/ServiceProvider.hpp"
 
 namespace text {
 
-void HelpText::init(automa::ServiceProvider& svc, std::string start, std::string_view code, std::string end, int delay_time, bool include_background) {
+void HelpText::init(automa::ServiceProvider& svc, std::string start, std::string_view code, std::string end, int delay_time, bool include_background, bool no_blink) {
 	font.loadFromFile(svc.text.text_font);
 	font.setSmooth(false);
 	text_color = svc.styles.colors.ui_white;
@@ -23,6 +22,10 @@ void HelpText::init(automa::ServiceProvider& svc, std::string start, std::string
 	data.setPosition(position);
 	delay.start(delay_time);
 	background = include_background;
+	if (no_blink) {
+		flags.set(HelpTextFlags::no_blink);
+		delay.cancel();
+	}
 }
 
 void HelpText::render(sf::RenderWindow& win) {
@@ -30,6 +33,7 @@ void HelpText::render(sf::RenderWindow& win) {
 	if (!ready()) { return; }
 	alpha_counter.update();
 	auto alpha = static_cast<int>(-128 * cos(0.06f * alpha_counter.get_count()) + 128);
+	if (flags.test(HelpTextFlags::no_blink)) { alpha = 255; }
 	text_color.a = std::clamp(alpha, 0, 255);
 	bg_color.a = std::clamp(alpha, 0, 255);
 	if (background) {
@@ -41,7 +45,6 @@ void HelpText::render(sf::RenderWindow& win) {
 	data.setFillColor(text_color);
 	win.draw(data);
 }
-
 
 void HelpText::set_color(sf::Color color) { text_color = color; }
 

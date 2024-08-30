@@ -101,7 +101,7 @@
   "radar_device": {
     "index": 16,
     "title": "Radar Device",
-    "naive_description": "A map system. You can view the map by toggling left or right in this window.",
+    "naive_description": "A map system. You can view the map by following the instruction below this window.",
     "unique": true
   },
   "heart_keychain": {

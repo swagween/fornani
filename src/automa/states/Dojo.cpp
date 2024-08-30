@@ -46,7 +46,12 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player->height()};
 				player->set_position(spawn_position, true);
 				camera.force_center(player->anchor_point);
-				if (portal.activate_on_contact()) { enter_room.start(90); }
+				if (portal.activate_on_contact()) {
+					enter_room.start(90);
+				} else {
+					if (!portal.already_open()) { portal.close(); }
+					player->set_idle();
+				}
 				if (portal.dimensions.x > 33.f && portal.position.y > 1.f) { player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity; }
 			}
 		}

@@ -40,6 +40,8 @@ struct StatTracker {
 		using namespace std::chrono;
 		return round<nanoseconds>(duration<float>{time});
 	}
+
+	auto tt_formatted() { return std::format("{:.3f}", time_trials.bryns_gun); }
 };
 
 } // namespace fornani

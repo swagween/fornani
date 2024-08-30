@@ -65,7 +65,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 		svc.soundboard.flags.world.set(audio::World::load);
 	}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
+	if (svc.controller_map.label_to_control.at("menu_back").triggered() || svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) {
 		svc.state_controller.submenu = menu_type::main;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);

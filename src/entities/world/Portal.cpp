@@ -6,11 +6,18 @@
 
 namespace entity {
 
-Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, int key_id) : scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}) {
+Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, bool already_open, int key_id) : scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}) {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
 	bounding_box.set_position(position);
+	sprite.setTexture(svc.assets.t_portals);
+	if (already_open) {
+		state = PortalRenderState::open;
+		flags.attributes.set(PortalAttributes::already_open);
+	}
+	lookup = sf::IntRect({static_cast<int>(state) * svc.constants.i_cell_size, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size * 2});
+	sprite.setTextureRect(lookup);
 	if (activate_on_contact) { flags.attributes.set(PortalAttributes::activate_on_contact); }
 	if (locked) { flags.state.set(PortalState::locked); }
 	if (svc.data.door_is_unlocked(key_id)) { flags.state.reset(PortalState::locked); }
@@ -21,6 +28,7 @@ void Portal::update(automa::ServiceProvider& svc) {
 	dimensions = static_cast<Vec>(scaled_dimensions * svc.constants.u32_cell_size);
 	bounding_box.set_position(position);
 	bounding_box.dimensions = dimensions;
+	lookup.left = static_cast<int>(state) * svc.constants.i_cell_size;
 }
 
 void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
@@ -36,6 +44,10 @@ void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec cam
 		box.setPosition(bounding_box.position - campos);
 		box.setSize(dimensions);
 		win.draw(box);
+	} else if (!flags.attributes.test(PortalAttributes::activate_on_contact)) {
+		sprite.setPosition(position - offset - campos);
+		sprite.setTextureRect(lookup);
+		win.draw(sprite);
 	}
 }
 
@@ -77,10 +89,12 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 			if (player.has_item(meta.key_id)) {
 				flags.state.reset(PortalState::locked);
 				flags.state.set(PortalState::unlocked);
+				svc.soundboard.flags.world.set(audio::World::door_unlock);
 				console.load_and_launch("unlocked_door");
 				console.append(player.catalog.categories.inventory.get_item(meta.key_id).get_label());
 				console.display_item(meta.key_id);
 				svc.data.unlock_door(meta.key_id);
+				svc.soundboard.flags.world.set(audio::World::door_unlock);
 			} else {
 				console.load_and_launch("locked_door");
 				flags.state.reset(PortalState::activated);
@@ -92,7 +106,11 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 	}
 }
 
-void Portal::change_states(automa::ServiceProvider& svc, int room_id, bool& fade_out, bool& done) const {
+void Portal::change_states(automa::ServiceProvider& svc, int room_id, bool& fade_out, bool& done) {
+	if (!flags.attributes.test(PortalAttributes::activate_on_contact) && (!fade_out && !done)) {
+		state = PortalRenderState::open;
+		if (!flags.attributes.test(PortalAttributes::already_open)) { svc.soundboard.flags.world.set(audio::World::door_open); }
+	}
 	fade_out = true;
 	if (done) {
 		try {

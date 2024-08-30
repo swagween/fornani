@@ -9,7 +9,7 @@
 namespace world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size) {
-	collider = shape::Collider({svc.constants.cell_size * static_cast<float>(size) - 2.f, svc.constants.cell_size * static_cast<float>(size) - 2.f});
+	collider = shape::Collider({svc.constants.cell_size * static_cast<float>(size) - 4.f, svc.constants.cell_size * static_cast<float>(size) - 1.f});
 	collider.physics.position = position;
 	start_position = position;
 	collider.physics.set_constant_friction({0.95f, 0.98f});
@@ -54,6 +54,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (player.controller.moving_right() && player.collider.physics.position.x < collider.physics.position.x) { collider.physics.acceleration.x = speed / mass; }
 		if (abs(collider.physics.acceleration.x) > 0.f) { svc.soundboard.flags.world.set(audio::World::pushable); }
 		state.set(PushableState::moved);
+		state.set(PushableState::moving);
 	}
 
 	//debug
@@ -77,6 +78,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 	}
 	if (size == 1) { collider.handle_collider_collision(player.collider.bounding_box); } // big ones should crush the player
+	if (abs(forced_momentum.x) > 0.1f || abs(forced_momentum.y) > 0.1f) { set_moving(); }
 	collider.physics.position += forced_momentum;
 	if (!collider.has_jump_collision()) { forced_momentum = {}; }
 	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { forced_momentum = {}; }
@@ -85,7 +87,9 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	for (auto& other : map.pushables) {
 		if (&other == this) { continue; }
 		if (other.collider.wallslider.overlaps(collider.bounding_box)) {
-			if (collider.pushes(other.collider)) { other.collider.physics.velocity.x = collider.physics.velocity.x * 2.f; }
+			if (collider.pushes(other.collider)) {
+				other.collider.physics.velocity.x = collider.physics.velocity.x * 2.f;
+			}
 		}
 		collider.handle_collider_collision(other.collider.bounding_box);
 	}
@@ -112,8 +116,9 @@ void Pushable::handle_collision(shape::Collider& other) const { other.handle_col
 void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	snap = collider.snap_to_grid(1, 4.f, 2.f);
 	if (abs(random_offset.x) > 0.f || abs(random_offset.y) > 0.f) { snap = collider.physics.position; } // don't snap if shaking
-	if (abs(collider.physics.velocity.x) > 0.5f) { snap.x = collider.physics.position.x; } // don't snap if moving
-	if (abs(collider.physics.velocity.y) > 0.5f) { snap.y = collider.physics.position.y; }
+	if (abs(collider.physics.velocity.x) > 0.1f || abs(collider.physics.velocity.y) > 0.1f) { set_moving(); }
+	if (is_moving()) { snap = collider.physics.position; } // don't snap if moving
+	state.reset(PushableState::moving); // we only use this flag for rendering
 	sprite.setPosition(snap - cam + random_offset - sprite_offset);
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);

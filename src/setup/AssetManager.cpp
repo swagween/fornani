@@ -137,6 +137,7 @@ void AssetManager::import_textures() {
 	t_switches.loadFromFile(finder.resource_path + "/image/tile/switches.png");
 	t_switch_blocks.loadFromFile(finder.resource_path + "/image/tile/switch_blocks.png");
 	t_indicator.loadFromFile(finder.resource_path + "/image/entity/arrow.png");
+	t_portals.loadFromFile(finder.resource_path + "/image/tile/portals.png");
 
 	// backgrounds
 	t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");
@@ -352,11 +353,16 @@ void AssetManager::load_audio() {
 	b_thud.loadFromFile(finder.resource_path + "/audio/sfx/thud.wav");
 	b_small_crash.loadFromFile(finder.resource_path + "/audio/sfx/small_crash.wav");
 	b_heavy_move.loadFromFile(finder.resource_path + "/audio/sfx/heavy_move.wav");
+	b_door_open.loadFromFile(finder.resource_path + "/audio/sfx/door_open.wav");
+	b_door_unlock.loadFromFile(finder.resource_path + "/audio/sfx/door_unlock.wav");
 	hard_hit.setBuffer(b_enemy_hit_inv);
 	wall_hit.setBuffer(b_wall_hit);
 	thud.setBuffer(b_thud);
 	small_crash.setBuffer(b_small_crash);
 	heavy_move.setBuffer(b_heavy_move);
+	door_open.setBuffer(b_door_open);
+	door_unlock.setBuffer(b_door_unlock);
+	
 
 	save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 	save.setBuffer(save_buffer);

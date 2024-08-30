@@ -8,6 +8,9 @@
 #include <unordered_map>
 #include <vector>
 
+namespace automa {
+struct ServiceProvider;
+}
 namespace fornani {
 
 // needs some further thinking
@@ -45,7 +48,7 @@ class QuestTracker {
 	int get_progression(QuestType type, int id);
 	void progress(QuestType type, int id, int source, int amount = 1, bool hard_set = false);
 	void reset(QuestType type, int id);
-	void process(util::QuestKey key);
+	void process(automa::ServiceProvider& svc, util::QuestKey key);
 
   private:
 	struct {

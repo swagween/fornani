@@ -145,13 +145,13 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					// flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
-					/*if (flags.test(GameFlags::playtest)) {
+					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
 						services.assets.menu_back.play();
 					} else {
 						flags.set(GameFlags::playtest);
 						services.assets.menu_next.play();
-					}*/
+					}
 				}
 				if (event.key.code == sf::Keyboard::F12) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {

@@ -1,5 +1,6 @@
 
 #include "QuestTracker.hpp"
+#include "../service/ServiceProvider.hpp"
 #include <iostream>
 
 namespace fornani {
@@ -53,12 +54,13 @@ void QuestTracker::reset(QuestType type, int id) {
 	if (type == QuestType::fetch_text) { suites.fetch_text.reset(id); }
 }
 
-void QuestTracker::process(util::QuestKey key) {
+void QuestTracker::process(automa::ServiceProvider& svc, util::QuestKey key) {
 	if (key.hard_set > 0) {
 		while (get_progression(static_cast<QuestType>(key.type), key.id) < key.hard_set) { progress(static_cast<QuestType>(key.type), key.id, key.source_id, key.amount, true); }
 	} else {
 		progress(static_cast<QuestType>(key.type), key.id, key.source_id, key.amount);
 	}
+	svc.data.push_quest(key);
 }
 
 

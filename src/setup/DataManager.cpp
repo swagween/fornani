@@ -209,7 +209,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 		auto amt = q[3].as<int>();
 		auto hard = q[4].as<int>();
 		quest_progressions.push_back(util::QuestKey{type, id, srcid, amt, hard});
-		m_services->quest.process(quest_progressions.back());
+		m_services->quest.process(*m_services, quest_progressions.back());
 	}
 
 	player.tutorial.flags = {};

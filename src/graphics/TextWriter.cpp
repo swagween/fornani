@@ -294,7 +294,7 @@ void TextWriter::check_for_event(Message& msg, Codes code, bool response) {
 		}
 
 		msg.data.setString(msg.data.getString().substring(0, index));
-		if (out_quest.type == 63) { msg.data.setString(msg.data.getString() + std::to_string(m_services->stats.time_trials.bryns_gun)); } // fetch text
+		if (out_quest.type == 63) { msg.data.setString(msg.data.getString() + m_services->stats.tt_formatted()); } // fetch text
 		if (!response) { out_quest = {}; }
 
 		return;
@@ -348,8 +348,7 @@ void TextWriter::process_selection() {
 }
 
 void TextWriter::process_quest(util::QuestKey out) {
-	m_services->quest.process(out);
-	m_services->data.push_quest(out);
+	m_services->quest.process(*m_services, out);
 	if (out.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
 	if (out.type == 33) { communicators.reveal_item.set(out.id); }
 	if (out.type == 88) { m_services->state_controller.actions.set(automa::Actions::console_transition); }

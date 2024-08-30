@@ -92,7 +92,9 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& pushable : map.pushables) { collider.handle_collider_collision(pushable.get_bounding_box()); }
 	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
-	for (auto& block : map.switch_blocks) { collider.handle_collider_collision(block.get_bounding_box()); }
+	for (auto& block : map.switch_blocks) {
+		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
+	}
 	for (auto& destroyer : map.destroyers) { collider.handle_collider_collision(destroyer.get_bounding_box()); }
 	for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
 	collider.reset();

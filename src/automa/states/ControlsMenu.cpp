@@ -74,7 +74,7 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	}
 	if (svc.controller_map.label_to_control.at("right").triggered()) {}
 	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
+	if (svc.controller_map.label_to_control.at("menu_back").triggered() || svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) {
 		svc.state_controller.submenu = menu_type::options;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);

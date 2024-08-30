@@ -40,7 +40,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 
 	mode = Mode::inventory;
 
-	help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
+	help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 
 }
@@ -71,9 +71,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	if (mode == Mode::minimap) {
 		title.setString("MAP");
 		minimap.update(svc, map, player);
-
 		selector.update();
-
 	}
 }
 
@@ -113,9 +111,9 @@ void InventoryWindow::close() {
 void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
 	mode = (mode == Mode::inventory) ? Mode::minimap : Mode::inventory;
 	if (mode == Mode::inventory) {
-		help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
+		help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true, true);
 	} else {
-		help_marker.init(svc, "Press [", "arms_switch_left", "] to view Inventory.", 20, true);
+		help_marker.init(svc, "Press [", "arms_switch_left", "] to view Inventory.", 20, true, true);
 		minimap.center();
 	}
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
