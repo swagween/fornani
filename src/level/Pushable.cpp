@@ -93,7 +93,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 		collider.handle_collider_collision(other.collider.bounding_box);
 	}
-	for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
+	//for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
