@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include <steam/steam_api.h>
 #include <ctime>
 
 namespace fornani {
@@ -178,6 +179,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
 		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(); }
+
+		SteamAPI_RunCallbacks();
 
 		ImGui::SFML::Update(window, deltaClock.restart());
 		screencap.update(window);
