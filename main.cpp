@@ -11,7 +11,11 @@ int main(int argc, char** argv) {
 		std::cout << "Re-launching through Steam." << std::endl;
 		return 0;
 	}
-	SteamAPI_Init();
+	SteamErrMsg errMsg;
+	if (SteamAPI_InitEx(&errMsg) != k_ESteamAPIInitResult_OK) {
+		std::cout << "Failed to init Steam: " << errMsg << std::endl;
+		return 0;
+	}
 
 	fornani::Game game{argv};
 	game.run();

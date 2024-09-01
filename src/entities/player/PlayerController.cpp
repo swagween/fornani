@@ -173,8 +173,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	}
 	decrement_requests();
 	jump.update();
-
-	svc.controller_map.reset_triggers();
 }
 
 void PlayerController::clean() {

@@ -12,11 +12,9 @@ CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::stri
 void CreditsMenu::init(ServiceProvider& svc, int room_number) {}
 
 void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+}
 
+void CreditsMenu::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
 		++current_selection;
 		constrain_selection();
@@ -38,10 +36,6 @@ void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	svc.controller_map.reset_triggers();
-}
-
-void CreditsMenu::tick_update(ServiceProvider& svc) {
 	for (auto& option : options) { option.update(svc, current_selection); }
 	left_dot.update(svc);
 	right_dot.update(svc);
@@ -49,7 +43,6 @@ void CreditsMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 
 	svc.soundboard.play_sounds(svc);
-	svc.controller_map.reset_triggers();
 }
 
 void CreditsMenu::frame_update(ServiceProvider& svc) {}

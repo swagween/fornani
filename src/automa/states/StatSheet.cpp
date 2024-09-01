@@ -24,11 +24,9 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 
 void StatSheet::init(ServiceProvider& svc, int room_number) {}
 
-void StatSheet::handle_events(ServiceProvider& svc, sf::Event& event) {
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+void StatSheet::handle_events(ServiceProvider& svc, sf::Event& event) {}
+
+void StatSheet::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
 		++current_selection;
 		constrain_selection();
@@ -48,9 +46,7 @@ void StatSheet::handle_events(ServiceProvider& svc, sf::Event& event) {
 		if (current_selection == 0) { svc.state_controller.actions.set(Actions::screenshot); }
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 	}
-}
 
-void StatSheet::tick_update(ServiceProvider& svc) {
 	auto ctr{1};
 	for (auto& option : options) {
 		option.update(svc, current_selection);
@@ -65,7 +61,6 @@ void StatSheet::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection).left_offset);
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 	svc.soundboard.play_sounds(svc);
-	svc.controller_map.reset_triggers();
 }
 
 void StatSheet::frame_update(ServiceProvider& svc) {}

@@ -22,12 +22,9 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 
 void SettingsMenu::init(ServiceProvider& svc, int room_number) {}
 
-void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
+void SettingsMenu::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
 		++current_selection;
 		constrain_selection();
@@ -74,8 +71,7 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 				svc.controller_map.hard_toggles.set(config::Toggles::gamepad);
 			}
 			break;
-		case 3: adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust);
-			break;
+		case 3: adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust); break;
 		}
 		if (!svc.controller_map.gamepad_connected()) { svc.controller_map.hard_toggles.set(config::Toggles::keyboard); }
 		options.at(0).label.setString(toggleables.autosprint.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::autosprint) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
@@ -88,10 +84,6 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	svc.controller_map.reset_triggers();
-}
-
-void SettingsMenu::tick_update(ServiceProvider& svc) {
 	left_dot.update(svc);
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection).left_offset);
@@ -105,7 +97,6 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 		if (svc.controller_map.label_to_control.at("right").held() && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
 	}
 	svc.soundboard.play_sounds(svc);
-	svc.controller_map.reset_triggers();
 }
 
 void SettingsMenu::frame_update(ServiceProvider& svc) {}

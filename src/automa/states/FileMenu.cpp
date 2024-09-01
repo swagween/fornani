@@ -33,12 +33,9 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 void FileMenu::init(ServiceProvider& svc, int room_number) {}
 
-void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
+void FileMenu::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
 		++current_selection;
 		constrain_selection();
@@ -53,7 +50,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
+	if (svc.controller_map.label_to_control.at("left").triggered()) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
@@ -70,10 +67,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	svc.controller_map.reset_triggers();
-}
 
-void FileMenu::tick_update(ServiceProvider& svc) {
 	for (auto& option : options) { option.update(svc, current_selection); }
 	constrain_selection();
 
@@ -100,7 +94,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	loading.update();
 
 	svc.soundboard.play_sounds(svc);
-	svc.controller_map.reset_triggers();
 }
 
 void FileMenu::frame_update(ServiceProvider& svc) {}

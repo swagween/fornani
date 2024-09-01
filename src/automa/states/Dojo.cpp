@@ -7,12 +7,12 @@ namespace automa {
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console), gui_map(svc, player, console) {}
 
 void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
-	//std::cout << "\n" << room_number;
-	//A = shape::Collider({32.f, 32.f});
-	//B = shape::Collider({24.f, 24.f});
-	//A.stats.GRAV = 0.f;
-	//B.stats.GRAV = 0.f;
-	//A.physics.position = {200.f, 200.f};
+	// std::cout << "\n" << room_number;
+	// A = shape::Collider({32.f, 32.f});
+	// B = shape::Collider({24.f, 24.f});
+	// A.stats.GRAV = 0.f;
+	// B.stats.GRAV = 0.f;
+	// A.physics.position = {200.f, 200.f};
 
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
@@ -24,7 +24,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	if (!svc.data.exists(room_number)) {
 		svc.data.rooms.push_back(room_number);
 		svc.data.load_data(room_name);
-		//std::cout << "Loading New Room...\n";
+		// std::cout << "Loading New Room...\n";
 	}
 	map.load(svc, room_number);
 	bake_maps(svc, {map.room_id}, true);
@@ -36,7 +36,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 
 	// TODO: refactor player initialization
 	player->collider.physics.zero();
-	
+
 	bool found_one{};
 	// only search for door entry if room was not loaded from main menu and player didn't die
 	if (!svc.state_controller.actions.test(Actions::save_loaded) && !svc.state_controller.actions.test(Actions::player_death)) {
@@ -66,15 +66,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
-	
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) {
-		svc.controller_map.handle_press(event.key.code);
-	}
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
-
-	if (event.type == sf::Event::EventType::KeyPressed) {
+	if (event.type == sf::Event::EventType::KeyPressed) { // XXX
 		if (event.key.code == sf::Keyboard::Enter && pause_window.active()) {
 			console.set_source(svc.text.basic);
 			console.load_and_launch("menu_return");
@@ -83,27 +75,26 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
 		if (event.key.code == sf::Keyboard::Num0) { camera.begin_shake(); }
 	}
+}
 
+void Dojo::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered() && inventory_window.active()) { toggle_inventory(svc); }
 	if (svc.controller_map.label_to_control.at("menu_toggle").triggered() && !console.active()) { toggle_inventory(svc); }
 	if ((svc.controller_map.label_to_control.at("arms_switch_right").triggered() || svc.controller_map.label_to_control.at("arms_switch_left").triggered()) && inventory_window.active() && player->has_map()) {
 		inventory_window.switch_modes(svc);
 		svc.soundboard.flags.console.set(audio::Console::next);
-		svc.controller_map.reset_triggers();
 	}
 	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) { toggle_pause_menu(svc); }
-}
 
-void Dojo::tick_update(ServiceProvider& svc) {
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
 
-	//A.update(svc);
-	//B.update(svc);
-	//auto mtv = A.bounding_box.testCollisionGetMTV(B.bounding_box, A.bounding_box);
-	//if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT x: " << mtv.x << "\n"; }
+	// A.update(svc);
+	// B.update(svc);
+	// auto mtv = A.bounding_box.testCollisionGetMTV(B.bounding_box, A.bounding_box);
+	// if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT x: " << mtv.x << "\n"; }
 
 	player->update(map, console, inventory_window);
 	map.update(svc, console, inventory_window);
@@ -115,7 +106,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	map.debug_mode = debug_mode;
 
-	svc.controller_map.reset_triggers();
 	player->controller.clean();
 	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
@@ -127,13 +117,12 @@ void Dojo::tick_update(ServiceProvider& svc) {
 void Dojo::frame_update(ServiceProvider& svc) {
 	pause_window.update(svc, *player);
 	hud.update(svc, *player);
-	svc.controller_map.reset_triggers();
 	pause_window.clean_off_trigger();
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
-	//B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
+	// B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
 
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
@@ -145,8 +134,8 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
 
-	//A.render(win, {});
-	//B.render(win, {});
+	// A.render(win, {});
+	// B.render(win, {});
 }
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {
@@ -160,7 +149,6 @@ void Dojo::toggle_inventory(ServiceProvider& svc) {
 		svc.soundboard.flags.console.set(audio::Console::menu_open);
 		inventory_window.set_item_size(static_cast<int>(player->catalog.categories.inventory.items.size()));
 	}
-	svc.controller_map.reset_triggers();
 }
 
 void Dojo::toggle_pause_menu(ServiceProvider& svc) {
@@ -173,14 +161,15 @@ void Dojo::toggle_pause_menu(ServiceProvider& svc) {
 		svc.soundboard.play_sounds(svc);
 	}
 	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();
-	svc.controller_map.reset_triggers();
 }
 
 void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
 	for (auto& id : ids) {
-		if (id == 0) { continue; } //intro
+		if (id == 0) { continue; } // intro
 		gui_map.clear();
-		if (svc.data.room_discovered(id)) { inventory_window.minimap.bake(svc, gui_map, id, current); } else {
+		if (svc.data.room_discovered(id)) {
+			inventory_window.minimap.bake(svc, gui_map, id, current);
+		} else {
 			inventory_window.minimap.bake(svc, gui_map, id, current, true);
 		}
 	}

@@ -44,12 +44,9 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 void MainMenu::init(ServiceProvider& svc, int room_number) {}
 
-void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
+void MainMenu::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
 		++current_selection;
 		constrain_selection();
@@ -71,27 +68,21 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
-		if (current_selection == menu_selection_id.at(MenuSelection::quit)) {
-			svc.state_controller.actions.set(Actions::shutdown);
-		}
+		if (current_selection == menu_selection_id.at(MenuSelection::quit)) { svc.state_controller.actions.set(Actions::shutdown); }
 	}
-	if (!svc.controller_map.is_gamepad() && svc.controller_map.label_to_control.at("right").triggered()) {
+	if (svc.controller_map.label_to_control.at("right").triggered()) {
 		if (current_selection == menu_selection_id.at(MenuSelection::play)) { svc.state_controller.submenu = menu_type::file_select; }
 		if (current_selection == menu_selection_id.at(MenuSelection::options)) { svc.state_controller.submenu = menu_type::options; }
 		svc.state_controller.actions.set(Actions::trigger_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 	}
-	svc.controller_map.reset_triggers();
-}
 
-void MainMenu::tick_update(ServiceProvider& svc) {
 	for (auto& option : options) { option.update(svc, current_selection); }
 	left_dot.update(svc);
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection).left_offset);
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 	svc.soundboard.play_sounds(svc);
-	svc.controller_map.reset_triggers();
 	player->animation.state = player::AnimState::run;
 }
 
@@ -100,7 +91,7 @@ void MainMenu::frame_update(ServiceProvider& svc) {}
 void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
 	win.draw(subtitle);
-	//win.draw(instruction);
+	// win.draw(instruction);
 	for (auto& option : options) { win.draw(option.label); }
 
 	left_dot.render(svc, win, {0, 0});

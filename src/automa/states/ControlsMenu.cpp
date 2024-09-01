@@ -44,14 +44,9 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		update_binding(svc, event);
 		return;
 	}
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
 	if (event.type == sf::Event::EventType::KeyPressed) {
-		if (event.key.code == sf::Keyboard::Enter && svc.controller_map.is_keyboard()) { binding_mode = true; }
 		if (event.key.code == sf::Keyboard::LControl || event.key.code == sf::Keyboard::RControl) { restore_defaults(svc); }
-		svc.controller_map.handle_press(event.key.code);
 	}
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
 
 	if (event.type == sf::Event::EventType::JoystickButtonPressed) {
 		if (event.joystickButton.button == 9) { binding_mode = true; }
@@ -67,7 +62,7 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
+	if (svc.controller_map.label_to_control.at("left").triggered()) {
 		svc.state_controller.submenu = menu_type::options;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
@@ -84,8 +79,6 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (event.type == sf::Event::EventType::JoystickConnected) { refresh_controls(svc); }
 	if (event.type == sf::Event::JoystickButtonPressed || svc.controller_map.joystick_moved()) { refresh_controls(svc); }
 	if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) { refresh_controls(svc); }
-
-	svc.controller_map.reset_triggers();
 }
 
 void ControlsMenu::tick_update(ServiceProvider& svc) {
@@ -96,7 +89,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		option.label.setOrigin(0, option.label.getLocalBounds().height * 0.5f);
 		option.left_offset = option.position - sf::Vector2<float>{option.dot_offset.x - 2, -option.dot_offset.y};
 		option.right_offset = option.position + sf::Vector2<float>{option.label.getLocalBounds().width + option.dot_offset.x, option.dot_offset.y};
-	
+
 		control_list.at(ctr).setFillColor(option.label.getFillColor());
 		++ctr;
 	}
@@ -107,7 +100,6 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 
 	svc.soundboard.play_sounds(svc);
-	svc.controller_map.reset_triggers();
 }
 
 void ControlsMenu::frame_update(ServiceProvider& svc) {}
@@ -147,15 +139,17 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 		options.at(ctr).flagged = dup_check > 1;
 		++ctr;
 	}
-	svc.controller_map.is_gamepad() ? instruction.setString("current controller : GAMEPAD\npress [START] to change binding, and [Esc] to cancel\npress [Ctrl] to restore defaults")
-									: instruction.setString("current controller : KEYBOARD\npress [ENTER] to change binding, and [Esc] to cancel\npress [Ctrl] to restore defaults");
+	// XXX
+	instruction.setString("TODO TEXT");
+	// svc.controller_map.is_gamepad() ? instruction.setString("current controller : GAMEPAD\npress [START] to change binding, and [Esc] to cancel\npress [Ctrl] to restore defaults")
+	// 								: instruction.setString("current controller : KEYBOARD\npress [ENTER] to change binding, and [Esc] to cancel\npress [Ctrl] to restore defaults");
 }
 
 void ControlsMenu::update_binding(ServiceProvider& svc, sf::Event& event) {
 	if (current_selection >= options.size() || current_selection >= control_list.size() || current_selection >= svc.controller_map.tags.size()) { return; }
 	options.at(current_selection).label.setFillColor(svc.styles.colors.bright_orange);
 	control_list.at(current_selection).setFillColor(svc.styles.colors.bright_orange);
-	if (svc.controller_map.is_keyboard()) {
+	if (true) { // XXX svc.controller_map.is_keyboard()
 		if (event.type == sf::Event::KeyPressed) {
 			binding_mode = false;
 			std::string_view tag = svc.controller_map.tags.at(current_selection);
@@ -175,7 +169,7 @@ void ControlsMenu::update_binding(ServiceProvider& svc, sf::Event& event) {
 			refresh_controls(svc);
 		}
 	}
-	if (svc.controller_map.is_gamepad()) {
+	if (false) { // XXX svc.controller_map.is_gamepad()
 		if (event.type == sf::Event::JoystickButtonPressed) {
 			binding_mode = false;
 			std::string_view tag = svc.controller_map.tags.at(current_selection);

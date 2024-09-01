@@ -11,12 +11,9 @@ OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, std::stri
 
 void OptionsMenu::init(ServiceProvider& svc, int room_number) {}
 
-void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
+void OptionsMenu::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
 		++current_selection;
 		constrain_selection();
@@ -27,12 +24,12 @@ void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
+	if (svc.controller_map.label_to_control.at("left").triggered()) {
 		svc.state_controller.submenu = menu_type::main;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (!svc.controller_map.is_gamepad() && svc.controller_map.label_to_control.at("right").triggered()) {
+	if (svc.controller_map.label_to_control.at("right").triggered()) {
 		if (current_selection == menu_selection_id.at(MenuSelection::controls)) { svc.state_controller.submenu = menu_type::controls; }
 		if (current_selection == menu_selection_id.at(MenuSelection::credits)) { svc.state_controller.submenu = menu_type::credits; }
 		if (current_selection == menu_selection_id.at(MenuSelection::settings)) { svc.state_controller.submenu = menu_type::settings; }
@@ -61,10 +58,7 @@ void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	svc.controller_map.reset_triggers();
-}
 
-void OptionsMenu::tick_update(ServiceProvider& svc) {
 	for (auto& option : options) { option.update(svc, current_selection); }
 	left_dot.update(svc);
 	right_dot.update(svc);
@@ -72,13 +66,12 @@ void OptionsMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection).right_offset);
 
 	svc.soundboard.play_sounds(svc);
-	svc.controller_map.reset_triggers();
 }
 
 void OptionsMenu::frame_update(ServiceProvider& svc) {}
 
 void OptionsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	
+
 	for (auto& option : options) { win.draw(option.label); }
 
 	left_dot.render(svc, win, {0, 0});

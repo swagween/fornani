@@ -1,7 +1,7 @@
 
 #include "DataManager.hpp"
-#include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "ControllerMap.hpp"
 
 namespace data {
@@ -15,7 +15,7 @@ void DataManager::load_data(std::string in_room) {
 	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
 
 	// load map
-	//std::cout << "loading map data...";
+	// std::cout << "loading map data...";
 	int room_counter{};
 	for (auto& room : rooms) {
 		map_jsons.push_back(MapData());
@@ -55,9 +55,9 @@ void DataManager::load_data(std::string in_room) {
 		++ctr;
 	}
 	blank_file.save_data = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
-	//std::cout << " success!\n";
+	// std::cout << " success!\n";
 
-	//std::cout << "loading json data...";
+	// std::cout << "loading json data...";
 	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
 	assert(!game_info.is_null());
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
@@ -88,7 +88,7 @@ void DataManager::load_data(std::string in_room) {
 	assert(!menu.is_null());
 	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
-	//std::cout << " success!\n";
+	// std::cout << " success!\n";
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
@@ -299,7 +299,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 
 void DataManager::load_player_params(player::Player& player) {
 
-	//std::cout << "loading player params ...";
+	// std::cout << "loading player params ...";
 	player_params = dj::Json::from_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
@@ -321,12 +321,12 @@ void DataManager::load_player_params(player::Player& player) {
 	player.physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
 	player.physics_stats.dash_dampen = player_params["physics"]["dash_dampen"].as<float>();
 	player.physics_stats.wallslide_speed = player_params["physics"]["wallslide_speed"].as<float>();
-	//std::cout << " success!\n";
+	// std::cout << " success!\n";
 }
 
 void DataManager::save_player_params(player::Player& player) {
 
-	//std::cout << "saving player params ...";
+	// std::cout << "saving player params ...";
 	player_params["physics"]["grav"] = player.physics_stats.grav;
 	player_params["physics"]["ground_fric"] = player.physics_stats.ground_fric;
 	player_params["physics"]["air_fric"] = player.physics_stats.air_fric;
@@ -347,7 +347,7 @@ void DataManager::save_player_params(player::Player& player) {
 	player_params["physics"]["wallslide_speed"] = player.physics_stats.wallslide_speed;
 
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
-	//std::cout << " success!\n";
+	// std::cout << " success!\n";
 }
 
 void DataManager::open_chest(int id) { opened_chests.push_back(id); }
@@ -427,14 +427,11 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 		if (controller.string_to_key.contains(in_key)) { controller.key_to_label.insert({controller.string_to_key.at(in_key), tag}); }
 		if (controller.string_to_mousebutton.contains(in_button)) { controller.mousebutton_to_label.insert({controller.string_to_mousebutton.at(in_button), tag}); }
 		if (in_gamepad != -1) { controller.label_to_gamepad.insert({tag, in_gamepad}); }
-		if (controller.is_keyboard()) {
-			if (in_button.empty()) {
-				controller.tag_to_label.insert({tag, in_key});
-			} else {
-				controller.tag_to_label.insert({tag, in_button});
-			}
+		if (in_button.empty()) {
+			controller.tag_to_label.insert({tag, in_key});
+		} else {
+			controller.tag_to_label.insert({tag, in_button});
 		}
-		if (controller.is_gamepad()) { controller.tag_to_label.insert({tag, controller.gamepad_button_name.at(in_gamepad)}); }
 	}
 }
 

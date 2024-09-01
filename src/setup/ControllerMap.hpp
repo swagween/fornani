@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <steam/steam_api.h>
 #include <SFML/Graphics.hpp>
 #include <string_view>
 #include <unordered_map>
@@ -42,23 +43,19 @@ struct Control {
 class ControllerMap {
   public:
 	ControllerMap(automa::ServiceProvider& svc);
-	void handle_mouse_events(sf::Event& event);
-	void handle_press(sf::Keyboard::Key& k);
-	void handle_release(sf::Keyboard::Key& k);
-	void handle_joystick_events(sf::Event& event);
-	void reset_triggers();
-	void switch_to_joystick();
-	void switch_to_keyboard();
+
+	ControllerMap(ControllerMap const&) = delete;
+	ControllerMap operator=(ControllerMap const&) = delete;
+
+	void update();
 	[[nodiscard]] auto get_throttle() const -> sf::Vector2<float> { return throttle; }
 	[[nodiscard]] auto gamepad_connected() const -> bool { return status.test(ControllerStatus::gamepad_connected); }
-	[[nodiscard]] auto is_gamepad() const -> bool { return type == ControllerType::gamepad; }
 	[[nodiscard]] auto autosprint() const -> bool { return hard_toggles.test(Toggles::autosprint); }
-	[[nodiscard]] auto is_keyboard() const -> bool { return type == ControllerType::keyboard; }
 	[[nodiscard]] auto joystick_moved() const -> bool { return throttle.x < -throttle_threshold || throttle.x > throttle_threshold || throttle.y < -throttle_threshold || throttle.y > throttle_threshold; }
 	[[nodiscard]] auto hard_toggles_off() const -> bool { return !hard_toggles.test(Toggles::keyboard) && !hard_toggles.test(Toggles::gamepad); }
 
 	std::vector<std::string_view> tags{"main_action", "secondary_action", "tertiary_action", "inspect", "sprint", "shield", "menu_toggle", "menu_toggle_secondary", "arms_switch_left", "arms_switch_right", "left", "right", "up",
-									   "down", "menu_forward", "menu_back"};
+									   "down",		  "menu_forward",	  "menu_back"};
 	std::unordered_map<std::string_view, Control> label_to_control{};
 	std::unordered_map<std::string_view, std::string_view> tag_to_label{};
 	std::unordered_map<sf::Keyboard::Key, std::string_view> key_to_label{};
@@ -114,6 +111,16 @@ class ControllerMap {
   private:
 	sf::Vector2<float> throttle{};
 	float const throttle_threshold{0.4f};
+
+	struct SteamInputData {
+		enum class Type {
+			Analog,
+			Digital,
+		} type;
+		InputDigitalActionHandle_t digital_handle;
+		InputAnalogActionHandle_t analog_handle;
+	};
+	std::unordered_map<std::string_view, SteamInputData> steam_input_data;
 };
 
 } // namespace config

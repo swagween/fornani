@@ -100,18 +100,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		bool valid_event{};
 		// check window events
 		while (window.pollEvent(event)) {
-			if ((event.type == sf::Event::JoystickButtonPressed || services.controller_map.joystick_moved()) && !services.controller_map.is_gamepad()) {
-				services.controller_map.switch_to_joystick();
-				services.data.load_controls(services.controller_map);
-			}
-			if ((event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) && !services.controller_map.is_keyboard()) {
-				services.controller_map.switch_to_keyboard();
-				services.data.load_controls(services.controller_map);
-			}
-			if (event.type == sf::Event::JoystickConnected) { services.controller_map.status.set(config::ControllerStatus::gamepad_connected); }
-			if (event.type == sf::Event::JoystickDisconnected) { services.controller_map.status.reset(config::ControllerStatus::gamepad_connected); }
-			if (event.type == sf::Event::JoystickDisconnected && !services.controller_map.is_keyboard()) { services.controller_map.switch_to_keyboard(); }
-			if (event.type == sf::Event::JoystickConnected && !services.controller_map.is_gamepad()) { services.controller_map.switch_to_joystick(); }
+			if ((event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased)) { services.data.load_controls(services.controller_map); }
 
 			player.animation.state = {};
 			player.animation.state = {};
@@ -173,14 +162,17 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			valid_event = true;
 		}
 
+		SteamAPI_RunCallbacks();
+
 		// game logic and rendering
 		services.music.update();
-		services.ticker.tick([this, &services = services] { game_state.get_current_state().tick_update(services); });
+		services.ticker.tick([this, &services = services] {
+			services.controller_map.update();
+			game_state.get_current_state().tick_update(services);
+		});
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
 		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(); }
-
-		SteamAPI_RunCallbacks();
 
 		ImGui::SFML::Update(window, deltaClock.restart());
 		screencap.update(window);
@@ -307,8 +299,8 @@ void Game::debug_window() {
 
 					ImGui::Text("Controller Type: ");
 					ImGui::SameLine();
-					if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad"); }
-					if (services.controller_map.is_keyboard()) { ImGui::Text("Keyboard"); }
+					// XXX if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad"); }
+					// XXX if (services.controller_map.is_keyboard()) { ImGui::Text("Keyboard"); }
 
 					ImGui::Text("Main     : %s", services.controller_map.label_to_control.at("main_action").held() ? "Pressed" : "");
 					ImGui::Text("Secondary: %s", services.controller_map.label_to_control.at("secondary_action").held() ? "Pressed" : "");
@@ -819,11 +811,9 @@ void Game::playtester_portal() {
 		if (ImGui::Begin("Playtester Portal", b_debug, window_flags)) {
 			ImGui::Text("Playtester Portal");
 			ImGui::Separator();
-			if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad Identification: %s", sf::Joystick::getIdentification(0).name.getData()); }
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
-					ImGui::Separator();
 					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
 					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
 					ImGui::Text(metadata.long_title().c_str());
@@ -861,7 +851,7 @@ void Game::playtester_portal() {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Input")) {
-					ImGui::Text("Current Input Device: %s", services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard");
+					ImGui::Text("Current Input Device: %s", "TODO"); // XXX services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard
 					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
 					ImGui::Text("Gamepad Enabled? %s", services.controller_map.hard_toggles.test(config::Toggles::gamepad) ? "Yes" : "No");
 					ImGui::Text("Kayboard Enabled? %s", services.controller_map.hard_toggles.test(config::Toggles::keyboard) ? "Yes" : "No");

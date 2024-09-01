@@ -1,10 +1,29 @@
 #include "ControllerMap.hpp"
+#include <steam/isteaminput.h>
+#include <steam/steam_api.h>
 #include <iostream>
 #include "../service/ServiceProvider.hpp"
+
+InputHandle_t controller{}; // XXX move to ControllerMap
 
 namespace config {
 
 ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
+	std::cout << "Initializing Steam Input" << std::endl;
+	if (!SteamInput()->Init(true)) {
+		std::cout << "Could not initialize Steam Input!" << std::endl;
+	} else {
+		std::cout << "Steam Input initialized" << std::endl;
+	}
+	SteamInput()->SetInputActionManifestFilePath("C:\\Program Files (x86)\\Steam\\controller_config\\steam_input_manifest.vdf");
+	InputHandle_t connected_controllers[STEAM_INPUT_MAX_COUNT];
+	SteamInput()->RunFrame();
+	auto connected_controllers_count = SteamInput()->GetConnectedControllers(connected_controllers);
+	std::cout << "Connected controller count: " << connected_controllers_count << std::endl;
+	if (connected_controllers_count > 0) { controller = connected_controllers[0]; }
+	SteamInput()->ActivateActionSet(controller, SteamInput()->GetActionSetHandle("MenuControls"));
+	std::cout << "Current action set: " << SteamInput()->GetCurrentActionSet(controller) << std::endl;
+
 	label_to_control.insert({"main_action", Control(Action::main_action)});
 	label_to_control.insert({"secondary_action", Control(Action::secondary_action)});
 	label_to_control.insert({"tertiary_action", Control(Action::tertiary_action)});
@@ -21,6 +40,13 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	label_to_control.insert({"down", Control(Action::down)});
 	label_to_control.insert({"menu_forward", Control(Action::menu_forward)});
 	label_to_control.insert({"menu_back", Control(Action::menu_back)});
+
+	steam_input_data.insert({"main_action", SteamInputData{.type = SteamInputData::Type::Digital, .digital_handle = SteamInput()->GetDigitalActionHandle("menu_select"), .analog_handle = 0}});
+	steam_input_data.insert({"up", SteamInputData{.type = SteamInputData::Type::Digital, .digital_handle = SteamInput()->GetDigitalActionHandle("menu_up"), .analog_handle = 0}});
+	steam_input_data.insert({"left", SteamInputData{.type = SteamInputData::Type::Digital, .digital_handle = SteamInput()->GetDigitalActionHandle("menu_left"), .analog_handle = 0}});
+	steam_input_data.insert({"right", SteamInputData{.type = SteamInputData::Type::Digital, .digital_handle = SteamInput()->GetDigitalActionHandle("menu_right"), .analog_handle = 0}});
+	steam_input_data.insert({"down", SteamInputData{.type = SteamInputData::Type::Digital, .digital_handle = SteamInput()->GetDigitalActionHandle("menu_down"), .analog_handle = 0}});
+	steam_input_data.insert({"sprint", SteamInputData{.type = SteamInputData::Type::Digital, .digital_handle = SteamInput()->GetDigitalActionHandle("sprint"), .analog_handle = 0}});
 
 	gamepad_button_name.insert({-1, "left analog stick"});
 	gamepad_button_name.insert({0, "square"});
@@ -45,59 +71,34 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	hard_toggles.set(Toggles::gamepad);
 }
 
-void ControllerMap::handle_mouse_events(sf::Event& event) {
-	if (event.type == sf::Event::EventType::MouseButtonPressed && mousebutton_to_label.contains(event.mouseButton.button)) { label_to_control.at(mousebutton_to_label.at(event.mouseButton.button)).press(); }
-	if (event.type == sf::Event::EventType::MouseButtonReleased && mousebutton_to_label.contains(event.mouseButton.button)) { label_to_control.at(mousebutton_to_label.at(event.mouseButton.button)).release(); }
-}
-
-void ControllerMap::handle_press(sf::Keyboard::Key& k) {
-	if (!hard_toggles.test(Toggles::keyboard)) { return; }
-	if (key_to_label.contains(k)) { label_to_control.at(key_to_label.at(k)).press(); }
-}
-
-void ControllerMap::handle_release(sf::Keyboard::Key& k) {
-	if (!hard_toggles.test(Toggles::keyboard)) { return; }
-	if (key_to_label.contains(k)) { label_to_control.at(key_to_label.at(k)).release(); }
-}
-
-void ControllerMap::handle_joystick_events(sf::Event& event) {
-	if (!hard_toggles.test(Toggles::gamepad)) { return; }
-	// left analog stick
-	throttle.x = sf::Joystick::getAxisPosition(0, sf::Joystick::X) / 100.f;
-	if (abs(throttle.x) < throttle_threshold) { throttle.x = 0.f; }
-	throttle.y = sf::Joystick::getAxisPosition(0, sf::Joystick::Y) / 100.f;
-	if (abs(throttle.y) < throttle_threshold) { throttle.y = 0.f; }
-
-	if (event.type == sf::Event::EventType::JoystickMoved) {
-		if (throttle.x < -throttle_threshold && !label_to_control.at("left").held()) { label_to_control.at("left").press(); }
-		if (throttle.x > throttle_threshold && !label_to_control.at("right").held()) { label_to_control.at("right").press(); }
-		if (throttle.y < -throttle_threshold && !label_to_control.at("up").held()) { label_to_control.at("up").press(); }
-		if (throttle.y > throttle_threshold && !label_to_control.at("down").held()) { label_to_control.at("down").press(); }
-
-		if (throttle.x > -throttle_threshold && label_to_control.at("left").held()) { label_to_control.at("left").release(); }
-		if (throttle.x < throttle_threshold && label_to_control.at("right").held()) { label_to_control.at("right").release(); }
-		if (throttle.y > -throttle_threshold && label_to_control.at("up").held()) { label_to_control.at("up").release(); }
-		if (throttle.y < throttle_threshold && label_to_control.at("down").held()) { label_to_control.at("down").release(); }
-	}
-
-	// gamepad buttons
-	for (auto& tag : tags) {
-		if (!label_to_gamepad.contains(tag)) { continue; }
-		if (!label_to_control.contains(tag)) { continue; }
-		if (event.type == sf::Event::JoystickButtonPressed) {
-			if (sf::Joystick::isButtonPressed(0, label_to_gamepad.at(tag)) && !label_to_control.at(tag).held()) { label_to_control.at(tag).press(); }
-		} else if (event.type == sf::Event::JoystickButtonReleased) {
-			if (!sf::Joystick::isButtonPressed(0, label_to_gamepad.at(tag)) && label_to_control.at(tag).held()) { label_to_control.at(tag).release(); }
+void ControllerMap::update() {
+	SteamInput()->RunFrame();
+	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
+	for (auto const& [tag, action] : steam_input_data) {
+		switch (action.type) {
+		case SteamInputData::Type::Analog: break;
+		case SteamInputData::Type::Digital:
+			auto const data = SteamInput()->GetDigitalActionData(controller, action.digital_handle);
+			auto& control = label_to_control.at(tag);
+			if (data.bState) {
+				if (!control.state.test(config::ActionState::held)) {
+					std::cout << "Pressed " << tag << std::endl;
+					control.state.set(config::ActionState::triggered);
+				} else {
+					control.state.reset(config::ActionState::triggered);
+				}
+				control.state.set(config::ActionState::held);
+			} else {
+				if (control.state.test(config::ActionState::held)) {
+					control.state.set(config::ActionState::released);
+				} else {
+					control.state.reset(config::ActionState::released);
+				}
+				control.state.reset(config::ActionState::held);
+			}
+			break;
 		}
 	}
 }
-
-void ControllerMap::reset_triggers() {
-	for (auto& tag : tags) { label_to_control.at(tag).reset_triggers(); }
-}
-
-void ControllerMap::switch_to_joystick() { type = ControllerType::gamepad; }
-
-void ControllerMap::switch_to_keyboard() { type = ControllerType::keyboard; }
 
 } // namespace config
