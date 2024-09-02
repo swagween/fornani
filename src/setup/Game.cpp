@@ -67,7 +67,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.music.turn_off();
 		services.data.load_blank_save(player);
 		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
-		//TODO: fix this
+		// TODO: fix this
 		game_state.get_current_state().init(services, room_id, levelpath.filename().string());
 		services.state_controller.demo_level = room_id;
 		//
@@ -82,7 +82,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 	while (window.isOpen()) {
 
-		if (services.state_controller.actions.test(automa::Actions::shutdown)) { return; }
+		if (services.state_controller.actions.test(automa::Actions::shutdown)) { break; }
 		if (services.death_mode()) { flags.reset(GameFlags::in_game); }
 
 		services.ticker.start_frame();
@@ -118,7 +118,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 			if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 			switch (event.type) {
-			case sf::Event::Closed: return;
+			case sf::Event::Closed: goto shutdown;
 			case sf::Event::Resized:
 				measurements.win_size.x = window.getSize().x;
 				measurements.win_size.y = window.getSize().y;
@@ -136,13 +136,13 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::D) {
-					//debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
-					//services.assets.sharp_click.play();
-					//services.state_controller.actions.set(automa::Actions::print_stats);
+					// debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
+					// services.assets.sharp_click.play();
+					// services.state_controller.actions.set(automa::Actions::print_stats);
 				}
 				if (event.key.code == sf::Keyboard::Q) {
-					//game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
-					//flags.set(GameFlags::in_game);
+					// game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
+					// flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
 					/*if (flags.test(GameFlags::playtest)) {
@@ -155,8 +155,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				}
 				if (event.key.code == sf::Keyboard::F12) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {
-					//services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
-					//services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
+					// services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
+					// services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 				}
 				break;
 			case sf::Event::KeyReleased:
@@ -198,8 +198,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.ticker.end_frame();
 	}
 
-	//shutdown
-	//explicitly delete music player since it can't be deleted after AssetManager
+shutdown:
+	// shutdown
+	// explicitly delete music player since it can't be deleted after AssetManager
 	services.music.stop();
 	ImGui::SFML::Shutdown();
 }
@@ -793,7 +794,7 @@ void Game::debug_window() {
 
 void Game::playtester_portal() {
 	if (!flags.test(GameFlags::playtest)) { return; }
-	//if (flags.test(GameFlags::in_game)) { return; }
+	// if (flags.test(GameFlags::in_game)) { return; }
 	bool* b_debug{};
 	float const PAD = 10.0f;
 	static int corner = 1;
