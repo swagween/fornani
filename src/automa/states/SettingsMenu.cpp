@@ -5,8 +5,8 @@
 namespace automa {
 
 SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
-	left_dot.set_position(options.at(current_selection).left_offset);
-	right_dot.set_position(options.at(current_selection).right_offset);
+	left_dot.set_position(options.at(current_selection.get()).left_offset);
+	right_dot.set_position(options.at(current_selection.get()).right_offset);
 	toggle_options.enabled.setString("Enabled");
 	toggle_options.disabled.setString("Disabled");
 
@@ -29,14 +29,12 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
 
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
-		++current_selection;
-		constrain_selection();
+		current_selection.modulate(1);
 		mode_flags.reset(MenuMode::adjust);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("up").triggered()) {
-		--current_selection;
-		constrain_selection();
+		current_selection.modulate(-1);
 		mode_flags.reset(MenuMode::adjust);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
@@ -50,7 +48,7 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	}
 	if (svc.controller_map.label_to_control.at("main_action").triggered() && !adjust_mode()) {
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
-		switch (current_selection) {
+		switch (current_selection.get()) {
 		case 0:
 			if (svc.controller_map.hard_toggles.test(config::Toggles::autosprint)) {
 				svc.controller_map.hard_toggles.reset(config::Toggles::autosprint);
@@ -94,10 +92,10 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 void SettingsMenu::tick_update(ServiceProvider& svc) {
 	left_dot.update(svc);
 	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection).left_offset);
-	right_dot.set_target_position(options.at(current_selection).right_offset);
+	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
+	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 	for (auto& option : options) {
-		option.update(svc, current_selection);
+		option.update(svc, current_selection.get());
 		option.label.setLetterSpacing(1.2f);
 	}
 	if (svc.ticker.every_x_ticks(16)) {

@@ -5,8 +5,9 @@
 namespace automa {
 
 StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
-	left_dot.set_position(options.at(current_selection).left_offset);
-	right_dot.set_position(options.at(current_selection).right_offset);
+	current_selection = util::Circuit(static_cast<int>(options.size()));
+	left_dot.set_position(options.at(current_selection.get()).left_offset);
+	right_dot.set_position(options.at(current_selection.get()).right_offset);
 	stats = options.at(0).label;
 	title = options.at(0).label;
 	title.setString("post-game stats");
@@ -30,22 +31,20 @@ void StatSheet::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
 	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
-		++current_selection;
-		constrain_selection();
+		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("up").triggered()) {
-		--current_selection;
-		constrain_selection();
+		current_selection.modulate(-1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
-		if (current_selection == 1) {
+		if (current_selection.get() == 1) {
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			svc.state_controller.actions.set(Actions::main_menu);
 			svc.state_controller.actions.set(Actions::trigger);
 		}
-		if (current_selection == 0) { svc.state_controller.actions.set(Actions::screenshot); }
+		if (current_selection.get() == 0) { svc.state_controller.actions.set(Actions::screenshot); }
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 	}
 }
@@ -53,7 +52,7 @@ void StatSheet::handle_events(ServiceProvider& svc, sf::Event& event) {
 void StatSheet::tick_update(ServiceProvider& svc) {
 	auto ctr{1};
 	for (auto& option : options) {
-		option.update(svc, current_selection);
+		option.update(svc, current_selection.get());
 		option.label.setLetterSpacing(1.4f);
 		option.position = {svc.constants.f_screen_dimensions.x * 0.5f, svc.constants.f_screen_dimensions.y - 60.f - ctr * 28.f};
 		++ctr;
@@ -62,8 +61,8 @@ void StatSheet::tick_update(ServiceProvider& svc) {
 	title.setPosition({svc.constants.f_screen_dimensions.x * 0.5f, 60.f});
 	left_dot.update(svc);
 	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection).left_offset);
-	right_dot.set_target_position(options.at(current_selection).right_offset);
+	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
+	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 	svc.soundboard.play_sounds(svc);
 	svc.controller_map.reset_triggers();
 }

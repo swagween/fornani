@@ -46,7 +46,7 @@ struct Option {
 	bool highlighted{};
 	bool selected{};
 	bool flagged{};
-	void update(ServiceProvider& svc, int& selection);
+	void update(ServiceProvider& svc, int selection);
 };
 
 struct Scene {
@@ -76,7 +76,6 @@ class GameState {
 	virtual void tick_update(ServiceProvider& svc){};
 	virtual void frame_update(ServiceProvider& svc){};
 	virtual void render(ServiceProvider& svc, sf::RenderWindow& win){};
-	void constrain_selection();
 
 	bool debug_mode{false};
 	util::BitFlags<GameStateFlags> flags{};
@@ -97,7 +96,7 @@ class GameState {
 
 	Scene target_folder{};
 	std::vector<Option> options{};
-	int current_selection{};
+	util::Circuit current_selection{1};
 	float spacing{24.f};
 	float top_buffer{80.f};
 };

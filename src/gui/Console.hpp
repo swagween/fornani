@@ -9,6 +9,7 @@
 #include "Portrait.hpp"
 #include "ItemWidget.hpp"
 #include "../utils/QuestCode.hpp"
+#include "../utils/NineSlice.hpp"
 
 namespace gui {
 
@@ -50,8 +51,6 @@ class Console {
 	void clean_off_trigger();
 	void include_portrait(int id);
 
-	void nine_slice(int corner_dim, int edge_dim);
-
 	std::string get_key();
 
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
@@ -64,8 +63,7 @@ class Console {
 	sf::Vector2<float> final_dimensions{};
 	sf::Vector2<float> text_origin{};
 	util::BitFlags<ConsoleFlags> flags{};
-
-	std::array<sf::Sprite, 9> sprites{};
+	util::NineSlice sprite{};
 
 	dj::Json text_suite{};
 

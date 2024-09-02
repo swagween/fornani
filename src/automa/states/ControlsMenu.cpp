@@ -8,7 +8,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	int ctr{0};
 	for (auto& option : options) {
 		option.position.x = svc.constants.screen_dimensions.x * 0.5f - center_offset;
-		option.update(svc, current_selection);
+		option.update(svc, current_selection.get());
 		option.left_offset = option.position - sf::Vector2<float>{option.dot_offset.x - 2, -option.dot_offset.y};
 		option.right_offset = option.position + sf::Vector2<float>{option.label.getLocalBounds().width + option.dot_offset.x, option.dot_offset.y};
 		option.label.setLetterSpacing(title_letter_spacing);
@@ -21,12 +21,12 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	instruction.setLineSpacing(1.5f);
 	instruction.setFont(font);
 	instruction.setLetterSpacing(title_letter_spacing);
-	instruction.setCharacterSize(options.at(current_selection).label.getCharacterSize());
+	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
 	instruction.setPosition(svc.constants.screen_dimensions.x * 0.5f - instruction.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 120.f);
 	instruction.setFillColor(svc.styles.colors.dark_grey);
 
-	left_dot.set_position(options.at(current_selection).left_offset);
-	right_dot.set_position(options.at(current_selection).right_offset);
+	left_dot.set_position(options.at(current_selection.get()).left_offset);
+	right_dot.set_position(options.at(current_selection.get()).right_offset);
 	loading.start(2);
 
 	debug.setFillColor(sf::Color::Transparent);
@@ -58,13 +58,11 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	}
 
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
-		++current_selection;
-		constrain_selection();
+		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("up").triggered()) {
-		--current_selection;
-		constrain_selection();
+		current_selection.modulate(-1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
@@ -92,7 +90,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	if (binding_mode) { return; }
 	int ctr{0};
 	for (auto& option : options) {
-		option.update(svc, current_selection);
+		option.update(svc, current_selection.get());
 		option.label.setOrigin(0, option.label.getLocalBounds().height * 0.5f);
 		option.left_offset = option.position - sf::Vector2<float>{option.dot_offset.x - 2, -option.dot_offset.y};
 		option.right_offset = option.position + sf::Vector2<float>{option.label.getLocalBounds().width + option.dot_offset.x, option.dot_offset.y};
@@ -103,8 +101,8 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	loading.update();
 	left_dot.update(svc);
 	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection).left_offset);
-	right_dot.set_target_position(options.at(current_selection).right_offset);
+	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
+	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
 	svc.soundboard.play_sounds(svc);
 	svc.controller_map.reset_triggers();
@@ -152,13 +150,13 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 }
 
 void ControlsMenu::update_binding(ServiceProvider& svc, sf::Event& event) {
-	if (current_selection >= options.size() || current_selection >= control_list.size() || current_selection >= svc.controller_map.tags.size()) { return; }
-	options.at(current_selection).label.setFillColor(svc.styles.colors.bright_orange);
-	control_list.at(current_selection).setFillColor(svc.styles.colors.bright_orange);
+	if (current_selection.get() >= options.size() || current_selection.get() >= control_list.size() || current_selection.get() >= svc.controller_map.tags.size()) { return; }
+	options.at(current_selection.get()).label.setFillColor(svc.styles.colors.bright_orange);
+	control_list.at(current_selection.get()).setFillColor(svc.styles.colors.bright_orange);
 	if (svc.controller_map.is_keyboard()) {
 		if (event.type == sf::Event::KeyPressed) {
 			binding_mode = false;
-			std::string_view tag = svc.controller_map.tags.at(current_selection);
+			std::string_view tag = svc.controller_map.tags.at(current_selection.get());
 			svc.data.controls["controls"][tag]["mouse_button"] = "";
 			if (!svc.controller_map.key_to_string.contains(event.key.code)) { return; }
 			svc.data.controls["controls"][tag]["keyboard_key"] = svc.controller_map.key_to_string.at(event.key.code);
@@ -167,7 +165,7 @@ void ControlsMenu::update_binding(ServiceProvider& svc, sf::Event& event) {
 		}
 		if (event.type == sf::Event::MouseButtonPressed) {
 			binding_mode = false;
-			std::string_view tag = svc.controller_map.tags.at(current_selection);
+			std::string_view tag = svc.controller_map.tags.at(current_selection.get());
 			svc.data.controls["controls"][tag]["keyboard_key"] = "";
 			if (event.mouseButton.button == sf::Mouse::Left) { svc.data.controls["controls"][tag]["mouse_button"] = "LMB"; }
 			if (event.mouseButton.button == sf::Mouse::Right) { svc.data.controls["controls"][tag]["mouse_button"] = "RMB"; }
@@ -178,7 +176,7 @@ void ControlsMenu::update_binding(ServiceProvider& svc, sf::Event& event) {
 	if (svc.controller_map.is_gamepad()) {
 		if (event.type == sf::Event::JoystickButtonPressed) {
 			binding_mode = false;
-			std::string_view tag = svc.controller_map.tags.at(current_selection);
+			std::string_view tag = svc.controller_map.tags.at(current_selection.get());
 			svc.data.controls["controls"][tag]["gamepad_button"] = event.joystickButton.button;
 			svc.data.save_controls(svc.controller_map);
 			refresh_controls(svc);

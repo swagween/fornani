@@ -118,6 +118,7 @@ void AssetManager::import_textures() {
 	particle_textures.insert({"twinkle", t_twinkle});
 
 	t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
+	t_white_console.loadFromFile(finder.resource_path + "/image/gui/white_console.png");
 
 	t_platforms.loadFromFile(finder.resource_path + "/image/tile/platforms.png");
 	t_platform_night.loadFromFile(finder.resource_path + "/image/tile/platform_night.png");

@@ -7,7 +7,7 @@
     "hp": 4.000000,
     "orbs": 1507,
     "position": {
-      "x": 452.928955,
+      "x": 452.195892,
       "y": 107.000008
     },
     "arsenal": [
@@ -66,7 +66,7 @@
       "highest_indicator_amount": 505,
       "enemies_killed": 64,
       "rooms_discovered": 23,
-      "seconds_played": 1711.704956,
+      "seconds_played": 1716.111084,
       "time_trials": {
         "bryns_gun": 136.147659
       }
@@ -196,7 +196,7 @@
   "tutorial": {
     "state": 4,
     "closed": true,
-    "on": false,
+    "on": true,
     "jump": true,
     "shoot": true,
     "sprint": true,
