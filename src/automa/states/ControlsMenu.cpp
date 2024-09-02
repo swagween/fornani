@@ -52,36 +52,32 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		if (event.joystickButton.button == 9) { binding_mode = true; }
 	}
 
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		--current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered()) {
-		svc.state_controller.submenu = menu_type::options;
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	}
-	if (svc.controller_map.label_to_control.at("right").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		svc.state_controller.submenu = menu_type::options;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
 
+	// XXX check this out
 	if (event.type == sf::Event::EventType::JoystickDisconnected) { refresh_controls(svc); }
 	if (event.type == sf::Event::EventType::JoystickConnected) { refresh_controls(svc); }
-	if (event.type == sf::Event::JoystickButtonPressed || svc.controller_map.joystick_moved()) { refresh_controls(svc); }
+	// if (event.type == sf::Event::JoystickButtonPressed || svc.controller_map.joystick_moved()) { refresh_controls(svc); }
 	if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) { refresh_controls(svc); }
 }
 
 void ControlsMenu::tick_update(ServiceProvider& svc) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+
 	if (binding_mode) { return; }
 	int ctr{0};
 	for (auto& option : options) {
@@ -121,11 +117,12 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 	size_t ctr{0};
 
 	for (auto& option : options) {
+		/* XXX
 		if (ctr >= control_list.size() || ctr >= svc.controller_map.tags.size()) { continue; }
 		control_list.at(ctr).setString(svc.controller_map.tag_to_label.at(svc.controller_map.tags.at(ctr)).data());
 		control_list.at(ctr).setCharacterSize(option.label.getCharacterSize());
 		control_list.at(ctr).setOrigin(control_list.at(ctr).getLocalBounds().width, control_list.at(ctr).getLocalBounds().height * 0.5f);
-		control_list.at(ctr).setPosition(svc.constants.screen_dimensions.x * 0.5f + center_offset, option.position.y);
+		control_list.at(ctr).setPosition(svc.constants.screen_dimensions.x * 0.5f + center_offset, option.position.y); */
 		++ctr;
 	}
 	ctr = 0;
@@ -146,36 +143,40 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 }
 
 void ControlsMenu::update_binding(ServiceProvider& svc, sf::Event& event) {
-	if (current_selection >= options.size() || current_selection >= control_list.size() || current_selection >= svc.controller_map.tags.size()) { return; }
+	return; // XXX
+	// XXX if (current_selection >= options.size() || current_selection >= control_list.size() || current_selection >= svc.controller_map.tags.size()) { return; }
 	options.at(current_selection).label.setFillColor(svc.styles.colors.bright_orange);
 	control_list.at(current_selection).setFillColor(svc.styles.colors.bright_orange);
 	if (true) { // XXX svc.controller_map.is_keyboard()
 		if (event.type == sf::Event::KeyPressed) {
 			binding_mode = false;
+			/* XXX
 			std::string_view tag = svc.controller_map.tags.at(current_selection);
 			svc.data.controls["controls"][tag]["mouse_button"] = "";
 			if (!svc.controller_map.key_to_string.contains(event.key.code)) { return; }
 			svc.data.controls["controls"][tag]["keyboard_key"] = svc.controller_map.key_to_string.at(event.key.code);
 			svc.data.save_controls(svc.controller_map);
-			refresh_controls(svc);
+			refresh_controls(svc); */
 		}
 		if (event.type == sf::Event::MouseButtonPressed) {
 			binding_mode = false;
+			/* XXX
 			std::string_view tag = svc.controller_map.tags.at(current_selection);
 			svc.data.controls["controls"][tag]["keyboard_key"] = "";
 			if (event.mouseButton.button == sf::Mouse::Left) { svc.data.controls["controls"][tag]["mouse_button"] = "LMB"; }
 			if (event.mouseButton.button == sf::Mouse::Right) { svc.data.controls["controls"][tag]["mouse_button"] = "RMB"; }
 			svc.data.save_controls(svc.controller_map);
-			refresh_controls(svc);
+			refresh_controls(svc); */
 		}
 	}
 	if (false) { // XXX svc.controller_map.is_gamepad()
 		if (event.type == sf::Event::JoystickButtonPressed) {
 			binding_mode = false;
+			/* XXX
 			std::string_view tag = svc.controller_map.tags.at(current_selection);
 			svc.data.controls["controls"][tag]["gamepad_button"] = event.joystickButton.button;
 			svc.data.save_controls(svc.controller_map);
-			refresh_controls(svc);
+			refresh_controls(svc); */
 		}
 	}
 }

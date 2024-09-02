@@ -14,29 +14,32 @@ void OptionsMenu::init(ServiceProvider& svc, int room_number) {}
 void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void OptionsMenu::tick_update(ServiceProvider& svc) {
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		--current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		svc.state_controller.submenu = menu_type::main;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (svc.controller_map.label_to_control.at("right").triggered()) {
+	/* XXX
+	if (svc.controller_map.digital_action_status(right).triggered) {
 		if (current_selection == menu_selection_id.at(MenuSelection::controls)) { svc.state_controller.submenu = menu_type::controls; }
 		if (current_selection == menu_selection_id.at(MenuSelection::credits)) { svc.state_controller.submenu = menu_type::credits; }
 		if (current_selection == menu_selection_id.at(MenuSelection::settings)) { svc.state_controller.submenu = menu_type::settings; }
 		svc.state_controller.actions.set(Actions::trigger_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
-	}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered() || svc.controller_map.label_to_control.at("right").triggered() || svc.controller_map.label_to_control.at("main_action").triggered()) {
+	}*/
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		if (current_selection == menu_selection_id.at(MenuSelection::controls)) {
 			svc.state_controller.submenu = menu_type::controls;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
@@ -52,11 +55,6 @@ void OptionsMenu::tick_update(ServiceProvider& svc) {
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
-	}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
-		svc.state_controller.submenu = menu_type::main;
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
 
 	for (auto& option : options) { option.update(svc, current_selection); }

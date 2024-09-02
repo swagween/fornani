@@ -21,12 +21,13 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 void Intro::init(ServiceProvider& svc, int room_number) {}
 
-void Intro::handle_events(ServiceProvider& svc, sf::Event& event) {
-}
+void Intro::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void Intro::tick_update(ServiceProvider& svc) {
-	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) { toggle_pause_menu(svc); }
-	
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+
+	// XXX if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
+
 	player->update(map, console, inventory_window);
 	player->controller.prevent_movement();
 	map.update(svc, console, inventory_window);

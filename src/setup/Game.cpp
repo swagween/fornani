@@ -291,6 +291,7 @@ void Game::debug_window() {
 
 					ImGui::EndTabItem();
 				}
+				/* XXX
 				if (ImGui::BeginTabItem("Key States")) {
 					ImGui::Text("Joystick");
 					ImGui::Text("Status: ");
@@ -333,7 +334,7 @@ void Game::debug_window() {
 					ImGui::Text("Y Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
 
 					ImGui::EndTabItem();
-				}
+				}*/
 				if (ImGui::BeginTabItem("Audio")) {
 					ImGui::Separator();
 					ImGui::Text("Music Player");

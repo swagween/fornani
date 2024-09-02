@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include <steam/steam_api.h>
+#include <steam/isteaminput.h>
 #include <SFML/Graphics.hpp>
+#include <cstdint>
 #include <string_view>
 #include <unordered_map>
 #include "../utils/BitFlags.hpp"
@@ -13,31 +14,70 @@ struct ServiceProvider;
 
 namespace config {
 
-enum class Action { left, right, up, down, main_action, secondary_action, tertiary_action, inspect, sprint, shield, arms_switch_left, arms_switch_right, menu_toggle, menu_toggle_secondary, menu_forward, menu_back };
-enum class ActionState { held, released, triggered };
+enum class DigitalAction {
+	// Platformer controls
+	platformer_left,
+	platformer_right,
+	platformer_up,
+	platformer_down,
+	platformer_jump,
+	platformer_shoot,
+	platformer_sprint,
+	platformer_shield,
+	platformer_inspect,
+	platformer_arms_switch_left,
+	platformer_arms_switch_right,
+	platformer_open_inventory,
+	platformer_open_map,
+	platformer_toggle_pause,
+
+	// Inventory controls
+	inventory_left,
+	inventory_right,
+	inventory_up,
+	inventory_down,
+	inventory_close,
+
+	// Map controls
+	map_close,
+
+	// Menu controls
+	menu_up,
+	menu_down,
+	menu_select,
+	menu_cancel
+};
+
+enum class AnalogAction {
+	// Map controls
+	map_movement,
+};
+
+enum class ActionSet {
+	Platformer,
+	Inventory,
+	Map,
+	Menu,
+};
+
 enum class ControllerType { keyboard, gamepad };
 enum class ControllerStatus { gamepad_connected };
 enum class Toggles { keyboard, gamepad, autosprint };
 
-struct Control {
-	Control(Action action) : action(action) {}
-	Action action{};
-	util::BitFlags<ActionState> state{};
-	[[nodiscard]] auto held() const -> bool { return state.test(ActionState::held); }
-	[[nodiscard]] auto released() const -> bool { return state.test(ActionState::released); }
-	[[nodiscard]] auto triggered() const -> bool { return state.test(ActionState::triggered); }
-	void press() {
-		state.set(ActionState::triggered);
-		state.set(ActionState::held);
-	}
-	void release() {
-		state.set(ActionState::released);
-		state.reset(ActionState::held);
-	}
-	void reset_triggers() {
-		state.reset(ActionState::triggered);
-		state.reset(ActionState::released);
-	}
+struct DigitalActionStatus {
+	DigitalActionStatus(DigitalAction action) : action(action) {}
+	DigitalAction action{};
+	bool held{};
+	bool triggered{};
+	bool released{};
+};
+
+struct AnalogActionStatus {
+	AnalogActionStatus(AnalogAction action) : action(action) {}
+	AnalogAction action{};
+
+	float x{};
+	float y{};
 };
 
 class ControllerMap {
@@ -48,20 +88,15 @@ class ControllerMap {
 	ControllerMap operator=(ControllerMap const&) = delete;
 
 	void update();
-	[[nodiscard]] auto get_throttle() const -> sf::Vector2<float> { return throttle; }
 	[[nodiscard]] auto gamepad_connected() const -> bool { return status.test(ControllerStatus::gamepad_connected); }
 	[[nodiscard]] auto autosprint() const -> bool { return hard_toggles.test(Toggles::autosprint); }
-	[[nodiscard]] auto joystick_moved() const -> bool { return throttle.x < -throttle_threshold || throttle.x > throttle_threshold || throttle.y < -throttle_threshold || throttle.y > throttle_threshold; }
 	[[nodiscard]] auto hard_toggles_off() const -> bool { return !hard_toggles.test(Toggles::keyboard) && !hard_toggles.test(Toggles::gamepad); }
+	[[nodiscard]] auto digital_action_status(DigitalAction action) const -> DigitalActionStatus { return digital_actions.at(action).second; }
+	[[nodiscard]] auto analog_action_status(AnalogAction action) const -> AnalogActionStatus { return analog_actions.at(action).second; }
+	[[nodiscard]] auto digital_action_name(DigitalAction action) const -> std::string_view;
+	void set_action_set(ActionSet set);
 
-	std::vector<std::string_view> tags{"main_action", "secondary_action", "tertiary_action", "inspect", "sprint", "shield", "menu_toggle", "menu_toggle_secondary", "arms_switch_left", "arms_switch_right", "left", "right", "up",
-									   "down",		  "menu_forward",	  "menu_back"};
-	std::unordered_map<std::string_view, Control> label_to_control{};
-	std::unordered_map<std::string_view, std::string_view> tag_to_label{};
-	std::unordered_map<sf::Keyboard::Key, std::string_view> key_to_label{};
-	std::unordered_map<sf::Mouse::Button, std::string_view> mousebutton_to_label{};
 	std::unordered_map<int, std::string_view> gamepad_button_name{};
-	std::unordered_map<std::string_view, int> label_to_gamepad{};
 	std::unordered_map<std::string_view, sf::Keyboard::Key> string_to_key{{"A", sf::Keyboard::A},			{"B", sf::Keyboard::B},
 																		  {"C", sf::Keyboard::C},			{"D", sf::Keyboard::D},
 																		  {"E", sf::Keyboard::E},			{"F", sf::Keyboard::F},
@@ -109,18 +144,13 @@ class ControllerMap {
 	util::BitFlags<ControllerStatus> status{};
 
   private:
-	sf::Vector2<float> throttle{};
-	float const throttle_threshold{0.4f};
+	std::unordered_map<DigitalAction, std::pair<InputDigitalActionHandle_t, DigitalActionStatus>> digital_actions{};
+	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
+	std::unordered_map<ActionSet, InputActionSetHandle_t> action_sets{};
 
-	struct SteamInputData {
-		enum class Type {
-			Analog,
-			Digital,
-		} type;
-		InputDigitalActionHandle_t digital_handle;
-		InputAnalogActionHandle_t analog_handle;
-	};
-	std::unordered_map<std::string_view, SteamInputData> steam_input_data;
+	InputHandle_t controller_handle{};
+
+	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
 };
 
 } // namespace config

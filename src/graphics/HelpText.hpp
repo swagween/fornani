@@ -9,11 +9,15 @@ namespace automa {
 struct ServiceProvider;
 }
 
+namespace config {
+enum class DigitalAction;
+}
+
 namespace text {
 
 class HelpText {
   public:
-	void init(automa::ServiceProvider& svc, std::string start, std::string_view code = "", std::string end = "", int delay_time = 195, bool include_background = false);
+	void init(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end = "", int delay_time = 195, bool include_background = false);
 	void render(sf::RenderWindow& win);
 	void set_color(sf::Color color);
 	void set_string(std::string string);
@@ -39,4 +43,4 @@ class HelpText {
 	sf::Vector2<float> bg_offset{2.f, 2.f};
 };
 
-} // namespace flfx
+} // namespace text

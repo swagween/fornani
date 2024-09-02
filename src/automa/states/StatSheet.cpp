@@ -27,17 +27,19 @@ void StatSheet::init(ServiceProvider& svc, int room_number) {}
 void StatSheet::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void StatSheet::tick_update(ServiceProvider& svc) {
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		--current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		if (current_selection == 1) {
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			svc.state_controller.actions.set(Actions::main_menu);

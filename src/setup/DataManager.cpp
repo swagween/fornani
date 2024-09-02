@@ -416,6 +416,7 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
 
+	/* XXX
 	controller.key_to_label.clear();
 	controller.mousebutton_to_label.clear();
 	controller.label_to_gamepad.clear();
@@ -433,6 +434,7 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 			controller.tag_to_label.insert({tag, in_button});
 		}
 	}
+	*/
 }
 
 void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((finder.resource_path + "/data/config/control_map.json").c_str()); }

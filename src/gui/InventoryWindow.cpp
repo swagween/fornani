@@ -40,7 +40,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 
 	mode = Mode::inventory;
 
-	help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
+	help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true); // XXX this was arms_switch_right
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 
 }
@@ -113,9 +113,9 @@ void InventoryWindow::close() {
 void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
 	mode = (mode == Mode::inventory) ? Mode::minimap : Mode::inventory;
 	if (mode == Mode::inventory) {
-		help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_arms_switch_right, "] to view Map.", 20, true); // XXX same as above
 	} else {
-		help_marker.init(svc, "Press [", "arms_switch_left", "] to view Inventory.", 20, true);
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_arms_switch_left, "] to view Inventory.", 20, true); // XXX same as above
 		minimap.center();
 	}
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});

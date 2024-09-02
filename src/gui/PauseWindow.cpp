@@ -1,6 +1,6 @@
 #include "PauseWindow.hpp"
-#include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace gui {
 
@@ -20,7 +20,7 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	widget_label.setFont(widget_font);
 	widget_label.setFillColor(svc.styles.colors.ui_white);
 
-	help_marker.init(svc, "Press [", "menu_toggle_secondary", "] to resume game.", 20, true);
+	help_marker.init(svc, "Press [", config::DigitalAction::platformer_toggle_pause, "] to resume game.", 20, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 
 	origin = {ui.corner_pad * 0.5f, ui.corner_pad * 0.5f};
@@ -33,7 +33,6 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	speed = 8;
 	flags.reset(ConsoleFlags::portrait_included);
 	extent = final_dimensions.y;
-
 }
 
 void PauseWindow::update(automa::ServiceProvider& svc, player::Player& player) {

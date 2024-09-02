@@ -36,25 +36,27 @@ void FileMenu::init(ServiceProvider& svc, int room_number) {}
 void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void FileMenu::tick_update(ServiceProvider& svc) {
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
 		svc.data.load_blank_save(*player);
 		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		--current_selection;
 		constrain_selection();
 		svc.data.load_blank_save(*player);
 		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered() || svc.controller_map.label_to_control.at("main_action").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		constrain_selection();
 		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection, true);
 		svc.state_controller.actions.set(Actions::trigger);
@@ -62,11 +64,12 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 		svc.soundboard.flags.world.set(audio::World::load);
 	}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
-		svc.state_controller.submenu = menu_type::main;
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	}
+	// XXX
+	//if (svc.controller_map.digital_action_status(menu_back).triggered) {
+	//	svc.state_controller.submenu = menu_type::main;
+	//	svc.state_controller.actions.set(Actions::exit_submenu);
+	//	svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+	//}
 
 	for (auto& option : options) { option.update(svc, current_selection); }
 	constrain_selection();

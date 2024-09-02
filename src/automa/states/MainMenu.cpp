@@ -47,17 +47,19 @@ void MainMenu::init(ServiceProvider& svc, int room_number) {}
 void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void MainMenu::tick_update(ServiceProvider& svc) {
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		--current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered() || svc.controller_map.label_to_control.at("main_action").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		if (current_selection == menu_selection_id.at(MenuSelection::play)) {
 			svc.state_controller.submenu = menu_type::file_select;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
@@ -70,12 +72,13 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 		}
 		if (current_selection == menu_selection_id.at(MenuSelection::quit)) { svc.state_controller.actions.set(Actions::shutdown); }
 	}
-	if (svc.controller_map.label_to_control.at("right").triggered()) {
-		if (current_selection == menu_selection_id.at(MenuSelection::play)) { svc.state_controller.submenu = menu_type::file_select; }
-		if (current_selection == menu_selection_id.at(MenuSelection::options)) { svc.state_controller.submenu = menu_type::options; }
-		svc.state_controller.actions.set(Actions::trigger_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
-	}
+	// XXX
+	// if (svc.controller_map.digital_action_status(right).triggered) {
+	// 	if (current_selection == menu_selection_id.at(MenuSelection::play)) { svc.state_controller.submenu = menu_type::file_select; }
+	// 	if (current_selection == menu_selection_id.at(MenuSelection::options)) { svc.state_controller.submenu = menu_type::options; }
+	// 	svc.state_controller.actions.set(Actions::trigger_submenu);
+	// 	svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+	// }
 
 	for (auto& option : options) { option.update(svc, current_selection); }
 	left_dot.update(svc);

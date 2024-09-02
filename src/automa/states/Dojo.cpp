@@ -78,13 +78,16 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void Dojo::tick_update(ServiceProvider& svc) {
-	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered() && inventory_window.active()) { toggle_inventory(svc); }
-	if (svc.controller_map.label_to_control.at("menu_toggle").triggered() && !console.active()) { toggle_inventory(svc); }
-	if ((svc.controller_map.label_to_control.at("arms_switch_right").triggered() || svc.controller_map.label_to_control.at("arms_switch_left").triggered()) && inventory_window.active() && player->has_map()) {
-		inventory_window.switch_modes(svc);
-		svc.soundboard.flags.console.set(audio::Console::next);
-	}
-	if (svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) { toggle_pause_menu(svc); }
+	svc.controller_map.set_action_set(config::ActionSet::Platformer); // XXX
+	// XXX have to change to menu bindings on dialog
+	// XXX
+	// if (svc.controller_map.digital_action_status(menu_toggle_secondary).triggered && inventory_window.active()) { toggle_inventory(svc); }
+	// if (svc.controller_map.digital_action_status(menu_toggle).triggered && !console.active()) { toggle_inventory(svc); }
+	// if ((svc.controller_map.digital_action_status(arms_switch_right).triggered || svc.controller_map.digital_action_status(arms_switch_left).triggered) && inventory_window.active() && player->has_map()) {
+	//	inventory_window.switch_modes(svc);
+	//	svc.soundboard.flags.console.set(audio::Console::next);
+	//}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
 
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }

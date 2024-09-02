@@ -11,28 +11,23 @@ CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::stri
 
 void CreditsMenu::init(ServiceProvider& svc, int room_number) {}
 
-void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-}
+void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void CreditsMenu::tick_update(ServiceProvider& svc) {
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		--current_selection;
 		constrain_selection();
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		svc.state_controller.submenu = menu_type::options;
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	}
-	if (svc.controller_map.label_to_control.at("right").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}

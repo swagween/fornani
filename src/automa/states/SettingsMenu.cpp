@@ -25,19 +25,21 @@ void SettingsMenu::init(ServiceProvider& svc, int room_number) {}
 void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void SettingsMenu::tick_update(ServiceProvider& svc) {
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
 		mode_flags.reset(MenuMode::adjust);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		--current_selection;
 		constrain_selection();
 		mode_flags.reset(MenuMode::adjust);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		if (adjust_mode()) {
 		} else {
 			svc.state_controller.submenu = menu_type::options;
@@ -45,7 +47,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
 	}
-	if (svc.controller_map.label_to_control.at("main_action").triggered() && !adjust_mode()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && !adjust_mode()) {
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		switch (current_selection) {
 		case 0:
@@ -78,12 +80,6 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 		options.at(1).label.setString(toggleables.keyboard.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::keyboard) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 		options.at(2).label.setString(toggleables.gamepad.getString() + (svc.controller_map.hard_toggles.test(config::Toggles::gamepad) ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	}
-	if (svc.controller_map.label_to_control.at("right").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered()) {
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	}
 	left_dot.update(svc);
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection).left_offset);
@@ -93,8 +89,8 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 		option.label.setLetterSpacing(1.2f);
 	}
 	if (svc.ticker.every_x_ticks(16)) {
-		if (svc.controller_map.label_to_control.at("left").held() && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
-		if (svc.controller_map.label_to_control.at("right").held() && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).held && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).held && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
 	}
 	svc.soundboard.play_sounds(svc);
 }
