@@ -12,14 +12,19 @@ namespace util {
 
 class NineSlice {
   public:
-	void slice(int corner_factor, int edge_factor);
+	void slice(automa::ServiceProvider& svc, int corner_factor, int edge_factor);
 	void set_texture(sf::Texture& tex);
 	void set_origin(sf::Vector2<float> origin);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float corner_dim, float edge_dim);
 	void render(sf::RenderWindow& win) const;
 	void start(automa::ServiceProvider& svc, sf::Vector2<float> position);
 	void end();
+	void speed_up_appearance(int rate);
+	void set_appearance_time(int time) { appearance_time = time; }
 	void set_scale(float scale) { global_scale = scale; }
+	void set_force(float force) { gravitator.attraction_force = force; }
+	void set_fric(float fric) { gravitator.collider.physics.set_global_friction(fric); }
+	void set_position(sf::Vector2<float> pos) { gravitator.set_position(pos); }
 	[[nodiscard]] auto is_extended() const -> bool { return appear.is_complete(); }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return native_dimensions * 0.5f; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return gravitator.collider.physics.position; }

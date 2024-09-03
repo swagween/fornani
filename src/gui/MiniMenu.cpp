@@ -7,7 +7,7 @@ namespace gui {
 
 MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt) {
 	sprite.set_texture(svc.assets.t_white_console);
-	sprite.slice(static_cast<int>(corner), static_cast<int>(edge));
+	sprite.slice(svc, static_cast<int>(corner), static_cast<int>(edge));
 	for (auto& o : opt) { options.push_back(automa::Option(svc, o)); }
 	selection = util::Circuit(static_cast<int>(options.size()));
 	font.loadFromFile(svc.text.title_font);

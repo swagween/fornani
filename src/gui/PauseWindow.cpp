@@ -31,11 +31,15 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	position = svc.constants.f_center_screen;
 	flags.reset(ConsoleFlags::portrait_included);
 
+	sprite.set_position(svc.constants.f_center_screen);
+	sprite.set_force(1.2f);
+	sprite.set_fric(0.90f);
 }
 
 void PauseWindow::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (!active()) { return; }
 	Console::update(svc);
+	sprite.speed_up_appearance(3);
 	selector.update();
 }
 
@@ -47,7 +51,7 @@ void PauseWindow::render(automa::ServiceProvider& svc, player::Player& player, s
 	help_marker.render(win);
 }
 
-void PauseWindow::open() { flags.set(ConsoleFlags::active); }
+void PauseWindow::open() { Console::begin(); }
 
 void PauseWindow::close() { Console::end(); }
 

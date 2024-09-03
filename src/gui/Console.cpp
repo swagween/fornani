@@ -9,7 +9,7 @@ Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(sv
 	origin = {pad, svc.constants.screen_dimensions.y - pad_y};
 	text_suite = svc.text.console;
 	set_texture(svc.assets.t_ui);
-	sprite.slice(corner_factor, edge_factor);
+	sprite.slice(svc, corner_factor, edge_factor);
 
 	dimensions = sf::Vector2<float>{(float)svc.constants.screen_dimensions.x - 2 * pad, (float)svc.constants.screen_dimensions.y / height_factor};
 	position = sf::Vector2<float>{svc.constants.f_center_screen.x, origin.y - dimensions.y * 0.5f};
@@ -24,7 +24,7 @@ void Console::begin() {
 
 void Console::update(automa::ServiceProvider& svc) {
 	sprite.update(svc, position, dimensions, corner_factor, edge_factor);
-	writer.set_bounds(sf::Vector2<float>{dimensions.x - border.left, dimensions.y - border.top});
+	writer.set_bounds(sf::Vector2<float>{position.x + dimensions.x * 0.5f - 2.f * border.left, position.y + dimensions.y * 0.5f - border.top});
 	writer.set_position(position + sf::Vector2<float>{border.left, border.top} - dimensions * 0.5f);
 	if (sprite.is_extended()) { flags.set(ConsoleFlags::extended); }
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);

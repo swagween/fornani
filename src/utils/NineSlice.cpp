@@ -3,7 +3,7 @@
 
 namespace util {
 
-void NineSlice::slice(int corner_factor, int edge_factor) {
+void NineSlice::slice(automa::ServiceProvider& svc, int corner_factor, int edge_factor) {
 	sprites.at(0).setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
 	sprites.at(1).setTextureRect(sf::IntRect{{corner_factor, 0}, {edge_factor, corner_factor}});
 	sprites.at(2).setTextureRect(sf::IntRect{{corner_factor + edge_factor, 0}, {corner_factor, corner_factor}});
@@ -15,7 +15,7 @@ void NineSlice::slice(int corner_factor, int edge_factor) {
 	sprites.at(8).setTextureRect(sf::IntRect{{corner_factor + edge_factor, corner_factor + edge_factor}, {corner_factor, corner_factor}});
 
 	float fric{0.93f};
-	gravitator = vfx::Gravitator({}, sf::Color::Transparent, 0.4f);
+	gravitator = vfx::Gravitator(svc.constants.f_center_screen, sf::Color::Transparent, 0.4f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{fric, fric}, 2.0f);
 }
 
@@ -74,5 +74,9 @@ void NineSlice::start(automa::ServiceProvider& svc, sf::Vector2<float> position)
 }
 
 void NineSlice::end() { appear.start(); }
+
+void NineSlice::speed_up_appearance(int rate) {
+	for (auto i{0}; i < rate; ++i) { appear.update(); }
+}
 
 } // namespace util

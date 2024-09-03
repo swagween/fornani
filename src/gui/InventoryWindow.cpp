@@ -29,10 +29,13 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
 	position = svc.constants.f_center_screen;
 	flags.reset(ConsoleFlags::portrait_included);
+	Console::update(svc);
+	sprite.set_position(position);
 
 	info.dimensions = {dimensions.x - 2.f * ui.info_offset.x, dimensions.y * 0.62f - ui.info_offset.y - ui.inner_corner};
 	info.position = svc.constants.f_center_screen;
 	info.position.y += ui.info_offset.y;
+	info.sprite.set_position(info.position);
 	info.flags.reset(ConsoleFlags::portrait_included);
 	info.update(svc);
 
@@ -56,6 +59,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		auto x_dim = std::min(static_cast<int>(player.catalog.categories.inventory.items.size()), ui.items_per_row);
 		auto y_dim = static_cast<int>(std::ceil(static_cast<float>(player.catalog.categories.inventory.items.size()) / static_cast<float>(ui.items_per_row)));
 		selector.update();
+		info.update(svc);
 		for (auto& item : player.catalog.categories.inventory.items) {
 			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
 			if (player.catalog.categories.inventory.items.size() == 1) { item.select(); }
