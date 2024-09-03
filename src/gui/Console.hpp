@@ -55,12 +55,11 @@ class Console {
 
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
 	[[nodiscard]] auto is_complete() const -> bool { return writer.empty(); }
-	[[nodiscard]] auto extended() const -> bool { return flags.test(ConsoleFlags::extended); }
+	[[nodiscard]] auto extended() const -> bool { return sprite.is_extended(); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
 
 	sf::Vector2<float> position{};
-	sf::Vector2<float> current_dimensions{};
-	sf::Vector2<float> final_dimensions{};
+	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> text_origin{};
 	util::BitFlags<ConsoleFlags> flags{};
 	util::NineSlice sprite{};
@@ -87,9 +86,6 @@ class Console {
 		26.f,
 		26.f
 	};
-
-	float extent{};
-	int speed{2};
 
 	protected:
 	sf::Vector2<float> origin{}; // bottom left corner

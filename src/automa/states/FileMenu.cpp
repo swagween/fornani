@@ -4,7 +4,7 @@
 
 namespace automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console), file_select_menu(svc, {"Play", "Delete"}) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console), file_select_menu(svc, {"play", "stats", "delete"}) {
 	current_selection = util::Circuit(num_files);
 	svc.data.load_blank_save(player);
 	hud.set_corner_pad(svc, true); // display hud preview for each file in the center of the screen
@@ -45,8 +45,8 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			current_selection.modulate(1);
 			svc.data.load_blank_save(*player);
 			svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("up").triggered()) {
 		if (file_select_menu.is_open()) {
@@ -55,24 +55,44 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			current_selection.modulate(-1);
 			svc.data.load_blank_save(*player);
 			svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		if (file_select_menu.is_open()) {
+			file_select_menu.close(svc);
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		} else {
+			svc.state_controller.actions.set(Actions::exit_submenu);
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		}
 	}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered() || svc.controller_map.label_to_control.at("main_action").triggered()) {
-		file_select_menu.open(options.at(current_selection.get()).position);
-		/*svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get(), true);
-		svc.state_controller.actions.set(Actions::trigger);
-		svc.state_controller.actions.set(Actions::save_loaded);
-		svc.soundboard.flags.menu.set(audio::Menu::select);
-		svc.soundboard.flags.world.set(audio::World::load);*/
+	if (svc.controller_map.label_to_control.at("menu_forward").triggered() || svc.controller_map.label_to_control.at("main_action").triggered() || (svc.controller_map.label_to_control.at("right").triggered() && !svc.controller_map.is_gamepad())) {
+		if (file_select_menu.is_open()) {
+			switch (file_select_menu.get_selection()) {
+			case 0:
+				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get(), true);
+				svc.state_controller.actions.set(Actions::trigger);
+				svc.state_controller.actions.set(Actions::save_loaded);
+				svc.soundboard.flags.menu.set(audio::Menu::select);
+				svc.soundboard.flags.world.set(audio::World::load);
+				break;
+			case 1:
+				svc.state_controller.actions.set(automa::Actions::print_stats);
+				svc.state_controller.actions.set(Actions::trigger);
+				svc.soundboard.flags.menu.set(audio::Menu::select);
+				break;
+			case 2: ; break;
+			}
+		} else {
+			file_select_menu.open(svc, options.at(current_selection.get()).position);
+			svc.soundboard.flags.console.set(audio::Console::menu_open);
+		}
 	}
 	if (svc.controller_map.label_to_control.at("menu_back").triggered() || svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) {
 		if (file_select_menu.is_open()) {
-			file_select_menu.close();
+			file_select_menu.close(svc);
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		} else {
 			svc.state_controller.submenu = menu_type::main;
 			svc.state_controller.actions.set(Actions::exit_submenu);
@@ -87,7 +107,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 
 	auto& opt = options.at(current_selection.get());
 	auto minimenu_dim = sf::Vector2<float>{128.f, 128.f};
-	auto minimenu_pos = opt.position - sf::Vector2<float>(opt.label.getLocalBounds().width * 0.5f + minimenu_dim.x + 2.f * spacing, minimenu_dim.y * 0.5f); 
+	auto minimenu_pos = opt.position + sf::Vector2<float>(opt.label.getLocalBounds().width * 0.5f + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f); 
 	file_select_menu.update(svc, minimenu_dim, minimenu_pos);
 
 	left_dot.update(svc);

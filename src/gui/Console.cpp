@@ -11,28 +11,22 @@ Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(sv
 	set_texture(svc.assets.t_ui);
 	sprite.slice(corner_factor, edge_factor);
 
-	final_dimensions = sf::Vector2<float>{(float)svc.constants.screen_dimensions.x - 2 * pad, (float)svc.constants.screen_dimensions.y / height_factor};
-	current_dimensions.x = final_dimensions.x;
-	position = sf::Vector2<float>{origin.x, origin.y - final_dimensions.y};
+	dimensions = sf::Vector2<float>{(float)svc.constants.screen_dimensions.x - 2 * pad, (float)svc.constants.screen_dimensions.y / height_factor};
+	position = sf::Vector2<float>{svc.constants.f_center_screen.x, origin.y - dimensions.y * 0.5f};
 	text_origin = sf::Vector2<float>{20.0f, 20.0f};
-
-	extent = corner_factor * 2;
 }
 
 void Console::begin() {
-	current_dimensions.y = corner_factor * 2;
 	flags.set(ConsoleFlags::active);
 	writer.start();
+	sprite.start(*m_services, position);
 }
 
 void Console::update(automa::ServiceProvider& svc) {
-	writer.set_bounds(position + sf::Vector2<float>{final_dimensions.x - 2 * border.left, final_dimensions.y - 2 * border.top});
-	writer.set_position(position + sf::Vector2<float>{border.left, border.top});
-	if (flags.test(ConsoleFlags::active)) { extent += speed; }
-	if (final_dimensions.y > 0) { extent = std::clamp((float)extent, 0.f, final_dimensions.y); }
-	if (extent == final_dimensions.y) { flags.set(ConsoleFlags::extended); }
-	current_dimensions.y = extent;
-	sprite.update(position, current_dimensions, corner_factor, edge_factor);
+	sprite.update(svc, position, dimensions, corner_factor, edge_factor);
+	writer.set_bounds(sf::Vector2<float>{dimensions.x - border.left, dimensions.y - border.top});
+	writer.set_position(position + sf::Vector2<float>{border.left, border.top} - dimensions * 0.5f);
+	if (sprite.is_extended()) { flags.set(ConsoleFlags::extended); }
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 	writer.update();
 
@@ -93,12 +87,13 @@ void Console::append(std::string_view key) { writer.append(key); }
 
 void Console::end() {
 	writer.flush_communicators();
-	extent = current_dimensions.y = corner_factor * 2;
 	flags.reset(ConsoleFlags::active);
 	flags.reset(ConsoleFlags::portrait_included);
 	flags.reset(ConsoleFlags::extended);
 	flags.reset(ConsoleFlags::display_item);
 	flags.set(ConsoleFlags::off_trigger);
+	sprite.end();
+	sprite.set_scale(0.f);
 }
 
 void Console::clean_off_trigger() { flags.reset(ConsoleFlags::off_trigger); }

@@ -269,6 +269,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
 	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
 	m_services->ticker.in_game_seconds_passed = m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>());
+	if (files.at(file).flags.test(fornani::FileFlags::new_file)) { s.player.death_count.set(0); }
 
 	return room_id;
 }

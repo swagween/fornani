@@ -27,12 +27,9 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	title.setPosition(origin + ui.title_offset);
 	widget_label.setPosition(origin + ui.widget_label_offset);
 
-	final_dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
-	current_dimensions = final_dimensions;
-	position = sf::Vector2<float>{origin.x, origin.y};
-	speed = 8;
+	dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
+	position = svc.constants.f_center_screen;
 	flags.reset(ConsoleFlags::portrait_included);
-	extent = final_dimensions.y;
 
 }
 
