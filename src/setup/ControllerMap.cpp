@@ -37,16 +37,14 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	DEFINE_ACTION(platformer_toggle_pause);
 
 	// Inventory controls
-	DEFINE_ACTION(inventory_left);
-	DEFINE_ACTION(inventory_right);
-	DEFINE_ACTION(inventory_up);
-	DEFINE_ACTION(inventory_down);
 	DEFINE_ACTION(inventory_close);
 
 	// Map controls
 	DEFINE_ACTION(map_close);
 
 	// Menu controls
+	DEFINE_ACTION(menu_left);
+	DEFINE_ACTION(menu_right);
 	DEFINE_ACTION(menu_up);
 	DEFINE_ACTION(menu_down);
 	DEFINE_ACTION(menu_select);
@@ -56,16 +54,13 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	analog_actions.insert({AnalogAction::map_movement, {SteamInput()->GetAnalogActionHandle("map_movement"), AnalogActionStatus(AnalogAction::map_movement)}});
 
 #undef DEFINE_ACTION
-#define DEFINE_ACTION_SET(set_name) action_sets.insert({ActionSet::set_name, SteamInput()->GetActionSetHandle(XSTR(set_name))})
-
-	DEFINE_ACTION_SET(Platformer);
-	DEFINE_ACTION_SET(Menu);
-	DEFINE_ACTION_SET(Inventory);
-	DEFINE_ACTION_SET(Map);
-
-#undef DEFINE_ACTION_SET
 #undef STR
 #undef XSTR
+
+	platformer_action_set = SteamInput()->GetActionSetHandle("Platformer");
+	menu_action_set = SteamInput()->GetActionSetHandle("Menu");
+	inventory_action_layer = SteamInput()->GetActionSetHandle("Inventory");
+	map_action_layer = SteamInput()->GetActionSetHandle("Map");
 
 	gamepad_button_name.insert({-1, "left analog stick"});
 	gamepad_button_name.insert({0, "square"});
@@ -90,7 +85,7 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	hard_toggles.set(Toggles::gamepad);
 }
 
-void ControllerMap::update() {
+void ControllerMap::update(bool has_focus) {
 	SteamInput()->RunFrame();
 	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
 	for (auto& [action, data] : digital_actions) {
@@ -103,7 +98,7 @@ void ControllerMap::update() {
 		}
 		auto pressed_on_gamepad = data.bState;
 		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
-		auto triggered = pressed_on_gamepad || pressed_on_keyboard;
+		auto triggered = has_focus && (pressed_on_gamepad || pressed_on_keyboard);
 		// Avoid actions being inmediately triggered when switching action sets
 		if (!can_be_pressed && triggered) { continue; }
 		can_be_pressed = true;
@@ -141,9 +136,19 @@ void ControllerMap::update() {
 }
 
 void ControllerMap::set_action_set(ActionSet set) {
-	auto handle = action_sets.at(set);
-	if (handle != SteamInput()->GetCurrentActionSet(controller_handle)) { std::cout << "Changing to set " << handle << std::endl; }
-	SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, handle);
+	SteamInput()->DeactivateAllActionSetLayers(STEAM_INPUT_HANDLE_ALL_CONTROLLERS);
+	switch (set) {
+	case ActionSet::Inventory:
+		SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, menu_action_set);
+		SteamInput()->ActivateActionSetLayer(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, inventory_action_layer);
+		break;
+	case ActionSet::Map:
+		SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, menu_action_set);
+		SteamInput()->ActivateActionSetLayer(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, map_action_layer);
+		break;
+	case ActionSet::Menu: SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, menu_action_set); break;
+	case ActionSet::Platformer: SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, platformer_action_set); break;
+	}
 }
 
 [[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view { return SteamInput()->GetStringForDigitalActionName(digital_actions.at(action).steam_handle); }

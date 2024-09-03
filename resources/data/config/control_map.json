@@ -42,23 +42,17 @@
     "platformer_toggle_pause": {
       "primary_key": "Esc"
     },
-    "inventory_left": {
-      "primary_key": "Left"
-    },
-    "inventory_right": {
-      "primary_key": "Right"
-    },
-    "inventory_up": {
-      "primary_key": "Up"
-    },
-    "inventory_down": {
-      "primary_key": "Down"
-    },
     "inventory_close": {
       "primary_key": "E"
     },
     "map_close": {
       "primary_key": "M"
+    },
+    "menu_left": {
+      "primary_key": "Left"
+    },
+    "menu_right": {
+      "primary_key": "Right"
     },
     "menu_up": {
       "primary_key": "Up"

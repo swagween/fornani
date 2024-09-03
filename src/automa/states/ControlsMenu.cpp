@@ -22,12 +22,10 @@ auto get_action_by_identifier(std::string_view id) -> config::DigitalAction {
 		{"platformer_open inventory", config::DigitalAction::platformer_open_inventory},
 		{"platformer_open map", config::DigitalAction::platformer_open_map},
 		{"platformer_pause", config::DigitalAction::platformer_toggle_pause},
-		{"inventory_left", config::DigitalAction::inventory_left},
-		{"inventory_right", config::DigitalAction::inventory_right},
-		{"inventory_up", config::DigitalAction::inventory_up},
-		{"inventory_down", config::DigitalAction::inventory_down},
 		{"inventory_close", config::DigitalAction::inventory_close},
 		{"map_close", config::DigitalAction::map_close},
+		{"menu_left", config::DigitalAction::menu_left},
+		{"menu_right", config::DigitalAction::menu_right},
 		{"menu_up", config::DigitalAction::menu_up},
 		{"menu_down", config::DigitalAction::menu_down},
 		{"menu_select", config::DigitalAction::menu_select},
@@ -70,7 +68,11 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(options.at(current_selection).label.getString());
 			auto action = get_action_by_identifier(id.data());
 
-			svc.controller_map.set_primary_keyboard_binding(action, event.key.code);
+			auto key = event.key.code;
+			if (key != sf::Keyboard::Key::Escape) {
+				// Escape cancels binding
+				svc.controller_map.set_primary_keyboard_binding(action, event.key.code);
+			}
 			option_is_selected = false;
 			refresh_controls(svc);
 		}
@@ -81,29 +83,25 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-		if (option_is_selected) {
-			// Action set selection should be first option
-			if (current_selection == 0) {
-				auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
-				auto tab_to_switch_to = (current_tab + 1) % 4;
-				change_scene(svc, tabs[tab_to_switch_to]);
-			}
-		} else {
+		if (!option_is_selected) {
 			++current_selection;
 			constrain_selection();
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered && option_is_selected && current_selection == 0) {
+		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
+		if (current_tab == 0) { current_tab = 4; }
+		auto tab_to_switch_to = current_tab - 1;
+		change_scene(svc, tabs[tab_to_switch_to]);
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered && option_is_selected && current_selection == 0) {
+		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
+		auto tab_to_switch_to = (current_tab + 1) % 4;
+		change_scene(svc, tabs[tab_to_switch_to]);
+	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-		if (option_is_selected) {
-			// Action set selection should be first option
-			if (current_selection == 0) {
-				auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
-				if (current_tab == 0) { current_tab = 4; }
-				auto tab_to_switch_to = current_tab - 1;
-				change_scene(svc, tabs[tab_to_switch_to]);
-			}
-		} else {
+		if (!option_is_selected) {
 			--current_selection;
 			constrain_selection();
 			svc.soundboard.flags.menu.set(audio::Menu::shift);

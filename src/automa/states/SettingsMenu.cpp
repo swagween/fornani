@@ -26,7 +26,7 @@ void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void SettingsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	
+
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
@@ -73,6 +73,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 				svc.controller_map.hard_toggles.set(config::Toggles::gamepad);
 			}
 			break;
+			// XXX music volume setting does not work
 		case 3: adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust); break;
 		}
 		if (!svc.controller_map.gamepad_connected()) { svc.controller_map.hard_toggles.set(config::Toggles::keyboard); }

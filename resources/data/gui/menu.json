@@ -33,16 +33,11 @@
       "switch weapon (right)",
       "open inventory",
       "open map",
-      "pause",
       "gamepad settings",
       "reset to default"
     ],
     "controls_inventory": [
       "< inventory >",
-      "left",
-      "right",
-      "up",
-      "down",
       "close",
       "gamepad settings",
       "reset to default"
@@ -55,6 +50,8 @@
     ],
     "controls_menu": [
       "< menu >",
+      "left",
+      "right",
       "up",
       "down",
       "select",

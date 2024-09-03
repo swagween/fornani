@@ -32,22 +32,17 @@ enum class DigitalAction {
 	platformer_toggle_pause,
 
 	// Inventory controls
-	// XXX convert this into an UI action set layer
-	inventory_left,
-	inventory_right,
-	inventory_up,
-	inventory_down,
 	inventory_close,
 
 	// Map controls
-	// XXX convert this into an UI action set layer
 	map_close,
 
 	// Menu controls
 	// XXX rename to UI
+	menu_left,
+	menu_right,
 	menu_up,
 	menu_down,
-	// XXX add left and right actions
 	menu_select,
 	menu_cancel
 };
@@ -92,7 +87,7 @@ class ControllerMap {
 	ControllerMap operator=(ControllerMap const&) = delete;
 
 	/// @brief Update internal action states. Call once on tick update, and nowhere else.
-	void update();
+	void update(bool has_focus);
 
 	/// @brief Returns whether there is a gamepad connected or not.
 	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }
@@ -140,7 +135,10 @@ class ControllerMap {
 	};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
-	std::unordered_map<ActionSet, InputActionSetHandle_t> action_sets{};
+	InputActionSetHandle_t platformer_action_set;
+	InputActionSetHandle_t menu_action_set;
+	InputActionSetHandle_t inventory_action_layer;
+	InputActionSetHandle_t map_action_layer;
 
 	InputHandle_t controller_handle{};
 

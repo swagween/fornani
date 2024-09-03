@@ -164,8 +164,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		// game logic and rendering
 		services.music.update();
-		services.ticker.tick([this, &services = services] {
-			services.controller_map.update();
+		bool has_focus = window.hasFocus();
+		services.ticker.tick([this, has_focus, &services = services] {
+			services.controller_map.update(has_focus);
 			game_state.get_current_state().tick_update(services);
 		});
 		game_state.get_current_state().frame_update(services);

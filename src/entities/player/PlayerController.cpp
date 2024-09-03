@@ -30,12 +30,12 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		auto const& transponder_exit = svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered;
 		auto const& transponder_down = svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered;
 		auto const& transponder_up = svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered;
-		auto const& transponder_left = svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered;
-		auto const& transponder_right = svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered;
+		auto const& transponder_left = svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered;
+		auto const& transponder_right = svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered;
 		auto const& transponder_hold_down = svc.controller_map.digital_action_status(config::DigitalAction::menu_down).held;
 		auto const& transponder_hold_up = svc.controller_map.digital_action_status(config::DigitalAction::menu_up).held;
-		auto const& transponder_hold_left = svc.controller_map.digital_action_status(config::DigitalAction::menu_down).held;
-		auto const& transponder_hold_right = svc.controller_map.digital_action_status(config::DigitalAction::menu_up).held;
+		auto const& transponder_hold_left = svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held;
+		auto const& transponder_hold_right = svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held;
 		auto const& transponder_select = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered;
 		// transponder flags
 		transponder_skip ? transponder_flags.set(TransponderInput::skip) : transponder_flags.reset(TransponderInput::skip);
