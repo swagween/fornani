@@ -32,6 +32,7 @@ enum class DigitalAction {
 	platformer_toggle_pause,
 
 	// Inventory controls
+	// XXX convert this into an UI action set layer
 	inventory_left,
 	inventory_right,
 	inventory_up,
@@ -39,11 +40,14 @@ enum class DigitalAction {
 	inventory_close,
 
 	// Map controls
+	// XXX convert this into an UI action set layer
 	map_close,
 
 	// Menu controls
+	// XXX rename to UI
 	menu_up,
 	menu_down,
+	// XXX add left and right actions
 	menu_select,
 	menu_cancel
 };
@@ -87,56 +91,38 @@ class ControllerMap {
 	ControllerMap(ControllerMap const&) = delete;
 	ControllerMap operator=(ControllerMap const&) = delete;
 
+	/// @brief Update internal action states. Call once on tick update, and nowhere else.
 	void update();
-	[[nodiscard]] auto gamepad_connected() const -> bool { return status.test(ControllerStatus::gamepad_connected); }
+
+	/// @brief Returns whether there is a gamepad connected or not.
+	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }
 	[[nodiscard]] auto autosprint() const -> bool { return hard_toggles.test(Toggles::autosprint); }
 	[[nodiscard]] auto hard_toggles_off() const -> bool { return !hard_toggles.test(Toggles::keyboard) && !hard_toggles.test(Toggles::gamepad); }
-	[[nodiscard]] auto digital_action_status(DigitalAction action) const -> DigitalActionStatus { return digital_actions.at(action).second; }
+	[[nodiscard]] auto digital_action_status(DigitalAction action) const -> DigitalActionStatus { return digital_actions.at(action).status; }
 	[[nodiscard]] auto analog_action_status(AnalogAction action) const -> AnalogActionStatus { return analog_actions.at(action).second; }
 	[[nodiscard]] auto digital_action_name(DigitalAction action) const -> std::string_view;
+	/// @brief Set the current action set.
+	/// @warning This determines the actions capable to be received by the connected gamepads, so remember to set it correctly!
 	void set_action_set(ActionSet set);
+	/// @brief Open the Steam controller configuration overlay.
+	void open_bindings_overlay();
+
+	void set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
+	void set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
+	/// @brief Returns the primary keyboard key associated with a particular action.
+	/// @param action
+	/// @return The key bound, or sf::Keyboard::Key::Unknown if no key was bound.
+	[[nodiscard]] auto get_primary_keyboard_binding(DigitalAction action) -> sf::Keyboard::Key;
+	/// @brief Returns the secondary keyboard key associated with a particular action.
+	/// @param action
+	/// @return The key bound, or sf::Keyboard::Key::Unknown if no key was bound.
+	[[nodiscard]] auto get_secondary_keyboard_binding(DigitalAction action) -> sf::Keyboard::Key;
+
+	[[nodiscard]] auto key_to_string(sf::Keyboard::Key) -> std::string_view;
+	[[nodiscard]] auto string_to_key(std::string_view) -> sf::Keyboard::Key;
 
 	std::unordered_map<int, std::string_view> gamepad_button_name{};
-	std::unordered_map<std::string_view, sf::Keyboard::Key> string_to_key{{"A", sf::Keyboard::A},			{"B", sf::Keyboard::B},
-																		  {"C", sf::Keyboard::C},			{"D", sf::Keyboard::D},
-																		  {"E", sf::Keyboard::E},			{"F", sf::Keyboard::F},
-																		  {"G", sf::Keyboard::G},			{"H", sf::Keyboard::H},
-																		  {"I", sf::Keyboard::I},			{"J", sf::Keyboard::J},
-																		  {"K", sf::Keyboard::K},			{"L", sf::Keyboard::L},
-																		  {"M", sf::Keyboard::M},			{"N", sf::Keyboard::N},
-																		  {"O", sf::Keyboard::O},			{"P", sf::Keyboard::P},
-																		  {"Q", sf::Keyboard::Q},			{"R", sf::Keyboard::R},
-																		  {"S", sf::Keyboard::S},			{"T", sf::Keyboard::T},
-																		  {"U", sf::Keyboard::U},			{"V", sf::Keyboard::V},
-																		  {"W", sf::Keyboard::W},			{"X", sf::Keyboard::X},
-																		  {"Y", sf::Keyboard::Y},			{"Z", sf::Keyboard::Z},
-																		  {"LShift", sf::Keyboard::LShift}, {"RShift", sf::Keyboard::RShift},
-																		  {"Left", sf::Keyboard::Left},		{"Right", sf::Keyboard::Right},
-																		  {"Up", sf::Keyboard::Up},			{"Down", sf::Keyboard::Down},
-																		  {"Period", sf::Keyboard::Period}, {"1", sf::Keyboard::Num1},
-																		  {"2", sf::Keyboard::Num2},		{"3", sf::Keyboard::Num3},
-																		  {"Space", sf::Keyboard::Space},	{"LControl", sf::Keyboard::LControl},
-																		  {"Esc", sf::Keyboard::Escape},	{"Enter", sf::Keyboard::Enter}};
-	std::unordered_map<sf::Keyboard::Key, std::string_view> key_to_string{{sf::Keyboard::A, "A"},			{sf::Keyboard::B, "B"},
-																		  {sf::Keyboard::C, "C"},			{sf::Keyboard::D, "D"},
-																		  {sf::Keyboard::E, "E"},			{sf::Keyboard::F, "F"},
-																		  {sf::Keyboard::G, "G"},			{sf::Keyboard::H, "H"},
-																		  {sf::Keyboard::I, "I"},			{sf::Keyboard::J, "J"},
-																		  {sf::Keyboard::K, "K"},			{sf::Keyboard::L, "L"},
-																		  {sf::Keyboard::M, "M"},			{sf::Keyboard::N, "N"},
-																		  {sf::Keyboard::O, "O"},			{sf::Keyboard::P, "P"},
-																		  {sf::Keyboard::Q, "Q"},			{sf::Keyboard::R, "R"},
-																		  {sf::Keyboard::S, "S"},			{sf::Keyboard::T, "T"},
-																		  {sf::Keyboard::U, "U"},			{sf::Keyboard::V, "V"},
-																		  {sf::Keyboard::W, "W"},			{sf::Keyboard::X, "X"},
-																		  {sf::Keyboard::Y, "Y"},			{sf::Keyboard::Z, "Z"},
-																		  {sf::Keyboard::LShift, "LShift"}, {sf::Keyboard::RShift, "RShift"},
-																		  {sf::Keyboard::Left, "Left"},		{sf::Keyboard::Right, "Right"},
-																		  {sf::Keyboard::Up, "Up"},			{sf::Keyboard::Down, "Down"},
-																		  {sf::Keyboard::Period, "Period"}, {sf::Keyboard::Num1, "1"},
-																		  {sf::Keyboard::Num2, "2"},		{sf::Keyboard::Num3, "3"},
-																		  {sf::Keyboard::Space, "Space"},	{sf::Keyboard::LControl, "LControl"},
-																		  {sf::Keyboard::Escape, "Esc"}};
+
 	std::unordered_map<std::string_view, sf::Mouse::Button> string_to_mousebutton{{"LMB", sf::Mouse::Left}, {"RMB", sf::Mouse::Right}};
 
 	ControllerType type{};
@@ -144,13 +130,21 @@ class ControllerMap {
 	util::BitFlags<ControllerStatus> status{};
 
   private:
-	std::unordered_map<DigitalAction, std::pair<InputDigitalActionHandle_t, DigitalActionStatus>> digital_actions{};
+	struct DigitalActionData {
+		InputDigitalActionHandle_t steam_handle;
+		DigitalActionStatus status;
+		sf::Keyboard::Key primary_binding;
+		sf::Keyboard::Key secondary_binding;
+	};
+	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
 	std::unordered_map<ActionSet, InputActionSetHandle_t> action_sets{};
 
 	InputHandle_t controller_handle{};
 
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
+
+	STEAM_CALLBACK(ControllerMap, handle_gamepad_disconnection, SteamInputDeviceDisconnected_t);
 };
 
 } // namespace config

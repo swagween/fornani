@@ -18,21 +18,49 @@
       "controls",
       "settings"
     ],
-    "controls": [
-      "jump/select",
-      "shoot",
-      "special",
-      "inspect",
-      "sprint",
-      "shield",
-      "inventory",
-      "menu",
-      "switch weapon (left)",
-      "switch weapon (right)",
+    "controls_platformer": [
+      "< platformer >",
       "left",
       "right",
       "up",
-      "down"
+      "down",
+      "jump",
+      "shoot",
+      "sprint",
+      "shield",
+      "inspect",
+      "switch weapon (left)",
+      "switch weapon (right)",
+      "open inventory",
+      "open map",
+      "pause",
+      "gamepad settings",
+      "reset to default"
+    ],
+    "controls_inventory": [
+      "< inventory >",
+      "left",
+      "right",
+      "up",
+      "down",
+      "close",
+      "gamepad settings",
+      "reset to default"
+    ],
+    "controls_map": [
+      "< map >",
+      "close",
+      "gamepad settings",
+      "reset to default"
+    ],
+    "controls_menu": [
+      "< menu >",
+      "up",
+      "down",
+      "select",
+      "cancel",
+      "gamepad settings",
+      "reset to default"
     ],
     "settings": [
       "auto-sprint: ",
@@ -54,8 +82,17 @@
     "options": {
       "top_buffer": 186
     },
-    "controls": {
-      "top_buffer": 60
+    "controls_platformer": {
+      "top_buffer": 30
+    },
+    "controls_inventory": {
+      "top_buffer": 30
+    },
+    "controls_map": {
+      "top_buffer": 30
+    },
+    "controls_menu": {
+      "top_buffer": 30
     },
     "settings": {
       "top_buffer": 60

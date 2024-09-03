@@ -3,9 +3,7 @@
 #include "../setup/Game.hpp"
 
 namespace automa {
-StateManager::StateManager() {
-	g_current_state = std::make_unique<MainMenu>();
-}
+StateManager::StateManager() { g_current_state = std::make_unique<MainMenu>(); }
 
 StateManager::~StateManager() {}
 
@@ -18,7 +16,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			break;
 		case menu_type::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, "options")); break;
 		case menu_type::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player, "settings")); break;
-		case menu_type::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player, "controls")); break;
+		case menu_type::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player, "controls_platformer")); break;
 		case menu_type::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player, "credits")); break;
 		}
 		svc.state_controller.actions.reset(Actions::trigger_submenu);
@@ -96,4 +94,4 @@ auto StateManager::set_current_state(std::unique_ptr<GameState> gameState) -> Ga
 	return get_current_state();
 }
 
-}
+} // namespace automa

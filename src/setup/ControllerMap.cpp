@@ -15,14 +15,11 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	// SteamInput()->SetInputActionManifestFilePath("C:\\Program Files (x86)\\Steam\\controller_config\\steam_input_manifest.vdf");
 	InputHandle_t connected_controllers[STEAM_INPUT_MAX_COUNT];
 	SteamInput()->EnableDeviceCallbacks();
-	SteamInput()->RunFrame();
-	auto connected_controllers_count = SteamInput()->GetConnectedControllers(connected_controllers);
-	std::cout << "Connected controller count: " << connected_controllers_count << std::endl;
-	if (connected_controllers_count > 0) { controller_handle = connected_controllers[0]; }
 
 #define XSTR(a) STR(a)
 #define STR(a) #a
-#define DEFINE_ACTION(action_name) digital_actions.insert({DigitalAction::action_name, {SteamInput()->GetDigitalActionHandle(XSTR(action_name)), DigitalActionStatus(DigitalAction::action_name)}})
+#define DEFINE_ACTION(action_name)                                                                                                                                                                                                             \
+	digital_actions.insert({DigitalAction::action_name, {SteamInput()->GetDigitalActionHandle(XSTR(action_name)), DigitalActionStatus(DigitalAction::action_name), sf::Keyboard::Key::Unknown, sf::Keyboard::Key::Unknown}})
 
 	// Platformer controls
 	DEFINE_ACTION(platformer_left);
@@ -71,9 +68,6 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 #undef STR
 #undef XSTR
 
-	SteamInput()->ActivateActionSet(controller_handle, action_sets[ActionSet::Menu]);
-	std::cout << "Current action set: " << SteamInput()->GetCurrentActionSet(controller_handle) << std::endl;
-
 	gamepad_button_name.insert({-1, "left analog stick"});
 	gamepad_button_name.insert({0, "square"});
 	gamepad_button_name.insert({1, "cross"});
@@ -101,10 +95,12 @@ void ControllerMap::update() {
 	SteamInput()->RunFrame();
 	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
 	for (auto& [action, pair] : digital_actions) {
-		auto& [steam_handle, action_status] = pair;
+		auto& [steam_handle, action_status, primary_key, secondary_key] = pair;
 
 		auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
-		if (data.bActive && data.bState) {
+		auto pressed_on_gamepad = data.bActive && data.bState;
+		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
+		if (pressed_on_gamepad || pressed_on_keyboard) {
 			if (!action_status.held) {
 				std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.triggered = true;
@@ -143,11 +139,79 @@ void ControllerMap::set_action_set(ActionSet set) {
 	SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, handle);
 }
 
-[[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view { return SteamInput()->GetStringForDigitalActionName(digital_actions.at(action).first); }
+[[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view { return SteamInput()->GetStringForDigitalActionName(digital_actions.at(action).steam_handle); }
 
 void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
 	std::cout << "Connected controller with handle = " << data->m_ulConnectedDeviceHandle << std::endl;
 	controller_handle = data->m_ulConnectedDeviceHandle;
 }
+
+void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
+	std::cout << "Disconnected controller with handle = " << data->m_ulDisconnectedDeviceHandle << std::endl;
+	controller_handle = data->m_ulDisconnectedDeviceHandle;
+}
+
+void ControllerMap::open_bindings_overlay() { SteamInput()->ShowBindingPanel(controller_handle); }
+
+auto ControllerMap::key_to_string(sf::Keyboard::Key key) -> std::string_view {
+	// XXX: Replace by switch
+	std::unordered_map<sf::Keyboard::Key, std::string_view> map{{sf::Keyboard::A, "A"},			  {sf::Keyboard::B, "B"},
+																{sf::Keyboard::C, "C"},			  {sf::Keyboard::D, "D"},
+																{sf::Keyboard::E, "E"},			  {sf::Keyboard::F, "F"},
+																{sf::Keyboard::G, "G"},			  {sf::Keyboard::H, "H"},
+																{sf::Keyboard::I, "I"},			  {sf::Keyboard::J, "J"},
+																{sf::Keyboard::K, "K"},			  {sf::Keyboard::L, "L"},
+																{sf::Keyboard::M, "M"},			  {sf::Keyboard::N, "N"},
+																{sf::Keyboard::O, "O"},			  {sf::Keyboard::P, "P"},
+																{sf::Keyboard::Q, "Q"},			  {sf::Keyboard::R, "R"},
+																{sf::Keyboard::S, "S"},			  {sf::Keyboard::T, "T"},
+																{sf::Keyboard::U, "U"},			  {sf::Keyboard::V, "V"},
+																{sf::Keyboard::W, "W"},			  {sf::Keyboard::X, "X"},
+																{sf::Keyboard::Y, "Y"},			  {sf::Keyboard::Z, "Z"},
+																{sf::Keyboard::LShift, "LShift"}, {sf::Keyboard::RShift, "RShift"},
+																{sf::Keyboard::Left, "Left"},	  {sf::Keyboard::Right, "Right"},
+																{sf::Keyboard::Up, "Up"},		  {sf::Keyboard::Down, "Down"},
+																{sf::Keyboard::Period, "Period"}, {sf::Keyboard::Num1, "1"},
+																{sf::Keyboard::Num2, "2"},		  {sf::Keyboard::Num3, "3"},
+																{sf::Keyboard::Space, "Space"},	  {sf::Keyboard::LControl, "LControl"},
+																{sf::Keyboard::Escape, "Esc"},	  {sf::Keyboard::Unknown, "None"}};
+
+	return map.at(key);
+}
+
+auto ControllerMap::string_to_key(std::string_view string) -> sf::Keyboard::Key {
+	std::unordered_map<std::string_view, sf::Keyboard::Key> map{{"A", sf::Keyboard::A},			  {"B", sf::Keyboard::B},
+																{"C", sf::Keyboard::C},			  {"D", sf::Keyboard::D},
+																{"E", sf::Keyboard::E},			  {"F", sf::Keyboard::F},
+																{"G", sf::Keyboard::G},			  {"H", sf::Keyboard::H},
+																{"I", sf::Keyboard::I},			  {"J", sf::Keyboard::J},
+																{"K", sf::Keyboard::K},			  {"L", sf::Keyboard::L},
+																{"M", sf::Keyboard::M},			  {"N", sf::Keyboard::N},
+																{"O", sf::Keyboard::O},			  {"P", sf::Keyboard::P},
+																{"Q", sf::Keyboard::Q},			  {"R", sf::Keyboard::R},
+																{"S", sf::Keyboard::S},			  {"T", sf::Keyboard::T},
+																{"U", sf::Keyboard::U},			  {"V", sf::Keyboard::V},
+																{"W", sf::Keyboard::W},			  {"X", sf::Keyboard::X},
+																{"Y", sf::Keyboard::Y},			  {"Z", sf::Keyboard::Z},
+																{"LShift", sf::Keyboard::LShift}, {"RShift", sf::Keyboard::RShift},
+																{"Left", sf::Keyboard::Left},	  {"Right", sf::Keyboard::Right},
+																{"Up", sf::Keyboard::Up},		  {"Down", sf::Keyboard::Down},
+																{"Period", sf::Keyboard::Period}, {"1", sf::Keyboard::Num1},
+																{"2", sf::Keyboard::Num2},		  {"3", sf::Keyboard::Num3},
+																{"Space", sf::Keyboard::Space},	  {"LControl", sf::Keyboard::LControl},
+																{"Esc", sf::Keyboard::Escape},	  {"Enter", sf::Keyboard::Enter}};
+
+	if (map.contains(string)) {
+		return map.at(string);
+	} else {
+		return sf::Keyboard::Unknown;
+	}
+}
+
+void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key) { digital_actions.at(action).primary_binding = key; }
+void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key) { digital_actions.at(action).secondary_binding = key; }
+
+auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) -> sf::Keyboard::Key { return digital_actions.at(action).primary_binding; }
+auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) -> sf::Keyboard::Key { return digital_actions.at(action).secondary_binding; }
 
 } // namespace config

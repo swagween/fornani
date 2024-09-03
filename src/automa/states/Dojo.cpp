@@ -78,8 +78,11 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void Dojo::tick_update(ServiceProvider& svc) {
-	svc.controller_map.set_action_set(config::ActionSet::Platformer); // XXX
-	// XXX have to change to menu bindings on dialog
+	if (console.is_complete()) {
+		svc.controller_map.set_action_set(config::ActionSet::Platformer);
+	} else {
+		svc.controller_map.set_action_set(config::ActionSet::Menu);
+	}
 	// XXX
 	// if (svc.controller_map.digital_action_status(menu_toggle_secondary).triggered && inventory_window.active()) { toggle_inventory(svc); }
 	// if (svc.controller_map.digital_action_status(menu_toggle).triggered && !console.active()) { toggle_inventory(svc); }

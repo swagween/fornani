@@ -19,11 +19,13 @@ class ControlsMenu : public automa::GameState {
 	void restore_defaults(ServiceProvider& svc);
 
   private:
+	void change_scene(ServiceProvider& svc, std::string_view scene); // XXX this is a hack to work with GameState
+
 	float center_offset{320.f};
 	std::vector<sf::Text> control_list{};
 	util::Cooldown loading{};
 	sf::Text instruction{};
-	bool binding_mode{};
+	bool option_is_selected{};
 	sf::RectangleShape debug{};
 };
 
