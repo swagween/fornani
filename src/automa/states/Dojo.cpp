@@ -66,7 +66,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
-	if (event.type == sf::Event::EventType::KeyPressed) { // XXX
+	if (event.type == sf::Event::EventType::KeyPressed) { // XXX Refactor pause window, add continue/exit options
 		if (event.key.code == sf::Keyboard::Enter && pause_window.active()) {
 			console.set_source(svc.text.basic);
 			console.load_and_launch("menu_return");
@@ -83,7 +83,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	} else {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 	}
-	// XXX
+	// XXX Get inventory/map to work
 	// if (svc.controller_map.digital_action_status(menu_toggle_secondary).triggered && inventory_window.active()) { toggle_inventory(svc); }
 	// if (svc.controller_map.digital_action_status(menu_toggle).triggered && !console.active()) { toggle_inventory(svc); }
 	// if ((svc.controller_map.digital_action_status(arms_switch_right).triggered || svc.controller_map.digital_action_status(arms_switch_left).triggered) && inventory_window.active() && player->has_map()) {

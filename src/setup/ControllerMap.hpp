@@ -135,6 +135,8 @@ class ControllerMap {
 		DigitalActionStatus status;
 		sf::Keyboard::Key primary_binding;
 		sf::Keyboard::Key secondary_binding;
+
+		bool can_be_pressed{};
 	};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};

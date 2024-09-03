@@ -15,7 +15,6 @@ class ControlsMenu : public automa::GameState {
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 	void refresh_controls(ServiceProvider& svc);
-	void update_binding(ServiceProvider& svc, sf::Event& event);
 	void restore_defaults(ServiceProvider& svc);
 
   private:

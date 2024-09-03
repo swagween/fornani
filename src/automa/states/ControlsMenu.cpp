@@ -184,49 +184,8 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 		}
 		++ctr;
 	}
-	// XXX
-	// instruction.setString("TODO TEXT");
-	// svc.controller_map.is_gamepad() ? instruction.setString("current controller : GAMEPAD\npress [START] to change binding, and [Esc] to cancel\npress [Ctrl] to restore defaults")
-	// 								: instruction.setString("current controller : KEYBOARD\npress [ENTER] to change binding, and [Esc] to cancel\npress [Ctrl] to restore defaults");
-}
-
-void ControlsMenu::update_binding(ServiceProvider& svc, sf::Event& event) {
-	return; // XXX
-	// XXX if (current_selection >= options.size() || current_selection >= control_list.size() || current_selection >= svc.controller_map.tags.size()) { return; }
-	options.at(current_selection).label.setFillColor(svc.styles.colors.bright_orange);
-	control_list.at(current_selection).setFillColor(svc.styles.colors.bright_orange);
-	if (true) { // XXX svc.controller_map.is_keyboard()
-		if (event.type == sf::Event::KeyPressed) {
-			option_is_selected = false;
-			/* XXX
-			std::string_view tag = svc.controller_map.tags.at(current_selection);
-			svc.data.controls["controls"][tag]["mouse_button"] = "";
-			if (!svc.controller_map.key_to_string.contains(event.key.code)) { return; }
-			svc.data.controls["controls"][tag]["keyboard_key"] = svc.controller_map.key_to_string.at(event.key.code);
-			svc.data.save_controls(svc.controller_map);
-			refresh_controls(svc); */
-		}
-		if (event.type == sf::Event::MouseButtonPressed) {
-			option_is_selected = false;
-			/* XXX
-			std::string_view tag = svc.controller_map.tags.at(current_selection);
-			svc.data.controls["controls"][tag]["keyboard_key"] = "";
-			if (event.mouseButton.button == sf::Mouse::Left) { svc.data.controls["controls"][tag]["mouse_button"] = "LMB"; }
-			if (event.mouseButton.button == sf::Mouse::Right) { svc.data.controls["controls"][tag]["mouse_button"] = "RMB"; }
-			svc.data.save_controls(svc.controller_map);
-			refresh_controls(svc); */
-		}
-	}
-	if (false) { // XXX svc.controller_map.is_gamepad()
-		if (event.type == sf::Event::JoystickButtonPressed) {
-			option_is_selected = false;
-			/* XXX
-			std::string_view tag = svc.controller_map.tags.at(current_selection);
-			svc.data.controls["controls"][tag]["gamepad_button"] = event.joystickButton.button;
-			svc.data.save_controls(svc.controller_map);
-			refresh_controls(svc); */
-		}
-	}
+	// XXX Press Escape to cancel binding, always set pause to escape
+	// XXX User may get stuck if their menu bindings are wrong, because they won't be able to reset them
 }
 
 void ControlsMenu::restore_defaults(ServiceProvider& svc) {

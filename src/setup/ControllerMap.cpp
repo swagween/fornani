@@ -13,7 +13,6 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 		std::cout << "Steam Input initialized" << std::endl;
 	}
 	// SteamInput()->SetInputActionManifestFilePath("C:\\Program Files (x86)\\Steam\\controller_config\\steam_input_manifest.vdf");
-	InputHandle_t connected_controllers[STEAM_INPUT_MAX_COUNT];
 	SteamInput()->EnableDeviceCallbacks();
 
 #define XSTR(a) STR(a)
@@ -94,13 +93,21 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 void ControllerMap::update() {
 	SteamInput()->RunFrame();
 	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
-	for (auto& [action, pair] : digital_actions) {
-		auto& [steam_handle, action_status, primary_key, secondary_key] = pair;
+	for (auto& [action, data] : digital_actions) {
+		auto& [steam_handle, action_status, primary_key, secondary_key, can_be_pressed] = data;
 
 		auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
-		auto pressed_on_gamepad = data.bActive && data.bState;
+		if (!data.bActive) {
+			can_be_pressed = false;
+			continue;
+		}
+		auto pressed_on_gamepad = data.bState;
 		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
-		if (pressed_on_gamepad || pressed_on_keyboard) {
+		auto triggered = pressed_on_gamepad || pressed_on_keyboard;
+		// Avoid actions being inmediately triggered when switching action sets
+		if (!can_be_pressed && triggered) { continue; }
+		can_be_pressed = true;
+		if (triggered) {
 			if (!action_status.held) {
 				std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.triggered = true;
