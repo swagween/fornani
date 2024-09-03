@@ -100,8 +100,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		bool valid_event{};
 		// check window events
 		while (window.pollEvent(event)) {
-			if ((event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased)) { services.data.load_controls(services.controller_map); }
-
 			player.animation.state = {};
 			player.animation.state = {};
 			if (event.key.code == sf::Keyboard::F2) { valid_event = false; }

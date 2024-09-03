@@ -5,6 +5,7 @@
 
 namespace automa {
 
+// XXX clean this up, use function from controllermap?
 auto get_action_by_identifier(std::string_view id) -> config::DigitalAction {
 	static std::unordered_map<std::string_view, config::DigitalAction> const map = {
 		{"platformer_left", config::DigitalAction::platformer_left},
@@ -126,7 +127,6 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		// Reset to default should be last option
 		else if (current_selection == options.size() - 1) {
 			restore_defaults(svc);
-
 		} else {
 			option_is_selected = !option_is_selected;
 			auto& control = control_list.at(current_selection);

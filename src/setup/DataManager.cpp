@@ -411,30 +411,47 @@ bool DataManager::room_discovered(int id) const {
 	return false;
 }
 
-void DataManager::load_controls(config::ControllerMap& controller) {
+auto get_action_by_string(std::string_view id) -> config::DigitalAction {
+	static std::unordered_map<std::string_view, config::DigitalAction> const map = {
+		{"platformer_left", config::DigitalAction::platformer_left},
+		{"platformer_right", config::DigitalAction::platformer_right},
+		{"platformer_up", config::DigitalAction::platformer_up},
+		{"platformer_down", config::DigitalAction::platformer_down},
+		{"platformer_jump", config::DigitalAction::platformer_jump},
+		{"platformer_shoot", config::DigitalAction::platformer_shoot},
+		{"platformer_sprint", config::DigitalAction::platformer_sprint},
+		{"platformer_shield", config::DigitalAction::platformer_shield},
+		{"platformer_inspect", config::DigitalAction::platformer_inspect},
+		{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
+		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
+		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
+		{"platformer_open_map", config::DigitalAction::platformer_open_map},
+		{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
+		{"inventory_left", config::DigitalAction::inventory_left},
+		{"inventory_right", config::DigitalAction::inventory_right},
+		{"inventory_up", config::DigitalAction::inventory_up},
+		{"inventory_down", config::DigitalAction::inventory_down},
+		{"inventory_close", config::DigitalAction::inventory_close},
+		{"map_close", config::DigitalAction::map_close},
+		{"menu_up", config::DigitalAction::menu_up},
+		{"menu_down", config::DigitalAction::menu_down},
+		{"menu_select", config::DigitalAction::menu_select},
+		{"menu_cancel", config::DigitalAction::menu_cancel},
+	};
 
+	return map.at(id);
+}
+
+void DataManager::load_controls(config::ControllerMap& controller) {
+	// XXX change controls json when keybinds get modified
 	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
+	assert(controls.contains("controls") && controls["controls"].is_object());
 
-	/* XXX
-	controller.key_to_label.clear();
-	controller.mousebutton_to_label.clear();
-	controller.label_to_gamepad.clear();
-	controller.tag_to_label.clear();
-	for (auto& tag : controller.tags) {
-		auto in_key = controls["controls"][tag]["keyboard_key"].as_string();
-		auto in_button = controls["controls"][tag]["mouse_button"].as_string();
-		auto in_gamepad = controls["controls"][tag]["gamepad_button"].as<int>();
-		if (controller.string_to_key.contains(in_key)) { controller.key_to_label.insert({controller.string_to_key.at(in_key), tag}); }
-		if (controller.string_to_mousebutton.contains(in_button)) { controller.mousebutton_to_label.insert({controller.string_to_mousebutton.at(in_button), tag}); }
-		if (in_gamepad != -1) { controller.label_to_gamepad.insert({tag, in_gamepad}); }
-		if (in_button.empty()) {
-			controller.tag_to_label.insert({tag, in_key});
-		} else {
-			controller.tag_to_label.insert({tag, in_button});
-		}
+	for (auto const& [key, item] : controls["controls"].object_view()) {
+		assert(item.is_object());
+		if (item.contains("primary_key")) { controller.set_primary_keyboard_binding(get_action_by_string(key), controller.string_to_key(item["primary_key"].as_string())); }
 	}
-	*/
 }
 
 void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((finder.resource_path + "/data/config/control_map.json").c_str()); }
