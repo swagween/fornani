@@ -92,9 +92,12 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 	}
 	// TODO: Split inventorywindow into inventory and map (separate functionality)
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered) { toggle_inventory(svc); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered) {
+		toggle_inventory(svc);
+		if (inventory_window.active() && inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
+	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered) {
-		// XXX Opening the map this way breaks the back panel rendering, as it is placed on (0, 0) with default size
+		// FIXME Opening the map this way breaks the back panel rendering, as it is placed on (0, 0) with default size
 		toggle_inventory(svc);
 		if (inventory_window.active() && !inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
 	}

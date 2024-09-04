@@ -132,7 +132,7 @@ void ControllerMap::update(bool has_focus) {
 		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
 		auto triggered = has_focus && (pressed_on_gamepad || pressed_on_keyboard);
 		config::ActionSet action_set = get_action_set_from_action(action);
-		bool active = action_set == active_action_set || ((action_set == config::ActionSet::Inventory || action_set == config::ActionSet::Map) && active_action_set == config::ActionSet::Menu);
+		bool active = action_set == active_action_set || ((active_action_set == config::ActionSet::Inventory || active_action_set == config::ActionSet::Map) && action_set == config::ActionSet::Menu);
 		if (triggered && active) {
 			action_status.released = false;
 			// Avoid actions being inmediately triggered when switching action sets
