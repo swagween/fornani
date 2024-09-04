@@ -290,50 +290,24 @@ void Game::debug_window() {
 
 					ImGui::EndTabItem();
 				}
-				/* XXX
-				if (ImGui::BeginTabItem("Key States")) {
-					ImGui::Text("Joystick");
-					ImGui::Text("Status: ");
-					ImGui::SameLine();
-					sf::Joystick::isConnected(0) ? ImGui::Text("Connected") : ImGui::Text("Not connected");
 
-					ImGui::Text("Controller Type: ");
-					ImGui::SameLine();
-					// XXX if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad"); }
-					// XXX if (services.controller_map.is_keyboard()) { ImGui::Text("Keyboard"); }
-
-					ImGui::Text("Main     : %s", services.controller_map.label_to_control.at("main_action").held() ? "Pressed" : "");
-					ImGui::Text("Secondary: %s", services.controller_map.label_to_control.at("secondary_action").held() ? "Pressed" : "");
-					ImGui::Text("Arms L   : %s", services.controller_map.label_to_control.at("arms_switch_left").held() ? "Pressed" : "");
-					ImGui::Text("Arms R   : %s", services.controller_map.label_to_control.at("arms_switch_right").held() ? "Pressed" : "");
-					ImGui::Text("Left   : %s", services.controller_map.label_to_control.at("left").held() ? "Pressed" : "");
-					ImGui::Text("Right  : %s", services.controller_map.label_to_control.at("right").held() ? "Pressed" : "");
-					ImGui::Text("Up     : %s", services.controller_map.label_to_control.at("up").held() ? "Pressed" : "");
-					ImGui::Text("Down   : %s", services.controller_map.label_to_control.at("down").held() ? "Pressed" : "");
-
-					ImGui::Text("SQUARE  : %s", sf::Joystick::isButtonPressed(0, 0) ? "Pressed" : "");
-					ImGui::Text("CROSS   : %s", sf::Joystick::isButtonPressed(0, 1) ? "Pressed" : "");
-					ImGui::Text("CIRCLE  : %s", sf::Joystick::isButtonPressed(0, 2) ? "Pressed" : "");
-					ImGui::Text("TRIANGLE: %s", sf::Joystick::isButtonPressed(0, 3) ? "Pressed" : "");
-					ImGui::Text("4: %s", sf::Joystick::isButtonPressed(0, 4) ? "Pressed" : "");
-					ImGui::Text("5: %s", sf::Joystick::isButtonPressed(0, 5) ? "Pressed" : "");
-					ImGui::Text("6: %s", sf::Joystick::isButtonPressed(0, 6) ? "Pressed" : "");
-					ImGui::Text("7: %s", sf::Joystick::isButtonPressed(0, 7) ? "Pressed" : "");
-					ImGui::Text("8: %s", sf::Joystick::isButtonPressed(0, 8) ? "Pressed" : "");
-					ImGui::Text("9: %s", sf::Joystick::isButtonPressed(0, 9) ? "Pressed" : "");
-					ImGui::Text("10: %s", sf::Joystick::isButtonPressed(0, 10) ? "Pressed" : "");
-					ImGui::Text("11: %s", sf::Joystick::isButtonPressed(0, 11) ? "Pressed" : "");
-					ImGui::Text("12: %s", sf::Joystick::isButtonPressed(0, 12) ? "Pressed" : "");
-					ImGui::Text("13: %s", sf::Joystick::isButtonPressed(0, 13) ? "Pressed" : "");
-					ImGui::Text("14: %s", sf::Joystick::isButtonPressed(0, 14) ? "Pressed" : "");
-					ImGui::Text("15: %s", sf::Joystick::isButtonPressed(0, 15) ? "Pressed" : "");
-					ImGui::Text("16: %s", sf::Joystick::isButtonPressed(0, 16) ? "Pressed" : "");
-
-					ImGui::Text("X Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::X));
-					ImGui::Text("Y Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
-
+				if (ImGui::BeginTabItem("Input State")) {
+					for (auto action = config::DigitalAction::platformer_left; action < config::DigitalAction::COUNT; action = static_cast<config::DigitalAction>(static_cast<int>(action) + 1)) {
+						ImGui::Text(services.controller_map.digital_action_name(action).data());
+						ImGui::SameLine();
+						auto status = services.controller_map.digital_action_status(action);
+						if (status.triggered) {
+							ImGui::Text("Triggered");
+						} else if (status.held) {
+							ImGui::Text("Held");
+						} else if (status.released) {
+							ImGui::Text("Released");
+						} else {
+							ImGui::Text("-");
+						}
+					}
 					ImGui::EndTabItem();
-				}*/
+				}
 				if (ImGui::BeginTabItem("Audio")) {
 					ImGui::Separator();
 					ImGui::Text("Music Player");
