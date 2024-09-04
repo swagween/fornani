@@ -356,7 +356,6 @@ void Game::debug_window() {
 							ImGui::Text("Player Pos: (%.4f,%.4f)", player.collider.physics.position.x, player.collider.physics.position.y);
 							ImGui::Text("Player Vel: (%.4f,%.4f)", player.collider.physics.velocity.x, player.collider.physics.velocity.y);
 							ImGui::Text("Player Acc: (%.4f,%.4f)", player.collider.physics.acceleration.x, player.collider.physics.acceleration.y);
-							ImGui::Text("Player Jer: (%.4f,%.4f)", player.collider.physics.jerk.x, player.collider.physics.jerk.y);
 							ImGui::Separator();
 							ImGui::Text("Player Grounded: %s", player.grounded() ? "Yes" : "No");
 							ImGui::Separator();

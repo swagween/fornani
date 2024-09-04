@@ -3,32 +3,34 @@
 #include "../utils/BitFlags.hpp"
 #include "../utils/NineSlice.hpp"
 #include "../utils/Circuit.hpp"
+#include "../automa/Option.hpp"
 #include <string_view>
 
 namespace automa {
 struct ServiceProvider;
-struct Option;
 }
 
 namespace gui {
 enum class MiniMenuState { open };
 class MiniMenu {
   public:
+	MiniMenu() = default;
 	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> position);
-	void render(sf::RenderWindow& win) const;
+	void render(sf::RenderWindow& win, bool bg = true) const;
 	void open(automa::ServiceProvider& svc, sf::Vector2<float> position);
 	void close(automa::ServiceProvider& svc);
 	void set_origin(sf::Vector2<float> origin);
 	void up();
 	void down();
+	void speed_up_appearance(int rate) { sprite.speed_up_appearance(rate); }
 	sf::Vector2<float> get_dimensions() const;
 	[[nodiscard]] auto is_open() const -> bool { return state.test(MiniMenuState::open); }
 	[[nodiscard]] auto get_selection() const -> int { return selection.get(); }
 	util::BitFlags<MiniMenuState> state{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> draw_position{};
-	std::vector<automa::Option> options{};
+
   private:
 	sf::Vector2<float> dimensions{};
 	int maximum{};
@@ -38,6 +40,7 @@ class MiniMenu {
 	util::NineSlice sprite{};
 	util::Circuit selection{1};
 	sf::Font font{};
+	std::vector<automa::Option> options;
 };
 
 } // namespace gui

@@ -73,7 +73,10 @@ void NineSlice::start(automa::ServiceProvider& svc, sf::Vector2<float> position)
 	gravitator.collider.physics.velocity = svc.random.random_vector_float(-10.f, 10.f);
 }
 
-void NineSlice::end() { appear.start(); }
+void NineSlice::end() {
+	appear.start();
+	set_scale(0.f);
+}
 
 void NineSlice::speed_up_appearance(int rate) {
 	for (auto i{0}; i < rate; ++i) { appear.update(); }

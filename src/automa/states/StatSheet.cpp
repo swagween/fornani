@@ -6,8 +6,15 @@ namespace automa {
 
 StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
 	current_selection = util::Circuit(static_cast<int>(options.size()));
-	left_dot.set_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_position(options.at(current_selection.get()).right_offset);
+	auto ctr{1};
+	for (auto& option : options) {
+		option.update(svc, current_selection.get());
+		option.label.setLetterSpacing(1.4f);
+		option.position = {svc.constants.f_center_screen.x, svc.constants.f_screen_dimensions.y - 60.f - ctr * 28.f};
+		++ctr;
+	}
+	left_dot.set_position(options.at(0).left_offset);
+	right_dot.set_position(options.at(0).right_offset);
 	stats = options.at(0).label;
 	title = options.at(0).label;
 	title.setString("post-game stats");
@@ -21,6 +28,7 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 	stats.setLineSpacing(2.0f);
 	svc.music.load("firstwind");
 	svc.music.play_looped(10);
+	loading.start();
 }
 
 void StatSheet::init(ServiceProvider& svc, int room_number) {}
@@ -50,11 +58,12 @@ void StatSheet::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void StatSheet::tick_update(ServiceProvider& svc) {
+	loading.update();
 	auto ctr{1};
 	for (auto& option : options) {
 		option.update(svc, current_selection.get());
 		option.label.setLetterSpacing(1.4f);
-		option.position = {svc.constants.f_screen_dimensions.x * 0.5f, svc.constants.f_screen_dimensions.y - 60.f - ctr * 28.f};
+		option.position = {svc.constants.f_center_screen.x, svc.constants.f_screen_dimensions.y - 60.f - ctr * 28.f};
 		++ctr;
 	}
 	stats.setPosition({200.f, 120.f});
@@ -70,7 +79,7 @@ void StatSheet::tick_update(ServiceProvider& svc) {
 void StatSheet::frame_update(ServiceProvider& svc) {}
 
 void StatSheet::render(ServiceProvider& svc, sf::RenderWindow& win) {
-
+	if (!loading.is_complete()) { return; }
 	for (auto& option : options) { win.draw(option.label); }
 	win.draw(stats);
 	win.draw(title);

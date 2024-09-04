@@ -107,7 +107,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 
 	auto& opt = options.at(current_selection.get());
 	auto minimenu_dim = sf::Vector2<float>{128.f, 128.f};
-	auto minimenu_pos = opt.position + sf::Vector2<float>(opt.label.getLocalBounds().width * 0.5f + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f); 
+	auto minimenu_pos = opt.position + sf::Vector2<float>(opt.label.getLocalBounds().width * 0.5f + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f);
 	file_select_menu.update(svc, minimenu_dim, minimenu_pos);
 
 	left_dot.update(svc);

@@ -43,7 +43,6 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 
 	help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
-
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
@@ -54,20 +53,20 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 			if (Console::extended()) { info.active() ? info.update(svc) : info.begin(); }
 		} else {
 			info.update(svc);
-			return;
 		}
 		auto x_dim = std::min(static_cast<int>(player.catalog.categories.inventory.items.size()), ui.items_per_row);
 		auto y_dim = static_cast<int>(std::ceil(static_cast<float>(player.catalog.categories.inventory.items.size()) / static_cast<float>(ui.items_per_row)));
 		selector.update();
-		info.update(svc);
 		for (auto& item : player.catalog.categories.inventory.items) {
 			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
 			if (player.catalog.categories.inventory.items.size() == 1) { item.select(); }
 			if (item.selected() && info.extended()) {
 				selector.set_position(item.get_position());
 				info.writer.load_single_message(item.get_description());
+				info.writer.wrap();
 			}
 		}
+		info.update(svc);
 	}
 	if (mode == Mode::minimap) {
 		title.setString("MAP");
@@ -89,7 +88,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 				win.draw(item_label);
 			}
 		}
-		if (!player.catalog.categories.inventory.items.empty()) { selector.render(win); }
+		if (!player.catalog.categories.inventory.items.empty() && info.extended()) { selector.render(win); }
 		if (info.active()) { info.render(win); }
 		if (info.extended()) { info.write(win, true); }
 		if (player.has_map()) { help_marker.render(win); }
@@ -102,6 +101,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 
 void InventoryWindow::open() {
 	flags.set(ConsoleFlags::active);
+	Console::begin();
 	info.begin();
 }
 

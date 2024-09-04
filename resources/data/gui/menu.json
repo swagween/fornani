@@ -36,6 +36,7 @@
     ],
     "settings": [
       "auto-sprint: ",
+      "tutorial: ",
       "keyboard input: ",
       "gamepad input: ",
       "music volume: "
@@ -62,6 +63,9 @@
     },
     "credits": {
       "top_buffer": 60
+    },
+    "stat": {
+      "top_buffer": 450
     }
   }
 }

@@ -16,6 +16,9 @@ TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 	special_characters.insert({Codes::hash, '#'});
 	help_marker.set_color(svc.styles.colors.ui_white);
 	help_marker.set_alpha(0);
+	bounds_box.setFillColor(sf::Color(200, 200, 10, 80));
+	bounds_box.setOutlineColor(sf::Color(255, 255, 255, 180));
+	bounds_box.setOutlineThickness(-1);
 }
 
 void TextWriter::start() {
@@ -47,6 +50,9 @@ void TextWriter::start() {
 }
 
 void TextWriter::update() {
+
+	bounds_box.setPosition(position);
+	bounds_box.setSize({bounds.x - position.x, bounds.y - position.y});
 
 	delay.update();
 	if (flags.test(MessageState::done_writing) && !flags.test(MessageState::started_delay)) {
@@ -160,13 +166,16 @@ void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 		msg.setPosition(response_position);
 	}
 }
-	void TextWriter::write_instant_message(sf::RenderWindow& win) {
+
+void TextWriter::write_instant_message(sf::RenderWindow& win) {
+	//win.draw(bounds_box);
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	win.draw(suite.at(iterators.current_suite_set).front().data);
 }
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
+	//win.draw(bounds_box);
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	if (!writing()) {

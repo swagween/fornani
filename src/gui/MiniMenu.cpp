@@ -8,17 +8,16 @@ namespace gui {
 MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt) {
 	sprite.set_texture(svc.assets.t_white_console);
 	sprite.slice(svc, static_cast<int>(corner), static_cast<int>(edge));
-	for (auto& o : opt) { options.push_back(automa::Option(svc, o)); }
-	selection = util::Circuit(static_cast<int>(options.size()));
 	font.loadFromFile(svc.text.title_font);
 	font.setSmooth(false);
-	int ctr{};
-	for (auto& option : options) {
-		option.label.setFont(font);
-		option.index = ctr;
-		option.update(svc, selection.get());
+	auto ctr{0};
+	for (auto& o : opt) {
+		options.push_back(automa::Option(svc, o, font));
+		options.back().index = ctr;
+		options.back().update(svc, selection.get());
 		++ctr;
 	}
+	selection = util::Circuit(static_cast<int>(options.size()));
 }
 
 void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> position) {
@@ -35,9 +34,10 @@ void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::
 	}
 }
 
-void MiniMenu::render(sf::RenderWindow& win) const {
+void MiniMenu::render(sf::RenderWindow& win, bool bg) const {
 	if (!is_open()) { return; }
-	sprite.render(win);
+	if (bg) { sprite.render(win); }
+	if (!sprite.is_extended()) { return; }
 	for (auto& option : options) { win.draw(option.label); }
 }
 

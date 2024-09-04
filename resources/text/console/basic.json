@@ -44,34 +44,9 @@
   },
   "menu_return": {
     "suite": [
-      [ "You will lose unsaved progress. Are you sure?%0" ],
-      [ "Returning to Main Menu...$89#1#1#" ]
+      [ "You will lose unsaved progress. Are you sure?%0" ]
     ],
-    "responses": [ [ "Yes%0", "No%1" ] ]
-  },
-  "test_selector": {
-    "suite": [
-      [ "Hello.", "Are you tired?%0" ],
-      [ "Go to sleep!", "Rest is extremely important for recovering your health." ],
-      [ "Then why are you next to a bed?%1" ],
-      [ "Oh okay, carry on." ],
-      [ "Then what are you waiting for?" ]
-    ],
-    "responses": [
-      [ "Yes%0", "No%1" ],
-      [ "I left my transponder on the night stand.%0", "Maybe I am a bit tired...%1" ]
-    ]
-  },
-
-  "bryn_test": {
-    "suite": [
-      [ "There's no way... Could it be?", "That gun you're holding... It's actually mine.", "In all the panic back at Firstwind, I left it behind in the tech lab. I had guessed that I'd never see it again.", "Would you... return it to me?%0" ],
-      [ "Classy move. I will repay you for this tenfold someday.", "But, for now, I suppose you'll be needing a new weapon, so go ahead and take this." ],
-      [ "Hmph. Well, finders keepers I suppose. It's my own fault for losing it in the first place. But, if you ever change your mind, I'll be here." ]
-    ],
-    "responses": [
-      [ "Yes%0", "No%1" ]
-    ]
+    "responses": [ [ "Yes$89#1#1#", "No%1" ] ]
   },
   "intro": {
     "suite": [

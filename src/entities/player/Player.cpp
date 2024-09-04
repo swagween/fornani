@@ -443,6 +443,7 @@ void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
 	sync_antennae();
 	health_indicator.set_position(new_pos);
 	orb_indicator.set_position(new_pos);
+	if (arsenal) { equipped_weapon().set_position(new_pos); }
 }
 
 void Player::freeze_position() {

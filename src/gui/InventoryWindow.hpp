@@ -10,7 +10,7 @@ class Player;
 
 namespace gui {
 
-	enum class Mode{inventory, minimap};
+enum class Mode{inventory, minimap};
 
 class InventoryWindow : public Console {
   public:

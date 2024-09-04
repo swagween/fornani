@@ -20,7 +20,7 @@ float const height_factor{3.0f};
 float const pad{168.f};
 float const text_pad{8.0f};
 
-enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item };
+enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item, exited };
 
 struct Border {
 	float left{};
@@ -57,6 +57,8 @@ class Console {
 	[[nodiscard]] auto is_complete() const -> bool { return writer.empty(); }
 	[[nodiscard]] auto extended() const -> bool { return sprite.is_extended(); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
+	[[nodiscard]] auto exited() const -> bool { return flags.test(ConsoleFlags::exited); }
+	[[nodiscard]] auto consume_exited() -> bool { return flags.consume(ConsoleFlags::exited); }
 
 	sf::Vector2<float> position{};
 	sf::Vector2<float> dimensions{};

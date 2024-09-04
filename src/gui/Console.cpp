@@ -79,6 +79,7 @@ void Console::display_gun(int gun_id) {
 
 void Console::write(sf::RenderWindow& win, bool instant) {
 	if (!flags.test(ConsoleFlags::active)) { return; }
+	if (!extended()) { return; }
 	instant ? writer.write_instant_message(win) : writer.write_gradual_message(win);
 	writer.write_responses(win);
 }
@@ -93,7 +94,6 @@ void Console::end() {
 	flags.reset(ConsoleFlags::display_item);
 	flags.set(ConsoleFlags::off_trigger);
 	sprite.end();
-	sprite.set_scale(0.f);
 }
 
 void Console::clean_off_trigger() { flags.reset(ConsoleFlags::off_trigger); }

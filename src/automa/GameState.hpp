@@ -6,6 +6,8 @@
 #include <cstdio>
 #include <memory>
 #include <filesystem>
+#include <optional>
+#include "Option.hpp"
 #include "../components/PhysicsComponent.hpp"
 #include "../entities/player/Player.hpp"
 #include "../graphics/Background.hpp"
@@ -31,23 +33,9 @@ enum class MenuSelection { play, options, quit, controls, tutorial, credits, set
 constexpr inline float dot_force{0.9f};
 constexpr inline float dot_fric{0.86f};
 constexpr inline float dot_speed{200.f};
-constexpr inline float title_letter_spacing{0.7f};
+constexpr inline float title_letter_spacing{1.0f};
 
 struct ServiceProvider;
-
-struct Option {
-	Option(ServiceProvider& svc, std::string_view lbl);
-	sf::Text label{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> left_offset{};
-	sf::Vector2<float> right_offset{};
-	sf::Vector2<float> dot_offset{24.f, 2.f};
-	int index{};
-	bool highlighted{};
-	bool selected{};
-	bool flagged{};
-	void update(ServiceProvider& svc, int selection);
-};
 
 struct Scene {
 	struct {

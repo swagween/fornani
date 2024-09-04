@@ -12,11 +12,9 @@ void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
 }
 
 void PhysicsComponent::update_euler(automa::ServiceProvider& svc) {
-
 	integrate(svc);
 	direction.und = velocity.y > 0.f ? dir::UND::down : (velocity.y < 0.f ? dir::UND::up : dir::UND::neutral);
 	direction.lr = velocity.x > 0.f ? dir::LR::right : (velocity.x < 0.f ? dir::LR::left : dir::LR::neutral);
-
 }
 
 void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
@@ -33,21 +31,6 @@ void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 	velocity.x = std::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
 	velocity.y = std::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
 	position = position + velocity * dt;
-
-	if (y_acc_history.size() < acceleration_sample_size) { y_acc_history.push_back(acceleration.y);
-	} else {
-		y_acc_history.pop_front();
-		y_acc_history.push_back(acceleration.y);
-	}
-	if (x_acc_history.size() < acceleration_sample_size) {
-		x_acc_history.push_back(acceleration.x);
-	} else {
-		x_acc_history.pop_front();
-		x_acc_history.push_back(acceleration.x);
-	}
-
-	calculate_maximum_acceleration();
-	calculate_jerk();
 }
 
 void PhysicsComponent::update(automa::ServiceProvider& svc) { update_euler(svc); }
@@ -55,29 +38,6 @@ void PhysicsComponent::update(automa::ServiceProvider& svc) { update_euler(svc);
 void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
 	update_euler(svc);
 	acceleration = {};
-}
-
-void PhysicsComponent::calculate_maximum_acceleration() {
-	auto max = acceleration.x;
-	for (auto& acc : x_acc_history) {
-		if (acc > max) { max = acc; }
-	}
-}
-
-void PhysicsComponent::calculate_jerk() {
-	float sum{};
-	float previous_y{acceleration.y};
-	for (auto& instance : y_acc_history) {
-		sum += instance - previous_y;
-		previous_y = instance;
-	}
-	jerk.y = sum / acceleration_sample_size;
-	float previous_x{acceleration.x};
-	for (auto& instance : x_acc_history) {
-		sum += instance - previous_x;
-		previous_x = instance;
-	}
-	jerk.x = sum / acceleration_sample_size;
 }
 
 void PhysicsComponent::zero() {
