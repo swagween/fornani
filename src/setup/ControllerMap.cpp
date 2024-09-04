@@ -219,11 +219,12 @@ void ControllerMap::set_action_set(ActionSet set) {
 void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
 	std::cout << "Connected controller with handle = " << data->m_ulConnectedDeviceHandle << std::endl;
 	controller_handle = data->m_ulConnectedDeviceHandle;
+	set_action_set(active_action_set);
 }
 
 void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
 	std::cout << "Disconnected controller with handle = " << data->m_ulDisconnectedDeviceHandle << std::endl;
-	controller_handle = data->m_ulDisconnectedDeviceHandle;
+	controller_handle = 0;
 }
 
 void ControllerMap::open_bindings_overlay() const { SteamInput()->ShowBindingPanel(controller_handle); }
