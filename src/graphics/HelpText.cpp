@@ -14,7 +14,7 @@ void HelpText::init(automa::ServiceProvider& svc, std::string start, config::Dig
 	data.setCharacterSize(text_size);
 	data.setFont(font);
 	data.setLineSpacing(1.5f);
-	marker = start + svc.controller_map.digital_action_name(code).data() + end;
+	marker = start + svc.controller_map.digital_action_source_name(code).data() + end;
 	data.setString(marker);
 	data.setFont(font);
 	data.setCharacterSize(text_size);

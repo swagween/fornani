@@ -79,17 +79,25 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
 
 void Dojo::tick_update(ServiceProvider& svc) {
 	if (console.is_complete()) {
-		svc.controller_map.set_action_set(config::ActionSet::Platformer);
+		if (inventory_window.active()) {
+			if (inventory_window.is_inventory()) {
+				svc.controller_map.set_action_set(config::ActionSet::Inventory);
+			} else if (inventory_window.is_minimap()) {
+				svc.controller_map.set_action_set(config::ActionSet::Map);
+			}
+		} else {
+			svc.controller_map.set_action_set(config::ActionSet::Platformer);
+		}
 	} else {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 	}
-	// XXX Get inventory/map to work
-	// if (svc.controller_map.digital_action_status(menu_toggle_secondary).triggered && inventory_window.active()) { toggle_inventory(svc); }
-	// if (svc.controller_map.digital_action_status(menu_toggle).triggered && !console.active()) { toggle_inventory(svc); }
-	// if ((svc.controller_map.digital_action_status(arms_switch_right).triggered || svc.controller_map.digital_action_status(arms_switch_left).triggered) && inventory_window.active() && player->has_map()) {
-	//	inventory_window.switch_modes(svc);
-	//	svc.soundboard.flags.console.set(audio::Console::next);
-	//}
+	// TODO: Split inventorywindow into inventory and map (separate functionality)
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered) { toggle_inventory(svc); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered) {
+		// XXX Opening the map this way breaks the back panel rendering, as it is placed on (0, 0) with default size
+		toggle_inventory(svc);
+		if (inventory_window.active() && !inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
+	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
 
 	enter_room.update();

@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include "../utils/BitFlags.hpp"
 
 namespace automa {
@@ -14,7 +15,7 @@ struct ServiceProvider;
 
 namespace config {
 
-enum class DigitalAction {
+enum class DigitalAction : int {
 	// Platformer controls
 	platformer_left,
 	platformer_right,
@@ -44,7 +45,9 @@ enum class DigitalAction {
 	menu_up,
 	menu_down,
 	menu_select,
-	menu_cancel
+	menu_cancel,
+
+	COUNT
 };
 
 enum class AnalogAction {
@@ -96,25 +99,26 @@ class ControllerMap {
 	[[nodiscard]] auto digital_action_status(DigitalAction action) const -> DigitalActionStatus { return digital_actions.at(action).status; }
 	[[nodiscard]] auto analog_action_status(AnalogAction action) const -> AnalogActionStatus { return analog_actions.at(action).second; }
 	[[nodiscard]] auto digital_action_name(DigitalAction action) const -> std::string_view;
+	[[nodiscard]] auto digital_action_source_name(DigitalAction action) const -> std::string_view;
 	/// @brief Set the current action set.
 	/// @warning This determines the actions capable to be received by the connected gamepads, so remember to set it correctly!
 	void set_action_set(ActionSet set);
 	/// @brief Open the Steam controller configuration overlay.
-	void open_bindings_overlay();
+	void open_bindings_overlay() const;
 
 	void set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
 	void set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
 	/// @brief Returns the primary keyboard key associated with a particular action.
 	/// @param action
 	/// @return The key bound, or sf::Keyboard::Key::Unknown if no key was bound.
-	[[nodiscard]] auto get_primary_keyboard_binding(DigitalAction action) -> sf::Keyboard::Key;
+	[[nodiscard]] auto get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key;
 	/// @brief Returns the secondary keyboard key associated with a particular action.
 	/// @param action
 	/// @return The key bound, or sf::Keyboard::Key::Unknown if no key was bound.
-	[[nodiscard]] auto get_secondary_keyboard_binding(DigitalAction action) -> sf::Keyboard::Key;
+	[[nodiscard]] auto get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key;
 
-	[[nodiscard]] auto key_to_string(sf::Keyboard::Key) -> std::string_view;
-	[[nodiscard]] auto string_to_key(std::string_view) -> sf::Keyboard::Key;
+	[[nodiscard]] auto key_to_string(sf::Keyboard::Key) const -> std::string_view;
+	[[nodiscard]] auto string_to_key(std::string_view) const -> sf::Keyboard::Key;
 
 	std::unordered_map<int, std::string_view> gamepad_button_name{};
 
@@ -131,7 +135,7 @@ class ControllerMap {
 		sf::Keyboard::Key primary_binding;
 		sf::Keyboard::Key secondary_binding;
 
-		bool can_be_pressed{};
+		bool was_active_last_tick{};
 	};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
@@ -139,6 +143,8 @@ class ControllerMap {
 	InputActionSetHandle_t menu_action_set;
 	InputActionSetHandle_t inventory_action_layer;
 	InputActionSetHandle_t map_action_layer;
+
+	ActionSet active_action_set;
 
 	InputHandle_t controller_handle{};
 

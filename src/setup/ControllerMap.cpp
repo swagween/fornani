@@ -5,6 +5,36 @@
 
 namespace config {
 
+auto get_action_set_from_action(DigitalAction action) -> ActionSet {
+	switch (action) {
+	case DigitalAction::platformer_left:
+	case DigitalAction::platformer_right:
+	case DigitalAction::platformer_up:
+	case DigitalAction::platformer_down:
+	case DigitalAction::platformer_jump:
+	case DigitalAction::platformer_shoot:
+	case DigitalAction::platformer_sprint:
+	case DigitalAction::platformer_shield:
+	case DigitalAction::platformer_inspect:
+	case DigitalAction::platformer_arms_switch_left:
+	case DigitalAction::platformer_arms_switch_right:
+	case DigitalAction::platformer_open_inventory:
+	case DigitalAction::platformer_open_map:
+	case DigitalAction::platformer_toggle_pause: return ActionSet::Platformer;
+
+	case DigitalAction::inventory_close: return ActionSet::Inventory;
+
+	case DigitalAction::map_close: return ActionSet::Map;
+
+	case DigitalAction::menu_left:
+	case DigitalAction::menu_right:
+	case DigitalAction::menu_up:
+	case DigitalAction::menu_down:
+	case DigitalAction::menu_select:
+	case DigitalAction::menu_cancel: return ActionSet::Menu;
+	}
+}
+
 ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	std::cout << "Initializing Steam Input" << std::endl;
 	if (!SteamInput()->Init(true)) {
@@ -12,6 +42,7 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	} else {
 		std::cout << "Steam Input initialized" << std::endl;
 	}
+	// XXX Bundle XBox/PS/Steam Deck action manifests with game (Or at least just XBox for now)
 	// SteamInput()->SetInputActionManifestFilePath("C:\\Program Files (x86)\\Steam\\controller_config\\steam_input_manifest.vdf");
 	SteamInput()->EnableDeviceCallbacks();
 
@@ -59,8 +90,8 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 
 	platformer_action_set = SteamInput()->GetActionSetHandle("Platformer");
 	menu_action_set = SteamInput()->GetActionSetHandle("Menu");
-	inventory_action_layer = SteamInput()->GetActionSetHandle("Inventory");
-	map_action_layer = SteamInput()->GetActionSetHandle("Map");
+	inventory_action_layer = SteamInput()->GetActionSetHandle("Menu_Inventory");
+	map_action_layer = SteamInput()->GetActionSetHandle("Menu_Map");
 
 	gamepad_button_name.insert({-1, "left analog stick"});
 	gamepad_button_name.insert({0, "square"});
@@ -88,22 +119,23 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 void ControllerMap::update(bool has_focus) {
 	SteamInput()->RunFrame();
 	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
+	std::unordered_set<EInputActionOrigin> buttons_pressed_this_tick{};
 	for (auto& [action, data] : digital_actions) {
-		auto& [steam_handle, action_status, primary_key, secondary_key, can_be_pressed] = data;
+		auto& [steam_handle, action_status, primary_key, secondary_key, was_active_last_tick] = data;
 
-		auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
-		if (!data.bActive) {
-			can_be_pressed = false;
-			continue;
+		bool pressed_on_gamepad = false;
+		if (controller_handle) {
+			auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
+			pressed_on_gamepad = data.bActive && data.bState;
 		}
-		auto pressed_on_gamepad = data.bState;
 		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
 		auto triggered = has_focus && (pressed_on_gamepad || pressed_on_keyboard);
-		// Avoid actions being inmediately triggered when switching action sets
-		if (!can_be_pressed && triggered) { continue; }
-		can_be_pressed = true;
-		if (triggered) {
-			if (!action_status.held) {
+		config::ActionSet action_set = get_action_set_from_action(action);
+		bool active = action_set == active_action_set || ((action_set == config::ActionSet::Inventory || action_set == config::ActionSet::Map) && active_action_set == config::ActionSet::Menu);
+		if (triggered && active) {
+			action_status.released = false;
+			// Avoid actions being inmediately triggered when switching action sets
+			if (!action_status.held && was_active_last_tick) {
 				std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.triggered = true;
 			} else {
@@ -111,13 +143,18 @@ void ControllerMap::update(bool has_focus) {
 			}
 			action_status.held = true;
 		} else {
-			if (action_status.held) {
+			action_status.triggered = false;
+			// Avoid releasing if just switching action sets
+			if (action_status.held && active) {
+				std::cout << "Released " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.released = true;
 			} else {
 				action_status.released = false;
 			}
 			action_status.held = false;
 		}
+
+		was_active_last_tick = active;
 	}
 
 	for (auto& [action, pair] : analog_actions) {
@@ -136,22 +173,48 @@ void ControllerMap::update(bool has_focus) {
 }
 
 void ControllerMap::set_action_set(ActionSet set) {
-	SteamInput()->DeactivateAllActionSetLayers(STEAM_INPUT_HANDLE_ALL_CONTROLLERS);
-	switch (set) {
-	case ActionSet::Inventory:
-		SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, menu_action_set);
-		SteamInput()->ActivateActionSetLayer(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, inventory_action_layer);
-		break;
-	case ActionSet::Map:
-		SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, menu_action_set);
-		SteamInput()->ActivateActionSetLayer(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, map_action_layer);
-		break;
-	case ActionSet::Menu: SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, menu_action_set); break;
-	case ActionSet::Platformer: SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, platformer_action_set); break;
+	if (controller_handle && set != active_action_set) {
+		std::cout << "Set action set to " << (int)set << std::endl;
+		SteamInput()->DeactivateAllActionSetLayers(controller_handle);
+		switch (set) {
+		case ActionSet::Inventory:
+			SteamInput()->ActivateActionSet(controller_handle, menu_action_set);
+			SteamInput()->ActivateActionSetLayer(controller_handle, inventory_action_layer);
+			break;
+		case ActionSet::Map:
+			SteamInput()->ActivateActionSet(controller_handle, menu_action_set);
+			SteamInput()->ActivateActionSetLayer(controller_handle, map_action_layer);
+			break;
+		case ActionSet::Menu: SteamInput()->ActivateActionSet(controller_handle, menu_action_set); break;
+		case ActionSet::Platformer: SteamInput()->ActivateActionSet(controller_handle, platformer_action_set); break;
+		}
 	}
+	active_action_set = set;
 }
 
 [[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view { return SteamInput()->GetStringForDigitalActionName(digital_actions.at(action).steam_handle); }
+
+[[nodiscard]] auto ControllerMap::digital_action_source_name(DigitalAction action) const -> std::string_view {
+	if (controller_handle) {
+		auto action_set = get_action_set_from_action(action);
+		InputActionSetHandle_t handle;
+		switch (action_set) {
+		case ActionSet::Inventory: handle = inventory_action_layer; break;
+		case ActionSet::Map: handle = map_action_layer; break;
+		case ActionSet::Menu: handle = menu_action_set; break;
+		case ActionSet::Platformer: handle = platformer_action_set; break;
+		}
+
+		EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS];
+		if (SteamInput()->GetDigitalActionOrigins(controller_handle, handle, digital_actions.at(action).steam_handle, origins) > 0) {
+			return SteamInput()->GetStringForActionOrigin(origins[0]);
+		} else {
+			return "Unassigned";
+		}
+	} else {
+		return key_to_string(digital_actions.at(action).primary_binding);
+	}
+}
 
 void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
 	std::cout << "Connected controller with handle = " << data->m_ulConnectedDeviceHandle << std::endl;
@@ -163,9 +226,9 @@ void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t*
 	controller_handle = data->m_ulDisconnectedDeviceHandle;
 }
 
-void ControllerMap::open_bindings_overlay() { SteamInput()->ShowBindingPanel(controller_handle); }
+void ControllerMap::open_bindings_overlay() const { SteamInput()->ShowBindingPanel(controller_handle); }
 
-auto ControllerMap::key_to_string(sf::Keyboard::Key key) -> std::string_view {
+auto ControllerMap::key_to_string(sf::Keyboard::Key key) const -> std::string_view {
 	// XXX: Replace by switch
 	std::unordered_map<sf::Keyboard::Key, std::string_view> map{{sf::Keyboard::A, "A"},			  {sf::Keyboard::B, "B"},
 																{sf::Keyboard::C, "C"},			  {sf::Keyboard::D, "D"},
@@ -191,7 +254,7 @@ auto ControllerMap::key_to_string(sf::Keyboard::Key key) -> std::string_view {
 	return map.at(key);
 }
 
-auto ControllerMap::string_to_key(std::string_view string) -> sf::Keyboard::Key {
+auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard::Key {
 	std::unordered_map<std::string_view, sf::Keyboard::Key> map{{"A", sf::Keyboard::A},			  {"B", sf::Keyboard::B},
 																{"C", sf::Keyboard::C},			  {"D", sf::Keyboard::D},
 																{"E", sf::Keyboard::E},			  {"F", sf::Keyboard::F},
@@ -223,7 +286,7 @@ auto ControllerMap::string_to_key(std::string_view string) -> sf::Keyboard::Key 
 void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key) { digital_actions.at(action).primary_binding = key; }
 void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key) { digital_actions.at(action).secondary_binding = key; }
 
-auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) -> sf::Keyboard::Key { return digital_actions.at(action).primary_binding; }
-auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) -> sf::Keyboard::Key { return digital_actions.at(action).secondary_binding; }
+auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key { return digital_actions.at(action).primary_binding; }
+auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key { return digital_actions.at(action).secondary_binding; }
 
 } // namespace config
