@@ -30,22 +30,25 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
+		if (mode_flags.test(MenuMode::adjust)) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 		mode_flags.reset(MenuMode::adjust);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		--current_selection;
 		constrain_selection();
+		if (mode_flags.test(MenuMode::adjust)) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 		mode_flags.reset(MenuMode::adjust);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		if (adjust_mode()) {
+			mode_flags.reset(MenuMode::adjust);
 		} else {
 			svc.state_controller.submenu = menu_type::options;
 			svc.state_controller.actions.set(Actions::exit_submenu);
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
+		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && !adjust_mode()) {
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
@@ -73,7 +76,6 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 				svc.controller_map.hard_toggles.set(config::Toggles::gamepad);
 			}
 			break;
-			// XXX music volume setting does not work
 		case 3: adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust); break;
 		}
 		if (!svc.controller_map.gamepad_connected()) { svc.controller_map.hard_toggles.set(config::Toggles::keyboard); }
@@ -90,8 +92,8 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 		option.label.setLetterSpacing(1.2f);
 	}
 	if (svc.ticker.every_x_ticks(16)) {
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).held && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).held && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held && adjust_mode()) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
 	}
 	svc.soundboard.play_sounds(svc);
 }
