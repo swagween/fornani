@@ -18,7 +18,7 @@ class ControlsMenu : public automa::GameState {
 	void restore_defaults(ServiceProvider& svc);
 
   private:
-	void change_scene(ServiceProvider& svc, std::string_view scene); // XXX this is a hack to work with GameState
+	void change_scene(ServiceProvider& svc, std::string_view scene); // FIXME this is a hack to work with GameState; eliminate options from GameState
 
 	float center_offset{320.f};
 	std::vector<sf::Text> control_list{};

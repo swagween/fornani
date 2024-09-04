@@ -26,8 +26,6 @@ void Intro::handle_events(ServiceProvider& svc, sf::Event& event) {}
 void Intro::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
-	// XXX if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
-
 	player->update(map, console, inventory_window);
 	player->controller.prevent_movement();
 	map.update(svc, console, inventory_window);

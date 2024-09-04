@@ -5,7 +5,7 @@
 
 namespace automa {
 
-// XXX clean this up, use function from controllermap?
+// TODO clean this up, if `options` is moved away from GameState we could bundle digitalaction data next to each option
 auto get_action_by_identifier(std::string_view id) -> config::DigitalAction {
 	static std::unordered_map<std::string_view, config::DigitalAction> const map = {
 		{"platformer_left", config::DigitalAction::platformer_left},
@@ -182,8 +182,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 		}
 		++ctr;
 	}
-	// XXX Press Escape to cancel binding, always set pause to escape
-	// XXX User may get stuck if their menu bindings are wrong, because they won't be able to reset them
+	// FIXME User may get stuck if their menu bindings are wrong, because they won't be able to reset them
 }
 
 void ControlsMenu::restore_defaults(ServiceProvider& svc) {

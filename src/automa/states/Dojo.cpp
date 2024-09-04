@@ -66,7 +66,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
-	if (event.type == sf::Event::EventType::KeyPressed) { // XXX Refactor pause window, add continue/exit options
+	if (event.type == sf::Event::EventType::KeyPressed) { // TODO Refactor pause window, add continue/exit options
 		if (event.key.code == sf::Keyboard::Enter && pause_window.active()) {
 			console.set_source(svc.text.basic);
 			console.load_and_launch("menu_return");
