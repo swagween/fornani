@@ -31,6 +31,7 @@
       "destination_id": 105,
       "activate_on_contact": false,
       "locked": false,
+      "already_open": true,
       "key_id": 0
     }
   ],

@@ -9,6 +9,7 @@
 #include "Portrait.hpp"
 #include "ItemWidget.hpp"
 #include "../utils/QuestCode.hpp"
+#include "../utils/NineSlice.hpp"
 
 namespace gui {
 
@@ -19,7 +20,7 @@ float const height_factor{3.0f};
 float const pad{168.f};
 float const text_pad{8.0f};
 
-enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item };
+enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item, exited };
 
 struct Border {
 	float left{};
@@ -50,22 +51,20 @@ class Console {
 	void clean_off_trigger();
 	void include_portrait(int id);
 
-	void nine_slice(int corner_dim, int edge_dim);
-
 	std::string get_key();
 
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
 	[[nodiscard]] auto is_complete() const -> bool { return writer.empty(); }
-	[[nodiscard]] auto extended() const -> bool { return flags.test(ConsoleFlags::extended); }
+	[[nodiscard]] auto extended() const -> bool { return sprite.is_extended(); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
+	[[nodiscard]] auto exited() const -> bool { return flags.test(ConsoleFlags::exited); }
+	[[nodiscard]] auto consume_exited() -> bool { return flags.consume(ConsoleFlags::exited); }
 
 	sf::Vector2<float> position{};
-	sf::Vector2<float> current_dimensions{};
-	sf::Vector2<float> final_dimensions{};
+	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> text_origin{};
 	util::BitFlags<ConsoleFlags> flags{};
-
-	std::array<sf::Sprite, 9> sprites{};
+	util::NineSlice sprite{};
 
 	dj::Json text_suite{};
 
@@ -89,9 +88,6 @@ class Console {
 		26.f,
 		26.f
 	};
-
-	float extent{};
-	int speed{2};
 
 	protected:
 	sf::Vector2<float> origin{}; // bottom left corner

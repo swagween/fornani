@@ -16,7 +16,7 @@ enum class Action { left, right, up, down, main_action, secondary_action, tertia
 enum class ActionState { held, released, triggered };
 enum class ControllerType { keyboard, gamepad };
 enum class ControllerStatus { gamepad_connected };
-enum class Toggles { keyboard, gamepad, autosprint };
+enum class Toggles { keyboard, gamepad, autosprint, tutorial };
 
 struct Control {
 	Control(Action action) : action(action) {}

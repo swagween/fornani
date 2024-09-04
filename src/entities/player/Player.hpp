@@ -110,6 +110,7 @@ class Player {
 	void update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void flash_sprite();
 	void calculate_sprite_offset();
+	void set_idle();
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }

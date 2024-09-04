@@ -10,6 +10,9 @@ DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 
 void DataManager::load_data(std::string in_room) {
 
+	//user config
+	load_settings();
+
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
@@ -182,6 +185,15 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
+void DataManager::save_settings() {
+	settings["auto_sprint"] = m_services->controller_map.hard_toggles.test(config::Toggles::autosprint) ? dj::Boolean{true} : dj::Boolean{false};
+	settings["tutorial"] = m_services->controller_map.hard_toggles.test(config::Toggles::tutorial) ? dj::Boolean{true} : dj::Boolean{false};
+	settings["keyboard"] = m_services->controller_map.hard_toggles.test(config::Toggles::keyboard) ? dj::Boolean{true} : dj::Boolean{false};
+	settings["gamepad"] = m_services->controller_map.hard_toggles.test(config::Toggles::gamepad) ? dj::Boolean{true} : dj::Boolean{false};
+	settings["music_volume"] = m_services->music.volume.multiplier;
+	settings.dj::Json::to_file((finder.resource_path + "/data/config/settings.json").c_str());
+}
+
 int DataManager::load_progress(player::Player& player, int const file, bool state_switch, bool from_menu) {
 
 	current_save = file;
@@ -209,7 +221,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 		auto amt = q[3].as<int>();
 		auto hard = q[4].as<int>();
 		quest_progressions.push_back(util::QuestKey{type, id, srcid, amt, hard});
-		m_services->quest.process(quest_progressions.back());
+		m_services->quest.process(*m_services, quest_progressions.back());
 	}
 
 	player.tutorial.flags = {};
@@ -221,10 +233,9 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	player.tutorial.current_state = static_cast<text::TutorialFlags>(save["tutorial"]["state"].as<int>());
 	if (save["tutorial"]["closed"].as_bool()) { player.tutorial.close_for_good(); }
 	player.cooldowns.tutorial.start();
-	if (save["tutorial"]["on"].as_bool()) {
-		player.tutorial.turn_on();
-		player.tutorial.trigger();
-	}
+	player.tutorial.turn_off();
+	if (!m_services->controller_map.hard_toggles.test(config::Toggles::tutorial)) { player.tutorial.close_for_good(); }
+	
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
@@ -269,8 +280,19 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
 	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
 	m_services->ticker.in_game_seconds_passed = m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>());
+	if (files.at(file).flags.test(fornani::FileFlags::new_file)) { s.player.death_count.set(0); }
 
 	return room_id;
+}
+
+void DataManager::load_settings() {
+	settings = dj::Json::from_file((finder.resource_path + "/data/config/settings.json").c_str());
+	assert(!settings.is_null());
+	settings["auto_sprint"].as_bool() ? m_services->controller_map.hard_toggles.set(config::Toggles::autosprint) : m_services->controller_map.hard_toggles.reset(config::Toggles::autosprint);
+	settings["tutorial"].as_bool() ? m_services->controller_map.hard_toggles.set(config::Toggles::tutorial) : m_services->controller_map.hard_toggles.reset(config::Toggles::tutorial);
+	settings["keyboard"].as_bool() ? m_services->controller_map.hard_toggles.set(config::Toggles::keyboard) : m_services->controller_map.hard_toggles.reset(config::Toggles::keyboard);
+	settings["gamepad"].as_bool() ? m_services->controller_map.hard_toggles.set(config::Toggles::gamepad) : m_services->controller_map.hard_toggles.reset(config::Toggles::gamepad);
+	m_services->music.volume.multiplier = settings["music_volume"].as<float>();
 }
 
 void DataManager::write_death_count(player::Player& player) {

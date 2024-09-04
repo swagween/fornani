@@ -32,7 +32,6 @@ class PhysicsComponent {
 		: ground_friction(fric), air_friction(fric), mass(ma), maximum_velocity(max_vel), gravity(grav) {}
 
 	// basic physics variables
-	sf::Vector2<float> jerk{};
 	sf::Vector2<float> acceleration{};
 	sf::Vector2<float> velocity{};
 	sf::Vector2<float> position{};
@@ -56,8 +55,6 @@ class PhysicsComponent {
 	void integrate(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void update_dampen(automa::ServiceProvider& svc);
-	void calculate_maximum_acceleration();
-	void calculate_jerk();
 	void zero();
 	void zero_x();
 	void zero_y();
@@ -71,10 +68,7 @@ class PhysicsComponent {
 
 	util::BitFlags<State> flags{};
 	dir::Direction direction{};
-
-	std::deque<float> x_acc_history{};
-	std::deque<float> y_acc_history{};
-	int acceleration_sample_size{2560};
+	
 	float epsilon{0.0001f};
 };
 

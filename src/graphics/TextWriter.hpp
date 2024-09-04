@@ -134,6 +134,7 @@ class TextWriter {
 	automa::ServiceProvider* m_services;
 
 	Message zero_option{}; // for debug
+	sf::RectangleShape bounds_box{};
 };
 
 } // namespace text

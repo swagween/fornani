@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../GameState.hpp"
+#include "../../gui/MiniMenu.hpp"
 
 namespace automa {
 
@@ -22,6 +23,7 @@ class FileMenu : public automa::GameState {
 private:
 	util::Cooldown loading{};
 	world::Map map;
+	gui::MiniMenu file_select_menu;
 };
 
 }

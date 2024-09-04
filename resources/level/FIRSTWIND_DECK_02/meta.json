@@ -29,7 +29,8 @@
       ],
       "source_id": 108,
       "destination_id": 116,
-      "activate_on_contact": false
+      "activate_on_contact": false,
+      "already_open": true
     },
     {
       "dimensions": [

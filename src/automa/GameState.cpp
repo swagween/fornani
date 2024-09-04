@@ -4,38 +4,22 @@
 
 namespace automa {
 
-Option::Option(ServiceProvider& svc, std::string_view lbl) {
-	label.setString(lbl.data());
-	label.setCharacterSize(16);
-	label.setLetterSpacing(title_letter_spacing);
-	label.setFillColor(svc.styles.colors.ui_white);
-	label.setOrigin(label.getLocalBounds().width * 0.5f, label.getLocalBounds().height * 0.5f);
-}
-
-void Option::update(ServiceProvider& svc, int& selection) {
-	label.setPosition(position);
-	left_offset = position - sf::Vector2<float>{label.getLocalBounds().width * 0.5f + dot_offset.x - 2, -dot_offset.y};
-	right_offset = position + sf::Vector2<float>{label.getLocalBounds().width * 0.5f + dot_offset.x, dot_offset.y};
-	selection == index ? label.setFillColor(svc.styles.colors.ui_white) : label.setFillColor(svc.styles.colors.dark_grey);
-	if (flagged) { label.setFillColor(svc.styles.colors.red); }
-	label.setOrigin(label.getLocalBounds().width * 0.5f, label.getLocalBounds().height * 0.5f);
-}
-GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : player(&player), hud(svc, player, {20, 20}), inventory_window(svc), pause_window(svc), scene(scene) {
+GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id)
+	: player(&player), hud(svc, player, {20, 20}), inventory_window(svc), scene(scene), pause_window(svc) {
 	font.loadFromFile(svc.text.title_font);
 	font.setSmooth(false);
 	subtitle_font.loadFromFile(svc.text.text_font);
 	subtitle_font.setSmooth(false);
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[scene].array_view()) {
-		options.push_back(Option(svc, entry.as_string()));
-	}
+	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string(), font)); }
+	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
+
 	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {
-		option.position = {svc.constants.screen_dimensions.x * 0.5f - option.label.getLocalBounds().width, top_buffer + ctr * (option.label.getLocalBounds().height + spacing)};
-		option.label.setFont(font);
+		option.position = {svc.constants.screen_dimensions.x * 0.5f, top_buffer + ctr * spacing};
 		option.index = ctr;
-		option.update(svc, current_selection);
+		option.update(svc, current_selection.get());
 		++ctr;
 	}
 	if (options.empty()) { return; }
@@ -47,9 +31,5 @@ GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_v
 	right_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
 	right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);
 }
-// helper
-void GameState::constrain_selection() {
-	if (current_selection >= (int)options.size()) { current_selection = 0; }
-	if (current_selection < 0) { current_selection = static_cast<int>(options.size() - 1); }
-}
+
 } // namespace automa

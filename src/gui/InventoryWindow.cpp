@@ -26,75 +26,71 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	title.setPosition(origin + ui.title_offset);
 	item_label.setPosition(origin + ui.item_label_offset);
 
-	final_dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
-	current_dimensions = final_dimensions;
-	position = sf::Vector2<float>{origin.x, origin.y};
-	speed = 8;
+	dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
+	position = svc.constants.f_center_screen;
 	flags.reset(ConsoleFlags::portrait_included);
+	Console::update(svc);
+	sprite.set_position(position);
 
-	info.final_dimensions = {final_dimensions.x - 2.f * ui.info_offset.x, final_dimensions.y - ui.info_offset.y - ui.inner_corner};
-	info.current_dimensions = info.final_dimensions;
-	info.position = sf::Vector2<float>{origin + ui.info_offset};
-	info.speed = 8;
+	info.dimensions = {dimensions.x - 2.f * ui.info_offset.x, dimensions.y * 0.62f - ui.info_offset.y - ui.inner_corner};
+	info.position = svc.constants.f_center_screen;
+	info.position.y += ui.info_offset.y;
+	info.sprite.set_position(info.position);
 	info.flags.reset(ConsoleFlags::portrait_included);
+	info.update(svc);
 
 	mode = Mode::inventory;
 
-	help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
+	help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
-
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
 	if (mode == Mode::inventory) {
 		title.setString("INVENTORY");
 		if (active()) {
-			extent = final_dimensions.y;
-			info.extent = info.final_dimensions.y;
 			Console::update(svc);
-			if (Console::extended()) { info.update(svc); }
-		}
-		for (auto& item : player.catalog.categories.inventory.items) {
-			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
-			if (player.catalog.categories.inventory.items.size() == 1) { item.select(); }
-			if (item.selected()) {
-				selector.set_position(item.get_position());
-				info.writer.load_single_message(item.get_description());
-			}
+			if (Console::extended()) { info.active() ? info.update(svc) : info.begin(); }
+		} else {
+			info.update(svc);
 		}
 		auto x_dim = std::min(static_cast<int>(player.catalog.categories.inventory.items.size()), ui.items_per_row);
 		auto y_dim = static_cast<int>(std::ceil(static_cast<float>(player.catalog.categories.inventory.items.size()) / static_cast<float>(ui.items_per_row)));
-
-		selector.set_dimensions({x_dim, y_dim});
 		selector.update();
+		for (auto& item : player.catalog.categories.inventory.items) {
+			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
+			if (player.catalog.categories.inventory.items.size() == 1) { item.select(); }
+			if (item.selected() && info.extended()) {
+				selector.set_position(item.get_position());
+				info.writer.load_single_message(item.get_description());
+				info.writer.wrap();
+			}
+		}
+		info.update(svc);
 	}
 	if (mode == Mode::minimap) {
 		title.setString("MAP");
 		minimap.update(svc, map, player);
-
 		selector.update();
-
 	}
 }
 
 void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!active()) { return; }
 	Console::render(win);
+	if (!Console::extended()) { return; }
 	win.draw(title);
 	if (mode == Mode::inventory) {
 		for (auto& item : player.catalog.categories.inventory.items) {
 			item.render(svc, win, {0.f, 0.f});
 			if (item.selected()) {
 				item_label.setString(item.get_label().data());
-				if (Console::extended()) { win.draw(item_label); }
+				win.draw(item_label);
 			}
 		}
-		if (!player.catalog.categories.inventory.items.empty()) { selector.render(win); }
-		if (Console::extended()) {
-			info.begin();
-			info.render(win);
-			if (info.extended()) { info.write(win, true); }
-		}
+		if (!player.catalog.categories.inventory.items.empty() && info.extended()) { selector.render(win); }
+		if (info.active()) { info.render(win); }
+		if (info.extended()) { info.write(win, true); }
 		if (player.has_map()) { help_marker.render(win); }
 	}
 	if (mode == Mode::minimap) {
@@ -103,7 +99,11 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 	}
 }
 
-void InventoryWindow::open() { flags.set(ConsoleFlags::active); }
+void InventoryWindow::open() {
+	flags.set(ConsoleFlags::active);
+	Console::begin();
+	info.begin();
+}
 
 void InventoryWindow::close() {
 	Console::end();
@@ -113,9 +113,9 @@ void InventoryWindow::close() {
 void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
 	mode = (mode == Mode::inventory) ? Mode::minimap : Mode::inventory;
 	if (mode == Mode::inventory) {
-		help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true);
+		help_marker.init(svc, "Press [", "arms_switch_right", "] to view Map.", 20, true, true);
 	} else {
-		help_marker.init(svc, "Press [", "arms_switch_left", "] to view Inventory.", 20, true);
+		help_marker.init(svc, "Press [", "arms_switch_left", "] to view Inventory.", 20, true, true);
 		minimap.center();
 	}
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});

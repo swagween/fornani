@@ -101,8 +101,14 @@
   "radar_device": {
     "index": 16,
     "title": "Radar Device",
-    "naive_description": "A map system. You can view the map by toggling left or right in this window.",
+    "naive_description": "A map system. You can view the map by following the instruction below this window.",
     "unique": true
+  },
+  "ashtown_raspberry_preserves": {
+    "index": 22,
+    "title": "Ashtown Raspberry Reserves",
+    "naive_description": "A delicious raspberry treat. It woukd taste better on some toast, but it will still restore your health if you eat it.",
+    "unique": false
   },
   "heart_keychain": {
     "index": 29,

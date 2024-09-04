@@ -4,7 +4,7 @@
 
 namespace gui {
 
-PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), selector(svc, {2, 1}) {
+PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), selector(svc, {2, 1}), menu(svc, {"resume", "quit"}) {
 	title.setString("PAUSED");
 	title.setCharacterSize(ui.title_size);
 	title_font.loadFromFile(svc.text.title_font);
@@ -23,22 +23,50 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	help_marker.init(svc, "Press [", "menu_toggle_secondary", "] to resume game.", 20, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 
-	origin = {ui.corner_pad * 0.5f, ui.corner_pad * 0.5f};
+	origin = svc.constants.f_center_screen;
+	title.setOrigin(title.getLocalBounds().getSize() * 0.5f);
 	title.setPosition(origin + ui.title_offset);
 	widget_label.setPosition(origin + ui.widget_label_offset);
+	dimensions = {180.f, 180.f};
 
-	final_dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
-	current_dimensions = final_dimensions;
-	position = sf::Vector2<float>{origin.x, origin.y};
-	speed = 8;
+	position = svc.constants.f_center_screen;
 	flags.reset(ConsoleFlags::portrait_included);
-	extent = final_dimensions.y;
 
+	sprite.set_position(svc.constants.f_center_screen);
+	sprite.set_force(1.2f);
+	sprite.set_fric(0.90f);
+}
+
+void PauseWindow::handle_events(automa::ServiceProvider& svc, Console& console) {
+	if (!active()) { return; }
+	if (svc.controller_map.label_to_control.at("down").triggered()) {
+		menu.down();
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (svc.controller_map.label_to_control.at("up").triggered()) {
+		menu.up();
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
+		switch (menu.get_selection()) {
+		case 0:
+			flags.set(ConsoleFlags::exited);
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			break;
+		case 1:
+			console.set_source(svc.text.basic);
+			console.load_and_launch("menu_return");
+			flags.set(ConsoleFlags::exited);
+			break;
+		}
+	}
 }
 
 void PauseWindow::update(automa::ServiceProvider& svc, player::Player& player) {
-	if (!active()) { return; }
 	Console::update(svc);
+	menu.update(svc, {128.f, 128.f}, {svc.constants.f_center_screen.x, svc.constants.f_center_screen.y + 32.f});
+	sprite.speed_up_appearance(3);
+	menu.speed_up_appearance(3);
 	selector.update();
 }
 
@@ -46,12 +74,19 @@ void PauseWindow::render(automa::ServiceProvider& svc, player::Player& player, s
 	if (!active()) { return; }
 	Console::render(win);
 	win.draw(title);
-	win.draw(widget_label);
-	help_marker.render(win);
+	//win.draw(widget_label);
+	//help_marker.render(win);
+	menu.render(win, false);
 }
 
-void PauseWindow::open() { flags.set(ConsoleFlags::active); }
+void PauseWindow::open() {
+	Console::begin();
+	menu.open(*m_services, m_services->constants.f_center_screen);
+}
 
-void PauseWindow::close() { Console::end(); }
+void PauseWindow::close() {
+	Console::end();
+	menu.close(*m_services);
+}
 
 } // namespace gui

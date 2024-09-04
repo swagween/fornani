@@ -5,6 +5,7 @@
 namespace automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console) {
+	pause_window = gui::PauseWindow(svc);
 	title.setPosition(0, 0);
 	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
 	title.setFillColor(svc.styles.colors.ui_black);
@@ -57,9 +58,9 @@ void Intro::tick_update(ServiceProvider& svc) {
 
 void Intro::frame_update(ServiceProvider& svc) {
 	pause_window.update(svc, *player);
+	pause_window.clean_off_trigger();
 	hud.update(svc, *player);
 	svc.controller_map.reset_triggers();
-	pause_window.clean_off_trigger();
 }
 
 void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
@@ -68,7 +69,6 @@ void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	//map.render_background(svc, win, {});
 	//map.render(svc, win, {});
 	map.render_console(svc, console, win);
-
 	map.transition.render(win);
 }
 

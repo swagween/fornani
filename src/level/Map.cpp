@@ -145,10 +145,11 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		dim.y = entry["dimensions"][1].as<int>();
 		auto src_id = entry["source_id"].as<int>();
 		auto dest_id = entry["destination_id"].as<int>();
-		auto aoc = (bool)entry["activate_on_contact"].as_bool();
-		auto locked = (bool)entry["locked"].as_bool();
+		auto aoc = static_cast<bool>(entry["activate_on_contact"].as_bool());
+		auto locked = static_cast<bool>(entry["locked"].as_bool());
+		auto already_open = static_cast<bool>(entry["already_open"].as_bool());
 		auto key_id = entry["key_id"].as<int>();
-		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, key_id));
+		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id));
 		portals.back().update(svc);
 	}
 
@@ -405,6 +406,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
 
+	for (auto& portal : portals) { portal.render(svc, win, cam); }
 	for (auto& chest : chests) { chest.render(svc, win, cam); }
 	for (auto& npc : npcs) {
 		if (!npc.background()) { npc.render(svc, win, cam); }
@@ -484,8 +486,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		borderbox.setPosition(real_dimensions.x + xdiff, 0.0f);
 		win.draw(borderbox);
 	}
-
-	for (auto& portal : portals) { portal.render(svc, win, cam); }
 
 	for (auto& animator : animators) {
 		if (animator.foreground()) { animator.render(svc, win, cam); }

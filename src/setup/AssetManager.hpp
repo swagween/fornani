@@ -63,6 +63,7 @@ class AssetManager {
 	sf::Texture t_title{};
 	sf::Texture t_title_assets{};
 	sf::Texture t_file_text{};
+	sf::Texture t_white_console{};
 
 	sf::Texture t_hud_orb_font{};
 	sf::Texture t_hud_hearts{};
@@ -84,6 +85,9 @@ class AssetManager {
 	sf::Texture t_platform_abandoned{};
 	sf::Texture t_platform_firstwind{};
 	sf::Texture t_platform_overturned{};
+
+	//portals
+	sf::Texture t_portals{};
 
 	// animators
 	sf::Texture t_automatic_animators_firstwind{};
@@ -291,6 +295,8 @@ class AssetManager {
 	sf::SoundBuffer b_thud{};
 	sf::SoundBuffer b_wall_hit{};
 	sf::SoundBuffer b_heavy_move{};
+	sf::SoundBuffer b_door_open{};
+	sf::SoundBuffer b_door_unlock{};
 
 	// save/load
 	sf::SoundBuffer save_buffer{};
@@ -319,6 +325,8 @@ class AssetManager {
 	sf::Sound thud{};
 	sf::Sound small_crash{};
 	sf::Sound heavy_move{};
+	sf::Sound door_open{};
+	sf::Sound door_unlock{};
 
 	sf::Sound minigun_neutral{};
 	sf::Sound minigun_charge{};

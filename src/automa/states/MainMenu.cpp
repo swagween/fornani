@@ -12,21 +12,21 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 	svc.state_controller.actions.reset(Actions::intro_done);
 
-	left_dot.set_position(options.at(current_selection).left_offset);
-	right_dot.set_position(options.at(current_selection).right_offset);
+	left_dot.set_position(options.at(current_selection.get()).left_offset);
+	right_dot.set_position(options.at(current_selection.get()).right_offset);
 
 	if (flags.test(GameStateFlags::playtest)) { subtitle.setString("Playtester Edition"); }
 	subtitle.setLineSpacing(1.5f);
 	subtitle.setFont(subtitle_font);
 	subtitle.setLetterSpacing(1.2f);
-	subtitle.setCharacterSize(options.at(current_selection).label.getCharacterSize());
+	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
 	subtitle.setPosition(svc.constants.screen_dimensions.x * 0.5f - subtitle.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 324.f);
 	subtitle.setFillColor(svc.styles.colors.red);
 	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
 	instruction.setLineSpacing(1.5f);
 	instruction.setFont(subtitle_font);
 	instruction.setLetterSpacing(1.2f);
-	instruction.setCharacterSize(options.at(current_selection).label.getCharacterSize());
+	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
 	instruction.setPosition(svc.constants.screen_dimensions.x * 0.5f - instruction.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 36.f);
 	instruction.setFillColor(svc.styles.colors.dark_grey);
 
@@ -51,33 +51,31 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
 
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
-		++current_selection;
-		constrain_selection();
+		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("up").triggered()) {
-		--current_selection;
-		constrain_selection();
+		current_selection.modulate(-1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.label_to_control.at("menu_forward").triggered() || svc.controller_map.label_to_control.at("main_action").triggered()) {
-		if (current_selection == menu_selection_id.at(MenuSelection::play)) {
+		if (current_selection.get() == menu_selection_id.at(MenuSelection::play)) {
 			svc.state_controller.submenu = menu_type::file_select;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
-		if (current_selection == menu_selection_id.at(MenuSelection::options)) {
+		if (current_selection.get() == menu_selection_id.at(MenuSelection::options)) {
 			svc.state_controller.submenu = menu_type::options;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
-		if (current_selection == menu_selection_id.at(MenuSelection::quit)) {
+		if (current_selection.get() == menu_selection_id.at(MenuSelection::quit)) {
 			svc.state_controller.actions.set(Actions::shutdown);
 		}
 	}
 	if (!svc.controller_map.is_gamepad() && svc.controller_map.label_to_control.at("right").triggered()) {
-		if (current_selection == menu_selection_id.at(MenuSelection::play)) { svc.state_controller.submenu = menu_type::file_select; }
-		if (current_selection == menu_selection_id.at(MenuSelection::options)) { svc.state_controller.submenu = menu_type::options; }
+		if (current_selection.get() == menu_selection_id.at(MenuSelection::play)) { svc.state_controller.submenu = menu_type::file_select; }
+		if (current_selection.get() == menu_selection_id.at(MenuSelection::options)) { svc.state_controller.submenu = menu_type::options; }
 		svc.state_controller.actions.set(Actions::trigger_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 	}
@@ -85,11 +83,11 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void MainMenu::tick_update(ServiceProvider& svc) {
-	for (auto& option : options) { option.update(svc, current_selection); }
+	for (auto& option : options) { option.update(svc, current_selection.get()); }
 	left_dot.update(svc);
 	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection).left_offset);
-	right_dot.set_target_position(options.at(current_selection).right_offset);
+	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
+	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 	svc.soundboard.play_sounds(svc);
 	svc.controller_map.reset_triggers();
 	player->animation.state = player::AnimState::run;
