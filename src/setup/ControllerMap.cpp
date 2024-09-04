@@ -42,8 +42,9 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	} else {
 		std::cout << "Steam Input initialized" << std::endl;
 	}
-	// XXX Bundle XBox/PS/Steam Deck action manifests with game (Or at least just XBox for now)
-	// SteamInput()->SetInputActionManifestFilePath("C:\\Program Files (x86)\\Steam\\controller_config\\steam_input_manifest.vdf");
+	// TODO: Do not do this in production builds! This will avoid letting users edit their bindings.
+	//		 When we have a proper Steam App ID assigned, upload the steam input manifest into the game's depot.
+	SteamInput()->SetInputActionManifestFilePath((svc.data.finder.resource_path + "text/input/steam_input_manifest.vdf").c_str());
 	SteamInput()->EnableDeviceCallbacks();
 
 #define XSTR(a) STR(a)
