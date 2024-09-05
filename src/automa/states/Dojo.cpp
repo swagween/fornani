@@ -80,6 +80,8 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			} else if (inventory_window.is_minimap()) {
 				svc.controller_map.set_action_set(config::ActionSet::Map);
 			}
+		} else if (pause_window.active()) {
+			svc.controller_map.set_action_set(config::ActionSet::Menu);
 		} else {
 			svc.controller_map.set_action_set(config::ActionSet::Platformer);
 		}
