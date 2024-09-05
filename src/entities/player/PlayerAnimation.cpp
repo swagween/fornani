@@ -477,8 +477,12 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 		slide.start();
 		slide.direction = m_player->controller.direction;
 	}
+	if (slide.going()) { m_player->m_services->soundboard.flags.player.set(audio::Player::slide); }
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
-	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::rise, rise)) {
+		m_player->controller.get_slide().end();
+		return PA_BIND(update_rise);
+	}
 
 	if (slide.broke_out()) {
 		m_player->controller.get_slide().end();
@@ -487,6 +491,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 		return PA_BIND(update_get_up);
 	}
 	if (!m_player->grounded()) {
+		m_player->controller.get_slide().end();
 		state = AnimState::suspend;
 		animation.set_params(suspend);
 		return PA_BIND(update_suspend);

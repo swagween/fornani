@@ -254,6 +254,8 @@ void AssetManager::load_audio() {
 	gnat.setBuffer(b_gnat);
 	jump_buffer.loadFromFile(finder.resource_path + "/audio/sfx/jump.wav");
 	jump.setBuffer(jump_buffer);
+	slide_buffer.loadFromFile(finder.resource_path + "/audio/sfx/slide.wav");
+	slide.setBuffer(slide_buffer);
 
 	shatter_buffer.loadFromFile(finder.resource_path + "/audio/sfx/shatter.wav");
 	shatter.setBuffer(shatter_buffer);

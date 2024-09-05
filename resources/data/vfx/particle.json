@@ -153,5 +153,23 @@
     "colliding": false,
     "fader": true,
     "color": "smoke"
+  },
+
+  "slide": {
+    "load": 2,
+    "rate": 2.0,
+    "expulsion": 18.0,
+    "expulsion_variance": 8.0,
+    "cone": 0.98,
+    "friction": 0.99,
+    "elasticity": 0.0,
+    "gravity": 0.3,
+    "lifespan": 160,
+    "lifespan_variance": 40,
+    "dimensions": [ 3, 3 ],
+    "animated": false,
+    "colliding": false,
+    "fader": true,
+    "color": "save"
   }
 }

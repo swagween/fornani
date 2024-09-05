@@ -21,6 +21,7 @@ class Slide {
 	void break_out() { flags.set(SlideFlags::break_out); }
 	void update();
 	void calculate();
+	[[nodiscard]] auto going() const -> bool { return begin_slide.get_cooldown() == 116; }
 	[[nodiscard]] auto can_exit() const -> bool { return begin_slide.is_complete(); }
 	[[nodiscard]] auto can_begin() const -> bool { return post_slide.is_complete(); }
 	[[nodiscard]] auto exhausted() const -> bool { return get_dampen() < slowness_limit; }

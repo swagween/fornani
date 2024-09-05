@@ -222,6 +222,7 @@ class AssetManager {
 	sf::SoundBuffer step_buffer{};
 	sf::SoundBuffer landed_buffer{};
 	sf::SoundBuffer hurt_buffer{};
+	sf::SoundBuffer slide_buffer{};
 
 	sf::SoundBuffer tank_alert1_buffer{};
 	sf::SoundBuffer tank_alert2_buffer{};
@@ -309,6 +310,7 @@ class AssetManager {
 	sf::Sound step{};
 	sf::Sound shatter{};
 	sf::Sound jump{};
+	sf::Sound slide{};
 	sf::Sound arms_switch{};
 	sf::Sound bg_shot{};
 	sf::Sound plasmer_shot{};
