@@ -120,13 +120,13 @@ class ControllerMap {
 	[[nodiscard]] auto key_to_string(sf::Keyboard::Key) const -> std::string_view;
 	[[nodiscard]] auto string_to_key(std::string_view) const -> sf::Keyboard::Key;
 
-	std::unordered_map<int, std::string_view> gamepad_button_name{};
+	std::unordered_map<int, std::string_view> gamepad_button_name{}; // XXX remove
 
-	std::unordered_map<std::string_view, sf::Mouse::Button> string_to_mousebutton{{"LMB", sf::Mouse::Left}, {"RMB", sf::Mouse::Right}};
+	std::unordered_map<std::string_view, sf::Mouse::Button> string_to_mousebutton{{"LMB", sf::Mouse::Left}, {"RMB", sf::Mouse::Right}}; // XXX remove
 
-	ControllerType type{};
-	util::BitFlags<Toggles> hard_toggles{};
-	util::BitFlags<ControllerStatus> status{};
+	ControllerType type{};					   // XXX remove
+	util::BitFlags<Toggles> hard_toggles{};	   // XXX these do not do anything
+	util::BitFlags<ControllerStatus> status{}; // XXX remove
 
   private:
 	struct DigitalActionData {
