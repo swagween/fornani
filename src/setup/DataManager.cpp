@@ -295,6 +295,12 @@ void DataManager::load_settings() {
 	m_services->music.volume.multiplier = settings["music_volume"].as<float>();
 }
 
+void DataManager::delete_file(int index) {
+	if (index >= files.size()) { return; }
+	files.at(index).save_data = blank_file.save_data;
+	files.at(index).flags.set(fornani::FileFlags::new_file);
+}
+
 void DataManager::write_death_count(player::Player& player) {
 	auto& save = files.at(current_save).save_data;
 	auto& out_stat = save["player_data"]["stats"];

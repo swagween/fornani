@@ -18,6 +18,7 @@ class FileMenu : public automa::GameState {
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
+	void refresh(ServiceProvider& svc);
 
 	sf::RectangleShape title{};
 private:

@@ -4,6 +4,10 @@
 namespace text {
 
 void Tutorial::update(automa::ServiceProvider& svc) {
+	if (!svc.controller_map.hard_toggles.test(config::Toggles::tutorial)) {
+		helpers.set(TutorialHelpers::closed);
+		return;
+	}
 	maximum_display_time.update();
 	if (helpers.test(TutorialHelpers::closed)) { return; }
 	if (!helpers.consume(TutorialHelpers::trigger)) { return; }

@@ -24,6 +24,8 @@ class MiniMenu {
 	void up();
 	void down();
 	void speed_up_appearance(int rate) { sprite.speed_up_appearance(rate); }
+	void set_force(float force) { sprite.set_force(force); }
+	void set_fric(float fric) { sprite.set_fric(fric); }
 	sf::Vector2<float> get_dimensions() const;
 	[[nodiscard]] auto is_open() const -> bool { return state.test(MiniMenuState::open); }
 	[[nodiscard]] auto get_selection() const -> int { return selection.get(); }
