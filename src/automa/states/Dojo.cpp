@@ -73,6 +73,12 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void Dojo::tick_update(ServiceProvider& svc) {
+	if (pause_window.active()) {
+		svc.controller_map.set_action_set(config::ActionSet::Menu);
+		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
+		pause_window.update(svc, console, true);
+		return;
+	}
 	if (console.is_complete()) {
 		if (inventory_window.active()) {
 			if (inventory_window.is_inventory()) {
@@ -80,8 +86,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			} else if (inventory_window.is_minimap()) {
 				svc.controller_map.set_action_set(config::ActionSet::Map);
 			}
-		} else if (pause_window.active()) {
-			svc.controller_map.set_action_set(config::ActionSet::Menu);
 		} else {
 			svc.controller_map.set_action_set(config::ActionSet::Platformer);
 		}
@@ -93,8 +97,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		toggle_inventory(svc);
 		if (inventory_window.active() && inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered) {
-		// FIXME Opening the map this way breaks the back panel rendering, as it is placed on (0, 0) with default size
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered && player->has_map()) {
 		toggle_inventory(svc);
 		if (inventory_window.active() && !inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
 	}

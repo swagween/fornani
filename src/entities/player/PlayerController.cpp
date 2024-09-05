@@ -81,10 +81,14 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& arms_switch_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_right).triggered;
 
 	auto const& inspected = svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered && grounded() && !left && !right;
+
+	/* Dash ability and grappling hook will remain out of scope for the demo. */
+
 	auto const& dash_left = false;	// XXX svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && left;
 	auto const& dash_right = false; // XXX svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
 
 	auto const& hook_held = false; // XXX svc.controller_map.label_to_control.at("secondary_action").held();
+	
 
 	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
 	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }

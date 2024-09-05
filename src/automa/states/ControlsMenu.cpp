@@ -17,10 +17,10 @@ auto get_action_by_identifier(std::string_view id) -> config::DigitalAction {
 		{"platformer_sprint", config::DigitalAction::platformer_sprint},
 		{"platformer_shield", config::DigitalAction::platformer_shield},
 		{"platformer_inspect", config::DigitalAction::platformer_inspect},
-		{"platformer_switch weapon (left)", config::DigitalAction::platformer_arms_switch_left},
-		{"platformer_switch weapon (right)", config::DigitalAction::platformer_arms_switch_right},
-		{"platformer_open inventory", config::DigitalAction::platformer_open_inventory},
-		{"platformer_open map", config::DigitalAction::platformer_open_map},
+		{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
+		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
+		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
+		{"platformer_open_map", config::DigitalAction::platformer_open_map},
 		{"platformer_pause", config::DigitalAction::platformer_toggle_pause},
 		{"inventory_close", config::DigitalAction::inventory_close},
 		{"map_close", config::DigitalAction::map_close},
@@ -72,6 +72,9 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 			if (key != sf::Keyboard::Key::Escape) {
 				// Escape cancels binding
 				svc.controller_map.set_primary_keyboard_binding(action, event.key.code);
+				svc.data.controls["controls"][id]["primary_key"] = svc.controller_map.key_to_string(svc.controller_map.get_primary_keyboard_binding(action));
+				svc.data.save_controls(svc.controller_map);
+				refresh_controls(svc);
 			}
 			option_is_selected = false;
 			refresh_controls(svc);

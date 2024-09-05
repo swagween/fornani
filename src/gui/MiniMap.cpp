@@ -50,6 +50,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	global_ratio = ratio * 0.25f;
 	win.setView(view);
 	win.draw(background);
+	std::cout << "rendering...\n";
 	if (svc.ticker.every_x_frames(10)) {
 		room_border.getFillColor() == svc.styles.colors.ui_white ? room_border.setOutlineColor(svc.styles.colors.periwinkle) : room_border.setOutlineColor(svc.styles.colors.ui_white);
 		player_box.getFillColor() == svc.styles.colors.periwinkle ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.periwinkle);

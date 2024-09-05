@@ -125,9 +125,9 @@ void ControllerMap::update(bool has_focus) {
 		bool active = action_set == active_action_set || ((active_action_set == config::ActionSet::Inventory || active_action_set == config::ActionSet::Map) && action_set == config::ActionSet::Menu);
 		if (triggered && active) {
 			action_status.released = false;
-			// Avoid actions being inmediately triggered when switching action sets
+			// Avoid actions being immediately triggered when switching action sets
 			if (!action_status.held && was_active_last_tick) {
-				std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
+				//std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.triggered = true;
 			} else {
 				action_status.triggered = false;
@@ -137,7 +137,7 @@ void ControllerMap::update(bool has_focus) {
 			action_status.triggered = false;
 			// Avoid releasing if just switching action sets
 			if (action_status.held && active) {
-				std::cout << "Released " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
+				//std::cout << "Released " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.released = true;
 			} else {
 				action_status.released = false;
@@ -219,7 +219,6 @@ void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t*
 }
 
 void ControllerMap::open_bindings_overlay() const { SteamInput()->ShowBindingPanel(controller_handle); }
-
 auto ControllerMap::key_to_string(sf::Keyboard::Key key) const -> std::string_view {
 	// XXX: Replace by switch
 	std::unordered_map<sf::Keyboard::Key, std::string_view> map{{sf::Keyboard::A, "A"},			  {sf::Keyboard::B, "B"},
