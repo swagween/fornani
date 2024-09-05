@@ -24,6 +24,7 @@ enum class DigitalAction : int {
 	platformer_jump,
 	platformer_shoot,
 	platformer_sprint,
+	// XXX platformer_dash
 	platformer_shield,
 	platformer_inspect,
 	platformer_arms_switch_left,
@@ -90,12 +91,11 @@ class ControllerMap {
 	ControllerMap operator=(ControllerMap const&) = delete;
 
 	/// @brief Update internal action states. Call once on tick update, and nowhere else.
+	/// @param has_focus Whether the game window has focus or not.
 	void update(bool has_focus);
 
 	/// @brief Returns whether there is a gamepad connected or not.
 	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }
-	[[nodiscard]] auto autosprint() const -> bool { return hard_toggles.test(Toggles::autosprint); }
-	[[nodiscard]] auto hard_toggles_off() const -> bool { return !hard_toggles.test(Toggles::keyboard) && !hard_toggles.test(Toggles::gamepad); }
 	[[nodiscard]] auto digital_action_status(DigitalAction action) const -> DigitalActionStatus { return digital_actions.at(action).status; }
 	[[nodiscard]] auto analog_action_status(AnalogAction action) const -> AnalogActionStatus { return analog_actions.at(action).second; }
 	[[nodiscard]] auto digital_action_name(DigitalAction action) const -> std::string_view;
@@ -120,13 +120,12 @@ class ControllerMap {
 	[[nodiscard]] auto key_to_string(sf::Keyboard::Key) const -> std::string_view;
 	[[nodiscard]] auto string_to_key(std::string_view) const -> sf::Keyboard::Key;
 
-	std::unordered_map<int, std::string_view> gamepad_button_name{}; // XXX remove
+	[[nodiscard]] auto last_controller_type_used() const -> ControllerType { return last_controller_ty_used; }
 
-	std::unordered_map<std::string_view, sf::Mouse::Button> string_to_mousebutton{{"LMB", sf::Mouse::Left}, {"RMB", sf::Mouse::Right}}; // XXX remove
-
-	ControllerType type{};					   // XXX remove
-	util::BitFlags<Toggles> hard_toggles{};	   // XXX these do not do anything
-	util::BitFlags<ControllerStatus> status{}; // XXX remove
+	void enable_autosprint(bool enable) { autosprint_enabled = enable; }
+	void enable_gamepad_input(bool enable) { gamepad_input_enabled = enable; }
+	[[nodiscard]] auto is_gamepad_input_enabled() -> bool { return gamepad_input_enabled; }
+	[[nodiscard]] auto is_autosprint_enabled() -> bool { return autosprint_enabled; }
 
   private:
 	struct DigitalActionData {
@@ -139,14 +138,19 @@ class ControllerMap {
 	};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
-	InputActionSetHandle_t platformer_action_set;
-	InputActionSetHandle_t menu_action_set;
-	InputActionSetHandle_t inventory_action_layer;
-	InputActionSetHandle_t map_action_layer;
+	InputActionSetHandle_t platformer_action_set{};
+	InputActionSetHandle_t menu_action_set{};
+	InputActionSetHandle_t inventory_action_layer{};
+	InputActionSetHandle_t map_action_layer{};
 
-	ActionSet active_action_set;
+	ControllerType last_controller_ty_used{ControllerType::keyboard};
+
+	ActionSet active_action_set{};
 
 	InputHandle_t controller_handle{};
+
+	bool gamepad_input_enabled{true};
+	bool autosprint_enabled{true};
 
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
 

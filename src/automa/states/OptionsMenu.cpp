@@ -31,14 +31,6 @@ void OptionsMenu::tick_update(ServiceProvider& svc) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	/* XXX
-	if (svc.controller_map.digital_action_status(right).triggered) {
-		if (current_selection == menu_selection_id.at(MenuSelection::controls)) { svc.state_controller.submenu = menu_type::controls; }
-		if (current_selection == menu_selection_id.at(MenuSelection::credits)) { svc.state_controller.submenu = menu_type::credits; }
-		if (current_selection == menu_selection_id.at(MenuSelection::settings)) { svc.state_controller.submenu = menu_type::settings; }
-		svc.state_controller.actions.set(Actions::trigger_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
-	}*/
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		if (current_selection == menu_selection_id.at(MenuSelection::controls)) {
 			svc.state_controller.submenu = menu_type::controls;

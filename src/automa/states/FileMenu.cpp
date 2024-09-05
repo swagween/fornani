@@ -37,7 +37,7 @@ void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void FileMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	
+
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
@@ -64,12 +64,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 		svc.soundboard.flags.world.set(audio::World::load);
 	}
-	// XXX
-	//if (svc.controller_map.digital_action_status(menu_back).triggered) {
-	//	svc.state_controller.submenu = menu_type::main;
-	//	svc.state_controller.actions.set(Actions::exit_submenu);
-	//	svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	//}
 
 	for (auto& option : options) { option.update(svc, current_selection); }
 	constrain_selection();

@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
 	assert(argc > 0);
 
-	if (SteamAPI_RestartAppIfNecessary(480)) {
+	if (SteamAPI_RestartAppIfNecessary(480)) { // XXX Set to whatever is set in CMake
 		std::cout << "Re-launching through Steam." << std::endl;
 		return 0;
 	}

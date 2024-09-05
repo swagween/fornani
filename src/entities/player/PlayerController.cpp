@@ -63,7 +63,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
 	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
 	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
-	if (svc.controller_map.autosprint()) {
+	if (svc.controller_map.is_autosprint_enabled()) {
 		sprint = !sprint;
 		sprint_release = sprint_pressed;
 	}

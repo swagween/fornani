@@ -48,7 +48,7 @@ void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void MainMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	
+
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		++current_selection;
 		constrain_selection();
@@ -72,13 +72,6 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 		}
 		if (current_selection == menu_selection_id.at(MenuSelection::quit)) { svc.state_controller.actions.set(Actions::shutdown); }
 	}
-	// XXX
-	// if (svc.controller_map.digital_action_status(right).triggered) {
-	// 	if (current_selection == menu_selection_id.at(MenuSelection::play)) { svc.state_controller.submenu = menu_type::file_select; }
-	// 	if (current_selection == menu_selection_id.at(MenuSelection::options)) { svc.state_controller.submenu = menu_type::options; }
-	// 	svc.state_controller.actions.set(Actions::trigger_submenu);
-	// 	svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
-	// }
 
 	for (auto& option : options) { option.update(svc, current_selection); }
 	left_dot.update(svc);

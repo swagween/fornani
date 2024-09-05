@@ -29,7 +29,6 @@ class SettingsMenu : public automa::GameState {
 
 	struct {
 		sf::Text autosprint{};
-		sf::Text keyboard{};
 		sf::Text gamepad{};
 	} toggleables{};
 

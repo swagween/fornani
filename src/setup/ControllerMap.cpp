@@ -6,6 +6,10 @@
 namespace config {
 
 auto get_action_set_from_action(DigitalAction action) -> ActionSet {
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(error : 4061) // Missing enum variants in switch cases
+#endif
 	switch (action) {
 	case DigitalAction::platformer_left:
 	case DigitalAction::platformer_right:
@@ -32,7 +36,13 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	case DigitalAction::menu_down:
 	case DigitalAction::menu_select:
 	case DigitalAction::menu_cancel: return ActionSet::Menu;
+
+	case DigitalAction::COUNT:
+	default: assert(false && "Invalid action set in get_action_set_from_action");
 	}
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 }
 
 ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
@@ -42,8 +52,7 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	} else {
 		std::cout << "Steam Input initialized" << std::endl;
 	}
-	// TODO: Do not do this in production builds! This will avoid letting users edit their bindings.
-	//		 When we have a proper Steam App ID assigned, upload the steam input manifest into the game's depot.
+	// TODO When we have a proper Steam App ID assigned, upload the steam input manifest into the game's depot.
 	SteamInput()->SetInputActionManifestFilePath((svc.data.finder.resource_path + "text/input/steam_input_manifest.vdf").c_str());
 	SteamInput()->EnableDeviceCallbacks();
 
@@ -93,28 +102,6 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	menu_action_set = SteamInput()->GetActionSetHandle("Menu");
 	inventory_action_layer = SteamInput()->GetActionSetHandle("Menu_Inventory");
 	map_action_layer = SteamInput()->GetActionSetHandle("Menu_Map");
-
-	gamepad_button_name.insert({-1, "left analog stick"});
-	gamepad_button_name.insert({0, "square"});
-	gamepad_button_name.insert({1, "cross"});
-	gamepad_button_name.insert({2, "circle"});
-	gamepad_button_name.insert({3, "triangle"});
-	gamepad_button_name.insert({4, "L1"});
-	gamepad_button_name.insert({5, "R1"});
-	gamepad_button_name.insert({6, "L2"});
-	gamepad_button_name.insert({7, "R2"});
-	gamepad_button_name.insert({8, "select"});
-	gamepad_button_name.insert({9, "start"});
-	gamepad_button_name.insert({10, "left analog click"});
-	gamepad_button_name.insert({11, "right analog click"});
-	gamepad_button_name.insert({12, "launch"});
-	gamepad_button_name.insert({13, "home"});
-	gamepad_button_name.insert({14, "unknown"});
-	gamepad_button_name.insert({15, "unknown"});
-	gamepad_button_name.insert({16, "unknown"});
-
-	hard_toggles.set(Toggles::keyboard);
-	hard_toggles.set(Toggles::gamepad);
 }
 
 void ControllerMap::update(bool has_focus) {
@@ -125,11 +112,14 @@ void ControllerMap::update(bool has_focus) {
 		auto& [steam_handle, action_status, primary_key, secondary_key, was_active_last_tick] = data;
 
 		bool pressed_on_gamepad = false;
-		if (controller_handle) {
+		if (controller_handle && gamepad_input_enabled) {
 			auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
 			pressed_on_gamepad = data.bActive && data.bState;
 		}
 		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
+
+		if (pressed_on_gamepad) { last_controller_ty_used = ControllerType::gamepad; }
+		if (pressed_on_keyboard) { last_controller_ty_used = ControllerType::keyboard; }
 		auto triggered = has_focus && (pressed_on_gamepad || pressed_on_keyboard);
 		config::ActionSet action_set = get_action_set_from_action(action);
 		bool active = action_set == active_action_set || ((active_action_set == config::ActionSet::Inventory || active_action_set == config::ActionSet::Map) && action_set == config::ActionSet::Menu);
@@ -257,6 +247,7 @@ auto ControllerMap::key_to_string(sf::Keyboard::Key key) const -> std::string_vi
 }
 
 auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard::Key {
+	// XXX: Replace by switch
 	std::unordered_map<std::string_view, sf::Keyboard::Key> map{{"A", sf::Keyboard::A},			  {"B", sf::Keyboard::B},
 																{"C", sf::Keyboard::C},			  {"D", sf::Keyboard::D},
 																{"E", sf::Keyboard::E},			  {"F", sf::Keyboard::F},
