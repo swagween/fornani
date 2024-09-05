@@ -100,6 +100,7 @@ void Console::clean_off_trigger() { flags.reset(ConsoleFlags::off_trigger); }
 
 void Console::end_tick() {
 	if (!flags.test(ConsoleFlags::active)) { flags.reset(ConsoleFlags::loaded); }
+	clean_off_trigger();
 }
 
 void Console::include_portrait(int id) {

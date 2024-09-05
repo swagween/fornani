@@ -44,6 +44,7 @@ class DataManager {
 	void save_settings();
 	int load_progress(player::Player& player, int const file, bool state_switch = false, bool from_menu = true);
 	void load_settings();
+	void delete_file(int index);
 	void write_death_count(player::Player& player);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false);
 	dj::Json& get_save() { return files.at(current_save).save_data; }

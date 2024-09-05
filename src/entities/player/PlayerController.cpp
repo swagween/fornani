@@ -20,9 +20,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	if (walking_autonomously()) {
 		prevent_movement();
 		key_map[ControllerInput::move_x] = direction.lr == dir::LR::left ? -1.f : 1.f;
-		return;
 	}
-	if (hard_state.test(HardState::no_move)) {
+	if (hard_state.test(HardState::no_move) || walking_autonomously()) {
 		auto const& transponder_skip = svc.controller_map.label_to_control.at("main_action").triggered();
 		auto const& transponder_skip_released = svc.controller_map.label_to_control.at("main_action").released();
 		auto const& transponder_next = svc.controller_map.label_to_control.at("main_action").triggered();
@@ -50,7 +49,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		transponder_hold_up ? transponder_flags.set(TransponderInput::hold_up) : transponder_flags.reset(TransponderInput::hold_up);
 		transponder_hold_left ? transponder_flags.set(TransponderInput::hold_left) : transponder_flags.reset(TransponderInput::hold_left);
 		transponder_hold_right ? transponder_flags.set(TransponderInput::hold_right) : transponder_flags.reset(TransponderInput::hold_right);
-		prevent_movement();
 		return;
 	}
 

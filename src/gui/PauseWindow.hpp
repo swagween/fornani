@@ -17,7 +17,7 @@ class PauseWindow : public Console {
   public:
 	PauseWindow() = default;
 	PauseWindow(automa::ServiceProvider& svc);
-	void handle_events(automa::ServiceProvider& svc, Console& console);
+	void handle_events(automa::ServiceProvider& svc, Console& console, bool automatic = false);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win);
 	void open();

@@ -4,35 +4,38 @@
   },
   "player_data": {
     "max_hp": 3.000000,
-    "hp": 2.000000,
+    "hp": 1.000000,
     "orbs": 0,
     "position": {
-      "x": 168.891968,
+      "x": 172.447235,
       "y": 395.000000
     },
     "arsenal": [
-      0
+
     ],
     "equipped_gun": 0,
     "abilities": [
 
     ],
     "items": [
-
+      {
+        "id": 8,
+        "quantity": 1
+      }
     ],
     "stats": {
       "death_count": 0,
-      "bullets_fired": 1,
-      "guns_collected": 1,
-      "items_collected": 0,
+      "bullets_fired": 0,
+      "guns_collected": 0,
+      "items_collected": 1,
       "orbs_collected": 0,
       "blue_orbs": 0,
       "highest_indicator_amount": 0,
       "enemies_killed": 0,
-      "rooms_discovered": 3,
-      "seconds_played": 70.113983,
+      "rooms_discovered": 4,
+      "seconds_played": 36.872414,
       "time_trials": {
-        "bryns_gun": 45.309418
+        "bryns_gun": 0.000000
       }
     }
   },
@@ -41,39 +44,34 @@
 
   ],
   "opened_chests": [
-    377
+    323
   ],
   "activated_switches": [
-    445
+
   ],
   "destroyed_blocks": [
 
   ],
   "quest_progressions": [
-    [
-      1,
-      111,
-      1,
-      1,
-      0
-    ]
+
   ],
   "destroyed_inspectables": [
 
   ],
   "tutorial": {
-    "state": 4,
+    "state": 2,
     "closed": false,
-    "on": false,
+    "on": true,
     "jump": true,
-    "shoot": true,
+    "shoot": false,
     "sprint": true,
     "map": false,
-    "inventory": true
+    "inventory": false
   },
   "discovered_rooms": [
     100,
     101,
+    103,
     110
   ]
 }

@@ -35,9 +35,11 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	sprite.set_position(svc.constants.f_center_screen);
 	sprite.set_force(1.2f);
 	sprite.set_fric(0.90f);
+	menu.set_force(1.2f);
+	menu.set_fric(0.90f);
 }
 
-void PauseWindow::handle_events(automa::ServiceProvider& svc, Console& console) {
+void PauseWindow::handle_events(automa::ServiceProvider& svc, Console& console, bool automatic) {
 	if (!active()) { return; }
 	if (svc.controller_map.label_to_control.at("down").triggered()) {
 		menu.down();
@@ -54,8 +56,13 @@ void PauseWindow::handle_events(automa::ServiceProvider& svc, Console& console) 
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			break;
 		case 1:
-			console.set_source(svc.text.basic);
-			console.load_and_launch("menu_return");
+			if (automatic) {
+				m_services->state_controller.actions.set(automa::Actions::main_menu);
+				console.end();
+			} else {
+				console.set_source(svc.text.basic);
+				console.load_and_launch("menu_return");
+			}
 			flags.set(ConsoleFlags::exited);
 			break;
 		}

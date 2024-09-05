@@ -128,7 +128,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 void Dojo::frame_update(ServiceProvider& svc) {
 	pause_window.update(svc, *player);
 	pause_window.clean_off_trigger();
-
+	if (pause_window.active()) { svc.soundboard.play_sounds(svc); }
 	hud.update(svc, *player);
 	svc.controller_map.reset_triggers();
 }
