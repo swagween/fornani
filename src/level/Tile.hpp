@@ -33,6 +33,8 @@ struct Tile {
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
+	[[nodiscard]] auto is_negative_ramp() const -> bool { return (value >= 208 && value < 212) || (value == 216 || value == 217) || (value == 220 || value == 221); }
+	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
 
 	sf::Vector2<float> middle_point();
 

@@ -9,6 +9,7 @@
 #include "Jump.hpp"
 #include "Wallslide.hpp"
 #include "Shield.hpp"
+#include "Slide.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -20,7 +21,7 @@ constexpr static int dash_time{32};
 constexpr static int quick_turn_sample_size{24};
 constexpr static float backwards_dampen{0.5f};
 
-enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y };
+enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
 enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released, hold_left, hold_right, hold_up, hold_down };
 enum class MovementState { restricted, grounded, walking_autonomously };
 enum class HardState { no_move };
@@ -67,6 +68,7 @@ class PlayerController {
 	[[nodiscard]] auto walking_autonomously() const -> bool { return flags.test(MovementState::walking_autonomously); }
 	[[nodiscard]] auto dash_requested() const -> bool { return dash_request > -1; }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
+	[[nodiscard]] auto sliding() -> bool { return key_map[ControllerInput::slide] != 0.f; }
 	[[nodiscard]] auto released_hook() -> bool {
 		auto ret = hook_flags.test(Hook::hook_released);
 		hook_flags.reset(Hook::hook_released);
@@ -97,6 +99,7 @@ class PlayerController {
 
 	[[nodiscard]] auto vertical_movement() -> float { return key_map[ControllerInput::move_y]; }
 	[[nodiscard]] auto horizontal_movement() -> float { return key_map[ControllerInput::move_x]; }
+	[[nodiscard]] auto sliding_movement() -> float { return key_map[ControllerInput::slide]; }
 	[[nodiscard]] auto arms_switch() -> float { return key_map[ControllerInput::arms_switch]; }
 	[[nodiscard]] auto dash_value() -> float { return key_map[ControllerInput::dash]; }
 	[[nodiscard]] auto quick_turn() const -> bool {
@@ -114,6 +117,7 @@ class PlayerController {
 	[[nodiscard]] auto get_jump() -> Jump& { return jump; }
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
 	[[nodiscard]] auto get_shield() -> Shield& { return shield; }
+	[[nodiscard]] auto get_slide() -> Slide& { return slide; }
 
 	dir::Direction direction{};
 
@@ -128,6 +132,7 @@ class PlayerController {
 	Jump jump{};
 	Wallslide wallslide{};
 	Shield shield;
+	Slide slide{};
 
 	int dash_request{};
 	int dash_count{};

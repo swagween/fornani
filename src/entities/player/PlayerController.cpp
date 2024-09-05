@@ -57,6 +57,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& up = svc.controller_map.label_to_control.at("up").held();
 	auto const& down = svc.controller_map.label_to_control.at("down").held();
 
+	auto const& down_released = svc.controller_map.label_to_control.at("down").released();
+
 	auto sprint = svc.controller_map.label_to_control.at("sprint").held();
 	auto sprint_release = svc.controller_map.label_to_control.at("sprint").released();
 	auto sprint_pressed = svc.controller_map.label_to_control.at("sprint").triggered();
@@ -79,9 +81,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& arms_switch_left = svc.controller_map.label_to_control.at("arms_switch_left").triggered();
 	auto const& arms_switch_right = svc.controller_map.label_to_control.at("arms_switch_right").triggered();
 
-	auto const& inspected = (svc.controller_map.label_to_control.at("inspect").triggered() && grounded() && !left && !right) ||
-(svc.controller_map.label_to_control.at("down").triggered() && grounded() && !left && !right);
-	auto const& dash_left = svc.controller_map.label_to_control.at("tertiary_action").triggered() &&!grounded() && left;
+	auto const& inspected = (svc.controller_map.label_to_control.at("inspect").triggered() && grounded() && !left && !right) || (svc.controller_map.label_to_control.at("down").triggered() && grounded() && !left && !right);
+	auto const& dash_left = svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && left;
 	auto const& dash_right = svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
 
 	auto const& hook_held = svc.controller_map.label_to_control.at("secondary_action").held();
@@ -89,25 +90,30 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
 	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
 
-		key_map[ControllerInput::move_x] = svc.controller_map.get_throttle().x;
-		key_map[ControllerInput::move_y] = svc.controller_map.get_throttle().y;
+	key_map[ControllerInput::move_x] = svc.controller_map.get_throttle().x;
+	key_map[ControllerInput::move_y] = svc.controller_map.get_throttle().y;
 
-		key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
-		key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
-		key_map[ControllerInput::move_x] = right && left ? 0.f : key_map[ControllerInput::move_x];
+	key_map[ControllerInput::move_x] = left && !right ? -1.f : key_map[ControllerInput::move_x];
+	key_map[ControllerInput::move_x] = right && !left ? 1.f : key_map[ControllerInput::move_x];
+	key_map[ControllerInput::move_x] = right && left ? 0.f : key_map[ControllerInput::move_x];
 
-		key_map[ControllerInput::move_y] = up && !down ? -1.f : key_map[ControllerInput::move_y];
-		key_map[ControllerInput::move_y] = down && !up ? 1.f : key_map[ControllerInput::move_y];
-		key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
-	
+	key_map[ControllerInput::move_y] = up && !down ? -1.f : key_map[ControllerInput::move_y];
+	key_map[ControllerInput::move_y] = down && !up ? 1.f : key_map[ControllerInput::move_y];
+	key_map[ControllerInput::move_y] = right && left ? 0.f : key_map[ControllerInput::move_y];
 
-	//shield
+	// shield
 	key_map[ControllerInput::shield] = 0.f;
 	if (!shield.recovering() && grounded()) {
 		if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
 		if (shielding) { shield.flags.triggers.set(ShieldTrigger::shield_up); }
 		if (shield_released && shield.is_shielding()) { shield.pop(); }
 	}
+
+	// slide
+	slide.update();
+	key_map[ControllerInput::slide] = 0.f;
+	if (moving() && down && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
+	if (down_released || !moving()) { slide.break_out(); }
 
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
@@ -118,10 +124,10 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
 	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }
 
-	//hook
+	// hook
 	hook_held ? hook_flags.set(Hook::hook_held) : hook_flags.reset(Hook::hook_held);
 
-	//sprint
+	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
 	if (grounded()) { sprint_flags = {}; }
 
@@ -141,6 +147,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		direction.und = down && !grounded() ? dir::UND::down : direction.und;
 	} else if ((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) {
 		key_map[ControllerInput::move_x] *= backwards_dampen;
+		key_map[ControllerInput::slide] = 0.f;
 	}
 
 	key_map[ControllerInput::arms_switch] = 0.f;
@@ -234,6 +241,7 @@ void PlayerController::prevent_movement() {
 	key_map[ControllerInput::shoot] = 0.f;
 	key_map[ControllerInput::jump] = 0.f;
 	key_map[ControllerInput::sprint] = 0.f;
+	key_map[ControllerInput::slide] = 0.f;
 	jump.reset_all();
 	jump.prevent();
 	flags.set(MovementState::restricted);

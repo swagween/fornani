@@ -199,6 +199,7 @@ void Player::update_animation() {
 			if (controller.nothing_pressed() && !controller.dashing() && !(animation.state == AnimState::inspect) && !(animation.state == AnimState::sit)) { animation.state = AnimState::idle; }
 			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state = AnimState::run; }
 			if (controller.moving() && controller.sprinting() && !controller.dashing() && !(animation.state == AnimState::sharp_turn)) { animation.state = AnimState::sprint; }
+			if (animation.state == AnimState::sprint && controller.sliding() && controller.get_slide().can_begin()) { animation.state = AnimState::slide; }
 			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.state = AnimState::stop; }
 			handle_turning();
 		}
@@ -240,6 +241,9 @@ void Player::update_animation() {
 		animation.state = AnimState::die;
 		flags.state.reset(State::show_weapon);
 	}
+
+	//for sliding down ramps
+	animation.state == AnimState::slide ? collider.flags.animation.set(shape::Animation::sliding) : collider.flags.animation.reset(shape::Animation::sliding);
 
 	animation.update();
 }
@@ -477,6 +481,7 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
+	if (animation.state == AnimState::slide) { return; }
 	if (animation.state == AnimState::sharp_turn) { collider.physics.acceleration.x *= 0.1f; }
 	if (controller.moving_right() && !collider.has_right_collision()) {
 		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();

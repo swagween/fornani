@@ -1,6 +1,7 @@
 
 #include "Shape.hpp"
 #include <ccmath/math/power/sqrt.hpp>
+#include <iostream>
 
 namespace shape {
 
@@ -340,6 +341,18 @@ bool Shape::contains_point(Vec point) {
 	if (vertices.at(0).y > point.y) { ret = false; }
 	if (vertices.at(2).y < point.y) { ret = false; }
 	return ret;
+}
+
+float Shape::get_height_at(float x) const {
+	auto rise = vertices.at(1).y - vertices.at(0).y;
+	auto run = vertices.at(1).x - vertices.at(0).x;
+	auto slope = -1 * rise / run;
+	auto max_height = std::max(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y);
+	auto min_height = std::min(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y);
+	// y intercept is always the left ramp height
+	auto b = vertices.at(3).y - vertices.at(0).y;
+	auto y = std::min(slope * x + b, max_height);
+	return y;
 }
 
 bool Shape::AABB_handle_left_collision_static(Shape const& immovable) {

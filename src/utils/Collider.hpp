@@ -23,8 +23,8 @@ float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 
 enum class General { ignore_resolution, complex, pushable, soft };
-enum class Animation { just_landed };
-enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision };
+enum class Animation { just_landed, sliding };
+enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision, on_flat_surface };
 enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision, world_collision, horiz_world_collision, vert_world_collision, world_grounded, jumped_into };
 enum class PermaFlags { world_grounded };
 
@@ -144,6 +144,7 @@ class Collider {
 	sf::Vector2<float> sprite_offset{};
 	sf::Vector2<float> hurtbox_offset{};
 	std::deque<sf::Vector2<float>> position_history{};
+	float maximum_ramp_height{};
 
 
 	bool spike_trigger{};

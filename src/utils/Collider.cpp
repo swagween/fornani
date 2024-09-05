@@ -124,7 +124,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		}
 		if (flags.external_state.test(ExternalState::vert_world_collision)) { flags.external_state.reset(ExternalState::horiz_world_collision); }
 	}
-
+	// don't fix ramp position unless we're only colliding with ramps
+	if (!is_ramp && jumpbox.SAT(cell)) { flags.state.set(State::on_flat_surface); }
 	// now let's settle ramp collisions. remember, the collider has already been resolved from any previous cell collision
 	if (is_ramp) {
 		bool falls_onto = is_ground_ramp && physics.velocity.y > vert_threshold;
@@ -136,7 +137,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				if (mtvs.actual.y < 0.f) { physics.position.y += mtvs.actual.y; }
 				// still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping)) { physics.zero_y(); }
-				//std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
+				// std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
 				if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
 			}
 			if (is_ceiling_ramp) { correct_x_y(mtvs.actual); }
@@ -163,6 +164,11 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				}
 				flags.external_state.set(ExternalState::world_collision);
 			}
+		}
+		if (flags.animation.test(Animation::sliding) && jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface)) {
+			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
+			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.position.x))); }
+			physics.position.y = cell.position.y + cell.dimensions.y - maximum_ramp_height - dimensions.y;
 		}
 	}
 	if (!is_ramp && wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
@@ -216,6 +222,8 @@ void Collider::detect_map_collision(world::Map& map) {
 			}
 		}
 	}
+	maximum_ramp_height = 0.f;
+	flags.state.reset(State::on_flat_surface);
 }
 
 int Collider::detect_ledge_height(world::Map& map) {
