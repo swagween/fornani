@@ -346,6 +346,12 @@ void Player::calculate_sprite_offset() {
 	apparent_position = collider.get_average_tick_position() + collider.dimensions / 2.f;
 }
 
+void Player::set_idle() {
+	animation.state = AnimState::idle;
+	animation.animation.set_params(idle);
+	animation.state_function = std::bind(&PlayerAnimation::update_idle, &animation);
+}
+
 void Player::jump(world::Map& map) {
 	if (is_dead() || animation.state == AnimState::die) { return; }
 	if (controller.get_jump().began()) {
@@ -437,6 +443,7 @@ void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
 	sync_antennae();
 	health_indicator.set_position(new_pos);
 	orb_indicator.set_position(new_pos);
+	if (arsenal) { equipped_weapon().set_position(new_pos); }
 }
 
 void Player::freeze_position() {
@@ -666,7 +673,8 @@ void Player::push_to_loadout(int id) {
 	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
 	if (id == 0) {
 		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
-		m_services->quest.process(util::QuestKey{1, 111, 1});
+		auto bg = util::QuestKey{1, 111, 1};
+		m_services->quest.process(*m_services, bg);
 		tutorial.flags.set(text::TutorialFlags::inventory); //set this in case the player never opened inventory
 		tutorial.current_state = text::TutorialFlags::shoot;
 		tutorial.trigger();

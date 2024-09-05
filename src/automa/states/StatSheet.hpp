@@ -19,6 +19,7 @@ class StatSheet : public automa::GameState {
 	sf::Text title{};
 	sf::Text stats{};
 	sf::Font stat_font{};
+	util::Cooldown loading{2};
 };
 
 } // namespace automa

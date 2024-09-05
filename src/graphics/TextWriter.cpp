@@ -16,6 +16,9 @@ TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
 	special_characters.insert({Codes::hash, '#'});
 	help_marker.set_color(svc.styles.colors.ui_white);
 	help_marker.set_alpha(0);
+	bounds_box.setFillColor(sf::Color(200, 200, 10, 80));
+	bounds_box.setOutlineColor(sf::Color(255, 255, 255, 180));
+	bounds_box.setOutlineThickness(-1);
 }
 
 void TextWriter::start() {
@@ -47,6 +50,9 @@ void TextWriter::start() {
 }
 
 void TextWriter::update() {
+
+	bounds_box.setPosition(position);
+	bounds_box.setSize({bounds.x - position.x, bounds.y - position.y});
 
 	delay.update();
 	if (flags.test(MessageState::done_writing) && !flags.test(MessageState::started_delay)) {
@@ -160,13 +166,16 @@ void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 		msg.setPosition(response_position);
 	}
 }
+
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
+	// win.draw(bounds_box);
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	win.draw(suite.at(iterators.current_suite_set).front().data);
 }
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
+	// win.draw(bounds_box);
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	if (!writing()) {
@@ -294,7 +303,7 @@ void TextWriter::check_for_event(Message& msg, Codes code, bool response) {
 		}
 
 		msg.data.setString(msg.data.getString().substring(0, index));
-		if (out_quest.type == 63) { msg.data.setString(msg.data.getString() + std::to_string(m_services->stats.time_trials.bryns_gun)); } // fetch text
+		if (out_quest.type == 63) { msg.data.setString(msg.data.getString() + m_services->stats.tt_formatted()); } // fetch text
 		if (!response) { out_quest = {}; }
 
 		return;
@@ -346,13 +355,13 @@ void TextWriter::process_selection() {
 }
 
 void TextWriter::process_quest(util::QuestKey out) {
-	m_services->quest.process(out);
-	m_services->data.push_quest(out);
+	m_services->quest.process(*m_services, out);
 	if (out.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
 	if (out.type == 33) { communicators.reveal_item.set(out.id); }
 	if (out.type == 88) { m_services->state_controller.actions.set(automa::Actions::console_transition); }
 	if (out.type == 89) { m_services->state_controller.actions.set(automa::Actions::main_menu); }
 	if (out.type == 69) { m_services->state_controller.actions.set(automa::Actions::print_stats); }
+	if (out.type == 97) { m_services->state_controller.actions.set(automa::Actions::delete_file); }
 	if (out.type == 299) { m_services->state_controller.actions.set(automa::Actions::end_demo); }
 	// std::cout << "Processed: " << out.type << ", " << out.id << ", " << out.source_id << ", " << out.amount << ", " << out.hard_set << "\n";
 }

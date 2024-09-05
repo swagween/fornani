@@ -21,15 +21,19 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 void Intro::init(ServiceProvider& svc, int room_number) {}
 
-void Intro::handle_events(ServiceProvider& svc, sf::Event& event) {}
+void Intro::handle_events(ServiceProvider& svc, sf::Event& event) {
+	if (pause_window.consume_exited()) { toggle_pause_menu(svc); }
+}
 
 void Intro::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-
+	if (svc.state_controller.actions.test(Actions::main_menu)) {
+		svc.state_controller.actions.set(automa::Actions::trigger);
+		return;
+	}
 	player->update(map, console, inventory_window);
 	player->controller.prevent_movement();
 	map.update(svc, console, inventory_window);
-
 	console.load_and_launch("intro");
 	if (console.is_complete()) {
 		svc.state_controller.actions.set(automa::Actions::intro_done);
@@ -46,14 +50,17 @@ void Intro::tick_update(ServiceProvider& svc) {
 	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
 
+	pause_window.update(svc, console, true);
+
 	map.background->update(svc, {});
 	console.end_tick();
 }
 
 void Intro::frame_update(ServiceProvider& svc) {
-	pause_window.update(svc, *player);
-	hud.update(svc, *player);
+	pause_window.render_update(svc);
 	pause_window.clean_off_trigger();
+	if (pause_window.active()) { svc.soundboard.play_sounds(svc); }
+	hud.update(svc, *player);
 }
 
 void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
@@ -62,12 +69,18 @@ void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	// map.render_background(svc, win, {});
 	// map.render(svc, win, {});
 	map.render_console(svc, console, win);
-
 	map.transition.render(win);
 }
 
 void Intro::toggle_pause_menu(ServiceProvider& svc) {
-	pause_window.active() ? pause_window.close() : pause_window.open();
+	if (pause_window.active()) {
+		pause_window.close();
+		svc.soundboard.flags.console.set(audio::Console::done);
+	} else {
+		pause_window.open();
+		svc.soundboard.flags.console.set(audio::Console::menu_open);
+		svc.soundboard.play_sounds(svc);
+	}
 	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();
 }
 

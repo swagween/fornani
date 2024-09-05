@@ -133,13 +133,13 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					// flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
-					/*if (flags.test(GameFlags::playtest)) {
+					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
 						services.assets.menu_back.play();
 					} else {
 						flags.set(GameFlags::playtest);
 						services.assets.menu_next.play();
-					}*/
+					}
 				}
 				if (event.key.code == sf::Keyboard::F12) { take_screenshot(); }
 				if (event.key.code == sf::Keyboard::H) {
@@ -325,7 +325,6 @@ void Game::debug_window() {
 							ImGui::Text("Player Pos: (%.4f,%.4f)", player.collider.physics.position.x, player.collider.physics.position.y);
 							ImGui::Text("Player Vel: (%.4f,%.4f)", player.collider.physics.velocity.x, player.collider.physics.velocity.y);
 							ImGui::Text("Player Acc: (%.4f,%.4f)", player.collider.physics.acceleration.x, player.collider.physics.acceleration.y);
-							ImGui::Text("Player Jer: (%.4f,%.4f)", player.collider.physics.jerk.x, player.collider.physics.jerk.y);
 							ImGui::Separator();
 							ImGui::Text("Player Grounded: %s", player.grounded() ? "Yes" : "No");
 							ImGui::Separator();

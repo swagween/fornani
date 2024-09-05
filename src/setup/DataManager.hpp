@@ -41,7 +41,10 @@ class DataManager {
 	// game save
 	void load_data(std::string in_room = "");
 	void save_progress(player::Player& player, int save_point_id);
+	void save_settings();
 	int load_progress(player::Player& player, int const file, bool state_switch = false, bool from_menu = true);
+	void load_settings();
+	void delete_file(int index);
 	void write_death_count(player::Player& player);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false);
 	dj::Json& get_save() { return files.at(current_save).save_data; }
@@ -103,13 +106,14 @@ class DataManager {
 	dj::Json player_params{};
 	dj::Json menu{};
 	dj::Json controls{};
+	dj::Json settings{};
 	dj::Json map_table{};
 	dj::Json background{};
 
 	std::vector<MapData> map_jsons{};
 	std::vector<std::vector<world::Layer>> map_layers{};
 	int num_layers{8};
-	std::vector<int> rooms{0, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 199, 120, 121, 122, 123, 124, 200, 224, 299};
+	std::vector<int> rooms{0, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 199, 120, 121, 122, 123, 124, 125, 200, 224, 299};
 	std::vector<int> discovered_rooms{};
 
 	ResourceFinder finder{};

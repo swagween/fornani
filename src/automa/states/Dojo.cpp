@@ -46,7 +46,12 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player->height()};
 				player->set_position(spawn_position, true);
 				camera.force_center(player->anchor_point);
-				if (portal.activate_on_contact()) { enter_room.start(90); }
+				if (portal.activate_on_contact()) {
+					enter_room.start(90);
+				} else {
+					if (!portal.already_open()) { portal.close(); }
+					player->set_idle();
+				}
 				if (portal.dimensions.x > 33.f && portal.position.y > 1.f) { player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity; }
 			}
 		}
@@ -65,17 +70,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	player->controller.prevent_movement();
 }
 
-void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {
-	if (event.type == sf::Event::EventType::KeyPressed) { // TODO Refactor pause window, add continue/exit options
-		if (event.key.code == sf::Keyboard::Enter && pause_window.active()) {
-			console.set_source(svc.text.basic);
-			console.load_and_launch("menu_return");
-			toggle_pause_menu(svc);
-		}
-		if (event.key.code == sf::Keyboard::LControl) { map.show_minimap = !map.show_minimap; }
-		if (event.key.code == sf::Keyboard::Num0) { camera.begin_shake(); }
-	}
-}
+void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void Dojo::tick_update(ServiceProvider& svc) {
 	if (console.is_complete()) {
@@ -127,14 +122,16 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
 
+	pause_window.update(svc, console, true);
 	map.background->update(svc, camera.get_observed_velocity());
 	console.end_tick();
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {
-	pause_window.update(svc, *player);
-	hud.update(svc, *player);
+	pause_window.render_update(svc);
 	pause_window.clean_off_trigger();
+	if (pause_window.active()) { svc.soundboard.play_sounds(svc); }
+	hud.update(svc, *player);
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
@@ -157,6 +154,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {
 	if (pause_window.active()) { return; }
+
 	if (inventory_window.active()) {
 		svc.soundboard.flags.console.set(audio::Console::done);
 		inventory_window.close();

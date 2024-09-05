@@ -78,6 +78,7 @@
       "source_id": 105,
       "destination_id": 199,
       "activate_on_contact": false,
+      "already_open": true,
       "locked": false,
       "key_id": 0
     }

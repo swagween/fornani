@@ -4,36 +4,42 @@
 namespace text {
 
 void Tutorial::update(automa::ServiceProvider& svc) {
+	if (!svc.controller_map.is_tutorial_enabled()) {
+		helpers.set(TutorialHelpers::closed);
+		return;
+	}
+	maximum_display_time.update();
 	if (helpers.test(TutorialHelpers::closed)) { return; }
 	if (!helpers.consume(TutorialHelpers::trigger)) { return; }
 	if (!flags.test(TutorialFlags::jump)) {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_jump, "] to jump.", 80, true);
-		//std::cout << "Jump Tutorial initialized.\n";
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_jump, "] to jump.", 80, true, true);
+		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::sprint)) {
-		help_marker.init(svc, "Hold [", config::DigitalAction::platformer_sprint, "] to sprint.", 80, true);
-		//std::cout << "Sprint Tutorial initialized.\n";
+		help_marker.init(svc, "Hold [", config::DigitalAction::platformer_sprint, "] to sprint.", 80, true, true);
+		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::inventory)) {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to open inventory.", 200, true);
-		//std::cout << "Inventory Tutorial initialized.\n";
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to open inventory.", 200, true, true);
+		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::shoot)) {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_shoot, "] to shoot.", 200, true);
-		//std::cout << "Shoot Tutorial initialized.\n";
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_shoot, "] to shoot.", 200, true, true);
+		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::map)) {
-		help_marker.init(svc, "View map from inventory by pressing [", config::DigitalAction::platformer_open_map, "].", 200, true);
-		//std::cout << "Map Tutorial initialized.\n";
+		help_marker.init(svc, "View map from inventory by pressing [", config::DigitalAction::platformer_open_map, "].", 200, true, true);
+		maximum_display_time.start();
 		return;
 	}
 }
 
 void Tutorial::render(sf::RenderWindow& win) {
+	if (maximum_display_time.is_complete()) { return; }
 	if (helpers.test(TutorialHelpers::closed)) { return; }
 	if (helpers.test(TutorialHelpers::render)) { help_marker.render(win); }
 }

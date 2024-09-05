@@ -65,7 +65,6 @@ enum class ActionSet {
 
 enum class ControllerType { keyboard, gamepad };
 enum class ControllerStatus { gamepad_connected };
-enum class Toggles { keyboard, gamepad, autosprint };
 
 struct DigitalActionStatus {
 	DigitalActionStatus(DigitalAction action) : action(action) {}
@@ -122,10 +121,13 @@ class ControllerMap {
 
 	[[nodiscard]] auto last_controller_type_used() const -> ControllerType { return last_controller_ty_used; }
 
+	// TODO Move autosprint and tutorial toggles away from ControllerMap
 	void enable_autosprint(bool enable) { autosprint_enabled = enable; }
+	void enable_tutorial(bool enable) { tutorial_enabled = enable; }
 	void enable_gamepad_input(bool enable) { gamepad_input_enabled = enable; }
 	[[nodiscard]] auto is_gamepad_input_enabled() -> bool { return gamepad_input_enabled; }
 	[[nodiscard]] auto is_autosprint_enabled() -> bool { return autosprint_enabled; }
+	[[nodiscard]] auto is_tutorial_enabled() -> bool { return tutorial_enabled; }
 
   private:
 	struct DigitalActionData {
@@ -151,6 +153,7 @@ class ControllerMap {
 
 	bool gamepad_input_enabled{true};
 	bool autosprint_enabled{true};
+	bool tutorial_enabled{true};
 
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
 
