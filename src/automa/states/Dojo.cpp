@@ -76,7 +76,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	if (pause_window.active()) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
-		pause_window.update(svc, console, true);
+		pause_window.update(svc, console, false);
 		return;
 	}
 	if (console.is_complete()) {
@@ -97,7 +97,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		toggle_inventory(svc);
 		if (inventory_window.active() && inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered && player->has_map()) {
+	if ((svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered) && player->has_map()) {
 		toggle_inventory(svc);
 		if (inventory_window.active() && !inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
 	}

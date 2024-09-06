@@ -40,6 +40,9 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 }
 
 void PauseWindow::update(automa::ServiceProvider& svc, Console& console, bool automatic) {
+	Console::update(svc);
+	menu.update(svc, {128.f, 128.f}, {svc.constants.f_center_screen.x, svc.constants.f_center_screen.y + 32.f});
+	selector.update();
 	if (active()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			menu.down();
@@ -53,6 +56,7 @@ void PauseWindow::update(automa::ServiceProvider& svc, Console& console, bool au
 			switch (menu.get_selection()) {
 			case 0:
 				flags.set(ConsoleFlags::exited);
+				close();
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 				break;
 			case 1:
@@ -64,6 +68,7 @@ void PauseWindow::update(automa::ServiceProvider& svc, Console& console, bool au
 					console.load_and_launch("menu_return");
 				}
 				flags.set(ConsoleFlags::exited);
+				close();
 				break;
 			}
 		}
@@ -71,11 +76,6 @@ void PauseWindow::update(automa::ServiceProvider& svc, Console& console, bool au
 }
 
 void PauseWindow::render_update(automa::ServiceProvider& svc) {
-	Console::update(svc);
-	menu.update(svc, {128.f, 128.f}, {svc.constants.f_center_screen.x, svc.constants.f_center_screen.y + 32.f});
-	sprite.speed_up_appearance(3);
-	menu.speed_up_appearance(3);
-	selector.update();
 }
 
 void PauseWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {

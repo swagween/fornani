@@ -26,6 +26,12 @@ void Intro::handle_events(ServiceProvider& svc, sf::Event& event) {
 }
 
 void Intro::tick_update(ServiceProvider& svc) {
+	if (pause_window.active()) {
+		svc.controller_map.set_action_set(config::ActionSet::Menu);
+		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
+		pause_window.update(svc, console, true);
+		return;
+	}
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (svc.state_controller.actions.test(Actions::main_menu)) {
 		svc.state_controller.actions.set(automa::Actions::trigger);
