@@ -804,6 +804,7 @@ void Game::playtester_portal() {
 					ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
 					ImGui::Text("Can Doublejump? %s", player.controller.get_jump().can_doublejump() ? "Yes" : "No");
 					ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
+					ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
 					ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
 					ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
 

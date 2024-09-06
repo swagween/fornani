@@ -122,8 +122,8 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 		}
 	}
 
-	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(8)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up))); }
-
+	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(12)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up))); }
+	
 	update_antennae();
 }
 

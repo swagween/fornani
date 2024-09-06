@@ -80,6 +80,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& arms_switch_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_left).triggered;
 	auto const& arms_switch_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_right).triggered;
 
+	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
+
 	auto const& inspected = svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered && grounded() && !left && !right;
 
 	/* Dash ability and grappling hook will remain out of scope for the demo. */

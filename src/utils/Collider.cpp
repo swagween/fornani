@@ -165,10 +165,13 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				flags.external_state.set(ExternalState::world_collision);
 			}
 		}
-		if (flags.animation.test(Animation::sliding) && jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface)) {
+		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping)) {
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.position.x))); }
 			physics.position.y = cell.position.y + cell.dimensions.y - maximum_ramp_height - dimensions.y;
+			if ((physics.velocity.x > 0.f && tile.is_negative_ramp()) || (physics.velocity.x < 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
+		} else if (flags.state.test(State::on_flat_surface)) {
+			flags.perma_state.reset(PermaFlags::downhill);
 		}
 	}
 	if (!is_ramp && wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }

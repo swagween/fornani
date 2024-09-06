@@ -498,6 +498,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	}
 
 	// physics
+	if (m_player->collider.downhill()) { slide.start(); }
 	m_player->collider.physics.acceleration.x = slide.get_speed() * m_player->controller.sliding_movement() * slide.get_dampen();
 
 	if (slide.direction.lr != m_player->controller.direction.lr) {
