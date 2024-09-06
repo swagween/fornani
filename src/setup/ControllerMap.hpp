@@ -34,9 +34,11 @@ enum class DigitalAction : int {
 	platformer_toggle_pause,
 
 	// Inventory controls
+	inventory_open_map,
 	inventory_close,
 
 	// Map controls
+	map_open_inventory,
 	map_close,
 
 	// Menu controls

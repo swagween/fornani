@@ -42,7 +42,13 @@
     "platformer_toggle_pause": {
       "primary_key": "Esc"
     },
+    "inventory_open_map": {
+      "primary_key": "W"
+    },
     "inventory_close": {
+      "primary_key": "E"
+    },
+    "map_open_inventory": {
       "primary_key": "E"
     },
     "map_close": {
