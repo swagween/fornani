@@ -1,6 +1,6 @@
 #include "PauseWindow.hpp"
-#include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace gui {
 
@@ -20,7 +20,7 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	widget_label.setFont(widget_font);
 	widget_label.setFillColor(svc.styles.colors.ui_white);
 
-	help_marker.init(svc, "Press [", "menu_toggle_secondary", "] to resume game.", 20, true);
+	help_marker.init(svc, "Press [", config::DigitalAction::platformer_toggle_pause, "] to resume game.", 20, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 
 	origin = svc.constants.f_center_screen;
@@ -39,50 +39,51 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), 
 	menu.set_fric(0.90f);
 }
 
-void PauseWindow::handle_events(automa::ServiceProvider& svc, Console& console, bool automatic) {
-	if (!active()) { return; }
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
-		menu.down();
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
-	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
-		menu.up();
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
-	}
-	if (svc.controller_map.label_to_control.at("main_action").triggered()) {
-		switch (menu.get_selection()) {
-		case 0:
-			flags.set(ConsoleFlags::exited);
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-			break;
-		case 1:
-			if (automatic) {
-				m_services->state_controller.actions.set(automa::Actions::main_menu);
-				console.end();
-			} else {
-				console.set_source(svc.text.basic);
-				console.load_and_launch("menu_return");
+void PauseWindow::update(automa::ServiceProvider& svc, Console& console, bool automatic) {
+	Console::update(svc);
+	menu.update(svc, {128.f, 128.f}, {svc.constants.f_center_screen.x, svc.constants.f_center_screen.y + 32.f});
+	selector.update();
+	if (active()) {
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
+			menu.down();
+			svc.soundboard.flags.menu.set(audio::Menu::shift);
+		}
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
+			menu.up();
+			svc.soundboard.flags.menu.set(audio::Menu::shift);
+		}
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+			switch (menu.get_selection()) {
+			case 0:
+				flags.set(ConsoleFlags::exited);
+				close();
+				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+				break;
+			case 1:
+				if (automatic) {
+					m_services->state_controller.actions.set(automa::Actions::main_menu);
+					console.end();
+				} else {
+					console.set_source(svc.text.basic);
+					console.load_and_launch("menu_return");
+				}
+				flags.set(ConsoleFlags::exited);
+				close();
+				break;
 			}
-			flags.set(ConsoleFlags::exited);
-			break;
 		}
 	}
 }
 
-void PauseWindow::update(automa::ServiceProvider& svc, player::Player& player) {
-	Console::update(svc);
-	menu.update(svc, {128.f, 128.f}, {svc.constants.f_center_screen.x, svc.constants.f_center_screen.y + 32.f});
-	sprite.speed_up_appearance(3);
-	menu.speed_up_appearance(3);
-	selector.update();
+void PauseWindow::render_update(automa::ServiceProvider& svc) {
 }
 
 void PauseWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
 	if (!active()) { return; }
 	Console::render(win);
 	win.draw(title);
-	//win.draw(widget_label);
-	//help_marker.render(win);
+	// win.draw(widget_label);
+	// help_marker.render(win);
 	menu.render(win, false);
 }
 

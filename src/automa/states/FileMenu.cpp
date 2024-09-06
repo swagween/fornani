@@ -30,81 +30,67 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 void FileMenu::init(ServiceProvider& svc, int room_number) {}
 
-void FileMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
-	if (console.active()) { return; }
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
-		if (file_select_menu.is_open()) {
-			file_select_menu.down();
-		} else {
-			current_selection.modulate(1);
-			svc.data.load_blank_save(*player);
-			svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-		}
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
-	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
-		if (file_select_menu.is_open()) {
-			file_select_menu.up();
-		} else {
-			current_selection.modulate(-1);
-			svc.data.load_blank_save(*player);
-			svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-		}
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
-	}
-	if (svc.controller_map.label_to_control.at("left").triggered() && !svc.controller_map.is_gamepad()) {
-		if (file_select_menu.is_open()) {
-			file_select_menu.close(svc);
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		} else {
-			svc.state_controller.actions.set(Actions::exit_submenu);
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		}
-	}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered() || svc.controller_map.label_to_control.at("main_action").triggered() ||
-		(svc.controller_map.label_to_control.at("right").triggered() && !svc.controller_map.is_gamepad())) {
-		if (file_select_menu.is_open()) {
-			switch (file_select_menu.get_selection()) {
-			case 0:
-				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get(), true);
-				svc.state_controller.actions.set(Actions::trigger);
-				svc.state_controller.actions.set(Actions::save_loaded);
-				svc.soundboard.flags.menu.set(audio::Menu::select);
-				svc.soundboard.flags.world.set(audio::World::load);
-				break;
-			case 1:
-				svc.state_controller.actions.set(automa::Actions::print_stats);
-				svc.state_controller.actions.set(Actions::trigger);
-				svc.soundboard.flags.menu.set(audio::Menu::select);
-				break;
-			case 2:
-				console.load_and_launch("delete_file");
-				file_select_menu.close(svc);
-				break;
-			}
-		} else {
-			file_select_menu.open(svc, options.at(current_selection.get()).position);
-			svc.soundboard.flags.console.set(audio::Console::menu_open);
-		}
-	}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered() || svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) {
-		if (file_select_menu.is_open()) {
-			file_select_menu.close(svc);
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		} else {
-			svc.state_controller.submenu = menu_type::main;
-			svc.state_controller.actions.set(Actions::exit_submenu);
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		}
-	}
-	svc.controller_map.reset_triggers();
-}
-
 void FileMenu::tick_update(ServiceProvider& svc) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+
+	if (!console.active()) {
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
+			if (file_select_menu.is_open()) {
+				file_select_menu.down();
+			} else {
+				current_selection.modulate(1);
+				svc.data.load_blank_save(*player);
+				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+			}
+			svc.soundboard.flags.menu.set(audio::Menu::shift);
+		}
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
+			if (file_select_menu.is_open()) {
+				file_select_menu.up();
+			} else {
+				current_selection.modulate(-1);
+				svc.data.load_blank_save(*player);
+				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+			}
+			svc.soundboard.flags.menu.set(audio::Menu::shift);
+		}
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+			if (file_select_menu.is_open()) {
+				file_select_menu.close(svc);
+				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			} else {
+				svc.state_controller.submenu = menu_type::main;
+				svc.state_controller.actions.set(Actions::exit_submenu);
+				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			}
+		}
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+			if (file_select_menu.is_open()) {
+				switch (file_select_menu.get_selection()) {
+				case 0:
+					svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get(), true);
+					svc.state_controller.actions.set(Actions::trigger);
+					svc.state_controller.actions.set(Actions::save_loaded);
+					svc.soundboard.flags.menu.set(audio::Menu::select);
+					svc.soundboard.flags.world.set(audio::World::load);
+					break;
+				case 1:
+					svc.state_controller.actions.set(automa::Actions::print_stats);
+					svc.state_controller.actions.set(Actions::trigger);
+					svc.soundboard.flags.menu.set(audio::Menu::select);
+					break;
+				case 2:
+					console.load_and_launch("delete_file");
+					file_select_menu.close(svc);
+					break;
+				}
+			} else {
+				file_select_menu.open(svc, options.at(current_selection.get()).position);
+				svc.soundboard.flags.console.set(audio::Console::menu_open);
+			}
+		}
+	}
+
 	for (auto& option : options) { option.update(svc, current_selection.get()); }
 
 	// file deletion requested
@@ -144,7 +130,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 
 	loading.update();
 
-	svc.controller_map.reset_triggers();
 	player->controller.clean();
 	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};

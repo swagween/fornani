@@ -15,15 +15,16 @@ class ControlsMenu : public automa::GameState {
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 	void refresh_controls(ServiceProvider& svc);
-	void update_binding(ServiceProvider& svc, sf::Event& event);
 	void restore_defaults(ServiceProvider& svc);
 
   private:
+	void change_scene(ServiceProvider& svc, std::string_view scene); // FIXME this is a hack to work with GameState; eliminate options from GameState
+
 	float center_offset{320.f};
 	std::vector<sf::Text> control_list{};
 	util::Cooldown loading{};
 	sf::Text instruction{};
-	bool binding_mode{};
+	bool option_is_selected{};
 	sf::RectangleShape debug{};
 };
 

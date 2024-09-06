@@ -4,7 +4,7 @@
 namespace text {
 
 void Tutorial::update(automa::ServiceProvider& svc) {
-	if (!svc.controller_map.hard_toggles.test(config::Toggles::tutorial)) {
+	if (!svc.controller_map.is_tutorial_enabled()) {
 		helpers.set(TutorialHelpers::closed);
 		return;
 	}
@@ -12,27 +12,27 @@ void Tutorial::update(automa::ServiceProvider& svc) {
 	if (helpers.test(TutorialHelpers::closed)) { return; }
 	if (!helpers.consume(TutorialHelpers::trigger)) { return; }
 	if (!flags.test(TutorialFlags::jump)) {
-		help_marker.init(svc, "Press [", "main_action", "] to jump.", 80, true);
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_jump, "] to jump.", 80, true, true);
 		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::sprint)) {
-		help_marker.init(svc, "Hold [", "sprint", "] to sprint.", 80, true);
+		help_marker.init(svc, "Hold [", config::DigitalAction::platformer_sprint, "] to sprint.", 80, true, true);
 		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::inventory)) {
-		help_marker.init(svc, "Press [", "menu_toggle", "] to open inventory.", 200, true);
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to open inventory.", 200, true, true);
 		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::shoot)) {
-		help_marker.init(svc, "Press [", "secondary_action", "] to shoot.", 200, true);
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_shoot, "] to shoot.", 200, true, true);
 		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::map)) {
-		help_marker.init(svc, "View map from inventory by pressing [", "menu_toggle", "].", 200, true);
+		help_marker.init(svc, "View map from inventory by pressing [", config::DigitalAction::platformer_open_map, "].", 200, true, true);
 		maximum_display_time.start();
 		return;
 	}

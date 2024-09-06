@@ -145,7 +145,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 		responses.push_back(this_set);
 	}
 	working_message = suite.at(iterators.current_suite_set).front().data;
-	help_marker.init(*m_services, "Press [", "main_action", "] to continue.");
+	help_marker.init(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
 }
 
 void TextWriter::append(std::string_view content) {
@@ -168,14 +168,14 @@ void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 }
 
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
-	//win.draw(bounds_box);
+	// win.draw(bounds_box);
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	win.draw(suite.at(iterators.current_suite_set).front().data);
 }
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
-	//win.draw(bounds_box);
+	// win.draw(bounds_box);
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	if (!writing()) {
@@ -231,7 +231,7 @@ void TextWriter::request_next() {
 		return;
 	}
 	if (suite.at(iterators.current_suite_set).front().prompt) {
-		flags.set(MessageState::selection_mode);// check for response events
+		flags.set(MessageState::selection_mode); // check for response events
 		if (iterators.current_response_set >= responses.size()) { return; }
 		for (auto& res : responses.at(iterators.current_response_set)) {
 			check_for_event(res, Codes::item, true);
@@ -289,14 +289,14 @@ void TextWriter::check_for_event(Message& msg, Codes code, bool response) {
 		communicators.out_quest.set(std::stoi(cue));
 
 		std::string hash = msg.data.getString().substring(index + 1, msg.data.getString().getSize() - 1);
-		//std::cout << "Quest key read: " << hash << "\n";
+		// std::cout << "Quest key read: " << hash << "\n";
 
 		auto push = decoder.decode(hash, '#');
 		if (push.size() == 3) { out_quest = util::QuestKey{push[0], push[1], push[2]}; }
-		if (push.size() == 4) { out_quest = util::QuestKey{push[0], push[1], push[2], push[3]}; } // progression amount provided
+		if (push.size() == 4) { out_quest = util::QuestKey{push[0], push[1], push[2], push[3]}; }		   // progression amount provided
 		if (push.size() == 5) { out_quest = util::QuestKey{push[0], push[1], push[2], push[3], push[4]}; } // hard set provided
-		//std::cout << "Decoded: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << ", " << out_quest.amount << ", " << out_quest.hard_set << "\n";
-		if(response) {
+		// std::cout << "Decoded: " << out_quest.type << ", " << out_quest.id << ", " << out_quest.source_id << ", " << out_quest.amount << ", " << out_quest.hard_set << "\n";
+		if (response) {
 			response_keys.push_back(out_quest);
 		} else {
 			process_quest(out_quest);
@@ -336,9 +336,7 @@ void TextWriter::process_selection() {
 	}
 	// flush the suite until we reach the target determined by the selection
 	for (auto i = 0; i <= responses.at(iterators.current_response_set).at(iterators.current_selection).target; ++i) {
-		if (suite.empty()) {
-			return;
-		}
+		if (suite.empty()) { return; }
 		suite.pop_front();
 		if (suite.empty()) {
 			m_services->soundboard.flags.console.set(audio::Console::done);
@@ -365,7 +363,7 @@ void TextWriter::process_quest(util::QuestKey out) {
 	if (out.type == 69) { m_services->state_controller.actions.set(automa::Actions::print_stats); }
 	if (out.type == 97) { m_services->state_controller.actions.set(automa::Actions::delete_file); }
 	if (out.type == 299) { m_services->state_controller.actions.set(automa::Actions::end_demo); }
-	//std::cout << "Processed: " << out.type << ", " << out.id << ", " << out.source_id << ", " << out.amount << ", " << out.hard_set << "\n";
+	// std::cout << "Processed: " << out.type << ", " << out.id << ", " << out.source_id << ", " << out.amount << ", " << out.hard_set << "\n";
 }
 
 void TextWriter::shutdown() {

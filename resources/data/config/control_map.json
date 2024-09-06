@@ -1,84 +1,70 @@
 {
   "controls": {
-    "main_action": {
-      "mouse_button": "",
-      "keyboard_key": "Z",
-      "gamepad_button": 3
+    "platformer_left": {
+      "primary_key": "Left"
     },
-    "secondary_action": {
-      "mouse_button": "",
-      "keyboard_key": "X",
-      "gamepad_button": 1
+    "platformer_right": {
+      "primary_key": "Right"
     },
-    "tertiary_action": {
-      "mouse_button": "",
-      "keyboard_key": "C",
-      "gamepad_button": 0
+    "platformer_up": {
+      "primary_key": "Up"
     },
-    "inspect": {
-      "mouse_button": "",
-      "keyboard_key": "Space",
-      "gamepad_button": 2
+    "platformer_down": {
+      "primary_key": "Down"
     },
-    "sprint": {
-      "mouse_button": "",
-      "keyboard_key": "LShift",
-      "gamepad_button": 6
+    "platformer_jump": {
+      "primary_key": "Z"
     },
-    "shield": {
-      "mouse_button": "",
-      "keyboard_key": "V",
-      "gamepad_button": 7
+    "platformer_shoot": {
+      "primary_key": "X"
     },
-    "left": {
-      "keyboard_key": "Left",
-      "gamepad_button": -1,
-      "mouse_button": null
+    "platformer_sprint": {
+      "primary_key": "LShift"
     },
-    "right": {
-      "keyboard_key": "Right",
-      "gamepad_button": -1,
-      "mouse_button": null
+    "platformer_shield": {
+      "primary_key": "V"
     },
-    "up": {
-      "keyboard_key": "Up",
-      "gamepad_button": -1,
-      "mouse_button": null
+    "platformer_inspect": {
+      "primary_key": "Down"
     },
-    "down": {
-      "keyboard_key": "Down",
-      "gamepad_button": -1,
-      "mouse_button": null
+    "platformer_arms_switch_left": {
+      "primary_key": "A"
     },
-    "arms_switch_left": {
-      "mouse_button": "",
-      "keyboard_key": "A",
-      "gamepad_button": 4
+    "platformer_arms_switch_right": {
+      "primary_key": "S"
     },
-    "arms_switch_right": {
-      "mouse_button": "",
-      "keyboard_key": "S",
-      "gamepad_button": 5
+    "platformer_open_inventory": {
+      "primary_key": "E"
     },
-    "menu_toggle": {
-      "mouse_button": "",
-      "keyboard_key": "E",
-      "gamepad_button": 9
+    "platformer_open_map": {
+      "primary_key": "W"
     },
-    "menu_toggle_secondary": {
-      "mouse_button": "",
-      "keyboard_key": "Esc",
-      "gamepad_button": 8
+    "platformer_toggle_pause": {
+      "primary_key": "Esc"
     },
-    "menu_forward": {
-      "mouse_button": "",
-      "keyboard_key": "Z",
-      "gamepad_button": 1
+    "inventory_close": {
+      "primary_key": "E"
     },
-    "menu_back": {
-      "mouse_button": "",
-      "keyboard_key": "X",
-      "gamepad_button": 2
+    "map_close": {
+      "primary_key": "W"
+    },
+    "menu_left": {
+      "primary_key": "Left"
+    },
+    "menu_right": {
+      "primary_key": "Right"
+    },
+    "menu_up": {
+      "primary_key": "Up"
+    },
+    "menu_down": {
+      "primary_key": "Down"
+    },
+    "menu_select": {
+      "primary_key": "Z"
+    },
+    "menu_cancel": {
+      "primary_key": "X"
     }
   }
 }

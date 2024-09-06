@@ -1,0 +1,19 @@
+"Action Manifest"
+{
+	"configurations"
+	{
+		"controller_xboxone"
+		{
+			"0"
+			{
+				"path"		"config_480_controller_xboxone.vdf"
+			}
+		}
+	}
+	"actions"
+	{
+	}
+	"localization"
+	{
+	}
+}
