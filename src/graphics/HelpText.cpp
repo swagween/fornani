@@ -1,9 +1,10 @@
 #include "HelpText.hpp"
 #include "../service/ServiceProvider.hpp"
+#include "HelpText.hpp"
 
 namespace text {
 
-void HelpText::init(automa::ServiceProvider& svc, std::string start, std::string_view code, std::string end, int delay_time, bool include_background, bool no_blink) {
+void HelpText::init(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) {
 	font.loadFromFile(svc.text.text_font);
 	font.setSmooth(false);
 	text_color = svc.styles.colors.ui_white;
@@ -13,7 +14,7 @@ void HelpText::init(automa::ServiceProvider& svc, std::string start, std::string
 	data.setCharacterSize(text_size);
 	data.setFont(font);
 	data.setLineSpacing(1.5f);
-	marker = start + svc.controller_map.tag_to_label.at(code).data() + end;
+	marker = start + svc.controller_map.digital_action_source_name(code).data() + end;
 	data.setString(marker);
 	data.setFont(font);
 	data.setCharacterSize(text_size);

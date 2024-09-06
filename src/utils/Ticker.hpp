@@ -49,7 +49,7 @@ class Ticker {
 
 		integrations = 0;
 		while (accumulator >= ft) {
-			if (!flags.test(TickerFlags::paused)) { fn(); }
+			fn();
 			accumulator -= ft;
 			++integrations;
 			++total_integrations;

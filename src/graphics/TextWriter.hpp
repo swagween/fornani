@@ -6,16 +6,16 @@
 #include <djson/json.hpp>
 #include <array>
 #include <deque>
-#include <unordered_map>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include "../graphics/HelpText.hpp"
 #include "../utils/BitFlags.hpp"
-#include "../utils/Shipment.hpp"
 #include "../utils/Cooldown.hpp"
 #include "../utils/Counter.hpp"
-#include "../utils/QuestCode.hpp"
 #include "../utils/Decoder.hpp"
-#include "../graphics/HelpText.hpp"
+#include "../utils/QuestCode.hpp"
+#include "../utils/Shipment.hpp"
 
 namespace automa {
 struct ServiceProvider;

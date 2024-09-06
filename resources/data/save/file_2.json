@@ -7,14 +7,19 @@
     "hp": 4.000000,
     "orbs": 1709,
     "position": {
+<<<<<<< HEAD
       "x": 180.187607,
       "y": 395.000000
+=======
+      "x": 209.446533,
+      "y": 331.000000
+>>>>>>> origin/master
     },
     "arsenal": [
       0,
       10
     ],
-    "equipped_gun": 1,
+    "equipped_gun": 0,
     "abilities": [
 
     ],
@@ -61,8 +66,13 @@
       }
     ],
     "stats": {
+<<<<<<< HEAD
       "death_count": 25,
       "bullets_fired": 4861,
+=======
+      "death_count": 24,
+      "bullets_fired": 4907,
+>>>>>>> origin/master
       "guns_collected": 2,
       "items_collected": 10,
       "orbs_collected": 1709,
@@ -70,7 +80,11 @@
       "highest_indicator_amount": 505,
       "enemies_killed": 72,
       "rooms_discovered": 24,
+<<<<<<< HEAD
       "seconds_played": 2197.837646,
+=======
+      "seconds_played": 2270.555664,
+>>>>>>> origin/master
       "time_trials": {
         "bryns_gun": 136.147659
       }

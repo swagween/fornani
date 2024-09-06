@@ -1,7 +1,7 @@
 
 #include "DataManager.hpp"
-#include "../service/ServiceProvider.hpp"
 #include "../entities/player/Player.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "ControllerMap.hpp"
 
 namespace data {
@@ -10,7 +10,7 @@ DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
 
 void DataManager::load_data(std::string in_room) {
 
-	//user config
+	// user config
 	load_settings();
 
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
@@ -18,7 +18,7 @@ void DataManager::load_data(std::string in_room) {
 	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
 
 	// load map
-	//std::cout << "loading map data...";
+	// std::cout << "loading map data...";
 	int room_counter{};
 	for (auto& room : rooms) {
 		map_jsons.push_back(MapData());
@@ -58,9 +58,9 @@ void DataManager::load_data(std::string in_room) {
 		++ctr;
 	}
 	blank_file.save_data = dj::Json::from_file((finder.resource_path + "/data/save/new_game.json").c_str());
-	//std::cout << " success!\n";
+	// std::cout << " success!\n";
 
-	//std::cout << "loading json data...";
+	// std::cout << "loading json data...";
 	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
 	assert(!game_info.is_null());
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
@@ -91,7 +91,7 @@ void DataManager::load_data(std::string in_room) {
 	assert(!menu.is_null());
 	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
-	//std::cout << " success!\n";
+	// std::cout << " success!\n";
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
@@ -186,10 +186,9 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 }
 
 void DataManager::save_settings() {
-	settings["auto_sprint"] = m_services->controller_map.hard_toggles.test(config::Toggles::autosprint) ? dj::Boolean{true} : dj::Boolean{false};
-	settings["tutorial"] = m_services->controller_map.hard_toggles.test(config::Toggles::tutorial) ? dj::Boolean{true} : dj::Boolean{false};
-	settings["keyboard"] = m_services->controller_map.hard_toggles.test(config::Toggles::keyboard) ? dj::Boolean{true} : dj::Boolean{false};
-	settings["gamepad"] = m_services->controller_map.hard_toggles.test(config::Toggles::gamepad) ? dj::Boolean{true} : dj::Boolean{false};
+	settings["auto_sprint"] = dj::Boolean{m_services->controller_map.is_autosprint_enabled()};
+	settings["tutorial"] = dj::Boolean{m_services->controller_map.is_tutorial_enabled()};
+	settings["gamepad"] = dj::Boolean{m_services->controller_map.is_gamepad_input_enabled()};
 	settings["music_volume"] = m_services->music.volume.multiplier;
 	settings.dj::Json::to_file((finder.resource_path + "/data/config/settings.json").c_str());
 }
@@ -234,8 +233,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	if (save["tutorial"]["closed"].as_bool()) { player.tutorial.close_for_good(); }
 	player.cooldowns.tutorial.start();
 	player.tutorial.turn_off();
-	if (!m_services->controller_map.hard_toggles.test(config::Toggles::tutorial)) { player.tutorial.close_for_good(); }
-	
+	if (!m_services->controller_map.is_tutorial_enabled()) { player.tutorial.close_for_good(); }
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
@@ -288,10 +286,9 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 void DataManager::load_settings() {
 	settings = dj::Json::from_file((finder.resource_path + "/data/config/settings.json").c_str());
 	assert(!settings.is_null());
-	settings["auto_sprint"].as_bool() ? m_services->controller_map.hard_toggles.set(config::Toggles::autosprint) : m_services->controller_map.hard_toggles.reset(config::Toggles::autosprint);
-	settings["tutorial"].as_bool() ? m_services->controller_map.hard_toggles.set(config::Toggles::tutorial) : m_services->controller_map.hard_toggles.reset(config::Toggles::tutorial);
-	settings["keyboard"].as_bool() ? m_services->controller_map.hard_toggles.set(config::Toggles::keyboard) : m_services->controller_map.hard_toggles.reset(config::Toggles::keyboard);
-	settings["gamepad"].as_bool() ? m_services->controller_map.hard_toggles.set(config::Toggles::gamepad) : m_services->controller_map.hard_toggles.reset(config::Toggles::gamepad);
+	m_services->controller_map.enable_autosprint(settings["auto_sprint"].as_bool().value);
+	m_services->controller_map.enable_tutorial(settings["tutorial"].as_bool().value);
+	m_services->controller_map.enable_gamepad_input(settings["gamepad"].as_bool().value);
 	m_services->music.volume.multiplier = settings["music_volume"].as<float>();
 }
 
@@ -327,7 +324,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 
 void DataManager::load_player_params(player::Player& player) {
 
-	//std::cout << "loading player params ...";
+	// std::cout << "loading player params ...";
 	player_params = dj::Json::from_file((finder.resource_path + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
@@ -349,12 +346,12 @@ void DataManager::load_player_params(player::Player& player) {
 	player.physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
 	player.physics_stats.dash_dampen = player_params["physics"]["dash_dampen"].as<float>();
 	player.physics_stats.wallslide_speed = player_params["physics"]["wallslide_speed"].as<float>();
-	//std::cout << " success!\n";
+	// std::cout << " success!\n";
 }
 
 void DataManager::save_player_params(player::Player& player) {
 
-	//std::cout << "saving player params ...";
+	// std::cout << "saving player params ...";
 	player_params["physics"]["grav"] = player.physics_stats.grav;
 	player_params["physics"]["ground_fric"] = player.physics_stats.ground_fric;
 	player_params["physics"]["air_fric"] = player.physics_stats.air_fric;
@@ -375,7 +372,7 @@ void DataManager::save_player_params(player::Player& player) {
 	player_params["physics"]["wallslide_speed"] = player.physics_stats.wallslide_speed;
 
 	player_params.dj::Json::to_file((finder.resource_path + "/data/player/physics_params.json").c_str());
-	//std::cout << " success!\n";
+	// std::cout << " success!\n";
 }
 
 void DataManager::open_chest(int id) { opened_chests.push_back(id); }
@@ -439,30 +436,44 @@ bool DataManager::room_discovered(int id) const {
 	return false;
 }
 
-void DataManager::load_controls(config::ControllerMap& controller) {
+auto get_action_by_string(std::string_view id) -> config::DigitalAction {
+	static std::unordered_map<std::string_view, config::DigitalAction> const map = {
+		{"platformer_left", config::DigitalAction::platformer_left},
+		{"platformer_right", config::DigitalAction::platformer_right},
+		{"platformer_up", config::DigitalAction::platformer_up},
+		{"platformer_down", config::DigitalAction::platformer_down},
+		{"platformer_jump", config::DigitalAction::platformer_jump},
+		{"platformer_shoot", config::DigitalAction::platformer_shoot},
+		{"platformer_sprint", config::DigitalAction::platformer_sprint},
+		{"platformer_shield", config::DigitalAction::platformer_shield},
+		{"platformer_inspect", config::DigitalAction::platformer_inspect},
+		{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
+		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
+		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
+		{"platformer_open_map", config::DigitalAction::platformer_open_map},
+		{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
+		{"inventory_close", config::DigitalAction::inventory_close},
+		{"map_close", config::DigitalAction::map_close},
+		{"menu_left", config::DigitalAction::menu_left},
+		{"menu_right", config::DigitalAction::menu_right},
+		{"menu_up", config::DigitalAction::menu_up},
+		{"menu_down", config::DigitalAction::menu_down},
+		{"menu_select", config::DigitalAction::menu_select},
+		{"menu_cancel", config::DigitalAction::menu_cancel},
+	};
 
+	return map.at(id);
+}
+
+void DataManager::load_controls(config::ControllerMap& controller) {
+	// XXX change controls json when keybinds get modified
 	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
+	assert(controls.contains("controls") && controls["controls"].is_object());
 
-	controller.key_to_label.clear();
-	controller.mousebutton_to_label.clear();
-	controller.label_to_gamepad.clear();
-	controller.tag_to_label.clear();
-	for (auto& tag : controller.tags) {
-		auto in_key = controls["controls"][tag]["keyboard_key"].as_string();
-		auto in_button = controls["controls"][tag]["mouse_button"].as_string();
-		auto in_gamepad = controls["controls"][tag]["gamepad_button"].as<int>();
-		if (controller.string_to_key.contains(in_key)) { controller.key_to_label.insert({controller.string_to_key.at(in_key), tag}); }
-		if (controller.string_to_mousebutton.contains(in_button)) { controller.mousebutton_to_label.insert({controller.string_to_mousebutton.at(in_button), tag}); }
-		if (in_gamepad != -1) { controller.label_to_gamepad.insert({tag, in_gamepad}); }
-		if (controller.is_keyboard()) {
-			if (in_button.empty()) {
-				controller.tag_to_label.insert({tag, in_key});
-			} else {
-				controller.tag_to_label.insert({tag, in_button});
-			}
-		}
-		if (controller.is_gamepad()) { controller.tag_to_label.insert({tag, controller.gamepad_button_name.at(in_gamepad)}); }
+	for (auto const& [key, item] : controls["controls"].object_view()) {
+		assert(item.is_object());
+		if (item.contains("primary_key")) { controller.set_primary_keyboard_binding(get_action_by_string(key), controller.string_to_key(item["primary_key"].as_string())); }
 	}
 }
 

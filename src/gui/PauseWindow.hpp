@@ -1,7 +1,7 @@
 #pragma once
 #include "Console.hpp"
-#include "Selector.hpp"
 #include "MiniMenu.hpp"
+#include "Selector.hpp"
 
 namespace player {
 class Player;
@@ -17,8 +17,8 @@ class PauseWindow : public Console {
   public:
 	PauseWindow() = default;
 	PauseWindow(automa::ServiceProvider& svc);
-	void handle_events(automa::ServiceProvider& svc, Console& console, bool automatic = false);
-	void update(automa::ServiceProvider& svc, player::Player& player);
+	void update(automa::ServiceProvider& svc, Console& console, bool automatic);
+	void render_update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win);
 	void open();
 	void close();

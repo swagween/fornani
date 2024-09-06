@@ -11,35 +11,23 @@ CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::stri
 
 void CreditsMenu::init(ServiceProvider& svc, int room_number) {}
 
-void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-	svc.controller_map.handle_mouse_events(event);
-	svc.controller_map.handle_joystick_events(event);
-	if (event.type == sf::Event::EventType::KeyPressed) { svc.controller_map.handle_press(event.key.code); }
-	if (event.type == sf::Event::EventType::KeyReleased) { svc.controller_map.handle_release(event.key.code); }
+void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
-	if (svc.controller_map.label_to_control.at("down").triggered()) {
+void CreditsMenu::tick_update(ServiceProvider& svc) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
+
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("up").triggered()) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		current_selection.modulate(-1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.label_to_control.at("left").triggered()) {
-		svc.state_controller.submenu = menu_type::options;
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	if (svc.controller_map.label_to_control.at("right").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_forward").triggered()) {}
-	if (svc.controller_map.label_to_control.at("menu_back").triggered() || svc.controller_map.label_to_control.at("menu_toggle_secondary").triggered()) {
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	}
-	svc.controller_map.reset_triggers();
-}
-
-void CreditsMenu::tick_update(ServiceProvider& svc) {
 	for (auto& option : options) { option.update(svc, current_selection.get()); }
 	left_dot.update(svc);
 	right_dot.update(svc);
@@ -47,7 +35,6 @@ void CreditsMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
 	svc.soundboard.play_sounds(svc);
-	svc.controller_map.reset_triggers();
 }
 
 void CreditsMenu::frame_update(ServiceProvider& svc) {}

@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include <steam/steam_api.h>
 #include <ctime>
 
 namespace fornani {
@@ -99,19 +100,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		bool valid_event{};
 		// check window events
 		while (window.pollEvent(event)) {
-			if ((event.type == sf::Event::JoystickButtonPressed || services.controller_map.joystick_moved()) && !services.controller_map.is_gamepad()) {
-				services.controller_map.switch_to_joystick();
-				services.data.load_controls(services.controller_map);
-			}
-			if ((event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) && !services.controller_map.is_keyboard()) {
-				services.controller_map.switch_to_keyboard();
-				services.data.load_controls(services.controller_map);
-			}
-			if (event.type == sf::Event::JoystickConnected) { services.controller_map.status.set(config::ControllerStatus::gamepad_connected); }
-			if (event.type == sf::Event::JoystickDisconnected) { services.controller_map.status.reset(config::ControllerStatus::gamepad_connected); }
-			if (event.type == sf::Event::JoystickDisconnected && !services.controller_map.is_keyboard()) { services.controller_map.switch_to_keyboard(); }
-			if (event.type == sf::Event::JoystickConnected && !services.controller_map.is_gamepad()) { services.controller_map.switch_to_joystick(); }
-
 			player.animation.state = {};
 			player.animation.state = {};
 			if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
@@ -172,9 +160,15 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			valid_event = true;
 		}
 
+		SteamAPI_RunCallbacks();
+
 		// game logic and rendering
 		services.music.update();
-		services.ticker.tick([this, &services = services] { game_state.get_current_state().tick_update(services); });
+		bool has_focus = window.hasFocus();
+		services.ticker.tick([this, has_focus, &services = services] {
+			services.controller_map.update(has_focus);
+			game_state.get_current_state().tick_update(services);
+		});
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
 		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(); }
@@ -296,47 +290,22 @@ void Game::debug_window() {
 
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Key States")) {
-					ImGui::Text("Joystick");
-					ImGui::Text("Status: ");
-					ImGui::SameLine();
-					sf::Joystick::isConnected(0) ? ImGui::Text("Connected") : ImGui::Text("Not connected");
 
-					ImGui::Text("Controller Type: ");
-					ImGui::SameLine();
-					if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad"); }
-					if (services.controller_map.is_keyboard()) { ImGui::Text("Keyboard"); }
-
-					ImGui::Text("Main     : %s", services.controller_map.label_to_control.at("main_action").held() ? "Pressed" : "");
-					ImGui::Text("Secondary: %s", services.controller_map.label_to_control.at("secondary_action").held() ? "Pressed" : "");
-					ImGui::Text("Arms L   : %s", services.controller_map.label_to_control.at("arms_switch_left").held() ? "Pressed" : "");
-					ImGui::Text("Arms R   : %s", services.controller_map.label_to_control.at("arms_switch_right").held() ? "Pressed" : "");
-					ImGui::Text("Left   : %s", services.controller_map.label_to_control.at("left").held() ? "Pressed" : "");
-					ImGui::Text("Right  : %s", services.controller_map.label_to_control.at("right").held() ? "Pressed" : "");
-					ImGui::Text("Up     : %s", services.controller_map.label_to_control.at("up").held() ? "Pressed" : "");
-					ImGui::Text("Down   : %s", services.controller_map.label_to_control.at("down").held() ? "Pressed" : "");
-
-					ImGui::Text("SQUARE  : %s", sf::Joystick::isButtonPressed(0, 0) ? "Pressed" : "");
-					ImGui::Text("CROSS   : %s", sf::Joystick::isButtonPressed(0, 1) ? "Pressed" : "");
-					ImGui::Text("CIRCLE  : %s", sf::Joystick::isButtonPressed(0, 2) ? "Pressed" : "");
-					ImGui::Text("TRIANGLE: %s", sf::Joystick::isButtonPressed(0, 3) ? "Pressed" : "");
-					ImGui::Text("4: %s", sf::Joystick::isButtonPressed(0, 4) ? "Pressed" : "");
-					ImGui::Text("5: %s", sf::Joystick::isButtonPressed(0, 5) ? "Pressed" : "");
-					ImGui::Text("6: %s", sf::Joystick::isButtonPressed(0, 6) ? "Pressed" : "");
-					ImGui::Text("7: %s", sf::Joystick::isButtonPressed(0, 7) ? "Pressed" : "");
-					ImGui::Text("8: %s", sf::Joystick::isButtonPressed(0, 8) ? "Pressed" : "");
-					ImGui::Text("9: %s", sf::Joystick::isButtonPressed(0, 9) ? "Pressed" : "");
-					ImGui::Text("10: %s", sf::Joystick::isButtonPressed(0, 10) ? "Pressed" : "");
-					ImGui::Text("11: %s", sf::Joystick::isButtonPressed(0, 11) ? "Pressed" : "");
-					ImGui::Text("12: %s", sf::Joystick::isButtonPressed(0, 12) ? "Pressed" : "");
-					ImGui::Text("13: %s", sf::Joystick::isButtonPressed(0, 13) ? "Pressed" : "");
-					ImGui::Text("14: %s", sf::Joystick::isButtonPressed(0, 14) ? "Pressed" : "");
-					ImGui::Text("15: %s", sf::Joystick::isButtonPressed(0, 15) ? "Pressed" : "");
-					ImGui::Text("16: %s", sf::Joystick::isButtonPressed(0, 16) ? "Pressed" : "");
-
-					ImGui::Text("X Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::X));
-					ImGui::Text("Y Axis: %f", sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
-
+				if (ImGui::BeginTabItem("Input State")) {
+					for (auto action = config::DigitalAction::platformer_left; action < config::DigitalAction::COUNT; action = static_cast<config::DigitalAction>(static_cast<int>(action) + 1)) {
+						ImGui::Text(services.controller_map.digital_action_name(action).data());
+						ImGui::SameLine();
+						auto status = services.controller_map.digital_action_status(action);
+						if (status.triggered) {
+							ImGui::Text("Triggered");
+						} else if (status.held) {
+							ImGui::Text("Held");
+						} else if (status.released) {
+							ImGui::Text("Released");
+						} else {
+							ImGui::Text("-");
+						}
+					}
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Audio")) {
@@ -815,11 +784,9 @@ void Game::playtester_portal() {
 		if (ImGui::Begin("Playtester Portal", b_debug, window_flags)) {
 			ImGui::Text("Playtester Portal");
 			ImGui::Separator();
-			if (services.controller_map.is_gamepad()) { ImGui::Text("Gamepad Identification: %s", sf::Joystick::getIdentification(0).name.getData()); }
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
-					ImGui::Separator();
 					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
 					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
 					ImGui::Text(metadata.long_title().c_str());
@@ -857,10 +824,9 @@ void Game::playtester_portal() {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Input")) {
-					ImGui::Text("Current Input Device: %s", services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard");
+					ImGui::Text("Current Input Device: %s", "TODO"); // XXX services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard
 					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
-					ImGui::Text("Gamepad Enabled? %s", services.controller_map.hard_toggles.test(config::Toggles::gamepad) ? "Yes" : "No");
-					ImGui::Text("Kayboard Enabled? %s", services.controller_map.hard_toggles.test(config::Toggles::keyboard) ? "Yes" : "No");
+					ImGui::Text("Gamepad Enabled? %s", services.controller_map.is_gamepad_input_enabled() ? "Yes" : "No");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tutorial")) {
