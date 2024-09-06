@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
 	assert(argc > 0);
 
-	if (SteamAPI_RestartAppIfNecessary(480)) { // XXX Set to whatever is set in CMake
+	if (SteamAPI_RestartAppIfNecessary(FORNANI_STEAM_APP_ID)) {
 		std::cout << "Re-launching through Steam." << std::endl;
 		return 0;
 	}

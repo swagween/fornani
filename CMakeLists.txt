@@ -7,7 +7,7 @@ project(fornani
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(FORNANI_STEAM_APP_ID 480 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
+set(FORNANI_STEAM_APP_ID 3218760 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
 option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the executable, that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION" ON)
 
 add_executable(${PROJECT_NAME})
@@ -19,6 +19,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
 target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-audio sfml-system sfml-window sfml-graphics)
 target_link_libraries(${PROJECT_NAME} PRIVATE steamworks)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
 
 file(GLOB_RECURSE sources LIST_DIRECTORIES false CONFIGURE_DEPENDS "src/*.?pp")
 
