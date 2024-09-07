@@ -36,6 +36,7 @@ class AssetManager {
 	sf::Texture t_mirin{};
 	sf::Texture t_carl{};
 	sf::Texture t_bit{};
+	sf::Texture t_lady_nimbus{};
 
 	// player palettes
 	sf::Texture t_palette_nani{};

@@ -30,7 +30,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	auto const& tiles = svc.data.map_jsons.at(room_lookup).tiles;
 	inspectable_data = svc.data.map_jsons.at(room_lookup).inspectable_data;
 
-	// get npc data
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
@@ -40,9 +39,16 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
 	chunk_dimensions.y = meta["chunk_dimensions"][1].as<int>();
 	real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
-	// for (int i = 0; i < NUM_LAYERS; ++i) { layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
 
 	if (!soft) {
+		if (meta["cutscene_on_entry"]["flag"].as_bool()) {
+			auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
+			auto cid = meta["cutscene_on_entry"]["id"].as<int>();
+			auto csource = meta["cutscene_on_entry"]["source"].as<int>();
+			auto cutscene = util::QuestKey{ctype, cid, csource};
+			svc.quest.process(svc, cutscene);
+			if (svc.quest.get_progression(fornani::QuestType::cutscene, 3002) > 0) { std::cout << "cutscene requested!\n"; }
+		}
 		if (meta["music"].is_string()) {
 			svc.music.load(meta["music"].as_string());
 			svc.music.play_looped(10);

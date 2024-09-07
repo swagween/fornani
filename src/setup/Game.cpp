@@ -951,6 +951,19 @@ void Game::playtester_portal() {
 							game_state.get_current_state().init(services, 110);
 							player.set_position({7 * 32, 9 * 32});
 						}
+						ImGui::Text("Test Levels:");
+						if (ImGui::Button("Junkyard")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 3001);
+							player.set_position({4 * 32, 9 * 32});
+						}
+						if (ImGui::Button("Bridge")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 6001);
+							player.set_position({4 * 32, 9 * 32});
+						}
 						ImGui::EndTabItem();
 					}
 					if (ImGui::BeginTabItem("Player")) {

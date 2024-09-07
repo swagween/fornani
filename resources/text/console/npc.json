@@ -204,5 +204,68 @@
     ],
     "responses": [
     ]
+  },
+  "lady_nimbus1": {
+    "suite": [
+      [ "Gus... Gus...?", "Gus, do you copy?" ]
+    ],
+    "responses": [
+    ]
+  },
+  "minigus4": {
+    "suite": [
+      [ "&4My Lady...?", "I'm here. I have an unstable connection here, and I can barely hear you.", "I had to flee Firstwind." ]
+    ],
+    "responses": [
+    ]
+  },
+  "lady_nimbus2": {
+    "suite": [
+      [ "Flee?!", "What do you mean?", "The ship has been securely ours for months." ]
+    ],
+    "responses": [
+    ]
+  },
+  "minigus5": {
+    "suite": [
+      [ "&1My mask was compromised. And besides, the storms up here are ferocious.", "And I have even worse news...", "The Kariba girl escaped." ]
+    ],
+    "responses": [
+    ]
+  },
+  "lady_nimbus3": {
+    "suite": [
+      [ "...", "It is unlike you to fail me so, Gus." ]
+    ],
+    "responses": [
+    ]
+  },
+  "minigus6": {
+    "suite": [
+      [ "&3I got nothing at all to say. She had a gun, and she's pretty nimble.", "I won't underestimate her again.", "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother." ]
+    ],
+    "responses": [
+    ]
+  },
+  "lady_nimbus4": {
+    "suite": [
+      [ "Your next paycheck isn't going to exist, I'm afraid." ]
+    ],
+    "responses": [
+    ]
+  },
+  "minigus7": {
+    "suite": [
+      [ "&3@2I set myself up for that one, I guess.", "@1Anyway, do us both a favor and get someone else to deal with the Kariba for now.", "I'll need to properly prepare for the next time I fight her, if it comes to that." ]
+    ],
+    "responses": [
+    ]
+  },
+  "lady_nimbus5": {
+    "suite": [
+      [ "I'll see to it that it won't.", "I have no interest in wasting any more time dealing with Nani.", "I'm sending Lynx after her, and that'll be the end of it." ]
+    ],
+    "responses": [
+    ]
   }
 }

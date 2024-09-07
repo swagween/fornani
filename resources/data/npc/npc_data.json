@@ -73,5 +73,18 @@
       "idle": [ 0, 6, 40, -1, false ],
       "turn": [ 6, 2, 40, 0, false ]
     }
+  },
+  "lady_nimbus": {
+    "dimensions": [ 24, 48 ],
+    "sprite_dimensions": [ 46, 64 ],
+    "spritesheet_dimensions": [ 2, 5 ],
+    "sprite_offset": [ 8, -14 ],
+    "sprite_origin": [ 30, 0 ],
+    "animation": {
+      "idle": [ 0, 1, 40, -1, false ],
+      "turn": [ 1, 1, 40, 0, false ],
+      "shift": [ 1, 4, 40, 0, false ],
+      "inspect": [ 5, 1, 40, -1, false ]
+    }
   }
 }
