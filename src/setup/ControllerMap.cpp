@@ -129,21 +129,37 @@ void ControllerMap::update(bool has_focus) {
 		bool pressed_on_gamepad = false;
 		if (controller_handle && gamepad_input_enabled) {
 			auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
-			pressed_on_gamepad = data.bActive && data.bState;
+			pressed_on_gamepad = data.bState;
 		}
 		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
 
-		if (pressed_on_gamepad) { last_controller_ty_used = ControllerType::gamepad; }
-		if (pressed_on_keyboard) { last_controller_ty_used = ControllerType::keyboard; }
-		auto triggered = has_focus && (pressed_on_gamepad || pressed_on_keyboard);
-		config::ActionSet action_set = get_action_set_from_action(action);
-		config::ActionSet parent_of_active_set{};
-		bool active{};
-		if (parent_action_set(active_action_set, &parent_of_active_set)) {
-			active = active_action_set == action_set || action_set == parent_of_active_set;
-		} else {
-			active = active_action_set == action_set;
+		if (pressed_on_gamepad) {
+			if (last_controller_ty_used != ControllerType::gamepad) { reset_digital_action_states(); }
+			last_controller_ty_used = ControllerType::gamepad;
 		}
+		if (pressed_on_keyboard) {
+			if (last_controller_ty_used != ControllerType::keyboard) { reset_digital_action_states(); }
+			last_controller_ty_used = ControllerType::keyboard;
+		}
+
+		// Determine if this action is active (bound on the current action set).
+		bool active{};
+		if (last_controller_ty_used == ControllerType::gamepad) {
+			// If we are using a gamepad, use steam's bActive member, otherwise it freaks out (causes multiple inputs, sometimes fails to input, etc)
+			auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
+			active = data.bActive;
+		} else {
+			// Otherwise we just check the current action set manually.
+			config::ActionSet action_set = get_action_set_from_action(action);
+			config::ActionSet parent_of_active_set{};
+			if (parent_action_set(active_action_set, &parent_of_active_set)) {
+				active = active_action_set == action_set || action_set == parent_of_active_set;
+			} else {
+				active = active_action_set == action_set;
+			}
+		}
+		auto triggered = has_focus && (pressed_on_gamepad || pressed_on_keyboard);
+
 		if (triggered && active) {
 			action_status.released = false;
 			// Avoid actions being immediately triggered when switching action sets
@@ -156,8 +172,7 @@ void ControllerMap::update(bool has_focus) {
 			action_status.held = true;
 		} else {
 			action_status.triggered = false;
-			// Avoid releasing if just switching action sets
-			if (action_status.held && active) {
+			if (action_status.held) {
 				// std::cout << "Released " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.released = true;
 			} else {
@@ -301,6 +316,13 @@ void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Key
 
 auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key { return digital_actions.at(action).primary_binding; }
 auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key { return digital_actions.at(action).secondary_binding; }
+
+void ControllerMap::reset_digital_action_states() {
+	for (auto& [action, state] : digital_actions) {
+		state.status = DigitalActionStatus(action);
+		state.was_active_last_tick = false;
+	}
+}
 
 } // namespace config
 

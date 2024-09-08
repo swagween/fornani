@@ -157,6 +157,8 @@ class ControllerMap {
 	bool autosprint_enabled{true};
 	bool tutorial_enabled{true};
 
+	void reset_digital_action_states();
+
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
 
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_disconnection, SteamInputDeviceDisconnected_t);

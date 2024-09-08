@@ -45,7 +45,7 @@ FetchContent_MakeAvailable(ccmath)
 # steamworks API
 FetchContent_Declare(
   steamworks_archive
-  URL https://partner.steamgames.com/downloads/steamworks_sdk_160.zip
+  URL https://github.com/aleokdev/fornani/releases/download/deck-test-1/steamworks_sdk_160.zip
 )
 FetchContent_MakeAvailable(steamworks_archive)
 
