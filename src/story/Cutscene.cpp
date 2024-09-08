@@ -1,9 +1,9 @@
 
 #include "Cutscene.hpp"
-#include "../service/ServiceProvider.hpp"
 #include <iostream>
 
 namespace fornani {
 
+Cutscene::Cutscene(int id) : id(id) {}
 
 } // namespace fornani

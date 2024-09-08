@@ -83,8 +83,6 @@ class DataManager {
 	int get_room_index(int id);
 	std::vector<world::Layer>& get_layers(int id);
 
-	dj::Json game_info{};
-
 	dj::Json weapon{};
 	dj::Json drop{};
 	dj::Json particle{};

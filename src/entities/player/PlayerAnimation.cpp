@@ -319,7 +319,7 @@ fsm::StateFunction PlayerAnimation::update_sit() {
 	if (change_state(AnimState::turn, turn)) { return PA_BIND(update_turn); }
 	if (animation.complete()) {
 		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
-		if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
+		//if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
 	}
 	state = AnimState::sit;
 	return PA_BIND(update_sit);

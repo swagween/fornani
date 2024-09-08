@@ -668,8 +668,6 @@ void Player::total_reset() {
 }
 
 void Player::map_reset() {
-	if (animation.state == AnimState::inspect) { animation.state = AnimState::idle; }
-	if (flags.state.test(State::killed)) { animation.state = AnimState::idle; }
 	animation.state = AnimState::idle;
 	flags.state.reset(State::killed);
 }

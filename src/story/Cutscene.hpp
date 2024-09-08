@@ -10,19 +10,24 @@
 namespace automa {
 struct ServiceProvider;
 }
+namespace gui {
+class Console;
+}
+namespace world {
+class Map;
+}
+namespace player {
+class Player;
+}
 namespace fornani {
 
-	struct StoryAction{
-	int npc_id{};
-		int animation{};
-	int walking_direction{};
-	};
+class Cutscene {
+  public:
+	Cutscene(int id);
+	virtual void update(automa::ServiceProvider& svc, gui::Console& console, world::Map& map, player::Player& player){};
 
-	class Cutscene {
-  private:
-		std::vector<int> npc_ids{};
-	std::vector<int> map_ids{};
-		std::vector<StoryAction> action_list{};
-	};
+  protected:
+	int id{};
+};
 
 } // namespace fornani

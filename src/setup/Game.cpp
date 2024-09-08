@@ -10,15 +10,6 @@ Game::Game(char** argv) : player(services) {
 	services.data.finder.setResourcePath(argv);
 	services.data.finder.set_scene_path(argv);
 	services.data.load_data();
-	// metadata
-	auto const& in_info = services.data.game_info;
-	metadata.title = in_info["title"].as_string();
-	metadata.build = in_info["build"].as_string();
-	metadata.major = in_info["version"]["major"].as<int>();
-	metadata.minor = in_info["version"]["minor"].as<int>();
-	metadata.hotfix = in_info["version"]["hotfix"].as<int>();
-
-	std::cout << "> launching " << metadata.long_title() << "\n";
 
 	// controls
 	services.data.load_controls(services.controller_map);
@@ -37,28 +28,18 @@ Game::Game(char** argv) : player(services) {
 	player.init(services);
 
 	// state manager
-
 	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 	game_state.get_current_state().init(services, 100);
 
-	window.create(sf::VideoMode(services.constants.screen_dimensions.x, services.constants.screen_dimensions.y), metadata.long_title());
 	measurements.width_ratio = (float)services.constants.screen_dimensions.x / (float)services.constants.screen_dimensions.y;
 	measurements.height_ratio = (float)services.constants.screen_dimensions.y / (float)services.constants.screen_dimensions.x;
 
-	screencap.create(window.getSize().x, window.getSize().y);
 	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
 	background.setPosition(0, 0);
 	background.setFillColor(services.styles.colors.ui_black);
-
-	// some SFML variables for drawing a basic window + background
-	window.setVerticalSyncEnabled(true);
-	window.setFramerateLimit(60);
-	window.setKeyRepeatEnabled(false);
-
-	ImGui::SFML::Init(window);
 }
 
-void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 
 	// for editor demo. should be excluded for releases.
 	if (demo) {
@@ -141,7 +122,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 						services.assets.menu_next.play();
 					}
 				}
-				if (event.key.code == sf::Keyboard::F12) { take_screenshot(); }
+				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(screencap); }
 				if (event.key.code == sf::Keyboard::H) {
 					// services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 					// services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
@@ -171,14 +152,14 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		});
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
-		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(); }
+		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(screencap); }
 
 		ImGui::SFML::Update(window, deltaClock.restart());
 		screencap.update(window);
 
 		// ImGui stuff
-		if (services.debug_flags.test(automa::DebugFlags::imgui_overlay)) { debug_window(); }
-		if (flags.test(GameFlags::playtest)) { playtester_portal(); }
+		if (services.debug_flags.test(automa::DebugFlags::imgui_overlay)) { debug_window(window); }
+		if (flags.test(GameFlags::playtest)) { playtester_portal(window); }
 
 		// my renders
 		window.clear();
@@ -199,7 +180,7 @@ shutdown:
 	ImGui::SFML::Shutdown();
 }
 
-void Game::debug_window() {
+void Game::debug_window(sf::RenderWindow& window) {
 
 	bool* debug{};
 	float const PAD = 10.0f;
@@ -539,8 +520,6 @@ void Game::debug_window() {
 				}
 				if (ImGui::BeginTabItem("General")) {
 
-					if (ImGui::Button("Save Screenshot")) { take_screenshot(); }
-					ImGui::Separator();
 					ImGui::Text("Draw Calls: %u", trackers.draw_calls);
 					trackers.draw_calls = 0;
 
@@ -760,7 +739,7 @@ void Game::debug_window() {
 	}
 }
 
-void Game::playtester_portal() {
+void Game::playtester_portal(sf::RenderWindow& window) {
 	if (!flags.test(GameFlags::playtest)) { return; }
 	// if (flags.test(GameFlags::in_game)) { return; }
 	bool* b_debug{};
@@ -789,7 +768,6 @@ void Game::playtester_portal() {
 				if (ImGui::BeginTabItem("General")) {
 					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
 					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
-					ImGui::Text(metadata.long_title().c_str());
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
 					if (ImGui::Button("Toggle Demo Mode")) { services.debug_flags.test(automa::DebugFlags::demo_mode) ? services.debug_flags.reset(automa::DebugFlags::demo_mode) : services.debug_flags.set(automa::DebugFlags::demo_mode); }
 					if (ImGui::Button("Toggle Greyblock Mode")) {
@@ -820,8 +798,6 @@ void Game::playtester_portal() {
 					ImGui::Separator();
 					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
-					ImGui::Separator();
-					if (ImGui::Button("Save Screenshot")) { take_screenshot(); }
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Input")) {
@@ -1058,7 +1034,7 @@ void Game::playtester_portal() {
 	}
 }
 
-void Game::take_screenshot() {
+void Game::take_screenshot(sf::Texture& screencap) {
 	std::time_t const now = std::time(nullptr);
 
 	std::time_t time = std::time({});

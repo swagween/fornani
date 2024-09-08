@@ -61,8 +61,6 @@ void DataManager::load_data(std::string in_room) {
 	// std::cout << " success!\n";
 
 	// std::cout << "loading json data...";
-	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
-	assert(!game_info.is_null());
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
 	drop = dj::Json::from_file((finder.resource_path + "/data/item/drop.json").c_str());
