@@ -81,6 +81,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.player.test(Player::hurt)) { svc.assets.hurt.play(); }
 	if (flags.player.test(Player::death)) { svc.assets.player_death.play(); }
 	if (flags.player.test(Player::shield_drop)) { randomize(svc, svc.assets.bubble, 0.2f, 60); }
+	if (flags.player.test(Player::slide)) { play_at_volume(svc.assets.slide, 30.f); }
 
 	// gun
 	if (flags.weapon.test(Weapon::bryns_gun)) { svc.assets.bg_shot.play(); }

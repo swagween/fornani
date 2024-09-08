@@ -59,7 +59,11 @@
     { "room_id": 1702, "label": "SKY_CHAMBER_02"},
     { "room_id": 1703, "label": "SKY_CHAMBER_03"},
     { "room_id": 1704, "label": "SKY_CHAMBER_04"},
-    { "room_id": 1705, "label": "SKY_CHAMBER_05"}
+    { "room_id": 1705, "label": "SKY_CHAMBER_05"},
+    
+    { "room_id": 3001, "label": "SKYCORPS_JUNKYARD_01"},
+    { "room_id": 3002, "label": "SKYCORPS_JUNKYARD_02"},
+    { "room_id": 6001, "label": "GREATWING_BRIDGE_01"}
 
   ]
 }

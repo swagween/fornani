@@ -6,7 +6,6 @@
 #include "../entities/player/Player.hpp"
 #include "../audio/MusicPlayer.hpp"
 #include "../utils/BitFlags.hpp"
-#include "../setup/Version.hpp"
 #include <imgui-SFML.h>
 #include <filesystem>
 
@@ -19,7 +18,7 @@ class Game {
 	Game() = default;
 	Game(char** argv);
 	~Game() {}
-	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+	void run(sf::RenderWindow& window, sf::Texture& screencap, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
 
 	void playtest_sync();
 	void toggle_weapon(bool flag, int id);
@@ -27,9 +26,9 @@ class Game {
 
   private:
 
-	void debug_window();
-	void playtester_portal();
-	void take_screenshot();
+	void debug_window(sf::RenderWindow& window);
+	void playtester_portal(sf::RenderWindow& window);
+	void take_screenshot(sf::Texture& screencap);
 	bool debug();
 	automa::ServiceProvider services{};
 
@@ -63,11 +62,7 @@ class Game {
 
 	player::Player player;
 	automa::StateManager game_state{};
-	sf::RenderWindow window{};
-	sf::Texture screencap{};
 	sf::RectangleShape background{};
-
-	Version metadata{};
 };
 
 } // namespace fornani

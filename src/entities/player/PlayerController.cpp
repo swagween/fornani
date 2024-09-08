@@ -80,6 +80,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& arms_switch_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_left).triggered;
 	auto const& arms_switch_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_right).triggered;
 
+	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
+
 	auto const& inspected = svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered && grounded() && !left && !right;
 
 	/* Dash ability and grappling hook will remain out of scope for the demo. */
@@ -108,6 +110,12 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		if (shielding) { shield.flags.triggers.set(ShieldTrigger::shield_up); }
 		if (shield_released && shield.is_shielding()) { shield.pop(); }
 	}
+
+	// slide
+	slide.update();
+	key_map[ControllerInput::slide] = 0.f;
+	if (moving() && down && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
+	if (down_released || !moving()) { slide.break_out(); }
 
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
@@ -141,6 +149,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		direction.und = down && !grounded() ? dir::UND::down : direction.und;
 	} else if ((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) {
 		key_map[ControllerInput::move_x] *= backwards_dampen;
+		key_map[ControllerInput::slide] = 0.f;
 	}
 
 	key_map[ControllerInput::arms_switch] = 0.f;
@@ -231,6 +240,7 @@ void PlayerController::prevent_movement() {
 	key_map[ControllerInput::shoot] = 0.f;
 	key_map[ControllerInput::jump] = 0.f;
 	key_map[ControllerInput::sprint] = 0.f;
+	key_map[ControllerInput::slide] = 0.f;
 	jump.reset_all();
 	jump.prevent();
 	flags.set(MovementState::restricted);
