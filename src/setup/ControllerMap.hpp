@@ -34,9 +34,11 @@ enum class DigitalAction : int {
 	platformer_toggle_pause,
 
 	// Inventory controls
+	inventory_open_map,
 	inventory_close,
 
 	// Map controls
+	map_open_inventory,
 	map_close,
 
 	// Menu controls
@@ -154,6 +156,8 @@ class ControllerMap {
 	bool gamepad_input_enabled{true};
 	bool autosprint_enabled{true};
 	bool tutorial_enabled{true};
+
+	void reset_digital_action_states();
 
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
 

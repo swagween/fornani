@@ -3,13 +3,14 @@
 #include <iostream>
 #include "../service/ServiceProvider.hpp"
 
-namespace config {
-
-auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(error : 4061) // Missing enum variants in switch cases
 #endif
+
+namespace config {
+
+auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	switch (action) {
 	case DigitalAction::platformer_left:
 	case DigitalAction::platformer_right:
@@ -26,8 +27,10 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	case DigitalAction::platformer_open_map:
 	case DigitalAction::platformer_toggle_pause: return ActionSet::Platformer;
 
+	case DigitalAction::inventory_open_map:
 	case DigitalAction::inventory_close: return ActionSet::Inventory;
 
+	case DigitalAction::map_open_inventory:
 	case DigitalAction::map_close: return ActionSet::Map;
 
 	case DigitalAction::menu_left:
@@ -40,9 +43,19 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	case DigitalAction::COUNT:
 	default: assert(false && "Invalid action set in get_action_set_from_action");
 	}
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+}
+
+/// @brief Gets the action set that should also be active when the given action set is active.
+/// @returns Whether `set` has a parent or not.
+bool parent_action_set(ActionSet set, ActionSet* parent) {
+	switch (set) {
+	case ActionSet::Platformer: return false;
+
+	case ActionSet::Inventory:
+	case ActionSet::Map: *parent = ActionSet::Menu; return true;
+
+	case ActionSet::Menu: return false;
+	}
 }
 
 ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
@@ -78,9 +91,11 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	DEFINE_ACTION(platformer_toggle_pause);
 
 	// Inventory controls
+	DEFINE_ACTION(inventory_open_map);
 	DEFINE_ACTION(inventory_close);
 
 	// Map controls
+	DEFINE_ACTION(map_open_inventory);
 	DEFINE_ACTION(map_close);
 
 	// Menu controls
@@ -114,20 +129,42 @@ void ControllerMap::update(bool has_focus) {
 		bool pressed_on_gamepad = false;
 		if (controller_handle && gamepad_input_enabled) {
 			auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
-			pressed_on_gamepad = data.bActive && data.bState;
+			pressed_on_gamepad = data.bState;
 		}
 		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
 
-		if (pressed_on_gamepad) { last_controller_ty_used = ControllerType::gamepad; }
-		if (pressed_on_keyboard) { last_controller_ty_used = ControllerType::keyboard; }
+		if (pressed_on_gamepad) {
+			if (last_controller_ty_used != ControllerType::gamepad) { reset_digital_action_states(); }
+			last_controller_ty_used = ControllerType::gamepad;
+		}
+		if (pressed_on_keyboard) {
+			if (last_controller_ty_used != ControllerType::keyboard) { reset_digital_action_states(); }
+			last_controller_ty_used = ControllerType::keyboard;
+		}
+
+		// Determine if this action is active (bound on the current action set).
+		bool active{};
+		if (last_controller_ty_used == ControllerType::gamepad) {
+			// If we are using a gamepad, use steam's bActive member, otherwise it freaks out (causes multiple inputs, sometimes fails to input, etc)
+			auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
+			active = data.bActive;
+		} else {
+			// Otherwise we just check the current action set manually.
+			config::ActionSet action_set = get_action_set_from_action(action);
+			config::ActionSet parent_of_active_set{};
+			if (parent_action_set(active_action_set, &parent_of_active_set)) {
+				active = active_action_set == action_set || action_set == parent_of_active_set;
+			} else {
+				active = active_action_set == action_set;
+			}
+		}
 		auto triggered = has_focus && (pressed_on_gamepad || pressed_on_keyboard);
-		config::ActionSet action_set = get_action_set_from_action(action);
-		bool active = action_set == active_action_set || ((active_action_set == config::ActionSet::Inventory || active_action_set == config::ActionSet::Map) && action_set == config::ActionSet::Menu);
+
 		if (triggered && active) {
 			action_status.released = false;
 			// Avoid actions being immediately triggered when switching action sets
 			if (!action_status.held && was_active_last_tick) {
-				//std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
+				// std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.triggered = true;
 			} else {
 				action_status.triggered = false;
@@ -135,9 +172,8 @@ void ControllerMap::update(bool has_focus) {
 			action_status.held = true;
 		} else {
 			action_status.triggered = false;
-			// Avoid releasing if just switching action sets
-			if (action_status.held && active) {
-				//std::cout << "Released " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
+			if (action_status.held) {
+				// std::cout << "Released " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
 				action_status.released = true;
 			} else {
 				action_status.released = false;
@@ -281,4 +317,15 @@ void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Key
 auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key { return digital_actions.at(action).primary_binding; }
 auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key { return digital_actions.at(action).secondary_binding; }
 
+void ControllerMap::reset_digital_action_states() {
+	for (auto& [action, state] : digital_actions) {
+		state.status = DigitalActionStatus(action);
+		state.was_active_last_tick = false;
+	}
+}
+
 } // namespace config
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
