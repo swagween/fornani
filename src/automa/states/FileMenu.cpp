@@ -32,7 +32,6 @@ void FileMenu::init(ServiceProvider& svc, int room_number) {}
 
 void FileMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-
 	if (!console.active()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			if (file_select_menu.is_open()) {
@@ -98,7 +97,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 		svc.data.delete_file(current_selection.get());
 		refresh(svc);
 		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-		std::cout << current_selection.get() << "\n";
 	}
 
 	auto& opt = options.at(current_selection.get());

@@ -4,7 +4,7 @@
 namespace text {
 
 void Tutorial::update(automa::ServiceProvider& svc) {
-	if (!svc.controller_map.is_tutorial_enabled()) {
+	if (!svc.tutorial()) {
 		helpers.set(TutorialHelpers::closed);
 		return;
 	}

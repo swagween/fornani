@@ -42,14 +42,11 @@ Application::Application(char** argv) {
 	// set view and veiwport for fullscreen mode
 	auto aspect_ratio = static_cast<float>(aspects.x) / static_cast<float>(aspects.y);
 	auto display_ratio = static_cast<float>(display_dimensions.x) / static_cast<float>(display_dimensions.y);
-	std::cout << "aspect ratio: " << aspect_ratio << "\n";
-	std::cout << "display ratio: " << display_ratio << "\n";
 	auto letterbox = std::min(display_ratio, aspect_ratio) / std::max(display_ratio, aspect_ratio);
 	auto vertical = display_ratio < aspect_ratio;
 	auto resize_ratio = vertical ? sf::Vector2<float>(1.f, letterbox) : sf::Vector2<float>(letterbox, 1.f);
 	auto offset = vertical ? sf::Vector2<float>(0.f, (1.f - letterbox) * 0.5f) : sf::Vector2<float>((1.f - letterbox) * 0.5f, 0.f);
-
-	window_utilities.game_port = sf::FloatRect{offset.x, offset.y, resize_ratio.x, resize_ratio.y};
+	window_utilities.game_port = settings.fullscreen ? sf::FloatRect{offset.x, offset.y, resize_ratio.x, resize_ratio.y} : sf::FloatRect(0.f, 0.f, 1.f, 1.f);
 	window_utilities.game_view.setViewport(window_utilities.game_port);
 	window.setView(window_utilities.game_view);
 	
@@ -71,7 +68,7 @@ Application::Application(char** argv) {
 
 void Application::launch(char** argv) {
 	Game game{argv};
-	game.run(window, screencap);
+	game.run(window, screencap, settings.fullscreen);
 }
 
 } // namespace fornani

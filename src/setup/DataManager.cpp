@@ -185,9 +185,10 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 
 void DataManager::save_settings() {
 	settings["auto_sprint"] = dj::Boolean{m_services->controller_map.is_autosprint_enabled()};
-	settings["tutorial"] = dj::Boolean{m_services->controller_map.is_tutorial_enabled()};
+	settings["tutorial"] = dj::Boolean{m_services->tutorial()};
 	settings["gamepad"] = dj::Boolean{m_services->controller_map.is_gamepad_input_enabled()};
 	settings["music_volume"] = m_services->music.volume.multiplier;
+	settings["fullscreen"] = dj::Boolean{m_services->fullscreen()};
 	settings.dj::Json::to_file((finder.resource_path + "/data/config/settings.json").c_str());
 }
 
@@ -231,7 +232,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	if (save["tutorial"]["closed"].as_bool()) { player.tutorial.close_for_good(); }
 	player.cooldowns.tutorial.start();
 	player.tutorial.turn_off();
-	if (!m_services->controller_map.is_tutorial_enabled()) { player.tutorial.close_for_good(); }
+	if (!m_services->tutorial()) { player.tutorial.close_for_good(); }
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
@@ -285,9 +286,10 @@ void DataManager::load_settings() {
 	settings = dj::Json::from_file((finder.resource_path + "/data/config/settings.json").c_str());
 	assert(!settings.is_null());
 	m_services->controller_map.enable_autosprint(settings["auto_sprint"].as_bool().value);
-	m_services->controller_map.enable_tutorial(settings["tutorial"].as_bool().value);
+	m_services->set_tutorial(settings["tutorial"].as_bool().value);
 	m_services->controller_map.enable_gamepad_input(settings["gamepad"].as_bool().value);
 	m_services->music.volume.multiplier = settings["music_volume"].as<float>();
+	m_services->set_fullscreen(settings["fullscreen"].as_bool().value);
 }
 
 void DataManager::delete_file(int index) {

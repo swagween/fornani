@@ -178,8 +178,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (controller.get_shield().active() && catalog.categories.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
-
-	collider.flush_positions();
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

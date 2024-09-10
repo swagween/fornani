@@ -78,7 +78,6 @@ class Collider {
 	bool vertical_squish() const;
 	bool pushes(Collider& other) const;
 
-	void flush_positions() { position_history.clear(); }
 	sf::Vector2<float> get_average_tick_position();
 	sf::Vector2<float> snap_to_grid(float size = 1.f, float scale = 32.f, float factor = 2.f);
 
@@ -144,7 +143,6 @@ class Collider {
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> sprite_offset{};
 	sf::Vector2<float> hurtbox_offset{};
-	std::deque<sf::Vector2<float>> position_history{};
 	float maximum_ramp_height{};
 
 

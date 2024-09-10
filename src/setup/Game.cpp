@@ -35,20 +35,13 @@ Game::Game(char** argv) : player(services) {
 	background.setFillColor(services.styles.colors.ui_black);
 }
 
-void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool fullscreen, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 
-	//set window size
-	measurements.width_ratio = static_cast<float>(window.getSize().x) / static_cast<float>(window.getSize().y);
-	measurements.height_ratio = static_cast<float>(window.getSize().y) / static_cast<float>(window.getSize().x);
+	if (fullscreen) { services.app_flags.set(automa::AppFlags::fullscreen); }
+	flags.set(GameFlags::standard_display);
+
 	measurements.win_size.x = window.getSize().x;
 	measurements.win_size.y = window.getSize().y;
-	if (measurements.win_size.y * measurements.width_ratio <= measurements.win_size.x) {
-		measurements.win_size.x = static_cast<uint32_t>(measurements.win_size.y * measurements.width_ratio);
-	} else if (measurements.win_size.x * measurements.height_ratio <= measurements.win_size.y) {
-		measurements.win_size.y = static_cast<uint32_t>(measurements.win_size.x * measurements.height_ratio);
-	}
-	window.setSize(sf::Vector2u{measurements.win_size.x, measurements.win_size.y});
-	screencap.create(window.getSize().x, window.getSize().y);
 
 	// for editor demo. should be excluded for releases.
 	if (demo) {
@@ -78,9 +71,6 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int 
 
 		services.ticker.start_frame();
 
-		measurements.win_size.x = window.getSize().x;
-		measurements.win_size.y = window.getSize().y;
-
 		// game loop
 		sf::Clock deltaClock{};
 
@@ -91,22 +81,30 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int 
 		// check window events
 		while (window.pollEvent(event)) {
 			player.animation.state = {};
-			player.animation.state = {};
 			if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
 			if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 			if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 			switch (event.type) {
 			case sf::Event::Closed: goto shutdown;
 			case sf::Event::Resized:
-				measurements.win_size.x = window.getSize().x;
-				measurements.win_size.y = window.getSize().y;
-				if (measurements.win_size.y * measurements.width_ratio <= measurements.win_size.x) {
-					measurements.win_size.x = static_cast<uint32_t>(measurements.win_size.y * measurements.width_ratio);
-				} else if (measurements.win_size.x * measurements.height_ratio <= measurements.win_size.y) {
-					measurements.win_size.y = static_cast<uint32_t>(measurements.win_size.x * measurements.height_ratio);
+				if (flags.test(GameFlags::standard_display)) {
+					sf::Vector2u display_dimensions{static_cast<unsigned>(sf::VideoMode::getDesktopMode().width), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height)};
+					auto aspect_ratio = static_cast<float>(services.constants.aspect_ratio.x) / static_cast<float>(services.constants.aspect_ratio.y);
+					auto display_ratio = static_cast<float>(display_dimensions.x) / static_cast<float>(display_dimensions.y);
+					auto vertical = display_ratio < aspect_ratio;
+					auto letterbox = std::min(display_ratio, aspect_ratio) / std::max(display_ratio, aspect_ratio);
+					if (vertical) {
+						window.setSize({static_cast<unsigned>(sf::VideoMode::getDesktopMode().width), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height * letterbox)});
+					} else {
+						window.setSize({static_cast<unsigned>(sf::VideoMode::getDesktopMode().width * letterbox), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height)});
+					}
+					flags.reset(GameFlags::standard_display);
+				} else {
+					window.setSize(measurements.win_size);
+					flags.set(GameFlags::standard_display);
 				}
-				window.setSize(sf::Vector2u{measurements.win_size.x, measurements.win_size.y});
 				screencap.create(window.getSize().x, window.getSize().y);
+				while (window.pollEvent(event)) {} // have to clear the event queue because Window::setSize() is considered a resize event
 				break;
 			case sf::Event::KeyPressed:
 				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }

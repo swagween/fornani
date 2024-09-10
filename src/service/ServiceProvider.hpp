@@ -18,6 +18,7 @@
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
+enum class AppFlags { fullscreen, tutorial };
 struct ServiceProvider {
 	asset::AssetManager assets{};
 	data::DataManager data{*this};
@@ -25,6 +26,7 @@ struct ServiceProvider {
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
+	util::BitFlags<AppFlags> app_flags{};
 	util::Random random{};
 	util::Ticker ticker{};
 	util::Constants constants{};
@@ -38,6 +40,13 @@ struct ServiceProvider {
 	//debug stuff
 	util::Stopwatch stopwatch{};
 
+	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
+	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
+	void set_fullscreen(bool flag) { flag ? app_flags.set(AppFlags::fullscreen) : app_flags.reset(AppFlags::fullscreen); }
+	void set_tutorial(bool flag) { flag ? app_flags.set(AppFlags::tutorial) : app_flags.reset(AppFlags::tutorial); }
+
+	[[nodiscard]] auto fullscreen() const -> bool { return app_flags.test(AppFlags::fullscreen); }
+	[[nodiscard]] auto tutorial() const -> bool { return app_flags.test(AppFlags::tutorial); }
 	[[nodiscard]] auto demo_mode() const -> bool { return debug_flags.test(DebugFlags::demo_mode); }
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
