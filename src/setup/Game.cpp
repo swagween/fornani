@@ -10,7 +10,6 @@ Game::Game(char** argv) : player(services) {
 	services.data.finder.setResourcePath(argv);
 	services.data.finder.set_scene_path(argv);
 	services.data.load_data();
-
 	// controls
 	services.data.load_controls(services.controller_map);
 	// text
@@ -31,15 +30,25 @@ Game::Game(char** argv) : player(services) {
 	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 	game_state.get_current_state().init(services, 100);
 
-	measurements.width_ratio = (float)services.constants.screen_dimensions.x / (float)services.constants.screen_dimensions.y;
-	measurements.height_ratio = (float)services.constants.screen_dimensions.y / (float)services.constants.screen_dimensions.x;
-
 	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
 	background.setPosition(0, 0);
 	background.setFillColor(services.styles.colors.ui_black);
 }
 
 void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+
+	//set window size
+	measurements.width_ratio = static_cast<float>(window.getSize().x) / static_cast<float>(window.getSize().y);
+	measurements.height_ratio = static_cast<float>(window.getSize().y) / static_cast<float>(window.getSize().x);
+	measurements.win_size.x = window.getSize().x;
+	measurements.win_size.y = window.getSize().y;
+	if (measurements.win_size.y * measurements.width_ratio <= measurements.win_size.x) {
+		measurements.win_size.x = static_cast<uint32_t>(measurements.win_size.y * measurements.width_ratio);
+	} else if (measurements.win_size.x * measurements.height_ratio <= measurements.win_size.y) {
+		measurements.win_size.y = static_cast<uint32_t>(measurements.win_size.x * measurements.height_ratio);
+	}
+	window.setSize(sf::Vector2u{measurements.win_size.x, measurements.win_size.y});
+	screencap.create(window.getSize().x, window.getSize().y);
 
 	// for editor demo. should be excluded for releases.
 	if (demo) {
@@ -60,7 +69,7 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int 
 		game_state.get_current_state().target_folder.paths.region = services.data.finder.scene_path + "/firstwind";
 	}
 
-	std::cout << "> success\n";
+	std::cout << "> Success\n";
 
 	while (window.isOpen()) {
 

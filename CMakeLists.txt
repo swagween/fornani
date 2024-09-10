@@ -35,6 +35,16 @@ if (WIN32)
           COMMENT "Copy Steam API DLL"
           PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${steamworks_dll_file} $<TARGET_FILE_DIR:${PROJECT_NAME}>/steam_api64.dll
           VERBATIM)
+
+  #app icon
+  target_sources(${PROJECT_NAME} PRIVATE src/app/app.rc)
+  if(MSVC)
+    set(subsystem $<IF:$<BOOL:$<CONFIG:Debug>>,CONSOLE,WINDOWS>)
+    target_link_options(${PROJECT_NAME} PRIVATE
+      /SUBSYSTEM:${subsystem}
+      /ENTRY:mainCRTStartup
+    )
+  endif()
 endif()
 
 if(FORNANI_DEV_BUILD)

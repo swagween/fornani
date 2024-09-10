@@ -3,5 +3,6 @@
   "keyboard": true,
   "gamepad": true,
   "music_volume": 0.260001,
-  "tutorial": false
+  "tutorial": false,
+  "fullscreen": true
 }

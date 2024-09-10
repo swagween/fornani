@@ -5,15 +5,16 @@
   "player_data": {
     "max_hp": 4.000000,
     "hp": 4.000000,
-    "orbs": 611,
+    "orbs": 2306,
     "position": {
-      "x": 199.816025,
-      "y": 235.000000
+      "x": 211.949921,
+      "y": 235.000015
     },
     "arsenal": [
-      0
+      0,
+      10
     ],
-    "equipped_gun": 0,
+    "equipped_gun": 1,
     "abilities": [
 
     ],
@@ -49,19 +50,27 @@
       {
         "id": 29,
         "quantity": 1
+      },
+      {
+        "id": 15,
+        "quantity": 1
+      },
+      {
+        "id": 30,
+        "quantity": 1
       }
     ],
     "stats": {
-      "death_count": 4,
-      "bullets_fired": 339,
-      "guns_collected": 1,
-      "items_collected": 8,
-      "orbs_collected": 611,
-      "blue_orbs": 2,
-      "highest_indicator_amount": 253,
-      "enemies_killed": 62,
-      "rooms_discovered": 20,
-      "seconds_played": 850.346252,
+      "death_count": 16,
+      "bullets_fired": 6049,
+      "guns_collected": 2,
+      "items_collected": 10,
+      "orbs_collected": 2306,
+      "blue_orbs": 5,
+      "highest_indicator_amount": 520,
+      "enemies_killed": 105,
+      "rooms_discovered": 24,
+      "seconds_played": 1682.736572,
       "time_trials": {
         "bryns_gun": 148.171875
       }
@@ -70,7 +79,9 @@
   "save_point_id": 117,
   "unlocked_doors": [
     11,
-    12
+    12,
+    15,
+    8
   ],
   "opened_chests": [
     5768,
@@ -80,7 +91,11 @@
     338223,
     211,
     323,
-    1240
+    1240,
+    8883,
+    45560,
+    77122,
+    42069
   ],
   "activated_switches": [
     445,
@@ -91,7 +106,16 @@
     4369
   ],
   "destroyed_blocks": [
-
+    110,
+    122,
+    122,
+    122,
+    122,
+    122,
+    122,
+    122,
+    122,
+    122
   ],
   "quest_progressions": [
     [
@@ -170,6 +194,13 @@
       2,
       1,
       0
+    ],
+    [
+      5,
+      110,
+      1,
+      1,
+      0
     ]
   ],
   "destroyed_inspectables": [
@@ -206,6 +237,10 @@
     118,
     123,
     121,
-    124
+    124,
+    120,
+    112,
+    114,
+    115
   ]
 }
