@@ -121,13 +121,13 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool fullscreen
 					// flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
-					if (flags.test(GameFlags::playtest)) {
+					/*if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
 						services.assets.menu_back.play();
 					} else {
 						flags.set(GameFlags::playtest);
 						services.assets.menu_next.play();
-					}
+					}*/
 				}
 				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(screencap); }
 				if (event.key.code == sf::Keyboard::H) {

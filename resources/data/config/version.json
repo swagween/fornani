@@ -3,7 +3,7 @@
   "build": "alpha",
   "version": {
     "major": 1,
-    "minor": 1,
-    "hotfix": 3
+    "minor": 2,
+    "hotfix": 0
   }
 }

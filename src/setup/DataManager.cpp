@@ -296,6 +296,7 @@ void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
 	files.at(index).save_data = blank_file.save_data;
 	files.at(index).flags.set(fornani::FileFlags::new_file);
+	files.at(index).save_data.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
 void DataManager::write_death_count(player::Player& player) {
