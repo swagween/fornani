@@ -11,14 +11,15 @@
 
 namespace fornani {
 
+class WindowManager;
 enum class GameFlags { playtest, in_game, standard_display };
 
 class Game {
   public:
 	Game() = default;
-	Game(char** argv);
+	Game(char** argv, WindowManager& window);
 	~Game() {}
-	void run(sf::RenderWindow& window, sf::Texture& screencap, bool fullscreen, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{},
+	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{},
 			 sf::Vector2<float> player_position = {});
 
 	void playtest_sync();

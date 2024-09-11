@@ -32,7 +32,7 @@ void Tutorial::update(automa::ServiceProvider& svc) {
 		return;
 	}
 	if (!flags.test(TutorialFlags::map)) {
-		help_marker.init(svc, "View map from inventory by pressing [", config::DigitalAction::platformer_open_map, "].", 200, true, true);
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_map, "] to open map.", 200, true, true);
 		maximum_display_time.start();
 		return;
 	}

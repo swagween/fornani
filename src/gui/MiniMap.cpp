@@ -77,7 +77,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	win.draw(cursor.vert);
 	win.draw(cursor.horiz);
 	win.draw(border);
-	win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y}));
+	svc.window->restore_view();
 }
 
 void MiniMap::toggle_scale() {

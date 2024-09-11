@@ -25,6 +25,7 @@ class ControlsMenu : public automa::GameState {
 	util::Cooldown loading{};
 	sf::Text instruction{};
 	bool option_is_selected{};
+	bool binding_mode{};
 	sf::RectangleShape debug{};
 };
 

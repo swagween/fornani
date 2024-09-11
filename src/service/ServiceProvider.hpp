@@ -1,5 +1,6 @@
 #pragma once
 #include "../utils/BitFlags.hpp"
+#include "../setup/WindowManager.hpp"
 #include "../setup/AssetManager.hpp"
 #include "../setup/DataManager.hpp"
 #include "../setup/TextManager.hpp"
@@ -20,6 +21,7 @@ namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
 enum class AppFlags { fullscreen, tutorial };
 struct ServiceProvider {
+	fornani::WindowManager* window;
 	asset::AssetManager assets{};
 	data::DataManager data{*this};
 	data::TextManager text{};

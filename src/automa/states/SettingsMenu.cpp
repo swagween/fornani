@@ -64,7 +64,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 			case static_cast<int>(Toggles::music): adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust); break;
 			case static_cast<int>(Toggles::fullscreen):
 				svc.toggle_fullscreen();
-				if (svc.fullscreen()) { console.load_and_launch("fullscreen"); }
+				console.load_and_launch("fullscreen");
 				break;
 			}
 			options.at(static_cast<int>(Toggles::autosprint)).label.setString(toggleables.autosprint.getString() + (svc.controller_map.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));

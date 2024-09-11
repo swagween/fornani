@@ -2,6 +2,7 @@
 #include "Game.hpp"
 #include "../setup/ResourceFinder.hpp"
 #include "../setup/Version.hpp"
+#include "../setup/WindowManager.hpp"
 
 namespace fornani {
 
@@ -13,23 +14,13 @@ class Application {
 	void launch(char** argv);
 
   private:
-	sf::RenderWindow window{};
-	sf::Texture screencap{};
 	sf::Texture t_loading{};
 	sf::Sprite loading{};
 	dj::Json game_info{};
 	dj::Json app_settings{};
 	data::ResourceFinder finder{};
 	Version metadata{};
-	struct {
-		sf::Vector2<int> screen_dimensions{};
-		sf::View game_view{};
-		sf::VideoMode mode{};
-		sf::FloatRect game_port{};
-	} window_utilities{};
-	struct {
-		bool fullscreen{};
-	} settings{};
+	WindowManager window{};
 };
 
 } // namespace fornani
