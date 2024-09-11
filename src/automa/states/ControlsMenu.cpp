@@ -101,27 +101,31 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		if (current_tab == 0) { current_tab = 4; }
 		auto tab_to_switch_to = current_tab - 1;
 		change_scene(svc, tabs[tab_to_switch_to]);
+		std::cout << "No. Options: " << options.size() << "\n";
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered && option_is_selected && current_selection.get() == 0) {
 		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
 		auto tab_to_switch_to = (current_tab + 1) % 4;
 		change_scene(svc, tabs[tab_to_switch_to]);
+		std::cout << "No. Options: " << options.size() << "\n";
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && !binding_mode) {
 		svc.state_controller.submenu = menu_type::options;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	auto pressed_select = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && !binding_mode;
+	auto pressed_select = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered;
 	if (pressed_select) {
 		// Gamepad settings should be second to last option
-		if (current_selection.get() == options.size() - 2 && svc.controller_map.gamepad_connected()) {
+		if (current_selection.get() == 0) {
+			option_is_selected = !option_is_selected;
+		} else if (current_selection.get() == options.size() - 2) {
 			svc.controller_map.open_bindings_overlay();
 		}
 		// Reset to default should be last option
 		else if (current_selection.get() == options.size() - 1) {
 			restore_defaults(svc);
-		} else {
+		} else  if (!binding_mode) {
 			option_is_selected = !option_is_selected;
 			auto& control = control_list.at(current_selection.get());
 			control.setString("Press a key");
@@ -196,6 +200,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	control_list.clear();
 	auto const& in_data = svc.data.menu["options"];
 	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string(), font)); }
+	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
 	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {

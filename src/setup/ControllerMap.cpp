@@ -254,7 +254,10 @@ void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t*
 	controller_handle = 0;
 }
 
-void ControllerMap::open_bindings_overlay() const { SteamInput()->ShowBindingPanel(controller_handle); }
+void ControllerMap::open_bindings_overlay() const {
+	if (!gamepad_connected()) { return; }
+	SteamInput()->ShowBindingPanel(controller_handle);
+}
 auto ControllerMap::key_to_string(sf::Keyboard::Key key) const -> std::string_view {
 	// XXX: Replace by switch
 	std::unordered_map<sf::Keyboard::Key, std::string_view> map{{sf::Keyboard::A, "A"},			  {sf::Keyboard::B, "B"},
