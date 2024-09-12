@@ -18,6 +18,12 @@
     "music": "",
     "styles": {
       "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
     }
   },
   "portals": [
@@ -33,6 +39,7 @@
       "source_id": 125,
       "destination_id": 106,
       "activate_on_contact": false,
+      "already_open": false,
       "locked": false,
       "key_id": 0
     }
@@ -161,7 +168,7 @@
       "type": 0,
       "position": [
         6,
-        8
+        13
       ]
     }
   ]

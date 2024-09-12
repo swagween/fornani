@@ -101,13 +101,11 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		if (current_tab == 0) { current_tab = 4; }
 		auto tab_to_switch_to = current_tab - 1;
 		change_scene(svc, tabs[tab_to_switch_to]);
-		std::cout << "No. Options: " << options.size() << "\n";
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered && option_is_selected && current_selection.get() == 0) {
 		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
 		auto tab_to_switch_to = (current_tab + 1) % 4;
 		change_scene(svc, tabs[tab_to_switch_to]);
-		std::cout << "No. Options: " << options.size() << "\n";
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && !binding_mode) {
 		svc.state_controller.submenu = menu_type::options;
@@ -163,9 +161,7 @@ void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
-	// svc.data.load_controls(svc.controller_map);
 	size_t ctr{0};
-
 	for (auto& option : options) {
 		if (ctr > 0 && ctr < options.size() - 2) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
@@ -221,7 +217,6 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		control_list.back().setFont(font);
 		++ctr;
 	}
-
 	refresh_controls(svc);
 }
 

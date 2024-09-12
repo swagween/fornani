@@ -152,6 +152,7 @@ class Player {
 	void start_over();
 	void give_drop(item::DropType type, float value);
 	void give_item(int item_id, int amount);
+	void take_item(int item_id, int amount = 1);
 
 	void reset_flags();
 	void total_reset();

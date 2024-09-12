@@ -93,7 +93,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 	}
 	//if (svc.controller_map.gamepad_disconnected()) { toggle_pause_menu(svc); }
-	// TODO: Split inventorywindow into inventory and map (separate functionality)
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered ||
 		svc.controller_map.digital_action_status(config::DigitalAction::map_open_inventory).triggered) {
 

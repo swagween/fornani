@@ -15,14 +15,14 @@ enum class MiniMenuState { open };
 class MiniMenu {
   public:
 	MiniMenu() = default;
-	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt);
+	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, bool white = false);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> position);
 	void render(sf::RenderWindow& win, bool bg = true) const;
 	void open(automa::ServiceProvider& svc, sf::Vector2<float> position);
 	void close(automa::ServiceProvider& svc);
 	void set_origin(sf::Vector2<float> origin);
-	void up();
-	void down();
+	void up(automa::ServiceProvider& svc);
+	void down(automa::ServiceProvider& svc);
 	void speed_up_appearance(int rate) { sprite.speed_up_appearance(rate); }
 	void set_force(float force) { sprite.set_force(force); }
 	void set_fric(float fric) { sprite.set_fric(fric); }

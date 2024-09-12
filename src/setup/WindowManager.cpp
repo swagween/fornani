@@ -36,7 +36,9 @@ void fornani::WindowManager::create(std::string title, bool const fullscreen) {
 		is_fullscreen = false;
 	}
 	is_fullscreen ? window.create(mode, title, sf::Style::Fullscreen) : window.create(mode, title, sf::Style::Default);
-}
+}
+
+
 void WindowManager::restore_view() { window.setView(game_view); }
 
 void WindowManager::set_screencap() { screencap.create(window.getSize().x, window.getSize().y); }

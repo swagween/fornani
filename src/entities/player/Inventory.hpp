@@ -20,6 +20,7 @@ class Inventory {
 	Inventory();
 	void update(automa::ServiceProvider& svc);
 	void add_item(automa::ServiceProvider& svc, int item_id, int amount);
+	void remove_item(automa::ServiceProvider& svc, int item_id, int amount);
 	void reveal_item(int item_id);
 	item::Item& get_item(int id);
 	void clear();

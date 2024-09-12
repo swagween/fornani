@@ -3,9 +3,14 @@
 #include "Console.hpp"
 #include "Selector.hpp"
 #include "MiniMap.hpp"
+#include "MiniMenu.hpp"
 
 namespace player {
 class Player;
+}
+
+namespace item {
+class Item;
 }
 
 namespace gui {
@@ -20,6 +25,10 @@ class InventoryWindow : public Console {
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void open();
 	void close();
+	void select();
+	void cancel();
+	void move(sf::Vector2<int> direction);
+	void use_item(automa::ServiceProvider& svc, player::Player& player, world::Map& map, item::Item& item);
 	void set_item_size(int sz) {
 		if (sz > 0) { selector.current_selection = util::Circuit(sz); }
 	}
@@ -31,6 +40,7 @@ class InventoryWindow : public Console {
 	Console info;
 	MiniMap minimap;
 	Mode mode{};
+	MiniMenu item_menu;
 	text::HelpText help_marker;
 
   private:

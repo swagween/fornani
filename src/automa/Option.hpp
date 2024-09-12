@@ -5,7 +5,7 @@
 namespace automa {
 struct ServiceProvider;
 struct Option {
-	Option(ServiceProvider& svc, std::string_view lbl, sf::Font& font);
+	Option(ServiceProvider& svc, std::string_view lbl, sf::Font& font, bool red = false);
 	sf::Text label{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> left_offset{};
@@ -15,6 +15,7 @@ struct Option {
 	bool highlighted{};
 	bool selected{};
 	bool flagged{};
+	bool red{};
 	void update(ServiceProvider& svc, int selection);
 };
 } // namespace automa

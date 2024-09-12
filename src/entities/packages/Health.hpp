@@ -23,13 +23,14 @@ class Health : public Entity {
 	void set_hp(float amount);
 	void set_invincibility(float amount);
 	void heal(float amount);
+	void refill();
 	void inflict(float amount, bool force = false);
 	void increase_max_hp(float amount);
 	void reset();
 
 	util::BitFlags<HPState> flags{};
 	util::Cooldown invincibility{};
-	util::Cooldown restored{};
+	util::Cooldown restored{128};
 	float taken_point{};
 
   private:

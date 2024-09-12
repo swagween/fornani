@@ -8,6 +8,8 @@ namespace fornani {
 class WindowManager {
   public:
 	sf::RenderWindow& get() { return window; }
+	sf::View get_view() { return game_view; }
+	sf::FloatRect get_viewport() const { return game_port; }
 	void set();
 	void create(std::string title, bool const fullscreen);
 	void restore_view();

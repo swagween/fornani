@@ -35,23 +35,23 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	if (!console.active()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			if (file_select_menu.is_open()) {
-				file_select_menu.down();
+				file_select_menu.down(svc);
 			} else {
 				current_selection.modulate(1);
 				svc.data.load_blank_save(*player);
 				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+				svc.soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 			if (file_select_menu.is_open()) {
-				file_select_menu.up();
+				file_select_menu.up(svc);
 			} else {
 				current_selection.modulate(-1);
 				svc.data.load_blank_save(*player);
 				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+				svc.soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 			if (file_select_menu.is_open()) {

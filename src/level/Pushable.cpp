@@ -35,7 +35,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	for (auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
 
 	//reset position if it's far away, and if the player isn't overlapping the start position
-	if (hit_count.get_count() > 3 || map.off_the_bottom(collider.physics.position)) {
+	if (hit_count.get_count() > 2 || map.off_the_bottom(collider.physics.position)) {
 		bool can_respawn = true;
 		if (player.collider.bounding_box.overlaps(start_box)) { can_respawn = false; }
 		for (auto& p : map.pushables) {
