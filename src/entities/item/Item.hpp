@@ -14,7 +14,7 @@ class Console;
 
 namespace item {
 
-enum class ItemFlags { unique, revealed };
+enum class ItemFlags { unique, revealed, usable };
 enum class UIFlags { selected };
 
 class Item : public entity::Entity {
@@ -24,11 +24,14 @@ class Item : public entity::Entity {
 	void update(automa::ServiceProvider& svc, int index);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void add_item(int amount);
+	void subtract_item(int amount);
 	void set_id(int new_id);
 	void select();
 	void deselect();
 	void reveal() { flags.set(ItemFlags::revealed); }
 	[[nodiscard]] auto selected() const -> bool { return ui_flags.test(UIFlags::selected); }
+	[[nodiscard]] auto usable() const -> bool { return flags.test(ItemFlags::usable); }
+	[[nodiscard]] auto depleted() const -> bool { return variables.quantity <= 0; }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_quantity() const -> int { return variables.quantity; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.title : metadata.naive_title; }

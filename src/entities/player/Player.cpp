@@ -178,8 +178,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (controller.get_shield().active() && catalog.categories.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
-
-	collider.flush_positions();
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -283,10 +281,10 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 	if (inventory_window.active()) {
 		controller.restrict_movement();
 		controller.prevent_movement();
-		if (controller.transponder_up()) { inventory_window.selector.go_up(); }
-		if (controller.transponder_down()) { inventory_window.selector.go_down(); }
-		if (controller.transponder_left()) { inventory_window.selector.go_left(); }
-		if (controller.transponder_right()) { inventory_window.selector.go_right(); }
+		if (controller.transponder_up()) { inventory_window.move({0, -1}); }
+		if (controller.transponder_down()) { inventory_window.move({0, 1}); }
+		if (controller.transponder_left()) { inventory_window.move({-1, 0}); }
+		if (controller.transponder_right()) { inventory_window.move({1, 0}); }
 		if (controller.transponder_hold_up() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, -1.f}); }
 		if (controller.transponder_hold_down() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, 1.f}); }
 		if (controller.transponder_hold_left() && inventory_window.is_minimap()) { inventory_window.minimap.move({-1.f, 0.f}); }
@@ -636,6 +634,8 @@ void Player::give_drop(item::DropType type, float value) {
 		if (orb_indicator.get_amount() > m_services->stats.treasure.highest_indicator_amount.get_count()) { m_services->stats.treasure.highest_indicator_amount.set(static_cast<int>(orb_indicator.get_amount())); }
 	}
 }
+
+void Player::take_item(int item_id, int amount) { catalog.remove_item(*m_services, item_id, amount); }
 
 void Player::give_item(int item_id, int amount) {
 	catalog.add_item(*m_services, item_id, 1);

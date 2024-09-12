@@ -2,6 +2,7 @@
   "auto_sprint": false,
   "keyboard": true,
   "gamepad": true,
-  "music_volume": 0.260001,
-  "tutorial": false
+  "music_volume": 0.510000,
+  "tutorial": true,
+  "fullscreen": true
 }

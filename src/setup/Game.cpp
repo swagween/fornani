@@ -1,16 +1,18 @@
 #include "Game.hpp"
+#include "WindowManager.hpp"
 #include <steam/steam_api.h>
 #include <ctime>
 
 namespace fornani {
 
-Game::Game(char** argv) : player(services) {
+Game::Game(char** argv, WindowManager& window) : player(services) {
+	services.window = &window;
+	services.constants.screen_dimensions = window.screen_dimensions;
 	// data
 	services.data = data::DataManager(services);
 	services.data.finder.setResourcePath(argv);
 	services.data.finder.set_scene_path(argv);
 	services.data.load_data();
-
 	// controls
 	services.data.load_controls(services.controller_map);
 	// text
@@ -31,15 +33,18 @@ Game::Game(char** argv) : player(services) {
 	game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 	game_state.get_current_state().init(services, 100);
 
-	measurements.width_ratio = (float)services.constants.screen_dimensions.x / (float)services.constants.screen_dimensions.y;
-	measurements.height_ratio = (float)services.constants.screen_dimensions.y / (float)services.constants.screen_dimensions.x;
-
 	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
 	background.setPosition(0, 0);
 	background.setFillColor(services.styles.colors.ui_black);
 }
 
-void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+
+	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
+	flags.set(GameFlags::standard_display);
+
+	measurements.win_size.x = services.window->get().getSize().x;
+	measurements.win_size.y = services.window->get().getSize().y;
 
 	// for editor demo. should be excluded for releases.
 	if (demo) {
@@ -60,17 +65,14 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int 
 		game_state.get_current_state().target_folder.paths.region = services.data.finder.scene_path + "/firstwind";
 	}
 
-	std::cout << "> success\n";
+	std::cout << "> Success\n";
 
-	while (window.isOpen()) {
+	while (services.window->get().isOpen()) {
 
 		if (services.state_controller.actions.test(automa::Actions::shutdown)) { break; }
 		if (services.death_mode()) { flags.reset(GameFlags::in_game); }
 
 		services.ticker.start_frame();
-
-		measurements.win_size.x = window.getSize().x;
-		measurements.win_size.y = window.getSize().y;
 
 		// game loop
 		sf::Clock deltaClock{};
@@ -80,8 +82,7 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int 
 
 		bool valid_event{};
 		// check window events
-		while (window.pollEvent(event)) {
-			player.animation.state = {};
+		while (services.window->get().pollEvent(event)) {
 			player.animation.state = {};
 			if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
 			if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
@@ -89,15 +90,24 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int 
 			switch (event.type) {
 			case sf::Event::Closed: goto shutdown;
 			case sf::Event::Resized:
-				measurements.win_size.x = window.getSize().x;
-				measurements.win_size.y = window.getSize().y;
-				if (measurements.win_size.y * measurements.width_ratio <= measurements.win_size.x) {
-					measurements.win_size.x = static_cast<uint32_t>(measurements.win_size.y * measurements.width_ratio);
-				} else if (measurements.win_size.x * measurements.height_ratio <= measurements.win_size.y) {
-					measurements.win_size.y = static_cast<uint32_t>(measurements.win_size.x * measurements.height_ratio);
+				if (flags.test(GameFlags::standard_display)) {
+					sf::Vector2u display_dimensions{static_cast<unsigned>(sf::VideoMode::getDesktopMode().width), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height)};
+					auto aspect_ratio = static_cast<float>(services.constants.aspect_ratio.x) / static_cast<float>(services.constants.aspect_ratio.y);
+					auto display_ratio = static_cast<float>(display_dimensions.x) / static_cast<float>(display_dimensions.y);
+					auto vertical = display_ratio < aspect_ratio;
+					auto letterbox = std::min(display_ratio, aspect_ratio) / std::max(display_ratio, aspect_ratio);
+					if (vertical) {
+						services.window->get().setSize({static_cast<unsigned>(sf::VideoMode::getDesktopMode().width), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height * letterbox)});
+					} else {
+						services.window->get().setSize({static_cast<unsigned>(sf::VideoMode::getDesktopMode().width * letterbox), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height)});
+					}
+					flags.reset(GameFlags::standard_display);
+				} else {
+					services.window->get().setSize(measurements.win_size);
+					flags.set(GameFlags::standard_display);
 				}
-				window.setSize(sf::Vector2u{measurements.win_size.x, measurements.win_size.y});
-				screencap.create(window.getSize().x, window.getSize().y);
+				services.window->set_screencap();
+				while (services.window->get().pollEvent(event)) {} // have to clear the event queue because Window::setSize() is considered a resize event
 				break;
 			case sf::Event::KeyPressed:
 				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
@@ -114,15 +124,15 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int 
 					// flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
-					if (flags.test(GameFlags::playtest)) {
+					/*if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
 						services.assets.menu_back.play();
 					} else {
 						flags.set(GameFlags::playtest);
 						services.assets.menu_next.play();
-					}
+					}*/
 				}
-				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(screencap); }
+				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(services.window->screencap); }
 				if (event.key.code == sf::Keyboard::H) {
 					// services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 					// services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
@@ -145,30 +155,30 @@ void Game::run(sf::RenderWindow& window, sf::Texture& screencap, bool demo, int 
 
 		// game logic and rendering
 		services.music.update();
-		bool has_focus = window.hasFocus();
+		bool has_focus = services.window->get().hasFocus();
 		services.ticker.tick([this, has_focus, &services = services] {
 			services.controller_map.update(has_focus);
 			game_state.get_current_state().tick_update(services);
 		});
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
-		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(screencap); }
+		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
 
-		ImGui::SFML::Update(window, deltaClock.restart());
-		screencap.update(window);
+		ImGui::SFML::Update(services.window->get(), deltaClock.restart());
+		services.window->screencap.update(services.window->get());
 
 		// ImGui stuff
-		if (services.debug_flags.test(automa::DebugFlags::imgui_overlay)) { debug_window(window); }
-		if (flags.test(GameFlags::playtest)) { playtester_portal(window); }
+		if (services.debug_flags.test(automa::DebugFlags::imgui_overlay)) { debug_window(services.window->get()); }
+		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
 
 		// my renders
-		window.clear();
-		window.draw(background);
+		services.window->get().clear();
+		services.window->get().draw(background);
 
-		game_state.get_current_state().render(services, window);
+		game_state.get_current_state().render(services, services.window->get());
 
-		ImGui::SFML::Render(window);
-		window.display();
+		ImGui::SFML::Render(services.window->get());
+		services.window->get().display();
 
 		services.ticker.end_frame();
 	}
@@ -878,6 +888,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 112);
 							player.set_position({32 * 2, 32 * 8});
+						}
+						if (ImGui::Button("Hideout")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 125);
+							player.set_position({32 * 8, 32 * 2});
 						}
 						if (ImGui::Button("Shaft")) {
 							services.assets.click.play();

@@ -28,7 +28,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	}
 
 	// world
-	if (flags.world.test(World::load)) { svc.assets.load.play(); }
+	if (flags.world.test(World::load)) { play_at_volume(svc.assets.load, 60); }
 	if (flags.world.test(World::save)) { svc.assets.save.play(); }
 	if (flags.world.test(World::soft_sparkle)) { svc.assets.soft_sparkle.play(); }
 	if (flags.world.test(World::chest)) { svc.assets.chest.play(); }

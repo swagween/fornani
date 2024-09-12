@@ -20,7 +20,7 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	subtitle.setFont(subtitle_font);
 	subtitle.setLetterSpacing(1.2f);
 	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	subtitle.setPosition(svc.constants.screen_dimensions.x * 0.5f - subtitle.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 324.f);
+	subtitle.setPosition(svc.constants.screen_dimensions.x * 0.5f - subtitle.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 300.f);
 	subtitle.setFillColor(svc.styles.colors.red);
 	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
 	instruction.setLineSpacing(1.5f);

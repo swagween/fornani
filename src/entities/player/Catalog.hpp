@@ -18,6 +18,7 @@ class Catalog {
   public:
 	void update(automa::ServiceProvider& svc);
 	void add_item(automa::ServiceProvider& svc, int item_id, int amount);
+	void remove_item(automa::ServiceProvider& svc, int item_id, int amount);
 	struct {
 		Inventory inventory{};
 		AbilityManager abilities{};

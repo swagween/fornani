@@ -4,7 +4,7 @@
 namespace text {
 
 void Tutorial::update(automa::ServiceProvider& svc) {
-	if (!svc.controller_map.is_tutorial_enabled()) {
+	if (!svc.tutorial()) {
 		helpers.set(TutorialHelpers::closed);
 		return;
 	}
@@ -32,7 +32,7 @@ void Tutorial::update(automa::ServiceProvider& svc) {
 		return;
 	}
 	if (!flags.test(TutorialFlags::map)) {
-		help_marker.init(svc, "View map from inventory by pressing [", config::DigitalAction::platformer_open_map, "].", 200, true, true);
+		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_map, "] to open map.", 200, true, true);
 		maximum_display_time.start();
 		return;
 	}

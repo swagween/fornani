@@ -48,7 +48,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto cutscene = util::QuestKey{ctype, cid, csource};
 			svc.quest.process(svc, cutscene);
 			if (svc.quest.get_progression(fornani::QuestType::cutscene, 3002) > 0) { std::cout << "cutscene requested!\n"; }
-
 		}
 		if (meta["music"].is_string()) {
 			svc.music.load(meta["music"].as_string());

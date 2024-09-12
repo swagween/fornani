@@ -405,7 +405,6 @@ void Collider::handle_collider_collision(Shape const& collider) {
 void Collider::update(automa::ServiceProvider& svc) {
 	flags.external_state = {};
 	physics.update(svc);
-	position_history.push_back(physics.position);
 	sync_components();
 	flags.state.reset(State::just_collided);
 	physics.gravity = flags.state.test(State::grounded) ? 0.0f : stats.GRAV;
@@ -525,15 +524,7 @@ bool Collider::pushes(Collider& other) const {
 	return (physics.position.x < other.physics.position.x && physics.velocity.x > 0.f) || (physics.position.x > other.physics.position.x && physics.velocity.x < 0.f);
 }
 
-sf::Vector2<float> Collider::get_average_tick_position() {
-	sf::Vector2<float> ret{};
-	auto size = static_cast<int>(position_history.size());
-	if (size == 0) { return physics.position; }
-	for (auto& pos : position_history) { ret += pos; }
-	ret.x /= size;
-	ret.y /= size;
-	return ret;
-}
+sf::Vector2<float> Collider::get_average_tick_position() { return physics.previous_position; }
 
 sf::Vector2<float> Collider::snap_to_grid(float size, float scale, float factor) {
 	return sf::Vector2<float>{std::round((physics.position.x * size / factor) / (size * (scale / factor))), std::round((physics.position.y * size / factor) / (size * (scale / factor)))} *

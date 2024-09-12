@@ -36,7 +36,12 @@ void Health::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 void Health::heal(float amount) {
 	hp += amount;
-	restored.start(128);
+	restored.start();
+}
+
+void Health::refill() {
+	hp = max_hp;
+	restored.start();
 }
 
 void Health::inflict(float amount, bool force) {

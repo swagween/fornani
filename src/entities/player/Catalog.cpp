@@ -9,4 +9,6 @@ void Catalog::update(automa::ServiceProvider& svc) {
 }
 void Catalog::add_item(automa::ServiceProvider& svc, int item_id, int amount) { categories.inventory.add_item(svc, item_id, amount); }
 
+void Catalog::remove_item(automa::ServiceProvider& svc, int item_id, int amount) { categories.inventory.remove_item(svc, item_id, amount); }
+
 } // namespace player

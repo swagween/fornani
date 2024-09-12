@@ -23,6 +23,7 @@ class Selector {
 	void set_dimensions(sf::Vector2<int> dim);
 	void set_position(sf::Vector2<float> pos) { position = pos; }
 	[[nodiscard]] auto get_current_selection() const -> int { return current_selection.get(); }
+	[[nodiscard]] auto get_menu_position() const -> sf::Vector2<float> { return position + sf::Vector2<float>{2.f * sprite.getLocalBounds().width, -8.f}; }
 
 	util::Circuit current_selection{1};
 

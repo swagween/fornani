@@ -5,8 +5,11 @@ namespace fornani {
 Application::Application(char** argv) {
 
 	finder.setResourcePath(argv);
+
+	// load app resources
 	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
 	assert(!game_info.is_null());
+
 	t_loading.loadFromFile(finder.resource_path + "/image/gui/loading.png");
 	loading.setTexture(t_loading);
 	metadata.title = game_info["title"].as_string();
@@ -14,26 +17,29 @@ Application::Application(char** argv) {
 	metadata.major = game_info["version"]["major"].as<int>();
 	metadata.minor = game_info["version"]["minor"].as<int>();
 	metadata.hotfix = game_info["version"]["hotfix"].as<int>();
-	std::cout << "> launching " << metadata.long_title() << "\n";
+	std::cout << "> Launching " << metadata.long_title() << "\n";
+
+	app_settings = dj::Json::from_file((finder.resource_path + "/data/config/settings.json").c_str());
+	assert(!app_settings.is_null());
 
 	//create window
-	sf::Vector2<int> aspect_ratio{3840, 2160};
-	sf::Vector2<int> screen_dimensions{aspect_ratio.x / 4, aspect_ratio.y / 4};
-	window.create(sf::VideoMode(screen_dimensions.x, screen_dimensions.y), metadata.long_title());
-	screencap.create(window.getSize().x, window.getSize().y);
-	window.setVerticalSyncEnabled(true);
-	window.setFramerateLimit(60);
-	window.setKeyRepeatEnabled(false);
+	window.create(metadata.long_title(), static_cast<bool>(app_settings["fullscreen"].as_bool()));
+	window.set();
 
-	ImGui::SFML::Init(window);
-	window.clear();
-	window.draw(loading);
-	window.display();
+	// set app icon
+	sf::Image icon{};
+	icon.loadFromFile(finder.resource_path + "/image/app/icon.png");
+	window.get().setIcon(256, 256, icon.getPixelsPtr());
+
+	ImGui::SFML::Init(window.get());
+	window.get().clear();
+	window.get().draw(loading);
+	window.get().display();
 }
 
 void Application::launch(char** argv) {
-	Game game{argv};
-	game.run(window, screencap);
+	std::unique_ptr game = std::make_unique<Game>(argv, window);
+	game->run();
 }
 
 } // namespace fornani

@@ -65,6 +65,7 @@ void ControlsMenu::init(ServiceProvider& svc, int room_number) {}
 void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 	if (option_is_selected && current_selection.get() > 0 && current_selection.get() < options.size() - 2) {
 		// Currently binding key
+		binding_mode = true;
 		if (event.type == sf::Event::EventType::KeyPressed) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
 			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(options.at(current_selection.get()).label.getString());
@@ -87,11 +88,13 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 void ControlsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-		if (!option_is_selected) {
-			current_selection.modulate(1);
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
-		}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered && !binding_mode) {
+		current_selection.modulate(-1);
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered && !binding_mode) {
+		current_selection.modulate(1);
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered && option_is_selected && current_selection.get() == 0) {
 		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
@@ -104,31 +107,23 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		auto tab_to_switch_to = (current_tab + 1) % 4;
 		change_scene(svc, tabs[tab_to_switch_to]);
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-		if (!option_is_selected) {
-			current_selection.modulate(-1);
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
-		}
-	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
-		if (option_is_selected) {
-			option_is_selected = false;
-		} else {
-			svc.state_controller.submenu = menu_type::options;
-			svc.state_controller.actions.set(Actions::exit_submenu);
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && !binding_mode) {
+		svc.state_controller.submenu = menu_type::options;
+		svc.state_controller.actions.set(Actions::exit_submenu);
+		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
 	auto pressed_select = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered;
 	if (pressed_select) {
 		// Gamepad settings should be second to last option
-		if (current_selection.get() == options.size() - 2 && svc.controller_map.gamepad_connected()) {
+		if (current_selection.get() == 0) {
+			option_is_selected = !option_is_selected;
+		} else if (current_selection.get() == options.size() - 2) {
 			svc.controller_map.open_bindings_overlay();
 		}
 		// Reset to default should be last option
 		else if (current_selection.get() == options.size() - 1) {
 			restore_defaults(svc);
-		} else {
+		} else  if (!binding_mode) {
 			option_is_selected = !option_is_selected;
 			auto& control = control_list.at(current_selection.get());
 			control.setString("Press a key");
@@ -148,6 +143,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
 	svc.soundboard.play_sounds(svc);
+	binding_mode = option_is_selected;
 }
 
 void ControlsMenu::frame_update(ServiceProvider& svc) {}
@@ -165,9 +161,7 @@ void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
-	// svc.data.load_controls(svc.controller_map);
 	size_t ctr{0};
-
 	for (auto& option : options) {
 		if (ctr > 0 && ctr < options.size() - 2) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
@@ -202,6 +196,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	control_list.clear();
 	auto const& in_data = svc.data.menu["options"];
 	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string(), font)); }
+	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
 	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {
@@ -222,7 +217,6 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		control_list.back().setFont(font);
 		++ctr;
 	}
-
 	refresh_controls(svc);
 }
 

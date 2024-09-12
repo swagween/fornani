@@ -7,7 +7,7 @@ namespace gui {
 
 MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc) {
 	background_color = svc.styles.colors.ui_black;
-	background_color.a = 120;
+	background_color.a = 210;
 	background.setFillColor(background_color);
 	border.setOutlineColor(svc.styles.colors.ui_white);
 	border.setOutlineThickness(-4.f);
@@ -36,8 +36,13 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool
 }
 
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	view = sf::View(sf::FloatRect(0.0f, 0.0f, svc.constants.f_screen_dimensions.x, svc.constants.f_screen_dimensions.y));
-	view.setViewport(sf::FloatRect(0.2f, 0.2f, 0.6f, 0.6f));
+	view = svc.window->get_view();
+	auto port = svc.window->get_viewport();
+	port.width *= window_scale;
+	port.height *= window_scale;
+	port.left = (1.f - port.width) * 0.5f;
+	port.top = (1.f - port.height) * 0.5f;
+	view.setViewport(port);
 	background.setSize(svc.constants.f_screen_dimensions);
 	border.setSize(svc.constants.f_screen_dimensions);
 	ratio = 32.f / scale;
@@ -77,7 +82,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	win.draw(cursor.vert);
 	win.draw(cursor.horiz);
 	win.draw(border);
-	win.setView(sf::View(sf::FloatRect{0.f, 0.f, (float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y}));
+	svc.window->restore_view();
 }
 
 void MiniMap::toggle_scale() {

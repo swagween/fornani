@@ -45,12 +45,10 @@ void PauseWindow::update(automa::ServiceProvider& svc, Console& console, bool au
 	selector.update();
 	if (active()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-			menu.down();
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
+			menu.down(svc);
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-			menu.up();
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
+			menu.up(svc);
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 			switch (menu.get_selection()) {

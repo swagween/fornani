@@ -64,7 +64,8 @@ class AssetManager {
 	sf::Texture t_title{};
 	sf::Texture t_title_assets{};
 	sf::Texture t_file_text{};
-	sf::Texture t_white_console{};
+	sf::Texture t_blue_console{};
+	sf::Texture t_cream_console{};
 
 	sf::Texture t_hud_orb_font{};
 	sf::Texture t_hud_hearts{};

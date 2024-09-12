@@ -5,7 +5,7 @@
 
 namespace automa {
 
-enum class Toggles { autosprint, tutorial, gamepad, music };
+enum class Toggles { autosprint, tutorial, gamepad, music, fullscreen };
 enum class MenuMode { adjust };
 
 class SettingsMenu : public automa::GameState {
@@ -31,6 +31,7 @@ class SettingsMenu : public automa::GameState {
 		sf::Text autosprint{};
 		sf::Text tutorial{};
 		sf::Text gamepad{};
+		sf::Text fullscreen{};
 	} toggleables{};
 
 	struct {

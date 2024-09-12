@@ -52,6 +52,16 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 	update(svc);
 }
 
+void Inventory::remove_item(automa::ServiceProvider& svc, int item_id, int amount) {
+	bool depleted{};
+	for (auto& item : items) {
+		if (item.get_id() == item_id) {
+			item.subtract_item(amount);
+		}
+	}
+	std::erase_if(items, [](auto const& i) { return i.depleted(); });
+}
+
 void Inventory::reveal_item(int item_id) {
 	for (auto& item : items) {
 		if (item.get_id() == item_id) { item.reveal(); }

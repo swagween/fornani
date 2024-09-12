@@ -11,14 +11,16 @@
 
 namespace fornani {
 
-enum class GameFlags { playtest, in_game };
+class WindowManager;
+enum class GameFlags { playtest, in_game, standard_display };
 
 class Game {
   public:
 	Game() = default;
-	Game(char** argv);
+	Game(char** argv, WindowManager& window);
 	~Game() {}
-	void run(sf::RenderWindow& window, sf::Texture& screencap, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{},
+			 sf::Vector2<float> player_position = {});
 
 	void playtest_sync();
 	void toggle_weapon(bool flag, int id);
@@ -33,7 +35,7 @@ class Game {
 	automa::ServiceProvider services{};
 
 	struct {
-		sf::Vector2<uint32_t> win_size{};
+		sf::Vector2u win_size{};
 		float height_ratio{};
 		float width_ratio{};
 	} measurements{};

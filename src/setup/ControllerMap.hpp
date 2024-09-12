@@ -126,11 +126,9 @@ class ControllerMap {
 
 	// TODO Move autosprint and tutorial toggles away from ControllerMap
 	void enable_autosprint(bool enable) { autosprint_enabled = enable; }
-	void enable_tutorial(bool enable) { tutorial_enabled = enable; }
 	void enable_gamepad_input(bool enable) { gamepad_input_enabled = enable; }
 	[[nodiscard]] auto is_gamepad_input_enabled() -> bool { return gamepad_input_enabled; }
 	[[nodiscard]] auto is_autosprint_enabled() -> bool { return autosprint_enabled; }
-	[[nodiscard]] auto is_tutorial_enabled() -> bool { return tutorial_enabled; }
 
   private:
 	struct DigitalActionData {
@@ -156,7 +154,6 @@ class ControllerMap {
 
 	bool gamepad_input_enabled{true};
 	bool autosprint_enabled{true};
-	bool tutorial_enabled{true};
 
 	void reset_digital_action_states();
 

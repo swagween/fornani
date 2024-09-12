@@ -13,6 +13,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	metadata.hidden_description = in_data["hidden_description"] ? in_data["hidden_description"].as_string() : in_data["naive_description"].as_string();
 	metadata.naive_description = in_data["naive_description"].as_string();
 	if (in_data["unique"].as_bool()) { flags.set(ItemFlags::unique); }
+	if (in_data["usable"].as_bool()) { flags.set(ItemFlags::usable); }
 	dimensions = {32.f, 32.f};
 	sprite.setTexture(svc.assets.t_items);
 	auto u = static_cast<int>(((metadata.id - 1) % 16) * dimensions.x);
@@ -37,6 +38,8 @@ void Item::update(automa::ServiceProvider& svc, int index) {
 void Item::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { svc.greyblock_mode() ? win.draw(drawbox) : win.draw(sprite); }
 
 void Item::add_item(int amount) { variables.quantity += amount; }
+
+void Item::subtract_item(int amount) { variables.quantity -= amount; }
 
 void item::Item::set_id(int new_id) { metadata.id = new_id; }
 
