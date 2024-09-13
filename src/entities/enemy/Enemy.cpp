@@ -234,4 +234,11 @@ void Enemy::on_crush(world::Map& map) {
 
 bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.dimensions.x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
 
+void Enemy::set_position_from_scaled(sf::Vector2<float> pos) {
+	auto new_pos = pos;
+	auto round = static_cast<int>(collider.dimensions.y) % 32;
+	new_pos.y += static_cast<float>(32.f - round);
+	set_position(new_pos);
+}
+
 } // namespace enemy

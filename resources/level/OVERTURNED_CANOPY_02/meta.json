@@ -16,7 +16,15 @@
     "style": 1,
     "background": 3,
     "music": "",
-    "styles":  {"breakables": 2}
+    "styles": {
+      "breakables": 2
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
   },
   "portals": [
     {
@@ -31,6 +39,7 @@
       "source_id": 299,
       "destination_id": 200,
       "activate_on_contact": true,
+      "already_open": false,
       "locked": false,
       "key_id": 0
     },
@@ -46,6 +55,7 @@
       "source_id": 299,
       "destination_id": 201,
       "activate_on_contact": true,
+      "already_open": false,
       "locked": false,
       "key_id": 0
     },
@@ -61,6 +71,7 @@
       "source_id": 299,
       "destination_id": 224,
       "activate_on_contact": true,
+      "already_open": false,
       "locked": false,
       "key_id": 0
     }

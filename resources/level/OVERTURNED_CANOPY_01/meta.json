@@ -18,6 +18,12 @@
     "music": "whispering_island",
     "styles": {
       "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
     }
   },
   "portals": [
@@ -33,6 +39,7 @@
       "source_id": 200,
       "destination_id": 299,
       "activate_on_contact": true,
+      "already_open": false,
       "locked": false,
       "key_id": 0
     },
@@ -48,23 +55,9 @@
       "source_id": 200,
       "destination_id": 122,
       "activate_on_contact": true,
+      "already_open": false,
       "locked": false,
       "key_id": 0
-    }
-  ],
-  "inspectables": [
-    {
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        11,
-        43
-      ],
-      "activate_on_contact": false,
-      "key": "canopy_farm",
-      "alternates": 0
     }
   ],
   "animators": [
@@ -132,20 +125,6 @@
         2
       ],
       "position": [
-        7,
-        17
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 115,
-      "style": 0,
-      "dimensions": [
-        2,
-        2
-      ],
-      "position": [
         8,
         26
       ],
@@ -174,20 +153,6 @@
         1
       ],
       "position": [
-        8,
-        20
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 212,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
         9,
         9
       ],
@@ -204,34 +169,6 @@
       "position": [
         9,
         1
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 211,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        7,
-        8
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 211,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        7,
-        11
       ],
       "automatic": false,
       "foreground": true
@@ -335,32 +272,39 @@
       "foreground": true
     },
     {
-      "id": 215,
+      "id": 114,
       "style": 0,
       "dimensions": [
-        1,
-        1
+        2,
+        2
       ],
       "position": [
-        15,
-        43
+        6,
+        10
       ],
       "automatic": false,
       "foreground": true
     },
     {
-      "id": 215,
+      "id": 211,
       "style": 0,
       "dimensions": [
         1,
         1
       ],
       "position": [
-        13,
-        43
+        6,
+        9
       ],
       "automatic": false,
       "foreground": true
     }
-  ]
+  ],
+  "save_point": {
+    "id": 200,
+    "position": [
+      5,
+      43
+    ]
+  }
 }

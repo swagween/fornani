@@ -27,21 +27,26 @@ class Player;
 
 namespace npc {
 
-enum class NPCState { engaged, force_interact, introduced, background, talking };
-enum class NPCTrigger { distant_interact, engaged };
+enum class NPCState { engaged, force_interact, introduced, background, talking, cutscene };
+enum class NPCTrigger { distant_interact, engaged, cutscene };
 
 class NPC : public entity::Entity {
   public:
 	NPC(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
+	void force_engage();
 	void set_position(sf::Vector2<float> pos);
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
 	void set_id(int new_id);
+	void start_conversation(automa::ServiceProvider& svc, gui::Console& console);
 	void push_conversation(std::string_view convo);
+	void pop_conversation();
 	void flush_conversations();
 	void push_to_background() { state_flags.set(NPCState::background); }
 	[[nodiscard]] auto background() const -> bool { return state_flags.test(NPCState::background); }
+	[[nodiscard]] auto num_suites() const -> int { return static_cast<int>(conversations.size()); }
+	[[nodiscard]] auto get_id() const -> int { return id; }
 
 	std::string_view label{};
 

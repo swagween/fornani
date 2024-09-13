@@ -67,6 +67,7 @@ void NineSlice::render(sf::RenderWindow& win) const {
 }
 
 void NineSlice::start(automa::ServiceProvider& svc, sf::Vector2<float> position) {
+	global_scale = 0.f;
 	appear.start();
 	random_offset = svc.random.random_vector_float(-32.f, 32.f);
 	gravitator.set_position(position + random_offset);

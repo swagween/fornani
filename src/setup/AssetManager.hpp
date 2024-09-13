@@ -273,6 +273,10 @@ class AssetManager {
 	sf::SoundBuffer b_mirin_oh{};
 	sf::SoundBuffer b_mirin_laugh{};
 
+	sf::SoundBuffer b_carl_huh{};
+	sf::SoundBuffer b_carl_eh{};
+	sf::SoundBuffer b_carl_and{};
+
 	sf::SoundBuffer b_heavy_land{};
 	sf::SoundBuffer b_delay_crash{};
 	sf::SoundBuffer b_small_crash{};
@@ -384,6 +388,8 @@ class AssetManager {
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
 	std::vector<sf::SoundBuffer> vs_mirin{};
+	std::vector<sf::SoundBuffer> vs_carl{};
+	std::vector<sf::SoundBuffer> vs_hologus{};
 	std::unordered_map<std::string_view, std::vector<sf::SoundBuffer>> npc_sounds{};
 };
 

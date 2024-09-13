@@ -158,7 +158,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
 
-	if (!svc.greyblock_mode()) { hud.render(*player, win); }
+	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
 	inventory_window.render(svc, *player, win, camera.get_position());
 	pause_window.render(svc, *player, win);
 	map.transition.render(win);

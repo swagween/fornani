@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
+#include "../utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -21,13 +22,18 @@ class Transition {
 
 	void update(player::Player& player);
 	void render(sf::RenderWindow& win);
+	void start();
+	void end();
+	[[nodiscard]] auto not_started() const -> bool { return !fade_out && !done; }
+	[[nodiscard]] auto is_done() const -> bool { return done; }
 
-	int const duration{};
-	int current_frame{};
+  private:
+	int duration{};
+	util::Cooldown cooldown{};
 	uint8_t alpha{255};
-	bool done{false};
-	bool fade_out{false};
-	bool fade_in{false};
+	bool done{};
+	bool fade_out{};
+	bool fade_in{};
 	int rate{4};
 
 	sf::RectangleShape box{};

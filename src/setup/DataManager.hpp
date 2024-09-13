@@ -91,6 +91,7 @@ class DataManager {
 	dj::Json npc{};
 	dj::Json item{};
 	dj::Json platform{};
+	dj::Json cutscene{};
 
 	//enemy
 	dj::Json enemy{};

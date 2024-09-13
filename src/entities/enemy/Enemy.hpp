@@ -82,6 +82,7 @@ class Enemy : public entity::Entity {
 		collider.sync_components();
 		health_indicator.set_position(pos);
 	}
+	void set_position_from_scaled(sf::Vector2<float> pos);
 	void hurt() { flags.state.set(StateFlags::hurt); }
 	void shake() { flags.state.set(StateFlags::shaking); }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }

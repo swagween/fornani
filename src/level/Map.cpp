@@ -11,7 +11,7 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 256), m_services(&svc), m_console(&console) {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), m_services(&svc), m_console(&console) {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
@@ -20,6 +20,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
 	spawn_counter.start();
+
+	svc.state_flags.reset(automa::StateFlags::hide_hud);
 
 	int ctr{};
 	for (auto& room : svc.data.map_jsons) {
@@ -47,7 +49,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto csource = meta["cutscene_on_entry"]["source"].as<int>();
 			auto cutscene = util::QuestKey{ctype, cid, csource};
 			svc.quest.process(svc, cutscene);
-			if (svc.quest.get_progression(fornani::QuestType::cutscene, 3002) > 0) { std::cout << "cutscene requested!\n"; }
+			if (svc.quest.get_progression(fornani::QuestType::cutscene, 6001) > 0) { std::cout << "cutscene requested!\n"; }
+			cutscene_catalog.push_cutscene(svc, *this, *m_console, cid);
 		}
 		if (meta["music"].is_string()) {
 			svc.music.load(meta["music"].as_string());
@@ -107,7 +110,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
-			beds.push_back(entity::Bed(svc, pos));
+			beds.push_back(entity::Bed(svc, pos, room_lookup));
 		}
 		for (auto& entry : metadata["inspectables"].array_view()) {
 			sf::Vector2<uint32_t> dim{};
@@ -126,11 +129,11 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 		for (auto& entry : metadata["enemies"].array_view()) {
 			int id{};
-			sf::Vector2<int> pos{};
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<float>();
+			pos.y = entry["position"][1].as<float>();
 			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>());
-			enemy_catalog.enemies.back()->set_position({(float)(pos.x * svc.constants.cell_size), (float)(pos.y * svc.constants.cell_size)});
+			enemy_catalog.enemies.back()->set_position_from_scaled({pos * svc.constants.cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 		}
 		for (auto& entry : metadata["destroyers"].array_view()) {
@@ -204,7 +207,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 		player->map_reset();
 
-		transition.fade_in = true;
+		transition.end();
 		loading.start(4);
 	}
 }
@@ -212,8 +215,10 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
 	auto& layers = svc.data.get_layers(room_id);
 	loading.update();
-	if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
+	//if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
 	flags.state.reset(LevelState::camera_shake);
+
+	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
@@ -226,7 +231,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		flags.state.reset(LevelState::spawn_enemy);
 	}
 
-	console.update(svc);
 	inventory_window.update(svc, *player, *this);
 
 	player->collider.reset();
@@ -327,7 +331,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
 	for (auto& npc : npcs) { npc.update(svc, *this, console, *player); }
-	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition.fade_out, transition.done); }
+	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(svc, *player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
@@ -336,7 +340,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
-	for (auto& bed : beds) { bed.update(svc, *this, console, *player); }
+	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) {
 		breakable.update(svc);
 		breakable.handle_collision(player->collider);
@@ -349,6 +353,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
 	std::erase_if(effects, [](auto& e) { return e.done(); });
+	console.update(svc);
 
 	player->collider.reset_ground_flags();
 
@@ -376,25 +381,11 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	if (svc.state_controller.actions.test(automa::Actions::retry)) { flags.state.set(LevelState::game_over); }
 	if (console.is_complete() && flags.state.test(LevelState::game_over)) {
-		transition.fade_out = true;
-		if (transition.done) {
+		transition.start();
+		if (transition.is_done()) {
 			player->start_over();
 			svc.state_controller.actions.set(automa::Actions::player_death);
 			svc.state_controller.actions.set(automa::Actions::trigger);
-		}
-	}
-	if(svc.state_controller.actions.test(automa::Actions::console_transition)) {
-		svc.music.load("brown");
-		svc.music.play_looped(10);
-		transition.fade_out = true;
-		if (transition.done && console.is_complete()) {
-			player->health.heal(64.f);
-			player->health.update();
-			svc.soundboard.flags.item.set(audio::Item::heal);
-			svc.music.load(svc.data.map_jsons.at(room_lookup).metadata["meta"]["music"].as_string());
-			svc.music.play_looped(10);
-			transition.fade_in = true;
-			svc.state_controller.actions.reset(automa::Actions::console_transition);
 		}
 	}
 

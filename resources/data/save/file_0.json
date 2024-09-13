@@ -1,71 +1,100 @@
 {
   "status": {
-    "new": true
+    "new": false
   },
   "player_data": {
-    "max_hp": 3,
-    "hp": 3,
-    "orbs": 0,
+    "max_hp": 3.000000,
+    "hp": 2.000000,
+    "orbs": 56,
     "position": {
-      "x": 102.0,
-      "y": 327.0
+      "x": 618.218079,
+      "y": 267.000000
     },
     "arsenal": [
-
+      0
     ],
     "equipped_gun": 0,
     "abilities": [
 
     ],
     "items": [
-
+      {
+        "id": 16,
+        "quantity": 1
+      }
     ],
     "stats": {
-      "death_count": 0,
-      "bullets_fired": 0,
-      "guns_collected": 0,
-      "items_collected": 0,
-      "orbs_collected": 0,
+      "death_count": 6,
+      "bullets_fired": 66,
+      "guns_collected": 1,
+      "items_collected": 1,
+      "orbs_collected": 56,
       "blue_orbs": 0,
-      "highest_indicator_amount": 0,
-      "enemies_killed": 0,
-      "rooms_discovered": 0,
-      "seconds_played": 0.0,
+      "highest_indicator_amount": 38,
+      "enemies_killed": 2,
+      "rooms_discovered": 12,
+      "seconds_played": 280.315430,
       "time_trials": {
-        "bryns_gun": 0.0
+        "bryns_gun": 25.041019
       }
     }
   },
-  "save_point_id": 100,
+  "save_point_id": 103,
   "unlocked_doors": [
 
   ],
   "opened_chests": [
-
+    377,
+    567911
   ],
   "activated_switches": [
-
+    445,
+    1
   ],
   "destroyed_blocks": [
 
   ],
   "quest_progressions": [
-
+    [
+      1,
+      111,
+      1,
+      1,
+      0
+    ],
+    [
+      88,
+      1,
+      1,
+      1,
+      0
+    ]
   ],
   "destroyed_inspectables": [
 
   ],
   "tutorial": {
-    "state": 0,
-    "closed": false,
-    "on": true,
-    "jump": false,
-    "shoot": false,
-    "sprint": false,
+    "state": 4,
+    "closed": true,
+    "on": false,
+    "jump": true,
+    "shoot": true,
+    "sprint": true,
     "map": false,
-    "inventory": false
+    "inventory": true
   },
   "discovered_rooms": [
-
+    100,
+    101,
+    102,
+    110,
+    108,
+    116,
+    107,
+    106,
+    117,
+    105,
+    199,
+    103
   ]
 }

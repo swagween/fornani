@@ -21,6 +21,7 @@ enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable
 enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase };
 enum class Player { jump, step, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide };
 enum class Weapon { bryns_gun, plasmer, skycorps_ar, nova, clover, tomahawk, tomahawk_catch, hook_probe, staple, indie, gnat };
+enum class Transmission { statics };
 
 // critters
 enum class Frdog { hurt, death };
@@ -38,6 +39,7 @@ struct Soundboard {
 		util::BitFlags<Item> item{};
 		util::BitFlags<Player> player{};
 		util::BitFlags<Weapon> weapon{};
+		util::BitFlags<Transmission> transmission{};
 
 		util::BitFlags<Frdog> frdog{};
 		util::BitFlags<Hulmet> hulmet{};

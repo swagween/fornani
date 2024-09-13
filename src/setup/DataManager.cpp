@@ -75,6 +75,8 @@ void DataManager::load_data(std::string in_room) {
 	assert(!item.is_null());
 	platform = dj::Json::from_file((finder.resource_path + "/data/level/platform.json").c_str());
 	assert(!platform.is_null());
+	cutscene = dj::Json::from_file((finder.resource_path + "/data/story/cutscenes.json").c_str());
+	assert(!cutscene.is_null());
 	map_styles = dj::Json::from_file((finder.resource_path + "/data/level/map_styles.json").c_str());
 	assert(!map_styles.is_null());
 

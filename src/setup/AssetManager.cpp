@@ -335,10 +335,24 @@ void AssetManager::load_audio() {
 	b_mirin_ah.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_ah.wav");
 	b_mirin_oh.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_oh.wav");
 	b_mirin_laugh.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_laugh.wav");
+	b_carl_huh.loadFromFile(finder.resource_path + "/audio/sfx/carl/carl_huh.wav");
+	b_carl_eh.loadFromFile(finder.resource_path + "/audio/sfx/carl/carl_eh.wav");
+	b_carl_and.loadFromFile(finder.resource_path + "/audio/sfx/carl/carl_and.wav");
 	vs_mirin.push_back(b_mirin_ah);
 	vs_mirin.push_back(b_mirin_oh);
 	vs_mirin.push_back(b_mirin_laugh);
 	npc_sounds.insert({"mirin", vs_mirin});
+	vs_hologus.push_back(b_minigus_pizza);
+	vs_hologus.push_back(b_minigus_dontlookatme);
+	vs_hologus.push_back(b_minigus_babyimhome);
+	vs_hologus.push_back(b_minigus_laugh);
+	vs_hologus.push_back(b_minigus_itsagreatday);
+	vs_hologus.push_back(b_minigus_ok_1);
+	npc_sounds.insert({"hologus", vs_hologus});
+	vs_carl.push_back(b_carl_huh);
+	vs_carl.push_back(b_carl_eh);
+	vs_carl.push_back(b_carl_and);
+	npc_sounds.insert({"carl", vs_carl});
 
 	b_heavy_land.loadFromFile(finder.resource_path + "/audio/sfx/deep/heavy_land.wav");
 	b_delay_crash.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_crash.wav");
