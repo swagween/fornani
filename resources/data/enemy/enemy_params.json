@@ -258,6 +258,48 @@
       "player_collision": true
     }
   },
+  "demon": {
+    "metadata": {
+      "id": 7,
+      "variant": "guardian"
+    },
+    "physical": {
+      "dimensions": [ 28, 38 ],
+      "sprite_dimensions": [ 72, 72 ],
+      "spritesheet_dimensions": [ 2, 6 ],
+      "offset": [ 11, -14 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 200.0, 300.0 ],
+      "hostile_range": [ 600.0, 96.0 ],
+      "friction": 0.98,
+      "gravity": 6.5
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 26,
+      "base_damage": 1.0,
+      "speed": 1.0,
+      "loot_multiplier": 9.0,
+      "drop_range": [ 6, 11 ]
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": false
+    }
+  },
   "hauler": {
     "metadata": {
       "id": 6,

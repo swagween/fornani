@@ -66,7 +66,9 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.thug.test(Thug::hurt_2)) { play_at_volume(svc.assets.tank_hurt_2, 50); }
 	if (flags.thug.test(Thug::death)) { svc.assets.tank_death.play(); }
 
-	//minigus
+	//demon
+	if (flags.demon.test(Demon::hurt)) { svc.assets.enem_hit.play(); }
+	if (flags.demon.test(Demon::death)) { svc.assets.enem_death_1.play(); }
 
 	//item
 	if (flags.item.test(Item::heal)) { svc.assets.heal.play(); }

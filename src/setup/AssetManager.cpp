@@ -34,6 +34,10 @@ void AssetManager::import_textures() {
 	t_minigus_inv.loadFromFile(finder.resource_path + "/image/boss/minigus_inv.png");
 	t_minigus_red.loadFromFile(finder.resource_path + "/image/boss/minigus_red.png");
 	t_minigus_blue.loadFromFile(finder.resource_path + "/image/boss/minigus_blue.png");
+	t_demon.loadFromFile(finder.resource_path + "/image/critter/demon.png");
+	t_demon_shield.loadFromFile(finder.resource_path + "/image/critter/demon_shield.png");
+	t_demon_spear.loadFromFile(finder.resource_path + "/image/critter/demon_spear.png");
+	t_demon_sword.loadFromFile(finder.resource_path + "/image/critter/demon_sword.png");
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
@@ -41,6 +45,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"eyebot", t_eyebot});
 	texture_lookup.insert({"eyebit", t_eyebit});
 	texture_lookup.insert({"minigus", t_minigus});
+	texture_lookup.insert({"demon", t_demon});
 
 	t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");

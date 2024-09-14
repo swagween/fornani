@@ -1,5 +1,4 @@
 #include "Grenade.hpp"
-#include "Grenade.hpp"
 #include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../level/Map.hpp"

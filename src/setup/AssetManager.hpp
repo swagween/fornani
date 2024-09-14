@@ -58,6 +58,10 @@ class AssetManager {
 	sf::Texture t_minigus_inv{};
 	sf::Texture t_minigus_red{};
 	sf::Texture t_minigus_blue{};
+	sf::Texture t_demon{};
+	sf::Texture t_demon_spear{};
+	sf::Texture t_demon_sword{};
+	sf::Texture t_demon_shield{};
 
 	// gui
 	sf::Texture t_ui{};

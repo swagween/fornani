@@ -153,11 +153,11 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	// get UV coords
 	if (spritesheet_dimensions.y != 0) {
-		int u = (int)(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-		int v = (int)(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+		auto u = static_cast<int>(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+		auto v = static_cast<int>(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
 		sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
 	}
-	sprite.setOrigin((float)sprite_dimensions.x / 2.f, (float)dimensions.y / 2.f);
+	sprite.setOrigin(static_cast<float>(sprite_dimensions.x) / 2.f, static_cast<float>(dimensions.y) / 2.f);
 }
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }

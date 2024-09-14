@@ -16,7 +16,9 @@
     "style": 1,
     "background": 3,
     "music": "",
-    "styles":  {"breakables": 2}
+    "styles": {
+      "breakables": 2
+    }
   },
   "portals": [
     {
@@ -31,6 +33,7 @@
       "source_id": 224,
       "destination_id": 299,
       "activate_on_contact": true,
+      "already_open": false,
       "locked": false,
       "key_id": 0
     },
@@ -46,6 +49,7 @@
       "source_id": 224,
       "destination_id": 225,
       "activate_on_contact": true,
+      "already_open": false,
       "locked": false,
       "key_id": 0
     }
@@ -136,20 +140,6 @@
       "foreground": true
     },
     {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        65,
-        11
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
       "id": 115,
       "style": 0,
       "dimensions": [
@@ -176,28 +166,28 @@
       ],
       "automatic": false,
       "foreground": true
-    },
-    {
-      "id": 115,
-      "style": 0,
-      "dimensions": [
-        2,
-        2
-      ],
-      "position": [
-        24,
-        10
-      ],
-      "automatic": false,
-      "foreground": true
     }
   ],
   "enemies": [
     {
-      "id": 0,
+      "id": 7,
       "position": [
-        38,
-        10
+        35,
+        11
+      ]
+    },
+    {
+      "id": 7,
+      "position": [
+        65,
+        12
+      ]
+    },
+    {
+      "id": 7,
+      "position": [
+        52,
+        13
       ]
     }
   ],
@@ -211,578 +201,6 @@
       "position": [
         55,
         2
-      ]
-    }
-  ],
-  "switch_blocks": [
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        6
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        6
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        6
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        6
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        6
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        5
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        5
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        5
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        5
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        5
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        5
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        5
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        4
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        3
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        3
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        3
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        3
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        3
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        3
-      ]
-    },
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        22,
-        3
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        11
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        11
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        11
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        11
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        11
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        11
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        11
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        12
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        13
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        13
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        13
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        13
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        13
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        13
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        13
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        53,
-        13
-      ]
-    }
-  ],
-  "switches": [
-    {
-      "button_id": 0,
-      "type": 1,
-      "position": [
-        20,
-        13
-      ]
-    },
-    {
-      "button_id": 1,
-      "type": 0,
-      "position": [
-        55,
-        5
       ]
     }
   ]

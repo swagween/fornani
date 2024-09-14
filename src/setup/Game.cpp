@@ -895,6 +895,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							game_state.get_current_state().init(services, 112);
 							player.set_position({32 * 2, 32 * 8});
 						}
+						if (ImGui::Button("Canopy")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 224);
+							player.set_position({32 * 4, 32 * 8});
+						}
 						if (ImGui::Button("Hideout")) {
 							services.assets.click.play();
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
