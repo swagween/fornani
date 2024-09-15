@@ -22,6 +22,7 @@ QuestTracker::QuestTracker() {
 	suites.destroyers.quests.insert({115, Quest{115, "firstwind_deck_destroyers"}});
 	suites.destroyers.quests.insert({122, Quest{122, "firstwind_atrium_destroyers"}});
 	suites.cutscene.quests.insert({3002, Quest{3002, "junkyard_test"}});
+	suites.cutscene.quests.insert({6001, Quest{6001, "lady_numbus_1"}});
 }
 
 int QuestTracker::get_progression(QuestType type, int id) { 

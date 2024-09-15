@@ -119,6 +119,11 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	secondary_collider.update(svc);
 	health_indicator.update(svc, collider.physics.position);
 
+	// shake
+	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	if (energy < 0.2f) { energy = 0.f; }
+	if (svc.ticker.every_x_ticks(20)) { random_offset = svc.random.random_vector_float(-energy, energy); }
+
 	if (flags.general.test(GeneralFlags::map_collision)) {
 		for (auto& breakable : map.breakables) { breakable.handle_collision(collider); }
 		collider.detect_map_collision(map);
@@ -153,11 +158,11 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	// get UV coords
 	if (spritesheet_dimensions.y != 0) {
-		int u = (int)(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-		int v = (int)(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+		auto u = static_cast<int>(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+		auto v = static_cast<int>(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
 		sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
 	}
-	sprite.setOrigin((float)sprite_dimensions.x / 2.f, (float)dimensions.y / 2.f);
+	sprite.setOrigin(static_cast<float>(sprite_dimensions.x) / 2.f, static_cast<float>(dimensions.y) / 2.f);
 }
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
@@ -167,7 +172,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
-	if (!flags.state.test(StateFlags::shaking)) { random_offset = {}; }
+	win.draw(sprite);
 	if (svc.greyblock_mode()) {
 		win.draw(sprite);
 		drawbox.setOrigin({0.f, 0.f});
@@ -186,8 +191,6 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		collider.render(win, cam);
 		secondary_collider.render(win, cam);
 		health.render(svc, win, cam);
-	} else {
-		win.draw(sprite);
 	}
 }
 
@@ -233,5 +236,12 @@ void Enemy::on_crush(world::Map& map) {
 }
 
 bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.dimensions.x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
+
+void Enemy::set_position_from_scaled(sf::Vector2<float> pos) {
+	auto new_pos = pos;
+	auto round = static_cast<int>(collider.dimensions.y) % 32;
+	new_pos.y += static_cast<float>(32.f - round);
+	set_position(new_pos);
+}
 
 } // namespace enemy

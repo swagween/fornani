@@ -20,6 +20,7 @@
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
 enum class AppFlags { fullscreen, tutorial };
+enum class StateFlags { hide_hud };
 struct ServiceProvider {
 	fornani::WindowManager* window;
 	asset::AssetManager assets{};
@@ -29,6 +30,7 @@ struct ServiceProvider {
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::BitFlags<AppFlags> app_flags{};
+	util::BitFlags<StateFlags> state_flags{};
 	util::Random random{};
 	util::Ticker ticker{};
 	util::Constants constants{};
@@ -49,6 +51,7 @@ struct ServiceProvider {
 
 	[[nodiscard]] auto fullscreen() const -> bool { return app_flags.test(AppFlags::fullscreen); }
 	[[nodiscard]] auto tutorial() const -> bool { return app_flags.test(AppFlags::tutorial); }
+	[[nodiscard]] auto hide_hud() const -> bool { return state_flags.test(StateFlags::hide_hud); }
 	[[nodiscard]] auto demo_mode() const -> bool { return debug_flags.test(DebugFlags::demo_mode); }
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }

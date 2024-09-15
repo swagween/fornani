@@ -14,6 +14,9 @@ class Player;
 namespace gui {
 class Console;
 }
+namespace flfx {
+class Transition;
+}
 
 namespace entity {
 
@@ -31,8 +34,8 @@ class Portal {
 	Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked = false, bool already_open = false, int key_id = 0);
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos); // for debugging
-	void handle_activation(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, int room_id, bool& fade_out, bool& done);
-	void change_states(automa::ServiceProvider& svc, int room_id, bool& fade_out, bool& done);
+	void handle_activation(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, int room_id, flfx::Transition& transition);
+	void change_states(automa::ServiceProvider& svc, int room_id, flfx::Transition& transition);
 	void close() { state = PortalRenderState::closed; }
 	[[nodiscard]] auto get_source() const -> int { return meta.source_map_id; }
 	[[nodiscard]] auto get_destination() const -> int { return meta.destination_map_id; }

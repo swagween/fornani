@@ -121,17 +121,17 @@
   },
   "carl1": {
     "suite": [
-      [ "What in the heck are my eyes seein' right now...?", "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea.", "The ship's goin' down, little lady.", "If I was you I'd find the nearest escape hatch and go for a swim in the clouds.", "Say, would you grab me a soda if you got nothin' else to do?" ]
+      [ "&1What in the heck are my eyes seein' right now...?", "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea.", "The ship's goin' down, little lady.", "If I was you I'd find the nearest escape hatch and go for a swim in the clouds.", "&3Say, would you grab me a soda if you got nothin' else to do?" ]
     ],
     "responses": [
     ]
   },
   "carl2": {
     "suite": [
-      [ "So... Any updates on that soda?%0" ],
-      [ "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months.", "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me." ],
-      [ "Why, it's the cargo room! Unless you were speakin' in more general terms, in which case, this is the Firstwind.", "She's an old research vessel that Skycorps... er... borrowed.", "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it." ],
-      [ "Say, would you grab me a soda if you got nothin' else to do?" ]
+      [ "&2So... Any updates on that soda?%0" ],
+      [ "&1Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months.", "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me." ],
+      [ "&3Why, it's the cargo room! Unless you were speakin' in more general terms, in which case, this is the Firstwind.", "She's an old research vessel that Skycorps... er... borrowed.", "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it." ],
+      [ "&3Say, would you grab me a soda if you got nothin' else to do?" ]
     ],
     "responses": [
       [ "Who are you?%0", "What is this place?%1" ]
@@ -212,9 +212,9 @@
     "responses": [
     ]
   },
-  "minigus4": {
+  "hologus1": {
     "suite": [
-      [ "&4My Lady...?", "I'm here. I have an unstable connection here, and I can barely hear you.", "I had to flee Firstwind." ]
+      [ "&1My Lady...?", "I'm here. I have an unstable connection here, and I can barely hear you.", "I had to flee Firstwind." ]
     ],
     "responses": [
     ]
@@ -226,9 +226,9 @@
     "responses": [
     ]
   },
-  "minigus5": {
+  "hologus2": {
     "suite": [
-      [ "&1My mask was compromised. And besides, the storms up here are ferocious.", "And I have even worse news...", "The Kariba girl escaped." ]
+      [ "&2My mask was compromised. And besides, the storms up here are ferocious.", "And I have even worse news...", "The Kariba girl escaped." ]
     ],
     "responses": [
     ]
@@ -240,9 +240,9 @@
     "responses": [
     ]
   },
-  "minigus6": {
+  "hologus3": {
     "suite": [
-      [ "&3I got nothing at all to say. She had a gun, and she's pretty nimble.", "I won't underestimate her again.", "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother." ]
+      [ "&5I got nothing at all to say. She had a gun, and she's pretty nimble.", "I won't underestimate her again.", "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother." ]
     ],
     "responses": [
     ]
@@ -254,9 +254,9 @@
     "responses": [
     ]
   },
-  "minigus7": {
+  "hologus4": {
     "suite": [
-      [ "&3@2I set myself up for that one, I guess.", "@1Anyway, do us both a favor and get someone else to deal with the Kariba for now.", "I'll need to properly prepare for the next time I fight her, if it comes to that." ]
+      [ "&4@2I set myself up for that one, I guess.", "&6@1Anyway, do us both a favor and get someone else to deal with the Kariba for now.", "I'll need to properly prepare for the next time I fight her, if it comes to that." ]
     ],
     "responses": [
     ]

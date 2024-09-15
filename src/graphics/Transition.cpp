@@ -6,26 +6,26 @@
 namespace flfx {
 
 Transition::Transition(automa::ServiceProvider& svc, int d) : duration(d) {
+	cooldown = util::Cooldown{d};
 	color = svc.styles.colors.ui_black;
 	box.setPosition(0, 0);
 	box.setSize(sf::Vector2<float>(static_cast<float>(svc.constants.screen_dimensions.x), static_cast<float>(svc.constants.screen_dimensions.y)));
-	current_frame = 0;
 }
 
 void Transition::update(player::Player& player) {
+	auto tt = static_cast<float>(duration);
 	if ((fade_in || fade_out) && !player.controller.walking_autonomously()) { player.controller.restrict_movement(); }
 	if (fade_out) {
-		if (current_frame > 0) { current_frame -= rate; }
-		if (alpha < 255) { alpha += rate; }
-		if (current_frame <= 0) {
+		auto timer = (tt - static_cast<float>(cooldown.get_cooldown())) / tt;
+		alpha = static_cast<uint8_t>(std::lerp(0, 255, timer));
+		if (cooldown.is_complete()) {
 			fade_out = false;
 			done = true;
 		}
 	} else if (fade_in) {
-		done = false;
-		if (current_frame < duration) { current_frame += rate; }
-		if (alpha > 0) { alpha -= rate; }
-		if (current_frame >= duration) { fade_in = false; }
+		auto timer = static_cast<float>(cooldown.get_cooldown()) / tt;
+		alpha = static_cast<uint8_t>(std::lerp(0, 255, timer));
+		if (cooldown.is_complete()) { fade_in = false; }
 	}
 	if (done) {
 		alpha = 255;
@@ -33,6 +33,7 @@ void Transition::update(player::Player& player) {
 		alpha = 0;
 		player.controller.unrestrict();
 	}
+	cooldown.update();
 }
 
 void Transition::render(sf::RenderWindow& win) {
@@ -41,6 +42,19 @@ void Transition::render(sf::RenderWindow& win) {
 		box.setFillColor(color);
 		win.draw(box);
 	}
+}
+
+void Transition::start() {
+	if (!fade_out) { cooldown.start(); }
+	fade_in = false;
+	fade_out = true;
+}
+
+void Transition::end() {
+	if (!fade_in) { cooldown.start(); }
+	done = false;
+	fade_in = true;
+	fade_out = false;
 }
 
 } // namespace flfx

@@ -124,13 +124,13 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					// flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
-					/*if (flags.test(GameFlags::playtest)) {
+					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
 						services.assets.menu_back.play();
 					} else {
 						flags.set(GameFlags::playtest);
 						services.assets.menu_next.play();
-					}*/
+					}
 				}
 				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(services.window->screencap); }
 				if (event.key.code == sf::Keyboard::H) {
@@ -877,6 +877,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
 							flags.reset(GameFlags::in_game);
 						}
+						if (ImGui::Button("Fall")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 122);
+							player.set_position({32 * 3, 32 * 3});
+						}
 						if (ImGui::Button("Minigus")) {
 							services.assets.click.play();
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
@@ -888,6 +894,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 112);
 							player.set_position({32 * 2, 32 * 8});
+						}
+						if (ImGui::Button("Canopy")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 224);
+							player.set_position({32 * 4, 32 * 8});
 						}
 						if (ImGui::Button("Hideout")) {
 							services.assets.click.play();

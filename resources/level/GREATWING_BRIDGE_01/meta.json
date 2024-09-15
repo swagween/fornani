@@ -18,6 +18,12 @@
     "music": "skycorps",
     "styles": {
       "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": true,
+      "type": 8,
+      "id": 6001,
+      "source": 6001
     }
   },
   "portals": [
@@ -53,6 +59,22 @@
           "3",
           "4",
           "5"
+        ]
+      ]
+    },
+    {
+      "id": 23,
+      "position": [
+        1,
+        1
+      ],
+      "background": false,
+      "suites": [
+        [
+          "1",
+          "2",
+          "3",
+          "4"
         ]
       ]
     }

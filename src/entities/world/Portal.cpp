@@ -51,7 +51,7 @@ void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec cam
 	}
 }
 
-void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, int room_id, bool& fade_out, bool& done) {
+void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, int room_id, flfx::Transition& transition) {
 	update(svc);
 	if (bounding_box.overlaps(player.collider.bounding_box)) {
 		if (flags.attributes.test(PortalAttributes::activate_on_contact) && flags.state.test(PortalState::ready)) {
@@ -80,7 +80,7 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 		player.controller.prevent_movement();
 		if (console.is_complete()) {
 			if (flags.state.test(PortalState::unlocked)) {
-				change_states(svc, room_id, fade_out, done);
+				change_states(svc, room_id, transition);
 				flags.state.reset(PortalState::unlocked);
 			}
 		}
@@ -102,17 +102,17 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 			return;
 		}
 		if (flags.state.test(PortalState::unlocked)) { return; }
-		change_states(svc, room_id, fade_out, done);
+		change_states(svc, room_id, transition);
 	}
 }
 
-void Portal::change_states(automa::ServiceProvider& svc, int room_id, bool& fade_out, bool& done) {
-	if (!flags.attributes.test(PortalAttributes::activate_on_contact) && (!fade_out && !done)) {
+void Portal::change_states(automa::ServiceProvider& svc, int room_id, flfx::Transition& transition) {
+	if (!flags.attributes.test(PortalAttributes::activate_on_contact) && transition.not_started()) {
 		state = PortalRenderState::open;
 		if (!flags.attributes.test(PortalAttributes::already_open)) { svc.soundboard.flags.world.set(audio::World::door_open); }
 	}
-	fade_out = true;
-	if (done) {
+	transition.start();
+	if (transition.is_done()) {
 		try {
 			svc.state_controller.next_state = meta.destination_map_id;
 		} catch (std::out_of_range) { svc.state_controller.next_state = room_id; }

@@ -27,7 +27,7 @@
 #include "SwitchBlock.hpp"
 #include "Destroyable.hpp"
 #include "../weapon/Grenade.hpp"
-#include "../story/Cutscene.hpp"
+#include "../story/CutsceneCatalog.hpp"
 #include "../utils/Stopwatch.hpp"
 
 int const NUM_LAYERS{8};
@@ -142,13 +142,13 @@ class Map {
 	std::vector<SwitchBlock> switch_blocks{};
 	std::vector<Destroyable> destroyers{};
 	std::vector<EnemySpawn> enemy_spawns{};
-	std::vector<fornani::Cutscene> cutscenes{};
 	entity::SavePoint save_point;
 
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition;
 
 	enemy::EnemyCatalog enemy_catalog;
+	fornani::CutsceneCatalog cutscene_catalog;
 
 	sf::RectangleShape tile{};
 	sf::RectangleShape borderbox{};

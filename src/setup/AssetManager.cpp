@@ -34,6 +34,10 @@ void AssetManager::import_textures() {
 	t_minigus_inv.loadFromFile(finder.resource_path + "/image/boss/minigus_inv.png");
 	t_minigus_red.loadFromFile(finder.resource_path + "/image/boss/minigus_red.png");
 	t_minigus_blue.loadFromFile(finder.resource_path + "/image/boss/minigus_blue.png");
+	t_demon.loadFromFile(finder.resource_path + "/image/critter/demon.png");
+	t_demon_shield.loadFromFile(finder.resource_path + "/image/critter/demon_shield.png");
+	t_demon_spear.loadFromFile(finder.resource_path + "/image/critter/demon_spear.png");
+	t_demon_sword.loadFromFile(finder.resource_path + "/image/critter/demon_sword.png");
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
@@ -41,6 +45,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"eyebot", t_eyebot});
 	texture_lookup.insert({"eyebit", t_eyebit});
 	texture_lookup.insert({"minigus", t_minigus});
+	texture_lookup.insert({"demon", t_demon});
 
 	t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -335,10 +340,24 @@ void AssetManager::load_audio() {
 	b_mirin_ah.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_ah.wav");
 	b_mirin_oh.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_oh.wav");
 	b_mirin_laugh.loadFromFile(finder.resource_path + "/audio/sfx/mirin/mirin_laugh.wav");
+	b_carl_huh.loadFromFile(finder.resource_path + "/audio/sfx/carl/carl_huh.wav");
+	b_carl_eh.loadFromFile(finder.resource_path + "/audio/sfx/carl/carl_eh.wav");
+	b_carl_and.loadFromFile(finder.resource_path + "/audio/sfx/carl/carl_and.wav");
 	vs_mirin.push_back(b_mirin_ah);
 	vs_mirin.push_back(b_mirin_oh);
 	vs_mirin.push_back(b_mirin_laugh);
 	npc_sounds.insert({"mirin", vs_mirin});
+	vs_hologus.push_back(b_minigus_pizza);
+	vs_hologus.push_back(b_minigus_dontlookatme);
+	vs_hologus.push_back(b_minigus_babyimhome);
+	vs_hologus.push_back(b_minigus_laugh);
+	vs_hologus.push_back(b_minigus_itsagreatday);
+	vs_hologus.push_back(b_minigus_ok_1);
+	npc_sounds.insert({"hologus", vs_hologus});
+	vs_carl.push_back(b_carl_huh);
+	vs_carl.push_back(b_carl_eh);
+	vs_carl.push_back(b_carl_and);
+	npc_sounds.insert({"carl", vs_carl});
 
 	b_heavy_land.loadFromFile(finder.resource_path + "/audio/sfx/deep/heavy_land.wav");
 	b_delay_crash.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_crash.wav");

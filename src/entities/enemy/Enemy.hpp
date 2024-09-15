@@ -10,6 +10,7 @@
 #include "../packages/Caution.hpp"
 #include "../packages/Attack.hpp"
 #include "../packages/Shockwave.hpp"
+#include "../packages/FloatingPart.hpp"
 #include "../player/Indicator.hpp"
 #include <string_view>
 #include <iostream>
@@ -31,7 +32,7 @@ namespace enemy {
 enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode };
 enum class Triggers { hostile, alert };
-enum class Variant { beast, soldier, elemental, worker };
+enum class Variant { beast, soldier, elemental, worker, guardian };
 struct Attributes {
 	float base_hp{};
 	float base_damage{};
@@ -82,8 +83,9 @@ class Enemy : public entity::Entity {
 		collider.sync_components();
 		health_indicator.set_position(pos);
 	}
+	void set_position_from_scaled(sf::Vector2<float> pos);
 	void hurt() { flags.state.set(StateFlags::hurt); }
-	void shake() { flags.state.set(StateFlags::shaking); }
+	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
 	entity::Health health{};
@@ -126,6 +128,11 @@ class Enemy : public entity::Entity {
 		sf::Sound hit{};
 		sf::Sound inv_hit{};
 	} sounds{};
+
+	// shake
+	float energy{};
+	float dampen{0.1f};
+	float hit_energy{6.f};
 };
 
 } // namespace enemy
