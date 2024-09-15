@@ -12,5 +12,12 @@
         "To Lower Glades"
       ]
     ]
+  },
+  "canopy_1_statue": {
+    "suite": [
+      [
+        "The ancient statue's gaze is sightless and disconcerting."
+      ]
+    ]
   }
 }

@@ -102,6 +102,19 @@
       "activate_on_contact": false,
       "key": "tolower",
       "alternates": 0
+    },
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        11,
+        10
+      ],
+      "activate_on_contact": false,
+      "key": "canopy_1_statue",
+      "alternates": 0
     }
   ],
   "animators": [
@@ -538,36 +551,6 @@
       ],
       "automatic": false,
       "foreground": false
-    }
-  ],
-  "platforms": [
-    {
-      "position": [
-        7,
-        79
-      ],
-      "dimensions": [
-        1,
-        1
-      ],
-      "extent": 6,
-      "style": 3,
-      "type": "standard_side_to_side",
-      "start": 0.000000
-    },
-    {
-      "position": [
-        7,
-        80
-      ],
-      "dimensions": [
-        1,
-        1
-      ],
-      "extent": 6,
-      "style": 3,
-      "type": "standard_side_to_side",
-      "start": 0.500000
     }
   ]
 }

@@ -85,7 +85,7 @@ class Enemy : public entity::Entity {
 	}
 	void set_position_from_scaled(sf::Vector2<float> pos);
 	void hurt() { flags.state.set(StateFlags::hurt); }
-	void shake() { flags.state.set(StateFlags::shaking); }
+	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
 	entity::Health health{};
@@ -128,6 +128,11 @@ class Enemy : public entity::Entity {
 		sf::Sound hit{};
 		sf::Sound inv_hit{};
 	} sounds{};
+
+	// shake
+	float energy{};
+	float dampen{0.1f};
+	float hit_energy{6.f};
 };
 
 } // namespace enemy

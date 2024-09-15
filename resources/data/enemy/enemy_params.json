@@ -264,14 +264,14 @@
       "variant": "guardian"
     },
     "physical": {
-      "dimensions": [ 28, 38 ],
+      "dimensions": [ 28, 28 ],
       "sprite_dimensions": [ 72, 72 ],
       "spritesheet_dimensions": [ 2, 6 ],
-      "offset": [ 11, -14 ],
+      "offset": [ 11, -24 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [ 200.0, 300.0 ],
-      "hostile_range": [ 600.0, 96.0 ],
+      "alert_range": [ 600.0, 300.0 ],
+      "hostile_range": [ 600.0, 64.0 ],
       "friction": 0.98,
       "gravity": 6.5
     },
@@ -283,9 +283,9 @@
       "hit": -1
     },
     "attributes": {
-      "base_hp": 26,
+      "base_hp": 36,
       "base_damage": 1.0,
-      "speed": 1.0,
+      "speed": 0.7,
       "loot_multiplier": 9.0,
       "drop_range": [ 6, 11 ]
     },

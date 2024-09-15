@@ -46,21 +46,25 @@ class Demon : public Enemy {
 	util::Cooldown hurt_effect{};
 
 	struct {
-		util::Cooldown jump{40};
+		util::Cooldown jump{30};
+		util::Cooldown post_jump{400};
 		util::Cooldown rush_hit{600};
+		util::Cooldown post_rush{128};
 	} cooldowns{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};
-	anim::Parameters turn{9, 1, 38, 0};
+	anim::Parameters turn{9, 1, 48, 0};
 	anim::Parameters run{6, 4, 28, 4};
-	anim::Parameters jump{9, 1, 28, -1};
-	anim::Parameters signal{10, 1, 42, 0};
+	anim::Parameters jump{9, 1, 48, 0};
+	anim::Parameters signal{10, 1, 58, 2};
 	anim::Parameters rush{11, 1, 22, 3};
 	anim::Parameters stab{11, 1, 32, 0};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
+
+	float rand_jump{};
 
 	bool change_state(DemonState next, anim::Parameters params);
 };
