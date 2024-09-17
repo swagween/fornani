@@ -62,6 +62,9 @@ class AssetManager {
 	sf::Texture t_demon_spear{};
 	sf::Texture t_demon_sword{};
 	sf::Texture t_demon_shield{};
+	sf::Texture t_caster{};
+	sf::Texture t_caster_wand{};
+	sf::Texture t_caster_scepter{};
 
 	// gui
 	sf::Texture t_ui{};
@@ -235,6 +238,7 @@ class AssetManager {
 	sf::SoundBuffer tank_hurt1_buffer{};
 	sf::SoundBuffer tank_hurt2_buffer{};
 	sf::SoundBuffer tank_death_buffer{};
+	sf::SoundBuffer b_demon_snort{};
 
 	// minigus
 	sf::SoundBuffer b_minigus_invincibility{};
@@ -355,6 +359,7 @@ class AssetManager {
 	sf::Sound tank_hurt_1{};
 	sf::Sound tank_hurt_2{};
 	sf::Sound tank_death{};
+	sf::Sound snort{};
 	sf::Sound hurt{};
 	sf::Sound player_death{};
 	sf::Sound enem_hit{};

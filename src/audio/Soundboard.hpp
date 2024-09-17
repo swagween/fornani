@@ -30,7 +30,7 @@ enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Thug { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Minigus { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost, ok };
 enum class Minigun { charge, reload, neutral, firing };
-enum class Demon { hurt, signal, death };
+enum class Demon { hurt, signal, death, snort };
 
 struct Soundboard {
 	struct {

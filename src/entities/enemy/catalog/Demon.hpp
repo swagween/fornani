@@ -5,7 +5,7 @@
 
 namespace enemy {
 
-enum class DemonState { idle, turn, run, jump, signal, rush, stab };
+enum class DemonState { idle, turn, run, jump, signal, rush, stab, dormant, jumpsquat };
 enum class DemonVariant { warrior, spearman };
 
 class Demon : public Enemy {
@@ -17,8 +17,9 @@ class Demon : public Enemy {
 	Demon(automa::ServiceProvider& svc, world::Map& map);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	[[nodiscard]] auto is_dormant() const -> bool { return state == DemonState::dormant || cooldowns.awaken.running(); }
 
-	fsm::StateFunction state_function = std::bind(&Demon::update_idle, this);
+	fsm::StateFunction state_function = std::bind(&Demon::update_dormant, this);
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_turn();
 	fsm::StateFunction update_run();
@@ -26,6 +27,8 @@ class Demon : public Enemy {
 	fsm::StateFunction update_signal();
 	fsm::StateFunction update_rush();
 	fsm::StateFunction update_stab();
+	fsm::StateFunction update_dormant();
+	fsm::StateFunction update_jumpsquat();
 
   private:
 	DemonState state{};
@@ -46,20 +49,23 @@ class Demon : public Enemy {
 	util::Cooldown hurt_effect{};
 
 	struct {
-		util::Cooldown jump{30};
+		util::Cooldown jump{40};
 		util::Cooldown post_jump{400};
 		util::Cooldown rush_hit{600};
 		util::Cooldown post_rush{128};
+		util::Cooldown awaken{180};
 	} cooldowns{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};
-	anim::Parameters turn{9, 1, 48, 0};
+	anim::Parameters turn{9, 1, 48, 1};
 	anim::Parameters run{6, 4, 28, 4};
 	anim::Parameters jump{9, 1, 48, 0};
 	anim::Parameters signal{10, 1, 58, 2};
 	anim::Parameters rush{11, 1, 22, 3};
 	anim::Parameters stab{11, 1, 32, 0};
+	anim::Parameters jumpsquat{12, 1, 44, 1};
+	anim::Parameters dormant{13, 1, 32, -1};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;

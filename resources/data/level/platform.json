@@ -61,6 +61,20 @@
       [ 0, 32 ]
     ]
   },
+  "standard_slow_square": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0002,
+    "track": [
+      [ 0, 0 ],
+      [ 32, 0 ],
+      [ 32, 32 ],
+      [ 0, 32 ]
+    ]
+  },
   "slow_up_down": {
     "sticky": true,
     "loop": true,

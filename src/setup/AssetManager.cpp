@@ -38,6 +38,9 @@ void AssetManager::import_textures() {
 	t_demon_shield.loadFromFile(finder.resource_path + "/image/critter/demon_shield.png");
 	t_demon_spear.loadFromFile(finder.resource_path + "/image/critter/demon_spear.png");
 	t_demon_sword.loadFromFile(finder.resource_path + "/image/critter/demon_sword.png");
+	t_caster.loadFromFile(finder.resource_path + "/image/critter/caster.png");
+	t_caster_scepter.loadFromFile(finder.resource_path + "/image/critter/caster_scepter.png");
+	t_caster_wand.loadFromFile(finder.resource_path + "/image/critter/caster_wand.png");
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
@@ -46,6 +49,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"eyebit", t_eyebit});
 	texture_lookup.insert({"minigus", t_minigus});
 	texture_lookup.insert({"demon", t_demon});
+	texture_lookup.insert({"caster", t_caster});
 
 	t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -306,6 +310,8 @@ void AssetManager::load_audio() {
 	tank_hurt_2.setBuffer(tank_hurt2_buffer);
 	tank_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_death.wav");
 	tank_death.setBuffer(tank_death_buffer);
+	b_demon_snort.loadFromFile(finder.resource_path + "/audio/sfx/demon/snort.wav");
+	snort.setBuffer(b_demon_snort);
 
 	// minigus
 

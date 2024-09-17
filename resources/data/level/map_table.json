@@ -34,6 +34,11 @@
     { "room_id": 299, "label": "OVERTURNED_CANOPY_02"},
     { "room_id": 224, "label": "OVERTURNED_CANOPY_06"},
     { "room_id": 225, "label": "OVERTURNED_CANOPY_08"},
+    { "room_id": 219, "label": "OVERTURNED_CANOPY_03"},
+    { "room_id": 226, "label": "OVERTURNED_CANOPY_09"},
+    { "room_id": 222, "label": "OVERTURNED_SHAFT_03"},
+    { "room_id": 227, "label": "OVERTURNED_FARM_01"},
+    { "room_id": 228, "label": "OVERTURNED_MIMIC_01"},
 
     { "room_id": 305, "label": "WOODSHINE_VILLAGE_01"},
     { "room_id": 306, "label": "WOODSHINE_GAIA_01"},

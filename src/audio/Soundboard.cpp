@@ -69,6 +69,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	//demon
 	if (flags.demon.test(Demon::hurt)) { svc.assets.enem_hit.play(); }
 	if (flags.demon.test(Demon::death)) { svc.assets.enem_death_1.play(); }
+	if (flags.demon.test(Demon::snort)) { randomize(svc, svc.assets.snort, 0.2f); }
 
 	//item
 	if (flags.item.test(Item::heal)) { svc.assets.heal.play(); }

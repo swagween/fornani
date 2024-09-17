@@ -37,9 +37,9 @@ Application::Application(char** argv) {
 	window.get().display();
 }
 
-void Application::launch(char** argv) {
+void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 	std::unique_ptr game = std::make_unique<Game>(argv, window);
-	game->run();
+	game->run(demo, room_id, levelpath, player_position);
 }
 
 } // namespace fornani

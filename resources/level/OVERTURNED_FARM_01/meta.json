@@ -1,23 +1,23 @@
 {
   "meta": {
-    "room_id": 224,
+    "room_id": 227,
     "metagrid": [
-      27,
+      42,
       11
     ],
     "dimensions": [
-      80,
+      32,
       16
     ],
     "chunk_dimensions": [
-      5,
+      2,
       1
     ],
     "style": 1,
     "background": 3,
-    "music": "",
+    "music": "whispering_island",
     "styles": {
-      "breakables": 2
+      "breakables": 0
     },
     "cutscene_on_entry": {
       "flag": false,
@@ -30,14 +30,14 @@
     {
       "dimensions": [
         1,
-        3
+        4
       ],
       "position": [
         0,
-        5
+        7
       ],
-      "source_id": 224,
-      "destination_id": 299,
+      "source_id": 227,
+      "destination_id": 222,
       "activate_on_contact": true,
       "already_open": false,
       "locked": false,
@@ -45,66 +45,53 @@
     },
     {
       "dimensions": [
-        3,
+        1,
         1
       ],
       "position": [
-        71,
-        15
+        25,
+        10
       ],
-      "source_id": 224,
-      "destination_id": 225,
-      "activate_on_contact": true,
+      "source_id": 227,
+      "destination_id": 228,
+      "activate_on_contact": false,
       "already_open": false,
       "locked": false,
       "key_id": 0
     }
   ],
+  "inspectables": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        2,
+        10
+      ],
+      "activate_on_contact": false,
+      "key": "old_mimic_farm",
+      "alternates": 0
+    }
+  ],
   "animators": [
     {
-      "id": 215,
+      "id": 106,
       "style": 0,
       "dimensions": [
-        1,
-        1
+        2,
+        2
       ],
       "position": [
-        6,
-        8
+        13,
+        10
       ],
       "automatic": false,
-      "foreground": true
+      "foreground": false
     },
     {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        3,
-        7
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 214,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        22,
-        13
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 111,
+      "id": 109,
       "style": 0,
       "dimensions": [
         2,
@@ -112,102 +99,94 @@
       ],
       "position": [
         16,
-        12
+        9
       ],
       "automatic": false,
-      "foreground": true
+      "foreground": false
     },
     {
-      "id": 111,
+      "id": 106,
       "style": 0,
       "dimensions": [
         2,
         2
       ],
       "position": [
-        50,
-        12
+        5,
+        9
       ],
       "automatic": false,
-      "foreground": true
+      "foreground": false
     },
     {
-      "id": 111,
-      "style": 0,
-      "dimensions": [
-        2,
-        2
-      ],
-      "position": [
-        56,
-        12
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 115,
-      "style": 0,
-      "dimensions": [
-        2,
-        2
-      ],
-      "position": [
-        76,
-        7
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
+      "id": 206,
       "style": 0,
       "dimensions": [
         1,
         1
       ],
       "position": [
-        43,
-        6
+        12,
+        11
       ],
       "automatic": false,
-      "foreground": true
-    }
-  ],
-  "enemies": [
+      "foreground": false
+    },
     {
-      "id": 7,
+      "id": 206,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
       "position": [
-        35,
+        19,
+        10
+      ],
+      "automatic": false,
+      "foreground": false
+    },
+    {
+      "id": 205,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        18,
+        10
+      ],
+      "automatic": false,
+      "foreground": false
+    },
+    {
+      "id": 205,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        11,
         11
-      ]
+      ],
+      "automatic": false,
+      "foreground": false
     },
     {
-      "id": 7,
+      "id": 205,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
       "position": [
-        65,
-        12
-      ]
-    },
-    {
-      "id": 7,
-      "position": [
-        52,
-        13
-      ]
-    }
-  ],
-  "chests": [
-    {
-      "id": 11443,
-      "item_id": 0,
-      "type": 2,
-      "amount": 40,
-      "rarity": 2.000000,
-      "position": [
-        55,
-        2
-      ]
+        4,
+        10
+      ],
+      "automatic": false,
+      "foreground": false
     }
   ]
 }
