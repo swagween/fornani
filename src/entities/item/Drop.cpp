@@ -5,7 +5,7 @@
 
 namespace item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop") {
+Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop"), special_id(special_id) {
 
 	collider = shape::Collider(drop_dimensions);
 	collider.sync_components();
@@ -17,7 +17,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	spritesheet_dimensions.y = svc.data.drop[key]["spritesheet_dimensions"][1].as<int>();
 
 	type = static_cast<DropType>(svc.data.drop[key]["type"].as<int>());
-	if (type == DropType::gem) { collider.physics.elasticity = 2.f; }
+	if (type == DropType::gem) { collider.physics.elasticity = 1.f; }
 
 	collider.physics.set_global_friction(svc.data.drop[key]["friction"].as<float>());
 	collider.stats.GRAV = svc.data.drop[key]["gravity"].as<float>();
@@ -31,15 +31,18 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 		a.num_loops = param["num_loops"].as<int>();
 		sprite.push_params(param["label"].as_string(), a);
 	}
-	sprite.set_params("static");
+	sprite.set_params("neutral", true);
 	sf::Vector2<int> dim{static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)};
 	sprite.set_dimensions(dim);
 
 	// randomly seed the animation start frame so drops in the same loot animate out of sync
 	sprite.random_start(svc);
 
-	int rand_cooldown_offset = svc.random.random_range(0, 50);
+	auto rand_cooldown_offset = svc.random.random_range(0, 50);
+	auto rand_shine_offset = svc.random.random_range(0, 600);
+	if (type == DropType::gem) { rand_cooldown_offset += 2000; }
 	lifespan.start(4500 + rand_cooldown_offset);
+	shine_cooldown.start(shine_cooldown.get_native_time() + rand_shine_offset);
 	delay.start(delay_time);
 	seed(svc, probability);
 	set_value();
@@ -49,9 +52,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 }
 
 void Drop::seed(automa::ServiceProvider& svc, float probability) {
-
 	auto random_sample = svc.random.random_range_float(0.0f, 1.0f);
-
 	if (random_sample < probability * constants.priceless) {
 		rarity = priceless;
 	} else if (random_sample < probability * constants.rare) {
@@ -113,17 +114,17 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	sparkler.update(svc);
 	sparkler.set_position(collider.bounding_box.position);
 
-	sprite_offset = drop_dimensions - sprite_dimensions;
+	sprite_offset = {0.f, static_cast<float>(drop_dimensions.y - sprite_dimensions.y) * 0.5f};
 
-	auto u{0};
-	auto v{0};
+	int u{};
+	int v{};
 	if (type == DropType::heart) { v = rarity == priceless || rarity == rare ? 1 : 0; }
 	if (type == DropType::orb) { v = rarity == priceless ? 3 : (rarity == rare ? 2 : (rarity == uncommon ? 1 : 0)); }
-	if (type == DropType::gem) {
-		v = rarity == priceless || rarity == rare ? 1 : 0; // temporary
-	}
+	if (type == DropType::gem) { v = special_id; }
 	sprite.set_origin(sprite_dimensions * 0.5f);
 	sprite.update(collider.get_center() + sprite_offset, u, v, true);
+
+	state_function = state_function();
 }
 
 void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -131,7 +132,6 @@ void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 		collider.render(win, cam);
 	} else {
 		if (!is_inactive() && !is_completely_gone() && (lifespan.get_cooldown() > 500 || (lifespan.get_cooldown() / 20) % 2 == 0)) { sprite.render(svc, win, cam); }
-		if (type == DropType::heart) { sparkler.render(svc, win, cam); }
 		sparkler.render(svc, win, cam);
 	}
 }
@@ -157,6 +157,24 @@ shape::Collider& Drop::get_collider() { return collider; }
 DropType Drop::get_type() const { return type; }
 
 int Drop::get_value() const { return value; }
+
+fsm::StateFunction Drop::update_neutral() {
+	shine_cooldown.update();
+	if (sprite.size() > 1 && shine_cooldown.is_complete()) {
+		sprite.set_params("shine", true);
+		return DROP_BIND(update_shining);
+	}
+	return DROP_BIND(update_neutral);
+}
+
+fsm::StateFunction Drop::update_shining() {
+	if (sprite.complete()) {
+		sprite.set_params("neutral", true);
+		shine_cooldown.start();
+		return DROP_BIND(update_neutral);
+	}
+	return DROP_BIND(update_shining);
+}
 
 bool Drop::is_completely_gone() const { return afterlife.is_complete() && lifespan.is_complete(); }
 

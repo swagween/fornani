@@ -33,6 +33,7 @@ class AnimatedSprite {
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
 	[[nodiscard]] auto just_started() const -> bool { return animation.just_started(); }
 	[[nodiscard]] auto complete() -> bool { return animation.complete(); }
+	[[nodiscard]] auto size() -> int { return static_cast<int>(params.size()); }
 	Animation& get() { return animation; }
 
   private:

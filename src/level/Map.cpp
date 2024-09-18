@@ -158,7 +158,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto locked = static_cast<bool>(entry["locked"].as_bool());
 		auto already_open = static_cast<bool>(entry["already_open"].as_bool());
 		auto key_id = entry["key_id"].as<int>();
-		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id));
+		auto door_style = style_id;
+		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style));
 		portals.back().update(svc);
 	}
 

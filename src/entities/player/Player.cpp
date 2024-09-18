@@ -33,11 +33,9 @@ void Player::init(automa::ServiceProvider& svc) {
 	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force));
 	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force, {2.f, 4.f}));
 
-	float back_fric{0.93f};
-
-	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
+	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
 	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
-	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{back_fric, back_fric}, 1.0f);
+	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
 	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 
 	sprite_dimensions = {48.f, 48.f};
@@ -125,6 +123,9 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(12)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up))); }
 	
 	update_antennae();
+	if (is_dead()) {
+		for (auto& a : antennae) { a.collider.detect_map_collision(map); }
+	}
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
@@ -552,8 +553,11 @@ void Player::update_antennae() {
 			antenna_offset.y = -17.f;
 		}
 		if (animation.get_frame() == 57) { antenna_offset.y = -8.f; }
-		a.set_target_position(collider.physics.position + antenna_offset);
-		//a.add_force(collider.physics.apparent_velocity() * 0.5f);
+		if (!is_dead()) {
+			a.set_target_position(collider.physics.position + antenna_offset);
+		} else {
+			a.demagnetize(*m_services);
+		}
 		a.update(*m_services);
 		a.collider.sync_components();
 		if (controller.facing_right()) {
@@ -619,6 +623,11 @@ void Player::start_over() {
 	animation.triggers.reset(AnimTriggers::end_death);
 	animation.post_death.cancel();
 	collider.collision_depths = util::CollisionDepth();
+	for (auto& a : antennae) {
+		a.collider.physics.set_global_friction(physics_stats.antenna_friction);
+		a.collider.physics.gravity = 0.f;
+	}
+	sync_antennae();
 }
 
 void Player::give_drop(item::DropType type, float value) {

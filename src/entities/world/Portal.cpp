@@ -6,7 +6,7 @@
 
 namespace entity {
 
-Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, bool already_open, int key_id) : scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}) {
+Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, bool already_open, int key_id, int style) : scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}) {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
@@ -16,7 +16,7 @@ Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, in
 		state = PortalRenderState::open;
 		flags.attributes.set(PortalAttributes::already_open);
 	}
-	lookup = sf::IntRect({static_cast<int>(state) * svc.constants.i_cell_size, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size * 2});
+	lookup = sf::IntRect({static_cast<int>(state) * svc.constants.i_cell_size, style * svc.constants.i_cell_size * 2}, {svc.constants.i_cell_size, svc.constants.i_cell_size * 2});
 	sprite.setTextureRect(lookup);
 	if (activate_on_contact) { flags.attributes.set(PortalAttributes::activate_on_contact); }
 	if (locked) { flags.state.set(PortalState::locked); }

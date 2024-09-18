@@ -68,6 +68,10 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 	while (services.window->get().isOpen()) {
 
+		auto smp = services.random.percent_chance(10) ? 1 : 0;
+		rng_test.sample += smp;
+		++rng_test.total;
+
 		if (services.state_controller.actions.test(automa::Actions::shutdown)) { break; }
 		if (services.death_mode()) { flags.reset(GameFlags::in_game); }
 
@@ -804,6 +808,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
+					ImGui::Separator();
+					ImGui::Text("Random");
+					ImGui::Text("Ten percent chance: %.2f", static_cast<float>(rng_test.sample) / static_cast<float>(rng_test.total));
 					ImGui::Separator();
 					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }

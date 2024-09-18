@@ -9,7 +9,7 @@
       "num_sprites": 2,
       "params": [
         {
-          "label": "static",
+          "label": "neutral",
           "duration": 12,
           "framerate": 28,
           "num_loops": -1
@@ -28,7 +28,7 @@
       "num_sprites": 4,
       "params": [
         {
-          "label": "static",
+          "label": "neutral",
           "duration": 7,
           "framerate": 12,
           "num_loops": -1
@@ -40,21 +40,21 @@
     "sprite_dimensions": [ 32.0, 32.0 ],
     "spritesheet_dimensions": [ 5, 2 ],
     "type": 2,
-    "friction": 0.999,
+    "friction": 0.99,
     "gravity": 6.9,
     "animation": {
       "num_sprites": 2,
       "params": [
         {
-          "label": "static",
+          "label": "neutral",
           "duration": 1,
           "framerate": 128,
-          "num_loops": 0
+          "num_loops": -1
         },
         {
           "label": "shine",
           "duration": 4,
-          "framerate": 12,
+          "framerate": 20,
           "num_loops": 0
         }
       ]

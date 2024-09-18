@@ -3,7 +3,7 @@
     "new": false
   },
   "player_data": {
-    "max_hp": 4.000000,
+    "max_hp": 1.000000,
     "hp": 4.000000,
     "orbs": 482,
     "position": {
@@ -28,7 +28,7 @@
       }
     ],
     "stats": {
-      "death_count": 49,
+      "death_count": 62,
       "bullets_fired": 294,
       "guns_collected": 1,
       "items_collected": 2,

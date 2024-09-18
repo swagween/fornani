@@ -7,6 +7,8 @@
 #include "../../utils/Cooldown.hpp"
 #include "../../particle/Sparkler.hpp"
 #include "../../graphics/FLColor.hpp"
+#include "../../utils/StateFunction.hpp"
+#define DROP_BIND(f) std::bind(&Drop::f, this)
 
 namespace automa {
 struct ServiceProvider;
@@ -21,12 +23,13 @@ namespace item {
 enum class DropType { heart, orb, gem };
 enum Rarity { common, uncommon, rare, priceless };
 enum class GemType { rhenite, sapphire };
+enum class DropFlags { neutral, shining };
 
 class Drop {
 
   public:
 	Drop() = default;
-	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0);
+	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0, int special_id = 0);
 	void seed(automa::ServiceProvider& svc, float probability);
 	void set_value();
 	void set_texture(automa::ServiceProvider& svc);
@@ -46,25 +49,34 @@ class Drop {
 	DropType get_type() const;
 	int get_value() const;
 
+	// animation state machine
+	fsm::StateFunction state_function = std::bind(&Drop::update_neutral, this);
+	fsm::StateFunction update_neutral();
+	fsm::StateFunction update_shining();
+
   private:
 	DropType type{};
-	sf::Vector2<float> drop_dimensions{16.f, 16.f};
+	sf::Vector2<float> drop_dimensions{20.f, 20.f};
 	shape::Collider collider{};
 	sf::Vector2<int> spritesheet_dimensions{};
 	sf::Vector2<float> sprite_dimensions{};
 	sf::Vector2<float> sprite_offset{};
 	anim::AnimatedSprite sprite{};
+	util::Cooldown shine_cooldown{600};
 
 	int num_sprites{}; // 2 for hearts, 4 for orbs
 
 	Rarity rarity{};
 	int value{};
+	int special_id{};
 
 	util::Cooldown lifespan{};
 	util::Cooldown afterlife{}; // so sparkles remain after destruction
 	util::Cooldown delay{};
 
 	vfx::Sparkler sparkler;
+
+	util::BitFlags<DropFlags> flags{};
 
 	int cooldown_constant{2500};
 

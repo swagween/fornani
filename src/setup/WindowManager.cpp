@@ -29,7 +29,7 @@ void fornani::WindowManager::create(std::string title, bool const fullscreen) {
 	screen_dimensions = {aspects.x / 4, aspects.y / 4};
 	display_dimensions = {static_cast<unsigned>(sf::VideoMode::getDesktopMode().width), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height)};
 	mode = fullscreen ? sf::VideoMode(display_dimensions.x, display_dimensions.y) : sf::VideoMode(screen_dimensions.x, screen_dimensions.y);
-	if (!mode.isValid()) {
+	if (!mode.isValid() && fullscreen) {
 		std::cout << "Number of valid fullscreen modes: " << mode.getFullscreenModes().size() << "\n";
 		std::cout << "Failed to extract a valid fullscreen mode.\n";
 		mode = sf::VideoMode(screen_dimensions.x, screen_dimensions.y);
