@@ -7,9 +7,10 @@ namespace anim {
 
 AnimatedSprite::AnimatedSprite(sf::Texture& texture, sf::Vector2<int> dimensions) : sprite(texture), dimensions(dimensions) {}
 
-void AnimatedSprite::update(sf::Vector2<float> pos, int u, int v) {
+void AnimatedSprite::update(sf::Vector2<float> pos, int u, int v, bool horiz) {
 	position = pos;
-	sprite.setTextureRect(sf::IntRect{{u * dimensions.x, animation.get_frame() * dimensions.y}, dimensions});
+	horiz ? sprite.setTextureRect(sf::IntRect{{animation.get_frame() * dimensions.x, v * dimensions.y}, dimensions})
+		  : sprite.setTextureRect(sf::IntRect{{u * dimensions.x, animation.get_frame() * dimensions.y}, dimensions});
 	animation.update();
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(sf::Color::Blue);
@@ -30,6 +31,10 @@ void AnimatedSprite::set_params(std::string_view label, bool force) {
 void AnimatedSprite::set_dimensions(sf::Vector2<int> dim) { dimensions = dim; }
 
 void AnimatedSprite::set_origin(sf::Vector2<float> origin) { sprite.setOrigin(origin); }
+
+void AnimatedSprite::set_texture(sf::Texture& texture) { sprite.setTexture(texture); }
+
+void AnimatedSprite::random_start(automa::ServiceProvider& svc) { animation.frame.set(svc.random.random_range(0, animation.params.duration - 1)); }
 
 void AnimatedSprite::end() { animation.end(); }
 

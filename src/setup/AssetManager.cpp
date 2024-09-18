@@ -121,6 +121,7 @@ void AssetManager::import_textures() {
 
 	t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 	t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
+	t_gem.loadFromFile(finder.resource_path + "/image/item/gems.png");
 
 	t_fader.loadFromFile(finder.resource_path + "/image/vfx/fader.png");
 

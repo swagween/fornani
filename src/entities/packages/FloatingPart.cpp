@@ -25,7 +25,7 @@ FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Ve
 void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, dir::Direction direction, sf::Vector2<float> scale, sf::Vector2<float> position) {
 	if (init) {
 		gravitator->set_position(position + actual);
-		movement.time = svc.random.random_range_float(0.f, 2.f * std::numbers::pi);
+		movement.time = svc.random.random_range_float(0.f, 2.f * static_cast<float>(std::numbers::pi));
 		init = false;
 	}
 	actual = direction.lr == dir::LR::left ? position + left : position + right;

@@ -195,6 +195,7 @@ class AssetManager {
 	// items
 	sf::Texture t_heart{};
 	sf::Texture t_orb{};
+	sf::Texture t_gem{};
 
 	sf::SoundBuffer player_death_buffer{};
 	sf::SoundBuffer enem_hit_buffer{};

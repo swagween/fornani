@@ -5,14 +5,16 @@
 
 
 namespace item {
-Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos, int delay_time) {
+Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos, int delay_time, bool special) {
 
 	auto drop_rate = svc.random.random_range(drop_range.x, drop_range.y);
 	position = pos;
 
 	std::string_view key{};
 	for (int i = 0; i < drop_rate; ++i) {
-		if (svc.random.percent_chance(8) && !flags.test(LootState::heart_dropped)) {
+		if (svc.random.percent_chance(50.f) && special) {
+			key = "gem";
+		} else if (svc.random.percent_chance(8) && !flags.test(LootState::heart_dropped)) {
 			key = "heart";
 			flags.set(LootState::heart_dropped);
 		} else {
