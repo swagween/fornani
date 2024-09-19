@@ -124,5 +124,17 @@
     "naive_description": "You discovered this rat inside a chest. It obviously didn't want to be found.",
     "hidden_description": "A very good boy who cannot spin.",
     "unique": true
+  },
+  "rhenite": {
+    "index": 97,
+    "title": "Rhenite",
+    "naive_description": "A rare red gem.",
+    "unique": false
+  },
+  "sapphire": {
+    "index": 98,
+    "title": "Sapphire",
+    "naive_description": "A rare blue gem.",
+    "unique": false
   }
 }

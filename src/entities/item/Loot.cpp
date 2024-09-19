@@ -12,7 +12,7 @@ Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float prob
 
 	std::string_view key{};
 	for (int i = 0; i < drop_rate; ++i) {
-		if (svc.random.percent_chance(50.f) && special) {
+		if (svc.random.percent_chance(0.08f) && special) {
 			key = "gem";
 		} else if (svc.random.percent_chance(8) && !flags.test(LootState::heart_dropped)) {
 			key = "heart";

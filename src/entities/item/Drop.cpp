@@ -82,6 +82,9 @@ void Drop::set_value() {
 	case uncommon: value = 5; break;
 	case common: value = 1; break;
 	}
+
+	//gem
+	if (type == DropType::gem) { value = special_id; }
 }
 
 void Drop::set_texture(automa::ServiceProvider& svc) {
