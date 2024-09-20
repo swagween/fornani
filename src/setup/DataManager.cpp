@@ -15,7 +15,10 @@ void DataManager::load_data(std::string in_room) {
 
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
-	for (auto const& room : map_table["rooms"].array_view()) { m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string())); }
+	for (auto const& room : map_table["rooms"].array_view()) {
+		m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string()));
+		rooms.push_back(room["room_id"].as<int>());
+	}
 
 	// load map
 	// std::cout << "loading map data...";
