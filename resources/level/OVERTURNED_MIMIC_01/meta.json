@@ -2,7 +2,7 @@
   "meta": {
     "room_id": 228,
     "metagrid": [
-      44,
+      45,
       11
     ],
     "dimensions": [
@@ -47,13 +47,7 @@
   "beds": [
     {
       "position": [
-        3,
-        6
-      ]
-    },
-    {
-      "position": [
-        3,
+        2,
         6
       ]
     }

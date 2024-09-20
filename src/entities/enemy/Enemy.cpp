@@ -171,6 +171,7 @@ void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
+	if (flags.state.test(StateFlags::invisible)) { return; }
 	drawbox.setOrigin(sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
@@ -196,7 +197,10 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	}
 }
 
-void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { health_indicator.render(svc, win, cam); }
+void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (flags.state.test(StateFlags::invisible)) { return; }
+	health_indicator.render(svc, win, cam);
+}
 
 void Enemy::handle_player_collision(player::Player& player) const {
 	if (died()) { return; }
@@ -209,6 +213,8 @@ void Enemy::handle_player_collision(player::Player& player) const {
 void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 
 	if (proj.team == arms::TEAMS::SKYCORPS) { return; }
+	if (proj.team == arms::TEAMS::GUARDIAN) { return; }
+	if (flags.state.test(StateFlags::invisible)) { return; }
 	if (!(proj.bounding_box.overlaps(collider.bounding_box) || proj.bounding_box.overlaps(secondary_collider.bounding_box))) { return; }
 
 	if (svc.ticker.every_x_ticks(10)) { proj.multiply(1.2f); }

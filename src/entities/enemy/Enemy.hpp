@@ -30,7 +30,7 @@ class Projectile;
 namespace enemy {
 
 enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker, guardian };
 struct Attributes {

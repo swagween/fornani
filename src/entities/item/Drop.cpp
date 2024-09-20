@@ -110,6 +110,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	collider.reset();
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
+	if (collider.flags.external_state.test(shape::ExternalState::world_collision) && type == DropType::gem && !is_inactive() && abs(collider.physics.velocity.y) > 1.f) { svc.soundboard.flags.world.set(audio::World::wall_hit); }
 
 	lifespan.update();
 	afterlife.update();

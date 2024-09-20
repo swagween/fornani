@@ -29,6 +29,7 @@ class Style {
 		sf::Color mythic_green{175, 227, 125};
 		sf::Color console_blue{24, 34, 67};
 		sf::Color beige{217, 214, 160};
+		sf::Color treasure_blue{15, 104, 248};
 	} colors{};
 
 	std::unordered_map<std::string_view, sf::Color> spray_colors{{"clover", colors.green},

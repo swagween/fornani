@@ -3,6 +3,7 @@
 #include "Weapon.hpp"
 #include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
+#include "../utils/Math.hpp"
 
 namespace arms {
 
@@ -23,11 +24,11 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	stats.variance = in_data["attributes"]["variance"].as<float>();
 	stats.stun_time = in_data["attributes"]["stun_time"].as<float>();
 	stats.knockback = in_data["attributes"]["knockback"].as<float>();
-	stats.boomerang = (bool)in_data["attributes"]["boomerang"].as_bool();
-	stats.persistent = (bool)in_data["attributes"]["persistent"].as_bool();
-	stats.transcendent = (bool)in_data["attributes"]["transcendent"].as_bool();
-	stats.constrained = (bool)in_data["attributes"]["constrained"].as_bool();
-	stats.spring = (bool)in_data["attributes"]["spring"].as_bool();
+	stats.boomerang = static_cast<bool>(in_data["attributes"]["boomerang"].as_bool());
+	stats.persistent = static_cast<bool>(in_data["attributes"]["persistent"].as_bool());
+	stats.transcendent = static_cast<bool>(in_data["attributes"]["transcendent"].as_bool());
+	stats.constrained = static_cast<bool>(in_data["attributes"]["constrained"].as_bool());
+	stats.spring = static_cast<bool>(in_data["attributes"]["spring"].as_bool());
 	stats.range_variance = in_data["attributes"]["range_variance"].as<int>();
 	stats.acceleration_factor = in_data["attributes"]["acceleration_factor"].as<float>();
 	stats.dampen_factor = in_data["attributes"]["dampen_factor"].as<float>();
@@ -38,6 +39,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	stats.spring_constant = in_data["attributes"]["spring_constant"].as<float>();
 	stats.spring_rest_length = in_data["attributes"]["spring_rest_length"].as<float>();
 	stats.spring_slack = in_data["attributes"]["spring_slack"].as<float>();
+	stats.omnidirectional = static_cast<bool>(in_data["attributes"]["omnidirectional"].as_bool());
 
 	anim.num_sprites = in_data["animation"]["num_sprites"].as<int>();
 	anim.num_frames = in_data["animation"]["num_frames"].as<int>();
@@ -166,48 +168,45 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 
 	// this is the right idea but needs to be refactored and generalized
 	if (render_type == RENDER_TYPE::MULTI_SPRITE) {
-		int u = sprite_index * (int)max_dimensions.x;
-		int v = (int)(animation.get_frame() * max_dimensions.y);
-		sprite.setTextureRect(sf::IntRect({u, v}, {(int)max_dimensions.x, (int)max_dimensions.y}));
+		int u = sprite_index * static_cast<int>(max_dimensions.x);
+		int v = static_cast<int>(animation.get_frame() * max_dimensions.y);
+		sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(max_dimensions.x), static_cast<int>(max_dimensions.y)}));
 		constrain_sprite_at_barrel(sprite, campos);
 		if (state.test(ProjectileState::destruction_initiated)) { constrain_sprite_at_destruction_point(sprite, campos); }
 		win.draw(sprite);
-
 		return;
 	}
-		// get UV coords (only one column of sprites is supported)
-		int u = 0;
-		int v = (int)(animation.get_frame() * max_dimensions.y);
-		sprite.setTextureRect(sf::IntRect({u, v}, {(int)max_dimensions.x, (int)max_dimensions.y}));
+	// get UV coords (only one column of sprites is supported)
+	auto u = static_cast<int>(sprite_index * max_dimensions.x);
+	auto v = static_cast<int>(animation.get_frame() * max_dimensions.y);
+	sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(max_dimensions.x), static_cast<int>(max_dimensions.y)}));
+	if (!stats.constrained) { sprite.setPosition(bounding_box.position - campos); }
+	// unconstrained projectiles have to get sprites set here
+	if (stats.boomerang) { sprite.setPosition(gravitator.collider.physics.position - campos); }
+	if (stats.spring) { hook.render(svc, player, win, campos); }
+	if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) {
+		sprite.setPosition(hook.spring.get_bob() - campos);
+	} else if (stats.spring) {
+		sprite.setPosition(hook.spring.get_anchor() - campos);
+	}
+	constrain_sprite_at_barrel(sprite, campos);
+	if (state.test(ProjectileState::destruction_initiated)) { constrain_sprite_at_destruction_point(sprite, campos); }
 
-		// unconstrained projectiles have to get sprites set here
-		if (stats.boomerang) { sprite.setPosition(gravitator.collider.physics.position - campos); }
-		if (stats.spring) { hook.render(svc, player, win, campos); }
-		if (stats.spring && hook.grapple_flags.test(GrappleState::snaking)) {
-			sprite.setPosition(hook.spring.get_bob() - campos);
-		} else if (stats.spring) {
-			sprite.setPosition(hook.spring.get_anchor() - campos);
-		}
+	// proj bounding box for debug
+	box.setSize(bounding_box.dimensions);
+	if (state.test(ProjectileState::destruction_initiated)) {
+		box.setFillColor(sf::Color{255, 255, 60, 160});
+	} else {
+		box.setFillColor(sf::Color{255, 255, 255, 160});
+	}
+	box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
 
-		constrain_sprite_at_barrel(sprite, campos);
-		if (state.test(ProjectileState::destruction_initiated)) { constrain_sprite_at_destruction_point(sprite, campos); }
-
-		// proj bounding box for debug
-		box.setSize(bounding_box.dimensions);
-		if (state.test(ProjectileState::destruction_initiated)) {
-			box.setFillColor(sf::Color{255, 255, 60, 160});
-		} else {
-			box.setFillColor(sf::Color{255, 255, 255, 160});
-		}
-		box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
-
-		if (svc.greyblock_mode()) {
-			gravitator.render(svc, win, campos);
-			win.draw(box);
-		} else {
-			win.draw(sprite);
-		}
-	
+	if (svc.greyblock_mode()) {
+		gravitator.render(svc, win, campos);
+		win.draw(box);
+	} else {
+		win.draw(sprite);
+	}
 }
 
 void Projectile::destroy(bool completely, bool whiffed) {
@@ -231,9 +230,12 @@ void Projectile::destroy(bool completely, bool whiffed) {
 	stats.base_damage = 0;
 }
 
-void Projectile::seed(automa::ServiceProvider& svc) {
-
+void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
 	float var = svc.random.random_range_float(-stats.variance, stats.variance);
+	if (stats.omnidirectional) {
+		physics.velocity = util::unit(target) * stats.speed;
+		return;
+	}
 	if (stats.spring) {
 		physics.velocity = hook.probe_velocity(stats.speed);
 		return;
@@ -251,7 +253,7 @@ void Projectile::seed(automa::ServiceProvider& svc) {
 void Projectile::set_sprite(automa::ServiceProvider& svc) {
 	set_orientation(sprite);
 	if (!svc.assets.projectile_textures.contains(label)) {
-		//std::cout << label.data() << " missing from AssetManager tables.\n";
+		std::cout << label.data() << " missing from AssetManager tables.\n";
 		return;
 	}
 	sprite.setTexture(svc.assets.projectile_textures.at(label));

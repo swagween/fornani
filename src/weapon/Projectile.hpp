@@ -57,7 +57,7 @@ enum class WEAPON_TYPE {
 	SKYCORPS_AR
 };
 
-enum class TEAMS { NANI, SKYCORPS, BEASTS };
+enum class TEAMS { NANI, SKYCORPS, BEASTS, GUARDIAN };
 enum class RENDER_TYPE { ANIMATED, SINGLE_SPRITE, MULTI_SPRITE };
 
 sf::Vector2<float> const DEFAULT_DIMENSIONS{8.0, 8.0};
@@ -91,6 +91,7 @@ struct ProjectileStats {
 	float spring_slack{};
 
 	int range_variance{};
+	bool omnidirectional{};
 };
 
 struct ProjectileAnimation {
@@ -110,7 +111,7 @@ class Projectile {
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void destroy(bool completely, bool whiffed = false);
-	void seed(automa::ServiceProvider& svc);
+	void seed(automa::ServiceProvider& svc, sf::Vector2<float> target = {});
 	void set_sprite(automa::ServiceProvider& svc);
 	void set_orientation(sf::Sprite& sprite);
 	void set_position(sf::Vector2<float> pos);

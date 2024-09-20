@@ -191,6 +191,7 @@ class AssetManager {
 	sf::Texture t_indie_projectile{};
 	sf::Texture t_gnat{};
 	sf::Texture t_gnat_projectile{};
+	sf::Texture t_energy_ball_projectile{};
 
 	// items
 	sf::Texture t_heart{};
@@ -206,6 +207,7 @@ class AssetManager {
 	sf::SoundBuffer orb_3_buffer{};
 	sf::SoundBuffer orb_4_buffer{};
 	sf::SoundBuffer b_health_increase{};
+	sf::SoundBuffer b_upward_get{};
 
 	// sound effects!
 	sf::SoundBuffer click_buffer{};
@@ -219,6 +221,7 @@ class AssetManager {
 	sf::SoundBuffer bg_shot_buffer{};
 	sf::SoundBuffer plasmer_shot_buffer{};
 	sf::SoundBuffer skycorps_ar_buffer{};
+	sf::SoundBuffer b_energy_shot{};
 	sf::SoundBuffer tomahawk_flight_buffer{};
 	sf::SoundBuffer tomahawk_catch_buffer{};
 	sf::SoundBuffer pop_mid_buffer{};
@@ -332,6 +335,7 @@ class AssetManager {
 	sf::Sound skycorps_ar_shot{};
 	sf::Sound tomahawk_flight{};
 	sf::Sound tomahawk_catch{};
+	sf::Sound energy_shot{};
 	sf::Sound pop_mid{};
 	sf::Sound bubble{};
 	sf::Sound nova_shot{};
@@ -371,6 +375,7 @@ class AssetManager {
 	sf::Sound orb_2{};
 	sf::Sound orb_3{};
 	sf::Sound orb_4{};
+	sf::Sound gem_get{};
 	sf::Sound menu_next{};
 	sf::Sound menu_back{};
 	sf::Sound sharp_click{};

@@ -536,12 +536,12 @@ void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf
 	console.write(win, false);
 }
 
-void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos) {
+void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {
 	if (weapon.attributes.grenade) { active_grenades.push_back(arms::Grenade(svc, pos, weapon.firing_direction)); }
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_sprite(svc);
 	active_projectiles.back().set_position(pos);
-	active_projectiles.back().seed(svc);
+	active_projectiles.back().seed(svc, target);
 	active_projectiles.back().update(svc, *player);
 	active_projectiles.back().sync_position();
 	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
@@ -708,6 +708,14 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
+}
+
+bool Map::overlaps_middleground(shape::Shape& test) const {
+	auto& layers = m_services->data.get_layers(room_id);
+	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+		if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; }
+	}
+	return false;
 }
 
 } // namespace world

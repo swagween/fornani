@@ -27,6 +27,7 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		spritesheet_dimensions = {4, 10};
 		break;
 	case 4:
+		//spawn
 		sprite.setOrigin({16.f, 16.f});
 		sprite_dimensions = {32, 32};
 		spritesheet_dimensions = {1, 4};

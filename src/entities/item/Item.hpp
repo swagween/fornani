@@ -3,6 +3,7 @@
 #include <string_view>
 #include "../../utils/BitFlags.hpp"
 #include "../Entity.hpp"
+#include "Drop.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -29,6 +30,7 @@ class Item : public entity::Entity {
 	void select();
 	void deselect();
 	void reveal() { flags.set(ItemFlags::revealed); }
+	void set_rarity_position(sf::Vector2<float> position);
 	[[nodiscard]] auto selected() const -> bool { return ui_flags.test(UIFlags::selected); }
 	[[nodiscard]] auto usable() const -> bool { return flags.test(ItemFlags::usable); }
 	[[nodiscard]] auto depleted() const -> bool { return variables.quantity <= 0; }
@@ -48,6 +50,7 @@ class Item : public entity::Entity {
 		std::string_view naive_title{};
 		std::string_view naive_description{};
 		std::string_view hidden_description{};
+		Rarity rarity{};
 	} metadata{};
 
 	util::BitFlags<ItemFlags> flags{};
@@ -60,6 +63,8 @@ class Item : public entity::Entity {
 	struct {
 		sf::Vector2<float> pad{120.f, 120.f};
 		float spacing{56.f};
+		sf::Text rarity{};
+		sf::Text quantity{};
 	} ui{};
 };
 

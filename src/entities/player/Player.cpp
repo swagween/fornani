@@ -642,7 +642,7 @@ void Player::give_drop(item::DropType type, float value) {
 		if (value == 100) { m_services->stats.treasure.blue_orbs.update(); }
 		if (orb_indicator.get_amount() > m_services->stats.treasure.highest_indicator_amount.get_count()) { m_services->stats.treasure.highest_indicator_amount.set(static_cast<int>(orb_indicator.get_amount())); }
 	}
-	if (type == item::DropType::gem) { give_item(value + 97, 1); }
+	if (type == item::DropType::gem) { give_item(static_cast<int>(value) + 97, 1); }
 }
 
 void Player::take_item(int item_id, int amount) { catalog.remove_item(*m_services, item_id, amount); }
