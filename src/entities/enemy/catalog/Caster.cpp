@@ -204,8 +204,8 @@ fsm::StateFunction Caster::update_prepare() {
 fsm::StateFunction Caster::update_signal() { 
 	animation.label = "signal";
 	if (animation.just_started()) {
-		auto sign = directions.actual.lr == dir::LR::left ? 1 : -1;
-		parts.scepter.sprite.rotate(90 * sign);
+		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
+		parts.scepter.sprite.rotate(90.f * sign);
 		cooldowns.rapid_fire.start(208);
 	}
 	if (m_services->ticker.every_x_ticks(20)) { flash.update(); }
@@ -220,8 +220,8 @@ fsm::StateFunction Caster::update_signal() {
 	if (animation.complete()) {
 		parts.scepter.sprite.setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
 		parts.wand.sprite.setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
-		auto sign = directions.actual.lr == dir::LR::left ? 1 : -1;
-		parts.scepter.sprite.rotate(-90 * sign);
+		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
+		parts.scepter.sprite.rotate(-90.f * sign);
 		cooldowns.post_cast.start();
 		if (variant == CasterVariant::apprentice) {
 			m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().barrel_point, attack_target);

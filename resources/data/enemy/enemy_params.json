@@ -67,7 +67,7 @@
       "base_hp": 40,
       "base_damage": 2.0,
       "speed": 1.0,
-      "loot_multiplier": 1.0,
+      "loot_multiplier": 4.0,
       "drop_range": [ 5, 8 ]
     },
     "animation": {
@@ -110,7 +110,7 @@
       "base_hp": 60,
       "base_damage": 1.0,
       "speed": 1.0,
-      "loot_multiplier": 2.0,
+      "loot_multiplier": 4.0,
       "drop_range": [ 5, 8 ]
     },
     "animation": {
@@ -292,7 +292,7 @@
       "base_hp": 36,
       "base_damage": 1.0,
       "speed": 0.7,
-      "loot_multiplier": 2.0,
+      "loot_multiplier": 5.0,
       "drop_range": [ 6, 11 ]
     },
     "animation": {
@@ -335,7 +335,7 @@
       "base_hp": 42,
       "base_damage": 1.0,
       "speed": 0.9,
-      "loot_multiplier": 3.0,
+      "loot_multiplier": 6.0,
       "drop_range": [ 6, 11 ],
       "rare_drop_id": 0
     },

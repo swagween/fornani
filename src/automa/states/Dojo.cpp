@@ -25,11 +25,12 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 		svc.data.rooms.push_back(room_number);
 		svc.data.load_data(room_name);
 		// std::cout << "Loading New Room...\n";
+	} else {
+		map.load(svc, room_number);
+		bake_maps(svc, {map.room_id}, true);
+		auto m_id = map.room_id;
+		bake_maps(svc, svc.data.rooms);
 	}
-	map.load(svc, room_number);
-	bake_maps(svc, {map.room_id}, true);
-	auto m_id = map.room_id;
-	bake_maps(svc, svc.data.rooms);
 	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
 	hud.set_corner_pad(svc, false); // reset hud position to corner
 	svc.soundboard.turn_on();

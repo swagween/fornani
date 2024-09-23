@@ -113,9 +113,14 @@ void Portal::change_states(automa::ServiceProvider& svc, int room_id, flfx::Tran
 	}
 	transition.start();
 	if (transition.is_done()) {
-		try {
+		if (svc.data.exists(meta.destination_map_id)) {
 			svc.state_controller.next_state = meta.destination_map_id;
-		} catch (std::out_of_range) { svc.state_controller.next_state = room_id; }
+		} else {
+			svc.state_controller.next_state = meta.source_map_id;
+			meta.source_map_id = meta.destination_map_id;
+			meta.destination_map_id = room_id;
+			svc.state_controller.status.set(automa::Status::out_of_bounds);
+		}
 		svc.state_controller.actions.set(automa::Actions::trigger);
 		svc.state_controller.refresh(meta.source_map_id);
 	}

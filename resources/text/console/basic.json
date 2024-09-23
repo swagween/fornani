@@ -72,5 +72,11 @@
       [ "Fullscreen settings will take effect the next time the game is opened." ]
     ],
     "responses": [ [ ] ]
+  },
+  "out_of_bounds": {
+    "suite": [
+      [ "You cannot go that way." ]
+    ],
+    "responses": [ [ ] ]
   }
 }

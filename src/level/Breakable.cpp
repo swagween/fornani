@@ -16,11 +16,12 @@ Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, 
 	sprite.setTextureRect(sf::IntRect{{state * 32, style * 32}, {32, 32}});
 }
 
-void Breakable::update(automa::ServiceProvider& svc) {
+void Breakable::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (destroyed()) { return; }
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = svc.random.random_vector_float(-energy, energy); }
+	handle_collision(player.collider);
 }
 
 void Breakable::handle_collision(shape::Collider& other) const {

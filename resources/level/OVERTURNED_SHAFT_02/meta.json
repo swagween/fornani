@@ -645,8 +645,21 @@
     {
       "id": 7,
       "position": [
-        12,
+        14,
         19
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 21801,
+      "item_id": 0,
+      "type": 2,
+      "amount": 11,
+      "rarity": 8.000000,
+      "position": [
+        27,
+        48
       ]
     }
   ]

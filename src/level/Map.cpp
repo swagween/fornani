@@ -342,10 +342,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
-	for (auto& breakable : breakables) {
-		breakable.update(svc);
-		breakable.handle_collision(player->collider);
-	}
+	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.handle_collision(player->collider); }
 	player->collider.detect_map_collision(*this);
@@ -354,6 +351,12 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
 	std::erase_if(effects, [](auto& e) { return e.done(); });
+	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
+	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
+	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
+	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
+	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
+
 	console.update(svc);
 
 	player->collider.reset_ground_flags();
@@ -412,13 +415,13 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 	for (auto& grenade : active_grenades) { grenade.render(svc, win, cam); }
 	player->render(svc, win, cam);
+
 	for (auto& enemy : enemy_catalog.enemies) {
 		if (!enemy->is_foreground()) {
 			enemy->render(svc, win, cam);
 			enemy->unique_render(svc, win, cam);
 		}
 	}
-	for (auto& enemy : enemy_catalog.enemies) { }
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
@@ -447,13 +450,13 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 			enemy->render(svc, win, cam);
 			enemy->unique_render(svc, win, cam);
 		}
+		enemy->render_indicators(svc, win, cam);
+		enemy->gui_render(svc, win, cam);
 	}
 
 	for (auto& effect : effects) { effect.render(svc, win, cam); }
 
 	player->render_indicators(svc, win, cam);
-	for (auto& enemy : enemy_catalog.enemies) { enemy->render_indicators(svc, win, cam); }
-	for (auto& enemy : enemy_catalog.enemies) { enemy->gui_render(svc, win, cam); }
 
 	if (svc.greyblock_mode()) {
 		for (auto& index : collidable_indeces) {
@@ -570,11 +573,6 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
 	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
-	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
-	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
-	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
-	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
-	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
 
 	if (player->arsenal) {
 		if (player->fire_weapon()) {
