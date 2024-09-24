@@ -289,7 +289,7 @@
       "hit": -1
     },
     "attributes": {
-      "base_hp": 36,
+      "base_hp": 46,
       "base_damage": 1.0,
       "speed": 0.7,
       "loot_multiplier": 5.0,
@@ -332,7 +332,7 @@
       "hit": -1
     },
     "attributes": {
-      "base_hp": 42,
+      "base_hp": 62,
       "base_damage": 1.0,
       "speed": 0.9,
       "loot_multiplier": 6.0,

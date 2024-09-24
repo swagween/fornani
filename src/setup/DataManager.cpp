@@ -13,6 +13,22 @@ void DataManager::load_data(std::string in_room) {
 	// user config
 	load_settings();
 
+	// populate map table
+	auto room_path = std::filesystem::path{finder.resource_path};
+	auto room_list = room_path / "level";
+	for (auto const& this_room : std::filesystem::recursive_directory_iterator(room_list)) {
+		if (!this_room.is_directory()) { continue; }
+		auto room_data = dj::Json::from_file((this_room.path() / "meta.json").string().c_str());
+		if (room_data.is_null()) { continue; }
+		auto this_id = room_data["meta"]["room_id"].as<int>();
+		auto this_name = this_room.path().filename().string();
+		auto entry = dj::Json{};
+		entry["room_id"] = this_id;
+		entry["label"] = this_name;
+		map_table["rooms"].push_back(entry);
+	}
+	map_table.dj::Json::to_file((finder.resource_path + "/data/level/map_table.json").c_str());
+
 	map_table = dj::Json::from_file((finder.resource_path + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) {

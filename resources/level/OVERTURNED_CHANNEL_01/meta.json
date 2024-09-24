@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "room_id": 232,
+    "metagrid": [
+      27,
+      13
+    ],
+    "dimensions": [
+      160,
+      32
+    ],
+    "chunk_dimensions": [
+      10,
+      2
+    ],
+    "style": 1,
+    "background": 3,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "enemies": [
+    {
+      "id": 8,
+      "position": [
+        14,
+        9
+      ]
+    },
+    {
+      "id": 7,
+      "position": [
+        140,
+        8
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 23201,
+      "item_id": 29,
+      "type": 3,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        43,
+        26
+      ]
+    }
+  ]
+}
