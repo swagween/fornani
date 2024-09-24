@@ -44,6 +44,17 @@
       "key_id": 0
     }
   ],
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          8,
+          6
+        ],
+        "length": 3
+      }
+    ]
+  },
   "save_point": {
     "id": 229,
     "position": [

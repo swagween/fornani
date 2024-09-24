@@ -112,6 +112,12 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
 			beds.push_back(entity::Bed(svc, pos, room_lookup));
 		}
+		for (auto& entry : metadata["scenery"]["vines"].array_view()) {
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
+			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
+			vines.push_back(entity::Vine(svc, pos, entry["length"].as<int>()));
+		}
 		for (auto& entry : metadata["inspectables"].array_view()) {
 			sf::Vector2<uint32_t> dim{};
 			sf::Vector2<uint32_t> pos{};
@@ -432,6 +438,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
+	for (auto& vine : vines) { vine.render(svc, win, cam); }
 
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 

@@ -4,7 +4,7 @@
 
 namespace vfx {
 
-Spring::Spring(Parameters params) : params(params) {
+Spring::Spring(SpringParameters params) : params(params) {
 	variables.physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
 	variables.physics.maximum_velocity = {6.f, 6.f};
 }

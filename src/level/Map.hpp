@@ -8,6 +8,7 @@
 #include "../entities/world/Inspectable.hpp"
 #include "../entities/world/Portal.hpp"
 #include "../entities/world/SavePoint.hpp"
+#include "../entities/world/Vine.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Transition.hpp"
 #include "Grid.hpp"
@@ -131,6 +132,7 @@ class Map {
 	std::vector<entity::Bed> beds{};
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
+	std::vector<entity::Vine> vines{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};

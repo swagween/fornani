@@ -6,7 +6,7 @@
 #include "../components/PhysicsComponent.hpp"
 
 namespace vfx {
-struct Parameters {
+struct SpringParameters {
 	float dampen_factor{};
 	float spring_constant{};
 	float rest_length{};
@@ -14,7 +14,7 @@ struct Parameters {
 class Spring {
   public:
 	Spring() = default;
-	Spring(Parameters params);
+	Spring(SpringParameters params);
 	void calculate();
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -41,7 +41,7 @@ class Spring {
 	sf::Vector2<float> bob{};
 	sf::Vector2<float> coil{};
 
-	Parameters params{};
+	SpringParameters params{};
 
 	//drawables for debugging
 	sf::CircleShape bob_shape{};
