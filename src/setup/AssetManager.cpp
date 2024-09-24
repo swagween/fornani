@@ -38,6 +38,9 @@ void AssetManager::import_textures() {
 	t_demon_shield.loadFromFile(finder.resource_path + "/image/critter/demon_shield.png");
 	t_demon_spear.loadFromFile(finder.resource_path + "/image/critter/demon_spear.png");
 	t_demon_sword.loadFromFile(finder.resource_path + "/image/critter/demon_sword.png");
+	t_caster.loadFromFile(finder.resource_path + "/image/critter/caster.png");
+	t_caster_scepter.loadFromFile(finder.resource_path + "/image/critter/caster_scepter.png");
+	t_caster_wand.loadFromFile(finder.resource_path + "/image/critter/caster_wand.png");
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
@@ -46,6 +49,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"eyebit", t_eyebit});
 	texture_lookup.insert({"minigus", t_minigus});
 	texture_lookup.insert({"demon", t_demon});
+	texture_lookup.insert({"caster", t_caster});
 
 	t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -83,6 +87,7 @@ void AssetManager::import_textures() {
 	t_indie_projectile.loadFromFile(finder.resource_path + "/image/weapon/indie_proj.png");
 	t_gnat.loadFromFile(finder.resource_path + "/image/weapon/gnat.png");
 	t_gnat_projectile.loadFromFile(finder.resource_path + "/image/weapon/gnat_proj.png");
+	t_energy_ball_projectile.loadFromFile(finder.resource_path + "/image/weapon/energy_ball.png");
 
 	weapon_textures.insert({"bryn's gun", t_bryns_gun});
 	projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
@@ -110,6 +115,8 @@ void AssetManager::import_textures() {
 	projectile_textures.insert({"indie", t_indie_projectile});
 	weapon_textures.insert({"gnat", t_gnat});
 	projectile_textures.insert({"gnat", t_gnat_projectile});
+	weapon_textures.insert({"energy ball", t_soda_gun});
+	projectile_textures.insert({"energy ball", t_energy_ball_projectile});
 
 	t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 	t_guns.loadFromFile(finder.resource_path + "/image/item/guns.png");
@@ -117,6 +124,7 @@ void AssetManager::import_textures() {
 
 	t_heart.loadFromFile(finder.resource_path + "/image/item/hearts.png");
 	t_orb.loadFromFile(finder.resource_path + "/image/item/orbs.png");
+	t_gem.loadFromFile(finder.resource_path + "/image/item/gems.png");
 
 	t_fader.loadFromFile(finder.resource_path + "/image/vfx/fader.png");
 
@@ -179,8 +187,8 @@ void AssetManager::import_textures() {
 	background_lookup.insert({16, t_bg_deep});
 	background_lookup.insert({17, t_bg_grove});
 
-	t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators_01.png");
-	t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators_01.png");
+	t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators.png");
+	t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators.png");
 
 	t_huge_explosion.loadFromFile(finder.resource_path + "/image/entity/huge_explosion.png");
 	t_large_explosion.loadFromFile(finder.resource_path + "/image/entity/large_explosion.png");
@@ -295,6 +303,8 @@ void AssetManager::load_audio() {
 	orb_3.setBuffer(orb_3_buffer);
 	orb_4_buffer.loadFromFile(finder.resource_path + "/audio/sfx/orb_4.wav");
 	orb_4.setBuffer(orb_4_buffer);
+	b_upward_get.loadFromFile(finder.resource_path + "/audio/sfx/upward_get.wav");
+	gem_get.setBuffer(b_upward_get);
 
 	tank_alert1_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_alert_1.wav");
 	tank_alert_1.setBuffer(tank_alert1_buffer);
@@ -306,6 +316,8 @@ void AssetManager::load_audio() {
 	tank_hurt_2.setBuffer(tank_hurt2_buffer);
 	tank_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/tank_death.wav");
 	tank_death.setBuffer(tank_death_buffer);
+	b_demon_snort.loadFromFile(finder.resource_path + "/audio/sfx/demon/snort.wav");
+	snort.setBuffer(b_demon_snort);
 
 	// minigus
 
@@ -363,6 +375,7 @@ void AssetManager::load_audio() {
 	b_delay_crash.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_crash.wav");
 	b_delay_high.loadFromFile(finder.resource_path + "/audio/sfx/deep/delay_high.wav");
 	b_laser.loadFromFile(finder.resource_path + "/audio/sfx/laser1.wav");
+	b_energy_shot.loadFromFile(finder.resource_path + "/audio/sfx/energy_shot.wav");
 	b_gun_charge.loadFromFile(finder.resource_path + "/audio/sfx/gun_charge.wav");
 	b_minigus_build.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_build.wav");
 	b_minigus_invincibility.loadFromFile(finder.resource_path + "/audio/sfx/minigus/mg_inv.wav");
@@ -387,7 +400,7 @@ void AssetManager::load_audio() {
 	heavy_move.setBuffer(b_heavy_move);
 	door_open.setBuffer(b_door_open);
 	door_unlock.setBuffer(b_door_unlock);
-	
+	energy_shot.setBuffer(b_energy_shot);
 
 	save_buffer.loadFromFile(finder.resource_path + "/audio/sfx/save_point.wav");
 	save.setBuffer(save_buffer);

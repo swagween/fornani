@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "room_id": 219,
+    "metagrid": [
+      39,
+      10
+    ],
+    "dimensions": [
+      32,
+      48
+    ],
+    "chunk_dimensions": [
+      2,
+      3
+    ],
+    "style": 1,
+    "background": 3,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        2
+      ],
+      "position": [
+        0,
+        25
+      ],
+      "source_id": 219,
+      "destination_id": 226,
+      "activate_on_contact": true,
+      "already_open": true,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        2
+      ],
+      "position": [
+        0,
+        43
+      ],
+      "source_id": 219,
+      "destination_id": 218,
+      "activate_on_contact": true,
+      "already_open": true,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        2
+      ],
+      "position": [
+        31,
+        3
+      ],
+      "source_id": 219,
+      "destination_id": 222,
+      "activate_on_contact": true,
+      "already_open": true,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        3,
+        1
+      ],
+      "position": [
+        26,
+        47
+      ],
+      "source_id": 219,
+      "destination_id": 220,
+      "activate_on_contact": true,
+      "already_open": true,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "animators": [
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        29,
+        4
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        16,
+        33
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        20,
+        33
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        1,
+        44
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        8,
+        44
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 106,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        16,
+        17
+      ],
+      "automatic": false,
+      "foreground": false
+    },
+    {
+      "id": 206,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        15,
+        18
+      ],
+      "automatic": false,
+      "foreground": false
+    }
+  ],
+  "enemies": [
+    {
+      "id": 8,
+      "position": [
+        21,
+        17
+      ]
+    }
+  ]
+}

@@ -110,13 +110,15 @@
     "title": "Ashtown Raspberry Reserves",
     "naive_description": "A delicious raspberry treat. It would taste better on some toast, but it will still restore your health if you eat it.",
     "unique": false,
-    "usable": true
+    "usable": true,
+    "rarity": 1
   },
   "heart_keychain": {
     "index": 29,
     "title": "Heart Keychain",
     "naive_description": "A heart keychain. You attach it to your belt and it gives you extra life.",
-    "unique": false
+    "unique": false,
+    "rarity": 1
   },
   "stationary_rat": {
     "index": 30,
@@ -124,5 +126,26 @@
     "naive_description": "You discovered this rat inside a chest. It obviously didn't want to be found.",
     "hidden_description": "A very good boy who cannot spin.",
     "unique": true
+  },
+  "loops_mixtape": {
+    "index": 31,
+    "title": "Loop's Mixtape",
+    "naive_description": "A mixtape with your brother's handwriting on the label. Your heart fills with sadness and rage when you look at it.",
+    "hidden_description": "A mixtape that Loop hid in the woods when you were younger. You can play it on a jukebox.",
+    "unique": true
+  },
+  "rhenite": {
+    "index": 97,
+    "title": "Rhenite",
+    "naive_description": "A rare red gem.",
+    "unique": false,
+    "rarity": 2
+  },
+  "sapphire": {
+    "index": 98,
+    "title": "Sapphire",
+    "naive_description": "A rare blue gem.",
+    "unique": false,
+    "rarity": 2
   }
 }

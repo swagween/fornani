@@ -158,7 +158,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto locked = static_cast<bool>(entry["locked"].as_bool());
 		auto already_open = static_cast<bool>(entry["already_open"].as_bool());
 		auto key_id = entry["key_id"].as<int>();
-		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id));
+		auto door_style = style_id;
+		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style));
 		portals.back().update(svc);
 	}
 
@@ -341,10 +342,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
-	for (auto& breakable : breakables) {
-		breakable.update(svc);
-		breakable.handle_collision(player->collider);
-	}
+	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.handle_collision(player->collider); }
 	player->collider.detect_map_collision(*this);
@@ -353,6 +351,12 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 
 	std::erase_if(effects, [](auto& e) { return e.done(); });
+	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
+	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
+	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
+	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
+	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
+
 	console.update(svc);
 
 	player->collider.reset_ground_flags();
@@ -411,13 +415,13 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 	for (auto& grenade : active_grenades) { grenade.render(svc, win, cam); }
 	player->render(svc, win, cam);
+
 	for (auto& enemy : enemy_catalog.enemies) {
 		if (!enemy->is_foreground()) {
 			enemy->render(svc, win, cam);
 			enemy->unique_render(svc, win, cam);
 		}
 	}
-	for (auto& enemy : enemy_catalog.enemies) { }
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
@@ -446,13 +450,13 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 			enemy->render(svc, win, cam);
 			enemy->unique_render(svc, win, cam);
 		}
+		enemy->render_indicators(svc, win, cam);
+		enemy->gui_render(svc, win, cam);
 	}
 
 	for (auto& effect : effects) { effect.render(svc, win, cam); }
 
 	player->render_indicators(svc, win, cam);
-	for (auto& enemy : enemy_catalog.enemies) { enemy->render_indicators(svc, win, cam); }
-	for (auto& enemy : enemy_catalog.enemies) { enemy->gui_render(svc, win, cam); }
 
 	if (svc.greyblock_mode()) {
 		for (auto& index : collidable_indeces) {
@@ -535,12 +539,12 @@ void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf
 	console.write(win, false);
 }
 
-void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos) {
+void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {
 	if (weapon.attributes.grenade) { active_grenades.push_back(arms::Grenade(svc, pos, weapon.firing_direction)); }
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_sprite(svc);
 	active_projectiles.back().set_position(pos);
-	active_projectiles.back().seed(svc);
+	active_projectiles.back().seed(svc, target);
 	active_projectiles.back().update(svc, *player);
 	active_projectiles.back().sync_position();
 	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
@@ -569,11 +573,6 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
 	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
-	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
-	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
-	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
-	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
-	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
 
 	if (player->arsenal) {
 		if (player->fire_weapon()) {
@@ -707,6 +706,14 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
+}
+
+bool Map::overlaps_middleground(shape::Shape& test) const {
+	auto& layers = m_services->data.get_layers(room_id);
+	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+		if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; }
+	}
+	return false;
 }
 
 } // namespace world

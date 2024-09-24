@@ -5,7 +5,6 @@
 namespace vfx {
 
 Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size) : scaled_position(pos), dimensions(size), color(col), attraction_force(agf) {
-
 	collider = shape::Collider(sf::Vector2<float>{4.f, 4.f}, sf::Vector2<float>{pos.x, pos.x});
 	collider.bounding_box.dimensions = Vec(4, 4);
 	collider.physics.position = static_cast<Vec>(pos) * lookup::unit_size_f;
@@ -55,24 +54,28 @@ void Gravitator::set_target_position(Vec new_position) {
 	collider.physics.apply_force({force_x, force_y});
 }
 
+void Gravitator::demagnetize(automa::ServiceProvider& svc) {
+	collider.physics.set_global_friction(0.99f);
+	collider.physics.gravity = 6.f;
+	collider.physics.elasticity = 1.f;
+}
+
 void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos, int history) {
 
-	//just for antennae, can be improved a lot
+	// just for antennae, can be improved a lot
 	auto prev_color = box.getFillColor();
-	if(history > 0) {
+	if (history > 0) {
 		box.setFillColor(svc.styles.colors.fucshia);
 		win.draw(box);
 	}
 
 	box.setFillColor(prev_color);
-	box.setPosition(collider.bounding_box.position.x - campos.x,
-					collider.bounding_box.position.y - campos.y);
+	box.setPosition(collider.bounding_box.position.x - campos.x, collider.bounding_box.position.y - campos.y);
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(box);
 	} else {
 		win.draw(box);
 	}
-	
 }
 } // namespace vfx

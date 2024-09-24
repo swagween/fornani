@@ -25,6 +25,11 @@ class TextManager {
 	std::string text_font{};
 	std::string title_font{};
 
+	struct {
+		sf::Font title{};
+		sf::Font basic{};
+	} fonts{};
+
 	ResourceFinder finder{};
 };
 

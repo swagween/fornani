@@ -23,7 +23,7 @@
       "base_hp": 20,
       "base_damage": 2.0,
       "speed": 10.0,
-      "loot_multiplier": 5.0,
+      "loot_multiplier": 1.0,
       "drop_range": [ 3, 6 ]
     },
     "animation": {
@@ -34,7 +34,8 @@
       "mobile": true,
       "gravity": true,
       "map_collision": true,
-      "player_collision": true
+      "player_collision": true,
+      "rare_drops": false
     }
   },
 
@@ -66,7 +67,7 @@
       "base_hp": 40,
       "base_damage": 2.0,
       "speed": 1.0,
-      "loot_multiplier": 6.0,
+      "loot_multiplier": 4.0,
       "drop_range": [ 5, 8 ]
     },
     "animation": {
@@ -77,7 +78,8 @@
       "mobile": true,
       "gravity": true,
       "map_collision": true,
-      "player_collision": true
+      "player_collision": true,
+      "rare_drops": false
     }
   },
   "thug": {
@@ -108,7 +110,7 @@
       "base_hp": 60,
       "base_damage": 1.0,
       "speed": 1.0,
-      "loot_multiplier": 8.0,
+      "loot_multiplier": 4.0,
       "drop_range": [ 5, 8 ]
     },
     "animation": {
@@ -119,7 +121,8 @@
       "mobile": true,
       "gravity": true,
       "map_collision": true,
-      "player_collision": true
+      "player_collision": true,
+      "rare_drops": false
     }
   },
   "hulmet": {
@@ -166,7 +169,8 @@
       "gravity": false,
       "map_collision": true,
       "player_collision": false,
-      "hurt_on_contact": true
+      "hurt_on_contact": true,
+      "rare_drops": false
     }
   },
 
@@ -212,7 +216,8 @@
       "player_collision": false,
       "hurt_on_contact": true,
       "uncrushable": true,
-      "foreground": true
+      "foreground": true,
+      "rare_drops": false
     }
   },
 
@@ -255,7 +260,8 @@
       "mobile": true,
       "gravity": true,
       "map_collision": true,
-      "player_collision": true
+      "player_collision": true,
+      "rare_drops": false
     }
   },
   "demon": {
@@ -266,12 +272,12 @@
     "physical": {
       "dimensions": [ 28, 28 ],
       "sprite_dimensions": [ 72, 72 ],
-      "spritesheet_dimensions": [ 2, 6 ],
+      "spritesheet_dimensions": [ 3, 6 ],
       "offset": [ 11, -24 ],
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [ 600.0, 300.0 ],
-      "hostile_range": [ 600.0, 64.0 ],
+      "hostile_range": [ 600.0, 80.0 ],
       "friction": 0.98,
       "gravity": 6.5
     },
@@ -286,7 +292,7 @@
       "base_hp": 36,
       "base_damage": 1.0,
       "speed": 0.7,
-      "loot_multiplier": 9.0,
+      "loot_multiplier": 5.0,
       "drop_range": [ 6, 11 ]
     },
     "animation": {
@@ -297,7 +303,52 @@
       "mobile": true,
       "gravity": true,
       "map_collision": true,
-      "player_collision": false
+      "player_collision": false,
+      "rare_drops": false
+    }
+  },
+  "caster": {
+    "metadata": {
+      "id": 8,
+      "variant": "guardian"
+    },
+    "physical": {
+      "dimensions": [ 28, 28 ],
+      "sprite_dimensions": [ 72, 72 ],
+      "spritesheet_dimensions": [ 3, 4 ],
+      "offset": [ 11, -24 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 600.0, 600.0 ],
+      "hostile_range": [ 180.0, 180.0 ],
+      "friction": 0.98,
+      "gravity": 0.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 42,
+      "base_damage": 1.0,
+      "speed": 0.9,
+      "loot_multiplier": 6.0,
+      "drop_range": [ 6, 11 ],
+      "rare_drop_id": 0
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": false,
+      "map_collision": false,
+      "player_collision": false,
+      "rare_drops": true
     }
   },
   "hauler": {
@@ -325,7 +376,7 @@
       "base_hp": 40,
       "base_damage": 2.0,
       "speed": 1.0,
-      "loot_multiplier": 6.0,
+      "loot_multiplier": 2.0,
       "drop_range": [ 5, 8 ]
     },
     "animation": {
@@ -336,7 +387,8 @@
       "mobile": true,
       "gravity": true,
       "map_collision": true,
-      "player_collision": true
+      "player_collision": true,
+      "rare_drops": false
     }
   }
 

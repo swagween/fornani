@@ -1,4 +1,4 @@
-fornani (beta v1.1)
+fornani
 
 a 2D action adventure currently in development.
 

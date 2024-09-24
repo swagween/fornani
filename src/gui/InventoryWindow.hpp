@@ -54,6 +54,7 @@ class InventoryWindow : public Console {
 		sf::Vector2<float> item_label_offset{(float)corner_factor, 230.f};
 		sf::Vector2<float> item_description_offset{(float)corner_factor, 290.f};
 		sf::Vector2<float> info_offset{32.f, 120.f};
+		sf::Vector2<float> rarity_pad{32.f, 32.f};
 	} ui{};
 
 	sf::Text title{};

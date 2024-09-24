@@ -451,7 +451,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setFillColor(sf::Color::Blue);
 	box.setOutlineColor(sf::Color::Transparent);
 	flags.state.test(State::is_any_jump_collision) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
-	//win.draw(box);
+	win.draw(box);
 
 	// draw hurtbox
 	draw_hurtbox.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});

@@ -62,6 +62,11 @@ class Game {
 		} weapons{};
 	} playtest{};
 
+	struct {
+		int sample{};
+		int total{};
+	} rng_test{};
+
 	player::Player player;
 	automa::StateManager game_state{};
 	sf::RectangleShape background{};

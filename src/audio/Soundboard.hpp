@@ -18,9 +18,9 @@ enum class SoundboardState { on, off };
 enum class Menu { select, shift, forward_switch, backward_switch };
 enum class Console { next, done, shift, select, speech, menu_open };
 enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, pushable, door_open, door_unlock };
-enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase };
+enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem };
 enum class Player { jump, step, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide };
-enum class Weapon { bryns_gun, plasmer, skycorps_ar, nova, clover, tomahawk, tomahawk_catch, hook_probe, staple, indie, gnat };
+enum class Weapon { bryns_gun, plasmer, skycorps_ar, nova, clover, tomahawk, tomahawk_catch, hook_probe, staple, indie, gnat, energy_ball };
 enum class Transmission { statics };
 
 // critters
@@ -30,7 +30,7 @@ enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Thug { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Minigus { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost, ok };
 enum class Minigun { charge, reload, neutral, firing };
-enum class Demon { hurt, signal, death };
+enum class Demon { hurt, signal, death, snort };
 
 struct Soundboard {
 	struct {
@@ -70,7 +70,13 @@ struct Soundboard {
 
 	std::unordered_map<std::string_view, Weapon> gun_sounds{
 		{"bryn's gun", Weapon::bryns_gun},		{"plasmer", Weapon::plasmer},		{"skycorps ar", Weapon::skycorps_ar}, {"nova", Weapon::nova},		  {"clover", Weapon::clover}, {"tomahawk", Weapon::tomahawk},
-		{"grappling hook", Weapon::hook_probe}, {"grenade launcher", Weapon::nova}, {"minigun", Weapon::plasmer},		  {"staple gun", Weapon::staple}, {"indie", Weapon::indie},	  {"gnat", Weapon::gnat}};
+															{"grappling hook", Weapon::hook_probe},
+															{"grenade launcher", Weapon::nova},
+															{"minigun", Weapon::plasmer},
+															{"staple gun", Weapon::staple},
+															{"indie", Weapon::indie},
+															{"gnat", Weapon::gnat},
+															{"energy ball", Weapon::energy_ball}};
 };
 
 } // namespace audio

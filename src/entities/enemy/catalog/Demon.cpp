@@ -8,10 +8,10 @@ namespace enemy {
 Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "demon"), m_services(&svc), m_map(&map),
 	  parts{.spear{svc.assets.t_demon_spear, 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.t_demon_sword, 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.t_demon_shield, 2.0f, 0.85f, {-28.f, 8.f}}} {
-	animation.set_params(idle);
+	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
-	collider.jumpbox.dimensions.y = 8.f;
+	collider.flags.general.set(shape::General::complex);
 	secondary_collider = shape::Collider({22.f, 22.f});
 	directions.desired.lr = dir::LR::left;
 	directions.actual.lr = dir::LR::left;
@@ -28,6 +28,8 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 
 	variant = svc.random.percent_chance(50) ? DemonVariant::spearman : DemonVariant::warrior;
 	if (variant == DemonVariant::spearman) { health.set_max(56); }
+
+	cooldowns.awaken.start();
 }
 
 void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -79,9 +81,11 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	if (directions.actual.lr == dir::LR::right && sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
 	if (directions.actual.lr == dir::LR::left && sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
-	parts.spear.update(svc, map, player, directions.actual, sprite.getScale(), collider.get_center());
-	parts.sword.update(svc, map, player, directions.actual, sprite.getScale(), collider.get_center());
-	parts.shield.update(svc, map, player, directions.actual, sprite.getScale(), collider.get_center());
+	if (!is_dormant()) {
+		parts.spear.update(svc, map, player, directions.actual, sprite.getScale(), collider.get_center());
+		parts.sword.update(svc, map, player, directions.actual, sprite.getScale(), collider.get_center());
+		parts.shield.update(svc, map, player, directions.actual, sprite.getScale(), collider.get_center());
+	}
 	if (variant == DemonVariant::spearman) { parts.spear.set_hitbox(); }
 	if (variant == DemonVariant::warrior) {
 		parts.sword.set_hitbox();
@@ -91,7 +95,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 10.f};
 	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
 	secondary_collider.sync_components();
-	if (player.collider.hurtbox.overlaps(secondary_collider.bounding_box)) { player.hurt(); }
+	if (player.collider.hurtbox.overlaps(secondary_collider.bounding_box) && !is_dormant()) { player.hurt(); }
 
 	if (svc.ticker.every_x_ticks(200)) {
 		if (svc.random.percent_chance(4) && !caution.danger(directions.actual)) { state = DemonState::run; }
@@ -113,17 +117,16 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	} else {
 		sprite.setColor(svc.styles.colors.white);
 	}
-
 	if (hostile() && !cooldowns.post_rush.running()) { state = DemonState::signal; }
 	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) {
-		state = DemonState::jump;
+		state = DemonState::jumpsquat;
 	} // player is already in hostile range
 
 	if (alert() && !hostile() && svc.ticker.every_x_ticks(32)) {
 		if (svc.random.percent_chance(50)) {
 			state = DemonState::run;
 		} else {
-			state = DemonState::jump;
+			state = DemonState::jumpsquat;
 		}
 	}
 
@@ -135,7 +138,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 }
 
 void Demon::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (died()) { return; }
+	if (died() || state == DemonState::dormant) { return; }
 	if (variant == DemonVariant::spearman) {
 		parts.spear.render(svc, win, cam);
 	} else {
@@ -154,7 +157,7 @@ fsm::StateFunction Demon::update_idle() {
 	if (change_state(DemonState::turn, turn)) { return DEMON_BIND(update_turn); }
 	if (change_state(DemonState::signal, signal)) { return DEMON_BIND(update_signal); }
 	if (change_state(DemonState::run, run)) { return DEMON_BIND(update_run); }
-	if (change_state(DemonState::jump, jump)) { return DEMON_BIND(update_jump); }
+	if (change_state(DemonState::jumpsquat, jumpsquat)) { return DEMON_BIND(update_jumpsquat); }
 	state = DemonState::idle;
 	return DEMON_BIND(update_idle);
 };
@@ -192,8 +195,9 @@ fsm::StateFunction Demon::update_jump() {
 	if (animation.just_started()) {
 		cooldowns.jump.start();
 		rand_jump = m_services->random.percent_chance(50) ? -1.f : 1.f;
+		if (cooldowns.post_rush.running()) { rand_jump = directions.actual.lr == dir::LR::left ? 1.f : -1.f; } // always jump backwards after a rush otherwise it feels unfair
 	}
-	if (cooldowns.jump.running()) { collider.physics.apply_force({0, -3.f}); }
+	if (cooldowns.jump.running()) { collider.physics.apply_force({0, -2.5f}); }
 	if (!collider.grounded()) { collider.physics.apply_force({rand_jump * 2.f, 0.f}); }
 	cooldowns.jump.update();
 	if (cooldowns.jump.is_complete() && collider.grounded()) {
@@ -227,7 +231,6 @@ fsm::StateFunction Demon::update_signal() {
 }
 
 fsm::StateFunction Demon::update_rush() {
-	if (change_state(DemonState::turn, turn)) { return DEMON_BIND(update_turn); }
 	if (caution.danger(directions.actual)) {
 		state = DemonState::idle;
 		animation.set_params(idle);
@@ -237,7 +240,7 @@ fsm::StateFunction Demon::update_rush() {
 	force *= directions.actual.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({force, 0.f});
 	directions.actual.lr == dir::LR::left ? parts.sword.move({-70.f, 0.f}) : parts.sword.move({70.f, 0.f});
-	directions.actual.lr == dir::LR::left ? parts.spear.move({-50.f, 0.f}) : parts.spear.move({50.f, 0.f});
+	directions.actual.lr == dir::LR::left ? parts.spear.move({-70.f, 0.f}) : parts.spear.move({70.f, 0.f});
 	if (animation.complete()) {
 		cooldowns.post_rush.start();
 		state = DemonState::idle;
@@ -249,6 +252,38 @@ fsm::StateFunction Demon::update_rush() {
 }
 
 fsm::StateFunction Demon::update_stab() { return DEMON_BIND(update_idle); }
+
+fsm::StateFunction Demon::update_dormant() {
+	flags.state.reset(StateFlags::vulnerable);
+	hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
+	if (cooldowns.awaken.halfway()) {
+		shake();
+		m_services->soundboard.flags.world.set(audio::World::pushable);
+	}
+	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot)) {
+		cooldowns.awaken.cancel();
+		flags.state.set(StateFlags::vulnerable);
+		m_map->effects.push_back(entity::Effect(*m_services, collider.physics.position, {}, 2, 0));
+		m_services->soundboard.flags.world.set(audio::World::block_toggle);
+		m_services->soundboard.flags.demon.set(audio::Demon::snort);
+		state = DemonState::jump;
+		animation.set_params(jump);
+		return DEMON_BIND(update_jump);
+	}
+	state = DemonState::dormant;
+	return DEMON_BIND(update_dormant);
+}
+
+fsm::StateFunction Demon::update_jumpsquat() {
+	if (animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::snort); }
+	if (animation.complete()) {
+		state = DemonState::jump;
+		animation.set_params(jump);
+		return DEMON_BIND(update_jump);
+	}
+	state = DemonState::jumpsquat;
+	return DEMON_BIND(update_jumpsquat);
+}
 
 bool Demon::change_state(DemonState next, anim::Parameters params) {
 	if (state == next) {

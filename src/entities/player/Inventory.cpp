@@ -24,6 +24,9 @@ Inventory::Inventory() {
 	item_labels.insert({22, "ashtown_raspberry_preserves"});
 	item_labels.insert({29, "heart_keychain"});
 	item_labels.insert({30, "stationary_rat"});
+	item_labels.insert({31, "loops_mixtape"});
+	item_labels.insert({97, "rhenite"});
+	item_labels.insert({98, "sapphire"});
 }
 
 void Inventory::update(automa::ServiceProvider& svc) {

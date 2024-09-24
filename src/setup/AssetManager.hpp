@@ -62,6 +62,9 @@ class AssetManager {
 	sf::Texture t_demon_spear{};
 	sf::Texture t_demon_sword{};
 	sf::Texture t_demon_shield{};
+	sf::Texture t_caster{};
+	sf::Texture t_caster_wand{};
+	sf::Texture t_caster_scepter{};
 
 	// gui
 	sf::Texture t_ui{};
@@ -188,10 +191,12 @@ class AssetManager {
 	sf::Texture t_indie_projectile{};
 	sf::Texture t_gnat{};
 	sf::Texture t_gnat_projectile{};
+	sf::Texture t_energy_ball_projectile{};
 
 	// items
 	sf::Texture t_heart{};
 	sf::Texture t_orb{};
+	sf::Texture t_gem{};
 
 	sf::SoundBuffer player_death_buffer{};
 	sf::SoundBuffer enem_hit_buffer{};
@@ -202,6 +207,7 @@ class AssetManager {
 	sf::SoundBuffer orb_3_buffer{};
 	sf::SoundBuffer orb_4_buffer{};
 	sf::SoundBuffer b_health_increase{};
+	sf::SoundBuffer b_upward_get{};
 
 	// sound effects!
 	sf::SoundBuffer click_buffer{};
@@ -215,6 +221,7 @@ class AssetManager {
 	sf::SoundBuffer bg_shot_buffer{};
 	sf::SoundBuffer plasmer_shot_buffer{};
 	sf::SoundBuffer skycorps_ar_buffer{};
+	sf::SoundBuffer b_energy_shot{};
 	sf::SoundBuffer tomahawk_flight_buffer{};
 	sf::SoundBuffer tomahawk_catch_buffer{};
 	sf::SoundBuffer pop_mid_buffer{};
@@ -235,6 +242,7 @@ class AssetManager {
 	sf::SoundBuffer tank_hurt1_buffer{};
 	sf::SoundBuffer tank_hurt2_buffer{};
 	sf::SoundBuffer tank_death_buffer{};
+	sf::SoundBuffer b_demon_snort{};
 
 	// minigus
 	sf::SoundBuffer b_minigus_invincibility{};
@@ -327,6 +335,7 @@ class AssetManager {
 	sf::Sound skycorps_ar_shot{};
 	sf::Sound tomahawk_flight{};
 	sf::Sound tomahawk_catch{};
+	sf::Sound energy_shot{};
 	sf::Sound pop_mid{};
 	sf::Sound bubble{};
 	sf::Sound nova_shot{};
@@ -355,6 +364,7 @@ class AssetManager {
 	sf::Sound tank_hurt_1{};
 	sf::Sound tank_hurt_2{};
 	sf::Sound tank_death{};
+	sf::Sound snort{};
 	sf::Sound hurt{};
 	sf::Sound player_death{};
 	sf::Sound enem_hit{};
@@ -365,6 +375,7 @@ class AssetManager {
 	sf::Sound orb_2{};
 	sf::Sound orb_3{};
 	sf::Sound orb_4{};
+	sf::Sound gem_get{};
 	sf::Sound menu_next{};
 	sf::Sound menu_back{};
 	sf::Sound sharp_click{};

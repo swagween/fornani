@@ -26,7 +26,7 @@ enum class BreakableAttributes { bulletproof };
 class Breakable {
   public:
 	Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style = 0, int state = 4);
-	void update(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power = 1);

@@ -1,0 +1,543 @@
+{
+  "meta": {
+    "room_id": 222,
+    "metagrid": [
+      41,
+      8
+    ],
+    "dimensions": [
+      32,
+      64
+    ],
+    "chunk_dimensions": [
+      2,
+      4
+    ],
+    "style": 1,
+    "background": 3,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        2
+      ],
+      "position": [
+        0,
+        35
+      ],
+      "source_id": 222,
+      "destination_id": 219,
+      "activate_on_contact": true,
+      "already_open": false,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        4
+      ],
+      "position": [
+        31,
+        55
+      ],
+      "source_id": 222,
+      "destination_id": 227,
+      "activate_on_contact": true,
+      "already_open": false,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        12
+      ],
+      "position": [
+        31,
+        0
+      ],
+      "source_id": 222,
+      "destination_id": 223,
+      "activate_on_contact": true,
+      "already_open": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "animators": [
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        10,
+        41
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        21,
+        59
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        24,
+        59
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        10,
+        52
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        21,
+        12
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        18,
+        13
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        12,
+        12
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        6,
+        10
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 111,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        18,
+        57
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 111,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        29,
+        10
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 112,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        9,
+        11
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 115,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        17,
+        44
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 115,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        12,
+        51
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 115,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        11,
+        32
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 115,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        17,
+        21
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 114,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        16,
+        22
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 114,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        16,
+        14
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 114,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        10,
+        32
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 114,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        16,
+        45
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 114,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        5,
+        7
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 211,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        9
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 211,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        16,
+        24
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 211,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        15,
+        17
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 211,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        11,
+        30
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 211,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        13,
+        38
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 212,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        18,
+        43
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 212,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        14,
+        39
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 212,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        17,
+        26
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 212,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        17,
+        48
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 211,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        3,
+        40
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 114,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        3,
+        41
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 115,
+      "style": 0,
+      "dimensions": [
+        2,
+        2
+      ],
+      "position": [
+        4,
+        36
+      ],
+      "automatic": false,
+      "foreground": true
+    },
+    {
+      "id": 215,
+      "style": 0,
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        5,
+        42
+      ],
+      "automatic": false,
+      "foreground": true
+    }
+  ]
+}

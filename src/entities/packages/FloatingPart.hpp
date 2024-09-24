@@ -25,10 +25,10 @@ class FloatingPart {
 	void move(sf::Vector2<float> distance);
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return gravitator->collider.bounding_box.position; }
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return gravitator->collider.physics.velocity; }
+	sf::Sprite sprite{};
 
   private:
 	std::unique_ptr<vfx::Gravitator> gravitator{};
-	sf::Sprite sprite{};
 	sf::Vector2<float> left{};
 	sf::Vector2<float> right{};
 	sf::Vector2<float> actual{};

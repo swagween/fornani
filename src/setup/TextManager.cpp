@@ -22,6 +22,11 @@ void TextManager::load_data() {
 	//set font
 	text_font = finder.resource_path + "/text/fonts/pixelFJ8pt1.ttf";
 	title_font = finder.resource_path + "/text/fonts/kongtext.ttf";
+
+	fonts.title.loadFromFile(title_font);
+	fonts.basic.loadFromFile(text_font);
+	fonts.title.setSmooth(false);
+	fonts.basic.setSmooth(false);
 }
 
 } // namespace data

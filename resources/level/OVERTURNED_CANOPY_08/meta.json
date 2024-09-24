@@ -2,7 +2,7 @@
   "meta": {
     "room_id": 225,
     "metagrid": [
-      29,
+      31,
       12
     ],
     "dimensions": [
@@ -38,6 +38,22 @@
       ],
       "source_id": 225,
       "destination_id": 224,
+      "activate_on_contact": true,
+      "already_open": true,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        4,
+        1
+      ],
+      "position": [
+        89,
+        0
+      ],
+      "source_id": 225,
+      "destination_id": 226,
       "activate_on_contact": true,
       "already_open": true,
       "locked": false,

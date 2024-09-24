@@ -119,6 +119,24 @@
     }
   },
 
+  "pulse": {
+    "load": 20,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 0.0,
+    "cone": 6.28,
+    "friction": 0.99,
+    "elasticity": 0.0,
+    "gravity": 0.0,
+    "lifespan": 200,
+    "lifespan_variance": 0,
+    "dimensions": [ 4, 4 ],
+    "animated": false,
+    "colliding": false,
+    "fader": true,
+    "color": "dark"
+  },
+
   "spritz": {
     "load": 2,
     "rate": 100.0,

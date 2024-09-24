@@ -683,6 +683,68 @@
         "type": "spritz",
         "color": "mythic_green"
       }
+    },
+    {
+      "label": "energy_ball",
+      "dimensions": {
+        "x": 78,
+        "y": 30
+      },
+      "gun_offset": {
+        "x": 0,
+        "y": 0
+      },
+      "barrel_point": {
+        "x": 0.0,
+        "y": 20.0
+      },
+      "attributes": {
+        "automatic": true,
+        "rate": 8,
+        "cooldown_time": 20,
+        "recoil": 0.00,
+        "ui_color": 1
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 32.0,
+          "y": 32.0
+        },
+        "attributes": {
+          "base_damage": 2,
+          "range": 2048,
+          "speed": 12.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": false,
+          "transcendent": true,
+          "boomerang": false,
+          "constrained": false,
+          "spring": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0,
+          "omnidirectional": true
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 18
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 8.0, 8.0 ],
+        "type": "pulse",
+        "color": "white"
+      }
     }
   ]
 }

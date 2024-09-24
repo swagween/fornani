@@ -78,6 +78,7 @@ struct PhysicsStats {
 	float dash_speed{};
 	float dash_dampen{};
 	float wallslide_speed{};
+	float antenna_friction{0.93f};
 };
 
 struct Counters {

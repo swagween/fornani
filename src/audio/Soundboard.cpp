@@ -69,6 +69,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	//demon
 	if (flags.demon.test(Demon::hurt)) { svc.assets.enem_hit.play(); }
 	if (flags.demon.test(Demon::death)) { svc.assets.enem_death_1.play(); }
+	if (flags.demon.test(Demon::snort)) { randomize(svc, svc.assets.snort, 0.2f); }
 
 	//item
 	if (flags.item.test(Item::heal)) { svc.assets.heal.play(); }
@@ -77,6 +78,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.item.test(Item::orb_high)) { svc.assets.orb_3.play(); }
 	if (flags.item.test(Item::orb_max)) { svc.assets.orb_4.play(); }
 	if (flags.item.test(Item::health_increase)) { svc.assets.health_increase.play(); }
+	if (flags.item.test(Item::gem)) { svc.assets.gem_get.play(); }
 
 	// player
 	if (flags.player.test(Player::land)) { svc.assets.landed.play(); }
@@ -103,6 +105,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 		svc.assets.tomahawk_flight.stop();
 	}
 	if (flags.weapon.test(Weapon::hook_probe)) { svc.assets.sharp_click.play(); }
+	if (flags.weapon.test(Weapon::energy_ball)) { randomize(svc, svc.assets.energy_shot, 0.1f); }
 
 	// reset flags
 	flags = {};

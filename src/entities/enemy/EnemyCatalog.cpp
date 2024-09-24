@@ -6,6 +6,7 @@
 #include "../enemy/catalog/Eyebit.hpp"
 #include "../enemy/catalog/Thug.hpp"
 #include "../enemy/catalog/Demon.hpp"
+#include "../enemy/catalog/Caster.hpp"
 #include "../enemy/boss/Minigus.hpp"
 
 namespace enemy {
@@ -25,6 +26,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, gui
 	case 5: enemies.push_back(std::make_unique<Eyebit>(svc, spawned)); break;
 	case 6: enemies.push_back(std::make_unique<Minigus>(svc, map, console)); break;
 	case 7: enemies.push_back(std::make_unique<Demon>(svc, map)); break;
+	case 8: enemies.push_back(std::make_unique<Caster>(svc, map)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	}
 }
