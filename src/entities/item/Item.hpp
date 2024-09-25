@@ -4,6 +4,7 @@
 #include "../../utils/BitFlags.hpp"
 #include "../Entity.hpp"
 #include "Drop.hpp"
+#include "../../particle/Gravitator.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -42,6 +43,7 @@ class Item : public entity::Entity {
 
 	std::string_view label{};
 	int selection_index{};
+	vfx::Gravitator gravitator{};
 
   private:
 	struct {
@@ -61,7 +63,7 @@ class Item : public entity::Entity {
 	} variables{};
 
 	struct {
-		sf::Vector2<float> pad{120.f, 120.f};
+		sf::Vector2<float> pad{80.f, 80.f};
 		float spacing{56.f};
 		sf::Text rarity{};
 		sf::Text quantity{};

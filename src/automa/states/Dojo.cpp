@@ -178,7 +178,7 @@ void Dojo::toggle_inventory(ServiceProvider& svc) {
 		inventory_window.close();
 	} else {
 		inventory_window.minimap.update(svc, map, *player);
-		inventory_window.open();
+		inventory_window.open(svc, *player);
 		svc.soundboard.flags.console.set(audio::Console::menu_open);
 		inventory_window.set_item_size(static_cast<int>(player->catalog.categories.inventory.items.size()));
 	}

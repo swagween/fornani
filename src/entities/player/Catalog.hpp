@@ -3,6 +3,7 @@
 #include "../../utils/BitFlags.hpp"
 #include "AbilityManager.hpp"
 #include "Inventory.hpp"
+#include "Wardrobe.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -22,6 +23,7 @@ class Catalog {
 	struct {
 		Inventory inventory{};
 		AbilityManager abilities{};
+		Wardrobe wardrobe{};
 	} categories{};
 };
 

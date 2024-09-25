@@ -4,6 +4,8 @@
 #include <string>
 #include "../utils/Shape.hpp"
 #include "../components/PhysicsComponent.hpp"
+#include "../components/CircleSensor.hpp"
+#include <optional>
 
 namespace vfx {
 struct SpringParameters {
@@ -15,8 +17,9 @@ class Spring {
   public:
 	Spring() = default;
 	Spring(SpringParameters params);
+	Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<float> bob);
 	void calculate();
-	void update(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc, float custom_grav = 1.5f, sf::Vector2<float> external_force = {}, bool loose = false);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void calculate_force();
 	void reverse_anchor_and_bob();
@@ -24,22 +27,30 @@ class Spring {
 	void set_bob(sf::Vector2<float> point);
 	void set_rest_length(float point);
 	void set_force(float force);
+	void lock() { locked = true; };
 	sf::Vector2<float>& get_bob();
 	sf::Vector2<float>& get_anchor();
 	sf::Vector2<float> get_rope(int index);
+	SpringParameters& get_params() { return params; }
+	components::CircleSensor sensor{8.f};
+	std::optional<Spring*> cousin{};
+	[[nodiscard]] auto is_locked() const -> bool { return locked; }
 
 	int num_links{8};
 
 	struct {
 		float extension{};
 		sf::Vector2<float> spring_force{};
-		components::PhysicsComponent physics{};
+		components::PhysicsComponent bob_physics{};
+		components::PhysicsComponent anchor_physics{};
 	} variables{};
 
   private:
 	sf::Vector2<float> anchor{};
 	sf::Vector2<float> bob{};
 	sf::Vector2<float> coil{};
+	float spring_max{64.f};
+	bool locked{};
 
 	SpringParameters params{};
 

@@ -132,7 +132,7 @@ class Map {
 	std::vector<entity::Bed> beds{};
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
-	std::vector<entity::Vine> vines{};
+	std::vector<std::unique_ptr<entity::Vine>> vines{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};

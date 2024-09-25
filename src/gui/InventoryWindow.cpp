@@ -5,7 +5,7 @@
 
 namespace gui {
 
-InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc), item_menu(svc, {"use", "cancel"}, true) {
+InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc), item_menu(svc, {"use", "cancel"}, true), wardrobe(svc) {
 	title.setString("INVENTORY");
 	title.setCharacterSize(ui.title_size);
 	title_font.loadFromFile(svc.text.title_font);
@@ -38,6 +38,8 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	info.sprite.set_position(info.position);
 	info.flags.reset(ConsoleFlags::portrait_included);
 	info.update(svc);
+
+	wardrobe.set_position(svc.constants.f_center_screen + ui.wardrobe_offset);
 
 	mode = Mode::inventory;
 
@@ -113,9 +115,9 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!active()) { return; }
 	if (mode == Mode::inventory) {
-	Console::render(win);
-	if (!Console::extended()) { return; }
-	win.draw(title);
+		Console::render(win);
+		if (!Console::extended()) { return; }
+		win.draw(title);
 		for (auto& item : player.catalog.categories.inventory.items) {
 			item.render(svc, win, {0.f, 0.f});
 			if (item.selected()) {
@@ -126,18 +128,25 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 		if (!player.catalog.categories.inventory.items.empty() && info.extended()) { selector.render(win); }
 		if (info.active()) { info.render(win); }
 		if (info.extended()) { info.write(win, true); }
-		if (player.has_map()) { help_marker.render(win); }
+		//if (player.has_map()) { help_marker.render(win); }
 		item_menu.render(win);
+		wardrobe.render(svc, win, cam);
 	}
-	if (mode == Mode::minimap) {
-		minimap.render(svc, win, cam);
-	}
+	if (mode == Mode::minimap) { minimap.render(svc, win, cam); }
 }
 
-void InventoryWindow::open() {
+void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player) {
 	flags.set(ConsoleFlags::active);
 	Console::begin();
 	info.begin();
+	auto& player_items = player.catalog.categories.inventory.items;
+	for (auto& item : player_items) {
+		auto randx = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.x);
+		auto randy = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.y);
+		auto top = svc.random.percent_chance(50);
+		auto startpos = top ? sf::Vector2<float>{randx, -ui.buffer} : sf::Vector2<float>{-ui.buffer, randy};
+		item.gravitator.set_position(startpos);
+	}
 }
 
 void InventoryWindow::close() {

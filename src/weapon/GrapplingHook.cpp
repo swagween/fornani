@@ -19,11 +19,10 @@ void GrapplingHook::update(automa::ServiceProvider& svc, player::Player& player)
 	}
 
 	if (grapple_triggers.test(arms::GrappleTriggers::released)) {
-		player.collider.physics.acceleration = spring.variables.physics.acceleration;
-		player.collider.physics.velocity = spring.variables.physics.velocity;
+		player.accumulated_forces.push_back(spring.variables.bob_physics.velocity);
 		spring.variables = {};
 		spring.set_bob(spring.get_anchor());
-		spring.variables.physics.position = spring.get_bob();
+		spring.variables.bob_physics.position = spring.get_bob();
 		spring.set_anchor(player.apparent_position);
 		grapple_triggers.reset(arms::GrappleTriggers::released);
 	}

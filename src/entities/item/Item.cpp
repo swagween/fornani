@@ -14,6 +14,10 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	metadata.naive_description = in_data["naive_description"].as_string();
 	metadata.rarity = static_cast<Rarity>(in_data["rarity"].as<int>());
 
+	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
+	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 1.0f);
+	gravitator.collider.physics.maximum_velocity = {640.f, 640.f};
+
 	ui.rarity.setFont(svc.text.fonts.title);
 	ui.rarity.setCharacterSize(16);
 	ui.quantity.setFont(svc.text.fonts.basic);
@@ -54,6 +58,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 }
 
 void Item::update(automa::ServiceProvider& svc, int index) {
+	gravitator.update(svc);
 	auto inv_pos = sf::Vector2<float>{index * ui.spacing + ui.pad.x, ui.pad.y};
 	if (flags.test(ItemFlags::unique)) {
 		variables.quantity = std::clamp(variables.quantity, 0, 1);
@@ -62,7 +67,8 @@ void Item::update(automa::ServiceProvider& svc, int index) {
 		ui.quantity.setPosition(inv_pos + dimensions);
 		ui.rarity.setOrigin({ui.rarity.getLocalBounds().getSize().x, 0.f});
 	}
-	sprite.setPosition(inv_pos);
+	gravitator.set_target_position(inv_pos);
+	sprite.setPosition(gravitator.position());
 	drawbox.setPosition(sprite.getPosition());
 	selection_index = index;
 	selected() ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.blue);

@@ -43,6 +43,13 @@ class AssetManager {
 	sf::Texture t_palette_nanidiv{};
 	sf::Texture t_palette_naninight{};
 
+	// wardrobe
+	sf::Texture t_wardrobe_base{};
+	sf::Texture t_wardrobe_green_pants{};
+	sf::Texture t_wardrobe_blue_shirt{};
+	sf::Texture t_wardrobe_default_hair{};
+	sf::Texture t_wardrobe_red_jeans{};
+
 	// items
 	sf::Texture t_items{};
 	sf::Texture t_guns{};
@@ -95,8 +102,10 @@ class AssetManager {
 	sf::Texture t_platform_firstwind{};
 	sf::Texture t_platform_overturned{};
 
-	//portals
+	//world stuff
 	sf::Texture t_portals{};
+	sf::Texture t_vine{};
+	sf::Texture t_vine_large{};
 
 	// animators
 	sf::Texture t_automatic_animators_firstwind{};

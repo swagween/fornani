@@ -24,6 +24,12 @@ void AssetManager::import_textures() {
 	t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");
 	t_palette_naninight.loadFromFile(finder.resource_path + "/image/character/nani_palette_night.png");
 
+	t_wardrobe_base.loadFromFile(finder.resource_path + "/image/wardrobe/base.png");
+	t_wardrobe_green_pants.loadFromFile(finder.resource_path + "/image/wardrobe/green_pants.png");
+	t_wardrobe_blue_shirt.loadFromFile(finder.resource_path + "/image/wardrobe/blue_shirt.png");
+	t_wardrobe_default_hair.loadFromFile(finder.resource_path + "/image/wardrobe/default_hair.png");
+	t_wardrobe_red_jeans.loadFromFile(finder.resource_path + "/image/wardrobe/red_jeans.png");
+
 	t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 	t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
 	t_tank.loadFromFile(finder.resource_path + "/image/critter/tank.png");
@@ -155,6 +161,8 @@ void AssetManager::import_textures() {
 	t_switch_blocks.loadFromFile(finder.resource_path + "/image/tile/switch_blocks.png");
 	t_indicator.loadFromFile(finder.resource_path + "/image/entity/arrow.png");
 	t_portals.loadFromFile(finder.resource_path + "/image/tile/portals.png");
+	t_vine.loadFromFile(finder.resource_path + "/image/tile/vine.png");
+	t_vine_large.loadFromFile(finder.resource_path + "/image/tile/vine_large.png");
 
 	// backgrounds
 	t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");

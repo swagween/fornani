@@ -116,7 +116,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
-			vines.push_back(entity::Vine(svc, pos, entry["length"].as<int>()));
+			auto fg = static_cast<bool>(entry["foreground"].as_bool());
+			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg));
 		}
 		for (auto& entry : metadata["inspectables"].array_view()) {
 			sf::Vector2<uint32_t> dim{};
@@ -351,6 +352,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.handle_collision(player->collider); }
+	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	player->collider.detect_map_collision(*this);
 	transition.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
@@ -438,7 +440,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
-	for (auto& vine : vines) { vine.render(svc, win, cam); }
+	for (auto& vine : vines) {
+		if (vine->foreground()) { vine->render(svc, win, cam); }
+	}
 
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
@@ -535,6 +539,9 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		box.setFillColor(svc.styles.colors.black);
 		box.setSize({(float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y});
 		win.draw(box);
+	}
+	for (auto& vine : vines) {
+		if (!vine->foreground()) { vine->render(svc, win, cam); }
 	}
 	for (auto& animator : animators) {
 		if (!animator.foreground()) { animator.render(svc, win, cam); }
@@ -653,12 +660,12 @@ void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& 
 		proj.hook.grapple_flags.set(arms::GrappleState::anchored);
 		proj.hook.grapple_flags.reset(arms::GrappleState::probing);
 		proj.hook.spring.set_force(proj.stats.spring_constant);
-		proj.hook.spring.variables.physics.acceleration += player->collider.physics.acceleration;
-		proj.hook.spring.variables.physics.velocity += player->collider.physics.velocity;
+		proj.hook.spring.variables.bob_physics.acceleration += player->collider.physics.acceleration;
+		proj.hook.spring.variables.bob_physics.velocity += player->collider.physics.velocity;
 	}
 	if (player->controller.hook_held() && proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
-		proj.hook.spring.variables.physics.acceleration += player->collider.physics.acceleration;
-		proj.hook.spring.variables.physics.acceleration.x += player->controller.horizontal_movement();
+		proj.hook.spring.variables.bob_physics.acceleration += player->collider.physics.acceleration;
+		proj.hook.spring.variables.bob_physics.acceleration.x += player->controller.horizontal_movement();
 		proj.lock_to_anchor();
 		proj.hook.spring.update(svc);
 
@@ -672,11 +679,11 @@ void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& 
 		if (distance > 32.f) { proj.hook.break_free(*player); }
 
 		// handle map collisions while anchored
-		player->collider.predictive_combined.set_position(proj.hook.spring.variables.physics.position);
+		player->collider.predictive_combined.set_position(proj.hook.spring.variables.bob_physics.position);
 		if (check_cell_collision(player->collider)) {
 			player->collider.physics.zero();
 		} else {
-			player->collider.physics.position = proj.hook.spring.variables.physics.position - player->collider.dimensions / 2.f;
+			player->collider.physics.position = proj.hook.spring.variables.bob_physics.position - player->collider.dimensions / 2.f;
 		}
 		player->collider.sync_components();
 	} else if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
