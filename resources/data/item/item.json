@@ -101,7 +101,7 @@
   "radar_device": {
     "index": 16,
     "title": "Radar Device",
-    "naive_description": "A map system. You can view the map by following the instruction below this window.",
+    "naive_description": "A map system. You can view the map by selecting this item, or pressing the designated key ([W] by default).",
     "unique": true,
     "usable": true
   },
@@ -133,6 +133,13 @@
     "naive_description": "A mixtape with your brother's handwriting on the label. Your heart fills with sadness and rage when you look at it.",
     "hidden_description": "A mixtape that Loop hid in the woods when you were younger. You can play it on a jukebox.",
     "unique": true
+  },
+  "red_jeans": {
+    "index": 81,
+    "title": "Red Jeans",
+    "naive_description": "A pair of red jeans. If you wear them, you will appear fashionable.",
+    "unique": true,
+    "equippable": true
   },
   "rhenite": {
     "index": 97,

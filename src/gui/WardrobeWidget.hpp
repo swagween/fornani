@@ -26,6 +26,7 @@ class WardrobeWidget {
 		sf::Sprite pants{};
 		sf::Sprite hairstyle{};
 	} sprites{};
+	sf::RectangleShape background{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> dimensions{128.f, 256.f};
 };

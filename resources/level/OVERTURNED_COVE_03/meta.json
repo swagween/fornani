@@ -48,15 +48,6 @@
     "vines": [
       {
         "position": [
-          4,
-          4
-        ],
-        "length": 12,
-        "size": 1,
-          "foreground": true
-      },
-      {
-        "position": [
           6,
           4
         ],
@@ -70,7 +61,8 @@
           3
         ],
         "length": 12,
-        "size": 2
+        "size": 2,
+        "foreground": false
       },
       {
         "position": [
@@ -78,7 +70,17 @@
           3
         ],
         "length": 10,
-        "size": 1
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          13,
+          4
+        ],
+        "length": 11,
+        "size": 2,
+        "foreground": true
       }
     ]
   },

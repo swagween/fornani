@@ -13,15 +13,22 @@ gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc) {
 	sprites.hairstyle.setOrigin(dimensions * 0.5f);
 	sprites.pants.setOrigin(dimensions * 0.5f);
 	sprites.shirt.setOrigin(dimensions * 0.5f);
+	background.setFillColor(svc.styles.colors.ui_black);
+	background.setOutlineColor(svc.styles.colors.ui_white);
+	background.setOutlineThickness(2);
+	background.setSize(dimensions);
+	background.setOrigin(dimensions * 0.5f);
 }
 
 void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player) {}
 
 void WardrobeWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	background.setPosition(position);
 	sprites.base.setPosition(position);
 	sprites.pants.setPosition(position);
 	sprites.shirt.setPosition(position);
 	sprites.hairstyle.setPosition(position);
+	win.draw(background);
 	win.draw(sprites.base);
 	win.draw(sprites.pants);
 	win.draw(sprites.shirt);

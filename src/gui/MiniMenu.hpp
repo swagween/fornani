@@ -16,6 +16,7 @@ class MiniMenu {
   public:
 	MiniMenu() = default;
 	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, bool white = false);
+	void overwrite_option(int index, std::string_view replacement);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> position);
 	void render(sf::RenderWindow& win, bool bg = true) const;
 	void open(automa::ServiceProvider& svc, sf::Vector2<float> position);

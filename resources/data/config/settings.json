@@ -4,5 +4,5 @@
   "gamepad": true,
   "music_volume": 1.000000,
   "tutorial": false,
-  "fullscreen": false
+  "fullscreen": true
 }

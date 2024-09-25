@@ -16,7 +16,7 @@ class Console;
 
 namespace item {
 
-enum class ItemFlags { unique, revealed, usable };
+enum class ItemFlags { unique, revealed, usable, equippable };
 enum class UIFlags { selected };
 
 class Item : public entity::Entity {
@@ -34,6 +34,8 @@ class Item : public entity::Entity {
 	void set_rarity_position(sf::Vector2<float> position);
 	[[nodiscard]] auto selected() const -> bool { return ui_flags.test(UIFlags::selected); }
 	[[nodiscard]] auto usable() const -> bool { return flags.test(ItemFlags::usable); }
+	[[nodiscard]] auto equippable() const -> bool { return flags.test(ItemFlags::equippable); }
+	[[nodiscard]] auto has_menu() const -> bool { return equippable() || usable(); }
 	[[nodiscard]] auto depleted() const -> bool { return variables.quantity <= 0; }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_quantity() const -> int { return variables.quantity; }

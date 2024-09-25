@@ -85,7 +85,12 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 					}
 				} else {
 					if (selector.get_current_selection() < player_items.size()) {
-						if (player_items.at(selector.get_current_selection()).usable()) {
+						if (player_items.at(selector.get_current_selection()).equippable()) {
+							item_menu.overwrite_option(0, "equip");
+						} else {
+							item_menu.overwrite_option(0, "use");
+						}
+						if (player_items.at(selector.get_current_selection()).has_menu()) {
 							item_menu.open(svc, selector.get_menu_position());
 							svc.soundboard.flags.console.set(audio::Console::menu_open);
 						} else {

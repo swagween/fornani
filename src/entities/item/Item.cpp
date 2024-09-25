@@ -44,6 +44,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 
 	if (in_data["unique"].as_bool()) { flags.set(ItemFlags::unique); }
 	if (in_data["usable"].as_bool()) { flags.set(ItemFlags::usable); }
+	if (in_data["equippable"].as_bool()) { flags.set(ItemFlags::equippable); }
 	dimensions = {32.f, 32.f};
 	sprite.setTexture(svc.assets.t_items);
 	auto u = static_cast<int>(((metadata.id - 1) % 16) * dimensions.x);

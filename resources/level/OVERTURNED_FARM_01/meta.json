@@ -188,5 +188,72 @@
       "automatic": false,
       "foreground": false
     }
-  ]
+  ],
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          4,
+          5
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          15,
+          3
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          28,
+          3
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          29,
+          4
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          6,
+          2
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          13,
+          3
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          2,
+          4
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": false
+      }
+    ]
+  }
 }

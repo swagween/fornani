@@ -20,6 +20,11 @@ MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> o
 	selection = util::Circuit(static_cast<int>(options.size()));
 }
 
+void MiniMenu::overwrite_option(int index, std::string_view replacement) {
+	if (index >= options.size()) { return; }
+		options.at(index).set_string(replacement);
+	}
+
 void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> position) {
 	if (!is_open()) { return; }
 	dimensions = dim;

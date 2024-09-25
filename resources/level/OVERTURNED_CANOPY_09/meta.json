@@ -104,6 +104,82 @@
       "foreground": true
     }
   ],
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          26,
+          3
+        ],
+        "length": 11,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          24,
+          3
+        ],
+        "length": 9,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          40,
+          3
+        ],
+        "length": 9,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          28,
+          1
+        ],
+        "length": 6,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          20,
+          2
+        ],
+        "length": 6,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          7,
+          4
+        ],
+        "length": 6,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          8,
+          3
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          41,
+          4
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      }
+    ]
+  },
   "chests": [
     {
       "id": 22601,
