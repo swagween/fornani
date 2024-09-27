@@ -66,8 +66,8 @@ class Layer {
 
   public:
 	Layer() = default;
-	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim) : render_order(o), collidable(c), dimensions(dim) { grid = Grid({dim.x, dim.y}); }
-	Grid grid{};
+	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(c), dimensions(dim), grid(dim, source) {}
+	Grid grid;
 	uint8_t render_order{};
 	bool collidable{};
 	sf::Vector2<uint32_t> dimensions{};

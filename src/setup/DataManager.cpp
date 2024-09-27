@@ -38,11 +38,14 @@ void DataManager::load_data(std::string in_room) {
 
 	// load map
 	// std::cout << "loading map data...";
+	std::string room_str{};
 	int room_counter{};
+	map_jsons.reserve(rooms.size());
+	map_layers.reserve(rooms.size());
 	for (auto& room : rooms) {
 		map_jsons.push_back(MapData());
 		map_jsons.back().id = room;
-		std::string room_str = m_services->tables.get_map_label.contains(room) ? finder.resource_path + "/level/" + m_services->tables.get_map_label.at(room) : finder.resource_path + "/level/" + in_room;
+		room_str = m_services->tables.get_map_label.contains(room) ? finder.resource_path + "/level/" + m_services->tables.get_map_label.at(room) : finder.resource_path + "/level/" + in_room;
 		map_jsons.back().metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
 		assert(!map_jsons.back().metadata.is_null());
 		map_jsons.back().tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
@@ -54,15 +57,9 @@ void DataManager::load_data(std::string in_room) {
 		dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
 		dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
 		map_layers.push_back(std::vector<world::Layer>());
-		for (int i = 0; i < num_layers; ++i) { map_layers.at(room_counter).push_back(world::Layer(i, (i == world::MIDDLEGROUND), dimensions)); }
-		for (auto& layer : map_layers.at(room_counter)) {
-			int cell_counter{};
-			layer.grid = world::Grid(dimensions);
-			for (auto& cell : map_jsons.back().tiles["layers"][layer_counter].array_view()) {
-				layer.grid.cells.at(cell_counter).value = cell.as<int>();
-				++cell_counter;
-			}
-			layer.grid.seed_vertices();
+		map_layers.back().reserve(num_layers);
+		for (int i = 0; i < num_layers; ++i) {
+			map_layers.at(room_counter).push_back(world::Layer(i, (i == world::MIDDLEGROUND), dimensions, map_jsons.back().tiles["layers"][layer_counter]));
 			++layer_counter;
 		}
 		++room_counter;

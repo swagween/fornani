@@ -6,7 +6,6 @@
 #include "../animation/AnimatedSprite.hpp"
 #include "../../utils/Cooldown.hpp"
 #include "../../particle/Sparkler.hpp"
-#include "../../graphics/FLColor.hpp"
 #include "../../utils/StateFunction.hpp"
 #define DROP_BIND(f) std::bind(&Drop::f, this)
 

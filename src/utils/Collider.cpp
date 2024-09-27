@@ -1,6 +1,5 @@
 
 #include "Collider.hpp"
-#include "../graphics/FLColor.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../level/Map.hpp"
 #include <ccmath/math/power/sqrt.hpp>
@@ -232,6 +231,8 @@ void Collider::detect_map_collision(world::Map& map) {
 int Collider::detect_ledge_height(world::Map& map) {
 	int ret{};
 	auto total = map.get_layers().at(world::MIDDLEGROUND).grid.cells.size();
+	bool floor_right{};
+	bool floor_left{};
 	for (int index = 0; index < total; ++index) {
 		auto& cell = map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(index);
 		if (!map.nearby(cell.bounding_box, bounding_box)) {
@@ -243,27 +244,17 @@ int Collider::detect_ledge_height(world::Map& map) {
 				continue;
 			} else {
 				// we're in the vicinity now, so we check the bottom left and right corners to find a potential ledge
-				if (!cell.is_occupied()) {
-					auto right = cell.bounding_box.contains_point(vicinity.vertices.at(2));
-					auto left = cell.bounding_box.contains_point(vicinity.vertices.at(3));
-					if (left) { flags.state.set(State::ledge_left); }
-					if (right) { flags.state.set(State::ledge_right); }
-						if (left || right) { // left ledge found
-						bool found{};
-						auto next_row = index + map.dimensions.x;
-						while (!found) {
-							if (map.get_layers().at(world::MIDDLEGROUND).grid.cells.size() <= next_row) { return map.dimensions.y; };
-							if (map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(next_row).is_occupied()) { found = true; }
-							next_row += map.dimensions.x;
-							++ret;
-							if (ret > (int)map.dimensions.y) { return map.dimensions.y; }
-						}
-						return ret;
-					}
-				}
+				// this is a good start, but I should use raycasting instead
+				// basically, just generate a point at each vicinity corner and increment its y position by 32 until it enters a cell
+				if (cell.bounding_box.contains_point(vicinity.vertices.at(2))) { floor_right = true; }
+				if (cell.bounding_box.contains_point(vicinity.vertices.at(3))) { floor_left = true; }
+				// TODO: write a function that checks if a point is in empty space or not
 			}
 		}
 	}
+	if (!floor_left) { flags.state.set(State::ledge_left); }
+	if (!floor_right) { flags.state.set(State::ledge_right); }
+	if (!floor_left || !floor_right) { ret = 2; }
 	return ret;
 }
 

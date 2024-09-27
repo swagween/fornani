@@ -603,9 +603,9 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 void Map::generate_collidable_layer(bool live) {
 	auto& layers = m_services->data.get_layers(room_id);
 	auto pushable_offset = sf::Vector2<float>{1.f, 0.f};
-	layers.at(MIDDLEGROUND).grid.check_neighbors();
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-		if ((!cell.surrounded && cell.is_occupied() && !cell.is_special())) { collidable_indeces.push_back(cell.one_d_index); }
+		layers.at(MIDDLEGROUND).grid.check_neighbors(cell.one_d_index);
+		if ((cell.is_occupied() && !cell.is_special())) { collidable_indeces.push_back(cell.one_d_index); }
 		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position, styles.breakables)); }
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position + pushable_offset, styles.pushables, cell.value - 227)); }

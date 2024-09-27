@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <format>
 
 namespace util {
 
@@ -26,7 +27,7 @@ class Stopwatch {
 	};
 	float seconds_passed() const { return seconds.count(); }
 	float get_snapshot() const { return snapshot.average_elapsed_ms; }
-	void print_time() const { std::cout << "Elapsed Time: " << elapsed_time.count() << "\n"; }
+	void print_time() const { std::cout << "Elapsed Time: " << std::format("{:.3f}", seconds.count()) << " seconds.\n"; }
 
 	Time elapsed_time{};
 	Tpt start_time = Clk::now();

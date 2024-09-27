@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include "../components/PhysicsComponent.hpp"
 #include "../entities/animation/Animation.hpp"
-#include "../graphics/FLColor.hpp"
 #include "../graphics/SpriteHistory.hpp"
 #include "../particle/Emitter.hpp"
 #include "../particle/Gravitator.hpp"

@@ -3,13 +3,9 @@
 
 namespace world {
 
-Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val) : index(i), position(p), value(val) {
-	bounding_box = shape::Shape(sf::Vector2<float>(lookup::unit_size_f, lookup::unit_size_f));
-	drawbox.setOutlineColor(sf::Color::Blue);
-	drawbox.setFillColor(sf::Color::Transparent);
-	drawbox.setSize(bounding_box.dimensions);
-	drawbox.setOutlineThickness(-2);
+Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi) : index(i), scaled_position(static_cast<sf::Vector2<int>>(i)), position(p), value(val), one_d_index(odi) {
 	set_type();
+	bounding_box.set_position(p);
 }
 
 void Tile::update_polygon(sf::Vector2<float> cam) {
@@ -22,6 +18,10 @@ void Tile::update_polygon(sf::Vector2<float> cam) {
 }
 
 void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+	drawbox.setOutlineColor(sf::Color::Blue);
+	drawbox.setFillColor(sf::Color::Transparent);
+	drawbox.setSize(bounding_box.dimensions);
+	drawbox.setOutlineThickness(-2);
 	if (collision_check) {
 		update_polygon(cam);
 		if (!surrounded) {
@@ -37,14 +37,38 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 void Tile::set_type() {
 	type = TileType::empty;
-	if (value < 192 && value > 0) { type = TileType::solid; }
-	if (value < 208 && value >= 192) { type = TileType::ceiling_ramp; }
-	if (value < 224 && value >= 208) { type = TileType::ground_ramp; }
-	if (value < 240 && value >= 236) { type = TileType::platform; }
-	if (value < 244 && value >= 240) { type = TileType::death_spike; }
-	if (value < 230 && value >= 228) { type = TileType::pushable; }
-	if (value == 231) { type = TileType::spawner; }
-	if (value < 248 && value >= 244) { type = TileType::breakable; }
+	if (value < 192 && value > 0) {
+		type = TileType::solid;
+		return;
+	}
+	if (value < 208 && value >= 192) {
+		type = TileType::ceiling_ramp;
+		return;
+	}
+	if (value < 224 && value >= 208) {
+		type = TileType::ground_ramp;
+		return;
+	}
+	if (value < 240 && value >= 236) {
+		type = TileType::platform;
+		return;
+	}
+	if (value < 244 && value >= 240) {
+		type = TileType::death_spike;
+		return;
+	}
+	if (value < 230 && value >= 228) {
+		type = TileType::pushable;
+		return;
+	}
+	if (value == 231) {
+		type = TileType::spawner;
+		return;
+	}
+	if (value < 248 && value >= 244) {
+		type = TileType::breakable;
+		return;
+	}
 	if (value >= 248) { type = TileType::spike; }
 }
 

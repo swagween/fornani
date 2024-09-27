@@ -6,6 +6,7 @@
 namespace fornani {
 
 Game::Game(char** argv, WindowManager& window) : player(services) {
+	services.stopwatch.start();
 	services.window = &window;
 	services.constants.screen_dimensions = window.screen_dimensions;
 	// data
@@ -39,8 +40,6 @@ Game::Game(char** argv, WindowManager& window) : player(services) {
 }
 
 void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-	services.stopwatch.start();
-	bool boot{true};
 	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 	flags.set(GameFlags::standard_display);
 
@@ -187,10 +186,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.window->get().display();
 
 		services.ticker.end_frame();
-		if (boot) {
-			std::cout << "> Boot time: " << services.ticker.total_seconds_passed.count() << " seconds.\n";
-			boot = false;
-		}
 	}
 
 shutdown:

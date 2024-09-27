@@ -12,7 +12,7 @@ enum class TileState { ramp_adjacent, big_ramp };
 struct Tile {
 
 	Tile() = default;
-	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val);
+	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi);
 
 	void update_polygon(sf::Vector2<float> cam); // for greyblock mode
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -45,7 +45,7 @@ struct Tile {
 
 	uint8_t value{};
 	TileType type{};	 // for assigning attributes
-	shape::Shape bounding_box{}; // for collision
+	shape::Shape bounding_box{{32, 32}}; // for collision
 
 	bool collision_check{};
 	bool surrounded{};

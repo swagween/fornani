@@ -6,8 +6,6 @@
 #include <array>
 #include <filesystem>
 #include <string>
-
-#include "../graphics/FLColor.hpp"
 #include "../setup/EnumLookups.hpp"
 #include "ResourceFinder.hpp"
 
