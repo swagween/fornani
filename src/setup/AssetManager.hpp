@@ -49,6 +49,12 @@ class AssetManager {
 	sf::Texture t_wardrobe_blue_shirt{};
 	sf::Texture t_wardrobe_default_hair{};
 	sf::Texture t_wardrobe_red_jeans{};
+	sf::Texture t_wardrobe_chalcedony_tee{};
+	sf::Texture t_wardrobe_chalcedony_skirt{};
+	sf::Texture t_wardrobe_ponytail{};
+	sf::Texture t_wardrobe_punk_hair{};
+	sf::Texture t_wardrobe_punk_shirt{};
+	sf::Texture t_wardrobe_punk_pants{};
 
 	// items
 	sf::Texture t_items{};

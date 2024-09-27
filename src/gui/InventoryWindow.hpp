@@ -31,6 +31,7 @@ class InventoryWindow : public Console {
 	void cancel();
 	void move(sf::Vector2<int> direction);
 	void use_item(automa::ServiceProvider& svc, player::Player& player, world::Map& map, item::Item& item);
+	void update_table(player::Player& player, bool new_dim);
 	void set_item_size(int sz) {
 		if (sz > 0) { selector.current_selection = util::Circuit(sz); }
 	}
@@ -53,7 +54,6 @@ class InventoryWindow : public Console {
 		float buffer{40.f};
 		int title_size{16};
 		int desc_size{16};
-		int items_per_row{12};
 		sf::Vector2<float> title_offset{static_cast<float>(corner_factor) * 1.3f, 66.f};
 		sf::Vector2<float> item_label_offset{static_cast<float>(corner_factor) * 1.3f, 390.f};
 		sf::Vector2<float> item_description_offset{static_cast<float>(corner_factor) * 1.3f, 490.f};

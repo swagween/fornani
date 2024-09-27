@@ -14,7 +14,7 @@ class Selector {
   public:
 	Selector() = default;
 	Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim);
-	void update();
+	void update(bool new_dim = false);
 	void render(sf::RenderWindow& win) const;
 	void go_up();
 	void go_down();

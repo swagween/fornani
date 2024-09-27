@@ -29,6 +29,12 @@ void AssetManager::import_textures() {
 	t_wardrobe_blue_shirt.loadFromFile(finder.resource_path + "/image/wardrobe/blue_shirt.png");
 	t_wardrobe_default_hair.loadFromFile(finder.resource_path + "/image/wardrobe/default_hair.png");
 	t_wardrobe_red_jeans.loadFromFile(finder.resource_path + "/image/wardrobe/red_jeans.png");
+	t_wardrobe_chalcedony_tee.loadFromFile(finder.resource_path + "/image/wardrobe/chalcedony_tee.png");
+	t_wardrobe_chalcedony_skirt.loadFromFile(finder.resource_path + "/image/wardrobe/chalcedony_skirt.png");
+	t_wardrobe_ponytail.loadFromFile(finder.resource_path + "/image/wardrobe/ponytail.png");
+	t_wardrobe_punk_hair.loadFromFile(finder.resource_path + "/image/wardrobe/punk_hair.png");
+	t_wardrobe_punk_shirt.loadFromFile(finder.resource_path + "/image/wardrobe/punk_shirt.png");
+	t_wardrobe_punk_pants.loadFromFile(finder.resource_path + "/image/wardrobe/punk_pants.png");
 
 	t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 	t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");

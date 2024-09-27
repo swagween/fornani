@@ -1,6 +1,7 @@
 
 #pragma once
 #include <string_view>
+#include <optional>
 #include "../../utils/BitFlags.hpp"
 #include "../Entity.hpp"
 #include "Drop.hpp"
@@ -14,6 +15,10 @@ namespace gui {
 class Console;
 }
 
+namespace player {
+enum class ApparelType;
+}
+
 namespace item {
 
 enum class ItemFlags { unique, revealed, usable, equippable };
@@ -24,7 +29,7 @@ class Item : public entity::Entity {
   public:
 	Item() = default;
 	Item(automa::ServiceProvider& svc, std::string_view label);
-	void update(automa::ServiceProvider& svc, int index);
+	void update(automa::ServiceProvider& svc, int index, int items_per_row);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void add_item(int amount);
 	void subtract_item(int amount);
@@ -45,6 +50,7 @@ class Item : public entity::Entity {
 	[[nodiscard]] auto get_label() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.title : metadata.naive_title; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return drawbox.getPosition(); }
 	[[nodiscard]] auto get_description() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.hidden_description : metadata.naive_description; }
+	[[nodiscard]] auto get_apparel_type() const -> player::ApparelType { return metadata.apparel_type ? metadata.apparel_type.value() : static_cast<player::ApparelType>(0); }
 
 	std::string_view label{};
 	int selection_index{};
@@ -58,6 +64,7 @@ class Item : public entity::Entity {
 		std::string_view naive_description{};
 		std::string_view hidden_description{};
 		Rarity rarity{};
+		std::optional<player::ApparelType> apparel_type{};
 	} metadata{};
 
 	util::BitFlags<ItemFlags> flags{};

@@ -21,10 +21,20 @@ void Wardrobe::update(flfx::TextureUpdater& updater) {
 	switch (get_variant(player::ApparelType::pants)) {
 	case 0: change_outfit({{{2, 0}, sf::Color{76, 176, 199}}, {{3, 0}, sf::Color{55, 151, 174}}}); break;
 	case 1: change_outfit({{{2, 0}, sf::Color{215, 0, 75}}, {{3, 0}, sf::Color{160, 18, 63}}}); break;
+	case 3: change_outfit({{{2, 0}, sf::Color{229, 234, 160}}, {{3, 0}, sf::Color{196, 213, 119}}}); break;
+	case 6: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	default: break;
 	}
 	switch (get_variant(player::ApparelType::hairstyle)) {
+	case 0: change_outfit({{{0, 1}, sf::Color{255, 255, 255}}, {{2, 1}, sf::Color{156, 142, 212}}}); break;
+	case 4: change_outfit({{{0, 1}, sf::Color{131, 52, 227}}, {{2, 1}, sf::Color{118, 114, 249}}}); break;
+	default: break;
 	}
 	switch (get_variant(player::ApparelType::shirt)) {
+	case 0: change_outfit({{{3, 2}, sf::Color{24, 34, 66}}}); break;
+	case 2: change_outfit({{{3, 2}, sf::Color{132, 113, 250}}}); break;
+	case 5: change_outfit({{{3, 2}, sf::Color{194, 217, 211}}}); break;
+	default: break;
 	}
 	updater.switch_to_palette(palette);
 }

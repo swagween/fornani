@@ -27,8 +27,9 @@ void Portrait::update(automa::ServiceProvider& svc) {
 	sprite.setPosition(gravitator.position());
 }
 
-void Portrait::set_custom_portrait(sf::Sprite& sp) {
+void Portrait::set_custom_portrait(sf::Sprite sp) {
 	sprite = sp;
+	sprite.setOrigin({});
 	flags.set(PortraitFlags::custom);
 }
 

@@ -26,6 +26,12 @@ Inventory::Inventory() {
 	item_labels.insert({30, "stationary_rat"});
 	item_labels.insert({31, "loops_mixtape"});
 	item_labels.insert({81, "red_jeans"});
+	item_labels.insert({82, "chalcedony_tee"});
+	item_labels.insert({83, "chalcedony_skirt"});
+	item_labels.insert({84, "punk_hair_dye"});
+	item_labels.insert({85, "punk_shirt"});
+	item_labels.insert({86, "punk_pants"});
+	item_labels.insert({87, "hairtie"});
 	item_labels.insert({97, "rhenite"});
 	item_labels.insert({98, "sapphire"});
 }
@@ -33,7 +39,7 @@ Inventory::Inventory() {
 void Inventory::update(automa::ServiceProvider& svc) {
 	int index{};
 	for (auto& item : items) {
-		item.update(svc, index);
+		item.update(svc, index, items_per_row);
 		++index;
 	}
 }
@@ -58,7 +64,6 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 }
 
 void Inventory::remove_item(automa::ServiceProvider& svc, int item_id, int amount) {
-	bool depleted{};
 	for (auto& item : items) {
 		if (item.get_id() == item_id) {
 			item.subtract_item(amount);

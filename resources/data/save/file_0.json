@@ -4,22 +4,23 @@
   },
   "player_data": {
     "max_hp": 4.000000,
-    "hp": 3.000000,
-    "orbs": 1166,
+    "hp": 2.000000,
+    "orbs": 1209,
     "position": {
-      "x": 294.237610,
-      "y": 363.000000
+      "x": 172.438522,
+      "y": 395.000000
     },
     "arsenal": [
-      0
+      0,
+      10
     ],
-    "equipped_gun": 0,
+    "equipped_gun": 1,
     "abilities": [
 
     ],
     "wardrobe": {
-      "hairstyle": 320,
-      "shirt": 320,
+      "hairstyle": 0,
+      "shirt": 2,
       "pants": 1
     },
     "items": [
@@ -40,27 +41,63 @@
         "quantity": 1
       },
       {
+        "id": 82,
+        "quantity": 1
+      },
+      {
+        "id": 83,
+        "quantity": 1
+      },
+      {
+        "id": 84,
+        "quantity": 1
+      },
+      {
+        "id": 85,
+        "quantity": 1
+      },
+      {
+        "id": 86,
+        "quantity": 1
+      },
+      {
+        "id": 87,
+        "quantity": 1
+      },
+      {
         "id": 8,
+        "quantity": 1
+      },
+      {
+        "id": 1,
+        "quantity": 1
+      },
+      {
+        "id": 11,
+        "quantity": 1
+      },
+      {
+        "id": 22,
         "quantity": 1
       }
     ],
     "stats": {
       "death_count": 80,
-      "bullets_fired": 736,
-      "guns_collected": 1,
-      "items_collected": 4,
-      "orbs_collected": 1166,
+      "bullets_fired": 2295,
+      "guns_collected": 2,
+      "items_collected": 7,
+      "orbs_collected": 1209,
       "blue_orbs": 1,
       "highest_indicator_amount": 124,
-      "enemies_killed": 25,
-      "rooms_discovered": 26,
-      "seconds_played": 2097.369629,
+      "enemies_killed": 27,
+      "rooms_discovered": 28,
+      "seconds_played": 2432.861084,
       "time_trials": {
         "bryns_gun": 25.041019
       }
     }
   },
-  "save_point_id": 229,
+  "save_point_id": 110,
   "unlocked_doors": [
 
   ],
@@ -71,7 +108,9 @@
     11443,
     22601,
     323,
-    21801
+    21801,
+    5768,
+    125111
   ],
   "activated_switches": [
     445,
@@ -96,10 +135,31 @@
       1,
       1,
       0
+    ],
+    [
+      3,
+      20,
+      1,
+      1,
+      0
+    ],
+    [
+      9,
+      1,
+      1,
+      1,
+      0
+    ],
+    [
+      63,
+      1,
+      1,
+      1,
+      0
     ]
   ],
   "destroyed_inspectables": [
-
+    "bookshelf110"
   ],
   "tutorial": {
     "state": 4,
@@ -137,6 +197,8 @@
     228,
     218,
     229,
-    232
+    232,
+    109,
+    125
   ]
 }

@@ -57,12 +57,11 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		} else {
 			info.update(svc);
 		}
-		auto x_dim = std::min(static_cast<int>(player_items.size()), ui.items_per_row);
-		auto y_dim = static_cast<int>(std::ceil(static_cast<float>(player_items.size()) / static_cast<float>(ui.items_per_row)));
-		selector.update();
+		update_table(player, false);
 		for (auto& item : player_items) {
 			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
 			if (player_items.size() == 1) { item.select(); }
+			if (item.depleted()) { selector.go_left(); }
 			if (item.selected() && info.extended()) {
 				selector.set_position(item.get_position());
 				info.writer.load_single_message(item.get_description());
@@ -203,15 +202,25 @@ void InventoryWindow::use_item(automa::ServiceProvider& svc, player::Player& pla
 	//equippables
 	if (item.equippable()) {
 		if (item.is_equipped()) {
-			player.unequip_item(player::ApparelType::pants, item.get_id());
+			player.unequip_item(item.get_apparel_type(), item.get_id());
 		} else {
-			player.equip_item(player::ApparelType::pants, item.get_id());
+			player.equip_item(item.get_apparel_type(), item.get_id());
 		}
 		svc.soundboard.flags.item.set(audio::Item::equip);
 		wardrobe.update(svc, player);
 	}
 	
 	item_menu.close(svc);
+	update_table(player, item.depleted());
+}
+
+void InventoryWindow::update_table(player::Player& player, bool new_dim) {
+	auto& player_items = player.catalog.categories.inventory.items;
+	auto ipr = player.catalog.categories.inventory.items_per_row;
+	auto x_dim = std::min(static_cast<int>(player_items.size()), ipr);
+	auto y_dim = static_cast<int>(std::ceil(static_cast<float>(player_items.size()) / static_cast<float>(ipr)));
+	selector.set_dimensions({x_dim, y_dim});
+	selector.update(new_dim);
 }
 
 void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {

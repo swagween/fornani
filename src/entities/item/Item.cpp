@@ -1,6 +1,7 @@
 #include "Item.hpp"
 #include "../../service/ServiceProvider.hpp"
 #include "../../gui/Console.hpp"
+#include "../player/Wardrobe.hpp"
 #include <algorithm>
 
 namespace item {
@@ -13,6 +14,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	metadata.hidden_description = in_data["hidden_description"] ? in_data["hidden_description"].as_string() : in_data["naive_description"].as_string();
 	metadata.naive_description = in_data["naive_description"].as_string();
 	metadata.rarity = static_cast<Rarity>(in_data["rarity"].as<int>());
+	if (in_data["apparel_type"]) { metadata.apparel_type = static_cast<player::ApparelType>(in_data["apparel_type"].as<int>()); }
 
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 1.0f);
@@ -58,9 +60,11 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	drawbox.setOutlineThickness(-1);
 }
 
-void Item::update(automa::ServiceProvider& svc, int index) {
+void Item::update(automa::ServiceProvider& svc, int index, int items_per_row) {
 	gravitator.update(svc);
-	auto inv_pos = sf::Vector2<float>{index * ui.spacing + ui.pad.x, ui.pad.y};
+	auto y_pos = ui.pad.y + static_cast<float>(index / items_per_row) * ui.spacing;
+	auto x_pos = ui.pad.x + static_cast<float>(index % items_per_row) * ui.spacing;
+	auto inv_pos = sf::Vector2<float>{x_pos, y_pos};
 	if (flags.test(ItemFlags::unique)) {
 		variables.quantity = std::clamp(variables.quantity, 0, 1);
 	} else {

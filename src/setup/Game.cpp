@@ -39,7 +39,8 @@ Game::Game(char** argv, WindowManager& window) : player(services) {
 }
 
 void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-
+	services.stopwatch.start();
+	bool boot{true};
 	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 	flags.set(GameFlags::standard_display);
 
@@ -65,6 +66,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 	}
 
 	std::cout << "> Success\n";
+	services.stopwatch.stop();
+	services.stopwatch.print_time();
 
 	while (services.window->get().isOpen()) {
 
@@ -184,6 +187,10 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.window->get().display();
 
 		services.ticker.end_frame();
+		if (boot) {
+			std::cout << "> Boot time: " << services.ticker.total_seconds_passed.count() << " seconds.\n";
+			boot = false;
+		}
 	}
 
 shutdown:
@@ -798,6 +805,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
 					ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
 					ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
+					ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.categories.inventory.items.size()));
 
 					ImGui::Separator();
 					ImGui::Text("Ticker");

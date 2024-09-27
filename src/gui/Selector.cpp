@@ -10,7 +10,11 @@ Selector::Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim) : table_d
 	sprite.setOrigin(10, 10);
 }
 
-void Selector::update() { sprite.setPosition(position); }
+void Selector::update(bool new_dim) {
+	sprite.setPosition(position);
+	if (!new_dim) { return; }
+	current_selection = util::Circuit(table_dimensions.x * table_dimensions.y);
+}
 
 void Selector::render(sf::RenderWindow& win) const { win.draw(sprite); }
 
