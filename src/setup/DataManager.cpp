@@ -173,6 +173,11 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["player_data"]["equipped_gun"] = player.arsenal.value().get_index();
 	}
 
+	// wardrobe
+	save["player_data"]["wardrobe"]["hairstyle"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::hairstyle);
+	save["player_data"]["wardrobe"]["shirt"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::shirt);
+	save["player_data"]["wardrobe"]["pants"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::pants);
+
 	// items and abilities
 	save["player_data"]["abilities"] = wipe;
 	save["player_data"]["items"] = wipe;
@@ -280,6 +285,16 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	player.catalog.categories.inventory.clear();
 	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
 	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
+
+	// wardrobe
+	auto& wardrobe = player.catalog.categories.wardrobe;
+	auto hairstyle = save["player_data"]["wardrobe"]["hairstyle"].as<int>();
+	auto shirt = save["player_data"]["wardrobe"]["shirt"].as<int>();
+	auto pants = save["player_data"]["wardrobe"]["pants"].as<int>();
+	hairstyle > 0 ? player.equip_item(player::ApparelType::hairstyle, hairstyle + 80) : wardrobe.unequip(player::ApparelType::hairstyle);
+	shirt > 0 ? player.equip_item(player::ApparelType::shirt, shirt + 80) : wardrobe.unequip(player::ApparelType::shirt);
+	pants > 0 ? player.equip_item(player::ApparelType::pants, pants + 80) : wardrobe.unequip(player::ApparelType::pants);
+	player.catalog.categories.wardrobe.update(player.texture_updater);
 
 	// stat tracker
 	auto& s = m_services->stats;

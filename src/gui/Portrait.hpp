@@ -2,12 +2,14 @@
 #pragma once
 #include <string_view>
 #include "../particle/Gravitator.hpp"
+#include "../utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;
 }
 
 namespace gui {
+enum class PortraitFlags { custom };
 float const pad_x{20.f};
 float const pad_y{20.f};
 class Portrait {
@@ -15,6 +17,7 @@ class Portrait {
 	Portrait() = default;
 	Portrait(automa::ServiceProvider& svc, bool left = true);
 	void update(automa::ServiceProvider& svc);
+	void set_custom_portrait(sf::Sprite& sp);
 	void render(sf::RenderWindow& win);
 	void reset(automa::ServiceProvider& svc);
 	void set_position(sf::Vector2<float> pos);
@@ -26,7 +29,9 @@ class Portrait {
 
   private:
 	sf::Sprite sprite{};
+	sf::Sprite window{};
 	std::string_view label{};
+	util::BitFlags<PortraitFlags> flags{};
 	int id{};
 	int emotion{1}; // 1-index to avoid communication errors
 	bool is_nani{};

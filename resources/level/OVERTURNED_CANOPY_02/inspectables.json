@@ -1,22 +1,15 @@
 {
-  "toupper": {
+  "canpy1": {
     "suite": [
       [
-        "Upper Canopies >"
+        "To Upper Canopies"
       ]
     ]
   },
-  "tolower": {
+  "canpy2": {
     "suite": [
       [
         "To Lower Glades"
-      ]
-    ]
-  },
-  "canopy_1_statue": {
-    "suite": [
-      [
-        "The ancient statue's gaze is sightless and disconcerting."
       ]
     ]
   }

@@ -45,6 +45,7 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	texture_updater.load_base_texture(svc.assets.t_nani);
 	texture_updater.load_pixel_map(svc.assets.t_palette_nani);
+	catalog.categories.wardrobe.set_palette(svc.assets.t_palette_nani);
 }
 
 void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window) {
@@ -628,6 +629,8 @@ void Player::start_over() {
 		a.collider.physics.gravity = 0.f;
 	}
 	sync_antennae();
+	catalog.categories.wardrobe.set_palette(m_services->assets.t_palette_nani);
+	catalog.categories.wardrobe.update(texture_updater);
 }
 
 void Player::give_drop(item::DropType type, float value) {
@@ -646,6 +649,18 @@ void Player::give_drop(item::DropType type, float value) {
 }
 
 void Player::take_item(int item_id, int amount) { catalog.remove_item(*m_services, item_id, amount); }
+
+void Player::equip_item(ApparelType type, int item_id) {
+	if (item_id < 1) { return; }
+	catalog.equip_item(*m_services, type, item_id);
+	catalog.categories.inventory.get_item(item_id).toggle_equip();
+}
+
+void Player::unequip_item(ApparelType type, int item_id) {
+	if (item_id < 1) { return; }
+	catalog.unequip_item(type);
+	catalog.categories.inventory.get_item(item_id).toggle_equip();
+}
 
 void Player::give_item(int item_id, int amount) {
 	catalog.add_item(*m_services, item_id, 1);

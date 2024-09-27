@@ -29,22 +29,6 @@
   "portals": [
     {
       "dimensions": [
-        1,
-        2
-      ],
-      "position": [
-        15,
-        42
-      ],
-      "source_id": 200,
-      "destination_id": 299,
-      "activate_on_contact": true,
-      "already_open": false,
-      "locked": false,
-      "key_id": 0
-    },
-    {
-      "dimensions": [
         4,
         1
       ],
@@ -54,6 +38,22 @@
       ],
       "source_id": 200,
       "destination_id": 122,
+      "activate_on_contact": true,
+      "already_open": false,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        2,
+        1
+      ],
+      "position": [
+        12,
+        47
+      ],
+      "source_id": 200,
+      "destination_id": 299,
       "activate_on_contact": true,
       "already_open": false,
       "locked": false,

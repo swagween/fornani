@@ -837,8 +837,14 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Quest Shipment..: %i", player.transponder.shipments.quest.get_residue());
 					ImGui::Separator();
 					ImGui::Text("MiniMap Scale..: %f", game_state.get_current_state().inventory_window.minimap.get_scale());
+					ImGui::Text("MiniMap Ratio..: %f", game_state.get_current_state().inventory_window.minimap.get_ratio());
 					ImGui::Text("MiniMap X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().x);
 					ImGui::Text("MiniMap Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().y);
+					ImGui::Separator();
+					ImGui::Text("MiniMap Extent Left..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().left);
+					ImGui::Text("MiniMap Extent Top..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().top);
+					ImGui::Text("MiniMap Extent Width..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().width);
+					ImGui::Text("MiniMap Extent Height..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().height);
 					ImGui::Separator();
 					ImGui::Text("MiniMap Center X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().x);
 					ImGui::Text("MiniMap Center Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().y);

@@ -141,6 +141,7 @@ void AssetManager::import_textures() {
 	t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 	t_blue_console.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");
 	t_cream_console.loadFromFile(finder.resource_path + "/image/gui/cream_console.png");
+	t_portrait_window.loadFromFile(finder.resource_path + "/image/gui/portrait_window.png");
 
 	t_platforms.loadFromFile(finder.resource_path + "/image/tile/platforms.png");
 	t_platform_night.loadFromFile(finder.resource_path + "/image/tile/platform_night.png");

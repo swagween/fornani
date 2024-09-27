@@ -93,6 +93,8 @@ void Item::select() { ui_flags.set(UIFlags::selected); }
 
 void Item::deselect() { ui_flags.reset(UIFlags::selected); }
 
+void Item::toggle_equip() { is_equipped() ? state.reset(ItemState::equipped) : state.set(ItemState::equipped); }
+
 void Item::set_rarity_position(sf::Vector2<float> position) { ui.rarity.setPosition(position); }
 
 } // namespace player

@@ -17,6 +17,11 @@
     "abilities": [
 
     ],
+    "wardrobe": {
+      "hairstyle": 0,
+      "shirt": 0,
+      "pants": 0
+    },
     "items": [
 
     ],

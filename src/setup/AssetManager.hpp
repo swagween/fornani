@@ -80,6 +80,7 @@ class AssetManager {
 	sf::Texture t_file_text{};
 	sf::Texture t_blue_console{};
 	sf::Texture t_cream_console{};
+	sf::Texture t_portrait_window{};
 
 	sf::Texture t_hud_orb_font{};
 	sf::Texture t_hud_hearts{};

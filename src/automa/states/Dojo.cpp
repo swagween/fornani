@@ -13,7 +13,6 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// A.stats.GRAV = 0.f;
 	// B.stats.GRAV = 0.f;
 	// A.physics.position = {200.f, 200.f};
-
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
 		svc.stats.world.rooms_discovered.update();
@@ -69,6 +68,8 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 
 	player->controller.prevent_movement();
+	inventory_window.update_wardrobe(svc, *player);
+	console.nani_portrait.set_custom_portrait(inventory_window.get_wardrobe_sprite());
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
@@ -172,7 +173,8 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {
 	if (pause_window.active()) { return; }
-
+	// refresh potential new console portrait
+	console.nani_portrait.set_custom_portrait(inventory_window.get_wardrobe_sprite());
 	if (inventory_window.active()) {
 		svc.soundboard.flags.console.set(audio::Console::done);
 		inventory_window.close();

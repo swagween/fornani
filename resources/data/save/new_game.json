@@ -13,6 +13,11 @@
     "arsenal": [],
     "equipped_gun": 0,
     "abilities": [],
+    "wardrobe": {
+      "hairstyle": 0,
+      "shirt": 0,
+      "pants": 0
+    },
     "items": [],
     "stats": {
       "death_count": 0,

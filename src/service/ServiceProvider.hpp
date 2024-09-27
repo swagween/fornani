@@ -19,7 +19,7 @@
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
-enum class AppFlags { fullscreen, tutorial };
+enum class AppFlags { fullscreen, tutorial, in_game };
 enum class StateFlags { hide_hud };
 struct ServiceProvider {
 	fornani::WindowManager* window;

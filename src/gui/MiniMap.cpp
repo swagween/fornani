@@ -33,6 +33,10 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool
 	atlas.push_back(std::make_unique<MapTexture>(svc));
 	if (current) { atlas.back()->set_current(); }
 	atlas.back()->bake(svc, map, room, scale, current, undiscovered);
+	extent.left = std::min(atlas.back()->get_position().x, extent.left);
+	extent.width = std::max(atlas.back()->get_position().x + atlas.back()->get_dimensions().x, extent.width);
+	extent.top = std::min(atlas.back()->get_position().y, extent.top);
+	extent.height = std::max(atlas.back()->get_position().y + atlas.back()->get_dimensions().y, extent.height);
 }
 
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -103,6 +107,8 @@ void MiniMap::toggle_scale() {
 
 void MiniMap::move(sf::Vector2<float> direction) {
 	position -= direction * speed;
+	position.x = std::clamp(position.x, -(extent.width) * ratio + view.getCenter().x, -(extent.left) * ratio + view.getCenter().x);
+	position.y = std::clamp(position.y, -(extent.height) * ratio + view.getCenter().y, -(extent.top) * ratio + view.getCenter().y);
 	previous_position = position;
 }
 

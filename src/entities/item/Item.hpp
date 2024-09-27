@@ -18,6 +18,7 @@ namespace item {
 
 enum class ItemFlags { unique, revealed, usable, equippable };
 enum class UIFlags { selected };
+enum class ItemState { equipped };
 
 class Item : public entity::Entity {
   public:
@@ -30,11 +31,13 @@ class Item : public entity::Entity {
 	void set_id(int new_id);
 	void select();
 	void deselect();
+	void toggle_equip();
 	void reveal() { flags.set(ItemFlags::revealed); }
 	void set_rarity_position(sf::Vector2<float> position);
 	[[nodiscard]] auto selected() const -> bool { return ui_flags.test(UIFlags::selected); }
 	[[nodiscard]] auto usable() const -> bool { return flags.test(ItemFlags::usable); }
 	[[nodiscard]] auto equippable() const -> bool { return flags.test(ItemFlags::equippable); }
+	[[nodiscard]] auto is_equipped() const -> bool { return state.test(ItemState::equipped); }
 	[[nodiscard]] auto has_menu() const -> bool { return equippable() || usable(); }
 	[[nodiscard]] auto depleted() const -> bool { return variables.quantity <= 0; }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
@@ -58,6 +61,7 @@ class Item : public entity::Entity {
 	} metadata{};
 
 	util::BitFlags<ItemFlags> flags{};
+	util::BitFlags<ItemState> state{};
 	util::BitFlags<UIFlags> ui_flags{};
 
 	struct {

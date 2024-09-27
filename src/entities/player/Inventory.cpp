@@ -54,6 +54,7 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 		svc.stats.player.items_collected.update();
 	}
 	update(svc);
+	if (svc.app_flags.test(automa::AppFlags::in_game)) { svc.soundboard.flags.item.set(audio::Item::get); }
 }
 
 void Inventory::remove_item(automa::ServiceProvider& svc, int item_id, int amount) {

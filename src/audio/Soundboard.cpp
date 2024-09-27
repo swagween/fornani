@@ -79,6 +79,8 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.item.test(Item::orb_max)) { svc.assets.orb_4.play(); }
 	if (flags.item.test(Item::health_increase)) { svc.assets.health_increase.play(); }
 	if (flags.item.test(Item::gem)) { svc.assets.gem_get.play(); }
+	if (flags.item.test(Item::get)) { svc.assets.gem_get.play(); }
+	if (flags.item.test(Item::equip)) { svc.assets.arms_switch.play(); }
 
 	// player
 	if (flags.player.test(Player::land)) { svc.assets.landed.play(); }

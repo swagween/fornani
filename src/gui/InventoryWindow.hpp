@@ -25,6 +25,7 @@ class InventoryWindow : public Console {
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void open(automa::ServiceProvider& svc, player::Player& player);
+	void update_wardrobe(automa::ServiceProvider& svc, player::Player& player);
 	void close();
 	void select();
 	void cancel();
@@ -36,6 +37,7 @@ class InventoryWindow : public Console {
 	void switch_modes(automa::ServiceProvider& svc);
 	[[nodiscard]] auto is_inventory() const -> bool { return mode == Mode::inventory; }
 	[[nodiscard]] auto is_minimap() const -> bool { return mode == Mode::minimap; }
+	[[nodiscard]] auto get_wardrobe_sprite() -> sf::Sprite& { return wardrobe.get_sprite(); }
 
 	Selector selector;
 	Console info;

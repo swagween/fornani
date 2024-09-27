@@ -85,12 +85,13 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 					}
 				} else {
 					if (selector.get_current_selection() < player_items.size()) {
-						if (player_items.at(selector.get_current_selection()).equippable()) {
-							item_menu.overwrite_option(0, "equip");
+						auto& item = player_items.at(selector.get_current_selection());
+						if (item.equippable()) {
+							item.is_equipped() ? item_menu.overwrite_option(0, "remove") : item_menu.overwrite_option(0, "equip");
 						} else {
 							item_menu.overwrite_option(0, "use");
 						}
-						if (player_items.at(selector.get_current_selection()).has_menu()) {
+						if (item.has_menu()) {
 							item_menu.open(svc, selector.get_menu_position());
 							svc.soundboard.flags.console.set(audio::Console::menu_open);
 						} else {
@@ -144,6 +145,7 @@ void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player)
 	flags.set(ConsoleFlags::active);
 	Console::begin();
 	info.begin();
+	wardrobe.update(svc, player);
 	auto& player_items = player.catalog.categories.inventory.items;
 	for (auto& item : player_items) {
 		auto randx = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.x);
@@ -153,6 +155,8 @@ void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player)
 		item.gravitator.set_position(startpos);
 	}
 }
+
+void InventoryWindow::update_wardrobe(automa::ServiceProvider& svc, player::Player& player) { wardrobe.update(svc, player); }
 
 void InventoryWindow::close() {
 	Console::end();
@@ -180,10 +184,12 @@ void InventoryWindow::move(sf::Vector2<int> direction) {
 }
 
 void InventoryWindow::use_item(automa::ServiceProvider& svc, player::Player& player, world::Map& map, item::Item& item) {
-	if (!item.usable()) { return; }
+	if (!item.usable() && !item.equippable()) { return; }
+
+	//special cases
 	switch (item.get_id()) {
 	case 16:
-		mode = Mode::minimap;
+		switch_modes(svc);
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 		break;
 	case 22:
@@ -193,6 +199,18 @@ void InventoryWindow::use_item(automa::ServiceProvider& svc, player::Player& pla
 		player.take_item(22);
 		break;
 	}
+
+	//equippables
+	if (item.equippable()) {
+		if (item.is_equipped()) {
+			player.unequip_item(player::ApparelType::pants, item.get_id());
+		} else {
+			player.equip_item(player::ApparelType::pants, item.get_id());
+		}
+		svc.soundboard.flags.item.set(audio::Item::equip);
+		wardrobe.update(svc, player);
+	}
+	
 	item_menu.close(svc);
 }
 
