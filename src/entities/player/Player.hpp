@@ -13,6 +13,7 @@
 #include "../../graphics/Tutorial.hpp"
 #include "../../weapon/Arsenal.hpp"
 #include "../packages/Health.hpp"
+#include "../packages/Caution.hpp"
 #include "Catalog.hpp"
 #include "Indicator.hpp"
 #include "PlayerAnimation.hpp"
@@ -170,6 +171,9 @@ class Player {
 
 	// for debug mode
 	std::string print_direction(bool lr);
+
+	//for ledge testing
+	entity::Caution caution{};
 
 	// components
 	PlayerController controller;

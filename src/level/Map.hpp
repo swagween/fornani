@@ -11,6 +11,7 @@
 #include "../entities/world/Vine.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Transition.hpp"
+#include "../graphics/Rain.hpp"
 #include "Grid.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
@@ -115,11 +116,10 @@ class Map {
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
-	//std::vector<Layer> layers{};
-	std::vector<uint32_t> collidable_indeces{}; // generated on load to reduce collision checks in hot code
-	Vec real_dimensions{};						// pixel dimensions (maybe useless)
-	Vecu16 dimensions{};						// points on the 32x32-unit grid
-	Vecu16 chunk_dimensions{};					// how many chunks (16x16 squares) in the room
+	// std::vector<Layer> layers{};
+	Vec real_dimensions{};	   // pixel dimensions (maybe useless)
+	Vecu16 dimensions{};	   // points on the 32x32-unit grid
+	Vecu16 chunk_dimensions{}; // how many chunks (16x16 squares) in the room
 
 	dj::Json inspectable_data{};
 
@@ -146,6 +146,9 @@ class Map {
 	std::vector<Destroyable> destroyers{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
+
+	// vfx
+	std::optional<vfx::Rain> rain{};
 
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition;

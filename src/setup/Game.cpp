@@ -158,6 +158,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		SteamAPI_RunCallbacks();
 
+		services.stopwatch.start();
 		// game logic and rendering
 		services.music.update();
 		bool has_focus = services.window->get().hasFocus();
@@ -168,6 +169,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
 		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
+
+		services.stopwatch.stop();
+		//if (services.ticker.every_x_ticks(100)) { services.stopwatch.print_time(); }
 
 		ImGui::SFML::Update(services.window->get(), deltaClock.restart());
 		services.window->screencap.update(services.window->get());
@@ -982,6 +986,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 6001);
 							player.set_position({4 * 32, 9 * 32});
+						}
+						if (ImGui::Button("Weather")) {
+							services.assets.click.play();
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 9901);
+							player.set_position({7 * 32, 7 * 32});
 						}
 						ImGui::EndTabItem();
 					}

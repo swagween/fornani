@@ -12,6 +12,7 @@ class CircleSensor {
 	CircleSensor();
 	CircleSensor(float radius);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void set_position(sf::Vector2<float> position);
 	sf::CircleShape bounds{};
 	sf::CircleShape drawable{};
 	bool within_bounds(shape::Shape& rect) const;

@@ -163,6 +163,10 @@
     {
       "room_id": 3002,
       "label": "SKYCORPS_JUNKYARD_02"
+    },
+    {
+      "room_id": 9901,
+      "label": "WEATHER_TEST"
     }
   ]
 }

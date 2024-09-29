@@ -52,7 +52,7 @@ class Collider {
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
 	void detect_map_collision(world::Map& map);
-	int detect_ledge_height(world::Map& map);
+	std::pair<size_t, size_t> get_collision_range(world::Map& map);
 	void correct_x(sf::Vector2<float> mtv);
 	void correct_y(sf::Vector2<float> mtv);
 	void correct_x_y(sf::Vector2<float> mtv);
@@ -66,7 +66,7 @@ class Collider {
 	void reset();
 	void reset_ground_flags();
 
-	bool on_ramp();
+	bool on_ramp() const;
 	bool has_horizontal_collision() const;
 	bool has_left_collision() const;
 	bool has_right_collision() const;

@@ -20,14 +20,18 @@ class Grid {
 	Grid(sf::Vector2<uint32_t> d, dj::Json& source);
 
 	sf::Vector2<uint32_t> dimensions{};
-	std::vector<Tile> cells{};
 
 	void check_neighbors(int i);
 	void seed_vertex(int index);
 	void destroy_cell(sf::Vector2<int> pos);
+	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	Tile& get_cell(int index);
+
+	std::vector<Tile> cells{};
 
   private:
 	float spacing{32.f};
+	sf::RectangleShape drawbox{};
 };
 
 } // namespace squid

@@ -4,26 +4,20 @@
 namespace world {
 
 Grid::Grid(sf::Vector2<uint32_t> d, dj::Json& source) : dimensions(d) {
-	cells.reserve(static_cast<std::size_t>(dimensions.x * dimensions.y));
+	auto size = static_cast<std::size_t>(dimensions.x * dimensions.y);
+	cells.reserve(size);
 	auto i{0};
-	auto index{0};
 	for (auto& cell : source.array_view()) {
 		auto value = cell.as<int>();
-		if (value == 0) {
-			++index;
-			continue;
-		}
-		auto xidx = static_cast<uint32_t>(std::floor(index % dimensions.x));
-		auto yidx = static_cast<uint32_t>(std::floor(index / dimensions.x));
+		auto xidx = static_cast<uint32_t>(std::floor(i % dimensions.x));
+		auto yidx = static_cast<uint32_t>(std::floor(i / dimensions.x));
 		cells.push_back(Tile({xidx, yidx}, {xidx * spacing, yidx * spacing}, value, i));
 		seed_vertex(i);
 		++i;
-		++index;
 	}
 }
 
 void Grid::check_neighbors(int i) {
-	if (!cells.at(i).is_occupied()) { return; }
 	auto right = static_cast<std::size_t>(i + 1);
 	auto left = static_cast<std::size_t>(i - 1);
 	auto up = static_cast<std::size_t>(i - dimensions.x);
@@ -31,22 +25,23 @@ void Grid::check_neighbors(int i) {
 	bool surrounded{true};
 	auto ui = static_cast<uint32_t>(i);
 	// right neighbor
-	if (!(i == cells.size() - 1)) {
-		if (!cells.at(right).is_solid()) { surrounded = false; }
+	if (i != cells.size() - 1) {
+			if (!cells.at(right).is_solid()) { surrounded = false; }
+		
 		if (cells.at(right).is_big_ramp() && cells.at(right).is_ground_ramp() && !cells.at(i).is_ramp()) { cells.at(i).flags.set(TileState::ramp_adjacent); }
 	}
 	// left neighbor
-	if (!(i == 0)) {
-		if (!cells.at(left).is_solid()) { surrounded = false; }
+	if (i != 0) {
+			if (!cells.at(left).is_solid()) { surrounded = false; }
 		if (cells.at(left).is_big_ramp() && cells.at(left).is_ground_ramp() && !cells.at(i).is_ramp()) { cells.at(i).flags.set(TileState::ramp_adjacent); }
 	}
 	// top neighbor
 	if (!(ui < dimensions.x)) {
-		if (!cells.at(up).is_solid()) { surrounded = false; }
+		if (cells.at(up).is_solid()) { surrounded = false; }
 	}
 	// bottom neighbor
 	if (!(ui > cells.size() - dimensions.x - 1)) {
-		if (!cells.at(down).is_solid()) { surrounded = false; }
+		if (cells.at(down).is_solid()) { surrounded = false; }
 	}
 	cells.at(i).surrounded = surrounded;
 }
@@ -209,8 +204,14 @@ void Grid::seed_vertex(int index) {
 
 void Grid::destroy_cell(sf::Vector2<int> pos) {
 	for(auto& cell : cells) {
-		if (cell.scaled_position == pos) { cell.value = 0; }
+		if (cell.scaled_position() == pos) { cell.value = 0; }
 	}
 }
+
+void Grid::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+	for (auto& cell : cells) { cell.render(win, cam, drawbox); }
+}
+
+Tile& Grid::get_cell(int index) { return cells.at(index); }
 
 } // namespace world

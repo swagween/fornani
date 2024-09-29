@@ -208,9 +208,13 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 void Collider::detect_map_collision(world::Map& map) {
 	flags.external_state.reset(ExternalState::grounded);
 	flags.perma_state = {};
-	for (auto& index : map.collidable_indeces) {
-		auto& cell = map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(index);
-		cell.collision_check = false;
+
+	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;
+	auto range = get_collision_range(map);
+
+	for(auto i{range.first}; i < range.second; ++i) {
+		auto& cell = grid.get_cell(i);
+		if (!cell.is_collidable()) { continue; }
 		if (!map.nearby(cell.bounding_box, bounding_box)) {
 			continue;
 		} else {
@@ -228,34 +232,15 @@ void Collider::detect_map_collision(world::Map& map) {
 	flags.state.reset(State::on_flat_surface);
 }
 
-int Collider::detect_ledge_height(world::Map& map) {
-	int ret{};
-	auto total = map.get_layers().at(world::MIDDLEGROUND).grid.cells.size();
-	bool floor_right{};
-	bool floor_left{};
-	for (int index = 0; index < total; ++index) {
-		auto& cell = map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(index);
-		if (!map.nearby(cell.bounding_box, bounding_box)) {
-			continue;
-		} else {
-			// check vicinity so we can escape early
-			if (vicinity.vertices.empty()) { return ret; }
-			if (!vicinity.overlaps(cell.bounding_box)) {
-				continue;
-			} else {
-				// we're in the vicinity now, so we check the bottom left and right corners to find a potential ledge
-				// this is a good start, but I should use raycasting instead
-				// basically, just generate a point at each vicinity corner and increment its y position by 32 until it enters a cell
-				if (cell.bounding_box.contains_point(vicinity.vertices.at(2))) { floor_right = true; }
-				if (cell.bounding_box.contains_point(vicinity.vertices.at(3))) { floor_left = true; }
-				// TODO: write a function that checks if a point is in empty space or not
-			}
-		}
-	}
-	if (!floor_left) { flags.state.set(State::ledge_left); }
-	if (!floor_right) { flags.state.set(State::ledge_right); }
-	if (!floor_left || !floor_right) { ret = 2; }
-	return ret;
+std::pair<size_t, size_t> Collider::get_collision_range(world::Map& map) {
+	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;
+	auto start_index = sf::Vector2<size_t>(static_cast<size_t>((vicinity.vertices.at(0).x / 32)), static_cast<size_t>((vicinity.vertices.at(0).y / 32)));
+	auto end_index = sf::Vector2<size_t>(static_cast<size_t>((vicinity.vertices.at(2).x / 32)), static_cast<size_t>((vicinity.vertices.at(2).y / 32)));
+	auto start = static_cast<size_t>(map.dimensions.x) * start_index.y + start_index.x;
+	auto end = static_cast<size_t>(map.dimensions.x) * end_index.y + end_index.x + 1;
+	start = std::clamp(start, std::size_t{0}, static_cast<size_t>(grid.cells.size() - 1));
+	end = std::clamp(end, std::size_t{0}, static_cast<size_t>(grid.cells.size() - 1));
+	return {start, end};
 }
 
 void Collider::correct_x(sf::Vector2<float> mtv) {
@@ -491,7 +476,7 @@ void Collider::reset_ground_flags() {
 		flags.state.reset(State::grounded);
 	}
 }
-bool Collider::on_ramp() { return flags.state.test(State::on_ramp); }
+bool Collider::on_ramp() const { return flags.state.test(State::on_ramp); }
 
 bool Collider::has_horizontal_collision() const { return flags.collision.test(Collision::has_left_collision) || flags.collision.test(Collision::has_right_collision); }
 

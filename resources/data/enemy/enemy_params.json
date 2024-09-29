@@ -45,7 +45,7 @@
       "variant": "skycorps"
     },
     "physical": {
-      "dimensions": [ 44, 40 ],
+      "dimensions": [ 40, 40 ],
       "sprite_dimensions": [ 80, 80 ],
       "spritesheet_dimensions": [ 5, 4 ],
       "offset": [ 22, -19 ],
@@ -348,6 +348,7 @@
       "gravity": false,
       "map_collision": false,
       "player_collision": false,
+      "foreground": true,
       "rare_drops": true
     }
   },

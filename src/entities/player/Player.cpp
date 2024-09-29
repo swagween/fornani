@@ -49,6 +49,7 @@ void Player::init(automa::ServiceProvider& svc) {
 }
 
 void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window) {
+	caution.avoid_ledges(map, collider, controller.direction, 8);
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	tutorial.update(*m_services);
 	cooldowns.tutorial.update();
@@ -168,6 +169,16 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setPosition(hurtbox.position - campos);
 		box.setSize(hurtbox.dimensions);
 		win.draw(box);
+		sf::CircleShape pt{};
+		pt.setPointCount(8);
+		pt.setRadius(4);
+		auto& probe = controller.direction.lr == dir::LR::left ? caution.testers.left : caution.testers.right;
+		for(auto& point : probe) { 
+			point.second ? pt.setFillColor(sf::Color::Green) : pt.setFillColor(sf::Color::Red);
+			pt.setPosition(point.first - campos);
+			win.draw(pt);
+			if (point.second) { break; }
+		}
 	} else {
 		antennae[1].render(svc, win, campos, 1);
 		win.draw(sprite);

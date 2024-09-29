@@ -55,25 +55,22 @@ class Shape {
 	[[nodiscard]] auto bottom() const -> float { return position.y + dimensions.y; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return position + dimensions * 0.5f; }
 	[[nodiscard]] float get_height_at(float x) const;
-	
 
 	bool AABB_handle_left_collision_static(Shape const& immovable);
 	bool AABB_handle_right_collision_static(Shape const& immovable);
 	bool AABB_is_left_collision(Shape const& immovable);
 	bool AABB_is_right_collision(Shape const& immovable);
 
-	std::vector<Vec> vertices;
-	std::vector<Vec> edges;
-	std::vector<Vec> normals;
-	Vec axis;
+	std::vector<Vec> vertices{};
+	std::vector<Vec> edges{};
+	std::vector<Vec> normals{};
+	Vec axis{};
 
 	// for hurtboxes
 	Vec dimensions{};
 	Vec position{};
-	Vec sprite_offset{};
 	int tile_id{};
-
-	int num_sides;
+	int num_sides{};
 };
 
 } // namespace shape

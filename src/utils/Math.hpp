@@ -2,6 +2,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <ccmath/math/power/sqrt.hpp>
+#include <numbers>
 
 namespace util {
 

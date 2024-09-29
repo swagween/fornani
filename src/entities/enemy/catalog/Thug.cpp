@@ -61,7 +61,7 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	}
 
 	flags.state.set(StateFlags::vulnerable); // thug is always vulnerable
-	caution.avoid_ledges(map, collider, 1);
+	caution.avoid_ledges(map, collider, directions.actual, 1);
 
 	// reset animation states to determine next animation state
 	state = {};
@@ -76,7 +76,7 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	player.collider.handle_collider_collision(secondary_collider.bounding_box);
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (svc.random.percent_chance(4) && !caution.danger(directions.actual)) { state = ThugState::run; }
+		if (svc.random.percent_chance(20) && !caution.danger()) { state = ThugState::run; }
 	}
 
 	if(flags.state.test(StateFlags::hurt)) {
@@ -116,7 +116,17 @@ void Thug::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 	if (!svc.greyblock_mode()) {
 	} else {
 		if (state == ThugState::punch) { attacks.punch.render(win, cam); }
-		attacks.rush.render(win, cam);
+		if (caution.danger()) { attacks.rush.render(win, cam); }
+		auto& probe = directions.actual.lr == dir::LR::left ? caution.testers.left : caution.testers.right;
+		sf::CircleShape pt{};
+		pt.setPointCount(8);
+		pt.setRadius(4);
+		for (auto& point : probe) {
+			point.second ? pt.setFillColor(sf::Color::Green) : pt.setFillColor(sf::Color::Red);
+			pt.setPosition(point.first - cam);
+			win.draw(pt);
+			if (point.second) { break; }
+		}
 	}
 }
 
@@ -145,7 +155,7 @@ fsm::StateFunction Thug::update_run() {
 	animation.label = "run";
 	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
-	if (caution.danger(directions.movement) || animation.complete()) {
+	if (caution.danger() || animation.complete()) {
 		state = ThugState::idle;
 		animation.set_params(idle);
 		return THUG_BIND(update_idle);
@@ -195,7 +205,7 @@ fsm::StateFunction Thug::update_alert() {
 
 fsm::StateFunction Thug::update_rush() {
 	if (change_state(ThugState::turn, turn)) { return THUG_BIND(update_turn); }
-	if (caution.danger(directions.actual)) {
+	if (caution.danger()) {
 		state = ThugState::idle;
 		animation.set_params(idle);
 		return THUG_BIND(update_idle);

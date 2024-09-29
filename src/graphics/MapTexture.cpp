@@ -31,7 +31,7 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 	sf::Color diff{};
 	for (auto& cell : middleground.grid.cells) {
 		if (cell.is_occupied() && !cell.is_breakable()) {
-			tile_box.setPosition(cell.position / scale);
+			tile_box.setPosition(cell.position() / scale);
 			diff = tile_color;
 			auto darkener = current ? 0 : 40;
 			auto g_diff = cell.value / 8;

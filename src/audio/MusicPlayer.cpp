@@ -51,13 +51,18 @@ void MusicPlayer::update() {
 		return;
 	}
 	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMilliseconds();
-	if (song_dt < 0) {
-		if (song_loop.getStatus() == sf::SoundSource::Status::Playing) { return; }
-		status = sf::SoundSource::Status::Stopped;
-	}
-	if (status != sf::SoundSource::Status::Playing) {
+	if (song_dt < 80 && !flags.state.test(SongState::looping)) {
 		song_loop.play();
-		status = sf::SoundSource::Status::Playing;
+		flags.state.set(SongState::looping);
+		music_clock.restart();
+	}
+	if (flags.state.test(SongState::looping)) {
+		auto song_dt = (song_loop.getDuration() - music_clock.getElapsedTime()).asMilliseconds();
+		if (song_dt < 80) {
+			song_loop.play();
+			flags.state.set(SongState::looping);
+			music_clock.restart();
+		}
 	}
 }
 

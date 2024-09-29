@@ -56,6 +56,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			svc.music.load(meta["music"].as_string());
 			svc.music.play_looped(10);
 		}
+		//if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
+		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 
 		auto style_value = meta["style"].as<int>();
 		style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
@@ -210,6 +212,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	}
 
 	generate_collidable_layer();
+
 	if (!soft) {
 		generate_layer_textures(svc);
 
@@ -221,6 +224,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 }
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
+	//if (svc.ticker.every_x_ticks(400)) { std::cout << "Collidable cells: " << collidable_indeces.size() << "\n"; }
 	auto& layers = svc.data.get_layers(room_id);
 	loading.update();
 	//if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
@@ -243,7 +247,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
-	player->ledge_height = player->collider.detect_ledge_height(*this);
 	if (off_the_bottom(player->collider.physics.position) && loading.is_complete()) {
 		player->hurt(64.f);
 		player->freeze_position();
@@ -270,10 +273,9 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	}
 
 	// i need to refactor this...
-	for (auto& index : collidable_indeces) {
-		auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
+	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+		cell.collision_check = false;
 		// damage player if spikes
-		if (cell.is_spike() && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(1); }
 		if (cell.is_death_spike() && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(64); }
 
 		for (auto& grenade : active_grenades) {
@@ -281,36 +283,15 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 				if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); }
 			}
 		}
-		for (auto& proj : active_projectiles) {
-
-			// should be, simply:
-			// cell.update(svc, player, proj, *this);
-			// or something similar
-
-			if (!nearby(cell.bounding_box, proj.bounding_box)) {
-				continue;
-			} else {
-				cell.collision_check = true;
-				if ((proj.bounding_box.overlaps(cell.bounding_box) && cell.is_occupied())) {
-					if (!cell.is_collidable()) { continue; }
-					if (!proj.stats.transcendent) {
-						if (!proj.destruction_initiated()) {
-							effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, proj.effect_type(), 2));
-							if (proj.direction.lr == dir::LR::neutral) { effects.back().rotate(); }
-						}
-						proj.destroy(false);
-					}
-					if (proj.stats.spring && cell.is_hookable()) {
-						if (proj.hook.grapple_flags.test(arms::GrappleState::probing)) {
-							proj.hook.spring.set_anchor(cell.middle_point());
-							proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
-						}
-						handle_grappling_hook(svc, proj);
-					}
-				}
-			}
-		}
+		for (auto& proj : active_projectiles) { cell.on_hit(svc, *player, *this, proj); }
 	}
+
+	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
+	std::erase_if(effects, [](auto& e) { return e.done(); });
+	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
+	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
+	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
+	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
 
 	manage_projectiles(svc);
 
@@ -357,13 +338,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	transition.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
-
-	std::erase_if(effects, [](auto& e) { return e.done(); });
-	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
-	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
-	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
-	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
-	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
+	if (rain) { rain.value().update(svc, *this); }
 
 	console.update(svc);
 
@@ -470,12 +445,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	player->render_indicators(svc, win, cam);
 
 	if (svc.greyblock_mode()) {
-		for (auto& index : collidable_indeces) {
-			auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
-			cell.drawbox.setPosition(cell.position - cam);
-			if (cell.ramp_adjacent()) { cell.drawbox.setOutlineColor(sf::Color::Red); }
-			win.draw(cell.drawbox);
-		}
+		layers.at(MIDDLEGROUND).grid.render(win, cam);
 	}
 
 	if (real_dimensions.y < svc.constants.screen_dimensions.y) {
@@ -503,6 +473,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		if (animator.foreground()) { animator.render(svc, win, cam); }
 	}
 	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
+	if (rain) { rain.value().render(svc, win, cam); }
 
 	if (svc.greyblock_mode()) {
 		center_box.setPosition(0.f, 0.f);
@@ -605,12 +576,11 @@ void Map::generate_collidable_layer(bool live) {
 	auto pushable_offset = sf::Vector2<float>{1.f, 0.f};
 	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
 		layers.at(MIDDLEGROUND).grid.check_neighbors(cell.one_d_index);
-		if ((cell.is_occupied() && !cell.is_special())) { collidable_indeces.push_back(cell.one_d_index); }
 		if (live) { continue; }
-		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position, styles.breakables)); }
-		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position + pushable_offset, styles.pushables, cell.value - 227)); }
-		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position, cell.value)); }
-		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position, 5)); }
+		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position(), styles.breakables)); }
+		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 227)); }
+		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position(), cell.value)); }
+		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
 	}
 }
 
@@ -625,7 +595,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
 				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-				tile_sprite.setPosition(cell.position);
+				tile_sprite.setPosition(cell.position());
 				layer_textures.at((int)layer.render_order).draw(tile_sprite);
 			}
 		}
@@ -633,9 +603,11 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 }
 
 bool Map::check_cell_collision(shape::Collider collider) {
+	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+	auto range = collider.get_collision_range(*this);
 	auto& layers = m_services->data.get_layers(room_id);
-	for (auto& index : collidable_indeces) {
-		auto& cell = layers.at(MIDDLEGROUND).grid.cells.at(index);
+	for (auto i{range.first}; i < range.second; ++i) {
+		auto& cell = grid.get_cell(i);
 		if (!nearby(cell.bounding_box, collider.bounding_box)) {
 			continue;
 		} else {

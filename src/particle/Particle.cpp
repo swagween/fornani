@@ -5,9 +5,7 @@
 
 namespace vfx {
 
-Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction) : position(pos), dimensions(dim), sprite_dimensions(dim) {
-	collider = shape::Collider(dimensions);
-	collider.sync_components();
+Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction) : position(pos), dimensions(dim), sprite_dimensions(dim), collider(dim.x) {
 	box.setFillColor(color);
 	box.setSize(dimensions);
 	box.setOrigin(dimensions * 0.5f);
@@ -18,7 +16,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	auto angle_range = in_data["cone"].as<float>();
 	collider.physics.elasticity = in_data["elasticity"].as<float>();
 	collider.physics.set_global_friction(in_data["friction"].as<float>());
-	collider.stats.GRAV = in_data["gravity"].as<float>();
+	collider.physics.gravity = in_data["gravity"].as<float>();
 	if ((dj::Boolean)in_data["animated"].as_bool()) { flags.set(ParticleType::animated); }
 	if ((dj::Boolean)in_data["colliding"].as_bool()) { flags.set(ParticleType::colliding); }
 
@@ -53,11 +51,8 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 }
 
 void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
-
 	collider.update(svc);
-	if (flags.test(ParticleType::colliding)) { collider.detect_map_collision(map); }
-	collider.reset();
-	collider.reset_ground_flags();
+	if (flags.test(ParticleType::colliding)) { collider.handle_map_collision(map); }
 	collider.physics.acceleration = {};
 	animation.update();
 	lifespan.update();

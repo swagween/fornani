@@ -72,7 +72,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 
 	flags.state.set(StateFlags::vulnerable); // demon is always vulnerable
-	caution.avoid_ledges(map, collider, 3);
+	caution.avoid_ledges(map, collider, directions.actual, 3);
 
 	// reset animation states to determine next animation state
 	state = {};
@@ -98,7 +98,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	if (player.collider.hurtbox.overlaps(secondary_collider.bounding_box) && !is_dormant()) { player.hurt(); }
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (svc.random.percent_chance(4) && !caution.danger(directions.actual)) { state = DemonState::run; }
+		if (svc.random.percent_chance(4) && !caution.danger()) { state = DemonState::run; }
 	}
 
 	if(flags.state.test(StateFlags::hurt)) {
@@ -179,7 +179,7 @@ fsm::StateFunction Demon::update_run() {
 	animation.label = "run";
 	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
-	if (caution.danger(directions.movement) || animation.complete()) {
+	if (caution.danger() || animation.complete()) {
 		state = DemonState::idle;
 		animation.set_params(idle);
 		return DEMON_BIND(update_idle);
@@ -231,7 +231,7 @@ fsm::StateFunction Demon::update_signal() {
 }
 
 fsm::StateFunction Demon::update_rush() {
-	if (caution.danger(directions.actual)) {
+	if (caution.danger()) {
 		state = DemonState::idle;
 		animation.set_params(idle);
 		return DEMON_BIND(update_idle);

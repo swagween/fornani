@@ -18,7 +18,7 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 
 	flags.state.set(StateFlags::vulnerable); // tank is always vulnerable
-	caution.avoid_ledges(map, collider, 1);
+	caution.avoid_ledges(map, collider, directions.actual, 1);
 	running_time.update();
 
 	if (state.test(HaulerState::haul)) {
@@ -34,7 +34,7 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 		state.set(HaulerState::alert);
 	}
 	if (hostile() && !hostility_triggered()) {
-		if (m_services->random.percent_chance(fire_chance) || caution.danger(direction)) {
+		if (m_services->random.percent_chance(fire_chance) || caution.danger()) {
 			state.set(HaulerState::haul);
 		} else {
 			state.set(HaulerState::run);
@@ -42,7 +42,7 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 		}
 	} // player is already in hostile range
 
-	if (caution.danger(direction)) { running_time.cancel(); }
+	if (caution.danger()) { running_time.cancel(); }
 	if (running_time.is_complete()) {
 		state.set(HaulerState::idle);
 	} else if (!running_time.is_complete()) {
@@ -51,7 +51,7 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (svc.random.percent_chance(4) && !caution.danger(direction)) {
+		if (svc.random.percent_chance(4) && !caution.danger()) {
 			state.set(HaulerState::run);
 			running_time.start(400);
 		}
@@ -128,7 +128,7 @@ fsm::StateFunction Hauler::update_run() {
 	animation.label = "run";
 	auto facing = direction.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
-	if (caution.danger(direction)) { running_time.cancel(); }
+	if (caution.danger()) { running_time.cancel(); }
 	if (running_time.is_complete()) { state.set(HaulerState::idle); }
 	if (state.test(HaulerState::turn)) {
 		state.reset(HaulerState::run);
@@ -175,7 +175,7 @@ fsm::StateFunction Hauler::update_alert() {
 		m_services->soundboard.flags.tank.set(audio::Tank::alert_1);
 	}
 	if (animation.complete()) {
-		if (m_services->random.percent_chance(fire_chance) || caution.danger(direction)) {
+		if (m_services->random.percent_chance(fire_chance) || caution.danger()) {
 			state.set(HaulerState::haul);
 		} else {
 			state.set(HaulerState::run);

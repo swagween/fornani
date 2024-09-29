@@ -13,7 +13,7 @@ struct ServiceProvider;
 
 namespace audio {
 
-enum class SongState { playing, paused, on };
+enum class SongState { playing, paused, on, looping };
 enum class MusicPlayerState { on };
 
 class MusicPlayer {

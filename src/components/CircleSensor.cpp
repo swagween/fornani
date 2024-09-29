@@ -28,6 +28,8 @@ void CircleSensor::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	win.draw(drawable);
 }
 
+void CircleSensor::set_position(sf::Vector2<float> position) { bounds.setPosition(position); }
+
 bool CircleSensor::within_bounds(shape::Shape& rect) const {
 	auto x = std::clamp(bounds.getPosition().x, rect.position.x, rect.position.x + rect.dimensions.x);
 	auto y = std::clamp(bounds.getPosition().y, rect.position.y, rect.position.y + rect.dimensions.y);
