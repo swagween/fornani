@@ -24,11 +24,6 @@
         "intensity": 6,
         "fall_speed": 0.999,
         "slant": -4.0
-      },
-      "snow": {
-        "intensity": 4,
-        "fall_speed": 0.97,
-        "slant": 0.0
       }
     },
     "cutscene_on_entry": {

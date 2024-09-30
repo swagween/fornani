@@ -25,6 +25,7 @@ class Rain {
 	float slant{};
 	float variance{};
 	float sway{};
+	float z{};
 	sf::Vector2<float> dimensions{};
 	sf::RectangleShape raindrop{};
 };

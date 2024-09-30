@@ -29,6 +29,7 @@ class Droplet {
 	[[nodiscard]] auto position() const -> sf::Vector2<float> { return collider.position(); }
 	[[nodiscard]] auto get_angle() const -> float { return angle; }
 	shape::CircleCollider collider;
+	float z{};
   private:
 	util::Counter counter{};
 	util::Cooldown post_collision{64};
