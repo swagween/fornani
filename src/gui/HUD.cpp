@@ -90,9 +90,9 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	}
 
 	// GUN
-	if (player.arsenal) {
+	if (player.hotbar) {
 		auto pointer_index{0};
-		auto const loadout_size = player.arsenal.value().size();
+		auto const loadout_size = player.hotbar.value().size();
 		for (int i = 0; i < loadout_size; ++i) {
 			auto gun_index = player.arsenal.value().get_weapon_at(i).get_id();
 			sprites.gun.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
@@ -100,7 +100,7 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 			sprites.gun.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			sprites.gun_shadow.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			win.draw(sprites.gun_shadow);
-			if (i == player.arsenal.value().get_index()) {
+			if (i == player.hotbar.value().get_id()) {
 				win.draw(sprites.gun);
 				pointer_index = i;
 			}

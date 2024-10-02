@@ -38,6 +38,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 	sp_gun_back.setOrigin({(float)attributes.back_offset, 0.f});
 	sp_gun.setTextureRect(sf::IntRect({attributes.back_offset, 0}, {sprite_dimensions.x - attributes.back_offset, sprite_dimensions.y}));
 	sp_gun_back.setTextureRect(sf::IntRect({0, 0}, {attributes.back_offset, sprite_dimensions.y}));
+	sprites.ui.setTexture(svc.assets.t_guns);
 }
 
 void Weapon::update(dir::Direction to_direction) {
@@ -75,6 +76,13 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	} else {
 		win.draw(sp_gun);
 	}
+}
+
+void Weapon::render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> position) {
+	auto gun_dimensions = sf::Vector2<int>{48, 48};
+	sprites.ui.setTextureRect(sf::IntRect({id * gun_dimensions.x, 0}, gun_dimensions));
+	sprites.ui.setPosition(position);
+	win.draw(sprites.ui);
 }
 
 void Weapon::equip() { flags.set(GunState::equipped); }

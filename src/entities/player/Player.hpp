@@ -11,7 +11,7 @@
 #include "../../utils/QuestCode.hpp"
 #include "../../utils/Collider.hpp"
 #include "../../graphics/Tutorial.hpp"
-#include "../../weapon/Arsenal.hpp"
+#include "../../weapon/Hotbar.hpp"
 #include "../packages/Health.hpp"
 #include "../packages/Caution.hpp"
 #include "Catalog.hpp"
@@ -189,6 +189,7 @@ class Player {
 
 	// weapons
 	std::optional<arms::Arsenal> arsenal{};
+	std::optional<arms::Hotbar> hotbar{};
 
 	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};

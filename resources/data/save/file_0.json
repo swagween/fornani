@@ -7,8 +7,8 @@
     "hp": 3.000000,
     "orbs": 1262,
     "position": {
-      "x": 295.678467,
-      "y": 363.000000
+      "x": 563.990173,
+      "y": 587.000000
     },
     "arsenal": [
       0,
@@ -91,13 +91,13 @@
       "highest_indicator_amount": 124,
       "enemies_killed": 30,
       "rooms_discovered": 31,
-      "seconds_played": 3523.916504,
+      "seconds_played": 3531.390381,
       "time_trials": {
         "bryns_gun": 25.041019
       }
     }
   },
-  "save_point_id": 229,
+  "save_point_id": 9901,
   "unlocked_doors": [
     11
   ],

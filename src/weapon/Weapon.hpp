@@ -34,6 +34,7 @@ class Weapon {
 	void update(dir::Direction to_direction);
 	void render_back(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> position);
 
 	void equip();
 	void unequip();
@@ -72,6 +73,9 @@ class Weapon {
 
 	sf::Sprite sp_gun{};
 	sf::Sprite sp_gun_back{};
+	struct {
+		sf::Sprite ui{};
+	} sprites{};
 
 	int active_projectiles{};
 	util::Cooldown cooldown{};

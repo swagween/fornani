@@ -79,7 +79,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	collider.flags.state.reset(shape::State::just_landed);
 
 	// player-controlled actions
-	if (arsenal) { arsenal.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
+	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
 	dash();
 	jump(map);
 	wallslide();
@@ -708,28 +708,35 @@ void Player::map_reset() {
 	flags.state.reset(State::killed);
 }
 
-arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_current_weapon(); }
+arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(hotbar.value().get_id()); }
 
 void Player::push_to_loadout(int id) {
 	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
+	if (!hotbar) { hotbar = arms::Hotbar(1); }
 	if (id == 0) {
 		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
 		auto bg = util::QuestKey{1, 111, 1};
 		m_services->quest.process(*m_services, bg);
-		tutorial.flags.set(text::TutorialFlags::inventory); //set this in case the player never opened inventory
+		tutorial.flags.set(text::TutorialFlags::inventory); // set this in case the player never opened inventory
 		tutorial.current_state = text::TutorialFlags::shoot;
 		tutorial.trigger();
 		tutorial.turn_on();
 	}
 	if (id == 10) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
 	arsenal.value().push_to_loadout(id);
+	if (hotbar.value().add(id)) {}
 	m_services->stats.player.guns_collected.update();
 }
 
 void Player::pop_from_loadout(int id) {
 	if (!arsenal) { throw std::runtime_error("Cannot pop weapon from empty Arsenal."); }
+	if (!hotbar) { throw std::runtime_error("Cannot pop weapon from empty Hotbar."); }
 	arsenal.value().pop_from_loadout(id);
-	if (arsenal.value().empty()) { arsenal = {}; }
+	hotbar.value().remove(id);
+	if (arsenal.value().empty()) {
+		arsenal = {};
+		hotbar = {};
+	}
 }
 
 dir::LR Player::entered_from() const { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }

@@ -55,8 +55,10 @@ class InventoryWindow : public Console {
 		int title_size{16};
 		int desc_size{16};
 		sf::Vector2<float> title_offset{static_cast<float>(corner_factor) * 1.3f, 66.f};
+		sf::Vector2<float> arsenal_offset{static_cast<float>(corner_factor) * 1.3f, 266.f};
 		sf::Vector2<float> item_label_offset{static_cast<float>(corner_factor) * 1.3f, 390.f};
 		sf::Vector2<float> item_description_offset{static_cast<float>(corner_factor) * 1.3f, 490.f};
+		sf::Vector2<float> arsenal_position{static_cast<float>(corner_factor) * 1.3f, 280.f};
 		sf::Vector2<float> info_offset{66.f, 180.f};
 		sf::Vector2<float> rarity_pad{32.f, 32.f};
 		sf::Vector2<float> wardrobe_offset{380.f, -32.f};
@@ -64,9 +66,12 @@ class InventoryWindow : public Console {
 
 	sf::Text title{};
 	sf::Font title_font{};
+	sf::Text arsenal{};
 
 	sf::Text item_label{};
 	sf::Font item_font{};
+
+	sf::CircleShape gun_slot{};
 
 	WardrobeWidget wardrobe{};
 };

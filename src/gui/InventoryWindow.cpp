@@ -14,6 +14,17 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	title.setFillColor(svc.styles.colors.ui_white);
 	title.setLetterSpacing(2.f);
 
+	arsenal.setString("ARSENAL");
+	arsenal.setCharacterSize(ui.title_size);
+	arsenal.setFont(title_font);
+	arsenal.setFillColor(svc.styles.colors.ui_white);
+	arsenal.setLetterSpacing(2.f);
+
+	gun_slot.setPointCount(64);
+	gun_slot.setFillColor(sf::Color{12, 12, 20, 128});
+	gun_slot.setRadius(32.f);
+	gun_slot.setOrigin({32.f, 32.f});
+
 	item_font.loadFromFile(svc.text.title_font);
 	item_font.setSmooth(false);
 	item_label.setCharacterSize(ui.desc_size);
@@ -24,6 +35,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 
 	origin = {ui.corner_pad * 0.5f, ui.corner_pad * 0.5f};
 	title.setPosition(origin + ui.title_offset);
+	arsenal.setPosition(origin + ui.arsenal_offset);
 	item_label.setPosition(origin + ui.item_label_offset);
 
 	dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
@@ -123,11 +135,25 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 		Console::render(win);
 		if (!Console::extended()) { return; }
 		win.draw(title);
+		win.draw(arsenal);
 		for (auto& item : player.catalog.categories.inventory.items) {
 			item.render(svc, win, {0.f, 0.f});
 			if (item.selected()) {
 				item_label.setString(item.get_label().data());
 				win.draw(item_label);
+			}
+		}
+		if (player.arsenal) {
+			auto slot = sf::Vector2<float>{72.f, 0.f};
+			auto index{0};
+			auto gunpos = sf::Vector2<float>{};
+			for (auto& gun : player.arsenal.value().get_loadout()) {
+				gunpos = ui.arsenal_position + slot * static_cast<float>(index);
+				gun_slot.setPosition(gunpos + sf::Vector2<float>{24.f, 24.f});
+				win.draw(gun_slot);
+				gun->render_ui(svc, win, gunpos);
+				
+				++index;
 			}
 		}
 		if (!player.catalog.categories.inventory.items.empty() && info.extended()) { selector.render(win); }

@@ -16,8 +16,8 @@ void Rain::update(automa::ServiceProvider& svc, world::Map& map) {
 	float offset = -slant * 32.f;
 	if (svc.ticker.every_x_ticks(4)) {
 		for (int i{0}; i < intensity; ++i) {
-			z = svc.random.random_range_float(0.998f, 1.f / fall_speed);
-			fall_speed *= z;
+			z = svc.random.random_range_float(0.999f, 1.f);
+			//fall_speed *= z;
 			auto start_x = svc.random.random_range_float(offset, map.real_dimensions.x + offset);
 			auto start_y = svc.random.random_range_float(-64.f, 0.f);
 			auto tweak = svc.random.random_range_float(-variance, variance);
