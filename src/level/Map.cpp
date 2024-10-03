@@ -333,7 +333,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
-	for (auto& spike : spikes) { spike.handle_collision(player->collider); }
+	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	player->collider.detect_map_collision(*this);
 	transition.update(*player);
@@ -560,15 +560,12 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 
 	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
 
-	if (player->arsenal) {
-		if (player->fire_weapon()) {
-			svc.stats.player.bullets_fired.update();
-			sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
-			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak);
-			++player->equipped_weapon().active_projectiles;
-			player->equipped_weapon().shoot();
-			if (!player->equipped_weapon().attributes.automatic) { player->controller.set_shot(false); }
-		}
+	if (player->fire_weapon()) {
+		svc.stats.player.bullets_fired.update();
+		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
+		spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak);
+		player->equipped_weapon().shoot();
+		if (!player->equipped_weapon().attributes.automatic) { player->controller.set_shot(false); }
 	}
 }
 
@@ -608,7 +605,7 @@ bool Map::check_cell_collision(shape::Collider collider) {
 	auto range = collider.get_collision_range(*this);
 	auto& layers = m_services->data.get_layers(room_id);
 	for (auto i{range.first}; i < range.second; ++i) {
-		auto& cell = grid.get_cell(i);
+		auto& cell = grid.get_cell(static_cast<int>(i));
 		if (!nearby(cell.bounding_box, collider.bounding_box)) {
 			continue;
 		} else {

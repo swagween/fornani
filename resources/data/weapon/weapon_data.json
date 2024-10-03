@@ -1,7 +1,9 @@
 {
   "weapons": [
     {
-      "label": "bryn's gun",
+      "label": "Bryn's Gun",
+      "description": "A single-action revolver that you found in Firstwind Lab.",
+      "texture_lookup": 0,
       "dimensions": {
         "x": 18,
         "y": 8
@@ -64,7 +66,9 @@
     },
 
     {
-      "label": "plasmer",
+      "label": "Plasmer",
+      "description": "An automatic plasma rifle.",
+      "texture_lookup": 1,
       "dimensions": {
         "x": 18,
         "y": 8
@@ -129,7 +133,8 @@
     },
 
     {
-      "label": "skycorps ar",
+      "label": "Skycorps AR",
+      "description": "A mass-produced assault rifle.",
       "dimensions": {
         "x": 0,
         "y": 0
@@ -191,7 +196,9 @@
     },
 
     {
-      "label": "tomahawk",
+      "label": "Tomahawk",
+      "description": "If you throw it, it will come back to you. The more foes it hits before you catch it, the more damage it racks up.",
+      "texture_lookup": 2,
       "dimensions": {
         "x": 16,
         "y": 16
@@ -252,7 +259,9 @@
     },
 
     {
-      "label": "grappling hook",
+      "label": "Grappling Hook",
+      "description": "Attaches to solid blocks and allows you to quickly swing from place to place.",
+      "texture_lookup": 3,
       "dimensions": {
         "x": 18,
         "y": 10
@@ -315,7 +324,9 @@
     },
 
     {
-      "label": "grenade launcher",
+      "label": "Grenade Launcher",
+      "description": "Launches a powerful grenade that, when detonated, will destroy breakable blocks. Use with care, because the grenades can also hurt you!",
+      "texture_lookup": 4,
       "dimensions": {
         "x": 40,
         "y": 12
@@ -380,7 +391,8 @@
     },
 
     {
-      "label": "minigun",
+      "label": "Minigun",
+      "description": "Gus's minigun.",
       "dimensions": {
         "x": 78,
         "y": 30
@@ -441,7 +453,8 @@
       }
     },
     {
-      "label": "soda gun",
+      "label": "Soda Gun",
+      "description": "Gus's soda gun.",
       "dimensions": {
         "x": 78,
         "y": 30
@@ -502,7 +515,9 @@
       }
     },
     {
-      "label": "staple gun",
+      "label": "Staple Gun",
+      "description": "A weak, long-range weapon. When its staples connect with a solid block, you can use them as temporary platforms.",
+      "texture_lookup": 5,
       "dimensions": {
         "x": 16,
         "y": 12
@@ -563,7 +578,9 @@
       }
     },
     {
-      "label": "indie",
+      "label": "Indie",
+      "description": "A powerful energy gun.",
+      "texture_lookup": 6,
       "dimensions": {
         "x": 28,
         "y": 14
@@ -624,7 +641,9 @@
       }
     },
     {
-      "label": "gnat",
+      "label": "Gnat",
+      "description": "A high-rate machine gun. If you shoot downwards or upwards, its recoil will affect your fall speed.",
+      "texture_lookup": 7,
       "dimensions": {
         "x": 26,
         "y": 10
@@ -640,7 +659,7 @@
       "attributes": {
         "automatic": true,
         "rate": 64,
-        "cooldown_time": 5,
+        "cooldown_time": 7,
         "recoil": 0.15,
         "ui_color": 6
       },
@@ -650,7 +669,7 @@
           "y": 4.0
         },
         "attributes": {
-          "base_damage": 0.8,
+          "base_damage": 1.0,
           "range": 180,
           "speed": 24.5,
           "variance": 0.2,
@@ -685,7 +704,8 @@
       }
     },
     {
-      "label": "energy_ball",
+      "label": "Energy Ball",
+      "description": "A ball of energy shot by casters.",
       "dimensions": {
         "x": 78,
         "y": 30
@@ -744,6 +764,69 @@
         "dimensions": [ 8.0, 8.0 ],
         "type": "pulse",
         "color": "white"
+      }
+    },
+    {
+      "label": "Wasp",
+      "description": "A powerful handgun that Bryn gave to you.",
+      "texture_lookup": 8,
+      "dimensions": {
+        "x": 20,
+        "y": 12
+      },
+      "gun_offset": {
+        "x": 0,
+        "y": 8
+      },
+      "barrel_point": {
+        "x": 20.0,
+        "y": 3.0
+      },
+      "attributes": {
+        "automatic": false,
+        "rate": 4,
+        "cooldown_time": 22,
+        "recoil": 0.0,
+        "ui_color": 4
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 6.0,
+          "y": 4.0
+        },
+        "attributes": {
+          "base_damage": 1.0,
+          "range": 180,
+          "speed": 24.5,
+          "variance": 0.2,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "boomerang": false,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": true,
+          "spring": false,
+          "range_variance": 8.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.998,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
+        },
+        "animation": {
+          "num_sprites": 5,
+          "num_frames": 1,
+          "framerate": 8
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 2.0, 2.0 ],
+        "type": "spritz",
+        "color": "mythic_green"
       }
     }
   ]

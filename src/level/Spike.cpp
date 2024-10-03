@@ -8,7 +8,7 @@
 
 namespace world {
 
-Spike::Spike(automa::ServiceProvider& svc, sf::Vector2<float> position, int lookup) {
+Spike::Spike(automa::ServiceProvider& svc, sf::Vector2<float> position, int lookup) : hitbox({32.f, 32.f}) {
 	collider = shape::Collider({32.f, 32.f});
 	auto adjustment = 22.f;
 	facing.und = (lookup == 255 || lookup == 254) ? dir::UND::up : facing.und;
@@ -19,9 +19,13 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Vector2<float> position, int look
 	offset.x = (facing.lr == dir::LR::left) ? adjustment : facing.lr == dir::LR::right ? -adjustment : offset.x;
 	collider.physics.position = position + offset;
 	collider.sync_components();
+	hitbox.set_position(position);
 }
 
-void Spike::update(automa::ServiceProvider& svc, world::Map& map) {}
+void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
+	if (player.hurtbox.overlaps(hitbox)) { player.hurt(); }
+	handle_collision(player.collider);
+}
 
 void Spike::handle_collision(shape::Collider& other) const {
 	if (attributes.test(SpikeAttributes::no_collision)) { return; }

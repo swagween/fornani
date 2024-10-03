@@ -153,9 +153,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 
-	if (arsenal) {
+	if (arsenal && hotbar) {
 		collider.flags.general.set(shape::General::complex);
-		equipped_weapon().sp_gun_back.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render_back(svc, win, campos); }
 	}
 
@@ -185,8 +184,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		antennae[0].render(svc, win, campos, 1);
 	}
 
-	if (arsenal) {
-		equipped_weapon().sp_gun.setTexture(svc.assets.weapon_textures.at(equipped_weapon().label));
+	if (arsenal && hotbar) {
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
 	}
 
@@ -294,8 +292,8 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 	if (inventory_window.active()) {
 		controller.restrict_movement();
 		controller.prevent_movement();
-		if (controller.transponder_up()) { inventory_window.move({0, -1}); }
-		if (controller.transponder_down()) { inventory_window.move({0, 1}); }
+		if (controller.transponder_up()) { inventory_window.move({0, -1}, static_cast<bool>(arsenal)); }
+		if (controller.transponder_down()) { inventory_window.move({0, 1}, static_cast<bool>(arsenal)); }
 		if (controller.transponder_left()) { inventory_window.move({-1, 0}); }
 		if (controller.transponder_right()) { inventory_window.move({1, 0}); }
 		if (controller.transponder_hold_up() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, -1.f}); }
@@ -460,7 +458,7 @@ void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
 	sync_antennae();
 	health_indicator.set_position(new_pos);
 	orb_indicator.set_position(new_pos);
-	if (arsenal) { equipped_weapon().set_position(new_pos); }
+	if (arsenal && hotbar) { equipped_weapon().set_position(new_pos); }
 }
 
 void Player::freeze_position() {
@@ -478,13 +476,15 @@ void Player::update_direction() {
 	}
 
 	// set directions for grappling hook
-	if (arsenal) { equipped_weapon().projectile.hook.probe_direction = controller.direction; }
+	//if (arsenal) { equipped_weapon().projectile.hook.probe_direction = controller.direction; }
 }
 
 void Player::update_weapon() {
 	if (!arsenal) { return; }
+	if (!hotbar) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
+		hotbar->has(weapon->get_id()) ? weapon->set_hotbar() : weapon->set_reserved();
 		weapon->firing_direction = controller.direction;
 		weapon->update(controller.direction);
 		auto tweak = controller.facing_left() ? -1.f : 1.f;
@@ -600,13 +600,14 @@ void Player::sync_antennae() {
 bool Player::grounded() const { return collider.flags.state.test(shape::State::grounded); }
 
 bool Player::fire_weapon() {
+	if (!arsenal || !hotbar) { return false; }
 	if (controller.shot() && equipped_weapon().can_shoot()) {
-		if (!m_services->soundboard.gun_sounds.contains(equipped_weapon().label)) {
+		if (!m_services->soundboard.gun_sounds.contains(equipped_weapon().get_id())) {
 			m_services->soundboard.flags.weapon.set(audio::Weapon::bryns_gun);
 			flags.state.set(State::impart_recoil);
 			return true;
 		}
-		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().label));
+		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().get_id()));
 		flags.state.set(State::impart_recoil);
 		if (tutorial.current_state == text::TutorialFlags::shoot) {
 			tutorial.flags.set(text::TutorialFlags::shoot);
@@ -673,6 +674,22 @@ void Player::unequip_item(ApparelType type, int item_id) {
 	catalog.categories.inventory.get_item(item_id).toggle_equip();
 }
 
+void Player::add_to_hotbar(int id) {
+	if (hotbar) {
+		hotbar.value().add(id);
+	} else {
+		hotbar = arms::Hotbar(1);
+		hotbar.value().add(id);
+	}
+}
+
+void Player::remove_from_hotbar(int id) {
+	if (hotbar) {
+		hotbar.value().remove(id);
+		if (hotbar.value().size() < 1) { hotbar = {}; }
+	}
+}
+
 void Player::give_item(int item_id, int amount) {
 	catalog.add_item(*m_services, item_id, 1);
 	if (catalog.categories.inventory.items.size() == 1) {
@@ -706,6 +723,7 @@ void Player::total_reset() {
 void Player::map_reset() {
 	animation.state = AnimState::idle;
 	flags.state.reset(State::killed);
+	if (arsenal) { arsenal.value().reset(); }
 }
 
 arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(hotbar.value().get_id()); }
@@ -724,7 +742,7 @@ void Player::push_to_loadout(int id) {
 	}
 	if (id == 10) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
 	arsenal.value().push_to_loadout(id);
-	if (hotbar.value().add(id)) {}
+	hotbar.value().add(id);
 	m_services->stats.player.guns_collected.update();
 }
 

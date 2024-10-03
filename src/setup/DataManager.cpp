@@ -161,13 +161,19 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 
 	// save arsenal
 	save["player_data"]["arsenal"] = wipe;
+	save["player_data"]["hotbar"] = wipe;
 	// push player arsenal
 	if (player.arsenal) {
 		for (auto& gun : player.arsenal.value().get_loadout()) {
 			int this_id = gun->get_id();
 			save["player_data"]["arsenal"].push_back(this_id);
 		}
-		if (player.hotbar) { save["player_data"]["equipped_gun"] = player.hotbar.value().get_id(); }
+		if (player.hotbar) {
+			for (auto& id : player.hotbar.value().get_ids()) {
+				save["player_data"]["hotbar"].push_back(id);
+			}
+			save["player_data"]["equipped_gun"] = player.hotbar.value().get_selection();
+		}
 	}
 
 	// wardrobe
@@ -268,14 +274,12 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 
 	// load player's arsenal
 	player.arsenal = {};
-	if (!save["player_data"]["arsenal"].array_view().empty()) {
-		player.arsenal = arms::Arsenal(*m_services);
-		player.hotbar = arms::Hotbar(save["player_data"]["arsenal"].array_view().size());
-	}
+	player.hotbar = {};
 	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
 		player.push_to_loadout(gun_id.as<int>());
 	}
 	if (player.hotbar) {
+		for (auto& gun_id : save["player_data"]["hotbar"].array_view()) { player.hotbar.value().add(gun_id.as<int>()); }
 		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
 		player.hotbar.value().set_selection(equipped_gun);
 	}

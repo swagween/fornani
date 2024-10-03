@@ -89,7 +89,7 @@ struct ProjectileStats {
 	float spring_rest_length{};
 	float spring_slack{};
 
-	int range_variance{};
+	float range_variance{};
 	bool omnidirectional{};
 };
 

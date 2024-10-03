@@ -95,6 +95,7 @@ class AssetManager {
 	sf::Texture t_selector{};
 	sf::Texture t_console_outline{};
 	sf::Texture t_indicator{};
+	sf::Texture t_sticker{};
 
 	sf::Texture t_alphabet{};
 	std::vector<sf::Sprite> sp_alphabet{};
@@ -167,43 +168,20 @@ class AssetManager {
 	sf::Texture t_bg_grove{};
 
 	// load the guns and bullets!
-	sf::Texture t_bryns_gun{};
+	sf::Texture t_gun{};
 	sf::Texture t_bryns_gun_projectile{};
-	sf::Texture t_plasmer{};
 	sf::Texture t_plasmer_projectile{};
-	sf::Texture t_clover{};
 	sf::Texture t_clover_projectile{};
 	sf::Texture t_wasp_projectile{};
-	sf::Texture t_blizzard_projectile{};
-	sf::Texture t_bismuth_projectile{};
-	sf::Texture t_underdog_projectile{};
-	sf::Texture t_electron_projectile{};
-	sf::Texture t_triton_projectile{};
-	sf::Texture t_willet_585_projectile{};
-	sf::Texture t_quasar_projectile{};
-	sf::Texture t_nova{};
-	sf::Texture t_nova_projectile{};
-	sf::Texture t_venom_projectile{};
-	sf::Texture t_twin_projectile{};
-	sf::Texture t_carise_projectile{};
-	sf::Texture t_stinger_projectile{};
-	sf::Texture t_tusk_projectile{};
-	sf::Texture t_tomahawk{};
 	sf::Texture t_tomahawk_projectile{};
 	sf::Texture t_skycorps_ar_projectile{};
-	sf::Texture t_grappling_hook{};
 	sf::Texture t_rope{};
 	sf::Texture t_hook{};
-	sf::Texture t_grenade_launcher{};
 	sf::Texture t_grenade{};
 	sf::Texture t_minigun{};
-	sf::Texture t_soda_gun{};
 	sf::Texture t_soda_gun_projectile{};
-	sf::Texture t_staple_gun{};
 	sf::Texture t_staple{};
-	sf::Texture t_indie{};
 	sf::Texture t_indie_projectile{};
-	sf::Texture t_gnat{};
 	sf::Texture t_gnat_projectile{};
 	sf::Texture t_energy_ball_projectile{};
 
@@ -412,7 +390,6 @@ class AssetManager {
 	std::unordered_map<int, sf::Texture&> effect_lookup{};
 	std::unordered_map<int, sf::Texture&> platform_lookup{};
 	std::unordered_map<int, sf::Texture&> animator_lookup{};
-	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> particle_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};

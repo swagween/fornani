@@ -16,7 +16,7 @@ namespace audio {
 enum class SoundboardState { on, off };
 
 enum class Menu { select, shift, forward_switch, backward_switch };
-enum class Console { next, done, shift, select, speech, menu_open};
+enum class Console { next, done, shift, select, speech, menu_open };
 enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, pushable, door_open, door_unlock };
 enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip };
 enum class Player { jump, step, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide };
@@ -68,15 +68,8 @@ struct Soundboard {
 		util::Cooldown hard_hit{18};
 	} cooldowns{};
 
-	std::unordered_map<std::string_view, Weapon> gun_sounds{
-		{"bryn's gun", Weapon::bryns_gun},		{"plasmer", Weapon::plasmer},		{"skycorps ar", Weapon::skycorps_ar}, {"nova", Weapon::nova},		  {"clover", Weapon::clover}, {"tomahawk", Weapon::tomahawk},
-															{"grappling hook", Weapon::hook_probe},
-															{"grenade launcher", Weapon::nova},
-															{"minigun", Weapon::plasmer},
-															{"staple gun", Weapon::staple},
-															{"indie", Weapon::indie},
-															{"gnat", Weapon::gnat},
-															{"energy ball", Weapon::energy_ball}};
+	std::unordered_map<int, Weapon> gun_sounds{{0, Weapon::bryns_gun},	{1, Weapon::plasmer}, {2, Weapon::skycorps_ar}, {3, Weapon::tomahawk}, {4, Weapon::clover}, {5, Weapon::plasmer},
+											   {6, Weapon::hook_probe}, {7, Weapon::plasmer}, {8, Weapon::staple},		{9, Weapon::indie},	   {10, Weapon::gnat},	{11, Weapon::energy_ball}};
 };
 
 } // namespace audio

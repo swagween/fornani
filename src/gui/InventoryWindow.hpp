@@ -29,7 +29,7 @@ class InventoryWindow : public Console {
 	void close();
 	void select();
 	void cancel();
-	void move(sf::Vector2<int> direction);
+	void move(sf::Vector2<int> direction, bool has_arsenal = false);
 	void use_item(automa::ServiceProvider& svc, player::Player& player, world::Map& map, item::Item& item);
 	void update_table(player::Player& player, bool new_dim);
 	void set_item_size(int sz) {
@@ -55,7 +55,7 @@ class InventoryWindow : public Console {
 		int title_size{16};
 		int desc_size{16};
 		sf::Vector2<float> title_offset{static_cast<float>(corner_factor) * 1.3f, 66.f};
-		sf::Vector2<float> arsenal_offset{static_cast<float>(corner_factor) * 1.3f, 266.f};
+		sf::Vector2<float> arsenal_offset{static_cast<float>(corner_factor) * 1.3f, 276.f};
 		sf::Vector2<float> item_label_offset{static_cast<float>(corner_factor) * 1.3f, 390.f};
 		sf::Vector2<float> item_description_offset{static_cast<float>(corner_factor) * 1.3f, 490.f};
 		sf::Vector2<float> arsenal_position{static_cast<float>(corner_factor) * 1.3f, 280.f};
@@ -71,7 +71,7 @@ class InventoryWindow : public Console {
 	sf::Text item_label{};
 	sf::Font item_font{};
 
-	sf::CircleShape gun_slot{};
+	sf::Sprite gun_slot{};
 
 	WardrobeWidget wardrobe{};
 };

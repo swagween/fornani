@@ -510,7 +510,7 @@ void Game::debug_window(sf::RenderWindow& window) {
 
 					ImGui::Text("Cooling Down? %s", player.equipped_weapon().cooling_down() ? "Yes" : "No");
 					ImGui::Text("Cooldown Time %i", player.equipped_weapon().cooldown.get_cooldown());
-					ImGui::Text("Active Projectiles: %i", player.equipped_weapon().active_projectiles);
+					ImGui::Text("Active Projectiles: %i", player.equipped_weapon().get_active_projectiles());
 
 					ImGui::Separator();
 					ImGui::Text("Equipped Weapon: %s", player.equipped_weapon().label.data());
@@ -998,6 +998,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					if (ImGui::BeginTabItem("Player")) {
 						if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
 							if (ImGui::BeginTabItem("Weapon")) {
+								ImGui::Text("Loadout:");
+								for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text(gun.get()->label.data()); }
+								ImGui::Text("Hotbar:");
+								for (auto& gun : player.hotbar.value().get_ids()) { ImGui::Text("%i", gun); }
 								ImGui::Text("Player has arsenal? %s", player.arsenal ? "Yes" : "No");
 								ImGui::Text("Loadout Size: %i", player.arsenal ? player.arsenal.value().size() : 0);
 								playtest_sync();

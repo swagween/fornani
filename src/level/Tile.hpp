@@ -28,7 +28,7 @@ struct Tile {
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleShape& draw); // greyblock mode only
 	void set_type();
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
-	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner(); }
+	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner() || is_platform(); }
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
 	[[nodiscard]] auto is_hookable() const -> bool { return type == TileType::solid; }
 	[[nodiscard]] auto is_ramp() const -> bool { return type == TileType::ground_ramp || type == TileType::ceiling_ramp; }

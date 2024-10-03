@@ -157,6 +157,8 @@ class Player {
 	void take_item(int item_id, int amount = 1);
 	void equip_item(ApparelType type, int item_id);
 	void unequip_item(ApparelType type, int item_id);
+	void add_to_hotbar(int id);
+	void remove_from_hotbar(int id);
 
 	void reset_flags();
 	void total_reset();

@@ -29,7 +29,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	stats.transcendent = static_cast<bool>(in_data["attributes"]["transcendent"].as_bool());
 	stats.constrained = static_cast<bool>(in_data["attributes"]["constrained"].as_bool());
 	stats.spring = static_cast<bool>(in_data["attributes"]["spring"].as_bool());
-	stats.range_variance = in_data["attributes"]["range_variance"].as<int>();
+	stats.range_variance = in_data["attributes"]["range_variance"].as<float>();
 	stats.acceleration_factor = in_data["attributes"]["acceleration_factor"].as<float>();
 	stats.dampen_factor = in_data["attributes"]["dampen_factor"].as<float>();
 	stats.gravitator_force = in_data["attributes"]["gravitator_force"].as<float>();
@@ -119,8 +119,9 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		physics.position = gravitator.collider.physics.position;
 		bounding_box.set_position(physics.position);
 
-		svc.soundboard.flags.weapon.set(svc.soundboard.gun_sounds.at(label)); // repeat sound
-		// use predictive bounding box so player can "meet up" with the boomerang
+		if (svc.soundboard.gun_sounds.contains(m_weapon->get_id())) {
+			svc.soundboard.flags.weapon.set(svc.soundboard.gun_sounds.at(m_weapon->get_id())); // repeat sound
+		}
 		if (bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
 			svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
@@ -149,19 +150,20 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	position_history.push_back(physics.position);
 	if (position_history.size() > history_limit) { position_history.pop_front(); }
 
+	auto diff = stats.range + svc.random.random_range_float(-stats.range_variance, stats.range_variance);
 	if (direction.lr == dir::LR::left || direction.lr == dir::LR::right) {
-		if (abs(physics.position.x - fired_point.x) >= stats.range) {
+		if (abs(physics.position.x - fired_point.x) >= diff) {
 			state.set(ProjectileState::whiffed);
 			destroy(false, true);
 		}
 	} else {
-		if (abs(physics.position.y - fired_point.y) >= stats.range) {
+		if (abs(physics.position.y - fired_point.y) >= diff) {
 			state.set(ProjectileState::whiffed);
 			destroy(false, true);
 		}
 	}
 
-	if (state.test(arms::ProjectileState::destroyed)) { --m_weapon->active_projectiles; }
+	if (state.test(arms::ProjectileState::destroyed)) { m_weapon->decrement_projectiles(); }
 }
 
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos) {

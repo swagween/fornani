@@ -3,12 +3,14 @@
 
 namespace arms {
 
-Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : label(label), id(id), projectile(svc, label, id, *this) {
+Weapon::Weapon(automa::ServiceProvider& svc, int id) : label(svc.data.weapon["weapons"][id]["label"].as_string()), id(id), projectile(svc, svc.data.weapon["weapons"][id]["label"].as_string(), id, *this) {
 
 	auto const& in_data = svc.data.weapon["weapons"][id];
 
 	//label = in_data["label"].as_string();
 	type = static_cast<WEAPON_TYPE>(id);
+
+	metadata.description = in_data["description"].as_string();
 
 	sprite_dimensions.x = in_data["dimensions"]["x"].as<int>();
 	sprite_dimensions.y = in_data["dimensions"]["y"].as<int>();
@@ -34,15 +36,17 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view label, int id) : l
 	} catch (std::out_of_range) { emitter_color = svc.styles.colors.white; }
 	emitter_type = in_data["spray"]["type"].as_string();
 
+	auto texture_lookup = in_data["texture_lookup"].as<int>() * 16;
 	attributes.boomerang = projectile.stats.boomerang;
+	sp_gun.setTexture(svc.assets.t_gun);
+	sp_gun_back.setTexture(svc.assets.t_gun);
 	sp_gun_back.setOrigin({(float)attributes.back_offset, 0.f});
-	sp_gun.setTextureRect(sf::IntRect({attributes.back_offset, 0}, {sprite_dimensions.x - attributes.back_offset, sprite_dimensions.y}));
-	sp_gun_back.setTextureRect(sf::IntRect({0, 0}, {attributes.back_offset, sprite_dimensions.y}));
+	sp_gun.setTextureRect(sf::IntRect({attributes.back_offset, texture_lookup}, {sprite_dimensions.x - attributes.back_offset, sprite_dimensions.y}));
+	sp_gun_back.setTextureRect(sf::IntRect({0, texture_lookup}, {attributes.back_offset, sprite_dimensions.y}));
 	sprites.ui.setTexture(svc.assets.t_guns);
 }
 
 void Weapon::update(dir::Direction to_direction) {
-	active_projectiles = std::clamp(active_projectiles, 0, std::numeric_limits<int>::max());
 	set_orientation(to_direction);
 	cooldown.update();
 	if (cooldown.is_complete()) {
@@ -53,14 +57,14 @@ void Weapon::update(dir::Direction to_direction) {
 }
 
 void Weapon::render_back(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
-	if (attributes.boomerang && active_projectiles == attributes.rate) { return; }
+	if (attributes.boomerang && active_projectiles.get_count() == attributes.rate) { return; }
 	if (!svc.greyblock_mode()) { win.draw(sp_gun_back); }
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 	// nani threw it, so don't render it in her hand
-	if (attributes.boomerang && active_projectiles == attributes.rate) { return; }
+	if (attributes.boomerang && active_projectiles.get_count() == attributes.rate) { return; }
 
 	// set sprite position
 	sp_gun.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
@@ -90,14 +94,20 @@ void Weapon::unequip() { flags.reset(GunState::equipped); }
 void Weapon::unlock() { flags.set(GunState::unlocked); }
 void Weapon::lock() { flags.reset(GunState::unlocked); }
 
-void Weapon::shoot() { cooldown.start(attributes.cooldown_time); }
+void Weapon::shoot() {
+	cooldown.start(attributes.cooldown_time);
+	active_projectiles.update();
+}
+
+void Weapon::decrement_projectiles() { active_projectiles.update(-1); }
 
 bool Weapon::is_equipped() const { return flags.test(GunState::equipped); }
+
 bool Weapon::is_unlocked() const { return flags.test(GunState::unlocked); }
 
 bool Weapon::cooling_down() const { return !cooldown.is_complete(); }
 
-bool Weapon::can_shoot() const { return !cooling_down() && !(active_projectiles >= attributes.rate); }
+bool Weapon::can_shoot() const { return !cooling_down() && !(active_projectiles.get_count() >= attributes.rate); }
 
 void Weapon::set_position(sf::Vector2<float> pos) { sprite_position = pos; }
 
@@ -153,5 +163,7 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	sp_gun_back.setPosition(sp_gun.getPosition());
 	sp_gun_back.setScale(sp_gun.getScale());
 }
+
+void Weapon::reset() { active_projectiles.start(); }
 
 } // namespace arms

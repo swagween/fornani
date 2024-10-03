@@ -20,9 +20,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	arsenal.setFillColor(svc.styles.colors.ui_white);
 	arsenal.setLetterSpacing(2.f);
 
-	gun_slot.setPointCount(64);
-	gun_slot.setFillColor(sf::Color{12, 12, 20, 128});
-	gun_slot.setRadius(32.f);
+	gun_slot.setTexture(svc.assets.t_sticker);
 	gun_slot.setOrigin({32.f, 32.f});
 
 	item_font.loadFromFile(svc.text.title_font);
@@ -69,21 +67,39 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		} else {
 			info.update(svc);
 		}
-		update_table(player, false);
 		for (auto& item : player_items) {
 			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
-			if (player_items.size() == 1) { item.select(); }
-			if (item.depleted()) { selector.go_left(); }
-			if (item.selected() && info.extended()) {
-				selector.set_position(item.get_position());
-				info.writer.load_single_message(item.get_description());
-				info.writer.wrap();
-				item.set_rarity_position(info.position + info.dimensions * 0.5f - ui.rarity_pad);
+			if (selector.get_section() != InventorySection::item) { item.deselect(); }
+			if (selector.get_section() == InventorySection::item) {
+				if (player_items.size() == 1) { item.select(); }
+				if (item.depleted()) { selector.go_left(); }
+				if (item.selected() && info.extended()) {
+					selector.set_position(item.get_position());
+					info.writer.load_single_message(item.get_description());
+					info.writer.wrap();
+					item.set_rarity_position(info.position + info.dimensions * 0.5f - ui.rarity_pad);
+				}
 			}
 		}
+		if(player.arsenal) {
+			auto ctr{0};
+			for (auto& gun : player.arsenal.value().get_loadout()) {
+				ctr == selector.get_current_selection() ? gun->select() : gun->deselect();
+				if (selector.get_section() != InventorySection::gun) { gun->deselect(); }
+				if (selector.get_section() == InventorySection::gun) {
+					if (gun->selected() && info.extended()) {
+						selector.set_position(gun->get_ui_position());
+						info.writer.load_single_message(gun->get_description());
+						info.writer.wrap();
+					}
+				}
+				++ctr;
+			}
+		}
+		update_table(player, selector.switched_sections());
 		info.update(svc);
 		if (active()) {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && selector.get_section() == InventorySection::item) {
 				if (item_menu.is_open()) {
 					switch (item_menu.get_selection()) {
 					case 0: 
@@ -107,6 +123,42 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 							svc.soundboard.flags.console.set(audio::Console::menu_open);
 						} else {
 							svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+						}
+					}
+				}
+			}
+			if (player.arsenal) {
+				auto& player_loadout = player.arsenal.value().get_loadout();
+				if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && selector.get_section() == InventorySection::gun) {
+					if (item_menu.is_open()) {
+						switch (item_menu.get_selection()) {
+						case 0:
+							if (selector.get_current_selection() < player_loadout.size()) {
+								auto& gun = player_loadout.at(selector.get_current_selection());
+								if (player.hotbar) {
+									player.hotbar.value().has(gun->get_id()) ? player.remove_from_hotbar(gun->get_id()) : player.add_to_hotbar(gun->get_id());
+								} else {
+									player.add_to_hotbar(gun->get_id());
+								}
+								svc.soundboard.flags.item.set(audio::Item::equip);
+								item_menu.close(svc);
+							}
+							break;
+						case 1:
+							item_menu.close(svc);
+							svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+							break;
+						}
+					} else {
+						if (selector.get_current_selection() < player_loadout.size()) {
+							auto& gun = player_loadout.at(selector.get_current_selection());
+							if (player.hotbar) {
+								player.hotbar.value().has(gun->get_id()) ? item_menu.overwrite_option(0, "remove") : item_menu.overwrite_option(0, "equip");
+							} else {
+								item_menu.overwrite_option(0, "equip");
+							}
+							item_menu.open(svc, selector.get_menu_position());
+							svc.soundboard.flags.console.set(audio::Console::menu_open);
 						}
 					}
 				}
@@ -149,14 +201,21 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 			auto gunpos = sf::Vector2<float>{};
 			for (auto& gun : player.arsenal.value().get_loadout()) {
 				gunpos = ui.arsenal_position + slot * static_cast<float>(index);
+				if (!player.hotbar) { gun->set_reserved(); }
+				auto lookup = gun->get_inventory_state();
+				if (selector.get_section() == InventorySection::gun && gun->selected()) { lookup += 2; }
+				gun_slot.setTextureRect(sf::IntRect{{0, lookup * 64}, {64, 64}});
 				gun_slot.setPosition(gunpos + sf::Vector2<float>{24.f, 24.f});
 				win.draw(gun_slot);
 				gun->render_ui(svc, win, gunpos);
-				
+				if (gun->selected()) {
+					item_label.setString(gun->label.data());
+					win.draw(item_label);
+				}
 				++index;
 			}
 		}
-		if (!player.catalog.categories.inventory.items.empty() && info.extended()) { selector.render(win); }
+		if (!player.catalog.categories.inventory.items.empty() && info.extended() && selector.get_section() == InventorySection::item) { selector.render(win); }
 		if (info.active()) { info.render(win); }
 		if (info.extended()) { info.write(win, true); }
 		//if (player.has_map()) { help_marker.render(win); }
@@ -196,7 +255,7 @@ void InventoryWindow::select() {
 void InventoryWindow::cancel() { //item_menu.close(*m_services); 
 }
 
-void InventoryWindow::move(sf::Vector2<int> direction) {
+void InventoryWindow::move(sf::Vector2<int> direction, bool has_arsenal) {
 	if (item_menu.is_open()) {
 		if (direction.y == -1) { item_menu.up(*m_services); }
 		if (direction.y == 1) { item_menu.down(*m_services); }
@@ -204,7 +263,7 @@ void InventoryWindow::move(sf::Vector2<int> direction) {
 		if (direction.x == -1) { selector.go_left(); }
 		if (direction.x == 1) { selector.go_right(); }
 		if (direction.y == -1) { selector.go_up(); }
-		if (direction.y == 1) { selector.go_down(); }
+		if (direction.y == 1) { selector.go_down(has_arsenal); }
 	}
 }
 
@@ -242,11 +301,26 @@ void InventoryWindow::use_item(automa::ServiceProvider& svc, player::Player& pla
 
 void InventoryWindow::update_table(player::Player& player, bool new_dim) {
 	auto& player_items = player.catalog.categories.inventory.items;
+	auto player_loadout = player.arsenal ? player.arsenal.value().get_loadout().size() : 0;
 	auto ipr = player.catalog.categories.inventory.items_per_row;
-	auto x_dim = std::min(static_cast<int>(player_items.size()), ipr);
-	auto y_dim = static_cast<int>(std::ceil(static_cast<float>(player_items.size()) / static_cast<float>(ipr)));
+	auto gpr = 12;
+	auto x_dim{0};
+	auto y_dim{0};
+	selector.update();
+	switch (selector.get_section()) {
+	case InventorySection::item:
+		x_dim = std::min(static_cast<int>(player_items.size()), ipr);
+		y_dim = static_cast<int>(std::ceil(static_cast<float>(player_items.size()) / static_cast<float>(ipr)));
+		if (new_dim) { selector.set_size(static_cast<int>(player_items.size())); }
+		break;
+	case InventorySection::gun:
+		x_dim = std::min(static_cast<int>(player_loadout), gpr);
+		y_dim = static_cast<int>(std::ceil(static_cast<float>(player_loadout) / static_cast<float>(gpr)));
+		if (new_dim) { selector.set_size(static_cast<int>(player_loadout));
+		}
+		break;
+	}
 	selector.set_dimensions({x_dim, y_dim});
-	selector.update(new_dim);
 }
 
 void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {

@@ -9,7 +9,7 @@ Arsenal::Arsenal(automa::ServiceProvider& svc) : m_services(&svc) {}
 
 void Arsenal::push_to_loadout(int id) {
 	if (has(id)) { return; }
-	loadout.push_back(std::make_unique<Weapon>(*m_services, m_services->tables.gun_label.at(id), id));
+	loadout.push_back(std::make_unique<Weapon>(*m_services, id));
 }
 
 void Arsenal::pop_from_loadout(int id) {
@@ -19,6 +19,10 @@ void Arsenal::pop_from_loadout(int id) {
 		return;
 	}
 	std::erase_if(loadout, [id](auto const& g) { return g->get_id() == id; });
+}
+
+void Arsenal::reset() {
+	for (auto& gun : loadout) { gun->reset(); }
 }
 
 Weapon& Arsenal::get_weapon_at(int id) { 

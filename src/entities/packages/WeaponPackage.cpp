@@ -5,7 +5,7 @@
 
 namespace entity {
 
-WeaponPackage::WeaponPackage(automa::ServiceProvider& svc, std::string_view label, int id) { weapon = std::make_unique<arms::Weapon>(svc, label, id); }
+WeaponPackage::WeaponPackage(automa::ServiceProvider& svc, std::string_view label, int id) { weapon = std::make_unique<arms::Weapon>(svc, id); }
 
 void WeaponPackage::update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy) {
 	weapon->update(direction);

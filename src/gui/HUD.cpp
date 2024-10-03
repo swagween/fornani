@@ -64,7 +64,7 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	num_orbs = player.player_stats.orbs;
 	total_hp_cells = static_cast<int>(player.health.get_max());
 	max_orbs = player.player_stats.max_orbs;
-	if (player.arsenal) { gun_name = player.equipped_weapon().label; }
+	if (player.hotbar) { gun_name = player.equipped_weapon().label; }
 }
 
 void HUD::render(player::Player& player, sf::RenderWindow& win) {
@@ -90,17 +90,17 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	}
 
 	// GUN
-	if (player.hotbar) {
+	if (player.hotbar && player.arsenal) {
 		auto pointer_index{0};
-		auto const loadout_size = player.hotbar.value().size();
-		for (int i = 0; i < loadout_size; ++i) {
-			auto gun_index = player.arsenal.value().get_weapon_at(i).get_id();
+		auto const hotbar_size = player.hotbar.value().size();
+		for (int i = 0; i < hotbar_size; ++i) {
+			auto gun_index = player.hotbar.value().get_id(i);
 			sprites.gun.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
 			sprites.gun_shadow.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
 			sprites.gun.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			sprites.gun_shadow.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			win.draw(sprites.gun_shadow);
-			if (i == player.hotbar.value().get_id()) {
+			if (i == player.hotbar.value().get_selection()) {
 				win.draw(sprites.gun);
 				pointer_index = i;
 			}

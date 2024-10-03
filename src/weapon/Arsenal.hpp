@@ -17,6 +17,7 @@ class Arsenal {
 
 	void push_to_loadout(int id);
 	void pop_from_loadout(int id);
+	void reset();
 	constexpr void clear() { loadout.clear(); }
 	Weapon& get_weapon_at(int id);
 	constexpr std::vector<std::unique_ptr<Weapon>>& get_loadout() { return loadout; }
