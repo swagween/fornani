@@ -38,6 +38,6 @@ class Spike {
 	dir::Direction facing{};
 	util::BitFlags<SpikeAttributes> attributes{};
 	sf::Vector2<float> offset{};
-
+	sf::RectangleShape drawbox{};
 };
 } // namespace world

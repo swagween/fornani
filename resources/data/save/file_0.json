@@ -4,11 +4,11 @@
   },
   "player_data": {
     "max_hp": 4.000000,
-    "hp": 4.000000,
-    "orbs": 1262,
+    "hp": 1.000000,
+    "orbs": 2098,
     "position": {
-      "x": 386.015533,
-      "y": 203.000000
+      "x": 169.613098,
+      "y": 1387.000000
     },
     "arsenal": [
       0,
@@ -17,17 +17,17 @@
       8
     ],
     "hotbar": [
+      8,
       10,
-      0,
-      8
+      3
     ],
-    "equipped_gun": 10,
+    "equipped_gun": 3,
     "abilities": [
 
     ],
     "wardrobe": {
       "hairstyle": 0,
-      "shirt": 0,
+      "shirt": 2,
       "pants": 3
     },
     "items": [
@@ -89,22 +89,22 @@
       }
     ],
     "stats": {
-      "death_count": 120,
-      "bullets_fired": 4596,
+      "death_count": 124,
+      "bullets_fired": 5443,
       "guns_collected": 4,
       "items_collected": 7,
-      "orbs_collected": 1262,
-      "blue_orbs": 1,
-      "highest_indicator_amount": 124,
-      "enemies_killed": 30,
-      "rooms_discovered": 31,
-      "seconds_played": 3845.847900,
+      "orbs_collected": 2098,
+      "blue_orbs": 2,
+      "highest_indicator_amount": 380,
+      "enemies_killed": 39,
+      "rooms_discovered": 34,
+      "seconds_played": 4735.257324,
       "time_trials": {
         "bryns_gun": 25.041019
       }
     }
   },
-  "save_point_id": 228,
+  "save_point_id": 200,
   "unlocked_doors": [
     11
   ],
@@ -126,7 +126,12 @@
     23201
   ],
   "destroyed_blocks": [
-
+    122,
+    122,
+    122,
+    115,
+    115,
+    115
   ],
   "quest_progressions": [
     [
@@ -177,15 +182,30 @@
       6001,
       1,
       0
+    ],
+    [
+      5,
+      115,
+      2,
+      1,
+      0
+    ],
+    [
+      9,
+      2,
+      1,
+      1,
+      0
     ]
   ],
   "destroyed_inspectables": [
-    "bookshelf110"
+    "bookshelf110",
+    "leap115"
   ],
   "tutorial": {
-    "state": 3,
+    "state": 4,
     "closed": true,
-    "on": true,
+    "on": false,
     "jump": true,
     "shoot": true,
     "sprint": true,
@@ -223,6 +243,9 @@
     125,
     6001,
     9901,
-    3001
+    3001,
+    112,
+    115,
+    122
   ]
 }

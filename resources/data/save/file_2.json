@@ -5,10 +5,10 @@
   "player_data": {
     "max_hp": 3.000000,
     "hp": 3.000000,
-    "orbs": 87,
+    "orbs": 224,
     "position": {
-      "x": 203.380920,
-      "y": 235.000015
+      "x": 213.081833,
+      "y": 363.000000
     },
     "arsenal": [
       0
@@ -34,19 +34,31 @@
       {
         "id": 16,
         "quantity": 1
+      },
+      {
+        "id": 22,
+        "quantity": 1
+      },
+      {
+        "id": 12,
+        "quantity": 1
+      },
+      {
+        "id": 8,
+        "quantity": 1
       }
     ],
     "stats": {
-      "death_count": 4,
-      "bullets_fired": 44,
+      "death_count": 7,
+      "bullets_fired": 189,
       "guns_collected": 1,
-      "items_collected": 3,
-      "orbs_collected": 87,
+      "items_collected": 6,
+      "orbs_collected": 224,
       "blue_orbs": 0,
-      "highest_indicator_amount": 19,
-      "enemies_killed": 5,
-      "rooms_discovered": 11,
-      "seconds_played": 319.416931,
+      "highest_indicator_amount": 45,
+      "enemies_killed": 12,
+      "rooms_discovered": 17,
+      "seconds_played": 671.887329,
       "time_trials": {
         "bryns_gun": 220.814438
       }
@@ -55,7 +67,7 @@
       0
     ]
   },
-  "save_point_id": 117,
+  "save_point_id": 123,
   "unlocked_doors": [
     11
   ],
@@ -63,11 +75,17 @@
     5768,
     377,
     567911,
-    7880
+    7880,
+    125111,
+    338223,
+    323,
+    211
   ],
   "activated_switches": [
     445,
-    44
+    44,
+    1,
+    233
   ],
   "destroyed_blocks": [
 
@@ -100,6 +118,20 @@
       1,
       1,
       0
+    ],
+    [
+      1,
+      110,
+      2,
+      1,
+      0
+    ],
+    [
+      1,
+      110,
+      1,
+      1,
+      0
     ]
   ],
   "destroyed_inspectables": [
@@ -108,7 +140,7 @@
   "tutorial": {
     "state": 4,
     "closed": true,
-    "on": true,
+    "on": false,
     "jump": true,
     "shoot": true,
     "sprint": true,
@@ -126,6 +158,12 @@
     116,
     108,
     109,
-    110
+    110,
+    125,
+    105,
+    111,
+    199,
+    103,
+    123
   ]
 }

@@ -19,7 +19,7 @@ void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::M
 	} else {
 		collision_check = true;
 		if ((proj.bounding_box.overlaps(bounding_box) && is_occupied())) {
-			if (!is_collidable()) { return; }
+			if (!is_collidable() || is_platform()) { return; }
 			if (!proj.stats.transcendent) {
 				if (!proj.destruction_initiated()) {
 					map.effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, proj.effect_type(), 2));
@@ -53,7 +53,7 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleSh
 
 	}
 	draw.setPosition(bounding_box.position - cam);
-	if (is_solid()) { win.draw(draw); }
+	if (is_solid() && !is_spike()) { win.draw(draw); }
 }
 
 void Tile::set_type() {

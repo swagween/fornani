@@ -24,7 +24,7 @@ void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, dir::Dire
 	auto start_index = map.get_index_at_position(probe);
 	for (auto i{start_index}; i < map.get_layers().at(world::MIDDLEGROUND).grid.cells.size(); i += map.dimensions.x) {
 		auto& cell = map.get_layers().at(world::MIDDLEGROUND).grid.cells.at(static_cast<int>(i));
-		if (cell.is_solid()) {
+		if (cell.is_solid() || cell.is_platform()) {
 			break;
 		} else {
 			++heights.perceived;

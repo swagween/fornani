@@ -110,6 +110,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	health.update();
 	health_indicator.update(*m_services, collider.physics.position);
 	orb_indicator.update(*m_services, collider.physics.position);
+	if (orb_indicator.active()) { health_indicator.shift(); }
 	update_invincibility();
 	update_weapon();
 	catalog.update(*m_services);
@@ -182,7 +183,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (orb_indicator.active()) { health_indicator.shift(); }
 	health_indicator.render(svc, win, cam);
 	orb_indicator.render(svc, win, cam);
 }

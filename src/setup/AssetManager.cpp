@@ -63,7 +63,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"demon", t_demon});
 	texture_lookup.insert({"caster", t_caster});
 
-	t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
+	t_ui.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
 	t_hud_hearts.loadFromFile(finder.resource_path + "/image/gui/HUD_hearts.png");
 	t_hud_pointer.loadFromFile(finder.resource_path + "/image/gui/HUD_pointer.png");

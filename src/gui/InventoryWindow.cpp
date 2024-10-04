@@ -229,6 +229,7 @@ void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player)
 	Console::begin();
 	info.begin();
 	wardrobe.update(svc, player);
+	update_table(player, true);
 	auto& player_items = player.catalog.categories.inventory.items;
 	for (auto& item : player_items) {
 		auto randx = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.x);

@@ -19,7 +19,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Vector2<float> position, int look
 	offset.x = (facing.lr == dir::LR::left) ? adjustment : facing.lr == dir::LR::right ? -adjustment : offset.x;
 	collider.physics.position = position + offset;
 	collider.sync_components();
-	hitbox.set_position(position);
+	hitbox.set_position(position + offset * 0.5f);
 }
 
 void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
@@ -33,7 +33,13 @@ void Spike::handle_collision(shape::Collider& other) const {
 }
 
 void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (svc.greyblock_mode()) { collider.render(win, cam); }
+	if (svc.greyblock_mode()) {
+		drawbox.setPosition(hitbox.position - cam);
+		drawbox.setSize(hitbox.dimensions);
+		drawbox.setFillColor(svc.styles.colors.red);
+		collider.render(win, cam);
+		win.draw(drawbox);
+	}
 }
 
 } // namespace world
