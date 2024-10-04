@@ -25,6 +25,7 @@ class Grid {
 	void seed_vertex(int index);
 	void destroy_cell(sf::Vector2<int> pos);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	std::size_t get_index_at_position(sf::Vector2<float> position) const;
 	Tile& get_cell(int index);
 
 	std::vector<Tile> cells{};

@@ -212,20 +212,17 @@ void Collider::detect_map_collision(world::Map& map) {
 	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;
 	auto range = get_collision_range(map);
 
-	for(auto i{range.first}; i < range.second; ++i) {
-		auto& cell = grid.get_cell(i);
+	for (auto i{range.first}; i <= range.second; ++i) {
+		if (i >= grid.cells.size() || i < 0) { continue; }
+		auto& cell = grid.get_cell(static_cast<int>(i));
 		if (!cell.is_collidable()) { continue; }
-		if (!map.nearby(cell.bounding_box, bounding_box)) {
+		// check vicinity so we can escape early
+		if (vicinity.vertices.empty()) { return; }
+		if (!vicinity.overlaps(cell.bounding_box)) {
 			continue;
 		} else {
-			// check vicinity so we can escape early
-			if (vicinity.vertices.empty()) { return; }
-			if (!vicinity.overlaps(cell.bounding_box)) {
-				continue;
-			} else {
-				cell.collision_check = true;
-				if (cell.value > 0) { handle_map_collision(cell); }
-			}
+			cell.collision_check = true;
+			if (cell.value > 0) { handle_map_collision(cell); }
 		}
 	}
 	maximum_ramp_height = 0.f;
@@ -233,13 +230,8 @@ void Collider::detect_map_collision(world::Map& map) {
 }
 
 std::pair<size_t, size_t> Collider::get_collision_range(world::Map& map) {
-	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;
-	auto start_index = sf::Vector2<size_t>(static_cast<size_t>((vicinity.vertices.at(0).x / 32)), static_cast<size_t>((vicinity.vertices.at(0).y / 32)));
-	auto end_index = sf::Vector2<size_t>(static_cast<size_t>((vicinity.vertices.at(2).x / 32)), static_cast<size_t>((vicinity.vertices.at(2).y / 32)));
-	auto start = static_cast<size_t>(map.dimensions.x) * start_index.y + start_index.x;
-	auto end = static_cast<size_t>(map.dimensions.x) * end_index.y + end_index.x + 1;
-	start = std::clamp(start, std::size_t{0}, static_cast<size_t>(grid.cells.size() - 1));
-	end = std::clamp(end, std::size_t{0}, static_cast<size_t>(grid.cells.size() - 1));
+	auto start = map.get_index_at_position(vicinity.vertices.at(0));
+	auto end = map.get_index_at_position(vicinity.vertices.at(2));
 	return {start, end};
 }
 

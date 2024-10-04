@@ -117,16 +117,6 @@ void Thug::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 	} else {
 		if (state == ThugState::punch) { attacks.punch.render(win, cam); }
 		if (caution.danger()) { attacks.rush.render(win, cam); }
-		auto& probe = directions.actual.lr == dir::LR::left ? caution.testers.left : caution.testers.right;
-		sf::CircleShape pt{};
-		pt.setPointCount(8);
-		pt.setRadius(4);
-		for (auto& point : probe) {
-			point.second ? pt.setFillColor(sf::Color::Green) : pt.setFillColor(sf::Color::Red);
-			pt.setPosition(point.first - cam);
-			win.draw(pt);
-			if (point.second) { break; }
-		}
 	}
 }
 

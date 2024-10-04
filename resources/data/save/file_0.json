@@ -7,7 +7,7 @@
     "hp": 4.000000,
     "orbs": 1262,
     "position": {
-      "x": 386.842102,
+      "x": 386.015533,
       "y": 203.000000
     },
     "arsenal": [
@@ -17,18 +17,18 @@
       8
     ],
     "hotbar": [
-      0,
       10,
-      3
+      0,
+      8
     ],
-    "equipped_gun": 0,
+    "equipped_gun": 10,
     "abilities": [
 
     ],
     "wardrobe": {
       "hairstyle": 0,
       "shirt": 0,
-      "pants": 1
+      "pants": 3
     },
     "items": [
       {
@@ -89,8 +89,8 @@
       }
     ],
     "stats": {
-      "death_count": 114,
-      "bullets_fired": 4531,
+      "death_count": 120,
+      "bullets_fired": 4596,
       "guns_collected": 4,
       "items_collected": 7,
       "orbs_collected": 1262,
@@ -98,7 +98,7 @@
       "highest_indicator_amount": 124,
       "enemies_killed": 30,
       "rooms_discovered": 31,
-      "seconds_played": 3714.571045,
+      "seconds_played": 3845.847900,
       "time_trials": {
         "bryns_gun": 25.041019
       }

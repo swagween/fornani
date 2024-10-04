@@ -172,7 +172,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 			for (auto& id : player.hotbar.value().get_ids()) {
 				save["player_data"]["hotbar"].push_back(id);
 			}
-			save["player_data"]["equipped_gun"] = player.hotbar.value().get_selection();
+			save["player_data"]["equipped_gun"] = player.hotbar.value().get_id();
 		}
 	}
 
@@ -276,12 +276,15 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	player.arsenal = {};
 	player.hotbar = {};
 	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
-		player.push_to_loadout(gun_id.as<int>());
+		player.push_to_loadout(gun_id.as<int>(), true);
 	}
-	if (player.hotbar) {
-		for (auto& gun_id : save["player_data"]["hotbar"].array_view()) { player.hotbar.value().add(gun_id.as<int>()); }
-		auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
-		player.hotbar.value().set_selection(equipped_gun);
+	if (!save["player_data"]["hotbar"].array_view().empty()) {
+		if (!player.hotbar) { player.hotbar = arms::Hotbar(1); }
+		if (player.hotbar) {
+			for (auto& gun_id : save["player_data"]["hotbar"].array_view()) { player.hotbar.value().add(gun_id.as<int>()); }
+			auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
+			player.hotbar.value().set_selection(equipped_gun);
+		}
 	}
 
 	// load items and abilities

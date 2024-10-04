@@ -19,7 +19,7 @@ void CircleCollider::handle_map_collision(world::Map& map) {
 	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;
 	auto range = get_collision_range(map);
 	for (auto i{range.first}; i < range.second; ++i) {
-		auto& cell = grid.get_cell(i);
+		auto& cell = grid.get_cell(static_cast<int>(i));
 		if (!cell.is_collidable()) { continue; }
 		if (cell.is_ramp()) { continue; }
 		cell.collision_check = true;

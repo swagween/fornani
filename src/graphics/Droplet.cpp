@@ -21,12 +21,12 @@ void Droplet::update(automa::ServiceProvider& svc, world::Map& map) {
 	auto slope = position() - collider.physics.previous_position;
 	auto mag = util::magnitude(slope);
 	auto adjacent = collider.physics.previous_position.x - position().x;
-	angle = tan(adjacent / mag) * 180.0 / std::numbers::pi;
+	angle = static_cast<float>(tan(adjacent / mag) * 180.0 / std::numbers::pi);
 	if (collider.collided()) {
 		decay();
 		collider.physics.velocity.x *= 0.9f;
 	} else {
-		auto offset = svc.random.random_range(0.f, static_cast<float>(std::numbers::pi));
+		auto offset = svc.random.random_range_float(0.f, static_cast<float>(std::numbers::pi));
 		collider.physics.position.x += sin(counter.get_count() * 0.01f + offset) * params.sway;
 	}
 }

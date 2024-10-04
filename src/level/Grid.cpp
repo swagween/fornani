@@ -212,6 +212,12 @@ void Grid::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	for (auto& cell : cells) { cell.render(win, cam, drawbox); }
 }
 
+std::size_t Grid::get_index_at_position(sf::Vector2<float> position) const {
+	auto start_index = sf::Vector2<std::size_t>(static_cast<std::size_t>((position.x / 32)), static_cast<std::size_t>((position.y / 32)));
+	auto ret = static_cast<std::size_t>(dimensions.x) * start_index.y + start_index.x;
+	return std::clamp(ret, std::size_t{0}, cells.size() - 1);
+}
+
 Tile& Grid::get_cell(int index) { return cells.at(index); }
 
 } // namespace world

@@ -14,9 +14,10 @@ void Hotbar::switch_weapon(automa::ServiceProvider& svc, int next) {
 }
 
 void Hotbar::set_selection(int id) {
-	for (auto& i : ids) { 
-		if (id == i) { return; }
-		selection.modulate(1);
+	auto ctr{0};
+	for(auto& i : ids) {
+		if (i == id) { selection.set(ctr); }
+		++ctr;
 	}
 }
 

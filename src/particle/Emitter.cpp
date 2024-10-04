@@ -11,7 +11,8 @@ Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::
 	particle_dimensions.x = in_data["dimensions"][0].as<float>();
 	particle_dimensions.y = in_data["dimensions"][1].as<float>();
 	
-	cooldown.start(variables.load);
+	cooldown = util::Cooldown(variables.load);
+	cooldown.start();
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setOutlineColor(sf::Color::Red);

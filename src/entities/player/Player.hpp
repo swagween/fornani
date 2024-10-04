@@ -165,7 +165,7 @@ class Player {
 	void map_reset();
 
 	arms::Weapon& equipped_weapon();
-	void push_to_loadout(int id);
+	void push_to_loadout(int id, bool from_save = false);
 	void pop_from_loadout(int id);
 
 	// map helpers

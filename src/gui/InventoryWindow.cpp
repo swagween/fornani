@@ -88,7 +88,6 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 				if (selector.get_section() != InventorySection::gun) { gun->deselect(); }
 				if (selector.get_section() == InventorySection::gun) {
 					if (gun->selected() && info.extended()) {
-						selector.set_position(gun->get_ui_position());
 						info.writer.load_single_message(gun->get_description());
 						info.writer.wrap();
 					}
@@ -262,7 +261,7 @@ void InventoryWindow::move(sf::Vector2<int> direction, bool has_arsenal) {
 	} else {
 		if (direction.x == -1) { selector.go_left(); }
 		if (direction.x == 1) { selector.go_right(); }
-		if (direction.y == -1) { selector.go_up(); }
+		if (direction.y == -1) { selector.go_up(has_arsenal); }
 		if (direction.y == 1) { selector.go_down(has_arsenal); }
 	}
 }

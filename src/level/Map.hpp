@@ -113,6 +113,7 @@ class Map {
 	bool overlaps_middleground(shape::Shape& test) const;
 	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
+	std::size_t get_index_at_position(sf::Vector2<float> position);
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};

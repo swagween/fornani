@@ -18,6 +18,7 @@ void MusicPlayer::load(std::string_view song_name) {
 	song_first.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_first.ogg");
 	song_loop.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_loop.ogg");
 	switch_on();
+	flags.state.reset(SongState::looping);
 }
 void MusicPlayer::play_once(float vol) {
 	if (global_off()) { return; }

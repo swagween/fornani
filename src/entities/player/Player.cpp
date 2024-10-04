@@ -168,16 +168,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setPosition(hurtbox.position - campos);
 		box.setSize(hurtbox.dimensions);
 		win.draw(box);
-		sf::CircleShape pt{};
-		pt.setPointCount(8);
-		pt.setRadius(4);
-		auto& probe = controller.direction.lr == dir::LR::left ? caution.testers.left : caution.testers.right;
-		for(auto& point : probe) { 
-			point.second ? pt.setFillColor(sf::Color::Green) : pt.setFillColor(sf::Color::Red);
-			pt.setPosition(point.first - campos);
-			win.draw(pt);
-			if (point.second) { break; }
-		}
 	} else {
 		antennae[1].render(svc, win, campos, 1);
 		win.draw(sprite);
@@ -728,9 +718,9 @@ void Player::map_reset() {
 
 arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(hotbar.value().get_id()); }
 
-void Player::push_to_loadout(int id) {
+void Player::push_to_loadout(int id, bool from_save) {
 	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
-	if (!hotbar) { hotbar = arms::Hotbar(1); }
+	if (!hotbar && !from_save) { hotbar = arms::Hotbar(1); }
 	if (id == 0) {
 		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
 		auto bg = util::QuestKey{1, 111, 1};
@@ -742,7 +732,7 @@ void Player::push_to_loadout(int id) {
 	}
 	if (id == 10) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
 	arsenal.value().push_to_loadout(id);
-	hotbar.value().add(id);
+	if (!from_save) { hotbar.value().add(id); }
 	m_services->stats.player.guns_collected.update();
 }
 

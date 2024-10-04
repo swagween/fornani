@@ -24,7 +24,7 @@ class Particle {
 	Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	[[nodiscard]] auto done() const -> bool { return lifespan.is_complete(); }
+	[[nodiscard]] auto done() const -> bool { return lifespan.is_almost_complete(); }
 
   private:
 	sf::RectangleShape box{};

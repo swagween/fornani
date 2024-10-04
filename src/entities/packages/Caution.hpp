@@ -29,8 +29,8 @@ class Caution {
 
 	sf::Vector2<float> retreat{};
 	struct {
-		std::vector<std::pair<sf::Vector2<float>, bool>> left{};
-		std::vector<std::pair<sf::Vector2<float>, bool>> right{};
+		sf::Vector2<float> left{};
+		sf::Vector2<float> right{};
 	} testers{};
 	struct {
 		int perceived{};

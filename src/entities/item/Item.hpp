@@ -76,7 +76,7 @@ class Item : public entity::Entity {
 	} variables{};
 
 	struct {
-		sf::Vector2<float> pad{80.f, 80.f};
+		sf::Vector2<float> pad{60.f, 60.f};
 		float spacing{56.f};
 		sf::Text rarity{};
 		sf::Text quantity{};

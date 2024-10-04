@@ -15,7 +15,7 @@ class Emitter {
 	void set_position(sf::Vector2<float> pos);
 	void set_dimensions(sf::Vector2<float> dim);
 	void deactivate();
-	[[nodiscard]] auto done() const -> bool { return particles.empty(); }
+	[[nodiscard]] auto done() const -> bool { return particles.empty() && !cooldown.started(); }
 
   private:
 	std::vector<Particle> particles{};

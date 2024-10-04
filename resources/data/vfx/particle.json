@@ -98,7 +98,7 @@
   },
 
   "twinkle": {
-    "load": 2,
+    "load": 3,
     "rate": 100.0,
     "expulsion": 50.0,
     "expulsion_variance": 0.0,
@@ -138,7 +138,7 @@
   },
 
   "spritz": {
-    "load": 2,
+    "load": 3,
     "rate": 100.0,
     "expulsion": 20.0,
     "expulsion_variance": 15.0,
@@ -156,7 +156,7 @@
   },
 
   "jump": {
-    "load": 2,
+    "load": 3,
     "rate": 2.0,
     "expulsion": 12.0,
     "expulsion_variance": 8.0,
@@ -174,7 +174,7 @@
   },
 
   "slide": {
-    "load": 2,
+    "load": 3,
     "rate": 2.0,
     "expulsion": 18.0,
     "expulsion_variance": 8.0,

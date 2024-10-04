@@ -168,7 +168,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto locked = static_cast<bool>(entry["locked"].as_bool());
 		auto already_open = static_cast<bool>(entry["already_open"].as_bool());
 		auto key_id = entry["key_id"].as<int>();
-		auto door_style = style_id;
+		auto door_style = native_style_id;
 		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style));
 		portals.back().update(svc);
 	}
@@ -699,5 +699,7 @@ bool Map::overlaps_middleground(shape::Shape& test) const {
 	}
 	return false;
 }
+
+std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_index_at_position(position); }
 
 } // namespace world
