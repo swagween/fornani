@@ -91,7 +91,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
 		if (collision_depths) { collision_depths.value().calculate(*this, cell); }
-		bool corner_collision{true};
+		bool corner_collision{};
+		bool vert{};
 		if (predictive_vertical.SAT(cell)) {
 			mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
 			//if (abs(mtvs.combined.x > 0.0001f)) { std::cout << "Combined MTV reading: " << mtvs.combined.x << "\n"; }
@@ -99,26 +100,24 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				flags.state.set(State::just_landed);
 				flags.animation.set(Animation::just_landed);
 			} // for landing sound
-			corner_collision = false;
 			flags.external_state.set(ExternalState::world_collision);
 			flags.external_state.set(ExternalState::vert_world_collision);
 			correct_y(mtvs.vertical);
+			vert = true;
 		}
-		if (predictive_horizontal.SAT(cell) && !tile.ramp_adjacent()) {
+		if (predictive_horizontal.SAT(cell) && !tile.ramp_adjacent() && !vert) {
 			mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
-			corner_collision = false;
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
 			flags.external_state.set(ExternalState::horiz_world_collision);
 			flags.external_state.reset(ExternalState::vert_world_collision);
 			correct_x(mtvs.horizontal);
 		}
-		if (predictive_combined.SAT(cell) && corner_collision && !tile.ramp_adjacent()) {
-			//if (abs(mtvs.combined.x > 0.0001f)) { std::cout << "Combined MTV reading: " << mtvs.combined.x << "\n"; }
+		if (predictive_combined.SAT(cell) && !tile.ramp_adjacent()) {
+			// if (abs(mtvs.combined.x > 0.0001f)) { std::cout << "Combined MTV reading: " << mtvs.combined.x << "\n"; }
 			flags.collision.set(Collision::any_collision);
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
-
 			correct_corner(mtvs.combined);
 		}
 		if (flags.external_state.test(ExternalState::vert_world_collision)) { flags.external_state.reset(ExternalState::horiz_world_collision); }

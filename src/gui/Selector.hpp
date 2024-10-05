@@ -11,8 +11,8 @@ struct ServiceProvider;
 
 namespace gui {
 
-enum class InventorySection { item, gun };
-enum class SelectorFlags { switched };
+enum class InventorySection { item, gun, END };
+enum class SelectorFlags { switched, went_up };
 
 class Selector {
   public:
@@ -28,6 +28,7 @@ class Selector {
 	void set_size(int size);
 	void set_dimensions(sf::Vector2<int> dim);
 	void set_position(sf::Vector2<float> pos) { position = pos; }
+	bool last_row() const;
 	[[nodiscard]] auto switched_sections() -> bool { return flags.consume(SelectorFlags::switched); }
 	[[nodiscard]] auto get_section() const -> InventorySection { return section; }
 	[[nodiscard]] auto get_section_int() const -> int { return static_cast<int>(section); }
@@ -46,7 +47,7 @@ class Selector {
 	sf::Sprite sprite{};
 
 	struct {
-		util::Circuit vertical{2};
+		util::Circuit vertical{static_cast<int>(InventorySection::END)};
 	} sections{};
 };
 

@@ -29,7 +29,7 @@ class InventoryWindow : public Console {
 	void close();
 	void select();
 	void cancel();
-	void move(sf::Vector2<int> direction, bool has_arsenal = false);
+	void move(player::Player& player, sf::Vector2<int> direction, bool has_arsenal = false);
 	void use_item(automa::ServiceProvider& svc, player::Player& player, world::Map& map, item::Item& item);
 	void update_table(player::Player& player, bool new_dim);
 	void set_item_size(int sz) {

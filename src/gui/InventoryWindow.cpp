@@ -95,7 +95,6 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 				++ctr;
 			}
 		}
-		update_table(player, selector.switched_sections());
 		info.update(svc);
 		if (active()) {
 			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && selector.get_section() == InventorySection::item) {
@@ -171,6 +170,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		}
 		auto minimenu_dim = sf::Vector2<float>{108.f, 108.f};
 		item_menu.update(svc, minimenu_dim, selector.get_menu_position());
+		update_table(player, selector.switched_sections());
 	}
 	if (mode == Mode::minimap) {
 		title.setString("MAP");
@@ -225,11 +225,12 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 }
 
 void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player) {
+	update_table(player, true);
+	selector.switch_sections({0, 0});
 	flags.set(ConsoleFlags::active);
 	Console::begin();
 	info.begin();
 	wardrobe.update(svc, player);
-	update_table(player, true);
 	auto& player_items = player.catalog.categories.inventory.items;
 	for (auto& item : player_items) {
 		auto randx = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.x);
@@ -255,7 +256,7 @@ void InventoryWindow::select() {
 void InventoryWindow::cancel() { //item_menu.close(*m_services); 
 }
 
-void InventoryWindow::move(sf::Vector2<int> direction, bool has_arsenal) {
+void InventoryWindow::move(player::Player& player, sf::Vector2<int> direction, bool has_arsenal) {
 	if (item_menu.is_open()) {
 		if (direction.y == -1) { item_menu.up(*m_services); }
 		if (direction.y == 1) { item_menu.down(*m_services); }
@@ -306,7 +307,6 @@ void InventoryWindow::update_table(player::Player& player, bool new_dim) {
 	auto gpr = 12;
 	auto x_dim{0};
 	auto y_dim{0};
-	selector.update();
 	switch (selector.get_section()) {
 	case InventorySection::item:
 		x_dim = std::min(static_cast<int>(player_items.size()), ipr);
@@ -316,11 +316,11 @@ void InventoryWindow::update_table(player::Player& player, bool new_dim) {
 	case InventorySection::gun:
 		x_dim = std::min(static_cast<int>(player_loadout), gpr);
 		y_dim = static_cast<int>(std::ceil(static_cast<float>(player_loadout) / static_cast<float>(gpr)));
-		if (new_dim) { selector.set_size(static_cast<int>(player_loadout));
-		}
+		if (new_dim) { selector.set_size(static_cast<int>(player_loadout)); }
 		break;
 	}
 	selector.set_dimensions({x_dim, y_dim});
+	selector.update();
 }
 
 void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {

@@ -10,21 +10,25 @@ Selector::Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim) : table_d
 	sprite.setOrigin(10, 10);
 }
 
-void Selector::update() {
-	sprite.setPosition(position);
-	section = static_cast<InventorySection>(sections.vertical.get());
-}
+void Selector::update() { sprite.setPosition(position); }
 
 void Selector::render(sf::RenderWindow& win) const { win.draw(sprite); }
 
 void Selector::switch_sections(sf::Vector2<int> way) {
 	sections.vertical.modulate(way.y);
+	section = static_cast<InventorySection>(sections.vertical.get());
 	flags.set(SelectorFlags::switched);
+	current_selection.set(current_selection.get() % table_dimensions.x);
+	if (way.y == -1) { flags.set(SelectorFlags::went_up); }
 }
 
 void Selector::go_down(bool has_arsenal) {
 	if (current_selection.get() + table_dimensions.x >= current_selection.get_order()) {
-		if (has_arsenal) { switch_sections({0, 1}); }
+		if (has_arsenal && last_row()) {
+			switch_sections({0, 1});
+		} else {
+			current_selection.set(current_selection.get_order() - 1);
+		}
 	} else {
 		current_selection.modulate(table_dimensions.x);
 	}
@@ -50,8 +54,22 @@ void Selector::go_right() {
 	m_services->soundboard.flags.console.set(audio::Console::shift);
 }
 
-void Selector::set_size(int size) { current_selection = util::Circuit(size); }
+void Selector::set_size(int size) {
+	if (size < 1) { return; }
+	current_selection.set_order(size);
+}
 
-void Selector::set_dimensions(sf::Vector2<int> dim) { table_dimensions = dim; }
+void Selector::set_dimensions(sf::Vector2<int> dim) {
+	table_dimensions = dim;
+	if (flags.consume(SelectorFlags::went_up) && table_dimensions.y > 1) {
+		if (get_current_selection() < current_selection.get_order() % table_dimensions.x) {
+			current_selection.modulate(table_dimensions.x * (table_dimensions.y - 1));
+		} else {
+			current_selection.set(current_selection.get_order() - 1);
+		}
+	}
+}
+
+bool Selector::last_row() const { return current_selection.get() / table_dimensions.x == table_dimensions.y - 1; }
 
 } // namespace gui

@@ -282,10 +282,10 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 	if (inventory_window.active()) {
 		controller.restrict_movement();
 		controller.prevent_movement();
-		if (controller.transponder_up()) { inventory_window.move({0, -1}, static_cast<bool>(arsenal)); }
-		if (controller.transponder_down()) { inventory_window.move({0, 1}, static_cast<bool>(arsenal)); }
-		if (controller.transponder_left()) { inventory_window.move({-1, 0}); }
-		if (controller.transponder_right()) { inventory_window.move({1, 0}); }
+		if (controller.transponder_up()) { inventory_window.move(*this, {0, -1}, static_cast<bool>(arsenal)); }
+		if (controller.transponder_down()) { inventory_window.move(*this, {0, 1}, static_cast<bool>(arsenal)); }
+		if (controller.transponder_left()) { inventory_window.move(*this, {-1, 0}); }
+		if (controller.transponder_right()) { inventory_window.move(*this, {1, 0}); }
 		if (controller.transponder_hold_up() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, -1.f}); }
 		if (controller.transponder_hold_down() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, 1.f}); }
 		if (controller.transponder_hold_left() && inventory_window.is_minimap()) { inventory_window.minimap.move({-1.f, 0.f}); }
