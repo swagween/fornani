@@ -51,15 +51,17 @@ void MusicPlayer::update() {
 		stop();
 		return;
 	}
-	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMilliseconds();
-	if (song_dt < 80 && !flags.state.test(SongState::looping)) {
+	last_dt = music_tick.getElapsedTime().asMicroseconds();
+	music_tick.restart();
+	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
+	if (song_dt < (last_dt * 1.9f) && !flags.state.test(SongState::looping)) {
 		song_loop.play();
 		flags.state.set(SongState::looping);
 		music_clock.restart();
 	}
 	if (flags.state.test(SongState::looping)) {
-		auto song_dt = (song_loop.getDuration() - music_clock.getElapsedTime()).asMilliseconds();
-		if (song_dt < 80) {
+		auto song_dt = (song_loop.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
+		if (song_dt < (last_dt * 1.9f)) {
 			song_loop.play();
 			flags.state.set(SongState::looping);
 			music_clock.restart();
@@ -72,25 +74,31 @@ void MusicPlayer::pause() {
 	song_loop.pause();
 	switch_off();
 }
+
 void MusicPlayer::stop() {
 	song_first.stop();
 	song_loop.stop();
 	switch_off();
 }
+
 void MusicPlayer::fade_out() {}
 void MusicPlayer::fade_in() {}
 void MusicPlayer::switch_off() { flags.state.reset(SongState::on); }
 void MusicPlayer::switch_on() { flags.state.set(SongState::on); }
+
 void MusicPlayer::turn_off() {
 	flags.player.reset(MusicPlayerState::on);
 	stop();
 }
+
 void MusicPlayer::turn_on() {
 	flags.player.set(MusicPlayerState::on);
 	pause();
 }
+
 void MusicPlayer::set_volume(float vol) {
 	song_first.setVolume(vol);
 	song_loop.setVolume(vol);
 }
+
 } // namespace audio

@@ -17,6 +17,13 @@ struct Direction {
 	UND und{UND::neutral};
 	Inter inter{Inter::north};
 
+	[[nodiscard]] auto up() const -> bool { return und == UND::up; }
+	[[nodiscard]] auto down() const -> bool { return und == UND::down; }
+	[[nodiscard]] auto left() const -> bool { return lr == LR::left; }
+	[[nodiscard]] auto right() const -> bool { return lr == LR::right; }
+	[[nodiscard]] auto up_or_down() const -> bool { return up() || down(); }
+	[[nodiscard]] auto left_or_right() const -> bool { return left() || right(); }
+
 	constexpr void set_intermediate(bool left, bool right, bool up, bool down) {
 
 		// no inputs

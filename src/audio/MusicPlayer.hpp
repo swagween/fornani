@@ -34,7 +34,7 @@ class MusicPlayer {
 	[[nodiscard]] auto get_volume() const -> float { return song_first.getStatus() == sf::SoundSource::Status::Playing ? song_first.getVolume() : song_loop.getStatus() == sf::SoundSource::Status::Playing ? song_loop.getVolume() : 0.f; }
 	[[nodiscard]] auto global_off() const -> bool { return !flags.player.test(MusicPlayerState::on); }
 	[[nodiscard]] auto switched_off() const -> bool { return !flags.state.test(SongState::on); }
-	
+
 	[[nodiscard]] auto playing() const -> bool { return song_first.getStatus() == sf::SoundSource::Status::Playing || song_loop.getStatus() == sf::SoundSource::Status::Playing; }
 
 	data::ResourceFinder finder{};
@@ -56,14 +56,15 @@ class MusicPlayer {
 	sf::Music song_first{};
 	sf::Music song_loop{};
 	sf::SoundSource::Status status{};
+	float last_dt{};
 
 	sf::Time start_time{};
 	sf::Time end_time{};
 	sf::Time current_time{};
 	sf::Clock music_clock{};
+	sf::Clock music_tick{};
 
 	std::string label{};
-
 };
 
 } // namespace audio

@@ -7,6 +7,7 @@
 #include "../utils/BitFlags.hpp"
 #include "Projectile.hpp"
 #include "Ammo.hpp"
+#include <optional>
 
 namespace arms {
 
@@ -25,6 +26,12 @@ struct WeaponAttributes {
 	COLOR_CODE ui_color{};
 	std::array<float, 2> barrel_position{};
 	int back_offset{};
+};
+
+struct EmitterAttributes {
+	sf::Vector2<float> dimensions{};
+	std::string_view type{};
+	sf::Color color{};
 };
 
 class Weapon {
@@ -66,13 +73,9 @@ class Weapon {
 	[[nodiscard]] auto get_description() const -> std::string_view { return metadata.description; }
 
 	WeaponAttributes attributes{};
-
+	EmitterAttributes emitter{};
+	std::optional<EmitterAttributes> secondary_emitter{};
 	Projectile projectile;
-
-	//spray
-	sf::Vector2<float> emitter_dimensions{};
-	std::string_view emitter_type{};
-	sf::Color emitter_color{};
 
 	sf::Vector2<float> sprite_position{};
 	sf::Vector2<float> gun_offset{};
@@ -94,9 +97,9 @@ class Weapon {
 	dir::Direction firing_direction{};
 
   private:
-	  struct {
+	struct {
 		std::string_view description{};
-	  } metadata{};
+	} metadata{};
 	util::BitFlags<GunState> flags{};
 	util::BitFlags<UIFlags> ui_flags{};
 	Ammo ammo{};

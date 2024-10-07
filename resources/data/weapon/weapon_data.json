@@ -18,7 +18,7 @@
       },
       "attributes": {
         "automatic": false,
-        "rate": 42,
+        "rate": 6,
         "cooldown_time": 30,
         "recoil": 0.00,
         "ui_color": 1,
@@ -742,6 +742,7 @@
           "boomerang": false,
           "constrained": false,
           "spring": false,
+          "circle": true,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.0,
@@ -775,18 +776,18 @@
         "y": 12
       },
       "gun_offset": {
-        "x": 0,
-        "y": 8
+        "x": 2,
+        "y": 6
       },
       "barrel_point": {
         "x": 20.0,
-        "y": 5.0
+        "y": 4.0
       },
       "attributes": {
         "automatic": false,
         "rate": 4,
-        "cooldown_time": 14,
-        "recoil": 1.0,
+        "cooldown_time": 8,
+        "recoil": 0.8,
         "ui_color": 3
       },
       "projectile": {
@@ -797,8 +798,8 @@
         "attributes": {
           "base_damage": 8.0,
           "power": 3,
-          "range": 140,
-          "speed": 28.0,
+          "range": 160,
+          "speed": 27.0,
           "variance": 0.0,
           "stun_time": 0.0,
           "knockback": 2.0,
@@ -809,7 +810,7 @@
           "spring": false,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
+          "dampen_factor": 0.998,
           "gravitator_force": 0.0,
           "gravitator_max_speed": 0.0,
           "gravitator_friction": 0.0,
@@ -828,6 +829,11 @@
         "sparkler_type": "light_trail"
       },
       "spray": {
+        "dimensions": [ 4.0, 4.0 ],
+        "type": "wasp_2",
+        "color": "white"
+      },
+      "secondary_spray": {
         "dimensions": [ 4.0, 4.0 ],
         "type": "wasp",
         "color": "white"

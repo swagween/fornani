@@ -132,12 +132,8 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
-
-	sf::Vector2<float> player_pos = apparent_position - campos;
 	calculate_sprite_offset();
-
 	if (flags.state.test(State::crushed)) { return; }
-
 	//debug
 	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.red;
 
@@ -348,7 +344,6 @@ void Player::flash_sprite() {
 void Player::calculate_sprite_offset() {
 	sprite_position = {collider.get_average_tick_position() + sprite_offset};
 	sprite_position.x += controller.facing_left() ? -1.f : 1.f;
-	apparent_position = collider.get_average_tick_position() + collider.dimensions / 2.f;
 }
 
 void Player::set_idle() {
@@ -478,7 +473,12 @@ void Player::update_weapon() {
 		weapon->firing_direction = controller.direction;
 		weapon->update(controller.direction);
 		auto tweak = controller.facing_left() ? -1.f : 1.f;
-		sf::Vector2<float> p_pos = {apparent_position.x + weapon->gun_offset.x + tweak, apparent_position.y + sprite_offset.y + weapon->gun_offset.y - collider.dimensions.y / 2.f};
+		auto g_offset = weapon->gun_offset;
+		if (weapon->firing_direction.up_or_down()) {
+			tweak = {};
+			g_offset.x = 0.f;
+		}
+		auto p_pos = sf::Vector2<float>{collider.get_center().x + g_offset.x + tweak, collider.get_center().y + sprite_offset.y + g_offset.y - collider.dimensions.y / 2.f};
 		weapon->set_position(p_pos);
 	}
 }
@@ -591,12 +591,7 @@ bool Player::grounded() const { return collider.flags.state.test(shape::State::g
 bool Player::fire_weapon() {
 	if (!arsenal || !hotbar) { return false; }
 	if (controller.shot() && equipped_weapon().can_shoot()) {
-		if (!m_services->soundboard.gun_sounds.contains(equipped_weapon().get_id())) {
-			m_services->soundboard.flags.weapon.set(audio::Weapon::bryns_gun);
-			flags.state.set(State::impart_recoil);
-			return true;
-		}
-		m_services->soundboard.flags.weapon.set(m_services->soundboard.gun_sounds.at(equipped_weapon().get_id()));
+		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_id()));
 		flags.state.set(State::impart_recoil);
 		if (tutorial.current_state == text::TutorialFlags::shoot) {
 			tutorial.flags.set(text::TutorialFlags::shoot);

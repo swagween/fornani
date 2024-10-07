@@ -5,15 +5,16 @@
   "player_data": {
     "max_hp": 3.000000,
     "hp": 3.000000,
-    "orbs": 224,
+    "orbs": 918,
     "position": {
-      "x": 213.081833,
-      "y": 363.000000
+      "x": 166.075073,
+      "y": 1387.000000
     },
     "arsenal": [
-      0
+      0,
+      12
     ],
-    "equipped_gun": 0,
+    "equipped_gun": 12,
     "abilities": [
 
     ],
@@ -50,26 +51,27 @@
     ],
     "stats": {
       "death_count": 7,
-      "bullets_fired": 189,
+      "bullets_fired": 677,
       "guns_collected": 1,
       "items_collected": 6,
-      "orbs_collected": 224,
-      "blue_orbs": 0,
-      "highest_indicator_amount": 45,
-      "enemies_killed": 12,
-      "rooms_discovered": 17,
-      "seconds_played": 671.887329,
+      "orbs_collected": 918,
+      "blue_orbs": 2,
+      "highest_indicator_amount": 265,
+      "enemies_killed": 34,
+      "rooms_discovered": 23,
+      "seconds_played": 1129.516113,
       "time_trials": {
         "bryns_gun": 220.814438
       }
     },
     "hotbar": [
-      0
+      12
     ]
   },
-  "save_point_id": 123,
+  "save_point_id": 200,
   "unlocked_doors": [
-    11
+    11,
+    8
   ],
   "opened_chests": [
     5768,
@@ -88,7 +90,9 @@
     233
   ],
   "destroyed_blocks": [
-
+    115,
+    115,
+    115
   ],
   "quest_progressions": [
     [
@@ -132,10 +136,32 @@
       1,
       1,
       0
+    ],
+    [
+      5,
+      115,
+      2,
+      1,
+      0
+    ],
+    [
+      9,
+      2,
+      1,
+      1,
+      0
+    ],
+    [
+      8,
+      6001,
+      6001,
+      1,
+      0
     ]
   ],
   "destroyed_inspectables": [
-    "bookshelf110"
+    "bookshelf110",
+    "leap115"
   ],
   "tutorial": {
     "state": 4,
@@ -164,6 +190,12 @@
     111,
     199,
     103,
-    123
+    123,
+    112,
+    114,
+    115,
+    122,
+    6001,
+    200
   ]
 }

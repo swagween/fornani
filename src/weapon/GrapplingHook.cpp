@@ -23,12 +23,12 @@ void GrapplingHook::update(automa::ServiceProvider& svc, player::Player& player)
 		spring.variables = {};
 		spring.set_bob(spring.get_anchor());
 		spring.variables.bob_physics.position = spring.get_bob();
-		spring.set_anchor(player.apparent_position);
+		spring.set_anchor(player.collider.get_center());
 		grapple_triggers.reset(arms::GrappleTriggers::released);
 	}
 	if (grapple_flags.test(arms::GrappleState::snaking)) {
 		spring.set_rest_length(-80);
-		spring.set_anchor(player.apparent_position);
+		spring.set_anchor(player.collider.get_center());
 		spring.update(svc);
 	}
 }

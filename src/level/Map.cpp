@@ -306,10 +306,8 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
-		if (proj.bounding_box.overlaps(player->hurtbox) && proj.team != arms::TEAMS::NANI) {
-			player->hurt(proj.stats.base_damage);
-			proj.destroy(false);
-		}
+		
+		proj.on_player_hit(*player);
 	}
 	for (auto& enemy : enemy_catalog.enemies) {
 		enemy->unique_update(svc, *this, *player);
@@ -396,7 +394,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& npc : npcs) {
 		if (!npc.background()) { npc.render(svc, win, cam); }
 	}
-	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 	for (auto& grenade : active_grenades) { grenade.render(svc, win, cam); }
 	player->render(svc, win, cam);
 
@@ -408,6 +405,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
+	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
@@ -539,7 +537,8 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);
 	}
 
-	active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.emitter_dimensions, weapon.emitter_type, weapon.emitter_color, weapon.firing_direction));
+	active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.emitter.dimensions, weapon.emitter.type, weapon.emitter.color, weapon.firing_direction));
+	if (weapon.secondary_emitter) { active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.firing_direction)); }
 }
 
 void Map::spawn_enemy(int id, sf::Vector2<float> pos) {
@@ -625,7 +624,7 @@ bool Map::check_cell_collision(shape::Collider collider) {
 void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj) {
 	// do this first block once
 	if (proj.hook.grapple_triggers.test(arms::GrappleTriggers::found) && !proj.hook.grapple_flags.test(arms::GrappleState::anchored) && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) {
-		proj.hook.spring.set_bob(player->apparent_position);
+		proj.hook.spring.set_bob(player->collider.get_center());
 		proj.hook.grapple_triggers.reset(arms::GrappleTriggers::found);
 		proj.hook.grapple_flags.set(arms::GrappleState::anchored);
 		proj.hook.grapple_flags.reset(arms::GrappleState::probing);

@@ -245,6 +245,8 @@ void AssetManager::load_audio() {
 	arms_switch_buffer.loadFromFile(finder.resource_path + "/audio/sfx/arms_switch.wav");
 	arms_switch.setBuffer(arms_switch_buffer);
 	bg_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bg_shot.wav");
+	b_wasp.loadFromFile(finder.resource_path + "/audio/sfx/wasp_shot.wav");
+	wasp.setBuffer(b_wasp);
 	bg_shot.setBuffer(bg_shot_buffer);
 	skycorps_ar_buffer.loadFromFile(finder.resource_path + "/audio/sfx/skycorps_ar_shot.wav");
 	skycorps_ar_shot.setBuffer(skycorps_ar_buffer);

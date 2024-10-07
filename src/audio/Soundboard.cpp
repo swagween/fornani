@@ -108,6 +108,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	}
 	if (flags.weapon.test(Weapon::hook_probe)) { svc.assets.sharp_click.play(); }
 	if (flags.weapon.test(Weapon::energy_ball)) { randomize(svc, svc.assets.energy_shot, 0.1f); }
+	if (flags.weapon.test(Weapon::wasp)) { svc.assets.wasp.play(); }
 
 	// reset flags
 	flags = {};

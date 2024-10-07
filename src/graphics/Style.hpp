@@ -39,7 +39,8 @@ class Style {
 																 {"tomahawk", colors.white},
 																 {"grappling hook", colors.ui_white},
 																 {"grenade launcher", colors.goldenrod},
-																 {"gnat", colors.mythic_green}};
+																 {"gnat", colors.mythic_green},
+																 {"Wasp", colors.ui_white}};
 };
 
 } // namespace style

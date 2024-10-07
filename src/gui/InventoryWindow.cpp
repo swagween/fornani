@@ -332,7 +332,6 @@ void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
 		minimap.center();
 	}
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
-	svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 }
 
 } // namespace gui

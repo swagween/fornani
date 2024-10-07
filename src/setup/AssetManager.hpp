@@ -222,6 +222,7 @@ class AssetManager {
 	sf::SoundBuffer b_nova{};
 	sf::SoundBuffer b_staple{};
 	sf::SoundBuffer b_gnat{};
+	sf::SoundBuffer b_wasp{};
 
 	sf::SoundBuffer jump_buffer{};
 	sf::SoundBuffer shatter_buffer{};
@@ -334,6 +335,7 @@ class AssetManager {
 	sf::Sound nova_shot{};
 	sf::Sound staple{};
 	sf::Sound gnat{};
+	sf::Sound wasp{};
 
 	sf::Sound hard_hit{};
 	sf::Sound thud{};

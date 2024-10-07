@@ -193,7 +193,6 @@ class Player {
 	std::optional<arms::Arsenal> arsenal{};
 	std::optional<arms::Hotbar> hotbar{};
 
-	sf::Vector2<float> apparent_position{};
 	sf::Vector2<float> anchor_point{};
 	sf::Vector2<float> sprite_offset{10.f, -3.f};
 	sf::Vector2<float> sprite_dimensions{};

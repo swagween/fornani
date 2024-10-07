@@ -101,6 +101,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 			if (inventory_window.active() && !inventory_window.is_inventory()) {
 				inventory_window.switch_modes(svc);
+				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 			} else {
 				toggle_inventory(svc);
 				if (!inventory_window.is_inventory()) { inventory_window.switch_modes(svc); }
@@ -111,6 +112,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			player->has_map()) {
 			if (inventory_window.active() && !inventory_window.is_minimap()) {
 				inventory_window.switch_modes(svc);
+				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 			} else {
 				toggle_inventory(svc);
 				if (!inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }

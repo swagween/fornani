@@ -49,7 +49,7 @@
 
   "wasp": {
     "load": 30,
-    "rate": 10.0,
+    "rate": 4.0,
     "expulsion": 30.0,
     "expulsion_variance": 30.0,
     "cone": 0.08,
@@ -67,6 +67,24 @@
       "framerate": 68,
       "loop": 0
     }
+  },
+
+  "wasp_2": {
+    "load": 12,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 50.0,
+    "cone": 0.08,
+    "friction": 0.99,
+    "elasticity": 0.95,
+    "gravity": 0.0,
+    "lifespan": 260,
+    "lifespan_variance": 85,
+    "dimensions": [ 3, 3 ],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "fire"
   },
 
   "light_burst": {
