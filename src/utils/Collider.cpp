@@ -76,10 +76,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		handle_platform_collision(cell);
 		return;
 	}
-	if (is_spike) {
-		handle_spike_collision(cell);
-		return;
-	}
+	if (is_spike) { return; }
 
 	// store all four mtvs
 	mtvs.combined = predictive_combined.testCollisionGetMTV(predictive_combined, cell);
@@ -298,10 +295,6 @@ void Collider::resolve_depths() {
 }
 
 void Collider::handle_platform_collision(Shape const& cell) {}
-
-void Collider::handle_spike_collision(Shape const& cell) {
-	if (hurtbox.overlaps(cell)) { spike_trigger = true; }
-}
 
 void Collider::handle_collider_collision(Shape const& collider) {
 	if (flags.general.test(General::ignore_resolution)) { return; }

@@ -7,11 +7,6 @@
 
 namespace arms {
 
-Projectile::Projectile() {
-	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
-	physics.velocity.x = stats.speed;
-};
-
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon) : label(label), id(id), sparkler(svc), m_weapon(&weapon) {
 
 	auto const& in_data = svc.data.weapon["weapons"][id]["projectile"];
@@ -19,6 +14,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	type = static_cast<WEAPON_TYPE>(id);
 
 	stats.base_damage = in_data["attributes"]["base_damage"].as<float>();
+	stats.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
 	stats.range = in_data["attributes"]["range"].as<int>();
 	stats.speed = in_data["attributes"]["speed"].as<float>();
 	stats.variance = in_data["attributes"]["variance"].as<float>();

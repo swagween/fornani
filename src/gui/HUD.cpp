@@ -39,11 +39,11 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	auto const& hp = player.health;
 	int i{};
 	for (auto& heart : hearts) {
-		heart.position = {corner_pad.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y};
+		heart.position = {corner_pad.x + static_cast<float>(i) * f_heart_dimensions.x + static_cast<float>(i) * static_cast<float>(HP_pad), corner_pad.y};
 		if (hp.flags.test(entity::HPState::hit)) {
-			auto randx = svc.random.random_range_float(-16.f, 16.f);
-			auto randy = svc.random.random_range_float(-16.f, 16.f);
-			heart.gravitator.set_position(heart.position + sf::Vector2<float>{randx, randy});
+			auto randv = svc.random.random_vector_float(-16.f, 16.f);
+			heart.gravitator.set_position(heart.position + randv);
+			heart.shake();
 		}
 		heart.update(svc, player);
 		heart.current_state = hp.get_hp() > i ? State::neutral : player.health.taken_point > i ? State::taken : State::gone;

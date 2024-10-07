@@ -515,9 +515,8 @@ void Player::hurt(float amount, bool force) {
 		health.inflict(amount, force);
 		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;
-		collider.physics.acceleration.y = -physics_stats.hurt_acc;
+		collider.physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
-		collider.spike_trigger = false;
 		m_services->soundboard.flags.player.set(audio::Player::hurt);
 		hurt_cooldown.start(2);
 	}
@@ -721,7 +720,7 @@ arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(h
 void Player::push_to_loadout(int id, bool from_save) {
 	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
 	if (!hotbar && !from_save) { hotbar = arms::Hotbar(1); }
-	if (id == 0) {
+	if (id == 0 && !from_save) {
 		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
 		auto bg = util::QuestKey{1, 111, 1};
 		m_services->quest.process(*m_services, bg);
@@ -730,7 +729,7 @@ void Player::push_to_loadout(int id, bool from_save) {
 		tutorial.trigger();
 		tutorial.turn_on();
 	}
-	if (id == 10) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
+	if (id == 10 && !from_save) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
 	arsenal.value().push_to_loadout(id);
 	if (!from_save) { hotbar.value().add(id); }
 	m_services->stats.player.guns_collected.update();

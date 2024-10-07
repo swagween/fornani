@@ -81,6 +81,7 @@ void AssetManager::import_textures() {
 	t_clover_projectile.loadFromFile(finder.resource_path + "/image/weapon/clover_proj.png");
 	t_skycorps_ar_projectile.loadFromFile(finder.resource_path + "/image/weapon/skycorps_ar_proj.png");
 	t_tomahawk_projectile.loadFromFile(finder.resource_path + "/image/weapon/tomahawk_projectile.png");
+	t_wasp_projectile.loadFromFile(finder.resource_path + "/image/weapon/wasp_proj.png");
 	t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 	t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
 	t_grenade.loadFromFile(finder.resource_path + "/image/weapon/grenade.png");
@@ -104,6 +105,7 @@ void AssetManager::import_textures() {
 	projectile_textures.insert({"Indie", t_indie_projectile});
 	projectile_textures.insert({"Gnat", t_gnat_projectile});
 	projectile_textures.insert({"Energy Ball", t_energy_ball_projectile});
+	projectile_textures.insert({"Wasp", t_wasp_projectile});
 
 	t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 	t_guns.loadFromFile(finder.resource_path + "/image/item/guns.png");
@@ -116,8 +118,10 @@ void AssetManager::import_textures() {
 	t_fader.loadFromFile(finder.resource_path + "/image/vfx/fader.png");
 
 	t_twinkle.loadFromFile(finder.resource_path + "/image/vfx/twinkle.png");
+	t_wasp_effect.loadFromFile(finder.resource_path + "/image/vfx/wasp_effect.png");
 	t_small_flash.loadFromFile(finder.resource_path + "/image/vfx/small_flash.png");
 	particle_textures.insert({"twinkle", t_twinkle});
+	particle_textures.insert({"wasp", t_wasp_effect});
 
 	t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 	t_blue_console.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");

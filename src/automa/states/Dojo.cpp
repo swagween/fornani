@@ -95,24 +95,26 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 	}
 	//if (svc.controller_map.gamepad_disconnected()) { toggle_pause_menu(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered ||
-		svc.controller_map.digital_action_status(config::DigitalAction::map_open_inventory).triggered) {
+	if (!svc.no_menu()) {
+		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered ||
+			svc.controller_map.digital_action_status(config::DigitalAction::map_open_inventory).triggered) {
 
-		if (inventory_window.active() && !inventory_window.is_inventory()) {
-			inventory_window.switch_modes(svc);
-		} else {
-			toggle_inventory(svc);
-			if (!inventory_window.is_inventory()) { inventory_window.switch_modes(svc); }
+			if (inventory_window.active() && !inventory_window.is_inventory()) {
+				inventory_window.switch_modes(svc);
+			} else {
+				toggle_inventory(svc);
+				if (!inventory_window.is_inventory()) { inventory_window.switch_modes(svc); }
+			}
 		}
-	}
-	if ((svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered ||
-		 svc.controller_map.digital_action_status(config::DigitalAction::inventory_open_map).triggered) &&
-		player->has_map()) {
-		if (inventory_window.active() && !inventory_window.is_minimap()) {
-			inventory_window.switch_modes(svc);
-		} else {
-			toggle_inventory(svc);
-			if (!inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
+		if ((svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered ||
+			 svc.controller_map.digital_action_status(config::DigitalAction::inventory_open_map).triggered) &&
+			player->has_map()) {
+			if (inventory_window.active() && !inventory_window.is_minimap()) {
+				inventory_window.switch_modes(svc);
+			} else {
+				toggle_inventory(svc);
+				if (!inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
+			}
 		}
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }

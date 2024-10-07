@@ -65,6 +65,7 @@ int const history_limit{4};
 struct ProjectileStats {
 
 	float base_damage{};
+	int power{};
 	int range{};
 
 	float speed{};
@@ -104,7 +105,6 @@ enum class ProjectileState { initialized, destruction_initiated, destroyed, whif
 class Projectile {
 
   public:
-	Projectile();
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon);
 
 	void update(automa::ServiceProvider& svc, player::Player& player);

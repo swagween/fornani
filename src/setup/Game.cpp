@@ -474,7 +474,6 @@ void Game::debug_window(sf::RenderWindow& window) {
 							ImGui::Text("Alive? %s", player.alive() ? "Yes" : "No");
 
 							ImGui::Text("Invincibility Counter: %i", player.counters.invincibility);
-							ImGui::Text("Spike Trigger: %s", player.collider.spike_trigger ? "True" : "False");
 							ImGui::Text("On Ramp: %s", player.collider.on_ramp() ? "True" : "False");
 
 							ImGui::Text("Grounded: %s", player.grounded() ? "Yes" : "No");

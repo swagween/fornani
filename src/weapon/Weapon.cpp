@@ -40,7 +40,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : label(svc.data.weapon["we
 	attributes.boomerang = projectile.stats.boomerang;
 	sp_gun.setTexture(svc.assets.t_gun);
 	sp_gun_back.setTexture(svc.assets.t_gun);
-	sp_gun_back.setOrigin({(float)attributes.back_offset, 0.f});
+	sp_gun_back.setOrigin({static_cast<float>(attributes.back_offset), 0.f});
 	sp_gun.setTextureRect(sf::IntRect({attributes.back_offset, texture_lookup}, {sprite_dimensions.x - attributes.back_offset, sprite_dimensions.y}));
 	sp_gun_back.setTextureRect(sf::IntRect({0, texture_lookup}, {attributes.back_offset, sprite_dimensions.y}));
 	sprites.ui.setTexture(svc.assets.t_guns);

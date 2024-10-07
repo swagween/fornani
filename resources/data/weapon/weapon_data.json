@@ -533,7 +533,7 @@
       "attributes": {
         "automatic": false,
         "rate": 22,
-        "cooldown_time": 10,
+        "cooldown_time": 6,
         "recoil": 0.00,
         "ui_color": 4
       },
@@ -780,35 +780,36 @@
       },
       "barrel_point": {
         "x": 20.0,
-        "y": 3.0
+        "y": 5.0
       },
       "attributes": {
         "automatic": false,
         "rate": 4,
-        "cooldown_time": 22,
-        "recoil": 0.0,
-        "ui_color": 4
+        "cooldown_time": 14,
+        "recoil": 1.0,
+        "ui_color": 3
       },
       "projectile": {
         "dimensions": {
-          "x": 6.0,
-          "y": 4.0
+          "x": 14.0,
+          "y": 14.0
         },
         "attributes": {
-          "base_damage": 1.0,
-          "range": 180,
-          "speed": 24.5,
-          "variance": 0.2,
+          "base_damage": 8.0,
+          "power": 3,
+          "range": 140,
+          "speed": 28.0,
+          "variance": 0.0,
           "stun_time": 0.0,
-          "knockback": 0.0,
+          "knockback": 2.0,
           "boomerang": false,
           "transcendent": false,
           "persistent": false,
           "constrained": true,
           "spring": false,
-          "range_variance": 8.0,
+          "range_variance": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.998,
+          "dampen_factor": 0.0,
           "gravitator_force": 0.0,
           "gravitator_max_speed": 0.0,
           "gravitator_friction": 0.0,
@@ -817,16 +818,19 @@
           "spring_rest_length": 0.0
         },
         "animation": {
-          "num_sprites": 5,
+          "num_sprites": 1,
           "num_frames": 1,
           "framerate": 8
+        },
+        "visual": {
+          "effect_type": 3
         },
         "sparkler_type": "light_trail"
       },
       "spray": {
-        "dimensions": [ 2.0, 2.0 ],
-        "type": "spritz",
-        "color": "mythic_green"
+        "dimensions": [ 4.0, 4.0 ],
+        "type": "wasp",
+        "color": "white"
       }
     }
   ]

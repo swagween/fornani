@@ -32,19 +32,41 @@
   },
 
   "thick_burst": {
-    "load": 12,
+    "load": 8,
     "rate": 100.0,
     "expulsion": 40.0,
     "expulsion_variance": 40.0,
     "cone": 0.08,
-    "friction": 0.99,
+    "friction": 0.98,
     "elasticity": 0.95,
-    "gravity": 2.5,
+    "gravity": 0.5,
     "lifespan": 360,
     "lifespan_variance": 225,
     "dimensions": [ 4, 4 ],
     "animated": false,
     "colliding": true
+  },
+
+  "wasp": {
+    "load": 30,
+    "rate": 10.0,
+    "expulsion": 30.0,
+    "expulsion_variance": 30.0,
+    "cone": 0.08,
+    "friction": 0.995,
+    "elasticity": 0.95,
+    "gravity": -0.5,
+    "lifespan": 360,
+    "lifespan_variance": 0,
+    "dimensions": [ 32, 32 ],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 5,
+      "framerate": 68,
+      "loop": 0
+    }
   },
 
   "light_burst": {

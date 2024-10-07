@@ -138,6 +138,7 @@ class AssetManager {
 	sf::Texture t_small_explosion{};
 	sf::Texture t_wall_hit{};
 	sf::Texture t_twinkle{};
+	sf::Texture t_wasp_effect{};
 	sf::Texture t_small_flash{};
 	sf::Texture t_mini_flash{};
 	sf::Texture t_medium_flash{};

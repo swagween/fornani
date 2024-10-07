@@ -2,6 +2,7 @@
 #include "../../level/Map.hpp"
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
+#include "../../utils/Math.hpp"
 
 namespace entity {
 
@@ -27,12 +28,8 @@ void Vine::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 	int ctr{0};
 	for (auto& link : chain.links) {
 		sprite.setTextureRect(sf::IntRect({0, encodings.at(ctr).at(0) * 32 * size}, {32 * size, 32 * size}));
-		sprite.setScale({static_cast<float>(encodings.at(ctr).at(1)), 1.f}); 
-		auto spritepos = link.get_bob();
-		spritepos = {std::floor(spritepos.x / 2.f), std::floor(spritepos.y / 2.f)};
-		auto intpos = static_cast<sf::Vector2<int>>(spritepos);
-		spritepos = 2.f * static_cast<sf::Vector2<float>>(intpos);
-		sprite.setPosition(spritepos - cam);
+		sprite.setScale({static_cast<float>(encodings.at(ctr).at(1)), 1.f});
+		sprite.setPosition(util::round_to_even(link.get_bob()) - cam);
 		win.draw(sprite);
 		++ctr;
 	}

@@ -30,7 +30,6 @@ struct WeaponAttributes {
 class Weapon {
 
   public:
-	Weapon() = default;
 	Weapon(automa::ServiceProvider& svc, int id);
 
 	void update(dir::Direction to_direction);

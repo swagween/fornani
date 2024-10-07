@@ -59,7 +59,6 @@ class Collider {
 	void correct_corner(sf::Vector2<float> mtv);
 	void resolve_depths();
 	void handle_platform_collision(Shape const& cell);
-	void handle_spike_collision(Shape const& cell);
 	void handle_collider_collision(Shape const& collider);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -144,9 +143,6 @@ class Collider {
 	sf::Vector2<float> sprite_offset{};
 	sf::Vector2<float> hurtbox_offset{};
 	float maximum_ramp_height{};
-
-
-	bool spike_trigger{};
 
 	sf::RectangleShape box{};
 	sf::RectangleShape draw_hurtbox{};

@@ -45,6 +45,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	auto framerate = in_animation["framerate"].as<int>();
 	auto loop = in_animation["loop"].as<int>();
 	animation.set_params({lookup, duration, framerate, loop});
+	if (svc.random.percent_chance(50)) { sprite.scale({-1.f, 1.f}); }
 
 	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get_cooldown(), in_data["color"].as_string()); }
 	if (fader) { fader.value().get_sprite().setScale(dim); }

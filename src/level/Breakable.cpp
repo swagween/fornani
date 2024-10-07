@@ -45,7 +45,7 @@ void Breakable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proj
 	if (destroyed()) { return; }
 	if (proj.bounding_box.overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			state -= power;
+			state -= power == 1 ? proj.stats.power : power;
 			energy = hit_energy;
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 		}

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "../particle/Gravitator.hpp"
+#include "../utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -18,6 +19,7 @@ class Widget {
 	Widget(automa::ServiceProvider& svc, sf::Vector2<int> dim, int index);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(sf::RenderWindow& win);
+	void shake() { shaking.start(); }
 	State current_state{};
 	vfx::Gravitator gravitator{};
 	sf::Sprite sprite{};
@@ -28,6 +30,7 @@ class Widget {
 	sf::Vector2<int> dimensions{};
 	int maximum{};
 	int index{};
+	util::Cooldown shaking{100};
 };
 
 } // namespace gui
