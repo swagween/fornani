@@ -6,6 +6,7 @@
 #include "../setup/TextManager.hpp"
 #include "../setup/Tables.hpp"
 #include "../automa/StateController.hpp"
+#include "../automa/MenuController.hpp"
 #include "../graphics/Style.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Ticker.hpp"
@@ -36,6 +37,7 @@ struct ServiceProvider {
 	util::Constants constants{};
 	lookup::Tables tables{};
 	StateController state_controller{};
+	MenuController menu_controller{};
 	audio::Soundboard soundboard{};
 	audio::MusicPlayer music{};
 	fornani::QuestTracker quest{};

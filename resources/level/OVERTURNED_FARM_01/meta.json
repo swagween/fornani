@@ -26,6 +26,21 @@
       "source": 0
     }
   },
+  "npcs": [
+    {
+      "id": 3,
+      "position": [
+        20,
+        10
+      ],
+      "background": false,
+      "suites": [
+        [
+          "2"
+        ]
+      ]
+    }
+  ],
   "portals": [
     {
       "dimensions": [

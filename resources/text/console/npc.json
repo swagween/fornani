@@ -15,7 +15,7 @@
       [ "Yes?%0" ],
       [ "Why, how rude of me! I'd forgotten to introduce myself! My name is Gobe, and this here is my dog, Justin. I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember." ],
       [ "I tell you, it is no place for the faint of heart. But I see that, at least, you carry a weapon to defend yourself. Smart!" ],
-      [ "Sure thing! Here's what I've picked up over the last few weeks..." ]
+      [ "Sure thing! Here's what I've picked up over the last few weeks...$70#1#1#" ]
     ],
     "responses": [
       [ "Who are you?%0", "I'd like to trade things with you.%2" ]

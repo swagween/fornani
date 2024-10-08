@@ -4,6 +4,8 @@
 #include "../GameState.hpp"
 #include "../../level/Camera.hpp"
 #include "../../utils/Collider.hpp"
+#include "../../gui/VendorDialog.hpp"
+#include <optional>
 
 namespace automa {
 
@@ -26,6 +28,7 @@ class Dojo : public GameState {
 	bool show_colliders{false};
 	int x{0};
 	util::Cooldown enter_room{};
+	std::optional<gui::VendorDialog> vendor_dialog{};
 
 	//shape::Collider A{};
 	//shape::Collider B{};

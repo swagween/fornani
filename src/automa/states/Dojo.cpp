@@ -81,6 +81,14 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		pause_window.update(svc, console, false);
 		return;
 	}
+	if (vendor_dialog) {
+		vendor_dialog.value().update(svc, map, *player);
+		if (!vendor_dialog.value().is_open()) {
+			vendor_dialog = {};
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		}
+		return;
+	}
 	if (console.is_complete()) {
 		if (inventory_window.active()) {
 			if (inventory_window.is_inventory()) {
@@ -120,6 +128,14 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		}
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
+
+	if (console.is_complete()) {
+		if (svc.menu_controller.vendor_dialog_opened()) {
+			vendor_dialog = gui::VendorDialog(svc, map, *player, svc.menu_controller.get_menu_id());
+			svc.controller_map.set_action_set(config::ActionSet::Menu);
+			svc.soundboard.flags.console.set(audio::Console::menu_open);
+		}
+	}
 
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
@@ -170,6 +186,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
+	if (vendor_dialog) { vendor_dialog.value().render(win); }
 
 	// A.render(win, {});
 	// B.render(win, {});

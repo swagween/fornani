@@ -54,14 +54,14 @@ void MusicPlayer::update() {
 	last_dt = music_tick.getElapsedTime().asMicroseconds();
 	music_tick.restart();
 	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
-	if (song_dt < (last_dt * 1.9f) && !flags.state.test(SongState::looping)) {
+	if (song_dt < (last_dt * 2) && !flags.state.test(SongState::looping)) {
 		song_loop.play();
 		flags.state.set(SongState::looping);
 		music_clock.restart();
 	}
 	if (flags.state.test(SongState::looping)) {
 		auto song_dt = (song_loop.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
-		if (song_dt < (last_dt * 1.9f)) {
+		if (song_dt < (last_dt * 2)) {
 			song_loop.play();
 			flags.state.set(SongState::looping);
 			music_clock.restart();
