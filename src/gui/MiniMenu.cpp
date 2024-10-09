@@ -53,6 +53,7 @@ void MiniMenu::close(automa::ServiceProvider& svc) {
 	state.reset(MiniMenuState::open);
 	sprite.start(svc, position);
 	selection.zero();
+	svc.soundboard.flags.console.set(audio::Console::done);
 }
 
 void MiniMenu::set_origin(sf::Vector2<float> origin) { sprite.set_origin(origin); }

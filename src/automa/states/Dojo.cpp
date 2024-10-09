@@ -85,8 +85,10 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	if (vendor_dialog) {
 		vendor_dialog.value().update(svc, map, *player);
 		if (!vendor_dialog.value().is_open()) {
+			if (vendor_dialog.value().made_sale()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
 			vendor_dialog = {};
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			inventory_window.update_wardrobe(svc, *player);
 		}
 		return;
 	}
@@ -170,7 +172,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 void Dojo::frame_update(ServiceProvider& svc) {
 	pause_window.render_update(svc);
 	pause_window.clean_off_trigger();
-	if (pause_window.active()) { svc.soundboard.play_sounds(svc); }
 	hud.update(svc, *player);
 }
 

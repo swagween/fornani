@@ -82,7 +82,7 @@ void Inventory::reveal_item(int item_id) {
 
 void Inventory::push_sellables() {
 	sellable_items.clear();
-	int index{};
+	auto index{0};
 	for (auto& item : items) {
 		if (item.sellable()) { sellable_items.push_back(index); }
 		++index;

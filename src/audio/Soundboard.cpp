@@ -34,6 +34,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.world.test(World::load)) { play_at_volume(svc.assets.load, 60); }
 	if (flags.world.test(World::save)) { svc.assets.save.play(); }
 	if (flags.world.test(World::soft_sparkle)) { svc.assets.soft_sparkle.play(); }
+	if (flags.world.test(World::soft_sparkle_high)) { svc.assets.soft_sparkle_high.play(); }
 	if (flags.world.test(World::chest)) { svc.assets.chest.play(); }
 	if (flags.world.test(World::breakable_shatter)) { svc.assets.breakable_shatter.play(); }
 	if (flags.world.test(World::breakable_hit)) { randomize(svc, svc.assets.breakable_hit, 0.1f); }
