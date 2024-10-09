@@ -408,8 +408,6 @@ void Game::debug_window(sf::RenderWindow& window) {
 						}
 						if (ImGui::BeginTabItem("Catalog")) {
 							ImGui::Text("Player Stats");
-							ImGui::SliderInt("Max Orbs", &player.player_stats.max_orbs, 99, 99999);
-							ImGui::SliderInt("Orbs", &player.player_stats.orbs, 0, 99999);
 							ImGui::Text("Shield: %f", player.controller.get_shield().health.get_hp());
 							ImGui::Separator();
 							ImGui::Text("Inventory");

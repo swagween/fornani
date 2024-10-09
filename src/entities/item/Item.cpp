@@ -15,6 +15,10 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	metadata.naive_description = in_data["naive_description"].as_string();
 	metadata.rarity = static_cast<Rarity>(in_data["rarity"].as<int>());
 	if (in_data["apparel_type"]) { metadata.apparel_type = static_cast<player::ApparelType>(in_data["apparel_type"].as<int>()); }
+	if (in_data["value"]) {
+		metadata.value = in_data["value"].as<int>();
+		flags.set(ItemFlags::sellable);
+	}
 
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 1.0f);
@@ -64,7 +68,7 @@ void Item::update(automa::ServiceProvider& svc, int index, int items_per_row) {
 	gravitator.update(svc);
 	auto y_pos = ui.pad.y + static_cast<float>(index / items_per_row) * ui.spacing;
 	auto x_pos = ui.pad.x + static_cast<float>(index % items_per_row) * ui.spacing;
-	auto inv_pos = sf::Vector2<float>{x_pos, y_pos};
+	auto inv_pos = sf::Vector2<float>{x_pos, y_pos} + ui.offset;
 	if (flags.test(ItemFlags::unique)) {
 		variables.quantity = std::clamp(variables.quantity, 0, 1);
 	} else {
@@ -100,5 +104,7 @@ void Item::deselect() { ui_flags.reset(UIFlags::selected); }
 void Item::toggle_equip() { is_equipped() ? state.reset(ItemState::equipped) : state.set(ItemState::equipped); }
 
 void Item::set_rarity_position(sf::Vector2<float> position) { ui.rarity.setPosition(position); }
+
+void Item::set_offset(sf::Vector2<float> offset) { ui.offset = offset; }
 
 } // namespace player

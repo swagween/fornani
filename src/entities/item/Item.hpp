@@ -21,7 +21,7 @@ enum class ApparelType;
 
 namespace item {
 
-enum class ItemFlags { unique, revealed, usable, equippable };
+enum class ItemFlags { unique, revealed, usable, equippable, sellable };
 enum class UIFlags { selected };
 enum class ItemState { equipped };
 
@@ -39,14 +39,17 @@ class Item : public entity::Entity {
 	void toggle_equip();
 	void reveal() { flags.set(ItemFlags::revealed); }
 	void set_rarity_position(sf::Vector2<float> position);
+	void set_offset(sf::Vector2<float> offset);
 	[[nodiscard]] auto selected() const -> bool { return ui_flags.test(UIFlags::selected); }
 	[[nodiscard]] auto usable() const -> bool { return flags.test(ItemFlags::usable); }
 	[[nodiscard]] auto equippable() const -> bool { return flags.test(ItemFlags::equippable); }
+	[[nodiscard]] auto sellable() const -> bool { return flags.test(ItemFlags::sellable); }
 	[[nodiscard]] auto is_equipped() const -> bool { return state.test(ItemState::equipped); }
 	[[nodiscard]] auto has_menu() const -> bool { return equippable() || usable(); }
 	[[nodiscard]] auto depleted() const -> bool { return variables.quantity <= 0; }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_quantity() const -> int { return variables.quantity; }
+	[[nodiscard]] auto get_value() const -> int { return metadata.value; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.title : metadata.naive_title; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return drawbox.getPosition(); }
 	[[nodiscard]] auto get_description() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.hidden_description : metadata.naive_description; }
@@ -65,6 +68,7 @@ class Item : public entity::Entity {
 		std::string_view hidden_description{};
 		Rarity rarity{};
 		std::optional<player::ApparelType> apparel_type{};
+		int value{};
 	} metadata{};
 
 	util::BitFlags<ItemFlags> flags{};
@@ -77,6 +81,7 @@ class Item : public entity::Entity {
 
 	struct {
 		sf::Vector2<float> pad{60.f, 60.f};
+		sf::Vector2<float> offset{};
 		float spacing{56.f};
 		sf::Text rarity{};
 		sf::Text quantity{};

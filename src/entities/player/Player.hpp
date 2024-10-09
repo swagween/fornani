@@ -16,6 +16,7 @@
 #include "../packages/Caution.hpp"
 #include "Catalog.hpp"
 #include "Indicator.hpp"
+#include "Wallet.hpp"
 #include "PlayerAnimation.hpp"
 #include "PlayerController.hpp"
 #include "Transponder.hpp"
@@ -58,8 +59,6 @@ constexpr inline float antenna_force{0.18f};
 constexpr inline float antenna_speed{336.f};
 
 struct PlayerStats {
-	int orbs{};
-	int max_orbs{};
 	float shield_dampen{0.01f};
 };
 
@@ -184,6 +183,7 @@ class Player {
 	shape::Shape hurtbox{};
 	PlayerAnimation animation;
 	entity::Health health{};
+	Wallet wallet{};
 	Indicator health_indicator;
 	Indicator orb_indicator;
 
@@ -201,7 +201,7 @@ class Player {
 	std::vector<vfx::Gravitator> antennae{};
 	sf::Vector2<float> antenna_offset{6.f, -17.f};
 
-	PlayerStats player_stats{0, 99999, 0.06f};
+	PlayerStats player_stats{0.06f};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
 	util::Cooldown hurt_cooldown{}; //for animation

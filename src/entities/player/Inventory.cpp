@@ -61,6 +61,7 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 	}
 	update(svc);
 	if (svc.app_flags.test(automa::AppFlags::in_game)) { svc.soundboard.flags.item.set(audio::Item::get); }
+	push_sellables();
 }
 
 void Inventory::remove_item(automa::ServiceProvider& svc, int item_id, int amount) {
@@ -70,11 +71,21 @@ void Inventory::remove_item(automa::ServiceProvider& svc, int item_id, int amoun
 		}
 	}
 	std::erase_if(items, [](auto const& i) { return i.depleted(); });
+	push_sellables();
 }
 
 void Inventory::reveal_item(int item_id) {
 	for (auto& item : items) {
 		if (item.get_id() == item_id) { item.reveal(); }
+	}
+}
+
+void Inventory::push_sellables() {
+	sellable_items.clear();
+	int index{};
+	for (auto& item : items) {
+		if (item.sellable()) { sellable_items.push_back(index); }
+		++index;
 	}
 }
 
@@ -84,6 +95,8 @@ item::Item& Inventory::get_item(int id) {
 	}
 	return items.at(0);
 }
+
+item::Item& Inventory::get_item_at_index(int index) { return items.at(index); }
 
 void Inventory::clear() { items.clear(); }
 

@@ -635,7 +635,7 @@ void Player::give_drop(item::DropType type, float value) {
 		health_indicator.add(value);
 	}
 	if (type == item::DropType::orb) {
-		player_stats.orbs += static_cast<int>(value);
+		wallet.add(static_cast<int>(value));
 		orb_indicator.add(value);
 		m_services->stats.treasure.total_orbs_collected.update(static_cast<int>(value));
 		if (value == 100) { m_services->stats.treasure.blue_orbs.update(); }

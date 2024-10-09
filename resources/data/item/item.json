@@ -111,7 +111,8 @@
     "naive_description": "A delicious raspberry treat. It would taste better on some toast, but it will still restore your health if you eat it.",
     "unique": false,
     "usable": true,
-    "rarity": 1
+    "rarity": 1,
+    "value": 660
   },
   "heart_keychain": {
     "index": 29,
@@ -140,7 +141,8 @@
     "naive_description": "A pair of red jeans. If you wear them, you will appear fashionable.",
     "unique": true,
     "equippable": true,
-    "apparel_type": 1
+    "apparel_type": 1,
+    "value": 1220
   },
   "chalcedony_tee": {
     "index": 82,
@@ -148,7 +150,8 @@
     "naive_description": "An elegant tee with a rhenite pendant.",
     "unique": true,
     "equippable": true,
-    "apparel_type": 0
+    "apparel_type": 0,
+    "value": 3000
   },
   "chalcedony_skirt": {
     "index": 83,
@@ -156,7 +159,8 @@
     "naive_description": "An elegant skirt.",
     "unique": true,
     "equippable": true,
-    "apparel_type": 1
+    "apparel_type": 1,
+    "value": 2000
   },
   "punk_hair_dye": {
     "index": 84,
@@ -164,7 +168,8 @@
     "naive_description": "A whacky and rebellious hair color.",
     "unique": true,
     "equippable": true,
-    "apparel_type": 2
+    "apparel_type": 2,
+    "value": 460
   },
   "punk_shirt": {
     "index": 85,
@@ -172,7 +177,8 @@
     "naive_description": "A shirt that awakens your rebellious spirit.",
     "unique": true,
     "equippable": true,
-    "apparel_type": 0
+    "apparel_type": 0,
+    "value": 190
   },
   "punk_pants": {
     "index": 86,
@@ -180,7 +186,8 @@
     "naive_description": "Black pants with a rebellious chain accessory.",
     "unique": true,
     "equippable": true,
-    "apparel_type": 1
+    "apparel_type": 1,
+    "value": 100
   },
   "hairtie": {
     "index": 87,
@@ -188,20 +195,23 @@
     "naive_description": "Wear this to keep your hair from going all over the place all the time.",
     "unique": true,
     "equippable": true,
-    "apparel_type": 2
+    "apparel_type": 2,
+    "value": 80
   },
   "rhenite": {
     "index": 97,
     "title": "Rhenite",
     "naive_description": "A rare red gem.",
     "unique": false,
-    "rarity": 2
+    "rarity": 2,
+    "value": 8100
   },
   "sapphire": {
     "index": 98,
     "title": "Sapphire",
     "naive_description": "A rare blue gem.",
     "unique": false,
-    "rarity": 2
+    "rarity": 2,
+    "value": 11000
   }
 }

@@ -24,6 +24,11 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 
 	sprite.setOrigin(in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>());
 
+	if (in_data["vendor"]) {
+		vendor = Vendor();
+		vendor.value().set_upcharge(in_data["vendor"]["upcharge"].as<float>());
+	}
+
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
 

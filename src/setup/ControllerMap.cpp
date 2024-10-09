@@ -38,6 +38,8 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	case DigitalAction::menu_up:
 	case DigitalAction::menu_down:
 	case DigitalAction::menu_select:
+	case DigitalAction::menu_switch_right:
+	case DigitalAction::menu_switch_left:
 	case DigitalAction::menu_cancel: return ActionSet::Menu;
 
 	case DigitalAction::COUNT:
@@ -104,6 +106,8 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	DEFINE_ACTION(menu_up);
 	DEFINE_ACTION(menu_down);
 	DEFINE_ACTION(menu_select);
+	DEFINE_ACTION(menu_switch_left);
+	DEFINE_ACTION(menu_switch_right);
 	DEFINE_ACTION(menu_cancel);
 
 	// Analog actions

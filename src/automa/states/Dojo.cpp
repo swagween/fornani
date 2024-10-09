@@ -75,6 +75,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void Dojo::tick_update(ServiceProvider& svc) {
+	svc.soundboard.play_sounds(svc);
 	if (pause_window.active()) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
@@ -102,7 +103,9 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	} else {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 	}
+
 	//if (svc.controller_map.gamepad_disconnected()) { toggle_pause_menu(svc); }
+
 	if (!svc.no_menu()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered ||
 			svc.controller_map.digital_action_status(config::DigitalAction::map_open_inventory).triggered) {
@@ -139,7 +142,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
-
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
 
 	// A.update(svc);
@@ -158,7 +160,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	map.debug_mode = debug_mode;
 
 	player->controller.clean();
-	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
 
 	pause_window.update(svc, console, true);
@@ -186,7 +187,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
-	if (vendor_dialog) { vendor_dialog.value().render(win); }
+	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player); }
 
 	// A.render(win, {});
 	// B.render(win, {});

@@ -117,7 +117,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	// set file data based on player state
 	save["player_data"]["max_hp"] = player.health.get_max();
 	save["player_data"]["hp"] = player.health.get_hp();
-	save["player_data"]["orbs"] = player.player_stats.orbs;
+	save["player_data"]["orbs"] = player.wallet.get_balance();
 	save["player_data"]["position"]["x"] = player.collider.physics.position.x;
 	save["player_data"]["position"]["y"] = player.collider.physics.position.y;
 
@@ -270,7 +270,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	// set player data based on save file
 	player.health.set_max(save["player_data"]["max_hp"].as<float>());
 	player.health.set_hp(save["player_data"]["hp"].as<float>());
-	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
+	player.wallet.set_balance(save["player_data"]["orbs"].as<int>());
 
 	// load player's arsenal
 	player.arsenal = {};
@@ -358,7 +358,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	// set player data based on save file
 	player.health.set_max(save["player_data"]["max_hp"].as<float>());
 	player.health.set_hp(save["player_data"]["hp"].as<float>());
-	player.player_stats.orbs = save["player_data"]["orbs"].as<int>();
+	player.wallet.set_balance(save["player_data"]["orbs"].as<int>());
 
 	// load player's arsenal
 	player.arsenal = {};
@@ -505,6 +505,8 @@ auto get_action_by_string(std::string_view id) -> config::DigitalAction {
 		{"menu_up", config::DigitalAction::menu_up},
 		{"menu_down", config::DigitalAction::menu_down},
 		{"menu_select", config::DigitalAction::menu_select},
+		{"menu_switch_left", config::DigitalAction::menu_switch_left},
+		{"menu_switch_right", config::DigitalAction::menu_switch_right},
 		{"menu_cancel", config::DigitalAction::menu_cancel},
 	};
 

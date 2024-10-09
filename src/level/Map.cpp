@@ -680,6 +680,15 @@ void Map::clear() {
 
 std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
 
+npc::NPC& Map::get_npc(int id) {
+	for (auto& npc : npcs) {
+		if (npc.get_id() == id) { return npc; }
+	}
+	try {
+		return npcs.at(0);
+	} catch (std::out_of_range) { std::cout << "Tried to get an NPC from empty NPC vector.\n"; }
+}
+
 sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 	for (auto& portal : portals) {
 		if (portal.get_source() == portal_source_map_id) { return (portal.position); }

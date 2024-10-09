@@ -42,7 +42,6 @@ class MiniMenu {
 	float edge{2.f};
 	util::NineSlice sprite{};
 	util::Circuit selection{1};
-	sf::Font font{};
 	std::vector<automa::Option> options;
 };
 

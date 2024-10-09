@@ -8,11 +8,9 @@ namespace gui {
 MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, bool white) {
 	white ? sprite.set_texture(svc.assets.t_cream_console) : sprite.set_texture(svc.assets.t_blue_console);
 	sprite.slice(svc, static_cast<int>(corner), static_cast<int>(edge));
-	font.loadFromFile(svc.text.title_font);
-	font.setSmooth(false);
 	auto ctr{0};
 	for (auto& o : opt) {
-		options.push_back(automa::Option(svc, o, font, white));
+		options.push_back(automa::Option(svc, o, svc.text.fonts.title, white));
 		options.back().index = ctr;
 		options.back().update(svc, selection.get());
 		++ctr;

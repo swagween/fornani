@@ -38,7 +38,6 @@ class HUD {
 	sf::Vector2<int> position{};
 	int total_hp_cells{};
 	int filled_hp_cells{};
-	int max_orbs{};
 	int num_orbs{};
 	int shield_bar{num_bits};
 

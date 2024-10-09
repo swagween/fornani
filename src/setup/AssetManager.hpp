@@ -87,6 +87,7 @@ class AssetManager {
 	sf::Texture t_portrait_window{};
 
 	sf::Texture t_vendor_artwork{};
+	sf::Texture t_vendor_ui{};
 
 	sf::Texture t_hud_orb_font{};
 	sf::Texture t_hud_hearts{};

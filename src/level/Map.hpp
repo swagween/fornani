@@ -107,6 +107,7 @@ class Map {
 	void shake_camera();
 	void clear();
 	std::vector<Layer>& get_layers();
+	npc::NPC& get_npc(int id);
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;

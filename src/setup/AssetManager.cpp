@@ -21,6 +21,7 @@ void AssetManager::import_textures() {
 	npcs.insert({"lady_nimbus", t_lady_nimbus});
 
 	t_vendor_artwork.loadFromFile(finder.resource_path + "/image/gui/vendor_artwork.png");
+	t_vendor_ui.loadFromFile(finder.resource_path + "/image/gui/vendor_interface.png");
 
 	t_palette_nani.loadFromFile(finder.resource_path + "/image/character/nani_palette_default.png");
 	t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");

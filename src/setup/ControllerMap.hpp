@@ -49,6 +49,8 @@ enum class DigitalAction : int {
 	menu_down,
 	menu_select,
 	menu_cancel,
+	menu_switch_left,
+	menu_switch_right,
 
 	COUNT
 };

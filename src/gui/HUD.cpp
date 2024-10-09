@@ -61,9 +61,8 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	shield_discrepancy.update(svc);
 
 	filled_hp_cells = static_cast<int>(std::ceil(player.health.get_hp()));
-	num_orbs = player.player_stats.orbs;
+	num_orbs = player.wallet.get_balance();
 	total_hp_cells = static_cast<int>(player.health.get_max());
-	max_orbs = player.player_stats.max_orbs;
 	if (player.hotbar) { gun_name = player.equipped_weapon().label; }
 }
 
