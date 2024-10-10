@@ -4,37 +4,7 @@
 
 namespace player {
 
-Inventory::Inventory() {
-	item_labels.insert({1, "bryns_notebook"});
-	item_labels.insert({2, "factory_access_permit"});
-	item_labels.insert({3, "bipolar_junction_transistor"});
-	item_labels.insert({4, "willets_floppy_disc"});
-	item_labels.insert({5, "track_zero_sensor"});
-	item_labels.insert({6, "head_motor"});
-	item_labels.insert({7, "gas_mask"});
-	item_labels.insert({8, "firstwind_hangar_key"});
-	item_labels.insert({9, "woodshine_warehouse_key"});
-	item_labels.insert({10, "nimbus_iii_boiler_room_key"});
-	item_labels.insert({11, "laboratory_key"});
-	item_labels.insert({12, "bit_cell_key"});
-	item_labels.insert({13, "four_of_diamonds"});
-	item_labels.insert({14, "staple_box"});
-	item_labels.insert({15, "boiler_key"});
-	item_labels.insert({16, "radar_device"});
-	item_labels.insert({22, "ashtown_raspberry_preserves"});
-	item_labels.insert({29, "heart_keychain"});
-	item_labels.insert({30, "stationary_rat"});
-	item_labels.insert({31, "loops_mixtape"});
-	item_labels.insert({81, "red_jeans"});
-	item_labels.insert({82, "chalcedony_tee"});
-	item_labels.insert({83, "chalcedony_skirt"});
-	item_labels.insert({84, "punk_hair_dye"});
-	item_labels.insert({85, "punk_shirt"});
-	item_labels.insert({86, "punk_pants"});
-	item_labels.insert({87, "hairtie"});
-	item_labels.insert({97, "rhenite"});
-	item_labels.insert({98, "sapphire"});
-}
+Inventory::Inventory() {}
 
 void Inventory::update(automa::ServiceProvider& svc) {
 	int index{};
@@ -54,7 +24,7 @@ void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) 
 		}
 	}
 	if (!found) {
-		items.push_back(item::Item(svc, item_labels.at(item_id)));
+		items.push_back(item::Item(svc, svc.tables.item_labels.at(item_id)));
 		items.back().set_id(item_id);
 		items.back().add_item(amount);
 		svc.stats.player.items_collected.update();
@@ -98,7 +68,10 @@ item::Item& Inventory::get_item(int id) {
 
 item::Item& Inventory::get_item_at_index(int index) { return items.at(index); }
 
-void Inventory::clear() { items.clear(); }
+void Inventory::clear() {
+	items.clear();
+	sellable_items.clear();
+}
 
 bool Inventory::has_item(int id) const {
 	auto ret{false};

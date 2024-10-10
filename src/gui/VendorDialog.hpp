@@ -25,13 +25,17 @@ class VendorDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map);
 	void close();
-	void update_table(player::Player& player, bool new_dim);
+	void update_table(player::Player& player, world::Map& map, bool new_dim);
+	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
   private:
-	Selector selector{};
+	struct {
+		Selector buy{};
+		Selector sell{};
+	} selectors{};
 	Console info;
 	MiniMenu item_menu;
 	util::BitFlags<VendorDialogStatus> flags{};
@@ -41,6 +45,7 @@ class VendorDialog {
 	VendorState state{};
 	int vendor_id{};
 	int npc_id{};
+	bool init{};
 	float sale_price{};
 	std::unordered_map<int, int> get_npc_id{};
 	sf::Vector2<float> portrait_position{44.f, 18.f};

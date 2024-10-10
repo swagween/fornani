@@ -107,7 +107,9 @@ void DataManager::load_data(std::string in_room) {
 	assert(!menu.is_null());
 	background = dj::Json::from_file((finder.resource_path + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
-	// std::cout << " success!\n";
+
+	// load item labels
+	for (const auto& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first}); }
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {

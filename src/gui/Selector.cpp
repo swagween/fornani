@@ -10,7 +10,10 @@ Selector::Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim) : table_d
 	sprite.setOrigin(10, 10);
 }
 
-void Selector::update() { sprite.setPosition(position); }
+void Selector::update() {
+	sprite.setPosition(position);
+	current_selection.set(std::clamp(current_selection.get(), 0, current_selection.get_order() - 1));
+}
 
 void Selector::render(sf::RenderWindow& win) const { win.draw(sprite); }
 
@@ -18,8 +21,8 @@ void Selector::switch_sections(sf::Vector2<int> way) {
 	sections.vertical.modulate(way.y);
 	section = static_cast<InventorySection>(sections.vertical.get());
 	flags.set(SelectorFlags::switched);
-	current_selection.set(current_selection.get() % table_dimensions.x);
 	if (way.y == -1) { flags.set(SelectorFlags::went_up); }
+	table_dimensions.x == 0 ? current_selection.set(0) : current_selection.set(current_selection.get() % table_dimensions.x);
 }
 
 void Selector::go_down(bool has_arsenal) {
@@ -55,12 +58,19 @@ void Selector::go_right() {
 }
 
 void Selector::set_size(int size) {
-	if (size < 1) { return; }
+	if (size < 1) {
+		current_selection.set_order(1);
+		return;
+	}
 	current_selection.set_order(size);
 }
 
 void Selector::set_dimensions(sf::Vector2<int> dim) {
 	table_dimensions = dim;
+	if (table_dimensions.x == 0) {
+		current_selection.set(0);
+		return;
+	}
 	if (flags.consume(SelectorFlags::went_up) && table_dimensions.y > 1) {
 		if (get_current_selection() < current_selection.get_order() % table_dimensions.x) {
 			current_selection.modulate(table_dimensions.x * (table_dimensions.y - 1));

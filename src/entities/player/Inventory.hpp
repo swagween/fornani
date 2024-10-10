@@ -29,7 +29,6 @@ class Inventory {
 	bool has_item(int id) const;
 	std::vector<item::Item> items{};
 	std::vector<int> sellable_items{};
-	std::unordered_map<int, std::string_view> item_labels{};
 	int items_per_row{12};
 };
 

@@ -188,7 +188,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
-	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player); }
+	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
 
 	// A.render(win, {});
 	// B.render(win, {});

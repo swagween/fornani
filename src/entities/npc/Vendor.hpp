@@ -2,6 +2,7 @@
 #pragma once
 
 #include <vector>
+#include "../player/Inventory.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -14,8 +15,8 @@ class Vendor {
   public:
 	void set_upcharge(float to_upcharge) { upcharge = to_upcharge; }
 	[[nodiscard]] auto get_upcharge() const -> float { return upcharge; }
+	player::Inventory inventory{};
   private:
-	std::vector<int> item_ids{};
 	std::vector<int> possible_items{};
 	float upcharge{0.2f};
 };
