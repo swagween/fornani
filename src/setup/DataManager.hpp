@@ -118,6 +118,7 @@ class DataManager {
 	ResourceFinder finder{};
 
 	automa::ServiceProvider* m_services;
+	std::unordered_map<int, npc::Vendor> marketplace{};
 
   private:
 	std::vector<int> opened_chests{};

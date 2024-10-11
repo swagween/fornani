@@ -49,7 +49,7 @@ class NPC : public entity::Entity {
 	[[nodiscard]] auto num_suites() const -> int { return static_cast<int>(conversations.size()); }
 	[[nodiscard]] auto get_id() const -> int { return id; }
 	[[nodiscard]] auto is_vendor() const -> bool { return static_cast<bool>(vendor); }
-	Vendor& get_vendor() { return vendor.value(); }
+	Vendor& get_vendor() { return *vendor.value(); }
 
 	std::string_view label{};
 
@@ -59,7 +59,7 @@ class NPC : public entity::Entity {
 	std::deque<std::string_view> conversations{};
 	shape::Collider collider{};
 	sf::Sound voice_sound{};
-	std::optional<Vendor> vendor{};
+	std::optional<Vendor*> vendor;
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
 	anim::AnimatedSprite indicator;

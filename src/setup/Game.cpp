@@ -171,7 +171,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
 
 		services.stopwatch.stop();
-		//if (services.ticker.every_x_ticks(100)) { services.stopwatch.print_time(); }
 
 		ImGui::SFML::Update(services.window->get(), deltaClock.restart());
 		services.window->screencap.update(services.window->get());

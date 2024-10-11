@@ -114,6 +114,46 @@
     "rarity": 1,
     "value": 660
   },
+  "bronze_bracelet": {
+    "index": 23,
+    "title": "Bronze Bracelet",
+    "naive_description": "A common treasure item.",
+    "unique": false,
+    "equippable": false,
+    "value": 200
+  },
+  "silver_bracelet": {
+    "index": 24,
+    "title": "Silver Bracelet",
+    "naive_description": "A common treasure item.",
+    "unique": false,
+    "equippable": false,
+    "value": 300
+  },
+  "boxing_glove": {
+    "index": 25,
+    "title": "Boxing Glove",
+    "naive_description": "Seems like it could be useful to someone who is not you.",
+    "unique": false,
+    "equippable": false,
+    "value": 80
+  },
+  "walkie_talkie": {
+    "index": 26,
+    "title": "Walkie-Talkie",
+    "naive_description": "The batteries are dead.",
+    "unique": false,
+    "equippable": false,
+    "value": 60
+  },
+  "clamp": {
+    "index": 27,
+    "title": "Clamp",
+    "naive_description": "A painted metal clamp. It could be useful for home improvements.",
+    "unique": false,
+    "equippable": false,
+    "value": 90
+  },
   "heart_keychain": {
     "index": 29,
     "title": "Heart Keychain",
@@ -143,6 +183,54 @@
     "equippable": true,
     "apparel_type": 1,
     "value": 1220
+  },
+  "clay_statue": {
+    "index": 65,
+    "title": "Clay Statue",
+    "naive_description": "A common artifact of the ancient peoples.",
+    "unique": false,
+    "equippable": false,
+    "value": 400
+  },
+  "glass_statue": {
+    "index": 66,
+    "title": "Glass Statue",
+    "naive_description": "An uncommon artifact of the ancient peoples.",
+    "unique": false,
+    "equippable": false,
+    "value": 800
+  },
+  "bronze_statue": {
+    "index": 67,
+    "title": "Bronze Statue",
+    "naive_description": "A rare artifact of the ancient peoples.",
+    "unique": false,
+    "equippable": false,
+    "value": 1000
+  },
+  "cinnabar_statue": {
+    "index": 68,
+    "title": "Cinnabar Statue",
+    "naive_description": "A very rare artifact of the ancient peoples.",
+    "unique": false,
+    "equippable": false,
+    "value": 4000
+  },
+  "jade_statue": {
+    "index": 69,
+    "title": "Jade Statue",
+    "naive_description": "An incredibly rare artifact of the ancient peoples.",
+    "unique": false,
+    "equippable": false,
+    "value": 8000
+  },
+  "alabaster_statue": {
+    "index": 70,
+    "title": "Alabaster Statue",
+    "naive_description": "A legendary artifact of the ancient peoples.",
+    "unique": false,
+    "equippable": false,
+    "value": 12000
   },
   "chalcedony_tee": {
     "index": 82,

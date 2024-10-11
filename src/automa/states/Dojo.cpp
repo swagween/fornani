@@ -142,6 +142,11 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		}
 	}
 
+	if (svc.ticker.every_twenty_minutes() || svc.data.marketplace.at(3).inventory.items.empty()) {
+		svc.random.set_vendor_seed();
+		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
+	}
+
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 	if (enter_room.running()) { player->controller.autonomous_walk(); }

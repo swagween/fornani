@@ -26,7 +26,11 @@
       "inspect": [ 14, 2, 32, -1, true ]
     },
     "vendor": {
-      "upcharge": 0.2
+      "id": 3,
+      "upcharge": 0.2,
+      "common_items": [ 65, 66, 23, 24, 25, 26, 27 ],
+      "uncommon_items": [ 67, 22, 81 ],
+      "rare_items": [98]
     } 
   },
   "minigus": {

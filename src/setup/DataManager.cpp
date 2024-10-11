@@ -109,7 +109,18 @@ void DataManager::load_data(std::string in_room) {
 	assert(!background.is_null());
 
 	// load item labels
-	for (const auto& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first}); }
+	for (auto const& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first}); }
+
+	//load marketplace
+	for (auto const& entry : npc.object_view()) {
+		if (!entry.second["vendor"]) { continue; }
+		std::cout << "Loading marketplace data for " << entry.first << ".\n";
+		marketplace.insert({entry.second["vendor"]["id"].as<int>(), npc::Vendor()});
+		auto& vendor = marketplace.at(entry.second["vendor"]["id"].as<int>());
+		vendor.set_upcharge(entry.second["vendor"]["upcharge"].as<float>());
+		for (auto& item : entry.second["vendor"]["common_items"].array_view()) { vendor.common_items.push_back(item.as<int>()); }
+		for (auto& item : entry.second["vendor"]["rare_items"].array_view()) { vendor.rare_items.push_back(item.as<int>()); }
+	}
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
@@ -126,6 +137,14 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	// create empty json array
 	constexpr auto empty_array = R"([])";
 	auto const wipe = dj::Json::parse(empty_array);
+
+	//write marketplace status
+	save["marketplace"] = wipe;
+	for(auto& vendor : marketplace) {
+		auto out_vendor = wipe;
+		for (auto& item : vendor.second.inventory.items) { out_vendor.push_back(item.get_id()); }
+		save["marketplace"].push_back(out_vendor);
+	}
 
 	// write opened chests and doors
 	save["discovered_rooms"] = wipe;
@@ -229,6 +248,14 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	auto const& save = files.at(file).save_data;
 	assert(!save.is_null());
 
+	// marketplace
+	for (auto& vendor : marketplace) {
+		vendor.second.inventory.items.clear();
+		for (auto& v : save["marketplace"].array_view()) {
+			for (auto& id : v.array_view()) { vendor.second.inventory.add_item(*m_services, id.as<int>(), 1); }
+		}
+	}
+
 	m_services->quest = {};
 	discovered_rooms.clear();
 	unlocked_doors.clear();
@@ -321,7 +348,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	s.enemy.enemies_killed.set(in_stat["enemies_killed"].as<int>());
 	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
 	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
-	m_services->ticker.in_game_seconds_passed = m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>());
+	m_services->ticker.set_time(m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>()));
 	if (files.at(file).flags.test(fornani::FileFlags::new_file)) { s.player.death_count.set(0); }
 
 	return room_id;
