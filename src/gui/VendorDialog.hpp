@@ -17,6 +17,9 @@ class Player;
 namespace npc {
 class Vendor;
 }
+namespace flfx {
+class Transition;
+}
 
 namespace gui {
 enum class VendorDialogStatus { opened, made_sale };

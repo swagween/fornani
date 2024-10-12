@@ -63,13 +63,8 @@ class Ticker {
 
 		integrations = 0;
 		while (accumulator >= ft) {
-			new_tick_time = Clk::now();
-			tick_dt = std::chrono::duration_cast<Sec>(new_tick_time - current_tick_time);
-			tick_dt *= dt_scalar;
-			current_tick_time = new_tick_time;
-			std::cout << tick_dt.count() << "\n";
-			second_ticker.tick(tick_dt) ? periods.set(Period::second) : periods.reset(Period::second);
-			twenty_minute_ticker.tick(tick_dt) ? periods.set(Period::twenty_minutes) : periods.reset(Period::twenty_minutes);
+			second_ticker.tick(ft) ? periods.set(Period::second) : periods.reset(Period::second);
+			twenty_minute_ticker.tick(ft) ? periods.set(Period::twenty_minutes) : periods.reset(Period::twenty_minutes);
 			fn();
 			accumulator -= ft;
 			++integrations;
@@ -104,8 +99,6 @@ class Ticker {
 
 	Clk::time_point current_time{Clk::now()};
 	Clk::time_point new_time{Clk::now()};
-	Clk::time_point current_tick_time{Clk::now()};
-	Clk::time_point new_tick_time{Clk::now()};
 
 	float tick_rate{0.005f};
 	float tick_multiplier{24.f};
@@ -115,7 +108,6 @@ class Ticker {
 
 	Sec ft{};
 	Sec dt{};
-	Sec tick_dt{};
 	Sec accumulator{};
 	Sec residue{};
 
@@ -133,7 +125,7 @@ class Ticker {
 	Sec in_game_seconds_passed{};
 	Sec total_milliseconds_passed{};
 	PeriodicBool second_ticker{std::chrono::seconds{1}};
-	PeriodicBool twenty_minute_ticker{std::chrono::seconds{30}};
+	PeriodicBool twenty_minute_ticker{std::chrono::seconds{1200}};
 	float fps{60.f};
 
   private:

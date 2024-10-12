@@ -801,6 +801,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
 					ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
 					ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.categories.inventory.items.size()));
+					ImGui::Text("Visit History: ");
+					for (auto& room : player.visit_history.rooms_visited) {
+						ImGui::Text("%i, ", room);
+						ImGui::SameLine();
+					}
 
 					ImGui::Separator();
 					ImGui::Text("Ticker");

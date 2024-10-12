@@ -66,6 +66,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
+	player->visit_history.push_room(room_number);
 
 	player->controller.prevent_movement();
 	inventory_window.update_wardrobe(svc, *player);
@@ -83,6 +84,11 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		return;
 	}
 	if (vendor_dialog) {
+		if (open_vendor) {
+			map.transition.end();
+			open_vendor = false;
+		}
+		map.transition.update(*player);
 		vendor_dialog.value().update(svc, map, *player);
 		if (!vendor_dialog.value().is_open()) {
 			if (vendor_dialog.value().made_sale()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
@@ -136,15 +142,20 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	if (console.is_complete()) {
 		if (svc.menu_controller.vendor_dialog_opened()) {
+			map.transition.start();
+			open_vendor = true;
+		}
+		if(open_vendor && map.transition.is_done()) {
 			vendor_dialog = gui::VendorDialog(svc, map, *player, svc.menu_controller.get_menu_id());
 			svc.controller_map.set_action_set(config::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
 		}
 	}
 
-	if (svc.ticker.every_twenty_minutes() || svc.data.marketplace.at(3).inventory.items.empty()) {
+	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items.empty()) {
 		svc.random.set_vendor_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
+		player->visit_history.clear();
 	}
 
 	enter_room.update();
@@ -190,10 +201,10 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
 	inventory_window.render(svc, *player, win, camera.get_position());
 	pause_window.render(svc, *player, win);
+	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
-	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
 
 	// A.render(win, {});
 	// B.render(win, {});

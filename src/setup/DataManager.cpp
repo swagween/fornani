@@ -119,6 +119,7 @@ void DataManager::load_data(std::string in_room) {
 		auto& vendor = marketplace.at(entry.second["vendor"]["id"].as<int>());
 		vendor.set_upcharge(entry.second["vendor"]["upcharge"].as<float>());
 		for (auto& item : entry.second["vendor"]["common_items"].array_view()) { vendor.common_items.push_back(item.as<int>()); }
+		for (auto& item : entry.second["vendor"]["uncommon_items"].array_view()) { vendor.uncommon_items.push_back(item.as<int>()); }
 		for (auto& item : entry.second["vendor"]["rare_items"].array_view()) { vendor.rare_items.push_back(item.as<int>()); }
 	}
 }

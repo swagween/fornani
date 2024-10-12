@@ -26,6 +26,7 @@ class Dojo : public GameState {
 	world::Map gui_map;
 	fornani::Camera camera{};
 	bool show_colliders{false};
+	bool open_vendor{};
 	int x{0};
 	util::Cooldown enter_room{};
 	std::optional<gui::VendorDialog> vendor_dialog{};

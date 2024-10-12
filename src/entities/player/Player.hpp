@@ -20,6 +20,7 @@
 #include "PlayerAnimation.hpp"
 #include "PlayerController.hpp"
 #include "Transponder.hpp"
+#include "VisitHistory.hpp"
 
 namespace gui {
 class Console;
@@ -233,6 +234,7 @@ class Player {
 	int ledge_height{}; // temp for testing
 
 	Catalog catalog{};
+	VisitHistory visit_history{};
 
   private:
 	struct {

@@ -3,6 +3,7 @@
 #include "../service/ServiceProvider.hpp"
 #include "../level/Map.hpp"
 #include "../entities/player/Player.hpp"
+#include "../graphics/Transition.hpp"
 
 namespace gui {
 
@@ -308,13 +309,13 @@ void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player,
 		auto randv = svc.random.random_vector_float(-16.f, 16.f);
 		auto startpos = item.get_position() + randv;
 		item.gravitator.set_position(startpos);
-		item.set_offset({214.f - 16.f, 62.f - 16.f});
+		item.set_offset({214.f - 24.f, 62.f - 24.f});
 	}
 	for (auto& item : vendor.inventory.items) {
 		auto randv = svc.random.random_vector_float(-16.f, 16.f);
 		auto startpos = item.get_position() + randv;
 		item.gravitator.set_position(startpos);
-		item.set_offset({214.f - 16.f, 62.f - 16.f});
+		item.set_offset({214.f - 24.f, 62.f - 24.f});
 	}
 }
 
