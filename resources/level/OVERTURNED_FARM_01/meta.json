@@ -205,6 +205,35 @@
     }
   ],
   "scenery": {
+    "grass": [
+      {
+        "position": [
+          19,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          22,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          21,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      }
+    ],
     "vines": [
       {
         "position": [

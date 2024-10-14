@@ -34,6 +34,7 @@ class VendorDialog {
 	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
+	[[nodiscard]] auto opening() const -> bool { return intro.running() || bring_in_cooldown.running(); }
   private:
 	struct {
 		Selector buy{};
@@ -41,6 +42,8 @@ class VendorDialog {
 	} selectors{};
 	Console info;
 	MiniMenu item_menu;
+	util::Cooldown intro{200};
+	util::Cooldown bring_in_cooldown{200};
 	util::BitFlags<VendorDialogStatus> flags{};
 	sf::Sprite artwork{};
 	sf::Sprite ui{};
@@ -52,6 +55,7 @@ class VendorDialog {
 	float sale_price{};
 	std::unordered_map<int, int> get_npc_id{};
 	sf::Vector2<float> portrait_position{44.f, 18.f};
+	sf::Vector2<float> bring_in{};
 	struct {
 		sf::Text vendor_name{};
 		sf::Text buy_tab{};

@@ -51,7 +51,7 @@ class Item : public entity::Entity {
 	[[nodiscard]] auto get_quantity() const -> int { return variables.quantity; }
 	[[nodiscard]] auto get_value() const -> int { return metadata.value; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.title : metadata.naive_title; }
-	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return drawbox.getPosition(); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return gravitator.position(); }
 	[[nodiscard]] auto get_description() const -> std::string_view { return flags.test(ItemFlags::revealed) ? metadata.hidden_description : metadata.naive_description; }
 	[[nodiscard]] auto get_apparel_type() const -> player::ApparelType { return metadata.apparel_type ? metadata.apparel_type.value() : static_cast<player::ApparelType>(0); }
 

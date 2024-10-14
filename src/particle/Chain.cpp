@@ -6,24 +6,26 @@
 
 namespace vfx {
 
-Chain::Chain(SpringParameters params, sf::Vector2<float> position, int num_links) : root(position) {
+Chain::Chain(SpringParameters params, sf::Vector2<float> position, int num_links, bool reversed) : root(position) {
+	if (reversed) { grav *= -1.f; }
 	for (int i{0}; i < num_links; ++i) { links.push_back(Spring({params})); }
 	int ctr{};
+	auto sign = reversed ? -1.f : 1.f;
 	for (auto& link : links) {
 		if (ctr == 0) {
 			link.set_anchor(position);
-			link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, params.rest_length * 2.071f});
+			link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, params.rest_length * sign});
 			link.lock();
 		} else {
 			link.cousin = &links.at(ctr - 1);
 			if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
-			link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, params.rest_length * 1.444f});
+			link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, params.rest_length * sign});
 		}
 		++ctr;
 	}
 }
 
-void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, float dampen) {
 	auto external_force = sf::Vector2<float>{};
 	auto ctr{0};
 	float avg{}; // for deriving the start position (there's a better way)
@@ -39,7 +41,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		}
 		if (link.sensor.within_bounds(player.collider.bounding_box)) {
 			link.sensor.activate();
-			external_force = {player.collider.physics.velocity.x * external_dampen, player.collider.physics.velocity.y * external_dampen * 0.1f};
+			external_force = {player.collider.physics.velocity.x * external_dampen * dampen, player.collider.physics.velocity.y * external_dampen * 0.1f * dampen};
 		} else {
 			link.sensor.deactivate();
 		}

@@ -73,10 +73,12 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 			if (selector.get_section() == InventorySection::item) {
 				if (player_items.size() == 1) { item.select(); }
 				if (item.depleted()) { selector.go_left(); }
-				if (item.selected() && info.extended()) {
+				if (item.selected()) {
 					selector.set_position(item.get_position());
-					info.writer.load_single_message(item.get_description());
-					info.writer.wrap();
+					if (info.extended()) {
+						info.writer.load_single_message(item.get_description());
+						info.writer.wrap();
+					}
 					item.set_rarity_position(info.position + info.dimensions * 0.5f - ui.rarity_pad);
 				}
 			}

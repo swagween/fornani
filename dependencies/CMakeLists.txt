@@ -35,6 +35,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(djson)
 
 # ccmath
+set(CCMATH_ENABLE_EXTENSIONS ON)
 FetchContent_Declare(
         ccmath
         GIT_REPOSITORY https://github.com/Rinzii/ccmath.git

@@ -21,6 +21,9 @@ class Cooldown {
 	[[nodiscard]] auto running() const -> bool { return decrementor != 0; }
 	[[nodiscard]] auto halfway() const -> bool { return decrementor <= native_time / 2; }
 	[[nodiscard]] auto get_cooldown() const -> int { return decrementor; }
+	[[nodiscard]] auto get_normalized() const -> float { return static_cast<float>(decrementor) / static_cast<float>(native_time); }
+	[[nodiscard]] auto get_quadratic_normalized() const -> float { return static_cast<float>(decrementor * decrementor) / static_cast<float>(native_time * native_time); }
+	[[nodiscard]] auto get_cubic_normalized() const -> float { return static_cast<float>(decrementor * decrementor * decrementor) / static_cast<float>(native_time * native_time * native_time); }
 	[[nodiscard]] auto get_native_time() const -> int { return native_time; }
 	[[nodiscard]] auto null() const -> bool { return decrementor == -1; }
 

@@ -120,7 +120,15 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
-			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg));
+			auto rev = static_cast<bool>(entry["reversed"].as_bool());
+			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
+		}
+		for (auto& entry : metadata["scenery"]["grass"].array_view()) {
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
+			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
+			auto fg = static_cast<bool>(entry["foreground"].as_bool());
+			grass.push_back(std::make_unique<entity::Grass>(svc, pos, 8, entry["size"].as<int>(), fg));
 		}
 		for (auto& entry : metadata["inspectables"].array_view()) {
 			sf::Vector2<uint32_t> dim{};
@@ -333,6 +341,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
+	for (auto& g : grass) { g->update(svc, *this, *player); }
 	player->collider.detect_map_collision(*this);
 	transition.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
@@ -416,6 +425,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
 	for (auto& vine : vines) {
 		if (vine->foreground()) { vine->render(svc, win, cam); }
+	}
+	for (auto& g : grass) {
+		if (g->foreground()) { g->render(svc, win, cam); }
 	}
 
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
@@ -512,6 +524,9 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	}
 	for (auto& vine : vines) {
 		if (!vine->foreground()) { vine->render(svc, win, cam); }
+	}
+	for (auto& g : grass) {
+		if (!g->foreground()) { g->render(svc, win, cam); }
 	}
 	for (auto& animator : animators) {
 		if (!animator.foreground()) { animator.render(svc, win, cam); }

@@ -9,6 +9,7 @@
 #include "../entities/world/Portal.hpp"
 #include "../entities/world/SavePoint.hpp"
 #include "../entities/world/Vine.hpp"
+#include "../entities/world/Grass.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Transition.hpp"
 #include "../graphics/Rain.hpp"
@@ -135,6 +136,7 @@ class Map {
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
 	std::vector<std::unique_ptr<entity::Vine>> vines{};
+	std::vector<std::unique_ptr<entity::Grass>> grass{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};

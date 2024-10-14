@@ -115,6 +115,8 @@ class AssetManager {
 	sf::Texture t_portals{};
 	sf::Texture t_vine{};
 	sf::Texture t_vine_large{};
+	sf::Texture t_grass{};
+	sf::Texture t_grass_large{};
 
 	// animators
 	sf::Texture t_automatic_animators_firstwind{};
