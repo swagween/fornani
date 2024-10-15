@@ -232,7 +232,9 @@ class AssetManager {
 	sf::SoundBuffer jump_buffer{};
 	sf::SoundBuffer shatter_buffer{};
 	sf::SoundBuffer step_buffer{};
+	sf::SoundBuffer grass_step_buffer{};
 	sf::SoundBuffer landed_buffer{};
+	sf::SoundBuffer landed_grass_buffer{};
 	sf::SoundBuffer hurt_buffer{};
 	sf::SoundBuffer slide_buffer{};
 
@@ -324,7 +326,9 @@ class AssetManager {
 	sf::SoundBuffer chest_buffer{};
 
 	sf::Sound landed{};
+	sf::Sound landed_grass{};
 	sf::Sound step{};
+	sf::Sound grass_step{};
 	sf::Sound shatter{};
 	sf::Sound jump{};
 	sf::Sound slide{};

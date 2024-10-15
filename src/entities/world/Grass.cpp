@@ -7,7 +7,7 @@
 namespace entity {
 
 Grass::Grass(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground)
-	: length(length), size(size), position(position), chain({0.98f, 0.84f, static_cast<float>(size) * 0.001f}, position, length, true) {
+	: length(length), size(size), position(position), chain(svc, {0.98f, 0.84f, static_cast<float>(size) * 0.001f, -3.2f}, position, length, true) {
 	drawbox.setOutlineColor(svc.styles.colors.blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
@@ -16,7 +16,6 @@ Grass::Grass(automa::ServiceProvider& svc, sf::Vector2<float> position, int leng
 	auto index = svc.random.random_range(0, 3);
 	auto sign = svc.random.percent_chance(50) ? -1 : 1;
 	for (auto& link : chain.links) { encodings.push_back({index, sign}); }
-	chain.set_gravity(-3.2f);
 	for (auto& sprite : sprites) { sprite.setOrigin({16.f * static_cast<float>(size), constants.f_height * 0.5f * static_cast<float>(size)}); }
 	if (foreground) { flags.set(GrassFlags::foreground); }
 }

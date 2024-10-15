@@ -53,6 +53,7 @@ struct ServiceProvider {
 
 	[[nodiscard]] auto fullscreen() const -> bool { return app_flags.test(AppFlags::fullscreen); }
 	[[nodiscard]] auto tutorial() const -> bool { return app_flags.test(AppFlags::tutorial); }
+	[[nodiscard]] auto in_game() const -> bool { return app_flags.test(AppFlags::in_game); }
 	[[nodiscard]] auto hide_hud() const -> bool { return state_flags.test(StateFlags::hide_hud); }
 	[[nodiscard]] auto no_menu() const -> bool { return state_flags.test(StateFlags::no_menu); }
 	[[nodiscard]] auto demo_mode() const -> bool { return debug_flags.test(DebugFlags::demo_mode); }

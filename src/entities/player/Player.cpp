@@ -75,7 +75,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (grounded()) { controller.reset_dash_count(); }
 
 	// do this elsehwere later
-	if (collider.flags.state.test(shape::State::just_landed)) { m_services->soundboard.flags.player.set(audio::Player::land); }
+	if (collider.flags.state.test(shape::State::just_landed)) { m_services->soundboard.play_step(map.get_tile_value_at_position(collider.get_below_point()), map.native_style_id, true); }
 	collider.flags.state.reset(shape::State::just_landed);
 
 	// player-controlled actions
@@ -128,6 +128,11 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	update_antennae();
 	if (is_dead()) {
 		for (auto& a : antennae) { a.collider.detect_map_collision(map); }
+	}
+
+	// step sounds
+	if (m_services->in_game()) {
+		if (animation.stepped() && abs(collider.physics.velocity.x) > 2.5f) { m_services->soundboard.play_step(map.get_tile_value_at_position(collider.get_below_point()), map.native_style_id); }
 	}
 }
 
@@ -501,9 +506,6 @@ void Player::walk() {
 				tutorial.flags.set(text::TutorialFlags::sprint);
 			}
 		}
-	}
-	if (animation.get_frame() == 44 || animation.get_frame() == 46 || animation.get_frame() == 10 || animation.get_frame() == 13) {
-		if (animation.animation.keyframe_over() && abs(collider.physics.velocity.x) > 2.5f) { m_services->soundboard.flags.player.set(audio::Player::step); }
 	}
 }
 

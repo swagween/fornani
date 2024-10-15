@@ -725,4 +725,6 @@ bool Map::overlaps_middleground(shape::Shape& test) const {
 
 std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_index_at_position(position); }
 
+int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_cell(get_index_at_position(position)).value; }
+
 } // namespace world

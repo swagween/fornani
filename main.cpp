@@ -16,7 +16,5 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 	app.launch(argv);
-	// for demo testing
-	// game.run(true, 200, "OVERTURNED_CANOPY_01", {100, 100});
 	return 0;
 }

@@ -87,6 +87,7 @@ class Collider {
 	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
+	[[nodiscard]] auto get_below_point() const -> sf::Vector2<float> { return jumpbox.position + jumpbox.dimensions * 0.5f; }
 	[[nodiscard]] auto platform_collision() const -> bool { return flags.external_state.test(ExternalState::collider_collision); }
 	[[nodiscard]] auto left() const -> float { return bounding_box.left(); }
 	[[nodiscard]] auto right() const -> float { return bounding_box.right(); }

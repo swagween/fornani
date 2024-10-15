@@ -67,6 +67,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 	std::cout << "> Success\n";
 	services.stopwatch.stop();
 	services.stopwatch.print_time();
+	// game loop
+	sf::Clock deltaClock{};
 
 	while (services.window->get().isOpen()) {
 
@@ -79,19 +81,13 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		services.ticker.start_frame();
 
-		// game loop
-		sf::Clock deltaClock{};
-
 		// SFML event variable
 		auto event = sf::Event{};
 
-		bool valid_event{};
+		bool valid_event{true};
 		// check window events
 		while (services.window->get().pollEvent(event)) {
 			player.animation.state = {};
-			if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
-			if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
-			if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 			switch (event.type) {
 			case sf::Event::Closed: goto shutdown;
 			case sf::Event::Resized:
@@ -173,7 +169,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.stopwatch.stop();
 
 		ImGui::SFML::Update(services.window->get(), deltaClock.restart());
-		services.window->screencap.update(services.window->get());
 
 		// ImGui stuff
 		if (services.debug_flags.test(automa::DebugFlags::imgui_overlay)) { debug_window(services.window->get()); }
@@ -1093,6 +1088,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 }
 
 void Game::take_screenshot(sf::Texture& screencap) {
+	services.window->screencap.update(services.window->get());
 	std::time_t const now = std::time(nullptr);
 
 	std::time_t time = std::time({});

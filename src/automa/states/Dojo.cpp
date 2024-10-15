@@ -13,6 +13,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// A.stats.GRAV = 0.f;
 	// B.stats.GRAV = 0.f;
 	// A.physics.position = {200.f, 200.f};
+	svc.app_flags.set(AppFlags::in_game);
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
 		svc.stats.world.rooms_discovered.update();

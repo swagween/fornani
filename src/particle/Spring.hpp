@@ -12,6 +12,8 @@ struct SpringParameters {
 	float dampen_factor{};
 	float spring_constant{};
 	float rest_length{};
+	float grav{1.f};
+	float mass{1.f};
 };
 class Spring {
   public:
@@ -35,6 +37,7 @@ class Spring {
 	components::CircleSensor sensor{8.f};
 	std::optional<Spring*> cousin{};
 	[[nodiscard]] auto is_locked() const -> bool { return locked; }
+	[[nodiscard]] auto get_equilibrium_point() const -> float { return params.grav / params.spring_constant; }
 
 	int num_links{8};
 

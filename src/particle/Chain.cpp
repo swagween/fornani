@@ -6,29 +6,49 @@
 
 namespace vfx {
 
-Chain::Chain(SpringParameters params, sf::Vector2<float> position, int num_links, bool reversed) : root(position) {
-	if (reversed) { grav *= -1.f; }
+Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2<float> position, int num_links, bool reversed) : root(position) {
 	for (int i{0}; i < num_links; ++i) { links.push_back(Spring({params})); }
+	grav = params.grav;
 	int ctr{};
 	auto sign = reversed ? -1.f : 1.f;
+	auto sag = static_cast<int>(links.size());
+	auto tweak{0.19f};
 	for (auto& link : links) {
 		if (ctr == 0) {
 			link.set_anchor(position);
-			link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, params.rest_length * sign});
 			link.lock();
 		} else {
 			link.cousin = &links.at(ctr - 1);
 			if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
-			link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, params.rest_length * sign});
 		}
+		link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, sign * params.rest_length + (link.get_equilibrium_point() * sag * tweak)});
 		++ctr;
+		--sag;
 	}
+	intro.start();
 }
 
 void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, float dampen) {
+	auto break_out{0};
+	while (moving() && break_out < 128 && intro.running()) {
+		auto ctr{0};
+		for (auto& link : links) {
+			if (ctr < links.size() - 1) {
+				link.set_bob(links.at(static_cast<std::size_t>(ctr + 1)).get_anchor());
+			} else {
+			}
+			if (!link.is_locked()) {
+				if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
+			}
+			link.update(svc, grav, {}, !link.is_locked());
+			++ctr;
+		}
+		++break_out;
+	}
+	intro.update();
+
 	auto external_force = sf::Vector2<float>{};
 	auto ctr{0};
-	float avg{}; // for deriving the start position (there's a better way)
 	for (auto& link : links) {
 		if (ctr < links.size() - 1) {
 			link.set_bob(links.at(static_cast<std::size_t>(ctr + 1)).get_anchor());
@@ -36,7 +56,6 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			
 		}
 		if (!link.is_locked()) {
-			avg += (link.get_anchor().y - link.get_bob().y) / link.get_params().rest_length;
 			if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 		}
 		if (link.sensor.within_bounds(player.collider.bounding_box)) {
@@ -48,15 +67,16 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		link.update(svc, grav, external_force, !link.is_locked());
 		++ctr;
 	}
-	avg /= links.size() - 1;
-	if (svc.ticker.every_x_ticks(500)) {
-		//std::cout << "avg: " << avg << "\n";
-	}
 
 }
 
 void Chain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	for (auto& link : links) { link.render(win, cam); }
+}
+
+bool Chain::moving() const {
+	if (links.empty()) { return false; }
+	return abs(links.at(links.size() - 1).variables.bob_physics.velocity.y) > 0.001f;
 }
 
 } // namespace vfx

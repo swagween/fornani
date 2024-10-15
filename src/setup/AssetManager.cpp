@@ -278,8 +278,12 @@ void AssetManager::load_audio() {
 	shatter.setBuffer(shatter_buffer);
 	step_buffer.loadFromFile(finder.resource_path + "/audio/sfx/steps.wav");
 	step.setBuffer(step_buffer);
+	grass_step_buffer.loadFromFile(finder.resource_path + "/audio/sfx/grass_steps.wav");
+	grass_step.setBuffer(grass_step_buffer);
 	landed_buffer.loadFromFile(finder.resource_path + "/audio/sfx/landed.wav");
 	landed.setBuffer(landed_buffer);
+	landed_grass_buffer.loadFromFile(finder.resource_path + "/audio/sfx/landed_grass.wav");
+	landed_grass.setBuffer(landed_grass_buffer);
 	hurt_buffer.loadFromFile(finder.resource_path + "/audio/sfx/hurt.wav");
 	hurt.setBuffer(hurt_buffer);
 	player_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/player_death.wav");

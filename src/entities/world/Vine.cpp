@@ -7,7 +7,7 @@
 namespace entity {
 
 Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground, bool reversed)
-	: length(length), size(size), position(position), chain({0.98f, 0.14f, static_cast<float>(size) * 12.f}, position, length, reversed) {
+	: length(length), size(size), position(position), chain(svc, {0.98f, 0.14f, static_cast<float>(size) * 12.f}, position, length, reversed) {
 	drawbox.setOutlineColor(svc.styles.colors.blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
@@ -22,7 +22,6 @@ Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length
 		auto sign = svc.random.percent_chance(50) ? -1 : 1;
 		encodings.push_back({index.get(), sign});
 		last_index = index.get();
-		std::cout << index.get() << "\n";
 	}
 	sprite.setOrigin({16.f * static_cast<float>(size), 16.f * static_cast<float>(size)});
 	if (foreground) { flags.set(VineFlags::foreground); }

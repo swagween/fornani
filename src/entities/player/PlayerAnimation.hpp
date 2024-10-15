@@ -54,8 +54,9 @@ class PlayerAnimation {
 	void update();
 	void start();
 	[[nodiscard]] auto death_over() -> bool { return triggers.consume(AnimTriggers::end_death); }
-	[[nodiscard]] auto not_jumping() -> bool { return state != AnimState::rise; }
+	[[nodiscard]] auto not_jumping() const -> bool { return state != AnimState::rise; }
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
+	bool stepped() const;
 
 	fsm::StateFunction state_function = std::bind(&PlayerAnimation::update_idle, this);
 

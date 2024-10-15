@@ -19,6 +19,8 @@ void PlayerAnimation::update() {
 
 void PlayerAnimation::start() { animation.start(); }
 
+bool PlayerAnimation::stepped() const { return (animation.get_frame() == 44 || animation.get_frame() == 46 || animation.get_frame() == 10 || animation.get_frame() == 13 || animation.get_frame() == 16) && animation.keyframe_started(); }
+
 fsm::StateFunction PlayerAnimation::update_idle() {
 	animation.label = "idle";
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }

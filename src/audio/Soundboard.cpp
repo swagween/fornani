@@ -84,14 +84,18 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.item.test(Item::equip)) { svc.assets.arms_switch.play(); }
 
 	// player
-	if (flags.player.test(Player::land)) { svc.assets.landed.play(); }
 	if (flags.player.test(Player::jump)) { randomize(svc, svc.assets.jump, 0.1f); }
-	if (flags.player.test(Player::step)) { randomize(svc, svc.assets.step, 0.1f); }
 	if (flags.player.test(Player::arms_switch)) { svc.assets.arms_switch.play(); }
 	if (flags.player.test(Player::hurt)) { svc.assets.hurt.play(); }
 	if (flags.player.test(Player::death)) { svc.assets.player_death.play(); }
 	if (flags.player.test(Player::shield_drop)) { randomize(svc, svc.assets.bubble, 0.2f, 60); }
 	if (flags.player.test(Player::slide)) { play_at_volume(svc.assets.slide, 30.f); }
+
+	// steps
+	if (flags.step.test(Step::basic)) { randomize(svc, svc.assets.step, 0.1f); }
+	if (flags.step.test(Step::grass)) { randomize(svc, svc.assets.grass_step, 0.3f); }
+	if (flags.land.test(Step::basic)) { svc.assets.landed.play(); }
+	if (flags.land.test(Step::grass)) { svc.assets.landed_grass.play(); }
 
 	// gun
 	if (flags.weapon.test(Weapon::bryns_gun)) { svc.assets.bg_shot.play(); }
@@ -136,6 +140,19 @@ void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float
 void Soundboard::play_at_volume(sf::Sound& sound, float vol) {
 	sound.setVolume(vol);
 	sound.play();
+}
+
+void Soundboard::play_step(int tile_value, int style_id, bool land) {
+	auto& set = land ? flags.land : flags.step;
+	if (!get_step_sound.contains(style_id)) {
+		set.set(audio::Step::basic);
+		return;
+	}
+	if (!get_step_sound.at(style_id).contains(tile_value)) {
+		set.set(audio::Step::basic);
+		return;
+	}
+	set.set(get_step_sound.at(style_id).at(tile_value));
 }
 
 } // namespace audio

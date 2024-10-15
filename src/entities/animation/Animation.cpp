@@ -65,30 +65,6 @@ void Animation::update() {
 	}
 }
 
-/*void Animation::update() {
-	if (frame_timer.is_complete()) {
-		frame.update();
-		if (frame.get_count() == params.duration) {
-			if (params.repeat_last_frame) {
-				frame.set(params.duration - 1);
-				end();
-				return;
-			}
-			if (loop.get_count() == params.num_loops) {
-				loop.start();
-				end();
-				return;
-			} else {
-				frame.start();
-				loop.update();
-			}
-		}
-		if (!params.repeat_last_frame) { frame_timer.start(params.framerate); }
-	}
-	global_counter.update();
-	frame_timer.update();
-}*/
-
 void Animation::set_params(Parameters const new_params, bool hard) {
 	next_params = new_params;
 	if (hard) {
