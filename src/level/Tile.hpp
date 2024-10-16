@@ -21,6 +21,12 @@ enum class TileState { ramp_adjacent, big_ramp };
 struct Tile {
 
 	Tile() = default;
+	constexpr static int evaluate(uint32_t val) {
+		auto ret{4};
+		if (val == 195 || val == 196 || val == 201 || val == 202 || val == 205 || val == 206) { ret = 3; }
+		if (val == 211 || val == 212 || val == 217 || val == 218 || val == 221 || val == 222) { ret = 3; }
+		return ret;
+	}
 	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi);
 
 	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
@@ -54,10 +60,11 @@ struct Tile {
 
 	uint8_t value{};
 	TileType type{};					 // for assigning attributes
-	shape::Shape bounding_box{{32, 32}}; // for collision
+	shape::Shape bounding_box; // for collision
 
 	bool collision_check{};
 	bool surrounded{};
+	mutable bool debug_flag{};
 	util::BitFlags<TileState> flags{};
 };
 

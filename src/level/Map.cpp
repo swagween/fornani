@@ -499,8 +499,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		center_box.setPosition(0.f, svc.constants.f_screen_dimensions.y * 0.5f);
 		win.draw(center_box);
 		for(auto& tile : get_layers().at(MIDDLEGROUND).grid.cells) {
-			if (tile.is_ramp()) {
-				svc.debug_text.setString(std::to_string(tile.one_d_index));
+			if (tile.debug_flag) {
+				svc.debug_text.setString("c");
 				svc.debug_text.setPosition(tile.position() - cam);
 				win.draw(svc.debug_text);
 			}

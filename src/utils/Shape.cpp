@@ -18,50 +18,20 @@ Shape::Vec Shape::perp(Vec edg) {
 	return temp;
 }
 
-Shape::Shape() {
-	// assume square
-	for (int i = 0; i < 4; i++) {
-		vertices.push_back(Vec(0.0f, 0.0f));
-		edges.push_back(Vec(0.0f, 0.0f));
-		normals.push_back(Vec(0.0f, 0.0f));
+Shape::Shape(Vec dim, int num_vertices) : dimensions(dim), num_sides(num_vertices) {
+	for (int i = 0; i < num_vertices; i++) {
+		edges.push_back({});
+		normals.push_back({});
 	}
-	num_sides = 4;
-	dimensions = sf::Vector2<float>(32.0f, 32.0f);
-	init();
-}
-
-Shape::Shape(std::vector<Vec> verts, std::vector<Vec> edg) {
-	vertices.clear();
-	edges.clear();
-	for (int i = 0; i < 4; i++) {
-		vertices.push_back(verts[i]);
-		edges.push_back(edg[i]);
-		normals.push_back(perp(edg[i]));
-	}
-	position = vertices[0];
-	num_sides = (int)verts.size();
-	init();
-}
-
-Shape::Shape(Vec dim) {
-	for (int i = 0; i < 4; i++) {
-		edges.push_back(Vec(0.0f, 0.0f));
-		normals.push_back(Vec(0, 0));
-	}
-	vertices.push_back(Vec(0.0f, 0.0f));
-	vertices.push_back(Vec(dim.x, 0.0f));
-	vertices.push_back(Vec(dim.x, dim.y));
-	vertices.push_back(Vec(0.0f, dim.y));
-	dimensions = dim;
-	num_sides = 4;
-	init();
-}
-
-void Shape::init() {
+	vertices.push_back({});
+	vertices.push_back({dim.x, 0.f});
+	vertices.push_back({dim.x, dim.y});
+	if (num_vertices > 3) { vertices.push_back({0.f, dim.y}); }
 	for (int i = 0; i < vertices.size(); i++) {
-		edges[i].x = vertices[(i + 1) % vertices.size()].x - vertices[i].x;
-		edges[i].y = vertices[(i + 1) % vertices.size()].y - vertices[i].y;
+		edges[i].x = vertices[static_cast<size_t>(i + 1) % vertices.size()].x - vertices[i].x;
+		edges[i].y = vertices[static_cast<size_t>(i + 1) % vertices.size()].y - vertices[i].y;
 		normals[i] = perp(edges[i]);
+		draw_vertices.push_back(sf::Vertex(vertices[0], sf::Color::Red));
 	}
 }
 
@@ -144,88 +114,16 @@ Shape::Vec Shape::getThisCenter() { return (Vec(position.x + dimensions.x / 2.f,
 
 std::vector<Shape::Vec> Shape::getVertices(Shape const& shape) { return shape.vertices; }
 
-Shape::Vec Shape::getPerpendicularAxis(const std::vector<Vec> vertices, std::size_t index) {
-	assert(index >= 0 && index < 4); // rect has 4 possible axes
-	return getNormal(getNormalized(vertices.at(index)));
-}
-
-// axes for which we'll test stuff. Two for each box, because testing for parallel axes isn't needed
-
-std::array<Shape::Vec, 8> Shape::getPerpendicularAxes(const std::vector<Vec> vertices1, std::vector<Vec> const& vertices2) {
-	std::array<Vec, 8> axes;
-
-	axes[0] = getPerpendicularAxis(vertices1, 0);
-	axes[1] = getPerpendicularAxis(vertices1, 1);
-	axes[2] = getPerpendicularAxis(vertices1, 2);
-	axes[3] = getPerpendicularAxis(vertices1, 3);
-
-	axes[4] = getPerpendicularAxis(vertices2, 0);
-	axes[5] = getPerpendicularAxis(vertices2, 1);
-	axes[6] = getPerpendicularAxis(vertices2, 2);
-	axes[7] = getPerpendicularAxis(vertices2, 3);
-	return axes;
-}
-
-// Separating Axis Theorem (SAT) collision test
-// Minimum Translation Vector (MTV) is returned for the first Oriented Bounding Box (OBB)
-bool Shape::testCollision(Shape const& obb1, Shape const& obb2, Vec& mtv) {
-	std::vector<Vec> vertices1 = getVertices(obb1);
-	std::vector<Vec> vertices2 = getVertices(obb2);
-
-	std::array<Vec, 4> axes1;
-	std::array<Vec, 4> axes2;
-
-	axes1[0] = obb1.normals.at(0);
-	axes1[1] = obb1.normals.at(1);
-	axes1[2] = obb1.normals.at(2);
-	axes1[3] = obb1.normals.at(3);
-
-	axes2[0] = obb2.normals.at(0);
-	axes2[1] = obb2.normals.at(1);
-	axes2[2] = obb2.normals.at(2);
-	axes2[3] = obb2.normals.at(3);
-
-	for (auto& axis : axes1) {
-		Vec proj1 = projectOnAxis(vertices1, axis);
-		Vec proj2 = projectOnAxis(vertices2, axis);
-
-		float overlap = getOverlapLength(proj1, proj2);
-		if (overlap == 0.f) { // shapes are not overlapping
-			return false;
-		}
-	}
-	for (auto& axis : axes2) {
-		Vec proj1 = projectOnAxis(vertices1, axis);
-		Vec proj2 = projectOnAxis(vertices2, axis);
-
-		float overlap = getOverlapLength(proj1, proj2);
-		if (overlap == 0.f) { // shapes are not overlapping
-			return false;
-		}
-	}
-	return true;
-}
-
 Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
-	Vec t_mtv = Vec(0.0f, 0.0f);
-	std::vector<Vec> vertices1 = getVertices(obb1);
-	std::vector<Vec> vertices2 = getVertices(obb2);
+	auto t_mtv = Vec{};
+	auto& vertices1 = vertices;
+	auto vertices2 = getVertices(obb2);
 
-	std::array<Vec, 4> axes1;
-	std::array<Vec, 4> axes2;
-
-	axes1[0] = obb1.normals.at(0);
-	axes1[1] = obb1.normals.at(1);
-	axes1[2] = obb1.normals.at(2);
-	axes1[3] = obb1.normals.at(3);
-
-	axes2[0] = obb2.normals.at(0);
-	axes2[1] = obb2.normals.at(1);
-	axes2[2] = obb2.normals.at(2);
-	axes2[3] = obb2.normals.at(3);
+	auto& axes1 = normals;
+	auto& axes2 = obb2.normals;
 
 	// we need to find the minimal overlap and axis on which it happens
-	float minOverlap = std::numeric_limits<float>::infinity();
+	auto minOverlap = std::numeric_limits<float>::max();
 
 	for (auto& axis : axes1) {
 		Vec proj1 = projectOnAxis(vertices1, axis);
@@ -233,7 +131,7 @@ Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 
 		float overlap = getOverlapLength(proj1, proj2);
 		if (overlap < NORMAL_TOLERANCE) { // shapes are not overlapping
-			return Vec(0.0f, 0.0f);
+			return {};
 		} else {
 			if (overlap < minOverlap) {
 				minOverlap = overlap;
@@ -248,7 +146,7 @@ Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 
 		float overlap = getOverlapLength(proj1, proj2);
 		if (overlap < NORMAL_TOLERANCE) { // shapes are not overlapping
-			return Vec(0.0f, 0.0f);
+			return {};
 		} else {
 			if (overlap < minOverlap) {
 				minOverlap = overlap;
@@ -270,31 +168,21 @@ Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 }
 
 bool Shape::SAT(Shape const& other) {
-	Vec t_mtv = Vec(0.0f, 0.0f);
-	std::vector<Vec> vertices1 = getVertices(*this);
-	std::vector<Vec> vertices2 = getVertices(other);
+	auto t_mtv = Vec{};
+	auto& vertices1 = vertices;
+	auto vertices2 = getVertices(other);
 
-	std::array<Vec, 4> axes1;
-	std::array<Vec, 4> axes2;
-
-	axes1[0] = this->normals.at(0);
-	axes1[1] = this->normals.at(1);
-	axes1[2] = this->normals.at(2);
-	axes1[3] = this->normals.at(3);
-
-	axes2[0] = other.normals.at(0);
-	axes2[1] = other.normals.at(1);
-	axes2[2] = other.normals.at(2);
-	axes2[3] = other.normals.at(3);
+	auto& axes1 = normals;
+	auto& axes2 = other.normals;
 
 	// we need to find the minimal overlap and axis on which it happens
-	float minOverlap = std::numeric_limits<float>::infinity();
+	auto minOverlap = std::numeric_limits<float>::max();
 
 	for (auto& axis : axes1) {
-		Vec proj1 = projectOnAxis(vertices1, axis);
-		Vec proj2 = projectOnAxis(vertices2, axis);
+		auto proj1 = projectOnAxis(vertices1, axis);
+		auto proj2 = projectOnAxis(vertices2, axis);
 
-		float overlap = getOverlapLength(proj1, proj2);
+		auto overlap = getOverlapLength(proj1, proj2);
 		if (overlap == 0.f) { // shapes are not overlapping
 			return false;
 		} else {
@@ -306,10 +194,10 @@ bool Shape::SAT(Shape const& other) {
 		}
 	}
 	for (auto& axis : axes2) {
-		Vec proj1 = projectOnAxis(vertices1, axis);
-		Vec proj2 = projectOnAxis(vertices2, axis);
+		auto proj1 = projectOnAxis(vertices1, axis);
+		auto proj2 = projectOnAxis(vertices2, axis);
 
-		float overlap = getOverlapLength(proj1, proj2);
+		auto overlap = getOverlapLength(proj1, proj2);
 		if (overlap == 0.f) { // shapes are not overlapping
 			return false;
 		} else {
@@ -341,6 +229,15 @@ bool Shape::contains_point(Vec point) {
 	if (vertices.at(0).y > point.y) { ret = false; }
 	if (vertices.at(2).y < point.y) { ret = false; }
 	return ret;
+}
+
+void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (num_sides == 4) {// define a 100x100 square, red, with a 10x10 texture mapped on it
+		sf::Vertex vertices[] = {sf::Vertex(vertices[0].position - cam, sf::Color::Red, sf::Vector2f(0, 0)), sf::Vertex(vertices[1].position - cam, sf::Color::Red, sf::Vector2f(0, 10)),
+								 sf::Vertex(vertices[2].position - cam, sf::Color::Red, sf::Vector2f(10, 10)), sf::Vertex(vertices[3].position - cam, sf::Color::Red, sf::Vector2f(10, 10))};
+		// draw it
+		win.draw(vertices, 4, sf::Quads);
+	}
 }
 
 float Shape::get_height_at(float x) const {

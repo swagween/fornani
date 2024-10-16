@@ -65,11 +65,11 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	auto const& cell = tile.bounding_box;
 
 	// tile flags
-	bool is_ground_ramp = tile.is_ground_ramp();
-	bool is_ceiling_ramp = tile.is_ceiling_ramp();
-	bool is_plat = tile.is_platform() && (jumpbox.position.y > cell.position.y + 4 || physics.acceleration.y < 0.0f);
-	bool is_spike = tile.is_spike();
-	bool is_ramp = tile.is_ramp();
+	bool const is_ground_ramp = tile.is_ground_ramp();
+	bool const is_ceiling_ramp = tile.is_ceiling_ramp();
+	bool const is_plat = tile.is_platform() && (jumpbox.position.y > cell.position.y + 4 || physics.acceleration.y < 0.0f);
+	bool const is_spike = tile.is_spike();
+	bool const is_ramp = tile.is_ramp();
 
 	// special tile types
 	if (is_plat) {
@@ -122,18 +122,22 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	// don't fix ramp position unless we're only colliding with ramps
 	if (!is_ramp && jumpbox.SAT(cell)) { flags.state.set(State::on_flat_surface); }
 	// now let's settle ramp collisions. remember, the collider has already been resolved from any previous cell collision
+	tile.debug_flag = false;
 	if (is_ramp) {
+		flags.external_state.set(ExternalState::tile_debug_flag);
 		bool falls_onto = is_ground_ramp && physics.velocity.y > vert_threshold;
 		bool jumps_into = physics.velocity.y < vert_threshold;
 		// ground ramp
 		// only handle ramp collisions if the bounding_box is colliding with it
 		if (bounding_box.SAT(cell)) {
+			tile.debug_flag = true;
 			flags.external_state.set(ExternalState::on_ramp);
-			std::cout << "\nhit! " << cell.position.y;
 			if (is_ground_ramp && !flags.general.test(General::ignore_resolution)) {
 				if (mtvs.actual.y < 0.f) { physics.position.y += mtvs.actual.y; }
 				// still zero this because of gravity
-				if (!flags.movement.test(Movement::jumping)) { physics.zero_y(); }
+				if (!flags.movement.test(Movement::jumping)) {
+					physics.zero_y();
+				}
 				// std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
 				if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
 			}
@@ -206,6 +210,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 void Collider::detect_map_collision(world::Map& map) {
 	flags.external_state.reset(ExternalState::grounded);
 	flags.external_state.reset(ExternalState::on_ramp);
+	flags.external_state.reset(ExternalState::tile_debug_flag);
 	flags.perma_state = {};
 
 	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;

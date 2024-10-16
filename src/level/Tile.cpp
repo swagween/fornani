@@ -7,7 +7,7 @@
 
 namespace world {
 
-Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi) : index(i), value(val), one_d_index(odi) {
+Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi) : index(i), value(val), one_d_index(odi), bounding_box({32.f, 32.f}, evaluate(val)) {
 	set_type();
 	bounding_box.set_position(p);
 }
@@ -45,15 +45,12 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleSh
 	draw.setFillColor(sf::Color{17, 230, 187, 127});
 	if (collision_check) {
 		draw.setFillColor(sf::Color{190, 255, 7, 180});
-		if (!surrounded) {
-
-		}
+		if (!surrounded) {}
 	}
-	if (ramp_adjacent()) { 
-
-	}
+	if (ramp_adjacent()) {}
 	draw.setPosition(bounding_box.position - cam);
 	if (is_solid() && !is_spike()) { win.draw(draw); }
+	bounding_box.render(win, cam);
 }
 
 void Tile::set_type() {

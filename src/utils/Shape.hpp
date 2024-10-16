@@ -19,11 +19,8 @@ class Shape {
   public:
 	using Vec = sf::Vector2<float>;
 
-	Shape();
-	Shape(std::vector<Vec> verts, std::vector<Vec> edg);
-	Shape(Vec dim);
+	Shape(Vec dim = {32.f, 32.f}, int num_vertices = 4);
 
-	void init();
 	void set_position(const Vec new_pos);
 	void update();
 
@@ -41,13 +38,11 @@ class Shape {
 	Vec getCenter(Shape const& shape);
 	Vec getThisCenter();
 	std::vector<Vec> getVertices(Shape const& shape);
-	Vec getPerpendicularAxis(const std::vector<Vec> vertices, std::size_t index);
-	std::array<Vec, 8> getPerpendicularAxes(const std::vector<Vec> vertices1, std::vector<Vec> const& vertices2);
-	bool testCollision(Shape const& obb1, Shape const& obb2, Vec& mtv);
 	Vec testCollisionGetMTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
 	bool overlaps(Shape const& other) const;
 	bool contains_point(Vec point);
+	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 
 	[[nodiscard]] auto left() const -> float { return position.x; }
 	[[nodiscard]] auto right() const -> float { return position.x + dimensions.x; }
@@ -65,6 +60,8 @@ class Shape {
 	std::vector<Vec> edges{};
 	std::vector<Vec> normals{};
 	Vec axis{};
+
+	std::vector<sf::Vertex> draw_vertices{};
 
 	// for hurtboxes
 	Vec dimensions{};
