@@ -312,6 +312,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		for (auto& destroyer : destroyers) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
+		for (auto& vine : vines) { vine->on_hit(svc, *this, proj); }
 
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
 		
@@ -497,6 +498,13 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		win.draw(center_box);
 		center_box.setPosition(0.f, svc.constants.f_screen_dimensions.y * 0.5f);
 		win.draw(center_box);
+		for(auto& tile : get_layers().at(MIDDLEGROUND).grid.cells) {
+			if (tile.is_ramp()) {
+				svc.debug_text.setString(std::to_string(tile.one_d_index));
+				svc.debug_text.setPosition(tile.position() - cam);
+				win.draw(svc.debug_text);
+			}
+		}
 	}
 }
 

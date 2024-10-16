@@ -78,118 +78,6 @@
   ],
   "animators": [
     {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        10,
-        41
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        21,
-        59
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        24,
-        59
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        10,
-        52
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        21,
-        12
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        18,
-        13
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        12,
-        12
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        6,
-        10
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
       "id": 111,
       "style": 0,
       "dimensions": [
@@ -365,20 +253,6 @@
         1
       ],
       "position": [
-        5,
-        9
-      ],
-      "automatic": false,
-      "foreground": true
-    },
-    {
-      "id": 211,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
         16,
         24
       ],
@@ -524,20 +398,190 @@
       ],
       "automatic": false,
       "foreground": true
-    },
-    {
-      "id": 215,
-      "style": 0,
-      "dimensions": [
-        1,
-        1
-      ],
-      "position": [
-        5,
-        42
-      ],
-      "automatic": false,
-      "foreground": true
     }
-  ]
+  ],
+  "scenery": {
+    "grass": [
+      {
+        "position": [
+          21,
+          12
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          20,
+          12
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          12,
+          12
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          13,
+          12
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          15,
+          21
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          14,
+          20
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          18,
+          24
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          12,
+          37
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          10,
+          41
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          9,
+          41
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          4,
+          42
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          5,
+          42
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          3,
+          36
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          1,
+          36
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          24,
+          59
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          23,
+          59
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          22,
+          59
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          18,
+          46
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          10,
+          52
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          15,
+          43
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      }
+    ]
+  }
 }

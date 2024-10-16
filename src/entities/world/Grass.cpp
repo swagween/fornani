@@ -7,7 +7,7 @@
 namespace entity {
 
 Grass::Grass(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground)
-	: length(length), size(size), position(position), chain(svc, {0.98f, 0.84f, static_cast<float>(size) * 0.001f, -3.2f}, position, length, true) {
+	: length(length), size(size), position(position), chain(svc, {0.98f, 0.84f, static_cast<float>(size) * 0.001f, -3.2f}, position + sf::Vector2<float>{16.f, 32.f}, length, true) {
 	drawbox.setOutlineColor(svc.styles.colors.blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
@@ -30,7 +30,7 @@ void Grass::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	int ctr{0};
 	for (auto& link : chain.links) {
 		auto sprite_ctr{0};
-			sprites.at(ctr).setTextureRect(sf::IntRect({0, encodings.at(ctr).at(0) * 32 * size + 32 - ctr * constants.height}, {32 * size, constants.height * size}));
+			sprites.at(ctr).setTextureRect(sf::IntRect({static_cast<int>(type) * 32, encodings.at(ctr).at(0) * 32 * size + 32 - ctr * constants.height}, {32 * size, constants.height * size}));
 			sprites.at(ctr).setScale({static_cast<float>(encodings.at(ctr).at(1)), 1.f});
 			auto tweak = sf::Vector2<float>{0.f, 4.f};
 			sprites.at(ctr).setPosition(util::round_to_even(link.get_bob()) - cam + tweak);

@@ -19,6 +19,9 @@ Game::Game(char** argv, WindowManager& window) : player(services) {
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
+	services.debug_text.setFont(services.text.fonts.basic);
+	services.debug_text.setCharacterSize(16);
+	services.debug_text.setFillColor(sf::Color::White);
 	// image
 	services.assets.finder.setResourcePath(argv);
 	services.assets.import_textures();
@@ -784,6 +787,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
+					ImGui::Text("32t max: %u", static_cast<unsigned int>(std::numeric_limits<uint32_t>::max()));
 					ImGui::Separator();
 					ImGui::Text("Player");
 					ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
@@ -793,6 +797,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Can Doublejump? %s", player.controller.get_jump().can_doublejump() ? "Yes" : "No");
 					ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
 					ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
+					ImGui::Text("X Position: %.2f", player.collider.physics.position.x / 32.f);
+					ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / 32.f);
 					ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
 					ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
 					ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.categories.inventory.items.size()));

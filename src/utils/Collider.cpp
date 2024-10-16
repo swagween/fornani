@@ -128,6 +128,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		// ground ramp
 		// only handle ramp collisions if the bounding_box is colliding with it
 		if (bounding_box.SAT(cell)) {
+			flags.external_state.set(ExternalState::on_ramp);
+			std::cout << "\nhit! " << cell.position.y;
 			if (is_ground_ramp && !flags.general.test(General::ignore_resolution)) {
 				if (mtvs.actual.y < 0.f) { physics.position.y += mtvs.actual.y; }
 				// still zero this because of gravity
@@ -203,6 +205,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 
 void Collider::detect_map_collision(world::Map& map) {
 	flags.external_state.reset(ExternalState::grounded);
+	flags.external_state.reset(ExternalState::on_ramp);
 	flags.perma_state = {};
 
 	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;
@@ -401,7 +404,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setSize(dimensions);
 	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
 	box.setFillColor(colors.local);
-	box.setOutlineColor(sf::Color{255, 255, 255, 190});
+	flags.external_state.test(ExternalState::on_ramp) ? box.setOutlineColor(sf::Color{255, 255, 255, 190}) : box.setOutlineColor(sf::Color{0, 0, 255, 190});
 	box.setOutlineThickness(-1);
 	win.draw(box);
 

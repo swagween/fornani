@@ -19,6 +19,7 @@ class Player;
 
 namespace entity {
 enum class GrassFlags { foreground };
+enum class GrassType { normal, bush };
 class Grass {
   public:
 	Grass(automa::ServiceProvider& svc, sf::Vector2<float> position, int length = 8, int size = 1, bool foreground = true);
@@ -32,6 +33,7 @@ class Grass {
 	sf::Vector2<float> spacing{0.f, 24.f};
 	int length{};
 	int size{};
+	GrassType type{};
 	sf::RectangleShape drawbox{};
 	vfx::Chain chain;
 	std::array<sf::Sprite, 8> sprites{};
