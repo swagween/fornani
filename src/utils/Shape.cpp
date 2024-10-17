@@ -238,6 +238,18 @@ bool Shape::circle_SAT(sf::CircleShape const& circle) {
 		auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), axis);
 		if (!areOverlapping(proj1, proj2)) { return false; }
 	}
+	//check fourth axis
+	auto closest_vertex_axis{sf::Vector2<float>{}};
+	auto distance{std::numeric_limits<float>::max()};
+	auto last_distance{std::numeric_limits<float>::max()};
+	for (auto& vertex : vertices) {
+		distance = util::magnitude(vertex - circle.getPosition());
+		if (distance < last_distance) { closest_vertex_axis = circle.getPosition() - vertex; }
+		last_distance = distance;
+	}
+	auto proj1 = projectOnAxis(vertices, closest_vertex_axis);
+	auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), closest_vertex_axis);
+	if (!areOverlapping(proj1, proj2)) { return false; }
 	return true;
 }
 
