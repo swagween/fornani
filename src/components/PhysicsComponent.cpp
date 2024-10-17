@@ -31,6 +31,7 @@ void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 	velocity.x = std::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
 	velocity.y = std::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
 	position = position + velocity * dt;
+	real_velocity = velocity * dt;
 }
 
 void PhysicsComponent::update(automa::ServiceProvider& svc) { update_euler(svc); }

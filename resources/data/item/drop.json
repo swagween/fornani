@@ -22,8 +22,8 @@
     "sprite_dimensions": [ 24.0, 24.0 ],
     "spritesheet_dimensions": [ 7, 4 ],
     "type": 1,
-    "friction": 0.98,
-    "gravity": 16.9,
+    "friction": 0.995,
+    "gravity": 8.0,
     "animation": {
       "num_sprites": 4,
       "params": [

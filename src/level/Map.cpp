@@ -497,7 +497,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		get_layers().at(MIDDLEGROUND).grid.render(win, cam);
 		for(auto& tile : get_layers().at(MIDDLEGROUND).grid.cells) {
 			if (tile.debug_flag) {
-				svc.debug_text.setString("c");
+				svc.debug_text.setString(std::to_string(tile.one_d_index));
 				svc.debug_text.setPosition(tile.position() - cam);
 				win.draw(svc.debug_text);
 			}

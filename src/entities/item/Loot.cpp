@@ -20,8 +20,8 @@ Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float prob
 		} else {
 			key = "orb";
 		}
-		float randx = svc.random.random_range_float(-100.0f, 100.0f);
-		float randy = svc.random.random_range_float(-100.0f, 100.0f);
+		float randx = svc.random.random_range_float(-40.0f, 40.0f);
+		float randy = svc.random.random_range_float(-40.0f, 40.0f);
 		drops.push_back(std::make_unique<Drop>(svc, key, probability, delay_time, special_id));
 		drops.back()->set_position(pos);
 		drops.back()->get_collider().physics.apply_force({randx, randy});

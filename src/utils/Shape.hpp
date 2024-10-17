@@ -21,6 +21,7 @@ class Shape {
 
 	void set_position(const Vec new_pos);
 	void update();
+	void set_normals();
 
 	Vec get_center();
 

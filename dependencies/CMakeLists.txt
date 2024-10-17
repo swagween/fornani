@@ -38,8 +38,8 @@ FetchContent_MakeAvailable(djson)
 set(CCMATH_ENABLE_EXTENSIONS ON)
 FetchContent_Declare(
         ccmath
-        GIT_REPOSITORY https://github.com/Rinzii/ccmath.git
-        GIT_TAG 26a0e1845eebc775121964b17a3fc5bd9c330831
+        GIT_REPOSITORY https://github.com/Rinzii/ccmath
+        GIT_TAG v0.1.5
 )
 FetchContent_MakeAvailable(ccmath)
 

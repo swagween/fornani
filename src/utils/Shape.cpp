@@ -28,11 +28,7 @@ Shape::Shape(Vec dim, int num_vertices) : dimensions(dim), num_sides(num_vertice
 	vertices.push_back({dim.x, 0.f});
 	vertices.push_back({dim.x, dim.y});
 	if (num_vertices > 3) { vertices.push_back({0.f, dim.y}); }
-	for (int i = 0; i < vertices.size(); i++) {
-		edges[i].x = vertices[static_cast<size_t>(i + 1) % vertices.size()].x - vertices[i].x;
-		edges[i].y = vertices[static_cast<size_t>(i + 1) % vertices.size()].y - vertices[i].y;
-		normals[i] = perp(edges[i]);
-	}
+	set_normals();
 }
 
 void Shape::set_position(const Vec new_pos) {
@@ -54,6 +50,14 @@ void Shape::update() {
 	} else {
 		for (auto& vert : vertices) { vert += position; }
 	}
+	for (auto i{0}; i < vertices.size(); ++i) {
+		edges[i].x = vertices[static_cast<size_t>(i + 1) % vertices.size()].x - vertices[i].x;
+		edges[i].y = vertices[static_cast<size_t>(i + 1) % vertices.size()].y - vertices[i].y;
+		normals[i] = perp(edges[i]);
+	}
+}
+
+void Shape::set_normals() {
 	for (auto i{0}; i < vertices.size(); ++i) {
 		edges[i].x = vertices[static_cast<size_t>(i + 1) % vertices.size()].x - vertices[i].x;
 		edges[i].y = vertices[static_cast<size_t>(i + 1) % vertices.size()].y - vertices[i].y;
@@ -99,12 +103,8 @@ Shape::Vec Shape::projectOnAxis(const std::vector<Vec> vertices, const Vec axis)
 }
 
 Shape::Vec Shape::project_circle_on_axis(Vec center, float radius, Vec const axis) {
-	float min = std::numeric_limits<float>::infinity();
-	float max = -std::numeric_limits<float>::infinity();
 	float projection = dotProduct(center, axis);
-	if ((projection - radius) < min) { min = projection - radius; }
-	if ((projection + radius) > max) { max = projection + radius; }
-	return Vec(min, max);
+	return Vec(projection - radius, projection + radius);
 }
 
 // a and b are ranges and it's assumed that a.x <= a.y and b.x <= b.y
@@ -134,6 +134,7 @@ std::vector<sf::Vector2<float>> Shape::get_poles(sf::CircleShape const& circle) 
 }
 
 Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
+	set_normals();
 	auto t_mtv = Vec{};
 	auto const& vertices1 = vertices;
 	auto const vertices2 = getVertices(obb2);
@@ -187,6 +188,7 @@ Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 }
 
 bool Shape::SAT(Shape const& other) {
+	set_normals();
 	auto t_mtv = Vec{};
 	auto const& vertices1 = vertices;
 	auto const vertices2 = getVertices(other);
@@ -233,6 +235,7 @@ bool Shape::SAT(Shape const& other) {
 }
 
 bool Shape::circle_SAT(sf::CircleShape const& circle) {
+	set_normals();
 	for (auto& axis : normals) {
 		auto proj1 = projectOnAxis(vertices, axis);
 		auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), axis);
@@ -241,12 +244,15 @@ bool Shape::circle_SAT(sf::CircleShape const& circle) {
 	//check fourth axis
 	auto closest_vertex_axis{sf::Vector2<float>{}};
 	auto distance{std::numeric_limits<float>::max()};
-	auto last_distance{std::numeric_limits<float>::max()};
+	auto min_dist{std::numeric_limits<float>::max()};
 	for (auto& vertex : vertices) {
 		distance = util::magnitude(vertex - circle.getPosition());
-		if (distance < last_distance) { closest_vertex_axis = circle.getPosition() - vertex; }
-		last_distance = distance;
+		if (distance < min_dist) {
+			closest_vertex_axis = vertex - circle.getPosition();
+			min_dist = distance;
+		}
 	}
+	closest_vertex_axis = getNormalized(closest_vertex_axis);
 	auto proj1 = projectOnAxis(vertices, closest_vertex_axis);
 	auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), closest_vertex_axis);
 	if (!areOverlapping(proj1, proj2)) { return false; }
@@ -273,7 +279,9 @@ bool Shape::contains_point(Vec point) {
 
 void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (vertices.size() == 3) {
-		sf::Vertex line[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, sf::Color::Red}, {{vertices[1].x - cam.x, vertices[1].y - cam.y}, sf::Color::Red}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, sf::Color::Red}};
+		sf::Vertex line[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, sf::Color{255, 255, 0, 100}},
+							 {{vertices[1].x - cam.x, vertices[1].y - cam.y}, sf::Color{255, 255, 0, 100}},
+							 {{vertices[2].x - cam.x, vertices[2].y - cam.y}, sf::Color{255, 255, 0, 100}}};
 		win.draw(line, 3, sf::Triangles);
 	}
 	if (vertices.size() == 4) {
@@ -281,8 +289,9 @@ void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 		sf::Vertex line[] = {
 			{{vertices[0].x - cam.x, vertices[0].y - cam.y}, color}, {{vertices[1].x - cam.x, vertices[1].y - cam.y}, color}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, color}, {{vertices[3].x - cam.x, vertices[3].y - cam.y}, color}};
 		win.draw(line, 4, sf::Quads);
-
-		sf::Vertex norm[] = {{{normals[0].x - cam.x, normals[0].y - cam.y}, sf::Color{255, 0, 0, 128}}, {{normals[0].x - cam.x, normals[0].y - cam.y - 8.f}, sf::Color{255, 0, 0, 128}}};
+	}
+	for (int i{0}; i < normals.size(); ++i) {
+		sf::Vertex norm[] = {{{vertices[i].x - cam.x, vertices[i].y - cam.y}, sf::Color{255, 0, 0, 128}}, {{normals[i].x * 8.f - cam.x + vertices[i].x, normals[i].y * 8.f - cam.y + vertices[i].y}, sf::Color{255, 0, 0, 128}}};
 		win.draw(norm, 2, sf::Lines);
 	}
 }

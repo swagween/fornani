@@ -9,7 +9,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 
 	collider = shape::Collider(drop_dimensions);
 	collider.sync_components();
-	collider.physics.elasticity = 1.0f;
+	collider.physics.elasticity = 0.8f;
 
 	sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
 	sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();
@@ -21,6 +21,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 
 	collider.physics.set_global_friction(svc.data.drop[key]["friction"].as<float>());
 	collider.stats.GRAV = svc.data.drop[key]["gravity"].as<float>();
+	collider.physics.maximum_velocity = {32.f, 32.f};
 
 	auto& in_anim = svc.data.drop[key]["animation"];
 	num_sprites = in_anim["num_sprites"].as<int>();

@@ -39,11 +39,11 @@ void Collider::sync_components() {
 	predictive_horizontal.dimensions.y = dimensions.y - 3.f * horizontal_detector_buffer;
 	predictive_combined.dimensions = dimensions;
 
-	vicinity.set_position(sf::Vector2<float>{physics.position.x - vicinity_pad + physics.velocity.x, physics.position.y - vicinity_pad + physics.velocity.y});
+	vicinity.set_position(sf::Vector2<float>{physics.position.x - vicinity_pad + physics.apparent_velocity().x, physics.position.y - vicinity_pad + physics.apparent_velocity().y});
 	wallslider.set_position(sf::Vector2<float>{physics.position.x - wallslide_pad, physics.position.y + 2.f});
-	predictive_vertical.set_position(sf::Vector2<float>{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.velocity.y});
-	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - horizontal_detector_buffer + physics.velocity.x, physics.position.y + horizontal_detector_buffer});
-	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.velocity.x, physics.position.y + physics.velocity.y});
+	predictive_vertical.set_position(sf::Vector2<float>{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.apparent_velocity().y});
+	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - horizontal_detector_buffer + physics.apparent_velocity().x, physics.position.y + horizontal_detector_buffer});
+	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.apparent_velocity().x, physics.position.y + physics.apparent_velocity().y});
 	jumpbox.set_position(sf::Vector2<float>{physics.position.x, physics.position.y + dimensions.y});
 	hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.dimensions.x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.dimensions.y * 0.5f) - (hurtbox_offset.y * 0.5f)));
 	vertical.set_position(sf::Vector2<float>{physics.position.x + dimensions.x * 0.5f - 0.5f, physics.position.y + depth_buffer});
@@ -93,13 +93,16 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		if (predictive_vertical.SAT(cell)) {
 			mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
 			//if (abs(mtvs.combined.x > 0.0001f)) { std::cout << "Combined MTV reading: " << mtvs.combined.x << "\n"; }
-			if (flags.collision.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) {
+			if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 				flags.state.set(State::just_landed);
 				flags.animation.set(Animation::just_landed);
 			} // for landing sound
 			flags.external_state.set(ExternalState::world_collision);
 			flags.external_state.set(ExternalState::vert_world_collision);
-			correct_y(mtvs.vertical);
+			if (physics.apparent_velocity().y < 0.f && predictive_vertical.top() < cell.top()) {
+			} else {
+				correct_y(mtvs.vertical);
+			}
 			vert = true;
 		}
 		if (predictive_horizontal.SAT(cell) && !tile.ramp_adjacent() && !vert) {
@@ -125,16 +128,17 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	tile.debug_flag = false;
 	if (is_ramp) {
 		flags.external_state.set(ExternalState::tile_debug_flag);
-		bool falls_onto = is_ground_ramp && physics.velocity.y > vert_threshold;
-		bool jumps_into = physics.velocity.y < vert_threshold;
+		bool falls_onto = is_ground_ramp && physics.apparent_velocity().y > vert_threshold;
+		bool jumps_into = physics.apparent_velocity().y < vert_threshold;
 		// ground ramp
 		// only handle ramp collisions if the bounding_box is colliding with it
 		if (bounding_box.SAT(cell)) {
-			tile.debug_flag = true;
 			flags.external_state.set(ExternalState::on_ramp);
 			if (is_ground_ramp && !flags.general.test(General::ignore_resolution)) {
 				//if (mtvs.actual.y < 0.f) { physics.position.y -= abs(mtvs.actual.y); }
 				physics.position.y -= abs(mtvs.actual.y);
+				tile.debug_flag = true;
+				//flags.state.set(State::on_flat_surface);
 				// still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping)) {
 					physics.zero_y();
@@ -167,11 +171,11 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				flags.external_state.set(ExternalState::world_collision);
 			}
 		}
-		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.velocity.y > -0.01f) {
+		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f) {
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.position.x))); }
 			physics.position.y = cell.position.y + cell.dimensions.y - maximum_ramp_height - dimensions.y;
-			if ((physics.velocity.x > 0.f && tile.is_negative_ramp()) || (physics.velocity.x < 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
+			if ((physics.apparent_velocity().x > 0.f && tile.is_negative_ramp()) || (physics.apparent_velocity().x < 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
 		} else if (flags.state.test(State::on_flat_surface)) {
 			flags.perma_state.reset(PermaFlags::downhill);
 		}
@@ -327,7 +331,7 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	if (predictive_vertical.SAT(collider)) {
 		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
 		//if (abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
-		if (flags.collision.test(Collision::has_bottom_collision) && physics.velocity.y > vert_threshold) {
+		if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 			flags.state.set(State::just_landed);
 			flags.animation.set(Animation::just_landed);
 		} // for landing sound
@@ -490,7 +494,7 @@ bool Collider::horizontal_squish() const { return collision_depths ? collision_d
 bool Collider::vertical_squish() const { return collision_depths ? collision_depths.value().vertical_squish() : false; }
 
 bool Collider::pushes(Collider& other) const {
-	return (physics.position.x < other.physics.position.x && physics.velocity.x > 0.f) || (physics.position.x > other.physics.position.x && physics.velocity.x < 0.f);
+	return (physics.position.x < other.physics.position.x && physics.apparent_velocity().x > 0.f) || (physics.position.x > other.physics.position.x && physics.apparent_velocity().x < 0.f);
 }
 
 sf::Vector2<float> Collider::get_average_tick_position() { return physics.previous_position; }

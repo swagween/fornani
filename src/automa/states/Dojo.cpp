@@ -15,8 +15,8 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// A.physics.position = {200.f, 200.f};
 
 	//circle collider test
-	circle.bounds.setRadius(16.f);
-	circle.bounds.setOrigin({16.f, 16.f});
+	//circle.bounds.setRadius(16.f);
+	//circle.bounds.setOrigin({16.f, 16.f});
 
 	svc.app_flags.set(AppFlags::in_game);
 	if (!svc.data.room_discovered(room_number)) {
@@ -172,10 +172,10 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	// B.update(svc);
 	// auto mtv = A.bounding_box.testCollisionGetMTV(B.bounding_box, A.bounding_box);
 	// if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT x: " << mtv.x << "\n"; }
-	circle.deactivate();
-	for (auto& cell : map.get_layers().at(world::MIDDLEGROUND).grid.cells) {
-		if (circle.within_bounds(cell.bounding_box) && cell.is_collidable()) { circle.activate(); }
-	}
+	//circle.deactivate();
+	//for (auto& cell : map.get_layers().at(world::MIDDLEGROUND).grid.cells) {
+	//if (circle.within_bounds(cell.bounding_box) && cell.is_collidable()) { circle.activate(); }
+	//}
 
 	player->update(map, console, inventory_window);
 	map.update(svc, console, inventory_window);
@@ -204,7 +204,7 @@ void Dojo::frame_update(ServiceProvider& svc) {
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	// B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
-	circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()));
+	//circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()));
 
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
@@ -219,7 +219,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	// A.render(win, {});
 	// B.render(win, {});
-	circle.render(win, camera.get_position());
+	//circle.render(win, camera.get_position());
 }
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {

@@ -33,7 +33,7 @@ class Dojo : public GameState {
 
 	//shape::Collider A{};
 	//shape::Collider B{};
-	components::CircleSensor circle{16.f};
+	//components::CircleSensor circle{16.f};
 };
 
 } // namespace automa

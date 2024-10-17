@@ -36,7 +36,7 @@ bool CircleSensor::within_bounds(shape::Shape& shape) const {
 	if (shape.non_square()) { return shape.circle_SAT(bounds); }
 	auto x = std::clamp(bounds.getPosition().x, shape.position.x, shape.position.x + shape.dimensions.x);
 	auto y = std::clamp(bounds.getPosition().y, shape.position.y, shape.position.y + shape.dimensions.y);
-	sf::Vector2<float> closest = {x, y};
+	sf::Vector2<float> closest{x, y};
 	return util::magnitude(closest - bounds.getPosition()) < bounds.getRadius();
 }
 } // namespace components
