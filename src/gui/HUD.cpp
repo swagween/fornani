@@ -63,7 +63,7 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	filled_hp_cells = static_cast<int>(std::ceil(player.health.get_hp()));
 	num_orbs = player.wallet.get_balance();
 	total_hp_cells = static_cast<int>(player.health.get_max());
-	if (player.hotbar) { gun_name = player.equipped_weapon().label; }
+	if (player.hotbar && player.arsenal) { gun_name = player.equipped_weapon().label; }
 }
 
 void HUD::render(player::Player& player, sf::RenderWindow& win) {

@@ -21,7 +21,6 @@ void CircleCollider::handle_map_collision(world::Map& map) {
 	for (auto i{range.first}; i < range.second; ++i) {
 		auto& cell = grid.get_cell(static_cast<int>(i));
 		if (!cell.is_collidable()) { continue; }
-		if (cell.is_ramp()) { continue; }
 		cell.collision_check = true;
 		if (cell.value > 0) { handle_collision(cell.bounding_box); }
 	}
@@ -29,6 +28,11 @@ void CircleCollider::handle_map_collision(world::Map& map) {
 
 void CircleCollider::handle_collision(shape::Shape& box) {
 	if (sensor.within_bounds(box)) {
+		if (box.non_square()) {
+			physics.velocity.y *= -1.f * physics.elasticity;
+			flags.set(CircleColliderFlags::collided);
+			return;
+		}
 		sensor.bounds.getPosition().y < box.top() || sensor.bounds.getPosition().y < box.bottom() ? physics.velocity.y *= -1.f * physics.elasticity : physics.velocity.x *= -1.f * physics.elasticity;
 		flags.set(CircleColliderFlags::collided);
 	}

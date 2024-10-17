@@ -50,7 +50,7 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleSh
 	if (ramp_adjacent()) {}
 	draw.setPosition(bounding_box.position - cam);
 	if (is_solid() && !is_spike()) { win.draw(draw); }
-	bounding_box.render(win, cam);
+	if (is_occupied()) { bounding_box.render(win, cam); }
 }
 
 void Tile::set_type() {

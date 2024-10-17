@@ -1,6 +1,7 @@
 
 #include "Shape.hpp"
 #include <ccmath/math/power/sqrt.hpp>
+#include "Math.hpp"
 #include <iostream>
 
 namespace shape {
@@ -31,7 +32,6 @@ Shape::Shape(Vec dim, int num_vertices) : dimensions(dim), num_sides(num_vertice
 		edges[i].x = vertices[static_cast<size_t>(i + 1) % vertices.size()].x - vertices[i].x;
 		edges[i].y = vertices[static_cast<size_t>(i + 1) % vertices.size()].y - vertices[i].y;
 		normals[i] = perp(edges[i]);
-		draw_vertices.push_back(sf::Vertex(vertices[0], sf::Color::Red));
 	}
 }
 
@@ -41,6 +41,7 @@ void Shape::set_position(const Vec new_pos) {
 }
 
 void Shape::update() {
+	if (vertices.empty()) { return; }
 	if (vertices.size() >= 4) {
 		vertices[0].x = position.x;
 		vertices[0].y = position.y;
@@ -50,10 +51,12 @@ void Shape::update() {
 		vertices[2].y = position.y + dimensions.y;
 		vertices[3].x = position.x;
 		vertices[3].y = position.y + dimensions.y;
+	} else {
+		for (auto& vert : vertices) { vert += position; }
 	}
-	for (int i = 0; i < vertices.size(); i++) {
-		edges[i].x = vertices[(i + 1) % vertices.size()].x - vertices[i].x;
-		edges[i].y = vertices[(i + 1) % vertices.size()].y - vertices[i].y;
+	for (auto i{0}; i < vertices.size(); ++i) {
+		edges[i].x = vertices[static_cast<size_t>(i + 1) % vertices.size()].x - vertices[i].x;
+		edges[i].y = vertices[static_cast<size_t>(i + 1) % vertices.size()].y - vertices[i].y;
 		normals[i] = perp(edges[i]);
 	}
 }
@@ -71,14 +74,10 @@ Shape::Vec Shape::get_center() {
 	return result;
 }
 
-static float const NORMAL_TOLERANCE = 0.0001f;
-
-float Shape::getLength(const Vec v) { return ccm::sqrt(v.x * v.x + v.y * v.y); }
-
 // Returns normalized vector
 Shape::Vec Shape::getNormalized(const Vec v) {
-	float length = getLength(v);
-	if (length < NORMAL_TOLERANCE) { return Vec(); }
+	float length = util::magnitude(v);
+	if (length == 0.f) { return Vec(); }
 	return Vec(v.x / length, v.y / length);
 }
 
@@ -99,6 +98,15 @@ Shape::Vec Shape::projectOnAxis(const std::vector<Vec> vertices, const Vec axis)
 	return Vec(min, max);
 }
 
+Shape::Vec Shape::project_circle_on_axis(Vec center, float radius, Vec const axis) {
+	float min = std::numeric_limits<float>::infinity();
+	float max = -std::numeric_limits<float>::infinity();
+	float projection = dotProduct(center, axis);
+	if ((projection - radius) < min) { min = projection - radius; }
+	if ((projection + radius) > max) { max = projection + radius; }
+	return Vec(min, max);
+}
+
 // a and b are ranges and it's assumed that a.x <= a.y and b.x <= b.y
 bool Shape::areOverlapping(Vec const& a, Vec const& b) { return a.x <= b.y && a.y >= b.x; }
 
@@ -114,13 +122,24 @@ Shape::Vec Shape::getThisCenter() { return (Vec(position.x + dimensions.x / 2.f,
 
 std::vector<Shape::Vec> Shape::getVertices(Shape const& shape) { return shape.vertices; }
 
+std::vector<sf::Vector2<float>> Shape::get_poles(sf::CircleShape const& circle) {
+	auto ret = std::vector<sf::Vector2<float>>{};
+	for (auto& normal : normals) {
+		auto r1 = circle.getPosition() + normal * circle.getRadius();
+		auto r2 = circle.getPosition() - normal * circle.getRadius();
+		ret.push_back(r1);
+		ret.push_back(r2);
+	}
+	return ret;
+}
+
 Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 	auto t_mtv = Vec{};
-	auto& vertices1 = vertices;
-	auto vertices2 = getVertices(obb2);
+	auto const& vertices1 = vertices;
+	auto const vertices2 = getVertices(obb2);
 
-	auto& axes1 = normals;
-	auto& axes2 = obb2.normals;
+	auto const& axes1 = normals;
+	auto const& axes2 = obb2.normals;
 
 	// we need to find the minimal overlap and axis on which it happens
 	auto minOverlap = std::numeric_limits<float>::max();
@@ -130,7 +149,7 @@ Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 		Vec proj2 = projectOnAxis(vertices2, axis);
 
 		float overlap = getOverlapLength(proj1, proj2);
-		if (overlap < NORMAL_TOLERANCE) { // shapes are not overlapping
+		if (overlap == 0.f) { // shapes are not overlapping
 			return {};
 		} else {
 			if (overlap < minOverlap) {
@@ -145,7 +164,7 @@ Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 		Vec proj2 = projectOnAxis(vertices2, axis);
 
 		float overlap = getOverlapLength(proj1, proj2);
-		if (overlap < NORMAL_TOLERANCE) { // shapes are not overlapping
+		if (overlap == 0.f) { // shapes are not overlapping
 			return {};
 		} else {
 			if (overlap < minOverlap) {
@@ -169,11 +188,11 @@ Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 
 bool Shape::SAT(Shape const& other) {
 	auto t_mtv = Vec{};
-	auto& vertices1 = vertices;
-	auto vertices2 = getVertices(other);
+	auto const& vertices1 = vertices;
+	auto const vertices2 = getVertices(other);
 
-	auto& axes1 = normals;
-	auto& axes2 = other.normals;
+	auto const& axes1 = normals;
+	auto const& axes2 = other.normals;
 
 	// we need to find the minimal overlap and axis on which it happens
 	auto minOverlap = std::numeric_limits<float>::max();
@@ -213,6 +232,15 @@ bool Shape::SAT(Shape const& other) {
 	return true;
 }
 
+bool Shape::circle_SAT(sf::CircleShape const& circle) {
+	for (auto& axis : normals) {
+		auto proj1 = projectOnAxis(vertices, axis);
+		auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), axis);
+		if (!areOverlapping(proj1, proj2)) { return false; }
+	}
+	return true;
+}
+
 bool Shape::overlaps(Shape const& other) const {
 	bool ret{true};
 	if (vertices.at(0).x > other.vertices.at(1).x) { ret = false; }
@@ -232,11 +260,18 @@ bool Shape::contains_point(Vec point) {
 }
 
 void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (num_sides == 4) {// define a 100x100 square, red, with a 10x10 texture mapped on it
-		sf::Vertex vertices[] = {sf::Vertex(vertices[0].position - cam, sf::Color::Red, sf::Vector2f(0, 0)), sf::Vertex(vertices[1].position - cam, sf::Color::Red, sf::Vector2f(0, 10)),
-								 sf::Vertex(vertices[2].position - cam, sf::Color::Red, sf::Vector2f(10, 10)), sf::Vertex(vertices[3].position - cam, sf::Color::Red, sf::Vector2f(10, 10))};
-		// draw it
-		win.draw(vertices, 4, sf::Quads);
+	if (vertices.size() == 3) {
+		sf::Vertex line[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, sf::Color::Red}, {{vertices[1].x - cam.x, vertices[1].y - cam.y}, sf::Color::Red}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, sf::Color::Red}};
+		win.draw(line, 3, sf::Triangles);
+	}
+	if (vertices.size() == 4) {
+		auto color = non_square() ? sf::Color{0, 0, 255, 128} : sf::Color{0, 255, 255, 128};
+		sf::Vertex line[] = {
+			{{vertices[0].x - cam.x, vertices[0].y - cam.y}, color}, {{vertices[1].x - cam.x, vertices[1].y - cam.y}, color}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, color}, {{vertices[3].x - cam.x, vertices[3].y - cam.y}, color}};
+		win.draw(line, 4, sf::Quads);
+
+		sf::Vertex norm[] = {{{normals[0].x - cam.x, normals[0].y - cam.y}, sf::Color{255, 0, 0, 128}}, {{normals[0].x - cam.x, normals[0].y - cam.y - 8.f}, sf::Color{255, 0, 0, 128}}};
+		win.draw(norm, 2, sf::Lines);
 	}
 }
 
@@ -244,10 +279,10 @@ float Shape::get_height_at(float x) const {
 	auto rise = vertices.at(1).y - vertices.at(0).y;
 	auto run = vertices.at(1).x - vertices.at(0).x;
 	auto slope = -1 * rise / run;
-	auto max_height = std::max(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y);
-	auto min_height = std::min(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y);
+	auto max_height = num_sides == 4 ? std::max(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::max(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);
+	auto min_height = num_sides == 4 ? std::min(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::min(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);
 	// y intercept is always the left ramp height
-	auto b = vertices.at(3).y - vertices.at(0).y;
+	auto b = num_sides == 4 ? vertices.at(3).y - vertices.at(0).y : vertices.at(2).y - vertices.at(0).y;
 	auto y = std::min(slope * x + b, max_height);
 	return y;
 }

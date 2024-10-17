@@ -49,8 +49,6 @@ void Grid::check_neighbors(int i) {
 void Grid::seed_vertex(int index) {
 	auto& tile = cells.at(index);
 	tile.set_type();
-	// check vector bounds
-	// 
 	// this function creates slants for appropriate tiles
 	switch (tile.value) {
 		// top left long ramp
@@ -72,7 +70,7 @@ void Grid::seed_vertex(int index) {
 		break;
 		// top right long ramp
 	case CEIL_SLANT_INDEX + 7:
-		tile.bounding_box.vertices[2].y -= spacing / 4;
+		tile.bounding_box.vertices[3].y -= spacing / 4;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case CEIL_SLANT_INDEX + 6:
@@ -194,11 +192,6 @@ void Grid::seed_vertex(int index) {
 		tile.bounding_box.vertices[0].y += spacing;
 		break;
 	default: break;
-	}
-	for (int i = 0; i < tile.bounding_box.vertices.size(); i++) {
-		tile.bounding_box.edges[i].x = tile.bounding_box.vertices[static_cast<size_t>(i + 1) % tile.bounding_box.vertices.size()].x - tile.bounding_box.vertices[i].x;
-		tile.bounding_box.edges[i].y = tile.bounding_box.vertices[static_cast<size_t>(i + 1) % tile.bounding_box.vertices.size()].y - tile.bounding_box.vertices[i].y;
-		tile.bounding_box.normals[i] = tile.bounding_box.perp(tile.bounding_box.edges[i]);
 	}
 }
 

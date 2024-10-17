@@ -1001,9 +1001,13 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
 							if (ImGui::BeginTabItem("Weapon")) {
 								ImGui::Text("Loadout:");
-								for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text(gun.get()->label.data()); }
+								if (player.arsenal) {
+									for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text(gun.get()->label.data()); }
+								}
 								ImGui::Text("Hotbar:");
-								for (auto& gun : player.hotbar.value().get_ids()) { ImGui::Text("%i", gun); }
+								if (player.hotbar) {
+									for (auto& gun : player.hotbar.value().get_ids()) { ImGui::Text("%i", gun); }
+								}
 								ImGui::Text("Player has arsenal? %s", player.arsenal ? "Yes" : "No");
 								ImGui::Text("Loadout Size: %i", player.arsenal ? player.arsenal.value().size() : 0);
 								playtest_sync();

@@ -12,8 +12,6 @@
 
 namespace shape {
 
-float const error = 0.0001f;
-
 class Shape {
 
   public:
@@ -28,22 +26,28 @@ class Shape {
 
 	Vec perp(Vec edg);
 
-	float getLength(Vec const v);
 	Vec getNormalized(const Vec v);
 	float dotProduct(const Vec a, const Vec b);
 	Vec getNormal(const Vec v);
 	Vec projectOnAxis(const std::vector<Vec> vertices, const Vec axis);
+	Vec project_circle_on_axis(Vec center, float radius, const Vec axis);
 	bool areOverlapping(Vec const& a, Vec const& b);
 	float getOverlapLength(Vec const& a, Vec const& b);
 	Vec getCenter(Shape const& shape);
 	Vec getThisCenter();
 	std::vector<Vec> getVertices(Shape const& shape);
+	std::vector<sf::Vector2<float>> get_poles(sf::CircleShape const& circle);
 	Vec testCollisionGetMTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
+	bool circle_SAT(sf::CircleShape const& circle);
 	bool overlaps(Shape const& other) const;
 	bool contains_point(Vec point);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 
+	[[nodiscard]] auto non_square() const -> bool {
+		if (num_sides < 4) { return true; }
+		return vertices[0].y != vertices[1].y || vertices[2].y != vertices[3].y;
+	}
 	[[nodiscard]] auto left() const -> float { return position.x; }
 	[[nodiscard]] auto right() const -> float { return position.x + dimensions.x; }
 	[[nodiscard]] auto top() const -> float { return position.y; }
@@ -60,8 +64,6 @@ class Shape {
 	std::vector<Vec> edges{};
 	std::vector<Vec> normals{};
 	Vec axis{};
-
-	std::vector<sf::Vertex> draw_vertices{};
 
 	// for hurtboxes
 	Vec dimensions{};

@@ -435,7 +435,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	// map foreground tiles
 	for (int i = 4; i < NUM_LAYERS; ++i) {
-		if (svc.greyblock_mode() && i != 4) { continue; }
+		if (svc.greyblock_mode()) { continue; }
 		layer_textures.at(i).display();
 		layer_sprite.setTexture(layer_textures.at(i).getTexture());
 		layer_sprite.setPosition(-cam);
@@ -455,10 +455,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& effect : effects) { effect.render(svc, win, cam); }
 
 	player->render_indicators(svc, win, cam);
-
-	if (svc.greyblock_mode()) {
-		layers.at(MIDDLEGROUND).grid.render(win, cam);
-	}
 
 	if (real_dimensions.y < svc.constants.screen_dimensions.y) {
 		float ydiff = (svc.constants.screen_dimensions.y - real_dimensions.y) / 2;
@@ -498,6 +494,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		win.draw(center_box);
 		center_box.setPosition(0.f, svc.constants.f_screen_dimensions.y * 0.5f);
 		win.draw(center_box);
+		get_layers().at(MIDDLEGROUND).grid.render(win, cam);
 		for(auto& tile : get_layers().at(MIDDLEGROUND).grid.cells) {
 			if (tile.debug_flag) {
 				svc.debug_text.setString("c");

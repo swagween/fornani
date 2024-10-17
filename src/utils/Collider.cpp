@@ -133,13 +133,14 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			tile.debug_flag = true;
 			flags.external_state.set(ExternalState::on_ramp);
 			if (is_ground_ramp && !flags.general.test(General::ignore_resolution)) {
-				if (mtvs.actual.y < 0.f) { physics.position.y += mtvs.actual.y; }
+				//if (mtvs.actual.y < 0.f) { physics.position.y -= abs(mtvs.actual.y); }
+				physics.position.y -= abs(mtvs.actual.y);
 				// still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping)) {
 					physics.zero_y();
 				}
 				// std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
-				if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
+				//if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
 			}
 			if (is_ceiling_ramp) { correct_x_y(mtvs.actual); }
 			// cancel dash
@@ -166,7 +167,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				flags.external_state.set(ExternalState::world_collision);
 			}
 		}
-		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping)) {
+		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.velocity.y > -0.01f) {
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.position.x))); }
 			physics.position.y = cell.position.y + cell.dimensions.y - maximum_ramp_height - dimensions.y;

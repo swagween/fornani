@@ -15,7 +15,7 @@ class CircleSensor {
 	void set_position(sf::Vector2<float> position);
 	sf::CircleShape bounds{};
 	sf::CircleShape drawable{};
-	bool within_bounds(shape::Shape& rect) const;
+	bool within_bounds(shape::Shape& shape) const;
 
 	auto activate() -> void { state.set(SensorState::active); }
 	auto deactivate() -> void { state.reset(SensorState::active); }
