@@ -193,6 +193,7 @@ void Grid::seed_vertex(int index) {
 		break;
 	default: break;
 	}
+	tile.bounding_box.set_normals();
 }
 
 void Grid::destroy_cell(sf::Vector2<int> pos) {

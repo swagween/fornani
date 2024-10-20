@@ -24,7 +24,22 @@ float const default_detector_height = 18.f;
 
 enum class General { ignore_resolution, complex, pushable, soft };
 enum class Animation { just_landed, sliding };
-enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision, on_flat_surface };
+enum class State {
+	just_collided,
+	is_any_jump_collision,
+	is_any_collision,
+	just_landed,
+	ceiling_collision,
+	grounded,
+	world_grounded,
+	on_ramp,
+	ledge_left,
+	ledge_right,
+	left_wallslide_collision,
+	right_wallslide_collision,
+	on_flat_surface,
+	tickwise_ramp_collision
+};
 enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision, world_collision, horiz_world_collision, vert_world_collision, world_grounded, jumped_into, on_ramp, tile_debug_flag };
 enum class PermaFlags { world_grounded, downhill };
 

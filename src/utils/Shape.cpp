@@ -134,7 +134,6 @@ std::vector<sf::Vector2<float>> Shape::get_poles(sf::CircleShape const& circle) 
 }
 
 Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
-	set_normals();
 	auto t_mtv = Vec{};
 	auto const& vertices1 = vertices;
 	auto const vertices2 = getVertices(obb2);
@@ -188,7 +187,6 @@ Shape::Vec Shape::testCollisionGetMTV(Shape const& obb1, Shape const& obb2) {
 }
 
 bool Shape::SAT(Shape const& other) {
-	set_normals();
 	auto t_mtv = Vec{};
 	auto const& vertices1 = vertices;
 	auto const vertices2 = getVertices(other);
@@ -235,7 +233,6 @@ bool Shape::SAT(Shape const& other) {
 }
 
 bool Shape::circle_SAT(sf::CircleShape const& circle) {
-	set_normals();
 	for (auto& axis : normals) {
 		auto proj1 = projectOnAxis(vertices, axis);
 		auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), axis);
@@ -293,9 +290,8 @@ void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	for (int i{0}; i < normals.size(); ++i) {
 		if (!non_square()) { break; }
 		auto start = vertices[i] + edges[i] * 0.5f;
-		auto scale = 12.f;
+		auto scale = -8.f;
 		sf::Vertex norm[] = {{{start.x - cam.x, start.y - cam.y}, sf::Color{255, 0, 0, 128}}, {{start.x + normals[i].x * scale - cam.x, start.y + normals[i].y * scale - cam.y}, sf::Color{255, 0, 0, 128}}};
-		if (util::magnitude(normals[i]) != 1.f) { std::cout << util::magnitude(normals[i]) << "\n"; }
 		win.draw(norm, 2, sf::Lines);
 	}
 }

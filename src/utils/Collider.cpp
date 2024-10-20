@@ -84,7 +84,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	mtvs.horizontal = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, cell);
 	mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, cell);
 
-	float vert_threshold = 5.5f; // for landing
+	float vert_threshold = 0.1f; // for landing
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
 		if (collision_depths) { collision_depths.value().calculate(*this, cell); }
@@ -128,14 +128,12 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	tile.debug_flag = false;
 	if (is_ramp) {
 		flags.external_state.set(ExternalState::tile_debug_flag);
-		bool falls_onto = is_ground_ramp && physics.apparent_velocity().y > vert_threshold;
-		bool jumps_into = physics.apparent_velocity().y < vert_threshold;
 		// ground ramp
 		// only handle ramp collisions if the bounding_box is colliding with it
 		if (bounding_box.SAT(cell)) {
-			flags.external_state.set(ExternalState::on_ramp);
-			if (is_ground_ramp && !flags.general.test(General::ignore_resolution)) {
-				//if (mtvs.actual.y < 0.f) { physics.position.y -= abs(mtvs.actual.y); }
+			flags.state.set(State::tickwise_ramp_collision);
+			if (is_ground_ramp) {
+				flags.external_state.set(ExternalState::on_ramp);
 				physics.position.y -= abs(mtvs.actual.y);
 				tile.debug_flag = true;
 				//flags.state.set(State::on_flat_surface);
@@ -146,30 +144,15 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				// std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
 				//if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
 			}
-			if (is_ceiling_ramp) { correct_x_y(mtvs.actual); }
+			if (is_ceiling_ramp) {
+				physics.position.y += abs(mtvs.actual.y);
+				correct_y(mtvs.vertical);
+				physics.acceleration.y = physics.gravity;
+				physics.velocity.y = 0.f;
+			}
 			// cancel dash
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
-		}
-		// we also need to check if the predictive bounding box is colliding a ramp, just to deal with falling/jumping onto and into ramps
-		if (predictive_combined.SAT(cell)) {
-			if (falls_onto) {
-				correct_corner(mtvs.combined);
-				flags.state.set(State::just_landed);
-				flags.animation.set(Animation::just_landed);
-				flags.external_state.set(ExternalState::world_collision);
-			}
-			if (is_ceiling_ramp) {
-				if (jumps_into) {
-					if (flags.movement.test(Movement::dashing)) {
-						correct_y(mtvs.combined);
-					} else {
-						flags.collision.set(Collision::any_collision);
-						correct_y(mtvs.combined + sf::Vector2<float>{8.f, 8.f}); // to prevent player gliding down ceiling ramps
-					}
-				}
-				flags.external_state.set(ExternalState::world_collision);
-			}
 		}
 		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f) {
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
@@ -217,6 +200,7 @@ void Collider::detect_map_collision(world::Map& map) {
 	flags.external_state.reset(ExternalState::on_ramp);
 	flags.external_state.reset(ExternalState::tile_debug_flag);
 	flags.perma_state = {};
+	flags.state.reset(State::tickwise_ramp_collision);
 
 	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;
 	auto top = map.get_index_at_position(vicinity.vertices.at(0));
@@ -224,6 +208,7 @@ void Collider::detect_map_collision(world::Map& map) {
 	auto right = map.get_index_at_position(vicinity.vertices.at(1)) - top;
 	for (auto i{top}; i <= bottom; i += static_cast<size_t>(map.dimensions.x)) {
 		auto left{0};
+		if (flags.state.test(State::tickwise_ramp_collision)) { continue; }
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;
 			if (index >= grid.cells.size() || index < 0) { continue; }

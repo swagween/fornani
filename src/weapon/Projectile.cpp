@@ -243,6 +243,7 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 		gravitator.render(svc, win, campos);
 		win.draw(box);
 		if (sensor) { sensor.value().render(win, campos); }
+		collider.render(win, campos);
 	} else {
 		win.draw(sprite);
 	}

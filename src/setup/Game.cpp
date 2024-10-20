@@ -801,6 +801,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / 32.f);
 					ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
 					ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
+					ImGui::Text("Apparent X Velocity: %.2f", player.collider.physics.apparent_velocity());
+					ImGui::Text("Apparent Y Velocity: %.2f", player.collider.physics.apparent_velocity());
 					ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.categories.inventory.items.size()));
 					ImGui::Text("Visit History: ");
 					for (auto& room : player.visit_history.rooms_visited) {
