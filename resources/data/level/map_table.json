@@ -1,6 +1,10 @@
 {
   "rooms": [
     {
+      "room_id": 9998,
+      "label": "COLLISION_TEST"
+    },
+    {
       "room_id": 121,
       "label": "FIRSTWIND_ARENA_01"
     },

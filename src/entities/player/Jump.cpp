@@ -23,6 +23,12 @@ void Jump::reset_all() {
 
 void Jump::request_jump() { request.start(request_time); }
 
+void Jump::cancel() {
+	triggers.set(JumpTrigger::is_released);
+	states.reset(JumpState::jump_held);
+	states.set(JumpState::jumping);
+}
+
 void Jump::prevent() { request.cancel(); }
 
 void Jump::doublejump() { jump_counter.update(); }

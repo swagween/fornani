@@ -617,8 +617,9 @@ bool Map::check_cell_collision(shape::Collider collider) {
 	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
-			if (j >= dimensions.x * dimensions.y || j < 0) { continue; }
-			auto& cell = grid.get_cell(static_cast<int>(i + j));
+			auto index = i + j;
+			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_solid()) { continue; }
 			cell.collision_check = true;
 			if (collider.predictive_combined.SAT(cell.bounding_box)) { return true; }
@@ -636,8 +637,9 @@ bool Map::check_cell_collision(shape::CircleCollider collider) {
 	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
-			if (j >= dimensions.x * dimensions.y || j < 0) { continue; }
-			auto& cell = grid.get_cell(static_cast<int>(i + j));
+			auto index = i + j;
+			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable() || cell.is_platform()) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return true; }
@@ -655,8 +657,9 @@ void Map::handle_cell_collision(shape::CircleCollider collider) {
 	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
-			if (j >= dimensions.x * dimensions.y || j < 0) { continue; }
-			auto& cell = grid.get_cell(static_cast<int>(i + j));
+			auto index = i + j;
+			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_solid()) { continue; }
 			cell.collision_check = true;
 			collider.handle_collision(cell.bounding_box);

@@ -47,7 +47,8 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleSh
 		draw.setFillColor(sf::Color{190, 255, 7, 180});
 		if (!surrounded) {}
 	}
-	if (ramp_adjacent()) {}
+	if (ramp_adjacent()) { draw.setFillColor(sf::Color{240, 155, 7, 180}); }
+	if (covered()) { draw.setFillColor(sf::Color{0, 155, 130, 180}); }
 	draw.setPosition(bounding_box.position - cam);
 	if (is_solid() && !is_spike()) { win.draw(draw); }
 	if (is_occupied()) { bounding_box.render(win, cam); }

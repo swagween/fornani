@@ -40,7 +40,20 @@ enum class State {
 	on_flat_surface,
 	tickwise_ramp_collision
 };
-enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision, world_collision, horiz_world_collision, vert_world_collision, world_grounded, jumped_into, on_ramp, tile_debug_flag };
+enum class ExternalState {
+	grounded,
+	collider_collision,
+	vert_collider_collision,
+	horiz_collider_collision,
+	world_collision,
+	horiz_world_collision,
+	vert_world_collision,
+	world_grounded,
+	jumped_into,
+	on_ramp,
+	tile_debug_flag,
+	ceiling_ramp_hit
+};
 enum class PermaFlags { world_grounded, downhill };
 
 enum class Collision {
@@ -108,6 +121,7 @@ class Collider {
 	[[nodiscard]] auto top() const -> float { return bounding_box.top(); }
 	[[nodiscard]] auto bottom() const -> float { return bounding_box.bottom(); }
 	[[nodiscard]] auto downhill() const -> bool { return flags.perma_state.test(PermaFlags::downhill); }
+	[[nodiscard]] auto hit_ceiling_ramp() const -> bool { return flags.external_state.test(ExternalState::ceiling_ramp_hit); }
 
 	float compute_length(sf::Vector2<float> const v);
 

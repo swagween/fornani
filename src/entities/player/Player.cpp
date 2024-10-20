@@ -71,6 +71,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	update_transponder(console, inventory_window);
 	if (!catalog.categories.abilities.has_ability(Abilities::double_jump)) { controller.get_jump().jump_counter.cancel(); }
 	controller.update(*m_services);
+	if (collider.hit_ceiling_ramp()) { controller.get_jump().cancel(); }
 
 	if (grounded()) { controller.reset_dash_count(); }
 
@@ -140,7 +141,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	calculate_sprite_offset();
 	if (flags.state.test(State::crushed)) { return; }
 	//debug
-	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.red;
+	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.green;
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
@@ -388,7 +389,7 @@ void Player::jump(world::Map& map) {
 		animation.state = AnimState::rise;
 		m_services->soundboard.flags.player.set(audio::Player::jump);
 		collider.flags.movement.set(shape::Movement::jumping);
-	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.velocity.y < 0) {
+	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.apparent_velocity().y < 0.0f) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 		controller.get_jump().reset();
 	}

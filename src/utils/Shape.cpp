@@ -299,6 +299,7 @@ void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 float Shape::get_height_at(float x) const {
 	auto rise = vertices.at(1).y - vertices.at(0).y;
 	auto run = vertices.at(1).x - vertices.at(0).x;
+	if (run == 0) { return 0.f; }
 	auto slope = -1 * rise / run;
 	auto max_height = num_sides == 4 ? std::max(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::max(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);
 	auto min_height = num_sides == 4 ? std::min(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::min(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);

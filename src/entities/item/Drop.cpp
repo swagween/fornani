@@ -7,8 +7,6 @@ namespace item {
 
 Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop"), special_id(special_id) {
 
-	collider = shape::Collider(drop_dimensions);
-	collider.sync_components();
 	collider.physics.elasticity = 0.8f;
 
 	sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
@@ -20,7 +18,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	if (type == DropType::gem) { collider.physics.elasticity = 1.f; }
 
 	collider.physics.set_global_friction(svc.data.drop[key]["friction"].as<float>());
-	collider.stats.GRAV = svc.data.drop[key]["gravity"].as<float>();
+	collider.physics.gravity = svc.data.drop[key]["gravity"].as<float>();
 	collider.physics.maximum_velocity = {32.f, 32.f};
 
 	auto& in_anim = svc.data.drop[key]["animation"];
@@ -49,7 +47,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	set_value();
 	set_texture(svc);
 
-	sparkler.set_dimensions(collider.bounding_box.dimensions);
+	sparkler.set_dimensions(drop_dimensions);
 }
 
 void Drop::seed(automa::ServiceProvider& svc, float probability) {
@@ -99,25 +97,23 @@ void Drop::set_texture(automa::ServiceProvider& svc) {
 void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	delay.update();
 	collider.update(svc);
-	collider.detect_map_collision(map);
-	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
-	for (auto& pushable : map.pushables) { collider.handle_collider_collision(pushable.get_bounding_box()); }
-	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
+	collider.handle_map_collision(map);
+	for (auto& breakable : map.breakables) { collider.handle_collision(breakable.get_bounding_box()); }
+	for (auto& pushable : map.pushables) { collider.handle_collision(pushable.get_bounding_box()); }
+	for (auto& platform : map.platforms) { collider.handle_collision(platform.bounding_box); }
 	for (auto& block : map.switch_blocks) {
-		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
+		if (block.on()) { collider.handle_collision(block.get_bounding_box()); }
 	}
-	for (auto& destroyer : map.destroyers) { collider.handle_collider_collision(destroyer.get_bounding_box()); }
-	for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
-	collider.reset();
-	collider.reset_ground_flags();
+	for (auto& destroyer : map.destroyers) { collider.handle_collision(destroyer.get_bounding_box()); }
+	for (auto& spike : map.spikes) { collider.handle_collision(spike.get_bounding_box()); }
 	collider.physics.acceleration = {};
-	if (collider.flags.external_state.test(shape::ExternalState::world_collision) && type == DropType::gem && !is_inactive() && abs(collider.physics.velocity.y) > 1.f) { svc.soundboard.flags.world.set(audio::World::wall_hit); }
+	if (collider.collided() && type == DropType::gem && !is_inactive() && abs(collider.physics.velocity.y) > 1.f) { svc.soundboard.flags.world.set(audio::World::wall_hit); }
 
 	lifespan.update();
 	afterlife.update();
 
 	sparkler.update(svc);
-	sparkler.set_position(collider.bounding_box.position);
+	sparkler.set_position(collider.position());
 
 	sprite_offset = {0.f, static_cast<float>(drop_dimensions.y - sprite_dimensions.y) * 0.5f};
 
@@ -127,7 +123,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	if (type == DropType::orb) { v = rarity == priceless ? 3 : (rarity == rare ? 2 : (rarity == uncommon ? 1 : 0)); }
 	if (type == DropType::gem) { v = special_id; }
 	sprite.set_origin(sprite_dimensions * 0.5f);
-	sprite.update(collider.get_center() + sprite_offset, u, v, true);
+	sprite.update(collider.position() + sprite_offset, u, v, true);
 
 	state_function = state_function();
 }
@@ -146,6 +142,8 @@ void Drop::set_position(sf::Vector2<float> pos) {
 	sparkler.set_position(pos);
 }
 
+void Drop::apply_force(sf::Vector2<float> force) { collider.physics.apply_force(force); }
+
 void Drop::destroy_completely() {
 	lifespan.cancel();
 	afterlife.cancel();
@@ -156,8 +154,6 @@ void Drop::deactivate() {
 	afterlife.start(1000);
 	sparkler.deactivate();
 }
-
-shape::Collider& Drop::get_collider() { return collider; }
 
 DropType Drop::get_type() const { return type; }
 

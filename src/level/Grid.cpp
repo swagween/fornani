@@ -194,6 +194,10 @@ void Grid::seed_vertex(int index) {
 	default: break;
 	}
 	tile.bounding_box.set_normals();
+	auto above = static_cast<int>(index - dimensions.x);
+	if (above >= 0) {
+		if (cells.at(static_cast<size_t>(above)).is_occupied()) { tile.flags.set(TileState::covered); }
+	}
 }
 
 void Grid::destroy_cell(sf::Vector2<int> pos) {

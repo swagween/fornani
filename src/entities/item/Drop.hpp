@@ -2,7 +2,7 @@
 #pragma once
 
 #include <string>
-#include "../../utils/Collider.hpp"
+#include "../../utils/CircleCollider.hpp"
 #include "../animation/AnimatedSprite.hpp"
 #include "../../utils/Cooldown.hpp"
 #include "../../particle/Sparkler.hpp"
@@ -35,16 +35,17 @@ class Drop {
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos);
+	void apply_force(sf::Vector2<float> force);
 
 	void destroy_completely();
 	void deactivate();
 
 	bool is_completely_gone() const;
 	bool is_inactive() const;
+	[[nodiscard]] auto collides_with(shape::Shape& shape) const -> bool { return collider.collides_with(shape); }
 	[[nodiscard]] auto get_rarity() const -> Rarity { return rarity; }
 	[[nodiscard]] auto delay_over() const -> bool { return delay.is_complete(); }
 
-	shape::Collider& get_collider();
 	DropType get_type() const;
 	int get_value() const;
 
@@ -56,7 +57,7 @@ class Drop {
   private:
 	DropType type{};
 	sf::Vector2<float> drop_dimensions{20.f, 20.f};
-	shape::Collider collider{};
+	shape::CircleCollider collider{16.f};
 	sf::Vector2<int> spritesheet_dimensions{};
 	sf::Vector2<float> sprite_dimensions{};
 	sf::Vector2<float> sprite_offset{};

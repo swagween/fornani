@@ -16,7 +16,7 @@ class Projectile;
 namespace world {
 class Map;
 enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable, pushable, spawner };
-enum class TileState { ramp_adjacent, big_ramp };
+enum class TileState { ramp_adjacent, big_ramp, covered };
 
 struct Tile {
 
@@ -49,6 +49,7 @@ struct Tile {
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
+	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool { return (value >= 208 && value < 212) || (value == 216 || value == 217) || (value == 220 || value == 221); }
 	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2<int> { return sf::Vector2<int>{static_cast<int>(bounding_box.position.x), static_cast<int>(bounding_box.position.y)}; }

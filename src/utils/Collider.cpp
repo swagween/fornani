@@ -27,17 +27,24 @@ void Collider::sync_components() {
 	vicinity.dimensions.y = dimensions.y + 2.f * vicinity_pad;
 	wallslider.dimensions.x = dimensions.x + 2.f * wallslide_pad;
 	wallslider.dimensions.y = dimensions.y * 0.7f;
+	wallslider.set_normals();
+	jumpbox.set_normals();
 
 	vertical.dimensions.x = 1.f;
 	vertical.dimensions.y = dimensions.y - 2.f * depth_buffer;
 	horizontal.dimensions.x = dimensions.x - 2.f * depth_buffer;
 	horizontal.dimensions.y = 1.f;
+	horizontal.set_normals();
+	vertical.set_normals();
 
 	predictive_vertical.dimensions.x = dimensions.x - 2.f * vertical_detector_buffer;
 	predictive_vertical.dimensions.y = dimensions.y + 2.f * vertical_detector_buffer;
+	predictive_vertical.set_normals();
 	predictive_horizontal.dimensions.x = dimensions.x + 2.f * horizontal_detector_buffer;
 	predictive_horizontal.dimensions.y = dimensions.y - 3.f * horizontal_detector_buffer;
+	predictive_horizontal.set_normals();
 	predictive_combined.dimensions = dimensions;
+	predictive_combined.set_normals();
 
 	vicinity.set_position(sf::Vector2<float>{physics.position.x - vicinity_pad + physics.apparent_velocity().x, physics.position.y - vicinity_pad + physics.apparent_velocity().y});
 	wallslider.set_position(sf::Vector2<float>{physics.position.x - wallslide_pad, physics.position.y + 2.f});
@@ -123,7 +130,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		if (flags.external_state.test(ExternalState::vert_world_collision)) { flags.external_state.reset(ExternalState::horiz_world_collision); }
 	}
 	// don't fix ramp position unless we're only colliding with ramps
-	if (!is_ramp && jumpbox.SAT(cell)) { flags.state.set(State::on_flat_surface); }
 	// now let's settle ramp collisions. remember, the collider has already been resolved from any previous cell collision
 	tile.debug_flag = false;
 	if (is_ramp) {
@@ -135,7 +141,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			if (is_ground_ramp) {
 				flags.external_state.set(ExternalState::on_ramp);
 				physics.position.y -= abs(mtvs.actual.y);
-				tile.debug_flag = true;
 				//flags.state.set(State::on_flat_surface);
 				// still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping)) {
@@ -145,29 +150,32 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				//if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
 			}
 			if (is_ceiling_ramp) {
-				physics.position.y += abs(mtvs.actual.y);
-				correct_y(mtvs.vertical);
-				physics.acceleration.y = physics.gravity;
-				physics.velocity.y = 0.f;
+				tile.debug_flag = true;
+				physics.position.y += abs(mtvs.combined.y) * 4.f;
+				if (physics.apparent_velocity().y < 0.f) { physics.zero_y(); }
+				flags.external_state.set(ExternalState::ceiling_ramp_hit);
 			}
 			// cancel dash
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
 		}
-		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f) {
+
+		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f) {
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.position.x))); }
 			physics.position.y = cell.position.y + cell.dimensions.y - maximum_ramp_height - dimensions.y;
-			if ((physics.apparent_velocity().x > 0.f && tile.is_negative_ramp()) || (physics.apparent_velocity().x < 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
+			if ((physics.apparent_velocity().x >= 0.f && tile.is_negative_ramp()) || (physics.apparent_velocity().x <= 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
 		} else if (flags.state.test(State::on_flat_surface)) {
 			flags.perma_state.reset(PermaFlags::downhill);
 		}
 	}
+	if (!is_ramp && jumpbox.SAT(cell) && !tile.covered()) { flags.state.set(State::on_flat_surface); }
 	if (!is_ramp && wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
 	// long-winded, but I want to reserve SAT for colliders that actually need it
 	if (flags.general.test(General::complex)) {
 		if (jumpbox.SAT(cell)) {
+			flags.external_state.reset(ExternalState::ceiling_ramp_hit);
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
 			flags.external_state.set(ExternalState::world_grounded);
@@ -180,6 +188,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		}
 	} else {
 		if (jumpbox.overlaps(cell)) {
+			flags.external_state.reset(ExternalState::ceiling_ramp_hit);
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
 			flags.external_state.set(ExternalState::world_grounded);
@@ -208,7 +217,6 @@ void Collider::detect_map_collision(world::Map& map) {
 	auto right = map.get_index_at_position(vicinity.vertices.at(1)) - top;
 	for (auto i{top}; i <= bottom; i += static_cast<size_t>(map.dimensions.x)) {
 		auto left{0};
-		if (flags.state.test(State::tickwise_ramp_collision)) { continue; }
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;
 			if (index >= grid.cells.size() || index < 0) { continue; }
@@ -392,7 +400,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setSize(dimensions);
 	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
 	box.setFillColor(colors.local);
-	flags.external_state.test(ExternalState::on_ramp) ? box.setOutlineColor(sf::Color{255, 255, 255, 190}) : box.setOutlineColor(sf::Color{0, 0, 255, 190});
+	flags.state.test(State::on_flat_surface) ? box.setOutlineColor(sf::Color{0, 255, 0, 190}) : box.setOutlineColor(sf::Color{255, 0, 0, 190});
 	box.setOutlineThickness(-1);
 	win.draw(box);
 
@@ -401,7 +409,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	box.setPosition(jumpbox.position.x - cam.x, jumpbox.position.y - cam.y);
 	box.setFillColor(sf::Color::Blue);
 	box.setOutlineColor(sf::Color::Transparent);
-	flags.state.test(State::is_any_jump_collision) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
+	flags.external_state.test(ExternalState::grounded) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
 	win.draw(box);
 
 	// draw hurtbox

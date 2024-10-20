@@ -49,11 +49,13 @@ void PhysicsComponent::zero() {
 void PhysicsComponent::zero_x() {
 	acceleration.x = 0.0f;
 	velocity.x *= -elasticity;
+	real_velocity.x *= -elasticity;
 }
 
 void PhysicsComponent::zero_y() {
 	acceleration.y = 0.0f;
 	velocity.y *= -elasticity;
+	real_velocity.y *= -elasticity;
 }
 
 void PhysicsComponent::hitstun() {}
