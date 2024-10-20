@@ -280,19 +280,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			}
 		}
 	}
-
-	// i need to refactor this...
-	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-		cell.collision_check = false;
-		// damage player if spikes
-		if (cell.is_death_spike() && player->collider.hurtbox.overlaps(cell.bounding_box)) { player->hurt(64); }
-
-		for (auto& grenade : active_grenades) {
-			for (auto& breakable : breakables) {
-				if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); }
-			}
+	for (auto& grenade : active_grenades) {
+		for (auto& breakable : breakables) {
+			if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); }
 		}
-		for (auto& proj : active_projectiles) { cell.on_hit(svc, *player, *this, proj); }
 	}
 
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
@@ -313,9 +304,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 		for (auto& vine : vines) { vine->on_hit(svc, *this, proj); }
-
-		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(proj.bounding_box)) { player->controller.get_shield().damage(proj.stats.base_damage * player->player_stats.shield_dampen); }
-		
+		proj.handle_collision(svc, *this);
 		proj.on_player_hit(*player);
 	}
 	for (auto& enemy : enemy_catalog.enemies) {
@@ -621,24 +610,58 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 
 bool Map::check_cell_collision(shape::Collider collider) {
 	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
-	auto range = collider.get_collision_range(*this);
 	auto& layers = m_services->data.get_layers(room_id);
-	for (auto i{range.first}; i < range.second; ++i) {
-		auto& cell = grid.get_cell(static_cast<int>(i));
-		if (!nearby(cell.bounding_box, collider.bounding_box)) {
-			continue;
-		} else {
-			// check vicinity so we can escape early
-			if (!collider.vicinity.overlaps(cell.bounding_box)) {
-				continue;
-			} else if (!cell.is_solid()) {
-				continue;
-			} else {
-				if (cell.value > 0 && collider.predictive_combined.SAT(cell.bounding_box)) { return true; }
-			}
+	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
+	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
+	auto right = get_index_at_position(collider.vicinity.vertices.at(1)) - top;
+	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+		auto left{0};
+		for (auto j{left}; j <= right; ++j) {
+			if (j >= dimensions.x * dimensions.y || j < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(i + j));
+			if (!cell.is_solid()) { continue; }
+			cell.collision_check = true;
+			if (collider.predictive_combined.SAT(cell.bounding_box)) { return true; }
 		}
 	}
 	return false;
+}
+
+bool Map::check_cell_collision(shape::CircleCollider collider) {
+	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+	auto& layers = m_services->data.get_layers(room_id);
+	auto top = get_index_at_position(collider.boundary.first);
+	auto bottom = get_index_at_position(collider.boundary.second);
+	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+		auto left{0};
+		for (auto j{left}; j <= right; ++j) {
+			if (j >= dimensions.x * dimensions.y || j < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(i + j));
+			if (!cell.is_collidable() || cell.is_platform()) { continue; }
+			cell.collision_check = true;
+			if (collider.collides_with(cell.bounding_box)) { return true; }
+		}
+	}
+	return false;
+}
+
+void Map::handle_cell_collision(shape::CircleCollider collider) {
+	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+	auto& layers = m_services->data.get_layers(room_id);
+	auto top = get_index_at_position(collider.boundary.first);
+	auto bottom = get_index_at_position(collider.boundary.second);
+	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+		auto left{0};
+		for (auto j{left}; j <= right; ++j) {
+			if (j >= dimensions.x * dimensions.y || j < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(i + j));
+			if (!cell.is_solid()) { continue; }
+			cell.collision_check = true;
+			collider.handle_collision(cell.bounding_box);
+		}
+	}
 }
 
 void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj) {
@@ -731,5 +754,7 @@ bool Map::overlaps_middleground(shape::Shape& test) const {
 std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_index_at_position(position); }
 
 int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_cell(get_index_at_position(position)).value; }
+
+Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.cells.at(get_index_at_position(position)); }
 
 } // namespace world

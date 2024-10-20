@@ -162,8 +162,27 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 			destroy(false, true);
 		}
 	}
-
 	if (state.test(arms::ProjectileState::destroyed)) { m_weapon->decrement_projectiles(); }
+}
+
+void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map) {
+	if (stats.transcendent) { return; }
+	collider.update(svc);
+	collider.set_position(physics.position);
+	if (map.check_cell_collision(collider)) {
+		if (!destruction_initiated()) {
+			map.effects.push_back(entity::Effect(svc, destruction_point + physics.position, {}, effect_type(), 2));
+			if (direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+		}
+		destroy(false);
+		if (stats.spring) {
+			if (hook.grapple_flags.test(arms::GrappleState::probing)) {
+				hook.spring.set_anchor(map.get_cell_at_position(physics.position).get_center());
+				hook.grapple_triggers.set(arms::GrappleTriggers::found);
+			}
+			map.handle_grappling_hook(svc, *this);
+		}
+	}
 }
 
 void Projectile::on_player_hit(player::Player& player) {

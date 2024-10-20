@@ -16,6 +16,7 @@
 #include "../particle/Sparkler.hpp"
 #include "../utils/BitFlags.hpp"
 #include "../utils/Cooldown.hpp"
+#include "../utils/CircleCollider.hpp"
 #include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
@@ -110,6 +111,7 @@ class Projectile {
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon);
 
 	void update(automa::ServiceProvider& svc, player::Player& player);
+	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void destroy(bool completely, bool whiffed = false);
@@ -171,7 +173,7 @@ class Projectile {
 	Weapon* m_weapon;
 
   private:
-
+	shape::CircleCollider collider{4.f};
 	struct {
 		float damage_multiplier{1.f};
 	} variables{};

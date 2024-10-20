@@ -29,7 +29,7 @@ void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::M
 			}
 			if (proj.stats.spring && is_hookable()) {
 				if (proj.hook.grapple_flags.test(arms::GrappleState::probing)) {
-					proj.hook.spring.set_anchor(middle_point());
+					proj.hook.spring.set_anchor(get_center());
 					proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
 				}
 				map.handle_grappling_hook(svc, proj);
@@ -51,6 +51,7 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleSh
 	draw.setPosition(bounding_box.position - cam);
 	if (is_solid() && !is_spike()) { win.draw(draw); }
 	if (is_occupied()) { bounding_box.render(win, cam); }
+	collision_check = false;
 }
 
 void Tile::set_type() {

@@ -291,7 +291,11 @@ void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 		win.draw(line, 4, sf::Quads);
 	}
 	for (int i{0}; i < normals.size(); ++i) {
-		sf::Vertex norm[] = {{{vertices[i].x - cam.x, vertices[i].y - cam.y}, sf::Color{255, 0, 0, 128}}, {{normals[i].x * 8.f - cam.x + vertices[i].x, normals[i].y * 8.f - cam.y + vertices[i].y}, sf::Color{255, 0, 0, 128}}};
+		if (!non_square()) { break; }
+		auto start = vertices[i] + edges[i] * 0.5f;
+		auto scale = 12.f;
+		sf::Vertex norm[] = {{{start.x - cam.x, start.y - cam.y}, sf::Color{255, 0, 0, 128}}, {{start.x + normals[i].x * scale - cam.x, start.y + normals[i].y * scale - cam.y}, sf::Color{255, 0, 0, 128}}};
+		if (util::magnitude(normals[i]) != 1.f) { std::cout << util::magnitude(normals[i]) << "\n"; }
 		win.draw(norm, 2, sf::Lines);
 	}
 }

@@ -32,6 +32,7 @@
 #include "../weapon/Grenade.hpp"
 #include "../story/CutsceneCatalog.hpp"
 #include "../utils/Stopwatch.hpp"
+#include "../utils/CircleCollider.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -104,6 +105,8 @@ class Map {
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
 	bool check_cell_collision(shape::Collider collider);
+	bool check_cell_collision(shape::CircleCollider collider);
+	void handle_cell_collision(shape::CircleCollider collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void shake_camera();
 	void clear();
@@ -117,6 +120,7 @@ class Map {
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
+	Tile& get_cell_at_position(sf::Vector2<float> position);
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};

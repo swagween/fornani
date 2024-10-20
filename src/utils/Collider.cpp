@@ -219,29 +219,22 @@ void Collider::detect_map_collision(world::Map& map) {
 	flags.perma_state = {};
 
 	auto& grid = map.get_layers().at(world::MIDDLEGROUND).grid;
-	auto range = get_collision_range(map);
-
-	for (auto i{range.first}; i <= range.second; ++i) {
-		if (i >= grid.cells.size() || i < 0) { continue; }
-		auto& cell = grid.get_cell(static_cast<int>(i));
-		if (!cell.is_collidable()) { continue; }
-		// check vicinity so we can escape early
-		if (vicinity.vertices.empty()) { return; }
-		if (!vicinity.overlaps(cell.bounding_box)) {
-			continue;
-		} else {
+	auto top = map.get_index_at_position(vicinity.vertices.at(0));
+	auto bottom = map.get_index_at_position(vicinity.vertices.at(3));
+	auto right = map.get_index_at_position(vicinity.vertices.at(1)) - top;
+	for (auto i{top}; i <= bottom; i += static_cast<size_t>(map.dimensions.x)) {
+		auto left{0};
+		for (auto j{left}; j <= right; ++j) {
+			auto index = i + j;
+			if (index >= grid.cells.size() || index < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(index));
+			if (!cell.is_collidable()) { continue; }
 			cell.collision_check = true;
-			if (cell.value > 0) { handle_map_collision(cell); }
+			handle_map_collision(cell);
 		}
 	}
 	maximum_ramp_height = 0.f;
 	flags.state.reset(State::on_flat_surface);
-}
-
-std::pair<size_t, size_t> Collider::get_collision_range(world::Map& map) {
-	auto start = map.get_index_at_position(vicinity.vertices.at(0));
-	auto end = map.get_index_at_position(vicinity.vertices.at(2));
-	return {start, end};
 }
 
 void Collider::correct_x(sf::Vector2<float> mtv) {
