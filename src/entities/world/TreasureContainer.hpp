@@ -29,7 +29,9 @@ class TreasureContainer {
 	[[nodiscard]] auto get_index() const -> int { return index; }
   private:
 	int index{};
+	sf::Vector2<float> root{};
 	item::Rarity rarity{};
+	float loot_multiplier{};
 	vfx::Gravitator gravitator{};
 	components::CircleSensor sensor{};
 	sf::Sprite sprite{};

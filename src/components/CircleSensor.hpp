@@ -16,6 +16,7 @@ class CircleSensor {
 	sf::CircleShape bounds{};
 	sf::CircleShape drawable{};
 	bool within_bounds(shape::Shape& shape) const;
+	sf::Vector2<float> get_MTV(shape::Shape& shape);
 
 	auto activate() -> void { state.set(SensorState::active); }
 	auto deactivate() -> void { state.reset(SensorState::active); }

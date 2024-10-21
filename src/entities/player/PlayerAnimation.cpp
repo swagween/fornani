@@ -205,6 +205,7 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 
 fsm::StateFunction PlayerAnimation::update_rise() {
 	animation.label = "rise";
+	//if (animation.frame_timer.get_cooldown() == 2) { std::cout << m_player->collider.physics.acceleration.y << "\n"; }
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::backflip, backflip)) { return PA_BIND(update_backflip); }

@@ -177,7 +177,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto already_open = static_cast<bool>(entry["already_open"].as_bool());
 		auto key_id = entry["key_id"].as<int>();
 		auto door_style = native_style_id;
-		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style));
+		auto mapdim = sf::Vector2<int>{dimensions};
+		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style, mapdim));
 		portals.back().update(svc);
 	}
 
@@ -226,14 +227,13 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		generate_layer_textures(svc);
 
 		player->map_reset();
-
 		transition.end();
-		loading.start(4);
+		loading.start(16);
 	}
 }
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
-	//if (svc.ticker.every_x_ticks(400)) { std::cout << "Collidable cells: " << collidable_indeces.size() << "\n"; }
+	// if (svc.ticker.every_x_ticks(400)) { std::cout << "Collidable cells: " << collidable_indeces.size() << "\n"; }
 	auto& layers = svc.data.get_layers(room_id);
 	loading.update();
 	//if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
@@ -333,7 +333,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& g : grass) { g->update(svc, *this, *player); }
 	player->collider.detect_map_collision(*this);
-	transition.update(*player);
+	if (loading.is_complete()) { transition.update(*player); }
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
@@ -345,6 +345,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && loading.is_complete()) {
 		// std::cout << "Launch death console.\n";
+		svc.app_flags.reset(automa::AppFlags::in_game);
 		console.set_source(svc.text.basic);
 		console.load_and_launch("death");
 		flags.state.set(LevelState::game_over);
@@ -608,7 +609,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	}
 }
 
-bool Map::check_cell_collision(shape::Collider collider) {
+bool Map::check_cell_collision(shape::Collider& collider) {
 	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
@@ -628,7 +629,7 @@ bool Map::check_cell_collision(shape::Collider collider) {
 	return false;
 }
 
-bool Map::check_cell_collision(shape::CircleCollider collider) {
+bool Map::check_cell_collision_circle(shape::CircleCollider& collider) {
 	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
@@ -640,7 +641,7 @@ bool Map::check_cell_collision(shape::CircleCollider collider) {
 			auto index = i + j;
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
-			if (!cell.is_collidable() || cell.is_platform()) { continue; }
+			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return true; }
 		}
@@ -648,9 +649,8 @@ bool Map::check_cell_collision(shape::CircleCollider collider) {
 	return false;
 }
 
-void Map::handle_cell_collision(shape::CircleCollider collider) {
+void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
-	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
 	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
@@ -660,7 +660,7 @@ void Map::handle_cell_collision(shape::CircleCollider collider) {
 			auto index = i + j;
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
-			if (!cell.is_solid()) { continue; }
+			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
 			cell.collision_check = true;
 			collider.handle_collision(cell.bounding_box);
 		}

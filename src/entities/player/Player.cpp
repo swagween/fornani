@@ -386,6 +386,7 @@ void Player::jump(world::Map& map) {
 		controller.get_jump().stop_jumpsquatting();
 		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
+		collider.physics.velocity.y = 0.f;
 		animation.state = AnimState::rise;
 		m_services->soundboard.flags.player.set(audio::Player::jump);
 		collider.flags.movement.set(shape::Movement::jumping);
@@ -393,7 +394,9 @@ void Player::jump(world::Map& map) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 		controller.get_jump().reset();
 	}
-	if (collider.flags.state.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
+	if (collider.flags.state.test(shape::State::just_landed)) {
+		controller.get_jump().reset_jumping();
+	}
 	if (catalog.categories.abilities.has_ability(Abilities::double_jump)) {
 		if (controller.get_jump().just_doublejumped()) {
 			collider.physics.velocity.y = 0.f;

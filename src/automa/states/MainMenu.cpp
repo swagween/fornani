@@ -37,9 +37,7 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	player.set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 	player.antennae.at(0).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 	player.antennae.at(1).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-
-	svc.music.load("clay");
-	svc.music.play_looped(20);
+	loading.start();
 };
 
 void MainMenu::init(ServiceProvider& svc, int room_number) {}
@@ -47,6 +45,13 @@ void MainMenu::init(ServiceProvider& svc, int room_number) {}
 void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void MainMenu::tick_update(ServiceProvider& svc) {
+
+	if (loading.is_almost_complete()) {
+		svc.music.load("clay");
+		svc.music.play_looped(20);
+	}
+	loading.update();
+
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {

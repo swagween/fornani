@@ -7,7 +7,7 @@ namespace item {
 
 Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop"), special_id(special_id) {
 
-	collider.physics.elasticity = 0.8f;
+	collider.physics.elasticity = 0.5f;
 
 	sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
 	sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();
@@ -18,8 +18,12 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	if (type == DropType::gem) { collider.physics.elasticity = 1.f; }
 
 	collider.physics.set_global_friction(svc.data.drop[key]["friction"].as<float>());
+	collider.physics.air_friction.y = 1.f;
+	collider.physics.air_friction.x = 0.99f;
+	collider.physics.ground_friction.y = 1.f;
+	collider.physics.ground_friction.x = 0.99f;
 	collider.physics.gravity = svc.data.drop[key]["gravity"].as<float>();
-	collider.physics.maximum_velocity = {32.f, 32.f};
+	collider.physics.maximum_velocity = {640.f, 640.f};
 
 	auto& in_anim = svc.data.drop[key]["animation"];
 	num_sprites = in_anim["num_sprites"].as<int>();
@@ -98,6 +102,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	delay.update();
 	collider.update(svc);
 	collider.handle_map_collision(map);
+	map.handle_cell_collision(collider);
 	for (auto& breakable : map.breakables) { collider.handle_collision(breakable.get_bounding_box()); }
 	for (auto& pushable : map.pushables) { collider.handle_collision(pushable.get_bounding_box()); }
 	for (auto& platform : map.platforms) { collider.handle_collision(platform.bounding_box); }
@@ -106,16 +111,16 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	}
 	for (auto& destroyer : map.destroyers) { collider.handle_collision(destroyer.get_bounding_box()); }
 	for (auto& spike : map.spikes) { collider.handle_collision(spike.get_bounding_box()); }
-	collider.physics.acceleration = {};
 	if (collider.collided() && type == DropType::gem && !is_inactive() && abs(collider.physics.velocity.y) > 1.f) { svc.soundboard.flags.world.set(audio::World::wall_hit); }
 
+	collider.physics.acceleration = {};
 	lifespan.update();
 	afterlife.update();
 
 	sparkler.update(svc);
 	sparkler.set_position(collider.position());
 
-	sprite_offset = {0.f, static_cast<float>(drop_dimensions.y - sprite_dimensions.y) * 0.5f};
+	sprite_offset = {0.f, static_cast<float>(drop_dimensions.y - sprite_dimensions.y) * 0.5f + 6.f};
 
 	int u{};
 	int v{};

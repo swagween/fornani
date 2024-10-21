@@ -794,7 +794,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 					ImGui::Text("Coyote Time: %i", player.controller.get_jump().get_coyote());
 					ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
-					ImGui::Text("Can Doublejump? %s", player.controller.get_jump().can_doublejump() ? "Yes" : "No");
+					ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
 					ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
 					ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
 					ImGui::Text("X Position: %.2f", player.collider.physics.position.x / 32.f);

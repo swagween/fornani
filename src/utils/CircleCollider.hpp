@@ -32,8 +32,8 @@ class CircleCollider {
 	[[nodiscard]] auto boundary_width() const -> float { return boundary.second.x - boundary.first.x; }
 	components::PhysicsComponent physics{};
 	std::pair<sf::Vector2<float>, sf::Vector2<float>> boundary{};
-  private:
 	components::CircleSensor sensor{};
+  private:
 	sf::Vector2<float> bound{64.f, 64.f};
 	util::BitFlags<CircleColliderFlags> flags{};
 };

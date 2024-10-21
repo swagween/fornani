@@ -13,10 +13,12 @@ TreasureContainer::TreasureContainer(automa::ServiceProvider& svc, item::Rarity 
 	sprite.setOrigin({8.f, 8.f});
 	sensor.bounds.setRadius(8.f);
 	sensor.bounds.setOrigin({8.f, 8.f});
+	loot_multiplier = 1.f + static_cast<float>(rarity) * 4.f;
+	root = svc.random.random_vector_float(-16.f, 16.f);
 }
 
 void TreasureContainer::update(automa::ServiceProvider& svc, sf::Vector2<float> target) {
-	gravitator.set_target_position(target);
+	gravitator.set_target_position(target + root);
 	gravitator.update(svc);
 	sensor.set_position(gravitator.position());
 	health.update();
@@ -30,7 +32,7 @@ void TreasureContainer::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 			health.inflict(proj.get_damage());
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 			if (health.is_dead()) {
-				map.active_loot.push_back(item::Loot(svc, {2, 3}, 1.f, gravitator.position(), 0, rarity == item::Rarity::priceless, 0));
+				map.active_loot.push_back(item::Loot(svc, {2, 3}, loot_multiplier, gravitator.position(), 0, rarity == item::Rarity::priceless, 0));
 				svc.soundboard.flags.world.set(audio::World::block_toggle);
 				map.effects.push_back(entity::Effect(svc, sensor.bounds.getPosition() - sf::Vector2<float>{8.f, 8.f}, {}, 0, 0));
 			}

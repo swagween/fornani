@@ -18,7 +18,6 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	//circle.bounds.setRadius(16.f);
 	//circle.bounds.setOrigin({16.f, 16.f});
 
-	svc.app_flags.set(AppFlags::in_game);
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
 		svc.stats.world.rooms_discovered.update();
@@ -52,13 +51,16 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player->height()};
 				player->set_position(spawn_position, true);
 				camera.force_center(player->anchor_point);
-				if (portal.activate_on_contact()) {
+				if (portal.activate_on_contact() && portal.is_left_or_right()) {
 					enter_room.start(90);
 				} else {
 					if (!portal.already_open()) { portal.close(); }
 					player->set_idle();
 				}
-				if (portal.dimensions.x > 33.f && portal.position.y > 1.f) { player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity; }
+				if (portal.is_bottom()) {
+					player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity;
+					player->collider.physics.acceleration.x = player->controller.facing_left() ? -player->physics_stats.x_acc : player->physics_stats.x_acc;
+				}
 			}
 		}
 	}
@@ -77,11 +79,14 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	player->controller.prevent_movement();
 	inventory_window.update_wardrobe(svc, *player);
 	console.nani_portrait.set_custom_portrait(inventory_window.get_wardrobe_sprite());
+	loading.start();
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void Dojo::tick_update(ServiceProvider& svc) {
+	loading.is_complete() ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
+	loading.update();
 	svc.soundboard.play_sounds(svc);
 	if (pause_window.active()) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
@@ -172,10 +177,15 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	// B.update(svc);
 	// auto mtv = A.bounding_box.testCollisionGetMTV(B.bounding_box, A.bounding_box);
 	// if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT x: " << mtv.x << "\n"; }
-	//circle.deactivate();
-	//for (auto& cell : map.get_layers().at(world::MIDDLEGROUND).grid.cells) {
-	//if (circle.within_bounds(cell.bounding_box) && cell.is_collidable()) { circle.activate(); }
-	//}
+	/*circle.update(svc);
+	circle.sensor.deactivate();
+	for (auto& cell : map.get_layers().at(world::MIDDLEGROUND).grid.cells) {
+		if (circle.collides_with(cell.bounding_box) && cell.is_collidable()) {
+			circle.sensor.activate();
+			auto mtv = circle.sensor.get_MTV(cell.bounding_box);
+			if (svc.ticker.every_x_ticks(50)) { std::cout << "MTV: x[ " << mtv.x << " ] : y[ " << mtv.y << " ]\n"; }
+		}
+	}*/
 
 	player->update(map, console, inventory_window);
 	map.update(svc, console, inventory_window);
@@ -204,7 +214,7 @@ void Dojo::frame_update(ServiceProvider& svc) {
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	// B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
-	//circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()));
+	//circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()) + camera.get_position());
 
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());

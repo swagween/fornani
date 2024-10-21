@@ -25,6 +25,7 @@ CircleSensor::CircleSensor(float radius) {
 
 void CircleSensor::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	drawable = bounds;
+	drawable.setOrigin({bounds.getRadius(), bounds.getRadius()});
 	drawable.setFillColor(active() ? sf::Color{20, 160, 160, 100} : sf::Color::Transparent);
 	drawable.setPosition(bounds.getPosition() - cam);
 	win.draw(drawable);
@@ -39,4 +40,7 @@ bool CircleSensor::within_bounds(shape::Shape& shape) const {
 	sf::Vector2<float> closest{x, y};
 	return util::magnitude(closest - bounds.getPosition()) < bounds.getRadius();
 }
+
+sf::Vector2<float> CircleSensor::get_MTV(shape::Shape& shape) { return shape.circle_SAT_MTV(bounds); }
+
 } // namespace components

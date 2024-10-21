@@ -24,7 +24,7 @@ Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length
 		encodings.push_back({index.get(), sign});
 		last_index = index.get();
 		// optionally add treasure container to vine segment
-		if (svc.random.percent_chance(10)) {
+		if (svc.random.percent_chance(5)) {
 			auto rarity = item::Rarity::common;
 			auto random_sample = svc.random.random_range_float(0.0f, 1.0f);
 			if (random_sample < constants.priceless) {

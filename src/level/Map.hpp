@@ -104,9 +104,9 @@ class Map {
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
-	bool check_cell_collision(shape::Collider collider);
-	bool check_cell_collision(shape::CircleCollider collider);
-	void handle_cell_collision(shape::CircleCollider collider);
+	bool check_cell_collision(shape::Collider& collider);
+	bool check_cell_collision_circle(shape::CircleCollider& collider);
+	void handle_cell_collision(shape::CircleCollider& collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void shake_camera();
 	void clear();

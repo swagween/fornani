@@ -43,6 +43,13 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 		randomize(svc, svc.assets.hard_hit, 0.1f, 60.f);
 		cooldowns.hard_hit.start();
 	}
+
+	if (!svc.in_game()) {
+		flags = {};
+		proximities = {};
+		return;
+	} // exit early if not in-game
+
 	if (flags.world.test(World::wall_hit)) { randomize(svc, svc.assets.wall_hit, 0.1f); }
 	if (flags.world.test(World::thud)) { randomize(svc, svc.assets.thud, 0.1f); }
 	if (flags.world.test(World::small_crash)) { randomize(svc, svc.assets.small_crash, 0.1f); }

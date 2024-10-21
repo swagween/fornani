@@ -23,6 +23,7 @@ class MainMenu : public GameState {
 	sf::Text subtitle{};
 	sf::Text instruction{};
 	std::vector<sf::Sprite> title_assets{};
+	util::Cooldown loading{16};
 };
 
 }

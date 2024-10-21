@@ -91,7 +91,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	mtvs.horizontal = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, cell);
 	mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, cell);
 
-	float vert_threshold = 0.1f; // for landing
+	float vert_threshold = 1.1f; // for landing
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
 		if (collision_depths) { collision_depths.value().calculate(*this, cell); }
@@ -99,7 +99,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		bool vert{};
 		if (predictive_vertical.SAT(cell)) {
 			mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
-			//if (abs(mtvs.combined.x > 0.0001f)) { std::cout << "Combined MTV reading: " << mtvs.combined.x << "\n"; }
 			if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 				flags.state.set(State::just_landed);
 				flags.animation.set(Animation::just_landed);
@@ -160,7 +159,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.external_state.set(ExternalState::world_collision);
 		}
 
-		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f) {
+		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp()) {
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.position.x))); }
 			physics.position.y = cell.position.y + cell.dimensions.y - maximum_ramp_height - dimensions.y;

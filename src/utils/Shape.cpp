@@ -256,6 +256,42 @@ bool Shape::circle_SAT(sf::CircleShape const& circle) {
 	return true;
 }
 
+sf::Vector2<float> Shape::circle_SAT_MTV(sf::CircleShape const& circle) {
+	auto ret = sf::Vector2<float>{};
+	auto min_overlap = std::numeric_limits<float>::max();
+	for (auto& axis : normals) {
+		auto proj1 = projectOnAxis(vertices, axis);
+		auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), axis);
+		auto overlap = getOverlapLength(proj1, proj2);
+		if (overlap < min_overlap) {
+			min_overlap = overlap;
+			ret = axis * min_overlap;
+		}
+		if (!areOverlapping(proj1, proj2)) { return {}; }
+	}
+	// check fourth axis
+	auto closest_vertex_axis{sf::Vector2<float>{}};
+	auto distance{std::numeric_limits<float>::max()};
+	auto min_dist{std::numeric_limits<float>::max()};
+	for (auto& vertex : vertices) {
+		distance = util::magnitude(vertex - circle.getPosition());
+		if (distance < min_dist) {
+			closest_vertex_axis = vertex - circle.getPosition();
+			min_dist = distance;
+		}
+	}
+	closest_vertex_axis = getNormalized(closest_vertex_axis);
+	auto proj1 = projectOnAxis(vertices, closest_vertex_axis);
+	auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), closest_vertex_axis);
+	auto overlap = getOverlapLength(proj1, proj2);
+	if (overlap < min_overlap) {
+		min_overlap = overlap;
+		ret = closest_vertex_axis * min_overlap;
+	}
+	if (!areOverlapping(proj1, proj2)) { return {}; }
+	return ret;
+}
+
 bool Shape::overlaps(Shape const& other) const {
 	bool ret{true};
 	if (vertices.at(0).x > other.vertices.at(1).x) { ret = false; }

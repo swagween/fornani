@@ -108,6 +108,7 @@ class Collider {
 	sf::Vector2<float> snap_to_grid(float size = 1.f, float scale = 32.f, float factor = 2.f);
 
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
+	[[nodiscard]] auto jumping() const -> bool { return flags.movement.test(Movement::jumping); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
 	[[nodiscard]] auto external_world_grounded() const -> bool { return flags.external_state.test(ExternalState::world_grounded); }
 	[[nodiscard]] auto jumped_into() -> bool { return flags.external_state.consume(ExternalState::jumped_into); }

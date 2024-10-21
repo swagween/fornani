@@ -41,6 +41,7 @@ class Shape {
 	Vec testCollisionGetMTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
 	bool circle_SAT(sf::CircleShape const& circle);
+	sf::Vector2<float> circle_SAT_MTV(sf::CircleShape const& circle);
 	bool overlaps(Shape const& other) const;
 	bool contains_point(Vec point);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
