@@ -10,15 +10,19 @@
       "x": 102.0,
       "y": 327.0
     },
-    "arsenal": [],
+    "arsenal": [
+    ],
     "equipped_gun": 0,
-    "abilities": [],
+    "abilities": [
+
+    ],
     "wardrobe": {
       "hairstyle": 0,
       "shirt": 0,
       "pants": 0
     },
-    "items": [],
+    "items": [
+    ],
     "stats": {
       "death_count": 0,
       "bullets_fired": 0,
@@ -33,7 +37,9 @@
       "time_trials": {
         "bryns_gun": 0.0
       }
-    }
+    },
+    "hotbar": [
+    ]
   },
   "save_point_id": 100,
   "unlocked_doors": [
@@ -50,13 +56,13 @@
   ],
   "tutorial": {
     "state": 0,
-    "closed": false,
-    "on": true,
-    "jump": false,
-    "shoot": false,
-    "sprint": false,
+    "closed": true,
+    "on": false,
+    "jump": true,
+    "shoot": true,
+    "sprint": true,
     "map": false,
-    "inventory": false
+    "inventory": true
   },
   "discovered_rooms": [
   ]

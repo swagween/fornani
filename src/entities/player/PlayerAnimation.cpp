@@ -139,11 +139,11 @@ fsm::StateFunction PlayerAnimation::update_run() {
 	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
+	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::stop, stop)) { return PA_BIND(update_stop); }
 	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
-	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
@@ -253,14 +253,15 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::roll, roll)) { return PA_BIND(update_roll); }
 	if (change_state(AnimState::backflip, backflip)) { return PA_BIND(update_backflip); }
+	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::land, land)) { return PA_BIND(update_land); }
 	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
 	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
-	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
 
@@ -273,6 +274,7 @@ fsm::StateFunction PlayerAnimation::update_stop() {
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 
 	if (animation.complete()) {
 		state = AnimState::idle;
@@ -482,20 +484,21 @@ fsm::StateFunction PlayerAnimation::update_backflip() {
 
 fsm::StateFunction PlayerAnimation::update_slide() {
 	animation.label = "slide";
-	auto& slide = m_player->controller.get_slide();
-	slide.calculate();
-	if (!slide.started()) {
-		slide.start();
-		slide.direction = m_player->controller.direction;
+	auto& slider = m_player->controller.get_slide();
+	slider.calculate();
+	if (!slider.started()) {
+		slider.start();
+		slider.direction = m_player->controller.direction;
 	}
-	if (slide.going()) { m_player->m_services->soundboard.flags.player.set(audio::Player::slide); }
+	if (slider.going()) { m_player->m_services->soundboard.flags.player.set(audio::Player::slide); }
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, rise)) {
 		m_player->controller.get_slide().end();
 		return PA_BIND(update_rise);
 	}
 
-	if (slide.broke_out()) {
+	if (slider.broke_out()) {
+		std::cout << "broke out\n";
 		m_player->controller.get_slide().end();
 		state = AnimState::get_up;
 		animation.set_params(get_up);
@@ -509,10 +512,10 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	}
 
 	// physics
-	if (m_player->collider.downhill()) { slide.start(); }
-	m_player->collider.physics.acceleration.x = slide.get_speed() * m_player->controller.sliding_movement() * slide.get_dampen();
+	if (m_player->collider.downhill()) { slider.start(); }
+	m_player->collider.physics.acceleration.x = slider.get_speed() * m_player->controller.sliding_movement() * slider.get_dampen();
 
-	if (slide.direction.lr != m_player->controller.direction.lr) {
+	if (slider.direction.lr != m_player->controller.direction.lr) {
 		m_player->controller.get_slide().end();
 		state = AnimState::sharp_turn;
 		animation.set_params(sharp_turn);
@@ -534,7 +537,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 		if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 		if (change_state(AnimState::sharp_turn, sharp_turn)) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::turn, turn)) { return PA_BIND(update_turn); }
-		if (!m_player->controller.moving() || slide.exhausted() || !m_player->controller.sliding()) {
+		if (!m_player->controller.moving() || slider.exhausted() || !m_player->controller.sliding()) {
 			m_player->controller.get_slide().end();
 			state = AnimState::get_up;
 			animation.set_params(get_up);
@@ -569,6 +572,24 @@ fsm::StateFunction PlayerAnimation::update_get_up() {
 
 	state = AnimState::get_up;
 	return PA_BIND(update_get_up);
+}
+
+fsm::StateFunction PlayerAnimation::update_roll() {
+	animation.label = "roll";
+	auto& slider = m_player->controller.get_slide();
+	m_player->collider.physics.acceleration.x = 10.f * m_player->controller.sliding_movement();
+	slider.start();
+	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
+	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
+
+	if (animation.complete()) {
+		animation.set_params(slide);
+		return PA_BIND(update_slide);
+	}
+	state = AnimState::roll;
+	return PA_BIND(update_roll);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

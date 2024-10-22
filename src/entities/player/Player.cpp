@@ -202,7 +202,8 @@ void Player::update_animation() {
 			if (controller.nothing_pressed() && !controller.dashing() && !(animation.state == AnimState::inspect) && !(animation.state == AnimState::sit)) { animation.state = AnimState::idle; }
 			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.state = AnimState::run; }
 			if (controller.moving() && controller.sprinting() && !controller.dashing() && !(animation.state == AnimState::sharp_turn)) { animation.state = AnimState::sprint; }
-			if (animation.state == AnimState::sprint && controller.sliding() && controller.get_slide().can_begin()) { animation.state = AnimState::slide; }
+			if ((animation.state == AnimState::sprint || animation.state == AnimState::roll) && controller.sliding() && controller.get_slide().can_begin()) { animation.state = AnimState::slide; }
+			if (controller.is_rolling() && grounded() && controller.moving()) { animation.state = AnimState::roll; }
 			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.state = AnimState::stop; }
 			handle_turning();
 		}
@@ -244,9 +245,9 @@ void Player::update_animation() {
 		animation.state = AnimState::die;
 		flags.state.reset(State::show_weapon);
 	}
-
 	//for sliding down ramps
 	animation.state == AnimState::slide ? collider.flags.animation.set(shape::Animation::sliding) : collider.flags.animation.reset(shape::Animation::sliding);
+	if (animation.state == AnimState::roll) { collider.flags.animation.set(shape::Animation::sliding); }
 
 	animation.update();
 }
