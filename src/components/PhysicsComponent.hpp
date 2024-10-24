@@ -56,6 +56,8 @@ class PhysicsComponent {
 	void integrate(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void update_dampen(automa::ServiceProvider& svc);
+	void hard_stop_x();
+	void stop_x();
 	void zero();
 	void zero_x();
 	void zero_y();

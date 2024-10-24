@@ -114,14 +114,14 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	// roll
 	roll.update();
-	if (down_pressed) { roll.request(); }
+	if (down_pressed && moving() && sprint) { roll.request(); }
 	if (grounded()) { roll.reset(); }
 
 	// slide
 	slide.update();
 	key_map[ControllerInput::slide] = 0.f;
 	if (moving() && down && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
-	if ((down_released || !moving()) && !roll.is_rolling()) { slide.break_out(); }
+	if ((down_released || !moving()) && !roll.rolling()) { slide.break_out(); }
 
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }

@@ -105,6 +105,13 @@
     "unique": true,
     "usable": true
   },
+  "dog_leash": {
+    "index": 20,
+    "title": "Dog Leash",
+    "naive_description": "You can use this to transport dogs.",
+    "unique": true,
+    "usable": false
+  },
   "ashtown_raspberry_preserves": {
     "index": 22,
     "title": "Ashtown Raspberry Reserves",

@@ -341,8 +341,8 @@ fsm::StateFunction PlayerAnimation::update_land() {
 	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
 	if (animation.complete()) {
+		m_player->controller.get_slide().end();
 		if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
-		if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
 		if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
 		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
@@ -497,13 +497,14 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 		return PA_BIND(update_rise);
 	}
 
-	if (slider.broke_out()) {
-		std::cout << "broke out\n";
+	if (slider.broke_out() && !m_player->controller.roll.rolling()) {
 		m_player->controller.get_slide().end();
 		state = AnimState::get_up;
 		animation.set_params(get_up);
 		return PA_BIND(update_get_up);
 	}
+	m_player->controller.roll.break_out();
+
 	if (!m_player->grounded()) {
 		m_player->controller.get_slide().end();
 		state = AnimState::suspend;
@@ -516,6 +517,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	m_player->collider.physics.acceleration.x = slider.get_speed() * m_player->controller.sliding_movement() * slider.get_dampen();
 
 	if (slider.direction.lr != m_player->controller.direction.lr) {
+		std::cout << "slider dir\n";
 		m_player->controller.get_slide().end();
 		state = AnimState::sharp_turn;
 		animation.set_params(sharp_turn);
@@ -577,16 +579,50 @@ fsm::StateFunction PlayerAnimation::update_get_up() {
 fsm::StateFunction PlayerAnimation::update_roll() {
 	animation.label = "roll";
 	auto& slider = m_player->controller.get_slide();
-	m_player->collider.physics.acceleration.x = 10.f * m_player->controller.sliding_movement();
-	slider.start();
-	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
-	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
-	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
-	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
+	auto& controller = m_player->controller;
+	auto sign = m_player->controller.facing_left() ? -1.f: 1.f;
+	m_player->collider.physics.velocity.x = 60.f * sign;
+	if (!controller.roll.rolling()) { controller.roll.direction.lr = controller.direction.lr; }
+	controller.roll.roll();
+	if (controller.roll.direction.lr != controller.direction.lr) {
+		m_player->collider.physics.hard_stop_x();
+		state = AnimState::sharp_turn;
+		animation.set_params(sharp_turn);
+		return PA_BIND(update_sharp_turn);
+	}
+	if (change_state(AnimState::inspect, inspect)) {
+		m_player->collider.physics.stop_x();
+		controller.roll.break_out();
+		return PA_BIND(update_inspect);
+	}
+	if (change_state(AnimState::die, die, true)) {
+		controller.roll.break_out();
+		return PA_BIND(update_die);
+	}
+	if (change_state(AnimState::hurt, hurt)) {
+		controller.roll.break_out();
+		return PA_BIND(update_hurt);
+	}
+	if (change_state(AnimState::rise, rise)) {
+		controller.roll.break_out();
+		return PA_BIND(update_rise);
+	}
+	if (change_state(AnimState::suspend, suspend)) {
+		controller.roll.break_out();
+		return PA_BIND(update_suspend);
+	}
 
 	if (animation.complete()) {
-		animation.set_params(slide);
-		return PA_BIND(update_slide);
+		if (controller.sliding()) {
+			state = AnimState::slide;
+			animation.set_params(slide);
+			return PA_BIND(update_slide);
+		} else {
+			controller.roll.break_out();
+			state = AnimState::idle;
+			animation.set_params(idle);
+			return PA_BIND(update_idle);
+		}
 	}
 	state = AnimState::roll;
 	return PA_BIND(update_roll);

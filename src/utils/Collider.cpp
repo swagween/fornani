@@ -91,7 +91,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	mtvs.horizontal = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, cell);
 	mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, cell);
 
-	float vert_threshold = 1.1f; // for landing
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
 		if (collision_depths) { collision_depths.value().calculate(*this, cell); }
@@ -309,7 +308,6 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	mtvs.horizontal = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, collider);
 	mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, collider);
 
-	float vert_threshold = 5.5f;
 	if (collision_depths) { collision_depths.value().calculate(*this, collider); }
 
 	bool corner_collision{true};

@@ -79,7 +79,6 @@ class PlayerController {
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
 	[[nodiscard]] auto dashing() -> bool { return key_map[ControllerInput::dash] != 0.f; }
 	[[nodiscard]] auto can_dash() const -> bool { return dash_count == 0; }
-	[[nodiscard]] auto is_rolling() const -> bool { return roll.is_rolling(); }
 	[[nodiscard]] auto can_jump() const -> bool { return (flags.test(MovementState::grounded) || jump.coyote()) || jump.can_doublejump(); }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
 	[[nodiscard]] auto transponder_skip() const -> bool { return transponder_flags.test(TransponderInput::skip); }
@@ -120,6 +119,7 @@ class PlayerController {
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
 	[[nodiscard]] auto get_shield() -> Shield& { return shield; }
 	[[nodiscard]] auto get_slide() -> Slide& { return slide; }
+	Roll roll{};
 
 	dir::Direction direction{};
 
@@ -135,7 +135,6 @@ class PlayerController {
 	Wallslide wallslide{};
 	Shield shield;
 	Slide slide{};
-	Roll roll{};
 
 	int dash_request{};
 	int dash_count{};

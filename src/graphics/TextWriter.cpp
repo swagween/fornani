@@ -258,7 +258,7 @@ void TextWriter::check_for_event(Message& msg, Codes code, bool response) {
 	// handle prompts
 	if (code == Codes::prompt) {
 		if (index < msg.data.getString().getSize() - 1) {
-			msg.target = (int)msg.data.getString().getData()[index + 1] - '0';
+			msg.target = static_cast<int>(msg.data.getString().getData()[index + 1] - '0');
 			msg.data.setString(msg.data.getString().substring(0, index));
 			flags.set(MessageState::response_trigger);
 			msg.prompt = true;
@@ -344,7 +344,11 @@ void TextWriter::process_selection() {
 			return;
 		}
 	}
-	responses.pop_front();
+	check_for_event(suite.at(iterators.current_suite_set).back(), Codes::prompt);
+	auto response_target = suite.at(iterators.current_suite_set).back().target;
+	//std::cout << static_cast<std::string>(suite.at(iterators.current_suite_set).back().data.getString()) << "\n";
+	//std::cout << "Response Target: " << response_target << "\n";
+	for (auto i{0}; i <= response_target; ++i) { responses.pop_front(); }
 
 	m_services->soundboard.flags.console.set(audio::Console::next);
 	flags.set(MessageState::cannot_skip);

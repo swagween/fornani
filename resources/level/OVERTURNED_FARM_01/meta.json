@@ -36,7 +36,11 @@
       "background": false,
       "suites": [
         [
+          "1",
           "2"
+        ],
+        [
+          "3"
         ]
       ]
     }
