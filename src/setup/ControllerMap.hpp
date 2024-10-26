@@ -94,8 +94,11 @@ class ControllerMap {
 	ControllerMap operator=(ControllerMap const&) = delete;
 
 	/// @brief Update internal action states. Call once on tick update, and nowhere else.
-	/// @param has_focus Whether the game window has focus or not.
-	void update(bool has_focus);
+	void update();
+
+	/// @brief Process the SFML event given.
+	/// @details Used for keyboard controls. 
+	void handle_event(sf::Event const&);
 
 	/// @brief Returns whether there is a gamepad connected or not.
 	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }
@@ -143,6 +146,7 @@ class ControllerMap {
 	};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
+	std::unordered_set<sf::Keyboard::Key> keys_pressed;
 	InputActionSetHandle_t platformer_action_set{};
 	InputActionSetHandle_t menu_action_set{};
 	InputActionSetHandle_t inventory_action_layer{};

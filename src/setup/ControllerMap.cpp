@@ -123,7 +123,18 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	map_action_layer = SteamInput()->GetActionSetHandle("Menu_Map");
 }
 
-void ControllerMap::update(bool has_focus) {
+void ControllerMap::handle_event(sf::Event const& event) {
+	if (event.type == sf::Event::KeyPressed) {
+		if (last_controller_ty_used != ControllerType::keyboard) { reset_digital_action_states(); }
+		last_controller_ty_used = ControllerType::keyboard;
+
+		keys_pressed.insert(event.key.code);
+	} else if (event.type == sf::Event::KeyReleased) {
+		keys_pressed.erase(event.key.code);
+	}
+}
+
+void ControllerMap::update() {
 	SteamInput()->RunFrame();
 	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
 	std::unordered_set<EInputActionOrigin> buttons_pressed_this_tick{};
@@ -135,7 +146,7 @@ void ControllerMap::update(bool has_focus) {
 			auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
 			pressed_on_gamepad = data.bState;
 		}
-		auto pressed_on_keyboard = sf::Keyboard::isKeyPressed(primary_key) || sf::Keyboard::isKeyPressed(secondary_key);
+		auto pressed_on_keyboard = keys_pressed.contains(primary_key) || keys_pressed.contains(secondary_key);
 
 		if (pressed_on_gamepad) {
 			if (last_controller_ty_used != ControllerType::gamepad) { reset_digital_action_states(); }
@@ -162,7 +173,7 @@ void ControllerMap::update(bool has_focus) {
 				active = active_action_set == action_set;
 			}
 		}
-		auto triggered = has_focus && (pressed_on_gamepad || pressed_on_keyboard);
+		auto triggered = pressed_on_gamepad || pressed_on_keyboard;
 
 		if (triggered && active) {
 			action_status.released = false;
