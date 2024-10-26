@@ -1,7 +1,7 @@
 #include "Game.hpp"
-#include "WindowManager.hpp"
 #include <steam/steam_api.h>
 #include <ctime>
+#include "WindowManager.hpp"
 
 namespace fornani {
 
@@ -151,6 +151,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			default: break;
 			}
 			game_state.get_current_state().handle_events(services, event);
+			services.controller_map.handle_event(event);
 			if (valid_event) { ImGui::SFML::ProcessEvent(event); }
 			valid_event = true;
 		}
@@ -162,7 +163,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.music.update();
 		bool has_focus = services.window->get().hasFocus();
 		services.ticker.tick([this, has_focus, &services = services] {
-			services.controller_map.update(has_focus);
+			services.controller_map.update();
 			game_state.get_current_state().tick_update(services);
 		});
 		game_state.get_current_state().frame_update(services);
