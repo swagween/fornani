@@ -97,13 +97,13 @@ class ControllerMap {
 	void update();
 
 	/// @brief Process the SFML event given.
-	/// @details Used for keyboard controls. 
+	/// @details Used for keyboard controls.
 	void handle_event(sf::Event const&);
 
 	/// @brief Returns whether there is a gamepad connected or not.
 	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }
 	[[nodiscard]] auto gamepad_disconnected() const -> bool { return controller_handle == 0; }
-	[[nodiscard]] auto digital_action_status(DigitalAction action) const -> DigitalActionStatus { return digital_actions.at(action).status; }
+	[[nodiscard]] auto digital_action_status(DigitalAction action) -> DigitalActionStatus;
 	[[nodiscard]] auto analog_action_status(AnalogAction action) const -> AnalogActionStatus { return analog_actions.at(action).second; }
 	[[nodiscard]] auto digital_action_name(DigitalAction action) const -> std::string_view;
 	[[nodiscard]] auto digital_action_source_name(DigitalAction action) const -> std::string_view;
@@ -112,6 +112,8 @@ class ControllerMap {
 	void set_action_set(ActionSet set);
 	/// @brief Open the Steam controller configuration overlay.
 	void open_bindings_overlay() const;
+
+	auto actions_queried_this_update() const -> std::unordered_set<DigitalAction> const& { return m_actions_queried_this_update; }
 
 	void set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
 	void set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
@@ -151,6 +153,8 @@ class ControllerMap {
 	InputActionSetHandle_t menu_action_set{};
 	InputActionSetHandle_t inventory_action_layer{};
 	InputActionSetHandle_t map_action_layer{};
+
+	std::unordered_set<DigitalAction> m_actions_queried_this_update;
 
 	ControllerType last_controller_ty_used{ControllerType::keyboard};
 

@@ -14,6 +14,12 @@ namespace fs = std::filesystem;
 class ResourceFinder {
 
   public:
+	ResourceFinder() = default;
+	ResourceFinder(char** argv) {
+		setResourcePath(argv);
+		set_scene_path(argv);
+	}
+
 	void setResourcePath(char** argv) { resource_path = find_resources(argv[0]).string(); }
 	void set_scene_path(char** argv) { scene_path = find_scenes(argv[0]).string(); }
 

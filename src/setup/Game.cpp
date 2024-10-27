@@ -5,14 +5,11 @@
 
 namespace fornani {
 
-Game::Game(char** argv, WindowManager& window) : player(services) {
+Game::Game(char** argv, WindowManager& window) : services(argv), player(services) {
 	services.stopwatch.start();
 	services.window = &window;
 	services.constants.screen_dimensions = window.screen_dimensions;
 	// data
-	services.data = data::DataManager(services);
-	services.data.finder.setResourcePath(argv);
-	services.data.finder.set_scene_path(argv);
 	services.data.load_data();
 	// controls
 	services.data.load_controls(services.controller_map);

@@ -4,7 +4,7 @@
 
 namespace automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), ctx_bar(svc) {
 
 	// playtester edition
 	flags.set(GameStateFlags::playtest);
@@ -84,6 +84,8 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 	svc.soundboard.play_sounds(svc);
 	player->animation.state = player::AnimState::run;
+
+	ctx_bar.update(svc);
 }
 
 void MainMenu::frame_update(ServiceProvider& svc) {}
@@ -96,6 +98,8 @@ void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	left_dot.render(svc, win, {0, 0});
 	right_dot.render(svc, win, {0, 0});
+
+	ctx_bar.render(win);
 }
 
 } // namespace automa

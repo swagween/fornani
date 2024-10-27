@@ -1,13 +1,13 @@
 #pragma once
 #include <imgui.h>
+#include <filesystem>
 #include <random>
-#include "../automa/StateManager.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../entities/player/Player.hpp"
 #include "../audio/MusicPlayer.hpp"
+#include "../automa/StateManager.hpp"
+#include "../entities/player/Player.hpp"
+#include "../service/ServiceProvider.hpp"
 #include "../utils/BitFlags.hpp"
 #include <imgui-SFML.h>
-#include <filesystem>
 
 namespace fornani {
 
@@ -19,18 +19,16 @@ class Game {
 	Game() = default;
 	Game(char** argv, WindowManager& window);
 	~Game() {}
-	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{},
-			 sf::Vector2<float> player_position = {});
+	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
 
 	void playtest_sync();
 	void toggle_weapon(bool flag, int id);
 	util::BitFlags<GameFlags> flags{};
 
   private:
-
 	void playtester_portal(sf::RenderWindow& window);
 	void take_screenshot(sf::Texture& screencap);
-	automa::ServiceProvider services{};
+	automa::ServiceProvider services;
 
 	struct {
 		sf::Vector2u win_size{};

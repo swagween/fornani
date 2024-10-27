@@ -68,13 +68,27 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 		std::cout << "Steam Input initialized" << std::endl;
 	}
 	// TODO When we have a proper Steam App ID assigned, upload the steam input manifest into the game's depot.
-	SteamInput()->SetInputActionManifestFilePath((svc.data.finder.resource_path + "text/input/steam_input_manifest.vdf").c_str());
+	std::string input_action_manifest_path = svc.data.finder.resource_path + "\\text\\input\\steam_input_manifest.vdf";
+	if (!SteamInput()->SetInputActionManifestFilePath(input_action_manifest_path.c_str())) {
+		// uh oh
+		std::cout << "Could not set Action Manifest file path!" << std::endl;
+		std::cout << "Path: " << input_action_manifest_path << std::endl;
+	}
 	SteamInput()->EnableDeviceCallbacks();
+
+	SteamInput()->RunFrame();
 
 #define XSTR(a) STR(a)
 #define STR(a) #a
 #define DEFINE_ACTION(action_name)                                                                                                                                                                                                             \
-	digital_actions.insert({DigitalAction::action_name, {SteamInput()->GetDigitalActionHandle(XSTR(action_name)), DigitalActionStatus(DigitalAction::action_name), sf::Keyboard::Key::Unknown, sf::Keyboard::Key::Unknown}})
+	digital_actions.insert({DigitalAction::action_name, {get_digital_handle(XSTR(action_name)), DigitalActionStatus(DigitalAction::action_name), sf::Keyboard::Key::Unknown, sf::Keyboard::Key::Unknown}});                                    \
+	std::cout << "Handle for " << XSTR(action_name) << ":" << get_digital_handle(XSTR(action_name)) << std::endl
+
+	auto get_digital_handle = [](char const* action_name) -> InputDigitalActionHandle_t {
+		InputDigitalActionHandle_t handle = 0;
+		while (handle == 0) { handle = SteamInput()->GetDigitalActionHandle(action_name); }
+		return handle;
+	};
 
 	// Platformer controls
 	DEFINE_ACTION(platformer_left);
@@ -136,6 +150,8 @@ void ControllerMap::handle_event(sf::Event const& event) {
 
 void ControllerMap::update() {
 	SteamInput()->RunFrame();
+	m_actions_queried_this_update.clear();
+
 	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
 	std::unordered_set<EInputActionOrigin> buttons_pressed_this_tick{};
 	for (auto& [action, data] : digital_actions) {
@@ -232,6 +248,12 @@ void ControllerMap::set_action_set(ActionSet set) {
 		}
 	}
 	active_action_set = set;
+}
+
+[[nodiscard]] auto ControllerMap::digital_action_status(DigitalAction action) -> DigitalActionStatus {
+	m_actions_queried_this_update.insert(action);
+
+	return digital_actions.at(action).status;
 }
 
 [[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view { return SteamInput()->GetStringForDigitalActionName(digital_actions.at(action).steam_handle); }
