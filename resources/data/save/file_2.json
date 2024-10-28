@@ -1,18 +1,17 @@
 {
   "status": {
-    "new": false
+    "new": true
   },
   "player_data": {
-    "max_hp": 4.000000,
-    "hp": 4.000000,
-    "orbs": 2477,
+    "max_hp": 3,
+    "hp": 3,
+    "orbs": 0,
     "position": {
-      "x": 375.183228,
-      "y": 203.000000
+      "x": 102.0,
+      "y": 327.0
     },
     "arsenal": [
-      0,
-      10
+
     ],
     "equipped_gun": 0,
     "abilities": [
@@ -24,230 +23,48 @@
       "pants": 0
     },
     "items": [
-      {
-        "id": 11,
-        "quantity": 1
-      },
-      {
-        "id": 1,
-        "quantity": 1
-      },
-      {
-        "id": 16,
-        "quantity": 1
-      },
-      {
-        "id": 22,
-        "quantity": 1
-      },
-      {
-        "id": 12,
-        "quantity": 1
-      },
-      {
-        "id": 8,
-        "quantity": 1
-      },
-      {
-        "id": 30,
-        "quantity": 1
-      },
-      {
-        "id": 13,
-        "quantity": 1
-      },
-      {
-        "id": 29,
-        "quantity": 1
-      },
-      {
-        "id": 15,
-        "quantity": 1
-      },
-      {
-        "id": 31,
-        "quantity": 1
-      }
+
     ],
     "stats": {
-      "death_count": 5,
-      "bullets_fired": 4410,
-      "guns_collected": 2,
-      "items_collected": 46,
-      "orbs_collected": 2477,
-      "blue_orbs": 5,
-      "highest_indicator_amount": 500,
-      "enemies_killed": 105,
-      "rooms_discovered": 35,
-      "seconds_played": 1869.437988,
+      "death_count": 0,
+      "bullets_fired": 0,
+      "guns_collected": 0,
+      "items_collected": 0,
+      "orbs_collected": 0,
+      "blue_orbs": 0,
+      "highest_indicator_amount": 0,
+      "enemies_killed": 0,
+      "rooms_discovered": 0,
+      "seconds_played": 0.0,
       "time_trials": {
-        "bryns_gun": 139.876053
+        "bryns_gun": 0.0
       }
     },
     "hotbar": [
-      0,
-      10
+
     ]
   },
-  "save_point_id": 228,
+  "save_point_id": 100,
   "unlocked_doors": [
-    11,
-    12,
-    15,
-    8
+
   ],
   "opened_chests": [
-    5768,
-    377,
-    567911,
-    125111,
-    338223,
-    211,
-    323,
-    42069,
-    1240,
-    7880,
-    8883,
-    45560,
-    77122,
-    11443,
-    22601
+
   ],
   "activated_switches": [
-    445,
-    44,
-    1,
-    233,
-    4367,
-    4369,
-    2251
+
   ],
   "destroyed_blocks": [
-    110,
-    122,
-    122,
-    122,
-    122,
-    122,
-    122,
-    115,
-    115,
-    115
+
   ],
   "quest_progressions": [
-    [
-      0,
-      0,
-      0,
-      1,
-      0
-    ],
-    [
-      1,
-      111,
-      1,
-      1,
-      0
-    ],
-    [
-      63,
-      1,
-      1,
-      1,
-      0
-    ],
-    [
-      9,
-      1,
-      1,
-      1,
-      0
-    ],
-    [
-      88,
-      1,
-      1,
-      1,
-      0
-    ],
-    [
-      1,
-      110,
-      2,
-      1,
-      0
-    ],
-    [
-      1,
-      110,
-      1,
-      1,
-      0
-    ],
-    [
-      9,
-      1,
-      2,
-      1,
-      0
-    ],
-    [
-      33,
-      12,
-      2,
-      1,
-      0
-    ],
-    [
-      3,
-      20,
-      2,
-      1,
-      2
-    ],
-    [
-      5,
-      110,
-      1,
-      1,
-      0
-    ],
-    [
-      5,
-      115,
-      2,
-      1,
-      0
-    ],
-    [
-      9,
-      2,
-      1,
-      1,
-      0
-    ],
-    [
-      8,
-      6001,
-      6001,
-      1,
-      0
-    ],
-    [
-      70,
-      1,
-      1,
-      1,
-      0
-    ]
+
   ],
   "destroyed_inspectables": [
-    "bookshelf110",
-    "bit1118",
-    "leap115"
+
   ],
   "tutorial": {
-    "state": 4,
+    "state": 0,
     "closed": true,
     "on": false,
     "jump": true,
@@ -257,49 +74,6 @@
     "inventory": true
   },
   "discovered_rooms": [
-    100,
-    101,
-    102,
-    104,
-    106,
-    107,
-    116,
-    108,
-    109,
-    110,
-    117,
-    125,
-    105,
-    111,
-    199,
-    103,
-    118,
-    123,
-    121,
-    124,
-    120,
-    112,
-    114,
-    115,
-    122,
-    6001,
-    200,
-    299,
-    224,
-    225,
-    226,
-    219,
-    222,
-    227,
-    228
-  ],
-  "marketplace": [
-    [
-      98,
-      25,
-      23,
-      24,
-      65
-    ]
+
   ]
 }

@@ -68,7 +68,7 @@ void Item::update(automa::ServiceProvider& svc, int index, int items_per_row) {
 	gravitator.update(svc);
 	auto y_pos = ui.pad.y + static_cast<float>(index / items_per_row) * ui.spacing;
 	auto x_pos = ui.pad.x + static_cast<float>(index % items_per_row) * ui.spacing;
-	auto inv_pos = sf::Vector2<float>{x_pos, y_pos} + ui.offset;
+	auto inv_pos = sf::Vector2<float>{x_pos, y_pos} + ui.offset - sf::Vector2<float>{8.f, 8.f};
 	if (flags.test(ItemFlags::unique)) {
 		variables.quantity = std::clamp(variables.quantity, 0, 1);
 	} else {

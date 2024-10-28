@@ -76,6 +76,7 @@ void AssetManager::import_textures() {
 	t_selector.loadFromFile(finder.resource_path + "/image/gui/selector.png");
 	t_console_outline.loadFromFile(finder.resource_path + "/image/gui/console_outline.png");
 	t_sticker.loadFromFile(finder.resource_path + "/image/gui/sticker.png");
+	t_controller_button_icons.loadFromFile(finder.resource_path + "/image/gui/controller_button_icons.png");
 
 	// guns and bullets!
 	t_gun.loadFromFile(finder.resource_path + "/image/weapon/gun.png");
