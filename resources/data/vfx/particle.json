@@ -32,19 +32,59 @@
   },
 
   "thick_burst": {
-    "load": 12,
+    "load": 8,
     "rate": 100.0,
     "expulsion": 40.0,
     "expulsion_variance": 40.0,
     "cone": 0.08,
-    "friction": 0.99,
+    "friction": 0.98,
     "elasticity": 0.95,
-    "gravity": 2.5,
+    "gravity": 0.5,
     "lifespan": 360,
     "lifespan_variance": 225,
     "dimensions": [ 4, 4 ],
     "animated": false,
     "colliding": true
+  },
+
+  "wasp": {
+    "load": 30,
+    "rate": 4.0,
+    "expulsion": 30.0,
+    "expulsion_variance": 30.0,
+    "cone": 0.08,
+    "friction": 0.995,
+    "elasticity": 0.95,
+    "gravity": -0.5,
+    "lifespan": 360,
+    "lifespan_variance": 0,
+    "dimensions": [ 32, 32 ],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 5,
+      "framerate": 68,
+      "loop": 0
+    }
+  },
+
+  "wasp_2": {
+    "load": 12,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 50.0,
+    "cone": 0.08,
+    "friction": 0.99,
+    "elasticity": 0.95,
+    "gravity": 0.0,
+    "lifespan": 260,
+    "lifespan_variance": 85,
+    "dimensions": [ 3, 3 ],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "fire"
   },
 
   "light_burst": {
@@ -98,7 +138,7 @@
   },
 
   "twinkle": {
-    "load": 2,
+    "load": 3,
     "rate": 100.0,
     "expulsion": 50.0,
     "expulsion_variance": 0.0,
@@ -138,7 +178,7 @@
   },
 
   "spritz": {
-    "load": 2,
+    "load": 3,
     "rate": 100.0,
     "expulsion": 20.0,
     "expulsion_variance": 15.0,
@@ -156,7 +196,7 @@
   },
 
   "jump": {
-    "load": 2,
+    "load": 3,
     "rate": 2.0,
     "expulsion": 12.0,
     "expulsion_variance": 8.0,
@@ -174,7 +214,7 @@
   },
 
   "slide": {
-    "load": 2,
+    "load": 3,
     "rate": 2.0,
     "expulsion": 18.0,
     "expulsion_variance": 8.0,

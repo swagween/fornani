@@ -4,18 +4,31 @@
 
 namespace vfx {
 
-Spring::Spring(Parameters params) : params(params) {
-	variables.physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
-	variables.physics.maximum_velocity = {6.f, 6.f};
+Spring::Spring(SpringParameters params) : params(params) {
+	variables.bob_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
+	variables.bob_physics.maximum_velocity = {60.f, 60.f};
+	variables.anchor_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
+	variables.anchor_physics.maximum_velocity = {60.f, 60.f};
+	sensor.bounds.setOrigin({sensor.bounds.getRadius(), sensor.bounds.getRadius()});
 }
+
+Spring::Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<float> bob) : anchor(anchor), bob(bob) {  }
 
 void Spring::calculate() { calculate_force(); }
 
-void Spring::update(automa::ServiceProvider& svc) {
-	variables.physics.gravity = 1.5f;
+void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2<float> external_force, bool loose) {
+	variables.bob_physics.gravity = custom_grav;
+	variables.anchor_physics.gravity = custom_grav;
 	calculate();
-	variables.physics.update(svc);
-	bob = variables.physics.position;
+	variables.bob_physics.apply_force(external_force);
+	variables.bob_physics.update(svc);
+	if (loose) {
+		variables.anchor_physics.apply_force(external_force);
+		variables.anchor_physics.update(svc);
+	}
+	bob = variables.bob_physics.position;
+	if (loose) { anchor = variables.anchor_physics.position; }
+	sensor.bounds.setPosition(bob);
 }
 
 void Spring::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -33,6 +46,7 @@ void Spring::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	anchor_shape.setOutlineColor(sf::Color::Yellow);
 	win.draw(bob_shape);
 	win.draw(anchor_shape);
+	sensor.render(win, cam);
 }
 
 void Spring::calculate_force() {
@@ -43,21 +57,27 @@ void Spring::calculate_force() {
 
 	variables.spring_force /= mag;
 	variables.spring_force *= -params.spring_constant * variables.extension;
-	variables.physics.acceleration = variables.spring_force;
+	variables.spring_force.x = std::clamp(variables.spring_force.x, -spring_max, spring_max);
+	variables.spring_force.y = std::clamp(variables.spring_force.y, -spring_max, spring_max);
+	variables.bob_physics.acceleration = variables.spring_force;
+	variables.anchor_physics.acceleration = -variables.spring_force;
 }
 
 void Spring::reverse_anchor_and_bob() {
 	auto temp = anchor;
 	anchor = bob;
 	bob = temp;
-	variables.physics.position = bob;
+	variables.bob_physics.position = bob;
 }
 
-void Spring::set_anchor(sf::Vector2<float> point) { anchor = point; }
+void Spring::set_anchor(sf::Vector2<float> point) {
+	anchor = point;
+	variables.anchor_physics.position = point;
+}
 
 void Spring::set_bob(sf::Vector2<float> point) {
 	bob = point;
-	variables.physics.position = point;
+	variables.bob_physics.position = point;
 }
 
 void Spring::set_rest_length(float point) { params.rest_length = point; }

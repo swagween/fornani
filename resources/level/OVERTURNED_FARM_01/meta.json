@@ -26,6 +26,25 @@
       "source": 0
     }
   },
+  "npcs": [
+    {
+      "id": 3,
+      "position": [
+        20,
+        10
+      ],
+      "background": false,
+      "suites": [
+        [
+          "1",
+          "2"
+        ],
+        [
+          "3"
+        ]
+      ]
+    }
+  ],
   "portals": [
     {
       "dimensions": [
@@ -188,5 +207,101 @@
       "automatic": false,
       "foreground": false
     }
-  ]
+  ],
+  "scenery": {
+    "grass": [
+      {
+        "position": [
+          19,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          22,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          21,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      }
+    ],
+    "vines": [
+      {
+        "position": [
+          4,
+          5
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          15,
+          3
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          28,
+          3
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          29,
+          4
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          6,
+          2
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          13,
+          3
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          2,
+          4
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": false
+      }
+    ]
+  }
 }

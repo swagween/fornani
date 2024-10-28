@@ -8,8 +8,11 @@
 #include "../entities/world/Inspectable.hpp"
 #include "../entities/world/Portal.hpp"
 #include "../entities/world/SavePoint.hpp"
+#include "../entities/world/Vine.hpp"
+#include "../entities/world/Grass.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Transition.hpp"
+#include "../graphics/Rain.hpp"
 #include "Grid.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
@@ -29,6 +32,7 @@
 #include "../weapon/Grenade.hpp"
 #include "../story/CutsceneCatalog.hpp"
 #include "../utils/Stopwatch.hpp"
+#include "../utils/CircleCollider.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -65,8 +69,8 @@ class Layer {
 
   public:
 	Layer() = default;
-	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim) : render_order(o), collidable(c), dimensions(dim) { grid = Grid({dim.x, dim.y}); }
-	Grid grid{};
+	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(c), dimensions(dim), grid(dim, source) {}
+	Grid grid;
 	uint8_t render_order{};
 	bool collidable{};
 	sf::Vector2<uint32_t> dimensions{};
@@ -100,25 +104,30 @@ class Map {
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
-	bool check_cell_collision(shape::Collider collider);
+	bool check_cell_collision(shape::Collider& collider);
+	bool check_cell_collision_circle(shape::CircleCollider& collider);
+	void handle_cell_collision(shape::CircleCollider& collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void shake_camera();
 	void clear();
 	std::vector<Layer>& get_layers();
+	npc::NPC& get_npc(int id);
 	Vec get_spawn_position(int portal_source_map_id);
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
 	bool overlaps_middleground(shape::Shape& test) const;
 	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
+	std::size_t get_index_at_position(sf::Vector2<float> position);
+	int get_tile_value_at_position(sf::Vector2<float> position);
+	Tile& get_cell_at_position(sf::Vector2<float> position);
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
-	//std::vector<Layer> layers{};
-	std::vector<uint32_t> collidable_indeces{}; // generated on load to reduce collision checks in hot code
-	Vec real_dimensions{};						// pixel dimensions (maybe useless)
-	Vecu16 dimensions{};						// points on the 32x32-unit grid
-	Vecu16 chunk_dimensions{};					// how many chunks (16x16 squares) in the room
+	// std::vector<Layer> layers{};
+	Vec real_dimensions{};	   // pixel dimensions (maybe useless)
+	Vecu16 dimensions{};	   // points on the 32x32-unit grid
+	Vecu16 chunk_dimensions{}; // how many chunks (16x16 squares) in the room
 
 	dj::Json inspectable_data{};
 
@@ -131,6 +140,8 @@ class Map {
 	std::vector<entity::Bed> beds{};
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
+	std::vector<std::unique_ptr<entity::Vine>> vines{};
+	std::vector<std::unique_ptr<entity::Grass>> grass{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};
@@ -144,6 +155,9 @@ class Map {
 	std::vector<Destroyable> destroyers{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
+
+	// vfx
+	std::optional<vfx::Rain> rain{};
 
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition;

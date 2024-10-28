@@ -39,11 +39,11 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	auto const& hp = player.health;
 	int i{};
 	for (auto& heart : hearts) {
-		heart.position = {corner_pad.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y};
+		heart.position = {corner_pad.x + static_cast<float>(i) * f_heart_dimensions.x + static_cast<float>(i) * static_cast<float>(HP_pad), corner_pad.y};
 		if (hp.flags.test(entity::HPState::hit)) {
-			auto randx = svc.random.random_range_float(-16.f, 16.f);
-			auto randy = svc.random.random_range_float(-16.f, 16.f);
-			heart.gravitator.set_position(heart.position + sf::Vector2<float>{randx, randy});
+			auto randv = svc.random.random_vector_float(-16.f, 16.f);
+			heart.gravitator.set_position(heart.position + randv);
+			heart.shake();
 		}
 		heart.update(svc, player);
 		heart.current_state = hp.get_hp() > i ? State::neutral : player.health.taken_point > i ? State::taken : State::gone;
@@ -61,10 +61,9 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	shield_discrepancy.update(svc);
 
 	filled_hp_cells = static_cast<int>(std::ceil(player.health.get_hp()));
-	num_orbs = player.player_stats.orbs;
+	num_orbs = player.wallet.get_balance();
 	total_hp_cells = static_cast<int>(player.health.get_max());
-	max_orbs = player.player_stats.max_orbs;
-	if (player.arsenal) { gun_name = player.equipped_weapon().label; }
+	if (player.hotbar && player.arsenal) { gun_name = player.equipped_weapon().label; }
 }
 
 void HUD::render(player::Player& player, sf::RenderWindow& win) {
@@ -90,17 +89,17 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	}
 
 	// GUN
-	if (player.arsenal) {
+	if (player.hotbar && player.arsenal) {
 		auto pointer_index{0};
-		auto const loadout_size = player.arsenal.value().size();
-		for (int i = 0; i < loadout_size; ++i) {
-			auto gun_index = player.arsenal.value().get_weapon_at(i).get_id();
+		auto const hotbar_size = player.hotbar.value().size();
+		for (int i = 0; i < hotbar_size; ++i) {
+			auto gun_index = player.hotbar.value().get_id(i);
 			sprites.gun.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
 			sprites.gun_shadow.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
 			sprites.gun.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			sprites.gun_shadow.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
 			win.draw(sprites.gun_shadow);
-			if (i == player.arsenal.value().get_index()) {
+			if (i == player.hotbar.value().get_selection()) {
 				win.draw(sprites.gun);
 				pointer_index = i;
 			}

@@ -38,8 +38,10 @@ class MiniMap {
 	void move(sf::Vector2<float> direction);
 	void center();
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
+	[[nodiscard]] auto get_extent() const -> sf::FloatRect{ return extent; }
 	[[nodiscard]] auto get_center_position() const -> sf::Vector2<float> { return center_position; }
-	[[nodiscard]] auto get_scale() const -> float{ return scale; }
+	[[nodiscard]] auto get_scale() const -> float { return scale; }
+	[[nodiscard]] auto get_ratio() const -> float { return ratio; }
 
   private:
 	float scale{8.f};
@@ -51,6 +53,7 @@ class MiniMap {
 	sf::Vector2<float> previous_position{};
 	sf::Vector2<float> center_position{};
 	sf::Vector2<float> player_position{};
+	sf::FloatRect extent{};
 	sf::View view{};
 	MapTexture texture;
 	sf::RenderTexture minimap_texture{};

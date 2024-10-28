@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CircleSensor.hpp"
+#include "../utils/Math.hpp"
+#include <iostream>
 #include <algorithm>
 
 namespace components {
@@ -23,15 +25,22 @@ CircleSensor::CircleSensor(float radius) {
 
 void CircleSensor::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	drawable = bounds;
+	drawable.setOrigin({bounds.getRadius(), bounds.getRadius()});
 	drawable.setFillColor(active() ? sf::Color{20, 160, 160, 100} : sf::Color::Transparent);
 	drawable.setPosition(bounds.getPosition() - cam);
 	win.draw(drawable);
 }
 
-bool CircleSensor::within_bounds(shape::Shape& rect) const {
-	auto x = std::clamp(bounds.getPosition().x, rect.position.x, rect.position.x + rect.dimensions.x);
-	auto y = std::clamp(bounds.getPosition().y, rect.position.y, rect.position.y + rect.dimensions.y);
-	sf::Vector2<float> closest = {x, y};
-	return rect.getLength(closest - bounds.getPosition()) < bounds.getRadius();
+void CircleSensor::set_position(sf::Vector2<float> position) { bounds.setPosition(position); }
+
+bool CircleSensor::within_bounds(shape::Shape& shape) const {
+	if (shape.non_square()) { return shape.circle_SAT(bounds); }
+	auto x = std::clamp(bounds.getPosition().x, shape.position.x, shape.position.x + shape.dimensions.x);
+	auto y = std::clamp(bounds.getPosition().y, shape.position.y, shape.position.y + shape.dimensions.y);
+	sf::Vector2<float> closest{x, y};
+	return util::magnitude(closest - bounds.getPosition()) < bounds.getRadius();
 }
+
+sf::Vector2<float> CircleSensor::get_MTV(shape::Shape& shape) { return shape.circle_SAT_MTV(bounds); }
+
 } // namespace components

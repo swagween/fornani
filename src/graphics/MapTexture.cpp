@@ -22,14 +22,17 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) {
 
 void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
 	map.load(svc, room, true);
+	tile_color = map.style_id == 0 ? svc.styles.colors.blue : svc.styles.colors.fucshia;
 	global_offset = map.metagrid_coordinates * 16;
+	map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions);
 	auto const& middleground = map.get_layers().at(world::MIDDLEGROUND);
 	map_texture.create(map.dimensions.x * static_cast<unsigned int>((32.f / scale)), map.dimensions.y * static_cast<unsigned int>(32.f / scale));
 	map_texture.clear(sf::Color::Transparent);
+	sf::Color diff{};
 	for (auto& cell : middleground.grid.cells) {
 		if (cell.is_occupied() && !cell.is_breakable()) {
-			tile_box.setPosition(cell.position / scale);
-			sf::Color diff = tile_color;
+			tile_box.setPosition(cell.position() / scale);
+			diff = tile_color;
 			auto darkener = current ? 0 : 40;
 			auto g_diff = cell.value / 8;
 			diff.g = std::clamp(diff.g + g_diff - darkener, 0, 255);
@@ -63,8 +66,8 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		curtain.setFillColor(svc.styles.colors.navy_blue);
 		map_texture.draw(curtain);
 	}
-
 	map_texture.display();
+	svc.stopwatch.stop();
 }
 
 sf::Sprite MapTexture::sprite() { return sf::Sprite(map_texture.getTexture()); }
@@ -72,5 +75,7 @@ sf::Sprite MapTexture::sprite() { return sf::Sprite(map_texture.getTexture()); }
 sf::RenderTexture& MapTexture::get() { return map_texture; }
 
 sf::Vector2<float> MapTexture::get_position() { return sf::Vector2<float>(static_cast<float>(global_offset.x), static_cast<float>(global_offset.y)); }
+
+sf::Vector2<float> MapTexture::get_dimensions() const { return map_dimensions; }
 
 } // namespace text

@@ -31,6 +31,7 @@ void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 	velocity.x = std::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
 	velocity.y = std::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
 	position = position + velocity * dt;
+	real_velocity = velocity * dt;
 }
 
 void PhysicsComponent::update(automa::ServiceProvider& svc) { update_euler(svc); }
@@ -40,19 +41,31 @@ void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
 	acceleration = {};
 }
 
+void PhysicsComponent::hard_stop_x() {
+	velocity.x = 0.f;
+	real_velocity.x = 0.f;
+}
+
+void PhysicsComponent::stop_x() {
+	acceleration.x = 0.f;
+}
+
 void PhysicsComponent::zero() {
 	acceleration = {};
 	velocity = {};
+	real_velocity = {};
 }
 
 void PhysicsComponent::zero_x() {
 	acceleration.x = 0.0f;
 	velocity.x *= -elasticity;
+	real_velocity.x *= -elasticity;
 }
 
 void PhysicsComponent::zero_y() {
 	acceleration.y = 0.0f;
 	velocity.y *= -elasticity;
+	real_velocity.y *= -elasticity;
 }
 
 void PhysicsComponent::hitstun() {}

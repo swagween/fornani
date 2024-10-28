@@ -15,7 +15,6 @@ add_executable(${PROJECT_NAME})
 add_subdirectory(dependencies)
 target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
 target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
-
 target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-audio sfml-system sfml-window sfml-graphics)
 target_link_libraries(${PROJECT_NAME} PRIVATE steamworks)

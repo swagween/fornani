@@ -4,6 +4,8 @@
 #include "../GameState.hpp"
 #include "../../level/Camera.hpp"
 #include "../../utils/Collider.hpp"
+#include "../../gui/VendorDialog.hpp"
+#include <optional>
 
 namespace automa {
 
@@ -24,11 +26,15 @@ class Dojo : public GameState {
 	world::Map gui_map;
 	fornani::Camera camera{};
 	bool show_colliders{false};
+	bool open_vendor{};
 	int x{0};
 	util::Cooldown enter_room{};
+	util::Cooldown loading{4};
+	std::optional<gui::VendorDialog> vendor_dialog{};
 
 	//shape::Collider A{};
 	//shape::Collider B{};
+	//shape::CircleCollider circle{16.f};
 };
 
 } // namespace automa

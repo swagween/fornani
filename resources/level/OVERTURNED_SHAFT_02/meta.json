@@ -627,6 +627,181 @@
       "foreground": true
     }
   ],
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          10,
+          14
+        ],
+        "length": 6,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          21,
+          25
+        ],
+        "length": 6,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          23,
+          2
+        ],
+        "length": 6,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          25,
+          3
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          14,
+          2
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          8,
+          15
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          7,
+          5
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          9,
+          4
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          8,
+          5
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          15,
+          1
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          22,
+          25
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          28,
+          25
+        ],
+        "length": 4,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          29,
+          24
+        ],
+        "length": 7,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          10,
+          36
+        ],
+        "length": 7,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          8,
+          34
+        ],
+        "length": 7,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          25,
+          37
+        ],
+        "length": 7,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          23,
+          35
+        ],
+        "length": 9,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          19,
+          49
+        ],
+        "length": 9,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          20,
+          49
+        ],
+        "length": 11,
+        "size": 1,
+        "foreground": false
+      }
+    ]
+  },
   "enemies": [
     {
       "id": 7,

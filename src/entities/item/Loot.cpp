@@ -20,11 +20,11 @@ Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float prob
 		} else {
 			key = "orb";
 		}
-		float randx = svc.random.random_range_float(-100.0f, 100.0f);
-		float randy = svc.random.random_range_float(-100.0f, 100.0f);
+		float randx = svc.random.random_range_float(-40.0f, 40.0f);
+		float randy = svc.random.random_range_float(-40.0f, 40.0f);
 		drops.push_back(std::make_unique<Drop>(svc, key, probability, delay_time, special_id));
 		drops.back()->set_position(pos);
-		drops.back()->get_collider().physics.apply_force({randx, randy});
+		drops.back()->apply_force({randx, randy});
 	}
 }
 
@@ -32,7 +32,7 @@ void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	std::erase_if(drops, [](auto const& d) { return d->is_completely_gone(); });
 	for (auto& drop : drops) {
 		drop->update(svc, map);
-		if (drop->get_collider().bounding_box.overlaps(player.collider.bounding_box) && !drop->is_inactive() && !drop->is_completely_gone() && drop->delay_over()) {
+		if (drop->collides_with(player.collider.bounding_box) && !drop->is_inactive() && !drop->is_completely_gone() && drop->delay_over()) {
 			player.give_drop(drop->get_type(), static_cast<float>(drop->get_value()));
 			if (drop->get_type() == DropType::gem) {
 				svc.soundboard.flags.item.set(audio::Item::gem);

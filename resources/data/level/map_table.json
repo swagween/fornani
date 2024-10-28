@@ -1,77 +1,176 @@
 {
   "rooms": [
-    
-    { "room_id": 0, "label": "INTRO"},
-
-    { "room_id": 100, "label": "FIRSTWIND_PRISON_01"},
-    { "room_id": 101, "label": "FIRSTWIND_CORRIDOR_01"},
-    { "room_id": 102, "label": "FIRSTWIND_ATRIUM_01"},
-    { "room_id": 103, "label": "FIRSTWIND_CARGO_01"},
-    { "room_id": 104, "label": "FIRSTWIND_CORRIDOR_02"},
-    { "room_id": 105, "label": "FIRSTWIND_CORRIDOR_03"},
-    { "room_id": 106, "label": "FIRSTWIND_ATRIUM_02"},
-    { "room_id": 107, "label": "FIRSTWIND_SHAFT_01"},
-    { "room_id": 108, "label": "FIRSTWIND_DECK_02"},
-    { "room_id": 109, "label": "FIRSTWIND_CLOSET_01"},
-    { "room_id": 110, "label": "FIRSTWIND_LAB_01"},
-    { "room_id": 111, "label": "FIRSTWIND_CLOSET_02"},
-    { "room_id": 112, "label": "FIRSTWIND_HANGAR_01"},
-    { "room_id": 113, "label": "FIRSTWIND_CLOSET_03"},
-    { "room_id": 114, "label": "FIRSTWIND_INFIRMARY_01"},
-    { "room_id": 115, "label": "FIRSTWIND_DECK_01"},
-    { "room_id": 116, "label": "FIRSTWIND_CORRIDOR_04"},
-    { "room_id": 117, "label": "FIRSTWIND_CLOSET_03"},
-    { "room_id": 118, "label": "FIRSTWIND_CELL_01"},
-    { "room_id": 199, "label": "FIRSTWIND_WASHROOM_01"},
-    { "room_id": 120, "label": "FIRSTWIND_BOILER_01"},
-    { "room_id": 121, "label": "FIRSTWIND_ARENA_01"},
-    { "room_id": 122, "label": "FIRSTWIND_FALL_01"},
-    { "room_id": 123, "label": "FIRSTWIND_BRIDGE_01"},
-    { "room_id": 124, "label": "FIRSTWIND_BUNKER_01"},
-    { "room_id": 125, "label": "FIRSTWIND_HIDEOUT_01"},
-    
-    { "room_id": 200, "label": "OVERTURNED_CANOPY_01"},
-    { "room_id": 299, "label": "OVERTURNED_CANOPY_02"},
-    { "room_id": 224, "label": "OVERTURNED_CANOPY_06"},
-    { "room_id": 225, "label": "OVERTURNED_CANOPY_08"},
-    { "room_id": 219, "label": "OVERTURNED_CANOPY_03"},
-    { "room_id": 218, "label": "OVERTURNED_SHAFT_02"},
-    { "room_id": 226, "label": "OVERTURNED_CANOPY_09"},
-    { "room_id": 222, "label": "OVERTURNED_SHAFT_03"},
-    { "room_id": 227, "label": "OVERTURNED_FARM_01"},
-    { "room_id": 228, "label": "OVERTURNED_MIMIC_01"},
-    { "room_id": 229, "label": "OVERTURNED_COVE_03"},
-
-    { "room_id": 305, "label": "WOODSHINE_VILLAGE_01"},
-    { "room_id": 306, "label": "WOODSHINE_GAIA_01"},
-    { "room_id": 307, "label": "WOODSHINE_SHACK_01"},
-    { "room_id": 308, "label": "WOODSHINE_INN_01"},
-    { "room_id": 309, "label": "WOODSHINE_BRODY_01"},
-    { "room_id": 310, "label": "WOODSHINE_HALL_01"},
-    { "room_id": 311, "label": "WOODSHINE_WAREHOUSE_01"},
-    { "room_id": 312, "label": "WOODSHINE_BRODY_02"},
-    { "room_id": 313, "label": "WOODSHINE_CRAWL_01"},
-    { "room_id": 314, "label": "WOODSHINE_CELLAR_01"},
-
-    { "room_id": 800, "label": "UNDER_LEDGE_01"},
-    { "room_id": 801, "label": "UNDER_HOME_01"},
-    
-    { "room_id": 6600, "label": "TESTLAB_01"},
-    { "room_id": 6601, "label": "TESTLAB_02"},
-
-    { "room_id": 1101, "label": "STONE_CORRIDOR_01"},
-    { "room_id": 1102, "label": "STONE_CHAMBER_01"},
-    { "room_id": 1103, "label": "STONE_HALL_01"},
-    
-    { "room_id": 1701, "label": "SKY_CHAMBER_01"},
-    { "room_id": 1702, "label": "SKY_CHAMBER_02"},
-    { "room_id": 1703, "label": "SKY_CHAMBER_03"},
-    { "room_id": 1704, "label": "SKY_CHAMBER_04"},
-    { "room_id": 1705, "label": "SKY_CHAMBER_05"},
-    
-    { "room_id": 3001, "label": "SKYCORPS_JUNKYARD_01"},
-    { "room_id": 3002, "label": "SKYCORPS_JUNKYARD_02"},
-    { "room_id": 6001, "label": "GREATWING_BRIDGE_01"}
-
+    {
+      "room_id": 9998,
+      "label": "COLLISION_TEST"
+    },
+    {
+      "room_id": 121,
+      "label": "FIRSTWIND_ARENA_01"
+    },
+    {
+      "room_id": 102,
+      "label": "FIRSTWIND_ATRIUM_01"
+    },
+    {
+      "room_id": 106,
+      "label": "FIRSTWIND_ATRIUM_02"
+    },
+    {
+      "room_id": 120,
+      "label": "FIRSTWIND_BOILER_01"
+    },
+    {
+      "room_id": 123,
+      "label": "FIRSTWIND_BRIDGE_01"
+    },
+    {
+      "room_id": 124,
+      "label": "FIRSTWIND_BUNKER_01"
+    },
+    {
+      "room_id": 103,
+      "label": "FIRSTWIND_CARGO_01"
+    },
+    {
+      "room_id": 118,
+      "label": "FIRSTWIND_CELL_01"
+    },
+    {
+      "room_id": 109,
+      "label": "FIRSTWIND_CLOSET_01"
+    },
+    {
+      "room_id": 111,
+      "label": "FIRSTWIND_CLOSET_02"
+    },
+    {
+      "room_id": 117,
+      "label": "FIRSTWIND_CLOSET_03"
+    },
+    {
+      "room_id": 101,
+      "label": "FIRSTWIND_CORRIDOR_01"
+    },
+    {
+      "room_id": 104,
+      "label": "FIRSTWIND_CORRIDOR_02"
+    },
+    {
+      "room_id": 105,
+      "label": "FIRSTWIND_CORRIDOR_03"
+    },
+    {
+      "room_id": 116,
+      "label": "FIRSTWIND_CORRIDOR_04"
+    },
+    {
+      "room_id": 115,
+      "label": "FIRSTWIND_DECK_01"
+    },
+    {
+      "room_id": 108,
+      "label": "FIRSTWIND_DECK_02"
+    },
+    {
+      "room_id": 122,
+      "label": "FIRSTWIND_FALL_01"
+    },
+    {
+      "room_id": 112,
+      "label": "FIRSTWIND_HANGAR_01"
+    },
+    {
+      "room_id": 125,
+      "label": "FIRSTWIND_HIDEOUT_01"
+    },
+    {
+      "room_id": 114,
+      "label": "FIRSTWIND_INFIRMARY_01"
+    },
+    {
+      "room_id": 110,
+      "label": "FIRSTWIND_LAB_01"
+    },
+    {
+      "room_id": 100,
+      "label": "FIRSTWIND_PRISON_01"
+    },
+    {
+      "room_id": 107,
+      "label": "FIRSTWIND_SHAFT_01"
+    },
+    {
+      "room_id": 199,
+      "label": "FIRSTWIND_WASHROOM_01"
+    },
+    {
+      "room_id": 6001,
+      "label": "GREATWING_BRIDGE_01"
+    },
+    {
+      "room_id": 0,
+      "label": "INTRO"
+    },
+    {
+      "room_id": 200,
+      "label": "OVERTURNED_CANOPY_01"
+    },
+    {
+      "room_id": 299,
+      "label": "OVERTURNED_CANOPY_02"
+    },
+    {
+      "room_id": 219,
+      "label": "OVERTURNED_CANOPY_03"
+    },
+    {
+      "room_id": 224,
+      "label": "OVERTURNED_CANOPY_06"
+    },
+    {
+      "room_id": 225,
+      "label": "OVERTURNED_CANOPY_08"
+    },
+    {
+      "room_id": 226,
+      "label": "OVERTURNED_CANOPY_09"
+    },
+    {
+      "room_id": 232,
+      "label": "OVERTURNED_CHANNEL_01"
+    },
+    {
+      "room_id": 229,
+      "label": "OVERTURNED_COVE_03"
+    },
+    {
+      "room_id": 227,
+      "label": "OVERTURNED_FARM_01"
+    },
+    {
+      "room_id": 228,
+      "label": "OVERTURNED_MIMIC_01"
+    },
+    {
+      "room_id": 218,
+      "label": "OVERTURNED_SHAFT_02"
+    },
+    {
+      "room_id": 222,
+      "label": "OVERTURNED_SHAFT_03"
+    },
+    {
+      "room_id": 3001,
+      "label": "SKYCORPS_JUNKYARD_01"
+    },
+    {
+      "room_id": 3002,
+      "label": "SKYCORPS_JUNKYARD_02"
+    },
+    {
+      "room_id": 9901,
+      "label": "WEATHER_TEST"
+    }
   ]
 }

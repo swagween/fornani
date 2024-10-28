@@ -71,6 +71,12 @@
     },
     "menu_cancel": {
       "primary_key": "X"
+    },
+    "menu_switch_left": {
+      "primary_key": "A"
+    },
+    "menu_switch_right": {
+      "primary_key": "S"
     }
   }
 }

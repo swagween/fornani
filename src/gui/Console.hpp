@@ -70,6 +70,7 @@ class Console {
 
 	Portrait portrait;
 	Portrait nani_portrait;
+	sf::Texture nani_texture{};
 	ItemWidget item_widget;
 
 	automa::ServiceProvider* m_services;

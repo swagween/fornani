@@ -16,10 +16,12 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, gui::Console& console
 	if (complete()) {
 		map.transition.start();
 		svc.state_controller.switch_rooms(122, metadata.target_state_on_end, map.transition);
+		svc.state_flags.reset(automa::StateFlags::no_menu);
 		return;
 	}
 
 	svc.state_flags.set(automa::StateFlags::hide_hud);
+	svc.state_flags.set(automa::StateFlags::no_menu);
 	cooldowns.beginning.update();
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();

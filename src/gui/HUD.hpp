@@ -38,7 +38,6 @@ class HUD {
 	sf::Vector2<int> position{};
 	int total_hp_cells{};
 	int filled_hp_cells{};
-	int max_orbs{};
 	int num_orbs{};
 	int shield_bar{num_bits};
 
@@ -70,6 +69,7 @@ class HUD {
 	sf::Vector2<int> SHIELD_origin{};
 
 	sf::Vector2<int> heart_dimensions{18, 18};
+	sf::Vector2<float> f_heart_dimensions{18.f, 18.f};
 	sf::Vector2<int> orb_text_dimensions{18, 16};
 	sf::Vector2<int> const gun_dimensions{66, 18};
 	sf::Vector2<int> const shield_dimensions{18, 18};

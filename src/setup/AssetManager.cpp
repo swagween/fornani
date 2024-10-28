@@ -20,9 +20,24 @@ void AssetManager::import_textures() {
 	npcs.insert({"bit", t_bit});
 	npcs.insert({"lady_nimbus", t_lady_nimbus});
 
+	t_vendor_artwork.loadFromFile(finder.resource_path + "/image/gui/vendor_artwork.png");
+	t_vendor_ui.loadFromFile(finder.resource_path + "/image/gui/vendor_interface.png");
+
 	t_palette_nani.loadFromFile(finder.resource_path + "/image/character/nani_palette_default.png");
 	t_palette_nanidiv.loadFromFile(finder.resource_path + "/image/character/nani_palette_divine.png");
 	t_palette_naninight.loadFromFile(finder.resource_path + "/image/character/nani_palette_night.png");
+
+	t_wardrobe_base.loadFromFile(finder.resource_path + "/image/wardrobe/base.png");
+	t_wardrobe_green_pants.loadFromFile(finder.resource_path + "/image/wardrobe/green_pants.png");
+	t_wardrobe_blue_shirt.loadFromFile(finder.resource_path + "/image/wardrobe/blue_shirt.png");
+	t_wardrobe_default_hair.loadFromFile(finder.resource_path + "/image/wardrobe/default_hair.png");
+	t_wardrobe_red_jeans.loadFromFile(finder.resource_path + "/image/wardrobe/red_jeans.png");
+	t_wardrobe_chalcedony_tee.loadFromFile(finder.resource_path + "/image/wardrobe/chalcedony_tee.png");
+	t_wardrobe_chalcedony_skirt.loadFromFile(finder.resource_path + "/image/wardrobe/chalcedony_skirt.png");
+	t_wardrobe_ponytail.loadFromFile(finder.resource_path + "/image/wardrobe/ponytail.png");
+	t_wardrobe_punk_hair.loadFromFile(finder.resource_path + "/image/wardrobe/punk_hair.png");
+	t_wardrobe_punk_shirt.loadFromFile(finder.resource_path + "/image/wardrobe/punk_shirt.png");
+	t_wardrobe_punk_pants.loadFromFile(finder.resource_path + "/image/wardrobe/punk_pants.png");
 
 	t_frdog.loadFromFile(finder.resource_path + "/image/critter/frdog.png");
 	t_hulmet.loadFromFile(finder.resource_path + "/image/critter/hulmet.png");
@@ -51,7 +66,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"demon", t_demon});
 	texture_lookup.insert({"caster", t_caster});
 
-	t_ui.loadFromFile(finder.resource_path + "/image/gui/simple_console.png");
+	t_ui.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
 	t_hud_hearts.loadFromFile(finder.resource_path + "/image/gui/HUD_hearts.png");
 	t_hud_pointer.loadFromFile(finder.resource_path + "/image/gui/HUD_pointer.png");
@@ -60,63 +75,41 @@ void AssetManager::import_textures() {
 	t_hud_shield.loadFromFile(finder.resource_path + "/image/gui/HUD_shield.png");
 	t_selector.loadFromFile(finder.resource_path + "/image/gui/selector.png");
 	t_console_outline.loadFromFile(finder.resource_path + "/image/gui/console_outline.png");
+	t_sticker.loadFromFile(finder.resource_path + "/image/gui/sticker.png");
+	t_controller_button_icons.loadFromFile(finder.resource_path + "/image/gui/controller_button_icons.png");
 
 	// guns and bullets!
-	t_bryns_gun.loadFromFile(finder.resource_path + "/image/weapon/bg.png");
-	t_plasmer.loadFromFile(finder.resource_path + "/image/weapon/plasmer.png");
-	t_clover.loadFromFile(finder.resource_path + "/image/weapon/clover.png");
-	t_nova.loadFromFile(finder.resource_path + "/image/weapon/nova.png");
-	t_tomahawk.loadFromFile(finder.resource_path + "/image/weapon/tomahawk.png");
+	t_gun.loadFromFile(finder.resource_path + "/image/weapon/gun.png");
 	t_bryns_gun_projectile.loadFromFile(finder.resource_path + "/image/weapon/bg_proj.png");
 	t_plasmer_projectile.loadFromFile(finder.resource_path + "/image/weapon/plasmer_proj.png");
 	t_clover_projectile.loadFromFile(finder.resource_path + "/image/weapon/clover_proj.png");
-	t_nova_projectile.loadFromFile(finder.resource_path + "/image/weapon/nova_proj.png");
 	t_skycorps_ar_projectile.loadFromFile(finder.resource_path + "/image/weapon/skycorps_ar_proj.png");
 	t_tomahawk_projectile.loadFromFile(finder.resource_path + "/image/weapon/tomahawk_projectile.png");
-	t_grappling_hook.loadFromFile(finder.resource_path + "/image/weapon/grappling_hook.png");
+	t_wasp_projectile.loadFromFile(finder.resource_path + "/image/weapon/wasp_proj.png");
 	t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 	t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
-	t_grenade_launcher.loadFromFile(finder.resource_path + "/image/weapon/grenade_launcher.png");
 	t_grenade.loadFromFile(finder.resource_path + "/image/weapon/grenade.png");
 	t_minigun.loadFromFile(finder.resource_path + "/image/boss/minigun.png");
-	t_soda_gun.loadFromFile(finder.resource_path + "/image/weapon/soda_gun.png");
 	t_soda_gun_projectile.loadFromFile(finder.resource_path + "/image/weapon/soda.png");
-	t_staple_gun.loadFromFile(finder.resource_path + "/image/weapon/staple_gun.png");
 	t_staple.loadFromFile(finder.resource_path + "/image/weapon/staple.png");
-	t_indie.loadFromFile(finder.resource_path + "/image/weapon/indie.png");
 	t_indie_projectile.loadFromFile(finder.resource_path + "/image/weapon/indie_proj.png");
-	t_gnat.loadFromFile(finder.resource_path + "/image/weapon/gnat.png");
 	t_gnat_projectile.loadFromFile(finder.resource_path + "/image/weapon/gnat_proj.png");
 	t_energy_ball_projectile.loadFromFile(finder.resource_path + "/image/weapon/energy_ball.png");
 
-	weapon_textures.insert({"bryn's gun", t_bryns_gun});
-	projectile_textures.insert({"bryn's gun", t_bryns_gun_projectile});
-	weapon_textures.insert({"plasmer", t_plasmer});
-	weapon_textures.insert({"skycorps ar", t_plasmer});
-	projectile_textures.insert({"skycorps ar", t_skycorps_ar_projectile});
-	projectile_textures.insert({"plasmer", t_plasmer_projectile});
-	weapon_textures.insert({"nova", t_nova});
-	projectile_textures.insert({"nova", t_nova_projectile});
-	weapon_textures.insert({"tomahawk", t_tomahawk});
-	projectile_textures.insert({"tomahawk", t_tomahawk_projectile});
-	weapon_textures.insert({"clover", t_clover});
-	projectile_textures.insert({"clover", t_clover_projectile});
-	weapon_textures.insert({"grappling hook", t_grappling_hook});
-	projectile_textures.insert({"grappling hook", t_hook});
-	weapon_textures.insert({"grenade launcher", t_grenade_launcher});
-	projectile_textures.insert({"grenade launcher", t_hook});
-	weapon_textures.insert({"minigun", t_minigun});
-	projectile_textures.insert({"minigun", t_skycorps_ar_projectile});
-	weapon_textures.insert({"soda gun", t_soda_gun});
-	projectile_textures.insert({"soda gun", t_soda_gun_projectile});
-	weapon_textures.insert({"staple gun", t_staple_gun});
-	projectile_textures.insert({"staple gun", t_staple});
-	weapon_textures.insert({"indie", t_indie});
-	projectile_textures.insert({"indie", t_indie_projectile});
-	weapon_textures.insert({"gnat", t_gnat});
-	projectile_textures.insert({"gnat", t_gnat_projectile});
-	weapon_textures.insert({"energy ball", t_soda_gun});
-	projectile_textures.insert({"energy ball", t_energy_ball_projectile});
+	projectile_textures.insert({"Bryn's Gun", t_bryns_gun_projectile});
+	projectile_textures.insert({"Skycorps AR", t_skycorps_ar_projectile});
+	projectile_textures.insert({"Plasmer", t_plasmer_projectile});
+	projectile_textures.insert({"Tomahawk", t_tomahawk_projectile});
+	projectile_textures.insert({"Clover", t_clover_projectile});
+	projectile_textures.insert({"Grappling Hook", t_hook});
+	projectile_textures.insert({"Grenade Launcher", t_hook});
+	projectile_textures.insert({"Minigun", t_skycorps_ar_projectile});
+	projectile_textures.insert({"Soda Gun", t_soda_gun_projectile});
+	projectile_textures.insert({"Staple Gun", t_staple});
+	projectile_textures.insert({"Indie", t_indie_projectile});
+	projectile_textures.insert({"Gnat", t_gnat_projectile});
+	projectile_textures.insert({"Energy Ball", t_energy_ball_projectile});
+	projectile_textures.insert({"Wasp", t_wasp_projectile});
 
 	t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 	t_guns.loadFromFile(finder.resource_path + "/image/item/guns.png");
@@ -129,12 +122,15 @@ void AssetManager::import_textures() {
 	t_fader.loadFromFile(finder.resource_path + "/image/vfx/fader.png");
 
 	t_twinkle.loadFromFile(finder.resource_path + "/image/vfx/twinkle.png");
+	t_wasp_effect.loadFromFile(finder.resource_path + "/image/vfx/wasp_effect.png");
 	t_small_flash.loadFromFile(finder.resource_path + "/image/vfx/small_flash.png");
 	particle_textures.insert({"twinkle", t_twinkle});
+	particle_textures.insert({"wasp", t_wasp_effect});
 
 	t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 	t_blue_console.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");
 	t_cream_console.loadFromFile(finder.resource_path + "/image/gui/cream_console.png");
+	t_portrait_window.loadFromFile(finder.resource_path + "/image/gui/portrait_window.png");
 
 	t_platforms.loadFromFile(finder.resource_path + "/image/tile/platforms.png");
 	t_platform_night.loadFromFile(finder.resource_path + "/image/tile/platform_night.png");
@@ -155,6 +151,10 @@ void AssetManager::import_textures() {
 	t_switch_blocks.loadFromFile(finder.resource_path + "/image/tile/switch_blocks.png");
 	t_indicator.loadFromFile(finder.resource_path + "/image/entity/arrow.png");
 	t_portals.loadFromFile(finder.resource_path + "/image/tile/portals.png");
+	t_vine.loadFromFile(finder.resource_path + "/image/tile/vine.png");
+	t_vine_large.loadFromFile(finder.resource_path + "/image/tile/vine_large.png");
+	t_grass.loadFromFile(finder.resource_path + "/image/tile/grass.png");
+	//t_grass_large.loadFromFile(finder.resource_path + "/image/tile/grass_large.png");
 
 	// backgrounds
 	t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");
@@ -190,6 +190,7 @@ void AssetManager::import_textures() {
 	t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators.png");
 	t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators.png");
 
+	t_treasure_ball.loadFromFile(finder.resource_path + "/image/entity/treasure_ball.png");
 	t_huge_explosion.loadFromFile(finder.resource_path + "/image/entity/huge_explosion.png");
 	t_large_explosion.loadFromFile(finder.resource_path + "/image/entity/large_explosion.png");
 	t_small_explosion.loadFromFile(finder.resource_path + "/image/entity/small_explosion.png");
@@ -251,6 +252,8 @@ void AssetManager::load_audio() {
 	arms_switch_buffer.loadFromFile(finder.resource_path + "/audio/sfx/arms_switch.wav");
 	arms_switch.setBuffer(arms_switch_buffer);
 	bg_shot_buffer.loadFromFile(finder.resource_path + "/audio/sfx/bg_shot.wav");
+	b_wasp.loadFromFile(finder.resource_path + "/audio/sfx/wasp_shot.wav");
+	wasp.setBuffer(b_wasp);
 	bg_shot.setBuffer(bg_shot_buffer);
 	skycorps_ar_buffer.loadFromFile(finder.resource_path + "/audio/sfx/skycorps_ar_shot.wav");
 	skycorps_ar_shot.setBuffer(skycorps_ar_buffer);
@@ -277,8 +280,12 @@ void AssetManager::load_audio() {
 	shatter.setBuffer(shatter_buffer);
 	step_buffer.loadFromFile(finder.resource_path + "/audio/sfx/steps.wav");
 	step.setBuffer(step_buffer);
+	grass_step_buffer.loadFromFile(finder.resource_path + "/audio/sfx/grass_steps.wav");
+	grass_step.setBuffer(grass_step_buffer);
 	landed_buffer.loadFromFile(finder.resource_path + "/audio/sfx/landed.wav");
 	landed.setBuffer(landed_buffer);
+	landed_grass_buffer.loadFromFile(finder.resource_path + "/audio/sfx/landed_grass.wav");
+	landed_grass.setBuffer(landed_grass_buffer);
 	hurt_buffer.loadFromFile(finder.resource_path + "/audio/sfx/hurt.wav");
 	hurt.setBuffer(hurt_buffer);
 	player_death_buffer.loadFromFile(finder.resource_path + "/audio/sfx/player_death.wav");

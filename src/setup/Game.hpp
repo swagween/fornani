@@ -28,10 +28,8 @@ class Game {
 
   private:
 
-	void debug_window(sf::RenderWindow& window);
 	void playtester_portal(sf::RenderWindow& window);
 	void take_screenshot(sf::Texture& screencap);
-	bool debug();
 	automa::ServiceProvider services{};
 
 	struct {
@@ -39,10 +37,6 @@ class Game {
 		float height_ratio{};
 		float width_ratio{};
 	} measurements{};
-
-	struct {
-		int draw_calls{};
-	} trackers{};
 
 	struct {
 		bool m_musicplayer{};

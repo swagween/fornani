@@ -18,6 +18,7 @@ void MusicPlayer::load(std::string_view song_name) {
 	song_first.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_first.ogg");
 	song_loop.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_loop.ogg");
 	switch_on();
+	flags.state.reset(SongState::looping);
 }
 void MusicPlayer::play_once(float vol) {
 	if (global_off()) { return; }
@@ -50,14 +51,21 @@ void MusicPlayer::update() {
 		stop();
 		return;
 	}
-	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMilliseconds();
-	if (song_dt < 0) {
-		if (song_loop.getStatus() == sf::SoundSource::Status::Playing) { return; }
-		status = sf::SoundSource::Status::Stopped;
-	}
-	if (status != sf::SoundSource::Status::Playing) {
+	last_dt = music_tick.getElapsedTime().asMicroseconds();
+	music_tick.restart();
+	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
+	if (song_dt < (last_dt * 2) && !flags.state.test(SongState::looping) && song_first.getStatus() != sf::Sound::Status::Playing) {
 		song_loop.play();
-		status = sf::SoundSource::Status::Playing;
+		flags.state.set(SongState::looping);
+		music_clock.restart();
+	}
+	if (flags.state.test(SongState::looping)) {
+		auto song_dt = (song_loop.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
+		if (song_dt < (last_dt * 2)) {
+			song_loop.play();
+			flags.state.set(SongState::looping);
+			music_clock.restart();
+		}
 	}
 }
 
@@ -66,25 +74,31 @@ void MusicPlayer::pause() {
 	song_loop.pause();
 	switch_off();
 }
+
 void MusicPlayer::stop() {
 	song_first.stop();
 	song_loop.stop();
 	switch_off();
 }
+
 void MusicPlayer::fade_out() {}
 void MusicPlayer::fade_in() {}
 void MusicPlayer::switch_off() { flags.state.reset(SongState::on); }
 void MusicPlayer::switch_on() { flags.state.set(SongState::on); }
+
 void MusicPlayer::turn_off() {
 	flags.player.reset(MusicPlayerState::on);
 	stop();
 }
+
 void MusicPlayer::turn_on() {
 	flags.player.set(MusicPlayerState::on);
 	pause();
 }
+
 void MusicPlayer::set_volume(float vol) {
 	song_first.setVolume(vol);
 	song_loop.setVolume(vol);
 }
+
 } // namespace audio

@@ -1,53 +1,95 @@
 #include "Tile.hpp"
+#include "../service/ServiceProvider.hpp"
+#include "../entities/player/Player.hpp"
+#include "../weapon/Projectile.hpp"
+#include "../level/Map.hpp"
 #include <iostream>
 
 namespace world {
 
-Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val) : index(i), position(p), value(val) {
-	bounding_box = shape::Shape(sf::Vector2<float>(lookup::unit_size_f, lookup::unit_size_f));
-	drawbox.setOutlineColor(sf::Color::Blue);
-	drawbox.setFillColor(sf::Color::Transparent);
-	drawbox.setSize(bounding_box.dimensions);
-	drawbox.setOutlineThickness(-2);
+Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi) : index(i), value(val), one_d_index(odi), bounding_box({32.f, 32.f}, evaluate(val)) {
 	set_type();
+	bounding_box.set_position(p);
 }
 
-void Tile::update_polygon(sf::Vector2<float> cam) {
-	polygon.setPointCount(bounding_box.vertices.size());
-	for (size_t i{0}; i < bounding_box.vertices.size(); ++i) { polygon.setPoint(i, bounding_box.vertices.at(i)); }
-	polygon.setPosition(-cam.x, -cam.y);
-	polygon.setFillColor(sf::Color{40, 200, 130, 120});
-	polygon.setOutlineColor(sf::Color(235, 232, 249, 140));
-	polygon.setOutlineThickness(0);
-}
-
-void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (collision_check) {
-		update_polygon(cam);
-		if (!surrounded) {
-			//win.draw(polygon);
+void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj) {
+	if (proj.stats.transcendent) { return; }
+	if (!map.nearby(bounding_box, proj.bounding_box)) {
+		return;
+	} else {
+		collision_check = true;
+		if ((proj.bounding_box.overlaps(bounding_box) && is_occupied())) {
+			if (!is_collidable() || is_platform()) { return; }
+			if (!proj.stats.transcendent) {
+				if (!proj.destruction_initiated()) {
+					map.effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, proj.effect_type(), 2));
+					if (proj.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+				}
+				proj.destroy(false);
+			}
+			if (proj.stats.spring && is_hookable()) {
+				if (proj.hook.grapple_flags.test(arms::GrappleState::probing)) {
+					proj.hook.spring.set_anchor(get_center());
+					proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
+				}
+				map.handle_grappling_hook(svc, proj);
+			}
 		}
 	}
-	drawbox.setPosition(bounding_box.position);
-	if (ramp_adjacent()) { 
-		drawbox.setOutlineColor(sf::Color::Red);
-		win.draw(drawbox);
+}
+
+void Tile::update_polygon(sf::Vector2<float> cam) {}
+
+void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleShape& draw) {
+	draw.setSize({32.f, 32.f});
+	draw.setFillColor(sf::Color{17, 230, 187, 127});
+	if (collision_check) {
+		draw.setFillColor(sf::Color{190, 255, 7, 180});
+		if (!surrounded) {}
 	}
+	if (ramp_adjacent()) { draw.setFillColor(sf::Color{240, 155, 7, 180}); }
+	if (covered()) { draw.setFillColor(sf::Color{0, 155, 130, 180}); }
+	draw.setPosition(bounding_box.position - cam);
+	if (is_solid() && !is_spike()) { win.draw(draw); }
+	if (is_occupied()) { bounding_box.render(win, cam); }
+	collision_check = false;
 }
 
 void Tile::set_type() {
 	type = TileType::empty;
-	if (value < 192 && value > 0) { type = TileType::solid; }
-	if (value < 208 && value >= 192) { type = TileType::ceiling_ramp; }
-	if (value < 224 && value >= 208) { type = TileType::ground_ramp; }
-	if (value < 240 && value >= 236) { type = TileType::platform; }
-	if (value < 244 && value >= 240) { type = TileType::death_spike; }
-	if (value < 230 && value >= 228) { type = TileType::pushable; }
-	if (value == 231) { type = TileType::spawner; }
-	if (value < 248 && value >= 244) { type = TileType::breakable; }
+	if (value < 192 && value > 0) {
+		type = TileType::solid;
+		return;
+	}
+	if (value < 208 && value >= 192) {
+		type = TileType::ceiling_ramp;
+		return;
+	}
+	if (value < 224 && value >= 208) {
+		type = TileType::ground_ramp;
+		return;
+	}
+	if (value < 240 && value >= 236) {
+		type = TileType::platform;
+		return;
+	}
+	if (value < 244 && value >= 240) {
+		type = TileType::death_spike;
+		return;
+	}
+	if (value < 230 && value >= 228) {
+		type = TileType::pushable;
+		return;
+	}
+	if (value == 231) {
+		type = TileType::spawner;
+		return;
+	}
+	if (value < 248 && value >= 244) {
+		type = TileType::breakable;
+		return;
+	}
 	if (value >= 248) { type = TileType::spike; }
 }
-
-sf::Vector2<float> Tile::middle_point() { return {position.x + bounding_box.dimensions.x / 2, position.y + bounding_box.dimensions.y / 2}; }
 
 } // namespace world

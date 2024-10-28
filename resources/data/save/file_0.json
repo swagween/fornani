@@ -1,125 +1,79 @@
 {
   "status": {
-    "new": false
+    "new": true
   },
   "player_data": {
-    "max_hp": 4.000000,
-    "hp": 4.000000,
-    "orbs": 805,
+    "max_hp": 3,
+    "hp": 3,
+    "orbs": 0,
     "position": {
-      "x": 305.702179,
-      "y": 363.000000
+      "x": 102.0,
+      "y": 327.0
     },
     "arsenal": [
-      0
+
     ],
     "equipped_gun": 0,
     "abilities": [
 
     ],
+    "wardrobe": {
+      "hairstyle": 0,
+      "shirt": 0,
+      "pants": 0
+    },
     "items": [
-      {
-        "id": 16,
-        "quantity": 1
-      },
-      {
-        "id": 29,
-        "quantity": 1
-      },
-      {
-        "id": 31,
-        "quantity": 1
-      }
+
     ],
     "stats": {
-      "death_count": 70,
-      "bullets_fired": 403,
-      "guns_collected": 1,
-      "items_collected": 3,
-      "orbs_collected": 805,
-      "blue_orbs": 1,
-      "highest_indicator_amount": 124,
-      "enemies_killed": 16,
-      "rooms_discovered": 25,
-      "seconds_played": 1186.947021,
+      "death_count": 0,
+      "bullets_fired": 0,
+      "guns_collected": 0,
+      "items_collected": 0,
+      "orbs_collected": 0,
+      "blue_orbs": 0,
+      "highest_indicator_amount": 0,
+      "enemies_killed": 0,
+      "rooms_discovered": 0,
+      "seconds_played": 0.0,
       "time_trials": {
-        "bryns_gun": 25.041019
+        "bryns_gun": 0.0
       }
-    }
+    },
+    "hotbar": [
+
+    ]
   },
-  "save_point_id": 229,
+  "save_point_id": 100,
   "unlocked_doors": [
 
   ],
   "opened_chests": [
-    377,
-    567911,
-    1240,
-    11443,
-    22601
+
   ],
   "activated_switches": [
-    445,
-    1,
-    2251
+
   ],
   "destroyed_blocks": [
 
   ],
   "quest_progressions": [
-    [
-      1,
-      111,
-      1,
-      1,
-      0
-    ],
-    [
-      88,
-      1,
-      1,
-      1,
-      0
-    ]
+
   ],
   "destroyed_inspectables": [
 
   ],
   "tutorial": {
-    "state": 4,
+    "state": 0,
     "closed": true,
     "on": false,
     "jump": true,
     "shoot": true,
     "sprint": true,
-    "map": true,
+    "map": false,
     "inventory": true
   },
   "discovered_rooms": [
-    100,
-    101,
-    102,
-    110,
-    108,
-    116,
-    107,
-    106,
-    117,
-    105,
-    199,
-    103,
-    121,
-    124,
-    224,
-    299,
-    200,
-    225,
-    226,
-    219,
-    222,
-    227,
-    228,
-    218,
-    229
+
   ]
 }

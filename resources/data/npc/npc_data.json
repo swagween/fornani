@@ -24,7 +24,14 @@
       "walk": [ 8, 4, 24, -1, false ],
       "turn": [ 12, 2, 40, 0, false ],
       "inspect": [ 14, 2, 32, -1, true ]
-    }
+    },
+    "vendor": {
+      "id": 3,
+      "upcharge": 0.2,
+      "common_items": [ 65, 66, 23, 24, 25, 26, 27 ],
+      "uncommon_items": [ 67, 22, 81 ],
+      "rare_items": [98]
+    } 
   },
   "minigus": {
     "dimensions": [ 24, 24 ]

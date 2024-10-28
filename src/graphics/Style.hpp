@@ -30,6 +30,7 @@ class Style {
 		sf::Color console_blue{24, 34, 67};
 		sf::Color beige{217, 214, 160};
 		sf::Color treasure_blue{15, 104, 248};
+		sf::Color bright_purple{219, 194, 255};
 	} colors{};
 
 	std::unordered_map<std::string_view, sf::Color> spray_colors{{"clover", colors.green},
@@ -39,7 +40,8 @@ class Style {
 																 {"tomahawk", colors.white},
 																 {"grappling hook", colors.ui_white},
 																 {"grenade launcher", colors.goldenrod},
-																 {"gnat", colors.mythic_green}};
+																 {"gnat", colors.mythic_green},
+																 {"Wasp", colors.ui_white}};
 };
 
 } // namespace style

@@ -10,6 +10,7 @@
 #include "Wallslide.hpp"
 #include "Shield.hpp"
 #include "Slide.hpp"
+#include "Roll.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -118,6 +119,7 @@ class PlayerController {
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
 	[[nodiscard]] auto get_shield() -> Shield& { return shield; }
 	[[nodiscard]] auto get_slide() -> Slide& { return slide; }
+	Roll roll{};
 
 	dir::Direction direction{};
 

@@ -6,8 +6,6 @@
 #include <array>
 #include <filesystem>
 #include <string>
-
-#include "../graphics/FLColor.hpp"
 #include "../setup/EnumLookups.hpp"
 #include "ResourceFinder.hpp"
 
@@ -43,6 +41,19 @@ class AssetManager {
 	sf::Texture t_palette_nanidiv{};
 	sf::Texture t_palette_naninight{};
 
+	// wardrobe
+	sf::Texture t_wardrobe_base{};
+	sf::Texture t_wardrobe_green_pants{};
+	sf::Texture t_wardrobe_blue_shirt{};
+	sf::Texture t_wardrobe_default_hair{};
+	sf::Texture t_wardrobe_red_jeans{};
+	sf::Texture t_wardrobe_chalcedony_tee{};
+	sf::Texture t_wardrobe_chalcedony_skirt{};
+	sf::Texture t_wardrobe_ponytail{};
+	sf::Texture t_wardrobe_punk_hair{};
+	sf::Texture t_wardrobe_punk_shirt{};
+	sf::Texture t_wardrobe_punk_pants{};
+
 	// items
 	sf::Texture t_items{};
 	sf::Texture t_guns{};
@@ -73,6 +84,11 @@ class AssetManager {
 	sf::Texture t_file_text{};
 	sf::Texture t_blue_console{};
 	sf::Texture t_cream_console{};
+	sf::Texture t_portrait_window{};
+	sf::Texture t_controller_button_icons{};
+
+	sf::Texture t_vendor_artwork{};
+	sf::Texture t_vendor_ui{};
 
 	sf::Texture t_hud_orb_font{};
 	sf::Texture t_hud_hearts{};
@@ -83,6 +99,7 @@ class AssetManager {
 	sf::Texture t_selector{};
 	sf::Texture t_console_outline{};
 	sf::Texture t_indicator{};
+	sf::Texture t_sticker{};
 
 	sf::Texture t_alphabet{};
 	std::vector<sf::Sprite> sp_alphabet{};
@@ -95,8 +112,13 @@ class AssetManager {
 	sf::Texture t_platform_firstwind{};
 	sf::Texture t_platform_overturned{};
 
-	//portals
+	//world stuff
 	sf::Texture t_portals{};
+	sf::Texture t_vine{};
+	sf::Texture t_vine_large{};
+	sf::Texture t_grass{};
+	sf::Texture t_grass_large{};
+	sf::Texture t_treasure_ball{};
 
 	// animators
 	sf::Texture t_automatic_animators_firstwind{};
@@ -123,6 +145,7 @@ class AssetManager {
 	sf::Texture t_small_explosion{};
 	sf::Texture t_wall_hit{};
 	sf::Texture t_twinkle{};
+	sf::Texture t_wasp_effect{};
 	sf::Texture t_small_flash{};
 	sf::Texture t_mini_flash{};
 	sf::Texture t_medium_flash{};
@@ -153,43 +176,20 @@ class AssetManager {
 	sf::Texture t_bg_grove{};
 
 	// load the guns and bullets!
-	sf::Texture t_bryns_gun{};
+	sf::Texture t_gun{};
 	sf::Texture t_bryns_gun_projectile{};
-	sf::Texture t_plasmer{};
 	sf::Texture t_plasmer_projectile{};
-	sf::Texture t_clover{};
 	sf::Texture t_clover_projectile{};
 	sf::Texture t_wasp_projectile{};
-	sf::Texture t_blizzard_projectile{};
-	sf::Texture t_bismuth_projectile{};
-	sf::Texture t_underdog_projectile{};
-	sf::Texture t_electron_projectile{};
-	sf::Texture t_triton_projectile{};
-	sf::Texture t_willet_585_projectile{};
-	sf::Texture t_quasar_projectile{};
-	sf::Texture t_nova{};
-	sf::Texture t_nova_projectile{};
-	sf::Texture t_venom_projectile{};
-	sf::Texture t_twin_projectile{};
-	sf::Texture t_carise_projectile{};
-	sf::Texture t_stinger_projectile{};
-	sf::Texture t_tusk_projectile{};
-	sf::Texture t_tomahawk{};
 	sf::Texture t_tomahawk_projectile{};
 	sf::Texture t_skycorps_ar_projectile{};
-	sf::Texture t_grappling_hook{};
 	sf::Texture t_rope{};
 	sf::Texture t_hook{};
-	sf::Texture t_grenade_launcher{};
 	sf::Texture t_grenade{};
 	sf::Texture t_minigun{};
-	sf::Texture t_soda_gun{};
 	sf::Texture t_soda_gun_projectile{};
-	sf::Texture t_staple_gun{};
 	sf::Texture t_staple{};
-	sf::Texture t_indie{};
 	sf::Texture t_indie_projectile{};
-	sf::Texture t_gnat{};
 	sf::Texture t_gnat_projectile{};
 	sf::Texture t_energy_ball_projectile{};
 
@@ -229,11 +229,14 @@ class AssetManager {
 	sf::SoundBuffer b_nova{};
 	sf::SoundBuffer b_staple{};
 	sf::SoundBuffer b_gnat{};
+	sf::SoundBuffer b_wasp{};
 
 	sf::SoundBuffer jump_buffer{};
 	sf::SoundBuffer shatter_buffer{};
 	sf::SoundBuffer step_buffer{};
+	sf::SoundBuffer grass_step_buffer{};
 	sf::SoundBuffer landed_buffer{};
+	sf::SoundBuffer landed_grass_buffer{};
 	sf::SoundBuffer hurt_buffer{};
 	sf::SoundBuffer slide_buffer{};
 
@@ -325,7 +328,9 @@ class AssetManager {
 	sf::SoundBuffer chest_buffer{};
 
 	sf::Sound landed{};
+	sf::Sound landed_grass{};
 	sf::Sound step{};
+	sf::Sound grass_step{};
 	sf::Sound shatter{};
 	sf::Sound jump{};
 	sf::Sound slide{};
@@ -341,6 +346,7 @@ class AssetManager {
 	sf::Sound nova_shot{};
 	sf::Sound staple{};
 	sf::Sound gnat{};
+	sf::Sound wasp{};
 
 	sf::Sound hard_hit{};
 	sf::Sound thud{};
@@ -398,7 +404,6 @@ class AssetManager {
 	std::unordered_map<int, sf::Texture&> effect_lookup{};
 	std::unordered_map<int, sf::Texture&> platform_lookup{};
 	std::unordered_map<int, sf::Texture&> animator_lookup{};
-	std::unordered_map<std::string_view, sf::Texture&> weapon_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> particle_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};

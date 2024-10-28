@@ -4,21 +4,37 @@
 #include "../utils/Shape.hpp"
 #include "../utils/BitFlags.hpp"
 
+namespace automa {
+struct ServiceProvider;
+}
+namespace player {
+class Player;
+}
+namespace arms {
+class Projectile;
+}
 namespace world {
-
+class Map;
 enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable, pushable, spawner };
-enum class TileState { ramp_adjacent, big_ramp };
+enum class TileState { ramp_adjacent, big_ramp, covered };
 
 struct Tile {
 
 	Tile() = default;
-	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val);
+	constexpr static int evaluate(uint32_t val) {
+		auto ret{4};
+		if (val == 195 || val == 196 || val == 201 || val == 202 || val == 205 || val == 206) { ret = 3; }
+		if (val == 211 || val == 212 || val == 217 || val == 218 || val == 221 || val == 222) { ret = 3; }
+		return ret;
+	}
+	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi);
 
+	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
 	void update_polygon(sf::Vector2<float> cam); // for greyblock mode
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleShape& draw); // greyblock mode only
 	void set_type();
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
-	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner(); }
+	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner() || is_platform(); }
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
 	[[nodiscard]] auto is_hookable() const -> bool { return type == TileType::solid; }
 	[[nodiscard]] auto is_ramp() const -> bool { return type == TileType::ground_ramp || type == TileType::ceiling_ramp; }
@@ -33,25 +49,24 @@ struct Tile {
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
+	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool { return (value >= 208 && value < 212) || (value == 216 || value == 217) || (value == 220 || value == 221); }
 	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
-
-	sf::Vector2<float> middle_point();
+	[[nodiscard]] auto scaled_position() const -> sf::Vector2<int> { return sf::Vector2<int>{static_cast<int>(bounding_box.position.x), static_cast<int>(bounding_box.position.y)}; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return bounding_box.position + bounding_box.dimensions * 0.5f; }
+	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounding_box.position; }
 
 	sf::Vector2<uint32_t> index{};
-	sf::Vector2<float> position{};
-	sf::Vector2<int> scaled_position{};
 	uint32_t one_d_index{};
 
 	uint8_t value{};
-	TileType type{};	 // for assigning attributes
-	shape::Shape bounding_box{}; // for collision
+	TileType type{};					 // for assigning attributes
+	shape::Shape bounding_box; // for collision
 
 	bool collision_check{};
 	bool surrounded{};
+	mutable bool debug_flag{};
 	util::BitFlags<TileState> flags{};
-	
-	sf::ConvexShape polygon{};
-	sf::RectangleShape drawbox{};
 };
-}
+
+} // namespace world

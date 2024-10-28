@@ -4,7 +4,7 @@
 #include <vector>
 #include <string_view>
 #include <optional>
-#include "../utils/Collider.hpp"
+#include "../utils/CircleCollider.hpp"
 #include "../utils/Cooldown.hpp"
 #include "../utils/Fader.hpp"
 #include "../entities/animation/Animation.hpp"
@@ -24,7 +24,7 @@ class Particle {
 	Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	[[nodiscard]] auto done() const -> bool { return lifespan.is_complete(); }
+	[[nodiscard]] auto done() const -> bool { return lifespan.is_almost_complete(); }
 
   private:
 	sf::RectangleShape box{};
@@ -32,7 +32,7 @@ class Particle {
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<int> sprite_dimensions{};
 	util::Cooldown lifespan{};
-	shape::Collider collider{};
+	shape::CircleCollider collider;
 	int frame{};
 	sf::Sprite sprite{};
 	std::optional<util::Fader> fader{};

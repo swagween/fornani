@@ -44,6 +44,46 @@
       "key_id": 0
     }
   ],
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          6,
+          4
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          8,
+          3
+        ],
+        "length": 12,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          10,
+          3
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          13,
+          4
+        ],
+        "length": 11,
+        "size": 2,
+        "foreground": true
+      }
+    ]
+  },
   "save_point": {
     "id": 229,
     "position": [

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <format>
 
 namespace util {
 
@@ -15,20 +16,24 @@ class Stopwatch {
 	using Clk = std::chrono::steady_clock;
 	using Tpt = std::chrono::time_point<std::chrono::steady_clock>;
 	using Time = std::chrono::duration<float, std::milli>;
+	using TimeSec = std::chrono::duration<float>;
 
 	void start() { start_time = Clk::now(); };
 	void stop() {
 		elapsed_time = Clk::now() - start_time;
+		seconds = std::chrono::duration_cast<TimeSec>(elapsed_time);
 		snapshot.history.push_back(elapsed_time.count());
 		calculate_snapshot();
 	};
+	float seconds_passed() const { return seconds.count(); }
 	float get_snapshot() const { return snapshot.average_elapsed_ms; }
-	void print_time() const { std::cout << "Elapsed Time: " << elapsed_time.count() << "\n"; }
+	void print_time() const { std::cout << "Elapsed Time: " << std::format("{:.3f}", seconds.count()) << " seconds.\n"; }
 
 	Time elapsed_time{};
 	Tpt start_time = Clk::now();
 
   private:
+	TimeSec seconds{};
 	struct {
 		std::deque<float> history{};
 		float average_elapsed_ms{};

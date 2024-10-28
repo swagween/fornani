@@ -1,24 +1,34 @@
 {
   "gobe1": {
     "suite": [
-      [ "...", "Huh?", "Oh! A lost girl wanders my way, hmm?", "Tell me, what are you doing wandering about in a place so perilous as this?%0" ],
-      [ "Hah! Well, some say strangers are just friends you haven't met yet.", "You know, there aren't many of your kind buzzing around here these days. Not since Skycorps posted up and turned this whole half of the island into a glorified toxic waste dump." ],
-      [ "Well, you're in luck, my friend, because just down yonder through those gloomy glades is the gateway to a quaint little village called Woodshine.", "You know, there aren't many of your kind buzzing around here these days. Not since Skycorps posted up and turned this whole half of the island into a glorified toxic waste dump.", "Anyway, I wish you the best of luck, wherever your road leads." ],
-      [ "A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start in the search for your little brother." ]
+      [ "...", "Huh?", "Oh! A lost girl wanders my way, hmm?", "I say, it shocks me a bit to see another friendly face around here. What's your story?%0" ],
+      [ "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep.", "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.", "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%0" ],
+      [ "A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start.", "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.", "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%1" ],
+      [ "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up.$9#1#1#^20" ]
     ],
     "responses": [
-      [ "I don't talk to strangers.%0", "I'm just looking for a place to rest.%1", "I'm looking for my little brother.%2$5995" ]
+      [ "I'm just looking for a place to rest.%0", "I'm looking for my little brother.%1" ],
+      [ "Sure thing!%1" ],
+      [ "Sure thing!%0" ]
     ]
   },
   "gobe2": {
     "suite": [
-      [ "Yes?%0" ],
-      [ "Why, how rude of me! I'd forgotten to introduce myself! My name is Gobe, and this here is my dog, Justin. I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember." ],
-      [ "I tell you, it is no place for the faint of heart. But I see that, at least, you carry a weapon to defend yourself. Smart!" ],
-      [ "Sure thing! Here's what I've picked up over the last few weeks..." ]
+      [ "So? Have you found my dog yet? I'm starting to get worried...%0" ],
+      [ "Well, if it's any help, he tends to climb to real high places when he's afraid.", "Good luck!" ]
     ],
     "responses": [
-      [ "Who are you?%0", "I'd like to trade things with you.%2" ]
+      [ "Not yet...%0" ]
+    ]
+  },
+  "gobe3": {
+    "suite": [
+      [ "Yes?%0" ],
+      [ "Sure thing! Here's what I've picked up over the last few weeks...$70#1#1#" ],
+      [ "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember." ]
+    ],
+    "responses": [
+      [ "I'd like to trade things with you.%0", "Who are you?%1" ]
     ]
   },
   "bryn1": {

@@ -8,14 +8,15 @@
 #include <memory>
 #include <unordered_map>
 #include "../components/PhysicsComponent.hpp"
+#include "../components/CircleSensor.hpp"
 #include "../entities/animation/Animation.hpp"
-#include "../graphics/FLColor.hpp"
 #include "../graphics/SpriteHistory.hpp"
 #include "../particle/Emitter.hpp"
 #include "../particle/Gravitator.hpp"
 #include "../particle/Sparkler.hpp"
 #include "../utils/BitFlags.hpp"
 #include "../utils/Cooldown.hpp"
+#include "../utils/CircleCollider.hpp"
 #include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
@@ -66,6 +67,7 @@ int const history_limit{4};
 struct ProjectileStats {
 
 	float base_damage{};
+	int power{};
 	int range{};
 
 	float speed{};
@@ -78,6 +80,7 @@ struct ProjectileStats {
 	bool constrained{};
 	bool boomerang{};
 	bool spring{};
+	bool circle{};
 
 	float acceleration_factor{};
 	float dampen_factor{};
@@ -90,7 +93,7 @@ struct ProjectileStats {
 	float spring_rest_length{};
 	float spring_slack{};
 
-	int range_variance{};
+	float range_variance{};
 	bool omnidirectional{};
 };
 
@@ -105,10 +108,11 @@ enum class ProjectileState { initialized, destruction_initiated, destroyed, whif
 class Projectile {
 
   public:
-	Projectile();
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon);
 
 	void update(automa::ServiceProvider& svc, player::Player& player);
+	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
+	void on_player_hit(player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc, sf::Vector2<float> target = {});
@@ -169,7 +173,7 @@ class Projectile {
 	Weapon* m_weapon;
 
   private:
-
+	shape::CircleCollider collider{4.f};
 	struct {
 		float damage_multiplier{1.f};
 	} variables{};
@@ -179,5 +183,7 @@ class Projectile {
 	struct {
 		int effect_type{};
 	} visual{};
+
+	std::optional<components::CircleSensor> sensor{};
 };
 } // namespace arms

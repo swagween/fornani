@@ -12,6 +12,10 @@ class Random {
 
   public:
 	int random_range(int lo, int hi) { return std::uniform_int_distribution<int>{lo, hi}(engine); }
+	int random_range(int lo, int hi, int seed) {
+		seeded_engine.seed(seed);
+		return std::uniform_int_distribution<int>{lo, hi}(seeded_engine);
+	}
 
 	float random_range_float(float lo, float hi) { return std::uniform_real_distribution<float>{lo, hi}(engine); }
 
@@ -38,8 +42,19 @@ class Random {
 		return result < percent;
 	}
 
+	int get_vendor_seed() const { return seeds.vendor; }
+	int get_test_seed() const { return seeds.test; }
+
+	void set_test_seed() { seeds.test = random_range(0, 100000); }
+	void set_vendor_seed() { seeds.vendor = random_range(0, 100000); }
+
   private:
 	std::default_random_engine engine{std::random_device{}()};
+	std::default_random_engine seeded_engine{std::random_device{}()};
+	struct {
+		int vendor{1997};
+		int test{2007};
+	} seeds{};
 };
 
 } // namespace util

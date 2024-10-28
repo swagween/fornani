@@ -24,6 +24,10 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 
 	sprite.setOrigin(in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>());
 
+	if (in_data["vendor"] && svc.data.marketplace.contains(id)) {
+		vendor = &svc.data.marketplace.at(id);
+	}
+
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
 

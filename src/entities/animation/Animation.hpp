@@ -51,6 +51,7 @@ struct Animation {
 		return ret;
 	}
 	[[nodiscard]] auto keyframe_over() -> bool { return flags.consume(State::keyframe); }
+	[[nodiscard]] auto keyframe_started() const -> bool { return frame_timer.get_cooldown() == params.framerate; }
 	[[nodiscard]] auto just_started() const -> bool { return global_counter.get_count() == 1; }
 
 	util::Cooldown frame_timer{};

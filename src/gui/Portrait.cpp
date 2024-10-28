@@ -14,6 +14,7 @@ Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left) {
 	float fric{0.85f};
 	gravitator = vfx::Gravitator(start_position, sf::Color::Transparent, 1.f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{fric, fric}, 2.0f);
+	window.setTexture(svc.assets.t_portrait_window);
 	sprite.setTexture(svc.assets.t_portraits);
 	sprite.setTextureRect(sf::IntRect({id * (int)dimensions.x, (emotion - 1) * (int)dimensions.y}, {(int)dimensions.x, (int)dimensions.y}));
 	gravitator.set_target_position(position);
@@ -22,11 +23,19 @@ Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left) {
 void Portrait::update(automa::ServiceProvider& svc) {
 	gravitator.set_target_position(position);
 	gravitator.update(svc);
-	sprite.setPosition(gravitator.collider.physics.position);
+	window.setPosition(gravitator.position());
+	sprite.setPosition(gravitator.position());
+}
+
+void Portrait::set_custom_portrait(sf::Sprite sp) {
+	sprite = sp;
+	sprite.setOrigin({});
+	flags.set(PortraitFlags::custom);
 }
 
 void Portrait::render(sf::RenderWindow& win) {
-	sprite.setTextureRect(sf::IntRect({id * (int)dimensions.x, (emotion - 1) * (int)dimensions.y}, {(int)dimensions.x, (int)dimensions.y}));
+	if (!flags.test(PortraitFlags::custom)) { sprite.setTextureRect(sf::IntRect({id * static_cast<int>(dimensions.x), (emotion - 1) * static_cast<int>(dimensions.y)}, static_cast<sf::Vector2<int>>(dimensions))); }
+	win.draw(window);
 	win.draw(sprite);
 }
 
@@ -39,6 +48,7 @@ void Portrait::reset(automa::ServiceProvider& svc) {
 }
 
 void Portrait::set_position(sf::Vector2<float> pos) {
+	window.setPosition(pos);
 	sprite.setPosition(pos);
 	gravitator.set_position(pos);
 }
@@ -54,7 +64,7 @@ void Portrait::set_emotion(int new_emotion) {
 
 void Portrait::set_id(int new_id) {
 	id = new_id;
-	sprite.setTextureRect(sf::IntRect({id * (int)dimensions.x, (emotion - 1) * (int)dimensions.y}, {(int)dimensions.x, (int)dimensions.y}));
+	if (!flags.test(PortraitFlags::custom)) { sprite.setTextureRect(sf::IntRect({id * (int)dimensions.x, (emotion - 1) * (int)dimensions.y}, {(int)dimensions.x, (int)dimensions.y})); }
 }
 
 } // namespace gui

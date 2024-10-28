@@ -129,7 +129,6 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 
 	gun.update(svc, map, *this);
 	soda.update(svc, map, *this);
-	caution.avoid_ledges(map, Enemy::collider, 1);
 	cooldowns.firing.update();
 	cooldowns.post_charge.update();
 	cooldowns.post_punch.update();
@@ -271,7 +270,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	}
 
 	if (alert() && Enemy::collider.grounded()) {
-		if (!caution.danger(movement_direction) && cooldowns.post_punch.is_complete()) {
+		if (cooldowns.post_punch.is_complete()) {
 			state = MinigusState::run;
 			if (attacks.uppercut.sensor.active()) { state = MinigusState::uppercut; }
 			if (attacks.punch.sensor.active()) { state = MinigusState::punch; }
@@ -279,8 +278,6 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 			state = MinigusState::jumpsquat;
 		}
 	}
-
-	if (caution.danger(movement_direction)) { state = MinigusState::jumpsquat; }
 
 	if (Enemy::health_indicator.get_amount() < -80 && flags.state.test(StateFlags::vulnerable)) { state = MinigusState::drink; }
 	if (cooldowns.vulnerability.is_complete() && flags.state.test(StateFlags::vulnerable)) { state = MinigusState::drink; }

@@ -14,6 +14,10 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// B.stats.GRAV = 0.f;
 	// A.physics.position = {200.f, 200.f};
 
+	//circle collider test
+	//circle.bounds.setRadius(16.f);
+	//circle.bounds.setOrigin({16.f, 16.f});
+
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
 		svc.stats.world.rooms_discovered.update();
@@ -47,13 +51,16 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player->height()};
 				player->set_position(spawn_position, true);
 				camera.force_center(player->anchor_point);
-				if (portal.activate_on_contact()) {
+				if (portal.activate_on_contact() && portal.is_left_or_right()) {
 					enter_room.start(90);
 				} else {
 					if (!portal.already_open()) { portal.close(); }
 					player->set_idle();
 				}
-				if (portal.dimensions.x > 33.f && portal.position.y > 1.f) { player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity; }
+				if (portal.is_bottom()) {
+					player->collider.physics.acceleration.y = -player->physics_stats.jump_velocity;
+					player->collider.physics.acceleration.x = player->controller.facing_left() ? -player->physics_stats.x_acc : player->physics_stats.x_acc;
+				}
 			}
 		}
 	}
@@ -67,17 +74,39 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
+	player->visit_history.push_room(room_number);
 
 	player->controller.prevent_movement();
+	inventory_window.update_wardrobe(svc, *player);
+	console.nani_portrait.set_custom_portrait(inventory_window.get_wardrobe_sprite());
+	loading.start();
 }
 
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void Dojo::tick_update(ServiceProvider& svc) {
+	loading.is_complete() ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
+	loading.update();
+	svc.soundboard.play_sounds(svc);
 	if (pause_window.active()) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
 		pause_window.update(svc, console, false);
+		return;
+	}
+	if (vendor_dialog) {
+		if (open_vendor) {
+			map.transition.end();
+			open_vendor = false;
+		}
+		map.transition.update(*player);
+		vendor_dialog.value().update(svc, map, *player);
+		if (!vendor_dialog.value().is_open()) {
+			if (vendor_dialog.value().made_sale()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
+			vendor_dialog = {};
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			inventory_window.update_wardrobe(svc, *player);
+		}
 		return;
 	}
 	if (console.is_complete()) {
@@ -93,38 +122,70 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	} else {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 	}
-	//if (svc.controller_map.gamepad_disconnected()) { toggle_pause_menu(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered ||
-		svc.controller_map.digital_action_status(config::DigitalAction::map_open_inventory).triggered) {
 
-		if (inventory_window.active() && !inventory_window.is_inventory()) {
-			inventory_window.switch_modes(svc);
-		} else {
-			toggle_inventory(svc);
-			if (!inventory_window.is_inventory()) { inventory_window.switch_modes(svc); }
+	//if (svc.controller_map.gamepad_disconnected()) { toggle_pause_menu(svc); }
+
+	if (!svc.no_menu()) {
+		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered ||
+			svc.controller_map.digital_action_status(config::DigitalAction::map_open_inventory).triggered) {
+
+			if (inventory_window.active() && !inventory_window.is_inventory()) {
+				inventory_window.switch_modes(svc);
+				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+			} else {
+				toggle_inventory(svc);
+				if (!inventory_window.is_inventory()) { inventory_window.switch_modes(svc); }
+			}
 		}
-	}
-	if ((svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered ||
-		 svc.controller_map.digital_action_status(config::DigitalAction::inventory_open_map).triggered) &&
-		player->has_map()) {
-		if (inventory_window.active() && !inventory_window.is_minimap()) {
-			inventory_window.switch_modes(svc);
-		} else {
-			toggle_inventory(svc);
-			if (!inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
+		if ((svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_map).triggered || svc.controller_map.digital_action_status(config::DigitalAction::map_close).triggered ||
+			 svc.controller_map.digital_action_status(config::DigitalAction::inventory_open_map).triggered) &&
+			player->has_map()) {
+			if (inventory_window.active() && !inventory_window.is_minimap()) {
+				inventory_window.switch_modes(svc);
+				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+			} else {
+				toggle_inventory(svc);
+				if (!inventory_window.is_minimap()) { inventory_window.switch_modes(svc); }
+			}
 		}
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
 
+	if (console.is_complete()) {
+		if (svc.menu_controller.vendor_dialog_opened()) {
+			map.transition.start();
+			open_vendor = true;
+		}
+		if(open_vendor && map.transition.is_done()) {
+			vendor_dialog = gui::VendorDialog(svc, map, *player, svc.menu_controller.get_menu_id());
+			svc.controller_map.set_action_set(config::ActionSet::Menu);
+			svc.soundboard.flags.console.set(audio::Console::menu_open);
+		}
+	}
+
+	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items.empty()) {
+		svc.random.set_vendor_seed();
+		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
+		player->visit_history.clear();
+	}
+
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
-
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
 
 	// A.update(svc);
 	// B.update(svc);
 	// auto mtv = A.bounding_box.testCollisionGetMTV(B.bounding_box, A.bounding_box);
 	// if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT x: " << mtv.x << "\n"; }
+	/*circle.update(svc);
+	circle.sensor.deactivate();
+	for (auto& cell : map.get_layers().at(world::MIDDLEGROUND).grid.cells) {
+		if (circle.collides_with(cell.bounding_box) && cell.is_collidable()) {
+			circle.sensor.activate();
+			auto mtv = circle.sensor.get_MTV(cell.bounding_box);
+			if (svc.ticker.every_x_ticks(50)) { std::cout << "MTV: x[ " << mtv.x << " ] : y[ " << mtv.y << " ]\n"; }
+		}
+	}*/
 
 	player->update(map, console, inventory_window);
 	map.update(svc, console, inventory_window);
@@ -137,7 +198,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	map.debug_mode = debug_mode;
 
 	player->controller.clean();
-	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
 
 	pause_window.update(svc, console, true);
@@ -148,13 +208,13 @@ void Dojo::tick_update(ServiceProvider& svc) {
 void Dojo::frame_update(ServiceProvider& svc) {
 	pause_window.render_update(svc);
 	pause_window.clean_off_trigger();
-	if (pause_window.active()) { svc.soundboard.play_sounds(svc); }
 	hud.update(svc, *player);
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	// B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
+	//circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()) + camera.get_position());
 
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
@@ -162,23 +222,26 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
 	inventory_window.render(svc, *player, win, camera.get_position());
 	pause_window.render(svc, *player, win);
+	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
 
 	// A.render(win, {});
 	// B.render(win, {});
+	//circle.render(win, camera.get_position());
 }
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {
 	if (pause_window.active()) { return; }
-
+	// refresh potential new console portrait
+	console.nani_portrait.set_custom_portrait(inventory_window.get_wardrobe_sprite());
 	if (inventory_window.active()) {
 		svc.soundboard.flags.console.set(audio::Console::done);
 		inventory_window.close();
 	} else {
 		inventory_window.minimap.update(svc, map, *player);
-		inventory_window.open();
+		inventory_window.open(svc, *player);
 		svc.soundboard.flags.console.set(audio::Console::menu_open);
 		inventory_window.set_item_size(static_cast<int>(player->catalog.categories.inventory.items.size()));
 	}

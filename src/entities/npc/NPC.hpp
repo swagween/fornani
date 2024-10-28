@@ -5,6 +5,7 @@
 #include "../../utils/Collider.hpp"
 #include "../Entity.hpp"
 #include "NPCAnimation.hpp"
+#include "Vendor.hpp"
 #include "../animation/AnimatedSprite.hpp"
 #include <deque>
 #include <string_view>
@@ -47,6 +48,8 @@ class NPC : public entity::Entity {
 	[[nodiscard]] auto background() const -> bool { return state_flags.test(NPCState::background); }
 	[[nodiscard]] auto num_suites() const -> int { return static_cast<int>(conversations.size()); }
 	[[nodiscard]] auto get_id() const -> int { return id; }
+	[[nodiscard]] auto is_vendor() const -> bool { return static_cast<bool>(vendor); }
+	Vendor& get_vendor() { return *vendor.value(); }
 
 	std::string_view label{};
 
@@ -56,6 +59,7 @@ class NPC : public entity::Entity {
 	std::deque<std::string_view> conversations{};
 	shape::Collider collider{};
 	sf::Sound voice_sound{};
+	std::optional<Vendor*> vendor;
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
 	anim::AnimatedSprite indicator;

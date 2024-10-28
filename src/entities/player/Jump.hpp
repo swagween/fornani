@@ -38,6 +38,7 @@ class Jump {
 	[[nodiscard]] auto get_count() const -> int { return jump_counter.get_count(); }
 
 	void request_jump();
+	void cancel();
 	bool requested() const;
 	bool launched() const;
 	bool released() const;

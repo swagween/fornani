@@ -24,10 +24,18 @@ class Caution {
 	Caution() = default;
 	void update();
 	void avoid_player(player::Player& player);
-	void avoid_ledges(world::Map& map, shape::Collider& collider, int height);
-	bool danger(dir::Direction& direction) const;
+	void avoid_ledges(world::Map& map, shape::Collider& collider, dir::Direction& direction, int height);
+	bool danger() const;
 
 	sf::Vector2<float> retreat{};
+	struct {
+		sf::Vector2<float> left{};
+		sf::Vector2<float> right{};
+	} testers{};
+	struct {
+		int perceived{};
+		int danger{};
+	} heights{};
 };
 
 } // namespace entity

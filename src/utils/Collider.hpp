@@ -24,8 +24,36 @@ float const default_detector_height = 18.f;
 
 enum class General { ignore_resolution, complex, pushable, soft };
 enum class Animation { just_landed, sliding };
-enum class State { just_collided, is_any_jump_collision, is_any_collision, just_landed, ceiling_collision, grounded, world_grounded, on_ramp, ledge_left, ledge_right, left_wallslide_collision, right_wallslide_collision, on_flat_surface };
-enum class ExternalState { grounded, collider_collision, vert_collider_collision, horiz_collider_collision, world_collision, horiz_world_collision, vert_world_collision, world_grounded, jumped_into };
+enum class State {
+	just_collided,
+	is_any_jump_collision,
+	is_any_collision,
+	just_landed,
+	ceiling_collision,
+	grounded,
+	world_grounded,
+	on_ramp,
+	ledge_left,
+	ledge_right,
+	left_wallslide_collision,
+	right_wallslide_collision,
+	on_flat_surface,
+	tickwise_ramp_collision
+};
+enum class ExternalState {
+	grounded,
+	collider_collision,
+	vert_collider_collision,
+	horiz_collider_collision,
+	world_collision,
+	horiz_world_collision,
+	vert_world_collision,
+	world_grounded,
+	jumped_into,
+	on_ramp,
+	tile_debug_flag,
+	ceiling_ramp_hit
+};
 enum class PermaFlags { world_grounded, downhill };
 
 enum class Collision {
@@ -52,21 +80,19 @@ class Collider {
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
 	void detect_map_collision(world::Map& map);
-	int detect_ledge_height(world::Map& map);
 	void correct_x(sf::Vector2<float> mtv);
 	void correct_y(sf::Vector2<float> mtv);
 	void correct_x_y(sf::Vector2<float> mtv);
 	void correct_corner(sf::Vector2<float> mtv);
 	void resolve_depths();
 	void handle_platform_collision(Shape const& cell);
-	void handle_spike_collision(Shape const& cell);
 	void handle_collider_collision(Shape const& collider);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void reset();
 	void reset_ground_flags();
 
-	bool on_ramp();
+	bool on_ramp() const;
 	bool has_horizontal_collision() const;
 	bool has_left_collision() const;
 	bool has_right_collision() const;
@@ -82,18 +108,21 @@ class Collider {
 	sf::Vector2<float> snap_to_grid(float size = 1.f, float scale = 32.f, float factor = 2.f);
 
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
+	[[nodiscard]] auto jumping() const -> bool { return flags.movement.test(Movement::jumping); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
 	[[nodiscard]] auto external_world_grounded() const -> bool { return flags.external_state.test(ExternalState::world_grounded); }
 	[[nodiscard]] auto jumped_into() -> bool { return flags.external_state.consume(ExternalState::jumped_into); }
 	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
+	[[nodiscard]] auto get_below_point() const -> sf::Vector2<float> { return jumpbox.position + jumpbox.dimensions * 0.5f; }
 	[[nodiscard]] auto platform_collision() const -> bool { return flags.external_state.test(ExternalState::collider_collision); }
 	[[nodiscard]] auto left() const -> float { return bounding_box.left(); }
 	[[nodiscard]] auto right() const -> float { return bounding_box.right(); }
 	[[nodiscard]] auto top() const -> float { return bounding_box.top(); }
 	[[nodiscard]] auto bottom() const -> float { return bounding_box.bottom(); }
 	[[nodiscard]] auto downhill() const -> bool { return flags.perma_state.test(PermaFlags::downhill); }
+	[[nodiscard]] auto hit_ceiling_ramp() const -> bool { return flags.external_state.test(ExternalState::ceiling_ramp_hit); }
 
 	float compute_length(sf::Vector2<float> const v);
 
@@ -135,7 +164,7 @@ class Collider {
 		sf::Color local{};
 	} colors{};
 
-	float landed_threshold{6.0f};
+	float vert_threshold{0.1f}; // for landing
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{1.0f};
 	float depth_buffer{1.0f};
@@ -144,9 +173,6 @@ class Collider {
 	sf::Vector2<float> sprite_offset{};
 	sf::Vector2<float> hurtbox_offset{};
 	float maximum_ramp_height{};
-
-
-	bool spike_trigger{};
 
 	sf::RectangleShape box{};
 	sf::RectangleShape draw_hurtbox{};

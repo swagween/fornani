@@ -43,7 +43,7 @@ class Cutscene {
 	} metadata{};
 	struct {
 		util::Cooldown beginning{256};
-		util::Cooldown pause{128};
+		util::Cooldown pause{64};
 		util::Cooldown long_pause{512};
 		util::Cooldown progressor{16};
 		util::Cooldown end{256};

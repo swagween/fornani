@@ -26,12 +26,18 @@ void Ticker::calculate_fps() {
 	for (auto& frame : frame_list) { seconds_passed += frame; }
 
 	fps = num_frames <= sample_size ? num_frames / seconds_passed.count() : sample_size / seconds_passed.count();
-	seconds_passed = Tim::zero();
+	seconds_passed = Sec::zero();
 }
 
 void Ticker::slow_down(int time) { slowdown.start(time); }
 
 void Ticker::freeze_frame(int time) { freezeframe.start(time); }
+
+void Ticker::set_time(Sec time) {
+	in_game_seconds_passed = time;
+	second_ticker.elapsed = time;
+	twenty_minute_ticker.elapsed = time;
+}
 
 void Ticker::scale_dt() { flags.set(TickerFlags::forced_slowdown); }
 

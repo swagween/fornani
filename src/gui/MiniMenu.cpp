@@ -8,17 +8,20 @@ namespace gui {
 MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, bool white) {
 	white ? sprite.set_texture(svc.assets.t_cream_console) : sprite.set_texture(svc.assets.t_blue_console);
 	sprite.slice(svc, static_cast<int>(corner), static_cast<int>(edge));
-	font.loadFromFile(svc.text.title_font);
-	font.setSmooth(false);
 	auto ctr{0};
 	for (auto& o : opt) {
-		options.push_back(automa::Option(svc, o, font, white));
+		options.push_back(automa::Option(svc, o, svc.text.fonts.title, white));
 		options.back().index = ctr;
 		options.back().update(svc, selection.get());
 		++ctr;
 	}
 	selection = util::Circuit(static_cast<int>(options.size()));
 }
+
+void MiniMenu::overwrite_option(int index, std::string_view replacement) {
+	if (index >= options.size()) { return; }
+		options.at(index).set_string(replacement);
+	}
 
 void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> position) {
 	if (!is_open()) { return; }
@@ -50,6 +53,7 @@ void MiniMenu::close(automa::ServiceProvider& svc) {
 	state.reset(MiniMenuState::open);
 	sprite.start(svc, position);
 	selection.zero();
+	svc.soundboard.flags.console.set(audio::Console::done);
 }
 
 void MiniMenu::set_origin(sf::Vector2<float> origin) { sprite.set_origin(origin); }

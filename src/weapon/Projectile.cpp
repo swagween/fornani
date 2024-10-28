@@ -7,11 +7,6 @@
 
 namespace arms {
 
-Projectile::Projectile() {
-	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
-	physics.velocity.x = stats.speed;
-};
-
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon) : label(label), id(id), sparkler(svc), m_weapon(&weapon) {
 
 	auto const& in_data = svc.data.weapon["weapons"][id]["projectile"];
@@ -19,6 +14,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	type = static_cast<WEAPON_TYPE>(id);
 
 	stats.base_damage = in_data["attributes"]["base_damage"].as<float>();
+	stats.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
 	stats.range = in_data["attributes"]["range"].as<int>();
 	stats.speed = in_data["attributes"]["speed"].as<float>();
 	stats.variance = in_data["attributes"]["variance"].as<float>();
@@ -28,8 +24,9 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	stats.persistent = static_cast<bool>(in_data["attributes"]["persistent"].as_bool());
 	stats.transcendent = static_cast<bool>(in_data["attributes"]["transcendent"].as_bool());
 	stats.constrained = static_cast<bool>(in_data["attributes"]["constrained"].as_bool());
+	stats.circle = static_cast<bool>(in_data["attributes"]["circle"].as_bool());
 	stats.spring = static_cast<bool>(in_data["attributes"]["spring"].as_bool());
-	stats.range_variance = in_data["attributes"]["range_variance"].as<int>();
+	stats.range_variance = in_data["attributes"]["range_variance"].as<float>();
 	stats.acceleration_factor = in_data["attributes"]["acceleration_factor"].as<float>();
 	stats.dampen_factor = in_data["attributes"]["dampen_factor"].as<float>();
 	stats.gravitator_force = in_data["attributes"]["gravitator_force"].as<float>();
@@ -68,6 +65,9 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	hook = GrapplingHook(svc);
 	hook.spring = vfx::Spring({stats.spring_dampen, stats.spring_constant, stats.spring_rest_length});
 
+	//circle
+	if (stats.circle) { sensor = components::CircleSensor(dim.x * 0.5f); }
+
 	anim::Parameters params = {0, anim.num_frames, anim.framerate, -1};
 	animation.set_params(params);
 
@@ -91,7 +91,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		hook.update(svc, player);
 		if (hook.grapple_flags.test(arms::GrappleState::probing)) {
 			hook.spring.set_anchor(physics.position);
-			hook.spring.set_bob(player.apparent_position);
+			hook.spring.set_bob(player.collider.get_center());
 			if (!player.controller.hook_held()) {
 				hook.grapple_flags.set(arms::GrappleState::snaking);
 				hook.grapple_flags.reset(arms::GrappleState::probing);
@@ -114,13 +114,13 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	// tomahawk-specific stuff
 	if (stats.boomerang) {
-		gravitator.set_target_position(player.apparent_position);
+		gravitator.set_target_position(player.collider.get_center());
 		gravitator.update(svc);
 		physics.position = gravitator.collider.physics.position;
 		bounding_box.set_position(physics.position);
 
-		svc.soundboard.flags.weapon.set(svc.soundboard.gun_sounds.at(label)); // repeat sound
-		// use predictive bounding box so player can "meet up" with the boomerang
+		svc.soundboard.flags.weapon.set(static_cast<audio::Weapon>(m_weapon->get_id())); // repeat sound
+	
 		if (bounding_box.overlaps(player.collider.predictive_combined) && cooldown.is_complete()) {
 			destroy(true);
 			svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
@@ -145,23 +145,56 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	sparkler.set_position(bounding_box.position);
 	sparkler.set_dimensions(bounding_box.dimensions);
+	if (sensor) { sensor.value().set_position(bounding_box.position); }
 
 	position_history.push_back(physics.position);
 	if (position_history.size() > history_limit) { position_history.pop_front(); }
 
+	auto diff = stats.range + svc.random.random_range_float(-stats.range_variance, stats.range_variance);
 	if (direction.lr == dir::LR::left || direction.lr == dir::LR::right) {
-		if (abs(physics.position.x - fired_point.x) >= stats.range) {
+		if (abs(physics.position.x - fired_point.x) >= diff) {
 			state.set(ProjectileState::whiffed);
 			destroy(false, true);
 		}
 	} else {
-		if (abs(physics.position.y - fired_point.y) >= stats.range) {
+		if (abs(physics.position.y - fired_point.y) >= diff) {
 			state.set(ProjectileState::whiffed);
 			destroy(false, true);
 		}
 	}
+	if (state.test(arms::ProjectileState::destroyed)) { m_weapon->decrement_projectiles(); }
+}
 
-	if (state.test(arms::ProjectileState::destroyed)) { --m_weapon->active_projectiles; }
+void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map) {
+	if (stats.transcendent) { return; }
+	collider.update(svc);
+	collider.set_position(physics.position);
+	if (map.check_cell_collision_circle(collider)) {
+		if (!destruction_initiated()) {
+			map.effects.push_back(entity::Effect(svc, destruction_point + physics.position, {}, effect_type(), 2));
+			if (direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+		}
+		destroy(false);
+		if (stats.spring) {
+			if (hook.grapple_flags.test(arms::GrappleState::probing)) {
+				hook.spring.set_anchor(map.get_cell_at_position(physics.position).get_center());
+				hook.grapple_triggers.set(arms::GrappleTriggers::found);
+			}
+			map.handle_grappling_hook(svc, *this);
+		}
+	}
+}
+
+void Projectile::on_player_hit(player::Player& player) {
+	if (team == arms::TEAMS::NANI) { return; }
+	if (sensor) {
+		if (sensor.value().within_bounds(player.hurtbox)) { player.hurt(stats.base_damage); }
+		return;
+	}
+	if (bounding_box.overlaps(player.hurtbox)) {
+		player.hurt(stats.base_damage);
+		destroy(false);
+	}
 }
 
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos) {
@@ -180,7 +213,9 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 	auto u = static_cast<int>(sprite_index * max_dimensions.x);
 	auto v = static_cast<int>(animation.get_frame() * max_dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(max_dimensions.x), static_cast<int>(max_dimensions.y)}));
-	if (!stats.constrained) { sprite.setPosition(bounding_box.position - campos); }
+	if (!stats.constrained) {
+		sprite.setPosition(bounding_box.position - campos);
+	}
 	// unconstrained projectiles have to get sprites set here
 	if (stats.boomerang) { sprite.setPosition(gravitator.collider.physics.position - campos); }
 	if (stats.spring) { hook.render(svc, player, win, campos); }
@@ -192,6 +227,9 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 	constrain_sprite_at_barrel(sprite, campos);
 	if (state.test(ProjectileState::destruction_initiated)) { constrain_sprite_at_destruction_point(sprite, campos); }
 
+	//circular projectiles get centered at the sensor
+	if (sensor) { sprite.setPosition(sensor.value().bounds.getPosition() - campos); }
+
 	// proj bounding box for debug
 	box.setSize(bounding_box.dimensions);
 	if (state.test(ProjectileState::destruction_initiated)) {
@@ -199,11 +237,13 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 	} else {
 		box.setFillColor(sf::Color{255, 255, 255, 160});
 	}
-	box.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
+	box.setPosition(bounding_box.position - campos);
 
 	if (svc.greyblock_mode()) {
 		gravitator.render(svc, win, campos);
 		win.draw(box);
+		if (sensor) { sensor.value().render(win, campos); }
+		collider.render(win, campos);
 	} else {
 		win.draw(sprite);
 	}
@@ -261,6 +301,7 @@ void Projectile::set_sprite(automa::ServiceProvider& svc) {
 }
 
 void Projectile::set_orientation(sf::Sprite& sprite) {
+	if (stats.circle) { return; }
 	// assume right
 	sprite.setScale({1.0f, 1.0f});
 	sprite.setRotation(0.0f);
@@ -297,16 +338,16 @@ void Projectile::sync_position() { gravitator.collider.physics.position = fired_
 
 void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float> campos) {
 	if (!stats.constrained) { return; }
-	int u = (int)(sprite_index * max_dimensions.x);
-	int v = (int)(animation.get_frame() * max_dimensions.y);
+	int u = static_cast<int>((sprite_index * max_dimensions.x));
+	int v = static_cast<int>((animation.get_frame() * max_dimensions.y));
 	if (direction.lr != dir::LR::neutral) {
 		if (abs(physics.position.x - fired_point.x) < max_dimensions.x) {
 			auto fwidth = abs(physics.position.x - fired_point.x);
 			auto iwidth = static_cast<int>(fwidth);
-			sprite.setTextureRect(sf::IntRect({(int)(max_dimensions.x - iwidth) + u, v}, {iwidth, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({static_cast<int>(max_dimensions.x - iwidth) + u, v}, {iwidth, static_cast<int>(max_dimensions.y)}));
 			bounding_box.dimensions.x = fwidth;
 		} else {
-			sprite.setTextureRect(sf::IntRect({u, v}, {(int)(bounding_box.dimensions.x), (int)(bounding_box.dimensions.y)}));
+			sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(bounding_box.dimensions.x), static_cast<int>((bounding_box.dimensions.y))}));
 			bounding_box.dimensions.x = max_dimensions.x;
 		}
 		if (direction.lr == dir::LR::right) {
@@ -314,16 +355,15 @@ void Projectile::constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<floa
 		} else if (direction.lr == dir::LR::left) {
 			sprite.setPosition(bounding_box.position.x + bounding_box.dimensions.x - campos.x, bounding_box.position.y - campos.y);
 		}
-
 	} else {
 		bounding_box.dimensions.x = max_dimensions.y;
 		if (abs(physics.position.y - fired_point.y) < max_dimensions.x) {
 			auto fheight = abs(physics.position.y - fired_point.y);
 			auto iheight = static_cast<int>(fheight);
-			sprite.setTextureRect(sf::IntRect({(int)(max_dimensions.x - iheight) + u, v}, {iheight, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({static_cast<int>(max_dimensions.x - iheight) + u, v}, {iheight, static_cast<int>(max_dimensions.y)}));
 			bounding_box.dimensions.y = fheight;
 		} else {
-			sprite.setTextureRect(sf::IntRect({u, v}, {(int)(max_dimensions.x), (int)(max_dimensions.y)}));
+			sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(max_dimensions.x), static_cast<int>((max_dimensions.y))}));
 			bounding_box.dimensions.y = max_dimensions.x;
 		}
 		if (direction.und == dir::UND::up) {
@@ -343,7 +383,7 @@ void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::V
 			auto rear = bounding_box.dimensions.x + physics.position.x;
 			auto fwidth = abs(rear - destruction_point.x);
 			auto iwidth = static_cast<int>(fwidth);
-			sprite.setTextureRect(sf::IntRect({u, v}, {iwidth, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({u, v}, {iwidth, static_cast<int>(max_dimensions.y)}));
 			bounding_box.dimensions.x = fwidth;
 			bounding_box.position.x = destruction_point.x;
 			sprite.setPosition(bounding_box.position.x + bounding_box.dimensions.x - campos.x, bounding_box.position.y - campos.y);
@@ -352,7 +392,7 @@ void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::V
 			auto rear = physics.position.x - bounding_box.dimensions.x;
 			auto fwidth = abs(rear - destruction_point.x);
 			auto iwidth = static_cast<int>(fwidth);
-			sprite.setTextureRect(sf::IntRect({u, v}, {iwidth, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({u, v}, {iwidth, static_cast<int>(max_dimensions.y)}));
 			bounding_box.dimensions.x = fwidth;
 			bounding_box.position.x = destruction_point.x - fwidth;
 			sprite.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y - campos.y);
@@ -364,7 +404,7 @@ void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::V
 			auto rear = bounding_box.dimensions.y + physics.position.y;
 			auto fheight = abs(rear - destruction_point.y);
 			auto iheight = static_cast<int>(fheight);
-			sprite.setTextureRect(sf::IntRect({u, v}, {iheight, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({u, v}, {iheight, static_cast<int>(max_dimensions.y)}));
 			bounding_box.dimensions.y = fheight;
 			bounding_box.position.y = destruction_point.y;
 			sprite.setPosition(bounding_box.position.x - campos.x, bounding_box.position.y + bounding_box.dimensions.y - campos.y);
@@ -373,7 +413,7 @@ void Projectile::constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::V
 			auto rear = physics.position.y - bounding_box.dimensions.y;
 			auto fheight = abs(rear - destruction_point.y);
 			auto iheight = static_cast<int>(fheight);
-			sprite.setTextureRect(sf::IntRect({u, v}, {iheight, (int)max_dimensions.y}));
+			sprite.setTextureRect(sf::IntRect({u, v}, {iheight, static_cast<int>(max_dimensions.y)}));
 			bounding_box.dimensions.y = fheight;
 			bounding_box.position.y = destruction_point.y - fheight;
 			sprite.setPosition(bounding_box.position.x + bounding_box.dimensions.x - campos.x, bounding_box.position.y - campos.y);
@@ -391,10 +431,6 @@ void Projectile::constrain_hitbox_at_barrel() {
 		} else {
 			bounding_box.dimensions.x = max_dimensions.x;
 		}
-		if (direction.lr == dir::LR::right) {
-		} else if (direction.lr == dir::LR::left) {
-		}
-
 	} else {
 		bounding_box.dimensions.x = max_dimensions.y;
 		if (abs(physics.position.y - fired_point.y) < max_dimensions.x) {
@@ -422,7 +458,6 @@ void Projectile::constrain_hitbox_at_destruction_point() {
 			bounding_box.position.x = destruction_point.x - fwidth;
 			if (rear >= destruction_point.x) { destroy(true); }
 		}
-
 	} else {
 		if (direction.und == dir::UND::up) {
 			auto rear = bounding_box.dimensions.y + physics.position.y;

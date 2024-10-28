@@ -4,6 +4,7 @@
 #include <chrono>
 #include <deque>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <thread>
@@ -14,17 +15,30 @@
 namespace util {
 
 using Clk = std::chrono::steady_clock;
-using Tim = std::chrono::duration<float>;
+using Sec = std::chrono::duration<float>;
 using Mil = std::chrono::milliseconds;
 
 enum class TickerFlags { forced_slowdown, paused };
-
+enum class Period { second, twenty_minutes };
+struct PeriodicBool {
+	PeriodicBool(Sec period) : period(period) {}
+	Sec period{};
+	Sec elapsed{};
+	constexpr bool tick(Sec dt) {
+		elapsed += dt;
+		if (elapsed >= period) {
+			elapsed = std::chrono::seconds{0};
+			return true;
+		}
+		return false;
+	}
+};
 class Ticker {
   public:
 	template <typename F>
 	void tick(F fn) {
 
-		ft = Tim{tick_rate};
+		ft = Sec{tick_rate};
 
 		if (!flags.test(TickerFlags::forced_slowdown)) {
 			if (slowdown.running()) { dt_scalar -= 0.05f; }
@@ -34,7 +48,7 @@ class Ticker {
 		}
 
 		new_time = Clk::now();
-		dt = std::chrono::duration_cast<Tim>(new_time - current_time);
+		dt = std::chrono::duration_cast<Sec>(new_time - current_time);
 		dt *= dt_scalar;
 		current_time = new_time;
 
@@ -43,12 +57,14 @@ class Ticker {
 		accumulator = dt + residue;
 		if (accumulator < ft) {
 			residue += accumulator;
-			accumulator = Tim::zero();
+			accumulator = Sec::zero();
 			return;
 		}
 
 		integrations = 0;
 		while (accumulator >= ft) {
+			second_ticker.tick(ft) ? periods.set(Period::second) : periods.reset(Period::second);
+			twenty_minute_ticker.tick(ft) ? periods.set(Period::twenty_minutes) : periods.reset(Period::twenty_minutes);
 			fn();
 			accumulator -= ft;
 			++integrations;
@@ -59,7 +75,7 @@ class Ticker {
 		residue = accumulator;
 		slowdown.update();
 		freezeframe.update();
-		accumulator = Tim::zero();
+		accumulator = Sec::zero();
 		++calls_per_frame;
 	};
 
@@ -68,6 +84,7 @@ class Ticker {
 	void calculate_fps();
 	void slow_down(int time);
 	void freeze_frame(int time);
+	void set_time(Sec time);
 	void scale_dt();
 	void reset_dt();
 	void pause() { flags.set(TickerFlags::paused); }
@@ -77,7 +94,8 @@ class Ticker {
 	[[nodiscard]] auto global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
 	[[nodiscard]] auto every_x_frames(int const freq) const -> bool { return num_frames % freq == 0; }
 	[[nodiscard]] auto every_x_ticks(int const freq) const -> bool { return ticks % freq == 0; }
-	[[nodiscard]] auto every_x_milliseconds(int num_milliseconds) const -> bool { return (int)std::floor(total_milliseconds_passed.count()) % num_milliseconds == 0; } // doesn't work
+	[[nodiscard]] auto every_second() const -> bool { return periods.test(Period::second); }
+	[[nodiscard]] auto every_twenty_minutes() const -> bool { return periods.test(Period::twenty_minutes); }
 
 	Clk::time_point current_time{Clk::now()};
 	Clk::time_point new_time{Clk::now()};
@@ -86,12 +104,12 @@ class Ticker {
 	float tick_multiplier{24.f};
 	float dt_scalar{1.f};
 
-	static constexpr Tim tick_limit{0.8f};
+	static constexpr Sec tick_limit{0.8f};
 
-	Tim ft{};
-	Tim dt{};
-	Tim accumulator{};
-	Tim residue{};
+	Sec ft{};
+	Sec dt{};
+	Sec accumulator{};
+	Sec residue{};
 
 	// for TPS and FPS calculations
 	int integrations{};
@@ -102,15 +120,18 @@ class Ticker {
 	float total_integrations{};
 	float ticks_per_frame{};
 
-	Tim seconds_passed{};
-	Tim total_seconds_passed{};
-	Tim in_game_seconds_passed{};
-	Tim total_milliseconds_passed{};
+	Sec seconds_passed{};
+	Sec total_seconds_passed{};
+	Sec in_game_seconds_passed{};
+	Sec total_milliseconds_passed{};
+	PeriodicBool second_ticker{std::chrono::seconds{1}};
+	PeriodicBool twenty_minute_ticker{std::chrono::seconds{1200}};
 	float fps{60.f};
 
   private:
-	std::deque<Tim> frame_list{};
+	std::deque<Sec> frame_list{};
 	BitFlags<TickerFlags> flags{};
+	BitFlags<Period> periods{};
 	float slowdown_rate{0.2f};
 	Cooldown slowdown{};
 	Cooldown freezeframe{};
