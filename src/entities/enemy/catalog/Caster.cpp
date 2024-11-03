@@ -242,6 +242,7 @@ fsm::StateFunction Caster::update_signal() {
 
 fsm::StateFunction Caster::update_dormant() {
 	flags.state.reset(StateFlags::vulnerable);
+	flags.general.reset(GeneralFlags::foreground);
 	hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();
@@ -254,6 +255,7 @@ fsm::StateFunction Caster::update_dormant() {
 		m_services->soundboard.flags.world.set(audio::World::block_toggle);
 		state = CasterState::idle;
 		animation.set_params(idle);
+		flags.general.set(GeneralFlags::foreground);
 		return CASTER_BIND(update_idle);
 	}
 	state = CasterState::dormant;

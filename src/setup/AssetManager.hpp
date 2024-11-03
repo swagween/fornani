@@ -15,7 +15,6 @@ const uint8_t TILE_WIDTH = 32;
 int const NANI_SPRITESHEET_WIDTH = 22;
 int const NANI_SPRITESHEET_HEIGHT = 10;
 const uint8_t NANI_SPRITE_WIDTH = 48;
-inline char const* styles[lookup::NUM_STYLES];
 
 class AssetManager {
   public:

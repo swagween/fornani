@@ -218,15 +218,9 @@ void AssetManager::import_textures() {
 	t_title.loadFromFile(finder.resource_path + "/image/gui/title.png");
 
 	// load all the other textures...
-
-	// load tilesets programatically (filenames had better be right...)
-	for (int i = 0; i < lookup::NUM_STYLES; ++i) {
-		char const* next = lookup::get_style_string.at(lookup::get_style.at(i));
-		styles[i] = next;
-	}
-	for (int i = 0; i < lookup::NUM_STYLES; ++i) {
+	for (int i = 0; i < static_cast<size_t>(lookup::Style::END); ++i) {
 		tilesets.push_back(sf::Texture());
-		std::string style = lookup::get_style_string.at(lookup::get_style.at(i));
+		std::string style = lookup::get_style_string.at(static_cast<lookup::Style>(i));
 		tilesets.back().loadFromFile(finder.resource_path + "/image/tile/" + style + "_tiles.png");
 	}
 

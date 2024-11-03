@@ -1,0 +1,202 @@
+{
+  "meta": {
+    "room_id": 223,
+    "metagrid": [
+      43,
+      7
+    ],
+    "dimensions": [
+      48,
+      16
+    ],
+    "chunk_dimensions": [
+      3,
+      1
+    ],
+    "style": 1,
+    "background": 3,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        12
+      ],
+      "position": [
+        0,
+        0
+      ],
+      "source_id": 223,
+      "destination_id": 222,
+      "activate_on_contact": true,
+      "already_open": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "scenery": {
+    "grass": [
+      {
+        "position": [
+          22,
+          9
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          25,
+          9
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          33,
+          9
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          34,
+          9
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          30,
+          9
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          43,
+          10
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          45,
+          10
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          45,
+          10
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          15,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          10,
+          12
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          4,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          4,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          2,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          40,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          41,
+          11
+        ],
+        "length": 1,
+        "size": 1,
+        "foreground": true
+      }
+    ]
+  },
+  "enemies": [
+    {
+      "id": 8,
+      "position": [
+        32,
+        9
+      ]
+    },
+    {
+      "id": 8,
+      "position": [
+        24,
+        9
+      ]
+    }
+  ]
+}

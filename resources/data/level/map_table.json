@@ -1,6 +1,10 @@
 {
   "rooms": [
     {
+      "room_id": 204,
+      "label": "BASE_LAB_01"
+    },
+    {
       "room_id": 9998,
       "label": "COLLISION_TEST"
     },
@@ -113,6 +117,10 @@
       "label": "INTRO"
     },
     {
+      "room_id": 207,
+      "label": "OVERTURNED_BRANCHES_01"
+    },
+    {
       "room_id": 200,
       "label": "OVERTURNED_CANOPY_01"
     },
@@ -123,6 +131,14 @@
     {
       "room_id": 219,
       "label": "OVERTURNED_CANOPY_03"
+    },
+    {
+      "room_id": 223,
+      "label": "OVERTURNED_CANOPY_04"
+    },
+    {
+      "room_id": 202,
+      "label": "OVERTURNED_CANOPY_05"
     },
     {
       "room_id": 224,
@@ -141,12 +157,24 @@
       "label": "OVERTURNED_CHANNEL_01"
     },
     {
+      "room_id": 201,
+      "label": "OVERTURNED_COVE_01"
+    },
+    {
+      "room_id": 206,
+      "label": "OVERTURNED_COVE_02"
+    },
+    {
       "room_id": 229,
       "label": "OVERTURNED_COVE_03"
     },
     {
       "room_id": 227,
       "label": "OVERTURNED_FARM_01"
+    },
+    {
+      "room_id": 203,
+      "label": "OVERTURNED_GLADE_02"
     },
     {
       "room_id": 228,
@@ -159,6 +187,14 @@
     {
       "room_id": 222,
       "label": "OVERTURNED_SHAFT_03"
+    },
+    {
+      "room_id": 231,
+      "label": "OVERTURNED_TROUGHWAY_01"
+    },
+    {
+      "room_id": 212,
+      "label": "OVERTURNED_TUNNEL_01"
     },
     {
       "room_id": 3001,
