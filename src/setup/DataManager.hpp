@@ -92,6 +92,7 @@ class DataManager {
 	dj::Json item{};
 	dj::Json platform{};
 	dj::Json cutscene{};
+	dj::Json action_names{};
 
 	// enemy
 	dj::Json enemy{};

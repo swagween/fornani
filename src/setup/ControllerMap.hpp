@@ -137,6 +137,9 @@ class ControllerMap {
 	[[nodiscard]] auto is_gamepad_input_enabled() -> bool { return gamepad_input_enabled; }
 	[[nodiscard]] auto is_autosprint_enabled() -> bool { return autosprint_enabled; }
 
+	/// @brief Obtains a `DigitalAction` variant by its name in the enum.
+	auto get_action_by_identifier(std::string_view id) -> config::DigitalAction;
+
   private:
 	struct DigitalActionData {
 		InputDigitalActionHandle_t steam_handle;
@@ -147,6 +150,7 @@ class ControllerMap {
 		bool was_active_last_tick{};
 	};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
+	std::unordered_map<DigitalAction, std::string> digital_action_names{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
 	std::unordered_set<sf::Keyboard::Key> keys_pressed;
 	InputActionSetHandle_t platformer_action_set{};
@@ -166,6 +170,10 @@ class ControllerMap {
 	bool autosprint_enabled{true};
 
 	void reset_digital_action_states();
+
+	/// @brief Sets up the values of `digital_actions` and `analog_actions` via the Steam Input API.
+	/// @details Since the Steam Input API returns invalid handles if no gamepad is connected (bug?), this needs to be recalled every time a controller is connected.
+	void setup_action_handles();
 
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
 

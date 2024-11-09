@@ -95,6 +95,8 @@ void DataManager::load_data(std::string in_room) {
 	assert(!cutscene.is_null());
 	map_styles = dj::Json::from_file((finder.resource_path + "/data/level/map_styles.json").c_str());
 	assert(!map_styles.is_null());
+	action_names = dj::Json::from_file((finder.resource_path + "/data/gui/action_names.json").c_str());
+	assert(!action_names.is_null());
 
 	enemy = dj::Json::from_file((finder.resource_path + "/data/enemy/enemy_params.json").c_str());
 	assert(!enemy.is_null());
