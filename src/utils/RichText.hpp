@@ -8,32 +8,29 @@ namespace util {
 
 class RichText : public sf::Drawable, public sf::Transformable {
   public:
-	void clearSegments() { m_segments.clear(); }
-	// Add a text segment
-	void addText(std::string_view text, sf::Font const& font, unsigned int size, sf::Color color = sf::Color::White) {
+	/// @brief Append some text to the list of segments.
+	void add_text(std::string_view text, sf::Font const& font, unsigned int size, sf::Color color = sf::Color::White) {
 		sf::Text textSegment(std::string(text), font, size);
 		textSegment.setFillColor(color);
+		textSegment.setPosition(m_current_offset, 0.0f);
+		m_current_offset += textSegment.getGlobalBounds().width;
 		m_segments.emplace_back(textSegment);
 	}
 
-	// Add a sprite
-	void addSprite(sf::Sprite const& sprite) { m_segments.emplace_back(sprite); }
+	/// @brief Append a sprite to the list of segments. Normally used to display icons inline with text.
+	void add_sprite(sf::Sprite sprite) {
+		sprite.setPosition(m_current_offset, 0.0f);
+		m_current_offset += sprite.getGlobalBounds().width;
+		m_segments.emplace_back(sprite);
+	}
 
-	// Arrange all segments
-	void arrange(float spacing = 5.0f) {
-		float xOffset = 0.0f;
+	/// @brief Append some space. It will be placed after the last segment added.
+	void add_spacing(float spacing) { m_current_offset += spacing; }
 
-		for (auto& segment : m_segments) {
-			if (std::holds_alternative<sf::Text>(segment)) {
-				sf::Text& text = std::get<sf::Text>(segment);
-				text.setPosition(xOffset, 0.0f);
-				xOffset += text.getGlobalBounds().width + spacing;
-			} else if (std::holds_alternative<sf::Sprite>(segment)) {
-				sf::Sprite& sprite = std::get<sf::Sprite>(segment);
-				sprite.setPosition(xOffset, 0.0f);
-				xOffset += sprite.getGlobalBounds().width + spacing;
-			}
-		}
+	/// @brief Remove all segments.
+	void clear_segments() {
+		m_segments.clear();
+		m_current_offset = 0.f;
 	}
 
 	// Draw all segments
@@ -52,7 +49,9 @@ class RichText : public sf::Drawable, public sf::Transformable {
   private:
 	// Each segment is either a text or a sprite
 	using Segment = std::variant<sf::Text, sf::Sprite>;
-	std::vector<Segment> m_segments;
+
+	float m_current_offset = 0.f;
+	std::vector<Segment> m_segments{};
 };
 
 } // namespace util

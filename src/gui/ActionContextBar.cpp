@@ -14,20 +14,19 @@ ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) { text.setPosit
 void ActionContextBar::update(automa::ServiceProvider& svc) {
 	auto actions_queried_this_frame = svc.controller_map.actions_queried_this_update();
 
-	text.clearSegments();
+	text.clear_segments();
 	for (auto const& action : actions_queried_this_frame) {
 		// If an action has been queried this tick, it most likely does something when activated, so it is shown in the context bar
 		auto sprite = get_action_control_icon(svc, action);
 
 		sprite.setColor(svc.styles.colors.dark_grey);
 
-		text.addSprite(sprite);
+		text.add_sprite(sprite);
 
 		auto str = svc.controller_map.digital_action_name(action);
-		text.addText(str, svc.text.fonts.title, 16, svc.styles.colors.dark_grey);
+		text.add_text(str, svc.text.fonts.title, 16, svc.styles.colors.dark_grey);
+		text.add_spacing(15.f);
 	}
-
-	text.arrange();
 }
 
 void ActionContextBar::render(sf::RenderWindow& win) { win.draw(text); }
