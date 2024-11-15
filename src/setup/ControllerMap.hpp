@@ -70,6 +70,11 @@ enum class ActionSet {
 enum class ControllerType { keyboard, gamepad };
 enum class ControllerStatus { gamepad_connected };
 
+struct DigitalActionSource {
+	EInputActionOrigin controller_origin{};
+	sf::Keyboard::Key key{};
+};
+
 struct DigitalActionStatus {
 	DigitalActionStatus(DigitalAction action) : action(action) {}
 	DigitalAction action{};
@@ -106,6 +111,7 @@ class ControllerMap {
 	[[nodiscard]] auto digital_action_status(DigitalAction action) -> DigitalActionStatus;
 	[[nodiscard]] auto analog_action_status(AnalogAction action) const -> AnalogActionStatus { return analog_actions.at(action).second; }
 	[[nodiscard]] auto digital_action_name(DigitalAction action) const -> std::string_view;
+	[[nodiscard]] auto digital_action_source(DigitalAction action) const -> DigitalActionSource;
 	[[nodiscard]] auto digital_action_source_name(DigitalAction action) const -> std::string_view;
 	/// @brief Set the current action set.
 	/// @warning This determines the actions capable to be received by the connected gamepads, so remember to set it correctly!

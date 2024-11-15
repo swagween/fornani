@@ -1,9 +1,14 @@
 #pragma once
 
-#include <SFML/Graphics/Text.hpp>
+#include "../setup/ControllerMap.hpp"
+#include "../utils/RichText.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <unordered_set>
 
 namespace automa {
-class ServiceProvider;
+struct ServiceProvider;
 }
 
 namespace sf {
@@ -21,7 +26,7 @@ class ActionContextBar {
 	void render(sf::RenderWindow& win);
 
   private:
-	sf::Text text{};
+	util::RichText text{};
 };
 
 } // namespace gui

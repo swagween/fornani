@@ -2,27 +2,32 @@
 #include <SFML/Graphics.hpp>
 
 #include "../service/ServiceProvider.hpp"
+#include "ActionControlIconQuery.hpp"
 
 #include <format>
 #include <string>
 
 namespace gui {
 
-ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) {
-	text.setFont(svc.text.fonts.title);
-	text.setFillColor(svc.styles.colors.dark_grey);
-	text.setCharacterSize(16);
-	text.setPosition(sf::Vector2f{0.f, svc.constants.f_screen_dimensions.y - 20.f});
-}
+ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) { text.setPosition(sf::Vector2f{0.f, svc.constants.f_screen_dimensions.y - 26.f}); }
 
 void ActionContextBar::update(automa::ServiceProvider& svc) {
-	std::string text_string{};
-	for (auto const& action : svc.controller_map.actions_queried_this_update()) {
+	auto actions_queried_this_frame = svc.controller_map.actions_queried_this_update();
+
+	text.clearSegments();
+	for (auto const& action : actions_queried_this_frame) {
 		// If an action has been queried this tick, it most likely does something when activated, so it is shown in the context bar
-		text_string += std::format("[{}] {} ", svc.controller_map.digital_action_source_name(action), svc.controller_map.digital_action_name(action));
+		auto sprite = get_action_control_icon(svc, action);
+
+		sprite.setColor(svc.styles.colors.dark_grey);
+
+		text.addSprite(sprite);
+
+		auto str = svc.controller_map.digital_action_name(action);
+		text.addText(str, svc.text.fonts.title, 16, svc.styles.colors.dark_grey);
 	}
 
-	text.setString(text_string);
+	text.arrange();
 }
 
 void ActionContextBar::render(sf::RenderWindow& win) { win.draw(text); }

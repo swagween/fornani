@@ -258,6 +258,26 @@ void ControllerMap::set_action_set(ActionSet set) {
 
 [[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view { return digital_action_names.at(action); }
 
+[[nodiscard]] auto ControllerMap::digital_action_source(DigitalAction action) const -> DigitalActionSource {
+	auto controller_origin = k_EInputActionOrigin_None;
+	if (controller_handle) {
+		auto action_set = get_action_set_from_action(action);
+		InputActionSetHandle_t handle;
+		switch (action_set) {
+		case ActionSet::Inventory: handle = inventory_action_layer; break;
+		case ActionSet::Map: handle = map_action_layer; break;
+		case ActionSet::Menu: handle = menu_action_set; break;
+		case ActionSet::Platformer: handle = platformer_action_set; break;
+		}
+
+		EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS];
+		if (SteamInput()->GetDigitalActionOrigins(controller_handle, handle, digital_actions.at(action).steam_handle, origins) > 0) {
+			if (origins[0] < k_EInputActionOrigin_Count) { controller_origin = origins[0]; }
+		}
+	}
+	return DigitalActionSource{.controller_origin = controller_origin, .key = get_primary_keyboard_binding(action)};
+}
+
 [[nodiscard]] auto ControllerMap::digital_action_source_name(DigitalAction action) const -> std::string_view {
 	if (controller_handle) {
 		auto action_set = get_action_set_from_action(action);
@@ -283,6 +303,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
 	std::cout << "Connected controller with handle = " << data->m_ulConnectedDeviceHandle << std::endl;
 	controller_handle = data->m_ulConnectedDeviceHandle;
+	last_controller_ty_used = ControllerType::gamepad; // Quickly switch to gamepad input
 	setup_action_handles();
 	set_action_set(active_action_set);
 }
@@ -290,6 +311,7 @@ void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data)
 void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
 	std::cout << "Disconnected controller with handle = " << data->m_ulDisconnectedDeviceHandle << std::endl;
 	controller_handle = 0;
+	last_controller_ty_used = ControllerType::keyboard; // Quickly switch to keyboard input
 }
 
 void ControllerMap::open_bindings_overlay() const {
@@ -378,7 +400,7 @@ auto ControllerMap::get_action_by_identifier(std::string_view id) -> config::Dig
 		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
 		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
 		{"platformer_open_map", config::DigitalAction::platformer_open_map},
-		{"platformer_pause", config::DigitalAction::platformer_toggle_pause},
+		{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
 		{"inventory_open_map", config::DigitalAction::inventory_open_map},
 		{"inventory_close", config::DigitalAction::inventory_close},
 		{"map_open_inventory", config::DigitalAction::map_open_inventory},
@@ -389,6 +411,8 @@ auto ControllerMap::get_action_by_identifier(std::string_view id) -> config::Dig
 		{"menu_down", config::DigitalAction::menu_down},
 		{"menu_select", config::DigitalAction::menu_select},
 		{"menu_cancel", config::DigitalAction::menu_cancel},
+		{"menu_switch_left", config::DigitalAction::menu_switch_left},
+		{"menu_switch_right", config::DigitalAction::menu_switch_right},
 	};
 
 	return map.at(id);

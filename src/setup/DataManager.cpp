@@ -6,7 +6,7 @@
 
 namespace data {
 
-DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc), finder(argv) {}
+DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc), finder(argv) { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
 

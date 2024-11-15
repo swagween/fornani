@@ -26,6 +26,7 @@ struct ServiceProvider {
 	ServiceProvider(char** argv) : data(*this, argv) {};
 
 	fornani::WindowManager* window;
+	lookup::Tables tables{};
 	asset::AssetManager assets{};
 	data::DataManager data;
 	data::TextManager text{};
@@ -37,7 +38,6 @@ struct ServiceProvider {
 	util::Random random{};
 	util::Ticker ticker{};
 	util::Constants constants{};
-	lookup::Tables tables{};
 	StateController state_controller{};
 	MenuController menu_controller{};
 	audio::Soundboard soundboard{};
