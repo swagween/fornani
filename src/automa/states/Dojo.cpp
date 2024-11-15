@@ -14,9 +14,9 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// B.stats.GRAV = 0.f;
 	// A.physics.position = {200.f, 200.f};
 
-	//circle collider test
-	//circle.bounds.setRadius(16.f);
-	//circle.bounds.setOrigin({16.f, 16.f});
+	// circle collider test
+	// circle.bounds.setRadius(16.f);
+	// circle.bounds.setOrigin({16.f, 16.f});
 
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
@@ -85,6 +85,8 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void Dojo::tick_update(ServiceProvider& svc) {
+	svc.a11y.set_action_ctx_bar_enabled(false);
+
 	loading.is_complete() ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	loading.update();
 	svc.soundboard.play_sounds(svc);
@@ -123,7 +125,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 	}
 
-	//if (svc.controller_map.gamepad_disconnected()) { toggle_pause_menu(svc); }
+	// if (svc.controller_map.gamepad_disconnected()) { toggle_pause_menu(svc); }
 
 	if (!svc.no_menu()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered || svc.controller_map.digital_action_status(config::DigitalAction::inventory_close).triggered ||
@@ -156,7 +158,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			map.transition.start();
 			open_vendor = true;
 		}
-		if(open_vendor && map.transition.is_done()) {
+		if (open_vendor && map.transition.is_done()) {
 			vendor_dialog = gui::VendorDialog(svc, map, *player, svc.menu_controller.get_menu_id());
 			svc.controller_map.set_action_set(config::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
@@ -214,7 +216,7 @@ void Dojo::frame_update(ServiceProvider& svc) {
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	// B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
-	//circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()) + camera.get_position());
+	// circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()) + camera.get_position());
 
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
@@ -229,7 +231,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	// A.render(win, {});
 	// B.render(win, {});
-	//circle.render(win, camera.get_position());
+	// circle.render(win, camera.get_position());
 }
 
 void Dojo::toggle_inventory(ServiceProvider& svc) {

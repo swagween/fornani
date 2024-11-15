@@ -163,7 +163,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
 			services.controller_map.update();
 			game_state.get_current_state().tick_update(services);
-			ctx_bar.update(services);
+			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
 		});
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
@@ -182,7 +182,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		game_state.get_current_state().render(services, services.window->get());
 
-		ctx_bar.render(services.window->get());
+		if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(services.window->get()); }
 
 		ImGui::SFML::Render(services.window->get());
 		services.window->get().display();

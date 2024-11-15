@@ -45,6 +45,7 @@ void MainMenu::init(ServiceProvider& svc, int room_number) {}
 void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void MainMenu::tick_update(ServiceProvider& svc) {
+	svc.a11y.set_action_ctx_bar_enabled(true);
 
 	if (loading.is_almost_complete()) {
 		svc.music.load("clay");

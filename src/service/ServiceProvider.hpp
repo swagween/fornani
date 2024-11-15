@@ -4,6 +4,7 @@
 #include "../automa/MenuController.hpp"
 #include "../automa/StateController.hpp"
 #include "../graphics/Style.hpp"
+#include "../setup/AccessibilityService.hpp"
 #include "../setup/AssetManager.hpp"
 #include "../setup/ControllerMap.hpp"
 #include "../setup/DataManager.hpp"
@@ -44,6 +45,7 @@ struct ServiceProvider {
 	audio::MusicPlayer music{};
 	fornani::QuestTracker quest{};
 	fornani::StatTracker stats{};
+	config::AccessibilityService a11y{};
 
 	// debug stuff
 	util::Stopwatch stopwatch{};
