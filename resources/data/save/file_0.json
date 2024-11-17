@@ -7,25 +7,21 @@
     "hp": 2.000000,
     "orbs": 69,
     "position": {
-      "x": 1341.522461,
-      "y": 427.000000
+      "x": 622.484558,
+      "y": 267.000000
     },
     "arsenal": [
       0,
       10
     ],
     "equipped_gun": 10,
-    "abilities": [
-
-    ],
+    "abilities": [],
     "wardrobe": {
       "hairstyle": 0,
       "shirt": 0,
       "pants": 0
     },
-    "items": [
-
-    ],
+    "items": [],
     "stats": {
       "death_count": 6,
       "bullets_fired": 231,
@@ -35,8 +31,8 @@
       "blue_orbs": 0,
       "highest_indicator_amount": 25,
       "enemies_killed": 4,
-      "rooms_discovered": 5,
-      "seconds_played": 123.169662,
+      "rooms_discovered": 4,
+      "seconds_played": 98.865860,
       "time_trials": {
         "bryns_gun": 2.699467
       }
@@ -46,13 +42,9 @@
       10
     ]
   },
-  "save_point_id": 20098,
-  "unlocked_doors": [
-
-  ],
-  "opened_chests": [
-
-  ],
+  "save_point_id": 103,
+  "unlocked_doors": [],
+  "opened_chests": [],
   "activated_switches": [
     1,
     233
@@ -74,9 +66,7 @@
       0
     ]
   ],
-  "destroyed_inspectables": [
-
-  ],
+  "destroyed_inspectables": [],
   "tutorial": {
     "state": 4,
     "closed": true,
@@ -91,8 +81,7 @@
     100,
     104,
     102,
-    103,
-    20098
+    103
   ],
   "piggybacker": 0,
   "marketplace": [
