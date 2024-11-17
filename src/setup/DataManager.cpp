@@ -6,7 +6,7 @@
 
 namespace data {
 
-DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) {}
+DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc), finder(argv) { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
 
@@ -95,6 +95,8 @@ void DataManager::load_data(std::string in_room) {
 	assert(!cutscene.is_null());
 	map_styles = dj::Json::from_file((finder.resource_path + "/data/level/map_styles.json").c_str());
 	assert(!map_styles.is_null());
+	action_names = dj::Json::from_file((finder.resource_path + "/data/gui/action_names.json").c_str());
+	assert(!action_names.is_null());
 
 	enemy = dj::Json::from_file((finder.resource_path + "/data/enemy/enemy_params.json").c_str());
 	assert(!enemy.is_null());
@@ -111,7 +113,7 @@ void DataManager::load_data(std::string in_room) {
 	// load item labels
 	for (auto const& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first}); }
 
-	//load marketplace
+	// load marketplace
 	for (auto const& entry : npc.object_view()) {
 		if (!entry.second["vendor"]) { continue; }
 		std::cout << "Loading marketplace data for " << entry.first << ".\n";
@@ -139,9 +141,9 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	constexpr auto empty_array = R"([])";
 	auto const wipe = dj::Json::parse(empty_array);
 
-	//write marketplace status
+	// write marketplace status
 	save["marketplace"] = wipe;
-	for(auto& vendor : marketplace) {
+	for (auto& vendor : marketplace) {
 		auto out_vendor = wipe;
 		for (auto& item : vendor.second.inventory.items) { out_vendor.push_back(item.get_id()); }
 		save["marketplace"].push_back(out_vendor);
@@ -191,9 +193,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 			save["player_data"]["arsenal"].push_back(this_id);
 		}
 		if (player.hotbar) {
-			for (auto& id : player.hotbar.value().get_ids()) {
-				save["player_data"]["hotbar"].push_back(id);
-			}
+			for (auto& id : player.hotbar.value().get_ids()) { save["player_data"]["hotbar"].push_back(id); }
 			save["player_data"]["equipped_gun"] = player.hotbar.value().get_id();
 		}
 	}
@@ -305,9 +305,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	// load player's arsenal
 	player.arsenal = {};
 	player.hotbar = {};
-	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) {
-		player.push_to_loadout(gun_id.as<int>(), true);
-	}
+	for (auto& gun_id : save["player_data"]["arsenal"].array_view()) { player.push_to_loadout(gun_id.as<int>(), true); }
 	if (!save["player_data"]["hotbar"].array_view().empty()) {
 		if (!player.hotbar) { player.hotbar = arms::Hotbar(1); }
 		if (player.hotbar) {

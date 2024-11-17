@@ -1,19 +1,15 @@
 #include "Game.hpp"
 #include <steam/steam_api.h>
 #include <ctime>
+#include "../gui/ActionContextBar.hpp"
 #include "WindowManager.hpp"
 
 namespace fornani {
 
-Game::Game(char** argv, WindowManager& window) : player(services) {
+Game::Game(char** argv, WindowManager& window) : services(argv), player(services) {
 	services.stopwatch.start();
 	services.window = &window;
 	services.constants.screen_dimensions = window.screen_dimensions;
-	// data
-	services.data = data::DataManager(services);
-	services.data.finder.setResourcePath(argv);
-	services.data.finder.set_scene_path(argv);
-	services.data.load_data();
 	// controls
 	services.data.load_controls(services.controller_map);
 	// text
@@ -66,6 +62,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		game_state.get_current_state().target_folder.paths.scene = services.data.finder.scene_path;
 		game_state.get_current_state().target_folder.paths.region = services.data.finder.scene_path + "/firstwind";
 	}
+
+	gui::ActionContextBar ctx_bar(services);
 
 	std::cout << "> Success\n";
 	services.stopwatch.stop();
@@ -162,9 +160,10 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		// game logic and rendering
 		services.music.update();
 		bool has_focus = services.window->get().hasFocus();
-		services.ticker.tick([this, has_focus, &services = services] {
+		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
 			services.controller_map.update();
 			game_state.get_current_state().tick_update(services);
+			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
 		});
 		game_state.get_current_state().frame_update(services);
 		game_state.process_state(services, player, *this);
@@ -182,6 +181,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.window->get().draw(background);
 
 		game_state.get_current_state().render(services, services.window->get());
+
+		if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(services.window->get()); }
 
 		ImGui::SFML::Render(services.window->get());
 		services.window->get().display();

@@ -5,38 +5,6 @@
 
 namespace automa {
 
-// TODO clean this up, if `options` is moved away from GameState we could bundle digitalaction data next to each option
-auto get_action_by_identifier(std::string_view id) -> config::DigitalAction {
-	static std::unordered_map<std::string_view, config::DigitalAction> const map = {
-		{"platformer_left", config::DigitalAction::platformer_left},
-		{"platformer_right", config::DigitalAction::platformer_right},
-		{"platformer_up", config::DigitalAction::platformer_up},
-		{"platformer_down", config::DigitalAction::platformer_down},
-		{"platformer_jump", config::DigitalAction::platformer_jump},
-		{"platformer_shoot", config::DigitalAction::platformer_shoot},
-		{"platformer_sprint", config::DigitalAction::platformer_sprint},
-		{"platformer_shield", config::DigitalAction::platformer_shield},
-		{"platformer_inspect", config::DigitalAction::platformer_inspect},
-		{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
-		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
-		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
-		{"platformer_open_map", config::DigitalAction::platformer_open_map},
-		{"platformer_pause", config::DigitalAction::platformer_toggle_pause},
-		{"inventory_open_map", config::DigitalAction::inventory_open_map},
-		{"inventory_close", config::DigitalAction::inventory_close},
-		{"map_open_inventory", config::DigitalAction::map_open_inventory},
-		{"map_close", config::DigitalAction::map_close},
-		{"menu_left", config::DigitalAction::menu_left},
-		{"menu_right", config::DigitalAction::menu_right},
-		{"menu_up", config::DigitalAction::menu_up},
-		{"menu_down", config::DigitalAction::menu_down},
-		{"menu_select", config::DigitalAction::menu_select},
-		{"menu_cancel", config::DigitalAction::menu_cancel},
-	};
-
-	return map.at(id);
-}
-
 constexpr std::array<std::string_view, 4> tabs = {"controls_platformer", "controls_inventory", "controls_map", "controls_menu"};
 constexpr std::array<std::string_view, 4> tab_id_prefixes = {"platformer_", "inventory_", "map_", "menu_"};
 
@@ -69,7 +37,7 @@ void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
 		if (event.type == sf::Event::EventType::KeyPressed) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
 			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(options.at(current_selection.get()).label.getString());
-			auto action = get_action_by_identifier(id.data());
+			auto action = svc.controller_map.get_action_by_identifier(id.data());
 
 			auto key = event.key.code;
 			if (key != sf::Keyboard::Key::Escape) {
@@ -123,7 +91,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		// Reset to default should be last option
 		else if (current_selection.get() == options.size() - 1) {
 			restore_defaults(svc);
-		} else  if (!binding_mode) {
+		} else if (!binding_mode) {
 			option_is_selected = !option_is_selected;
 			auto& control = control_list.at(current_selection.get());
 			control.setString("Press a key");
@@ -166,7 +134,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 		if (ctr > 0 && ctr < options.size() - 2) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
 			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(option.label.getString());
-			auto action = get_action_by_identifier(id.data());
+			auto action = svc.controller_map.get_action_by_identifier(id.data());
 
 			auto& control = control_list.at(ctr);
 			control.setString(std::string(svc.controller_map.key_to_string(svc.controller_map.get_primary_keyboard_binding(action))));

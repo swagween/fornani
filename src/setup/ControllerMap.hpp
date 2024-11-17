@@ -70,6 +70,11 @@ enum class ActionSet {
 enum class ControllerType { keyboard, gamepad };
 enum class ControllerStatus { gamepad_connected };
 
+struct DigitalActionSource {
+	EInputActionOrigin controller_origin{};
+	sf::Keyboard::Key key{};
+};
+
 struct DigitalActionStatus {
 	DigitalActionStatus(DigitalAction action) : action(action) {}
 	DigitalAction action{};
@@ -97,21 +102,24 @@ class ControllerMap {
 	void update();
 
 	/// @brief Process the SFML event given.
-	/// @details Used for keyboard controls. 
+	/// @details Used for keyboard controls.
 	void handle_event(sf::Event const&);
 
 	/// @brief Returns whether there is a gamepad connected or not.
 	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }
 	[[nodiscard]] auto gamepad_disconnected() const -> bool { return controller_handle == 0; }
-	[[nodiscard]] auto digital_action_status(DigitalAction action) const -> DigitalActionStatus { return digital_actions.at(action).status; }
+	[[nodiscard]] auto digital_action_status(DigitalAction action) -> DigitalActionStatus;
 	[[nodiscard]] auto analog_action_status(AnalogAction action) const -> AnalogActionStatus { return analog_actions.at(action).second; }
 	[[nodiscard]] auto digital_action_name(DigitalAction action) const -> std::string_view;
+	[[nodiscard]] auto digital_action_source(DigitalAction action) const -> DigitalActionSource;
 	[[nodiscard]] auto digital_action_source_name(DigitalAction action) const -> std::string_view;
 	/// @brief Set the current action set.
 	/// @warning This determines the actions capable to be received by the connected gamepads, so remember to set it correctly!
 	void set_action_set(ActionSet set);
 	/// @brief Open the Steam controller configuration overlay.
 	void open_bindings_overlay() const;
+
+	auto actions_queried_this_update() const -> std::unordered_set<DigitalAction> const& { return m_actions_queried_this_update; }
 
 	void set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
 	void set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
@@ -135,6 +143,9 @@ class ControllerMap {
 	[[nodiscard]] auto is_gamepad_input_enabled() -> bool { return gamepad_input_enabled; }
 	[[nodiscard]] auto is_autosprint_enabled() -> bool { return autosprint_enabled; }
 
+	/// @brief Obtains a `DigitalAction` variant by its name in the enum.
+	auto get_action_by_identifier(std::string_view id) -> config::DigitalAction;
+
   private:
 	struct DigitalActionData {
 		InputDigitalActionHandle_t steam_handle;
@@ -145,12 +156,15 @@ class ControllerMap {
 		bool was_active_last_tick{};
 	};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
+	std::unordered_map<DigitalAction, std::string> digital_action_names{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
 	std::unordered_set<sf::Keyboard::Key> keys_pressed;
 	InputActionSetHandle_t platformer_action_set{};
 	InputActionSetHandle_t menu_action_set{};
 	InputActionSetHandle_t inventory_action_layer{};
 	InputActionSetHandle_t map_action_layer{};
+
+	std::unordered_set<DigitalAction> m_actions_queried_this_update;
 
 	ControllerType last_controller_ty_used{ControllerType::keyboard};
 
@@ -162,6 +176,10 @@ class ControllerMap {
 	bool autosprint_enabled{true};
 
 	void reset_digital_action_states();
+
+	/// @brief Sets up the values of `digital_actions` and `analog_actions` via the Steam Input API.
+	/// @details Since the Steam Input API returns invalid handles if no gamepad is connected (bug?), this needs to be recalled every time a controller is connected.
+	void setup_action_handles();
 
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
 

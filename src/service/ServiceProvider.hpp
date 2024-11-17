@@ -1,31 +1,35 @@
 #pragma once
-#include "../utils/BitFlags.hpp"
-#include "../setup/WindowManager.hpp"
-#include "../setup/AssetManager.hpp"
-#include "../setup/DataManager.hpp"
-#include "../setup/TextManager.hpp"
-#include "../setup/Tables.hpp"
-#include "../automa/StateController.hpp"
-#include "../automa/MenuController.hpp"
-#include "../graphics/Style.hpp"
-#include "../utils/Random.hpp"
-#include "../utils/Ticker.hpp"
-#include "../utils/Constants.hpp"
-#include "../audio/Soundboard.hpp"
 #include "../audio/MusicPlayer.hpp"
+#include "../audio/Soundboard.hpp"
+#include "../automa/MenuController.hpp"
+#include "../automa/StateController.hpp"
+#include "../graphics/Style.hpp"
+#include "../setup/AccessibilityService.hpp"
+#include "../setup/AssetManager.hpp"
 #include "../setup/ControllerMap.hpp"
-#include "../utils/Stopwatch.hpp"
+#include "../setup/DataManager.hpp"
+#include "../setup/Tables.hpp"
+#include "../setup/TextManager.hpp"
+#include "../setup/WindowManager.hpp"
 #include "../story/QuestTracker.hpp"
 #include "../story/StatTracker.hpp"
+#include "../utils/BitFlags.hpp"
+#include "../utils/Constants.hpp"
+#include "../utils/Random.hpp"
+#include "../utils/Stopwatch.hpp"
+#include "../utils/Ticker.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
 enum class AppFlags { fullscreen, tutorial, in_game };
 enum class StateFlags { hide_hud, no_menu };
 struct ServiceProvider {
+	ServiceProvider(char** argv) : data(*this, argv) {};
+
 	fornani::WindowManager* window;
+	lookup::Tables tables{};
 	asset::AssetManager assets{};
-	data::DataManager data{*this};
+	data::DataManager data;
 	data::TextManager text{};
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
@@ -35,13 +39,13 @@ struct ServiceProvider {
 	util::Random random{};
 	util::Ticker ticker{};
 	util::Constants constants{};
-	lookup::Tables tables{};
 	StateController state_controller{};
 	MenuController menu_controller{};
 	audio::Soundboard soundboard{};
 	audio::MusicPlayer music{};
 	fornani::QuestTracker quest{};
 	fornani::StatTracker stats{};
+	config::AccessibilityService a11y{};
 
 	// debug stuff
 	util::Stopwatch stopwatch{};

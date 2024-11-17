@@ -5,6 +5,7 @@ namespace fornani {
 Application::Application(char** argv) {
 
 	finder.setResourcePath(argv);
+	std::cout << "Resource path: " << finder.resource_path << std::endl;
 
 	// load app resources
 	game_info = dj::Json::from_file((finder.resource_path + "/data/config/version.json").c_str());
@@ -22,7 +23,7 @@ Application::Application(char** argv) {
 	app_settings = dj::Json::from_file((finder.resource_path + "/data/config/settings.json").c_str());
 	assert(!app_settings.is_null());
 
-	//create window
+	// create window
 	window.create(metadata.long_title(), static_cast<bool>(app_settings["fullscreen"].as_bool()));
 	window.set();
 

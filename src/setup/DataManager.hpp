@@ -5,13 +5,13 @@
 #include <assert.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <array>
 #include <iostream>
 #include <string>
-#include <array>
-#include "ResourceFinder.hpp"
-#include "File.hpp"
-#include "../utils/QuestCode.hpp"
 #include "../level/Map.hpp"
+#include "../utils/QuestCode.hpp"
+#include "File.hpp"
+#include "ResourceFinder.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -27,17 +27,17 @@ class Player;
 
 namespace data {
 
-	struct MapData {
+struct MapData {
 	int id{};
 	dj::Json metadata{};
 	dj::Json tiles{};
 	dj::Json inspectable_data{};
-	};
+};
 
 class DataManager {
 
-	public:
-	DataManager(automa::ServiceProvider& svc);
+  public:
+	DataManager(automa::ServiceProvider& svc, char** argv);
 	// game save
 	void load_data(std::string in_room = "");
 	void save_progress(player::Player& player, int save_point_id);
@@ -92,8 +92,9 @@ class DataManager {
 	dj::Json item{};
 	dj::Json platform{};
 	dj::Json cutscene{};
+	dj::Json action_names{};
 
-	//enemy
+	// enemy
 	dj::Json enemy{};
 	dj::Json frdog{};
 	dj::Json hulmet{};
