@@ -131,6 +131,10 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		collider.detect_map_collision(map);
 		secondary_collider.detect_map_collision(map);
 	}
+	for (auto& other : map.enemy_catalog.enemies) {
+		if (other.get() != this) { handle_collision(other->collider); }
+	}
+
 	collider.reset();
 	secondary_collider.reset();
 	if (collider.collision_depths) { collider.collision_depths.value().update(); }
@@ -209,6 +213,8 @@ void Enemy::handle_player_collision(player::Player& player) const {
 		if (player.collider.hurtbox.overlaps(collider.bounding_box)) { player.hurt(attributes.base_damage); }
 	}
 }
+
+void Enemy::handle_collision(shape::Collider& other) { collider.handle_collider_collision(other.bounding_box, true); }
 
 void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 

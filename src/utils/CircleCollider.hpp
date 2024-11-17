@@ -23,7 +23,7 @@ class CircleCollider {
 	CircleCollider(float radius);
 	void update(automa::ServiceProvider& svc);
 	void handle_map_collision(world::Map& map);
-	void handle_collision(shape::Shape& shape);
+	void handle_collision(shape::Shape& shape, bool soft = false);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos) { physics.position = pos; }
 	[[nodiscard]] auto collided() const -> bool { return flags.test(CircleColliderFlags::collided); }

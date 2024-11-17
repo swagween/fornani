@@ -9,6 +9,13 @@
 				"path"		"config_480_controller_xboxone.vdf"
 			}
 		}
+		"controller_ps5"
+		{
+			"0"
+			{
+				"path"		"config_3218760_controller_ps5.vdf"
+			}
+		}
 	}
 	"actions"
 	{
@@ -71,6 +78,8 @@
 			"action_platformer_arms_switch_left"		"Switch to Previous Weapon"
 			"action_platformer_arms_switch_right"		"Switch to Next Weapon"
 			"action_platformer_open_inventory"		"Open Inventory"
+			"action_platformer_toggle_pause"		"Pause"
+			"action_platformer_open_map"		"Open Map"
 			"platformer_open_map"		"Open Map"
 			"platformer_toggle_pause"		"Pause/Unpause"
 			"set_menu"		"Menu Controls"

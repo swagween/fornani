@@ -23,6 +23,15 @@ namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
 enum class AppFlags { fullscreen, tutorial, in_game };
 enum class StateFlags { hide_hud, no_menu };
+struct PlayerDat {
+	void set_piggy_id(int id) { piggy_id = id; }
+	void unpiggy() { drop_piggy = true; }
+	int piggy_id{};
+	bool drop_piggy{};
+};
+struct MapDebug {
+	int active_projectiles{};
+};
 struct ServiceProvider {
 	ServiceProvider(char** argv) : data(*this, argv) {};
 
@@ -45,6 +54,8 @@ struct ServiceProvider {
 	audio::MusicPlayer music{};
 	fornani::QuestTracker quest{};
 	fornani::StatTracker stats{};
+	PlayerDat player_dat{};
+	MapDebug map_debug{};
 	config::AccessibilityService a11y{};
 
 	// debug stuff

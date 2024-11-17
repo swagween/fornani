@@ -189,6 +189,14 @@
       "label": "OVERTURNED_SHAFT_03"
     },
     {
+      "room_id": 20099,
+      "label": "OVERTURNED_TEST_ROOM"
+    },
+    {
+      "room_id": 20098,
+      "label": "OVERTURNED_TEST_ROOM_2"
+    },
+    {
       "room_id": 231,
       "label": "OVERTURNED_TROUGHWAY_01"
     },

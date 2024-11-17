@@ -8,4 +8,6 @@ void MenuController::open_vendor_dialog(int id) {
 	menu_id = id;
 }
 
+void MenuController::reset_vendor_dialog() { status.reset(MenuStatus::vendor); }
+
 } // namespace automa

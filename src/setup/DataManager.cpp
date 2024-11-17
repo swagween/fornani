@@ -9,10 +9,6 @@ namespace data {
 DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc), finder(argv) { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
-
-	// user config
-	load_settings();
-
 	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path};
 	auto room_list = room_path / "level";
@@ -150,6 +146,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 
 	// write opened chests and doors
+	save["piggybacker"] = m_services->player_dat.piggy_id;
+	save["npc_locations"] = wipe;
 	save["discovered_rooms"] = wipe;
 	save["unlocked_doors"] = wipe;
 	save["opened_chests"] = wipe;
@@ -158,6 +156,12 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["destroyed_inspectables"] = wipe;
 	for (auto& entry : save["quest_progressions"].array_view()) { entry = wipe; }
 	save["quest_progressions"] = wipe;
+	for (auto& location : npc_locations) {
+		auto entry = wipe;
+		entry.push_back(location.first);
+		entry.push_back(location.second);
+		save["npc_locations"].push_back(entry);
+	}
 	for (auto& room : discovered_rooms) { save["discovered_rooms"].push_back(room); }
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
@@ -265,6 +269,8 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	activated_switches.clear();
 	destroyed_inspectables.clear();
 	quest_progressions.clear();
+	npc_locations.clear();
+
 	for (auto& room : save["discovered_rooms"].array_view()) { discovered_rooms.push_back(room.as<int>()); }
 	for (auto& door : save["unlocked_doors"].array_view()) { unlocked_doors.push_back(door.as<int>()); }
 	for (auto& chest : save["opened_chests"].array_view()) { opened_chests.push_back(chest.as<int>()); }
@@ -280,6 +286,10 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 		quest_progressions.push_back(util::QuestKey{type, id, srcid, amt, hard});
 		m_services->quest.process(*m_services, quest_progressions.back());
 	}
+	for (auto& location : save["npc_locations"].array_view()) { npc_locations.insert({location[0].as<int>(), location[1].as<int>()}); }
+	player.piggybacker = {};
+	m_services->player_dat.set_piggy_id(save["piggybacker"].as<int>());
+	m_services->player_dat.drop_piggy = false;
 
 	player.tutorial.flags = {};
 	if (save["tutorial"]["jump"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::jump); }
@@ -361,6 +371,7 @@ void DataManager::load_settings() {
 	m_services->controller_map.enable_gamepad_input(settings["gamepad"].as_bool().value);
 	m_services->music.volume.multiplier = settings["music_volume"].as<float>();
 	m_services->set_fullscreen(settings["fullscreen"].as_bool().value);
+	std::cout << "Settings set.\n";
 }
 
 void DataManager::delete_file(int index) {
@@ -466,6 +477,12 @@ void DataManager::push_quest(util::QuestKey key) {
 	quest_progressions.push_back(key);
 }
 
+void DataManager::set_npc_location(int npc_id, int room_id) {
+	if (room_id < 0) { return; }
+	if (!npc_locations.contains(npc_id)) { npc_locations.insert({npc_id, room_id}); }
+	npc_locations.at(npc_id) = room_id;
+}
+
 bool DataManager::door_is_unlocked(int id) const {
 	for (auto& door : unlocked_doors) {
 		if (door == id) { return true; }
@@ -564,6 +581,11 @@ int DataManager::get_room_index(int id) {
 		++ctr;
 	}
 	return ctr;
+}
+
+int DataManager::get_npc_location(int npc_id) {
+	if (!npc_locations.contains(npc_id)) { return 0; }
+	return npc_locations.at(npc_id);
 }
 
 std::vector<world::Layer>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }

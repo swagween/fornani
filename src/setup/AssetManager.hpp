@@ -23,6 +23,7 @@ class AssetManager {
 
 	void import_textures();
 	void load_audio();
+	sf::Texture& get_scenery(int style);
 
 	// player and NPCs!
 	sf::Texture t_nani{};
@@ -34,6 +35,7 @@ class AssetManager {
 	sf::Texture t_carl{};
 	sf::Texture t_bit{};
 	sf::Texture t_lady_nimbus{};
+	sf::Texture t_justin{};
 
 	// player palettes
 	sf::Texture t_palette_nani{};
@@ -173,6 +175,9 @@ class AssetManager {
 	sf::Texture t_bg_crevasse{};
 	sf::Texture t_bg_deep{};
 	sf::Texture t_bg_grove{};
+
+	//scenery
+	sf::Texture t_overturned_scenery{};
 
 	// load the guns and bullets!
 	sf::Texture t_gun{};
@@ -399,6 +404,7 @@ class AssetManager {
 	data::ResourceFinder finder{};
 
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
+	std::unordered_map<int, sf::Texture&> scenery_lookup{};
 	std::unordered_map<int, sf::Texture&> background_lookup{};
 	std::unordered_map<int, sf::Texture&> effect_lookup{};
 	std::unordered_map<int, sf::Texture&> platform_lookup{};

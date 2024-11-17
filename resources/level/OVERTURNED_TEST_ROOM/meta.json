@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "room_id": 20099,
+    "metagrid": [
+      80,
+      80
+    ],
+    "dimensions": [
+      32,
+      32
+    ],
+    "chunk_dimensions": [
+      2,
+      2
+    ],
+    "style": 1,
+    "background": 3,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          6,
+          11
+        ],
+        "length": 5,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          4,
+          12
+        ],
+        "length": 9,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          7,
+          10
+        ],
+        "length": 9,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          25,
+          11
+        ],
+        "length": 7,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          17,
+          5
+        ],
+        "length": 7,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          19,
+          3
+        ],
+        "length": 7,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          15,
+          6
+        ],
+        "length": 5,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          9,
+          8
+        ],
+        "length": 5,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          24,
+          9
+        ],
+        "length": 5,
+        "size": 1,
+        "foreground": true
+      }
+    ]
+  },
+  "save_point": {
+    "id": 20099,
+    "position": [
+      16,
+      22
+    ]
+  }
+}

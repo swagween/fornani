@@ -86,7 +86,7 @@ class Collider {
 	void correct_corner(sf::Vector2<float> mtv);
 	void resolve_depths();
 	void handle_platform_collision(Shape const& cell);
-	void handle_collider_collision(Shape const& collider);
+	void handle_collider_collision(Shape const& collider, bool soft = false);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void reset();

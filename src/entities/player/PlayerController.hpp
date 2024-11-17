@@ -25,7 +25,7 @@ constexpr static float backwards_dampen{0.5f};
 enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
 enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released, hold_left, hold_right, hold_up, hold_down };
 enum class MovementState { restricted, grounded, walking_autonomously };
-enum class HardState { no_move };
+enum class HardState { no_move, has_arsenal };
 
 enum class Hook { hook_released, hook_held };
 enum class Sprint { released };
@@ -54,6 +54,7 @@ class PlayerController {
 	void prevent_movement();
 	void release_hook();
 	void nullify_dash();
+	void set_arsenal(bool const has);
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 
@@ -75,6 +76,7 @@ class PlayerController {
 		hook_flags.reset(Hook::hook_released);
 		return ret;
 	}
+	[[nodiscard]] auto has_arsenal() const -> bool { return hard_state.test(HardState::has_arsenal); }
 	[[nodiscard]] auto hook_held() const -> bool { return hook_flags.test(Hook::hook_held); }
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
 	[[nodiscard]] auto dashing() -> bool { return key_map[ControllerInput::dash] != 0.f; }

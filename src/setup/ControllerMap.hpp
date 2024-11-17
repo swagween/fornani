@@ -140,8 +140,8 @@ class ControllerMap {
 	// TODO Move autosprint and tutorial toggles away from ControllerMap
 	void enable_autosprint(bool enable) { autosprint_enabled = enable; }
 	void enable_gamepad_input(bool enable) { gamepad_input_enabled = enable; }
-	[[nodiscard]] auto is_gamepad_input_enabled() -> bool { return gamepad_input_enabled; }
-	[[nodiscard]] auto is_autosprint_enabled() -> bool { return autosprint_enabled; }
+	[[nodiscard]] auto is_gamepad_input_enabled() const -> bool { return gamepad_input_enabled; }
+	[[nodiscard]] auto is_autosprint_enabled() const -> bool { return autosprint_enabled; }
 
 	/// @brief Obtains a `DigitalAction` variant by its name in the enum.
 	auto get_action_by_identifier(std::string_view id) -> config::DigitalAction;

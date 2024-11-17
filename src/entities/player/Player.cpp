@@ -127,6 +127,11 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(12)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up))); }
 	
 	update_antennae();
+	// piggybacker
+	if (m_services->player_dat.piggy_id == 0 && piggybacker) { piggybacker = {}; }
+	if (m_services->player_dat.piggy_id != 0 && !piggybacker) { piggyback(m_services->player_dat.piggy_id); }
+	if (piggybacker) { piggybacker.value().update(*m_services, *this); }
+
 	if (is_dead()) {
 		for (auto& a : antennae) { a.collider.detect_map_collision(map); }
 	}
@@ -142,6 +147,9 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (flags.state.test(State::crushed)) { return; }
 	//debug
 	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.green;
+
+	//piggybacker
+	if (piggybacker) { piggybacker.value().render(svc, win, campos); }
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
@@ -360,6 +368,10 @@ void Player::set_idle() {
 	animation.state_function = std::bind(&PlayerAnimation::update_idle, &animation);
 }
 
+void Player::piggyback(int id) {
+	piggybacker = Piggybacker(*m_services, m_services->tables.npc_label.at(id), collider.physics.position);
+}
+
 void Player::jump(world::Map& map) {
 	if (is_dead() || animation.state == AnimState::die) { return; }
 	if (controller.get_jump().began()) {
@@ -476,6 +488,7 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon() {
+	controller.set_arsenal(static_cast<bool>(hotbar));
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching

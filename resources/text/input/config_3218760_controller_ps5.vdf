@@ -1,18 +1,18 @@
 "controller_mappings"
 {
 	"version"		"3"
-	"revision"		"36"
-	"title"		"XBoxOne"
-	"description"		""
+	"revision"		"47"
+	"title"		"fornani layout 3"
+	"description"		"now with layers"
 	"creator"		"76561198260873188"
-	"progenitor"		"usercloud://480/fornani layout 3_0"
-	"url"		"autosave://C:\\Program Files (x86)\\Steam\\steamapps\\common\\Steam Controller Configs\\300607460\\config\\480\\controller_xboxone.vdf"
+	"progenitor"		"usercloud://3218760/controller_ps5"
+	"url"		"usercloud://3218760/controller_ps5"
 	"export_type"		"personal_local"
-	"controller_type"		"controller_xboxone"
-	"controller_caps"		"1590271"
+	"controller_type"		"controller_ps5"
+	"controller_caps"		"580344831"
 	"major_revision"		"0"
 	"minor_revision"		"0"
-	"Timestamp"		"1725474624"
+	"Timestamp"		"1731865523"
 	"actions"
 	{
 		"Platformer"
@@ -149,6 +149,22 @@
 				{
 				}
 			}
+			"button_b"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"game_action Platformer platformer_inspect, , "
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
 			"button_x"
 			{
 				"activators"
@@ -191,6 +207,26 @@
 		"description"		""
 		"inputs"
 		{
+			"click"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"game_action Platformer platformer_sprint, , "
+						}
+						"settings"
+						{
+							"haptic_intensity"		"2"
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
 		}
 	}
 	"group"
@@ -201,6 +237,46 @@
 		"description"		""
 		"inputs"
 		{
+			"click"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"game_action Platformer platformer_shoot, #action_platformer_shoot, , "
+						}
+						"settings"
+						{
+							"haptic_intensity"		"2"
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
+			"edge"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"game_action Platformer platformer_shoot, #action_platformer_shoot, , "
+						}
+						"settings"
+						{
+							"haptic_intensity"		"2"
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
 		}
 	}
 	"group"
@@ -281,7 +357,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Menu_Inventory inventory_close, #action_inventory_close, , "
+							"binding"		"game_action Menu_Inventory inventory_close, , "
 						}
 					}
 				}
@@ -405,6 +481,13 @@
 						"bindings"
 						{
 							"binding"		"game_action Platformer platformer_down, , "
+						}
+					}
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"game_action Platformer platformer_inspect, , "
 						}
 					}
 				}
@@ -531,7 +614,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_sprint, , "
+							"binding"		"game_action Platformer platformer_down, , "
 						}
 					}
 				}
@@ -660,6 +743,88 @@
 	}
 	"group"
 	{
+		"id"		"25"
+		"mode"		"single_button"
+		"name"		""
+		"description"		""
+		"inputs"
+		{
+			"click"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"game_action Menu_Map map_close, , "
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
+		}
+		"settings"
+		{
+			"layer"		"1"
+		}
+	}
+	"group"
+	{
+		"id"		"26"
+		"mode"		"single_button"
+		"name"		""
+		"description"		""
+		"inputs"
+		{
+			"click"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"game_action Platformer platformer_toggle_pause, , "
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
+		}
+	}
+	"group"
+	{
+		"id"		"27"
+		"mode"		"single_button"
+		"name"		""
+		"description"		""
+		"inputs"
+		{
+			"click"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"game_action Platformer platformer_open_map, , "
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
+		}
+	}
+	"group"
+	{
 		"id"		"0"
 		"mode"		"switches"
 		"name"		""
@@ -706,7 +871,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_shield, , "
+							"binding"		"game_action Platformer platformer_arms_switch_left, , "
 						}
 					}
 				}
@@ -722,7 +887,23 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_sprint, , "
+							"binding"		"game_action Platformer platformer_arms_switch_right, , "
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
+			"button_capture"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"controller_action SCREENSHOT, , "
 						}
 					}
 				}
@@ -740,6 +921,22 @@
 		"description"		""
 		"inputs"
 		{
+			"button_capture"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"controller_action SCREENSHOT, , "
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
 		}
 	}
 	"group"
@@ -750,6 +947,22 @@
 		"description"		""
 		"inputs"
 		{
+			"button_capture"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"controller_action SCREENSHOT, , "
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
 		}
 		"settings"
 		{
@@ -780,6 +993,22 @@
 				{
 				}
 			}
+			"button_capture"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"controller_action SCREENSHOT, , "
+						}
+					}
+				}
+				"disabled_activators"
+				{
+				}
+			}
 		}
 		"settings"
 		{
@@ -798,6 +1027,8 @@
 			"3"		"right_trigger active"
 			"20"		"joystick active"
 			"19"		"dpad active"
+			"27"		"left_trackpad active"
+			"26"		"right_trackpad active"
 		}
 	}
 	"preset"
@@ -837,6 +1068,7 @@
 			"14"		"left_trigger active"
 			"15"		"right_trigger active"
 			"24"		"joystick active"
+			"25"		"left_trackpad active"
 		}
 	}
 	"settings"

@@ -1,0 +1,16 @@
+
+#include "Scenery.hpp"
+#include "../service/ServiceProvider.hpp"
+
+namespace vfx {
+Scenery::Scenery(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int layer, int variant, float parallax) : position(position), properties{style, layer, variant, parallax} { 
+	sprite.setTexture(svc.assets.get_scenery(style));
+	auto u = variant * dimensions.x;
+	auto v = layer * dimensions.y;
+	sprite.setTextureRect(sf::IntRect({u, v}, dimensions));
+	sprite.setOrigin(f_dimensions * 0.5f);
+}
+void Scenery::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { 
+	sprite.setPosition(position - cam * properties.parallax);
+	win.draw(sprite); }
+} // namespace vfx

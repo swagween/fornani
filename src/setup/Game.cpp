@@ -12,6 +12,7 @@ Game::Game(char** argv, WindowManager& window) : services(argv), player(services
 	services.constants.screen_dimensions = window.screen_dimensions;
 	// controls
 	services.data.load_controls(services.controller_map);
+	services.data.load_settings();
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
@@ -232,6 +233,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
+					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
 					ImGui::Text("32t max: %u", static_cast<unsigned int>(std::numeric_limits<uint32_t>::max()));
 					ImGui::Separator();
 					ImGui::Text("Player");
@@ -309,6 +311,15 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("MiniMap Center Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().y);
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("NPC")) {
+					ImGui::Separator();
+					for (auto& entry : services.data.npc_locations) {
+						ImGui::Text("NPC: %i", entry.first);
+						ImGui::SameLine();
+						ImGui::Text(" ; Location: %i", entry.second);
+					}
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Music")) {
 					ImGui::Separator();
 					ImGui::Checkbox("Music Player", &playtest.m_musicplayer);
@@ -324,8 +335,13 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				}
 				if (ImGui::BeginTabItem("Story")) {
 					ImGui::Separator();
+					ImGui::Text("Piggybacking? %s", static_cast<bool>(player.piggybacker) ? "Yes" : "No");
+					ImGui::Separator();
 					ImGui::Text("Quest Progress:");
 					ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::npc, 20));
+					ImGui::Text("Justin: %i", services.quest.get_progression(QuestType::npc, 24));
+					ImGui::Text("Justin Hidden: %i", services.quest.get_progression(fornani::QuestType::hidden_npcs, 24));
+					ImGui::Text("Gobe: %i", services.quest.get_progression(QuestType::npc, 3));
 					ImGui::Text("Bryn's Notebook: %i", services.quest.get_progression(QuestType::inspectable, 1));
 					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::inspectable, 110));
 					ImGui::Separator();

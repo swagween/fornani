@@ -12,6 +12,7 @@ void AssetManager::import_textures() {
 	t_mirin.loadFromFile(finder.resource_path + "/image/character/mirin.png");
 	t_bit.loadFromFile(finder.resource_path + "/image/character/bit.png");
 	t_lady_nimbus.loadFromFile(finder.resource_path + "/image/character/lady_nimbus.png");
+	t_justin.loadFromFile(finder.resource_path + "/image/character/justin.png");
 	npcs.insert({"bryn", t_bryn});
 	npcs.insert({"gobe", t_gobe});
 	npcs.insert({"dr_go", t_dr_go});
@@ -19,6 +20,7 @@ void AssetManager::import_textures() {
 	npcs.insert({"mirin", t_mirin});
 	npcs.insert({"bit", t_bit});
 	npcs.insert({"lady_nimbus", t_lady_nimbus});
+	npcs.insert({"justin", t_justin});
 
 	t_vendor_artwork.loadFromFile(finder.resource_path + "/image/gui/vendor_artwork.png");
 	t_vendor_ui.loadFromFile(finder.resource_path + "/image/gui/vendor_interface.png");
@@ -186,6 +188,9 @@ void AssetManager::import_textures() {
 	background_lookup.insert({15, t_bg_crevasse});
 	background_lookup.insert({16, t_bg_deep});
 	background_lookup.insert({17, t_bg_grove});
+
+	t_overturned_scenery.loadFromFile(finder.resource_path + "/image/background/overturned_scenery.png");
+	scenery_lookup.insert({1, t_overturned_scenery});
 
 	t_large_animators.loadFromFile(finder.resource_path + "/image/animators/large_animators.png");
 	t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators.png");
@@ -419,6 +424,11 @@ void AssetManager::load_audio() {
 	breakable_shatter.setBuffer(shatter_buffer);
 	switch_press.setBuffer(b_switch_press);
 	block_toggle.setBuffer(b_block_toggle);
+}
+
+sf::Texture& AssetManager::get_scenery(int style) {
+	if (!scenery_lookup.contains(style)) { return scenery_lookup.at(0); }
+	return scenery_lookup.at(style);
 }
 
 } // namespace data

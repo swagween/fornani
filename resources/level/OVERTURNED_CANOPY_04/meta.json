@@ -30,11 +30,11 @@
     {
       "dimensions": [
         1,
-        12
+        11
       ],
       "position": [
         0,
-        0
+        1
       ],
       "source_id": 223,
       "destination_id": 222,
@@ -183,6 +183,23 @@
       }
     ]
   },
+  "npcs": [
+    {
+      "id": 24,
+      "position": [
+        43,
+        11
+      ],
+      "background": false,
+      "suites": [
+        [
+          "1"
+        ],
+        [ "2" ]
+      ],
+      "hidden": true
+    }
+  ],
   "enemies": [
     {
       "id": 8,

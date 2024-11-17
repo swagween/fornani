@@ -63,7 +63,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto style_value = meta["style"].as<int>();
 		style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
 		style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
-		if (svc.greyblock_mode()) { style_id = 20; }
+		if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
 		native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
 		styles.breakables = meta["styles"]["breakables"].as<int>();
@@ -79,6 +79,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			for (auto& convo : entry["suites"][npc_state].array_view()) { npcs.back().push_conversation(convo.as_string()); }
 			npcs.back().set_position_from_scaled(pos);
 			if ((bool)entry["background"].as_bool()) { npcs.back().push_to_background(); }
+			if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back().hide(); }
+			if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
+			npcs.back().set_current_location(room_id);
 		}
 		for (auto& entry : metadata["chests"].array_view()) {
 			sf::Vector2<float> pos{};
@@ -114,6 +117,15 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
 			beds.push_back(entity::Bed(svc, pos, room_lookup));
+		}
+		for (auto& entry : metadata["scenery"]["basic"].array_view()) {
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
+			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
+			auto var = entry["variant"].as<int>();
+			auto lyr = entry["layer"].as<int>();
+			auto parallax = entry["parallax"].as<float>();
+			scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
 		}
 		for (auto& entry : metadata["scenery"]["vines"].array_view()) {
 			sf::Vector2<float> pos{};
@@ -225,7 +237,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	if (!soft) {
 		generate_layer_textures(svc);
-
 		player->map_reset();
 		transition.end();
 		loading.start(16);
@@ -280,10 +291,30 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			}
 		}
 	}
+
 	for (auto& grenade : active_grenades) {
 		for (auto& breakable : breakables) {
 			if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); }
 		}
+	}
+
+	// TODO: refactor this
+	if (svc.player_dat.piggy_id != 0) {
+		for (auto& n : npcs) {
+			if (n.get_id() == svc.player_dat.piggy_id) { n.hide(); }
+		}
+	}
+	if (svc.player_dat.drop_piggy) {
+		svc.player_dat.drop_piggy = false;
+		for (auto& n : npcs) {
+			if (n.get_id() == svc.player_dat.piggy_id) {
+				n.unhide();
+				n.set_position(player->collider.physics.position);
+				n.apply_force({32.f, -32.f});
+				n.set_current_location(room_id);
+			}
+		}
+		svc.player_dat.piggy_id = 0;
 	}
 
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
@@ -292,9 +323,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
 	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
+	std::erase_if(npcs, [](auto const& n) { return n.piggybacking(); });
 
 	manage_projectiles(svc);
-
+	svc.map_debug.active_projectiles = active_projectiles.size();
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
@@ -384,7 +416,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	auto& layers = svc.data.get_layers(room_id);
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
-		style_id = style_id == 20 ? native_style_id : 20;
+		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);
 		generate_layer_textures(svc);
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
@@ -498,6 +530,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam, real_dimensions);
+		for(auto& layer : scenery_layers) {
+			for (auto& piece : layer) { piece->render(svc, win, cam); }
+		}
 		for (int i = 0; i < 4; ++i) {
 			layer_textures.at(i).display();
 			layer_sprite.setTexture(layer_textures.at(i).getTexture());

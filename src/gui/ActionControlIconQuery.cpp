@@ -1,63 +1,37 @@
 #include "ActionControlIconQuery.hpp"
-
 #include "../service/ServiceProvider.hpp"
+
+static auto get_controller_lookup(EInputActionOrigin btn) -> int {
+	if (btn >= EInputActionOrigin::k_EInputActionOrigin_PS4_X && btn <= EInputActionOrigin::k_EInputActionOrigin_PS4_Reserved10) { return 50; }
+	if (btn >= EInputActionOrigin::k_EInputActionOrigin_XBoxOne_A && btn <= EInputActionOrigin::k_EInputActionOrigin_XBoxOne_Reserved10) { return 114; }
+	if (btn >= EInputActionOrigin::k_EInputActionOrigin_PS5_X && btn <= EInputActionOrigin::k_EInputActionOrigin_PS5_Reserved20) { return 258; }
+	return 0;
+}
+
+static auto get_icon_lookup(EInputActionOrigin btn) -> int {
+	switch (get_controller_lookup(btn)) {
+	case 50: return 0; break;
+	case 114: return 8; break;
+	case 258: return 4; break;
+	default: return 0;
+	}
+}
 
 sf::Vector2i get_key_coordinates(sf::Keyboard::Key key) {
 	auto keyi = static_cast<int>(key);
+	auto controller_section = 10;
 	if (keyi >= static_cast<int>(sf::Keyboard::Key::A) && keyi <= static_cast<int>(sf::Keyboard::Key::Pause)) {
-		return {keyi % 14, 3 + keyi / 14};
+		return {keyi % atlas_width, controller_section + keyi / atlas_width};
 	} else {
-		return {10, 3};
+		return {controller_section, 3};
 	}
 }
 
 sf::Vector2i get_controller_button_coordinates(EInputActionOrigin btn) {
-	switch (btn) {
-	case k_EInputActionOrigin_XBoxOne_A: return {0, 0};
-	case k_EInputActionOrigin_XBoxOne_B: return {1, 0};
-	case k_EInputActionOrigin_XBoxOne_X: return {2, 0};
-	case k_EInputActionOrigin_XBoxOne_Y: return {3, 0};
-	case k_EInputActionOrigin_XBoxOne_LeftBumper: return {0, 1};
-	case k_EInputActionOrigin_XBoxOne_RightBumper: return {1, 1};
-	case k_EInputActionOrigin_XBoxOne_Menu: return {12, 0}; // Start
-	case k_EInputActionOrigin_XBoxOne_View: return {13, 0}; // Back
-	case k_EInputActionOrigin_XBoxOne_LeftTrigger_Pull: return {2, 1};
-	case k_EInputActionOrigin_XBoxOne_LeftTrigger_Click: return {2, 1};
-	case k_EInputActionOrigin_XBoxOne_RightTrigger_Pull: return {3, 1};
-	case k_EInputActionOrigin_XBoxOne_RightTrigger_Click: return {3, 1};
-	case k_EInputActionOrigin_XBoxOne_LeftStick_Move: return {0, 2};
-	case k_EInputActionOrigin_XBoxOne_LeftStick_Click: return {12, 1};
-	case k_EInputActionOrigin_XBoxOne_DPad_North: return {6, 1};
-	case k_EInputActionOrigin_XBoxOne_DPad_South: return {8, 1};
-	case k_EInputActionOrigin_XBoxOne_DPad_West: return {5, 1};
-	case k_EInputActionOrigin_XBoxOne_DPad_East:
-		return {7, 1};
-		/*
-		case k_EInputActionOrigin_XBoxOne_LeftStick_DPadNorth: return {};
-		case k_EInputActionOrigin_XBoxOne_LeftStick_DPadSouth: return {};
-		case k_EInputActionOrigin_XBoxOne_LeftStick_DPadWest: return {};
-		case k_EInputActionOrigin_XBoxOne_LeftStick_DPadEast: return {};
-		case k_EInputActionOrigin_XBoxOne_RightStick_Move: return {};
-		case k_EInputActionOrigin_XBoxOne_RightStick_Click: return {};
-		case k_EInputActionOrigin_XBoxOne_RightStick_DPadNorth: return {};
-		case k_EInputActionOrigin_XBoxOne_RightStick_DPadSouth: return {};
-		case k_EInputActionOrigin_XBoxOne_RightStick_DPadWest: return {};
-		case k_EInputActionOrigin_XBoxOne_RightStick_DPadEast: return {};
-		case k_EInputActionOrigin_XBoxOne_DPad_Move: return {};
-		case k_EInputActionOrigin_XBoxOne_LeftGrip_Lower: return {};
-		case k_EInputActionOrigin_XBoxOne_LeftGrip_Upper: return {};
-		case k_EInputActionOrigin_XBoxOne_RightGrip_Lower: return {};
-		case k_EInputActionOrigin_XBoxOne_RightGrip_Upper: return {};
-		case k_EInputActionOrigin_XBoxOne_Share: return {}; // Xbox Series X controllers only
-		case k_EInputActionOrigin_XBoxOne_Reserved6: return {};
-		case k_EInputActionOrigin_XBoxOne_Reserved7: return {};
-		case k_EInputActionOrigin_XBoxOne_Reserved8: return {};
-		case k_EInputActionOrigin_XBoxOne_Reserved9: return {};
-		case k_EInputActionOrigin_XBoxOne_Reserved10: return {};
-		*/
-
-	default: return {13, 2};
-	}
+	auto controller_index = get_controller_lookup(btn);
+	auto buttoni = static_cast<int>(btn) - controller_index;
+	auto controller_section = get_icon_lookup(btn);
+	return {buttoni % atlas_width, controller_section + buttoni / atlas_width};
 }
 
 namespace gui {

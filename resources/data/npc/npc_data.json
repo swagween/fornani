@@ -30,8 +30,8 @@
       "upcharge": 0.2,
       "common_items": [ 65, 66, 23, 24, 25, 26, 27 ],
       "uncommon_items": [ 67, 22, 81 ],
-      "rare_items": [98]
-    } 
+      "rare_items": [ 98 ]
+    }
   },
   "minigus": {
     "dimensions": [ 24, 24 ]
@@ -79,6 +79,18 @@
     "animation": {
       "idle": [ 0, 6, 40, -1, false ],
       "turn": [ 6, 2, 40, 0, false ]
+    }
+  },
+  "justin": {
+    "dimensions": [ 18, 18 ],
+    "sprite_dimensions": [ 36, 36 ],
+    "spritesheet_dimensions": [ 3, 4 ],
+    "sprite_offset": [ 18, -18 ],
+    "sprite_origin": [ 18, 0 ],
+    "animation": {
+      "idle": [ 0, 4, 40, -1, false ],
+      "walk": [ 4, 4, 40, 0, false ],
+      "turn": [7, 1, 40, 0, false]
     }
   },
   "lady_nimbus": {

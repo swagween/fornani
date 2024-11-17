@@ -11,6 +11,7 @@
 #include "../entities/world/Vine.hpp"
 #include "../entities/world/Grass.hpp"
 #include "../graphics/Background.hpp"
+#include "../graphics/Scenery.hpp"
 #include "../graphics/Transition.hpp"
 #include "../graphics/Rain.hpp"
 #include "Grid.hpp"
@@ -142,6 +143,7 @@ class Map {
 	std::vector<entity::Effect> effects{};
 	std::vector<std::unique_ptr<entity::Vine>> vines{};
 	std::vector<std::unique_ptr<entity::Grass>> grass{};
+	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};

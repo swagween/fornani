@@ -232,8 +232,9 @@ void Collider::correct_x(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	auto xdist = predictive_horizontal.position.x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
-	physics.position.x += correction;
-	physics.zero_x();
+		physics.position.x += correction;
+		physics.zero_x();
+	
 }
 
 void Collider::correct_y(sf::Vector2<float> mtv) {
@@ -246,8 +247,9 @@ void Collider::correct_y(sf::Vector2<float> mtv) {
 	}
 	auto ydist = predictive_vertical.position.y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
-	physics.position.y += correction;
-	physics.zero_y();
+		physics.position.y += correction;
+		physics.zero_y();
+	
 }
 
 void Collider::correct_x_y(sf::Vector2<float> mtv) {
@@ -293,7 +295,14 @@ void Collider::resolve_depths() {
 
 void Collider::handle_platform_collision(Shape const& cell) {}
 
-void Collider::handle_collider_collision(Shape const& collider) {
+void Collider::handle_collider_collision(Shape const& collider, bool soft) {
+	if (soft) {
+		if (!vicinity.overlaps(collider)) { return; }
+		mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, collider);
+		if (bounding_box.SAT(collider)) { physics.position += mtvs.actual * 0.01f; }
+		sync_components();
+		return;
+	}
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	if (!vicinity.overlaps(collider)) { return; }
 	if (collision_depths) {

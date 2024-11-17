@@ -70,7 +70,7 @@
       "primary_key": "Z"
     },
     "menu_cancel": {
-      "primary_key": "Esc"
+      "primary_key": "X"
     },
     "menu_switch_left": {
       "primary_key": "A"

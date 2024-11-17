@@ -18,6 +18,8 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// circle.bounds.setRadius(16.f);
 	// circle.bounds.setOrigin({16.f, 16.f});
 
+	svc.menu_controller.reset_vendor_dialog();
+	open_vendor = false;
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
 		svc.stats.world.rooms_discovered.update();
@@ -70,6 +72,8 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 		sf::Vector2f player_pos = {ppx, ppy};
 		player->set_position(player_pos);
 	}
+
+	if (player->piggybacker) { player->piggybacker.value().set_position(player->collider.physics.position); }
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);

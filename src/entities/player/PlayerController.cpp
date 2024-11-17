@@ -91,7 +91,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& dash_right = false; // XXX svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
 
 	auto const& hook_held = false; // XXX svc.controller_map.label_to_control.at("secondary_action").held();
-	
 
 	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
 	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
@@ -147,14 +146,15 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		hook_flags.set(Hook::hook_released);
 	}
 
-	if (!restricted() && !shot()) {
+	if (!restricted() && (!shot() || !has_arsenal())) {
 		direction.lr = moving_left() ? dir::LR::left : direction.lr;
 		direction.lr = moving_right() ? dir::LR::right : direction.lr;
 		direction.und = dir::UND::neutral;
 		direction.und = up ? dir::UND::up : direction.und;
 		direction.und = down && !grounded() ? dir::UND::down : direction.und;
-	} else if ((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) {
+	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) && has_arsenal()){
 		key_map[ControllerInput::move_x] *= backwards_dampen;
+	}else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left))) {
 		key_map[ControllerInput::slide] = 0.f;
 	}
 
@@ -258,6 +258,8 @@ void PlayerController::nullify_dash() {
 	cancel_dash_request();
 	stop_dashing();
 }
+
+void PlayerController::set_arsenal(bool const has) { has ? hard_state.set(HardState::has_arsenal) : hard_state.reset(HardState::has_arsenal); }
 
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {

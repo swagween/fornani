@@ -1,9 +1,33 @@
 {
+  "justin1": {
+    "suite": [
+      [ "Barf! Barf!" ]
+    ],
+    "responses": [
+    ]
+  },
+  "justin2": {
+    "suite": [
+      [ "Barf! Barf!%0" ],
+      [ "Grrr...$3#3#2#", "Barf!!$200#24#1#", "Barf, barf!$201#24#1#" ],
+      [ "(Whine)" ]
+    ],
+    "responses": [
+      [ "(Take the dog)$3#24#2#%0", "(Leave the dog)%1" ]
+    ]
+  },
+  "justin3": {
+    "suite": [
+      [ "Barf!" ]
+    ],
+    "responses": [
+    ]
+  },
   "gobe1": {
     "suite": [
-      [ "...", "Huh?", "Oh! A lost girl wanders my way, hmm?", "I say, it shocks me a bit to see another friendly face around here. What's your story?%0" ],
-      [ "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep.", "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.", "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%0" ],
-      [ "A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start.", "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.", "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%1" ],
+      [ "...$3#3#1#", "Huh?", "Oh! A lost girl wanders my way, hmm?", "I say, it shocks me a bit to see another friendly face around here. What's your story?%0" ],
+      [ "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep.", "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.$3#24#1#", "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%0" ],
+      [ "A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start.", "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.$3#24#1#", "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%1" ],
       [ "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up.$9#1#1#^20" ]
     ],
     "responses": [
@@ -22,6 +46,18 @@
     ]
   },
   "gobe3": {
+    "suite": [
+      [ "Oh, Justin! My precious thing!$201#24#2#", "Well, you've really gone and done it, haven't you?$3#3#3#", "I say, I was beginning to fear for this lil' guy's life. I owe you a great debt, friend!$3#24#3#%0" ],
+      [ "Well, I've got to thank you somehow...", "Say, I'd be happy to trade some stuff with you. Normally I don't vend outside of Ashtown, but for you I'll make an exception!", "What do you say?%0" ],
+      [ "Here's what I've got.$70#1#1#" ],
+      [ "Alright then, I'll see ya around!" ]
+    ],
+    "responses": [
+      [ "Hey, don't mention it!%0" ],
+      [ "Sure, let's trade!%0", "Maybe later.%1" ]
+    ]
+  },
+  "gobe4": {
     "suite": [
       [ "Yes?%0" ],
       [ "Sure thing! Here's what I've picked up over the last few weeks...$70#1#1#" ],

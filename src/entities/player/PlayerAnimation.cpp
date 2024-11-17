@@ -326,10 +326,12 @@ fsm::StateFunction PlayerAnimation::update_sit() {
 	if (animation.complete()) {
 		if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
 	}
-	if (m_player->equipped_weapon().cooling_down()) {
-		state = AnimState::idle;
-		animation.set_params(idle);
-		return PA_BIND(update_idle);
+	if (m_player->arsenal && m_player->hotbar) {
+		if (m_player->equipped_weapon().cooling_down()) {
+			state = AnimState::idle;
+			animation.set_params(idle);
+			return PA_BIND(update_idle);
+		}
 	}
 	state = AnimState::sit;
 	return PA_BIND(update_sit);

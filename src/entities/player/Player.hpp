@@ -21,6 +21,7 @@
 #include "PlayerController.hpp"
 #include "Transponder.hpp"
 #include "VisitHistory.hpp"
+#include "Piggybacker.hpp"
 
 namespace gui {
 class Console;
@@ -113,6 +114,7 @@ class Player {
 	void flash_sprite();
 	void calculate_sprite_offset();
 	void set_idle();
+	void piggyback(int id);
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
@@ -216,6 +218,7 @@ class Player {
 	std::vector<sf::Vector2<float>> accumulated_forces{};
 	sf::Vector2<float> forced_momentum{};
 	std::optional<util::QuestCode> quest_code{};
+	std::optional<Piggybacker> piggybacker{};
 
 	automa::ServiceProvider* m_services;
 

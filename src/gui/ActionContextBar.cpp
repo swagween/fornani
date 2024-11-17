@@ -9,7 +9,7 @@
 
 namespace gui {
 
-ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) { text.setPosition(sf::Vector2f{0.f, svc.constants.f_screen_dimensions.y - 26.f}); }
+ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) { text.setPosition(sf::Vector2f{8.f, svc.constants.f_screen_dimensions.y - 32.f}); }
 
 void ActionContextBar::update(automa::ServiceProvider& svc) {
 	auto actions_queried_this_frame = svc.controller_map.actions_queried_this_update();
@@ -24,7 +24,7 @@ void ActionContextBar::update(automa::ServiceProvider& svc) {
 		text.add_sprite(sprite);
 
 		auto str = svc.controller_map.digital_action_name(action);
-		text.add_text(str, svc.text.fonts.title, 16, svc.styles.colors.dark_grey);
+		text.add_text(str, svc.text.fonts.basic, 16, svc.styles.colors.dark_grey);
 		text.add_spacing(15.f);
 	}
 }
