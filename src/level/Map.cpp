@@ -664,7 +664,7 @@ bool Map::check_cell_collision(shape::Collider& collider) {
 	return false;
 }
 
-bool Map::check_cell_collision_circle(shape::CircleCollider& collider) {
+bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms) {
 	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
@@ -677,6 +677,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider) {
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
+			if (cell.is_platform() && !collide_with_platforms) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return true; }
 		}

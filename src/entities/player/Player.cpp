@@ -634,6 +634,7 @@ void Player::update_invincibility() {
 }
 
 void Player::start_over() {
+	flags.state.reset(State::crushed);
 	health.reset();
 	controller.unrestrict();
 	health.invincibility.start(8);

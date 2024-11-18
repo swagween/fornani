@@ -427,7 +427,7 @@ void AssetManager::load_audio() {
 }
 
 sf::Texture& AssetManager::get_scenery(int style) {
-	if (!scenery_lookup.contains(style)) { return scenery_lookup.at(0); }
+	if (!scenery_lookup.contains(style)) { return scenery_lookup.at(1); }
 	return scenery_lookup.at(style);
 }
 

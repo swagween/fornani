@@ -169,7 +169,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	if (stats.transcendent) { return; }
 	collider.update(svc);
 	collider.set_position(physics.position);
-	if (map.check_cell_collision_circle(collider)) {
+	if (map.check_cell_collision_circle(collider, false)) {
 		if (!destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, destruction_point + physics.position, {}, effect_type(), 2));
 			if (direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }

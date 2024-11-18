@@ -466,7 +466,10 @@ void DataManager::activate_switch(int id) {
 	if (!switch_is_activated(id)) { activated_switches.push_back(id); }
 }
 
-void DataManager::destroy_block(int id) { destroyed_blocks.push_back(id); }
+void DataManager::destroy_block(int id) {
+	if (std::find(destroyed_blocks.begin(), destroyed_blocks.end(), id) != destroyed_blocks.end()) { return; }
+	destroyed_blocks.push_back(id);
+}
 
 void DataManager::destroy_inspectable(std::string_view id) { destroyed_inspectables.push_back(id.data()); }
 
