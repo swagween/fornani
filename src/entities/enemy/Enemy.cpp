@@ -208,13 +208,13 @@ void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& wi
 
 void Enemy::handle_player_collision(player::Player& player) const {
 	if (died()) { return; }
-	if (player_collision()) { player.collider.handle_collider_collision(collider.bounding_box); }
+	if (player_collision()) { player.collider.handle_collider_collision(collider); }
 	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
 		if (player.collider.hurtbox.overlaps(collider.bounding_box)) { player.hurt(attributes.base_damage); }
 	}
 }
 
-void Enemy::handle_collision(shape::Collider& other) { collider.handle_collider_collision(other.bounding_box, true); }
+void Enemy::handle_collision(shape::Collider& other) { collider.handle_collider_collision(other, true); }
 
 void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 

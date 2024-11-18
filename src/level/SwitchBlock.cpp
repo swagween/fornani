@@ -27,7 +27,7 @@ void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player&
 	previous_state = state;
 }
 
-void SwitchBlock::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider.bounding_box); }
+void SwitchBlock::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider); }
 
 void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam, bool background) {
 	if (state == SwitchBlockState::empty && !background) { return; }

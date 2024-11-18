@@ -51,29 +51,47 @@ void Vine::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		for (auto& ball : treasure_balls.value()) { ball->update(svc, chain.links.at(ball->get_index()).get_bob()); }
 		std::erase_if(treasure_balls.value(), [](auto const& b) { return b->destroyed(); });
 	}
+	if(spawnable_platforms) {
+		for (auto& plat : spawnable_platforms.value()) { plat->update(svc, player, chain.links.at(plat->get_index()).get_bob()); }
+	}
 }
 
 void Vine::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
-	if (!treasure_balls) { return; }
-	for (auto& ball : treasure_balls.value()) { ball->on_hit(svc, map, proj); }
+	if (treasure_balls) {
+		for (auto& ball : treasure_balls.value()) { ball->on_hit(svc, map, proj); }
+	}
+	if (spawnable_platforms) {
+		for (auto& plat : spawnable_platforms.value()) { plat->on_hit(svc, map, proj); }
+	}
 }
 
 void Vine::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (svc.greyblock_mode()) {
 		chain.render(svc, win, cam);
-		return;
 	}
 	if (treasure_balls) {
 		for (auto& ball : treasure_balls.value()) { ball->render(svc, win, cam); }
 	}
 	int ctr{0};
-	for (auto& link : chain.links) {
-		sprite.setTextureRect(sf::IntRect({0, encodings.at(ctr).at(0) * 32 * size}, {32 * size, 32 * size}));
-		sprite.setScale({static_cast<float>(encodings.at(ctr).at(1)), 1.f});
-		sprite.setPosition(util::round_to_even(link.get_bob()) - cam);
-		win.draw(sprite);
-		++ctr;
+	if (!svc.greyblock_mode()) {
+		for (auto& link : chain.links) {
+			sprite.setTextureRect(sf::IntRect({0, encodings.at(ctr).at(0) * 32 * size}, {32 * size, 32 * size}));
+			sprite.setScale({static_cast<float>(encodings.at(ctr).at(1)), 1.f});
+			sprite.setPosition(util::round_to_even(link.get_bob()) - cam);
+			win.draw(sprite);
+			++ctr;
+		}
 	}
+	if (spawnable_platforms) {
+		for (auto& plat : spawnable_platforms.value()) { plat->render(svc, win, cam); }
+	}
+}
+
+void Vine::add_platform(automa::ServiceProvider& svc, int link_index) { 
+	if (link_index > chain.links.size() || link_index < 0) { return; }
+	auto& link = chain.links.at(link_index);
+	if (!spawnable_platforms) { spawnable_platforms = std::vector<std::unique_ptr<SpawnablePlatform>>{}; }
+	spawnable_platforms.value().push_back(std::make_unique<SpawnablePlatform>(svc, link.get_anchor(), link_index));
 }
 
 } // namespace entity

@@ -20,7 +20,7 @@ class Projectile;
 
 namespace world {
 
-	enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side };
+enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side };
 enum class PlatformState { moving };
 
 class Platform : public shape::Collider {
@@ -60,6 +60,5 @@ class Platform : public shape::Collider {
 	int style{};
 	int state{};
 	sf::Vector2<int> offset{};
-
 };
 } // namespace world

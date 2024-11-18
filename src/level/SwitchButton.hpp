@@ -46,6 +46,7 @@ class SwitchButton {
 	fsm::StateFunction update_pressed();
 	fsm::StateFunction update_rising();
 	bool change_state(SwitchButtonState next, std::string_view tag);
+	shape::Collider collider{};
 
   private:
 	int id{};
@@ -55,7 +56,6 @@ class SwitchButton {
 	SwitchButtonState state{};
 	SwitchButtonState external{};
 	util::BitFlags<SwitchButtonState> triggers{};
-	shape::Collider collider{};
 	shape::Shape sensor{};
 	anim::AnimatedSprite sprite{};
 	sf::RectangleShape sensorbox{};

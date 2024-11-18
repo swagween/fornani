@@ -219,7 +219,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	secondary_collider.physics.position.y -= secondary_collider.dimensions.y;
 	secondary_collider.physics.position.x += Enemy::direction.lr == dir::LR::left ? 0 : Enemy::collider.dimensions.x - secondary_collider.dimensions.x;
 	secondary_collider.sync_components();
-	if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.collider.handle_collider_collision(secondary_collider.bounding_box); }
+	if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.collider.handle_collider_collision(secondary_collider); }
 	distant_range.set_position(Enemy::collider.bounding_box.position - (distant_range.dimensions * 0.5f) + (Enemy::collider.dimensions * 0.5f));
 	player.collider.bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
 	player.on_crush(map);

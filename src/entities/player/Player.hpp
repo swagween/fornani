@@ -243,7 +243,7 @@ class Player {
 	struct {
 		float stop{5.8f};
 		float wallslide{-1.5f};
-		float suspend{4.4f};
+		float suspend{0.9f};
 		float landed{0.4f};
 		float run{0.02f};
 		float quick_turn{0.9f};

@@ -63,7 +63,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	auto old_position = physics.position;
 	auto skip_value{16.f};
 	auto edge_start = 0.f;
-	player.collider.handle_collider_collision(bounding_box);
+	player.collider.handle_collider_collision(*this);
 	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
 	player.on_crush(map);
 	for (auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }

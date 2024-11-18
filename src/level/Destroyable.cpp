@@ -23,9 +23,9 @@ void Destroyable::update(automa::ServiceProvider& svc, Map& map, player::Player&
 		map.effects.push_back(entity::Effect(svc, static_cast<sf::Vector2<float>>(position) * svc.constants.cell_size, {}, 0, 0));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);
 	}
-	player.collider.handle_collider_collision(collider.bounding_box);
-	for (auto& e : map.enemy_catalog.enemies) { e->get_collider().handle_collider_collision(collider.bounding_box); }
-	for (auto& c : map.chests) { c.get_collider().handle_collider_collision(collider.bounding_box); }
+	player.collider.handle_collider_collision(collider);
+	for (auto& e : map.enemy_catalog.enemies) { e->get_collider().handle_collider_collision(collider); }
+	for (auto& c : map.chests) { c.get_collider().handle_collider_collision(collider); }
 }
 
 void Destroyable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

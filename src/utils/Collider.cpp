@@ -322,7 +322,7 @@ void Collider::handle_collider_collision(Shape const& collider, bool soft) {
 	bool corner_collision{true};
 	if (predictive_vertical.SAT(collider)) {
 		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
-		//if (abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
+		// if (abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
 		if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 			flags.state.set(State::just_landed);
 			flags.animation.set(Animation::just_landed);
@@ -365,6 +365,13 @@ void Collider::handle_collider_collision(Shape const& collider, bool soft) {
 	if (flags.external_state.test(ExternalState::vert_collider_collision)) { flags.external_state.reset(ExternalState::horiz_collider_collision); }
 	flags.movement.reset(Movement::dashing);
 	sync_components();
+}
+
+void Collider::handle_collider_collision(Collider const& collider, bool soft) {
+	if (collider.flags.general.test(General::top_only_collision)) {
+		if (jumpbox.position.y > collider.physics.position.y + 4 || physics.acceleration.y < 0.0f) { return; }
+	}
+	handle_collider_collision(collider.bounding_box, soft);
 }
 
 void Collider::update(automa::ServiceProvider& svc) {
@@ -455,6 +462,10 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	if (collision_depths) { collision_depths.value().render(bounding_box, win, cam); }
 
+}
+void Collider::set_position(sf::Vector2<float> pos) {
+	physics.position = pos;
+	sync_components();
 }
 void Collider::reset() { flags.state = {}; }
 void Collider::reset_ground_flags() {

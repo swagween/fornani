@@ -80,9 +80,10 @@
           7,
           8
         ],
-        "length": 8,
+        "length": 14,
         "size": 2,
-        "foreground": true
+        "foreground": true,
+        "platform": { "link_index": 7 }
       },
       {
         "position": [

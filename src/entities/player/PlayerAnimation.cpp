@@ -237,7 +237,6 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
-	if (change_state(AnimState::land, land)) { return PA_BIND(update_land); }
 	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
@@ -259,11 +258,12 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::land, land)) { return PA_BIND(update_land); }
 	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
-	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
-	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
-	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
-	if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
+	if(m_player->grounded()) {
+		state = AnimState::land;
+		animation.set_params(land);
+		return PA_BIND(update_land);
+	}
 
 	state = AnimState::fall;
 	return std::move(state_function);

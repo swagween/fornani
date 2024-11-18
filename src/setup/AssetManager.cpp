@@ -196,6 +196,7 @@ void AssetManager::import_textures() {
 	t_small_animators.loadFromFile(finder.resource_path + "/image/animators/small_animators.png");
 
 	t_treasure_ball.loadFromFile(finder.resource_path + "/image/entity/treasure_ball.png");
+	t_spawnable_platform.loadFromFile(finder.resource_path + "/image/entity/spawnable_platform.png");
 	t_huge_explosion.loadFromFile(finder.resource_path + "/image/entity/huge_explosion.png");
 	t_large_explosion.loadFromFile(finder.resource_path + "/image/entity/large_explosion.png");
 	t_small_explosion.loadFromFile(finder.resource_path + "/image/entity/small_explosion.png");

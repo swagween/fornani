@@ -68,10 +68,10 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}*/
 	}
 
-	player.collider.handle_collider_collision(collider.bounding_box);
+	player.collider.handle_collider_collision(collider);
 	for (auto& enemy : map.enemy_catalog.enemies) {
 		if (enemy->is_transcendent()) { continue; }
-		enemy->get_collider().handle_collider_collision(collider.bounding_box);
+		enemy->get_collider().handle_collider_collision(collider);
 		if (size == 1) {
 			collider.handle_collider_collision(enemy->get_collider().bounding_box);
 			collider.handle_collider_collision(enemy->get_secondary_collider().bounding_box);
@@ -111,7 +111,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	collider.physics.acceleration = {};
 }
 
-void Pushable::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider.bounding_box); }
+void Pushable::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider); }
 
 void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	snap = collider.snap_to_grid(1, 4.f, 2.f);

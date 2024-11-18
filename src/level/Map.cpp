@@ -134,6 +134,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
 			auto rev = static_cast<bool>(entry["reversed"].as_bool());
 			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
+			if (entry["platform"]) { vines.back()->add_platform(svc, entry["platform"]["link_index"].as<int>()); }
 		}
 		for (auto& entry : metadata["scenery"]["grass"].array_view()) {
 			sf::Vector2<float> pos{};

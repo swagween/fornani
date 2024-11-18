@@ -29,7 +29,7 @@ void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::
 
 void Spike::handle_collision(shape::Collider& other) const {
 	if (attributes.test(SpikeAttributes::no_collision)) { return; }
-	other.handle_collider_collision(collider.bounding_box);
+	other.handle_collider_collision(collider);
 }
 
 void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

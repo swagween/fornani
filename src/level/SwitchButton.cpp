@@ -92,7 +92,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	state_function = state_function();
 }
 
-void SwitchButton::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider.bounding_box); }
+void SwitchButton::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider); }
 
 void SwitchButton::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (svc.greyblock_mode()) {

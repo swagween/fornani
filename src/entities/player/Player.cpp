@@ -214,14 +214,10 @@ void Player::update_animation() {
 			handle_turning();
 		}
 	} else {
-		if (collider.physics.velocity.y > -thresholds.suspend && collider.physics.velocity.y < thresholds.suspend) { animation.state = AnimState::suspend; }
+		if (collider.physics.apparent_velocity().y > -thresholds.suspend && collider.physics.apparent_velocity().y < thresholds.suspend) { animation.state = AnimState::suspend; }
 	}
 
-	if (collider.physics.velocity.y > thresholds.suspend && !grounded()) { animation.state = AnimState::fall; }
-	if (collider.flags.animation.test(shape::Animation::just_landed)) {
-		collider.flags.animation.reset(shape::Animation::just_landed);
-		animation.state = AnimState::land;
-	}
+	if (collider.physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.state = AnimState::fall; }
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (controller.dashing() && controller.can_dash()) { animation.state = AnimState::dash; }
