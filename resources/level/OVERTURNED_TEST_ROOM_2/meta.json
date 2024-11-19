@@ -82,8 +82,8 @@
         ],
         "length": 14,
         "size": 2,
-        "foreground": true,
-        "platform": { "link_index": 7 }
+        "foreground": false,
+        "platform": { "link_index": 9 }
       },
       {
         "position": [

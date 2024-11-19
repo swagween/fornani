@@ -30,7 +30,6 @@ class SpawnablePlatform {
 	SpawnablePlatformState state{};
 	shape::Collider collider{};
 	int index{};
-	sf::Vector2<float> root{};
 	vfx::Gravitator gravitator{};
 	components::CircleSensor sensor{};
 	anim::AnimatedSprite sprite{};

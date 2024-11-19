@@ -104,7 +104,11 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
 	accumulated_forces.clear();
 	collider.physics.position += forced_momentum;
-	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { forced_momentum = {}; }
+	collider.physics.velocity += forced_acceleration;
+	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) {
+		forced_momentum = {}; }
+	auto switched = directions.movement.lr != controller.direction.lr;
+	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched) { forced_acceleration = {}; }
 
 	collider.update(*m_services);
 	hurtbox.set_position(collider.hurtbox.position - sf::Vector2<float>{0.f, 14.f});
@@ -214,7 +218,7 @@ void Player::update_animation() {
 			handle_turning();
 		}
 	} else {
-		if (collider.physics.apparent_velocity().y > -thresholds.suspend && collider.physics.apparent_velocity().y < thresholds.suspend) { animation.state = AnimState::suspend; }
+		if (collider.physics.apparent_velocity().y > -thresholds.suspend && collider.physics.apparent_velocity().y < thresholds.suspend && !controller.get_wallslide().is_wallsliding() && !controller.is_walljumping()) { animation.state = AnimState::suspend; }
 	}
 
 	if (collider.physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.state = AnimState::fall; }
@@ -373,6 +377,7 @@ void Player::jump(world::Map& map) {
 	if (controller.get_jump().began()) {
 		collider.flags.movement.set(shape::Movement::jumping);
 		animation.state = AnimState::rise;
+		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
 		if (m_services->ticker.every_x_ticks(20)) {
 			map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
 		}
@@ -398,7 +403,8 @@ void Player::jump(world::Map& map) {
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
 		collider.physics.velocity.y = 0.f;
 		animation.state = AnimState::rise;
-		m_services->soundboard.flags.player.set(audio::Player::jump);
+		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
+		controller.get_wallslide().is_wallsliding() ? m_services->soundboard.flags.player.set(audio::Player::walljump) : m_services->soundboard.flags.player.set(audio::Player::jump);
 		collider.flags.movement.set(shape::Movement::jumping);
 	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.apparent_velocity().y < 0.0f) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
@@ -471,6 +477,7 @@ void Player::freeze_position() {
 }
 
 void Player::update_direction() {
+	directions.movement.lr = collider.physics.apparent_velocity().x > 0.f ? dir::LR::right : dir::LR::left;
 	if (controller.facing_left()) {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
 	} else if (controller.facing_right()) {

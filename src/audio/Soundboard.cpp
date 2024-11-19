@@ -97,6 +97,14 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.player.test(Player::death)) { svc.assets.player_death.play(); }
 	if (flags.player.test(Player::shield_drop)) { randomize(svc, svc.assets.bubble, 0.2f, 60); }
 	if (flags.player.test(Player::slide)) { play_at_volume(svc.assets.slide, 30.f); }
+	if (flags.player.test(Player::walljump)) {
+		sounds.player.setBuffer(svc.assets.b_walljump);
+		sounds.player.play();
+	}
+	if (flags.player.test(Player::roll)) {
+		sounds.player.setBuffer(svc.assets.b_roll);
+		sounds.player.play();
+	}
 
 	// steps
 	if (flags.step.test(Step::basic)) { randomize(svc, svc.assets.step, 0.1f); }

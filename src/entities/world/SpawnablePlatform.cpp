@@ -1,6 +1,7 @@
 #include "SpawnablePlatform.hpp"
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
+#include "../../utils/Math.hpp"
 
 namespace entity {
 
@@ -12,9 +13,8 @@ SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<f
 	gravitator.set_position(position);
 	health.set_max(8.f);
 	sprite.set_origin({8.f, 8.f});
-	sensor.bounds.setRadius(32.f);
-	sensor.bounds.setOrigin({32.f, 32.f});
-	root = svc.random.random_vector_float(-16.f, 16.f);
+	sensor.bounds.setRadius(16.f);
+	sensor.bounds.setOrigin({16.f, 16.f});
 	sprite.push_params("dormant", {0, 1, 8, -1});
 	sprite.push_params("open", {1, 4, 28, -1});
 	sprite.set_params("dormant");
@@ -22,13 +22,13 @@ SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<f
 }
 
 void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<float> target) {
-	gravitator.set_target_position(target + root - collider.dimensions * 0.5f);
+	gravitator.set_target_position(target - collider.dimensions * 0.5f);
 	gravitator.update(svc);
 	collider.set_position(gravitator.position());
 	collider.update(svc);
 	sensor.set_position(gravitator.position() + collider.dimensions * 0.5f);
 	health.update();
-	sprite.update(gravitator.position());
+	sprite.update(util::round_to_even(gravitator.position() - sf::Vector2<float>{0.f, 4.f}));
 	if (state == SpawnablePlatformState::open) { player.collider.handle_collider_collision(collider); }
 }
 
@@ -50,8 +50,8 @@ void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 
 void SpawnablePlatform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (svc.greyblock_mode()) {
-		sensor.render(win, cam);
 		collider.render(win, cam);
+		sensor.render(win, cam);
 	} else {
 		sprite.render(svc, win, cam);
 	}

@@ -13,7 +13,7 @@ namespace player {
 
 class Player;
 
-enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, between_push, push, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, die, backflip, slide, get_up, roll };
+enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, between_push, push, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, walljump, die, backflip, slide, get_up, roll };
 enum class AnimTriggers { flip, end_death };
 int const rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
@@ -26,6 +26,7 @@ inline anim::Parameters shield{80, 3, 4 * rate, -1, true};
 inline anim::Parameters between_push{85, 1, 4 * rate, 0};
 inline anim::Parameters push{86, 4, 7 * rate, -1};
 inline anim::Parameters rise{40, 4, 6 * rate, 0};
+inline anim::Parameters walljump{40, 4, 6 * rate, 0};
 inline anim::Parameters suspend{30, 3, 7 * rate, -1};
 inline anim::Parameters fall{62, 4, 5 * rate, -1};
 inline anim::Parameters stop{74, 2, 4 * rate, 0};
@@ -51,6 +52,9 @@ class PlayerAnimation {
 	util::BitFlags<AnimTriggers> triggers{};
 	util::Counter idle_timer{};
 	util::Cooldown post_death{400};
+	struct {
+		util::Cooldown walljump{24};
+	} cooldowns{};
 
 	void update();
 	void start();
@@ -79,6 +83,7 @@ class PlayerAnimation {
 	fsm::StateFunction update_hurt();
 	fsm::StateFunction update_dash();
 	fsm::StateFunction update_wallslide();
+	fsm::StateFunction update_walljump();
 	fsm::StateFunction update_die();
 	fsm::StateFunction update_backflip();
 	fsm::StateFunction update_slide();

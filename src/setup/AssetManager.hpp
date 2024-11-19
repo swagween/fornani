@@ -244,6 +244,8 @@ class AssetManager {
 	sf::SoundBuffer landed_grass_buffer{};
 	sf::SoundBuffer hurt_buffer{};
 	sf::SoundBuffer slide_buffer{};
+	sf::SoundBuffer b_walljump{};
+	sf::SoundBuffer b_roll{};
 
 	sf::SoundBuffer tank_alert1_buffer{};
 	sf::SoundBuffer tank_alert2_buffer{};

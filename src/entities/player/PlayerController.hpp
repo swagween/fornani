@@ -24,7 +24,7 @@ constexpr static float backwards_dampen{0.5f};
 
 enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
 enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released, hold_left, hold_right, hold_up, hold_down };
-enum class MovementState { restricted, grounded, walking_autonomously };
+enum class MovementState { restricted, grounded, walking_autonomously, walljumping };
 enum class HardState { no_move, has_arsenal };
 
 enum class Hook { hook_released, hook_held };
@@ -48,12 +48,14 @@ class PlayerController {
 	void reset_dash_count();
 	void cancel_dash_request();
 	void dash();
+	void walljump();
 	void autonomous_walk();
 	void stop_walking_autonomously();
 	void set_shot(bool flag);
 	void prevent_movement();
 	void release_hook();
 	void nullify_dash();
+	void stop_walljumping();
 	void set_arsenal(bool const has);
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
@@ -67,6 +69,7 @@ class PlayerController {
 	[[nodiscard]] auto facing_right() const -> bool { return direction.lr == dir::LR::right; }
 	[[nodiscard]] auto restricted() const -> bool { return flags.test(MovementState::restricted); }
 	[[nodiscard]] auto grounded() const -> bool { return flags.test(MovementState::grounded); }
+	[[nodiscard]] auto is_walljumping() const -> bool { return flags.test(MovementState::walljumping); }
 	[[nodiscard]] auto walking_autonomously() const -> bool { return flags.test(MovementState::walking_autonomously); }
 	[[nodiscard]] auto dash_requested() const -> bool { return dash_request > -1; }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
@@ -81,7 +84,7 @@ class PlayerController {
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
 	[[nodiscard]] auto dashing() -> bool { return key_map[ControllerInput::dash] != 0.f; }
 	[[nodiscard]] auto can_dash() const -> bool { return dash_count == 0; }
-	[[nodiscard]] auto can_jump() const -> bool { return (flags.test(MovementState::grounded) || jump.coyote()) || jump.can_doublejump(); }
+	[[nodiscard]] auto can_jump() const -> bool { return (flags.test(MovementState::grounded) || jump.coyote()) || jump.can_doublejump() || wallslide.is_wallsliding(); }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
 	[[nodiscard]] auto transponder_skip() const -> bool { return transponder_flags.test(TransponderInput::skip); }
 	[[nodiscard]] auto transponder_skip_released() const -> bool { return transponder_flags.test(TransponderInput::skip_released); }

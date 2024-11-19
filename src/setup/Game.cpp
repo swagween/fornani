@@ -242,9 +242,15 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 					ImGui::Text("Coyote Time: %i", player.controller.get_jump().get_coyote());
 					ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
+					ImGui::Separator();
+					ImGui::Text("Jump");
+					ImGui::Separator();
 					ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
+					ImGui::Text("Can Jump? %s", player.controller.can_jump() ? "Yes" : "No");
 					ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
+					ImGui::Text("Jump Request: %i", player.controller.get_jump().get_request());
 					ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
+					ImGui::Text("Wallsliding? %s", player.controller.get_wallslide().is_wallsliding() ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("X Position: %.2f", player.collider.physics.position.x / 32.f);
 					ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / 32.f);
@@ -494,6 +500,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("dash...: %s", player.animation.state == player::AnimState::dash ? "flag set" : "");
 								ImGui::Text("sprint.: %s", player.animation.state == player::AnimState::sprint ? "flag set" : "");
 								ImGui::Text("wlslide: %s", player.animation.state == player::AnimState::wallslide ? "flag set" : "");
+								ImGui::Text("wljump.: %s", player.animation.state == player::AnimState::walljump ? "flag set" : "");
 								ImGui::Text("inspect: %s", player.animation.state == player::AnimState::inspect ? "flag set" : "");
 								ImGui::Text("die....: %s", player.animation.state == player::AnimState::die ? "flag set" : "");
 								ImGui::EndTabItem();

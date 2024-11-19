@@ -131,6 +131,7 @@ class Player {
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.categories.inventory.has_item(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
+	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
 
 	// moves
 	void jump(world::Map& map);
@@ -217,6 +218,7 @@ class Player {
 	Counters counters{};
 	std::vector<sf::Vector2<float>> accumulated_forces{};
 	sf::Vector2<float> forced_momentum{};
+	sf::Vector2<float> forced_acceleration{};
 	std::optional<util::QuestCode> quest_code{};
 	std::optional<Piggybacker> piggybacker{};
 
@@ -251,6 +253,7 @@ class Player {
 	struct {
 		dir::Direction left_squish{};
 		dir::Direction right_squish{};
+		dir::Direction movement{};
 	} directions{};
 };
 

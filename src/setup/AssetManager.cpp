@@ -275,6 +275,8 @@ void AssetManager::load_audio() {
 	jump.setBuffer(jump_buffer);
 	slide_buffer.loadFromFile(finder.resource_path + "/audio/sfx/slide.wav");
 	slide.setBuffer(slide_buffer);
+	b_walljump.loadFromFile(finder.resource_path + "/audio/sfx/walljump.wav");
+	b_roll.loadFromFile(finder.resource_path + "/audio/sfx/roll.wav");
 
 	shatter_buffer.loadFromFile(finder.resource_path + "/audio/sfx/shatter.wav");
 	shatter.setBuffer(shatter_buffer);

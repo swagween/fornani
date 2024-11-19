@@ -211,6 +211,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["player_data"]["abilities"] = wipe;
 	save["player_data"]["items"] = wipe;
 	if (player.catalog.categories.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
+	if (player.catalog.categories.abilities.has_ability(player::Abilities::wall_slide)) { save["player_data"]["abilities"].push_back("wallslide"); }
+	if (player.catalog.categories.abilities.has_ability(player::Abilities::double_jump)) { save["player_data"]["abilities"].push_back("doublejump"); }
 	for (auto& item : player.catalog.categories.inventory.items) {
 		dj::Json this_item{};
 		this_item["id"] = item.get_id();
@@ -328,7 +330,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	// load items and abilities
 	player.catalog.categories.abilities.clear();
 	player.catalog.categories.inventory.clear();
-	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as_string()); }
+	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as<int>()); }
 	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
 	// wardrobe

@@ -12,6 +12,7 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr) {
 }
 
 void PlayerAnimation::update() {
+	cooldowns.walljump.update();
 	animation.update();
 	state_function = state_function();
 	if (m_player->is_dead()) { state = AnimState::die; }
@@ -205,10 +206,10 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 
 fsm::StateFunction PlayerAnimation::update_rise() {
 	animation.label = "rise";
-	//if (animation.frame_timer.get_cooldown() == 2) { std::cout << m_player->collider.physics.acceleration.y << "\n"; }
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::backflip, backflip)) { return PA_BIND(update_backflip); }
+	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
@@ -419,7 +420,14 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 fsm::StateFunction PlayerAnimation::update_wallslide() {
 	animation.label = "wallslide";
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
-	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::walljump, walljump, true)) {
+		cooldowns.walljump.start();
+		return PA_BIND(update_walljump);
+	}
+	if (change_state(AnimState::rise, walljump, true)) {
+		cooldowns.walljump.start();
+		return PA_BIND(update_walljump);
+	}
 	if (change_state(AnimState::backflip, backflip)) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
@@ -432,6 +440,32 @@ fsm::StateFunction PlayerAnimation::update_wallslide() {
 
 	state = AnimState::wallslide;
 	return PA_BIND(update_wallslide);
+}
+
+fsm::StateFunction PlayerAnimation::update_walljump() {
+	animation.label = "walljump";
+	if (cooldowns.walljump.running()) {
+		auto sign = m_player->moving_left() ? -1.f : 1.f;
+		if (abs(m_player->collider.physics.apparent_velocity().x) < 0.01f) { sign = m_player->controller.facing_left() ? 1.f : -1.f; }
+		m_player->forced_acceleration = {0.8f * sign, 0.f};
+		m_player->controller.stop();
+	} else {
+		m_player->controller.stop_walljumping();
+	}
+	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
+	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
+	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
+	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
+	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
+	if (animation.complete()) {
+		state = AnimState::suspend;
+		animation.set_params(suspend);
+		return PA_BIND(update_suspend);
+	}
+	state = AnimState::walljump;
+	return PA_BIND(update_walljump);
 }
 
 fsm::StateFunction PlayerAnimation::update_die() {
@@ -584,7 +618,10 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	auto& controller = m_player->controller;
 	auto sign = m_player->controller.facing_left() ? -1.f: 1.f;
 	m_player->collider.physics.velocity.x = 60.f * sign;
-	if (!controller.roll.rolling()) { controller.roll.direction.lr = controller.direction.lr; }
+	if (!controller.roll.rolling()) {
+		controller.roll.direction.lr = controller.direction.lr;
+		m_player->m_services->soundboard.flags.player.set(audio::Player::roll);
+	}
 	controller.roll.roll();
 	if (controller.roll.direction.lr != controller.direction.lr) {
 		m_player->collider.physics.hard_stop_x();

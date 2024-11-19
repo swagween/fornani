@@ -164,7 +164,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
 
-	bool can_launch = !restricted() && flags.test(MovementState::grounded) && !jump.launched();
+	bool can_launch = !restricted() && (flags.test(MovementState::grounded) || wallslide.is_wallsliding()) && !jump.launched();
 	can_launch ? jump.states.set(JumpState::can_jump) : jump.states.reset(JumpState::can_jump);
 
 	if (jump_started) { jump.request_jump(); }
@@ -227,6 +227,8 @@ void PlayerController::cancel_dash_request() { dash_request = -1; }
 
 void PlayerController::dash() { dash_count = 1; }
 
+void PlayerController::walljump() { flags.set(MovementState::walljumping); }
+
 void PlayerController::autonomous_walk() {
 	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = 1.f : key_map[ControllerInput::move_x] = -1.f;
 	if (sprinting()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
@@ -258,6 +260,8 @@ void PlayerController::nullify_dash() {
 	cancel_dash_request();
 	stop_dashing();
 }
+
+void PlayerController::stop_walljumping() { flags.reset(MovementState::walljumping); }
 
 void PlayerController::set_arsenal(bool const has) { has ? hard_state.set(HardState::has_arsenal) : hard_state.reset(HardState::has_arsenal); }
 
