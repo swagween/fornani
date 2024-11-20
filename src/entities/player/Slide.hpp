@@ -25,7 +25,8 @@ class Slide {
 	void break_out() { flags.set(SlideFlags::break_out); }
 	void update();
 	void calculate();
-	[[nodiscard]] auto going() const -> bool { return begin_slide.halfway(); }
+	void slide();
+	[[nodiscard]] auto going() const -> bool { return begin_slide.get_cooldown() == begin_slide.get_native_time() - 1; }
 	[[nodiscard]] auto can_exit() const -> bool { return begin_slide.is_complete(); }
 	[[nodiscard]] auto can_begin() const -> bool { return post_slide.is_complete(); }
 	[[nodiscard]] auto exhausted() const -> bool { return get_dampen() < slowness_limit; }
@@ -36,7 +37,7 @@ class Slide {
 	dir::Direction direction{};
 
   private:
-	util::Cooldown begin_slide{32};
+	util::Cooldown begin_slide{128};
 	util::Cooldown friction{256};
 	util::Cooldown post_slide{48};
 	float speed{4.5f};

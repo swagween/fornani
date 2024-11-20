@@ -62,6 +62,7 @@ enum LAYER_ORDER {
 };
 
 enum class LevelState { game_over, camera_shake, spawn_enemy };
+enum class MapState { unobscure };
 
 // a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
@@ -105,7 +106,7 @@ class Map {
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
-	bool check_cell_collision(shape::Collider& collider);
+	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
@@ -175,6 +176,7 @@ class Map {
 	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};
 	sf::Sprite tile_sprite{};
 	sf::Sprite layer_sprite{};
+	sf::Sprite obscuring_sprite{};
 	std::string_view style_label{};
 
 	int room_lookup{};
@@ -199,6 +201,9 @@ class Map {
 	util::Cooldown loading{}; // shouldn't exist
 	util::Cooldown spawning{2};
 	util::Counter spawn_counter{};
+	struct {
+		util::Cooldown fade_obscured{128};
+	} cooldowns{};
 
 	// debug
 	util::Stopwatch stopwatch{};
@@ -208,6 +213,7 @@ class Map {
 	int abyss_distance{400};
 	struct {
 		util::BitFlags<LevelState> state{};
+		util::BitFlags<MapState> map_state{};
 	} flags{};
 };
 

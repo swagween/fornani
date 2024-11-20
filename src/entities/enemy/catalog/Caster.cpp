@@ -102,8 +102,9 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
 	secondary_collider.sync_components();
 
-	if(flags.state.test(StateFlags::hurt)) {
+	if(flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.demon.set(audio::Demon::hurt);
+		sound.hurt_sound_cooldown.start();
 		hurt_effect.start();
 		flags.state.reset(StateFlags::hurt);
 		cooldowns.pre_invisibility.start();

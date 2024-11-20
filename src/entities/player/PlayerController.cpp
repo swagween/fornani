@@ -80,6 +80,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& arms_switch_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_left).triggered;
 	auto const& arms_switch_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_right).triggered;
 
+	auto const& left_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).released;
+	auto const& right_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).released;
 	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
 	auto const& down_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).triggered;
 
@@ -120,7 +122,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	slide.update();
 	key_map[ControllerInput::slide] = 0.f;
 	if (moving() && down && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
-	if ((down_released || !moving()) && !roll.rolling()) { slide.break_out(); }
+	if ((down_released || (left_released || right_released)) && !roll.rolling()) { slide.break_out(); }
 
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }

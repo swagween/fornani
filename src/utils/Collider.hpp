@@ -166,7 +166,7 @@ class Collider {
 		sf::Color local{};
 	} colors{};
 
-	float vert_threshold{0.1f}; // for landing
+	float vert_threshold{0.6f}; // for landing
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{1.0f};
 	float depth_buffer{1.0f};

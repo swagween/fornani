@@ -273,6 +273,16 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		player->freeze_position();
 	}
 
+	// hidden areas
+	flags.map_state.test(MapState::unobscure) ? cooldowns.fade_obscured.update() : cooldowns.fade_obscured.reverse();
+	if (check_cell_collision(player->collider, true)) {
+		if (!flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.start(); }
+		flags.map_state.set(MapState::unobscure);
+	} else {
+		if (flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.cancel(); }
+		flags.map_state.reset(MapState::unobscure);
+	}
+
 	for (auto& grenade : active_grenades) {
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(grenade.bounding_box)) {
 			player->controller.get_shield().damage();
@@ -462,7 +472,14 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		layer_textures.at(i).display();
 		layer_sprite.setTexture(layer_textures.at(i).getTexture());
 		layer_sprite.setPosition(-cam);
-		win.draw(layer_sprite);
+		if (i == 7) {
+			obscuring_sprite = layer_sprite;
+			sf::Uint8 alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
+			obscuring_sprite.setColor(sf::Color{255, 255, 255, alpha});
+			win.draw(obscuring_sprite);
+		} else {
+			win.draw(layer_sprite);
+		}
 	}
 
 	//foreground enemies
@@ -645,8 +662,8 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	}
 }
 
-bool Map::check_cell_collision(shape::Collider& collider) {
-	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
+	auto& grid = foreground ? get_layers().at(7).grid : get_layers().at(world::MIDDLEGROUND).grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));

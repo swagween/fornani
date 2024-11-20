@@ -43,13 +43,14 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 		if (svc.random.percent_chance(8) && !caution.danger()) { state = TankState::run; }
 	}
 
-	if(flags.state.test(StateFlags::hurt)) {
+	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		if (m_services->random.percent_chance(50)) {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_1);
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_2);
 		}
 		hurt_effect.start(128);
+		sound.hurt_sound_cooldown.start();
 		flags.state.reset(StateFlags::hurt);
 	}
 

@@ -12,6 +12,7 @@
 #include "../packages/Shockwave.hpp"
 #include "../packages/FloatingPart.hpp"
 #include "../player/Indicator.hpp"
+#include "../../audio/Soundboard.hpp"
 #include <string_view>
 #include <iostream>
 
@@ -127,9 +128,9 @@ class Enemy : public entity::Entity {
 	} visual{};
 
 	struct {
-		sf::Sound hit{};
-		sf::Sound inv_hit{};
-	} sounds{};
+		audio::Enemy hit_flag{};
+		util::Cooldown hurt_sound_cooldown{24};
+	} sound{};
 
 	// shake
 	float energy{};

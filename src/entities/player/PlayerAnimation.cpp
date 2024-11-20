@@ -58,7 +58,7 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 	animation.label = "sprint";
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
-	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
+	if (change_state(AnimState::slide, slide, true)) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
 	if (change_state(AnimState::stop, stop)) { return PA_BIND(update_stop); }
@@ -526,7 +526,10 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 		slider.start();
 		slider.direction = m_player->controller.direction;
 	}
-	if (slider.going()) { m_player->m_services->soundboard.flags.player.set(audio::Player::slide); }
+	if (animation.just_started()) {
+		m_player->m_services->soundboard.flags.player.set(audio::Player::slide);
+		slider.slide();
+	}
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, rise)) {
 		m_player->controller.get_slide().end();
@@ -579,6 +582,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 			m_player->controller.get_slide().end();
 			state = AnimState::get_up;
 			animation.set_params(get_up);
+			std::cout << "exited\n";
 			return PA_BIND(update_get_up);
 		}
 	}

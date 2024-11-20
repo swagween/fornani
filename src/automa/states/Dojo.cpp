@@ -260,7 +260,6 @@ void Dojo::toggle_pause_menu(ServiceProvider& svc) {
 	} else {
 		pause_window.open();
 		svc.soundboard.flags.console.set(audio::Console::menu_open);
-		svc.soundboard.play_sounds(svc);
 	}
 	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();
 }

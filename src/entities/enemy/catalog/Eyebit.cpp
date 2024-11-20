@@ -27,7 +27,7 @@ void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	state_function = state_function();
 
-	if (player.collider.bounding_box.overlaps(physical.hostile_range)) { seeker.set_force(0.003f); }
+	if (player.collider.bounding_box.overlaps(physical.hostile_range)) { seeker.set_force(0.002f); }
 	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
 		seeker.update(svc);
 		seeker.seek_player(player);

@@ -3,25 +3,27 @@
 #include "../service/ServiceProvider.hpp"
 
 namespace audio {
-
+Soundboard::Soundboard() {
+	for (int i{0}; i < 64; ++i) { sound_pool.push_back(sf::Sound()); }
+}
 void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 
 	// menu
-	if (flags.menu.test(Menu::forward_switch)) { svc.assets.menu_next.play(); }
-	if (flags.menu.test(Menu::backward_switch)) { svc.assets.menu_back.play(); }
-	if (flags.menu.test(Menu::select)) { svc.assets.click.play(); }
-	if (flags.menu.test(Menu::shift)) { svc.assets.menu_shift.play(); }
+	if (flags.menu.test(Menu::forward_switch)) { play(svc, svc.assets.menu_next_buffer); }
+	if (flags.menu.test(Menu::backward_switch)) { play(svc, svc.assets.menu_back_buffer); }
+	if (flags.menu.test(Menu::select)) { play(svc, svc.assets.click_buffer); }
+	if (flags.menu.test(Menu::shift)) { play(svc, svc.assets.menu_shift_buffer); }
 
 	// console
-	if (flags.console.test(Console::select)) { svc.assets.click.play(); }
-	if (flags.console.test(Console::done)) { svc.assets.menu_back.play(); }
-	if (flags.console.test(Console::next)) { svc.assets.menu_next.play(); }
-	if (flags.console.test(Console::shift)) { svc.assets.menu_shift.play(); }
-	if (flags.console.test(Console::menu_open)) { svc.assets.menu_open.play(); }
-	if (flags.console.test(Console::speech)) { repeat(svc, svc.assets.menu_shift, 16, 0.2f); }
+	if (flags.console.test(Console::select)) { play(svc, svc.assets.click_buffer); }
+	if (flags.console.test(Console::done)) { play(svc, svc.assets.menu_back_buffer); }
+	if (flags.console.test(Console::next)) { play(svc, svc.assets.menu_next_buffer); }
+	if (flags.console.test(Console::shift)) { play(svc, svc.assets.menu_shift_buffer); }
+	if (flags.console.test(Console::menu_open)) { play(svc, svc.assets.menu_open_buffer); }
+	if (flags.console.test(Console::speech)) { play(svc, svc.assets.menu_shift_buffer, 0.2f, 100.f, 16); }
 
-	//transmission
-	if (flags.transmission.test(Transmission::statics)) { svc.assets.small_crash.play(); }
+	// transmission
+	if (flags.transmission.test(Transmission::statics)) { play(svc, svc.assets.b_small_crash); }
 
 	// always play console and menu sounds
 	if (status == SoundboardState::off) {
@@ -31,16 +33,19 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	}
 
 	// world
-	if (flags.world.test(World::load)) { play_at_volume(svc.assets.load, 60); }
-	if (flags.world.test(World::save)) { svc.assets.save.play(); }
-	if (flags.world.test(World::soft_sparkle)) { svc.assets.soft_sparkle.play(); }
-	if (flags.world.test(World::soft_sparkle_high)) { svc.assets.soft_sparkle_high.play(); }
-	if (flags.world.test(World::chest)) { svc.assets.chest.play(); }
-	if (flags.world.test(World::breakable_shatter)) { svc.assets.breakable_shatter.play(); }
-	if (flags.world.test(World::breakable_hit)) { randomize(svc, svc.assets.breakable_hit, 0.1f); }
+	if (flags.world.test(World::load)) { play(svc, svc.assets.load_buffer, 0.f, 40.f); }
+	if (flags.world.test(World::save)) { play(svc, svc.assets.save_buffer);
+	}
+	if (flags.world.test(World::soft_sparkle)) { play(svc, svc.assets.soft_sparkle_buffer);
+	}
+	if (flags.world.test(World::soft_sparkle_high)) { play(svc, svc.assets.soft_sparkle_high_buffer);
+	}
+	if (flags.world.test(World::chest)) { play(svc, svc.assets.chest_buffer); }
+	if (flags.world.test(World::breakable_shatter)) { play(svc, svc.assets.shatter_buffer); }
+	if (flags.world.test(World::breakable_hit)) { play(svc, svc.assets.b_breakable_hit, 0.1f); }
 	cooldowns.hard_hit.update();
 	if (flags.world.test(World::hard_hit) && !cooldowns.hard_hit.running()) {
-		randomize(svc, svc.assets.hard_hit, 0.1f, 60.f);
+		play(svc, svc.assets.b_enemy_hit_inv, 0.1f, 60.f);
 		cooldowns.hard_hit.start();
 	}
 
@@ -50,85 +55,85 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 		return;
 	} // exit early if not in-game
 
-	if (flags.world.test(World::wall_hit)) { randomize(svc, svc.assets.wall_hit, 0.1f); }
-	if (flags.world.test(World::thud)) { randomize(svc, svc.assets.thud, 0.1f); }
-	if (flags.world.test(World::small_crash)) { randomize(svc, svc.assets.small_crash, 0.1f); }
-	if (flags.world.test(World::switch_press)) { svc.assets.switch_press.play(); }
-	if (flags.world.test(World::block_toggle)) { svc.assets.block_toggle.play(); }
-	if (flags.world.test(World::door_open)) { svc.assets.door_open.play(); }
-	if (flags.world.test(World::door_unlock)) { svc.assets.door_unlock.play(); }
-	if (flags.world.test(World::pushable)) { repeat(svc, svc.assets.heavy_move, 80); }
+	if (flags.world.test(World::wall_hit)) { play(svc, svc.assets.b_wall_hit, 0.1f); }
+	if (flags.world.test(World::thud)) { play(svc, svc.assets.b_thud, 0.1f); }
+	if (flags.world.test(World::small_crash)) { play(svc, svc.assets.b_small_crash, 0.1f); }
+	if (flags.world.test(World::switch_press)) { play(svc, svc.assets.b_switch_press);
+	}
+	if (flags.world.test(World::block_toggle)) { play(svc, svc.assets.b_block_toggle); }
+	if (flags.world.test(World::door_open)) { play(svc, svc.assets.b_door_open); }
+	if (flags.world.test(World::door_unlock)) { play(svc, svc.assets.b_door_unlock); }
+	if (flags.world.test(World::pushable)) { play(svc, svc.assets.b_heavy_move, 0.f, 100.f, 80); }
 
-	//frdog
-	if (flags.frdog.test(Frdog::death)) { svc.assets.enem_death_1.play(); }
-	//tank
-	if (flags.tank.test(Tank::alert_1)) { svc.assets.tank_alert_1.play(); }
-	if (flags.tank.test(Tank::alert_2)) { svc.assets.tank_alert_2.play(); }
-	if (flags.tank.test(Tank::hurt_1)) { svc.assets.tank_hurt_1.play(); }
-	if (flags.tank.test(Tank::hurt_2)) { play_at_volume(svc.assets.tank_hurt_2, 50); }
-	if (flags.tank.test(Tank::death)) { svc.assets.tank_death.play(); }
+	// frdog
+	if (flags.frdog.test(Frdog::death)) { play(svc, svc.assets.enem_death_1_buffer); }
+	// tank
+	if (flags.tank.test(Tank::alert_1)) { play(svc, svc.assets.tank_alert1_buffer); }
+	if (flags.tank.test(Tank::alert_2)) { play(svc, svc.assets.tank_alert2_buffer); }
+	if (flags.tank.test(Tank::hurt_1)) { play(svc, svc.assets.tank_hurt1_buffer); }
+	if (flags.tank.test(Tank::hurt_2)) { play(svc, svc.assets.tank_hurt2_buffer, 0.f, 50.f);
+	}
+	if (flags.tank.test(Tank::death)) { play(svc, svc.assets.tank_death_buffer); }
 	// thug
-	if (flags.thug.test(Thug::alert_1)) { svc.assets.tank_alert_1.play(); }
-	if (flags.thug.test(Thug::alert_2)) { svc.assets.tank_alert_2.play(); }
-	if (flags.thug.test(Thug::hurt_1)) { svc.assets.tank_hurt_1.play(); }
-	if (flags.thug.test(Thug::hurt_2)) { play_at_volume(svc.assets.tank_hurt_2, 50); }
-	if (flags.thug.test(Thug::death)) { svc.assets.tank_death.play(); }
+	if (flags.thug.test(Thug::alert_1)) { play(svc, svc.assets.tank_alert1_buffer); }
+	if (flags.thug.test(Thug::alert_2)) { play(svc, svc.assets.tank_alert2_buffer); }
+	if (flags.thug.test(Thug::hurt_1)) { play(svc, svc.assets.tank_hurt1_buffer); }
+	if (flags.thug.test(Thug::hurt_2)) { play(svc, svc.assets.tank_hurt2_buffer, 0.f, 50.f);
+	}
+	if (flags.thug.test(Thug::death)) { play(svc, svc.assets.tank_death_buffer); }
 
-	//demon
-	if (flags.demon.test(Demon::hurt)) { svc.assets.enem_hit.play(); }
-	if (flags.demon.test(Demon::death)) { svc.assets.enem_death_1.play(); }
-	if (flags.demon.test(Demon::snort)) { randomize(svc, svc.assets.snort, 0.2f); }
+	// demon
+	if (flags.demon.test(Demon::hurt)) { play(svc, svc.assets.enem_hit_buffer); }
+	if (flags.demon.test(Demon::death)) { play(svc, svc.assets.enem_death_1_buffer); }
+	if (flags.demon.test(Demon::snort)) { play(svc, svc.assets.b_demon_snort, 0.2f); }
 
-	//item
-	if (flags.item.test(Item::heal)) { svc.assets.heal.play(); }
-	if (flags.item.test(Item::orb_low)) { svc.assets.orb_1.play(); }
-	if (flags.item.test(Item::orb_medium)) { svc.assets.orb_2.play(); }
-	if (flags.item.test(Item::orb_high)) { svc.assets.orb_3.play(); }
-	if (flags.item.test(Item::orb_max)) { svc.assets.orb_4.play(); }
-	if (flags.item.test(Item::health_increase)) { svc.assets.health_increase.play(); }
-	if (flags.item.test(Item::gem)) { svc.assets.gem_get.play(); }
-	if (flags.item.test(Item::get)) { svc.assets.gem_get.play(); }
-	if (flags.item.test(Item::equip)) { svc.assets.arms_switch.play(); }
+	// general enemy
+	if (flags.enemy.test(Enemy::hit_low)) { play(svc, svc.assets.b_enemy_hit_low); }
+	if (flags.enemy.test(Enemy::hit_medium)) { play(svc, svc.assets.b_enemy_hit_medium); }
+	if (flags.enemy.test(Enemy::hit_high)) { play(svc, svc.assets.b_enemy_hit_high); }
+	if (flags.enemy.test(Enemy::hit_squeak)) { play(svc, svc.assets.b_enemy_hit_squeak); }
+
+	// item
+	if (flags.item.test(Item::heal)) { play(svc, svc.assets.heal_buffer); }
+	if (flags.item.test(Item::orb_low)) { play(svc, svc.assets.orb_1_buffer); }
+	if (flags.item.test(Item::orb_medium)) { play(svc, svc.assets.orb_2_buffer); }
+	if (flags.item.test(Item::orb_high)) { play(svc, svc.assets.orb_3_buffer); }
+	if (flags.item.test(Item::orb_max)) { play(svc, svc.assets.orb_4_buffer); }
+	if (flags.item.test(Item::health_increase)) { play(svc, svc.assets.b_health_increase); }
+	if (flags.item.test(Item::gem)) { play(svc, svc.assets.b_upward_get); }
+	if (flags.item.test(Item::get)) { play(svc, svc.assets.b_upward_get); }
+	if (flags.item.test(Item::equip)) { play(svc, svc.assets.arms_switch_buffer); }
 
 	// player
-	if (flags.player.test(Player::jump)) { randomize(svc, svc.assets.jump, 0.1f); }
-	if (flags.player.test(Player::arms_switch)) { svc.assets.arms_switch.play(); }
-	if (flags.player.test(Player::hurt)) { svc.assets.hurt.play(); }
-	if (flags.player.test(Player::death)) { svc.assets.player_death.play(); }
-	if (flags.player.test(Player::shield_drop)) { randomize(svc, svc.assets.bubble, 0.2f, 60); }
-	if (flags.player.test(Player::slide)) { play_at_volume(svc.assets.slide, 30.f); }
-	if (flags.player.test(Player::walljump)) {
-		sounds.player.setBuffer(svc.assets.b_walljump);
-		sounds.player.play();
-	}
-	if (flags.player.test(Player::roll)) {
-		sounds.player.setBuffer(svc.assets.b_roll);
-		sounds.player.play();
-	}
+	if (flags.player.test(Player::jump)) { play(svc, svc.assets.jump_buffer, 0.1f); }
+	if (flags.player.test(Player::arms_switch)) { play(svc, svc.assets.arms_switch_buffer); }
+	if (flags.player.test(Player::hurt)) { play(svc, svc.assets.hurt_buffer); }
+	if (flags.player.test(Player::death)) { play(svc, svc.assets.player_death_buffer); }
+	if (flags.player.test(Player::shield_drop)) { play(svc, svc.assets.bubble_buffer, 0.2f, 60.f); }
+	if (flags.player.test(Player::slide)) { play(svc, svc.assets.slide_buffer); }
+	if (flags.player.test(Player::walljump)) { play(svc, svc.assets.b_walljump); }
+	if (flags.player.test(Player::roll)) { play(svc, svc.assets.b_roll); }
 
 	// steps
-	if (flags.step.test(Step::basic)) { randomize(svc, svc.assets.step, 0.1f); }
-	if (flags.step.test(Step::grass)) { randomize(svc, svc.assets.grass_step, 0.3f); }
-	if (flags.land.test(Step::basic)) { svc.assets.landed.play(); }
-	if (flags.land.test(Step::grass)) { svc.assets.landed_grass.play(); }
+	if (flags.step.test(Step::basic)) { play(svc, svc.assets.step_buffer, 0.1f); }
+	if (flags.step.test(Step::grass)) { play(svc, svc.assets.grass_step_buffer, 0.3f); }
+	if (flags.land.test(Step::basic)) { play(svc, svc.assets.landed_buffer); }
+	if (flags.land.test(Step::grass)) { play(svc, svc.assets.landed_grass_buffer); }
 
 	// gun
-	if (flags.weapon.test(Weapon::bryns_gun)) { svc.assets.bg_shot.play(); }
-	if (flags.weapon.test(Weapon::plasmer)) { svc.assets.plasmer_shot.play(); }
-	if (flags.weapon.test(Weapon::skycorps_ar)) { svc.assets.skycorps_ar_shot.play(); }
-	if (flags.weapon.test(Weapon::clover)) { repeat(svc, svc.assets.pop_mid, 2, 0.3f); }
-	if (flags.weapon.test(Weapon::nova)) { svc.assets.pop_mid.play(); }
-	if (flags.weapon.test(Weapon::indie)) { svc.assets.nova_shot.play(); }
-	if (flags.weapon.test(Weapon::staple)) { svc.assets.staple.play(); }
-	if (flags.weapon.test(Weapon::gnat)) { repeat(svc, svc.assets.gnat, 2, 0.1f); }
-	if (flags.weapon.test(Weapon::tomahawk)) { repeat(svc, svc.assets.tomahawk_flight, -1, 0.1f); }
-	if (flags.weapon.test(Weapon::tomahawk_catch)) {
-		svc.assets.tomahawk_catch.play();
-		svc.assets.tomahawk_flight.stop();
-	}
-	if (flags.weapon.test(Weapon::hook_probe)) { svc.assets.sharp_click.play(); }
-	if (flags.weapon.test(Weapon::energy_ball)) { randomize(svc, svc.assets.energy_shot, 0.1f); }
-	if (flags.weapon.test(Weapon::wasp)) { svc.assets.wasp.play(); }
+	if (flags.weapon.test(Weapon::bryns_gun)) { play(svc, svc.assets.bg_shot_buffer); }
+	if (flags.weapon.test(Weapon::plasmer)) { play(svc, svc.assets.plasmer_shot_buffer); }
+	if (flags.weapon.test(Weapon::skycorps_ar)) { play(svc, svc.assets.skycorps_ar_buffer); }
+	if (flags.weapon.test(Weapon::clover)) { play(svc, svc.assets.pop_mid_buffer, 0.3f, 100.f, 0); }
+	if (flags.weapon.test(Weapon::nova)) { play(svc, svc.assets.pop_mid_buffer); }
+	if (flags.weapon.test(Weapon::indie)) { play(svc, svc.assets.b_nova); }
+	if (flags.weapon.test(Weapon::staple)) { play(svc, svc.assets.b_staple); }
+	if (flags.weapon.test(Weapon::gnat)) { play(svc, svc.assets.b_gnat, 0.1f, 100.f, 2); }
+	if (flags.weapon.test(Weapon::tomahawk)) { play(svc, svc.assets.tomahawk_flight_buffer, 0.05f, 100.f, 32); }
+	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(svc, svc.assets.tomahawk_catch_buffer); }
+	if (flags.weapon.test(Weapon::hook_probe)) { play(svc, svc.assets.sharp_click_buffer); }
+	if (flags.weapon.test(Weapon::energy_ball)) { play(svc, svc.assets.b_energy_shot, 0.1f); }
+	if (flags.weapon.test(Weapon::wasp)) { play(svc, svc.assets.b_wasp); }
 
 	// reset flags
 	flags = {};
@@ -137,16 +142,20 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	proximities = {};
 }
 
+void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset, float vol, int frequency) {
+	auto iterator = std::ranges::find_if_not(sound_pool, [](auto& s) { return s.getStatus() == sf::Sound::Status::Playing; });
+	if (iterator == std::ranges::end(sound_pool)) { return; }
+	auto& target = *iterator;
+	target.setBuffer(buffer);
+	frequency != 0 ? repeat(svc, target, frequency, random_pitch_offset) : randomize(svc, target, random_pitch_offset, vol);
+}
+
 void Soundboard::repeat(automa::ServiceProvider& svc, sf::Sound& sound, int frequency, float random_pitch_offset) {
-	if (frequency == -1) {
-		if (sound.getStatus() != sf::SoundSource::Playing) { randomize(svc, sound, random_pitch_offset); }
-		return;
-	}
 	if (svc.ticker.every_x_ticks(frequency)) { randomize(svc, sound, random_pitch_offset); }
 }
 
 void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset, float vol) {
-	float random_pitch = svc.random.random_range_float(-random_pitch_offset, random_pitch_offset);
+	auto random_pitch = random_pitch_offset == 0.f ? 0.f : svc.random.random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.setPitch(1.f + random_pitch);
 	sound.setVolume(vol);
 	sound.play();
@@ -155,6 +164,10 @@ void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float
 void Soundboard::play_at_volume(sf::Sound& sound, float vol) {
 	sound.setVolume(vol);
 	sound.play();
+}
+
+void Soundboard::set_available_sound(sf::SoundBuffer& buffer) {
+	
 }
 
 void Soundboard::play_step(int tile_value, int style_id, bool land) {
@@ -168,6 +181,14 @@ void Soundboard::play_step(int tile_value, int style_id, bool land) {
 		return;
 	}
 	set.set(get_step_sound.at(style_id).at(tile_value));
+}
+
+auto Soundboard::number_of_playng_sounds() -> int {
+	auto ret{0};
+	for (auto& sound : sound_pool) {
+		if (sound.getStatus() == sf::Sound::Status::Playing) { ++ret; }
+	}
+	return ret;
 }
 
 } // namespace audio
