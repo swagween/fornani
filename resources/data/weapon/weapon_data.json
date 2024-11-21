@@ -838,6 +838,155 @@
         "type": "wasp",
         "color": "white"
       }
+    },
+
+    {
+      "label": "Underdog",
+      "description": "A unique and powerful all-rounder.",
+      "texture_lookup": 9,
+      "dimensions": {
+        "x": 20,
+        "y": 12
+      },
+      "gun_offset": {
+        "x": 2,
+        "y": 6
+      },
+      "barrel_point": {
+        "x": 20.0,
+        "y": 4.0
+      },
+      "attributes": {
+        "automatic": false,
+        "rate": 4,
+        "cooldown_time": 8,
+        "recoil": 0.8,
+        "ui_color": 3
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 14.0,
+          "y": 14.0
+        },
+        "attributes": {
+          "base_damage": 8.0,
+          "power": 3,
+          "range": 160,
+          "speed": 27.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 2.0,
+          "boomerang": false,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": true,
+          "spring": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.998,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 8
+        },
+        "visual": {
+          "effect_type": 3
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 4.0, 4.0 ],
+        "type": "wasp_2",
+        "color": "white"
+      },
+      "secondary_spray": {
+        "dimensions": [ 4.0, 4.0 ],
+        "type": "wasp",
+        "color": "white"
+      }
+    },
+    {
+      "label": "Peckett 710",
+      "description": "An old but reliable shotgun.",
+      "texture_lookup": 10,
+      "dimensions": {
+        "x": 40,
+        "y": 12
+      },
+      "gun_offset": {
+        "x": 16,
+        "y": 10
+      },
+      "barrel_point": {
+        "x": 40.0,
+        "y": 4.0
+      },
+      "attributes": {
+        "automatic": false,
+        "rate": 12,
+        "cooldown_time": 200,
+        "multishot": 12,
+        "recoil": 2.8,
+        "ui_color": 3
+      },
+      "projectile": {
+        "dimensions": {
+          "x": 6.0,
+          "y": 6.0
+        },
+        "attributes": {
+          "base_damage": 3.0,
+          "power": 3,
+          "range": 320,
+          "speed": 37.0,
+          "speed_variance": 15.0,
+          "lifespan": 200,
+          "variance": 6.0,
+          "stun_time": 0.0,
+          "knockback": 2.0,
+          "boomerang": false,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "spring": false,
+          "range_variance": 60.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.98,
+          "dampen_variance": 0.02,
+          "gravitator_force": 0.0,
+          "gravitator_max_speed": 0.0,
+          "gravitator_friction": 0.0,
+          "spring_dampen": 0.0,
+          "spring_constant": 0.0,
+          "spring_rest_length": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 3,
+          "framerate": 16
+        },
+        "visual": {
+          "effect_type": 3
+        },
+        "sparkler_type": "light_trail"
+      },
+      "spray": {
+        "dimensions": [ 4.0, 4.0 ],
+        "type": "peckett_2",
+        "color": "white"
+      },
+      "secondary_spray": {
+        "dimensions": [ 4.0, 4.0 ],
+        "type": "peckett",
+        "color": "white"
+      }
     }
   ]
 }

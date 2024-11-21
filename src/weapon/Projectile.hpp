@@ -69,8 +69,10 @@ struct ProjectileStats {
 	float base_damage{};
 	int power{};
 	int range{};
+	int lifespan{};
 
 	float speed{};
+	float speed_variance{};
 	float variance{};
 	float stun_time{};
 	float knockback{};
@@ -84,6 +86,7 @@ struct ProjectileStats {
 
 	float acceleration_factor{};
 	float dampen_factor{};
+	float dampen_variance{};
 	float gravitator_force{};
 	float gravitator_max_speed{};
 	float gravitator_friction{};
@@ -173,6 +176,7 @@ class Projectile {
 	Weapon* m_weapon;
 
   private:
+	std::optional<util::Cooldown> lifespan{};
 	shape::CircleCollider collider{4.f};
 	struct {
 		float damage_multiplier{1.f};

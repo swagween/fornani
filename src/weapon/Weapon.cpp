@@ -24,6 +24,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : label(svc.data.weapon["we
 	attributes.automatic = (bool)in_data["attributes"]["automatic"].as_bool();
 	attributes.grenade = (bool)in_data["attributes"]["grenade"].as_bool();
 	attributes.rate = in_data["attributes"]["rate"].as<int>();
+	attributes.multishot = in_data["attributes"]["multishot"].as<int>();
 	attributes.cooldown_time = in_data["attributes"]["cooldown_time"].as<int>();
 	attributes.recoil = in_data["attributes"]["recoil"].as<float>();
 	attributes.ui_color = (COLOR_CODE)in_data["attributes"]["ui_color"].as<int>();

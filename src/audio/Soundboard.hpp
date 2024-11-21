@@ -19,7 +19,7 @@ enum class Console { next, done, shift, select, speech, menu_open };
 enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, pushable, door_open, door_unlock };
 enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip };
 enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
-enum class Weapon { bryns_gun, plasmer, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, wasp };
+enum class Weapon { bryns_gun, plasmer, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, wasp, underdog, peckett_710 };
 enum class Transmission { statics };
 enum class Step { basic, grass };
 

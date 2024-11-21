@@ -473,10 +473,16 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		layer_sprite.setTexture(layer_textures.at(i).getTexture());
 		layer_sprite.setPosition(-cam);
 		if (i == 7) {
+			obscuring_texture.display();
+			reverse_obscuring_sprite.setTexture(obscuring_texture.getTexture());
+			reverse_obscuring_sprite.setPosition(-cam);
 			obscuring_sprite = layer_sprite;
 			sf::Uint8 alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
+			sf::Uint8 revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
 			obscuring_sprite.setColor(sf::Color{255, 255, 255, alpha});
-			win.draw(obscuring_sprite);
+			reverse_obscuring_sprite.setColor(sf::Color{255, 255, 255, revalpha});
+			if (alpha != 0) { win.draw(obscuring_sprite); }
+			if (revalpha != 0) { win.draw(reverse_obscuring_sprite); }
 		} else {
 			win.draw(layer_sprite);
 		}
@@ -625,7 +631,11 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
 		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
-		spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak);
+		if (player->equipped_weapon().multishot()) {
+			for (int i = 0; i < player->equipped_weapon().attributes.multishot; ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak); }
+		} else {
+			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak);
+		}
 		player->equipped_weapon().shoot();
 		if (!player->equipped_weapon().attributes.automatic) { player->controller.set_shot(false); }
 	}
@@ -646,9 +656,14 @@ void Map::generate_collidable_layer(bool live) {
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
+	auto ctr{0};
 	for (auto& layer : layers) {
 		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
 		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
+		if(ctr == 7) {
+			obscuring_texture.create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
+			obscuring_texture.clear(sf::Color::Transparent);
+		}
 		for (auto& cell : layer.grid.cells) {
 			if (cell.is_occupied() && !cell.is_special()) {
 				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
@@ -657,8 +672,16 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
 				tile_sprite.setPosition(cell.position());
 				layer_textures.at((int)layer.render_order).draw(tile_sprite);
+			} else if (ctr == 7) {
+				auto x_coord = static_cast<int>((1 % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
+				auto y_coord = static_cast<int>(std::floor(1 / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
+				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
+				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+				tile_sprite.setPosition(cell.position());
+				obscuring_texture.draw(tile_sprite);
 			}
 		}
+		++ctr;
 	}
 }
 

@@ -16,7 +16,14 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	stats.base_damage = in_data["attributes"]["base_damage"].as<float>();
 	stats.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
 	stats.range = in_data["attributes"]["range"].as<int>();
+	if (in_data["attributes"]["lifespan"]) {
+		stats.lifespan = in_data["attributes"]["lifespan"].as<int>();
+		lifespan = util::Cooldown{stats.lifespan};
+	}
 	stats.speed = in_data["attributes"]["speed"].as<float>();
+	stats.speed_variance = in_data["attributes"]["speed_variance"].as<float>();
+	auto var = svc.random.random_range_float(-stats.speed_variance, stats.speed_variance);
+	stats.speed += var;
 	stats.variance = in_data["attributes"]["variance"].as<float>();
 	stats.stun_time = in_data["attributes"]["stun_time"].as<float>();
 	stats.knockback = in_data["attributes"]["knockback"].as<float>();
@@ -29,6 +36,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	stats.range_variance = in_data["attributes"]["range_variance"].as<float>();
 	stats.acceleration_factor = in_data["attributes"]["acceleration_factor"].as<float>();
 	stats.dampen_factor = in_data["attributes"]["dampen_factor"].as<float>();
+	stats.dampen_variance = in_data["attributes"]["dampen_variance"].as<float>();
 	stats.gravitator_force = in_data["attributes"]["gravitator_force"].as<float>();
 	stats.gravitator_max_speed = in_data["attributes"]["gravitator_max_speed"].as<float>();
 	stats.gravitator_friction = in_data["attributes"]["gravitator_friction"].as<float>();
@@ -54,7 +62,10 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physics.velocity.x = stats.speed;
-	if (stats.dampen_factor != 0.f) { physics.set_global_friction(stats.dampen_factor); }
+	if (stats.dampen_factor != 0.f) {
+		auto var = svc.random.random_range_float(-stats.dampen_variance, stats.dampen_variance);
+		physics.set_global_friction(stats.dampen_factor + var);
+	}
 
 	// Gravitator
 	gravitator = vfx::Gravitator(physics.position, svc.styles.colors.goldenrod, stats.gravitator_force);
@@ -76,6 +87,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	state.set(ProjectileState::initialized);
 	cooldown.start(40);
+	if (lifespan) { lifespan.value().start(); }
 	seed(svc);
 	set_sprite(svc);
 }
@@ -86,6 +98,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	animation.update();
 	sparkler.update(svc);
 	cooldown.update();
+	if (lifespan) { lifespan.value().update(); }
 
 	if (stats.spring) {
 		hook.update(svc, player);
@@ -149,6 +162,13 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	position_history.push_back(physics.position);
 	if (position_history.size() > history_limit) { position_history.pop_front(); }
+
+	if (lifespan) {
+		if (lifespan.value().is_complete()) {
+			state.set(ProjectileState::whiffed);
+			destroy(false, true);
+		}
+	}
 
 	auto diff = stats.range + svc.random.random_range_float(-stats.range_variance, stats.range_variance);
 	if (direction.lr == dir::LR::left || direction.lr == dir::LR::right) {
@@ -281,12 +301,12 @@ void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
 		return;
 	}
 	switch (direction.lr) {
-	case dir::LR::left: physics.velocity = {-stats.speed + (var / 2), var}; break;
-	case dir::LR::right: physics.velocity = {stats.speed + (var / 2), var}; break;
+	case dir::LR::left: physics.velocity = {-stats.speed, var}; break;
+	case dir::LR::right: physics.velocity = {stats.speed, var}; break;
 	}
 	switch (direction.und) {
-	case dir::UND::up: physics.velocity = {var, -stats.speed + (var / 2)}; break;
-	case dir::UND::down: physics.velocity = {var, stats.speed + (var / 2)}; break;
+	case dir::UND::up: physics.velocity = {var, -stats.speed}; break;
+	case dir::UND::down: physics.velocity = {var, stats.speed}; break;
 	}
 }
 

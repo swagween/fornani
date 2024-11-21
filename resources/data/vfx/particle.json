@@ -87,6 +87,46 @@
     "color": "fire"
   },
 
+  "peckett_2": {
+    "load": 4,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 50.0,
+    "cone": 0.08,
+    "friction": 0.99,
+    "elasticity": 0.95,
+    "gravity": 0.0,
+    "lifespan": 260,
+    "lifespan_variance": 85,
+    "dimensions": [ 3, 3 ],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "fire"
+  },
+
+  "peckett": {
+    "load": 8,
+    "rate": 4.0,
+    "expulsion": 20.0,
+    "expulsion_variance": 20.0,
+    "cone": 0.08,
+    "friction": 0.999,
+    "elasticity": 0.95,
+    "gravity": -0.5,
+    "lifespan": 360,
+    "lifespan_variance": 0,
+    "dimensions": [ 32, 32 ],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 1,
+      "duration": 5,
+      "framerate": 68,
+      "loop": 0
+    }
+  },
+
   "light_burst": {
     "load": 18,
     "rate": 100.0,

@@ -148,6 +148,7 @@ class AssetManager {
 	sf::Texture t_wall_hit{};
 	sf::Texture t_twinkle{};
 	sf::Texture t_wasp_effect{};
+	sf::Texture t_peckett_effect{};
 	sf::Texture t_small_flash{};
 	sf::Texture t_mini_flash{};
 	sf::Texture t_medium_flash{};
@@ -197,6 +198,7 @@ class AssetManager {
 	sf::Texture t_indie_projectile{};
 	sf::Texture t_gnat_projectile{};
 	sf::Texture t_energy_ball_projectile{};
+	sf::Texture t_peckett_projectile{};
 
 	// items
 	sf::Texture t_heart{};
@@ -235,6 +237,8 @@ class AssetManager {
 	sf::SoundBuffer b_staple{};
 	sf::SoundBuffer b_gnat{};
 	sf::SoundBuffer b_wasp{};
+
+	sf::SoundBuffer b_reload{};
 
 	sf::SoundBuffer jump_buffer{};
 	sf::SoundBuffer shatter_buffer{};

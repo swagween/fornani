@@ -97,6 +97,7 @@ void AssetManager::import_textures() {
 	t_indie_projectile.loadFromFile(finder.resource_path + "/image/weapon/indie_proj.png");
 	t_gnat_projectile.loadFromFile(finder.resource_path + "/image/weapon/gnat_proj.png");
 	t_energy_ball_projectile.loadFromFile(finder.resource_path + "/image/weapon/energy_ball.png");
+	t_peckett_projectile.loadFromFile(finder.resource_path + "/image/weapon/peckett_710_proj.png");
 
 	projectile_textures.insert({"Bryn's Gun", t_bryns_gun_projectile});
 	projectile_textures.insert({"Skycorps AR", t_skycorps_ar_projectile});
@@ -112,6 +113,8 @@ void AssetManager::import_textures() {
 	projectile_textures.insert({"Gnat", t_gnat_projectile});
 	projectile_textures.insert({"Energy Ball", t_energy_ball_projectile});
 	projectile_textures.insert({"Wasp", t_wasp_projectile});
+	projectile_textures.insert({"Underdog", t_wasp_projectile});
+	projectile_textures.insert({"Peckett 710", t_peckett_projectile});
 
 	t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 	t_guns.loadFromFile(finder.resource_path + "/image/item/guns.png");
@@ -125,9 +128,11 @@ void AssetManager::import_textures() {
 
 	t_twinkle.loadFromFile(finder.resource_path + "/image/vfx/twinkle.png");
 	t_wasp_effect.loadFromFile(finder.resource_path + "/image/vfx/wasp_effect.png");
+	t_peckett_effect.loadFromFile(finder.resource_path + "/image/vfx/peckett_effect.png");
 	t_small_flash.loadFromFile(finder.resource_path + "/image/vfx/small_flash.png");
 	particle_textures.insert({"twinkle", t_twinkle});
 	particle_textures.insert({"wasp", t_wasp_effect});
+	particle_textures.insert({"peckett", t_peckett_effect});
 
 	t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 	t_blue_console.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");
@@ -257,6 +262,8 @@ void AssetManager::load_audio() {
 	slide_buffer.loadFromFile(finder.resource_path + "/audio/sfx/slide.wav");
 	b_walljump.loadFromFile(finder.resource_path + "/audio/sfx/walljump.wav");
 	b_roll.loadFromFile(finder.resource_path + "/audio/sfx/roll.wav");
+
+	b_reload.loadFromFile(finder.resource_path + "/audio/sfx/reload.wav");
 
 	shatter_buffer.loadFromFile(finder.resource_path + "/audio/sfx/shatter.wav");
 	step_buffer.loadFromFile(finder.resource_path + "/audio/sfx/steps.wav");
