@@ -10,7 +10,7 @@ namespace entity {
 FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset) {
 	sprite.setTexture(tex);
 	sprite.setOrigin(sprite.getLocalBounds().getSize() * 0.5f);
-	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Transparent, force);
+	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
 	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
 	gravitator->collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
 	left = offset;
@@ -57,6 +57,7 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 	sprite.setPosition(gravitator->position() - cam);
 	win.draw(sprite);
 	if(svc.greyblock_mode()) {
+		gravitator->render(svc, win, cam);
 		if (hitbox) {
 			debugbox.setSize(hitbox.value().dimensions);
 			debugbox.setPosition(hitbox.value().position);

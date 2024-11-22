@@ -1,0 +1,262 @@
+{
+  "meta": {
+    "room_id": 20097,
+    "metagrid": [
+      80,
+      80
+    ],
+    "dimensions": [
+      64,
+      48
+    ],
+    "chunk_dimensions": [
+      4,
+      3
+    ],
+    "style": 1,
+    "background": 3,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          48,
+          8
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          40,
+          3
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          42,
+          5
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          28,
+          5
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          24,
+          3
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          17,
+          8
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          13,
+          10
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          14,
+          7
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          30,
+          3
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          34,
+          3
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          35,
+          1
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          35,
+          1
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          52,
+          9
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          52,
+          9
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          51,
+          7
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          10,
+          12
+        ],
+        "length": 10,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          53,
+          7
+        ],
+        "length": 12,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          9,
+          11
+        ],
+        "length": 12,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          25,
+          4
+        ],
+        "length": 12,
+        "size": 2,
+        "foreground": true
+      }
+    ]
+  },
+  "enemies": [
+    {
+      "id": 9,
+      "position": [
+        17,
+        25
+      ]
+    },
+    {
+      "id": 9,
+      "position": [
+        35,
+        24
+      ]
+    },
+    {
+      "id": 9,
+      "position": [
+        43,
+        43
+      ]
+    },
+    {
+      "id": 9,
+      "position": [
+        52,
+        42
+      ]
+    },
+    {
+      "id": 9,
+      "position": [
+        57,
+        39
+      ]
+    },
+    {
+      "id": 9,
+      "position": [
+        23,
+        43
+      ]
+    },
+    {
+      "id": 9,
+      "position": [
+        7,
+        23
+      ]
+    }
+  ],
+  "save_point": {
+    "id": 20097,
+    "position": [
+      55,
+      18
+    ]
+  }
+}

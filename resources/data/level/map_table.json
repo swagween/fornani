@@ -117,6 +117,10 @@
       "label": "INTRO"
     },
     {
+      "room_id": 200900,
+      "label": "OVERTURNED_BIG"
+    },
+    {
       "room_id": 207,
       "label": "OVERTURNED_BRANCHES_01"
     },
@@ -167,6 +171,10 @@
     {
       "room_id": 229,
       "label": "OVERTURNED_COVE_03"
+    },
+    {
+      "room_id": 20097,
+      "label": "OVERTURNED_DOJO"
     },
     {
       "room_id": 227,

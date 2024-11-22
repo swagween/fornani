@@ -58,6 +58,9 @@ void AssetManager::import_textures() {
 	t_caster.loadFromFile(finder.resource_path + "/image/critter/caster.png");
 	t_caster_scepter.loadFromFile(finder.resource_path + "/image/critter/caster_scepter.png");
 	t_caster_wand.loadFromFile(finder.resource_path + "/image/critter/caster_wand.png");
+	t_archer.loadFromFile(finder.resource_path + "/image/critter/archer.png");
+	t_archer_bow.loadFromFile(finder.resource_path + "/image/critter/archer_bow.png");
+	t_archer_arrow.loadFromFile(finder.resource_path + "/image/critter/archer_arrow.png");
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
@@ -67,6 +70,7 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"minigus", t_minigus});
 	texture_lookup.insert({"demon", t_demon});
 	texture_lookup.insert({"caster", t_caster});
+	texture_lookup.insert({"archer", t_archer});
 
 	t_ui.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");

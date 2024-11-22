@@ -77,6 +77,9 @@ class AssetManager {
 	sf::Texture t_caster{};
 	sf::Texture t_caster_wand{};
 	sf::Texture t_caster_scepter{};
+	sf::Texture t_archer{};
+	sf::Texture t_archer_bow{};
+	sf::Texture t_archer_arrow{};
 
 	// gui
 	sf::Texture t_ui{};
