@@ -41,7 +41,6 @@ Game::Game(char** argv, WindowManager& window) : services(argv), player(services
 
 void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
-	flags.set(GameFlags::standard_display);
 
 	measurements.win_size.x = services.window->get().getSize().x;
 	measurements.win_size.y = services.window->get().getSize().y;
@@ -92,26 +91,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			player.animation.state = {};
 			switch (event.type) {
 			case sf::Event::Closed: goto shutdown;
-			case sf::Event::Resized:
-				if (flags.test(GameFlags::standard_display)) {
-					sf::Vector2u display_dimensions{static_cast<unsigned>(sf::VideoMode::getDesktopMode().width), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height)};
-					auto aspect_ratio = static_cast<float>(services.constants.aspect_ratio.x) / static_cast<float>(services.constants.aspect_ratio.y);
-					auto display_ratio = static_cast<float>(display_dimensions.x) / static_cast<float>(display_dimensions.y);
-					auto vertical = display_ratio < aspect_ratio;
-					auto letterbox = std::min(display_ratio, aspect_ratio) / std::max(display_ratio, aspect_ratio);
-					if (vertical) {
-						services.window->get().setSize({static_cast<unsigned>(sf::VideoMode::getDesktopMode().width), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height * letterbox)});
-					} else {
-						services.window->get().setSize({static_cast<unsigned>(sf::VideoMode::getDesktopMode().width * letterbox), static_cast<unsigned>(sf::VideoMode::getDesktopMode().height)});
-					}
-					flags.reset(GameFlags::standard_display);
-				} else {
-					services.window->get().setSize(measurements.win_size);
-					flags.set(GameFlags::standard_display);
-				}
-				services.window->set_screencap();
-				while (services.window->get().pollEvent(event)) {} // have to clear the event queue because Window::setSize() is considered a resize event
-				break;
 			case sf::Event::KeyPressed:
 				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
