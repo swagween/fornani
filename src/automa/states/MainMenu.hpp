@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../GameState.hpp"
+#include "../../gui/OptionList.hpp"
 
 namespace automa {
 
@@ -23,6 +24,7 @@ class MainMenu : public GameState {
 	sf::Text instruction{};
 	std::vector<sf::Sprite> title_assets{};
 	util::Cooldown loading{16};
+	gui::OptionList option_list;
 };
 
 } // namespace automa

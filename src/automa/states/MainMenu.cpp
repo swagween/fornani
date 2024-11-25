@@ -4,7 +4,7 @@
 
 namespace automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), option_list(svc) {
 
 	// playtester edition
 	flags.set(GameStateFlags::playtest);
@@ -12,25 +12,34 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	svc.app_flags.reset(AppFlags::in_game);
 	svc.state_controller.actions.reset(Actions::intro_done);
 
-	left_dot.set_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_position(options.at(current_selection.get()).right_offset);
-
 	if (flags.test(GameStateFlags::playtest)) { subtitle.setString("Playtester Edition"); }
 	subtitle.setLineSpacing(1.5f);
 	subtitle.setFont(subtitle_font);
 	subtitle.setLetterSpacing(1.2f);
-	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
+	subtitle.setCharacterSize(16.f);
 	subtitle.setPosition(svc.constants.screen_dimensions.x * 0.5f - subtitle.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 300.f);
 	subtitle.setFillColor(svc.styles.colors.red);
 	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
 	instruction.setLineSpacing(1.5f);
 	instruction.setFont(subtitle_font);
 	instruction.setLetterSpacing(1.2f);
-	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
+	instruction.setCharacterSize(16.f);
 	instruction.setPosition(svc.constants.screen_dimensions.x * 0.5f - instruction.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 36.f);
 	instruction.setFillColor(svc.styles.colors.dark_grey);
 
 	title = sf::Sprite{svc.assets.t_title, sf::IntRect({0, 0}, {(int)svc.constants.screen_dimensions.x, (int)svc.constants.screen_dimensions.y})};
+
+	option_list.push_option("play", [&svc]() {
+		svc.state_controller.submenu = menu_type::file_select;
+		svc.state_controller.actions.set(Actions::trigger_submenu);
+		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+	});
+	option_list.push_option("options", [&svc]() {
+		svc.state_controller.submenu = menu_type::options;
+		svc.state_controller.actions.set(Actions::trigger_submenu);
+		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+	});
+	option_list.push_option("exit", [&svc]() { svc.state_controller.actions.set(Actions::shutdown); });
 
 	svc.data.load_blank_save(player);
 	player.controller.autonomous_walk();
@@ -78,11 +87,8 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 	}
 
 	for (auto& option : options) { option.update(svc, current_selection.get()); }
+	option_list.update(svc);
 
-	left_dot.update(svc);
-	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 	svc.soundboard.play_sounds(svc);
 	player->animation.state = player::AnimState::run;
 }
@@ -93,10 +99,7 @@ void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(title);
 	win.draw(subtitle);
 	// win.draw(instruction);
-	for (auto& option : options) { win.draw(option.label); }
-
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	option_list.render(svc, win, {0.f, 80.f});
 }
 
 } // namespace automa
