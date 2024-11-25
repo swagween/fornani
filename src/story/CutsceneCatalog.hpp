@@ -3,10 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 #include "../utils/Counter.hpp"
+#include "Cutscene.hpp"
+
+#include <memory>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
-#include "Cutscene.hpp"
 
 namespace automa {
 struct ServiceProvider;

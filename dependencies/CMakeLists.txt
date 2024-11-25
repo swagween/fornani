@@ -61,4 +61,6 @@ if (WIN32)
   endif()
   
   set(steamworks_dll_file ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.dll PARENT_SCOPE)
+elseif (UNIX)
+  target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/linux64/libsteam_api.so)
 endif()
