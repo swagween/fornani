@@ -730,9 +730,9 @@ npc::NPC& Map::get_npc(int id) {
 	for (auto& npc : npcs) {
 		if (npc.get_id() == id) { return npc; }
 	}
-	try {
-		return npcs.at(0);
-	} catch (std::out_of_range) { std::cout << "Tried to get an NPC from empty NPC vector.\n"; }
+
+	std::cerr << "Tried to get NPC that didn't exist! ID: " << id << std::endl;
+	std::exit(1);
 }
 
 sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
