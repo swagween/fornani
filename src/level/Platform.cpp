@@ -116,11 +116,11 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			direction.und = physics.velocity.y > 0.0f ? dir ::UND::down : dir::UND::up;
 
 			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky)) {
-				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.forced_momentum = physics.position - old_position; }
+				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.collider.physics.forced_momentum = physics.position - old_position; }
 			}
 			for (auto& pushable : map.pushables) {
 				if (pushable.collider.jumpbox.overlaps(bounding_box) && !pushable.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky)) {
-					if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { pushable.forced_momentum = physics.position - old_position; }
+					if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { pushable.collider.physics.forced_momentum = physics.position - old_position; }
 				}
 			}
 			break;

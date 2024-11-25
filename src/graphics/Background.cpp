@@ -12,8 +12,13 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) {
 
 	std::string_view type{};
 	if (bg_id == 0) { type = "fast_scroll"; }
-	else if (bg_id <= 4) { type = "standard_scroll"; }
-	else if (bg_id >= 5) { type = "fast_scroll"; }
+	if (bg_id == 3) {
+		type = "rosy_haze";
+	} else if (bg_id <= 4) {
+		type = "standard_scroll";
+	} else if (bg_id >= 5) {
+		type = "fast_scroll";
+	}
 	if (bg_id > 6) { type = "standard_flat"; }
 	if (bg_id == 17) { type = "slow_static"; }
 

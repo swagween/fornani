@@ -7,7 +7,7 @@
 namespace entity {
 
 Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground, bool reversed)
-	: length(length), size(size), position(position), chain(svc, {0.98f, 0.14f, static_cast<float>(size) * 12.f}, position, length, reversed) {
+	: length(length), size(size), position(position), chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, position, length, reversed) {
 	drawbox.setOutlineColor(svc.styles.colors.blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
@@ -88,6 +88,7 @@ void Vine::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 }
 
 void Vine::add_platform(automa::ServiceProvider& svc, int link_index) { 
+	treasure_balls = {}; // don't want them to get in the way
 	if (link_index > chain.links.size() || link_index < 0) { return; }
 	auto& link = chain.links.at(link_index);
 	if (!spawnable_platforms) { spawnable_platforms = std::vector<std::unique_ptr<SpawnablePlatform>>{}; }

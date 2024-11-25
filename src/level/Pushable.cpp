@@ -78,10 +78,10 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 	}
 	if (size == 1) { collider.handle_collider_collision(player.collider.bounding_box); } // big ones should crush the player
-	if (abs(forced_momentum.x) > 0.1f || abs(forced_momentum.y) > 0.1f) { set_moving(); }
-	collider.physics.position += forced_momentum;
-	if (!collider.has_jump_collision()) { forced_momentum = {}; }
-	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { forced_momentum = {}; }
+	if (abs(collider.physics.forced_momentum.x) > 0.1f || abs(collider.physics.forced_momentum.y) > 0.1f) { set_moving(); }
+	collider.physics.impart_momentum();
+	if (!collider.has_jump_collision()) { collider.physics.forced_momentum = {}; }
+	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { collider.physics.forced_momentum = {}; }
 	collider.update(svc);
 	collider.detect_map_collision(map);
 	for (auto& other : map.pushables) {

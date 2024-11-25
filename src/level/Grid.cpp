@@ -23,27 +23,32 @@ void Grid::check_neighbors(int i) {
 	auto up = static_cast<std::size_t>(i - dimensions.x);
 	auto down = static_cast<std::size_t>(i + dimensions.x);
 	bool surrounded{true};
+	bool exposed{};
 	auto ui = static_cast<uint32_t>(i);
 	// right neighbor
-	if (i != cells.size() - 1) {
-			if (!cells.at(right).is_solid()) { surrounded = false; }
-		
+	if (i != cells.size() - 1 && i % dimensions.x != dimensions.x - 1) {
+		if (!cells.at(right).is_solid()) { surrounded = false; }
+		if (!cells.at(right).is_occupied()) { exposed = true; }
 		if (cells.at(right).is_big_ramp() && cells.at(right).is_ground_ramp() && !cells.at(i).is_ramp()) { cells.at(i).flags.set(TileState::ramp_adjacent); }
 	}
 	// left neighbor
-	if (i != 0) {
-			if (!cells.at(left).is_solid()) { surrounded = false; }
+	if (i != 0 && i % dimensions.x != 0) {
+		if (!cells.at(left).is_solid()) { surrounded = false; }
+		if (!cells.at(left).is_occupied()) { exposed = true; }
 		if (cells.at(left).is_big_ramp() && cells.at(left).is_ground_ramp() && !cells.at(i).is_ramp()) { cells.at(i).flags.set(TileState::ramp_adjacent); }
 	}
 	// top neighbor
 	if (!(ui < dimensions.x)) {
 		if (cells.at(up).is_solid()) { surrounded = false; }
+		if (!cells.at(up).is_occupied()) { exposed = true; }
 	}
 	// bottom neighbor
 	if (!(ui > cells.size() - dimensions.x - 1)) {
 		if (cells.at(down).is_solid()) { surrounded = false; }
+		if (!cells.at(down).is_occupied()) { exposed = true; }
 	}
 	cells.at(i).surrounded = surrounded;
+	cells.at(i).exposed = exposed;
 }
 
 void Grid::seed_vertex(int index) {

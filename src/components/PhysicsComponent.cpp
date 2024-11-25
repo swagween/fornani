@@ -41,6 +41,11 @@ void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
 	acceleration = {};
 }
 
+void PhysicsComponent::impart_momentum() {
+	position += forced_momentum;
+	velocity += forced_acceleration;
+}
+
 void PhysicsComponent::hard_stop_x() {
 	velocity.x = 0.f;
 	real_velocity.x = 0.f;

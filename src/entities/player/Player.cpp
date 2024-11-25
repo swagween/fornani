@@ -103,12 +103,11 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	force_cooldown.update();
 	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
 	accumulated_forces.clear();
-	collider.physics.position += forced_momentum;
-	collider.physics.velocity += forced_acceleration;
+	collider.physics.impart_momentum();
 	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) {
-		forced_momentum = {}; }
-	auto switched = directions.movement.lr != controller.direction.lr;
-	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched) { forced_acceleration = {}; }
+		collider.physics.forced_momentum = {}; }
+	auto switched = directions.movement.lr != controller.direction.lr || !controller.moving();
+	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched || grounded()) { collider.physics.forced_acceleration = {}; }
 
 	collider.update(*m_services);
 	hurtbox.set_position(collider.hurtbox.position - sf::Vector2<float>{0.f, 14.f});

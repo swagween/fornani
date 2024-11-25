@@ -37,6 +37,7 @@ class MapTexture {
   private:
 	sf::RenderTexture map_texture{};
 	sf::Color tile_color{};
+	sf::Color border_color{};
 	sf::Vector2<int> global_offset{};
 	sf::Vector2<float> map_dimensions{};
 	util::BitFlags<MapTextureFlags> flags{};

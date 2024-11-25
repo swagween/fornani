@@ -86,8 +86,8 @@ class Collider {
 	void correct_corner(sf::Vector2<float> mtv);
 	void resolve_depths();
 	void handle_platform_collision(Shape const& cell);
-	void handle_collider_collision(Shape const& collider, bool soft = false);
-	void handle_collider_collision(Collider const& collider, bool soft = false);
+	bool handle_collider_collision(Shape const& collider, bool soft = false); // returns true if grounded on collider
+	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos);

@@ -16,9 +16,9 @@ Spring::Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<f
 
 void Spring::calculate() { calculate_force(); }
 
-void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2<float> external_force, bool loose) {
-	variables.bob_physics.gravity = custom_grav;
-	variables.anchor_physics.gravity = custom_grav;
+void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2<float> external_force, bool loose, bool sag) {
+	variables.bob_physics.gravity = sag ? custom_grav : 0.f;
+	variables.anchor_physics.gravity = sag ? custom_grav : 0.f;
 	calculate();
 	variables.bob_physics.apply_force(external_force);
 	variables.bob_physics.update(svc);

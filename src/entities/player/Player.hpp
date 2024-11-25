@@ -217,8 +217,6 @@ class Player {
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2<float>> accumulated_forces{};
-	sf::Vector2<float> forced_momentum{};
-	sf::Vector2<float> forced_acceleration{};
 	std::optional<util::QuestCode> quest_code{};
 	std::optional<Piggybacker> piggybacker{};
 

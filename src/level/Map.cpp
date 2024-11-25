@@ -41,6 +41,11 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
 	chunk_dimensions.y = meta["chunk_dimensions"][1].as<int>();
 	real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
+	auto style_value = meta["style"].as<int>();
+	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
+	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
+	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
+	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 
 	if (!soft) {
 		if (meta["cutscene_on_entry"]["flag"].as_bool()) {
@@ -60,11 +65,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
 		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 
-		auto style_value = meta["style"].as<int>();
-		style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
-		style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
-		if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
-		native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
 		styles.breakables = meta["styles"]["breakables"].as<int>();
 		styles.pushables = meta["styles"]["pushables"].as<int>();
@@ -134,7 +134,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
 			auto rev = static_cast<bool>(entry["reversed"].as_bool());
 			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
-			if (entry["platform"]) { vines.back()->add_platform(svc, entry["platform"]["link_index"].as<int>()); }
+			if (entry["platform"]) {
+				for (auto& link : entry["platform"]["link_indeces"].array_view()) { vines.back()->add_platform(svc, link.as<int>()); }
+			}
 		}
 		for (auto& entry : metadata["scenery"]["grass"].array_view()) {
 			sf::Vector2<float> pos{};

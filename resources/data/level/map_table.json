@@ -117,6 +117,10 @@
       "label": "INTRO"
     },
     {
+      "room_id": 20095,
+      "label": "OVERTURNED_AMBIANCE"
+    },
+    {
       "room_id": 200900,
       "label": "OVERTURNED_BIG"
     },
@@ -195,6 +199,10 @@
     {
       "room_id": 222,
       "label": "OVERTURNED_SHAFT_03"
+    },
+    {
+      "room_id": 20096,
+      "label": "OVERTURNED_TALL"
     },
     {
       "room_id": 20099,

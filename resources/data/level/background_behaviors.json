@@ -1,4 +1,14 @@
 {
+  "rosy_haze": {
+    "used_layers": 5,
+    "scroll_speed": 0.5,
+    "scrolling": true,
+    "parallax_multiplier": 0.1,
+    "dimensions": [
+      3840,
+      512
+    ]
+  },
   "standard_scroll": {
     "used_layers": 5,
     "scroll_speed": 0.5,

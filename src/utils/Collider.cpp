@@ -295,18 +295,19 @@ void Collider::resolve_depths() {
 
 void Collider::handle_platform_collision(Shape const& cell) {}
 
-void Collider::handle_collider_collision(Shape const& collider, bool soft) {
+bool Collider::handle_collider_collision(Shape const& collider, bool soft) {
+	auto ret{false};
 	if (soft) {
-		if (!vicinity.overlaps(collider)) { return; }
+		if (!vicinity.overlaps(collider)) { return ret; }
 		mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, collider);
 		if (bounding_box.SAT(collider)) { physics.position += mtvs.actual * 0.01f; }
 		sync_components();
-		return;
+		return ret;
 	}
-	if (flags.general.test(General::ignore_resolution)) { return; }
-	if (!vicinity.overlaps(collider)) { return; }
+	if (flags.general.test(General::ignore_resolution)) { return ret; }
+	if (!vicinity.overlaps(collider)) { return ret; }
 	if (collision_depths) {
-		if (collision_depths.value().crushed()) { return; }
+		if (collision_depths.value().crushed()) { return ret; }
 	}
 
 	flags.collision = {};
@@ -358,6 +359,7 @@ void Collider::handle_collider_collision(Shape const& collider, bool soft) {
 	if (jumpbox.SAT(collider)) {
 		flags.state.set(State::grounded);
 		flags.state.set(State::is_any_jump_collision);
+		ret = true;
 	} else {
 		flags.state.reset(State::grounded);
 	}
@@ -365,13 +367,16 @@ void Collider::handle_collider_collision(Shape const& collider, bool soft) {
 	if (flags.external_state.test(ExternalState::vert_collider_collision)) { flags.external_state.reset(ExternalState::horiz_collider_collision); }
 	flags.movement.reset(Movement::dashing);
 	sync_components();
+	return ret;
 }
 
-void Collider::handle_collider_collision(Collider const& collider, bool soft) {
+void Collider::handle_collider_collision(Collider const& collider, bool soft, bool momentum) {
 	if (collider.flags.general.test(General::top_only_collision)) {
 		if (jumpbox.position.y > collider.physics.position.y + 4 || physics.acceleration.y < 0.0f) { return; }
 	}
-	handle_collider_collision(collider.bounding_box, soft);
+	if (handle_collider_collision(collider.bounding_box, soft)) {
+		if (momentum) { physics.forced_momentum = collider.physics.position - collider.physics.previous_position; }
+	}
 }
 
 void Collider::update(automa::ServiceProvider& svc) {

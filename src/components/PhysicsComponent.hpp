@@ -38,6 +38,8 @@ class PhysicsComponent {
 	sf::Vector2<float> position{};
 	sf::Vector2<float> ground_friction{};
 	sf::Vector2<float> air_friction{};
+	sf::Vector2<float> forced_momentum{};
+	sf::Vector2<float> forced_acceleration{};
 	sf::Vector2<float> mtv{};
 
 	sf::Vector2<float> previous_acceleration{};
@@ -56,6 +58,7 @@ class PhysicsComponent {
 	void integrate(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void update_dampen(automa::ServiceProvider& svc);
+	void impart_momentum();
 	void hard_stop_x();
 	void stop_x();
 	void zero();

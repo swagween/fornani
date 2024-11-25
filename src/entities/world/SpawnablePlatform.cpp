@@ -16,7 +16,7 @@ SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<f
 	sensor.bounds.setRadius(16.f);
 	sensor.bounds.setOrigin({16.f, 16.f});
 	sprite.push_params("dormant", {0, 1, 8, -1});
-	sprite.push_params("opening", {1, 2, 28, 0});
+	sprite.push_params("opening", {1, 2, 8, 0});
 	sprite.push_params("open", {3, 4, 28, 3});
 	sprite.push_params("fading", {7, 8, 28, 0});
 	sprite.push_params("closing", {15, 3, 28, 0});
@@ -27,12 +27,13 @@ SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<f
 void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<float> target) {
 	gravitator.set_target_position(target - collider.dimensions * 0.5f);
 	gravitator.update(svc);
-	collider.set_position(gravitator.position());
 	collider.update(svc);
+	collider.set_position(gravitator.position());
+	if (collidable()) { player.collider.handle_collider_collision(collider, false, true); }
+	collider.physics.previous_position = gravitator.position();
 	sensor.set_position(gravitator.position() + collider.dimensions * 0.5f - sf::Vector2<float>{0.f, 4.f});
 	health.update();
 	sprite.update(util::round_to_even(gravitator.position() - sf::Vector2<float>{-4.f, 2.f}));
-	if (collidable()) { player.collider.handle_collider_collision(collider); }
 	state_function = state_function();
 }
 

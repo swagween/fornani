@@ -5,9 +5,8 @@
 
 namespace gui {
 
-MapTexture::MapTexture(automa::ServiceProvider& svc) {
-	tile_color = svc.styles.colors.blue;
-	tile_color.a = 235;
+MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.colors.ui_white}, tile_color{svc.styles.colors.blue} {
+	border_color.a = 200;
 	tile_box.setFillColor(tile_color);
 	tile_box.setSize({4.f, 4.f});
 	plat_box.setFillColor(svc.styles.colors.periwinkle);
@@ -22,29 +21,23 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) {
 
 void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
 	map.load(svc, room, true);
-	tile_color = map.style_id == 0 ? svc.styles.colors.blue : svc.styles.colors.fucshia;
+	tile_color = map.native_style_id == 0 ? svc.styles.colors.blue : svc.styles.colors.fucshia;
+	tile_color.a = 100;
 	global_offset = map.metagrid_coordinates * 16;
 	map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions);
 	auto const& middleground = map.get_layers().at(world::MIDDLEGROUND);
 	map_texture.create(map.dimensions.x * static_cast<unsigned int>((32.f / scale)), map.dimensions.y * static_cast<unsigned int>(32.f / scale));
 	map_texture.clear(sf::Color::Transparent);
-	sf::Color diff{};
 	for (auto& cell : middleground.grid.cells) {
-		if (cell.is_occupied() && !cell.is_breakable()) {
+		if (!cell.is_breakable()) {
 			tile_box.setPosition(cell.position() / scale);
-			diff = tile_color;
-			auto darkener = current ? 0 : 40;
-			auto g_diff = cell.value / 8;
-			diff.g = std::clamp(diff.g + g_diff - darkener, 0, 255);
-			auto r_diff = cell.value / 4;
-			diff.r = std::clamp(diff.r + r_diff - darkener / 2, 0, 255);
-			auto b_diff = cell.value / 4;
-			diff.b = std::clamp(diff.b + b_diff - darkener / 2, 0, 255);
-			if (cell.surrounded) { diff.b = std::clamp(diff.b - 40, 0, 255); }
-			if (cell.surrounded) { diff.g = std::clamp(diff.g - 60, 0, 255); }
-			if (cell.surrounded) { diff.r = std::clamp(diff.r - 20, 0, 255); }
-			tile_box.setFillColor(current ? diff : diff);
-			map_texture.draw(tile_box);
+			if (!cell.is_occupied()) {
+				tile_box.setFillColor(tile_color);
+				map_texture.draw(tile_box);
+			} else if (cell.exposed) {
+				tile_box.setFillColor(border_color);
+				map_texture.draw(tile_box);
+			}
 		}
 	}
 	for (auto& portal : map.portals) {
@@ -65,6 +58,7 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		curtain.setSize({static_cast<float>(map.dimensions.x) * (32.f / scale), static_cast<float>(map.dimensions.y) * (32.f / scale)});
 		curtain.setFillColor(svc.styles.colors.navy_blue);
 		map_texture.draw(curtain);
+		map_texture.clear(sf::Color::Transparent);
 	}
 	map_texture.display();
 	svc.stopwatch.stop();
