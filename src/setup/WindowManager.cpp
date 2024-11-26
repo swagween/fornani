@@ -35,7 +35,7 @@ void fornani::WindowManager::create(std::string title, bool const fullscreen) {
 		mode = sf::VideoMode(screen_dimensions.x, screen_dimensions.y);
 		is_fullscreen = false;
 	}
-	is_fullscreen ? window.create(mode, title, sf::Style::Fullscreen) : window.create(mode, title, sf::Style::Default);
+	is_fullscreen ? window.create(mode, title, sf::Style::Fullscreen) : window.create(mode, title, sf::Style::Default & ~sf::Style::Resize);
 }
 
 
