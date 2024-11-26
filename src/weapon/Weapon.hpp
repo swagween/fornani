@@ -26,6 +26,7 @@ struct WeaponAttributes {
 	COLOR_CODE ui_color{};
 	std::array<float, 2> barrel_position{};
 	int back_offset{};
+	int multishot{};
 };
 
 struct EmitterAttributes {
@@ -71,6 +72,7 @@ class Weapon {
 	[[nodiscard]] auto get_inventory_state() const -> int { return static_cast<int>(inventory_state); }
 	[[nodiscard]] auto get_ui_position() const -> sf::Vector2<float> { return sprites.ui.getPosition(); }
 	[[nodiscard]] auto get_description() const -> std::string_view { return metadata.description; }
+	[[nodiscard]] auto multishot() const -> bool { return attributes.multishot != 0; }
 
 	WeaponAttributes attributes{};
 	EmitterAttributes emitter{};

@@ -42,12 +42,12 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 	sparkler.update(svc);
 
 	collider.update(svc);
-	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
-	for (auto& pushable : map.pushables) { collider.handle_collider_collision(pushable.get_bounding_box()); }
-	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform.bounding_box); }
-	for (auto& button : map.switch_buttons) { collider.handle_collider_collision(button->get_bounding_box()); }
+	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.collider); }
+	for (auto& pushable : map.pushables) { collider.handle_collider_collision(pushable.collider); }
+	for (auto& platform : map.platforms) { collider.handle_collider_collision(platform); }
+	for (auto& button : map.switch_buttons) { collider.handle_collider_collision(button->collider); }
 	for (auto& block : map.switch_blocks) {
-		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
+		if (block.on()) { collider.handle_collider_collision(block.collider); }
 	}
 	collider.detect_map_collision(map);
 	collider.reset();

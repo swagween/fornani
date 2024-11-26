@@ -35,9 +35,9 @@ class Breakable {
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
 	[[nodiscard]] auto destroyed() const -> bool { return state <= 1; }
+	shape::Collider collider{};
 
   private:
-	shape::Collider collider{};
 	util::BitFlags<BreakableAttributes> attributes{};
 	sf::Sprite sprite{};
 	int style{};

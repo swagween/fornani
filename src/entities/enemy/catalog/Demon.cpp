@@ -101,8 +101,9 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 		if (svc.random.percent_chance(4) && !caution.danger()) { state = DemonState::run; }
 	}
 
-	if(flags.state.test(StateFlags::hurt)) {
+	if(flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.demon.set(audio::Demon::hurt);
+		sound.hurt_sound_cooldown.start();
 		hurt_effect.start(128);
 		flags.state.reset(StateFlags::hurt);
 	}

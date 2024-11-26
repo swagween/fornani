@@ -62,11 +62,11 @@
     {
       "dimensions": [
         1,
-        12
+        11
       ],
       "position": [
         31,
-        0
+        1
       ],
       "source_id": 222,
       "destination_id": 223,

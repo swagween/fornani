@@ -21,7 +21,7 @@ class Spring {
 	Spring(SpringParameters params);
 	Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<float> bob);
 	void calculate();
-	void update(automa::ServiceProvider& svc, float custom_grav = 1.5f, sf::Vector2<float> external_force = {}, bool loose = false);
+	void update(automa::ServiceProvider& svc, float custom_grav = 1.5f, sf::Vector2<float> external_force = {}, bool loose = false, bool sag = false);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void calculate_force();
 	void reverse_anchor_and_bob();

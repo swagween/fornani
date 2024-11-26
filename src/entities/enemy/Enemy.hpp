@@ -12,6 +12,7 @@
 #include "../packages/Shockwave.hpp"
 #include "../packages/FloatingPart.hpp"
 #include "../player/Indicator.hpp"
+#include "../../audio/Soundboard.hpp"
 #include <string_view>
 #include <iostream>
 
@@ -61,6 +62,7 @@ class Enemy : public entity::Entity {
 	virtual void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
 	virtual void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
 	void handle_player_collision(player::Player& player) const;
+	void handle_collision(shape::Collider& other);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void on_crush(world::Map& map);
 	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
@@ -126,9 +128,9 @@ class Enemy : public entity::Entity {
 	} visual{};
 
 	struct {
-		sf::Sound hit{};
-		sf::Sound inv_hit{};
-	} sounds{};
+		audio::Enemy hit_flag{};
+		util::Cooldown hurt_sound_cooldown{24};
+	} sound{};
 
 	// shake
 	float energy{};

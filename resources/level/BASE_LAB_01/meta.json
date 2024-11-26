@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "room_id": 204,
+    "metagrid": [
+      21,
+      15
+    ],
+    "dimensions": [
+      32,
+      16
+    ],
+    "chunk_dimensions": [
+      2,
+      1
+    ],
+    "style": 2,
+    "background": 5,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "portals": [
+    {
+      "dimensions": [
+        1,
+        1
+      ],
+      "position": [
+        25,
+        10
+      ],
+      "source_id": 204,
+      "destination_id": 203,
+      "activate_on_contact": false,
+      "already_open": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ],
+  "beds": [
+    {
+      "position": [
+        3,
+        3
+      ]
+    },
+    {
+      "position": [
+        14,
+        2
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "id": 20401,
+      "item_id": 4,
+      "type": 3,
+      "amount": 0,
+      "rarity": 0.000000,
+      "position": [
+        4,
+        14
+      ]
+    }
+  ],
+  "save_point": {
+    "id": 204,
+    "position": [
+      9,
+      3
+    ]
+  }
+}

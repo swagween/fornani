@@ -11,6 +11,7 @@
 #include "../entities/world/Vine.hpp"
 #include "../entities/world/Grass.hpp"
 #include "../graphics/Background.hpp"
+#include "../graphics/Scenery.hpp"
 #include "../graphics/Transition.hpp"
 #include "../graphics/Rain.hpp"
 #include "Grid.hpp"
@@ -33,6 +34,7 @@
 #include "../story/CutsceneCatalog.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/CircleCollider.hpp"
+#include "../audio/Ambience.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -61,6 +63,7 @@ enum LAYER_ORDER {
 };
 
 enum class LevelState { game_over, camera_shake, spawn_enemy };
+enum class MapState { unobscure };
 
 // a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
@@ -104,8 +107,8 @@ class Map {
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
-	bool check_cell_collision(shape::Collider& collider);
-	bool check_cell_collision_circle(shape::CircleCollider& collider);
+	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
+	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void shake_camera();
@@ -142,6 +145,7 @@ class Map {
 	std::vector<entity::Effect> effects{};
 	std::vector<std::unique_ptr<entity::Vine>> vines{};
 	std::vector<std::unique_ptr<entity::Grass>> grass{};
+	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
 	std::vector<npc::NPC> npcs{};
@@ -159,6 +163,9 @@ class Map {
 	// vfx
 	std::optional<vfx::Rain> rain{};
 
+	// sfx
+	audio::Ambience ambience{};
+
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition;
 
@@ -171,8 +178,11 @@ class Map {
 
 	// layers
 	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};
+	sf::RenderTexture obscuring_texture{};
 	sf::Sprite tile_sprite{};
 	sf::Sprite layer_sprite{};
+	sf::Sprite obscuring_sprite{};
+	sf::Sprite reverse_obscuring_sprite{};
 	std::string_view style_label{};
 
 	int room_lookup{};
@@ -197,6 +207,9 @@ class Map {
 	util::Cooldown loading{}; // shouldn't exist
 	util::Cooldown spawning{2};
 	util::Counter spawn_counter{};
+	struct {
+		util::Cooldown fade_obscured{128};
+	} cooldowns{};
 
 	// debug
 	util::Stopwatch stopwatch{};
@@ -206,6 +219,7 @@ class Map {
 	int abyss_distance{400};
 	struct {
 		util::BitFlags<LevelState> state{};
+		util::BitFlags<MapState> map_state{};
 	} flags{};
 };
 

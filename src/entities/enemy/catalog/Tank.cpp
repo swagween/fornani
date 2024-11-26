@@ -38,18 +38,19 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
 	secondary_collider.sync_components();
 	
-	player.collider.handle_collider_collision(secondary_collider.bounding_box);
+	player.collider.handle_collider_collision(secondary_collider);
 	if (svc.ticker.every_x_ticks(20)) {
 		if (svc.random.percent_chance(8) && !caution.danger()) { state = TankState::run; }
 	}
 
-	if(flags.state.test(StateFlags::hurt)) {
+	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		if (m_services->random.percent_chance(50)) {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_1);
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_2);
 		}
 		hurt_effect.start(128);
+		sound.hurt_sound_cooldown.start();
 		flags.state.reset(StateFlags::hurt);
 	}
 

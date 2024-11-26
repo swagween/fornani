@@ -11,8 +11,6 @@ Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2<
 	grav = params.grav;
 	int ctr{};
 	auto sign = reversed ? -1.f : 1.f;
-	auto sag = static_cast<int>(links.size());
-	auto tweak{0.19f};
 	for (auto& link : links) {
 		if (ctr == 0) {
 			link.set_anchor(position);
@@ -21,9 +19,8 @@ Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2<
 			link.cousin = &links.at(ctr - 1);
 			if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 		}
-		link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, sign * params.rest_length + (link.get_equilibrium_point() * sag * tweak)});
+		link.set_bob(link.get_anchor() + sf::Vector2<float>{0.f, sign * params.rest_length});
 		++ctr;
-		--sag;
 	}
 	intro.start();
 }
@@ -40,7 +37,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			if (!link.is_locked()) {
 				if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 			}
-			link.update(svc, grav, {}, !link.is_locked());
+			link.update(svc, grav, {}, !link.is_locked(), ctr == links.size() - 1);
 			++ctr;
 		}
 		++break_out;
@@ -60,11 +57,11 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		}
 		if (link.sensor.within_bounds(player.collider.bounding_box)) {
 			link.sensor.activate();
-			external_force = {player.collider.physics.velocity.x * external_dampen * dampen, player.collider.physics.velocity.y * external_dampen * 0.1f * dampen};
+			external_force = {player.collider.physics.velocity.x * external_dampen * dampen, player.collider.physics.velocity.y * external_dampen * 0.3f * dampen};
 		} else {
 			link.sensor.deactivate();
 		}
-		link.update(svc, grav, external_force, !link.is_locked());
+		link.update(svc, grav, external_force, !link.is_locked(), ctr == links.size() - 1);
 		++ctr;
 	}
 

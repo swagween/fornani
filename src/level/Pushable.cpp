@@ -68,20 +68,20 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}*/
 	}
 
-	player.collider.handle_collider_collision(collider.bounding_box);
+	player.collider.handle_collider_collision(collider);
 	for (auto& enemy : map.enemy_catalog.enemies) {
 		if (enemy->is_transcendent()) { continue; }
-		enemy->get_collider().handle_collider_collision(collider.bounding_box);
+		enemy->get_collider().handle_collider_collision(collider);
 		if (size == 1) {
 			collider.handle_collider_collision(enemy->get_collider().bounding_box);
 			collider.handle_collider_collision(enemy->get_secondary_collider().bounding_box);
 		}
 	}
 	if (size == 1) { collider.handle_collider_collision(player.collider.bounding_box); } // big ones should crush the player
-	if (abs(forced_momentum.x) > 0.1f || abs(forced_momentum.y) > 0.1f) { set_moving(); }
-	collider.physics.position += forced_momentum;
-	if (!collider.has_jump_collision()) { forced_momentum = {}; }
-	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { forced_momentum = {}; }
+	if (abs(collider.physics.forced_momentum.x) > 0.1f || abs(collider.physics.forced_momentum.y) > 0.1f) { set_moving(); }
+	collider.physics.impart_momentum();
+	if (!collider.has_jump_collision()) { collider.physics.forced_momentum = {}; }
+	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { collider.physics.forced_momentum = {}; }
 	collider.update(svc);
 	collider.detect_map_collision(map);
 	for (auto& other : map.pushables) {
@@ -111,7 +111,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	collider.physics.acceleration = {};
 }
 
-void Pushable::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider.bounding_box); }
+void Pushable::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider); }
 
 void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	snap = collider.snap_to_grid(1, 4.f, 2.f);

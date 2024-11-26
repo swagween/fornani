@@ -8,7 +8,7 @@ void AbilityManager::update(automa::ServiceProvider& svc) {}
 
 void AbilityManager::give_ability(Abilities ability) { ability_flags.set(ability); }
 
-void AbilityManager::give_ability(std::string_view ability) { give_ability(ability_from_label.at(ability)); }
+void AbilityManager::give_ability(int ability) { give_ability(static_cast<Abilities>(ability)); }
 
 void AbilityManager::remove_ability(Abilities ability) { ability_flags.reset(ability); }
 

@@ -9,7 +9,6 @@ namespace lookup {
 
 
 inline const float SPACING{ 32.0f };
-inline const int NUM_STYLES{21};
 
 const inline float unit_size_f{ 32.0f };
 inline int const unit_size_i{32};
@@ -17,123 +16,10 @@ inline int const unit_size_i{32};
 inline float const min_hook_length{32.f};
 inline float const max_hook_length{256.f};
 
-enum class CONTROLS {
-    JUMP,
-    SHOOT,
-    DASH,
-    MOVE_LEFT,
-	MOVE_RIGHT,
-	LOOK_UP,
-	LOOK_DOWN,
-    ARMS_SWITCH_LEFT,
-    ARMS_SWITCH_RIGHT,
-    INSPECT,
-    SELECT,
-    PAUSE
-};
+enum class Style { firstwind, overturned, base, factory, greatwing, provisional, END };
 
-enum class STYLE {
-    FIRSTWIND,
-    OVERTURNED,
-    GRUB,
-    TOXIC,
-    BASE,
-    FROZEN,
-    NIGHT,
-    WORM,
-    SKY,
-    ASH,
-    GREATWING,
-    ICE,
-    SNOW,
-    STONE,
-    ABANDONED,
-    ANCIENT,
-    FACTORY,
-    SHADOW,
-    HOARDER,
-    MANSION,
-    PROVISIONAL
-};
-
-enum class ALPHABET {
-    A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
-    ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, ZERO, APOSTROPHE, PERIOD,
-    EXCLAM, PERCENT, OPEN_ANGLED_BRACKET, CLOSED_ANGLED_BRACKET, QUESTION_MARK, COLON,
-    DASH, UNDESRCORE, HYPHEN, OPEN_PARENTHESIS, CLOSED_PARENTHESIS, HASH, PLUS, SQUARE
-};
-
-inline std::unordered_map<int, STYLE> get_style {
-    {0,     STYLE::FIRSTWIND    },
-    {1,     STYLE::OVERTURNED   },
-    {2,     STYLE::GRUB         },
-    {3,     STYLE::TOXIC        },
-    {4,     STYLE::BASE         },
-    {5,     STYLE::FROZEN       },
-    {6,     STYLE::NIGHT        },
-    {7,     STYLE::WORM         },
-    {8,     STYLE::SKY          },
-    {9,     STYLE::ASH          },
-    {10,    STYLE::GREATWING    },
-    {11,    STYLE::ICE          },
-    {12,    STYLE::SNOW         },
-    {13,    STYLE::STONE        },
-    {14,    STYLE::ABANDONED    },
-    {15,    STYLE::ANCIENT      },
-    {16,    STYLE::FACTORY      },
-    {17,    STYLE::SHADOW       },
-    {18,    STYLE::HOARDER      },
-    {19,    STYLE::MANSION      },
-    {20,    STYLE::PROVISIONAL  }
-};
-
-inline std::unordered_map<STYLE, int> get_style_id {
-    {STYLE::FIRSTWIND, 0    },
-    {STYLE::OVERTURNED, 1   },
-    {STYLE::GRUB, 2         },
-    {STYLE::TOXIC, 3        },
-    {STYLE::BASE, 4         },
-    {STYLE::FROZEN, 5       },
-    {STYLE::NIGHT, 6        },
-    {STYLE::WORM, 7         },
-    {STYLE::SKY, 8          },
-    {STYLE::ASH, 9          },
-    {STYLE::GREATWING, 10   },
-    {STYLE::ICE, 11         },
-    {STYLE::SNOW, 12        },
-    {STYLE::STONE, 13       },
-    {STYLE::ABANDONED, 14   },
-    {STYLE::ANCIENT, 15     },
-    {STYLE::FACTORY, 16     },
-    {STYLE::SHADOW, 17      },
-    {STYLE::HOARDER, 18     },
-    {STYLE::MANSION, 19     },
-    {STYLE::PROVISIONAL, 20 }
-};
-
-inline std::unordered_map<STYLE, const char*> get_style_string {
-    {STYLE::FIRSTWIND,  "firstwind"     },
-    {STYLE::OVERTURNED, "overturned"    },
-    {STYLE::GRUB,       "grub"          },
-    {STYLE::TOXIC,      "toxic"         },
-    {STYLE::BASE,       "base"          },
-    {STYLE::FROZEN,     "frozen"        },
-    {STYLE::NIGHT,      "night"         },
-    {STYLE::WORM,       "worm"          },
-    {STYLE::SKY,        "sky"           },
-    {STYLE::ASH,        "ash"           },
-    {STYLE::GREATWING,  "greatwing"     },
-    {STYLE::ICE,        "ice"           },
-    {STYLE::SNOW,       "snow"          },
-    {STYLE::STONE,      "stone"         },
-    {STYLE::ABANDONED,  "abandoned"     },
-    {STYLE::ANCIENT,    "ancient"       },
-    {STYLE::FACTORY,    "factory"       },
-    {STYLE::SHADOW,     "shadow"        },
-    {STYLE::HOARDER,    "hoarder"       },
-    {STYLE::MANSION,    "mansion"       },
-    {STYLE::PROVISIONAL,"provisional"   }
-};
+inline std::unordered_map<Style, char const*> get_style_string{{Style::firstwind, "firstwind"}, {Style::overturned, "overturned"}, {Style::base, "base"},
+															   {Style::greatwing, "greatwing"}, {Style::factory, "factory"},	   {Style::provisional, "provisional"}};
 
 inline std::unordered_map<char, int> get_character {
     {'a', 0},
@@ -188,19 +74,6 @@ inline std::unordered_map<char, int> get_character {
     {'#', 49},
     {'+', 50},
     {'`', 51}
-};
-
-inline std::unordered_map<char, int> get_orb_number{
-    {'0', 0},
-    {'1', 1},
-    {'2', 2},
-    {'3', 3},
-    {'4', 4},
-    {'5', 5},
-    {'6', 6},
-    {'7', 7},
-    {'8', 8},
-    {'9', 9}
 };
 
 }

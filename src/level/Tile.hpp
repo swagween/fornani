@@ -65,6 +65,7 @@ struct Tile {
 
 	bool collision_check{};
 	bool surrounded{};
+	bool exposed{};
 	mutable bool debug_flag{};
 	util::BitFlags<TileState> flags{};
 };

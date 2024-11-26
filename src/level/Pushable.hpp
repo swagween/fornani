@@ -40,7 +40,6 @@ class Pushable {
 	[[nodiscard]] auto is_moving() { return state.test(PushableState::moving); }
 	shape::Collider collider{};
 	shape::Shape start_box{};
-	sf::Vector2<float> forced_momentum{};
 
   private:
 	util::BitFlags<PushableAttributes> attributes{};

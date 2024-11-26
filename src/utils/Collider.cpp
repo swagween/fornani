@@ -232,8 +232,9 @@ void Collider::correct_x(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	auto xdist = predictive_horizontal.position.x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
-	physics.position.x += correction;
-	physics.zero_x();
+		physics.position.x += correction;
+		physics.zero_x();
+	
 }
 
 void Collider::correct_y(sf::Vector2<float> mtv) {
@@ -246,8 +247,9 @@ void Collider::correct_y(sf::Vector2<float> mtv) {
 	}
 	auto ydist = predictive_vertical.position.y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
-	physics.position.y += correction;
-	physics.zero_y();
+		physics.position.y += correction;
+		physics.zero_y();
+	
 }
 
 void Collider::correct_x_y(sf::Vector2<float> mtv) {
@@ -293,11 +295,19 @@ void Collider::resolve_depths() {
 
 void Collider::handle_platform_collision(Shape const& cell) {}
 
-void Collider::handle_collider_collision(Shape const& collider) {
-	if (flags.general.test(General::ignore_resolution)) { return; }
-	if (!vicinity.overlaps(collider)) { return; }
+bool Collider::handle_collider_collision(Shape const& collider, bool soft) {
+	auto ret{false};
+	if (soft) {
+		if (!vicinity.overlaps(collider)) { return ret; }
+		mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, collider);
+		if (bounding_box.SAT(collider)) { physics.position += mtvs.actual * 0.01f; }
+		sync_components();
+		return ret;
+	}
+	if (flags.general.test(General::ignore_resolution)) { return ret; }
+	if (!vicinity.overlaps(collider)) { return ret; }
 	if (collision_depths) {
-		if (collision_depths.value().crushed()) { return; }
+		if (collision_depths.value().crushed()) { return ret; }
 	}
 
 	flags.collision = {};
@@ -313,7 +323,7 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	bool corner_collision{true};
 	if (predictive_vertical.SAT(collider)) {
 		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
-		//if (abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
+		// if (abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
 		if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 			flags.state.set(State::just_landed);
 			flags.animation.set(Animation::just_landed);
@@ -349,6 +359,7 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	if (jumpbox.SAT(collider)) {
 		flags.state.set(State::grounded);
 		flags.state.set(State::is_any_jump_collision);
+		ret = true;
 	} else {
 		flags.state.reset(State::grounded);
 	}
@@ -356,6 +367,16 @@ void Collider::handle_collider_collision(Shape const& collider) {
 	if (flags.external_state.test(ExternalState::vert_collider_collision)) { flags.external_state.reset(ExternalState::horiz_collider_collision); }
 	flags.movement.reset(Movement::dashing);
 	sync_components();
+	return ret;
+}
+
+void Collider::handle_collider_collision(Collider const& collider, bool soft, bool momentum) {
+	if (collider.flags.general.test(General::top_only_collision)) {
+		if (jumpbox.position.y > collider.physics.position.y + 4 || physics.acceleration.y < 0.0f) { return; }
+	}
+	if (handle_collider_collision(collider.bounding_box, soft)) {
+		if (momentum) { physics.forced_momentum = collider.physics.position - collider.physics.previous_position; }
+	}
 }
 
 void Collider::update(automa::ServiceProvider& svc) {
@@ -446,6 +467,10 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	if (collision_depths) { collision_depths.value().render(bounding_box, win, cam); }
 
+}
+void Collider::set_position(sf::Vector2<float> pos) {
+	physics.position = pos;
+	sync_components();
 }
 void Collider::reset() { flags.state = {}; }
 void Collider::reset_ground_flags() {

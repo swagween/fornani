@@ -41,9 +41,9 @@ class SwitchBlock {
 	[[nodiscard]] auto switched() const -> bool { return state != previous_state; }
 	[[nodiscard]] auto on() const -> bool { return state != SwitchBlockState::empty; }
 	[[nodiscard]] auto off() const -> bool { return state == SwitchBlockState::empty; }
+	shape::Collider collider{};
 
   private:
-	shape::Collider collider{};
 	sf::Sprite sprite{};
 	SwitchType type{};
 	SwitchBlockState state{};

@@ -21,6 +21,7 @@
 #include "PlayerController.hpp"
 #include "Transponder.hpp"
 #include "VisitHistory.hpp"
+#include "Piggybacker.hpp"
 
 namespace gui {
 class Console;
@@ -113,6 +114,7 @@ class Player {
 	void flash_sprite();
 	void calculate_sprite_offset();
 	void set_idle();
+	void piggyback(int id);
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
@@ -129,6 +131,7 @@ class Player {
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.categories.inventory.has_item(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
+	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
 
 	// moves
 	void jump(world::Map& map);
@@ -214,8 +217,8 @@ class Player {
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2<float>> accumulated_forces{};
-	sf::Vector2<float> forced_momentum{};
 	std::optional<util::QuestCode> quest_code{};
+	std::optional<Piggybacker> piggybacker{};
 
 	automa::ServiceProvider* m_services;
 
@@ -240,7 +243,7 @@ class Player {
 	struct {
 		float stop{5.8f};
 		float wallslide{-1.5f};
-		float suspend{4.4f};
+		float suspend{0.9f};
 		float landed{0.4f};
 		float run{0.02f};
 		float quick_turn{0.9f};
@@ -248,6 +251,7 @@ class Player {
 	struct {
 		dir::Direction left_squish{};
 		dir::Direction right_squish{};
+		dir::Direction movement{};
 	} directions{};
 };
 

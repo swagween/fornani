@@ -12,6 +12,7 @@ Game::Game(char** argv, WindowManager& window) : services(argv), player(services
 	services.constants.screen_dimensions = window.screen_dimensions;
 	// controls
 	services.data.load_controls(services.controller_map);
+	services.data.load_settings();
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
@@ -126,12 +127,13 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					// flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
+					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
-						services.assets.menu_back.play();
+						services.soundboard.flags.menu.set(audio::Menu::forward_switch);
 					} else {
 						flags.set(GameFlags::playtest);
-						services.assets.menu_next.play();
+						services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 					}
 				}
 				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(services.window->screencap); }
@@ -232,6 +234,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
+					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
 					ImGui::Text("32t max: %u", static_cast<unsigned int>(std::numeric_limits<uint32_t>::max()));
 					ImGui::Separator();
 					ImGui::Text("Player");
@@ -240,9 +243,15 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 					ImGui::Text("Coyote Time: %i", player.controller.get_jump().get_coyote());
 					ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
+					ImGui::Separator();
+					ImGui::Text("Jump");
+					ImGui::Separator();
 					ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
+					ImGui::Text("Can Jump? %s", player.controller.can_jump() ? "Yes" : "No");
 					ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
+					ImGui::Text("Jump Request: %i", player.controller.get_jump().get_request());
 					ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
+					ImGui::Text("Wallsliding? %s", player.controller.get_wallslide().is_wallsliding() ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("X Position: %.2f", player.collider.physics.position.x / 32.f);
 					ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / 32.f);
@@ -309,6 +318,21 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("MiniMap Center Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().y);
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("NPC")) {
+					ImGui::Separator();
+					for (auto& entry : services.data.npc_locations) {
+						ImGui::Text("NPC: %i", entry.first);
+						ImGui::SameLine();
+						ImGui::Text(" ; Location: %i", entry.second);
+					}
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Sound")) {
+					ImGui::Separator();
+					ImGui::Text("Sound pool size: %i", static_cast<int>(services.soundboard.number_of_playng_sounds()));
+					ImGui::Separator();
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Music")) {
 					ImGui::Separator();
 					ImGui::Checkbox("Music Player", &playtest.m_musicplayer);
@@ -324,8 +348,13 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				}
 				if (ImGui::BeginTabItem("Story")) {
 					ImGui::Separator();
+					ImGui::Text("Piggybacking? %s", static_cast<bool>(player.piggybacker) ? "Yes" : "No");
+					ImGui::Separator();
 					ImGui::Text("Quest Progress:");
 					ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::npc, 20));
+					ImGui::Text("Justin: %i", services.quest.get_progression(QuestType::npc, 24));
+					ImGui::Text("Justin Hidden: %i", services.quest.get_progression(fornani::QuestType::hidden_npcs, 24));
+					ImGui::Text("Gobe: %i", services.quest.get_progression(QuestType::npc, 3));
 					ImGui::Text("Bryn's Notebook: %i", services.quest.get_progression(QuestType::inspectable, 1));
 					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::inspectable, 110));
 					ImGui::Separator();
@@ -349,98 +378,98 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							flags.reset(GameFlags::in_game);
 						}
 						if (ImGui::Button("Caster")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 219);
 							player.set_position({32 * 2, 32 * 27});
 						}
 						if (ImGui::Button("Minigus")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 115);
 							player.set_position({32 * 3, 32 * 8});
 						}
 						if (ImGui::Button("Hangar")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 112);
 							player.set_position({32 * 2, 32 * 8});
 						}
 						if (ImGui::Button("Canopy")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 224);
 							player.set_position({32 * 4, 32 * 8});
 						}
 						if (ImGui::Button("Hideout")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 125);
 							player.set_position({32 * 8, 32 * 2});
 						}
 						if (ImGui::Button("Shaft")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 107);
 							player.set_position({32 * 6, 32 * 4});
 						}
 						if (ImGui::Button("Atrium 1")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 102);
 							player.set_position({32 * 45, 32 * 56});
 						}
 						if (ImGui::Button("Corridor 2")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 104);
 							player.set_position({7 * 32, 7 * 32});
 						}
 						if (ImGui::Button("Arena")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 121);
 							player.set_position({3 * 32, 9 * 32});
 						}
 						if (ImGui::Button("Bunker")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 124);
 							player.set_position({4 * 32, 3 * 32});
 						}
 						if (ImGui::Button("Cargo")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 103);
 							player.set_position({7 * 32, 7 * 32});
 						}
 						if (ImGui::Button("Prison")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 100);
 							player.set_position({7 * 32, 7 * 32});
 						}
 						if (ImGui::Button("Lab")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 110);
 							player.set_position({7 * 32, 9 * 32});
 						}
 						ImGui::Text("Test Levels:");
 						if (ImGui::Button("Junkyard")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 3001);
 							player.set_position({4 * 32, 9 * 32});
 						}
 						if (ImGui::Button("Bridge")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 6001);
 							player.set_position({4 * 32, 9 * 32});
 						}
 						if (ImGui::Button("Weather")) {
-							services.assets.click.play();
+							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 9901);
 							player.set_position({7 * 32, 7 * 32});
@@ -478,6 +507,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("dash...: %s", player.animation.state == player::AnimState::dash ? "flag set" : "");
 								ImGui::Text("sprint.: %s", player.animation.state == player::AnimState::sprint ? "flag set" : "");
 								ImGui::Text("wlslide: %s", player.animation.state == player::AnimState::wallslide ? "flag set" : "");
+								ImGui::Text("wljump.: %s", player.animation.state == player::AnimState::walljump ? "flag set" : "");
 								ImGui::Text("inspect: %s", player.animation.state == player::AnimState::inspect ? "flag set" : "");
 								ImGui::Text("die....: %s", player.animation.state == player::AnimState::die ? "flag set" : "");
 								ImGui::EndTabItem();

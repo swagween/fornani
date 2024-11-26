@@ -5,6 +5,7 @@
 #include "../../particle/Chain.hpp"
 #include "../../utils/BitFlags.hpp"
 #include "TreasureContainer.hpp"
+#include "SpawnablePlatform.hpp"
 #include <optional>
 #include <vector>
 #include <memory>
@@ -29,10 +30,12 @@ class Vine {
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void add_platform(automa::ServiceProvider& svc, int link_index);
 	[[nodiscard]] auto foreground() const -> bool { return flags.test(VineFlags::foreground); }
 
   private:
 	std::optional<std::vector<std::unique_ptr<TreasureContainer>>> treasure_balls{};
+	std::optional<std::vector<std::unique_ptr<SpawnablePlatform>>> spawnable_platforms{};
 	util::BitFlags<VineFlags> flags{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> spacing{0.f, 24.f};

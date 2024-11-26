@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "room_id": 206,
+    "metagrid": [
+      26,
+      20
+    ],
+    "dimensions": [
+      48,
+      16
+    ],
+    "chunk_dimensions": [
+      3,
+      1
+    ],
+    "style": 1,
+    "background": 3,
+    "music": "",
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "portals": [
+    {
+      "dimensions": [
+        3,
+        1
+      ],
+      "position": [
+        6,
+        0
+      ],
+      "source_id": 206,
+      "destination_id": 201,
+      "activate_on_contact": true,
+      "already_open": false,
+      "locked": false,
+      "key_id": 0
+    },
+    {
+      "dimensions": [
+        1,
+        3
+      ],
+      "position": [
+        47,
+        6
+      ],
+      "source_id": 206,
+      "destination_id": 207,
+      "activate_on_contact": true,
+      "already_open": false,
+      "locked": false,
+      "key_id": 0
+    }
+  ]
+}

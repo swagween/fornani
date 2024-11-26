@@ -103,8 +103,11 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	force_cooldown.update();
 	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
 	accumulated_forces.clear();
-	collider.physics.position += forced_momentum;
-	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { forced_momentum = {}; }
+	collider.physics.impart_momentum();
+	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) {
+		collider.physics.forced_momentum = {}; }
+	auto switched = directions.movement.lr != controller.direction.lr || !controller.moving();
+	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched || grounded()) { collider.physics.forced_acceleration = {}; }
 
 	collider.update(*m_services);
 	hurtbox.set_position(collider.hurtbox.position - sf::Vector2<float>{0.f, 14.f});
@@ -127,6 +130,11 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(12)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up))); }
 	
 	update_antennae();
+	// piggybacker
+	if (m_services->player_dat.piggy_id == 0 && piggybacker) { piggybacker = {}; }
+	if (m_services->player_dat.piggy_id != 0 && !piggybacker) { piggyback(m_services->player_dat.piggy_id); }
+	if (piggybacker) { piggybacker.value().update(*m_services, *this); }
+
 	if (is_dead()) {
 		for (auto& a : antennae) { a.collider.detect_map_collision(map); }
 	}
@@ -142,6 +150,9 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (flags.state.test(State::crushed)) { return; }
 	//debug
 	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.green;
+
+	//piggybacker
+	if (piggybacker) { piggybacker.value().render(svc, win, campos); }
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
@@ -206,14 +217,10 @@ void Player::update_animation() {
 			handle_turning();
 		}
 	} else {
-		if (collider.physics.velocity.y > -thresholds.suspend && collider.physics.velocity.y < thresholds.suspend) { animation.state = AnimState::suspend; }
+		if (collider.physics.apparent_velocity().y > -thresholds.suspend && collider.physics.apparent_velocity().y < thresholds.suspend && !controller.get_wallslide().is_wallsliding() && !controller.is_walljumping()) { animation.state = AnimState::suspend; }
 	}
 
-	if (collider.physics.velocity.y > thresholds.suspend && !grounded()) { animation.state = AnimState::fall; }
-	if (collider.flags.animation.test(shape::Animation::just_landed)) {
-		collider.flags.animation.reset(shape::Animation::just_landed);
-		animation.state = AnimState::land;
-	}
+	if (collider.physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.state = AnimState::fall; }
 
 	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
 		if (controller.dashing() && controller.can_dash()) { animation.state = AnimState::dash; }
@@ -360,11 +367,16 @@ void Player::set_idle() {
 	animation.state_function = std::bind(&PlayerAnimation::update_idle, &animation);
 }
 
+void Player::piggyback(int id) {
+	piggybacker = Piggybacker(*m_services, m_services->tables.npc_label.at(id), collider.physics.position);
+}
+
 void Player::jump(world::Map& map) {
 	if (is_dead() || animation.state == AnimState::die) { return; }
 	if (controller.get_jump().began()) {
 		collider.flags.movement.set(shape::Movement::jumping);
 		animation.state = AnimState::rise;
+		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
 		if (m_services->ticker.every_x_ticks(20)) {
 			map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
 		}
@@ -390,7 +402,8 @@ void Player::jump(world::Map& map) {
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
 		collider.physics.velocity.y = 0.f;
 		animation.state = AnimState::rise;
-		m_services->soundboard.flags.player.set(audio::Player::jump);
+		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
+		controller.get_wallslide().is_wallsliding() ? m_services->soundboard.flags.player.set(audio::Player::walljump) : m_services->soundboard.flags.player.set(audio::Player::jump);
 		collider.flags.movement.set(shape::Movement::jumping);
 	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.apparent_velocity().y < 0.0f) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
@@ -463,6 +476,7 @@ void Player::freeze_position() {
 }
 
 void Player::update_direction() {
+	directions.movement.lr = collider.physics.apparent_velocity().x > 0.f ? dir::LR::right : dir::LR::left;
 	if (controller.facing_left()) {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
 	} else if (controller.facing_right()) {
@@ -476,6 +490,7 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon() {
+	controller.set_arsenal(static_cast<bool>(hotbar));
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
@@ -621,6 +636,7 @@ void Player::update_invincibility() {
 }
 
 void Player::start_over() {
+	flags.state.reset(State::crushed);
 	health.reset();
 	controller.unrestrict();
 	health.invincibility.start(8);

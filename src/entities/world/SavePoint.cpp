@@ -37,8 +37,6 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 	activated = false;
 
 	if (player.collider.bounding_box.SAT(proximity_box)) {
-		svc.soundboard.proximities.save = abs(player.collider.bounding_box.position.x - bounding_box.position.x);
-
 		if (player.collider.bounding_box.SAT(bounding_box)) {
 			intensity = 3;
 			if (animation.keyframe_over()) { animation.params.framerate = 4; }

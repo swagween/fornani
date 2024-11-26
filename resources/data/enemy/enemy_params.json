@@ -352,6 +352,51 @@
       "rare_drops": true
     }
   },
+  "archer": {
+    "metadata": {
+      "id": 9,
+      "variant": "guardian"
+    },
+    "physical": {
+      "dimensions": [ 20, 20 ],
+      "sprite_dimensions": [ 64, 64 ],
+      "spritesheet_dimensions": [ 2, 9 ],
+      "offset": [ 11, -33 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 1600.0, 1600.0 ],
+      "hostile_range": [ 280.0, 280.0 ],
+      "friction": 0.98,
+      "gravity": 6.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 18,
+      "base_damage": 0.0,
+      "speed": 0.9,
+      "loot_multiplier": 4.0,
+      "drop_range": [ 4, 7 ],
+      "rare_drop_id": 0
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": false,
+      "foreground": false,
+      "rare_drops": false
+    }
+  },
   "hauler": {
     "metadata": {
       "id": 6,

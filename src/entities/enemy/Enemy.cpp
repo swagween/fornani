@@ -67,12 +67,11 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned)
 
 	switch (in_audio["hit"].as<int>()) {
 	case -1: flags.general.set(GeneralFlags::custom_sounds); break;
-	case 0: sounds.hit.setBuffer(svc.assets.b_enemy_hit_low); break;
-	case 1: sounds.hit.setBuffer(svc.assets.b_enemy_hit_medium); break;
-	case 2: sounds.hit.setBuffer(svc.assets.b_enemy_hit_high); break;
-	case 3: sounds.hit.setBuffer(svc.assets.b_enemy_hit_squeak); break;
+	case 0: sound.hit_flag = audio::Enemy::hit_low; break;
+	case 1: sound.hit_flag = audio::Enemy::hit_medium; break;
+	case 2: sound.hit_flag = audio::Enemy::hit_high; break;
+	case 3: sound.hit_flag = audio::Enemy::hit_squeak; break;
 	}
-	sounds.inv_hit.setBuffer(svc.assets.b_enemy_hit_inv);
 
 	health.set_max(attributes.base_hp);
 	health_indicator.init(svc, 0);
@@ -100,6 +99,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned)
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
+	sound.hurt_sound_cooldown.update();
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position, 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
@@ -131,6 +131,10 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		collider.detect_map_collision(map);
 		secondary_collider.detect_map_collision(map);
 	}
+	for (auto& other : map.enemy_catalog.enemies) {
+		if (other.get() != this) { handle_collision(other->collider); }
+	}
+
 	collider.reset();
 	secondary_collider.reset();
 	if (collider.collision_depths) { collider.collision_depths.value().update(); }
@@ -204,11 +208,13 @@ void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& wi
 
 void Enemy::handle_player_collision(player::Player& player) const {
 	if (died()) { return; }
-	if (player_collision()) { player.collider.handle_collider_collision(collider.bounding_box); }
+	if (player_collision()) { player.collider.handle_collider_collision(collider); }
 	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
 		if (player.collider.hurtbox.overlaps(collider.bounding_box)) { player.hurt(attributes.base_damage); }
 	}
 }
+
+void Enemy::handle_collision(shape::Collider& other) { collider.handle_collider_collision(other, true); }
 
 void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 
@@ -224,10 +230,10 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		hurt();
 		health.inflict(proj.get_damage());
 		health_indicator.add(-proj.get_damage());
-		if (!flags.general.test(GeneralFlags::custom_sounds)) { sounds.hit.play(); }
+		if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
 	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
 		map.effects.push_back(entity::Effect(svc, proj.physics.position, {}, 0, 6));
-		sounds.inv_hit.play();
+		svc.soundboard.flags.world.set(audio::World::hard_hit);
 	}
 	if (!proj.stats.persistent && (!died() || just_died())) { proj.destroy(false); }
 }

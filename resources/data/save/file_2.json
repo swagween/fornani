@@ -11,7 +11,6 @@
       "y": 327.0
     },
     "arsenal": [
-
     ],
     "equipped_gun": 0,
     "abilities": [
@@ -23,7 +22,6 @@
       "pants": 0
     },
     "items": [
-
     ],
     "stats": {
       "death_count": 0,
@@ -41,27 +39,20 @@
       }
     },
     "hotbar": [
-
     ]
   },
   "save_point_id": 100,
   "unlocked_doors": [
-
   ],
   "opened_chests": [
-
   ],
   "activated_switches": [
-
   ],
   "destroyed_blocks": [
-
   ],
   "quest_progressions": [
-
   ],
   "destroyed_inspectables": [
-
   ],
   "tutorial": {
     "state": 0,
@@ -74,6 +65,6 @@
     "inventory": true
   },
   "discovered_rooms": [
-
-  ]
+  ],
+  "piggybacker": 0
 }

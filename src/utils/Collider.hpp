@@ -22,7 +22,7 @@ float const default_jumpbox_height = 4.0f;
 float const default_detector_width = 4.f;
 float const default_detector_height = 18.f;
 
-enum class General { ignore_resolution, complex, pushable, soft };
+enum class General { ignore_resolution, complex, pushable, soft, top_only_collision };
 enum class Animation { just_landed, sliding };
 enum class State {
 	just_collided,
@@ -86,9 +86,11 @@ class Collider {
 	void correct_corner(sf::Vector2<float> mtv);
 	void resolve_depths();
 	void handle_platform_collision(Shape const& cell);
-	void handle_collider_collision(Shape const& collider);
+	bool handle_collider_collision(Shape const& collider, bool soft = false); // returns true if grounded on collider
+	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void set_position(sf::Vector2<float> pos);
 	void reset();
 	void reset_ground_flags();
 
@@ -164,7 +166,7 @@ class Collider {
 		sf::Color local{};
 	} colors{};
 
-	float vert_threshold{0.1f}; // for landing
+	float vert_threshold{0.6f}; // for landing
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{1.0f};
 	float depth_buffer{1.0f};

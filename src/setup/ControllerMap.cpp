@@ -310,6 +310,8 @@ void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data)
 
 void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
 	std::cout << "Disconnected controller with handle = " << data->m_ulDisconnectedDeviceHandle << std::endl;
+	if(controller_handle != 0) { // pause the game 
+	}
 	controller_handle = 0;
 	last_controller_ty_used = ControllerType::keyboard; // Quickly switch to keyboard input
 }

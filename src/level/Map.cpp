@@ -41,6 +41,11 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
 	chunk_dimensions.y = meta["chunk_dimensions"][1].as<int>();
 	real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
+	auto style_value = meta["style"].as<int>();
+	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
+	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
+	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
+	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 
 	if (!soft) {
 		if (meta["cutscene_on_entry"]["flag"].as_bool()) {
@@ -56,15 +61,14 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			svc.music.load(meta["music"].as_string());
 			svc.music.play_looped(10);
 		}
+		if (meta["ambience"].is_string()) {
+			ambience.load(svc.assets.finder, meta["ambience"].as_string());
+			ambience.play();
+		}
 
 		if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
 		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 
-		auto style_value = meta["style"].as<int>();
-		style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
-		style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
-		if (svc.greyblock_mode()) { style_id = 20; }
-		native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
 		styles.breakables = meta["styles"]["breakables"].as<int>();
 		styles.pushables = meta["styles"]["pushables"].as<int>();
@@ -79,6 +83,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			for (auto& convo : entry["suites"][npc_state].array_view()) { npcs.back().push_conversation(convo.as_string()); }
 			npcs.back().set_position_from_scaled(pos);
 			if ((bool)entry["background"].as_bool()) { npcs.back().push_to_background(); }
+			if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back().hide(); }
+			if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
+			npcs.back().set_current_location(room_id);
 		}
 		for (auto& entry : metadata["chests"].array_view()) {
 			sf::Vector2<float> pos{};
@@ -115,6 +122,15 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
 			beds.push_back(entity::Bed(svc, pos, room_lookup));
 		}
+		for (auto& entry : metadata["scenery"]["basic"].array_view()) {
+			sf::Vector2<float> pos{};
+			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
+			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
+			auto var = entry["variant"].as<int>();
+			auto lyr = entry["layer"].as<int>();
+			auto parallax = entry["parallax"].as<float>();
+			scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
+		}
 		for (auto& entry : metadata["scenery"]["vines"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
@@ -122,6 +138,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
 			auto rev = static_cast<bool>(entry["reversed"].as_bool());
 			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
+			if (entry["platform"]) {
+				for (auto& link : entry["platform"]["link_indeces"].array_view()) { vines.back()->add_platform(svc, link.as<int>()); }
+			}
 		}
 		for (auto& entry : metadata["scenery"]["grass"].array_view()) {
 			sf::Vector2<float> pos{};
@@ -225,7 +244,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	if (!soft) {
 		generate_layer_textures(svc);
-
 		player->map_reset();
 		transition.end();
 		loading.start(16);
@@ -261,6 +279,16 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		player->freeze_position();
 	}
 
+	// hidden areas
+	flags.map_state.test(MapState::unobscure) ? cooldowns.fade_obscured.update() : cooldowns.fade_obscured.reverse();
+	if (check_cell_collision(player->collider, true)) {
+		if (!flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.start(); }
+		flags.map_state.set(MapState::unobscure);
+	} else {
+		if (flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.cancel(); }
+		flags.map_state.reset(MapState::unobscure);
+	}
+
 	for (auto& grenade : active_grenades) {
 		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(grenade.bounding_box)) {
 			player->controller.get_shield().damage();
@@ -280,10 +308,30 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			}
 		}
 	}
+
 	for (auto& grenade : active_grenades) {
 		for (auto& breakable : breakables) {
 			if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); }
 		}
+	}
+
+	// TODO: refactor this
+	if (svc.player_dat.piggy_id != 0) {
+		for (auto& n : npcs) {
+			if (n.get_id() == svc.player_dat.piggy_id) { n.hide(); }
+		}
+	}
+	if (svc.player_dat.drop_piggy) {
+		svc.player_dat.drop_piggy = false;
+		for (auto& n : npcs) {
+			if (n.get_id() == svc.player_dat.piggy_id) {
+				n.unhide();
+				n.set_position(player->collider.physics.position);
+				n.apply_force({32.f, -32.f});
+				n.set_current_location(room_id);
+			}
+		}
+		svc.player_dat.piggy_id = 0;
 	}
 
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
@@ -292,9 +340,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
 	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
+	std::erase_if(npcs, [](auto const& n) { return n.piggybacking(); });
 
 	manage_projectiles(svc);
-
+	svc.map_debug.active_projectiles = active_projectiles.size();
 	for (auto& proj : active_projectiles) {
 		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
@@ -342,6 +391,9 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	player->collider.reset_ground_flags();
 
+	// ambience
+	ambience.set_balance(cooldowns.fade_obscured.get_normalized() * 100.f);
+
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && loading.is_complete()) {
 		// std::cout << "Launch death console.\n";
@@ -384,7 +436,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	auto& layers = svc.data.get_layers(room_id);
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
-		style_id = style_id == 20 ? native_style_id : 20;
+		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);
 		generate_layer_textures(svc);
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
@@ -429,7 +481,20 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		layer_textures.at(i).display();
 		layer_sprite.setTexture(layer_textures.at(i).getTexture());
 		layer_sprite.setPosition(-cam);
-		win.draw(layer_sprite);
+		if (i == 7) {
+			obscuring_texture.display();
+			reverse_obscuring_sprite.setTexture(obscuring_texture.getTexture());
+			reverse_obscuring_sprite.setPosition(-cam);
+			obscuring_sprite = layer_sprite;
+			sf::Uint8 alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
+			sf::Uint8 revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
+			obscuring_sprite.setColor(sf::Color{255, 255, 255, alpha});
+			reverse_obscuring_sprite.setColor(sf::Color{255, 255, 255, revalpha});
+			if (alpha != 0) { win.draw(obscuring_sprite); }
+			if (revalpha != 0) { win.draw(reverse_obscuring_sprite); }
+		} else {
+			win.draw(layer_sprite);
+		}
 	}
 
 	//foreground enemies
@@ -498,6 +563,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam, real_dimensions);
+		for(auto& layer : scenery_layers) {
+			for (auto& piece : layer) { piece->render(svc, win, cam); }
+		}
 		for (int i = 0; i < 4; ++i) {
 			layer_textures.at(i).display();
 			layer_sprite.setTexture(layer_textures.at(i).getTexture());
@@ -572,7 +640,11 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
 		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
-		spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak);
+		if (player->equipped_weapon().multishot()) {
+			for (int i = 0; i < player->equipped_weapon().attributes.multishot; ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak); }
+		} else {
+			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak);
+		}
 		player->equipped_weapon().shoot();
 		if (!player->equipped_weapon().attributes.automatic) { player->controller.set_shot(false); }
 	}
@@ -593,9 +665,14 @@ void Map::generate_collidable_layer(bool live) {
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
+	auto ctr{0};
 	for (auto& layer : layers) {
 		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
 		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
+		if(ctr == 7) {
+			obscuring_texture.create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
+			obscuring_texture.clear(sf::Color::Transparent);
+		}
 		for (auto& cell : layer.grid.cells) {
 			if (cell.is_occupied() && !cell.is_special()) {
 				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
@@ -604,13 +681,21 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
 				tile_sprite.setPosition(cell.position());
 				layer_textures.at((int)layer.render_order).draw(tile_sprite);
+			} else if (ctr == 7) {
+				auto x_coord = static_cast<int>((1 % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
+				auto y_coord = static_cast<int>(std::floor(1 / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
+				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
+				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+				tile_sprite.setPosition(cell.position());
+				obscuring_texture.draw(tile_sprite);
 			}
 		}
+		++ctr;
 	}
 }
 
-bool Map::check_cell_collision(shape::Collider& collider) {
-	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
+	auto& grid = foreground ? get_layers().at(7).grid : get_layers().at(world::MIDDLEGROUND).grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
@@ -629,7 +714,7 @@ bool Map::check_cell_collision(shape::Collider& collider) {
 	return false;
 }
 
-bool Map::check_cell_collision_circle(shape::CircleCollider& collider) {
+bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms) {
 	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
@@ -642,6 +727,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider) {
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
+			if (cell.is_platform() && !collide_with_platforms) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return true; }
 		}

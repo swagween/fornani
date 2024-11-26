@@ -360,15 +360,7 @@ void TextWriter::process_selection() {
 
 void TextWriter::process_quest(util::QuestKey out) {
 	m_services->quest.process(*m_services, out);
-	if (out.type == 27) { m_services->state_controller.actions.set(automa::Actions::retry); }
 	if (out.type == 33) { communicators.reveal_item.set(out.id); }
-	if (out.type == 88) { m_services->state_controller.actions.set(automa::Actions::sleep); }
-	if (out.type == 89) { m_services->state_controller.actions.set(automa::Actions::main_menu); }
-	if (out.type == 69) { m_services->state_controller.actions.set(automa::Actions::print_stats); }
-	if (out.type == 70) { m_services->menu_controller.open_vendor_dialog(out.id); }
-	if (out.type == 97) { m_services->state_controller.actions.set(automa::Actions::delete_file); }
-	if (out.type == 299) { m_services->state_controller.actions.set(automa::Actions::end_demo); }
-	// std::cout << "Processed: " << out.type << ", " << out.id << ", " << out.source_id << ", " << out.amount << ", " << out.hard_set << "\n";
 }
 
 void TextWriter::shutdown() {

@@ -5,7 +5,6 @@
 #include <SFML/Graphics.hpp>
 #include "../utils/BitFlags.hpp"
 #include "../setup/ResourceFinder.hpp"
-#include <thread>
 
 namespace automa {
 struct ServiceProvider;
@@ -19,6 +18,7 @@ enum class MusicPlayerState { on };
 class MusicPlayer {
   public:
 	void load(std::string_view song_name);
+	void simple_load(std::string_view source);
 	void play_once(float vol = 100.f);
 	void play_looped(float vol = 100.f);
 	void update();

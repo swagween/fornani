@@ -18,6 +18,8 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	// circle.bounds.setRadius(16.f);
 	// circle.bounds.setOrigin({16.f, 16.f});
 
+	svc.menu_controller.reset_vendor_dialog();
+	open_vendor = false;
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
 		svc.stats.world.rooms_discovered.update();
@@ -70,6 +72,8 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 		sf::Vector2f player_pos = {ppx, ppy};
 		player->set_position(player_pos);
 	}
+
+	if (player->piggybacker) { player->piggybacker.value().set_position(player->collider.physics.position); }
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
@@ -228,6 +232,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
+	if (svc.debug_mode()) { map.background->debug(); }
 
 	// A.render(win, {});
 	// B.render(win, {});
@@ -256,7 +261,6 @@ void Dojo::toggle_pause_menu(ServiceProvider& svc) {
 	} else {
 		pause_window.open();
 		svc.soundboard.flags.console.set(audio::Console::menu_open);
-		svc.soundboard.play_sounds(svc);
 	}
 	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();
 }

@@ -61,6 +61,7 @@ class DataManager {
 	void destroy_block(int id);
 	void destroy_inspectable(std::string_view id);
 	void push_quest(util::QuestKey key);
+	void set_npc_location(int npc_id, int room_id);
 	bool door_is_unlocked(int id) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
@@ -81,6 +82,7 @@ class DataManager {
 	}
 
 	int get_room_index(int id);
+	int get_npc_location(int npc_id);
 	std::vector<world::Layer>& get_layers(int id);
 
 	dj::Json weapon{};
@@ -120,6 +122,7 @@ class DataManager {
 
 	automa::ServiceProvider* m_services;
 	std::unordered_map<int, npc::Vendor> marketplace{};
+	std::unordered_map<int, int> npc_locations{};
 
   private:
 	std::vector<int> opened_chests{};

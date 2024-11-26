@@ -26,7 +26,7 @@ void Breakable::update(automa::ServiceProvider& svc, player::Player& player) {
 
 void Breakable::handle_collision(shape::Collider& other) const {
 	if (destroyed()) { return; }
-	other.handle_collider_collision(collider.bounding_box);
+	other.handle_collider_collision(collider);
 }
 
 void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

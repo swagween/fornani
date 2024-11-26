@@ -20,9 +20,18 @@
 #include "../utils/Ticker.hpp"
 
 namespace automa {
-enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode };
+enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
 enum class AppFlags { fullscreen, tutorial, in_game };
 enum class StateFlags { hide_hud, no_menu };
+struct PlayerDat {
+	void set_piggy_id(int id) { piggy_id = id; }
+	void unpiggy() { drop_piggy = true; }
+	int piggy_id{};
+	bool drop_piggy{};
+};
+struct MapDebug {
+	int active_projectiles{};
+};
 struct ServiceProvider {
 	ServiceProvider(char** argv) : data(*this, argv) {};
 
@@ -45,6 +54,8 @@ struct ServiceProvider {
 	audio::MusicPlayer music{};
 	fornani::QuestTracker quest{};
 	fornani::StatTracker stats{};
+	PlayerDat player_dat{};
+	MapDebug map_debug{};
 	config::AccessibilityService a11y{};
 
 	// debug stuff
@@ -53,6 +64,7 @@ struct ServiceProvider {
 
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
+	void toggle_debug() { debug_mode() ? debug_flags.reset(DebugFlags::debug_mode) : debug_flags.set(DebugFlags::debug_mode); }
 	void set_fullscreen(bool flag) { flag ? app_flags.set(AppFlags::fullscreen) : app_flags.reset(AppFlags::fullscreen); }
 	void set_tutorial(bool flag) { flag ? app_flags.set(AppFlags::tutorial) : app_flags.reset(AppFlags::tutorial); }
 
@@ -63,6 +75,7 @@ struct ServiceProvider {
 	[[nodiscard]] auto no_menu() const -> bool { return state_flags.test(StateFlags::no_menu); }
 	[[nodiscard]] auto demo_mode() const -> bool { return debug_flags.test(DebugFlags::demo_mode); }
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
+	[[nodiscard]] auto debug_mode() const -> bool { return debug_flags.test(DebugFlags::debug_mode); }
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
 };
 } // namespace automa

@@ -80,6 +80,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& arms_switch_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_left).triggered;
 	auto const& arms_switch_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_right).triggered;
 
+	auto const& left_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).released;
+	auto const& right_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).released;
 	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
 	auto const& down_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).triggered;
 
@@ -91,7 +93,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& dash_right = false; // XXX svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
 
 	auto const& hook_held = false; // XXX svc.controller_map.label_to_control.at("secondary_action").held();
-	
 
 	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
 	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
@@ -121,7 +122,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	slide.update();
 	key_map[ControllerInput::slide] = 0.f;
 	if (moving() && down && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
-	if ((down_released || !moving()) && !roll.rolling()) { slide.break_out(); }
+	if ((down_released || (left_released || right_released)) && !roll.rolling()) { slide.break_out(); }
 
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
@@ -147,14 +148,15 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		hook_flags.set(Hook::hook_released);
 	}
 
-	if (!restricted() && !shot()) {
+	if (!restricted() && (!shot() || !has_arsenal())) {
 		direction.lr = moving_left() ? dir::LR::left : direction.lr;
 		direction.lr = moving_right() ? dir::LR::right : direction.lr;
 		direction.und = dir::UND::neutral;
 		direction.und = up ? dir::UND::up : direction.und;
 		direction.und = down && !grounded() ? dir::UND::down : direction.und;
-	} else if ((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) {
+	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) && has_arsenal()){
 		key_map[ControllerInput::move_x] *= backwards_dampen;
+	}else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left))) {
 		key_map[ControllerInput::slide] = 0.f;
 	}
 
@@ -164,7 +166,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
 
-	bool can_launch = !restricted() && flags.test(MovementState::grounded) && !jump.launched();
+	bool can_launch = !restricted() && (flags.test(MovementState::grounded) || wallslide.is_wallsliding()) && !jump.launched();
 	can_launch ? jump.states.set(JumpState::can_jump) : jump.states.reset(JumpState::can_jump);
 
 	if (jump_started) { jump.request_jump(); }
@@ -227,6 +229,8 @@ void PlayerController::cancel_dash_request() { dash_request = -1; }
 
 void PlayerController::dash() { dash_count = 1; }
 
+void PlayerController::walljump() { flags.set(MovementState::walljumping); }
+
 void PlayerController::autonomous_walk() {
 	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = 1.f : key_map[ControllerInput::move_x] = -1.f;
 	if (sprinting()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
@@ -258,6 +262,10 @@ void PlayerController::nullify_dash() {
 	cancel_dash_request();
 	stop_dashing();
 }
+
+void PlayerController::stop_walljumping() { flags.reset(MovementState::walljumping); }
+
+void PlayerController::set_arsenal(bool const has) { has ? hard_state.set(HardState::has_arsenal) : hard_state.reset(HardState::has_arsenal); }
 
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {

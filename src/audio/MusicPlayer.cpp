@@ -20,6 +20,23 @@ void MusicPlayer::load(std::string_view song_name) {
 	switch_on();
 	flags.state.reset(SongState::looping);
 }
+
+void MusicPlayer::simple_load(std::string_view source) {
+	if (global_off()) { return; }
+	if (label == source && playing()) { return; }
+	if (source == "") { return; }
+	if (source == "none") {
+		stop();
+		return;
+	}
+	label = source;
+	std::string path = source.data();
+	song_first.openFromFile(path + ".ogg");
+	song_loop.openFromFile(path + ".ogg");
+	switch_on();
+	flags.state.reset(SongState::looping);
+}
+
 void MusicPlayer::play_once(float vol) {
 	if (global_off()) { return; }
 	if (switched_off()) { return; }
