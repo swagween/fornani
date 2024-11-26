@@ -23,6 +23,7 @@ class AssetManager {
 
 	void import_textures();
 	void load_audio();
+	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
 
 	// player and NPCs!

@@ -1,60 +1,98 @@
 {
+  "black": {
+    "dimensions": [
+      960,
+      512
+    ],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      }
+    ]
+  },
   "rosy_haze": {
-    "used_layers": 5,
-    "scroll_speed": 0.5,
-    "scrolling": true,
-    "parallax_multiplier": 0.1,
     "dimensions": [
       3840,
       512
+    ],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.1
+      },
+      {
+        "scroll_speed": -0.1,
+        "parallax": 0.15
+      },
+      {
+        "scroll_speed": -0.2,
+        "parallax": 0.2
+      },
+      {
+        "scroll_speed": -0.3,
+        "parallax": 0.25
+      },
+      {
+        "scroll_speed": -0.4,
+        "parallax": 0.3
+      }
     ]
   },
-  "standard_scroll": {
-    "used_layers": 5,
-    "scroll_speed": 0.5,
-    "scrolling": true,
-    "parallax_multiplier": 0.1,
+  "night": {
     "dimensions": [
       3840,
       540
+    ],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": -0.78,
+        "parallax": 0.067
+      },
+      {
+        "scroll_speed": -1.4,
+        "parallax": 0.108
+      },
+      {
+        "scroll_speed": -3.0,
+        "parallax": 0.18
+      },
+      {
+        "scroll_speed": -3.9,
+        "parallax": 0.22
+      }
     ]
   },
-  "fast_scroll": {
-    "used_layers": 5,
-    "scroll_speed": 1.0,
-    "scrolling": true,
-    "parallax_multiplier": 0.1,
+  "dusk": {
     "dimensions": [
       3840,
       540
+    ],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": -0.78,
+        "parallax": 0.067
+      },
+      {
+        "scroll_speed": -1.4,
+        "parallax": 0.108
+      },
+      {
+        "scroll_speed": -3.0,
+        "parallax": 0.18
+      },
+      {
+        "scroll_speed": -3.9,
+        "parallax": 0.22
+      }
     ]
-  },
-  "standard_flat": {
-    "used_layers": 1,
-    "scroll_speed": 0.0,
-    "scrolling": false,
-    "parallax_multiplier": 0.8,
-    "dimensions": [
-      3840,
-      540
-    ]
-  },
-  "distant_flat": {
-    "used_layers": 1,
-    "scroll_speed": 0.0,
-    "scrolling": false,
-    "parallax_multiplier": 0.4,
-    "dimensions": [
-      3840,
-      540
-    ]
-  },
-  "slow_static": {
-    "used_layers": 6,
-    "scroll_speed": 0.0,
-    "scrolling": true,
-    "parallax_multiplier": 0.1,
-    "dimensions": [ 1920, 1080 ],
-    "start_offset": [ 230, 130 ]
   }
 }

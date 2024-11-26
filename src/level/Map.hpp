@@ -34,6 +34,7 @@
 #include "../story/CutsceneCatalog.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/CircleCollider.hpp"
+#include "../audio/Ambience.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -161,6 +162,9 @@ class Map {
 
 	// vfx
 	std::optional<vfx::Rain> rain{};
+
+	// sfx
+	audio::Ambience ambience{};
 
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition;

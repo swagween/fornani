@@ -13,29 +13,30 @@ struct ServiceProvider;
 
 namespace bg {
 
-static int const scroll_size{1920};
+struct BackgroundLayer {
+	int render_layer{};
+	float scroll_speed{};
+	float parallax{};
+	sf::Sprite sprite{};
+	components::PhysicsComponent physics{};
+};
 
 class Background {
-
   public:
 	Background() = default;
 	Background(automa::ServiceProvider& svc, int bg_id);
 
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> observed_camvel);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& mapdim);
+	void debug();
 
   private:
-	std::vector<sf::Sprite> sprites{};
+	std::vector<BackgroundLayer> layers{};
+	sf::Vector2<int> scroll_pane{};
 	sf::Vector2<int> dimensions{};
 	sf::Vector2<int> start_offset{};
-	struct {
-		int used_layers{};
-		float scroll_speed{};
-		bool scrolling{};
-		float parallax_multiplier{};
-	} behavior{};
-
-	std::vector<components::PhysicsComponent> physics{};
+	bool* b_debug{};
+	std::unordered_map<int, std::string_view> labels{};
 };
 
 } // namespace bg

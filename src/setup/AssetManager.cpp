@@ -380,6 +380,11 @@ void AssetManager::load_audio() {
 	b_block_toggle.loadFromFile(finder.resource_path + "/audio/sfx/block_toggle.wav");
 }
 
+sf::Texture& AssetManager::get_background(int id) {
+	if (!background_lookup.contains(id)) { return background_lookup.at(0); }
+	return background_lookup.at(id);
+}
+
 sf::Texture& AssetManager::get_scenery(int style) {
 	if (!scenery_lookup.contains(style)) { return scenery_lookup.at(1); }
 	return scenery_lookup.at(style);

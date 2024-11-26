@@ -127,6 +127,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					// flags.set(GameFlags::in_game);
 				}
 				if (event.key.code == sf::Keyboard::P) {
+					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
 						services.soundboard.flags.menu.set(audio::Menu::forward_switch);

@@ -61,6 +61,10 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			svc.music.load(meta["music"].as_string());
 			svc.music.play_looped(10);
 		}
+		if (meta["ambience"].is_string()) {
+			ambience.load(svc.assets.finder, meta["ambience"].as_string());
+			ambience.play();
+		}
 
 		if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
 		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
@@ -386,6 +390,9 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	console.update(svc);
 
 	player->collider.reset_ground_flags();
+
+	// ambience
+	ambience.set_balance(cooldowns.fade_obscured.get_normalized() * 100.f);
 
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && loading.is_complete()) {
