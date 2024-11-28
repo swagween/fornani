@@ -334,6 +334,8 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 	if (transponder.shipments.item.get_residue() > 0) {
 		give_item(transponder.shipments.item.get_residue(), 1);
 		console.display_item(transponder.shipments.item.get_residue());
+		transponder.shipments.item = {};
+		console.writer.communicators.out_item = {};
 	}
 	auto qs = transponder.shipments.quest.consume_pulse();
 	auto ri = transponder.shipments.reveal_item.consume_pulse();
@@ -497,7 +499,7 @@ void Player::update_weapon() {
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_id()) ? weapon->set_hotbar() : weapon->set_reserved();
 		weapon->firing_direction = controller.direction;
-		weapon->update(controller.direction);
+		weapon->update(*m_services, controller.direction);
 		auto tweak = controller.facing_left() ? -1.f : 1.f;
 		auto g_offset = weapon->gun_offset;
 		if (weapon->firing_direction.up_or_down()) {

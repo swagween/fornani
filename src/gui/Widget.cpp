@@ -11,11 +11,11 @@ Widget::Widget(automa::ServiceProvider& svc, sf::Vector2<int> dim, int index) : 
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.9f, 0.9f}, 1.0f);
 }
 
-void Widget::update(automa::ServiceProvider& svc, player::Player& player) {
+void Widget::update(automa::ServiceProvider& svc, int max) {
 	shaking.update();
 	gravitator.set_target_position(position);
 	gravitator.update(svc);
-	maximum = static_cast<int>(player.health.get_max());
+	maximum = max;
 }
 
 void Widget::render(sf::RenderWindow& win) {

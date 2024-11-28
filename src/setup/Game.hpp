@@ -13,6 +13,7 @@ namespace fornani {
 
 class WindowManager;
 enum class GameFlags { playtest, in_game };
+enum class KeyboardFlags { control };
 
 class Game {
   public:
@@ -20,10 +21,12 @@ class Game {
 	Game(char** argv, WindowManager& window);
 	~Game() {}
 	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+	void shutdown();
 
 	void playtest_sync();
 	void toggle_weapon(bool flag, int id);
 	util::BitFlags<GameFlags> flags{};
+	util::BitFlags<KeyboardFlags> key_flags{};
 
   private:
 	void playtester_portal(sf::RenderWindow& window);

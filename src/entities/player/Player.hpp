@@ -132,6 +132,7 @@ class Player {
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
+	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 
 	// moves
 	void jump(world::Map& map);

@@ -40,7 +40,7 @@ class Weapon {
   public:
 	Weapon(automa::ServiceProvider& svc, int id);
 
-	void update(dir::Direction to_direction);
+	void update(automa::ServiceProvider& svc, dir::Direction to_direction);
 	void render_back(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos);
 	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> position);
@@ -67,6 +67,7 @@ class Weapon {
 	void deselect() { ui_flags.reset(UIFlags::selected); }
 
 	[[nodiscard]] auto selected() const -> bool { return ui_flags.test(UIFlags::selected); }
+	[[nodiscard]] auto shot() const -> bool { return cooldown.just_started(); }
 	[[nodiscard]] auto get_id() const -> int { return id; }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }
 	[[nodiscard]] auto get_inventory_state() const -> int { return static_cast<int>(inventory_state); }
@@ -74,6 +75,7 @@ class Weapon {
 	[[nodiscard]] auto get_description() const -> std::string_view { return metadata.description; }
 	[[nodiscard]] auto multishot() const -> bool { return attributes.multishot != 0; }
 
+	Ammo ammo{};
 	WeaponAttributes attributes{};
 	EmitterAttributes emitter{};
 	std::optional<EmitterAttributes> secondary_emitter{};
@@ -104,10 +106,13 @@ class Weapon {
 	} metadata{};
 	util::BitFlags<GunState> flags{};
 	util::BitFlags<UIFlags> ui_flags{};
-	Ammo ammo{};
 	int id{};
 	util::Counter active_projectiles{};
 	InventoryState inventory_state{};
+	struct {
+		util::Cooldown reload{};
+		util::Cooldown down_time{};
+	} cooldowns{};
 };
 
 } // namespace arms

@@ -17,7 +17,7 @@ class Widget {
   public:
 	Widget() = default;
 	Widget(automa::ServiceProvider& svc, sf::Vector2<int> dim, int index);
-	void update(automa::ServiceProvider& svc, player::Player& player);
+	void update(automa::ServiceProvider& svc, int max);
 	void render(sf::RenderWindow& win);
 	void shake() { shaking.start(); }
 	State current_state{};

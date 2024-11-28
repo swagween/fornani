@@ -90,22 +90,14 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		while (services.window->get().pollEvent(event)) {
 			player.animation.state = {};
 			switch (event.type) {
-			case sf::Event::Closed: goto shutdown;
+			case sf::Event::Closed: shutdown(); return;
 			case sf::Event::KeyPressed:
+				if (event.key.code == sf::Keyboard::LControl) { key_flags.set(KeyboardFlags::control); }
 				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::D) {
-					// debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
-					// services.assets.sharp_click.play();
-					// services.state_controller.actions.set(automa::Actions::print_stats);
-				}
-				if (event.key.code == sf::Keyboard::Q) {
-					// game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
-					// flags.set(GameFlags::in_game);
-				}
-				if (event.key.code == sf::Keyboard::P) {
+				if (event.key.code == sf::Keyboard::P && key_flags.test(KeyboardFlags::control)) {
 					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
@@ -116,12 +108,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					}
 				}
 				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(services.window->screencap); }
-				if (event.key.code == sf::Keyboard::H) {
-					// services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
-					// services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
-				}
 				break;
 			case sf::Event::KeyReleased:
+				if (event.key.code == sf::Keyboard::LControl) { key_flags.reset(KeyboardFlags::control); }
 				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
@@ -170,10 +159,10 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		services.ticker.end_frame();
 	}
+	shutdown();
+}
 
-shutdown:
-	// shutdown
-	// explicitly delete music player since it can't be deleted after AssetManager
+void Game::shutdown() {
 	services.music.stop();
 	ImGui::SFML::Shutdown();
 }
@@ -435,7 +424,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							player.set_position({7 * 32, 9 * 32});
 						}
 						ImGui::Text("Test Levels:");
-						if (ImGui::Button("Junkyard")) {
+						/*if (ImGui::Button("Junkyard")) {
 							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 3001);
@@ -452,7 +441,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 9901);
 							player.set_position({7 * 32, 7 * 32});
-						}
+						}*/
 						ImGui::EndTabItem();
 					}
 					if (ImGui::BeginTabItem("Player")) {
@@ -492,6 +481,15 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Weapon")) {
+								ImGui::Text("Current Weapon:");
+								ImGui::Separator();
+								if (player.hotbar) {
+									auto& gun = player.equipped_weapon();
+									ImGui::Text(gun.label.data());
+									ImGui::Text("Ammo Capacity: %i", gun.ammo.get_capacity());
+									ImGui::Text("Ammo Count: %i", gun.ammo.get_count());
+								}
+								ImGui::Separator();
 								ImGui::Text("Loadout:");
 								if (player.arsenal) {
 									for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text(gun.get()->label.data()); }
@@ -551,7 +549,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							}
 							if (ImGui::BeginTabItem("Parameters")) {
 								ImGui::Text("Vertical Movement");
-								ImGui::SliderFloat("GRAVITY", &player.physics_stats.grav, 0.f, 2.8f, "%.5f");
+								ImGui::SliderFloat("GRAVITY", &player.physics_stats.grav, -2.0f, 2.8f, "%.5f");
 								ImGui::SliderFloat("JUMP VELOCITY", &player.physics_stats.jump_velocity, 0.5f, 18.0f, "%.5f");
 								ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &player.physics_stats.jump_release_multiplier, 0.005f, 1.f, "%.5f");
 								ImGui::SliderFloat("MAX Y VELOCITY", &player.physics_stats.maximum_velocity.y, 1.0f, 60.0f);

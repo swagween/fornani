@@ -20,7 +20,7 @@ void Health::update() {
 	restored.update();
 	auto taken_diff = taken_point - hp;
 	if (taken.running()) {
-		if (taken_point > hp && taken.get_count() > 200 && taken.get_count() % 32 == 0) { --taken_point; }
+		if (taken_point > hp && taken.get_count() > taken_time && taken.get_count() % 32 == 0) { --taken_point; }
 		if (taken_point == hp) { taken.cancel(); }
 	}
 }

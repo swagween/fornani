@@ -9,7 +9,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	svc.data.load_blank_save(player);
 	console = gui::Console(svc);
 	console.set_source(svc.text.basic);
-	hud.set_corner_pad(svc, true); // display hud preview for each file in the center of the screen
+	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
 	player.set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
 	player.antennae.at(0).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
@@ -109,8 +109,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
-	hud.update(svc, *player);
-
 	player->animation.state = player::AnimState::run;
 	player->collider.physics.acceleration = {};
 	player->collider.physics.velocity = {};
@@ -124,6 +122,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.direction.lr = dir::LR::left;
 
 	console.update(svc);
+	hud.update(svc, *player);
 
 	loading.update();
 

@@ -37,8 +37,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 		auto m_id = map.room_id;
 		bake_maps(svc, svc.data.rooms);
 	}
-	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
-	hud.set_corner_pad(svc, false); // reset hud position to corner
+	hud.orient(svc, *player); // reset hud position to corner
 	svc.soundboard.turn_on();
 
 	// TODO: refactor player initialization
@@ -208,13 +207,14 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	pause_window.update(svc, console, true);
 	map.background->update(svc, camera.get_observed_velocity());
+	hud.update(svc, *player);
+
 	console.end_tick();
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {
 	pause_window.render_update(svc);
 	pause_window.clean_off_trigger();
-	hud.update(svc, *player);
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {

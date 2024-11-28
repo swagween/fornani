@@ -16,6 +16,7 @@ class Cooldown {
 	constexpr void cancel() { decrementor = 0; }
 	constexpr void nullify() { decrementor = -1; }
 	[[nodiscard]] auto started() const -> bool { return decrementor == native_time; }
+	[[nodiscard]] auto just_started() const -> bool { return decrementor == native_time - 1; }
 	[[nodiscard]] auto is_almost_complete() const -> bool { return decrementor == 1; }
 	[[nodiscard]] auto is_complete() const -> bool { return decrementor == 0; }
 	[[nodiscard]] auto running() const -> bool { return decrementor != 0; }

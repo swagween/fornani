@@ -8,7 +8,7 @@ namespace entity {
 WeaponPackage::WeaponPackage(automa::ServiceProvider& svc, std::string_view label, int id) { weapon = std::make_unique<arms::Weapon>(svc, id); }
 
 void WeaponPackage::update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy) {
-	weapon->update(direction);
+	weapon->update(svc, direction);
 	clip_cooldown.update();
 	weapon.get()->barrel_point = enemy.get_collider().physics.position + barrel_offset;
 	sf::Vector2<float> p_pos = {enemy.get_collider().physics.position.x + barrel_offset.x, enemy.get_collider().physics.position.y + barrel_offset.y};

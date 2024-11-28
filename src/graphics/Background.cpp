@@ -9,12 +9,12 @@ namespace bg {
 
 int const tile_dim{256};
 
-Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "rosy_haze"}} {
+Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "rosy_haze"}, {18, "woods"}} {
 	auto type = labels.contains(bg_id) ? labels.at(bg_id) : "black";
 	auto const& in_data = svc.data.background[type];
 	dimensions.x = in_data["dimensions"][0].as<int>();
 	dimensions.y = in_data["dimensions"][1].as<int>();
-	scroll_pane = dimensions / 2;
+	scroll_pane = dimensions;
 	auto index{0};
 	for (auto& layer : in_data["layers"].array_view()) {
 		layers.push_back({index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()});
@@ -27,23 +27,26 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "du
 
 void Background::update(automa::ServiceProvider& svc, sf::Vector2<float> observed_camvel) {
 	for (auto& layer : layers) {
-		layer.physics.velocity.x = layer.scroll_speed;
-		layer.physics.update_euler(svc);
 		// backtrack sprites for infinite scroll effect
 		if (layer.physics.position.x < -scroll_pane.x) { layer.physics.position.x = 0.f; }
 		if (layer.physics.position.x > 0.f) { layer.physics.position.x = -scroll_pane.x; }
-		if (layer.physics.position.y < -scroll_pane.y) { layer.physics.position.y = 0.f; }
-		if (layer.physics.position.y > 0.f) { layer.physics.position.y = -scroll_pane.y; }
-		layer.sprite.setPosition(layer.physics.position);
+		if (layer.physics.position.y < -scroll_pane.y) { layer.physics.position.y = layer.physics.position.y + scroll_pane.y; }
+		if (layer.physics.position.y > 0.f) { layer.physics.position.y = -scroll_pane.y + layer.physics.position.y; }
+		layer.physics.velocity.x = layer.scroll_speed;
+		layer.physics.update_euler(svc);
 	}
 }
 
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& mapdim) {
+	auto epsilon = 0.999f;
 	for (auto& layer : layers) {
 		auto final_position = layer.physics.position - campos * layer.parallax;
-		final_position.y = std::clamp(final_position.y, svc.constants.f_screen_dimensions.y - dimensions.y, 0.f);
-		layer.sprite.setPosition(final_position);
-		win.draw(layer.sprite);
+		for (auto i{0}; i < 2; ++i) {
+			for (auto j{0}; j < 2; ++j) {
+				layer.sprite.setPosition(final_position + sf::Vector2<float>{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
+				win.draw(layer.sprite);
+			}
+		}
 	}
 }
 

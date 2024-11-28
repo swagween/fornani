@@ -18,6 +18,7 @@ class Health : public Entity {
 	[[nodiscard]] auto is_dead() const -> bool { return hp <= 0.f; }
 	[[nodiscard]] auto invincible() const -> bool { return !invincibility.is_complete(); }
 	[[nodiscard]] auto full() const -> bool { return hp == max_hp; }
+	[[nodiscard]] auto empty() const -> bool { return is_dead(); }
 	[[nodiscard]] auto get_normalized() const -> float { return hp / max_hp; }
 	void set_max(float amount);
 	void set_hp(float amount);
@@ -32,6 +33,7 @@ class Health : public Entity {
 	util::Cooldown invincibility{};
 	util::Cooldown restored{128};
 	float taken_point{};
+	int taken_time{200};
 
   private:
 	float hp_limit{24.f};
