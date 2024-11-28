@@ -5,10 +5,6 @@
       "label": "BASE_LAB_01"
     },
     {
-      "room_id": 9998,
-      "label": "COLLISION_TEST"
-    },
-    {
       "room_id": 121,
       "label": "FIRSTWIND_ARENA_01"
     },
@@ -117,14 +113,6 @@
       "label": "INTRO"
     },
     {
-      "room_id": 20095,
-      "label": "OVERTURNED_AMBIANCE"
-    },
-    {
-      "room_id": 200900,
-      "label": "OVERTURNED_BIG"
-    },
-    {
       "room_id": 207,
       "label": "OVERTURNED_BRANCHES_01"
     },
@@ -177,10 +165,6 @@
       "label": "OVERTURNED_COVE_03"
     },
     {
-      "room_id": 20097,
-      "label": "OVERTURNED_DOJO"
-    },
-    {
       "room_id": 227,
       "label": "OVERTURNED_FARM_01"
     },
@@ -201,36 +185,12 @@
       "label": "OVERTURNED_SHAFT_03"
     },
     {
-      "room_id": 20096,
-      "label": "OVERTURNED_TALL"
-    },
-    {
-      "room_id": 20099,
-      "label": "OVERTURNED_TEST_ROOM"
-    },
-    {
-      "room_id": 20098,
-      "label": "OVERTURNED_TEST_ROOM_2"
-    },
-    {
       "room_id": 231,
       "label": "OVERTURNED_TROUGHWAY_01"
     },
     {
       "room_id": 212,
       "label": "OVERTURNED_TUNNEL_01"
-    },
-    {
-      "room_id": 3001,
-      "label": "SKYCORPS_JUNKYARD_01"
-    },
-    {
-      "room_id": 3002,
-      "label": "SKYCORPS_JUNKYARD_02"
-    },
-    {
-      "room_id": 9901,
-      "label": "WEATHER_TEST"
     }
   ]
 }
