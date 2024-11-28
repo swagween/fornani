@@ -19,6 +19,7 @@ void Hotbar::set_selection(int id) {
 		if (i == id) { selection.set(ctr); }
 		++ctr;
 	}
+	previous = -1;
 }
 
 void Hotbar::sync() { previous = selection.get(); }
@@ -34,12 +35,14 @@ void Hotbar::add(int id) {
 	if (ids.size() == max_size) { ids.pop_back(); }
 	ids.push_back(id);
 	selection = util::Circuit{static_cast<int>(ids.size())};
+	previous = -1;
 }
 
 void Hotbar::remove(int id) {
 	std::erase_if(ids, [id](auto const& i) { return i == id; });
 	if (ids.empty()) { return; }
 	selection = util::Circuit{static_cast<int>(ids.size())};
+	previous = -1;
 }
 
 } // namespace arms

@@ -33,7 +33,7 @@ class Hotbar {
 	util::Circuit selection{1};
 	std::vector<int> ids{};
 	int max_size{3};
-	int previous{};
+	int previous{-1};
 };
 
 } // namespace arms

@@ -37,8 +37,7 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 		auto m_id = map.room_id;
 		bake_maps(svc, svc.data.rooms);
 	}
-	if (player->has_shield()) { hud.flags.set(gui::HUDState::shield); }
-	hud.set_corner_pad(svc, false); // reset hud position to corner
+	hud.orient(svc, *player); // reset hud position to corner
 	svc.soundboard.turn_on();
 
 	// TODO: refactor player initialization

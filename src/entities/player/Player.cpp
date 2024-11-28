@@ -334,6 +334,8 @@ void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inv
 	if (transponder.shipments.item.get_residue() > 0) {
 		give_item(transponder.shipments.item.get_residue(), 1);
 		console.display_item(transponder.shipments.item.get_residue());
+		transponder.shipments.item = {};
+		console.writer.communicators.out_item = {};
 	}
 	auto qs = transponder.shipments.quest.consume_pulse();
 	auto ri = transponder.shipments.reveal_item.consume_pulse();

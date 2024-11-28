@@ -90,22 +90,14 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		while (services.window->get().pollEvent(event)) {
 			player.animation.state = {};
 			switch (event.type) {
-			case sf::Event::Closed: goto shutdown;
+			case sf::Event::Closed: shutdown(); return;
 			case sf::Event::KeyPressed:
+				if (event.key.code == sf::Keyboard::LControl) { key_flags.set(KeyboardFlags::control); }
 				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::D) {
-					// debug() ? services.debug_flags.reset(automa::DebugFlags::imgui_overlay) : services.debug_flags.set(automa::DebugFlags::imgui_overlay);
-					// services.assets.sharp_click.play();
-					// services.state_controller.actions.set(automa::Actions::print_stats);
-				}
-				if (event.key.code == sf::Keyboard::Q) {
-					// game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main"));
-					// flags.set(GameFlags::in_game);
-				}
-				if (event.key.code == sf::Keyboard::P) {
+				if (event.key.code == sf::Keyboard::P && key_flags.test(KeyboardFlags::control)) {
 					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
@@ -116,12 +108,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					}
 				}
 				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(services.window->screencap); }
-				if (event.key.code == sf::Keyboard::H) {
-					// services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
-					// services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
-				}
 				break;
 			case sf::Event::KeyReleased:
+				if (event.key.code == sf::Keyboard::LControl) { key_flags.reset(KeyboardFlags::control); }
 				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
 				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
@@ -170,10 +159,10 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		services.ticker.end_frame();
 	}
+	shutdown();
+}
 
-shutdown:
-	// shutdown
-	// explicitly delete music player since it can't be deleted after AssetManager
+void Game::shutdown() {
 	services.music.stop();
 	ImGui::SFML::Shutdown();
 }
