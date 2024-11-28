@@ -208,13 +208,14 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	pause_window.update(svc, console, true);
 	map.background->update(svc, camera.get_observed_velocity());
+	hud.update(svc, *player);
+
 	console.end_tick();
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {
 	pause_window.render_update(svc);
 	pause_window.clean_off_trigger();
-	hud.update(svc, *player);
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {

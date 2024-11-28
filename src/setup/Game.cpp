@@ -492,6 +492,15 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Weapon")) {
+								ImGui::Text("Current Weapon:");
+								ImGui::Separator();
+								if (player.hotbar) {
+									auto& gun = player.equipped_weapon();
+									ImGui::Text(gun.label.data());
+									ImGui::Text("Ammo Capacity: %i", gun.ammo.get_capacity());
+									ImGui::Text("Ammo Count: %i", gun.ammo.get_count());
+								}
+								ImGui::Separator();
 								ImGui::Text("Loadout:");
 								if (player.arsenal) {
 									for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text(gun.get()->label.data()); }
@@ -551,7 +560,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							}
 							if (ImGui::BeginTabItem("Parameters")) {
 								ImGui::Text("Vertical Movement");
-								ImGui::SliderFloat("GRAVITY", &player.physics_stats.grav, 0.f, 2.8f, "%.5f");
+								ImGui::SliderFloat("GRAVITY", &player.physics_stats.grav, -2.0f, 2.8f, "%.5f");
 								ImGui::SliderFloat("JUMP VELOCITY", &player.physics_stats.jump_velocity, 0.5f, 18.0f, "%.5f");
 								ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &player.physics_stats.jump_release_multiplier, 0.005f, 1.f, "%.5f");
 								ImGui::SliderFloat("MAX Y VELOCITY", &player.physics_stats.maximum_velocity.y, 1.0f, 60.0f);

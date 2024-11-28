@@ -75,6 +75,7 @@ void AssetManager::import_textures() {
 	t_ui.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
 	t_hud_hearts.loadFromFile(finder.resource_path + "/image/gui/HUD_hearts.png");
+	t_hud_ammo.loadFromFile(finder.resource_path + "/image/gui/HUD_ammo.png");
 	t_hud_pointer.loadFromFile(finder.resource_path + "/image/gui/HUD_pointer.png");
 	t_hud_gun_color.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_color.png");
 	t_hud_gun_shadow.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_shadow.png");
@@ -178,6 +179,7 @@ void AssetManager::import_textures() {
 	t_bg_slime.loadFromFile(finder.resource_path + "/image/background/slime.png");
 	t_bg_dirt.loadFromFile(finder.resource_path + "/image/background/dirt.png");
 	t_bg_grove.loadFromFile(finder.resource_path + "/image/background/glade.png");
+	t_bg_woods.loadFromFile(finder.resource_path + "/image/background/woods.png");
 
 	background_lookup.insert({0, t_bg_dusk});
 	background_lookup.insert({1, t_bg_sunrise});
@@ -197,6 +199,7 @@ void AssetManager::import_textures() {
 	background_lookup.insert({15, t_bg_crevasse});
 	background_lookup.insert({16, t_bg_deep});
 	background_lookup.insert({17, t_bg_grove});
+	background_lookup.insert({18, t_bg_woods});
 
 	t_overturned_scenery.loadFromFile(finder.resource_path + "/image/background/overturned_scenery.png");
 	scenery_lookup.insert({1, t_overturned_scenery});
@@ -365,6 +368,7 @@ void AssetManager::load_audio() {
 	b_enemy_hit_squeak.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_squeak.wav");
 	b_enemy_hit_inv.loadFromFile(finder.resource_path + "/audio/sfx/enemy/hit_inv.wav");
 	b_wall_hit.loadFromFile(finder.resource_path + "/audio/sfx/wall_hit.wav");
+	b_soft_tap.loadFromFile(finder.resource_path + "/audio/sfx/soft_tap.wav");
 	b_thud.loadFromFile(finder.resource_path + "/audio/sfx/thud.wav");
 	b_small_crash.loadFromFile(finder.resource_path + "/audio/sfx/small_crash.wav");
 	b_heavy_move.loadFromFile(finder.resource_path + "/audio/sfx/heavy_move.wav");

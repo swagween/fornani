@@ -39,7 +39,7 @@
       "source_id": 6001,
       "destination_id": 6002,
       "activate_on_contact": false,
-      "already_open": true,
+      "already_open": false,
       "locked": false,
       "key_id": 0
     }

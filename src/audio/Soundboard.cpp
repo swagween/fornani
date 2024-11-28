@@ -56,6 +56,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	} // exit early if not in-game
 
 	if (flags.world.test(World::wall_hit)) { play(svc, svc.assets.b_wall_hit, 0.1f); }
+	if (flags.world.test(World::soft_tap)) { play(svc, svc.assets.b_soft_tap, 0.1f); }
 	if (flags.world.test(World::thud)) { play(svc, svc.assets.b_thud, 0.1f); }
 	if (flags.world.test(World::small_crash)) { play(svc, svc.assets.b_small_crash, 0.1f); }
 	if (flags.world.test(World::switch_press)) { play(svc, svc.assets.b_switch_press);
@@ -119,6 +120,9 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.step.test(Step::grass)) { play(svc, svc.assets.grass_step_buffer, 0.3f); }
 	if (flags.land.test(Step::basic)) { play(svc, svc.assets.landed_buffer); }
 	if (flags.land.test(Step::grass)) { play(svc, svc.assets.landed_grass_buffer); }
+
+	// arms
+	if (flags.arms.test(Arms::reload)) { play(svc, svc.assets.b_reload); }
 
 	// gun
 	if (flags.weapon.test(Weapon::bryns_gun)) { play(svc, svc.assets.bg_shot_buffer); }

@@ -5,22 +5,19 @@
 namespace gui {
 
 HUD::HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> pos) : position(pos) {
-	HP_origin = {distance_from_edge, (int)svc.constants.screen_dimensions.y - distance_from_edge - heart_dimensions.y};
-	origins.hp = {(float)distance_from_edge, svc.constants.screen_dimensions.y - (float)distance_from_edge - (float)heart_dimensions.y};
-	ORB_origin = {distance_from_edge, HP_origin.y - PAD - orb_text_dimensions.y};
-	GUN_origin = {distance_from_edge, ORB_origin.y - PAD - pointer_dimensions.y - pointer_pad * 2};
-	SHIELD_origin = {distance_from_edge, HP_origin.y + PAD + heart_dimensions.y};
+	auto f_distance_from_edge = 20.f;
+	auto f_pad = 4.f;
+	origins.hp = {f_distance_from_edge, svc.constants.screen_dimensions.y - f_distance_from_edge - (float)heart_dimensions.y};
+	origins.orb = {f_distance_from_edge, origins.hp.y - f_pad - orb_text_dimensions.y};
+	origins.ammo = {f_distance_from_edge, origins.orb.y - f_pad - f_ammo_dimensions.y};
+	origins.gun = {f_distance_from_edge, origins.ammo.y - f_pad - pointer_dimensions.y - pointer_pad * 2};
+	origins.shield = {f_distance_from_edge, origins.hp.y + f_pad + heart_dimensions.y};
 	shield_discrepancy = vfx::Gravitator({0, 0}, svc.styles.colors.bright_orange, 0.1f);
 	shield_discrepancy.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.9f, 0.9f}, 1.0f);
 	shield_discrepancy.set_position({0.f, 0.f});
 
-	for (auto i{0}; i < player.health.get_limit(); ++i) {
-		hearts.push_back(Widget(svc, heart_dimensions, i));
-		hearts.back().sprite.setTexture(svc.assets.t_hud_hearts);
-		hearts.back().position = {corner_pad.x + i * heart_dimensions.x + i * HP_pad, corner_pad.y};
-		hearts.back().gravitator.set_position(hearts.back().position);
-		hearts.back().origin = origins.hp;
-	}
+	health_bar.set(svc, player.health.get_limit(), heart_dimensions, svc.assets.t_hud_hearts, origins.hp, HP_pad);
+	if (player.arsenal && player.hotbar) { ammo_bar.set(svc, player.equipped_weapon().ammo.get_capacity(), ammo_dimensions, svc.assets.t_hud_ammo, origins.ammo, AMMO_pad); }
 
 	sprites.orb.setTexture(svc.assets.t_hud_orb_font);
 	sprites.gun.setTexture(svc.assets.t_hud_gun_color);
@@ -29,27 +26,21 @@ HUD::HUD(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int> 
 	sprites.shield_icon.setTexture(svc.assets.t_hud_shield);
 	sprites.shield_bit.setTexture(svc.assets.t_hud_shield);
 	sprites.shield_icon.setTextureRect(sf::IntRect{{0, 0}, shield_dimensions});
-	sprites.shield_icon.setPosition(sf::Vector2<float>{SHIELD_origin});
+	sprites.shield_icon.setPosition(origins.shield);
 	sprites.shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x * 3, 0}, shield_bit_dimensions});
 }
 
 void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 
-	// health widgets
-	auto const& hp = player.health;
-	int i{};
-	for (auto& heart : hearts) {
-		heart.position = {corner_pad.x + static_cast<float>(i) * f_heart_dimensions.x + static_cast<float>(i) * static_cast<float>(HP_pad), corner_pad.y};
-		if (hp.flags.test(entity::HPState::hit)) {
-			auto randv = svc.random.random_vector_float(-16.f, 16.f);
-			heart.gravitator.set_position(heart.position + randv);
-			heart.shake();
-		}
-		heart.update(svc, player);
-		heart.current_state = hp.get_hp() > i ? State::neutral : player.health.taken_point > i ? State::taken : State::gone;
-		auto flashing = hp.restored.running() && hp.restored.get_cooldown() % 48 > 24 && hp.get_hp() > i;
-		heart.current_state = flashing ? State::added : heart.current_state;
-		++i;
+	// widget bars
+	auto& hp = player.health;
+	health_bar.update(svc, hp, hp.flags.test(entity::HPState::hit));
+
+	if (player.arsenal && player.hotbar) {
+		if (player.switched_weapon()) { ammo_bar.set(svc, player.equipped_weapon().ammo.get_capacity(), ammo_dimensions, svc.assets.t_hud_ammo, origins.ammo, AMMO_pad); }
+		player.hotbar->sync();
+		auto& player_ammo = player.equipped_weapon().ammo;
+		ammo_bar.update(svc, player_ammo.magazine, player.equipped_weapon().shot());
 	}
 
 	player.health.flags.reset(entity::HPState::hit);
@@ -69,11 +60,11 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 void HUD::render(player::Player& player, sf::RenderWindow& win) {
 
 	// HEARTS
-	for (auto& heart : hearts) { heart.render(win); }
+	health_bar.render(win);
 
 	// ORB
 	sprites.orb.setTextureRect(sf::IntRect({orb_text_dimensions.x * 10, 0}, {orb_label_width, orb_text_dimensions.y}));
-	sprites.orb.setPosition(corner_pad.x + ORB_origin.x, corner_pad.y + ORB_origin.y);
+	sprites.orb.setPosition(corner_pad.x + origins.orb.x, corner_pad.y + origins.orb.y);
 	win.draw(sprites.orb);
 
 	digits = std::to_string(num_orbs);
@@ -82,22 +73,25 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 		auto index = static_cast<int>(digit - '0');
 		if (index >= 0 && index < 10) {
 			sprites.orb.setTextureRect(sf::IntRect({orb_text_dimensions.x * index, 0}, orb_text_dimensions));
-			sprites.orb.setPosition(corner_pad.x + ORB_origin.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), corner_pad.y + ORB_origin.y);
+			sprites.orb.setPosition(corner_pad.x + origins.orb.x + orb_label_width + orb_pad + (orb_text_dimensions.x * ctr), corner_pad.y + origins.orb.y);
 			win.draw(sprites.orb);
 		}
 		ctr++;
 	}
 
+
 	// GUN
 	if (player.hotbar && player.arsenal) {
+		// AMMO
+		ammo_bar.render(win);
 		auto pointer_index{0};
 		auto const hotbar_size = player.hotbar.value().size();
 		for (int i = 0; i < hotbar_size; ++i) {
 			auto gun_index = player.hotbar.value().get_id(i);
 			sprites.gun.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
 			sprites.gun_shadow.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
-			sprites.gun.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
-			sprites.gun_shadow.setPosition(corner_pad.x + GUN_origin.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + GUN_origin.y - i * gun_dimensions.y - i * gun_pad_vert);
+			sprites.gun.setPosition(corner_pad.x + origins.gun.x + pointer_dimensions.x + gun_pad_horiz, corner_pad.y + origins.gun.y - i * gun_dimensions.y - i * gun_pad_vert);
+			sprites.gun_shadow.setPosition(corner_pad.x + origins.gun.x + pointer_dimensions.x + gun_pad_horiz + 2, corner_pad.y + origins.gun.y - i * gun_dimensions.y - i * gun_pad_vert);
 			win.draw(sprites.gun_shadow);
 			if (i == player.hotbar.value().get_selection()) {
 				win.draw(sprites.gun);
@@ -106,7 +100,7 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 		}
 		arms::WEAPON_TYPE curr_type = player.equipped_weapon().type;
 		sprites.pointer.setTextureRect(sf::IntRect({0, player.equipped_weapon().attributes.ui_color * pointer_dimensions.y}, pointer_dimensions));
-		sprites.pointer.setPosition(corner_pad.x + GUN_origin.x, corner_pad.y + GUN_origin.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
+		sprites.pointer.setPosition(corner_pad.x + origins.gun.x, corner_pad.y + origins.gun.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
 		win.draw(sprites.pointer);
 	}
 
@@ -114,13 +108,13 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 	if (player.has_shield()) {
 		auto const& shield = player.controller.get_shield();
 		sprites.shield_icon.setTextureRect(sf::IntRect{{0, shield.hud_animation.get_frame() * shield_dimensions.y}, shield_dimensions});
-		sprites.shield_icon.setPosition({corner_pad.x + SHIELD_origin.x, corner_pad.y + SHIELD_origin.y});
+		sprites.shield_icon.setPosition({corner_pad.x + origins.shield.x, corner_pad.y + origins.shield.y});
 		win.draw(sprites.shield_icon);
 		auto amount = std::lerp(0, num_bits, shield.health.get_hp() / shield.health.get_max());
 		auto discrepancy_position = shield_discrepancy.collider.physics.position.x;
 
 		for (auto i{shield_bar}; i >= 0; --i) {
-			sprites.shield_bit.setPosition({corner_pad.x + SHIELD_origin.x + shield_dimensions.x + shield_pad + i, corner_pad.y + SHIELD_origin.y});
+			sprites.shield_bit.setPosition({corner_pad.x + origins.shield.x + shield_dimensions.x + shield_pad + i, corner_pad.y + origins.shield.y});
 			if (i <= amount) {
 				sprites.shield_bit.setTextureRect(sf::IntRect{{shield_dimensions.x, shield.hud_animation.get_frame() * shield_bit_dimensions.y}, shield_bit_dimensions});
 				win.draw(sprites.shield_bit);
@@ -143,11 +137,6 @@ void HUD::set_corner_pad(automa::ServiceProvider& svc, bool file_preview) {
 	if (file_preview) { corner_pad = {((float)svc.constants.screen_dimensions.x / 2.f) - 140.f, -60.f}; }
 	if (flags.test(HUDState::shield)) { corner_pad = {0.f, -((float)shield_dimensions.y + PAD)}; }
 	int ctr{};
-	for (auto& heart : hearts) {
-		heart.position = {corner_pad.x + ctr * heart_dimensions.x + ctr * HP_pad, corner_pad.y};
-		heart.gravitator.set_position(heart.position);
-		++ctr;
-	}
 }
 
 } // namespace gui

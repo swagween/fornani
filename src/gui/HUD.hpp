@@ -10,7 +10,7 @@
 #include "../utils/BitFlags.hpp"
 #include "../entities/animation/Animation.hpp"
 #include "../particle/Gravitator.hpp"
-#include "Widget.hpp"
+#include "WidgetBar.hpp"
 #include "../utils/Stopwatch.hpp"
 
 namespace automa {
@@ -44,13 +44,17 @@ class HUD {
 	std::string_view gun_name{};
 	std::string digits{};
 
-	sf::Vector2f corner_pad{}; // for rendering file preview
+	sf::Vector2f corner_pad{};
 
 	util::BitFlags<HUDState> flags{};
 
   private:
 	struct {
 		sf::Vector2<float> hp{};
+		sf::Vector2<float> orb{};
+		sf::Vector2<float> ammo{};
+		sf::Vector2<float> gun{};
+		sf::Vector2<float> shield{};
 	} origins{};
 
 	struct {
@@ -61,25 +65,24 @@ class HUD {
 		sf::Sprite shield_icon{};
 		sf::Sprite shield_bit{};
 	} sprites{};
-	std::vector<Widget> hearts{};
 
-	sf::Vector2<int> HP_origin{};
-	sf::Vector2<int> ORB_origin{};
-	sf::Vector2<int> GUN_origin{};
-	sf::Vector2<int> SHIELD_origin{};
+	WidgetBar health_bar{};
+	WidgetBar ammo_bar{};
 
 	sf::Vector2<int> heart_dimensions{18, 18};
 	sf::Vector2<float> f_heart_dimensions{18.f, 18.f};
 	sf::Vector2<int> orb_text_dimensions{18, 16};
+	sf::Vector2<int> const ammo_dimensions{10, 28};
+	sf::Vector2<float> const f_ammo_dimensions{10.f, 28.f};
 	sf::Vector2<int> const gun_dimensions{66, 18};
 	sf::Vector2<int> const shield_dimensions{18, 18};
 	sf::Vector2<int> const shield_bit_dimensions{6, 18};
 	sf::Vector2<int> const pointer_dimensions{14, 10};
 
-	int distance_from_edge{20};
 	int PAD{4};
 	int shield_pad{4};
 	int HP_pad{2};
+	int AMMO_pad{2};
 	int orb_pad{8};
 	int gun_pad_horiz{12};
 	int gun_pad_vert{4};

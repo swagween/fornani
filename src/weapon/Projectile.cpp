@@ -193,6 +193,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		if (!destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, destruction_point + physics.position, {}, effect_type(), 2));
 			if (direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+			svc.soundboard.flags.world.set(audio::World::soft_tap);
 		}
 		destroy(false);
 		if (stats.spring) {

@@ -97,6 +97,7 @@ class AssetManager {
 
 	sf::Texture t_hud_orb_font{};
 	sf::Texture t_hud_hearts{};
+	sf::Texture t_hud_ammo{};
 	sf::Texture t_hud_gun_color{};
 	sf::Texture t_hud_gun_shadow{};
 	sf::Texture t_hud_pointer{};
@@ -181,6 +182,7 @@ class AssetManager {
 	sf::Texture t_bg_crevasse{};
 	sf::Texture t_bg_deep{};
 	sf::Texture t_bg_grove{};
+	sf::Texture t_bg_woods{};
 
 	//scenery
 	sf::Texture t_overturned_scenery{};
@@ -331,6 +333,7 @@ class AssetManager {
 	sf::SoundBuffer b_enemy_hit_inv{};
 	sf::SoundBuffer b_thud{};
 	sf::SoundBuffer b_wall_hit{};
+	sf::SoundBuffer b_soft_tap{};
 	sf::SoundBuffer b_heavy_move{};
 	sf::SoundBuffer b_door_open{};
 	sf::SoundBuffer b_door_unlock{};

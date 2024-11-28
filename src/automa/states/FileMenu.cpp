@@ -109,8 +109,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
-	hud.update(svc, *player);
-
 	player->animation.state = player::AnimState::run;
 	player->collider.physics.acceleration = {};
 	player->collider.physics.velocity = {};
@@ -124,6 +122,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.direction.lr = dir::LR::left;
 
 	console.update(svc);
+	hud.update(svc, *player);
 
 	loading.update();
 

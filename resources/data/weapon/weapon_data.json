@@ -18,6 +18,8 @@
       },
       "attributes": {
         "automatic": false,
+        "ammo": 6,
+        "reload": 160,
         "rate": 6,
         "cooldown_time": 30,
         "recoil": 0.00,
@@ -658,6 +660,8 @@
       },
       "attributes": {
         "automatic": true,
+        "ammo": -1,
+        "reload": 160,
         "rate": 64,
         "cooldown_time": 7,
         "recoil": 0.15,
@@ -785,6 +789,8 @@
       },
       "attributes": {
         "automatic": false,
+        "ammo": 4,
+        "reload": 200,
         "rate": 4,
         "cooldown_time": 8,
         "recoil": 0.8,
@@ -798,7 +804,7 @@
         "attributes": {
           "base_damage": 8.0,
           "power": 3,
-          "range": 160,
+          "range": 190,
           "speed": 27.0,
           "variance": 0.0,
           "stun_time": 0.0,

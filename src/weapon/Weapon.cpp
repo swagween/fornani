@@ -21,13 +21,16 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : label(svc.data.weapon["we
 	attributes.barrel_position.at(0) = in_data["barrel_point"]["x"].as<float>();
 	attributes.barrel_position.at(1) = in_data["barrel_point"]["y"].as<float>();
 
-	attributes.automatic = (bool)in_data["attributes"]["automatic"].as_bool();
-	attributes.grenade = (bool)in_data["attributes"]["grenade"].as_bool();
+	ammo.set_max(in_data["attributes"]["ammo"].as<int>());
+	cooldowns.reload = util::Cooldown{in_data["attributes"]["reload"].as<int>()};
+	cooldowns.down_time = util::Cooldown{cooldowns.reload};
+	attributes.automatic = static_cast<bool>(in_data["attributes"]["automatic"].as_bool());
+	attributes.grenade = static_cast<bool>(in_data["attributes"]["grenade"].as_bool());
 	attributes.rate = in_data["attributes"]["rate"].as<int>();
 	attributes.multishot = in_data["attributes"]["multishot"].as<int>();
 	attributes.cooldown_time = in_data["attributes"]["cooldown_time"].as<int>();
 	attributes.recoil = in_data["attributes"]["recoil"].as<float>();
-	attributes.ui_color = (COLOR_CODE)in_data["attributes"]["ui_color"].as<int>();
+	attributes.ui_color = static_cast<COLOR_CODE>(in_data["attributes"]["ui_color"].as<int>());
 
 	emitter.dimensions.x = in_data["spray"]["dimensions"][0].as<float>();
 	emitter.dimensions.y = in_data["spray"]["dimensions"][1].as<float>();
@@ -58,7 +61,16 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id) : label(svc.data.weapon["we
 	sprites.ui.setTexture(svc.assets.t_guns);
 }
 
-void Weapon::update(dir::Direction to_direction) {
+void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
+
+	// ammo
+	ammo.update();
+	if ((ammo.empty() || !cooldowns.down_time.running()) && !cooldowns.reload.running() && !ammo.full()) { cooldowns.reload.start(); }
+	if (cooldowns.reload.is_almost_complete()) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
+	if (cooldowns.reload.is_almost_complete()) { ammo.refill(); }
+	cooldowns.reload.update();
+	if (!cooldowns.reload.running()) { cooldowns.down_time.update(); }
+
 	set_orientation(to_direction);
 	cooldown.update();
 	if (cooldown.is_complete()) {
@@ -108,7 +120,9 @@ void Weapon::lock() { flags.reset(GunState::unlocked); }
 
 void Weapon::shoot() {
 	cooldown.start(attributes.cooldown_time);
+	cooldowns.down_time.start();
 	active_projectiles.update();
+	ammo.use();
 }
 
 void Weapon::decrement_projectiles() { active_projectiles.update(-1); }
@@ -119,7 +133,7 @@ bool Weapon::is_unlocked() const { return flags.test(GunState::unlocked); }
 
 bool Weapon::cooling_down() const { return !cooldown.is_complete(); }
 
-bool Weapon::can_shoot() const { return !cooling_down() && !(active_projectiles.get_count() >= attributes.rate); }
+bool Weapon::can_shoot() const { return !cooling_down() && !(active_projectiles.get_count() >= attributes.rate) && ammo.get_count() > 0; }
 
 void Weapon::set_position(sf::Vector2<float> pos) { sprite_position = pos; }
 

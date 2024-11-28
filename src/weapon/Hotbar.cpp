@@ -1,5 +1,4 @@
 #include "Hotbar.hpp"
-#include "Hotbar.hpp"
 #include "../service/ServiceProvider.hpp"
 #include <algorithm>
 
@@ -9,6 +8,7 @@ Hotbar::Hotbar(int size) : selection{std::clamp(size, 1, 3)} {}
 
 void Hotbar::switch_weapon(automa::ServiceProvider& svc, int next) {
 	if (next == 0 || ids.size() == 0) { return; }
+	previous = selection.get();
 	selection.modulate(next);
 	svc.soundboard.flags.player.set(audio::Player::arms_switch);
 }
@@ -20,6 +20,8 @@ void Hotbar::set_selection(int id) {
 		++ctr;
 	}
 }
+
+void Hotbar::sync() { previous = selection.get(); }
 
 bool Hotbar::has(int id) const {
 	for (auto& i : ids) {
