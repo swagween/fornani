@@ -12,17 +12,19 @@ Droplet::Droplet(sf::Vector2<float> start, DropParams params, float tweak) : col
 	collider.physics.set_constant_friction({0.8f, params.fall_speed});
 }
 
-void Droplet::update(automa::ServiceProvider& svc, world::Map& map) {
-	post_collision.update();
-	counter.update();
-	collider.update(svc);
-	collider.handle_map_collision(map);
-	collider.physics.acceleration = {};
+void Droplet::update(automa::ServiceProvider& svc, world::Map& map, bool collision) {
+	if (collision) {
+		post_collision.update();
+		counter.update();
+		collider.update(svc);
+		collider.handle_map_collision(map);
+		collider.physics.acceleration = {};
+	}
 	auto slope = position() - collider.physics.previous_position;
 	auto mag = util::magnitude(slope);
 	auto adjacent = collider.physics.previous_position.x - position().x;
 	angle = static_cast<float>(tan(adjacent / mag) * 180.0 / std::numbers::pi);
-	if (collider.collided()) {
+	if (collider.collided() && collision) {
 		decay();
 		collider.physics.velocity.x *= 0.9f;
 	} else {
