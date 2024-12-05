@@ -24,6 +24,13 @@
       "type": 0,
       "id": 0,
       "source": 0
+    },
+    "weather": {
+      "leaves": {
+        "intensity": 2,
+        "fall_speed": 0.997,
+        "slant": -1.0
+      }
     }
   },
   "portals": [

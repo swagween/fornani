@@ -1,16 +1,17 @@
 {
   "status": {
-    "new": true
+    "new": false
   },
   "player_data": {
-    "max_hp": 3,
-    "hp": 3,
-    "orbs": 0,
+    "max_hp": 3.000000,
+    "hp": 2.000000,
+    "orbs": 547,
     "position": {
-      "x": 102.0,
-      "y": 327.0
+      "x": 1302.903564,
+      "y": 395.000000
     },
     "arsenal": [
+      0
     ],
     "equipped_gun": 0,
     "abilities": [
@@ -22,49 +23,142 @@
       "pants": 0
     },
     "items": [
+      {
+        "id": 1,
+        "quantity": 1
+      },
+      {
+        "id": 20,
+        "quantity": 1
+      },
+      {
+        "id": 16,
+        "quantity": 1
+      }
     ],
     "stats": {
-      "death_count": 0,
-      "bullets_fired": 0,
-      "guns_collected": 0,
-      "items_collected": 0,
-      "orbs_collected": 0,
-      "blue_orbs": 0,
-      "highest_indicator_amount": 0,
-      "enemies_killed": 0,
-      "rooms_discovered": 0,
-      "seconds_played": 0.0,
+      "death_count": 4,
+      "bullets_fired": 201,
+      "guns_collected": 1,
+      "items_collected": 17,
+      "orbs_collected": 547,
+      "blue_orbs": 1,
+      "highest_indicator_amount": 112,
+      "enemies_killed": 13,
+      "rooms_discovered": 15,
+      "seconds_played": 358.315857,
       "time_trials": {
-        "bryns_gun": 0.0
+        "bryns_gun": 8.402306
       }
     },
     "hotbar": [
+      0
     ]
   },
-  "save_point_id": 100,
+  "save_point_id": 20094,
   "unlocked_doors": [
+
   ],
   "opened_chests": [
+    377,
+    11443,
+    567911
   ],
   "activated_switches": [
+    2251
   ],
   "destroyed_blocks": [
+
   ],
   "quest_progressions": [
+    [
+      1,
+      111,
+      1,
+      1,
+      0
+    ],
+    [
+      9,
+      1,
+      1,
+      1,
+      0
+    ],
+    [
+      3,
+      3,
+      1,
+      1,
+      0
+    ],
+    [
+      3,
+      24,
+      1,
+      1,
+      0
+    ],
+    [
+      88,
+      1,
+      1,
+      1,
+      0
+    ]
   ],
   "destroyed_inspectables": [
+    "bookshelf110"
   ],
   "tutorial": {
-    "state": 0,
+    "state": 4,
     "closed": true,
     "on": false,
     "jump": true,
     "shoot": true,
     "sprint": true,
-    "map": false,
+    "map": true,
     "inventory": true
   },
   "discovered_rooms": [
+    100,
+    110,
+    224,
+    225,
+    226,
+    219,
+    222,
+    227,
+    228,
+    108,
+    116,
+    107,
+    106,
+    117,
+    20094
   ],
-  "piggybacker": 0
+  "piggybacker": 0,
+  "marketplace": [
+    [
+      65,
+      25,
+      24,
+      27,
+      26
+    ]
+  ],
+  "npc_locations": [
+    [
+      20,
+      100
+    ],
+    [
+      3,
+      227
+    ],
+    [
+      24,
+      227
+    ]
+  ]
 }
