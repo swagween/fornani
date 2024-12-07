@@ -25,6 +25,12 @@ class Random {
 		return {randx, randy};
 	}
 
+	sf::Vector2<float> random_vector_float(sf::Vector2<float> lo, sf::Vector2<float> hi) {
+		auto randx = random_range_float(lo.x, hi.x);
+		auto randy = random_range_float(lo.y, hi.y);
+		return {randx, randy};
+	}
+
 	int unsigned_coin_flip() {
 		auto result = std::uniform_real_distribution<float>{-1.0f, 1.0f}(engine);
 		return (result > 0.0f) ? 0 : 1;

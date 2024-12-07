@@ -29,29 +29,8 @@ void Gravitator::set_position(Vec new_position) {
 }
 
 void Gravitator::set_target_position(Vec new_position) {
-
-	// close enough; call them equal and escape
-	if (abs(new_position.x - collider.physics.position.x) < 0.1f) { collider.physics.position.x = new_position.x; }
-	if (abs(new_position.y - collider.physics.position.y) < 0.1f) { collider.physics.position.y = new_position.y; }
-	if (collider.physics.position == new_position) {
-		collider.sync_components();
-		return;
-	}
-
-	float gx = collider.physics.position.x;
-	float gy = collider.physics.position.y;
-	float mx = new_position.x - collider.bounding_box.dimensions.x / 2;
-	float my = new_position.y - collider.bounding_box.dimensions.y / 2;
-
-	float force_x = mx - gx;
-	float force_y = my - gy;
-	float mag = sqrt((force_x * force_x) + (force_y * force_y));
-	mag = std::max(0.0001f, mag);
-	float str = attraction_force / mag * mag;
-	force_x *= str;
-	force_y *= str;
-
-	collider.physics.apply_force({force_x, force_y});
+	steering.target(collider.physics, new_position, attraction_force);
+	collider.sync_components();
 }
 
 void Gravitator::demagnetize(automa::ServiceProvider& svc) {
@@ -61,7 +40,6 @@ void Gravitator::demagnetize(automa::ServiceProvider& svc) {
 }
 
 void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos, int history) {
-
 	// just for antennae, can be improved a lot
 	auto prev_color = box.getFillColor();
 	if (history > 0) {

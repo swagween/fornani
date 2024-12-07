@@ -186,6 +186,8 @@ class AssetManager {
 
 	//scenery
 	sf::Texture t_overturned_scenery{};
+	sf::Texture t_firefly{};
+	sf::Texture t_dragonfly{};
 
 	// load the guns and bullets!
 	sf::Texture t_gun{};

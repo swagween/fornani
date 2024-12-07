@@ -232,7 +232,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
-	if (svc.debug_mode()) { map.background->debug(); }
+	if (svc.debug_mode()) { map.debug(); }
 
 	// A.render(win, {});
 	// B.render(win, {});

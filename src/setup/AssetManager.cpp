@@ -130,6 +130,8 @@ void AssetManager::import_textures() {
 	t_gem.loadFromFile(finder.resource_path + "/image/item/gems.png");
 
 	t_fader.loadFromFile(finder.resource_path + "/image/vfx/fader.png");
+	t_firefly.loadFromFile(finder.resource_path + "/image/vfx/firefly.png");
+	t_dragonfly.loadFromFile(finder.resource_path + "/image/vfx/dragonfly.png");
 
 	t_twinkle.loadFromFile(finder.resource_path + "/image/vfx/twinkle.png");
 	t_wasp_effect.loadFromFile(finder.resource_path + "/image/vfx/wasp_effect.png");

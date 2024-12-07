@@ -17,7 +17,8 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	health_bar.update(svc, hp, hp.flags.test(entity::HPState::hit));
 
 	if (player.arsenal && player.hotbar) {
-		if (player.switched_weapon()) { ammo_bar.set(svc, player.equipped_weapon().ammo.get_capacity(), ammo_dimensions, svc.assets.t_hud_ammo, origins.ammo, AMMO_pad); }
+		if (player.switched_weapon()) { ammo_bar.set(svc, player.equipped_weapon().ammo.get_capacity(), ammo_dimensions, svc.assets.t_hud_ammo, origins.ammo, static_cast<float>(AMMO_pad));
+		}
 		player.hotbar->sync();
 		auto& player_ammo = player.equipped_weapon().ammo;
 		ammo_bar.update(svc, player_ammo.magazine, player.equipped_weapon().shot());
@@ -81,8 +82,8 @@ void HUD::orient(automa::ServiceProvider& svc, player::Player& player, bool file
 	origins.orb = sf::Vector2<float>{true_origin.x, origins.hp.y - f_pad - orb_text_dimensions.y};
 	origins.ammo = sf::Vector2<float>{true_origin.x, origins.orb.y - f_pad - f_ammo_dimensions.y};
 	origins.gun = sf::Vector2<float>{true_origin.x, origins.ammo.y - f_pad - pointer_dimensions.y - pointer_pad * 2};
-	health_bar.set(svc, player.health.get_limit(), heart_dimensions, svc.assets.t_hud_hearts, origins.hp, HP_pad);
-	if (player.arsenal && player.hotbar) { ammo_bar.set(svc, player.equipped_weapon().ammo.get_capacity(), ammo_dimensions, svc.assets.t_hud_ammo, origins.ammo, AMMO_pad); }
+	health_bar.set(svc, static_cast<int>(player.health.get_limit()), heart_dimensions, svc.assets.t_hud_hearts, origins.hp, static_cast<float>(HP_pad));
+	if (player.arsenal && player.hotbar) { ammo_bar.set(svc, player.equipped_weapon().ammo.get_capacity(), ammo_dimensions, svc.assets.t_hud_ammo, origins.ammo, static_cast<float>(AMMO_pad)); }
 }
 
 } // namespace gui

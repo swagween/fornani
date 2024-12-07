@@ -35,6 +35,7 @@
 #include "../utils/Stopwatch.hpp"
 #include "../utils/CircleCollider.hpp"
 #include "../audio/Ambience.hpp"
+#include "../entities/atmosphere/Atmosphere.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -113,11 +114,16 @@ class Map {
 	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void shake_camera();
 	void clear();
+	void wrap(sf::Vector2<float>& position) const;
 	std::vector<Layer>& get_layers();
 	npc::NPC& get_npc(int id);
 	Vec get_spawn_position(int portal_source_map_id);
+	sf::Vector2<float> get_nearest_target_point(sf::Vector2<float> from);
+
+	void debug();
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
+	bool within_bounds(sf::Vector2<float> test) const;
 	bool overlaps_middleground(shape::Shape& test) const;
 	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
@@ -159,6 +165,8 @@ class Map {
 	std::vector<Destroyable> destroyers{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
+	std::vector<vfx::Atmosphere> atmosphere{};
+	std::vector<sf::Vector2<float>> target_points{};
 
 	// vfx
 	std::optional<vfx::Rain> rain{};
