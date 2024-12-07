@@ -65,6 +65,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			ambience.load(svc.assets.finder, meta["ambience"].as_string());
 			ambience.play();
 		}
+		for (auto& entry : meta["atmosphere"].array_view()) {
+			if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
+		}
 
 		if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
 		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
@@ -371,6 +374,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(svc, *player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
+	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& spawner : spawners) { spawner.update(svc, *this); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
@@ -467,6 +471,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
+	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
 	for (auto& vine : vines) {
 		if (vine->foreground()) { vine->render(svc, win, cam); }
 	}
@@ -661,6 +666,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 227)); }
 		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position(), cell.value)); }
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
+		if (cell.is_target()) { target_points.push_back(cell.get_center()); }
 	}
 }
 
@@ -811,6 +817,13 @@ void Map::clear() {
 	npcs.clear();
 }
 
+void Map::wrap(sf::Vector2<float>& position) const {
+	if (position.x < 0.f) { position.x = real_dimensions.x; }
+	if (position.y < 0.f) { position.y = real_dimensions.y; }
+	if (position.x > real_dimensions.x) { position.x = 0.f; }
+	if (position.y > real_dimensions.y) { position.y = 0.f; }
+}
+
 std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
 
 npc::NPC& Map::get_npc(int id) {
@@ -829,9 +842,29 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 	return Vec(300.f, 390.f);
 }
 
+sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
+	auto ret = sf::Vector2<float>{};
+	auto dist = std::numeric_limits<float>::max();
+	for (auto& target : target_points) {
+		auto test = util::magnitude(from - target);
+		if (test < dist) {
+			ret = target;
+			dist = test;
+		}
+	}
+	return ret;
+}
+
+void Map::debug() {
+	//background->debug();
+	//for (auto& atm : atmosphere) { atm.debug(); }
+}
+
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
 }
+
+bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
 
 bool Map::overlaps_middleground(shape::Shape& test) const {
 	auto& layers = m_services->data.get_layers(room_id);

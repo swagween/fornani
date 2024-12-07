@@ -41,6 +41,13 @@ void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
 	acceleration = {};
 }
 
+void PhysicsComponent::simple_update() {
+	velocity *= air_friction.x;
+	velocity += acceleration;
+	position += velocity;
+	acceleration = {};
+}
+
 void PhysicsComponent::impart_momentum() {
 	position += forced_momentum;
 	velocity += forced_acceleration;

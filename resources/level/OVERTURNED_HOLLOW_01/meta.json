@@ -17,6 +17,7 @@
     "background": 18,
     "music": "whispering_island",
     "ambience": "overturned",
+    "atmosphere": [1],
     "styles": {
       "breakables": 0
     },

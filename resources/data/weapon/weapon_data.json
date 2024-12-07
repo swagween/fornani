@@ -18,7 +18,7 @@
       },
       "attributes": {
         "automatic": false,
-        "ammo": 6,
+        "ammo": 3,
         "reload": 160,
         "rate": 6,
         "cooldown_time": 30,

@@ -34,7 +34,9 @@ void AnimatedSprite::set_origin(sf::Vector2<float> origin) { sprite.setOrigin(or
 
 void AnimatedSprite::set_texture(sf::Texture& texture) { sprite.setTexture(texture); }
 
-void AnimatedSprite::random_start(automa::ServiceProvider& svc) { animation.frame.set(svc.random.random_range(0, animation.params.duration - 1)); }
+void AnimatedSprite::random_start(automa::ServiceProvider& svc) {
+	if (animation.params.duration > 1) { animation.frame.set(svc.random.random_range(0, animation.params.duration - 1)); }
+}
 
 void AnimatedSprite::end() { animation.end(); }
 

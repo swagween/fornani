@@ -76,7 +76,19 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (grounded()) { controller.reset_dash_count(); }
 
 	// do this elsehwere later
-	if (collider.flags.state.test(shape::State::just_landed)) { m_services->soundboard.play_step(map.get_tile_value_at_position(collider.get_below_point()), map.native_style_id, true); }
+	if (collider.flags.state.test(shape::State::just_landed)) {
+		auto below_point = collider.get_below_point();
+		auto val = map.get_tile_value_at_position(below_point);
+		if (val == 0) {
+			below_point = collider.get_below_point(-1);
+			val = map.get_tile_value_at_position(below_point);
+		}
+		if (val == 0) {
+			below_point = collider.get_below_point(1);
+			val = map.get_tile_value_at_position(below_point);
+		}
+		m_services->soundboard.play_step(val, map.native_style_id, true);
+	}
 	collider.flags.state.reset(shape::State::just_landed);
 
 	// player-controlled actions

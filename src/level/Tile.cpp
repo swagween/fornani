@@ -81,6 +81,10 @@ void Tile::set_type() {
 		type = TileType::pushable;
 		return;
 	}
+	if (value == 230) {
+		type = TileType::target;
+		return;
+	}
 	if (value == 231) {
 		type = TileType::spawner;
 		return;

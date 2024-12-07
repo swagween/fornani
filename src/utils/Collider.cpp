@@ -135,6 +135,10 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		// ground ramp
 		// only handle ramp collisions if the bounding_box is colliding with it
 		if (bounding_box.SAT(cell)) {
+			if (physics.apparent_velocity().y > vert_threshold) {
+				flags.state.set(State::just_landed);
+				flags.animation.set(Animation::just_landed);
+			}
 			flags.state.set(State::tickwise_ramp_collision);
 			if (is_ground_ramp) {
 				flags.external_state.set(ExternalState::on_ramp);

@@ -6,7 +6,6 @@
 #include "../../components/PhysicsComponent.hpp"
 #include "../../components/SteeringBehavior.hpp"
 #include "../animation/AnimatedSprite.hpp"
-#include "../../utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -16,20 +15,29 @@ namespace world {
 class Map;
 }
 
+namespace player {
+class Player;
+}
+
 namespace vfx {
 
-class Firefly {
+class Dragonfly {
   public:
-	Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start);
-	void update(automa::ServiceProvider& svc, world::Map& map);
+	Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void set_forces(float seek, float walk, float evade);
+	void debug();
   private:
 	components::PhysicsComponent physics{};
 	components::SteeringBehavior steering{};
 	anim::AnimatedSprite sprite{};
-	util::Cooldown light{};
 	int variant{};
-	bool glowing{};
+	struct {
+		float seek{};
+		float walk{};
+		float evade{};
+	} forces{};
 };
 
 } // namespace vfx
