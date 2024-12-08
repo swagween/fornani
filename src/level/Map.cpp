@@ -32,6 +32,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	auto const& tiles = svc.data.map_jsons.at(room_lookup).tiles;
 	inspectable_data = svc.data.map_jsons.at(room_lookup).inspectable_data;
 
+	//check for enemy respawns
+	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
+
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
@@ -176,6 +179,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>());
 			enemy_catalog.enemies.back()->set_position_from_scaled({pos * svc.constants.cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
+			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
+			std::cout << "Enemy external id: " << enemy_catalog.enemies.back()->get_external_id() << "\n";
+			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
 		}
 		for (auto& entry : metadata["destroyers"].array_view()) {
 			sf::Vector2<int> pos{};
@@ -856,7 +862,7 @@ sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
 }
 
 void Map::debug() {
-	//background->debug();
+	background->debug();
 	//for (auto& atm : atmosphere) { atm.debug(); }
 }
 

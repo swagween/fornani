@@ -295,6 +295,35 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					}
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("Enemy")) {
+					ImGui::Separator();
+					for (auto& entry : services.data.fallen_enemies) {
+						ImGui::Text("Room ID: %i", entry.code.first);
+						ImGui::SameLine();
+						ImGui::Text(" ; External ID: %i", entry.code.second);
+						ImGui::SameLine();
+						ImGui::Text(" ; Respawn Distance: %i", entry.respawn_distance);
+						if (entry.permanent) {
+							ImGui::SameLine();
+							ImGui::Text(" ; permanent");
+						}
+					}
+					ImGui::Separator();
+					ImGui::Text("Distance Traveled: %i", player.visit_history.distance_traveled());
+					ImGui::Text("Distance Traveled from 223: %i", player.visit_history.distance_traveled_from(223));
+					ImGui::Text("Visit History: ");
+					for (auto& room : player.visit_history.rooms_visited) {
+						ImGui::Text("%i, ", room);
+						ImGui::SameLine();
+					}
+					ImGui::Separator();
+					ImGui::Text("Room Deque: ");
+					for (auto& room : player.visit_history.room_deque) {
+						ImGui::Text("%i, ", room);
+						ImGui::SameLine();
+					}
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Sound")) {
 					ImGui::Separator();
 					ImGui::Text("Sound pool size: %i", static_cast<int>(services.soundboard.number_of_playng_sounds()));

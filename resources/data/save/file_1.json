@@ -1,16 +1,17 @@
 {
   "status": {
-    "new": true
+    "new": false
   },
   "player_data": {
-    "max_hp": 3,
-    "hp": 3,
-    "orbs": 0,
+    "max_hp": 3.000000,
+    "hp": 2.000000,
+    "orbs": 9,
     "position": {
-      "x": 102.0,
-      "y": 327.0
+      "x": 178.183456,
+      "y": 395.000000
     },
     "arsenal": [
+      0
     ],
     "equipped_gun": 0,
     "abilities": [
@@ -22,42 +23,67 @@
       "pants": 0
     },
     "items": [
+      {
+        "id": 11,
+        "quantity": 1
+      }
     ],
     "stats": {
       "death_count": 0,
-      "bullets_fired": 0,
-      "guns_collected": 0,
-      "items_collected": 0,
-      "orbs_collected": 0,
+      "bullets_fired": 22,
+      "guns_collected": 1,
+      "items_collected": 5,
+      "orbs_collected": 9,
       "blue_orbs": 0,
-      "highest_indicator_amount": 0,
-      "enemies_killed": 0,
-      "rooms_discovered": 0,
-      "seconds_played": 0.0,
+      "highest_indicator_amount": 9,
+      "enemies_killed": 2,
+      "rooms_discovered": 5,
+      "seconds_played": 83.316559,
       "time_trials": {
-        "bryns_gun": 0.0
+        "bryns_gun": 8.407800
       }
     },
     "hotbar": [
+      0
     ]
   },
-  "save_point_id": 100,
+  "save_point_id": 110,
   "unlocked_doors": [
+    11
   ],
   "opened_chests": [
+    377,
+    5768
   ],
   "activated_switches": [
+
   ],
   "destroyed_blocks": [
+
   ],
   "quest_progressions": [
+    [
+      1,
+      111,
+      1,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0
+    ]
   ],
   "destroyed_inspectables": [
+
   ],
   "tutorial": {
-    "state": 0,
+    "state": 2,
     "closed": true,
-    "on": false,
+    "on": true,
     "jump": true,
     "shoot": true,
     "sprint": true,
@@ -65,6 +91,29 @@
     "inventory": true
   },
   "discovered_rooms": [
+    100,
+    110,
+    219,
+    108,
+    109
   ],
-  "piggybacker": 0
+  "piggybacker": 0,
+  "marketplace": [
+    [
+      27,
+      66,
+      23,
+      25
+    ]
+  ],
+  "npc_locations": [
+    [
+      20,
+      100
+    ]
+  ],
+  "map_data": {
+    "fallen_enemies": [
+    ]
+  }
 }

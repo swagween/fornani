@@ -68,7 +68,9 @@
       "base_damage": 2.0,
       "speed": 1.0,
       "loot_multiplier": 4.0,
-      "drop_range": [ 5, 8 ]
+      "drop_range": [ 5, 8 ],
+      "respawn_distance": 6,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -111,7 +113,9 @@
       "base_damage": 1.0,
       "speed": 1.0,
       "loot_multiplier": 4.0,
-      "drop_range": [ 5, 8 ]
+      "drop_range": [ 5, 8 ],
+      "respawn_distance": 6,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -158,7 +162,9 @@
       "base_damage": 1.0,
       "speed": 10.0,
       "loot_multiplier": 0.0,
-      "drop_range": [ 0, 0 ]
+      "drop_range": [ 0, 0 ],
+      "respawn_distance": 4,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -203,7 +209,9 @@
       "base_damage": 1.0,
       "speed": 18.0,
       "loot_multiplier": 0.1,
-      "drop_range": [ 1, 2 ]
+      "drop_range": [ 1, 2 ],
+      "respawn_distance": 1,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -250,7 +258,9 @@
       "base_damage": 1.0,
       "speed": 0.5,
       "loot_multiplier": 25.0,
-      "drop_range": [ 25, 30 ]
+      "drop_range": [ 25, 30 ],
+      "respawn_distance": 0,
+      "permadeath": true
     },
     "animation": {
       "duration": 2,
@@ -293,7 +303,9 @@
       "base_damage": 1.0,
       "speed": 0.7,
       "loot_multiplier": 5.0,
-      "drop_range": [ 6, 11 ]
+      "drop_range": [ 6, 11 ],
+      "respawn_distance": 4,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -337,7 +349,9 @@
       "speed": 0.9,
       "loot_multiplier": 6.0,
       "drop_range": [ 6, 11 ],
-      "rare_drop_id": 0
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -382,7 +396,9 @@
       "speed": 0.9,
       "loot_multiplier": 4.0,
       "drop_range": [ 4, 7 ],
-      "rare_drop_id": 0
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,

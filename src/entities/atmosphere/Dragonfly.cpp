@@ -7,7 +7,7 @@
 
 namespace vfx {
 
-Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_dragonfly, {24, 24}) {
+Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_dragonfly, {16, 16}) {
 	physics.set_global_friction(0.97f);
 	physics.position = start;
 	physics.velocity = svc.random.random_vector_float(-1.f, 1.f);

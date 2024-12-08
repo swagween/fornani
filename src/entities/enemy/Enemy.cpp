@@ -55,6 +55,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned)
 	attributes.drop_range.x = in_attributes["drop_range"][0].as<int>();
 	attributes.drop_range.y = in_attributes["drop_range"][1].as<int>();
 	attributes.rare_drop_id = in_attributes["rare_drop_id"].as<int>();
+	attributes.respawn_distance = in_attributes["respawn_distance"].as<int>();
+	if (in_attributes["permadeath"].as_bool()) { flags.general.set(GeneralFlags::permadeath); };
 
 	visual.effect_size = in_visual["effect_size"].as<int>();
 	visual.effect_type = in_visual["effect_type"].as<int>();
@@ -91,15 +93,18 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned)
 	if (!flags.general.test(GeneralFlags::uncrushable)) { collider.collision_depths = util::CollisionDepth(); }
 
 	sprite.setTexture(svc.assets.texture_lookup.at(label));
-	drawbox.setSize({(float)sprite_dimensions.x, (float)sprite_dimensions.y});
+	drawbox.setSize({static_cast<float>(sprite_dimensions.x), static_cast<float>(sprite_dimensions.y)});
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(svc.styles.colors.ui_white);
 	drawbox.setOutlineThickness(-1);
 }
 
+void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) { metadata.external_id = code.first * 2719 + code.second.x * 13219 + code.second.y * 49037; }
+
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	sound.hurt_sound_cooldown.update();
+	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position, 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));

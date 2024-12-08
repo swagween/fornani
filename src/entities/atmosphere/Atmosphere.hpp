@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include "Firefly.hpp"
 #include "Dragonfly.hpp"
 
@@ -25,7 +26,7 @@ class Atmosphere {
 	void debug();
 
   private:
-	std::vector<Firefly> fireflies{};
+	std::vector<std::unique_ptr<Firefly>> fireflies{};
 	std::vector<Dragonfly> dragonflies{};
 
 	// debug
