@@ -19,6 +19,10 @@ Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprit
 	light.start(offset);
 	sprite.set_origin({4.5f, 4.5f});
 	variant = svc.random.percent_chance(60) ? 0 : svc.random.percent_chance(50) ? 1 : svc.random.percent_chance(50) ? 2 : 3;
+	if (variant == 0 && svc.random.percent_chance(30)) {
+		trail = std::make_unique<flfx::SpriteHistory>();
+		trail.value()->set_sample_size(12);
+	}
 }
 
 void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
@@ -37,9 +41,11 @@ void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
 		sprite.set_params("invisible", true);
 	}
 	sprite.update(physics.position, variant);
+	if (trail && (svc.ticker.every_x_ticks(20) || light.is_almost_complete())) { trail.value()->update(sprite.get_sprite(), physics.position); }
 }
 
 void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (trail) { trail.value()->drag(win, cam); }
 	if (glowing) { sprite.render(svc, win, cam); }
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape drawbox{};

@@ -14,7 +14,7 @@ Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, in
 	for (auto i{0}; i < density * chunks; ++i) {
 		auto startx = svc.random.random_range_float(0.f, span.x);
 		auto starty = svc.random.random_range_float(0.f, span.y);
-		fireflies.push_back(vfx::Firefly(svc, {startx, starty}));
+		fireflies.push_back(std::make_unique<vfx::Firefly>(svc, sf::Vector2<float>{startx, starty}));
 	}
 	if(type == 1) { density = 4;
 	for (auto i{0}; i < density * chunks; ++i) {
@@ -26,12 +26,12 @@ Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, in
 }
 
 void vfx::Atmosphere::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	for (auto& fly : fireflies) { fly.update(svc, map); }
+	for (auto& fly : fireflies) { fly->update(svc, map); }
 	for (auto& fly : dragonflies) { fly.update(svc, map, player); }
 }
 
 void Atmosphere::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	for (auto& fly : fireflies) { fly.render(svc, win, cam); }
+	for (auto& fly : fireflies) { fly->render(svc, win, cam); }
 	for (auto& fly : dragonflies) { fly.render(svc, win, cam); }
 }
 

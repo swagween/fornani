@@ -122,5 +122,61 @@
         "parallax": 0.22
       }
     ]
+  },
+  "tall_woods": {
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.067
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.108
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.18
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.22
+      }
+    ]
+  },
+  "dense_woods": {
+    "dimensions": [
+      1920,
+      1024
+    ],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.067
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.108
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.18
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.22
+      }
+    ]
   }
 }

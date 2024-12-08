@@ -148,6 +148,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	// write opened chests and doors
 	save["piggybacker"] = m_services->player_dat.piggy_id;
 	save["npc_locations"] = wipe;
+	save["map_data"]["fallen_enemies"] = wipe;
 	save["discovered_rooms"] = wipe;
 	save["unlocked_doors"] = wipe;
 	save["opened_chests"] = wipe;
@@ -161,6 +162,14 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		entry.push_back(location.first);
 		entry.push_back(location.second);
 		save["npc_locations"].push_back(entry);
+	}
+	for (auto& enemy : fallen_enemies) {
+		auto entry = wipe;
+		entry.push_back(enemy.code.first);
+		entry.push_back(enemy.code.second);
+		entry.push_back(enemy.respawn_distance);
+		entry.push_back(static_cast<int>(enemy.permanent));
+		save["map_data"]["fallen_enemies"].push_back(entry);
 	}
 	for (auto& room : discovered_rooms) { save["discovered_rooms"].push_back(room); }
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
@@ -272,6 +281,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	destroyed_inspectables.clear();
 	quest_progressions.clear();
 	npc_locations.clear();
+	fallen_enemies.clear();
 
 	for (auto& room : save["discovered_rooms"].array_view()) { discovered_rooms.push_back(room.as<int>()); }
 	for (auto& door : save["unlocked_doors"].array_view()) { unlocked_doors.push_back(door.as<int>()); }
@@ -289,6 +299,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 		m_services->quest.process(*m_services, quest_progressions.back());
 	}
 	for (auto& location : save["npc_locations"].array_view()) { npc_locations.insert({location[0].as<int>(), location[1].as<int>()}); }
+	for (auto& enemy : save["map_data"]["fallen_enemies"].array_view()) { fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), enemy[1].as<int>()), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>())}); };
 	player.piggybacker = {};
 	m_services->player_dat.set_piggy_id(save["piggybacker"].as<int>());
 	m_services->player_dat.drop_piggy = false;
@@ -488,6 +499,21 @@ void DataManager::set_npc_location(int npc_id, int room_id) {
 	npc_locations.at(npc_id) = room_id;
 }
 
+void DataManager::kill_enemy(int room_id, int id, int distance, bool permanent) { fallen_enemies.push_back({{room_id, id}, distance, permanent});
+}
+
+void DataManager::respawn_enemy(int room_id, int id) {
+	std::erase_if(fallen_enemies, [room_id, id](auto const& i) { return i.code.first == room_id && i.code.second == id && !i.permanent; });
+}
+
+void DataManager::respawn_enemies(int room_id, int distance) {
+	std::erase_if(fallen_enemies, [room_id, distance](auto const& i) { return i.code.first == room_id && i.respawn_distance <= distance && !i.permanent; });
+}
+
+void DataManager::respawn_all() {
+	std::erase_if(fallen_enemies, [](auto const& i) { return !i.permanent; });
+}
+
 bool DataManager::door_is_unlocked(int id) const {
 	for (auto& door : unlocked_doors) {
 		if (door == id) { return true; }
@@ -526,6 +552,13 @@ bool DataManager::inspectable_is_destroyed(std::string_view id) const {
 bool DataManager::room_discovered(int id) const {
 	for (auto& room : discovered_rooms) {
 		if (id == room) { return true; }
+	}
+	return false;
+}
+
+bool DataManager::enemy_is_fallen(int room_id, int id) const {
+	for (auto& enemy : fallen_enemies) {
+		if (enemy.code.first == room_id && enemy.code.second == id) { return true; }
 	}
 	return false;
 }

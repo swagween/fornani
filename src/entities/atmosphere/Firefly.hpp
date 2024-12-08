@@ -7,6 +7,9 @@
 #include "../../components/SteeringBehavior.hpp"
 #include "../animation/AnimatedSprite.hpp"
 #include "../../utils/Cooldown.hpp"
+#include "../../graphics/SpriteHistory.hpp"
+#include <optional>
+#include <memory>
 
 namespace automa {
 struct ServiceProvider;
@@ -30,6 +33,7 @@ class Firefly {
 	util::Cooldown light{};
 	int variant{};
 	bool glowing{};
+	std::optional<std::unique_ptr<flfx::SpriteHistory>> trail{};
 };
 
 } // namespace vfx

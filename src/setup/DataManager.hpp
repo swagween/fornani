@@ -34,6 +34,12 @@ struct MapData {
 	dj::Json inspectable_data{};
 };
 
+struct EnemyState {
+	std::pair<int, int> code{};
+	int respawn_distance{};
+	bool permanent{};
+};
+
 class DataManager {
 
   public:
@@ -62,12 +68,17 @@ class DataManager {
 	void destroy_inspectable(std::string_view id);
 	void push_quest(util::QuestKey key);
 	void set_npc_location(int npc_id, int room_id);
+	void kill_enemy(int room_id, int id, int distance, bool permanent);
+	void respawn_enemy(int room_id, int id);
+	void respawn_enemies(int room_id, int distance);
+	void respawn_all();
 	bool door_is_unlocked(int id) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
 	bool block_is_destroyed(int id) const;
 	bool inspectable_is_destroyed(std::string_view id) const;
 	bool room_discovered(int id) const;
+	bool enemy_is_fallen(int room_id, int id) const;
 
 	// support user-defined control mapping
 	void load_controls(config::ControllerMap& controller);
@@ -123,6 +134,7 @@ class DataManager {
 	automa::ServiceProvider* m_services;
 	std::unordered_map<int, npc::Vendor> marketplace{};
 	std::unordered_map<int, int> npc_locations{};
+	std::vector<EnemyState> fallen_enemies{};
 
   private:
 	std::vector<int> opened_chests{};

@@ -35,6 +35,7 @@ class AnimatedSprite {
 	[[nodiscard]] auto complete() -> bool { return animation.complete(); }
 	[[nodiscard]] auto size() -> int { return static_cast<int>(params.size()); }
 	Animation& get() { return animation; }
+	sf::Sprite& get_sprite() { return sprite; }
 
   private:
 	sf::Sprite sprite{};
