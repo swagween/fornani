@@ -67,6 +67,10 @@ void TextWriter::update() {
 	if (tick_count % writing_speed == 0) {
 		char const next_char = (char)suite.at(iterators.current_suite_set).front().data.getString().getData()[glyph_count];
 		working_str += next_char;
+		third_working_message = second_working_message;
+		third_working_message.setFillColor(m_services->styles.colors.ui_white);
+		second_working_message = working_message;
+		second_working_message.setFillColor(m_services->styles.colors.periwinkle);
 		working_message.setString(working_str);
 		++glyph_count;
 	}
@@ -185,7 +189,10 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 		return;
 	}
 	help_marker.start();
+	working_message.setFillColor(m_services->styles.colors.blue);
 	win.draw(working_message);
+	if (working_message.getString().getSize() > 1) { win.draw(second_working_message); }
+	if (second_working_message.getString().getSize() > 1) { win.draw(third_working_message); }
 }
 
 void TextWriter::write_responses(sf::RenderWindow& win) {

@@ -39,5 +39,6 @@ class Spike {
 	util::BitFlags<SpikeAttributes> attributes{};
 	sf::Vector2<float> offset{};
 	sf::RectangleShape drawbox{};
+	bool soft_reset{};
 };
 } // namespace world

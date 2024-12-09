@@ -10,6 +10,7 @@ class ColorFade{
   public:
 	ColorFade() = default;
 	ColorFade(std::vector<sf::Color> colors, int threshold, int duration);
+	void change_colors(std::vector<sf::Color> colors);
 	void start();
 	void update();
 	[[nodiscard]] auto color() const -> sf::Color { return current_color; }

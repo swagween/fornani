@@ -4,8 +4,8 @@
 
 namespace dir {
 
-	// the exclusion of "N" in the class name is purposeful; there is no "neutral" direction between L and R.
-	// the neutral state is used for setting the und state in specific use cases, like weapon direction.
+// the exclusion of "N" in the class name is purposeful; there is no "neutral" direction between L and R.
+// the neutral state is used for setting the und state in specific use cases, like weapon direction.
 enum class LR { left, neutral, right };
 enum class UND { up, neutral, down };
 // intermediate direction, used for special cases like grappling hook
@@ -43,11 +43,11 @@ struct Direction {
 		}
 	}
 
-	void neutralize_und() {
-		und = UND::neutral;
-	}
-	void neutralize_lr() {
-		lr = LR::neutral;
+	void neutralize_und() { und = UND::neutral; }
+	void neutralize_lr() { lr = LR::neutral; }
+	void flip(bool horizontal = true, bool vertical = false) {
+		if (horizontal) { lr = lr == LR::left ? LR::right : LR::left; }
+		if (vertical) { und = und == UND::up ? UND::down : UND::up; }
 	}
 	constexpr float as_float() const { return lr == LR::left ? -1.f : (lr == LR::right ? 1.f : 0.f); }
 
@@ -67,7 +67,6 @@ struct Direction {
 		}
 		return "null";
 	}
-
 };
 
-} // namespace util
+} // namespace dir

@@ -25,5 +25,7 @@ inline float ease_out_back(float progress) {
 	return 1.f + c3 * ccm::pow(progress - 1.f, 3.f) + c1 * ccm::pow(progress - 1.f, 2.f);
 }
 inline float smoothstep(float x, float y, float progress) { return ccm::ext::smoothstep(x, y, progress); }
+inline bool same_parity(float a, float b) { return ((static_cast<int>(a) ^ static_cast<int>(b)) & 1) == 0; }
+inline bool same_sign(float a, float b) { return a * b >= 0.f; }
 
 } // namespace util

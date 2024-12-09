@@ -11,7 +11,7 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), m_services(&svc), m_console(&console) {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console) {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
@@ -386,6 +386,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
+	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
@@ -394,6 +395,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& g : grass) { g->update(svc, *this, *player); }
 	player->collider.detect_map_collision(*this);
 	if (loading.is_complete()) { transition.update(*player); }
+	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
@@ -473,6 +475,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
 	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
+	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
 	for (auto& spike : spikes) { spike.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
@@ -673,6 +676,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position(), cell.value)); }
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
 		if (cell.is_target()) { target_points.push_back(cell.get_center()); }
+		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
 	}
 }
 
@@ -821,6 +825,7 @@ void Map::clear() {
 	switch_buttons.clear();
 	chests.clear();
 	npcs.clear();
+	checkpoints.clear();
 }
 
 void Map::wrap(sf::Vector2<float>& position) const {
@@ -859,6 +864,13 @@ sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
 		}
 	}
 	return ret;
+}
+
+sf::Vector2<float> Map::last_checkpoint() {
+	for (auto& checkpoint : checkpoints) {
+		if (checkpoint.reached()) { return checkpoint.position(); }
+	}
+	return {};
 }
 
 void Map::debug() {

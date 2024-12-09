@@ -30,6 +30,7 @@
 #include "Spike.hpp"
 #include "SwitchBlock.hpp"
 #include "Destroyable.hpp"
+#include "Checkpoint.hpp"
 #include "../weapon/Grenade.hpp"
 #include "../story/CutsceneCatalog.hpp"
 #include "../utils/Stopwatch.hpp"
@@ -119,6 +120,7 @@ class Map {
 	npc::NPC& get_npc(int id);
 	Vec get_spawn_position(int portal_source_map_id);
 	sf::Vector2<float> get_nearest_target_point(sf::Vector2<float> from);
+	sf::Vector2<float> last_checkpoint();
 
 	void debug();
 
@@ -163,6 +165,7 @@ class Map {
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
 	std::vector<Destroyable> destroyers{};
+	std::vector<Checkpoint> checkpoints{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
 	std::vector<vfx::Atmosphere> atmosphere{};
@@ -176,6 +179,7 @@ class Map {
 
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition;
+	flfx::Transition soft_reset;
 
 	enemy::EnemyCatalog enemy_catalog;
 	fornani::CutsceneCatalog cutscene_catalog;

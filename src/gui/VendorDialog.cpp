@@ -187,6 +187,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						auto item_id = vendor.inventory.items.at(selector.get_current_selection()).get_id();
 						player.give_item(item_id, 1);
 						player.give_drop(item::DropType::orb, -sale_price);
+						balance -= sale_price;
 						vendor.inventory.remove_item(svc, item_id, 1);
 						svc.soundboard.flags.world.set(audio::World::soft_sparkle_high);
 						exchanged = true;
@@ -243,6 +244,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						vendor.inventory.add_item(svc, item.get_id(), 1);
 						player.take_item(item.get_id());
 						player.give_drop(item::DropType::orb, sale_price);
+						balance += sale_price;
 						svc.soundboard.flags.world.set(audio::World::soft_sparkle_high);
 						flags.set(VendorDialogStatus::made_sale);
 						exchanged = true;

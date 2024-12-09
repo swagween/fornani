@@ -90,7 +90,7 @@ void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
 void Dojo::tick_update(ServiceProvider& svc) {
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
-	loading.is_complete() ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
+	loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	loading.update();
 	svc.soundboard.play_sounds(svc);
 	if (pause_window.active()) {
@@ -107,7 +107,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		map.transition.update(*player);
 		vendor_dialog.value().update(svc, map, *player);
 		if (!vendor_dialog.value().is_open()) {
-			if (vendor_dialog.value().made_sale()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
+			if (vendor_dialog.value().made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
 			vendor_dialog = {};
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			inventory_window.update_wardrobe(svc, *player);
@@ -229,6 +229,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	inventory_window.render(svc, *player, win, camera.get_position());
 	pause_window.render(svc, *player, win);
 	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
+	map.soft_reset.render(win);
 	map.transition.render(win);
 	map.render_console(svc, console, win);
 	player->tutorial.render(win);
