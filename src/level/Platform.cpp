@@ -111,6 +111,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
 			physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
 			physics.velocity = physics.position - old_position;
+			physics.real_velocity = physics.velocity;
 			// set direction
 			direction.lr = physics.velocity.x > 0.0f ? dir ::LR::right : dir::LR::left;
 			direction.und = physics.velocity.y > 0.0f ? dir ::UND::down : dir::UND::up;

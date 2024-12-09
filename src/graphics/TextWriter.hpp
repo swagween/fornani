@@ -113,6 +113,9 @@ class TextWriter {
 	std::unordered_map<Codes, char> special_characters{};
 
 	sf::Text working_message{};
+	sf::Text second_working_message{};
+	sf::Text third_working_message{};
+	std::vector<sf::Text> working_messages{};
 
 	HelpText help_marker;
 

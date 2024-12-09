@@ -498,7 +498,6 @@ void Player::update_direction() {
 	} else {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
 	}
-
 	// set directions for grappling hook
 	//if (arsenal) { equipped_weapon().projectile.hook.probe_direction = controller.direction; }
 }
@@ -511,6 +510,7 @@ void Player::update_weapon() {
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_id()) ? weapon->set_hotbar() : weapon->set_reserved();
 		weapon->firing_direction = controller.direction;
+		if (controller.get_wallslide().is_wallsliding()) { weapon->firing_direction.flip(); }
 		weapon->update(*m_services, controller.direction);
 		auto tweak = controller.facing_left() ? -1.f : 1.f;
 		auto g_offset = weapon->gun_offset;

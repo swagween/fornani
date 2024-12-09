@@ -23,7 +23,24 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Vector2<float> position, int look
 }
 
 void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
-	if (player.hurtbox.overlaps(hitbox)) { player.hurt(); }
+	if (map.soft_reset.is_done()) { player.controller.unrestrict(); }
+	if (soft_reset && map.soft_reset.is_done()) {
+		player.set_position(map.last_checkpoint());
+		player.collider.physics.zero();
+		player.controller.prevent_movement();
+		player.controller.restrict_movement();
+		map.soft_reset.end();
+		std::cout << "ended\n";
+		soft_reset = false;
+	}
+	if (player.hurtbox.overlaps(hitbox) && map.soft_reset.not_started() && !player.invincible()) {
+		player.hurt();
+		if (!player.is_dead()) {
+			soft_reset = true;
+			map.soft_reset.start();
+			std::cout << "started\n";
+		}
+	}
 	handle_collision(player.collider);
 }
 

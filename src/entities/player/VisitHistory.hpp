@@ -6,12 +6,10 @@ namespace player {
 class VisitHistory {
   public:
 	[[nodiscard]] auto distance_traveled_from(int room_id) -> int {
-		auto counter{0};
 		auto cache = std::vector<int>{};
 		for (auto& room : room_deque) {
 			if (room == room_id) { cache.clear(); }
 			if (std::find(cache.begin(), cache.end(), room) == cache.end()) { cache.push_back(room); }
-			++counter;
 		}
 		return static_cast<int>(cache.size());
 	}

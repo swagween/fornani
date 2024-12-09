@@ -18,6 +18,7 @@
 #include "../utils/Random.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/Ticker.hpp"
+#include "../setup/Version.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
@@ -35,6 +36,7 @@ struct MapDebug {
 struct ServiceProvider {
 	ServiceProvider(char** argv) : data(*this, argv) {};
 
+	fornani::Version version{};
 	fornani::WindowManager* window;
 	lookup::Tables tables{};
 	asset::AssetManager assets{};

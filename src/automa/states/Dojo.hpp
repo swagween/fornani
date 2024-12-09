@@ -29,7 +29,7 @@ class Dojo : public GameState {
 	bool open_vendor{};
 	int x{0};
 	util::Cooldown enter_room{};
-	util::Cooldown loading{4};
+	util::Cooldown loading{32};
 	std::optional<gui::VendorDialog> vendor_dialog{};
 
 	//shape::Collider A{};

@@ -89,7 +89,11 @@ void Tile::set_type() {
 		type = TileType::spawner;
 		return;
 	}
-	if (value < 248 && value >= 244) {
+	if (value == 246) {
+		type = TileType::checkpoint;
+		return;
+	}
+	if (value == 247) {
 		type = TileType::breakable;
 		return;
 	}

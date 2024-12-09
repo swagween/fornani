@@ -3,11 +3,13 @@
 #include <ctime>
 #include "../gui/ActionContextBar.hpp"
 #include "WindowManager.hpp"
+#include "../utils/Math.hpp"
 
 namespace fornani {
 
-Game::Game(char** argv, WindowManager& window) : services(argv), player(services) {
+Game::Game(char** argv, WindowManager& window, Version& version) : services(argv), player(services) {
 	services.stopwatch.start();
+	services.version = version;
 	services.window = &window;
 	services.constants.screen_dimensions = window.screen_dimensions;
 	// controls
@@ -194,6 +196,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
+					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
 					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
@@ -203,7 +206,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
 					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
-					ImGui::Text("32t max: %u", static_cast<unsigned int>(std::numeric_limits<uint32_t>::max()));
 					ImGui::Separator();
 					ImGui::Text("Player");
 					ImGui::Separator();
@@ -245,11 +247,19 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
 					ImGui::Separator();
-					ImGui::Text("Random");
-					ImGui::Text("Ten percent chance: %.2f", static_cast<float>(rng_test.sample) / static_cast<float>(rng_test.total));
-					ImGui::Separator();
 					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Tests")) {
+					ImGui::Text("Parity");
+					ImGui::Text("-1 and 2: %s", util::same_parity(-1.f, 2.f) ? "Yes" : "No");
+					ImGui::Text("3 and 5: %s", util::same_parity(3.f, 5.f) ? "Yes" : "No");
+					ImGui::Text("-0.001 and 5: %s", util::same_parity(-0.001f, 5.f) ? "Yes" : "No");
+					ImGui::Text("-0.1 and -5: %s", util::same_parity(-0.1f, -5.f) ? "Yes" : "No");
+					ImGui::Separator();
+					ImGui::Text("Random");
+					ImGui::Text("Ten percent chance: %.2f", static_cast<float>(rng_test.sample) / static_cast<float>(rng_test.total));
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Input")) {

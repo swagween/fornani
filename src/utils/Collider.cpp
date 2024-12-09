@@ -3,6 +3,7 @@
 #include "../service/ServiceProvider.hpp"
 #include "../level/Map.hpp"
 #include <ccmath/math/power/sqrt.hpp>
+#include "../utils/Math.hpp"
 
 namespace shape {
 
@@ -299,7 +300,7 @@ void Collider::resolve_depths() {
 
 void Collider::handle_platform_collision(Shape const& cell) {}
 
-bool Collider::handle_collider_collision(Shape const& collider, bool soft) {
+bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2<float> velocity) {
 	auto ret{false};
 	if (soft) {
 		if (!vicinity.overlaps(collider)) { return ret; }
@@ -321,6 +322,8 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft) {
 	mtvs.vertical = predictive_vertical.testCollisionGetMTV(predictive_vertical, collider);
 	mtvs.horizontal = predictive_horizontal.testCollisionGetMTV(predictive_horizontal, collider);
 	mtvs.actual = bounding_box.testCollisionGetMTV(bounding_box, collider);
+	if (!util::same_sign(velocity.y, mtvs.vertical.y)) { velocity.y = 0.f; }
+	if (!util::same_sign(velocity.x, mtvs.horizontal.x)) { velocity.x = 0.f; }
 
 	if (collision_depths) { collision_depths.value().calculate(*this, collider); }
 
@@ -337,11 +340,15 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft) {
 		flags.external_state.set(ExternalState::vert_collider_collision);
 
 		if (flags.general.test(General::soft)) {
-			correct_y(mtvs.vertical);
+			correct_y(mtvs.vertical + velocity);
 		} else {
-			flags.collision.test(Collision::has_top_collision) ? correct_y(mtvs.vertical) : correct_y(mtvs.vertical);
+			if (flags.collision.test(Collision::has_top_collision)) {
+				flags.external_state.set(ExternalState::jumped_into);
+				correct_y(mtvs.vertical + velocity);
+			} else {
+				correct_y(mtvs.vertical + velocity);
+			}
 		}
-		if (flags.collision.test(Collision::has_top_collision)) { flags.external_state.set(ExternalState::jumped_into); }
 	}
 	if (predictive_horizontal.SAT(collider)) {
 		mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
@@ -350,13 +357,13 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft) {
 		flags.external_state.set(ExternalState::collider_collision);
 		flags.external_state.set(ExternalState::horiz_collider_collision);
 		flags.external_state.reset(ExternalState::vert_collider_collision);
-		correct_x(mtvs.horizontal);
+		correct_x(mtvs.horizontal + velocity);
 	}
 	if (predictive_combined.overlaps(collider) && corner_collision) {
 		flags.collision.set(Collision::any_collision);
 		flags.dash.set(Dash::dash_cancel_collision);
 		flags.external_state.set(ExternalState::collider_collision);
-		correct_corner(mtvs.combined);
+		correct_corner(mtvs.combined + velocity);
 	}
 	if (wallslider.overlaps(collider)) { wallslider.vertices.at(0).x > collider.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
@@ -375,10 +382,11 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft) {
 }
 
 void Collider::handle_collider_collision(Collider const& collider, bool soft, bool momentum) {
+	if (!vicinity.overlaps(collider.bounding_box)) { return; }
 	if (collider.flags.general.test(General::top_only_collision)) {
-		if (jumpbox.position.y > collider.physics.position.y + 4 || physics.acceleration.y < 0.0f) { return; }
+		if (jumpbox.position.y > collider.physics.position.y + 4.f || physics.acceleration.y < 0.0f) { return; }
 	}
-	if (handle_collider_collision(collider.bounding_box, soft)) {
+	if (handle_collider_collision(collider.bounding_box, soft, collider.physics.apparent_velocity() * 4.f)) {
 		if (momentum) { physics.forced_momentum = collider.physics.position - collider.physics.previous_position; }
 	}
 }

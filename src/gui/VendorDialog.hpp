@@ -34,6 +34,7 @@ class VendorDialog {
 	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
+	[[nodiscard]] auto made_profit() const -> bool { return balance > 0.f; }
 	[[nodiscard]] auto opening() const -> bool { return intro.running() || bring_in_cooldown.running(); }
   private:
 	struct {
@@ -53,6 +54,7 @@ class VendorDialog {
 	int npc_id{};
 	bool init{};
 	float sale_price{};
+	float balance{};
 	std::unordered_map<int, int> get_npc_id{};
 	sf::Vector2<float> portrait_position{44.f, 18.f};
 	sf::Vector2<float> bring_in{};
