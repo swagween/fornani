@@ -516,7 +516,7 @@ void Player::update_weapon() {
 			g_offset.x = 0.f;
 		}
 		auto p_pos = sf::Vector2<float>{collider.get_center().x + g_offset.x + tweak, collider.get_center().y + sprite_offset.y + g_offset.y - collider.dimensions.y / 2.f};
-		weapon->set_position(p_pos);
+		weapon->set_position(collider.physics.position);
 	}
 }
 

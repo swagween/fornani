@@ -355,7 +355,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	manage_projectiles(svc);
 	svc.map_debug.active_projectiles = active_projectiles.size();
 	for (auto& proj : active_projectiles) {
-		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
+		if (proj.destruction_initiated()) { continue; }
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
 		for (auto& breakable : breakables) { breakable.on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
@@ -617,18 +617,10 @@ void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf
 }
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {
-	//if (weapon.attributes.grenade) { active_grenades.push_back(arms::Grenade(svc, pos, weapon.get_firing_direction())); }
 	active_projectiles.push_back(weapon.projectile);
-	active_projectiles.back().set_sprite(svc);
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed(svc, target);
 	active_projectiles.back().update(svc, *player);
-	active_projectiles.back().sync_position();
-	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
-	if (active_projectiles.back().stats.spring) {
-		active_projectiles.back().set_hook_speed();
-		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);
-	}
 
 	active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.emitter.dimensions, weapon.emitter.type, weapon.emitter.color, weapon.get_firing_direction()));
 	if (weapon.secondary_emitter) { active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.get_firing_direction())); }
@@ -644,13 +636,13 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	for (auto& proj : active_projectiles) {
 		proj.update(svc, *player);
 		if (proj.whiffed() && !proj.poofed() && !proj.made_contact()) {
-			effects.push_back(entity::Effect(svc, proj.physics.position, proj.physics.velocity * 0.1f, proj.effect_type(), 8));
-			proj.state.set(arms::ProjectileState::poof);
+			effects.push_back(entity::Effect(svc, proj.get_position(), proj.get_velocity(), proj.effect_type(), 8));
+			proj.poof();
 		}
 	}
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
-	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
+	std::erase_if(active_projectiles, [](auto const& p) { return p.destroyed(); });
 
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
@@ -768,47 +760,6 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 			collider.handle_collision(cell.bounding_box);
 		}
 	}
-}
-
-void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj) {
-	// do this first block once
-	if (proj.hook.grapple_triggers.test(arms::GrappleTriggers::found) && !proj.hook.grapple_flags.test(arms::GrappleState::anchored) && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) {
-		proj.hook.spring.set_bob(player->collider.get_center());
-		proj.hook.grapple_triggers.reset(arms::GrappleTriggers::found);
-		proj.hook.grapple_flags.set(arms::GrappleState::anchored);
-		proj.hook.grapple_flags.reset(arms::GrappleState::probing);
-		proj.hook.spring.set_force(proj.stats.spring_constant);
-		proj.hook.spring.variables.bob_physics.acceleration += player->collider.physics.acceleration;
-		proj.hook.spring.variables.bob_physics.velocity += player->collider.physics.velocity;
-	}
-	if (player->controller.hook_held() && proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
-		proj.hook.spring.variables.bob_physics.acceleration += player->collider.physics.acceleration;
-		proj.hook.spring.variables.bob_physics.acceleration.x += player->controller.horizontal_movement();
-		proj.lock_to_anchor();
-		proj.hook.spring.update(svc);
-
-		// update rest length
-		auto next_length = proj.stats.spring_slack * abs(player->collider.physics.position.y - proj.hook.spring.get_anchor().y);
-		next_length = std::clamp(next_length, lookup::min_hook_length, lookup::max_hook_length);
-		proj.hook.spring.set_rest_length(next_length);
-
-		// break out if player is far away from bob. we don't want the player to teleport.
-		auto distance = util::magnitude(player->collider.physics.position - proj.hook.spring.get_bob());
-		if (distance > 32.f) { proj.hook.break_free(*player); }
-
-		// handle map collisions while anchored
-		player->collider.predictive_combined.set_position(proj.hook.spring.variables.bob_physics.position);
-		if (check_cell_collision(player->collider)) {
-			player->collider.physics.zero();
-		} else {
-			player->collider.physics.position = proj.hook.spring.variables.bob_physics.position - player->collider.dimensions / 2.f;
-		}
-		player->collider.sync_components();
-	} else if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
-		proj.hook.break_free(*player);
-	}
-
-	if (player->controller.released_hook() && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) { proj.hook.break_free(*player); }
 }
 
 void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }

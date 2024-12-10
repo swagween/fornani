@@ -38,7 +38,7 @@ void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& pla
 }
 
 void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
-	if (sensor.within_bounds(proj.bounding_box) && !health.is_dead() && state == SpawnablePlatformState::dormant) {
+	if (sensor.within_bounds(proj.get_bounding_box()) && !health.is_dead() && state == SpawnablePlatformState::dormant) {
 		if (!proj.destruction_initiated()) {
 			health.inflict(proj.get_damage());
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);

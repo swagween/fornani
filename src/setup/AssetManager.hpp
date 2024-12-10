@@ -98,8 +98,7 @@ class AssetManager {
 	sf::Texture t_hud_orb_font{};
 	sf::Texture t_hud_hearts{};
 	sf::Texture t_hud_ammo{};
-	sf::Texture t_hud_gun_color{};
-	sf::Texture t_hud_gun_shadow{};
+	sf::Texture t_hud_gun{};
 	sf::Texture t_hud_pointer{};
 	sf::Texture t_hud_shield{};
 	sf::Texture t_selector{};
@@ -136,7 +135,6 @@ class AssetManager {
 	// entities
 	sf::Texture t_chest{};
 	sf::Texture t_shield{};
-
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
 	sf::Texture t_breakables{};
@@ -195,7 +193,7 @@ class AssetManager {
 	sf::Texture t_plasmer_projectile{};
 	sf::Texture t_clover_projectile{};
 	sf::Texture t_wasp_projectile{};
-	sf::Texture t_tomahawk_projectile{};
+	sf::Texture t_tomahawk{};
 	sf::Texture t_skycorps_ar_projectile{};
 	sf::Texture t_rope{};
 	sf::Texture t_hook{};
