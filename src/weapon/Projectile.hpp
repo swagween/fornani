@@ -34,34 +34,8 @@ namespace arms {
 
 class Weapon;
 
-enum class WEAPON_TYPE {
-	BRYNS_GUN,
-	PLASMER,
-	WASP,
-	BLIZZARD,
-	BISMUTH,
-	UNDERDOG,
-	ELECTRON,
-	CLOVER,
-	TRITON,
-	WILLET_585,
-	QUASAR,
-	NOVA,
-	VENOM,
-	TWIN,
-	CARISE,
-	STINGER,
-	TUSK,
-	TOMAHAWK,
-	GRAPPLING_HOOK,
-
-	SKYCORPS_AR
-};
-
-enum class TEAMS { NANI, SKYCORPS, BEASTS, GUARDIAN };
-enum class RENDER_TYPE { ANIMATED, SINGLE_SPRITE, MULTI_SPRITE };
-
-sf::Vector2<float> const DEFAULT_DIMENSIONS{8.0, 8.0};
+enum class Team { nani, skycorps, guardian, pioneer };
+enum class RenderType { animated, single_sprite, multi_sprite };
 int const history_limit{4};
 
 struct ProjectileStats {
@@ -148,9 +122,8 @@ class Projectile {
 
 	std::string_view label{};
 
-	WEAPON_TYPE type{WEAPON_TYPE::BRYNS_GUN};
-	TEAMS team{TEAMS::NANI}; // default to player projectile. enemies and bosses will be set separately
-	RENDER_TYPE render_type{};
+	Team team{Team::nani}; // default to player projectile. enemies and bosses will be set separately
+	RenderType render_type{};
 
 	util::BitFlags<ProjectileState> state{};
 

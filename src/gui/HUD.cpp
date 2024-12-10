@@ -65,8 +65,8 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 				pointer_index = i;
 			}
 		}
-		arms::WEAPON_TYPE curr_type = player.equipped_weapon().type;
-		sprites.pointer.setTextureRect(sf::IntRect({0, player.equipped_weapon().attributes.ui_color * pointer_dimensions.y}, pointer_dimensions));
+		arms::WeaponType curr_type = player.equipped_weapon().get_type();
+		sprites.pointer.setTextureRect(sf::IntRect({0, player.equipped_weapon().get_ui_color() * pointer_dimensions.y}, pointer_dimensions));
 		sprites.pointer.setPosition(+origins.gun.x, +origins.gun.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
 		win.draw(sprites.pointer);
 	}

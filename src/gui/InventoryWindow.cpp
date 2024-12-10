@@ -210,7 +210,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 				win.draw(gun_slot);
 				gun->render_ui(svc, win, gunpos);
 				if (gun->selected()) {
-					item_label.setString(gun->label.data());
+					item_label.setString(gun->get_label().data());
 					win.draw(item_label);
 				}
 				++index;

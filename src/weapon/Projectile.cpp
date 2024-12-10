@@ -11,8 +11,6 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	auto const& in_data = svc.data.weapon["weapons"][id]["projectile"];
 
-	type = static_cast<WEAPON_TYPE>(id);
-
 	stats.base_damage = in_data["attributes"]["base_damage"].as<float>();
 	stats.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
 	stats.range = in_data["attributes"]["range"].as<int>();
@@ -58,7 +56,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	if (svc.styles.spray_colors.contains(label)) { sparkler = vfx::Sparkler(svc, dim, svc.styles.spray_colors.at(label), in_data["sparkler_type"].as_string()); }
 
-	render_type = anim.num_sprites > 1 ? RENDER_TYPE::MULTI_SPRITE : RENDER_TYPE::SINGLE_SPRITE;
+	render_type = anim.num_sprites > 1 ? RenderType::multi_sprite : RenderType::single_sprite;
 
 	physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physics.velocity.x = stats.speed;
@@ -207,7 +205,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 }
 
 void Projectile::on_player_hit(player::Player& player) {
-	if (team == arms::TEAMS::NANI) { return; }
+	if (team == arms::Team::nani) { return; }
 	if (sensor) {
 		if (sensor.value().within_bounds(player.hurtbox)) { player.hurt(stats.base_damage); }
 		return;
@@ -221,7 +219,7 @@ void Projectile::on_player_hit(player::Player& player) {
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos) {
 
 	// this is the right idea but needs to be refactored and generalized
-	if (render_type == RENDER_TYPE::MULTI_SPRITE) {
+	if (render_type == RenderType::multi_sprite) {
 		int u = sprite_index * static_cast<int>(max_dimensions.x);
 		int v = static_cast<int>(animation.get_frame() * max_dimensions.y);
 		sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(max_dimensions.x), static_cast<int>(max_dimensions.y)}));

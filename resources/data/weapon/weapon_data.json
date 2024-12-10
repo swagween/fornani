@@ -1,997 +1,131 @@
 {
   "weapons": [
     {
-      "label": "Bryn's Gun",
-      "description": "A single-action revolver that you found in Firstwind Lab.",
-      "texture_lookup": 0,
-      "dimensions": {
-        "x": 18,
-        "y": 8
+      "metadata": {
+        "label": "Bryn's Gun",
+        "description": "A single-action revolver that you found in Firstwind Lab.",
+        "type": 0
       },
-      "gun_offset": {
-        "x": 0,
-        "y": 8
-      },
-      "barrel_point": {
-        "x": 18.0,
-        "y": 2.0
-      },
-      "attributes": {
-        "automatic": false,
-        "ammo": 4,
-        "reload": 160,
-        "rate": 6,
-        "cooldown_time": 30,
-        "recoil": 0.00,
-        "ui_color": 1,
-        "back_offset": 0
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 28.0,
-          "y": 12.0
+      "visual": {
+        "texture_lookup": 0,
+        "dimensions": [ 18, 8 ],
+        "offsets": {
+          "stock": [ 0, 0 ],
+          "grip": [ 0, 0 ],
+          "barrel": [ 18.0, 2.0 ]
         },
-        "attributes": {
-          "base_damage": 10,
-          "range": 210,
-          "speed": 25.5,
-          "variance": 0.1,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "boomerang": false,
-          "transcendent": false,
-          "persistent": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
+        "ui": { "color": 1 },
+        "spray": {
+          "dimensions": [ 2.0, 2.0 ],
+          "type": "bryns_gun",
+          "color": "periwinkle"
         },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 1,
-          "framerate": 8
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 2.0, 2.0 ],
-        "type": "bryns_gun",
-        "color": "periwinkle"
-      }
-    },
-
-    {
-      "label": "Plasmer",
-      "description": "An automatic plasma rifle.",
-      "texture_lookup": 1,
-      "dimensions": {
-        "x": 18,
-        "y": 8
-      },
-      "gun_offset": {
-        "x": 0,
-        "y": 8
-      },
-      "barrel_point": {
-        "x": 22.0,
-        "y": 7.0
-      },
-      "attributes": {
-        "automatic": true,
-        "rate": 42,
-        "cooldown_time": 30,
-        "recoil": 0.00,
-        "ui_color": 4
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 18.0,
-          "y": 12.0
-        },
-        "attributes": {
-          "base_damage": 5,
-          "range": 240,
-          "speed": 17.0,
-          "variance": 0.0,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "persistent": false,
-          "transcendent": false,
-          "boomerang": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 4,
-          "framerate": 12
-        },
-        "visual": {
-          "effect_type": 1
-        },
-        "sparkler_type": "dense_trail"
-      },
-      "spray": {
-        "dimensions": [ 2.0, 2.0 ],
-        "type": "heavy_burst",
-        "color": "fucshia"
-      }
-    },
-
-    {
-      "label": "Skycorps AR",
-      "description": "A mass-produced assault rifle.",
-      "dimensions": {
-        "x": 0,
-        "y": 0
-      },
-      "gun_offset": {
-        "x": 0,
-        "y": 0
-      },
-      "barrel_point": {
-        "x": 0.0,
-        "y": 0.0
-      },
-      "attributes": {
-        "automatic": false,
-        "rate": 8,
-        "cooldown_time": 50,
-        "recoil": 0.00,
-        "ui_color": 3
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 14.0,
-          "y": 14.0
-        },
-        "attributes": {
-          "base_damage": 1,
-          "range": 480,
-          "speed": 8.0,
-          "variance": 0.2,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "persistent": false,
-          "transcendent": false,
-          "boomerang": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 4,
-          "framerate": 24
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 2.0, 2.0 ],
-        "type": "fast_burst",
-        "color": "goldenrod"
-      }
-    },
-
-    {
-      "label": "Tomahawk",
-      "description": "If you throw it, it will come back to you. The more foes it hits before you catch it, the more damage it racks up.",
-      "texture_lookup": 2,
-      "dimensions": {
-        "x": 16,
-        "y": 16
-      },
-      "gun_offset": {
-        "x": 2,
-        "y": 0
-      },
-      "barrel_point": {
-        "x": 8.0,
-        "y": 12.0
-      },
-      "attributes": {
-        "automatic": false,
-        "rate": 1,
-        "cooldown_time": 100,
-        "recoil": 0.00,
-        "ui_color": 0
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 16.0,
-          "y": 16.0
-        },
-        "attributes": {
-          "base_damage": 0.2,
-          "range": 800,
-          "speed": 40.5,
-          "variance": 0.0,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "persistent": true,
-          "transcendent": true,
-          "boomerang": true,
-          "constrained": false,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.025,
-          "gravitator_max_speed": 60.0,
-          "gravitator_friction": 0.993,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 4,
-          "framerate": 8
+        "secondary_spray": {
+          "dimensions": [ 4.0, 4.0 ],
+          "type": "peckett",
+          "color": "white"
         }
       },
-      "spray": {
-        "dimensions": [ 2.0, 2.0 ],
-        "type": "twinkle",
-        "color": "white"
-      }
-    },
-
-    {
-      "label": "Grappling Hook",
-      "description": "Attaches to solid blocks and allows you to quickly swing from place to place.",
-      "texture_lookup": 3,
-      "dimensions": {
-        "x": 18,
-        "y": 10
-      },
-      "gun_offset": {
-        "x": 0,
-        "y": 6
-      },
-      "barrel_point": {
-        "x": 14.0,
-        "y": 3.0
-      },
-      "attributes": {
-        "automatic": false,
-        "rate": 1,
-        "cooldown_time": 20,
-        "recoil": 0.00,
-        "ui_color": 0
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 14.0,
-          "y": 14.0
-        },
+      "gameplay": {
         "attributes": {
-          "base_damage": 0.05,
-          "range": 400,
-          "speed": 40.5,
-          "variance": 0.0,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "persistent": true,
-          "transcendent": true,
-          "boomerang": false,
-          "constrained": false,
-          "spring": true,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.99,
-          "spring_constant": 0.02,
-          "spring_rest_length": 20.0,
-          "spring_slack": 0.65
+          "automatic": false,
+          "ammo": 4,
+          "reload": 160,
+          "rate": 6,
+          "cooldown_time": 30,
+          "recoil": 0.0
         },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 2,
-          "framerate": 24
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 2.0, 2.0 ],
-        "type": "twinkle",
-        "color": "periwinkle"
-      }
-    },
-
-    {
-      "label": "Grenade Launcher",
-      "description": "Launches a powerful grenade that, when detonated, will destroy breakable blocks. Use with care, because the grenades can also hurt you!",
-      "texture_lookup": 4,
-      "dimensions": {
-        "x": 40,
-        "y": 12
-      },
-      "gun_offset": {
-        "x": 0,
-        "y": 8
-      },
-      "barrel_point": {
-        "x": 40.0,
-        "y": 3.0
-      },
-      "attributes": {
-        "automatic": false,
-        "grenade": true,
-        "rate": 2,
-        "cooldown_time": 60,
-        "recoil": 0.00,
-        "ui_color": 0,
-        "back_offset": 18
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "attributes": {
-          "base_damage": 0.0,
-          "range": 0,
-          "speed": 0.0,
-          "variance": 0.0,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "persistent": false,
-          "transcendent": false,
-          "boomerang": false,
-          "constrained": false,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0,
-          "spring_slack": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 1,
-          "framerate": 1
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 2.0, 2.0 ],
-        "type": "twinkle",
-        "color": "white"
-      }
-    },
-
-    {
-      "label": "Minigun",
-      "description": "Gus's minigun.",
-      "dimensions": {
-        "x": 78,
-        "y": 30
-      },
-      "gun_offset": {
-        "x": 0,
-        "y": 0
-      },
-      "barrel_point": {
-        "x": 0.0,
-        "y": 20.0
-      },
-      "attributes": {
-        "automatic": true,
-        "rate": 8,
-        "cooldown_time": 20,
-        "recoil": 0.00,
-        "ui_color": 1
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 14.0,
-          "y": 14.0
-        },
-        "attributes": {
-          "base_damage": 1,
-          "range": 840,
-          "speed": 16.0,
-          "variance": 0.1,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "persistent": false,
-          "transcendent": false,
-          "boomerang": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 4,
-          "framerate": 18
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 8.0, 8.0 ],
-        "type": "twinkle",
-        "color": "white"
+        "projectile": {
+          "dimensions": {
+            "x": 28.0,
+            "y": 12.0
+          },
+          "attributes": {
+            "base_damage": 10,
+            "range": 210,
+            "speed": 25.5,
+            "variance": 0.1,
+            "stun_time": 0.0,
+            "knockback": 0.0,
+            "boomerang": false,
+            "transcendent": false,
+            "persistent": false,
+            "constrained": true,
+            "spring": false,
+            "range_variance": 0.0,
+            "acceleration_factor": 0.0,
+            "dampen_factor": 0.0
+          },
+          "animation": {
+            "num_sprites": 1,
+            "num_frames": 1,
+            "framerate": 8
+          }
+        }
       }
     },
     {
-      "label": "Soda Gun",
-      "description": "Gus's soda gun.",
-      "dimensions": {
-        "x": 78,
-        "y": 30
+      "metadata": {
+        "label": "Wasp",
+        "description": "A powerful pistol that Bryn gave to you.",
+        "type": 0
       },
-      "gun_offset": {
-        "x": 0,
-        "y": 0
-      },
-      "barrel_point": {
-        "x": 0.0,
-        "y": -10.0
-      },
-      "attributes": {
-        "automatic": false,
-        "rate": 8,
-        "cooldown_time": 30,
-        "recoil": 0.1,
-        "ui_color": 1
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 22.0,
-          "y": 12.0
+      "visual": {
+        "texture_lookup": 8,
+        "dimensions": [ 20, 12 ],
+        "offsets": {
+          "stock": [ 0, 0 ],
+          "grip": [ 2, 6 ],
+          "barrel": [ 20.0, 4.0 ]
         },
+        "ui": { "color": 3 },
+        "spray": {
+          "dimensions": [ 4.0, 4.0 ],
+          "type": "wasp_2",
+          "color": "white"
+        },
+        "secondary_spray": {
+          "dimensions": [ 4.0, 4.0 ],
+          "type": "wasp",
+          "color": "white"
+        }
+      },
+      "gameplay": {
         "attributes": {
-          "base_damage": 1,
-          "range": 640,
-          "speed": 24.0,
-          "variance": 0.4,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "persistent": false,
-          "transcendent": false,
-          "boomerang": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
+          "automatic": false,
+          "ammo": 2,
+          "reload": 160,
+          "rate": 4,
+          "cooldown_time": 8,
+          "recoil": 0.8
         },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 6,
-          "framerate": 18
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 8.0, 8.0 ],
-        "type": "thick_burst",
-        "color": "white"
-      }
-    },
-    {
-      "label": "Staple Gun",
-      "description": "A weak, long-range weapon. When its staples connect with a solid block, you can use them as temporary platforms.",
-      "texture_lookup": 5,
-      "dimensions": {
-        "x": 16,
-        "y": 12
-      },
-      "gun_offset": {
-        "x": -2,
-        "y": 9
-      },
-      "barrel_point": {
-        "x": 16.0,
-        "y": 6.0
-      },
-      "attributes": {
-        "automatic": false,
-        "rate": 22,
-        "cooldown_time": 6,
-        "recoil": 0.00,
-        "ui_color": 4
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 20.0,
-          "y": 12.0
-        },
-        "attributes": {
-          "base_damage": 5,
-          "range": 360,
-          "speed": 35.5,
-          "variance": 0.0,
-          "stun_time": 0.2,
-          "knockback": 0.0,
-          "boomerang": false,
-          "transcendent": false,
-          "persistent": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.99,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 1,
-          "framerate": 8
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 4.0, 4.0 ],
-        "type": "fast_burst",
-        "color": "white"
-      }
-    },
-    {
-      "label": "Indie",
-      "description": "A powerful energy gun.",
-      "texture_lookup": 6,
-      "dimensions": {
-        "x": 28,
-        "y": 14
-      },
-      "gun_offset": {
-        "x": 0,
-        "y": 8
-      },
-      "barrel_point": {
-        "x": 28.0,
-        "y": 5.0
-      },
-      "attributes": {
-        "automatic": false,
-        "rate": 2,
-        "cooldown_time": 4,
-        "recoil": 1.8,
-        "ui_color": 0
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 32.0,
-          "y": 14.0
-        },
-        "attributes": {
-          "base_damage": 120,
-          "range": 260,
-          "speed": 17.5,
-          "variance": 0.0,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "boomerang": false,
-          "transcendent": false,
-          "persistent": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 1,
-          "framerate": 8
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 4.0, 4.0 ],
-        "type": "thick_burst",
-        "color": "white"
-      }
-    },
-    {
-      "label": "Gnat",
-      "description": "A high-rate machine gun. If you shoot downwards or upwards, its recoil will affect your fall speed.",
-      "texture_lookup": 7,
-      "dimensions": {
-        "x": 26,
-        "y": 10
-      },
-      "gun_offset": {
-        "x": 0,
-        "y": 8
-      },
-      "barrel_point": {
-        "x": 26.0,
-        "y": 3.0
-      },
-      "attributes": {
-        "automatic": true,
-        "ammo": -1,
-        "reload": 160,
-        "rate": 64,
-        "cooldown_time": 7,
-        "recoil": 0.15,
-        "ui_color": 6
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 6.0,
-          "y": 4.0
-        },
-        "attributes": {
-          "base_damage": 1.0,
-          "range": 180,
-          "speed": 24.5,
-          "variance": 0.2,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "boomerang": false,
-          "transcendent": false,
-          "persistent": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 8.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.998,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 5,
-          "num_frames": 1,
-          "framerate": 8
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 2.0, 2.0 ],
-        "type": "spritz",
-        "color": "mythic_green"
-      }
-    },
-    {
-      "label": "Energy Ball",
-      "description": "A ball of energy shot by casters.",
-      "dimensions": {
-        "x": 78,
-        "y": 30
-      },
-      "gun_offset": {
-        "x": 0,
-        "y": 0
-      },
-      "barrel_point": {
-        "x": 0.0,
-        "y": 20.0
-      },
-      "attributes": {
-        "automatic": true,
-        "rate": 8,
-        "cooldown_time": 20,
-        "recoil": 0.00,
-        "ui_color": 1
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 32.0,
-          "y": 32.0
-        },
-        "attributes": {
-          "base_damage": 2,
-          "range": 2048,
-          "speed": 12.0,
-          "variance": 0.0,
-          "stun_time": 0.0,
-          "knockback": 0.0,
-          "persistent": false,
-          "transcendent": true,
-          "boomerang": false,
-          "constrained": false,
-          "spring": false,
-          "circle": true,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.0,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0,
-          "omnidirectional": true
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 4,
-          "framerate": 18
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 8.0, 8.0 ],
-        "type": "pulse",
-        "color": "white"
-      }
-    },
-    {
-      "label": "Wasp",
-      "description": "A powerful handgun that Bryn gave to you.",
-      "texture_lookup": 8,
-      "dimensions": {
-        "x": 20,
-        "y": 12
-      },
-      "gun_offset": {
-        "x": 2,
-        "y": 6
-      },
-      "barrel_point": {
-        "x": 20.0,
-        "y": 4.0
-      },
-      "attributes": {
-        "automatic": false,
-        "ammo": 2,
-        "reload": 200,
-        "rate": 4,
-        "cooldown_time": 8,
-        "recoil": 0.8,
-        "ui_color": 3
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 14.0,
-          "y": 14.0
-        },
-        "attributes": {
-          "base_damage": 16.0,
-          "power": 3,
-          "range": 160,
-          "speed": 27.0,
-          "variance": 0.0,
-          "stun_time": 0.0,
-          "knockback": 2.0,
-          "boomerang": false,
-          "transcendent": false,
-          "persistent": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.998,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 1,
-          "framerate": 8
-        },
-        "visual": {
-          "effect_type": 3
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 4.0, 4.0 ],
-        "type": "wasp_2",
-        "color": "white"
-      },
-      "secondary_spray": {
-        "dimensions": [ 4.0, 4.0 ],
-        "type": "wasp",
-        "color": "white"
-      }
-    },
-
-    {
-      "label": "Underdog",
-      "description": "A unique and powerful all-rounder.",
-      "texture_lookup": 9,
-      "dimensions": {
-        "x": 20,
-        "y": 12
-      },
-      "gun_offset": {
-        "x": 2,
-        "y": 6
-      },
-      "barrel_point": {
-        "x": 20.0,
-        "y": 4.0
-      },
-      "attributes": {
-        "automatic": false,
-        "rate": 4,
-        "cooldown_time": 8,
-        "recoil": 0.8,
-        "ui_color": 3
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 14.0,
-          "y": 14.0
-        },
-        "attributes": {
-          "base_damage": 8.0,
-          "power": 3,
-          "range": 160,
-          "speed": 27.0,
-          "variance": 0.0,
-          "stun_time": 0.0,
-          "knockback": 2.0,
-          "boomerang": false,
-          "transcendent": false,
-          "persistent": false,
-          "constrained": true,
-          "spring": false,
-          "range_variance": 0.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.998,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 1,
-          "framerate": 8
-        },
-        "visual": {
-          "effect_type": 3
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 4.0, 4.0 ],
-        "type": "wasp_2",
-        "color": "white"
-      },
-      "secondary_spray": {
-        "dimensions": [ 4.0, 4.0 ],
-        "type": "wasp",
-        "color": "white"
-      }
-    },
-    {
-      "label": "Peckett 710",
-      "description": "An old but reliable shotgun.",
-      "texture_lookup": 10,
-      "dimensions": {
-        "x": 40,
-        "y": 12
-      },
-      "gun_offset": {
-        "x": 16,
-        "y": 10
-      },
-      "barrel_point": {
-        "x": 40.0,
-        "y": 4.0
-      },
-      "attributes": {
-        "automatic": false,
-        "rate": 12,
-        "cooldown_time": 200,
-        "multishot": 12,
-        "recoil": 2.8,
-        "ui_color": 3
-      },
-      "projectile": {
-        "dimensions": {
-          "x": 6.0,
-          "y": 6.0
-        },
-        "attributes": {
-          "base_damage": 3.0,
-          "power": 3,
-          "range": 320,
-          "speed": 37.0,
-          "speed_variance": 15.0,
-          "lifespan": 200,
-          "variance": 6.0,
-          "stun_time": 0.0,
-          "knockback": 2.0,
-          "boomerang": false,
-          "transcendent": false,
-          "persistent": false,
-          "constrained": false,
-          "spring": false,
-          "range_variance": 60.0,
-          "acceleration_factor": 0.0,
-          "dampen_factor": 0.98,
-          "dampen_variance": 0.02,
-          "gravitator_force": 0.0,
-          "gravitator_max_speed": 0.0,
-          "gravitator_friction": 0.0,
-          "spring_dampen": 0.0,
-          "spring_constant": 0.0,
-          "spring_rest_length": 0.0
-        },
-        "animation": {
-          "num_sprites": 1,
-          "num_frames": 3,
-          "framerate": 16
-        },
-        "visual": {
-          "effect_type": 3
-        },
-        "sparkler_type": "light_trail"
-      },
-      "spray": {
-        "dimensions": [ 4.0, 4.0 ],
-        "type": "peckett_2",
-        "color": "white"
-      },
-      "secondary_spray": {
-        "dimensions": [ 4.0, 4.0 ],
-        "type": "peckett",
-        "color": "white"
+        "projectile": {
+          "dimensions": {
+            "x": 14.0,
+            "y": 14.0
+          },
+          "attributes": {
+            "base_damage": 14,
+            "range": 190,
+            "speed": 27.0,
+            "variance": 0.0,
+            "stun_time": 0.0,
+            "knockback": 0.0,
+            "boomerang": false,
+            "transcendent": false,
+            "persistent": false,
+            "constrained": true,
+            "spring": false,
+            "range_variance": 0.0,
+            "acceleration_factor": 0.0,
+            "dampen_factor": 0.996
+          },
+          "animation": {
+            "num_sprites": 1,
+            "num_frames": 1,
+            "framerate": 8
+          }
+        }
       }
     }
   ]

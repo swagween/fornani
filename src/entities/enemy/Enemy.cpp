@@ -223,8 +223,8 @@ void Enemy::handle_collision(shape::Collider& other) { collider.handle_collider_
 
 void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 
-	if (proj.team == arms::TEAMS::SKYCORPS) { return; }
-	if (proj.team == arms::TEAMS::GUARDIAN) { return; }
+	if (proj.team == arms::Team::skycorps) { return; }
+	if (proj.team == arms::Team::guardian) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
 	if (!(proj.bounding_box.overlaps(collider.bounding_box) || proj.bounding_box.overlaps(secondary_collider.bounding_box))) { return; }
 

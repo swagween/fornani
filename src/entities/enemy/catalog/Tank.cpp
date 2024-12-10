@@ -8,7 +8,7 @@ namespace enemy {
 Tank::Tank(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "tank"), gun(svc, "skycorps ar", 2), m_services(&svc), m_map(&map) {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
-	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
+	gun.get().set_team(arms::Team::skycorps);
 	collider.physics.maximum_velocity = {3.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
 	secondary_collider = shape::Collider({28.f, 28.f});

@@ -617,7 +617,7 @@ void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf
 }
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {
-	if (weapon.attributes.grenade) { active_grenades.push_back(arms::Grenade(svc, pos, weapon.firing_direction)); }
+	//if (weapon.attributes.grenade) { active_grenades.push_back(arms::Grenade(svc, pos, weapon.get_firing_direction())); }
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_sprite(svc);
 	active_projectiles.back().set_position(pos);
@@ -630,8 +630,8 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);
 	}
 
-	active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.emitter.dimensions, weapon.emitter.type, weapon.emitter.color, weapon.firing_direction));
-	if (weapon.secondary_emitter) { active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.firing_direction)); }
+	active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.emitter.dimensions, weapon.emitter.type, weapon.emitter.color, weapon.get_firing_direction()));
+	if (weapon.secondary_emitter) { active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.get_firing_direction())); }
 }
 
 void Map::spawn_enemy(int id, sf::Vector2<float> pos) {
@@ -656,12 +656,12 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 		svc.stats.player.bullets_fired.update();
 		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
 		if (player->equipped_weapon().multishot()) {
-			for (int i = 0; i < player->equipped_weapon().attributes.multishot; ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak); }
+			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point() + tweak); }
 		} else {
-			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak);
+			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point() + tweak);
 		}
 		player->equipped_weapon().shoot();
-		if (!player->equipped_weapon().attributes.automatic) { player->controller.set_shot(false); }
+		if (!player->equipped_weapon().automatic()) { player->controller.set_shot(false); }
 	}
 }
 
