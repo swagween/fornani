@@ -3,16 +3,14 @@
     {
       "metadata": {
         "label": "Bryn's Gun",
-        "description": "A single-action revolver that you found in Firstwind Lab.",
-        "type": 0
+        "description": "A single-action revolver that you found in Firstwind Lab."
       },
       "visual": {
         "texture_lookup": 0,
         "dimensions": [ 18, 8 ],
         "offsets": {
-          "stock": [ 0, 0 ],
-          "grip": [ 0, 0 ],
-          "barrel": [ 18.0, 2.0 ]
+          "global": [ 18.0, 2.0 ],
+          "stock": [ 0, 0 ]
         },
         "ui": { "color": 1 },
         "spray": {
@@ -27,6 +25,7 @@
         }
       },
       "gameplay": {
+        "offsets": { "barrel": [18, 8] },
         "attributes": {
           "automatic": false,
           "ammo": 4,
@@ -34,24 +33,26 @@
           "rate": 6,
           "cooldown_time": 30,
           "recoil": 0.0
-        },
+        }
+      },
+      "class_package": {
         "projectile": {
-          "dimensions": {
-            "x": 28.0,
-            "y": 12.0
-          },
+          "type": 0,
+          "dimensions": [
+            12.0,
+            12.0
+          ],
           "attributes": {
             "base_damage": 10,
-            "range": 210,
+            "lifespan": 70,
+            "lifespan_variance": 0,
             "speed": 25.5,
             "variance": 0.1,
             "stun_time": 0.0,
             "knockback": 0.0,
-            "boomerang": false,
             "transcendent": false,
             "persistent": false,
-            "constrained": true,
-            "spring": false,
+            "constrained": false,
             "range_variance": 0.0,
             "acceleration_factor": 0.0,
             "dampen_factor": 0.0
@@ -67,8 +68,7 @@
     {
       "metadata": {
         "label": "Wasp",
-        "description": "A powerful pistol that Bryn gave to you.",
-        "type": 0
+        "description": "A powerful pistol that Bryn gave to you."
       },
       "visual": {
         "texture_lookup": 8,
@@ -91,6 +91,7 @@
         }
       },
       "gameplay": {
+        "offsets": { "barrel": [ 20, 4 ] },
         "attributes": {
           "automatic": false,
           "ammo": 2,
@@ -98,27 +99,29 @@
           "rate": 4,
           "cooldown_time": 8,
           "recoil": 0.8
-        },
+        }
+      },
+      "class_package": {
         "projectile": {
-          "dimensions": {
-            "x": 14.0,
-            "y": 14.0
-          },
+          "type": 0,
+          "dimensions": [
+            14.0,
+            14.0
+          ],
           "attributes": {
-            "base_damage": 14,
-            "range": 190,
-            "speed": 27.0,
-            "variance": 0.0,
+            "base_damage": 10,
+            "lifespan": 60,
+            "lifespan_variance": 0,
+            "speed": 29.5,
+            "variance": 0.1,
             "stun_time": 0.0,
             "knockback": 0.0,
-            "boomerang": false,
             "transcendent": false,
             "persistent": false,
-            "constrained": true,
-            "spring": false,
+            "constrained": false,
             "range_variance": 0.0,
             "acceleration_factor": 0.0,
-            "dampen_factor": 0.996
+            "dampen_factor": 0.0
           },
           "animation": {
             "num_sprites": 1,

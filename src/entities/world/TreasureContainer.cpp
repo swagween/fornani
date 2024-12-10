@@ -26,7 +26,7 @@ void TreasureContainer::update(automa::ServiceProvider& svc, sf::Vector2<float> 
 
 void TreasureContainer::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 	if (health.is_dead()) { return; }
-	if (sensor.within_bounds(proj.bounding_box)) {
+	if (sensor.within_bounds(proj.get_bounding_box())) {
 		if (!proj.destruction_initiated()) {
 			health.inflict(proj.get_damage());
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);

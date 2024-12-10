@@ -77,8 +77,7 @@ void AssetManager::import_textures() {
 	t_hud_hearts.loadFromFile(finder.resource_path + "/image/gui/HUD_hearts.png");
 	t_hud_ammo.loadFromFile(finder.resource_path + "/image/gui/HUD_ammo.png");
 	t_hud_pointer.loadFromFile(finder.resource_path + "/image/gui/HUD_pointer.png");
-	t_hud_gun_color.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_color.png");
-	t_hud_gun_shadow.loadFromFile(finder.resource_path + "/image/gui/HUD_gun_shadow.png");
+	t_hud_gun.loadFromFile(finder.resource_path + "/image/gui/HUD_gun.png");
 	t_hud_shield.loadFromFile(finder.resource_path + "/image/gui/HUD_shield.png");
 	t_selector.loadFromFile(finder.resource_path + "/image/gui/selector.png");
 	t_console_outline.loadFromFile(finder.resource_path + "/image/gui/console_outline.png");
@@ -91,7 +90,7 @@ void AssetManager::import_textures() {
 	t_plasmer_projectile.loadFromFile(finder.resource_path + "/image/weapon/plasmer_proj.png");
 	t_clover_projectile.loadFromFile(finder.resource_path + "/image/weapon/clover_proj.png");
 	t_skycorps_ar_projectile.loadFromFile(finder.resource_path + "/image/weapon/skycorps_ar_proj.png");
-	t_tomahawk_projectile.loadFromFile(finder.resource_path + "/image/weapon/tomahawk_projectile.png");
+	t_tomahawk.loadFromFile(finder.resource_path + "/image/weapon/tomahawk.png");
 	t_wasp_projectile.loadFromFile(finder.resource_path + "/image/weapon/wasp_proj.png");
 	t_rope.loadFromFile(finder.resource_path + "/image/weapon/rope.png");
 	t_hook.loadFromFile(finder.resource_path + "/image/weapon/hook.png");
@@ -107,7 +106,7 @@ void AssetManager::import_textures() {
 	projectile_textures.insert({"Bryn's Gun", t_bryns_gun_projectile});
 	projectile_textures.insert({"Skycorps AR", t_skycorps_ar_projectile});
 	projectile_textures.insert({"Plasmer", t_plasmer_projectile});
-	projectile_textures.insert({"Tomahawk", t_tomahawk_projectile});
+	projectile_textures.insert({"Tomahawk", t_tomahawk});
 	projectile_textures.insert({"Clover", t_clover_projectile});
 	projectile_textures.insert({"Grappling Hook", t_hook});
 	projectile_textures.insert({"Grenade Launcher", t_hook});

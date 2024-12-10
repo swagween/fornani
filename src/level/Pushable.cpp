@@ -135,8 +135,8 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 }
 
 void Pushable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
-	if (proj.stats.transcendent) { return; }
-	if (proj.bounding_box.overlaps(collider.bounding_box)) {
+	if (proj.transcendent()) { return; }
+	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		hit_count.update();
 		weakened.start();
 		if (!proj.destruction_initiated()) {

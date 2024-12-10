@@ -8,19 +8,16 @@
 #include "Projectile.hpp"
 #include "Ammo.hpp"
 #include "../entities/animation/AnimatedSprite.hpp"
-#include "class/ClassPackage.hpp"
 #include <optional>
 
 namespace arms {
 
 enum class WeaponAttributes { automatic };
 enum class WeaponState { unlocked, equipped, reloading };
-enum class WeaponType { bullet, missile, melee };
 enum class InventoryState { reserve, hotbar };
 enum class UIFlags { selected };
 enum class UIColor { white, periwinkle, green, orange, fucshia, purple, mythic };
 struct WeaponSpecifications {
-	int rate{};
 	int cooldown_time{};
 	int multishot{};
 	float recoil{};
@@ -92,7 +89,7 @@ class Weapon {
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.label; }
-	[[nodiscard]] auto get_type() const -> WeaponType { return metadata.type; }
+	[[nodiscard]] auto get_type() const -> ProjectileType { return projectile.get_type(); }
 	[[nodiscard]] auto get_ui_color() const -> int { return static_cast<int>(visual.color); }
 
 	Projectile projectile;
@@ -105,22 +102,22 @@ class Weapon {
 		int id{};
 		std::string_view label{};
 		std::string_view description{};
-		WeaponType type{};
 	} metadata{};
 
 	Offsets offsets{};
 	dir::Direction firing_direction{};
 	WeaponSpecifications specifications{};
-	std::unique_ptr<ClassPackage> class_package{};
 	util::BitFlags<WeaponAttributes> attributes{};
 
 	struct {
-		anim::AnimatedSprite sprite{};
+		sf::Sprite sprite{};
+		anim::AnimatedSprite animation{};
 		sf::Vector2<float> position{};
 		sf::Vector2<int> dimensions{};
 		std::vector<sf::Vector2<float>> anchor_points{};
 		sf::Sprite ui{};
 		UIColor color{};
+		int texture_lookup{};
 	} visual{};
 
 	struct {

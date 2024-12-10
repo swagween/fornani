@@ -1,15 +1,11 @@
 
 #pragma once
 
-#include <chrono>
-#include <cstdio>
-#include <deque>
-#include <list>
 #include <memory>
 #include <unordered_map>
 #include "../components/PhysicsComponent.hpp"
 #include "../components/CircleSensor.hpp"
-#include "../entities/animation/Animation.hpp"
+#include "../entities/animation/AnimatedSprite.hpp"
 #include "../graphics/SpriteHistory.hpp"
 #include "../particle/Emitter.hpp"
 #include "../particle/Gravitator.hpp"
@@ -20,7 +16,6 @@
 #include "../utils/Direction.hpp"
 #include "../utils/Random.hpp"
 #include "../utils/Shape.hpp"
-#include "GrapplingHook.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -33,134 +28,106 @@ class Player;
 namespace arms {
 
 class Weapon;
-
 enum class Team { nani, skycorps, guardian, pioneer };
+enum class ProjectileType { bullet, missile, melee };
 enum class RenderType { animated, single_sprite, multi_sprite };
-int const history_limit{4};
-
-struct ProjectileStats {
-
+enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional };
+struct ProjectileSpecifications {
 	float base_damage{};
 	int power{};
-	int range{};
 	int lifespan{};
-
+	int lifespan_variance{};
 	float speed{};
 	float speed_variance{};
 	float variance{};
 	float stun_time{};
 	float knockback{};
-
-	bool persistent{};
-	bool transcendent{};
-	bool constrained{};
-	bool boomerang{};
-	bool spring{};
-	bool circle{};
-
 	float acceleration_factor{};
 	float dampen_factor{};
 	float dampen_variance{};
-	float gravitator_force{};
-	float gravitator_max_speed{};
-	float gravitator_friction{};
-
-	float spring_dampen{};
-	float spring_constant{};
-	float spring_rest_length{};
-	float spring_slack{};
-
-	float range_variance{};
-	bool omnidirectional{};
 };
-
-struct ProjectileAnimation {
-	int num_sprites{};
-	int num_frames{};
-	int framerate{};
-};
-
 enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
 
 class Projectile {
-
   public:
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon);
 
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(player::Player& player);
-	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc, sf::Vector2<float> target = {});
-	void set_sprite(automa::ServiceProvider& svc);
-	void set_orientation(sf::Sprite& sprite);
 	void set_position(sf::Vector2<float> pos);
-	void set_boomerang_speed();
-	void set_hook_speed();
-	void sync_position();
-	void constrain_sprite_at_barrel(sf::Sprite& sprite, sf::Vector2<float> campos);
-	void constrain_sprite_at_destruction_point(sf::Sprite& sprite, sf::Vector2<float> campos);
-	void constrain_hitbox_at_barrel();
-	void constrain_hitbox_at_destruction_point();
-	void lock_to_anchor();
-
+	void set_team(Team to_team);
+	void set_firing_direction(dir::Direction to_direction);
 	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
+	void poof();
+
 	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
-	[[nodiscard]] auto destruction_initiated() const -> bool { return state.test(ProjectileState::destruction_initiated); }
-	[[nodiscard]] auto get_damage() const -> float { return stats.base_damage * variables.damage_multiplier; }
-	[[nodiscard]] auto whiffed() const -> bool { return state.test(ProjectileState::whiffed); }
-	[[nodiscard]] auto poofed() const -> bool { return state.test(ProjectileState::poof); }
-	[[nodiscard]] auto made_contact() const -> bool { return state.test(ProjectileState::contact); }
+	[[nodiscard]] auto get_type() const -> ProjectileType { return metadata.type; }
+	[[nodiscard]] auto destruction_initiated() const -> bool { return variables.state.test(ProjectileState::destruction_initiated); }
+	[[nodiscard]] auto destroyed() const -> bool { return variables.state.test(ProjectileState::destroyed); }
+	[[nodiscard]] auto get_damage() const -> float { return metadata.specifications.base_damage * variables.damage_multiplier; }
+	[[nodiscard]] auto get_power() const -> float { return metadata.specifications.power; }
+	[[nodiscard]] auto whiffed() const -> bool { return variables.state.test(ProjectileState::whiffed); }
+	[[nodiscard]] auto poofed() const -> bool { return variables.state.test(ProjectileState::poof); }
+	[[nodiscard]] auto made_contact() const -> bool { return variables.state.test(ProjectileState::contact); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return physical.physics.position; }
+	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return physical.physics.apparent_velocity(); }
+	[[nodiscard]] auto get_destruction_point() const -> sf::Vector2<float> { return variables.destruction_point; }
+	[[nodiscard]] auto get_team() const -> Team { return metadata.team; }
+	[[nodiscard]] auto get_direction() const -> dir::Direction { return physical.direction; }
+	[[nodiscard]] auto get_bounding_box() -> shape::Shape& { return physical.bounding_box; }
 
-	dir::Direction direction{};
-	shape::Shape bounding_box{};
-	components::PhysicsComponent physics{};
-	ProjectileStats stats{};
-	ProjectileAnimation anim{};
-	vfx::Sparkler sparkler{};
+	[[nodiscard]] auto transcendent() const -> bool { return metadata.attributes.test(ProjectileAttributes::transcendent); }
+	[[nodiscard]] auto omnidirectional() const -> bool { return metadata.attributes.test(ProjectileAttributes::omnidirectional); }
+	[[nodiscard]] auto constrained() const -> bool { return metadata.attributes.test(ProjectileAttributes::constrained); }
+	[[nodiscard]] auto persistent() const -> bool { return metadata.attributes.test(ProjectileAttributes::persistent); }
 
-	std::string_view label{};
-
-	Team team{Team::nani}; // default to player projectile. enemies and bosses will be set separately
-	RenderType render_type{};
-
-	util::BitFlags<ProjectileState> state{};
-
-	sf::Vector2<float> max_dimensions{};
-	sf::Vector2<float> fired_point{};
-	sf::Vector2<float> destruction_point{};
-
-	sf::Sprite sprite{};
-
-	anim::Animation animation{};
-	flfx::SpriteHistory sprite_history{};
-	int sprite_index{};
-
-	util::Cooldown cooldown{};
-
-	vfx::Gravitator gravitator{};
-	GrapplingHook hook{};
-
-	sf::RectangleShape box{};
-
-	std::vector<sf::Color> colors{};
-	std::deque<sf::Vector2<float>> position_history{};
-	Weapon* m_weapon;
+	struct {
+		//std::optional<std::unique_ptr<BulletPackage>> bullet{};
+		// std::optional<std::unique_ptr<MissilePackage>> bullet{};
+		// std::optional<std::unique_ptr<MeleePackage>> bullet{};
+	} package{};
 
   private:
-	std::optional<util::Cooldown> lifespan{};
-	shape::CircleCollider collider{4.f};
 	struct {
-		float damage_multiplier{1.f};
-	} variables{};
-
-	int id{};
+		int id{};
+		Team team{};
+		ProjectileType type{};
+		std::string_view label{};
+		ProjectileSpecifications specifications{};
+		util::BitFlags<ProjectileAttributes> attributes{};
+	} metadata{};
 
 	struct {
 		int effect_type{};
+		int sprite_index{};
+		RenderType render_type{};
+		anim::AnimatedSprite sprite{};
+		sf::Vector2<int> dimensions{};
+		flfx::SpriteHistory sprite_history{};
 	} visual{};
 
-	std::optional<components::CircleSensor> sensor{};
+	struct {
+		shape::Shape bounding_box{};
+		dir::Direction direction{};
+		sf::Vector2<float> max_dimensions{};
+		shape::CircleCollider collider{4.f};
+		components::PhysicsComponent physics{};
+		std::optional<components::CircleSensor> sensor{};
+	} physical{};
+
+	struct {
+		float damage_multiplier{1.f};
+		sf::Vector2<float> fired_point{};
+		sf::Vector2<float> destruction_point{};
+		util::BitFlags<ProjectileState> state{};
+	} variables{};
+
+	util::Cooldown cooldown{};
+	util::Cooldown lifetime{};
+	Weapon* m_weapon;
 };
 } // namespace arms

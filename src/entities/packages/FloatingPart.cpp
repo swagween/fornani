@@ -41,10 +41,10 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	if (shieldbox) {
 		for (auto& proj : map.active_projectiles) {
-			if (proj.bounding_box.overlaps(shieldbox.value())) {
+			if (proj.get_bounding_box().overlaps(shieldbox.value())) {
 				if (!proj.destruction_initiated()) {
-					map.effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, 0, 6));
-					if (proj.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+					map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), {}, 0, 6));
+					if (proj.get_direction().up_or_down()) { map.effects.back().rotate(); }
 					svc.soundboard.flags.world.set(audio::World::hard_hit);
 				}
 				proj.destroy(false);

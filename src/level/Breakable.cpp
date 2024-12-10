@@ -41,12 +41,12 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 }
 
 void Breakable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power) {
-	if (proj.stats.transcendent) { return; }
+	if (proj.transcendent()) { return; }
 	if (destroyed()) { return; }
-	if (!collider.vicinity.overlaps(proj.bounding_box)) { return; }
-	if (proj.bounding_box.overlaps(collider.bounding_box)) {
+	if (!collider.vicinity.overlaps(proj.get_bounding_box())) { return; }
+	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			state -= power == 1 ? proj.stats.power : power;
+			state -= power == 1 ? proj.get_power() : power;
 			energy = hit_energy;
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 		}

@@ -43,7 +43,6 @@ class HUD {
 	struct {
 		sf::Sprite orb{};
 		sf::Sprite gun{};
-		sf::Sprite gun_shadow{};
 		sf::Sprite pointer{};
 	} sprites{};
 

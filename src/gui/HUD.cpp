@@ -7,8 +7,7 @@ namespace gui {
 HUD::HUD(automa::ServiceProvider& svc, player::Player& player) {
 	orient(svc, player, false);
 	sprites.orb.setTexture(svc.assets.t_hud_orb_font);
-	sprites.gun.setTexture(svc.assets.t_hud_gun_color);
-	sprites.gun_shadow.setTexture(svc.assets.t_hud_gun_shadow);
+	sprites.gun.setTexture(svc.assets.t_hud_gun);
 	sprites.pointer.setTexture(svc.assets.t_hud_pointer);
 }
 
@@ -55,17 +54,16 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 		auto const hotbar_size = player.hotbar.value().size();
 		for (int i = 0; i < hotbar_size; ++i) {
 			auto gun_index = player.hotbar.value().get_id(i);
-			sprites.gun.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
-			sprites.gun_shadow.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
-			sprites.gun.setPosition(origins.gun.x + pointer_dimensions.x + gun_pad_horiz, origins.gun.y - i * gun_dimensions.y - i * gun_pad_vert);
-			sprites.gun_shadow.setPosition(origins.gun.x + pointer_dimensions.x + gun_pad_horiz + 2, origins.gun.y - i * gun_dimensions.y - i * gun_pad_vert);
-			win.draw(sprites.gun_shadow);
+			sprites.gun.setTextureRect(sf::IntRect({gun_dimensions.x, gun_index * gun_dimensions.y}, gun_dimensions));
+			sprites.gun.setPosition(origins.gun.x + pointer_dimensions.x + gun_pad_horiz + 2.f, origins.gun.y - i * gun_dimensions.y - i * gun_pad_vert);
+			win.draw(sprites.gun);
 			if (i == player.hotbar.value().get_selection()) {
+				sprites.gun.setTextureRect(sf::IntRect({0, gun_index * gun_dimensions.y}, gun_dimensions));
+				sprites.gun.setPosition(origins.gun.x + pointer_dimensions.x + gun_pad_horiz, origins.gun.y - i * gun_dimensions.y - i * gun_pad_vert);
 				win.draw(sprites.gun);
 				pointer_index = i;
 			}
 		}
-		arms::WeaponType curr_type = player.equipped_weapon().get_type();
 		sprites.pointer.setTextureRect(sf::IntRect({0, player.equipped_weapon().get_ui_color() * pointer_dimensions.y}, pointer_dimensions));
 		sprites.pointer.setPosition(+origins.gun.x, +origins.gun.y + pointer_pad - pointer_index * (gun_dimensions.y + gun_pad_vert));
 		win.draw(sprites.pointer);

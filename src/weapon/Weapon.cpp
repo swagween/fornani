@@ -4,16 +4,19 @@
 namespace arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, int id)
-	: metadata{.id = id, .label = svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()}, projectile(svc, svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this) {
+	: metadata{.id = id, .label = svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()}, projectile(svc, svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this), visual{.animation{svc.assets.t_gun}} {
 
 	auto const& in_data = svc.data.weapon["weapons"][id];
 
-	//metadata
+	// metadata
 	metadata.description = in_data["metadata"]["description"].as_string();
-	metadata.type = static_cast<WeaponType>(in_data["metadata"]["type"].as<int>());
 
-	//visual
-	visual.dimensions = {in_data["visual"]["dimensions"]["x"].as<int>(), in_data["dimensions"]["y"].as<int>()};
+	// visual
+	visual.dimensions = {in_data["visual"]["dimensions"][0].as<int>(), in_data["dimensions"][1].as<int>()};
+	visual.animation.set_dimensions(visual.dimensions);
+	visual.animation.push_params("basic", {0, 1, 24, -1});
+	visual.animation.set_params("basic");
+	visual.sprite.setTexture(svc.assets.t_gun);
 	offsets.render.global = {in_data["visual"]["offsets"]["global"][0].as<float>(), in_data["visual"]["offsets"]["global"][1].as<float>()};
 	offsets.render.stock = {in_data["visual"]["offsets"]["stock"][0].as<int>(), in_data["visual"]["offsets"]["stock"][1].as<int>()};
 	visual.color = static_cast<UIColor>(in_data["visual"]["ui"]["color"].as<int>());
@@ -21,7 +24,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id)
 	try {
 		emitter.color = svc.styles.spray_colors.at(metadata.label);
 	} catch (std::out_of_range) { emitter.color = svc.styles.colors.white; }
-	emitter.type = in_data["visual"]["spray"]["type"].as_string();// secondary emitter
+	emitter.type = in_data["visual"]["spray"]["type"].as_string(); // secondary emitter
 	if (in_data["visual"]["secondary_spray"]) {
 		secondary_emitter = EmitterAttributes();
 		secondary_emitter.value().dimensions.x = in_data["visual"]["secondary_spray"]["dimensions"][0].as<float>();
@@ -32,27 +35,21 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id)
 		secondary_emitter.value().type = in_data["visual"]["secondary_spray"]["type"].as_string();
 	}
 
-	//gameplay
+	// gameplay
 	offsets.gameplay.barrel = {in_data["gameplay"]["offsets"]["barrel"][0].as<float>(), in_data["gameplay"]["offsets"]["barrel"][1].as<float>()};
 	ammo.set_max(in_data["gameplay"]["attributes"]["ammo"].as<int>());
 	cooldowns.reload = util::Cooldown{in_data["gameplay"]["attributes"]["reload"].as<int>()};
 	cooldowns.down_time = util::Cooldown{cooldowns.reload};
-	specifications.rate = in_data["gameplay"]["attributes"]["rate"].as<int>();
 	specifications.multishot = in_data["gameplay"]["attributes"]["multishot"].as<int>();
 	specifications.cooldown_time = in_data["gameplay"]["attributes"]["cooldown_time"].as<int>();
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
 
-
-	
-
-	auto texture_lookup = in_data["texture_lookup"].as<int>() * 16;
+	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 16;
 	visual.ui.setTexture(svc.assets.t_guns);
 }
 
 void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
-
-	// ammo
 	ammo.update();
 	if ((ammo.empty() || !cooldowns.down_time.running()) && !cooldowns.reload.running() && !ammo.full()) { cooldowns.reload.start(); }
 	if (cooldowns.reload.is_almost_complete()) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
@@ -63,14 +60,10 @@ void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
 	set_orientation(to_direction);
 	cooldowns.cooldown.update();
 
-	visual.sprite.update(visual.position, 0, 0); // TODO: allow for custom gun animations
+	visual.sprite.setTextureRect(sf::IntRect{{0, metadata.id * visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-
-	// nani threw it, so don't render it in her hand
-	//if (specifications.boomerang && active_projectiles.get_count() == specifications.rate) { return; }
-
 	if (svc.greyblock_mode()) {
 		// fire point debug
 		sf::RectangleShape box{};
@@ -80,7 +73,9 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setFillColor(svc.styles.colors.fucshia);
 		win.draw(box);
 	} else {
-		visual.sprite.render(svc, win, cam);
+		//visual.sprite.render(svc, win, cam);
+		visual.sprite.setPosition(visual.position - cam);
+		win.draw(visual.sprite);
 	}
 }
 
@@ -114,7 +109,7 @@ bool Weapon::is_unlocked() const { return flags.state.test(WeaponState::unlocked
 
 bool Weapon::cooling_down() const { return !cooldowns.cooldown.is_complete(); }
 
-bool Weapon::can_shoot() const { return !cooling_down() && !(active_projectiles.get_count() >= specifications.rate) && ammo.get_count() > 0; }
+bool Weapon::can_shoot() const { return !cooling_down() && ammo.get_count() > 0; }
 
 void Weapon::set_position(sf::Vector2<float> pos) { visual.position = pos; }
 
@@ -129,7 +124,7 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	float down_rotation{90.f};
 
 	// start from default
-	auto& sp_gun = visual.sprite.get_sprite();
+	auto& sp_gun = visual.sprite;
 	sp_gun.setRotation(neutral_rotation);
 	sp_gun.setScale(right_scale);
 
@@ -170,10 +165,10 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 		break;
 	default: break;
 	}
-	projectile.direction = firing_direction;
+	projectile.set_firing_direction(firing_direction);
 }
 
-void Weapon::set_team(Team team) { projectile.team = team; }
+void Weapon::set_team(Team team) { projectile.set_team(team); }
 
 void Weapon::set_firing_direction(dir::Direction to_direction) { firing_direction = to_direction; }
 
