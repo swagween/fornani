@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.15)
 project(fornani
   LANGUAGES CXX
   VERSION 1.0
@@ -15,13 +15,14 @@ add_executable(${PROJECT_NAME})
 add_subdirectory(dependencies)
 target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
 target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
-target_link_libraries(${PROJECT_NAME} PRIVATE noiz::noiz-lib
-  noiz::noiz-compile-options)
 target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-audio sfml-system sfml-window sfml-graphics)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-system sfml-graphics sfml-window sfml-audio)
 target_link_libraries(${PROJECT_NAME} PRIVATE steamworks)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
+if (CCMATH_ENABLE_RUNTIME_SIMD)
+    target_compile_definitions(${PROJECT_NAME} INTERFACE CCM_CONFIG_USE_RT_SIMD)
+endif ()
 
 file(GLOB_RECURSE sources LIST_DIRECTORIES false CONFIGURE_DEPENDS "src/*.?pp")
 
@@ -29,6 +30,13 @@ target_sources(${PROJECT_NAME} PRIVATE
 main.cpp
 ${sources}
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+    add_compile_options(${PROJECT_NAME} INTERFACE /W4056 /W4146 /W4018 /W4056)
+endif()
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(${PROJECT_NAME} INTERFACE -Wno-sign-conversion)
+endif()
 
 if (WIN32)
   add_custom_command(

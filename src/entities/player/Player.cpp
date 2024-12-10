@@ -107,8 +107,8 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	// weapon
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
 	if (flags.state.test(State::impart_recoil) && arsenal) {
-		if (controller.direction.und == dir::UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().attributes.recoil}); }
-		if (controller.direction.und == dir::UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().attributes.recoil}); }
+		if (controller.direction.und == dir::UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()}); }
+		if (controller.direction.und == dir::UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().get_recoil()}); }
 		flags.state.reset(State::impart_recoil);
 	}
 
@@ -179,10 +179,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
 	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
 
-	if (arsenal && hotbar) {
-		collider.flags.general.set(shape::General::complex);
-		if (flags.state.test(State::show_weapon)) { equipped_weapon().render_back(svc, win, campos); }
-	}
+	if (arsenal && hotbar) { collider.flags.general.set(shape::General::complex); }
 
 	if (svc.greyblock_mode()) {
 		win.draw(sprite);
@@ -509,12 +506,12 @@ void Player::update_weapon() {
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_id()) ? weapon->set_hotbar() : weapon->set_reserved();
-		weapon->firing_direction = controller.direction;
-		if (controller.get_wallslide().is_wallsliding()) { weapon->firing_direction.flip(); }
+		weapon->set_firing_direction(controller.direction);
+		if (controller.get_wallslide().is_wallsliding()) { weapon->get_firing_direction().flip(); }
 		weapon->update(*m_services, controller.direction);
 		auto tweak = controller.facing_left() ? -1.f : 1.f;
-		auto g_offset = weapon->gun_offset;
-		if (weapon->firing_direction.up_or_down()) {
+		auto g_offset = weapon->get_global_offset();
+		if (weapon->get_firing_direction().up_or_down()) {
 			tweak = {};
 			g_offset.x = 0.f;
 		}

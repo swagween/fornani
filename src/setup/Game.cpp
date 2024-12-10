@@ -524,14 +524,14 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								if (player.hotbar) {
 									auto& gun = player.equipped_weapon();
-									ImGui::Text(gun.label.data());
+									ImGui::Text(gun.get_label().data());
 									ImGui::Text("Ammo Capacity: %i", gun.ammo.get_capacity());
 									ImGui::Text("Ammo Count: %i", gun.ammo.get_count());
 								}
 								ImGui::Separator();
 								ImGui::Text("Loadout:");
 								if (player.arsenal) {
-									for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text(gun.get()->label.data()); }
+									for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text(gun.get()->get_label().data()); }
 								}
 								ImGui::Text("Hotbar:");
 								if (player.hotbar) {

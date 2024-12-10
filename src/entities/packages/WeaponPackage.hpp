@@ -16,9 +16,10 @@ class WeaponPackage : public Entity {
 	void update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void shoot();
+	void set_team(arms::Team team);
 	[[nodiscard]] auto get() -> arms::Weapon& { return *weapon; }
-	[[nodiscard]] auto barrel_point() -> sf::Vector2<float> { return weapon->barrel_point; }
-	[[nodiscard]] auto get_cooldown() const -> int { return weapon->cooldown.get_cooldown(); }
+	[[nodiscard]] auto barrel_point() -> sf::Vector2<float> { return weapon->get_barrel_point(); }
+	[[nodiscard]] auto get_cooldown() const -> int { return weapon->get_cooldown(); }
 
 	util::Cooldown clip_cooldown{};
 	util::Cycle cycle{2};

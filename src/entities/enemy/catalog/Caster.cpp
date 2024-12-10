@@ -16,7 +16,7 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	directions.desired.lr = dir::LR::left;
 	directions.actual.lr = dir::LR::left;
 	directions.movement.lr = dir::LR::neutral;
-	energy_ball.get().projectile.team = arms::TEAMS::GUARDIAN;
+	energy_ball.get().set_team(arms::Team::guardian);
 
 	target = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.013f);
 	target.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.96f, 0.98f}, 1.0f);
@@ -70,7 +70,7 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	energy_ball.update(svc, map, *this);
 	auto bp = collider.get_center();
 	bp.y -= 48.f;
-	energy_ball.get().barrel_point = bp;
+	energy_ball.get().set_barrel_point(bp);
 	attack_target = player.collider.get_center() - energy_ball.barrel_point();
 
 	cooldowns.post_cast.update();
@@ -214,7 +214,7 @@ fsm::StateFunction Caster::update_signal() {
 	parts.wand.sprite.setTextureRect(sf::IntRect{{0, 62 + 62 * flash.get_alternator()}, wand_dimensions});
 	if (variant == CasterVariant::tyrant) { cooldowns.rapid_fire.update(); }
 	if (cooldowns.rapid_fire.is_almost_complete()) {
-		m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().barrel_point, attack_target);
+		m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);
 		cooldowns.rapid_fire.start();
 		m_services->soundboard.flags.weapon.set(audio::Weapon::energy_ball);
 	}
@@ -225,7 +225,7 @@ fsm::StateFunction Caster::update_signal() {
 		parts.scepter.sprite.rotate(-90.f * sign);
 		cooldowns.post_cast.start();
 		if (variant == CasterVariant::apprentice) {
-			m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().barrel_point, attack_target);
+			m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);
 			m_services->soundboard.flags.weapon.set(audio::Weapon::energy_ball);
 		} // only shoot at end for apprentice
 		if (directions.actual.lr != directions.desired.lr) {

@@ -11,8 +11,8 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	  sparkler(svc, Enemy::collider.vicinity.dimensions, svc.styles.colors.ui_white, "minigus") {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
-	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
-	soda.get().projectile.team = arms::TEAMS::SKYCORPS;
+	gun.get().set_team(arms::Team::skycorps);
+	soda.get().set_team(arms::Team::skycorps);
 	gun.cycle.set_order(3);
 	Enemy::collider.physics.maximum_velocity = {8.f, 18.f};
 	Enemy::collider.physics.set_constant_friction({0.97f, 0.989f});
@@ -206,9 +206,9 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	}
 	auto gun_base = Enemy::collider.physics.position + Enemy::collider.dimensions * 0.5f;
 	auto gun_point = Enemy::direction.lr == dir::LR::left ? gun_base - sf::Vector2<float>{(float)minigun.dimensions.x, -6.f} : gun_base + sf::Vector2<float>{(float)minigun.dimensions.x, 6.f};
-	gun.get().barrel_point = gun_point;
+	gun.get().set_barrel_point(gun_point);
 	gun_point.y -= 64;
-	soda.get().barrel_point = gun_point;
+	soda.get().set_barrel_point(gun_point);
 
 	Enemy::direction = post_direction;
 
@@ -394,7 +394,7 @@ fsm::StateFunction Minigus::update_shoot() {
 		gun.cycle.update();
 		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{0.f, 20.f} : sf::Vector2<float>{0.f, 15.f});
 		gun.shoot();
-		m_map->spawn_projectile_at(*m_services, gun.get(), gun.barrel_point());
+		m_map->spawn_projectile_at(*m_services, gun.get(), gun.get().get_barrel_point());
 		m_map->shake_camera();
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}
@@ -511,7 +511,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		gun.cycle.update();
 		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{0.f, 20.f} : sf::Vector2<float>{0.f, 15.f});
 		gun.shoot();
-		m_map->spawn_projectile_at(*m_services, gun.get(), gun.barrel_point());
+		m_map->spawn_projectile_at(*m_services, gun.get(), gun.get().get_barrel_point());
 		m_map->shake_camera();
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}
@@ -916,7 +916,7 @@ fsm::StateFunction Minigus::update_throw_can() {
 	if (animation.just_started()) { voice.pizza.play(); }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.get_frame() == 62 && !status.test(MinigusFlags::threw_can)) {
-		m_map->spawn_projectile_at(*m_services, soda.get(), soda.get().barrel_point);
+		m_map->spawn_projectile_at(*m_services, soda.get(), soda.get().get_barrel_point());
 		status.set(MinigusFlags::threw_can);
 	}
 	if (animation.complete()) {

@@ -11,7 +11,7 @@ GrapplingHook::GrapplingHook(automa::ServiceProvider& svc) {
 void GrapplingHook::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	if (grapple_flags.test(GrappleState::probing)) {
-		spring.set_bob(player.equipped_weapon().barrel_point);
+		spring.set_bob(player.equipped_weapon().get_barrel_point());
 		svc.soundboard.flags.weapon.set(audio::Weapon::hook_probe);
 	}
 	if (grapple_flags.test(GrappleState::anchored)) {

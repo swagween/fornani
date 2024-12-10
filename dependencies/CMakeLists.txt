@@ -40,17 +40,9 @@ set(CCMATH_DISABLE_ERRNO ON)
 FetchContent_Declare(
         ccmath
         GIT_REPOSITORY https://github.com/Rinzii/ccmath
-        GIT_TAG v0.1.5
+        GIT_TAG simd-patch
 )
 FetchContent_MakeAvailable(ccmath)
-
-# noiz
-FetchContent_Declare(
-    noiz
-    GIT_REPOSITORY https://github.com/cpp-gamedev/noiz
-    GIT_TAG 6c9164f37cfd014c9e6de14c714916ed266a8cc0
-)
-FetchContent_MakeAvailable(noiz)
 
 # steamworks API
 FetchContent_Declare(
