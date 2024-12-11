@@ -9,7 +9,7 @@
         "texture_lookup": 0,
         "dimensions": [ 18, 8 ],
         "offsets": {
-          "global": [ 18.0, 2.0 ],
+          "global": [ 16.0, -2.0 ],
           "stock": [ 0, 0 ]
         },
         "ui": { "color": 1 },
@@ -20,12 +20,12 @@
         },
         "secondary_spray": {
           "dimensions": [ 4.0, 4.0 ],
-          "type": "peckett",
+          "type": "bryns_gun_smoke",
           "color": "white"
         }
       },
       "gameplay": {
-        "offsets": { "barrel": [18, 8] },
+        "offsets": { "barrel": [18, 2] },
         "attributes": {
           "automatic": false,
           "ammo": 4,
@@ -71,12 +71,11 @@
         "description": "A powerful pistol that Bryn gave to you."
       },
       "visual": {
-        "texture_lookup": 8,
+        "texture_lookup": 1,
         "dimensions": [ 20, 12 ],
         "offsets": {
           "stock": [ 0, 0 ],
-          "grip": [ 2, 6 ],
-          "barrel": [ 20.0, 4.0 ]
+          "grip": [ 2, 6 ]
         },
         "ui": { "color": 3 },
         "spray": {
