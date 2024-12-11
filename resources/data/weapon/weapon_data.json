@@ -9,7 +9,8 @@
         "texture_lookup": 0,
         "dimensions": [ 18, 8 ],
         "offsets": {
-          "global": [ 16.0, -2.0 ],
+          "global": [ -3.0, 5.0 ],
+          "barrel": [ 18.0, 2.0 ],
           "stock": [ 0, 0 ]
         },
         "ui": { "color": 1 },
@@ -25,7 +26,6 @@
         }
       },
       "gameplay": {
-        "offsets": { "barrel": [18, 2] },
         "attributes": {
           "automatic": false,
           "ammo": 4,
@@ -74,8 +74,9 @@
         "texture_lookup": 1,
         "dimensions": [ 20, 12 ],
         "offsets": {
-          "stock": [ 0, 0 ],
-          "grip": [ 2, 6 ]
+          "global": [ -3.0, 5.0 ],
+          "barrel": [ 20.0, 3.0 ],
+          "stock": [ 0, 0 ]
         },
         "ui": { "color": 3 },
         "spray": {
@@ -90,7 +91,6 @@
         }
       },
       "gameplay": {
-        "offsets": { "barrel": [ 20, 4 ] },
         "attributes": {
           "automatic": false,
           "ammo": 2,

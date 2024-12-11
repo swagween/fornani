@@ -15,8 +15,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id)
 	visual.dimensions = {in_data["visual"]["dimensions"][0].as<int>(), in_data["visual"]["dimensions"][1].as<int>()};
 	visual.sprite.setTexture(svc.assets.t_gun);
 	offsets.render.global = {in_data["visual"]["offsets"]["global"][0].as<float>(), in_data["visual"]["offsets"]["global"][1].as<float>()};
-	offsets.render.stock = {in_data["visual"]["offsets"]["stock"][0].as<int>(), in_data["visual"]["offsets"]["stock"][1].as<int>()};
-	offsets.render.barrel = {in_data["gameplay"]["offsets"]["barrel"][0].as<float>(), in_data["gameplay"]["offsets"]["barrel"][1].as<float>()};
+	offsets.render.barrel = {in_data["visual"]["offsets"]["barrel"][0].as<float>(), in_data["visual"]["offsets"]["barrel"][1].as<float>()};
 	visual.color = static_cast<UIColor>(in_data["visual"]["ui"]["color"].as<int>());
 	emitter.dimensions = {in_data["visual"]["spray"]["dimensions"][0].as<float>(), in_data["visual"]["spray"]["dimensions"][1].as<float>()};
 	try {
@@ -34,7 +33,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id)
 	}
 
 	// gameplay
-	offsets.gameplay.barrel = {in_data["gameplay"]["offsets"]["barrel"][0].as<float>(), in_data["gameplay"]["offsets"]["barrel"][1].as<float>()};
 	ammo.set_max(in_data["gameplay"]["attributes"]["ammo"].as<int>());
 	cooldowns.reload = util::Cooldown{in_data["gameplay"]["attributes"]["reload"].as<int>()};
 	cooldowns.down_time = util::Cooldown{cooldowns.reload};
@@ -46,6 +44,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id)
 	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 16;
 	visual.ui.setTexture(svc.assets.t_guns);
 	visual.sprite.setTextureRect(sf::IntRect{{0, metadata.id * visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
+	visual.sprite.setOrigin(offsets.render.global);
 }
 
 void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
@@ -61,18 +60,23 @@ void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	visual.sprite.setPosition(visual.position - cam);
+	win.draw(visual.sprite);
 	if (svc.greyblock_mode()) {
-		// fire point debug
 		sf::RectangleShape box{};
 		box.setSize({2.f, 2.f});
 		box.setOrigin(1.f, 1.f);
 		box.setPosition(offsets.gameplay.barrel - cam);
 		box.setFillColor(svc.styles.colors.fucshia);
 		win.draw(box);
+		box.setPosition(visual.position - cam);
+		box.setFillColor(svc.styles.colors.goldenrod);
+		win.draw(box);
+		box.setPosition(visual.position + offsets.render.global - cam);
+		box.setFillColor(svc.styles.colors.periwinkle);
+		//win.draw(box);
 	} else {
 		//visual.sprite.render(svc, win, cam);
-		visual.sprite.setPosition(visual.position - cam);
-		win.draw(visual.sprite);
 	}
 }
 
@@ -108,17 +112,52 @@ bool Weapon::cooling_down() const { return !cooldowns.cooldown.is_complete(); }
 
 bool Weapon::can_shoot() const { return !cooling_down() && ammo.get_count() > 0; }
 
-void Weapon::set_position(sf::Vector2<float> pos) { visual.position = pos + offsets.render.global; }
+void Weapon::set_position(sf::Vector2<float> pos) { visual.position = pos; }
 
 void Weapon::set_barrel_point(sf::Vector2<float> point) { offsets.gameplay.barrel = point; }
 
 void Weapon::set_orientation(dir::Direction to_direction) {
+	auto right_scale = sf::Vector2<float>{1.f, 1.f};
+	auto left_scale = sf::Vector2<float>{-1.f, 1.f};
+	auto neutral_rotation{0.0f};
+	auto up_rotation{-90.f};
+	auto down_rotation{90.f};
+	auto right_offset = sf::Vector2<float>{-offsets.render.global.x, -offsets.render.global.y};
+	auto left_offset = sf::Vector2<float>{offsets.render.global.x, -offsets.render.global.y};
+	auto right_barrel_offset = sf::Vector2<float>{offsets.render.barrel.x, offsets.render.barrel.y};
+	auto left_barrel_offset = sf::Vector2<float>{-offsets.render.barrel.x, offsets.render.barrel.y};
+	visual.sprite.setRotation(neutral_rotation);
+	switch (firing_direction.lr) {
+	case dir::LR::right:
+		visual.sprite.setScale(right_scale);
+		offsets.gameplay.barrel = visual.position + right_offset + right_barrel_offset;
+		break;
+	case dir::LR::left:
+		visual.sprite.setScale(left_scale);
+		offsets.gameplay.barrel = visual.position + left_offset + left_barrel_offset;
+		break;
+	default: break;
+	}
+	switch (firing_direction.und) {
+	case dir::UND::up:
+		to_direction.right() ? visual.sprite.rotate(-90) : visual.sprite.rotate(90);
+		offsets.gameplay.barrel = {visual.position.x + offsets.render.global.y, visual.position.y - offsets.render.global.x};
+		if (to_direction.left()) { offsets.gameplay.barrel.x = visual.position.x - offsets.render.global.y + 1.f; }
+		if (to_direction.right()) { offsets.gameplay.barrel.x = visual.position.x + offsets.render.global.y - 1.f; }
+		firing_direction.neutralize_lr();
+		break;
+	case dir::UND::down:
+		to_direction.lr == dir::LR::right ? visual.sprite.rotate(90) : visual.sprite.rotate(-90);
+		firing_direction.neutralize_lr();
+		break;
+	default: break;
+	}
+	projectile.set_firing_direction(firing_direction);
+	return;
 
-	sf::Vector2<float> right_scale = {1.0f, 1.0f};
-	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-	float neutral_rotation{0.0f};
-	float up_rotation{-90.f};
-	float down_rotation{90.f};
+
+
+	//old stuff
 
 	// start from default
 	auto& sp_gun = visual.sprite;
@@ -127,12 +166,10 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 
 	switch (firing_direction.lr) {
 	case dir::LR::right:
-		offsets.gameplay.barrel.x -= 2.0f * offsets.render.barrel.y;
-		offsets.gameplay.barrel.x += offsets.render.stock.x;
+		offsets.gameplay.barrel.x -= 2.0f * offsets.render.global.y;
 		break;
 	case dir::LR::left:
-		offsets.gameplay.barrel.x += 2.0f * offsets.render.barrel.y;
-		offsets.gameplay.barrel.x -= offsets.render.stock.x;
+		offsets.gameplay.barrel.x += 2.0f * offsets.render.global.y;
 		sp_gun.scale(-1.0f, 1.0f);
 		break;
 	default: break;
@@ -140,24 +177,22 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	switch (firing_direction.und) {
 	case dir::UND::up:
 		to_direction.right() ? sp_gun.rotate(-90) : sp_gun.rotate(90);
-		offsets.gameplay.barrel = {visual.position.x + offsets.render.barrel.y, visual.position.y - offsets.render.barrel.x};
-		if (to_direction.left()) { offsets.gameplay.barrel.x = visual.position.x - offsets.render.barrel.y + 1.f; }
-		if (to_direction.right()) { offsets.gameplay.barrel.x = visual.position.x + offsets.render.barrel.y - 1.f; }
+		offsets.gameplay.barrel = {visual.position.x + offsets.render.global.y, visual.position.y - offsets.render.global.x};
+		if (to_direction.left()) { offsets.gameplay.barrel.x = visual.position.x - offsets.render.global.y + 1.f; }
+		if (to_direction.right()) { offsets.gameplay.barrel.x = visual.position.x + offsets.render.global.y - 1.f; }
 		firing_direction.neutralize_lr();
-		offsets.gameplay.barrel.y += offsets.render.stock.x;
 		break;
 	case dir::UND::down:
 		to_direction.lr == dir::LR::right ? sp_gun.rotate(90) : sp_gun.rotate(-90);
-		offsets.gameplay.barrel = {visual.position.x - offsets.render.barrel.y, visual.position.y + visual.dimensions.x};
-		if (to_direction.right()) { offsets.gameplay.barrel.x = visual.position.x + offsets.render.barrel.y - 1.f; }
-		if (to_direction.left()) { offsets.gameplay.barrel.x = visual.position.x - offsets.render.barrel.y + 1.f; }
+		offsets.gameplay.barrel = {visual.position.x - offsets.render.global.y, visual.position.y + visual.dimensions.x};
+		if (to_direction.right()) { offsets.gameplay.barrel.x = visual.position.x + offsets.render.global.y - 1.f; }
+		if (to_direction.left()) { offsets.gameplay.barrel.x = visual.position.x - offsets.render.global.y + 1.f; }
 		firing_direction.neutralize_lr();
-		offsets.gameplay.barrel.y -= offsets.render.stock.x;
 		break;
 	case dir::UND::neutral:
 		switch (firing_direction.lr) {
-		case dir::LR::right: offsets.gameplay.barrel = {visual.position.x + offsets.render.barrel.x - offsets.render.stock.x, visual.position.y + offsets.render.barrel.y}; break;
-		case dir::LR::left: offsets.gameplay.barrel = {visual.position.x - offsets.render.barrel.x + offsets.render.stock.x, visual.position.y + offsets.render.barrel.y}; break;
+		case dir::LR::right: offsets.gameplay.barrel = {visual.position.x + offsets.render.global.x, visual.position.y + offsets.render.global.y}; break;
+		case dir::LR::left: offsets.gameplay.barrel = {visual.position.x - offsets.render.global.x, visual.position.y + offsets.render.global.y}; break;
 		}
 		break;
 	default: break;

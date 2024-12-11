@@ -91,7 +91,7 @@
   },
 
   "wasp_2": {
-    "load": 12,
+    "load": 8,
     "rate": 100.0,
     "expulsion": 50.0,
     "expulsion_variance": 50.0,
