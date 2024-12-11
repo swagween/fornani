@@ -26,7 +26,6 @@ struct WeaponSpecifications {
 struct Offsets {
 	struct {
 		sf::Vector2<float> global{};
-		sf::Vector2<int> stock{};
 		sf::Vector2<float> barrel{};
 	} render{};
 	struct {
