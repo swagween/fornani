@@ -27,7 +27,6 @@ struct Offsets {
 	struct {
 		sf::Vector2<float> global{};
 		sf::Vector2<int> stock{};
-		sf::Vector2<int> grip{};
 		sf::Vector2<float> barrel{};
 	} render{};
 	struct {
@@ -111,7 +110,6 @@ class Weapon {
 
 	struct {
 		sf::Sprite sprite{};
-		anim::AnimatedSprite animation{};
 		sf::Vector2<float> position{};
 		sf::Vector2<int> dimensions{};
 		std::vector<sf::Vector2<float>> anchor_points{};

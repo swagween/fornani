@@ -135,10 +135,12 @@ void AssetManager::import_textures() {
 	t_twinkle.loadFromFile(finder.resource_path + "/image/vfx/twinkle.png");
 	t_wasp_effect.loadFromFile(finder.resource_path + "/image/vfx/wasp_effect.png");
 	t_peckett_effect.loadFromFile(finder.resource_path + "/image/vfx/peckett_effect.png");
+	t_bg_effect.loadFromFile(finder.resource_path + "/image/vfx/bryns_gun_effect.png");
 	t_small_flash.loadFromFile(finder.resource_path + "/image/vfx/small_flash.png");
 	particle_textures.insert({"twinkle", t_twinkle});
 	particle_textures.insert({"wasp", t_wasp_effect});
 	particle_textures.insert({"peckett", t_peckett_effect});
+	particle_textures.insert({"bryns_gun_smoke", t_bg_effect});
 
 	t_alphabet.loadFromFile(finder.resource_path + "/image/gui/alphabet.png");
 	t_blue_console.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");

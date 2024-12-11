@@ -648,9 +648,9 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 		svc.stats.player.bullets_fired.update();
 		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
 		if (player->equipped_weapon().multishot()) {
-			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point() + tweak); }
+			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point()); }
 		} else {
-			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point() + tweak);
+			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point());
 		}
 		player->equipped_weapon().shoot();
 		if (!player->equipped_weapon().automatic()) { player->controller.set_shot(false); }

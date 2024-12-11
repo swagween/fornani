@@ -47,6 +47,27 @@
     "colliding": true
   },
 
+  "bryns_gun_smoke": {
+    "load": 8,
+    "rate": 4.0,
+    "expulsion": 4.0,
+    "expulsion_variance": 2.0,
+    "cone": 0.08,
+    "friction": 0.998,
+    "elasticity": 0.95,
+    "gravity": -0.2,
+    "lifespan": 360,
+    "lifespan_variance": 0,
+    "dimensions": [ 32, 32 ],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 1,
+      "duration": 5,
+      "framerate": 68,
+      "loop": 0
+    }
+  },
   "wasp": {
     "load": 30,
     "rate": 4.0,

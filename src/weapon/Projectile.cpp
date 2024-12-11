@@ -8,7 +8,7 @@
 
 namespace arms {
 
-Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon) : metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.projectile_textures.at(label) }} {
+Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon) : metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.projectile_textures.at(label)}} {
 
 	auto const& in_data = svc.data.weapon["weapons"][id]["class_package"]["projectile"];
 
@@ -41,7 +41,6 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	visual.sprite.push_params("anim", {0, in_data["animation"]["num_frames"].as<int>(), in_data["animation"]["framerate"].as<int>()});
 	visual.sprite.set_params("anim");
-	visual.sprite.set_origin({0.f, static_cast<float>(visual.dimensions.y) * 0.5f});
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
 	visual.render_type = visual.sprite.size() > 1 ? RenderType::multi_sprite : RenderType::single_sprite;
 
@@ -59,6 +58,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	// circle
 	if (metadata.attributes.test(ProjectileAttributes::circle)) { physical.sensor = components::CircleSensor(physical.bounding_box.dimensions.x * 0.5f); }
+	visual.sprite.set_origin({static_cast<float>(visual.dimensions.x) * 0.5f, static_cast<float>(visual.dimensions.y) * 0.5f});
 
 	physical.max_dimensions = physical.bounding_box.dimensions;
 
@@ -71,7 +71,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	// animation
-	visual.sprite.update(physical.physics.position);
+	visual.sprite.update(physical.bounding_box.position);
 	if (physical.sensor) { visual.sprite.update(physical.sensor.value().bounds.getPosition()); }
 	cooldown.update();
 	lifetime.update();
