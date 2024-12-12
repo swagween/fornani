@@ -51,7 +51,6 @@ enum class ProjectileState { initialized, destruction_initiated, destroyed, whif
 class Projectile {
   public:
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon);
-
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(player::Player& player);
@@ -84,12 +83,6 @@ class Projectile {
 	[[nodiscard]] auto omnidirectional() const -> bool { return metadata.attributes.test(ProjectileAttributes::omnidirectional); }
 	[[nodiscard]] auto constrained() const -> bool { return metadata.attributes.test(ProjectileAttributes::constrained); }
 	[[nodiscard]] auto persistent() const -> bool { return metadata.attributes.test(ProjectileAttributes::persistent); }
-
-	struct {
-		//std::optional<std::unique_ptr<BulletPackage>> bullet{};
-		// std::optional<std::unique_ptr<MissilePackage>> bullet{};
-		// std::optional<std::unique_ptr<MeleePackage>> bullet{};
-	} package{};
 
   private:
 	struct {
