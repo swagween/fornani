@@ -1,9 +1,21 @@
 {
-  "dev": [
+  "creator": [
+    {
+      "name": "Alex Frasca",
+        "description": "Creator"
+    }
+  ],
+  "devs": [
+    {
+      "name": "Alejandro Perea",
+      "description": "Steam API integration, steam deck support, bugfixes"
+    },
     {
       "name": "Karn Kaul",
       "description": "djson, frequent consulting"
-    },
+    }
+  ],
+  "additional_dev": [
     {
       "name": "Omar Cornut",
       "description": "DearImGui, imgui-sfml"
@@ -17,11 +29,23 @@
       "description": "sfml"
     },
     {
+      "name": "Rinzii",
+      "description": "ccmath"
+    },
+    {
       "name": "silverweed",
-      "description": "functional animation state machines"
+      "description": "Functional animation state machines"
     }
   ],
   "design": [
+    {
+      "name": "tck",
+      "description": "Concept artist, game designer, narrative designer, consultant"
+    },
+    {
+      "name": "Zach Causey",
+      "description": "Concept artist, game designer, enemy designer, consultant"
+    }
   ],
   "visuals": [
     {
