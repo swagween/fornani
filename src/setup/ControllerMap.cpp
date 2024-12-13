@@ -142,7 +142,9 @@ void ControllerMap::handle_event(sf::Event const& event) {
 		if (last_controller_ty_used != ControllerType::keyboard) { reset_digital_action_states(); }
 		last_controller_ty_used = ControllerType::keyboard;
 
-		keys_pressed.insert(event.key.code);
+		if (event.key.code != sf::Keyboard::Key::Unknown) {
+			keys_pressed.insert(event.key.code);
+		}
 	} else if (event.type == sf::Event::KeyReleased) {
 		keys_pressed.erase(event.key.code);
 	}
