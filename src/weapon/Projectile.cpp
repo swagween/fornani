@@ -1,7 +1,6 @@
 
 #include "Projectile.hpp"
 #include "Weapon.hpp"
-#include "class/BulletPackage.hpp"
 #include "../entities/player/Player.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../utils/Math.hpp"
@@ -38,9 +37,12 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (static_cast<bool>(in_data["attributes"]["transcendent"].as_bool())) { metadata.attributes.set(ProjectileAttributes::transcendent); }
 	if (static_cast<bool>(in_data["attributes"]["constrained"].as_bool())) { metadata.attributes.set(ProjectileAttributes::constrained); }
 	if (static_cast<bool>(in_data["attributes"]["omnidirectional"].as_bool())) { metadata.attributes.set(ProjectileAttributes::omnidirectional); }
+	if (static_cast<bool>(in_data["attributes"]["boomerang"].as_bool())) { metadata.attributes.set(ProjectileAttributes::boomerang); }
+	if (static_cast<bool>(in_data["attributes"]["wander"].as_bool())) { metadata.attributes.set(ProjectileAttributes::wander); }
 
 	visual.sprite.push_params("anim", {0, in_data["animation"]["num_frames"].as<int>(), in_data["animation"]["framerate"].as<int>()});
 	visual.sprite.set_params("anim");
+	visual.num_angles = in_data["animation"]["angles"].as<int>();
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
 	visual.render_type = visual.sprite.size() > 1 ? RenderType::multi_sprite : RenderType::single_sprite;
 
@@ -48,6 +50,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.lifespan_variance = in_data["attributes"]["lifespan_variance"].as<int>();
 	auto var = svc.random.random_range(-metadata.specifications.lifespan_variance, metadata.specifications.lifespan_variance);
 	lifetime = util::Cooldown{metadata.specifications.lifespan + var};
+	damage_timer = util::Cooldown{in_data["attributes"]["damage_rate"].as<int>()};
 
 	physical.physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physical.physics.velocity.x = metadata.specifications.speed;
@@ -58,7 +61,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	// circle
 	if (metadata.attributes.test(ProjectileAttributes::circle)) { physical.sensor = components::CircleSensor(physical.bounding_box.dimensions.x * 0.5f); }
-	visual.sprite.set_origin({static_cast<float>(visual.dimensions.x) * 0.5f, static_cast<float>(visual.dimensions.y) * 0.5f});
+	visual.sprite.set_origin(physical.bounding_box.dimensions * 0.5f);
 
 	physical.max_dimensions = physical.bounding_box.dimensions;
 
@@ -70,14 +73,27 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
-	// animation
-	visual.sprite.update(physical.bounding_box.position);
-	if (physical.sensor) { visual.sprite.update(physical.sensor.value().bounds.getPosition()); }
 	cooldown.update();
 	lifetime.update();
+	damage_timer.update();
 	if (variables.state.test(ProjectileState::destruction_initiated) && !metadata.attributes.test(ProjectileAttributes::constrained)) { destroy(true); }
 
-	physical.physics.update_euler(svc);
+	if (boomerang()) {
+		physical.physics.set_global_friction(0.95f);
+		physical.steering.seek(physical.physics, player.collider.get_center(), 0.001f);
+		physical.physics.simple_update();
+	} else if (wander()) {
+		physical.physics.set_global_friction(0.9f);
+		physical.steering.smooth_random_walk(svc, physical.physics,	0.01f);
+		physical.physics.simple_update();
+	} else {
+		physical.physics.update_euler(svc);
+	}
+
+	// animation
+	visual.sprite.handle_rotation(physical.physics.velocity, visual.num_angles);
+	visual.sprite.update(physical.bounding_box.position + physical.bounding_box.dimensions * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true);
+	if (physical.sensor) { visual.sprite.update(physical.bounding_box.position + physical.bounding_box.dimensions * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true); }
 
 	if (physical.direction.lr == dir::LR::left) {
 		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x, physical.physics.position.y - physical.bounding_box.dimensions.y / 2});
@@ -127,7 +143,6 @@ void Projectile::on_player_hit(player::Player& player) {
 
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam) {
 
-	// this is the right idea but needs to be refactored and generalized
 	visual.sprite.render(svc, win, cam);
 
 	// proj bounding box for debug
@@ -194,5 +209,9 @@ void Projectile::set_team(Team to_team) { metadata.team = to_team; }
 void Projectile::set_firing_direction(dir::Direction to_direction) { physical.direction = to_direction; }
 
 void Projectile::poof() { variables.state.set(arms::ProjectileState::poof); }
+
+void Projectile::damage_over_time() {
+	if (damage_timer.is_complete()) { damage_timer.start(); }
+}
 
 } // namespace arms

@@ -3,10 +3,10 @@
 
 namespace arms {
 
-Weapon::Weapon(automa::ServiceProvider& svc, int id)
+Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	: metadata{.id = id, .label = svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()}, projectile(svc, svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this) {
 
-	auto const& in_data = svc.data.weapon["weapons"][id];
+	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id] : svc.data.weapon["weapons"][id];
 
 	// metadata
 	metadata.description = in_data["metadata"]["description"].as_string();
@@ -31,6 +31,10 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id)
 		} catch (std::out_of_range) { secondary_emitter.value().color = svc.styles.colors.white; }
 		secondary_emitter.value().type = in_data["visual"]["secondary_spray"]["type"].as_string();
 	}
+	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 16;
+	visual.ui.setTexture(svc.assets.t_guns);
+	visual.sprite.setTextureRect(sf::IntRect{{0, metadata.id * visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
+	visual.sprite.setOrigin(offsets.render.global);
 
 	// gameplay
 	ammo.set_max(in_data["gameplay"]["attributes"]["ammo"].as<int>());
@@ -41,10 +45,8 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id)
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
 
-	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 16;
-	visual.ui.setTexture(svc.assets.t_guns);
-	visual.sprite.setTextureRect(sf::IntRect{{0, metadata.id * visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
-	visual.sprite.setOrigin(offsets.render.global);
+	//audio
+	audio.shoot = in_data["audio"]["shoot"].as<int>();
 }
 
 void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
@@ -57,10 +59,12 @@ void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
 
 	set_orientation(to_direction);
 	cooldowns.cooldown.update();
+	physical.steering.seek(physical.physics, visual.position, 0.01f);
+	physical.physics.simple_update();
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	visual.sprite.setPosition(visual.position - cam);
+	visual.sprite.setPosition(physical.physics.position - cam);
 	win.draw(visual.sprite);
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape box{};
@@ -97,6 +101,7 @@ void Weapon::shoot() {
 	cooldowns.down_time.start();
 	active_projectiles.update();
 	ammo.use();
+	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
 }
 
 void Weapon::decrement_projectiles() { active_projectiles.update(-1); }
@@ -111,6 +116,11 @@ bool Weapon::can_shoot() const { return !cooling_down() && ammo.get_count() > 0;
 
 void Weapon::set_position(sf::Vector2<float> pos) { visual.position = pos; }
 
+void Weapon::force_position(sf::Vector2<float> pos) {
+	set_position(pos);
+	physical.physics.position = pos;
+}
+
 void Weapon::set_barrel_point(sf::Vector2<float> point) { offsets.gameplay.barrel = point; }
 
 void Weapon::set_orientation(dir::Direction to_direction) {
@@ -123,29 +133,30 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	auto left_offset = sf::Vector2<float>{offsets.render.global.x, -offsets.render.global.y};
 	auto right_barrel_offset = sf::Vector2<float>{offsets.render.barrel.x, offsets.render.barrel.y};
 	auto left_barrel_offset = sf::Vector2<float>{-offsets.render.barrel.x, offsets.render.barrel.y};
+	auto const& position = physical.physics.position;
 	visual.sprite.setRotation(neutral_rotation);
 	switch (firing_direction.lr) {
 	case dir::LR::right:
 		visual.sprite.setScale(right_scale);
-		offsets.gameplay.barrel = visual.position + right_offset + right_barrel_offset;
+		offsets.gameplay.barrel = position + right_offset + right_barrel_offset;
 		break;
 	case dir::LR::left:
 		visual.sprite.setScale(left_scale);
-		offsets.gameplay.barrel = visual.position + left_offset + left_barrel_offset;
+		offsets.gameplay.barrel = position + left_offset + left_barrel_offset;
 		break;
 	default: break;
 	}
 	switch (firing_direction.und) {
 	case dir::UND::up:
 		to_direction.right() ? visual.sprite.rotate(-90) : visual.sprite.rotate(90);
-		if (to_direction.left()) { offsets.gameplay.barrel = {visual.position.x - left_offset.y - left_barrel_offset.y, visual.position.y + left_offset.x + left_barrel_offset.x}; }
-		if (to_direction.right()) { offsets.gameplay.barrel = {visual.position.x + right_offset.y + right_barrel_offset.y, visual.position.y - right_offset.x - right_barrel_offset.x}; }
+		if (to_direction.left()) { offsets.gameplay.barrel = {position.x - left_offset.y - left_barrel_offset.y, position.y + left_offset.x + left_barrel_offset.x}; }
+		if (to_direction.right()) { offsets.gameplay.barrel = {position.x + right_offset.y + right_barrel_offset.y, position.y - right_offset.x - right_barrel_offset.x}; }
 		firing_direction.neutralize_lr();
 		break;
 	case dir::UND::down:
 		to_direction.lr == dir::LR::right ? visual.sprite.rotate(90) : visual.sprite.rotate(-90);
-		if (to_direction.left()) { offsets.gameplay.barrel = {visual.position.x + left_offset.y + left_barrel_offset.y, visual.position.y - left_offset.x - left_barrel_offset.x}; }
-		if (to_direction.right()) { offsets.gameplay.barrel = {visual.position.x - right_offset.y - right_barrel_offset.y, visual.position.y + right_offset.x + right_barrel_offset.x}; }
+		if (to_direction.left()) { offsets.gameplay.barrel = {position.x + left_offset.y + left_barrel_offset.y, position.y - left_offset.x - left_barrel_offset.x}; }
+		if (to_direction.right()) { offsets.gameplay.barrel = {position.x - right_offset.y - right_barrel_offset.y, position.y + right_offset.x + right_barrel_offset.x}; }
 		firing_direction.neutralize_lr();
 		break;
 	default: break;

@@ -38,6 +38,8 @@ void AnimatedSprite::random_start(automa::ServiceProvider& svc) {
 	if (animation.params.duration > 1) { animation.frame.set(svc.random.random_range(0, animation.params.duration - 1)); }
 }
 
+void AnimatedSprite::handle_rotation(sf::Vector2<float> direction, int num_angles, bool radial) { rotator.handle_rotation(sprite, direction, num_angles, radial); }
+
 void AnimatedSprite::end() { animation.end(); }
 
 void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -45,6 +47,8 @@ void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		sprite.setPosition(position - cam);
 		win.draw(sprite);
 	} else {
+		sprite.setPosition(position - cam);
+		win.draw(sprite);
 		drawbox.setPosition(position - cam);
 		win.draw(drawbox);
 	}

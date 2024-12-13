@@ -44,6 +44,7 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
+	if (change_state(AnimState::shoot, shoot)) { return PA_BIND(update_shoot); }
 	if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
 	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
@@ -669,6 +670,33 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	}
 	state = AnimState::roll;
 	return PA_BIND(update_roll);
+}
+
+fsm::StateFunction PlayerAnimation::update_shoot() {
+	animation.label = "shoot";
+	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
+	if (change_state(AnimState::sprint, run)) { return PA_BIND(update_run); }
+	if (change_state(AnimState::shoot, shoot)) { return PA_BIND(update_shoot); }
+	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
+	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
+	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
+	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
+	if (change_state(AnimState::stop, stop)) { return PA_BIND(update_stop); }
+	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
+	if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
+	if (change_state(AnimState::shield, shield)) { return PA_BIND(update_shield); }
+	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
+	if (change_state(AnimState::sharp_turn, sharp_turn)) { return PA_BIND(update_sharp_turn); }
+	if (change_state(AnimState::turn, turn)) { return PA_BIND(update_turn); }
+	if(animation.complete()) {
+		state = AnimState::idle;
+		animation.set_params(idle);
+		return PA_BIND(update_idle);
+	}
+	return PA_BIND(update_shoot);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

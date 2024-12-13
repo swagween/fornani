@@ -222,20 +222,19 @@ void Enemy::handle_player_collision(player::Player& player) const {
 void Enemy::handle_collision(shape::Collider& other) { collider.handle_collider_collision(other, true); }
 
 void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
-
 	if (proj.get_team() == arms::Team::skycorps) { return; }
 	if (proj.get_team() == arms::Team::guardian) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
 	if (!(proj.get_bounding_box().overlaps(collider.bounding_box) || proj.get_bounding_box().overlaps(secondary_collider.bounding_box))) { return; }
-
-	if (svc.ticker.every_x_ticks(10)) { proj.multiply(1.2f); }
-
 	flags.state.set(enemy::StateFlags::shot);
 	if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
-		hurt();
-		health.inflict(proj.get_damage());
-		health_indicator.add(-proj.get_damage());
-		if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
+		if (proj.persistent()) { proj.damage_over_time(); }
+		if (proj.can_damage()) {
+			hurt();
+			health.inflict(proj.get_damage());
+			health_indicator.add(-proj.get_damage());
+			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
+		}
 	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
 		map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 6));
 		svc.soundboard.flags.world.set(audio::World::hard_hit);

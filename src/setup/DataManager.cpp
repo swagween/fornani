@@ -75,6 +75,8 @@ void DataManager::load_data(std::string in_room) {
 	// std::cout << "loading json data...";
 	weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
+	enemy_weapon = dj::Json::from_file((finder.resource_path + "/data/weapon/enemy_weapons.json").c_str());
+	assert(!enemy_weapon.is_null());
 	drop = dj::Json::from_file((finder.resource_path + "/data/item/drop.json").c_str());
 	assert(!drop.is_null());
 	particle = dj::Json::from_file((finder.resource_path + "/data/vfx/particle.json").c_str());

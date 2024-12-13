@@ -223,6 +223,9 @@ void Player::update_animation() {
 			if (controller.moving() && controller.sprinting() && !controller.dashing() && !(animation.state == AnimState::sharp_turn)) { animation.state = AnimState::sprint; }
 			if ((animation.state == AnimState::sprint || animation.state == AnimState::roll) && controller.sliding() && controller.get_slide().can_begin()) { animation.state = AnimState::slide; }
 			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.state = AnimState::stop; }
+			if (hotbar && arsenal) {
+				if (controller.shot() && equipped_weapon().can_shoot()) { animation.state = AnimState::shoot; }
+			}
 			handle_turning();
 		}
 	} else {
@@ -478,7 +481,7 @@ void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
 	sync_antennae();
 	health_indicator.set_position(new_pos);
 	orb_indicator.set_position(new_pos);
-	if (arsenal && hotbar) { equipped_weapon().set_position(new_pos); }
+	if (arsenal && hotbar) { equipped_weapon().force_position(new_pos); }
 }
 
 void Player::freeze_position() {

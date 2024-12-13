@@ -252,6 +252,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tests")) {
+
+					ImGui::Text("Angle");
+					ImGui::Text("{-1.f, 1.f} ; down-left: %.2f", util::direction({-1.f, 1.f}));
+					ImGui::Text("{1.f, -1.f} ; top-right: %.2f", util::direction({1.f, -1.f}));
+					ImGui::Text("{1.f, 0.f} ; horiz-right: %.2f", util::direction({1.f, 0.f}));
+					ImGui::Separator();
 					ImGui::Text("Parity");
 					ImGui::Text("-1 and 2: %s", util::same_parity(-1.f, 2.f) ? "Yes" : "No");
 					ImGui::Text("3 and 5: %s", util::same_parity(3.f, 5.f) ? "Yes" : "No");

@@ -31,7 +31,8 @@ class Weapon;
 enum class Team { nani, skycorps, guardian, pioneer };
 enum class ProjectileType { bullet, missile, melee };
 enum class RenderType { animated, single_sprite, multi_sprite };
-enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional };
+
+enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander };
 struct ProjectileSpecifications {
 	float base_damage{};
 	int power{};
@@ -46,6 +47,7 @@ struct ProjectileSpecifications {
 	float dampen_factor{};
 	float dampen_variance{};
 };
+
 enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
 
 class Projectile {
@@ -62,6 +64,7 @@ class Projectile {
 	void set_firing_direction(dir::Direction to_direction);
 	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
 	void poof();
+	void damage_over_time();
 
 	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return metadata.type; }
@@ -78,11 +81,14 @@ class Projectile {
 	[[nodiscard]] auto get_team() const -> Team { return metadata.team; }
 	[[nodiscard]] auto get_direction() const -> dir::Direction { return physical.direction; }
 	[[nodiscard]] auto get_bounding_box() -> shape::Shape& { return physical.bounding_box; }
+	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
 
-	[[nodiscard]] auto transcendent() const -> bool { return metadata.attributes.test(ProjectileAttributes::transcendent); }
 	[[nodiscard]] auto omnidirectional() const -> bool { return metadata.attributes.test(ProjectileAttributes::omnidirectional); }
+	[[nodiscard]] auto transcendent() const -> bool { return metadata.attributes.test(ProjectileAttributes::transcendent); }
 	[[nodiscard]] auto constrained() const -> bool { return metadata.attributes.test(ProjectileAttributes::constrained); }
 	[[nodiscard]] auto persistent() const -> bool { return metadata.attributes.test(ProjectileAttributes::persistent); }
+	[[nodiscard]] auto boomerang() const -> bool { return metadata.attributes.test(ProjectileAttributes::boomerang); }
+	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }
 
   private:
 	struct {
@@ -97,10 +103,12 @@ class Projectile {
 	struct {
 		int effect_type{};
 		int sprite_index{};
+		int num_angles{};
 		RenderType render_type{};
 		anim::AnimatedSprite sprite{};
 		sf::Vector2<int> dimensions{};
 		flfx::SpriteHistory sprite_history{};
+		dir::Direction direction{};
 	} visual{};
 
 	struct {
@@ -110,6 +118,7 @@ class Projectile {
 		shape::CircleCollider collider{4.f};
 		components::PhysicsComponent physics{};
 		std::optional<components::CircleSensor> sensor{};
+		components::SteeringBehavior steering{};
 	} physical{};
 
 	struct {
@@ -121,6 +130,8 @@ class Projectile {
 
 	util::Cooldown cooldown{};
 	util::Cooldown lifetime{};
+	util::Cooldown damage_timer{};
 	Weapon* m_weapon;
 };
+
 } // namespace arms
