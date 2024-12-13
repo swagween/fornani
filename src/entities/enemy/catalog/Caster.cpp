@@ -7,7 +7,7 @@ namespace enemy {
 
 Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "caster"), m_services(&svc), m_map(&map),
-	  parts{.scepter{svc.assets.t_caster_scepter, 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.t_caster_wand, 2.0f, 0.85f, {-40.f, 48.f}}}, energy_ball(svc, "energy ball", 11) {
+	  parts{.scepter{svc.assets.t_caster_scepter, 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.t_caster_wand, 2.0f, 0.85f, {-40.f, 48.f}}}, energy_ball(svc, 3) {
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.9f, 0.9f};

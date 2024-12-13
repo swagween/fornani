@@ -97,6 +97,7 @@ class DataManager {
 	std::vector<world::Layer>& get_layers(int id);
 
 	dj::Json weapon{};
+	dj::Json enemy_weapon{};
 	dj::Json drop{};
 	dj::Json particle{};
 	dj::Json sparkler{};

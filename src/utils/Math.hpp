@@ -11,6 +11,7 @@ namespace util {
 
 inline float magnitude(sf::Vector2<float> vec) { return ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }
 inline sf::Vector2<float> unit(sf::Vector2<float> vec) { return vec / ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }
+inline float direction(sf::Vector2<float> vec) { return atan2f(vec.y, vec.x); }
 inline sf::Vector2<float> round_to_even(sf::Vector2<float> input) {
 	auto ret = input;
 	ret = {std::floor(ret.x / 2.f), std::floor(ret.y / 2.f)};

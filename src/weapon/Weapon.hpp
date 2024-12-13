@@ -8,15 +8,17 @@
 #include "Projectile.hpp"
 #include "Ammo.hpp"
 #include "../entities/animation/AnimatedSprite.hpp"
+#include "../components/SteeringBehavior.hpp"
 #include <optional>
 
 namespace arms {
 
-enum class WeaponAttributes { automatic };
 enum class WeaponState { unlocked, equipped, reloading };
 enum class InventoryState { reserve, hotbar };
 enum class UIFlags { selected };
 enum class UIColor { white, periwinkle, green, orange, fucshia, purple, mythic };
+
+enum class WeaponAttributes { automatic };
 struct WeaponSpecifications {
 	int cooldown_time{};
 	int multishot{};
@@ -41,7 +43,7 @@ struct EmitterAttributes {
 
 class Weapon {
   public:
-	Weapon(automa::ServiceProvider& svc, int id);
+	Weapon(automa::ServiceProvider& svc, int id, bool enemy = false);
 
 	void update(automa::ServiceProvider& svc, dir::Direction to_direction);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -60,6 +62,7 @@ class Weapon {
 	bool can_shoot() const;
 
 	void set_position(sf::Vector2<float> pos);
+	void force_position(sf::Vector2<float> pos);
 	void set_barrel_point(sf::Vector2<float> point);
 	void set_orientation(dir::Direction to_direction);
 	void set_team(Team team);
@@ -108,6 +111,11 @@ class Weapon {
 	util::BitFlags<WeaponAttributes> attributes{};
 
 	struct {
+		components::PhysicsComponent physics{};
+		components::SteeringBehavior steering{};
+	} physical{};
+
+	struct {
 		sf::Sprite sprite{};
 		sf::Vector2<float> position{};
 		sf::Vector2<int> dimensions{};
@@ -121,6 +129,10 @@ class Weapon {
 		util::BitFlags<WeaponState> state{};
 		util::BitFlags<UIFlags> ui{};
 	} flags{};
+
+	struct {
+		int shoot{};
+	} audio{};
 
 	util::Counter active_projectiles{};
 	InventoryState inventory_state{};

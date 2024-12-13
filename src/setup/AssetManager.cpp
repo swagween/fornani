@@ -60,7 +60,7 @@ void AssetManager::import_textures() {
 	t_caster_wand.loadFromFile(finder.resource_path + "/image/critter/caster_wand.png");
 	t_archer.loadFromFile(finder.resource_path + "/image/critter/archer.png");
 	t_archer_bow.loadFromFile(finder.resource_path + "/image/critter/archer_bow.png");
-	t_archer_arrow.loadFromFile(finder.resource_path + "/image/critter/archer_arrow.png");
+	t_archer_arrow.loadFromFile(finder.resource_path + "/image/weapon/arrow.png");
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
@@ -103,7 +103,7 @@ void AssetManager::import_textures() {
 	t_energy_ball_projectile.loadFromFile(finder.resource_path + "/image/weapon/energy_ball.png");
 	t_peckett_projectile.loadFromFile(finder.resource_path + "/image/weapon/peckett_710_proj.png");
 
-	projectile_textures.insert({"Bryn's Gun", t_bryns_gun_projectile});
+	projectile_textures.insert({"Bryn's Gun", t_archer_arrow});
 	projectile_textures.insert({"Skycorps AR", t_skycorps_ar_projectile});
 	projectile_textures.insert({"Plasmer", t_plasmer_projectile});
 	projectile_textures.insert({"Tomahawk", t_tomahawk});

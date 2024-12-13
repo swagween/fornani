@@ -1,0 +1,120 @@
+{
+  "weapons": [
+    {
+      "metadata": {
+        "label": "Skycorps AR"
+      },
+      "visual": {
+        "texture_lookup": 0,
+        "dimensions": [ 18, 8 ],
+        "offsets": {
+          "global": [ -3.0, 5.0 ],
+          "barrel": [ 18.0, 2.0 ],
+          "stock": [ 0, 0 ]
+        },
+        "spray": {
+          "dimensions": [ 2.0, 2.0 ],
+          "type": "fast_burst",
+          "color": "goldenrod"
+        }
+      },
+      "gameplay": {
+        "attributes": {
+          "automatic": false,
+          "ammo": 4,
+          "reload": 160,
+          "cooldown_time": 50,
+          "recoil": 0.0
+        }
+      },
+      "audio": { "shoot": 2 },
+      "class_package": {
+        "projectile": {
+          "type": 0,
+          "dimensions": [
+            14.0,
+            14.0
+          ],
+          "attributes": {
+            "base_damage": 1,
+            "lifespan": 180,
+            "lifespan_variance": 0,
+            "speed": 16.5,
+            "variance": 0.2,
+            "stun_time": 0.0,
+            "knockback": 0.0,
+            "transcendent": false,
+            "persistent": false,
+            "constrained": false,
+            "range_variance": 0.0,
+            "acceleration_factor": 0.0,
+            "dampen_factor": 0.0
+          },
+          "animation": {
+            "num_sprites": 1,
+            "num_frames": 4,
+            "framerate": 24
+          }
+        }
+      }
+    },
+    {
+      "metadata": {
+        "label": "Minigun"
+      },
+      "visual": {
+        "texture_lookup": 0,
+        "dimensions": [ 18, 8 ],
+        "offsets": {
+          "global": [ -3.0, 5.0 ],
+          "barrel": [ 18.0, 2.0 ],
+          "stock": [ 0, 0 ]
+        },
+        "spray": {
+          "dimensions": [ 2.0, 2.0 ],
+          "type": "fast_burst",
+          "color": "goldenrod"
+        }
+      },
+      "gameplay": {
+        "attributes": {
+          "automatic": false,
+          "ammo": 4,
+          "reload": 160,
+          "cooldown_time": 50,
+          "recoil": 0.0
+        }
+      },
+      "audio": { "shoot": 3 },
+      "class_package": {
+        "projectile": {
+          "type": 0,
+          "dimensions": [
+            14.0,
+            14.0
+          ],
+          "attributes": {
+            "base_damage": 1,
+            "lifespan": 180,
+            "lifespan_variance": 0,
+            "speed": 16.5,
+            "variance": 0.2,
+            "stun_time": 0.0,
+            "knockback": 0.0,
+            "transcendent": false,
+            "persistent": false,
+            "constrained": false,
+            "range_variance": 0.0,
+            "acceleration_factor": 0.0,
+            "dampen_factor": 0.0
+          },
+          "animation": {
+            "num_sprites": 1,
+            "num_frames": 4,
+            "framerate": 24
+          }
+        }
+      }
+    }
+  ]
+}

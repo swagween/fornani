@@ -45,6 +45,7 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	case DigitalAction::COUNT:
 	default: assert(false && "Invalid action set in get_action_set_from_action");
 	}
+	assert(false && "Invalid action set in get_action_set_from_action");
 }
 
 /// @brief Gets the action set that should also be active when the given action set is active.
@@ -58,6 +59,7 @@ bool parent_action_set(ActionSet set, ActionSet* parent) {
 
 	case ActionSet::Menu: return false;
 	}
+	return false;
 }
 
 ControllerMap::ControllerMap(automa::ServiceProvider& svc) {

@@ -12,7 +12,7 @@ namespace entity {
 
 class WeaponPackage : public Entity {
   public:
-	WeaponPackage(automa::ServiceProvider& svc, std::string_view label, int id);
+	WeaponPackage(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void shoot();

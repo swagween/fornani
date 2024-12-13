@@ -10,6 +10,7 @@
 #include "../../utils/BitFlags.hpp"
 #include "../../utils/Cooldown.hpp"
 #include "../../utils/Counter.hpp"
+#include "../../graphics/SpriteRotator.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -28,12 +29,14 @@ class AnimatedSprite {
 	void set_origin(sf::Vector2<float> origin);
 	void set_texture(sf::Texture& texture);
 	void random_start(automa::ServiceProvider& svc);
+	void handle_rotation(sf::Vector2<float> direction, int num_angles, bool radial = true);
 	void end();
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
 	[[nodiscard]] auto just_started() const -> bool { return animation.just_started(); }
 	[[nodiscard]] auto complete() -> bool { return animation.complete(); }
 	[[nodiscard]] auto size() -> int { return static_cast<int>(params.size()); }
+	[[nodiscard]] auto get_sprite_angle_index() const -> int { return rotator.get_sprite_angle_index(); }
 	Animation& get() { return animation; }
 	sf::Sprite& get_sprite() { return sprite; }
 
@@ -44,6 +47,7 @@ class AnimatedSprite {
 	sf::Vector2<float> position{}; 
 	Animation animation{};
 	std::unordered_map<std::string_view, Parameters> params{};
+	vfx::SpriteRotator rotator{};
 };
 
 } // namespace anim

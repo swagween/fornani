@@ -30,41 +30,45 @@
           "automatic": false,
           "ammo": 4,
           "reload": 160,
-          "rate": 6,
           "cooldown_time": 30,
           "recoil": 0.0
         }
       },
-      "class_package": {
-        "projectile": {
-          "type": 0,
-          "dimensions": [
-            12.0,
-            12.0
-          ],
-          "attributes": {
-            "base_damage": 10,
-            "lifespan": 70,
-            "lifespan_variance": 0,
-            "speed": 25.5,
-            "variance": 0.1,
-            "stun_time": 0.0,
-            "knockback": 0.0,
-            "transcendent": false,
-            "persistent": false,
-            "constrained": false,
-            "range_variance": 0.0,
-            "acceleration_factor": 0.0,
-            "dampen_factor": 0.0
-          },
-          "animation": {
-            "num_sprites": 1,
-            "num_frames": 1,
-            "framerate": 8
+      "audio": {"shoot": 0},
+        "class_package": {
+          "projectile": {
+            "type": 0,
+            "dimensions": [
+              44.0,
+              44.0
+            ],
+            "attributes": {
+              "base_damage": 10,
+              "lifespan": 770,
+              "lifespan_variance": 0,
+              "speed": 10.5,
+              "variance": 0.1,
+              "stun_time": 0.0,
+              "knockback": 0.0,
+              "transcendent": true,
+              "persistent": true,
+              "constrained": false,
+              "boomerang": true,
+              "wander": false,
+              "range_variance": 0.0,
+              "acceleration_factor": 0.0,
+              "dampen_factor": 0.0,
+              "damage_rate": 8
+            },
+            "animation": {
+              "num_sprites": 1,
+              "num_frames": 1,
+              "framerate": 8,
+              "angles": 6
+            }
           }
         }
-      }
-    },
+      },
     {
       "metadata": {
         "label": "Wasp",
@@ -95,11 +99,11 @@
           "automatic": false,
           "ammo": 2,
           "reload": 160,
-          "rate": 4,
           "cooldown_time": 8,
           "recoil": 0.8
         }
       },
+      "audio": { "shoot": 1 },
       "class_package": {
         "projectile": {
           "type": 0,
@@ -109,6 +113,7 @@
           ],
           "attributes": {
             "base_damage": 10,
+            "power": 3,
             "lifespan": 60,
             "lifespan_variance": 0,
             "speed": 29.5,

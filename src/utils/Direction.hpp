@@ -1,6 +1,7 @@
 
 #pragma once
 #include <string>
+#include <SFML/Graphics.hpp>
 
 namespace dir {
 
@@ -50,6 +51,8 @@ struct Direction {
 		if (vertical) { und = und == UND::up ? UND::down : UND::up; }
 	}
 	constexpr float as_float() const { return lr == LR::left ? -1.f : (lr == LR::right ? 1.f : 0.f); }
+	constexpr float as_float_und() const { return und == UND::up ? -1.f : (und == UND::down ? 1.f : 0.f); }
+	sf::Vector2<float> get_vector() const { return sf::Vector2<float>{as_float(), as_float_und()}; }
 
 	std::string print_und() const { return "UND: " + (std::string)(und == UND::up ? "UP " : (und == UND::neutral ? "NEUTRAL " : "DOWN ")); }
 	std::string print_lr() const { return "LR: " + (std::string)(lr == LR::left ? "LEFT " : (lr == LR::neutral ? "NEUTRAL " : "RIGHT ")); }
