@@ -7,9 +7,9 @@
 
 namespace arms {
 
-Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon) : metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.projectile_textures.at(label)}} {
+Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy) : metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.projectile_textures.at(label)}} {
 
-	auto const& in_data = svc.data.weapon["weapons"][id]["class_package"]["projectile"];
+	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id]["class_package"]["projectile"] : svc.data.weapon["weapons"][id]["class_package"]["projectile"];
 
 	metadata.type = static_cast<ProjectileType>(in_data["type"].as<int>());
 	// package
@@ -32,6 +32,8 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.acceleration_factor = in_data["attributes"]["acceleration_factor"].as<float>();
 	metadata.specifications.dampen_factor = in_data["attributes"]["dampen_factor"].as<float>();
 	metadata.specifications.dampen_variance = in_data["attributes"]["dampen_variance"].as<float>();
+	metadata.specifications.gravity = in_data["attributes"]["gravity"].as<float>();
+	metadata.specifications.elasticty = in_data["attributes"]["elasticity"].as<float>();
 
 	if (static_cast<bool>(in_data["attributes"]["persistent"].as_bool())) { metadata.attributes.set(ProjectileAttributes::persistent); }
 	if (static_cast<bool>(in_data["attributes"]["transcendent"].as_bool())) { metadata.attributes.set(ProjectileAttributes::transcendent); }
@@ -39,8 +41,9 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (static_cast<bool>(in_data["attributes"]["omnidirectional"].as_bool())) { metadata.attributes.set(ProjectileAttributes::omnidirectional); }
 	if (static_cast<bool>(in_data["attributes"]["boomerang"].as_bool())) { metadata.attributes.set(ProjectileAttributes::boomerang); }
 	if (static_cast<bool>(in_data["attributes"]["wander"].as_bool())) { metadata.attributes.set(ProjectileAttributes::wander); }
+	if (static_cast<bool>(in_data["attributes"]["reflect"].as_bool())) { metadata.attributes.set(ProjectileAttributes::reflect); }
 
-	visual.sprite.push_params("anim", {0, in_data["animation"]["num_frames"].as<int>(), in_data["animation"]["framerate"].as<int>()});
+	visual.sprite.push_params("anim", {0, in_data["animation"]["num_frames"].as<int>(), in_data["animation"]["framerate"].as<int>(), -1});
 	visual.sprite.set_params("anim");
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
@@ -64,6 +67,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	visual.sprite.set_origin(physical.bounding_box.dimensions * 0.5f);
 
 	physical.max_dimensions = physical.bounding_box.dimensions;
+	physical.physics.gravity = metadata.specifications.gravity;
 
 	variables.state.set(ProjectileState::initialized);
 	cooldown.start(40);
@@ -91,7 +95,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	}
 
 	// animation
-	visual.sprite.handle_rotation(physical.physics.velocity, visual.num_angles);
+	if (visual.num_angles > 0) { visual.sprite.handle_rotation(physical.physics.velocity, visual.num_angles); }
 	visual.sprite.update(physical.bounding_box.position + physical.bounding_box.dimensions * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true);
 	if (physical.sensor) { visual.sprite.update(physical.bounding_box.position + physical.bounding_box.dimensions * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true); }
 

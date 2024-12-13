@@ -11,10 +11,9 @@
       "y": 203.000000
     },
     "arsenal": [
-      0,
-      12
+      0
     ],
-    "equipped_gun": 12,
+    "equipped_gun": 0,
     "abilities": [
 
     ],
@@ -53,8 +52,7 @@
       }
     },
     "hotbar": [
-      0,
-      12
+      0
     ]
   },
   "save_point_id": 228,

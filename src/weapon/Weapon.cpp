@@ -4,7 +4,8 @@
 namespace arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
-	: metadata{.id = id, .label = svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()}, projectile(svc, svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this) {
+	: metadata{.id = id, .label = enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()},
+	  projectile(svc, enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this, enemy) {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id] : svc.data.weapon["weapons"][id];
 

@@ -32,7 +32,7 @@ enum class Team { nani, skycorps, guardian, pioneer };
 enum class ProjectileType { bullet, missile, melee };
 enum class RenderType { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander };
+enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect };
 struct ProjectileSpecifications {
 	float base_damage{};
 	int power{};
@@ -46,13 +46,15 @@ struct ProjectileSpecifications {
 	float acceleration_factor{};
 	float dampen_factor{};
 	float dampen_variance{};
+	float gravity{};
+	float elasticty{};
 };
 
 enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
 
 class Projectile {
   public:
-	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon);
+	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(player::Player& player);
