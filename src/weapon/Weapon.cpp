@@ -34,7 +34,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	}
 	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 16;
 	visual.ui.setTexture(svc.assets.t_guns);
-	visual.sprite.setTextureRect(sf::IntRect{{0, metadata.id * visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
+	visual.sprite.setTextureRect(sf::IntRect{{0, visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
 	visual.sprite.setOrigin(offsets.render.global);
 
 	// gameplay
@@ -53,19 +53,20 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
 	ammo.update();
 	if ((ammo.empty() || !cooldowns.down_time.running()) && !cooldowns.reload.running() && !ammo.full()) { cooldowns.reload.start(); }
-	if (cooldowns.reload.is_almost_complete()) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
+	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
 	if (cooldowns.reload.is_almost_complete()) { ammo.refill(); }
 	cooldowns.reload.update();
 	if (!cooldowns.reload.running()) { cooldowns.down_time.update(); }
 
 	set_orientation(to_direction);
 	cooldowns.cooldown.update();
-	physical.steering.seek(physical.physics, visual.position, 0.01f);
+	physical.steering.seek(physical.physics, {}, 0.01f);
 	physical.physics.simple_update();
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	visual.sprite.setPosition(physical.physics.position - cam);
+	physical.final_position = visual.position + physical.physics.position;
+	visual.sprite.setPosition(physical.final_position - cam);
 	win.draw(visual.sprite);
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape box{};
@@ -134,7 +135,7 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	auto left_offset = sf::Vector2<float>{offsets.render.global.x, -offsets.render.global.y};
 	auto right_barrel_offset = sf::Vector2<float>{offsets.render.barrel.x, offsets.render.barrel.y};
 	auto left_barrel_offset = sf::Vector2<float>{-offsets.render.barrel.x, offsets.render.barrel.y};
-	auto const& position = physical.physics.position;
+	auto const& position = physical.final_position;
 	visual.sprite.setRotation(neutral_rotation);
 	switch (firing_direction.lr) {
 	case dir::LR::right:

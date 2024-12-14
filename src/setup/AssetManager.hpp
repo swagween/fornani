@@ -206,6 +206,8 @@ class AssetManager {
 	sf::Texture t_gnat_projectile{};
 	sf::Texture t_energy_ball_projectile{};
 	sf::Texture t_peckett_projectile{};
+	sf::Texture t_arrow_projectile{};
+	sf::Texture t_archer_arrow_projectile{};
 
 	// items
 	sf::Texture t_heart{};

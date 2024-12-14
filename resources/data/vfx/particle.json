@@ -50,10 +50,10 @@
   "bryns_gun_smoke": {
     "load": 8,
     "rate": 4.0,
-    "expulsion": 4.0,
-    "expulsion_variance": 2.0,
+    "expulsion": 40.0,
+    "expulsion_variance": 30.0,
     "cone": 0.08,
-    "friction": 0.998,
+    "friction": 0.98,
     "elasticity": 0.95,
     "gravity": -0.2,
     "lifespan": 360,
