@@ -102,8 +102,10 @@ void AssetManager::import_textures() {
 	t_gnat_projectile.loadFromFile(finder.resource_path + "/image/weapon/gnat_proj.png");
 	t_energy_ball_projectile.loadFromFile(finder.resource_path + "/image/weapon/energy_ball.png");
 	t_peckett_projectile.loadFromFile(finder.resource_path + "/image/weapon/peckett_710_proj.png");
+	t_arrow_projectile.loadFromFile(finder.resource_path + "/image/weapon/arrow.png");
+	t_archer_arrow_projectile.loadFromFile(finder.resource_path + "/image/weapon/archer_arrow.png");
 
-	projectile_textures.insert({"Bryn's Gun", t_archer_arrow});
+	projectile_textures.insert({"Bryn's Gun", t_bryns_gun_projectile});
 	projectile_textures.insert({"Skycorps AR", t_skycorps_ar_projectile});
 	projectile_textures.insert({"Plasmer", t_plasmer_projectile});
 	projectile_textures.insert({"Tomahawk", t_tomahawk});
@@ -119,6 +121,8 @@ void AssetManager::import_textures() {
 	projectile_textures.insert({"Wasp", t_wasp_projectile});
 	projectile_textures.insert({"Underdog", t_wasp_projectile});
 	projectile_textures.insert({"Peckett 710", t_peckett_projectile});
+	projectile_textures.insert({"Longbow", t_arrow_projectile});
+	projectile_textures.insert({"Demon Bow", t_archer_arrow_projectile});
 
 	t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 	t_guns.loadFromFile(finder.resource_path + "/image/item/guns.png");

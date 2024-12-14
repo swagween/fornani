@@ -34,42 +34,41 @@
           "recoil": 0.0
         }
       },
-      "audio": {"shoot": 0},
-        "class_package": {
-          "projectile": {
-            "type": 0,
-            "dimensions": [
-              44.0,
-              44.0
-            ],
-            "attributes": {
-              "base_damage": 10,
-              "lifespan": 770,
-              "lifespan_variance": 0,
-              "speed": 20.5,
-              "variance": 0.1,
-              "stun_time": 0.0,
-              "knockback": 0.0,
-              "transcendent": false,
-              "persistent": false,
-              "constrained": false,
-              "boomerang": false,
-              "wander": false,
-              "range_variance": 0.0,
-              "acceleration_factor": 0.0,
-              "dampen_factor": 0.0,
-              "damage_rate": 8,
-              "gravity": 0.04
-            },
-            "animation": {
-              "num_sprites": 1,
-              "num_frames": 1,
-              "framerate": 8,
-              "angles": 6
-            }
+      "audio": { "shoot": 0 },
+      "class_package": {
+        "projectile": {
+          "type": 0,
+          "dimensions": [
+            12.0,
+            12.0
+          ],
+          "attributes": {
+            "base_damage": 8,
+            "lifespan": 85,
+            "lifespan_variance": 0,
+            "speed": 20.5,
+            "variance": 0.1,
+            "stun_time": 0.0,
+            "knockback": 0.0,
+            "transcendent": false,
+            "persistent": false,
+            "constrained": false,
+            "boomerang": false,
+            "wander": false,
+            "range_variance": 0.0,
+            "acceleration_factor": 0.0,
+            "dampen_factor": 0.0,
+            "damage_rate": 8,
+            "gravity": 0.0
+          },
+          "animation": {
+            "num_sprites": 1,
+            "num_frames": 1,
+            "framerate": 8
           }
         }
-      },
+      }
+    },
     {
       "metadata": {
         "label": "Wasp",
@@ -132,6 +131,68 @@
             "num_sprites": 1,
             "num_frames": 1,
             "framerate": 8
+          }
+        }
+      }
+    },
+    {
+      "metadata": {
+        "label": "Gnat",
+        "description": "A high-rate machine gun. If you shoot downwards or upwards, its recoil will affect your fall speed."
+      },
+      "visual": {
+        "texture_lookup": 2,
+        "dimensions": [ 26, 10 ],
+        "offsets": {
+          "global": [ 0.0, 8.0 ],
+          "barrel": [ 26.0, 3.0 ],
+          "stock": [ 0, 0 ]
+        },
+        "ui": { "color": 6 },
+        "spray": {
+          "dimensions": [ 3.0, 3.0 ],
+          "type": "spritz",
+          "color": "mythic_green"
+        }
+      },
+      "gameplay": {
+        "attributes": {
+          "automatic": true,
+          "ammo": -1,
+          "reload": 160,
+          "cooldown_time": 7,
+          "recoil": 0.15
+        }
+      },
+      "audio": { "shoot": 10 },
+      "class_package": {
+        "projectile": {
+          "type": 0,
+          "dimensions": [
+            6.0,
+            4.0
+          ],
+          "attributes": {
+            "base_damage": 1,
+            "power": 1,
+            "lifespan": 100,
+            "lifespan_variance": 0,
+            "speed": 24.5,
+            "variance": 0.2,
+            "stun_time": 0.0,
+            "knockback": 0.0,
+            "transcendent": false,
+            "persistent": false,
+            "constrained": false,
+            "range_variance": 8.0,
+            "acceleration_factor": 0.0,
+            "dampen_factor": 0.998
+          },
+          "animation": {
+            "num_sprites": 5,
+            "num_frames": 1,
+            "framerate": 8,
+            "angles": 4
           }
         }
       }

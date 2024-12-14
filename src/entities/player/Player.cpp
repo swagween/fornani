@@ -481,7 +481,10 @@ void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
 	sync_antennae();
 	health_indicator.set_position(new_pos);
 	orb_indicator.set_position(new_pos);
-	if (arsenal && hotbar) { equipped_weapon().force_position(new_pos); }
+	if (arsenal && hotbar) {
+		equipped_weapon().update(*m_services, controller.direction);
+		equipped_weapon().force_position(collider.get_center());
+	}
 }
 
 void Player::freeze_position() {
@@ -512,13 +515,6 @@ void Player::update_weapon() {
 		weapon->set_firing_direction(controller.direction);
 		if (controller.get_wallslide().is_wallsliding()) { weapon->get_firing_direction().flip(); }
 		weapon->update(*m_services, controller.direction);
-		auto tweak = controller.facing_left() ? -1.f : 1.f;
-		auto g_offset = weapon->get_global_offset();
-		if (weapon->get_firing_direction().up_or_down()) {
-			tweak = {};
-			g_offset.x = 0.f;
-		}
-		auto p_pos = sf::Vector2<float>{collider.get_center().x + g_offset.x + tweak, collider.get_center().y + sprite_offset.y + g_offset.y - collider.dimensions.y / 2.f};
 		weapon->set_position(collider.get_center());
 	}
 }
@@ -628,7 +624,7 @@ bool Player::grounded() const { return collider.flags.state.test(shape::State::g
 bool Player::fire_weapon() {
 	if (!arsenal || !hotbar) { return false; }
 	if (controller.shot() && equipped_weapon().can_shoot()) {
-		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_id()));
+		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));
 		flags.state.set(State::impart_recoil);
 		if (tutorial.current_state == text::TutorialFlags::shoot) {
 			tutorial.flags.set(text::TutorialFlags::shoot);

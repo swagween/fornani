@@ -78,6 +78,7 @@ class Weapon {
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
 	[[nodiscard]] auto automatic() const -> bool { return attributes.test(WeaponAttributes::automatic); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
+	[[nodiscard]] auto get_sound_id() const -> int { return audio.shoot; }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }
 	[[nodiscard]] auto get_inventory_state() const -> int { return static_cast<int>(inventory_state); }
 	[[nodiscard]] auto get_ui_position() const -> sf::Vector2<float> { return visual.ui.getPosition(); }
@@ -113,6 +114,7 @@ class Weapon {
 	struct {
 		components::PhysicsComponent physics{};
 		components::SteeringBehavior steering{};
+		sf::Vector2<float> final_position{};
 	} physical{};
 
 	struct {
