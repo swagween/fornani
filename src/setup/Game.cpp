@@ -70,8 +70,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 	std::cout << "> Success\n";
 	services.stopwatch.stop();
 	services.stopwatch.print_time();
+
 	// game loop
-	sf::Clock deltaClock{};
+	sf::Clock delta_clock{};
 
 	while (services.window->get().isOpen()) {
 
@@ -143,10 +144,16 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		services.stopwatch.stop();
 
-		ImGui::SFML::Update(services.window->get(), deltaClock.restart());
+		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
+		services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
+		ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
+		delta_clock.restart();
 
 		// ImGui stuff
 		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
+		flags.test(GameFlags::playtest) ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 
 		// my renders
 		services.window->get().clear();
@@ -171,7 +178,6 @@ void Game::shutdown() {
 
 void Game::playtester_portal(sf::RenderWindow& window) {
 	if (!flags.test(GameFlags::playtest)) { return; }
-	// if (flags.test(GameFlags::in_game)) { return; }
 	bool* b_debug{};
 	float const PAD = 10.0f;
 	static int corner = 1;
@@ -463,12 +469,18 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							player.set_position({7 * 32, 7 * 32});
 						}
 						if (ImGui::Button("Lab")) {
-							services.soundboard.flags.menu.set(audio::Menu::select);;
+							services.soundboard.flags.menu.set(audio::Menu::select);
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
 							game_state.get_current_state().init(services, 110);
 							player.set_position({7 * 32, 9 * 32});
 						}
 						ImGui::Text("Test Levels:");
+						if (ImGui::Button("Tall")) {
+							services.soundboard.flags.menu.set(audio::Menu::select);
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));
+							game_state.get_current_state().init(services, 20096);
+							player.set_position({21 * 32, 184 * 32});
+						}
 						/*if (ImGui::Button("Junkyard")) {
 							services.soundboard.flags.menu.set(audio::Menu::select);;
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));

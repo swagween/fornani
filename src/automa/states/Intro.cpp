@@ -58,7 +58,7 @@ void Intro::tick_update(ServiceProvider& svc) {
 
 	pause_window.update(svc, console, true);
 
-	map.background->update(svc, {});
+	map.background->update(svc);
 	console.end_tick();
 }
 

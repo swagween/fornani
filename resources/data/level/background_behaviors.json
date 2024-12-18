@@ -16,6 +16,9 @@
       3840,
       512
     ],
+    "lock": {
+      "vertical": true
+    },
     "layers": [
       {
         "scroll_speed": 0.0,
@@ -44,6 +47,9 @@
       3840,
       540
     ],
+    "lock": {
+      "vertical": true
+    },
     "layers": [
       {
         "scroll_speed": 0.0,
@@ -72,6 +78,9 @@
       3840,
       540
     ],
+    "lock": {
+      "vertical": true
+    },
     "layers": [
       {
         "scroll_speed": 0.0,

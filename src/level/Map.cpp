@@ -577,7 +577,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc.greyblock_mode()) {
-		background->render(svc, win, cam, real_dimensions);
+		background->render(svc, win, cam);
 		for(auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}

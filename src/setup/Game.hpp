@@ -12,7 +12,7 @@
 namespace fornani {
 
 class WindowManager;
-enum class GameFlags { playtest, in_game };
+enum class GameFlags { playtest, in_game, draw_cursor };
 enum class KeyboardFlags { control };
 
 class Game {

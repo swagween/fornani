@@ -15,6 +15,8 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "du
 	dimensions.x = in_data["dimensions"][0].as<int>();
 	dimensions.y = in_data["dimensions"][1].as<int>();
 	scroll_pane = dimensions;
+	if (in_data["lock"]["horizontal"].as_bool()) { lock_horizontally(); }
+	if (in_data["lock"]["vertical"].as_bool()) { lock_vertically(); }
 	auto index{0};
 	for (auto& layer : in_data["layers"].array_view()) {
 		layers.push_back({index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()});
@@ -25,30 +27,43 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "du
 	}
 }
 
-void Background::update(automa::ServiceProvider& svc, sf::Vector2<float> observed_camvel) {
+void Background::update(automa::ServiceProvider& svc) {
 	for (auto& layer : layers) {
-		// backtrack sprites for infinite scroll effect
-		if (layer.physics.position.x < -scroll_pane.x) { layer.physics.position.x = 0.f; }
-		if (layer.physics.position.x > 0.f) { layer.physics.position.x = -scroll_pane.x; }
-		if (layer.physics.position.y < -scroll_pane.y) { layer.physics.position.y = layer.physics.position.y + scroll_pane.y; }
-		if (layer.physics.position.y > 0.f) { layer.physics.position.y = -scroll_pane.y + layer.physics.position.y; }
 		layer.physics.velocity.x = layer.scroll_speed;
 		layer.physics.update_euler(svc);
 	}
 }
 
-void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float>& campos, sf::Vector2<float>& mapdim) {
-	auto epsilon = 0.999f;
+void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	auto epsilon = 0.99999f;
 	for (auto& layer : layers) {
-		auto final_position = layer.physics.position - campos * layer.parallax;
+		// backtrack sprites for infinite scroll effect
+		if (layer.final_position.x < -scroll_pane.x && !locked_horizontally()) { layer.physics.position.x = 0.f; }
+		if (layer.final_position.x > 0.f && !locked_horizontally()) { layer.physics.position.x = -scroll_pane.x; }
+		if (layer.final_position.y < -scroll_pane.y && !locked_vertically()) { layer.physics.position.y = layer.physics.position.y + scroll_pane.y; }
+		if (layer.final_position.y > 0.f && !locked_vertically()) { layer.physics.position.y = -scroll_pane.y + layer.physics.position.y; }
+
+		layer.final_position = layer.physics.position - cam * layer.parallax;
+
+		if (locked_vertically()) { layer.final_position.y = std::clamp(layer.final_position.y, std::min(static_cast<float>(-scroll_pane.y + svc.window->screen_dimensions.y), -1 + epsilon), 0.f); }
+		if (locked_horizontally()) { layer.final_position.x = std::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->screen_dimensions.x), -1 + epsilon), 0.f); }
 		for (auto i{0}; i < 2; ++i) {
 			for (auto j{0}; j < 2; ++j) {
-				layer.sprite.setPosition(final_position + sf::Vector2<float>{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
+				layer.sprite.setPosition(layer.final_position + sf::Vector2<float>{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
 				win.draw(layer.sprite);
 			}
 		}
 	}
 }
+
+void Background::lock() {
+	lock_horizontally();
+	lock_vertically();
+}
+
+void Background::lock_horizontally() { attributes.horizontal.set(BackgroundAttributes::lock); }
+
+void Background::lock_vertically() { attributes.vertical.set(BackgroundAttributes::lock); }
 
 void Background::debug() {
 	ImGuiIO& io = ImGui::GetIO();

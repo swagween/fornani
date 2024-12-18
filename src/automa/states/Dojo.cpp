@@ -206,7 +206,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	player->flags.triggers = {};
 
 	pause_window.update(svc, console, true);
-	map.background->update(svc, camera.get_observed_velocity());
+	map.background->update(svc);
 	hud.update(svc, *player);
 
 	console.end_tick();
