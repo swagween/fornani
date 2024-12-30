@@ -18,6 +18,7 @@
 #include "../utils/Random.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/Ticker.hpp"
+#include "../utils/WorldClock.hpp"
 #include "../setup/Version.hpp"
 
 namespace automa {
@@ -49,6 +50,7 @@ struct ServiceProvider {
 	util::BitFlags<StateFlags> state_flags{};
 	util::Random random{};
 	util::Ticker ticker{};
+	fornani::WorldClock world_clock{};
 	util::Constants constants{};
 	StateController state_controller{};
 	MenuController menu_controller{};

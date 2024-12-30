@@ -45,6 +45,18 @@
     "color": "save"
   },
 
+  "fire": {
+   "rate": 3.0,
+    "volatility": 0.7,
+    "wobble": 0.03,
+    "frequency": 0.005,
+    "speed": 0.3,
+    "lifespan": 260,
+    "lifespan_variance": 195,
+    "fader": true,
+    "color": "fire"
+  },
+
   "light_trail": {
     "rate": 13.0,
     "volatility": 0.0,

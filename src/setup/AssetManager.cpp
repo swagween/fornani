@@ -135,14 +135,17 @@ void AssetManager::import_textures() {
 	t_fader.loadFromFile(finder.resource_path + "/image/vfx/fader.png");
 	t_firefly.loadFromFile(finder.resource_path + "/image/vfx/firefly.png");
 	t_dragonfly.loadFromFile(finder.resource_path + "/image/vfx/dragonfly.png");
+	t_fire.loadFromFile(finder.resource_path + "/image/vfx/fire.png");
 
 	t_twinkle.loadFromFile(finder.resource_path + "/image/vfx/twinkle.png");
 	t_wasp_effect.loadFromFile(finder.resource_path + "/image/vfx/wasp_effect.png");
 	t_peckett_effect.loadFromFile(finder.resource_path + "/image/vfx/peckett_effect.png");
 	t_bg_effect.loadFromFile(finder.resource_path + "/image/vfx/bryns_gun_effect.png");
 	t_small_flash.loadFromFile(finder.resource_path + "/image/vfx/small_flash.png");
+	t_smoke.loadFromFile(finder.resource_path + "/image/vfx/smoke.png");
 	particle_textures.insert({"twinkle", t_twinkle});
 	particle_textures.insert({"wasp", t_wasp_effect});
+	particle_textures.insert({"smoke", t_smoke});
 	particle_textures.insert({"peckett", t_peckett_effect});
 	particle_textures.insert({"bryns_gun_smoke", t_bg_effect});
 

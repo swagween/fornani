@@ -27,10 +27,10 @@ enum class InspectableFlags { hovered, hovered_trigger, activated, destroy, enga
 class Inspectable {
   public:
 	using Vec = sf::Vector2<float>;
-	using Vecu16 = sf::Vector2<uint32_t>;
+	using Vecu32 = sf::Vector2<uint32_t>;
 
 	Inspectable() = default;
-	Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates = 0, int native = 0, bool aoc = false);
+	Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key = "", int room_id = 0, int alternates = 0, int native = 0, bool aoc = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 	void destroy() { flags.set(InspectableFlags::destroy); } 
@@ -40,8 +40,8 @@ class Inspectable {
 	Vec dimensions{};
 	Vec position{};
 	Vec offset{0.f, -36.f};
-	Vecu16 scaled_dimensions{};
-	Vecu16 scaled_position{};
+	Vecu32 scaled_dimensions{};
+	Vecu32 scaled_position{};
 	shape::Shape bounding_box{};
 
 	std::string key{};

@@ -5,9 +5,9 @@
   "player_data": {
     "max_hp": 3.000000,
     "hp": 3.000000,
-    "orbs": 19,
+    "orbs": 52,
     "position": {
-      "x": 1264.950806,
+      "x": 1266.201172,
       "y": 395.000000
     },
     "arsenal": [
@@ -15,7 +15,7 @@
       1,
       2
     ],
-    "equipped_gun": 1,
+    "equipped_gun": 0,
     "abilities": [
 
     ],
@@ -28,16 +28,16 @@
 
     ],
     "stats": {
-      "death_count": 3,
-      "bullets_fired": 1000,
+      "death_count": 5,
+      "bullets_fired": 1810,
       "guns_collected": 0,
       "items_collected": 4,
-      "orbs_collected": 19,
+      "orbs_collected": 52,
       "blue_orbs": 0,
-      "highest_indicator_amount": 8,
+      "highest_indicator_amount": 25,
       "enemies_killed": 0,
       "rooms_discovered": 7,
-      "seconds_played": 202.888550,
+      "seconds_played": 493.343811,
       "time_trials": {
         "bryns_gun": 0.000000
       }
@@ -111,6 +111,10 @@
   "map_data": {
     "fallen_enemies": [
 
-    ]
+    ],
+    "world_time": {
+      "hours": 19,
+      "minutes": 50
+    }
   }
 }

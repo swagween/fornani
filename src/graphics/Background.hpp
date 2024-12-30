@@ -20,7 +20,7 @@ struct BackgroundLayer {
 	int render_layer{};
 	float scroll_speed{};
 	float parallax{};
-	sf::Sprite sprite{};
+	std::vector<sf::Sprite> sprites{};
 	components::PhysicsComponent physics{};
 	sf::Vector2<float> final_position{};
 };

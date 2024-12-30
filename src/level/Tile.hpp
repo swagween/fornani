@@ -15,7 +15,7 @@ class Projectile;
 }
 namespace world {
 class Map;
-enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable, pushable, target, spawner, checkpoint };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, death_spike, breakable, pushable, target, spawner, checkpoint, fire };
 enum class TileState { ramp_adjacent, big_ramp, covered };
 
 struct Tile {
@@ -49,7 +49,8 @@ struct Tile {
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_target() const -> bool { return type == TileType::target; }
 	[[nodiscard]] auto is_checkpoint() const -> bool { return type == TileType::checkpoint; }
-	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_target() || is_checkpoint(); }
+	[[nodiscard]] auto is_fire() const -> bool { return type == TileType::fire; }
+	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_target() || is_checkpoint() || is_fire(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool { return (value >= 208 && value < 212) || (value == 216 || value == 217) || (value == 220 || value == 221); }

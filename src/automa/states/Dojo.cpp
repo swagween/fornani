@@ -99,6 +99,9 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		pause_window.update(svc, console, false);
 		return;
 	}
+
+	svc.world_clock.update(svc);
+
 	if (vendor_dialog) {
 		if (open_vendor) {
 			map.transition.end();

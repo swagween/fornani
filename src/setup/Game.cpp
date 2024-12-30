@@ -211,6 +211,14 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
+					ImGui::Separator();
+					ImGui::Text("World Time (military): %s", services.world_clock.get_string().c_str());
+					ImGui::Text("World Time: %s", services.world_clock.get_string(false).c_str());
+					ImGui::Text("Time of Day: %s", services.world_clock.get_time_of_day() == fornani::TimeOfDay::day ? "Day" : services.world_clock.get_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight" : "Night");
+					ImGui::Text("Previous Time of Day: %s", services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::day		  ? "Day"
+															: services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight"
+																																			  : "Night");
+					ImGui::Separator();
 					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
 					ImGui::Separator();
 					ImGui::Text("Player");

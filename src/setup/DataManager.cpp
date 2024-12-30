@@ -148,6 +148,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 
 	// write opened chests and doors
+	save["map_data"]["world_time"]["hours"] = m_services->world_clock.get_hours();
+	save["map_data"]["world_time"]["minutes"] = m_services->world_clock.get_minutes();
 	save["piggybacker"] = m_services->player_dat.piggy_id;
 	save["npc_locations"] = wipe;
 	save["map_data"]["fallen_enemies"] = wipe;
@@ -285,6 +287,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	npc_locations.clear();
 	fallen_enemies.clear();
 
+	m_services->world_clock.set_time(save["map_data"]["world_time"]["hours"].as<int>(), save["map_data"]["world_time"]["minutes"].as<int>());
 	for (auto& room : save["discovered_rooms"].array_view()) { discovered_rooms.push_back(room.as<int>()); }
 	for (auto& door : save["unlocked_doors"].array_view()) { unlocked_doors.push_back(door.as<int>()); }
 	for (auto& chest : save["opened_chests"].array_view()) { opened_chests.push_back(chest.as<int>()); }

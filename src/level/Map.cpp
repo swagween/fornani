@@ -371,6 +371,9 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		enemy->post_update(svc, *this, *player);
 	}
 
+	if (fire) {
+		for (auto& f : fire.value()) { f.update(svc, *player, *this, console, inspectable_data); }
+	}
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& grenade : active_grenades) { grenade.update(svc, *player, *this); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
@@ -455,6 +458,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 
 	for (auto& portal : portals) { portal.render(svc, win, cam); }
+	if (fire) {
+		for (auto& f : fire.value()) { f.render(svc, win, cam); }
+	}
 	for (auto& chest : chests) { chest.render(svc, win, cam); }
 	for (auto& npc : npcs) {
 		if (!npc.background()) { npc.render(svc, win, cam); }
@@ -674,6 +680,10 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
 		if (cell.is_target()) { target_points.push_back(cell.get_center()); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
+		if (cell.is_fire()) {
+			if (!fire) { fire = std::vector<Fire>{}; }
+			fire.value().push_back(Fire(*m_services, cell.position()));
+		}
 	}
 }
 

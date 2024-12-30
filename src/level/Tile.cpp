@@ -82,6 +82,10 @@ void Tile::set_type() {
 		type = TileType::spawner;
 		return;
 	}
+	if (value == 244) {
+		type = TileType::fire;
+		return;
+	}
 	if (value == 246) {
 		type = TileType::checkpoint;
 		return;

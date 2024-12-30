@@ -2,6 +2,7 @@
 #include "Background.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../setup/EnumLookups.hpp"
+#include "../utils/Math.hpp"
 #include <algorithm>
 #include <imgui.h>
 
@@ -21,8 +22,10 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "du
 	for (auto& layer : in_data["layers"].array_view()) {
 		layers.push_back({index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()});
 		layers.back().physics.set_global_friction(1.f);
-		layers.back().sprite.setTexture(svc.assets.get_background(bg_id));
-		layers.back().sprite.setTextureRect(sf::IntRect{{0, dimensions.y * index}, dimensions});
+		for (auto i{0}; i < svc.world_clock.num_cycles(); ++i) {
+			layers.back().sprites.push_back(sf::Sprite{svc.assets.get_background(bg_id)});
+			layers.back().sprites.back().setTextureRect(sf::IntRect{{i * dimensions.x, dimensions.y * index}, dimensions});
+		}
 		++index;
 	}
 }
@@ -36,6 +39,9 @@ void Background::update(automa::ServiceProvider& svc) {
 
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	auto epsilon = 0.99999f;
+	auto cycle = static_cast<int>(svc.world_clock.get_time_of_day());
+	auto from_cycle = static_cast<int>(svc.world_clock.get_previous_time_of_day());
+	
 	for (auto& layer : layers) {
 		// backtrack sprites for infinite scroll effect
 		if (layer.final_position.x < -scroll_pane.x && !locked_horizontally()) { layer.physics.position.x = 0.f; }
@@ -47,11 +53,24 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 
 		if (locked_vertically()) { layer.final_position.y = std::clamp(layer.final_position.y, std::min(static_cast<float>(-scroll_pane.y + svc.window->screen_dimensions.y), -1 + epsilon), 0.f); }
 		if (locked_horizontally()) { layer.final_position.x = std::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->screen_dimensions.x), -1 + epsilon), 0.f); }
-		for (auto i{0}; i < 2; ++i) {
-			for (auto j{0}; j < 2; ++j) {
-				layer.sprite.setPosition(layer.final_position + sf::Vector2<float>{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
-				win.draw(layer.sprite);
+		auto ctr{0};
+		for (auto& sprite : layer.sprites) {
+			for (auto i{0}; i < 2; ++i) {
+				for (auto j{0}; j < 2; ++j) {
+					sprite.setPosition(layer.final_position + sf::Vector2<float>{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
+					if (cycle == ctr) {
+						uint8_t alpha = from_cycle > cycle ? 255 : util::get_uint8_from_normal(1.f - svc.world_clock.get_transition());
+						sprite.setColor({255, 255, 255, alpha});
+						win.draw(sprite);
+					} else if (ctr == from_cycle && svc.world_clock.is_transitioning()) {
+						uint8_t alpha = from_cycle <= cycle ? 255 : util::get_uint8_from_normal(svc.world_clock.get_transition());
+						sprite.setColor({255, 255, 255, alpha});
+						win.draw(sprite);
+					}
+				}
 			}
+			sprite.setColor(sf::Color::White);
+			++ctr;
 		}
 	}
 }

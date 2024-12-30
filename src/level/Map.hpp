@@ -10,6 +10,7 @@
 #include "../entities/world/SavePoint.hpp"
 #include "../entities/world/Vine.hpp"
 #include "../entities/world/Grass.hpp"
+#include "../entities/world/Fire.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Scenery.hpp"
 #include "../graphics/Transition.hpp"
@@ -112,7 +113,6 @@ class Map {
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
-	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void shake_camera();
 	void clear();
 	void wrap(sf::Vector2<float>& position) const;
@@ -173,6 +173,7 @@ class Map {
 
 	// vfx
 	std::optional<vfx::Rain> rain{};
+	std::optional<std::vector<Fire>> fire{};
 
 	// sfx
 	audio::Ambience ambience{};
