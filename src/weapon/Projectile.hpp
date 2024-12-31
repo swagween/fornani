@@ -28,11 +28,11 @@ class Player;
 namespace arms {
 
 class Weapon;
-enum class Team { nani, skycorps, guardian, pioneer };
+enum class Team { nani, skycorps, guardian, pioneer, beast };
 enum class ProjectileType { bullet, missile, melee };
 enum class RenderType { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect };
+enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip };
 struct ProjectileSpecifications {
 	float base_damage{};
 	int power{};
@@ -88,6 +88,7 @@ class Projectile {
 	[[nodiscard]] auto omnidirectional() const -> bool { return metadata.attributes.test(ProjectileAttributes::omnidirectional); }
 	[[nodiscard]] auto transcendent() const -> bool { return metadata.attributes.test(ProjectileAttributes::transcendent); }
 	[[nodiscard]] auto constrained() const -> bool { return metadata.attributes.test(ProjectileAttributes::constrained); }
+	[[nodiscard]] auto sprite_flip() const -> bool { return metadata.attributes.test(ProjectileAttributes::sprite_flip); }
 	[[nodiscard]] auto persistent() const -> bool { return metadata.attributes.test(ProjectileAttributes::persistent); }
 	[[nodiscard]] auto boomerang() const -> bool { return metadata.attributes.test(ProjectileAttributes::boomerang); }
 	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }

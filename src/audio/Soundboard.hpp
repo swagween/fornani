@@ -34,6 +34,8 @@ enum class Minigus { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, p
 enum class Minigun { charge, reload, neutral, firing };
 enum class Demon { hurt, signal, death, snort };
 enum class Archer { hurt, flee, death };
+enum class Beamstalk { hurt, death };
+enum class Meatsquash { hurt, death, chomp, whip, swallow };
 
 class Soundboard {
   public:
@@ -65,6 +67,8 @@ class Soundboard {
 		util::BitFlags<Minigun> minigun{};
 		util::BitFlags<Demon> demon{};
 		util::BitFlags<Archer> archer{};
+		util::BitFlags<Beamstalk> beamstalk{};
+		util::BitFlags<Meatsquash> meatsquash{};
 	} flags{};
   private:
 	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0);

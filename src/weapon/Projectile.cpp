@@ -42,6 +42,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (static_cast<bool>(in_data["attributes"]["boomerang"].as_bool())) { metadata.attributes.set(ProjectileAttributes::boomerang); }
 	if (static_cast<bool>(in_data["attributes"]["wander"].as_bool())) { metadata.attributes.set(ProjectileAttributes::wander); }
 	if (static_cast<bool>(in_data["attributes"]["reflect"].as_bool())) { metadata.attributes.set(ProjectileAttributes::reflect); }
+	if (static_cast<bool>(in_data["attributes"]["sprite_flip"].as_bool())) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
 
 	visual.sprite.push_params("anim", {0, in_data["animation"]["num_frames"].as<int>(), in_data["animation"]["framerate"].as<int>(), -1});
 	visual.sprite.set_params("anim");
@@ -95,7 +96,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	}
 
 	// animation
-	if (visual.num_angles > 0) { visual.sprite.handle_rotation(physical.physics.velocity, visual.num_angles); }
+	if (visual.num_angles > 0 && !sprite_flip()) { visual.sprite.handle_rotation(physical.physics.velocity, visual.num_angles); }
 	visual.sprite.update(physical.bounding_box.position + physical.bounding_box.dimensions * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true);
 	if (physical.sensor) { visual.sprite.update(physical.bounding_box.position + physical.bounding_box.dimensions * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true); }
 
@@ -147,7 +148,7 @@ void Projectile::on_player_hit(player::Player& player) {
 
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam) {
 
-	visual.sprite.render(svc, win, cam);
+	if (!lifetime.just_started()) { visual.sprite.render(svc, win, cam); }
 
 	// proj bounding box for debug
 	if (svc.greyblock_mode()) {
@@ -200,12 +201,17 @@ void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
 	case dir::UND::up: physical.physics.velocity = {var, -metadata.specifications.speed}; break;
 	case dir::UND::down: physical.physics.velocity = {var, metadata.specifications.speed}; break;
 	}
+	if (sprite_flip()) {
+		auto scale = physical.direction.left_or_right() ? sf::Vector2<float>{1.f, -1.f} : sf::Vector2<float>{-1.f, 1.f};
+		if (svc.random.percent_chance(50)) { visual.sprite.set_scale(scale); }
+	}
 }
 
 void Projectile::set_position(sf::Vector2<float> pos) {
 	physical.physics.position = pos;
 	physical.bounding_box.position = pos;
 	variables.fired_point = pos;
+	visual.sprite.set_position(pos);
 }
 
 void Projectile::set_team(Team to_team) { metadata.team = to_team; }

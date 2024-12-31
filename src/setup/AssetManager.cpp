@@ -61,6 +61,8 @@ void AssetManager::import_textures() {
 	t_archer.loadFromFile(finder.resource_path + "/image/critter/archer.png");
 	t_archer_bow.loadFromFile(finder.resource_path + "/image/critter/archer_bow.png");
 	t_archer_arrow.loadFromFile(finder.resource_path + "/image/weapon/arrow.png");
+	t_beamstalk.loadFromFile(finder.resource_path + "/image/critter/beamstalk.png");
+	t_meatsquash.loadFromFile(finder.resource_path + "/image/critter/meatsquash.png");
 	texture_lookup.insert({"frdog", t_frdog});
 	texture_lookup.insert({"hulmet", t_hulmet});
 	texture_lookup.insert({"tank", t_tank});
@@ -71,6 +73,8 @@ void AssetManager::import_textures() {
 	texture_lookup.insert({"demon", t_demon});
 	texture_lookup.insert({"caster", t_caster});
 	texture_lookup.insert({"archer", t_archer});
+	texture_lookup.insert({"beamstalk", t_beamstalk});
+	texture_lookup.insert({"meatsquash", t_meatsquash});
 
 	t_ui.loadFromFile(finder.resource_path + "/image/gui/blue_console.png");
 	t_hud_orb_font.loadFromFile(finder.resource_path + "/image/gui/HUD_orb_font.png");
@@ -104,6 +108,7 @@ void AssetManager::import_textures() {
 	t_peckett_projectile.loadFromFile(finder.resource_path + "/image/weapon/peckett_710_proj.png");
 	t_arrow_projectile.loadFromFile(finder.resource_path + "/image/weapon/arrow.png");
 	t_archer_arrow_projectile.loadFromFile(finder.resource_path + "/image/weapon/archer_arrow.png");
+	t_green_beam.loadFromFile(finder.resource_path + "/image/weapon/green_beam.png");
 
 	projectile_textures.insert({"Bryn's Gun", t_bryns_gun_projectile});
 	projectile_textures.insert({"Skycorps AR", t_skycorps_ar_projectile});
@@ -123,6 +128,7 @@ void AssetManager::import_textures() {
 	projectile_textures.insert({"Peckett 710", t_peckett_projectile});
 	projectile_textures.insert({"Longbow", t_arrow_projectile});
 	projectile_textures.insert({"Demon Bow", t_archer_arrow_projectile});
+	projectile_textures.insert({"Green Beam", t_green_beam});
 
 	t_items.loadFromFile(finder.resource_path + "/image/item/items.png");
 	t_guns.loadFromFile(finder.resource_path + "/image/item/guns.png");
@@ -143,9 +149,11 @@ void AssetManager::import_textures() {
 	t_bg_effect.loadFromFile(finder.resource_path + "/image/vfx/bryns_gun_effect.png");
 	t_small_flash.loadFromFile(finder.resource_path + "/image/vfx/small_flash.png");
 	t_smoke.loadFromFile(finder.resource_path + "/image/vfx/smoke.png");
+	t_green_beam_effect.loadFromFile(finder.resource_path + "/image/vfx/green_beam_effect.png");
 	particle_textures.insert({"twinkle", t_twinkle});
 	particle_textures.insert({"wasp", t_wasp_effect});
 	particle_textures.insert({"smoke", t_smoke});
+	particle_textures.insert({"green_beam", t_green_beam_effect});
 	particle_textures.insert({"peckett", t_peckett_effect});
 	particle_textures.insert({"bryns_gun_smoke", t_bg_effect});
 

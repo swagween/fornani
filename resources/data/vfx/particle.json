@@ -313,5 +313,27 @@
       "framerate": 180,
       "loop": 0
     }
+  },
+  
+  "green_beam": {
+    "load": 2,
+    "rate": 4.0,
+    "expulsion": 16.0,
+    "expulsion_variance": 4.0,
+    "cone": 2.8,
+    "friction": 0.999,
+    "elasticity": 0.95,
+    "gravity": 0.0,
+    "lifespan": 2000,
+    "lifespan_variance": 0,
+    "dimensions": [ 32, 32 ],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 4,
+      "framerate": 100,
+      "loop": 0
+    }
   }
 }

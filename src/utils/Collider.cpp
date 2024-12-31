@@ -493,6 +493,9 @@ void Collider::reset_ground_flags() {
 		flags.state.reset(State::grounded);
 	}
 }
+
+void Collider::set_top_only() { flags.general.set(General::top_only_collision); }
+
 bool Collider::on_ramp() const { return flags.state.test(State::on_ramp); }
 
 bool Collider::has_horizontal_collision() const { return flags.collision.test(Collision::has_left_collision) || flags.collision.test(Collision::has_right_collision); }

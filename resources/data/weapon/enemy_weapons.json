@@ -277,6 +277,62 @@
           }
         }
       }
+    },
+    {
+      "metadata": {
+        "label": "Green Beam"
+      },
+      "visual": {
+        "texture_lookup": 0,
+        "dimensions": [ 18, 8 ],
+        "offsets": {
+          "global": [ 0.0, 0.0 ],
+          "barrel": [ 0.0, 0.0 ],
+          "stock": [ 0, 0 ]
+        },
+        "spray": {
+          "dimensions": [ 8.0, 8.0 ],
+          "type": "green_beam",
+          "color": "green"
+        }
+      },
+      "gameplay": {
+        "attributes": {
+          "automatic": false,
+          "ammo": 4,
+          "reload": 160,
+          "cooldown_time": 50,
+          "recoil": 0.0
+        }
+      },
+      "audio": { "shoot": 2 },
+      "class_package": {
+        "projectile": {
+          "type": 0,
+          "dimensions": [
+            32.0,
+            32.0
+          ],
+          "attributes": {
+            "base_damage": 2,
+            "lifespan": 660,
+            "lifespan_variance": 0,
+            "speed": 34.5,
+            "variance": 0.5,
+            "stun_time": 0.0,
+            "knockback": 0.0,
+            "range_variance": 0.0,
+            "acceleration_factor": 0.0,
+            "dampen_factor": 0.995,
+            "sprite_flip": true
+          },
+          "animation": {
+            "num_sprites": 1,
+            "num_frames": 1,
+            "framerate": 18
+          }
+        }
+      }
     }
   ]
 }

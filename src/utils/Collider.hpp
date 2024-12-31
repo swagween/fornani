@@ -93,6 +93,7 @@ class Collider {
 	void set_position(sf::Vector2<float> pos);
 	void reset();
 	void reset_ground_flags();
+	void set_top_only();
 
 	bool on_ramp() const;
 	bool has_horizontal_collision() const;

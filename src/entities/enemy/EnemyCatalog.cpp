@@ -8,6 +8,8 @@
 #include "../enemy/catalog/Demon.hpp"
 #include "../enemy/catalog/Caster.hpp"
 #include "../enemy/catalog/Archer.hpp"
+#include "../enemy/catalog/Beamstalk.hpp"
+#include "../enemy/catalog/Meatsquash.hpp"
 #include "../enemy/boss/Minigus.hpp"
 
 namespace enemy {
@@ -29,6 +31,8 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, gui
 	case 7: enemies.push_back(std::make_unique<Demon>(svc, map)); break;
 	case 8: enemies.push_back(std::make_unique<Caster>(svc, map)); break;
 	case 9: enemies.push_back(std::make_unique<Archer>(svc, map)); break;
+	case 10: enemies.push_back(std::make_unique<Beamstalk>(svc, map)); break;
+	case 11: enemies.push_back(std::make_unique<Meatsquash>(svc, map)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	}
 }

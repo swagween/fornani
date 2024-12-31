@@ -452,6 +452,95 @@
       "player_collision": true,
       "rare_drops": false
     }
+  },
+  "beamstalk": {
+    "metadata": {
+      "id": 10,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [ 80, 80 ],
+      "sprite_dimensions": [ 200, 200 ],
+      "spritesheet_dimensions": [ 3, 28 ],
+      "offset": [ 32, -32 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 1600.0, 1600.0 ],
+      "hostile_range": [ 280.0, 280.0 ],
+      "friction": 0.98,
+      "gravity": 0.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 88,
+      "base_damage": 0.0,
+      "speed": 0.9,
+      "loot_multiplier": 18.0,
+      "drop_range": [ 8, 12 ],
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": false
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": false,
+      "gravity": false,
+      "map_collision": false,
+      "player_collision": false,
+      "foreground": true,
+      "rare_drops": false
+    }
+  },
+  "meatsquash": {
+    "metadata": {
+      "id": 11,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [ 192, 100 ],
+      "sprite_dimensions": [ 256, 256 ],
+      "offset": [ 96, -110 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 180.0, 180.0 ],
+      "hostile_range": [ 180.0, 180.0 ],
+      "friction": 0.98,
+      "gravity": 0.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 164,
+      "base_damage": 4.0,
+      "speed": 0.9,
+      "loot_multiplier": 18.0,
+      "drop_range": [ 8, 12 ],
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": false
+    },
+    "general": {
+      "mobile": false,
+      "gravity": false,
+      "map_collision": false,
+      "player_collision": true,
+      "foreground": true,
+      "rare_drops": true
+    }
   }
 
 }

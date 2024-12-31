@@ -69,6 +69,7 @@ class Enemy : public entity::Entity {
 	void on_crush(world::Map& map);
 	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }
+	[[nodiscard]] auto is_hurt() const -> bool { return flags.state.test(StateFlags::hurt); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
@@ -113,6 +114,8 @@ class Enemy : public entity::Entity {
 	Attributes attributes{};
 	util::Cooldown post_death{};
 	int afterlife{200};
+
+	util::Cooldown hurt_effect{};
 
 	struct {
 		int id{};

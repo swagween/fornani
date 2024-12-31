@@ -93,6 +93,7 @@ class Weapon {
 	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.label; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return projectile.get_type(); }
 	[[nodiscard]] auto get_ui_color() const -> int { return static_cast<int>(visual.color); }
+	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2<float> { return sf::Vector2<float>{-specifications.recoil, 0.f}; }
 
 	Projectile projectile;
 	Ammo ammo{};

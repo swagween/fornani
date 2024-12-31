@@ -167,13 +167,13 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		flags.state.reset(StateFlags::hostile);
 	}
 
-	// get UV coords
-	if (spritesheet_dimensions.y != 0) {
-		auto u = static_cast<int>(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-		auto v = static_cast<int>(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
-		sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
-	}
-	sprite.setOrigin(static_cast<float>(sprite_dimensions.x) / 2.f, static_cast<float>(dimensions.y) / 2.f);
+	// animate
+	auto column{0};
+	if (hurt_effect.running()) { column = (hurt_effect.get_cooldown() / 32) % 2 == 0 ? 1 : 2; }
+	auto u = column * sprite_dimensions.x;
+	auto v = static_cast<int>(animation.get_frame()) * sprite_dimensions.y;
+	sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
+	sprite.setOrigin(static_cast<float>(sprite_dimensions.x) * 0.5f, static_cast<float>(dimensions.y) * 0.5f);
 }
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
@@ -224,6 +224,7 @@ void Enemy::handle_collision(shape::Collider& other) { collider.handle_collider_
 void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 	if (proj.get_team() == arms::Team::skycorps) { return; }
 	if (proj.get_team() == arms::Team::guardian) { return; }
+	if (proj.get_team() == arms::Team::beast) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
 	if (!(proj.get_bounding_box().overlaps(collider.bounding_box) || proj.get_bounding_box().overlaps(secondary_collider.bounding_box))) { return; }
 	flags.state.set(enemy::StateFlags::shot);

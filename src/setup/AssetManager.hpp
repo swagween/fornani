@@ -81,6 +81,8 @@ class AssetManager {
 	sf::Texture t_archer{};
 	sf::Texture t_archer_bow{};
 	sf::Texture t_archer_arrow{};
+	sf::Texture t_beamstalk{};
+	sf::Texture t_meatsquash{};
 
 	// gui
 	sf::Texture t_ui{};
@@ -151,6 +153,7 @@ class AssetManager {
 	sf::Texture t_wall_hit{};
 	sf::Texture t_twinkle{};
 	sf::Texture t_wasp_effect{};
+	sf::Texture t_green_beam_effect{};
 	sf::Texture t_peckett_effect{};
 	sf::Texture t_bg_effect{};
 	sf::Texture t_small_flash{};
@@ -210,6 +213,7 @@ class AssetManager {
 	sf::Texture t_peckett_projectile{};
 	sf::Texture t_arrow_projectile{};
 	sf::Texture t_archer_arrow_projectile{};
+	sf::Texture t_green_beam{};
 
 	// items
 	sf::Texture t_heart{};

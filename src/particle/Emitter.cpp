@@ -27,7 +27,6 @@ void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 		auto y = svc.random.random_range_float(0.f, dimensions.y);
 		sf::Vector2<float> point{position.x + x, position.y + y};
 		particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
-	
 	}
 	for (auto& particle : particles) { particle.update(svc, map); }
 	std::erase_if(particles, [](auto const& p) { return p.done(); });
