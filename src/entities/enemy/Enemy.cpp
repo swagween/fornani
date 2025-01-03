@@ -5,7 +5,10 @@
 
 namespace enemy {
 
-Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned) : entity::Entity(svc), label(label), health_indicator(svc) {
+Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
+	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}} {
+
+	direction = dir::Direction{start_direction};
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
 
@@ -79,8 +82,6 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned)
 	health_indicator.init(svc, 0);
 	post_death.start(afterlife);
 
-	direction.lr = dir::LR::left;
-
 	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
 	if (in_general["gravity"].as_bool()) { flags.general.set(GeneralFlags::gravity); }
 	if (in_general["map_collision"].as_bool()) { flags.general.set(GeneralFlags::map_collision); }
@@ -107,7 +108,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
-		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position, 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
+		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
 		svc.soundboard.flags.frdog.set(audio::Frdog::death);
 		map.spawn_counter.update(-1);
 	}

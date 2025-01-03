@@ -15,8 +15,8 @@ Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(sv
 	directions.movement.lr = dir::LR::neutral;
 	collider.set_top_only();
 
-	attacks.bite.sensor.bounds.setRadius(80.f);
-	attacks.bite.hit.bounds.setRadius(80.f);
+	attacks.bite.sensor.bounds.setRadius(96.f);
+	attacks.bite.hit.bounds.setRadius(96.f);
 	attacks.bite.origin = {0.f, 0.f};
 }
 
@@ -35,7 +35,7 @@ void Meatsquash::unique_update(automa::ServiceProvider& svc, world::Map& map, pl
 	if (directions.actual.lr == dir::LR::left && sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	
-	auto bite_offset = sf::Vector2<float>{0.f, -108.f};
+	auto bite_offset = sf::Vector2<float>{0.f, -88.f};
 	attacks.bite.set_position(collider.get_center() + bite_offset);
 	attacks.bite.update();
 	attacks.bite.handle_player(player);
@@ -59,7 +59,7 @@ void Meatsquash::unique_update(automa::ServiceProvider& svc, world::Map& map, pl
 
 void Meatsquash::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died()) { return; }
-	attacks.bite.render(win, cam);
+	//attacks.bite.render(win, cam);
 }
 
 fsm::StateFunction Meatsquash::update_idle() {

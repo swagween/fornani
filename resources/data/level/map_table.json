@@ -199,6 +199,10 @@
     {
       "room_id": 212,
       "label": "OVERTURNED_TUNNEL_01"
+    },
+    {
+      "room_id": 20090,
+      "label": "OVERTURNED_VINE"
     }
   ]
 }

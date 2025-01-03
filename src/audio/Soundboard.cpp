@@ -3,9 +3,11 @@
 #include "../service/ServiceProvider.hpp"
 
 namespace audio {
+
 Soundboard::Soundboard() {
-	for (int i{0}; i < 64; ++i) { sound_pool.push_back(sf::Sound()); }
+	for (int i{0}; i < 64; ++i) { sound_pool.push_back(Sound()); }
 }
+
 void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 
 	// menu
@@ -146,32 +148,25 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	proximities = {};
 }
 
-void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset, float vol, int frequency) {
-	auto iterator = std::ranges::find_if_not(sound_pool, [](auto& s) { return s.getStatus() == sf::Sound::Status::Playing; });
+void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2<float> distance) {
+	auto iterator = std::ranges::find_if_not(sound_pool, [](auto& s) { return s.get_status() == sf::Sound::Status::Playing; });
 	if (iterator == std::ranges::end(sound_pool)) { return; }
 	auto& target = *iterator;
-	target.setBuffer(buffer);
-	frequency != 0 ? repeat(svc, target, frequency, random_pitch_offset) : randomize(svc, target, random_pitch_offset, vol);
+	target.set_buffer(buffer);
+	frequency != 0 ? repeat(svc, target, frequency, random_pitch_offset, attenuation, distance) : randomize(svc, target, random_pitch_offset, vol, attenuation, distance);
 }
 
-void Soundboard::repeat(automa::ServiceProvider& svc, sf::Sound& sound, int frequency, float random_pitch_offset) {
-	if (svc.ticker.every_x_ticks(frequency)) { randomize(svc, sound, random_pitch_offset); }
+void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset, float attenuation, sf::Vector2<float> distance) {
+	if (svc.ticker.every_x_ticks(frequency)) { randomize(svc, sound, random_pitch_offset, 100.f, attenuation, distance); }
 }
 
-void Soundboard::randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset, float vol) {
+void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2<float> distance) {
 	auto random_pitch = random_pitch_offset == 0.f ? 0.f : svc.random.random_range_float(-random_pitch_offset, random_pitch_offset);
-	sound.setPitch(1.f + random_pitch);
-	sound.setVolume(vol);
+	sound.set_pitch(1.f + random_pitch);
+	sound.set_volume(vol);
+	auto scalar = util::magnitude(distance) / attenuation;
+	sound.set_volume(vol - (scalar > vol ? vol : scalar));
 	sound.play();
-}
-
-void Soundboard::play_at_volume(sf::Sound& sound, float vol) {
-	sound.setVolume(vol);
-	sound.play();
-}
-
-void Soundboard::set_available_sound(sf::SoundBuffer& buffer) {
-	
 }
 
 void Soundboard::play_step(int tile_value, int style_id, bool land) {
@@ -190,7 +185,7 @@ void Soundboard::play_step(int tile_value, int style_id, bool land) {
 auto Soundboard::number_of_playng_sounds() -> int {
 	auto ret{0};
 	for (auto& sound : sound_pool) {
-		if (sound.getStatus() == sf::Sound::Status::Playing) { ++ret; }
+		if (sound.get_status() == sf::Sound::Status::Playing) { ++ret; }
 	}
 	return ret;
 }

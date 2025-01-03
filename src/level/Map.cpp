@@ -174,9 +174,13 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		for (auto& entry : metadata["enemies"].array_view()) {
 			int id{};
 			sf::Vector2<float> pos{};
+			sf::Vector2<int> start{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
-			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>());
+			start.x = entry["start_direction"][0].as<int>();
+			start.y = entry["start_direction"][1].as<int>();
+			auto variant = entry["variant"].as<int>();
+			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>(), false, variant, start);
 			enemy_catalog.enemies.back()->set_position_from_scaled({pos * svc.constants.cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});

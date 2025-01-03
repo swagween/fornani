@@ -92,7 +92,12 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	loading.update();
+
+	// set player as listener for spacialized audio
+	auto listener_position = sf::Vector3<float>{player->collider.get_center().x, 0.f, player->collider.get_center().y};
+	sf::Listener::setPosition(listener_position);
 	svc.soundboard.play_sounds(svc);
+
 	if (pause_window.active()) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }

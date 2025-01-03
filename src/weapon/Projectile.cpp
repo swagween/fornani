@@ -128,7 +128,8 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		if (!destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, variables.destruction_point + physical.physics.position, {}, effect_type(), 2));
 			if (physical.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
-			svc.soundboard.flags.world.set(audio::World::soft_tap);
+			auto listener_position = sf::Vector2<float>{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
+			svc.soundboard.play(svc, svc.assets.b_soft_tap, 0.1f, 100.f, 0, 10.f, listener_position - physical.bounding_box.get_center());
 		}
 		destroy(false);
 	}

@@ -1,0 +1,141 @@
+{
+  "meta": {
+    "room_id": 20090,
+    "metagrid": [
+      0,
+      0
+    ],
+    "dimensions": [
+      80,
+      48
+    ],
+    "chunk_dimensions": [
+      5,
+      3
+    ],
+    "style": 1,
+    "background": 18,
+    "music": "whispering_island",
+    "atmosphere": [1],
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          40,
+          10
+        ],
+        "length": 3,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          10,
+          6
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          8,
+          3
+        ],
+        "length": 10,
+        "size": 2,
+        "foreground": false
+      },
+      {
+        "position": [
+          12,
+          5
+        ],
+        "length": 12,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          44,
+          5
+        ],
+        "length": 12,
+        "size": 1,
+        "foreground": false
+      },
+      {
+        "position": [
+          46,
+          2
+        ],
+        "length": 12,
+        "size": 1,
+        "foreground": false
+      }
+    ]
+  },
+  "enemies": [
+    {
+      "id": 11,
+      "position": [
+        28,
+        19
+      ]
+    },
+    {
+      "id": 11,
+      "position": [
+        39,
+        27
+      ]
+    },
+    {
+      "id": 11,
+      "position": [
+        49,
+        26
+      ]
+    },
+    {
+      "id": 11,
+      "position": [
+        60,
+        28
+      ]
+    },
+    {
+      "id": 10,
+      "position": [
+        40,
+        13
+      ],
+      "start_direction": [-1, 0]
+    },
+    {
+      "id": 10,
+      "position": [
+        44,
+        16
+      ],
+      "start_direction": [1, 0]
+    }
+  ],
+  "save_point": {
+    "id": 0,
+    "position": [
+      3,
+      6
+    ]
+  }
+}

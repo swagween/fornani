@@ -13,7 +13,7 @@ class Beamstalk : public Enemy {
 	Beamstalk() = delete;
 	~Beamstalk() override {}
 	Beamstalk& operator=(Beamstalk&&) = delete;
-	Beamstalk(automa::ServiceProvider& svc, world::Map& map);
+	Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 

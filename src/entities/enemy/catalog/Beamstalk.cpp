@@ -5,14 +5,11 @@
 
 namespace enemy {
 
-Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "beamstalk"), m_services(&svc), m_map(&map), beam(svc, 5), fire_rate{4} {
+Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction) : Enemy(svc, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, 5), fire_rate{4} {
 	animation.set_params(idle);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
 	collider.flags.general.set(shape::General::complex);
-	directions.desired.lr = dir::LR::right;
-	directions.actual.lr = dir::LR::right;
-	directions.movement.lr = dir::LR::neutral;
 	beam.get().set_team(arms::Team::beast);
 }
 
@@ -21,6 +18,8 @@ void Beamstalk::unique_update(automa::ServiceProvider& svc, world::Map& map, pla
 		Enemy::update(svc, map, player);
 		return;
 	}
+
+	svc.soundboard.play(svc, svc.assets.b_heavy_move, 0.f, 100.f, 64, 5.f, player.collider.get_center() - collider.get_center());
 
 	post_beam.update();
 	flags.state.set(StateFlags::vulnerable); // always vulnerable
@@ -33,7 +32,7 @@ void Beamstalk::unique_update(automa::ServiceProvider& svc, world::Map& map, pla
 	Enemy::update(svc, map, player);
 	beam.update(svc, map, *this);
 	auto bp = collider.get_center();
-	bp.x += 84.f;
+	bp.x += 84.f * directions.actual.as_float();
 	bp.y -= 16.f;
 	beam.get().set_barrel_point(bp);
 

@@ -20,7 +20,7 @@ void EnemyCatalog::update() {
 	std::erase_if(enemies, [this](auto const& e) { return e->gone(); });
 }
 
-void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, int id, bool spawned) {
+void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, int id, bool spawned, int variant, sf::Vector2<int> start_direction) {
 	switch (id) {
 	case 0: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	case 1: enemies.push_back(std::make_unique<Tank>(svc, map)); break;
@@ -31,7 +31,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, gui
 	case 7: enemies.push_back(std::make_unique<Demon>(svc, map)); break;
 	case 8: enemies.push_back(std::make_unique<Caster>(svc, map)); break;
 	case 9: enemies.push_back(std::make_unique<Archer>(svc, map)); break;
-	case 10: enemies.push_back(std::make_unique<Beamstalk>(svc, map)); break;
+	case 10: enemies.push_back(std::make_unique<Beamstalk>(svc, map, start_direction)); break;
 	case 11: enemies.push_back(std::make_unique<Meatsquash>(svc, map)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	}

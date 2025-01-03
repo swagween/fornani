@@ -14,6 +14,8 @@ enum class Inter { north, south, east, west, northeast, northwest, southeast, so
 
 struct Direction {
 	Direction(dir::UND und_preset = dir::UND::neutral, dir::LR lr_preset = dir::LR::neutral) : und(und_preset), lr(lr_preset) {}
+	Direction(sf::Vector2<int> preset) : lr{preset.x == 0 ? dir::LR::neutral : preset.x == 1 ? dir::LR::right : dir::LR::left}, und{preset.y == 0 ? dir::UND::neutral : preset.y == 1 ? dir::UND::down : dir::UND::up} {}
+	
 	LR lr{LR::neutral};
 	UND und{UND::neutral};
 	Inter inter{Inter::north};

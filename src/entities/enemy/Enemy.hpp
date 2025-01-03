@@ -5,6 +5,7 @@
 #include "../../utils/BitFlags.hpp"
 #include "../animation/Animation.hpp"
 #include "../../utils/StateFunction.hpp"
+#include "../../utils/Math.hpp"
 #include "../packages/Health.hpp"
 #include "../packages/WeaponPackage.hpp"
 #include "../packages/Caution.hpp"
@@ -54,7 +55,7 @@ class Enemy : public entity::Entity {
   public:
 	Enemy() = default;
 	virtual ~Enemy() {}
-	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false);
+	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 	void set_external_id(std::pair<int, sf::Vector2<int>> code);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);

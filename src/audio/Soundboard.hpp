@@ -4,6 +4,7 @@
 #include <SFML/Audio.hpp>
 #include "../utils/BitFlags.hpp"
 #include "../utils/Cooldown.hpp"
+#include "Sound.hpp"
 #include <unordered_map>
 
 namespace automa {
@@ -70,12 +71,12 @@ class Soundboard {
 		util::BitFlags<Beamstalk> beamstalk{};
 		util::BitFlags<Meatsquash> meatsquash{};
 	} flags{};
+	
+	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {});
+
   private:
-	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0);
-	void repeat(automa::ServiceProvider& svc, sf::Sound& sound, int frequency, float random_pitch_offset = 0.f);
-	void randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset, float vol = 100.f);
-	void play_at_volume(sf::Sound& sound, float vol);
-	void set_available_sound(sf::SoundBuffer& buffer);
+	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
+	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
 
 	struct {
 		sf::Sound menu{};
@@ -88,7 +89,8 @@ class Soundboard {
 		sf::Sound step{};
 		std::vector<sf::Sound> critter{};
 	} sounds{};
-	std::vector<sf::Sound> sound_pool{};
+
+	std::vector<Sound> sound_pool{};
 
 	SoundboardState status{SoundboardState::on};
 
