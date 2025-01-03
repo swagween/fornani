@@ -31,7 +31,7 @@ class Dragonfly {
   private:
 	components::PhysicsComponent physics{};
 	components::SteeringBehavior steering{};
-	anim::AnimatedSprite sprite{};
+	anim::AnimatedSprite sprite;
 	int variant{};
 	struct {
 		float seek{};

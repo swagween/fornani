@@ -2,7 +2,7 @@
 
 namespace fornani {
 
-Application::Application(char** argv) {
+Application::Application(char** argv) : loading(t_loading) {
 
 	finder.setResourcePath(argv);
 	std::cout << "Resource path: " << finder.resource_path << std::endl;
@@ -12,7 +12,6 @@ Application::Application(char** argv) {
 	assert(!game_info.is_null());
 
 	t_loading.loadFromFile(finder.resource_path + "/image/gui/loading.png");
-	loading.setTexture(t_loading);
 	metadata.title = game_info["title"].as_string();
 	metadata.build = game_info["build"].as_string();
 	metadata.major = game_info["version"]["major"].as<int>();
@@ -30,7 +29,7 @@ Application::Application(char** argv) {
 	// set app icon
 	sf::Image icon{};
 	icon.loadFromFile(finder.resource_path + "/image/app/icon.png");
-	window.get().setIcon(256, 256, icon.getPixelsPtr());
+	window.get().setIcon({256, 256}, icon.getPixelsPtr());
 
 	ImGui::SFML::Init(window.get());
 	window.get().clear();

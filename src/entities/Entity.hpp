@@ -22,10 +22,9 @@ class Entity {
   public:
 	Entity() = default;
 	virtual ~Entity() {};
-	Entity(automa::ServiceProvider& svc){};
+	Entity(automa::ServiceProvider& svc);
 	virtual void update(automa::ServiceProvider& svc, world::Map& map);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) = 0;
-	void sprite_flip();
 	void sprite_shake(automa::ServiceProvider& svc, int rate = 16, int energy = 4);
 	[[nodiscard]] auto get_direction() const -> dir::Direction { return direction; }
 	sf::RectangleShape drawbox{}; // for debug
@@ -36,7 +35,6 @@ class Entity {
 	sf::Vector2<float> random_offset{};
 	sf::Vector2<int> sprite_dimensions{};
 	sf::Vector2<int> spritesheet_dimensions{};
-	sf::Sprite sprite{};
 	dir::Direction direction{};
 	util::BitFlags<State> ent_state{};
 };

@@ -4,9 +4,7 @@
 
 namespace text {
 
-void HelpText::init(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) {
-	font.loadFromFile(svc.text.text_font);
-	font.setSmooth(false);
+HelpText::HelpText(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) : data(svc.text.fonts.title) {
 	text_color = svc.styles.colors.ui_white;
 	text_color.a = 0;
 	bg_color = svc.styles.colors.ui_black;
@@ -18,7 +16,7 @@ void HelpText::init(automa::ServiceProvider& svc, std::string start, config::Dig
 	data.setString(marker);
 	data.setFont(font);
 	data.setCharacterSize(text_size);
-	data.setOrigin(data.getLocalBounds().getSize() * 0.5f);
+	data.setOrigin(data.getLocalBounds().getCenter());
 	position = {static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 2.f * pad};
 	data.setPosition(position);
 	delay.start(delay_time);

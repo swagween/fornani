@@ -64,16 +64,16 @@ class InventoryWindow : public Console {
 		sf::Vector2<float> wardrobe_offset{380.f, -32.f};
 	} ui{};
 
-	sf::Text title{};
+	sf::Text title;
 	sf::Font title_font{};
-	sf::Text arsenal{};
+	sf::Text arsenal;
 
-	sf::Text item_label{};
+	sf::Text item_label;
 	sf::Font item_font{};
 
-	sf::Sprite gun_slot{};
+	sf::Sprite gun_slot;
 
-	WardrobeWidget wardrobe{};
+	WardrobeWidget wardrobe;
 };
 
 } // namespace gui

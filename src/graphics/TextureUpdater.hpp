@@ -20,9 +20,9 @@ class TextureUpdater {
 	sf::Texture& get_dynamic_texture();
 
   private:
-	std::vector<sf::Uint8> image{};
-	std::vector<sf::Uint8> palette{};
-	std::vector<sf::Uint8> map{};
+	std::vector<std::uint8_t> image{};
+	std::vector<std::uint8_t> palette{};
+	std::vector<std::uint8_t> map{};
 
 	std::vector<sf::Color> palette_colors{};
 	std::vector<sf::Color> map_colors{};

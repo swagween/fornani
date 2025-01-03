@@ -29,7 +29,7 @@ class Firefly {
   private:
 	components::PhysicsComponent physics{};
 	components::SteeringBehavior steering{};
-	anim::AnimatedSprite sprite{};
+	anim::AnimatedSprite sprite;
 	util::Cooldown light{};
 	int variant{};
 	bool glowing{};

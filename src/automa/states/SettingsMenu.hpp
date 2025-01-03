@@ -23,22 +23,22 @@ class SettingsMenu : public automa::GameState {
 	util::BitFlags<Toggles> toggles{};
 	util::BitFlags<MenuMode> mode_flags{};
 	struct {
-		sf::Text enabled{};
-		sf::Text disabled{};
-	} toggle_options{};
+		sf::Text enabled;
+		sf::Text disabled;
+	} toggle_options;
 
 	struct {
-		sf::Text autosprint{};
-		sf::Text tutorial{};
-		sf::Text gamepad{};
-		sf::Text fullscreen{};
-	} toggleables{};
+		sf::Text autosprint;
+		sf::Text tutorial;
+		sf::Text gamepad;
+		sf::Text fullscreen;
+	} toggleables;
 
 	struct {
-		sf::Text music_volume{};
-	} sliders{};
+		sf::Text music_volume;
+	} sliders;
 
-	sf::Text music_label{};
+	sf::Text music_label;
 };
 
 } // namespace automa

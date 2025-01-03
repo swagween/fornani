@@ -18,7 +18,7 @@ class Scenery {
 	sf::Vector2<int> dimensions{320, 320};
 	sf::Vector2<float> f_dimensions{320.f, 320.f};
 	sf::Vector2<float> position{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	struct {
 		int style{};   // to match room style
 		int layer{};   // draw depth

@@ -16,7 +16,7 @@ class StatusBar {
 	void render(sf::RenderWindow& win);
 	BarState current_state{};
 	vfx::Gravitator gravitator{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	sf::Vector2<float> position{};
 	sf::Vector2<float> draw_position{};
 	sf::Vector2<float> origin{};

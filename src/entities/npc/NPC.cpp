@@ -6,7 +6,7 @@
 
 namespace npc {
 
-NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::make_unique<NPCAnimation>(svc, id)), indicator(svc.assets.t_indicator, {32, 32}) {
+NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::make_unique<NPCAnimation>(svc, id)), indicator(svc.assets.t_indicator, {32, 32}), sprite(svc.assets.npcs.at(label)) {
 
 	label = svc.tables.npc_label.at(id);
 	indicator.set_origin({0.f, 48.f});
@@ -22,7 +22,7 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 	sprite_offset.x = in_data["sprite_offset"][0].as<float>();
 	sprite_offset.y = in_data["sprite_offset"][1].as<float>();
 
-	sprite.setOrigin(in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>());
+	sprite.setOrigin({in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>()});
 
 	if (in_data["vendor"] && svc.data.marketplace.contains(id)) {
 		vendor = &svc.data.marketplace.at(id);
@@ -38,7 +38,6 @@ NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize(dimensions);
 
-	if (svc.assets.npcs.contains(label)) { sprite.setTexture(svc.assets.npcs.at(label)); }
 	direction.lr = dir::LR::left;
 }
 
@@ -54,7 +53,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	animation_machine->update();
 
 	if (animation_machine->communication_flags.test(NPCCommunication::sprite_flip)) {
-		sprite_flip();
+		sprite.scale({-1.f, 1.f});
 		animation_machine->communication_flags.reset(NPCCommunication::sprite_flip);
 	}
 
@@ -82,10 +81,9 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 			if (svc.assets.npc_sounds.contains(label)) {
 				auto index = voice_cue - 1;
 				if (index < svc.assets.npc_sounds.at(label).size()) {
-					voice_sound.setBuffer(svc.assets.npc_sounds.at(label).at(index));
+					//voice_sound.setBuffer(svc.assets.npc_sounds.at(label).at(index));
 				}
 			}
-			voice_sound.play();
 		}
 	}
 	if (console.off() && state_flags.test(NPCState::engaged)) { pop_conversation(); }
@@ -94,7 +92,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 	if (state_flags.test(NPCState::hidden)) { return; }
-	sprite.setPosition(collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y);
+	sprite.setPosition({collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y});
 	if (spritesheet_dimensions.y > 0) {
 		int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
 		int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;

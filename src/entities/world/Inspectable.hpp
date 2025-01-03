@@ -29,7 +29,6 @@ class Inspectable {
 	using Vec = sf::Vector2<float>;
 	using Vecu32 = sf::Vector2<uint32_t>;
 
-	Inspectable() = default;
 	Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key = "", int room_id = 0, int alternates = 0, int native = 0, bool aoc = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
@@ -53,7 +52,7 @@ class Inspectable {
 	int native_id{};
 	util::BitFlags<InspectableAttributes> attributes{};
 	util::BitFlags<InspectableFlags> flags{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	anim::Animation animation{};
 	anim::Parameters params{0, 14, 18, 0};
 };

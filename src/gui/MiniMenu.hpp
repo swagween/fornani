@@ -40,7 +40,7 @@ class MiniMenu {
 	int index{};
 	float corner{56.f};
 	float edge{2.f};
-	util::NineSlice sprite{};
+	util::NineSlice sprite;
 	util::Circuit selection{1};
 	std::vector<automa::Option> options;
 };

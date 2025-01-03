@@ -58,7 +58,7 @@ class Shield {
 		float recovery_regen_rate{0.01f};
 	} stats{};
 	util::Cooldown timer{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 
 	anim::Animation animation{};
 

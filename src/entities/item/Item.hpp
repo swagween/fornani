@@ -83,9 +83,9 @@ class Item : public entity::Entity {
 		sf::Vector2<float> pad{60.f, 60.f};
 		sf::Vector2<float> offset{};
 		float spacing{56.f};
-		sf::Text rarity{};
-		sf::Text quantity{};
-	} ui{};
+		sf::Text rarity;
+		sf::Text quantity;
+	} ui;
 };
 
 } // namespace player

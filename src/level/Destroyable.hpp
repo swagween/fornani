@@ -34,6 +34,6 @@ class Destroyable {
 	shape::Collider collider{};
 	sf::Vector2<int> position{};
 	util::BitFlags<DestroyerState> flags{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 };
 } // namespace world

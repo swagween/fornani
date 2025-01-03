@@ -18,9 +18,9 @@ class MainMenu : public GameState {
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 
-	sf::Sprite title{};
-	sf::Text subtitle{};
-	sf::Text instruction{};
+	sf::Sprite title;
+	sf::Text subtitle;
+	sf::Text instruction;
 	std::vector<sf::Sprite> title_assets{};
 	util::Cooldown loading{16};
 };

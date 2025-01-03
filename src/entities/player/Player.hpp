@@ -192,7 +192,7 @@ class Player {
 	Indicator health_indicator;
 	Indicator orb_indicator;
 
-	text::Tutorial tutorial{};
+	text::Tutorial tutorial;
 
 	// weapons
 	std::optional<arms::Arsenal> arsenal{};
@@ -224,7 +224,7 @@ class Player {
 	automa::ServiceProvider* m_services;
 
 	// sprites
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	flfx::SpriteHistory sprite_history{};
 
 	// texture updater

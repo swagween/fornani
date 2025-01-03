@@ -10,6 +10,8 @@ Soundboard::Soundboard() {
 
 void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 
+	for (auto& s : sound_pool) { s.update(svc); }
+
 	// menu
 	if (flags.menu.test(Menu::forward_switch)) { play(svc, svc.assets.menu_next_buffer); }
 	if (flags.menu.test(Menu::backward_switch)) { play(svc, svc.assets.menu_back_buffer); }
@@ -107,9 +109,12 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.item.test(Item::get)) { play(svc, svc.assets.b_upward_get); }
 	if (flags.item.test(Item::equip)) { play(svc, svc.assets.arms_switch_buffer); }
 
+	auto er = 40;
+	auto ec = 4;
+
 	// player
-	if (flags.player.test(Player::jump)) { play(svc, svc.assets.jump_buffer, 0.1f); }
-	if (flags.player.test(Player::arms_switch)) { play(svc, svc.assets.arms_switch_buffer); }
+	if (flags.player.test(Player::jump)) { play(svc, svc.assets.jump_buffer, 0.1f, 100.f, 0, 1.f, {}, ec, er); }
+	if (flags.player.test(Player::arms_switch)) { play(svc, svc.assets.arms_switch_buffer, 0.f, 100.f, 0, 1.f, {}, ec, er); }
 	if (flags.player.test(Player::hurt)) { play(svc, svc.assets.hurt_buffer); }
 	if (flags.player.test(Player::death)) { play(svc, svc.assets.player_death_buffer); }
 	if (flags.player.test(Player::shield_drop)) { play(svc, svc.assets.bubble_buffer, 0.2f, 60.f); }
@@ -118,23 +123,23 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	if (flags.player.test(Player::roll)) { play(svc, svc.assets.b_roll); }
 
 	// steps
-	if (flags.step.test(Step::basic)) { play(svc, svc.assets.step_buffer, 0.1f); }
-	if (flags.step.test(Step::grass)) { play(svc, svc.assets.grass_step_buffer, 0.3f); }
-	if (flags.land.test(Step::basic)) { play(svc, svc.assets.landed_buffer); }
-	if (flags.land.test(Step::grass)) { play(svc, svc.assets.landed_grass_buffer); }
+	if (flags.step.test(Step::basic)) { play(svc, svc.assets.step_buffer, 0.1f, 100.f, 0, 1.f, {}, ec, er); }
+	if (flags.step.test(Step::grass)) { play(svc, svc.assets.grass_step_buffer, 0.3f, 100.f, 0, 1.f, {}, ec, er); }
+	if (flags.land.test(Step::basic)) { play(svc, svc.assets.landed_buffer, 0.f, 100.f, 0, 1.f, {}, ec, er); }
+	if (flags.land.test(Step::grass)) { play(svc, svc.assets.landed_grass_buffer, 0.f, 100.f, 0, 1.f, {}, ec, er); }
 
 	// arms
-	if (flags.arms.test(Arms::reload)) { play(svc, svc.assets.b_reload); }
+	if (flags.arms.test(Arms::reload)) { play(svc, svc.assets.b_reload, 0.f, 100.f, 0, 1.f, {}, ec, er); }
 
 	// gun
-	if (flags.weapon.test(Weapon::bryns_gun)) { play(svc, svc.assets.bg_shot_buffer); }
+	if (flags.weapon.test(Weapon::bryns_gun)) { play(svc, svc.assets.bg_shot_buffer, 0.f, 100.f, 0, 1.f, {}, ec, er); }
 	if (flags.weapon.test(Weapon::plasmer)) { play(svc, svc.assets.plasmer_shot_buffer); }
 	if (flags.weapon.test(Weapon::skycorps_ar)) { play(svc, svc.assets.skycorps_ar_buffer); }
 	if (flags.weapon.test(Weapon::clover)) { play(svc, svc.assets.pop_mid_buffer, 0.3f, 100.f, 0); }
 	if (flags.weapon.test(Weapon::nova)) { play(svc, svc.assets.pop_mid_buffer); }
 	if (flags.weapon.test(Weapon::indie)) { play(svc, svc.assets.b_nova); }
 	if (flags.weapon.test(Weapon::staple)) { play(svc, svc.assets.b_staple); }
-	if (flags.weapon.test(Weapon::gnat)) { play(svc, svc.assets.b_gnat, 0.1f, 100.f, 2); }
+	if (flags.weapon.test(Weapon::gnat)) { play(svc, svc.assets.b_gnat, 0.1f, 100.f, 2, 1.f, {}, ec, er); }
 	if (flags.weapon.test(Weapon::tomahawk)) { play(svc, svc.assets.tomahawk_flight_buffer, 0.05f, 100.f, 32); }
 	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(svc, svc.assets.tomahawk_catch_buffer); }
 	if (flags.weapon.test(Weapon::hook_probe)) { play(svc, svc.assets.sharp_click_buffer); }
@@ -148,11 +153,11 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 	proximities = {};
 }
 
-void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2<float> distance) {
-	auto iterator = std::ranges::find_if_not(sound_pool, [](auto& s) { return s.get_status() == sf::Sound::Status::Playing; });
+void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2<float> distance, int echo_count, int echo_rate) {
+	auto iterator = std::ranges::find_if_not(sound_pool, [](auto& s) { return s.is_running(); });
 	if (iterator == std::ranges::end(sound_pool)) { return; }
 	auto& target = *iterator;
-	target.set_buffer(buffer);
+	target.set_buffer(buffer, echo_count, echo_rate);
 	frequency != 0 ? repeat(svc, target, frequency, random_pitch_offset, attenuation, distance) : randomize(svc, target, random_pitch_offset, vol, attenuation, distance);
 }
 
@@ -185,7 +190,7 @@ void Soundboard::play_step(int tile_value, int style_id, bool land) {
 auto Soundboard::number_of_playng_sounds() -> int {
 	auto ret{0};
 	for (auto& sound : sound_pool) {
-		if (sound.get_status() == sf::Sound::Status::Playing) { ++ret; }
+		if (sound.is_running()) { ++ret; }
 	}
 	return ret;
 }

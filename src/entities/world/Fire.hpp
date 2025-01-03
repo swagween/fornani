@@ -15,9 +15,9 @@ class Fire {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	private:
 	shape::Shape bounding_box{};
-	anim::AnimatedSprite sprite{};
+	anim::AnimatedSprite sprite;
 	vfx::Sparkler sparkler{};
-	entity::Inspectable inspectable{};
+	entity::Inspectable inspectable;
 	sf::Vector2<float> sprite_offset{};
 };
 

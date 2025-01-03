@@ -44,7 +44,7 @@ class AnimatedSprite {
 	sf::Sprite& get_sprite() { return sprite; }
 
   private:
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	sf::RectangleShape drawbox{};
 	sf::Vector2<int> dimensions{};
 	sf::Vector2<float> position{}; 

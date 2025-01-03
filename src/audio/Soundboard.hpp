@@ -72,23 +72,23 @@ class Soundboard {
 		util::BitFlags<Meatsquash> meatsquash{};
 	} flags{};
 	
-	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {});
+	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {}, int echo_count = 0, int echo_rate = 64);
 
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
 	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
 
 	struct {
-		sf::Sound menu{};
-		sf::Sound console{};
+		sf::Sound menu;
+		sf::Sound console;
 		std::vector<sf::Sound> world{};
 		std::vector<sf::Sound> item{};
-		sf::Sound player{};
-		sf::Sound weapon{};
-		sf::Sound transmission{};
-		sf::Sound step{};
+		sf::Sound player;
+		sf::Sound weapon;
+		sf::Sound transmission;
+		sf::Sound step;
 		std::vector<sf::Sound> critter{};
-	} sounds{};
+	} sounds;
 
 	std::vector<Sound> sound_pool{};
 

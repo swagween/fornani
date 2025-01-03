@@ -4,27 +4,22 @@
 
 namespace gui {
 
-PauseWindow::PauseWindow(automa::ServiceProvider& svc) : Console::Console(svc), selector(svc, {2, 1}), menu(svc, {"resume", "quit"}) {
+PauseWindow::PauseWindow(automa::ServiceProvider& svc)
+	: Console::Console(svc), selector(svc, {2, 1}), menu(svc, {"resume", "quit"}), title(svc.text.fonts.title), widget_label(svc.text.fonts.basic),
+	  help_marker{svc, "Press [", config::DigitalAction::platformer_toggle_pause, "] to resume game.", 20, true} {
 	title.setString("PAUSED");
 	title.setCharacterSize(ui.title_size);
-	title_font.loadFromFile(svc.text.title_font);
-	title_font.setSmooth(false);
-	title.setFont(title_font);
 	title.setFillColor(svc.styles.colors.ui_white);
 	title.setLetterSpacing(2.f);
 
-	widget_font.loadFromFile(svc.text.text_font);
-	widget_font.setSmooth(false);
 	widget_label.setString("Press [Enter] to return to Main Menu.");
 	widget_label.setCharacterSize(ui.widget_size);
-	widget_label.setFont(widget_font);
 	widget_label.setFillColor(svc.styles.colors.ui_white);
 
-	help_marker.init(svc, "Press [", config::DigitalAction::platformer_toggle_pause, "] to resume game.", 20, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 
 	origin = svc.constants.f_center_screen;
-	title.setOrigin(title.getLocalBounds().getSize() * 0.5f);
+	title.setOrigin(title.getLocalBounds().getCenter());
 	title.setPosition(origin + ui.title_offset);
 	widget_label.setPosition(origin + ui.widget_label_offset);
 	dimensions = {180.f, 180.f};

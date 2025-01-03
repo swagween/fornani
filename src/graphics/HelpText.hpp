@@ -20,7 +20,7 @@ enum class HelpTextFlags { no_blink, time_limit };
 
 class HelpText {
   public:
-	void init(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end = "", int delay_time = 195, bool include_background = false, bool no_blink = false);
+	HelpText(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end = "", int delay_time = 195, bool include_background = false, bool no_blink = false);
 	void render(sf::RenderWindow& win);
 	void set_color(sf::Color color);
 	void set_string(std::string string);
@@ -35,12 +35,11 @@ class HelpText {
 	util::BitFlags<HelpTextFlags> flags{};
 	util::Cooldown delay{195};
 	util::Counter alpha_counter{};
-	sf::Text data{};
+	sf::Text data;
 	std::string marker{};
 	int text_size{16};
 	sf::Color text_color{};
 	sf::Color bg_color{};
-	sf::Font font{};
 	float pad{30};
 	bool background{};
 	sf::Vector2<float> position{};

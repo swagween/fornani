@@ -37,7 +37,7 @@ class Indicator {
 	} variables{};
 
 	IndicatorType type{};
-	sf::Text label{};
+	sf::Text label;
 	sf::Font font{};
 	util::Cooldown addition_limit{};
 	util::Cooldown fadeout{};

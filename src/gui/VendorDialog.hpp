@@ -38,16 +38,16 @@ class VendorDialog {
 	[[nodiscard]] auto opening() const -> bool { return intro.running() || bring_in_cooldown.running(); }
   private:
 	struct {
-		Selector buy{};
-		Selector sell{};
-	} selectors{};
+		Selector buy;
+		Selector sell;
+	} selectors;
 	Console info;
 	MiniMenu item_menu;
 	util::Cooldown intro{200};
 	util::Cooldown bring_in_cooldown{200};
 	util::BitFlags<VendorDialogStatus> flags{};
-	sf::Sprite artwork{};
-	sf::Sprite ui{};
+	sf::Sprite artwork;
+	sf::Sprite ui;
 	Portrait portrait;
 	VendorState state{};
 	int vendor_id{};
@@ -59,15 +59,14 @@ class VendorDialog {
 	sf::Vector2<float> portrait_position{44.f, 18.f};
 	sf::Vector2<float> bring_in{};
 	struct {
-		sf::Text vendor_name{};
-		sf::Text buy_tab{};
-		sf::Text sell_tab{};
-		sf::Text orb_count{};
-		sf::Text price{};
-		sf::Text price_number{};
-		sf::Text value{};
-		sf::Text item_label{};
-	} text{};
+		sf::Text vendor_name;
+		sf::Text buy_tab;
+		sf::Text sell_tab;
+		sf::Text orb_count;
+		sf::Text price;
+		sf::Text price_number;
+		sf::Text item_label;
+	} text;
 	struct {
 		sf::Vector2<float> item_label_position{232.f, 320.f};
 		sf::Vector2<float> price_position{232.f, 345.f};
@@ -76,8 +75,8 @@ class VendorDialog {
 		int items_per_row{12};
 	} ui_constants{};
 	struct {
-		anim::AnimatedSprite sprite{};
-	} orb{};
+		anim::AnimatedSprite sprite;
+	} orb;
 };
 
 } // namespace gui

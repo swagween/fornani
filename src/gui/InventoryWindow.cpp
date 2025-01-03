@@ -5,10 +5,10 @@
 
 namespace gui {
 
-InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc), item_menu(svc, {"use", "cancel"}, true), wardrobe(svc) {
+InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc), item_menu(svc, {"use", "cancel"}, true), wardrobe(svc), help_marker( {
 	title.setString("INVENTORY");
 	title.setCharacterSize(ui.title_size);
-	title_font.loadFromFile(svc.text.title_font);
+	title_font.openFromFile(svc.text.title_font);
 	title_font.setSmooth(false);
 	title.setFont(title_font);
 	title.setFillColor(svc.styles.colors.ui_white);
@@ -23,7 +23,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 	gun_slot.setTexture(svc.assets.t_sticker);
 	gun_slot.setOrigin({32.f, 32.f});
 
-	item_font.loadFromFile(svc.text.title_font);
+	item_font.openFromFile(svc.text.title_font);
 	item_font.setSmooth(false);
 	item_label.setCharacterSize(ui.desc_size);
 	item_label.setFont(item_font);

@@ -35,7 +35,7 @@ class NineSlice {
 	int appearance_time{32};
 	util::Cooldown appear{appearance_time};
 	float global_scale{};
-	std::array<sf::Sprite, 9> sprites{};
+	std::array<sf::Sprite, 9> sprites;
 	sf::Vector2<float> native_dimensions{};
 };
 

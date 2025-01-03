@@ -16,7 +16,7 @@ add_subdirectory(dependencies)
 target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
 target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
 target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-system sfml-graphics sfml-window sfml-audio)
+target_link_libraries(${PROJECT_NAME} PRIVATE SFML::System SFML::Graphics SFML::Window SFML::Audio)
 target_link_libraries(${PROJECT_NAME} PRIVATE steamworks)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})

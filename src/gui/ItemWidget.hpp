@@ -26,9 +26,9 @@ class ItemWidget {
 
   private:
 	struct {
-		sf::Sprite item{};
-		sf::Sprite gun{};
-	} sprites{};
+		sf::Sprite item;
+		sf::Sprite gun;
+	} sprites;
 	sf::CircleShape sticker{};
 	
 	std::string_view label{};

@@ -58,7 +58,7 @@ class MiniMap {
 	MapTexture texture;
 	sf::RenderTexture minimap_texture{};
 	sf::RectangleShape player_box{};
-	sf::Sprite map_sprite{};
+	sf::Sprite map_sprite;
 	sf::RectangleShape background{};
 	sf::RectangleShape border{};
 	sf::RectangleShape room_border{};

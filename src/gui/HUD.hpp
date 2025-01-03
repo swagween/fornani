@@ -41,10 +41,10 @@ class HUD {
 	} origins{};
 
 	struct {
-		sf::Sprite orb{};
-		sf::Sprite gun{};
-		sf::Sprite pointer{};
-	} sprites{};
+		sf::Sprite orb;
+		sf::Sprite gun;
+		sf::Sprite pointer;
+	} sprites;
 
 	WidgetBar health_bar{};
 	WidgetBar ammo_bar{};

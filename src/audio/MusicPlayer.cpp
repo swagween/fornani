@@ -42,7 +42,7 @@ void MusicPlayer::play_once(float vol) {
 	if (switched_off()) { return; }
 	if (playing()) { return; }
 	volume.native = vol;
-	song_first.setLoop(false);
+	song_first.setLooping(false);
 	song_first.setVolume(volume.actual);
 	song_first.play();
 	status = sf::SoundSource::Status::Playing;
@@ -52,8 +52,8 @@ void MusicPlayer::play_looped(float vol) {
 	if (switched_off()) { return; }
 	if (playing()) { return; }
 	volume.native = vol;
-	song_first.setLoop(false);
-	song_loop.setLoop(true);
+	song_first.setLooping(false);
+	song_loop.setLooping(true);
 	song_first.setVolume(volume.actual);
 	song_loop.setVolume(volume.actual);
 	song_first.play();

@@ -44,7 +44,7 @@ class SpawnablePlatform {
 	int index{};
 	vfx::Gravitator gravitator{};
 	components::CircleSensor sensor{};
-	anim::AnimatedSprite sprite{};
+	anim::AnimatedSprite sprite;
 	Health health{};
 };
 } // namespace entity

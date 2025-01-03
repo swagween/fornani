@@ -108,7 +108,7 @@ class Projectile {
 		int sprite_index{};
 		int num_angles{};
 		RenderType render_type{};
-		anim::AnimatedSprite sprite{};
+		anim::AnimatedSprite sprite;
 		sf::Vector2<int> dimensions{};
 		flfx::SpriteHistory sprite_history{};
 		dir::Direction direction{};

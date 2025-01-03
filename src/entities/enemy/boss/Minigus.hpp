@@ -62,7 +62,7 @@ class Minigus : public Enemy, public npc::NPC {
 	shape::Shape distant_range{};
 
 	struct {
-		sf::Sprite sprite{};
+		sf::Sprite sprite;
 		anim::Animation animation{};
 		MinigunState state{};
 		anim::Parameters neutral{21, 4, 28, -1};

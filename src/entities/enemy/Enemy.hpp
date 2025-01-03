@@ -98,7 +98,7 @@ class Enemy : public entity::Entity {
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
 	entity::Health health{};
-	player::Indicator health_indicator{};
+	player::Indicator health_indicator;
 	anim::Animation animation{};
 	struct {
 		dir::Direction actual{};

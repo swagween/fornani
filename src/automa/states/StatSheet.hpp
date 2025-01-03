@@ -16,8 +16,8 @@ class StatSheet : public automa::GameState {
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 
   private:
-	sf::Text title{};
-	sf::Text stats{};
+	sf::Text title;
+	sf::Text stats;
 	sf::Font stat_font{};
 	util::Cooldown loading{2};
 };

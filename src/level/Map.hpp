@@ -192,10 +192,10 @@ class Map {
 	// layers
 	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};
 	sf::RenderTexture obscuring_texture{};
-	sf::Sprite tile_sprite{};
-	sf::Sprite layer_sprite{};
-	sf::Sprite obscuring_sprite{};
-	sf::Sprite reverse_obscuring_sprite{};
+	sf::Sprite tile_sprite;
+	sf::Sprite layer_sprite;
+	sf::Sprite obscuring_sprite;
+	sf::Sprite reverse_obscuring_sprite;
 	std::string_view style_label{};
 
 	int room_lookup{};

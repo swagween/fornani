@@ -4,7 +4,12 @@
 
 namespace automa {
 
-SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
+SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id)
+	: GameState(svc, player, scene, id), toggleables{.autosprint = options.at(static_cast<int>(Toggles::autosprint)).label,
+													 .tutorial = options.at(static_cast<int>(Toggles::tutorial)).label,
+													 .gamepad = options.at(static_cast<int>(Toggles::gamepad)).label,
+													 .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label},
+	  music_label{options.at(static_cast<int>(Toggles::music)).label}, toggle_options{.enabled{svc.text.fonts.title}, .disabled{svc.text.fonts.title}}, sliders{.music_volume{svc.text.fonts.title}} {
 	console = gui::Console(svc);
 	console.set_source(svc.text.basic);
 	player.map_reset();
@@ -13,11 +18,6 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 	toggle_options.enabled.setString("enabled");
 	toggle_options.disabled.setString("disabled");
 
-	toggleables.autosprint = options.at(static_cast<int>(Toggles::autosprint)).label;
-	toggleables.tutorial = options.at(static_cast<int>(Toggles::tutorial)).label;
-	toggleables.gamepad = options.at(static_cast<int>(Toggles::gamepad)).label;
-	music_label = options.at(static_cast<int>(Toggles::music)).label;
-	toggleables.fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label;
 	options.at(static_cast<int>(Toggles::autosprint)).label.setString(toggleables.autosprint.getString() + (svc.controller_map.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(Toggles::tutorial)).label.setString(toggleables.tutorial.getString() + (svc.tutorial() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(Toggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.controller_map.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));

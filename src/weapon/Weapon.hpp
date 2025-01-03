@@ -119,14 +119,14 @@ class Weapon {
 	} physical{};
 
 	struct {
-		sf::Sprite sprite{};
+		sf::Sprite sprite;
 		sf::Vector2<float> position{};
 		sf::Vector2<int> dimensions{};
 		std::vector<sf::Vector2<float>> anchor_points{};
-		sf::Sprite ui{};
+		sf::Sprite ui;
 		UIColor color{};
 		int texture_lookup{};
-	} visual{};
+	} visual;
 
 	struct {
 		util::BitFlags<WeaponState> state{};

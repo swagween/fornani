@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <ccmath/math/power/sqrt.hpp>
 #include <ccmath/math/power/pow.hpp>
-#include <ccmath/ext/cubic.hpp>
-#include <ccmath/ext/smoothstep.hpp>
+#include <ccmath/extensions/cubic.hpp>
+#include <ccmath/extensions/smoothstep.hpp>
 #include <numbers>
 
 namespace util {
