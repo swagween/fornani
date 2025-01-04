@@ -6,7 +6,7 @@
 namespace enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
-	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}} {
+	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.texture_lookup.at(label))} {
 
 	direction = dir::Direction{start_direction};
 
@@ -93,7 +93,6 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 	if (!flags.general.test(GeneralFlags::uncrushable)) { collider.collision_depths = util::CollisionDepth(); }
 
-	sprite.setTexture(svc.assets.texture_lookup.at(label));
 	drawbox.setSize({static_cast<float>(sprite_dimensions.x), static_cast<float>(sprite_dimensions.y)});
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(svc.styles.colors.ui_white);
@@ -173,8 +172,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (hurt_effect.running()) { column = (hurt_effect.get_cooldown() / 32) % 2 == 0 ? 1 : 2; }
 	auto u = column * sprite_dimensions.x;
 	auto v = static_cast<int>(animation.get_frame()) * sprite_dimensions.y;
-	sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
-	sprite.setOrigin(static_cast<float>(sprite_dimensions.x) * 0.5f, static_cast<float>(dimensions.y) * 0.5f);
+	visual.sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
+	visual.sprite.setOrigin({static_cast<float>(sprite_dimensions.x) * 0.5f, static_cast<float>(dimensions.y) * 0.5f});
 }
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
@@ -182,12 +181,12 @@ void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::P
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
-	drawbox.setOrigin(sprite.getOrigin());
+	drawbox.setOrigin(visual.sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
-	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
-	win.draw(sprite);
+	visual.sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
+	win.draw(visual.sprite);
 	if (svc.greyblock_mode()) {
-		win.draw(sprite);
+		win.draw(visual.sprite);
 		drawbox.setOrigin({0.f, 0.f});
 		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
 		drawbox.setOutlineColor(svc.styles.colors.ui_white);

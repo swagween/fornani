@@ -12,7 +12,7 @@ class FileMenu : public automa::GameState {
 
   public:
 	FileMenu() = default;
-	FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
+	FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int id = 0);
 	void init(ServiceProvider& svc, int room_number);
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);

@@ -4,9 +4,7 @@
 
 namespace automa {
 
-StateManager::StateManager() { g_current_state = std::make_unique<MainMenu>(); }
-
-StateManager::~StateManager() {}
+StateManager::StateManager(ServiceProvider& svc, player::Player& player) : g_current_state{std::make_unique<MainMenu>(svc, player)} {}
 
 void StateManager::process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game) {
 	if (svc.state_controller.actions.test(Actions::trigger_submenu)) {

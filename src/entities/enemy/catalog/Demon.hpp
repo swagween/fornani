@@ -36,10 +36,10 @@ class Demon : public Enemy {
 
 	// packages
 	struct {
-		entity::FloatingPart spear{};
-		entity::FloatingPart sword{};
-		entity::FloatingPart shield{};
-	} parts{};
+		entity::FloatingPart spear;
+		entity::FloatingPart sword;
+		entity::FloatingPart shield;
+	} parts;
 
 	struct {
 		entity::Attack stab{};

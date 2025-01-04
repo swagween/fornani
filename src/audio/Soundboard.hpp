@@ -40,7 +40,7 @@ enum class Meatsquash { hurt, death, chomp, whip, swallow };
 
 class Soundboard {
   public:
-	Soundboard();
+	Soundboard(automa::ServiceProvider& svc);
 	void play_sounds(automa::ServiceProvider& svc);
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
@@ -77,18 +77,6 @@ class Soundboard {
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
 	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
-
-	struct {
-		sf::Sound menu;
-		sf::Sound console;
-		std::vector<sf::Sound> world{};
-		std::vector<sf::Sound> item{};
-		sf::Sound player;
-		sf::Sound weapon;
-		sf::Sound transmission;
-		sf::Sound step;
-		std::vector<sf::Sound> critter{};
-	} sounds;
 
 	std::vector<Sound> sound_pool{};
 

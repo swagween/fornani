@@ -5,7 +5,6 @@
 namespace automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console) {
-	title.setPosition(0, 0);
 	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
 	title.setFillColor(svc.styles.colors.ui_black);
 	console = gui::Console(svc);
@@ -21,11 +20,8 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 void Intro::init(ServiceProvider& svc, int room_number) {}
 
-void Intro::handle_events(ServiceProvider& svc, sf::Event& event) {
-	if (pause_window.consume_exited()) { toggle_pause_menu(svc); }
-}
-
 void Intro::tick_update(ServiceProvider& svc) {
+	if (pause_window.consume_exited()) { toggle_pause_menu(svc); }
 	if (pause_window.active()) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }

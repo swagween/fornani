@@ -64,7 +64,7 @@ class Game {
 	} rng_test{};
 
 	player::Player player;
-	automa::StateManager game_state{};
+	automa::StateManager game_state;
 	sf::RectangleShape background{};
 };
 

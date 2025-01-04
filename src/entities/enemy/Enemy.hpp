@@ -132,9 +132,10 @@ class Enemy : public entity::Entity {
 	} physical{};
 
 	struct {
+		sf::Sprite sprite;
 		int effect_type{};
 		int effect_size{};
-	} visual{};
+	} visual;
 
 	struct {
 		audio::Enemy hit_flag{};

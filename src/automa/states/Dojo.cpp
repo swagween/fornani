@@ -85,8 +85,6 @@ void Dojo::init(ServiceProvider& svc, int room_number, std::string room_name) {
 	loading.start();
 }
 
-void Dojo::handle_events(ServiceProvider& svc, sf::Event& event) {}
-
 void Dojo::tick_update(ServiceProvider& svc) {
 	svc.a11y.set_action_ctx_bar_enabled(false);
 

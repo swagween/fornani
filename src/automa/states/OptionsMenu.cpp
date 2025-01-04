@@ -11,8 +11,6 @@ OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, std::stri
 
 void OptionsMenu::init(ServiceProvider& svc, int room_number) {}
 
-void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
-
 void OptionsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 

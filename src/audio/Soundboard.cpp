@@ -4,8 +4,8 @@
 
 namespace audio {
 
-Soundboard::Soundboard() {
-	for (int i{0}; i < 64; ++i) { sound_pool.push_back(Sound()); }
+Soundboard::Soundboard(automa::ServiceProvider& svc) {
+	for (int i{0}; i < 64; ++i) { sound_pool.push_back(Sound(svc.assets.click_buffer)); }
 }
 
 void Soundboard::play_sounds(automa::ServiceProvider& svc) {
@@ -157,7 +157,7 @@ void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, flo
 	auto iterator = std::ranges::find_if_not(sound_pool, [](auto& s) { return s.is_running(); });
 	if (iterator == std::ranges::end(sound_pool)) { return; }
 	auto& target = *iterator;
-	target.set_buffer(buffer, echo_count, echo_rate);
+	target = Sound(buffer, echo_count, echo_rate);
 	frequency != 0 ? repeat(svc, target, frequency, random_pitch_offset, attenuation, distance) : randomize(svc, target, random_pitch_offset, vol, attenuation, distance);
 }
 

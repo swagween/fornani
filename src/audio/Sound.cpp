@@ -3,6 +3,15 @@
 
 namespace audio {
 
+Sound::Sound(sf::SoundBuffer& buffer, int echo_count, int echo_rate) {
+	sounds.clear();
+	echo.rate = echo_rate;
+	echo.count = util::Cooldown{echo_count};
+	echo.repeater.start(echo.rate);
+	echo.count.start();
+	for (auto i{0}; i <= echo_count; ++i) { sounds.push_back(sf::Sound(buffer)); }
+}
+
 void Sound::update(automa::ServiceProvider& svc) {
 	echo.repeater.update();
 	if (!is_echoing()) { return; }
@@ -15,7 +24,7 @@ void Sound::update(automa::ServiceProvider& svc) {
 	}
 }
 
-void Sound::play() { sounds.back().play(); sounds.back().setMinGain}
+void Sound::play() { sounds.back().play(); }
 
 void Sound::set_volume(float volume) {
 	native_volume = volume;
@@ -24,16 +33,6 @@ void Sound::set_volume(float volume) {
 
 void Sound::set_pitch(float pitch) {
 	for (auto& s : sounds) { s.setPitch(pitch); }
-}
-
-void Sound::set_buffer(sf::SoundBuffer& buffer, int echo_count, int echo_rate) {
-	sounds.clear();
-	echo.rate = echo_rate;
-	echo.count = util::Cooldown{echo_count};
-	echo.repeater.start(echo.rate);
-	echo.count.start();
-	for (auto i{0}; i <= echo_count; ++i) { sounds.push_back(sf::Sound(buffer)); }
-	std::cout << sounds.size() << "\n";
 }
 
 } // namespace fornani

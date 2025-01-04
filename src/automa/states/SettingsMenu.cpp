@@ -27,8 +27,6 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 
 void SettingsMenu::init(ServiceProvider& svc, int room_number) {}
 
-void SettingsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
-
 void SettingsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (!console.active()) {

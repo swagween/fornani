@@ -18,6 +18,7 @@ class WindowManager {
 
 	sf::Texture screencap{};
 	sf::Vector2<int> screen_dimensions{};
+	sf::Vector2u u_screen_dimensions{};
 	sf::Vector2u display_dimensions{};
 
   private:

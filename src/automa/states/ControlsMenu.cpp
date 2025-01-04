@@ -8,14 +8,13 @@ namespace automa {
 constexpr std::array<std::string_view, 4> tabs = {"controls_platformer", "controls_inventory", "controls_map", "controls_menu"};
 constexpr std::array<std::string_view, 4> tab_id_prefixes = {"platformer_", "inventory_", "map_", "menu_"};
 
-ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
+ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), instruction(svc.text.fonts.title) {
 	change_scene(svc, "controls_platformer");
 	refresh_controls(svc);
 	instruction.setLineSpacing(1.5f);
-	instruction.setFont(font);
 	instruction.setLetterSpacing(title_letter_spacing);
 	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	instruction.setPosition(svc.constants.screen_dimensions.x * 0.5f - instruction.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 120.f);
+	instruction.setPosition({svc.constants.screen_dimensions.x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.constants.screen_dimensions.y - 120.f});
 	instruction.setFillColor(svc.styles.colors.dark_grey);
 
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
@@ -29,29 +28,6 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 }
 
 void ControlsMenu::init(ServiceProvider& svc, int room_number) {}
-
-void ControlsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {
-	if (option_is_selected && current_selection.get() > 0 && current_selection.get() < options.size() - 2) {
-		// Currently binding key
-		binding_mode = true;
-		if (event.type == sf::Event::EventType::KeyPressed) {
-			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
-			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(options.at(current_selection.get()).label.getString());
-			auto action = svc.controller_map.get_action_by_identifier(id.data());
-
-			auto key = event.key.code;
-			if (key != sf::Keyboard::Key::Escape) {
-				// Escape cancels binding
-				svc.controller_map.set_primary_keyboard_binding(action, event.key.code);
-				svc.data.controls["controls"][id]["primary_key"] = svc.controller_map.key_to_string(svc.controller_map.get_primary_keyboard_binding(action));
-				svc.data.save_controls(svc.controller_map);
-				refresh_controls(svc);
-			}
-			option_is_selected = false;
-			refresh_controls(svc);
-		}
-	}
-}
 
 void ControlsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
@@ -95,7 +71,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 			option_is_selected = !option_is_selected;
 			auto& control = control_list.at(current_selection.get());
 			control.setString("Press a key");
-			control.setOrigin(control.getLocalBounds().width, control.getLocalBounds().height * 0.5f);
+			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
 		}
 	}
 
@@ -138,12 +114,12 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 
 			auto& control = control_list.at(ctr);
 			control.setString(std::string(svc.controller_map.key_to_string(svc.controller_map.get_primary_keyboard_binding(action))));
-			control.setOrigin(control.getLocalBounds().width, control.getLocalBounds().height * 0.5f);
-			control.setPosition(svc.constants.screen_dimensions.x * 0.5f + center_offset, option.position.y);
+			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
+			control.setPosition({svc.constants.screen_dimensions.x * 0.5f + center_offset, option.position.y});
 			control.setCharacterSize(16);
 			control.setLetterSpacing(title_letter_spacing);
 			control.setFillColor(svc.styles.colors.dark_grey);
-			control.setOrigin(control.getLocalBounds().width * 0.5f, control.getLocalBounds().height * 0.5f);
+			control.setOrigin(control.getLocalBounds().getCenter());
 		}
 		++ctr;
 	}
@@ -163,17 +139,16 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	options.clear();
 	control_list.clear();
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string(), font)); }
+	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
 	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {
-		option.label.setFont(font);
 		if (ctr == 0 || ctr >= options.size() - 2) {
 			// Show tab selector, gamepad settings & reset to default in middle of screen
 			option.position.x = svc.constants.screen_dimensions.x * 0.5f;
 		} else {
-			option.position.x = svc.constants.screen_dimensions.x * 0.5f - center_offset + option.label.getLocalBounds().width * 0.5f;
+			option.position.x = svc.constants.screen_dimensions.x * 0.5f - center_offset + option.label.getLocalBounds().getCenter().x;
 		}
 		// FIXME Spacing is broken in other menus. getLocalBounds().height is returning 0 because the font isn't set when the function is called
 		// 	     To make up for it we don't add the getLocalBounds().height factor here, but keep it in mind when it is fixed!
@@ -181,8 +156,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		option.index = ctr;
 		option.update(svc, current_selection.get());
 
-		control_list.push_back(sf::Text());
-		control_list.back().setFont(font);
+		control_list.push_back(sf::Text(svc.text.fonts.title));
 		++ctr;
 	}
 	refresh_controls(svc);

@@ -37,9 +37,9 @@ class Caster : public Enemy {
 
 	// packages
 	struct {
-		entity::FloatingPart scepter{};
-		entity::FloatingPart wand{};
-	} parts{};
+		entity::FloatingPart scepter;
+		entity::FloatingPart wand;
+	} parts;
 
 	util::Cooldown hurt_effect{};
 

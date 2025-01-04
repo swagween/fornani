@@ -12,11 +12,11 @@ namespace audio {
 
 class Sound {
   public:
+	Sound(sf::SoundBuffer& buffer, int echo_count = 0, int echo_rate = 16);
 	void update(automa::ServiceProvider& svc);
 	void play();
 	void set_volume(float volume);
 	void set_pitch(float pitch);
-	void set_buffer(sf::SoundBuffer& buffer, int echo_count = 0, int echo_rate = 16);
 	[[nodiscard]] auto get_status() const -> sf::Sound::Status {
 		return std::ranges::find_if(sounds, [](auto& s) { return s.getStatus() == sf::Sound::Status::Playing; }) == std::ranges::end(sounds) ? sf::Sound::Status::Stopped : sf::Sound::Status::Playing;
 	}

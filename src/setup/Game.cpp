@@ -7,7 +7,7 @@
 
 namespace fornani {
 
-Game::Game(char** argv, WindowManager& window, Version& version) : services(argv), player(services) {
+Game::Game(char** argv, WindowManager& window, Version& version) : services(argv), player(services), game_state(services, player) {
 	services.stopwatch.start();
 	services.version = version;
 	services.window = &window;
@@ -18,9 +18,6 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	// text
 	services.text.finder.setResourcePath(argv);
 	services.text.load_data();
-	services.debug_text.setFont(services.text.fonts.basic);
-	services.debug_text.setCharacterSize(16);
-	services.debug_text.setFillColor(sf::Color::White);
 	// image
 	services.assets.finder.setResourcePath(argv);
 	services.assets.import_textures();
@@ -37,7 +34,6 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	game_state.get_current_state().init(services, 100);
 
 	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
-	background.setPosition(0, 0);
 	background.setFillColor(services.styles.colors.ui_black);
 }
 
@@ -85,22 +81,22 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		services.ticker.start_frame();
 
-		// SFML event variable
-		auto event = sf::Event{};
-
 		bool valid_event{true};
 		// check window events
-		while (services.window->get().pollEvent(event)) {
+		while (std::optional const event = services.window->get().pollEvent()) {
 			player.animation.state = {};
-			switch (event.type) {
-			case sf::Event::Closed: shutdown(); return;
-			case sf::Event::KeyPressed:
-				if (event.key.code == sf::Keyboard::LControl) { key_flags.set(KeyboardFlags::control); }
-				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::P && key_flags.test(KeyboardFlags::control)) {
+			if (event->is<sf::Event::Closed>()) {
+				shutdown();
+				return;
+			}
+			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { key_flags.set(KeyboardFlags::control); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::F2) { valid_event = false; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::F3) { valid_event = false; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { valid_event = false; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Slash) { valid_event = false; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Unknown) { valid_event = false; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_flags.test(KeyboardFlags::control)) {
 					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
@@ -110,22 +106,20 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 						services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 					}
 				}
-				if (event.key.code == sf::Keyboard::Equal) { take_screenshot(services.window->screencap); }
-				break;
-			case sf::Event::KeyReleased:
-				if (event.key.code == sf::Keyboard::LControl) { key_flags.reset(KeyboardFlags::control); }
-				if (event.key.code == sf::Keyboard::F2) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::F3) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::Slash) { valid_event = false; }
-				if (event.key.code == sf::Keyboard::Unknown) { valid_event = false; }
-				break;
-			default: break;
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
 			}
-			game_state.get_current_state().handle_events(services, event);
+			if (auto const* key_pressed = event->getIf<sf::Event::KeyReleased>()) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { key_flags.reset(KeyboardFlags::control); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::F2) { valid_event = false; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::F3) { valid_event = false; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Slash) { valid_event = false; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Unknown) { valid_event = false; }
+			}
 			services.controller_map.handle_event(event);
-			if (valid_event) { ImGui::SFML::ProcessEvent(event); }
+			if (valid_event) { ImGui::SFML::ProcessEvent(services.window->get(), event); }
 			valid_event = true;
 		}
+		
 
 		SteamAPI_RunCallbacks();
 
@@ -307,10 +301,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("MiniMap X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().x);
 					ImGui::Text("MiniMap Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().y);
 					ImGui::Separator();
-					ImGui::Text("MiniMap Extent Left..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().left);
-					ImGui::Text("MiniMap Extent Top..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().top);
-					ImGui::Text("MiniMap Extent Width..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().width);
-					ImGui::Text("MiniMap Extent Height..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().height);
+					ImGui::Text("MiniMap Extent Left..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().position.x);
+					ImGui::Text("MiniMap Extent Top..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().position.y);
+					ImGui::Text("MiniMap Extent Width..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().size.x);
+					ImGui::Text("MiniMap Extent Height..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().size.y);
 					ImGui::Separator();
 					ImGui::Text("MiniMap Center X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().x);
 					ImGui::Text("MiniMap Center Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().y);

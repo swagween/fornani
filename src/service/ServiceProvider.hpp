@@ -54,7 +54,7 @@ struct ServiceProvider {
 	util::Constants constants{};
 	StateController state_controller{};
 	MenuController menu_controller{};
-	audio::Soundboard soundboard{};
+	audio::Soundboard soundboard{*this};
 	audio::MusicPlayer music{};
 	fornani::QuestTracker quest{};
 	fornani::StatTracker stats{};
