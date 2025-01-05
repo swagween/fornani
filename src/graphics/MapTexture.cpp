@@ -25,7 +25,7 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 	tile_color.a = 100;
 	global_offset = map.metagrid_coordinates * 16;
 	map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions);
-	auto const& middleground = map.get_layers().at(world::MIDDLEGROUND);
+	auto const& middleground = map.get_middleground();
 	map_texture.resize({map.dimensions.x * static_cast<unsigned int>((32.f / scale)), map.dimensions.y * static_cast<unsigned int>(32.f / scale)});
 	map_texture.clear(sf::Color::Transparent);
 	for (auto& cell : middleground.grid.cells) {

@@ -1,8 +1,7 @@
 #include "AssetManager.hpp"
 
 namespace asset {
-
-void AssetManager::import_textures() {
+AssetManager::AssetManager(data::ResourceFinder& finder) {
 
 	if (!t_null.loadFromFile(finder.resource_path + "/image/app/null.png")) { std::cout << "Failed to load texture.\n"; };
 
@@ -265,9 +264,8 @@ void AssetManager::import_textures() {
 
 	savepoint.loadFromFile(finder.resource_path + "/image/entity/savepoint.png");
 	t_chest.loadFromFile(finder.resource_path + "/image/entity/chest.png");
-}
 
-void AssetManager::load_audio() {
+
 	click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/heavy_click.wav");
 	sharp_click_buffer.loadFromFile(finder.resource_path + "/audio/sfx/click.wav");
 	menu_shift_buffer.loadFromFile(finder.resource_path + "/audio/sfx/menu_shift_1.wav");

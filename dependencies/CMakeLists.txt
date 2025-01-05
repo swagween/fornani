@@ -4,7 +4,7 @@ set(BUILD_SHARED_LIBS OFF)
 # SFML
 FetchContent_Declare(sfml
   GIT_REPOSITORY https://github.com/SFML/SFML
-  GIT_TAG 7f1162dfea4969bc17417563ac55d93b72e84c1e # 3.0.0
+  GIT_TAG 3.0.0
 )
 FetchContent_MakeAvailable(sfml)
 
@@ -12,7 +12,7 @@ FetchContent_MakeAvailable(sfml)
 FetchContent_Declare(
   imgui
   GIT_REPOSITORY https://github.com/ocornut/imgui
-  GIT_TAG 993fa347495860ed44b83574254ef2a317d0c14f # 1.91.6
+  GIT_TAG v1.91.6
 )
 
 FetchContent_MakeAvailable(imgui)
@@ -21,7 +21,7 @@ FetchContent_MakeAvailable(imgui)
 FetchContent_Declare(
   imgui-sfml
   GIT_REPOSITORY https://github.com/eliasdaler/imgui-sfml
-  GIT_TAG 5e8f8fb857c8f3cff1096bf3e4402c64e3bcf6af
+  GIT_TAG v3.0
 )
 add_subdirectory(imgui-sfml)
 
@@ -39,7 +39,7 @@ set(CCMATH_DISABLE_ERRNO ON)
 FetchContent_Declare(
         ccmath
         GIT_REPOSITORY https://github.com/Rinzii/ccmath
-        GIT_TAG d921f12ef27f92ad08251a0f40dfb1af557c5fe6
+        GIT_TAG main
 )
 FetchContent_MakeAvailable(ccmath)
 

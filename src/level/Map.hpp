@@ -59,12 +59,6 @@ class InventoryWindow;
 
 namespace world {
 
-enum LAYER_ORDER {
-	BACKGROUND = 0,
-	MIDDLEGROUND = 4,
-	FOREGROUND = 7,
-};
-
 enum class LevelState { game_over, camera_shake, spawn_enemy };
 enum class MapState { unobscure };
 
@@ -72,14 +66,18 @@ enum class MapState { unobscure };
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
 
 class Layer {
-
   public:
 	Layer() = default;
 	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(c), dimensions(dim), grid(dim, source) {}
+	[[nodiscard]] auto middleground() const -> bool { return render_order == 4; }
+	[[nodiscard]] auto obscuring() const -> bool { return render_order == 7; }
+	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
 	Grid grid;
-	uint8_t render_order{};
 	bool collidable{};
 	sf::Vector2<uint32_t> dimensions{};
+
+  private:
+	uint8_t render_order{};
 };
 
 struct EnemySpawn {
@@ -117,6 +115,7 @@ class Map {
 	void clear();
 	void wrap(sf::Vector2<float>& position) const;
 	std::vector<Layer>& get_layers();
+	Layer& get_middleground();
 	npc::NPC& get_npc(int id);
 	Vec get_spawn_position(int portal_source_map_id);
 	sf::Vector2<float> get_nearest_target_point(sf::Vector2<float> from);
@@ -126,7 +125,7 @@ class Map {
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
 	bool within_bounds(sf::Vector2<float> test) const;
-	bool overlaps_middleground(shape::Shape& test) const;
+	bool overlaps_middleground(shape::Shape& test);
 	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	std::size_t get_index_at_position(sf::Vector2<float> position);

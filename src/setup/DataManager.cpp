@@ -55,7 +55,7 @@ void DataManager::load_data(std::string in_room) {
 		map_layers.push_back(std::vector<world::Layer>());
 		map_layers.back().reserve(num_layers);
 		for (int i = 0; i < num_layers; ++i) {
-			map_layers.at(room_counter).push_back(world::Layer(i, (i == world::MIDDLEGROUND), dimensions, map_jsons.back().tiles["layers"][layer_counter]));
+			map_layers.at(room_counter).push_back(world::Layer(i, (i == 4), dimensions, map_jsons.back().tiles["layers"][layer_counter]));
 			++layer_counter;
 		}
 		++room_counter;

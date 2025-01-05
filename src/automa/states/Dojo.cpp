@@ -190,7 +190,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	// if (svc.ticker.every_x_ticks(400)) { std::cout << "MYT x: " << mtv.x << "\n"; }
 	/*circle.update(svc);
 	circle.sensor.deactivate();
-	for (auto& cell : map.get_layers().at(world::MIDDLEGROUND).grid.cells) {
+	for (auto& cell : map.get_middleground().grid.cells) {
 		if (circle.collides_with(cell.bounding_box) && cell.is_collidable()) {
 			circle.sensor.activate();
 			auto mtv = circle.sensor.get_MTV(cell.bounding_box);

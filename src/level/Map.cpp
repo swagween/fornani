@@ -67,7 +67,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			svc.music.play_looped(10);
 		}
 		if (meta["ambience"].is_string()) {
-			ambience.load(svc.assets.finder, meta["ambience"].as_string());
+			ambience.load(svc.finder, meta["ambience"].as_string());
 			ambience.play();
 		}
 		for (auto& entry : meta["atmosphere"].array_view()) {
@@ -573,7 +573,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		win.draw(center_box);
 		center_box.setPosition({0.f, svc.constants.f_screen_dimensions.y * 0.5f});
 		win.draw(center_box);
-		get_layers().at(MIDDLEGROUND).grid.render(win, cam);
+		get_middleground().grid.render(win, cam);
 	}
 }
 
@@ -665,10 +665,9 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 }
 
 void Map::generate_collidable_layer(bool live) {
-	auto& layers = m_services->data.get_layers(room_id);
 	auto pushable_offset = sf::Vector2<float>{1.f, 0.f};
-	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-		layers.at(MIDDLEGROUND).grid.check_neighbors(cell.one_d_index);
+	for (auto& cell : get_middleground().grid.cells) {
+		get_middleground().grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position(), styles.breakables)); }
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 227)); }
@@ -685,13 +684,13 @@ void Map::generate_collidable_layer(bool live) {
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
-	auto ctr{0};
 	for (auto& layer : layers) {
-		auto& tex = layer_textures.at(static_cast<size_t>(layer.render_order));
+		auto& tex = layer_textures.at(static_cast<size_t>(layer.get_render_order()));
+		std::cout << "render order : " << static_cast<int>(layer.get_render_order()) << "\n";
 		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x) * static_cast<unsigned int>(svc.constants.i_cell_size), static_cast<unsigned int>(layer.grid.dimensions.y) * static_cast<unsigned int>(svc.constants.i_cell_size)};
 		if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
 		tex.clear(sf::Color::Transparent);
-		if(ctr == 7) {
+		if (layer.obscuring()) {
 			if (!obscuring_texture.resize({layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size})) { std::cout << "Obscuring layer texture not created.\n"; }
 			obscuring_texture.clear(sf::Color::Transparent);
 		}
@@ -703,7 +702,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
 				tile_sprite.setPosition(cell.position());
 				tex.draw(tile_sprite);
-			} else if (ctr == 7) {
+			} else if (layer.obscuring()) {
 				auto x_coord = static_cast<int>((1 % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				auto y_coord = static_cast<int>(std::floor(1 / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
@@ -714,12 +713,12 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 		}
 		tex.display();
 		obscuring_texture.display();
-		++ctr;
+		std::cout << "Texture dimensions: " << tex.getSize().x << " ; " << tex.getSize().y << std::endl;
 	}
 }
 
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
-	auto& grid = foreground ? get_layers().at(7).grid : get_layers().at(world::MIDDLEGROUND).grid;
+	auto& grid = foreground ? get_layers().at(7).grid : get_middleground().grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
@@ -739,7 +738,7 @@ bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 }
 
 bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms) {
-	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+	auto& grid = get_middleground().grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
@@ -760,7 +759,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 }
 
 void Map::handle_cell_collision(shape::CircleCollider& collider) {
-	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+	auto& grid = get_middleground().grid;
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
 	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
@@ -802,6 +801,8 @@ void Map::wrap(sf::Vector2<float>& position) const {
 }
 
 std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
+
+Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(4); }
 
 npc::NPC& Map::get_npc(int id) {
 	for (auto& npc : npcs) {
@@ -850,18 +851,17 @@ bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 
 bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
 
-bool Map::overlaps_middleground(shape::Shape& test) const {
-	auto& layers = m_services->data.get_layers(room_id);
-	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+bool Map::overlaps_middleground(shape::Shape& test) {
+	for (auto& cell : get_middleground().grid.cells) {
 		if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; }
 	}
 	return false;
 }
 
-std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_index_at_position(position); }
+std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_index_at_position(position); }
 
-int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_cell(get_index_at_position(position)).value; }
+int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_cell(get_index_at_position(position)).value; }
 
-Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.cells.at(get_index_at_position(position)); }
+Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground().grid.cells.at(get_index_at_position(position)); }
 
 } // namespace world

@@ -14,12 +14,8 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	// controls
 	services.data.load_controls(services.controller_map);
 	services.data.load_settings();
-	// image
-	services.assets.finder.set_resource_path(argv);
-	services.assets.import_textures();
 	// sounds
 	services.music.finder.set_resource_path(argv);
-	services.assets.load_audio();
 	playtest.m_musicplayer = true;
 	services.music.turn_on();
 	// player

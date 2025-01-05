@@ -13,11 +13,8 @@ namespace asset {
 
 class AssetManager {
   public:
-	AssetManager() = default;
-	~AssetManager() {}
+	AssetManager(data::ResourceFinder& finder);
 
-	void import_textures();
-	void load_audio();
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
 
@@ -353,8 +350,6 @@ class AssetManager {
 
 	// other members
 	int music_vol{24};
-
-	data::ResourceFinder finder{};
 
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
 	std::unordered_map<int, sf::Texture&> scenery_lookup{};
