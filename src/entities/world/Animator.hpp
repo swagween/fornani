@@ -48,6 +48,7 @@ class Animator : public Entity {
 	anim::Parameters moving{1, 4, 28, 0};
 	anim::Parameters still{0, 1, 28, -1};
 	util::BitFlags<AnimatorAttributes> attributes{};
+	sf::Sprite sprite;
 };
 
 } // namespace entity

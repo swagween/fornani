@@ -37,8 +37,8 @@ void Rain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 		drop.collided() ? raindrop.setSize({dimensions.x, dimensions.x}) : raindrop.setSize(dimensions);
 		drop.collided() ? raindrop.setOrigin({dimensions.x * 0.5f, dimensions.x}) : raindrop.setOrigin({dimensions.x * 0.5f, dimensions.y});
 		raindrop.setPosition(drop.position() - cam);
-		raindrop.setRotation(drop.get_angle());
-		raindrop.setScale(drop.z, raindrop.getScale().y);
+		raindrop.setRotation(sf::degrees(drop.get_angle()));
+		raindrop.setScale({drop.z, raindrop.getScale().y});
 		svc.greyblock_mode() ? drop.collider.render(win, cam) : win.draw(raindrop);
 	}
 }

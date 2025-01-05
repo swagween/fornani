@@ -4,11 +4,10 @@
 
 namespace player {
 
-Piggybacker::Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2<float> position) {
+Piggybacker::Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2<float> position) : sprite{svc.assets.npcs.at(label)} {
 	auto const& in_data = svc.data.npc[label];
 	auto dimensions = sf::Vector2<int>{in_data["sprite_dimensions"][0].as<int>(), in_data["sprite_dimensions"][1].as<int>()};
 	sprite.setTextureRect(sf::IntRect{{}, dimensions});
-	if (svc.assets.npcs.contains(label)) { sprite.setTexture(svc.assets.npcs.at(label)); }
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.9f, 0.9f}, 1.0f);
 	gravitator.set_position(position);

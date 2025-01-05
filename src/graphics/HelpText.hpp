@@ -20,6 +20,7 @@ enum class HelpTextFlags { no_blink, time_limit };
 
 class HelpText {
   public:
+	HelpText(automa::ServiceProvider& svc);
 	HelpText(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end = "", int delay_time = 195, bool include_background = false, bool no_blink = false);
 	void render(sf::RenderWindow& win);
 	void set_color(sf::Color color);

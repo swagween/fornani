@@ -5,15 +5,12 @@
 
 namespace player {
 
-Indicator::Indicator(automa::ServiceProvider& svc) {}
+Indicator::Indicator(automa::ServiceProvider& svc) : label{svc.text.fonts.title} {}
 
 void Indicator::init(automa::ServiceProvider& svc, int id) {
 	type = static_cast<IndicatorType>(id);
-	font.loadFromFile(svc.text.title_font);
-	font.setSmooth(false);
 	label.setCharacterSize(16);
 	label.setLetterSpacing(0.6f);
-	label.setFont(font);
 	if (type == IndicatorType::health) { color_fade = vfx::ColorFade({svc.styles.colors.ui_white, svc.styles.colors.red, svc.styles.colors.dark_fucshia}, 16, addition_time); }
 	if (type == IndicatorType::orb) { color_fade = vfx::ColorFade({svc.styles.colors.ui_white, svc.styles.colors.goldenrod, svc.styles.colors.dark_orange}, 16, addition_time); }
 	float fric{0.85f};

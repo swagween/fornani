@@ -8,7 +8,7 @@
 
 namespace world {
 
-Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size) {
+Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.t_pushables} {
 	collider = shape::Collider({svc.constants.cell_size * static_cast<float>(size) - 4.f, svc.constants.cell_size * static_cast<float>(size) - 1.f});
 	collider.physics.position = position;
 	start_position = position;
@@ -20,7 +20,6 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, in
 	auto snap = collider.snap_to_grid(static_cast<float>(size));
 	collider.physics.position = snap;
 	start_box = collider.bounding_box;
-	sprite.setTexture(svc.assets.t_pushables);
 	sf::IntRect lookup = size == 1 ? sf::IntRect{{style * 2 * svc.constants.i_cell_size, 0}, svc.constants.i_cell_vec} : sf::IntRect{{style * 2 * svc.constants.i_cell_size, svc.constants.i_cell_size}, 2 * svc.constants.i_cell_vec};
 	sprite.setTextureRect(lookup);
 }

@@ -48,7 +48,7 @@ void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec
 	}
 
 	box.setFillColor(prev_color);
-	box.setPosition(collider.bounding_box.position.x - campos.x, collider.bounding_box.position.y - campos.y);
+	box.setPosition(collider.bounding_box.position - campos);
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(box);
@@ -56,4 +56,5 @@ void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec
 		win.draw(box);
 	}
 }
+
 } // namespace vfx

@@ -37,6 +37,7 @@ class Grenade : public shape::Collider, public entity::Entity {
 	util::BitFlags<GrenadeFlags> grenade_flags{};
 	components::CircleSensor sensor{};
 	float damage{24.f};
+	sf::Sprite sprite;
 };
 
 } // namespace arms

@@ -8,7 +8,7 @@
 namespace world {
 
 Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point, int style)
-	: shape::Collider(dimensions, position), path_position(start_point) {
+	: shape::Collider(dimensions, position), path_position(start_point), sprite{svc.assets.platform_lookup.at(style)} {
 
 	auto const& in_data = svc.data.platform[specifications];
 	if (in_data["sticky"].as_bool()) { flags.attributes.set(PlatformAttributes::sticky); }
@@ -49,7 +49,6 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 
 	// set visuals
 	animation.set_params({0, 4, 16, -1});
-	sprite.setTexture(svc.assets.platform_lookup.at(style));
 	auto scaled_dim = dimensions / svc.constants.cell_size;
 	if (scaled_dim.x == 1) { offset = {0, 0}; }
 	if (scaled_dim.x == 2) { offset = {32, 0}; }
@@ -167,7 +166,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 }
 
 void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	track_shape.setPosition(-cam.x, -cam.y);
+	track_shape.setPosition(-cam);
 	sprite.setPosition(physics.position - cam);
 	auto u = state * 96;
 	auto v = animation.get_frame() * 224;

@@ -9,11 +9,11 @@
 
 namespace world {
 
-SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id) {
+SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id), sprite{svc.assets.t_switch_blocks}
+{
 	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();
-	sprite.setTexture(svc.assets.t_switch_blocks);
 	sprite.setTextureRect(sf::IntRect{{static_cast<int>(type) * 32, static_cast<int>(state) * 32}, {32, 32}});
 	if (svc.data.switch_is_activated(button_id)) { state = SwitchBlockState::empty; }
 }

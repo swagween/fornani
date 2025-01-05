@@ -112,7 +112,7 @@ class Projectile {
 		sf::Vector2<int> dimensions{};
 		flfx::SpriteHistory sprite_history{};
 		dir::Direction direction{};
-	} visual{};
+	} visual;
 
 	struct {
 		shape::Shape bounding_box{};

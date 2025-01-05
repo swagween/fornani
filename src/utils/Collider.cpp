@@ -404,7 +404,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	// draw predictive vertical
 	box.setSize(predictive_vertical.dimensions);
-	box.setPosition(predictive_vertical.position.x - cam.x, predictive_vertical.position.y - cam.y);
+	box.setPosition(predictive_vertical.position - cam);
 	box.setOutlineColor(sf::Color{255, 0, 0, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
@@ -412,7 +412,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.dimensions);
-	box.setPosition(predictive_horizontal.position.x - cam.x, predictive_horizontal.position.y - cam.y);
+	box.setPosition(predictive_horizontal.position - cam);
 	box.setOutlineColor(sf::Color{80, 0, 255, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
@@ -420,7 +420,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	// draw predictive combined
 	box.setSize(predictive_combined.dimensions);
-	box.setPosition(predictive_combined.position.x - cam.x, predictive_combined.position.y - cam.y);
+	box.setPosition(predictive_combined.position - cam);
 	box.setOutlineColor(sf::Color{255, 255, 80, 180});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
@@ -428,7 +428,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	// draw bounding box
 	box.setSize(dimensions);
-	box.setPosition(bounding_box.position.x - cam.x, bounding_box.position.y - cam.y);
+	box.setPosition(bounding_box.position - cam);
 	box.setFillColor(colors.local);
 	flags.state.test(State::on_flat_surface) ? box.setOutlineColor(sf::Color{0, 255, 0, 190}) : box.setOutlineColor(sf::Color{255, 0, 0, 190});
 	box.setOutlineThickness(-1);
@@ -436,7 +436,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	// draw jump box
 	box.setSize(jumpbox.dimensions);
-	box.setPosition(jumpbox.position.x - cam.x, jumpbox.position.y - cam.y);
+	box.setPosition(jumpbox.position - cam);
 	box.setFillColor(sf::Color::Blue);
 	box.setOutlineColor(sf::Color::Transparent);
 	flags.external_state.test(ExternalState::grounded) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
@@ -444,12 +444,12 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	// draw hurtbox
 	draw_hurtbox.setSize(sf::Vector2<float>{(float)hurtbox.dimensions.x, (float)hurtbox.dimensions.y});
-	draw_hurtbox.setPosition(hurtbox.position.x - cam.x, hurtbox.position.y - cam.y);
+	draw_hurtbox.setPosition(hurtbox.position - cam);
 	//win.draw(draw_hurtbox);
 
 	// draw vicinity
 	box.setSize(sf::Vector2<float>{(float)vicinity.dimensions.x, (float)vicinity.dimensions.y});
-	box.setPosition(vicinity.position.x - cam.x, vicinity.position.y - cam.y);
+	box.setPosition(vicinity.position - cam);
 	box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{120, 60, 80, 180});
 	box.setOutlineThickness(-1);
@@ -457,7 +457,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	// draw wallslider
 	box.setSize(sf::Vector2<float>{(float)wallslider.dimensions.x, (float)wallslider.dimensions.y});
-	box.setPosition(wallslider.position.x - cam.x, wallslider.position.y - cam.y);
+	box.setPosition(wallslider.position - cam);
 	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
 	box.setOutlineThickness(-1);
@@ -466,12 +466,12 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw physics position
 	if (collision_depths) {
 		box.setSize(vertical.dimensions);
-		box.setPosition(vertical.position.x - cam.x, vertical.position.y - cam.y);
+		box.setPosition(vertical.position - cam);
 		collision_depths.value().vertical_squish() ? box.setFillColor(sf::Color::Green) : box.setFillColor(sf::Color::Red);
 		box.setOutlineThickness(0);
 		//win.draw(box); // draw physics position
 		box.setSize(horizontal.dimensions);
-		box.setPosition(horizontal.position.x - cam.x, horizontal.position.y - cam.y);
+		box.setPosition(horizontal.position - cam);
 		collision_depths.value().horizontal_squish() ? box.setFillColor(sf::Color::Green) : box.setFillColor(sf::Color::Red);
 		box.setOutlineThickness(0);
 		//win.draw(box);

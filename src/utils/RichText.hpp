@@ -10,17 +10,17 @@ class RichText : public sf::Drawable, public sf::Transformable {
   public:
 	/// @brief Append some text to the list of segments.
 	void add_text(std::string_view text, sf::Font const& font, unsigned int size, sf::Color color = sf::Color::White) {
-		sf::Text textSegment(std::string(text), font, size);
+		sf::Text textSegment(font, std::string(text), size);
 		textSegment.setFillColor(color);
-		textSegment.setPosition(m_current_offset, 0.0f);
-		m_current_offset += textSegment.getGlobalBounds().width;
+		textSegment.setPosition({m_current_offset, 0.0f});
+		m_current_offset += textSegment.getGlobalBounds().size.x;
 		m_segments.emplace_back(textSegment);
 	}
 
 	/// @brief Append a sprite to the list of segments. Normally used to display icons inline with text.
 	void add_sprite(sf::Sprite sprite) {
-		sprite.setPosition(m_current_offset, 0.0f);
-		m_current_offset += sprite.getGlobalBounds().width;
+		sprite.setPosition({m_current_offset, 0.0f});
+		m_current_offset += sprite.getGlobalBounds().size.x;
 		m_segments.emplace_back(sprite);
 	}
 

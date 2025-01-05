@@ -25,7 +25,7 @@ class Wardrobe {
   public:
 	Wardrobe();
 	void set_palette(sf::Texture& tex);
-	void change_outfit(std::vector<std::pair<sf::Vector2<int>, sf::Color>> replacement);
+	void change_outfit(std::vector<std::pair<sf::Vector2<unsigned int>, sf::Color>> replacement);
 	void update(flfx::TextureUpdater& updater);
 	void equip(ApparelType type, int variant);
 	void unequip(ApparelType type);

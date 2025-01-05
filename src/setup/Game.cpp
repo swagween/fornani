@@ -7,22 +7,18 @@
 
 namespace fornani {
 
-Game::Game(char** argv, WindowManager& window, Version& version) : services(argv), player(services), game_state(services, player) {
+Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version), player(services), game_state(services, player) {
 	services.stopwatch.start();
-	services.version = version;
 	services.window = &window;
 	services.constants.screen_dimensions = window.screen_dimensions;
 	// controls
 	services.data.load_controls(services.controller_map);
 	services.data.load_settings();
-	// text
-	services.text.finder.setResourcePath(argv);
-	services.text.load_data();
 	// image
-	services.assets.finder.setResourcePath(argv);
+	services.assets.finder.set_resource_path(argv);
 	services.assets.import_textures();
 	// sounds
-	services.music.finder.setResourcePath(argv);
+	services.music.finder.set_resource_path(argv);
 	services.assets.load_audio();
 	playtest.m_musicplayer = true;
 	services.music.turn_on();
@@ -115,8 +111,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Slash) { valid_event = false; }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Unknown) { valid_event = false; }
 			}
-			services.controller_map.handle_event(event);
-			if (valid_event) { ImGui::SFML::ProcessEvent(services.window->get(), event); }
+			services.controller_map.handle_event(*event);
+			if (valid_event) { ImGui::SFML::ProcessEvent(services.window->get(), *event); }
 			valid_event = true;
 		}
 		

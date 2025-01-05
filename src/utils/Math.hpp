@@ -10,7 +10,11 @@
 namespace util {
 
 inline float magnitude(sf::Vector2<float> vec) { return ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }
-inline sf::Vector2<float> unit(sf::Vector2<float> vec) { return vec / ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }
+inline sf::Vector2<float> unit(sf::Vector2<float> vec) {
+	auto denominator = ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y));
+	if (denominator == 0.f) { return sf::Vector2<float>{1.f, 0.f}; }
+	return vec / denominator;
+}
 inline float direction(sf::Vector2<float> vec) { return atan2f(vec.y, vec.x); }
 inline sf::Vector2<float> absolute_distance(sf::Vector2<float> source, sf::Vector2<float> destination) { return sf::Vector2<float>{abs(source.x - destination.x), abs(source.y - destination.y)}; }
 	inline sf::Vector2<float> round_to_even(sf::Vector2<float> input) {

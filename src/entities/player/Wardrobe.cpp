@@ -11,9 +11,9 @@ Wardrobe::Wardrobe() {
 
 void Wardrobe::set_palette(sf::Texture& tex) { palette = tex; }
 
-void Wardrobe::change_outfit(std::vector<std::pair<sf::Vector2<int>, sf::Color>> replacement) {
+void Wardrobe::change_outfit(std::vector<std::pair<sf::Vector2<unsigned int>, sf::Color>> replacement) {
 	sf::Image image = palette.copyToImage();
-	for (auto& pixel : replacement) { image.setPixel(pixel.first.x, pixel.first.y, pixel.second); }
+	for (auto& pixel : replacement) { image.setPixel(pixel.first, pixel.second); }
 	palette.loadFromImage(image);
 }
 

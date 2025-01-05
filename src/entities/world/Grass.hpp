@@ -36,7 +36,7 @@ class Grass {
 	GrassType type{};
 	sf::RectangleShape drawbox{};
 	vfx::Chain chain;
-	std::array<sf::Sprite, 8> sprites;
+	sf::Sprite sprite;
 	std::vector<std::array<int, 2>> encodings{};
 	struct {
 		float f_height{4.f};

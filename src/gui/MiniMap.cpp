@@ -5,7 +5,7 @@
 
 namespace gui {
 
-MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc) {
+MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null} {
 	background_color = svc.styles.colors.ui_black;
 	background_color.a = 210;
 	background.setFillColor(background_color);
@@ -33,19 +33,19 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool
 	atlas.push_back(std::make_unique<MapTexture>(svc));
 	if (current) { atlas.back()->set_current(); }
 	atlas.back()->bake(svc, map, room, scale, current, undiscovered);
-	extent.left = std::min(atlas.back()->get_position().x, extent.left);
-	extent.width = std::max(atlas.back()->get_position().x + atlas.back()->get_dimensions().x, extent.width);
-	extent.top = std::min(atlas.back()->get_position().y, extent.top);
-	extent.height = std::max(atlas.back()->get_position().y + atlas.back()->get_dimensions().y, extent.height);
+	extent.position.x = std::min(atlas.back()->get_position().x, extent.position.x);
+	extent.size.x = std::max(atlas.back()->get_position().x + atlas.back()->get_dimensions().x, extent.size.x);
+	extent.position.y = std::min(atlas.back()->get_position().y, extent.position.y);
+	extent.size.y = std::max(atlas.back()->get_position().y + atlas.back()->get_dimensions().y, extent.size.y);
 }
 
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	view = svc.window->get_view();
 	auto port = svc.window->get_viewport();
-	port.width *= window_scale;
-	port.height *= window_scale;
-	port.left = (1.f - port.width) * 0.5f;
-	port.top = (1.f - port.height) * 0.5f;
+	port.size.x *= window_scale;
+	port.size.y *= window_scale;
+	port.position.x = (1.f - port.size.x) * 0.5f;
+	port.position.y = (1.f - port.size.y) * 0.5f;
 	view.setViewport(port);
 	background.setSize(svc.constants.f_screen_dimensions);
 	border.setSize(svc.constants.f_screen_dimensions);
@@ -71,12 +71,12 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		map_sprite.setPosition(room->get_position() * ratio + position);
 		room_border.setPosition(map_sprite.getPosition());
 		room_border.setOrigin(map_sprite.getOrigin());
-		room_border.setSize(map_sprite.getLocalBounds().getSize());
+		room_border.setSize(map_sprite.getLocalBounds().size);
 		room_border.setScale(map_sprite.getScale());
 		room_border.setOutlineThickness(-2.f);
 		win.draw(map_sprite);
 		auto tl = room->get_position() * ratio + position;
-		auto br = tl + map_sprite.getLocalBounds().getSize() * global_ratio;
+		auto br = tl + map_sprite.getLocalBounds().size * global_ratio;
 		auto pos = view.getCenter();
 		if( pos.x > tl.x && pos.x < br.x && pos.y > tl.y && pos.y < br.y) { win.draw(room_border); }
 		win.draw(player_box);
@@ -107,8 +107,8 @@ void MiniMap::toggle_scale() {
 
 void MiniMap::move(sf::Vector2<float> direction) {
 	position -= direction * speed;
-	position.x = std::clamp(position.x, -(extent.width) * ratio + view.getCenter().x, -(extent.left) * ratio + view.getCenter().x);
-	position.y = std::clamp(position.y, -(extent.height) * ratio + view.getCenter().y, -(extent.top) * ratio + view.getCenter().y);
+	position.x = std::clamp(position.x, -(extent.size.x) * ratio + view.getCenter().x, -(extent.position.x) * ratio + view.getCenter().x);
+	position.y = std::clamp(position.y, -(extent.size.y) * ratio + view.getCenter().y, -(extent.position.y) * ratio + view.getCenter().y);
 	previous_position = position;
 }
 

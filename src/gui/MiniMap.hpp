@@ -29,7 +29,6 @@ struct Chunk {
 
 class MiniMap {
   public:
-	MiniMap() = default;
 	MiniMap(automa::ServiceProvider& svc);
 	void bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current = false, bool undiscovered = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);

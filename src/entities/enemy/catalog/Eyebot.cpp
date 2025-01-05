@@ -64,10 +64,11 @@ fsm::StateFunction Eyebot::update_idle() {
 	state.set(EyebotState::idle);
 	return std::move(state_function);
 };
+
 fsm::StateFunction Eyebot::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		sprite_flip();
+		visual.sprite.scale({-1.f, 1.f});
 		state = {};
 		state.set(EyebotState::idle);
 		animation.set_params(idle);
@@ -77,4 +78,5 @@ fsm::StateFunction Eyebot::update_turn() {
 	state.set(EyebotState::turn);
 	return EYEBOT_BIND(update_turn);
 };
+
 } // namespace enemy

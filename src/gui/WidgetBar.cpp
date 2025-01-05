@@ -10,8 +10,7 @@ namespace gui {
 void WidgetBar::set(automa::ServiceProvider& svc, int amount, sf::Vector2<int> dimensions, sf::Texture& texture, sf::Vector2<float> origin, float pad) {
 	widgets.clear();
 	for (auto i{0}; i < amount; ++i) {
-		widgets.push_back(Widget(svc, dimensions, i));
-		widgets.back().sprite.setTexture(texture);
+		widgets.push_back(Widget(svc, texture, dimensions, i));
 		widgets.back().position = {i * dimensions.x + i * pad, 0.f};
 		widgets.back().gravitator.set_position(widgets.back().position);
 		widgets.back().origin = origin;

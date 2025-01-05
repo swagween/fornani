@@ -4,7 +4,7 @@ namespace fornani {
 
 Application::Application(char** argv) : loading(t_loading) {
 
-	finder.setResourcePath(argv);
+	finder.set_resource_path(argv);
 	std::cout << "Resource path: " << finder.resource_path << std::endl;
 
 	// load app resources

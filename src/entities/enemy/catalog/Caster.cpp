@@ -94,8 +94,8 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	directions.movement.lr = target.collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
-		parts.scepter.update(svc, map, player, directions.actual, sprite.getScale(), collider.get_center());
-		parts.wand.update(svc, map, player, directions.actual, sprite.getScale(), collider.get_center());
+		parts.scepter.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
+		parts.wand.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
 	}
 
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 10.f};
@@ -117,12 +117,12 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	if (hurt_effect.running()) {
 		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			sprite.setColor(svc.styles.colors.green);
+			visual.sprite.setColor(svc.styles.colors.green);
 		} else {
-			sprite.setColor(svc.styles.colors.mythic_green);
+			visual.sprite.setColor(svc.styles.colors.mythic_green);
 		}
 	} else {
-		sprite.setColor(svc.styles.colors.white);
+		visual.sprite.setColor(svc.styles.colors.white);
 	}
 
 	if (alert() && !hostile() && !cooldowns.post_cast.running()) { state = CasterState::prepare; }
@@ -133,8 +133,8 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	state_function = state_function();
 
-	if (directions.actual.lr == dir::LR::right && sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 }
 
 void Caster::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -182,7 +182,7 @@ fsm::StateFunction Caster::update_turn() {
 	animation.label = "turn";
 	cooldowns.pre_invisibility.update();
 	if (animation.complete()) {
-		Enemy::sprite.scale({-1.f, 1.f});
+		Enemy::visual.sprite.scale({-1.f, 1.f});
 		directions.actual = directions.desired;
 		state = CasterState::idle;
 		animation.set_params(idle);
@@ -206,7 +206,7 @@ fsm::StateFunction Caster::update_signal() {
 	animation.label = "signal";
 	if (animation.just_started()) {
 		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
-		parts.scepter.sprite.rotate(90.f * sign);
+		parts.scepter.sprite.rotate(sf::degrees(90.f) * sign);
 		cooldowns.rapid_fire.start(208);
 	}
 	if (m_services->ticker.every_x_ticks(20)) { flash.update(); }
@@ -222,7 +222,7 @@ fsm::StateFunction Caster::update_signal() {
 		parts.scepter.sprite.setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
 		parts.wand.sprite.setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
 		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
-		parts.scepter.sprite.rotate(-90.f * sign);
+		parts.scepter.sprite.rotate(sf::degrees(-90.f) * sign);
 		cooldowns.post_cast.start();
 		if (variant == CasterVariant::apprentice) {
 			m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);

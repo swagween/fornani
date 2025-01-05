@@ -8,7 +8,7 @@ namespace vfx {
 void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2<float> direction, int num_angles, bool radial) {
 
 	sprite.setScale({1.f, 1.f});
-	sprite.setRotation(0.f);
+	sprite.setRotation(sf::degrees(0.f));
 
 	sprite_angle_index = 0;
 	auto angle = util::direction(direction);
@@ -29,10 +29,13 @@ void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2<float> direc
 	auto positive_angle = angle + pi + slice;
 
 	if (radial) {
-		if (positive_angle <= two_pi && positive_angle > three_halves_pi) { sprite.setRotation(90.f); }
+		if (positive_angle <= two_pi && positive_angle > three_halves_pi) { sprite.setRotation(sf::degrees(90.f));
+		}
 		if (positive_angle <= three_halves_pi + slice && positive_angle > pi) {}
-		if (positive_angle <= pi && positive_angle > half_pi) { sprite.setRotation(270.f); }
-		if (positive_angle <= half_pi || positive_angle > two_pi) { sprite.setRotation(180.f); }
+		if (positive_angle <= pi && positive_angle > half_pi) { sprite.setRotation(sf::degrees(270.f));
+		}
+		if (positive_angle <= half_pi || positive_angle > two_pi) { sprite.setRotation(sf::degrees(180.f));
+		}
 	} else {
 		if (positive_angle <= two_pi && positive_angle > three_halves_pi) { sprite.setScale({-1.f, 1.f}); }
 		if (positive_angle <= three_halves_pi + slice && positive_angle > pi) {}

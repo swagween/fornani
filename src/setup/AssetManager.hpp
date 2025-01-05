@@ -11,11 +11,6 @@
 
 namespace asset {
 
-const uint8_t TILE_WIDTH = 32;
-int const NANI_SPRITESHEET_WIDTH = 22;
-int const NANI_SPRITESHEET_HEIGHT = 10;
-const uint8_t NANI_SPRITE_WIDTH = 48;
-
 class AssetManager {
   public:
 	AssetManager() = default;
@@ -25,6 +20,8 @@ class AssetManager {
 	void load_audio();
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
+
+	sf::Texture t_null{};
 
 	// player and NPCs!
 	sf::Texture t_nani{};

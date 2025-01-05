@@ -26,7 +26,6 @@ namespace gui {
 class HUD {
 
   public:
-	HUD() = default;
 	HUD(automa::ServiceProvider& svc, player::Player& player);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(player::Player& player, sf::RenderWindow& win);

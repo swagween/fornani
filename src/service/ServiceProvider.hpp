@@ -35,14 +35,15 @@ struct MapDebug {
 	int active_projectiles{};
 };
 struct ServiceProvider {
-	ServiceProvider(char** argv) : data(*this, argv) {};
+	ServiceProvider(char** argv, fornani::Version& version) : finder(argv), data(*this, argv), version(version){};
 
+	data::ResourceFinder finder;
+	lookup::Tables tables{};
+	data::TextManager text{finder};
+	data::DataManager data;
 	fornani::Version version{};
 	fornani::WindowManager* window;
-	lookup::Tables tables{};
 	asset::AssetManager assets{};
-	data::DataManager data;
-	data::TextManager text{};
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};

@@ -3,7 +3,7 @@
 
 namespace gui {
 
-Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left) {
+Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left), sprite{svc.assets.t_portraits}, window{svc.assets.t_portrait_window} {
 	dimensions = sf::Vector2<float>{128, 256};
 	end_position = sf::Vector2<float>{pad_x, svc.constants.screen_dimensions.y - pad_y - dimensions.y};
 	bring_in();
@@ -14,9 +14,7 @@ Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left) {
 	float fric{0.85f};
 	gravitator = vfx::Gravitator(start_position, sf::Color::Transparent, 1.f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{fric, fric}, 2.0f);
-	window.setTexture(svc.assets.t_portrait_window);
-	sprite.setTexture(svc.assets.t_portraits);
-	sprite.setTextureRect(sf::IntRect({id * (int)dimensions.x, (emotion - 1) * (int)dimensions.y}, {(int)dimensions.x, (int)dimensions.y}));
+	sprite.setTextureRect(sf::IntRect({id * static_cast<int>(dimensions.x), (emotion - 1) * static_cast<int>(dimensions.y)}, {static_cast<int>(dimensions.x), static_cast<int>(dimensions.y)}));
 	gravitator.set_target_position(position);
 }
 

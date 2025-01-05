@@ -14,7 +14,6 @@ enum class WidgetFlags { gun };
 
 class ItemWidget {
   public:
-	ItemWidget() = default;
 	ItemWidget(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);

@@ -72,7 +72,7 @@ enum class ControllerStatus { gamepad_connected };
 
 struct DigitalActionSource {
 	EInputActionOrigin controller_origin{};
-	sf::Keyboard::Key key{};
+	sf::Keyboard::Scancode key{};
 };
 
 struct DigitalActionStatus {
@@ -103,7 +103,7 @@ class ControllerMap {
 
 	/// @brief Process the SFML event given.
 	/// @details Used for keyboard controls.
-	void handle_event(sf::Event const&);
+	void handle_event(std::optional<sf::Event> const);
 
 	/// @brief Returns whether there is a gamepad connected or not.
 	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }
@@ -121,19 +121,19 @@ class ControllerMap {
 
 	auto actions_queried_this_update() const -> std::unordered_set<DigitalAction> const& { return m_actions_queried_this_update; }
 
-	void set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
-	void set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key);
+	void set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key);
+	void set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key);
 	/// @brief Returns the primary keyboard key associated with a particular action.
 	/// @param action
-	/// @return The key bound, or sf::Keyboard::Key::Unknown if no key was bound.
-	[[nodiscard]] auto get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key;
+	/// @return The key bound, or sf::Keyboard::Scancode::Unknown if no key was bound.
+	[[nodiscard]] auto get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode;
 	/// @brief Returns the secondary keyboard key associated with a particular action.
 	/// @param action
-	/// @return The key bound, or sf::Keyboard::Key::Unknown if no key was bound.
-	[[nodiscard]] auto get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key;
+	/// @return The key bound, or sf::Keyboard::Scancode::Unknown if no key was bound.
+	[[nodiscard]] auto get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode;
 
-	[[nodiscard]] auto key_to_string(sf::Keyboard::Key) const -> std::string_view;
-	[[nodiscard]] auto string_to_key(std::string_view) const -> sf::Keyboard::Key;
+	[[nodiscard]] auto key_to_string(sf::Keyboard::Scancode) const -> std::string_view;
+	[[nodiscard]] auto string_to_key(std::string_view) const -> sf::Keyboard::Scancode;
 
 	[[nodiscard]] auto last_controller_type_used() const -> ControllerType { return last_controller_ty_used; }
 
@@ -150,15 +150,15 @@ class ControllerMap {
 	struct DigitalActionData {
 		InputDigitalActionHandle_t steam_handle;
 		DigitalActionStatus status;
-		sf::Keyboard::Key primary_binding;
-		sf::Keyboard::Key secondary_binding;
+		sf::Keyboard::Scancode primary_binding;
+		sf::Keyboard::Scancode secondary_binding;
 
 		bool was_active_last_tick{};
 	};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
 	std::unordered_map<DigitalAction, std::string> digital_action_names{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};
-	std::unordered_set<sf::Keyboard::Key> keys_pressed;
+	std::unordered_set<sf::Keyboard::Scancode> keys_pressed;
 	InputActionSetHandle_t platformer_action_set{};
 	InputActionSetHandle_t menu_action_set{};
 	InputActionSetHandle_t inventory_action_layer{};

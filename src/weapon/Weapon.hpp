@@ -120,10 +120,10 @@ class Weapon {
 
 	struct {
 		sf::Sprite sprite;
+		sf::Sprite ui;
 		sf::Vector2<float> position{};
 		sf::Vector2<int> dimensions{};
 		std::vector<sf::Vector2<float>> anchor_points{};
-		sf::Sprite ui;
 		UIColor color{};
 		int texture_lookup{};
 	} visual;

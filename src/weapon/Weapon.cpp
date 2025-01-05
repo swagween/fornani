@@ -5,7 +5,8 @@ namespace arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	: metadata{.id = id, .label = enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()},
-	  projectile(svc, enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this, enemy) {
+	  projectile(svc, enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this, enemy),
+	  visual{.sprite = sf::Sprite{svc.assets.t_gun}, .ui = sf::Sprite{svc.assets.t_guns}} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id] : svc.data.weapon["weapons"][id];
 
@@ -14,7 +15,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 
 	// visual
 	visual.dimensions = {in_data["visual"]["dimensions"][0].as<int>(), in_data["visual"]["dimensions"][1].as<int>()};
-	visual.sprite.setTexture(svc.assets.t_gun);
 	offsets.render.global = {in_data["visual"]["offsets"]["global"][0].as<float>(), in_data["visual"]["offsets"]["global"][1].as<float>()};
 	offsets.render.barrel = {in_data["visual"]["offsets"]["barrel"][0].as<float>(), in_data["visual"]["offsets"]["barrel"][1].as<float>()};
 	visual.color = static_cast<UIColor>(in_data["visual"]["ui"]["color"].as<int>());
@@ -33,7 +33,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 		secondary_emitter.value().type = in_data["visual"]["secondary_spray"]["type"].as_string();
 	}
 	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 16;
-	visual.ui.setTexture(svc.assets.t_guns);
 	visual.sprite.setTextureRect(sf::IntRect{{0, visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
 	visual.sprite.setOrigin(offsets.render.global);
 
@@ -71,7 +70,7 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape box{};
 		box.setSize({2.f, 2.f});
-		box.setOrigin(1.f, 1.f);
+		box.setOrigin({1.f, 1.f});
 		box.setPosition(offsets.gameplay.barrel - cam);
 		box.setFillColor(svc.styles.colors.fucshia);
 		win.draw(box);
@@ -136,7 +135,7 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	auto right_barrel_offset = sf::Vector2<float>{offsets.render.barrel.x, offsets.render.barrel.y};
 	auto left_barrel_offset = sf::Vector2<float>{-offsets.render.barrel.x, offsets.render.barrel.y};
 	auto const& position = physical.final_position;
-	visual.sprite.setRotation(neutral_rotation);
+	visual.sprite.setRotation(sf::degrees(neutral_rotation));
 	switch (firing_direction.lr) {
 	case dir::LR::right:
 		visual.sprite.setScale(right_scale);
@@ -150,13 +149,13 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	}
 	switch (firing_direction.und) {
 	case dir::UND::up:
-		to_direction.right() ? visual.sprite.rotate(-90) : visual.sprite.rotate(90);
+		to_direction.right() ? visual.sprite.rotate(sf::degrees(-90)) : visual.sprite.rotate(sf::degrees(90));
 		if (to_direction.left()) { offsets.gameplay.barrel = {position.x - left_offset.y - left_barrel_offset.y, position.y + left_offset.x + left_barrel_offset.x}; }
 		if (to_direction.right()) { offsets.gameplay.barrel = {position.x + right_offset.y + right_barrel_offset.y, position.y - right_offset.x - right_barrel_offset.x}; }
 		firing_direction.neutralize_lr();
 		break;
 	case dir::UND::down:
-		to_direction.lr == dir::LR::right ? visual.sprite.rotate(90) : visual.sprite.rotate(-90);
+		to_direction.lr == dir::LR::right ? visual.sprite.rotate(sf::degrees(90)) : visual.sprite.rotate(sf::degrees(-90));
 		if (to_direction.left()) { offsets.gameplay.barrel = {position.x + left_offset.y + left_barrel_offset.y, position.y - left_offset.x - left_barrel_offset.x}; }
 		if (to_direction.right()) { offsets.gameplay.barrel = {position.x - right_offset.y - right_barrel_offset.y, position.y + right_offset.x + right_barrel_offset.x}; }
 		firing_direction.neutralize_lr();

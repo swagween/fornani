@@ -7,7 +7,7 @@
 
 namespace player {
 
-Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this) {}
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.t_nani} {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -26,7 +26,6 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
 	collider.collision_depths = util::CollisionDepth();
-	// if (collider.collision_depths) { std::cout << "Depth instantiated.\n"; }
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
@@ -39,9 +38,6 @@ void Player::init(automa::ServiceProvider& svc) {
 	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 
 	sprite_dimensions = {48.f, 48.f};
-
-	// sprites
-	sprite.setTexture(svc.assets.t_nani);
 
 	texture_updater.load_base_texture(svc.assets.t_nani);
 	texture_updater.load_pixel_map(svc.assets.t_palette_nani);
@@ -173,11 +169,11 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite_history.drag(win, campos);
 
 	// get UV coords
-	int u = (int)(animation.get_frame() / asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
-	int v = (int)(animation.get_frame() % asset::NANI_SPRITESHEET_HEIGHT) * asset::NANI_SPRITE_WIDTH;
-	sprite.setTextureRect(sf::IntRect({u, v}, {asset::NANI_SPRITE_WIDTH, asset::NANI_SPRITE_WIDTH}));
-	sprite.setOrigin(asset::NANI_SPRITE_WIDTH / 2, asset::NANI_SPRITE_WIDTH / 2);
-	sprite.setPosition(sprite_position.x - campos.x, sprite_position.y - campos.y);
+	auto u = (animation.get_frame() / 10) * 48;
+	auto v = (animation.get_frame() % 10) * 48;
+	sprite.setTextureRect(sf::IntRect({u, v}, {48, 48}));
+	sprite.setOrigin(sprite.getLocalBounds().getCenter());
+	sprite.setPosition(sprite_position - campos);
 
 	if (arsenal && hotbar) { collider.flags.general.set(shape::General::complex); }
 
@@ -275,7 +271,7 @@ void Player::update_animation() {
 void Player::update_sprite() {
 
 	if (animation.triggers.consume(AnimTriggers::flip)) {
-		sprite.scale(-1.0f, 1.0f);
+		sprite.scale({-1.0f, 1.0f});
 		if (animation.animation.label == "turn" || animation.animation.label == "sharp_turn") { animation.animation.set_params(idle); }
 	}
 
@@ -284,8 +280,8 @@ void Player::update_sprite() {
 	sf::Vector2<float> right_scale = {1.0f, 1.0f};
 	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
 	if (!grounded()) {
-		if (controller.facing_left() && sprite.getScale() == right_scale) { sprite.scale(-1.0f, 1.0f); }
-		if (controller.facing_right() && sprite.getScale() == left_scale) { sprite.scale(-1.0f, 1.0f); }
+		if (controller.facing_left() && sprite.getScale() == right_scale) { sprite.scale({-1.0f, 1.0f}); }
+		if (controller.facing_right() && sprite.getScale() == left_scale) { sprite.scale({-1.0f, 1.0f}); }
 	}
 
 	// check for quick turn

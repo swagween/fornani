@@ -95,7 +95,7 @@ void ControllerMap::setup_action_handles() {
 #define XSTR(a) STR(a)
 #define STR(a) #a
 #define DEFINE_ACTION(action_name)                                                                                                                                                                                                             \
-	digital_actions.insert({DigitalAction::action_name, {SteamInput()->GetDigitalActionHandle(XSTR(action_name)), DigitalActionStatus(DigitalAction::action_name), sf::Keyboard::Key::Unknown, sf::Keyboard::Key::Unknown}});
+	digital_actions.insert({DigitalAction::action_name, {SteamInput()->GetDigitalActionHandle(XSTR(action_name)), DigitalActionStatus(DigitalAction::action_name), sf::Keyboard::Scancode::Unknown, sf::Keyboard::Scancode::Unknown}});
 
 	// Platformer controls
 	DEFINE_ACTION(platformer_left);
@@ -139,16 +139,13 @@ void ControllerMap::setup_action_handles() {
 #undef XSTR
 }
 
-void ControllerMap::handle_event(sf::Event const& event) {
-	if (event.type == sf::Event::KeyPressed) {
+void ControllerMap::handle_event(std::optional<sf::Event> const event) {
+	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 		if (last_controller_ty_used != ControllerType::keyboard) { reset_digital_action_states(); }
 		last_controller_ty_used = ControllerType::keyboard;
-
-		if (event.key.code != sf::Keyboard::Key::Unknown) {
-			keys_pressed.insert(event.key.code);
-		}
-	} else if (event.type == sf::Event::KeyReleased) {
-		keys_pressed.erase(event.key.code);
+		if (key_pressed->scancode != sf::Keyboard::Scancode::Unknown) { keys_pressed.insert(key_pressed->scancode); }
+	} else if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
+		keys_pressed.erase(key_released->scancode);
 	}
 }
 
@@ -324,65 +321,65 @@ void ControllerMap::open_bindings_overlay() const {
 	if (!gamepad_connected()) { return; }
 	SteamInput()->ShowBindingPanel(controller_handle);
 }
-auto ControllerMap::key_to_string(sf::Keyboard::Key key) const -> std::string_view {
-	static std::unordered_map<sf::Keyboard::Key, std::string_view> map{{sf::Keyboard::A, "A"},			 {sf::Keyboard::B, "B"},
-																	   {sf::Keyboard::C, "C"},			 {sf::Keyboard::D, "D"},
-																	   {sf::Keyboard::E, "E"},			 {sf::Keyboard::F, "F"},
-																	   {sf::Keyboard::G, "G"},			 {sf::Keyboard::H, "H"},
-																	   {sf::Keyboard::I, "I"},			 {sf::Keyboard::J, "J"},
-																	   {sf::Keyboard::K, "K"},			 {sf::Keyboard::L, "L"},
-																	   {sf::Keyboard::M, "M"},			 {sf::Keyboard::N, "N"},
-																	   {sf::Keyboard::O, "O"},			 {sf::Keyboard::P, "P"},
-																	   {sf::Keyboard::Q, "Q"},			 {sf::Keyboard::R, "R"},
-																	   {sf::Keyboard::S, "S"},			 {sf::Keyboard::T, "T"},
-																	   {sf::Keyboard::U, "U"},			 {sf::Keyboard::V, "V"},
-																	   {sf::Keyboard::W, "W"},			 {sf::Keyboard::X, "X"},
-																	   {sf::Keyboard::Y, "Y"},			 {sf::Keyboard::Z, "Z"},
-																	   {sf::Keyboard::LShift, "LShift"}, {sf::Keyboard::RShift, "RShift"},
-																	   {sf::Keyboard::Left, "Left"},	 {sf::Keyboard::Right, "Right"},
-																	   {sf::Keyboard::Up, "Up"},		 {sf::Keyboard::Down, "Down"},
-																	   {sf::Keyboard::Period, "Period"}, {sf::Keyboard::Num1, "1"},
-																	   {sf::Keyboard::Num2, "2"},		 {sf::Keyboard::Num3, "3"},
-																	   {sf::Keyboard::Space, "Space"},	 {sf::Keyboard::LControl, "LControl"},
-																	   {sf::Keyboard::Escape, "Esc"},	 {sf::Keyboard::Unknown, "None"}};
+auto ControllerMap::key_to_string(sf::Keyboard::Scancode key) const -> std::string_view {
+	static std::unordered_map<sf::Keyboard::Scancode, std::string_view> map{{sf::Keyboard::Scancode::A, "A"},			 {sf::Keyboard::Scancode::B, "B"},
+																	   {sf::Keyboard::Scancode::C, "C"},			 {sf::Keyboard::Scancode::D, "D"},
+																	   {sf::Keyboard::Scancode::E, "E"},			 {sf::Keyboard::Scancode::F, "F"},
+																	   {sf::Keyboard::Scancode::G, "G"},			 {sf::Keyboard::Scancode::H, "H"},
+																	   {sf::Keyboard::Scancode::I, "I"},			 {sf::Keyboard::Scancode::J, "J"},
+																	   {sf::Keyboard::Scancode::K, "K"},			 {sf::Keyboard::Scancode::L, "L"},
+																	   {sf::Keyboard::Scancode::M, "M"},			 {sf::Keyboard::Scancode::N, "N"},
+																	   {sf::Keyboard::Scancode::O, "O"},			 {sf::Keyboard::Scancode::P, "P"},
+																	   {sf::Keyboard::Scancode::Q, "Q"},			 {sf::Keyboard::Scancode::R, "R"},
+																	   {sf::Keyboard::Scancode::S, "S"},			 {sf::Keyboard::Scancode::T, "T"},
+																	   {sf::Keyboard::Scancode::U, "U"},			 {sf::Keyboard::Scancode::V, "V"},
+																	   {sf::Keyboard::Scancode::W, "W"},			 {sf::Keyboard::Scancode::X, "X"},
+																	   {sf::Keyboard::Scancode::Y, "Y"},			 {sf::Keyboard::Scancode::Z, "Z"},
+																	   {sf::Keyboard::Scancode::LShift, "LShift"}, {sf::Keyboard::Scancode::RShift, "RShift"},
+																	   {sf::Keyboard::Scancode::Left, "Left"},	 {sf::Keyboard::Scancode::Right, "Right"},
+																	   {sf::Keyboard::Scancode::Up, "Up"},		 {sf::Keyboard::Scancode::Down, "Down"},
+																	   {sf::Keyboard::Scancode::Period, "Period"}, {sf::Keyboard::Scancode::Num1, "1"},
+																	   {sf::Keyboard::Scancode::Num2, "2"},		 {sf::Keyboard::Scancode::Num3, "3"},
+																	   {sf::Keyboard::Scancode::Space, "Space"},	 {sf::Keyboard::Scancode::LControl, "LControl"},
+																	   {sf::Keyboard::Scancode::Escape, "Esc"},	 {sf::Keyboard::Scancode::Unknown, "None"}};
 
 	return map.at(key);
 }
 
-auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard::Key {
-	static std::unordered_map<std::string_view, sf::Keyboard::Key> map{{"A", sf::Keyboard::A},			 {"B", sf::Keyboard::B},
-																	   {"C", sf::Keyboard::C},			 {"D", sf::Keyboard::D},
-																	   {"E", sf::Keyboard::E},			 {"F", sf::Keyboard::F},
-																	   {"G", sf::Keyboard::G},			 {"H", sf::Keyboard::H},
-																	   {"I", sf::Keyboard::I},			 {"J", sf::Keyboard::J},
-																	   {"K", sf::Keyboard::K},			 {"L", sf::Keyboard::L},
-																	   {"M", sf::Keyboard::M},			 {"N", sf::Keyboard::N},
-																	   {"O", sf::Keyboard::O},			 {"P", sf::Keyboard::P},
-																	   {"Q", sf::Keyboard::Q},			 {"R", sf::Keyboard::R},
-																	   {"S", sf::Keyboard::S},			 {"T", sf::Keyboard::T},
-																	   {"U", sf::Keyboard::U},			 {"V", sf::Keyboard::V},
-																	   {"W", sf::Keyboard::W},			 {"X", sf::Keyboard::X},
-																	   {"Y", sf::Keyboard::Y},			 {"Z", sf::Keyboard::Z},
-																	   {"LShift", sf::Keyboard::LShift}, {"RShift", sf::Keyboard::RShift},
-																	   {"Left", sf::Keyboard::Left},	 {"Right", sf::Keyboard::Right},
-																	   {"Up", sf::Keyboard::Up},		 {"Down", sf::Keyboard::Down},
-																	   {"Period", sf::Keyboard::Period}, {"1", sf::Keyboard::Num1},
-																	   {"2", sf::Keyboard::Num2},		 {"3", sf::Keyboard::Num3},
-																	   {"Space", sf::Keyboard::Space},	 {"LControl", sf::Keyboard::LControl},
-																	   {"Esc", sf::Keyboard::Escape},	 {"Enter", sf::Keyboard::Enter}};
+auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard::Scancode {
+	static std::unordered_map<std::string_view, sf::Keyboard::Scancode> map{{"A", sf::Keyboard::Scancode::A},			{"B", sf::Keyboard::Scancode::B},
+																			{"C", sf::Keyboard::Scancode::C},			{"D", sf::Keyboard::Scancode::D},
+																			{"E", sf::Keyboard::Scancode::E},			{"F", sf::Keyboard::Scancode::F},
+																			{"G", sf::Keyboard::Scancode::G},			{"H", sf::Keyboard::Scancode::H},
+																			{"I", sf::Keyboard::Scancode::I},			{"J", sf::Keyboard::Scancode::J},
+																			{"K", sf::Keyboard::Scancode::K},			{"L", sf::Keyboard::Scancode::L},
+																			{"M", sf::Keyboard::Scancode::M},			{"N", sf::Keyboard::Scancode::N},
+																			{"O", sf::Keyboard::Scancode::O},			{"P", sf::Keyboard::Scancode::P},
+																			{"Q", sf::Keyboard::Scancode::Q},			{"R", sf::Keyboard::Scancode::R},
+																			{"S", sf::Keyboard::Scancode::S},			{"T", sf::Keyboard::Scancode::T},
+																			{"U", sf::Keyboard::Scancode::U},			{"V", sf::Keyboard::Scancode::V},
+																			{"W", sf::Keyboard::Scancode::W},			{"X", sf::Keyboard::Scancode::X},
+																			{"Y", sf::Keyboard::Scancode::Y},			{"Z", sf::Keyboard::Scancode::Z},
+																			{"LShift", sf::Keyboard::Scancode::LShift}, {"RShift", sf::Keyboard::Scancode::RShift},
+																			{"Left", sf::Keyboard::Scancode::Left},		{"Right", sf::Keyboard::Scancode::Right},
+																			{"Up", sf::Keyboard::Scancode::Up},			{"Down", sf::Keyboard::Scancode::Down},
+																			{"Period", sf::Keyboard::Scancode::Period}, {"1", sf::Keyboard::Scancode::Num1},
+																			{"2", sf::Keyboard::Scancode::Num2},		{"3", sf::Keyboard::Scancode::Num3},
+																			{"Space", sf::Keyboard::Scancode::Space},	{"LControl", sf::Keyboard::Scancode::LControl},
+																			{"Esc", sf::Keyboard::Scancode::Escape},	{"Enter", sf::Keyboard::Scancode::Enter}};
 
 	if (map.contains(string)) {
 		return map.at(string);
 	} else {
-		return sf::Keyboard::Unknown;
+		return sf::Keyboard::Scancode::Unknown;
 	}
 }
 
-void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key) { digital_actions.at(action).primary_binding = key; }
-void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Key key) { digital_actions.at(action).secondary_binding = key; }
+void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) { digital_actions.at(action).primary_binding = key; }
+void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) { digital_actions.at(action).secondary_binding = key; }
 
-auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key { return digital_actions.at(action).primary_binding; }
-auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Key { return digital_actions.at(action).secondary_binding; }
+auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return digital_actions.at(action).primary_binding; }
+auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return digital_actions.at(action).secondary_binding; }
 
 void ControllerMap::reset_digital_action_states() {
 	for (auto& [action, state] : digital_actions) {

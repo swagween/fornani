@@ -5,7 +5,8 @@
 
 namespace vfx {
 
-Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction) : position(pos), dimensions(dim), sprite_dimensions(dim), collider(dim.x) {
+Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction)
+	: position(pos), dimensions(dim), sprite_dimensions(dim), collider(dim.x), sprite{svc.assets.particle_textures.contains(type) ? svc.assets.particle_textures.at(type) : svc.assets.t_null} {
 	box.setFillColor(color);
 	box.setSize(dimensions);
 	box.setOrigin(dimensions * 0.5f);
@@ -37,7 +38,6 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	lifespan.start(lifespan_time + rand_diff);
 
 	// for animated particles
-	if (svc.assets.particle_textures.contains(type)) { sprite.setTexture(svc.assets.particle_textures.at(type)); }
 	auto const& in_animation = in_data["animation"];
 	auto lookup = in_animation["lookup"].as<int>();
 	auto duration = in_animation["duration"].as<int>();

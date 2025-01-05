@@ -5,8 +5,7 @@
 
 namespace vfx {
 
-Scenery::Scenery(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int layer, int variant, float parallax) : position(position), properties{style, layer, variant, parallax} {
-	sprite.setTexture(svc.assets.get_scenery(style));
+Scenery::Scenery(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int layer, int variant, float parallax) : position(position), properties{style, layer, variant, parallax}, sprite{svc.assets.get_scenery(style)} {
 	auto u = variant * dimensions.x;
 	auto v = layer * dimensions.y;
 	properties.parallax = 1.f - 0.1f / static_cast<float>((layer + 1));

@@ -5,8 +5,9 @@
 
 namespace text {
 
-TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc) {
-	font.loadFromFile(svc.text.text_font);
+TextWriter::TextWriter(automa::ServiceProvider& svc)
+	: m_services(&svc), help_marker(svc), working_message{svc.text.fonts.basic}, second_working_message{svc.text.fonts.basic}, third_working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}} {
+	font.openFromFile(svc.text.text_font);
 	font.setSmooth(false);
 	special_characters.insert({Codes::prompt, '%'});
 	special_characters.insert({Codes::quest, '$'});
@@ -90,7 +91,7 @@ void TextWriter::wrap() {
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 
-	auto horizontal_extent = position.x + suite.at(iterators.current_suite_set).front().data.getLocalBounds().width;
+	auto horizontal_extent = position.x + suite.at(iterators.current_suite_set).front().data.getLocalBounds().size.x;
 	if (horizontal_extent > bounds.x) {
 
 		// get index of last in-bounds space
@@ -118,7 +119,7 @@ void TextWriter::load_single_message(std::string_view message) {
 	suite.clear();
 	responses.clear();
 	auto message_container = std::deque<Message>{};
-	message_container.push_back({sf::Text(), false});
+	message_container.push_back({sf::Text(font), false});
 	message_container.back().data.setString(message.data());
 	stylize(message_container.back().data, true);
 	suite.push_back(message_container);
@@ -132,7 +133,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	for (auto& set : source[key]["suite"].array_view()) {
 		auto this_set = std::deque<Message>{};
 		for (auto& msg : set.array_view()) {
-			this_set.push_back({sf::Text(), false});
+			this_set.push_back({sf::Text(font), false});
 			this_set.back().data.setString(msg.as_string().data());
 			stylize(this_set.back().data, true);
 		}
@@ -142,14 +143,14 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	for (auto& set : source[key]["responses"].array_view()) {
 		auto this_set = std::deque<Message>{};
 		for (auto& msg : set.array_view()) {
-			this_set.push_back({sf::Text(), false});
+			this_set.push_back({sf::Text(font), false});
 			this_set.back().data.setString(msg.as_string().data());
 			stylize(this_set.back().data, false);
 		}
 		responses.push_back(this_set);
 	}
 	working_message = suite.at(iterators.current_suite_set).front().data;
-	help_marker.init(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
+	help_marker = text::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
 }
 
 void TextWriter::append(std::string_view content) {
@@ -204,7 +205,7 @@ void TextWriter::write_responses(sf::RenderWindow& win) {
 			win.draw(msg.data);
 			newpos.y += pad; // provisional
 		}
-		indicator.setPosition(position.x + response_offset.x - pad / 2, position.y + pad / 3 + pad * iterators.current_selection + response_offset.y);
+		indicator.setPosition({position.x + response_offset.x - pad / 2, position.y + pad / 3 + pad * iterators.current_selection + response_offset.y});
 		win.draw(indicator);
 	}
 }
@@ -214,7 +215,7 @@ void TextWriter::reset() {
 	help_marker.reset();
 	glyph_count = 0;
 	tick_count = 0;
-	working_message = {};
+	working_message.setString("");
 	working_str = {};
 	iterators.current_selection = 0;
 }

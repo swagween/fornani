@@ -7,12 +7,12 @@
 namespace entity {
 
 Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground, bool reversed)
-	: length(length), size(size), position(position), chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, position, length, reversed) {
+	: length(length), size(size), position(position), chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, position, length, reversed), sprite{size == 1 ? svc.assets.t_vine : svc.assets.t_vine_large}
+{
 	drawbox.setOutlineColor(svc.styles.colors.blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize({8.f, 8.f});
-	size == 1 ? sprite.setTexture(svc.assets.t_vine) : sprite.setTexture(svc.assets.t_vine_large);
 	if (reversed) { flags.set(VineFlags::reverse); }
 	auto index = util::Circuit(4);
 	auto last_index = svc.random.random_range(0, 3);
@@ -29,7 +29,7 @@ Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length
 			auto random_sample = svc.random.random_range_float(0.0f, 1.0f);
 			if (random_sample < constants.priceless) {
 				rarity = item::Rarity::priceless;
-			} else if (random_sample <  constants.rare) {
+			} else if (random_sample < constants.rare) {
 				rarity = item::Rarity::rare;
 			} else if (random_sample < constants.uncommon) {
 				rarity = item::Rarity::uncommon;

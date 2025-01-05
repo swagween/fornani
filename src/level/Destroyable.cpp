@@ -6,12 +6,11 @@
 
 namespace world {
 
-Destroyable::Destroyable(automa::ServiceProvider& svc, sf::Vector2<int> pos, int quest_id, int style_id) : position(pos), quest_id(quest_id) {
+Destroyable::Destroyable(automa::ServiceProvider& svc, sf::Vector2<int> pos, int quest_id, int style_id) : position(pos), quest_id(quest_id), sprite{svc.assets.tilesets.at(style_id)} {
 	collider = shape::Collider({32.f, 32.f});
 	auto f_pos = sf::Vector2<float>{static_cast<float>(position.x * svc.constants.cell_size), static_cast<float>(position.y * svc.constants.cell_size)};
 	collider.physics.position = f_pos;
 	collider.sync_components();
-	sprite.setTexture(svc.assets.tilesets.at(style_id));
 	sprite.setTextureRect(sf::IntRect{{6 * 32, 14 * 32}, {32, 32}});
 }
 

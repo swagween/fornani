@@ -6,7 +6,7 @@
 
 namespace gui {
 
-Widget::Widget(automa::ServiceProvider& svc, sf::Vector2<int> dim, int index) : dimensions(dim), index(index) {
+Widget::Widget(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<int> dim, int index) : dimensions(dim), index(index), sprite{texture} {
 	gravitator = vfx::Gravitator({}, svc.styles.colors.bright_orange, 0.9f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.9f, 0.9f}, 1.0f);
 }

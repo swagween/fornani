@@ -3,7 +3,7 @@
 
 namespace gui {
 
-ItemWidget::ItemWidget(automa::ServiceProvider& svc) {
+ItemWidget::ItemWidget(automa::ServiceProvider& svc) : sprites{.item = sf::Sprite{svc.assets.t_items}, .gun = sf::Sprite{svc.assets.t_guns}} {
 	dimensions = sf::Vector2<float>{32.f, 32.f};
 	gun_dimensions = sf::Vector2<float>{48.f, 48.f};
 	pad.x = svc.constants.screen_dimensions.x * 0.5f;
@@ -13,16 +13,14 @@ ItemWidget::ItemWidget(automa::ServiceProvider& svc) {
 	float fric{0.9f};
 	gravitator = vfx::Gravitator(start_position, sf::Color::Transparent, 1.f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{fric, fric}, 2.0f);
-	sprites.item.setTexture(svc.assets.t_items);
-	sprites.gun.setTexture(svc.assets.t_guns);
-	sprites.item.setOrigin(dimensions.x * 0.5f, dimensions.y * 0.5f);
-	sprites.gun.setOrigin(gun_dimensions.x * 0.5f, gun_dimensions.y * 0.5f);
-	sprites.item.setTextureRect(sf::IntRect({(id - 1) * (int)dimensions.x, 0}, {(int)dimensions.x, (int)dimensions.y}));
+	sprites.item.setOrigin(dimensions * 0.5f);
+	sprites.gun.setOrigin(gun_dimensions * 0.5f);
+	sprites.item.setTextureRect(sf::IntRect({(id - 1) * static_cast<int>(dimensions.x), 0}, {static_cast<int>(dimensions.x), static_cast<int>(dimensions.y)}));
 	gravitator.set_target_position(position);
 	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.ui_white, "item");
 	sticker.setFillColor(svc.styles.colors.console_blue);
 	sticker.setRadius(32.f);
-	sticker.setOrigin(sticker.getRadius(), sticker.getRadius());
+	sticker.setOrigin({sticker.getRadius(), sticker.getRadius()});
 	sticker.setPointCount(32);
 }
 
@@ -41,7 +39,7 @@ void ItemWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
 	auto u = static_cast<int>(((id - 1) % 16) * dimensions.x);
 	auto v = static_cast<int>(std::floor((static_cast<float>(id - 1) / 16.f)) * dimensions.y);
 	sprites.item.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
-	sprites.gun.setTextureRect(sf::IntRect({id * (int)gun_dimensions.x, 0}, {(int)gun_dimensions.x, (int)gun_dimensions.y}));
+	sprites.gun.setTextureRect(sf::IntRect({id * (int)gun_dimensions.x, 0}, {static_cast<int>(gun_dimensions.x), static_cast<int>(gun_dimensions.y)}));
 	if (flags.test(WidgetFlags::gun)) {
 		win.draw(sprites.gun);
 	} else {

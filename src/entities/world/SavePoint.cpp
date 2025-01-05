@@ -7,7 +7,7 @@
 
 namespace entity {
 
-SavePoint::SavePoint(automa::ServiceProvider& svc) {
+SavePoint::SavePoint(automa::ServiceProvider& svc) : sprite{svc.assets.savepoint} {
 	id = -1;
 	dimensions = {32, 32};
 	bounding_box = shape::Shape(dimensions);
@@ -17,7 +17,6 @@ SavePoint::SavePoint(automa::ServiceProvider& svc) {
 	drawbox.setSize(dimensions);
 
 	animation.set_params(anim_params);
-	sprite.setTexture(svc.assets.savepoint);
 
 	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.green, "save_point");
 	sparkler.set_position(position);
@@ -65,11 +64,12 @@ void SavePoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec 
 
 	sparkler.render(svc, win, campos);
 
-	sprite.setPosition(position.x - 16.f - campos.x, position.y - 32.f - campos.y);
-	// get UV coords (only one row of sprites is supported)
-	int u = (int)intensity * (int)sprite_dimensions.x;
-	int v = (int)(animation.get_frame() * sprite_dimensions.y);
-	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
+	auto offset = sf::Vector2<float>{16.f, 32.f};
+	sprite.setPosition(position - offset - campos);
+
+	int u = static_cast<int>(intensity) * static_cast<int>(sprite_dimensions.x);
+	int v = static_cast<int>(animation.get_frame() * sprite_dimensions.y);
+	sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)}));
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		drawbox.setPosition(position - campos);

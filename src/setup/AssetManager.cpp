@@ -3,6 +3,9 @@
 namespace asset {
 
 void AssetManager::import_textures() {
+
+	if (!t_null.loadFromFile(finder.resource_path + "/image/app/null.png")) { std::cout << "Failed to load texture.\n"; };
+
 	t_nani.loadFromFile(finder.resource_path + "/image/character/nani.png");
 	t_portraits.loadFromFile(finder.resource_path + "/image/character/portraits.png");
 	t_bryn.loadFromFile(finder.resource_path + "/image/character/bryn.png");

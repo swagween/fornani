@@ -2,7 +2,7 @@
 
 namespace data {
 
-void TextManager::load_data() {
+TextManager::TextManager(ResourceFinder& finder) {
 	//test
 	console = dj::Json::from_file((finder.resource_path + "/text/console/basic.json").c_str());
 	assert(!console.is_null());
@@ -23,8 +23,8 @@ void TextManager::load_data() {
 	text_font = finder.resource_path + "/text/fonts/pixelFJ8pt1.ttf";
 	title_font = finder.resource_path + "/text/fonts/kongtext.ttf";
 
-	fonts.title.loadFromFile(title_font);
-	fonts.basic.loadFromFile(text_font);
+	assert(fonts.title.openFromFile(title_font));
+	assert(fonts.basic.openFromFile(text_font));
 	fonts.title.setSmooth(false);
 	fonts.basic.setSmooth(false);
 }

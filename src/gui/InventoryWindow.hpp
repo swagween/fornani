@@ -65,11 +65,8 @@ class InventoryWindow : public Console {
 	} ui{};
 
 	sf::Text title;
-	sf::Font title_font{};
 	sf::Text arsenal;
-
 	sf::Text item_label;
-	sf::Font item_font{};
 
 	sf::Sprite gun_slot;
 

@@ -3,12 +3,11 @@
 
 namespace entity {
 
-TreasureContainer::TreasureContainer(automa::ServiceProvider& svc, item::Rarity rarity, sf::Vector2<float> position, int index) : rarity(rarity), index(index) {
+TreasureContainer::TreasureContainer(automa::ServiceProvider& svc, item::Rarity rarity, sf::Vector2<float> position, int index) : rarity(rarity), index(index), sprite{svc.assets.t_treasure_ball} {
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 1.0f);
 	gravitator.set_position(position);
 	health.set_max(4.f);
-	sprite.setTexture(svc.assets.t_treasure_ball);
 	sprite.setTextureRect(sf::IntRect({0, static_cast<int>(rarity) * 16}, {16, 16}));
 	sprite.setOrigin({8.f, 8.f});
 	sensor.bounds.setRadius(8.f);

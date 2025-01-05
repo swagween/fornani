@@ -48,7 +48,7 @@ fsm::StateFunction Frdog::update_sit() { return FRDOG_BIND(update_idle); };
 fsm::StateFunction Frdog::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		sprite_flip();
+		visual.sprite.scale({-1.f, 1.f});
 		if (state.test(AnimState::hurt)) {
 			state.reset(AnimState::turn);
 			animation.set_params(hurt);

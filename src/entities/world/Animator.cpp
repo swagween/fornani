@@ -5,7 +5,8 @@
 
 namespace entity {
 
-Animator::Animator(automa::ServiceProvider& svc, sf::Vector2<int> pos, int id, bool large, bool automatic, bool foreground, int style) : scaled_position(pos), id(id) {
+Animator::Animator(automa::ServiceProvider& svc, sf::Vector2<int> pos, int id, bool large, bool automatic, bool foreground, int style)
+	: scaled_position(pos), id(id), sprite{(large ? svc.assets.t_large_animators : svc.assets.t_small_animators)} {
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(svc.styles.colors.dark_orange);
 	drawbox.setOutlineThickness(-1);
@@ -13,7 +14,7 @@ Animator::Animator(automa::ServiceProvider& svc, sf::Vector2<int> pos, int id, b
 	animation.set_params(still);
 	position = sf::Vector2<float>{static_cast<float>(pos.x) * svc.constants.cell_size, static_cast<float>(pos.y) * svc.constants.cell_size};
 	bounding_box.set_position(position);
-	large ? sprite.setTexture(svc.assets.t_large_animators) : sprite.setTexture(svc.assets.t_small_animators);
+	
 	if (large) { attributes.set(AnimatorAttributes::large); }
 	if (automatic) {
 		sprite.setTexture(svc.assets.animator_lookup.at(style));
@@ -55,8 +56,8 @@ void Animator::update(automa::ServiceProvider& svc, player::Player& player) {
 void Animator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	activated ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
 	drawbox.setSize(bounding_box.dimensions);
-	drawbox.setPosition(position.x - cam.x, position.y - cam.y);
-	sprite.setPosition(position.x - cam.x, position.y - cam.y);
+	drawbox.setPosition(position - cam);
+	sprite.setPosition(position - cam);
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(drawbox);
 	} else {

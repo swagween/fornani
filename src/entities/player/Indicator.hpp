@@ -38,7 +38,6 @@ class Indicator {
 
 	IndicatorType type{};
 	sf::Text label;
-	sf::Font font{};
 	util::Cooldown addition_limit{};
 	util::Cooldown fadeout{};
 	int fadeout_time{32};
