@@ -68,8 +68,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			set_current_state(std::make_unique<Intro>(svc, player, "intro"));
 		} else {
 			game.flags.set(fornani::GameFlags::in_game);
-			set_current_state(std::make_unique<Dojo>(svc, player, "dojo"));
-			get_current_state().init(svc, svc.state_controller.next_state);
+			set_current_state(std::make_unique<Dojo>(svc, player, "dojo", svc.state_controller.next_state));
 			if (svc.demo_mode()) { player.set_position(svc.state_controller.player_position); }
 			game.playtest_sync();
 		}

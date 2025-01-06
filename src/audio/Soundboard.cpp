@@ -5,11 +5,12 @@
 namespace audio {
 
 Soundboard::Soundboard(automa::ServiceProvider& svc) {
-	for (int i{0}; i < 64; ++i) { sound_pool.push_back(Sound(svc.assets.click_buffer)); }
+	//for (int i{0}; i < 64; ++i) { sound_pool.push_back(Sound(svc.assets.click_buffer)); }
 }
 
 void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 
+	std::erase_if(sound_pool, [](auto& s) { return !s.is_running(); });
 	for (auto& s : sound_pool) { s.update(svc); }
 
 	// menu
@@ -154,11 +155,12 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc) {
 }
 
 void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2<float> distance, int echo_count, int echo_rate) {
-	auto iterator = std::ranges::find_if_not(sound_pool, [](auto& s) { return s.is_running(); });
-	if (iterator == std::ranges::end(sound_pool)) { return; }
-	auto& target = *iterator;
-	target = Sound(buffer, echo_count, echo_rate);
-	frequency != 0 ? repeat(svc, target, frequency, random_pitch_offset, attenuation, distance) : randomize(svc, target, random_pitch_offset, vol, attenuation, distance);
+	//auto iterator = std::ranges::find_if_not(sound_pool, [](auto& s) { return s.is_running(); });
+	//if (iterator == std::ranges::end(sound_pool)) { return; }
+	//auto& target = *iterator;
+	//target = Sound(buffer, echo_count, echo_rate);
+	sound_pool.push_back(Sound(buffer, echo_count, echo_rate));
+	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
 }
 
 void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset, float attenuation, sf::Vector2<float> distance) {

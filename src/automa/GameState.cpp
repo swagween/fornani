@@ -4,7 +4,7 @@
 
 namespace automa {
 
-GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id)
+GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
 	: player(&player), hud(svc, player), inventory_window(svc), scene(scene), pause_window(svc), console(svc) {
 	auto const& in_data = svc.data.menu["options"];
 	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string())); }

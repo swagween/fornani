@@ -4,7 +4,7 @@
 
 namespace automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console), file_select_menu(svc, {"play", "stats", "delete"}) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player, console), file_select_menu(svc, {"play", "stats", "delete"}) {
 	current_selection = util::Circuit(num_files);
 	svc.data.load_blank_save(player);
 	console = gui::Console(svc);
@@ -26,8 +26,6 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 }
-
-void FileMenu::init(ServiceProvider& svc, int room_number) {}
 
 void FileMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);

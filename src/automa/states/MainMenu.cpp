@@ -4,7 +4,8 @@
 
 namespace automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), subtitle(svc.text.fonts.basic), instruction(svc.text.fonts.basic), title(svc.assets.t_title) {
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
+	: GameState(svc, player, scene, room_number), subtitle(svc.text.fonts.basic), instruction(svc.text.fonts.basic), title(svc.assets.t_title) {
 	// playtester edition
 	flags.set(GameStateFlags::playtest);
 	// playtester edition
@@ -32,8 +33,6 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	player.set_position({svc.constants.f_center_screen.x + 80.f, 360.f});
 	loading.start();
 }
-
-void MainMenu::init(ServiceProvider& svc, int room_number) {}
 
 void MainMenu::tick_update(ServiceProvider& svc) {
 	svc.a11y.set_action_ctx_bar_enabled(true);

@@ -12,8 +12,7 @@
 namespace world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), tile_sprite{svc.assets.t_null}, layer_sprite{svc.assets.t_null},
-	  obscuring_sprite{svc.assets.t_null}, reverse_obscuring_sprite{svc.assets.t_null} {}
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console) {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
@@ -503,24 +502,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
 	// map foreground tiles
-	for (int i = 4; i < NUM_LAYERS; ++i) {
-		if (svc.greyblock_mode()) { continue; }
-		layer_sprite.setTexture(layer_textures.at(i).getTexture());
-		layer_sprite.setPosition(-cam);
-		if (i == 7) {
-			reverse_obscuring_sprite.setTexture(obscuring_texture.getTexture());
-			reverse_obscuring_sprite.setPosition(-cam);
-			obscuring_sprite = layer_sprite;
-			std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
-			std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
-			obscuring_sprite.setColor(sf::Color{255, 255, 255, alpha});
-			reverse_obscuring_sprite.setColor(sf::Color{255, 255, 255, revalpha});
-			if (alpha != 0) { win.draw(obscuring_sprite); }
-			if (revalpha != 0) { win.draw(reverse_obscuring_sprite); }
-		} else {
-			win.draw(layer_sprite);
-		}
-	}
+		sf::Sprite tex{textures.foreground.getTexture()};
+		tex.setPosition(-cam);
+		win.draw(tex);
 
 	//foreground enemies
 	for (auto& enemy : enemy_catalog.enemies) {
@@ -532,29 +516,23 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		enemy->gui_render(svc, win, cam);
 	}
 
+	if (!svc.greyblock_mode()) {
+		// draw obscuring layer
+		sf::Sprite obscuring{textures.obscuring.getTexture()};
+		sf::Sprite reverse{textures.reverse.getTexture()};
+		obscuring.setPosition(-cam);
+		reverse.setPosition(-cam);
+		std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
+		std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
+		obscuring.setColor(sf::Color{255, 255, 255, alpha});
+		reverse.setColor(sf::Color{255, 255, 255, revalpha});
+		if (alpha != 0) { win.draw(obscuring); }
+		if (revalpha != 0) { win.draw(reverse); }
+	}
+
 	for (auto& effect : effects) { effect.render(svc, win, cam); }
 
 	player->render_indicators(svc, win, cam);
-
-	if (real_dimensions.y < svc.constants.screen_dimensions.y) {
-		float ydiff = (svc.constants.screen_dimensions.y - real_dimensions.y) / 2;
-		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({static_cast<float>(svc.constants.screen_dimensions.x), ydiff});
-		borderbox.setPosition({});
-		win.draw(borderbox);
-		borderbox.setPosition({0.0f, real_dimensions.y + ydiff});
-		win.draw(borderbox);
-	}
-	if (real_dimensions.x < svc.constants.screen_dimensions.x) {
-		float xdiff = (svc.constants.screen_dimensions.x - real_dimensions.x) / 2;
-		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({xdiff, static_cast<float>(svc.constants.screen_dimensions.y)});
-		borderbox.setPosition({});
-		win.draw(borderbox);
-
-		borderbox.setPosition({real_dimensions.x + xdiff, 0.0f});
-		win.draw(borderbox);
-	}
 
 	for (auto& animator : animators) {
 		if (animator.foreground()) { animator.render(svc, win, cam); }
@@ -580,28 +558,23 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
-		for(auto& layer : scenery_layers) {
+		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
-		for (int i = 0; i < 4; ++i) {
-			layer_textures.at(i).display();
-			layer_sprite.setTexture(layer_textures.at(i).getTexture());
-			layer_sprite.setPosition(-cam);
-			win.draw(layer_sprite);
-			if (i == 0) {
-				for (auto& npc : npcs) {
-					if (npc.background()) { npc.render(svc, win, cam); }
-				}
-			}
+		sf::Sprite tex{textures.background.getTexture()};
+		tex.setPosition(-cam);
+		win.draw(tex);
+		for (auto& npc : npcs) {
+			if (npc.background()) { npc.render(svc, win, cam); }
 		}
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {
 		sf::RectangleShape box{};
-		box.setPosition({0, 0});
 		box.setFillColor(svc.styles.colors.black);
-		box.setSize({(float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y});
+		box.setSize(svc.constants.f_screen_dimensions);
 		win.draw(box);
 	}
+
 	for (auto& vine : vines) {
 		if (!vine->foreground()) { vine->render(svc, win, cam); }
 	}
@@ -685,35 +658,42 @@ void Map::generate_collidable_layer(bool live) {
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
 	for (auto& layer : layers) {
-		auto& tex = layer_textures.at(static_cast<size_t>(layer.get_render_order()));
+		auto changed = layer.get_render_order() == 0 || layer.get_render_order() == 4;
+		auto finished = layer.get_render_order() == 3 || layer.get_render_order() == 7;
+		auto& tex = layer.foreground() ? textures.foreground : textures.background;
 		std::cout << "render order : " << static_cast<int>(layer.get_render_order()) << "\n";
 		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x) * static_cast<unsigned int>(svc.constants.i_cell_size), static_cast<unsigned int>(layer.grid.dimensions.y) * static_cast<unsigned int>(svc.constants.i_cell_size)};
-		if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
-		tex.clear(sf::Color::Transparent);
-		if (layer.obscuring()) {
-			if (!obscuring_texture.resize({layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size})) { std::cout << "Obscuring layer texture not created.\n"; }
-			obscuring_texture.clear(sf::Color::Transparent);
+		if (changed) {
+			if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
+			tex.clear(sf::Color::Transparent);
 		}
+		if (layer.obscuring()) {
+			if (!textures.obscuring.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
+			if (!textures.reverse.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
+			textures.obscuring.clear(sf::Color::Transparent);
+			textures.reverse.clear(sf::Color::Transparent);
+		}
+		sf::Sprite tile{svc.assets.tilesets.at(style_id)};
 		for (auto& cell : layer.grid.cells) {
 			if (cell.is_occupied() && !cell.is_special()) {
 				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
-				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-				tile_sprite.setPosition(cell.position());
-				tex.draw(tile_sprite);
-			} else if (layer.obscuring()) {
-				auto x_coord = static_cast<int>((1 % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				auto y_coord = static_cast<int>(std::floor(1 / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
-				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-				tile_sprite.setPosition(cell.position());
-				obscuring_texture.draw(tile_sprite);
+				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+				tile.setPosition(cell.position());
+				layer.obscuring() ? textures.obscuring.draw(tile) : tex.draw(tile);
+			} else {
+				if (layer.obscuring()) {
+					tile.setTextureRect(sf::IntRect({32, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+					tile.setPosition(cell.position());
+					textures.reverse.draw(tile);
+				}
 			}
 		}
-		tex.display();
-		obscuring_texture.display();
-		std::cout << "Texture dimensions: " << tex.getSize().x << " ; " << tex.getSize().y << std::endl;
+		if (finished) { tex.display(); }
+		if (layer.obscuring()) {
+			textures.obscuring.display();
+			textures.reverse.display();
+		}
 	}
 }
 

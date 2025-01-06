@@ -8,7 +8,7 @@ namespace automa {
 constexpr std::array<std::string_view, 4> tabs = {"controls_platformer", "controls_inventory", "controls_map", "controls_menu"};
 constexpr std::array<std::string_view, 4> tab_id_prefixes = {"platformer_", "inventory_", "map_", "menu_"};
 
-ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), instruction(svc.text.fonts.title) {
+ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), instruction(svc.text.fonts.title) {
 	change_scene(svc, "controls_platformer");
 	refresh_controls(svc);
 	instruction.setLineSpacing(1.5f);
@@ -26,8 +26,6 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	debug.setOutlineColor(svc.styles.colors.blue);
 	debug.setOutlineThickness(-1);
 }
-
-void ControlsMenu::init(ServiceProvider& svc, int room_number) {}
 
 void ControlsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);

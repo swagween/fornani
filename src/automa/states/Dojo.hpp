@@ -11,8 +11,7 @@ namespace automa {
 
 class Dojo : public GameState {
   public:
-	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int id = 0);
-	void init(ServiceProvider& svc, int room_number = 100, std::string room_name = "");
+	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0, std::string_view room_name = "");
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);

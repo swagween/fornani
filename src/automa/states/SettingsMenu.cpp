@@ -4,8 +4,8 @@
 
 namespace automa {
 
-SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id)
-	: GameState(svc, player, scene, id), toggleables{.autosprint = options.at(static_cast<int>(Toggles::autosprint)).label,
+SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
+	: GameState(svc, player, scene, room_number), toggleables{.autosprint = options.at(static_cast<int>(Toggles::autosprint)).label,
 													 .tutorial = options.at(static_cast<int>(Toggles::tutorial)).label,
 													 .gamepad = options.at(static_cast<int>(Toggles::gamepad)).label,
 													 .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label},
@@ -24,8 +24,6 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 	options.at(static_cast<int>(Toggles::music)).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 	options.at(static_cast<int>(Toggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 }
-
-void SettingsMenu::init(ServiceProvider& svc, int room_number) {}
 
 void SettingsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);

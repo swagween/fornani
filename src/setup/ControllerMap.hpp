@@ -137,6 +137,10 @@ class ControllerMap {
 
 	[[nodiscard]] auto last_controller_type_used() const -> ControllerType { return last_controller_ty_used; }
 
+	/// @brief Processes gamepad disconnection to pause the game.
+	/// @return Returns true if gamepad was just disconnected, otherwise returns false.
+	bool process_gamepad_disconnection();
+
 	// TODO Move autosprint and tutorial toggles away from ControllerMap
 	void enable_autosprint(bool enable) { autosprint_enabled = enable; }
 	void enable_gamepad_input(bool enable) { gamepad_input_enabled = enable; }
@@ -155,6 +159,9 @@ class ControllerMap {
 
 		bool was_active_last_tick{};
 	};
+	struct {
+		bool gamepad_disconnected{};
+	} out{};
 	std::unordered_map<DigitalAction, DigitalActionData> digital_actions{};
 	std::unordered_map<DigitalAction, std::string> digital_action_names{};
 	std::unordered_map<AnalogAction, std::pair<InputAnalogActionHandle_t, AnalogActionStatus>> analog_actions{};

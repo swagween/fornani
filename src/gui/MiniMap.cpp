@@ -73,7 +73,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		room_border.setOrigin(map_sprite.getOrigin());
 		room_border.setSize(map_sprite.getLocalBounds().size);
 		room_border.setScale(map_sprite.getScale());
-		room_border.setOutlineThickness(-2.f);
+		room_border.setOutlineThickness(scale / 4.f);
 		win.draw(map_sprite);
 		auto tl = room->get_position() * ratio + position;
 		auto br = tl + map_sprite.getLocalBounds().size * global_ratio;

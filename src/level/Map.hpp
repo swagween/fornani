@@ -69,6 +69,8 @@ class Layer {
   public:
 	Layer() = default;
 	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(c), dimensions(dim), grid(dim, source) {}
+	[[nodiscard]] auto background() const -> bool { return render_order < 4; }
+	[[nodiscard]] auto foreground() const -> bool { return render_order > 3; }
 	[[nodiscard]] auto middleground() const -> bool { return render_order == 4; }
 	[[nodiscard]] auto obscuring() const -> bool { return render_order == 7; }
 	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
@@ -189,12 +191,12 @@ class Map {
 	sf::RectangleShape center_box{};
 
 	// layers
-	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};
-	sf::RenderTexture obscuring_texture{};
-	sf::Sprite tile_sprite;
-	sf::Sprite layer_sprite;
-	sf::Sprite obscuring_sprite;
-	sf::Sprite reverse_obscuring_sprite;
+	struct {
+		sf::RenderTexture foreground{};
+		sf::RenderTexture background{};
+		sf::RenderTexture obscuring{};
+		sf::RenderTexture reverse{};
+	} textures{};
 	std::string_view style_label{};
 
 	int room_lookup{};

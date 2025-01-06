@@ -311,8 +311,7 @@ void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data)
 
 void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
 	std::cout << "Disconnected controller with handle = " << data->m_ulDisconnectedDeviceHandle << std::endl;
-	if(controller_handle != 0) { // pause the game 
-	}
+	if (controller_handle != 0) { out.gamepad_disconnected = true; }
 	controller_handle = 0;
 	last_controller_ty_used = ControllerType::keyboard; // Quickly switch to keyboard input
 }
@@ -373,6 +372,12 @@ auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard
 	} else {
 		return sf::Keyboard::Scancode::Unknown;
 	}
+}
+
+bool ControllerMap::process_gamepad_disconnection() {
+	auto ret = out.gamepad_disconnected;
+	out.gamepad_disconnected = false;
+	return ret;
 }
 
 void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) { digital_actions.at(action).primary_binding = key; }
