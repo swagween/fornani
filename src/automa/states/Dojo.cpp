@@ -77,7 +77,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	loading.update();
 
-	svc.soundboard.play_sounds(svc);
+	svc.soundboard.play_sounds(svc, map.get_echo_count(), map.get_echo_rate());
 
 	if (pause_window.active()) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);

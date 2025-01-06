@@ -24,7 +24,11 @@ void Sound::update(automa::ServiceProvider& svc) {
 	}
 }
 
-void Sound::play() { sounds.back().play(); }
+void Sound::play() { 
+	auto& sound = sounds.back();
+	sound.play();
+	//sound.setEffectProcessor(sf::SoundSource::EffectProcessor)
+}
 
 void Sound::set_volume(float volume) {
 	native_volume = volume;

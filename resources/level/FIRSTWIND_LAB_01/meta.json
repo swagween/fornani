@@ -15,7 +15,11 @@
     ],
     "style": 0,
     "background": 5,
-    "music": "abandoned"
+    "music": "abandoned",
+    "sound": {
+      "echo_rate": 32,
+      "echo_count": 3
+    }
   },
   "portals": [
     {

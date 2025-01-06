@@ -130,6 +130,8 @@ class Map {
 	bool overlaps_middleground(shape::Shape& test);
 	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
+	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
+	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
 	Tile& get_cell_at_position(sf::Vector2<float> position);
@@ -235,6 +237,10 @@ class Map {
 		util::BitFlags<LevelState> state{};
 		util::BitFlags<MapState> map_state{};
 	} flags{};
+	struct {
+		int echo_rate{};
+		int echo_count{};
+	} sound{};
 };
 
 } // namespace world

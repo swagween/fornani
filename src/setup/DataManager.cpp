@@ -504,7 +504,11 @@ void DataManager::set_npc_location(int npc_id, int room_id) {
 	npc_locations.at(npc_id) = room_id;
 }
 
-void DataManager::kill_enemy(int room_id, int id, int distance, bool permanent) { fallen_enemies.push_back({{room_id, id}, distance, permanent});
+void DataManager::kill_enemy(int room_id, int id, int distance, bool permanent) {
+	for (auto& e : fallen_enemies) {
+		if (e.code.first == room_id && e.code.second) { return; }
+	}
+	fallen_enemies.push_back({{room_id, id}, distance, permanent});
 }
 
 void DataManager::respawn_enemy(int room_id, int id) {

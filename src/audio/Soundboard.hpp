@@ -41,7 +41,7 @@ enum class Meatsquash { hurt, death, chomp, whip, swallow };
 class Soundboard {
   public:
 	Soundboard(automa::ServiceProvider& svc);
-	void play_sounds(automa::ServiceProvider& svc);
+	void play_sounds(automa::ServiceProvider& svc, int echo_count = 0, int echo_rate = 1);
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);

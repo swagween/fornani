@@ -73,6 +73,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
 		}
 
+		sound.echo_count = meta["sound"]["echo_count"].as<int>();
+		sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
+
 		if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
 		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 		if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
@@ -534,6 +537,27 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	player->render_indicators(svc, win, cam);
 
+	if (real_dimensions.y < svc.constants.f_screen_dimensions.y) {
+		auto ydiff = (svc.constants.f_screen_dimensions.y - real_dimensions.y) * 0.5f;
+		borderbox.setFillColor(svc.styles.colors.ui_black);
+		borderbox.setSize({svc.constants.f_screen_dimensions.x, ydiff});
+		borderbox.setPosition({});
+		win.draw(borderbox);
+
+		borderbox.setPosition({0.0f, real_dimensions.y + ydiff});
+		win.draw(borderbox);
+	}
+	if (real_dimensions.x < svc.constants.f_screen_dimensions.x) {
+		auto xdiff = (svc.constants.f_screen_dimensions.x - real_dimensions.x) * 0.5f;
+		borderbox.setFillColor(svc.styles.colors.ui_black);
+		borderbox.setSize({xdiff, svc.constants.f_screen_dimensions.y});
+		borderbox.setPosition({});
+		win.draw(borderbox);
+
+		borderbox.setPosition({real_dimensions.x + xdiff, 0.0f});
+		win.draw(borderbox);
+	}
+
 	for (auto& animator : animators) {
 		if (animator.foreground()) { animator.render(svc, win, cam); }
 	}
@@ -661,7 +685,6 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 		auto changed = layer.get_render_order() == 0 || layer.get_render_order() == 4;
 		auto finished = layer.get_render_order() == 3 || layer.get_render_order() == 7;
 		auto& tex = layer.foreground() ? textures.foreground : textures.background;
-		std::cout << "render order : " << static_cast<int>(layer.get_render_order()) << "\n";
 		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x) * static_cast<unsigned int>(svc.constants.i_cell_size), static_cast<unsigned int>(layer.grid.dimensions.y) * static_cast<unsigned int>(svc.constants.i_cell_size)};
 		if (changed) {
 			if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
