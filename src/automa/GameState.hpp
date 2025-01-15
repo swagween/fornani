@@ -54,13 +54,10 @@ class GameState {
 	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0},	   {MenuSelection::options, 1}, {MenuSelection::quit, 2},	 {MenuSelection::controls, 0},
 															 {MenuSelection::tutorial, 2}, {MenuSelection::credits, 3}, {MenuSelection::settings, 1}};
 
-	GameState() = default;
-	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
+	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	GameState& operator=(GameState&&) = delete;
 	virtual ~GameState() {}
 
-	virtual void init(ServiceProvider& svc, int room_number, std::string room_name = ""){};
-	virtual void handle_events(ServiceProvider& svc, sf::Event& event){};
 	virtual void tick_update(ServiceProvider& svc){};
 	virtual void frame_update(ServiceProvider& svc){};
 	virtual void render(ServiceProvider& svc, sf::RenderWindow& win){};
@@ -69,7 +66,7 @@ class GameState {
 	util::BitFlags<GameStateFlags> flags{};
 
 	std::string_view scene{};
-	gui::Console console{};
+	gui::Console console;
 	gui::InventoryWindow inventory_window;
 	gui::PauseWindow pause_window;
 
@@ -79,8 +76,6 @@ class GameState {
 
 	player::Player* player;
 	gui::HUD hud;
-	sf::Font font{};
-	sf::Font subtitle_font{};
 
 	Scene target_folder{};
 	std::vector<Option> options{};

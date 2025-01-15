@@ -26,7 +26,6 @@ namespace gui {
 class HUD {
 
   public:
-	HUD() = default;
 	HUD(automa::ServiceProvider& svc, player::Player& player);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(player::Player& player, sf::RenderWindow& win);
@@ -41,11 +40,10 @@ class HUD {
 	} origins{};
 
 	struct {
-		sf::Sprite orb{};
-		sf::Sprite gun{};
-		sf::Sprite gun_shadow{};
-		sf::Sprite pointer{};
-	} sprites{};
+		sf::Sprite orb;
+		sf::Sprite gun;
+		sf::Sprite pointer;
+	} sprites;
 
 	WidgetBar health_bar{};
 	WidgetBar ammo_bar{};

@@ -44,7 +44,7 @@ class SwitchBlock {
 	shape::Collider collider{};
 
   private:
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	SwitchType type{};
 	SwitchBlockState state{};
 	SwitchBlockState previous_state{};

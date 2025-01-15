@@ -13,26 +13,19 @@ Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t
 }
 
 void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj) {
-	if (proj.stats.transcendent) { return; }
-	if (!map.nearby(bounding_box, proj.bounding_box)) {
+	if (proj.transcendent()) { return; }
+	if (!map.nearby(bounding_box, proj.get_bounding_box())) {
 		return;
 	} else {
 		collision_check = true;
-		if ((proj.bounding_box.overlaps(bounding_box) && is_occupied())) {
+		if ((proj.get_bounding_box().overlaps(bounding_box) && is_occupied())) {
 			if (!is_collidable() || is_platform()) { return; }
-			if (!proj.stats.transcendent) {
+			if (!proj.transcendent()) {
 				if (!proj.destruction_initiated()) {
-					map.effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, proj.effect_type(), 2));
-					if (proj.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+					map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type(), 2));
+					if (proj.get_direction().lr == dir::LR::neutral) { map.effects.back().rotate(); }
 				}
 				proj.destroy(false);
-			}
-			if (proj.stats.spring && is_hookable()) {
-				if (proj.hook.grapple_flags.test(arms::GrappleState::probing)) {
-					proj.hook.spring.set_anchor(get_center());
-					proj.hook.grapple_triggers.set(arms::GrappleTriggers::found);
-				}
-				map.handle_grappling_hook(svc, proj);
 			}
 		}
 	}
@@ -81,11 +74,23 @@ void Tile::set_type() {
 		type = TileType::pushable;
 		return;
 	}
+	if (value == 230) {
+		type = TileType::target;
+		return;
+	}
 	if (value == 231) {
 		type = TileType::spawner;
 		return;
 	}
-	if (value < 248 && value >= 244) {
+	if (value == 244) {
+		type = TileType::fire;
+		return;
+	}
+	if (value == 246) {
+		type = TileType::checkpoint;
+		return;
+	}
+	if (value == 247) {
 		type = TileType::breakable;
 		return;
 	}

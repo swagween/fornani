@@ -47,6 +47,28 @@
     "colliding": true
   },
 
+  "bryns_gun_smoke": {
+    "load": 8,
+    "rate": 4.0,
+    "expulsion": 40.0,
+    "expulsion_variance": 30.0,
+    "cone": 0.08,
+    "friction": 0.98,
+    "elasticity": 0.95,
+    "gravity": -0.2,
+    "lifespan": 360,
+    "lifespan_variance": 0,
+    "dimensions": [ 32, 32 ],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 1,
+      "duration": 5,
+      "framerate": 68,
+      "loop": 0
+    }
+  },
+
   "wasp": {
     "load": 30,
     "rate": 4.0,
@@ -70,7 +92,7 @@
   },
 
   "wasp_2": {
-    "load": 12,
+    "load": 8,
     "rate": 100.0,
     "expulsion": 50.0,
     "expulsion_variance": 50.0,
@@ -269,5 +291,49 @@
     "colliding": false,
     "fader": true,
     "color": "save"
+  },
+
+  "smoke": {
+    "load": 2,
+    "rate": 4.0,
+    "expulsion": 10.0,
+    "expulsion_variance": 0.2,
+    "cone": 0.08,
+    "friction": 0.999,
+    "elasticity": 0.95,
+    "gravity": -0.17,
+    "lifespan": 2000,
+    "lifespan_variance": 0,
+    "dimensions": [ 32, 32 ],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 5,
+      "framerate": 180,
+      "loop": 0
+    }
+  },
+  
+  "green_beam": {
+    "load": 2,
+    "rate": 4.0,
+    "expulsion": 16.0,
+    "expulsion_variance": 4.0,
+    "cone": 2.8,
+    "friction": 0.999,
+    "elasticity": 0.95,
+    "gravity": 0.0,
+    "lifespan": 2000,
+    "lifespan_variance": 0,
+    "dimensions": [ 32, 32 ],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 4,
+      "framerate": 100,
+      "loop": 0
+    }
   }
 }

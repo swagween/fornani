@@ -5,7 +5,10 @@
 
 namespace enemy {
 
-Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned) : entity::Entity(svc), label(label), health_indicator(svc) {
+Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
+	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.texture_lookup.at(label))} {
+
+	direction = dir::Direction{start_direction};
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
 
@@ -55,6 +58,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned)
 	attributes.drop_range.x = in_attributes["drop_range"][0].as<int>();
 	attributes.drop_range.y = in_attributes["drop_range"][1].as<int>();
 	attributes.rare_drop_id = in_attributes["rare_drop_id"].as<int>();
+	attributes.respawn_distance = in_attributes["respawn_distance"].as<int>();
+	if (in_attributes["permadeath"].as_bool()) { flags.general.set(GeneralFlags::permadeath); };
 
 	visual.effect_size = in_visual["effect_size"].as<int>();
 	visual.effect_type = in_visual["effect_type"].as<int>();
@@ -77,8 +82,6 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned)
 	health_indicator.init(svc, 0);
 	post_death.start(afterlife);
 
-	direction.lr = dir::LR::left;
-
 	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
 	if (in_general["gravity"].as_bool()) { flags.general.set(GeneralFlags::gravity); }
 	if (in_general["map_collision"].as_bool()) { flags.general.set(GeneralFlags::map_collision); }
@@ -90,19 +93,21 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned)
 	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 	if (!flags.general.test(GeneralFlags::uncrushable)) { collider.collision_depths = util::CollisionDepth(); }
 
-	sprite.setTexture(svc.assets.texture_lookup.at(label));
-	drawbox.setSize({(float)sprite_dimensions.x, (float)sprite_dimensions.y});
+	drawbox.setSize({static_cast<float>(sprite_dimensions.x), static_cast<float>(sprite_dimensions.y)});
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(svc.styles.colors.ui_white);
 	drawbox.setOutlineThickness(-1);
 }
 
+void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) { metadata.external_id = code.first * 2719 + code.second.x * 13219 + code.second.y * 49037; }
+
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	sound.hurt_sound_cooldown.update();
+	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
-		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.bounding_box.position, 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
+		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
 		svc.soundboard.flags.frdog.set(audio::Frdog::death);
 		map.spawn_counter.update(-1);
 	}
@@ -162,13 +167,13 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		flags.state.reset(StateFlags::hostile);
 	}
 
-	// get UV coords
-	if (spritesheet_dimensions.y != 0) {
-		auto u = static_cast<int>(animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-		auto v = static_cast<int>(animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
-		sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
-	}
-	sprite.setOrigin(static_cast<float>(sprite_dimensions.x) / 2.f, static_cast<float>(dimensions.y) / 2.f);
+	// animate
+	auto column{0};
+	if (hurt_effect.running()) { column = (hurt_effect.get_cooldown() / 32) % 2 == 0 ? 1 : 2; }
+	auto u = column * sprite_dimensions.x;
+	auto v = static_cast<int>(animation.get_frame()) * sprite_dimensions.y;
+	visual.sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
+	visual.sprite.setOrigin({static_cast<float>(sprite_dimensions.x) * 0.5f, static_cast<float>(dimensions.y) * 0.5f});
 }
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
@@ -176,12 +181,12 @@ void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::P
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
-	drawbox.setOrigin(sprite.getOrigin());
+	drawbox.setOrigin(visual.sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
-	sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
-	win.draw(sprite);
+	visual.sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
+	win.draw(visual.sprite);
 	if (svc.greyblock_mode()) {
-		win.draw(sprite);
+		win.draw(visual.sprite);
 		drawbox.setOrigin({0.f, 0.f});
 		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
 		drawbox.setOutlineColor(svc.styles.colors.ui_white);
@@ -217,25 +222,25 @@ void Enemy::handle_player_collision(player::Player& player) const {
 void Enemy::handle_collision(shape::Collider& other) { collider.handle_collider_collision(other, true); }
 
 void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
-
-	if (proj.team == arms::TEAMS::SKYCORPS) { return; }
-	if (proj.team == arms::TEAMS::GUARDIAN) { return; }
+	if (proj.get_team() == arms::Team::skycorps) { return; }
+	if (proj.get_team() == arms::Team::guardian) { return; }
+	if (proj.get_team() == arms::Team::beast) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
-	if (!(proj.bounding_box.overlaps(collider.bounding_box) || proj.bounding_box.overlaps(secondary_collider.bounding_box))) { return; }
-
-	if (svc.ticker.every_x_ticks(10)) { proj.multiply(1.2f); }
-
+	if (!(proj.get_bounding_box().overlaps(collider.bounding_box) || proj.get_bounding_box().overlaps(secondary_collider.bounding_box))) { return; }
 	flags.state.set(enemy::StateFlags::shot);
 	if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
-		hurt();
-		health.inflict(proj.get_damage());
-		health_indicator.add(-proj.get_damage());
-		if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
+		if (proj.persistent()) { proj.damage_over_time(); }
+		if (proj.can_damage()) {
+			hurt();
+			health.inflict(proj.get_damage());
+			health_indicator.add(-proj.get_damage());
+			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
+		}
 	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
-		map.effects.push_back(entity::Effect(svc, proj.physics.position, {}, 0, 6));
+		map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 6));
 		svc.soundboard.flags.world.set(audio::World::hard_hit);
 	}
-	if (!proj.stats.persistent && (!died() || just_died())) { proj.destroy(false); }
+	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }
 }
 
 void Enemy::on_crush(world::Map& map) {

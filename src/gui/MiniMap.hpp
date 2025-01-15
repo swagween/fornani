@@ -29,7 +29,6 @@ struct Chunk {
 
 class MiniMap {
   public:
-	MiniMap() = default;
 	MiniMap(automa::ServiceProvider& svc);
 	void bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current = false, bool undiscovered = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
@@ -58,7 +57,7 @@ class MiniMap {
 	MapTexture texture;
 	sf::RenderTexture minimap_texture{};
 	sf::RectangleShape player_box{};
-	sf::Sprite map_sprite{};
+	sf::Sprite map_sprite;
 	sf::RectangleShape background{};
 	sf::RectangleShape border{};
 	sf::RectangleShape room_border{};

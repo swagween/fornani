@@ -64,8 +64,8 @@ class NPC : public entity::Entity {
 	util::BitFlags<NPCTrigger> triggers{};
 	std::deque<std::string_view> conversations{};
 	shape::Collider collider{};
-	sf::Sound voice_sound{};
 	std::optional<Vendor*> vendor;
+	sf::Sprite sprite;
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
 	anim::AnimatedSprite indicator;

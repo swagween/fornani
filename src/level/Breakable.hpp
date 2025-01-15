@@ -39,7 +39,7 @@ class Breakable {
 
   private:
 	util::BitFlags<BreakableAttributes> attributes{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	int style{};
 	int state{};
 	float energy{};

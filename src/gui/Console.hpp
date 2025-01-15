@@ -64,7 +64,7 @@ class Console {
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> text_origin{};
 	util::BitFlags<ConsoleFlags> flags{};
-	util::NineSlice sprite{};
+	util::NineSlice sprite;
 
 	dj::Json text_suite{};
 

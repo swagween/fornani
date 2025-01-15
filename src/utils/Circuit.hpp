@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <algorithm>
 
 namespace util {
 
@@ -15,6 +16,7 @@ class Circuit {
 	}
 	[[nodiscard]] constexpr auto get_order() const -> int { return order; }
 	[[nodiscard]] constexpr auto get() const -> int { return selection; }
+	[[nodiscard]] constexpr auto cycled() const -> bool { return selection == 0; }
 
   private:
 	int order{};

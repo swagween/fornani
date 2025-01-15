@@ -3,8 +3,7 @@
 
 namespace player {
 
-Shield::Shield(automa::ServiceProvider& svc) {
-	sprite.setTexture(svc.assets.t_shield);
+Shield::Shield(automa::ServiceProvider& svc) : sprite{svc.assets.t_shield} {
 	sensor.bounds.setRadius(28);
 	sensor.bounds.setOrigin({28, 28});
 	animation.set_params(neutral);

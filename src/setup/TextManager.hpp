@@ -13,7 +13,7 @@ namespace data {
 class TextManager {
 
 	public:
-	void load_data();
+	TextManager(ResourceFinder& finder);
 
 	//jsons
 	dj::Json console{};
@@ -29,8 +29,6 @@ class TextManager {
 		sf::Font title{};
 		sf::Font basic{};
 	} fonts{};
-
-	ResourceFinder finder{};
 };
 
 } // namespace data

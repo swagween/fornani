@@ -147,6 +147,7 @@ class Player {
 	void walk();
 	void hurt(float amount = 1.f, bool force = false);
 	void on_crush(world::Map& map);
+	void handle_map_collision(world::Map& map);
 	void update_antennae();
 	void sync_antennae();
 
@@ -192,7 +193,7 @@ class Player {
 	Indicator health_indicator;
 	Indicator orb_indicator;
 
-	text::Tutorial tutorial{};
+	text::Tutorial tutorial;
 
 	// weapons
 	std::optional<arms::Arsenal> arsenal{};
@@ -224,7 +225,7 @@ class Player {
 	automa::ServiceProvider* m_services;
 
 	// sprites
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	flfx::SpriteHistory sprite_history{};
 
 	// texture updater

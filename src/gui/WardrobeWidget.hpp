@@ -13,7 +13,6 @@ class Player;
 namespace gui {
 class WardrobeWidget {
   public:
-	WardrobeWidget() = default;
 	WardrobeWidget(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -22,13 +21,13 @@ class WardrobeWidget {
 
   private:
 	struct {
-		sf::Sprite base{};
-		sf::Sprite shirt{};
-		sf::Sprite pants{};
-		sf::Sprite hairstyle{};
-	} sprites{};
+		sf::Sprite base;
+		sf::Sprite shirt;
+		sf::Sprite pants;
+		sf::Sprite hairstyle;
+	} sprites;
 	sf::RenderTexture nani{};
-	sf::Sprite out_nani{};
+	sf::Sprite out_nani;
 	sf::RectangleShape background{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> dimensions{128.f, 256.f};

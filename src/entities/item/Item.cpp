@@ -6,7 +6,7 @@
 
 namespace item {
 
-Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) {
+Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label), sprite(svc.assets.t_items), ui{.rarity{svc.text.fonts.title}, .quantity{svc.text.fonts.basic}} {
 	auto const& in_data = svc.data.item[label];
 	metadata.id = in_data["index"].as<int>();
 	metadata.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string() : metadata.naive_title = in_data["title"].as_string();
@@ -24,9 +24,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 1.0f);
 	gravitator.collider.physics.maximum_velocity = {640.f, 640.f};
 
-	ui.rarity.setFont(svc.text.fonts.title);
 	ui.rarity.setCharacterSize(16);
-	ui.quantity.setFont(svc.text.fonts.basic);
 	ui.quantity.setCharacterSize(16);
 	ui.quantity.setFillColor(svc.styles.colors.ui_white);
 	switch (metadata.rarity) {
@@ -52,7 +50,6 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label) 
 	if (in_data["usable"].as_bool()) { flags.set(ItemFlags::usable); }
 	if (in_data["equippable"].as_bool()) { flags.set(ItemFlags::equippable); }
 	dimensions = {32.f, 32.f};
-	sprite.setTexture(svc.assets.t_items);
 	auto u = static_cast<int>(((metadata.id - 1) % 16) * dimensions.x);
 	auto v = static_cast<int>(std::floor((static_cast<float>(metadata.id - 1) / 16.f)) * dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
@@ -74,7 +71,7 @@ void Item::update(automa::ServiceProvider& svc, int index, int items_per_row) {
 	} else {
 		ui.quantity.setString(std::format("x{}", variables.quantity));
 		ui.quantity.setPosition(inv_pos + dimensions);
-		ui.rarity.setOrigin({ui.rarity.getLocalBounds().getSize().x, 0.f});
+		ui.rarity.setOrigin({ui.rarity.getLocalBounds().size.x, 0.f});
 	}
 	gravitator.set_target_position(inv_pos);
 	sprite.setPosition(gravitator.position());

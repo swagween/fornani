@@ -56,7 +56,7 @@ class MusicPlayer {
 	sf::Music song_first{};
 	sf::Music song_loop{};
 	sf::SoundSource::Status status{};
-	sf::Int64 last_dt{};
+	std::int64_t last_dt{};
 
 	sf::Time start_time{};
 	sf::Time end_time{};

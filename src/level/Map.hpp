@@ -10,6 +10,7 @@
 #include "../entities/world/SavePoint.hpp"
 #include "../entities/world/Vine.hpp"
 #include "../entities/world/Grass.hpp"
+#include "../entities/world/Fire.hpp"
 #include "../graphics/Background.hpp"
 #include "../graphics/Scenery.hpp"
 #include "../graphics/Transition.hpp"
@@ -30,11 +31,13 @@
 #include "Spike.hpp"
 #include "SwitchBlock.hpp"
 #include "Destroyable.hpp"
+#include "Checkpoint.hpp"
 #include "../weapon/Grenade.hpp"
 #include "../story/CutsceneCatalog.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/CircleCollider.hpp"
 #include "../audio/Ambience.hpp"
+#include "../entities/atmosphere/Atmosphere.hpp"
 
 int const NUM_LAYERS{8};
 int const CHUNK_SIZE{16};
@@ -56,12 +59,6 @@ class InventoryWindow;
 
 namespace world {
 
-enum LAYER_ORDER {
-	BACKGROUND = 0,
-	MIDDLEGROUND = 4,
-	FOREGROUND = 7,
-};
-
 enum class LevelState { game_over, camera_shake, spawn_enemy };
 enum class MapState { unobscure };
 
@@ -69,14 +66,20 @@ enum class MapState { unobscure };
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
 
 class Layer {
-
   public:
 	Layer() = default;
 	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(c), dimensions(dim), grid(dim, source) {}
+	[[nodiscard]] auto background() const -> bool { return render_order < 4; }
+	[[nodiscard]] auto foreground() const -> bool { return render_order > 3; }
+	[[nodiscard]] auto middleground() const -> bool { return render_order == 4; }
+	[[nodiscard]] auto obscuring() const -> bool { return render_order == 7; }
+	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
 	Grid grid;
-	uint8_t render_order{};
 	bool collidable{};
 	sf::Vector2<uint32_t> dimensions{};
+
+  private:
+	uint8_t render_order{};
 };
 
 struct EnemySpawn {
@@ -110,17 +113,25 @@ class Map {
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
-	void handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj);
 	void shake_camera();
 	void clear();
+	void wrap(sf::Vector2<float>& position) const;
 	std::vector<Layer>& get_layers();
+	Layer& get_middleground();
 	npc::NPC& get_npc(int id);
 	Vec get_spawn_position(int portal_source_map_id);
+	sf::Vector2<float> get_nearest_target_point(sf::Vector2<float> from);
+	sf::Vector2<float> last_checkpoint();
+
+	void debug();
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
-	bool overlaps_middleground(shape::Shape& test) const;
+	bool within_bounds(sf::Vector2<float> test) const;
+	bool overlaps_middleground(shape::Shape& test);
 	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
+	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
+	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
 	Tile& get_cell_at_position(sf::Vector2<float> position);
@@ -157,17 +168,22 @@ class Map {
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
 	std::vector<Destroyable> destroyers{};
+	std::vector<Checkpoint> checkpoints{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
+	std::vector<vfx::Atmosphere> atmosphere{};
+	std::vector<sf::Vector2<float>> target_points{};
 
 	// vfx
 	std::optional<vfx::Rain> rain{};
+	std::optional<std::vector<Fire>> fire{};
 
 	// sfx
 	audio::Ambience ambience{};
 
 	std::unique_ptr<bg::Background> background{};
 	flfx::Transition transition;
+	flfx::Transition soft_reset;
 
 	enemy::EnemyCatalog enemy_catalog;
 	fornani::CutsceneCatalog cutscene_catalog;
@@ -177,12 +193,12 @@ class Map {
 	sf::RectangleShape center_box{};
 
 	// layers
-	std::array<sf::RenderTexture, NUM_LAYERS> layer_textures{};
-	sf::RenderTexture obscuring_texture{};
-	sf::Sprite tile_sprite{};
-	sf::Sprite layer_sprite{};
-	sf::Sprite obscuring_sprite{};
-	sf::Sprite reverse_obscuring_sprite{};
+	struct {
+		sf::RenderTexture foreground{};
+		sf::RenderTexture background{};
+		sf::RenderTexture obscuring{};
+		sf::RenderTexture reverse{};
+	} textures{};
 	std::string_view style_label{};
 
 	int room_lookup{};
@@ -221,6 +237,10 @@ class Map {
 		util::BitFlags<LevelState> state{};
 		util::BitFlags<MapState> map_state{};
 	} flags{};
+	struct {
+		int echo_rate{};
+		int echo_count{};
+	} sound{};
 };
 
 } // namespace world

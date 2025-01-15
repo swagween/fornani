@@ -54,7 +54,7 @@ class Platform : public shape::Collider {
 	std::vector<sf::Vector2<float>> track{};
 	float path_length{};
 	float path_position{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	anim::Animation animation{};
 	util::Cooldown switch_up{3};
 	int style{};

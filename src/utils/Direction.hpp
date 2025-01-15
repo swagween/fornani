@@ -1,11 +1,12 @@
 
 #pragma once
 #include <string>
+#include <SFML/Graphics.hpp>
 
 namespace dir {
 
-	// the exclusion of "N" in the class name is purposeful; there is no "neutral" direction between L and R.
-	// the neutral state is used for setting the und state in specific use cases, like weapon direction.
+// the exclusion of "N" in the class name is purposeful; there is no "neutral" direction between L and R.
+// the neutral state is used for setting the und state in specific use cases, like weapon direction.
 enum class LR { left, neutral, right };
 enum class UND { up, neutral, down };
 // intermediate direction, used for special cases like grappling hook
@@ -13,6 +14,8 @@ enum class Inter { north, south, east, west, northeast, northwest, southeast, so
 
 struct Direction {
 	Direction(dir::UND und_preset = dir::UND::neutral, dir::LR lr_preset = dir::LR::neutral) : und(und_preset), lr(lr_preset) {}
+	Direction(sf::Vector2<int> preset) : lr{preset.x == 0 ? dir::LR::neutral : preset.x == 1 ? dir::LR::right : dir::LR::left}, und{preset.y == 0 ? dir::UND::neutral : preset.y == 1 ? dir::UND::down : dir::UND::up} {}
+	
 	LR lr{LR::neutral};
 	UND und{UND::neutral};
 	Inter inter{Inter::north};
@@ -43,13 +46,15 @@ struct Direction {
 		}
 	}
 
-	void neutralize_und() {
-		und = UND::neutral;
-	}
-	void neutralize_lr() {
-		lr = LR::neutral;
+	void neutralize_und() { und = UND::neutral; }
+	void neutralize_lr() { lr = LR::neutral; }
+	void flip(bool horizontal = true, bool vertical = false) {
+		if (horizontal) { lr = lr == LR::left ? LR::right : LR::left; }
+		if (vertical) { und = und == UND::up ? UND::down : UND::up; }
 	}
 	constexpr float as_float() const { return lr == LR::left ? -1.f : (lr == LR::right ? 1.f : 0.f); }
+	constexpr float as_float_und() const { return und == UND::up ? -1.f : (und == UND::down ? 1.f : 0.f); }
+	sf::Vector2<float> get_vector() const { return sf::Vector2<float>{as_float(), as_float_und()}; }
 
 	std::string print_und() const { return "UND: " + (std::string)(und == UND::up ? "UP " : (und == UND::neutral ? "NEUTRAL " : "DOWN ")); }
 	std::string print_lr() const { return "LR: " + (std::string)(lr == LR::left ? "LEFT " : (lr == LR::neutral ? "NEUTRAL " : "RIGHT ")); }
@@ -67,7 +72,6 @@ struct Direction {
 		}
 		return "null";
 	}
-
 };
 
-} // namespace util
+} // namespace dir

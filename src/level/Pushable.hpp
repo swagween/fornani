@@ -44,7 +44,7 @@ class Pushable {
   private:
 	util::BitFlags<PushableAttributes> attributes{};
 	util::BitFlags<PushableState> state{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	int style{};
 	int size{};
 	float mass{};

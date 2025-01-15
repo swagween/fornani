@@ -4,7 +4,7 @@
 
 namespace automa {
 
-StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
+StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), stats(svc.text.fonts.basic), title(svc.text.fonts.title) {
 	current_selection = util::Circuit(static_cast<int>(options.size()));
 	auto ctr{1};
 	for (auto& option : options) {
@@ -22,18 +22,11 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 							 "\nrooms discovered: " + std::to_string(svc.data.discovered_rooms.size()) + " / 25\nguns collected: " + std::to_string(player.arsenal_size()) +
 							 " / 2\n items found: " + std::to_string(player.catalog.categories.inventory.items.size()) + " / 9\n'get bryn's gun' speedrun time: " + svc.stats.tt_formatted() + " seconds";
 	stats.setString(statistics);
-	stat_font.loadFromFile(svc.text.text_font);
-	stat_font.setSmooth(false);
-	stats.setFont(stat_font);
 	stats.setLineSpacing(2.0f);
 	svc.music.load("firstwind");
 	svc.music.play_looped(10);
 	loading.start();
 }
-
-void StatSheet::init(ServiceProvider& svc, int room_number) {}
-
-void StatSheet::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void StatSheet::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);

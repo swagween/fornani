@@ -71,6 +71,8 @@ class Item : public entity::Entity {
 		int value{};
 	} metadata{};
 
+	sf::Sprite sprite;
+
 	util::BitFlags<ItemFlags> flags{};
 	util::BitFlags<ItemState> state{};
 	util::BitFlags<UIFlags> ui_flags{};
@@ -80,12 +82,12 @@ class Item : public entity::Entity {
 	} variables{};
 
 	struct {
+		sf::Text rarity;
+		sf::Text quantity;
 		sf::Vector2<float> pad{60.f, 60.f};
 		sf::Vector2<float> offset{};
 		float spacing{56.f};
-		sf::Text rarity{};
-		sf::Text quantity{};
-	} ui{};
+	} ui;
 };
 
 } // namespace player

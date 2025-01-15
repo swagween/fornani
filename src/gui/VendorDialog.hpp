@@ -34,38 +34,39 @@ class VendorDialog {
 	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
+	[[nodiscard]] auto made_profit() const -> bool { return balance > 0.f; }
 	[[nodiscard]] auto opening() const -> bool { return intro.running() || bring_in_cooldown.running(); }
   private:
 	struct {
-		Selector buy{};
-		Selector sell{};
-	} selectors{};
+		Selector buy;
+		Selector sell;
+	} selectors;
 	Console info;
 	MiniMenu item_menu;
 	util::Cooldown intro{200};
 	util::Cooldown bring_in_cooldown{200};
 	util::BitFlags<VendorDialogStatus> flags{};
-	sf::Sprite artwork{};
-	sf::Sprite ui{};
+	sf::Sprite artwork;
+	sf::Sprite ui;
 	Portrait portrait;
 	VendorState state{};
 	int vendor_id{};
 	int npc_id{};
 	bool init{};
 	float sale_price{};
+	float balance{};
 	std::unordered_map<int, int> get_npc_id{};
 	sf::Vector2<float> portrait_position{44.f, 18.f};
 	sf::Vector2<float> bring_in{};
 	struct {
-		sf::Text vendor_name{};
-		sf::Text buy_tab{};
-		sf::Text sell_tab{};
-		sf::Text orb_count{};
-		sf::Text price{};
-		sf::Text price_number{};
-		sf::Text value{};
-		sf::Text item_label{};
-	} text{};
+		sf::Text vendor_name;
+		sf::Text buy_tab;
+		sf::Text sell_tab;
+		sf::Text orb_count;
+		sf::Text price;
+		sf::Text price_number;
+		sf::Text item_label;
+	} text;
 	struct {
 		sf::Vector2<float> item_label_position{232.f, 320.f};
 		sf::Vector2<float> price_position{232.f, 345.f};
@@ -74,8 +75,8 @@ class VendorDialog {
 		int items_per_row{12};
 	} ui_constants{};
 	struct {
-		anim::AnimatedSprite sprite{};
-	} orb{};
+		anim::AnimatedSprite sprite;
+	} orb;
 };
 
 } // namespace gui

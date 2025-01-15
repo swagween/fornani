@@ -6,12 +6,12 @@
 
 namespace entity {
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu16 dim, Vecu16 pos, std::string_view key, int room_id, int alternates, int native, bool aoc) : scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates) {
+Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key, int room_id, int alternates, int native, bool aoc)
+	: scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates), sprite(svc.assets.t_inspectable) {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
 	bounding_box.set_position(position);
-	sprite.setTexture(svc.assets.t_inspectable);
 	animation.end();
 	id = key.data() + std::to_string(room_id);
 	native_id = native == 0 ? room_id : native;

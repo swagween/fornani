@@ -56,6 +56,7 @@ class Shape {
 	[[nodiscard]] auto bottom() const -> float { return position.y + dimensions.y; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return position + dimensions * 0.5f; }
 	[[nodiscard]] float get_height_at(float x) const;
+	[[nodiscard]] float get_radial_factor() const;
 
 	bool AABB_handle_left_collision_static(Shape const& immovable);
 	bool AABB_handle_right_collision_static(Shape const& immovable);

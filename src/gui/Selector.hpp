@@ -33,7 +33,7 @@ class Selector {
 	[[nodiscard]] auto get_section() const -> InventorySection { return section; }
 	[[nodiscard]] auto get_section_int() const -> int { return static_cast<int>(section); }
 	[[nodiscard]] auto get_current_selection() const -> int { return current_selection.get(); }
-	[[nodiscard]] auto get_menu_position() const -> sf::Vector2<float> { return position + sf::Vector2<float>{2.f * sprite.getLocalBounds().width, -8.f}; }
+	[[nodiscard]] auto get_menu_position() const -> sf::Vector2<float> { return position + sf::Vector2<float>{2.f * sprite.getLocalBounds().size.x, -8.f}; }
 
 	util::Circuit current_selection{1};
 
@@ -44,7 +44,7 @@ class Selector {
 
 	sf::Vector2<int> table_dimensions{};
 	sf::Vector2<float> position{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 
 	struct {
 		util::Circuit vertical{static_cast<int>(InventorySection::END)};

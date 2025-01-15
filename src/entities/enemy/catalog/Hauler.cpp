@@ -70,12 +70,12 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	hurt_effect.update();
 	if (hurt_effect.running()) {
 		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			sprite.setColor(svc.styles.colors.red);
+			visual.sprite.setColor(svc.styles.colors.red);
 		} else {
-			sprite.setColor(svc.styles.colors.periwinkle);
+			visual.sprite.setColor(svc.styles.colors.periwinkle);
 		}
 	} else {
-		sprite.setColor(svc.styles.colors.white);
+		visual.sprite.setColor(svc.styles.colors.white);
 	}
 
 	if (just_died()) { m_services->soundboard.flags.tank.set(audio::Tank::death); }
@@ -114,7 +114,7 @@ fsm::StateFunction Hauler::update_idle() {
 fsm::StateFunction Hauler::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		sprite_flip();
+		visual.sprite.setScale({-1.f, 1.f});
 		state = {};
 		state.set(HaulerState::idle);
 		animation.set_params(idle);

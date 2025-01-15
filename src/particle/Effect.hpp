@@ -26,6 +26,7 @@ class Effect : public Entity {
 	anim::Animation animation{};
 	components::PhysicsComponent physics{};
 	int type{};
+	sf::Sprite sprite;
 };
 
 } // namespace vfx

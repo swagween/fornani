@@ -7,17 +7,14 @@ namespace automa {
 
 class StatSheet : public automa::GameState {
   public:
-	StatSheet() = default;
-	StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
-	void init(ServiceProvider& svc, int room_number);
-	void handle_events(ServiceProvider& svc, sf::Event& event);
+	StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
 
   private:
-	sf::Text title{};
-	sf::Text stats{};
+	sf::Text title;
+	sf::Text stats;
 	sf::Font stat_font{};
 	util::Cooldown loading{2};
 };

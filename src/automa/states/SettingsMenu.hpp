@@ -10,10 +10,7 @@ enum class MenuMode { adjust };
 
 class SettingsMenu : public automa::GameState {
   public:
-	SettingsMenu() = default;
-	SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
-	void init(ServiceProvider& svc, int room_number);
-	void handle_events(ServiceProvider& svc, sf::Event& event);
+	SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
@@ -23,22 +20,22 @@ class SettingsMenu : public automa::GameState {
 	util::BitFlags<Toggles> toggles{};
 	util::BitFlags<MenuMode> mode_flags{};
 	struct {
-		sf::Text enabled{};
-		sf::Text disabled{};
-	} toggle_options{};
+		sf::Text enabled;
+		sf::Text disabled;
+	} toggle_options;
 
 	struct {
-		sf::Text autosprint{};
-		sf::Text tutorial{};
-		sf::Text gamepad{};
-		sf::Text fullscreen{};
-	} toggleables{};
+		sf::Text autosprint;
+		sf::Text tutorial;
+		sf::Text gamepad;
+		sf::Text fullscreen;
+	} toggleables;
 
 	struct {
-		sf::Text music_volume{};
-	} sliders{};
+		sf::Text music_volume;
+	} sliders;
 
-	sf::Text music_label{};
+	sf::Text music_label;
 };
 
 } // namespace automa

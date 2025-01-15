@@ -43,7 +43,7 @@ class Vine {
 	int size{};
 	sf::RectangleShape drawbox{};
 	vfx::Chain chain;
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	std::vector<std::array<int, 2>> encodings{};
 	struct {
 		float priceless{0.001f};

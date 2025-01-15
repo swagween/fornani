@@ -5,17 +5,15 @@
 
 namespace gui {
 
-gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc) {
-	sprites.base.setTexture(svc.assets.t_wardrobe_base);
-	sprites.hairstyle.setTexture(svc.assets.t_wardrobe_default_hair);
-	sprites.pants.setTexture(svc.assets.t_wardrobe_green_pants);
-	sprites.shirt.setTexture(svc.assets.t_wardrobe_blue_shirt);
+gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
+	: sprites{.base = sf::Sprite{svc.assets.t_wardrobe_base}, .shirt = sf::Sprite{svc.assets.t_wardrobe_blue_shirt}, .pants = sf::Sprite{svc.assets.t_wardrobe_green_pants}, .hairstyle = sf::Sprite{svc.assets.t_wardrobe_default_hair}},
+	  out_nani{svc.assets.t_null} {
 	background.setFillColor(svc.styles.colors.ui_black);
 	background.setOutlineColor(svc.styles.colors.ui_white);
 	background.setOutlineThickness(2);
 	background.setSize(dimensions);
 	background.setOrigin(dimensions * 0.5f);
-	nani.create(128, 256);
+	nani.resize({128, 256});
 }
 
 void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player) {

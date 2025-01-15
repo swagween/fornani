@@ -71,7 +71,7 @@ class Portal {
 
 	PortalRenderState state{};
 
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	sf::IntRect lookup{};
 };
 

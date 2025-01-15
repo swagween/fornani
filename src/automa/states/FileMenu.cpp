@@ -4,7 +4,7 @@
 
 namespace automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id), map(svc, player, console), file_select_menu(svc, {"play", "stats", "delete"}) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player, console), file_select_menu(svc, {"play", "stats", "delete"}) {
 	current_selection = util::Circuit(num_files);
 	svc.data.load_blank_save(player);
 	console = gui::Console(svc);
@@ -18,7 +18,6 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 	loading.start(4);
 
-	title.setPosition(0, 0);
 	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
 	title.setFillColor(svc.styles.colors.ui_black);
 
@@ -27,8 +26,6 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 }
-
-void FileMenu::init(ServiceProvider& svc, int room_number) {}
 
 void FileMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
@@ -101,7 +98,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 
 	auto& opt = options.at(current_selection.get());
 	auto minimenu_dim = sf::Vector2<float>{128.f, 128.f};
-	auto minimenu_pos = opt.position + sf::Vector2<float>(opt.label.getLocalBounds().width * 0.5f + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f);
+	auto minimenu_pos = opt.position + sf::Vector2<float>(opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f);
 	file_select_menu.update(svc, minimenu_dim, minimenu_pos);
 
 	left_dot.update(svc);

@@ -36,6 +36,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 		svc.music.load("brown");
 		svc.music.play_looped(10);
 		transition.start();
+		svc.data.respawn_all();
 		if (transition.is_done() && console.is_complete()) {
 			player.health.heal(64.f);
 			player.health.update();

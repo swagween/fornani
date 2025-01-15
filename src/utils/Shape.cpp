@@ -315,20 +315,21 @@ void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 		sf::Vertex line[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, sf::Color{255, 255, 0, 100}},
 							 {{vertices[1].x - cam.x, vertices[1].y - cam.y}, sf::Color{255, 255, 0, 100}},
 							 {{vertices[2].x - cam.x, vertices[2].y - cam.y}, sf::Color{255, 255, 0, 100}}};
-		win.draw(line, 3, sf::Triangles);
+		win.draw(line, 3, sf::PrimitiveType::Triangles);
 	}
 	if (vertices.size() == 4) {
 		auto color = non_square() ? sf::Color{0, 0, 255, 128} : sf::Color{0, 255, 255, 128};
-		sf::Vertex line[] = {
-			{{vertices[0].x - cam.x, vertices[0].y - cam.y}, color}, {{vertices[1].x - cam.x, vertices[1].y - cam.y}, color}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, color}, {{vertices[3].x - cam.x, vertices[3].y - cam.y}, color}};
-		win.draw(line, 4, sf::Quads);
+		sf::Vertex line1[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, color}, {{vertices[1].x - cam.x, vertices[1].y - cam.y}, color}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, color}};
+		win.draw(line1, 3, sf::PrimitiveType::Triangles);
+		sf::Vertex line2[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, color}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, color}, {{vertices[3].x - cam.x, vertices[3].y - cam.y}, color}};
+		win.draw(line2, 3, sf::PrimitiveType::Triangles);
 	}
 	for (int i{0}; i < normals.size(); ++i) {
 		if (!non_square()) { break; }
 		auto start = vertices[i] + edges[i] * 0.5f;
 		auto scale = -8.f;
 		sf::Vertex norm[] = {{{start.x - cam.x, start.y - cam.y}, sf::Color{255, 0, 0, 128}}, {{start.x + normals[i].x * scale - cam.x, start.y + normals[i].y * scale - cam.y}, sf::Color{255, 0, 0, 128}}};
-		win.draw(norm, 2, sf::Lines);
+		win.draw(norm, 2, sf::PrimitiveType::Lines);
 	}
 }
 
@@ -343,6 +344,15 @@ float Shape::get_height_at(float x) const {
 	auto b = num_sides == 4 ? vertices.at(3).y - vertices.at(0).y : vertices.at(2).y - vertices.at(0).y;
 	auto y = std::min(slope * x + b, max_height);
 	return y;
+}
+
+float Shape::get_radial_factor() const {
+	auto a = vertices.at(1).x - vertices.at(0).x;
+	auto b = vertices.at(1).y - vertices.at(0).y;
+	if (a == 0) { return 1.f; }
+	auto c_squared = a * a + b * b;
+	auto c = std::sqrt(c_squared);
+	return a / c;
 }
 
 bool Shape::AABB_handle_left_collision_static(Shape const& immovable) {

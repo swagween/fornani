@@ -14,7 +14,6 @@ enum class WidgetFlags { gun };
 
 class ItemWidget {
   public:
-	ItemWidget() = default;
 	ItemWidget(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);
@@ -26,9 +25,9 @@ class ItemWidget {
 
   private:
 	struct {
-		sf::Sprite item{};
-		sf::Sprite gun{};
-	} sprites{};
+		sf::Sprite item;
+		sf::Sprite gun;
+	} sprites;
 	sf::CircleShape sticker{};
 	
 	std::string_view label{};

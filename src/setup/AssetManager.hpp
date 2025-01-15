@@ -11,20 +11,14 @@
 
 namespace asset {
 
-const uint8_t TILE_WIDTH = 32;
-int const NANI_SPRITESHEET_WIDTH = 22;
-int const NANI_SPRITESHEET_HEIGHT = 10;
-const uint8_t NANI_SPRITE_WIDTH = 48;
-
 class AssetManager {
   public:
-	AssetManager() = default;
-	~AssetManager() {}
+	AssetManager(data::ResourceFinder& finder);
 
-	void import_textures();
-	void load_audio();
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
+
+	sf::Texture t_null{};
 
 	// player and NPCs!
 	sf::Texture t_nani{};
@@ -81,6 +75,8 @@ class AssetManager {
 	sf::Texture t_archer{};
 	sf::Texture t_archer_bow{};
 	sf::Texture t_archer_arrow{};
+	sf::Texture t_beamstalk{};
+	sf::Texture t_meatsquash{};
 
 	// gui
 	sf::Texture t_ui{};
@@ -98,8 +94,7 @@ class AssetManager {
 	sf::Texture t_hud_orb_font{};
 	sf::Texture t_hud_hearts{};
 	sf::Texture t_hud_ammo{};
-	sf::Texture t_hud_gun_color{};
-	sf::Texture t_hud_gun_shadow{};
+	sf::Texture t_hud_gun{};
 	sf::Texture t_hud_pointer{};
 	sf::Texture t_hud_shield{};
 	sf::Texture t_selector{};
@@ -136,7 +131,6 @@ class AssetManager {
 	// entities
 	sf::Texture t_chest{};
 	sf::Texture t_shield{};
-
 	sf::Texture t_large_animators{};
 	sf::Texture t_small_animators{};
 	sf::Texture t_breakables{};
@@ -153,7 +147,9 @@ class AssetManager {
 	sf::Texture t_wall_hit{};
 	sf::Texture t_twinkle{};
 	sf::Texture t_wasp_effect{};
+	sf::Texture t_green_beam_effect{};
 	sf::Texture t_peckett_effect{};
+	sf::Texture t_bg_effect{};
 	sf::Texture t_small_flash{};
 	sf::Texture t_mini_flash{};
 	sf::Texture t_medium_flash{};
@@ -186,6 +182,10 @@ class AssetManager {
 
 	//scenery
 	sf::Texture t_overturned_scenery{};
+	sf::Texture t_firefly{};
+	sf::Texture t_dragonfly{};
+	sf::Texture t_fire{};
+	sf::Texture t_smoke{};
 
 	// load the guns and bullets!
 	sf::Texture t_gun{};
@@ -193,7 +193,7 @@ class AssetManager {
 	sf::Texture t_plasmer_projectile{};
 	sf::Texture t_clover_projectile{};
 	sf::Texture t_wasp_projectile{};
-	sf::Texture t_tomahawk_projectile{};
+	sf::Texture t_tomahawk{};
 	sf::Texture t_skycorps_ar_projectile{};
 	sf::Texture t_rope{};
 	sf::Texture t_hook{};
@@ -205,6 +205,9 @@ class AssetManager {
 	sf::Texture t_gnat_projectile{};
 	sf::Texture t_energy_ball_projectile{};
 	sf::Texture t_peckett_projectile{};
+	sf::Texture t_arrow_projectile{};
+	sf::Texture t_archer_arrow_projectile{};
+	sf::Texture t_green_beam{};
 
 	// items
 	sf::Texture t_heart{};
@@ -347,8 +350,6 @@ class AssetManager {
 
 	// other members
 	int music_vol{24};
-
-	data::ResourceFinder finder{};
 
 	std::unordered_map<std::string_view, sf::Texture&> texture_lookup{};
 	std::unordered_map<int, sf::Texture&> scenery_lookup{};

@@ -173,6 +173,10 @@
       "label": "OVERTURNED_GLADE_02"
     },
     {
+      "room_id": 20094,
+      "label": "OVERTURNED_HOLLOW_01"
+    },
+    {
       "room_id": 228,
       "label": "OVERTURNED_MIMIC_01"
     },
@@ -185,12 +189,20 @@
       "label": "OVERTURNED_SHAFT_03"
     },
     {
+      "room_id": 20096,
+      "label": "OVERTURNED_TALL"
+    },
+    {
       "room_id": 231,
       "label": "OVERTURNED_TROUGHWAY_01"
     },
     {
       "room_id": 212,
       "label": "OVERTURNED_TUNNEL_01"
+    },
+    {
+      "room_id": 20090,
+      "label": "OVERTURNED_VINE"
     }
   ]
 }

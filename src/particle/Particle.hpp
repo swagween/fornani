@@ -34,7 +34,7 @@ class Particle {
 	util::Cooldown lifespan{};
 	shape::CircleCollider collider;
 	int frame{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	std::optional<util::Fader> fader{};
 	anim::Animation animation{};
 	util::BitFlags<ParticleType> flags{};

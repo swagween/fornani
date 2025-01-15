@@ -6,7 +6,7 @@
 
 namespace arms {
 
-Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir::Direction direction) : Collider({16.f, 16.f}) {
+Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir::Direction direction) : Collider({16.f, 16.f}), sprite{svc.assets.t_grenade} {
 	switch (direction.inter) {
 	case dir::Inter::northeast: physics.acceleration = {60.f, -100.f}; break;
 	case dir::Inter::east: physics.acceleration = {100.f, -20.f}; break;
@@ -40,7 +40,6 @@ Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir:
 	drawbox.setSize({Entity::dimensions});
 	physics.position = position;
 	sync_components();
-	sprite.setTexture(svc.assets.t_grenade);
 	sprite.setOrigin(sf::Vector2<float>{sprite_dimensions} * 0.5f);
 	animation.set_params({0, 7, 40, -1});
 	detonator.start(detonation_time);
@@ -67,7 +66,7 @@ void Grenade::update(automa::ServiceProvider& svc, player::Player& player, world
 	if (detonator.get_cooldown() % 80 == 0 && animation.params.framerate > 8) { animation.params.framerate -= 5; }
 	auto dampen = 0.003f;
 	auto sign = physics.velocity.x > 0.f ? -1 : 1;
-	sprite.setRotation((detonator.get_cooldown() * detonator.get_cooldown()) * dampen * sign);
+	sprite.setRotation(sf::degrees((detonator.get_cooldown() * detonator.get_cooldown()) * dampen * sign));
 	drawbox.setPosition(physics.position);
 }
 

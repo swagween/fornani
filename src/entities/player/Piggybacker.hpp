@@ -17,7 +17,7 @@ class Piggybacker {
 	void set_position(sf::Vector2<float> position) { gravitator.set_position(position); }
   private:
 	vfx::Gravitator gravitator{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	sf::Vector2<float> offset{};
 };
 

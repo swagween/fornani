@@ -72,14 +72,14 @@ void TextureUpdater::update_texture(sf::Texture& texture) {
 	for (int i = 0; i < total_array_size; ++i) {
 
 		// fill image
-		sf::Uint8 index = i;
+		std::uint8_t index = i;
 
 		sf::Color current_pixel{};
 		int to_index{};
 
 		// next pixel
 		if (i % 4 == 0) {
-			current_pixel = {(sf::Uint8)(image_data[i]), (sf::Uint8)(image_data[i + 1]), (sf::Uint8)(image_data[i + 2]), (sf::Uint8)(image_data[i + 3])};
+			current_pixel = {static_cast<std::uint8_t>(image_data[i]), static_cast<std::uint8_t>(image_data[i + 1]), static_cast<std::uint8_t>(image_data[i + 2]), static_cast<std::uint8_t>(image_data[i + 3])};
 
 			// find this pixels home index
 			for (int j = 0; j < map_colors.size(); ++j) {
@@ -107,14 +107,14 @@ void flfx::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float
 	int i{};
 	for (auto& color : map_colors) {
 		debug.setFillColor(color);
-		debug.setPosition(i * 8.f, 0.f);
+		debug.setPosition({i * 8.f, 0.f});
 		win.draw(debug);
 		++i;
 	}
 	i = 0;
 	for (auto& color : palette_colors) {
 		debug.setFillColor(color);
-		debug.setPosition(i * 8.f, 10.f);
+		debug.setPosition({i * 8.f, 10.f});
 		win.draw(debug);
 		++i;
 	}

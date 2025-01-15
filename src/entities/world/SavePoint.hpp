@@ -43,7 +43,7 @@ class SavePoint {
 	Vecu16 scaled_position{};
 	shape::Shape bounding_box{};
 	shape::Shape proximity_box{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	sf::RectangleShape drawbox{}; // for debug
 	anim::Animation animation{};
 	vfx::Sparkler sparkler{};

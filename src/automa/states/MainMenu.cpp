@@ -4,8 +4,8 @@
 
 namespace automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
-
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
+	: GameState(svc, player, scene, room_number), subtitle(svc.text.fonts.basic), instruction(svc.text.fonts.basic), title(svc.assets.t_title) {
 	// playtester edition
 	flags.set(GameStateFlags::playtest);
 	// playtester edition
@@ -15,34 +15,24 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 
-	if (flags.test(GameStateFlags::playtest)) { subtitle.setString("Playtester Edition"); }
+	if (flags.test(GameStateFlags::playtest)) { subtitle.setString(svc.version.version_title()); }
 	subtitle.setLineSpacing(1.5f);
-	subtitle.setFont(subtitle_font);
 	subtitle.setLetterSpacing(1.2f);
 	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	subtitle.setPosition(svc.constants.screen_dimensions.x * 0.5f - subtitle.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 300.f);
+	subtitle.setPosition({svc.constants.f_center_screen.x - subtitle.getLocalBounds().getCenter().x, svc.constants.screen_dimensions.y - 300.f});
 	subtitle.setFillColor(svc.styles.colors.red);
 	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
 	instruction.setLineSpacing(1.5f);
-	instruction.setFont(subtitle_font);
 	instruction.setLetterSpacing(1.2f);
 	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	instruction.setPosition(svc.constants.screen_dimensions.x * 0.5f - instruction.getLocalBounds().width * 0.5f, svc.constants.screen_dimensions.y - 36.f);
+	instruction.setPosition({svc.constants.screen_dimensions.x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.constants.screen_dimensions.y - 36.f});
 	instruction.setFillColor(svc.styles.colors.dark_grey);
-
-	title = sf::Sprite{svc.assets.t_title, sf::IntRect({0, 0}, {(int)svc.constants.screen_dimensions.x, (int)svc.constants.screen_dimensions.y})};
 
 	svc.data.load_blank_save(player);
 	player.controller.autonomous_walk();
-	player.set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(0).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(1).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+	player.set_position({svc.constants.f_center_screen.x + 80.f, 360.f});
 	loading.start();
-};
-
-void MainMenu::init(ServiceProvider& svc, int room_number) {}
-
-void MainMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
+}
 
 void MainMenu::tick_update(ServiceProvider& svc) {
 	svc.a11y.set_action_ctx_bar_enabled(true);

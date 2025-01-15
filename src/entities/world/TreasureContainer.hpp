@@ -34,7 +34,7 @@ class TreasureContainer {
 	float loot_multiplier{};
 	vfx::Gravitator gravitator{};
 	components::CircleSensor sensor{};
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 	Health health{};
 };
 

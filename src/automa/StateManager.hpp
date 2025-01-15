@@ -24,8 +24,7 @@ struct ServiceProvider;
 class StateManager {
 
   public:
-	StateManager();
-	~StateManager();
+	StateManager(ServiceProvider& svc, player::Player& player);
 	StateManager& operator=(StateManager&&) = delete;
 	void process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game);
 	void return_to_main_menu(ServiceProvider& svc, player::Player& player);

@@ -7,12 +7,11 @@
 namespace entity {
 
 Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, bool already_open, int key_id, int style, sf::Vector2<int> map_dim)
-	: scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}) {
+	: scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}), sprite{svc.assets.t_portals} {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
 	bounding_box.set_position(position);
-	sprite.setTexture(svc.assets.t_portals);
 	meta.orientation = PortalOrientation::central;
 	if (pos.x == 0) { meta.orientation = PortalOrientation::left; }
 	if (pos.y == 0) { meta.orientation = PortalOrientation::top; }
@@ -34,7 +33,7 @@ void Portal::update(automa::ServiceProvider& svc) {
 	dimensions = static_cast<Vec>(scaled_dimensions * svc.constants.u32_cell_size);
 	bounding_box.set_position(position);
 	bounding_box.dimensions = dimensions;
-	lookup.left = static_cast<int>(state) * svc.constants.i_cell_size;
+	lookup.position.x = static_cast<int>(state) * svc.constants.i_cell_size;
 }
 
 void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {

@@ -2,7 +2,8 @@
 #include "../service/ServiceProvider.hpp"
 
 namespace vfx {
-Rain::Rain(int intensity, float fall_speed, float slant, bool snow) : intensity(intensity), fall_speed(fall_speed), slant(slant) {
+
+Rain::Rain(int intensity, float fall_speed, float slant, bool snow, bool collision) : intensity(intensity), fall_speed(fall_speed), slant(slant), collision(collision) {
 	auto color = sf::Color{163, 206, 229, 100};
 	auto snow_color = sf::Color{206, 236, 239, 200};
 	snow ? raindrop.setFillColor(snow_color) : raindrop.setFillColor(color);
@@ -12,6 +13,7 @@ Rain::Rain(int intensity, float fall_speed, float slant, bool snow) : intensity(
 		sway = 0.2f;
 	}
 }
+
 void Rain::update(automa::ServiceProvider& svc, world::Map& map) {
 	float offset = -slant * 32.f;
 	if (svc.ticker.every_x_ticks(4)) {
@@ -26,7 +28,7 @@ void Rain::update(automa::ServiceProvider& svc, world::Map& map) {
 			drops.back().z = z;
 		}
 	}
-	for (auto& drop : drops) { drop.update(svc, map); }
+	for (auto& drop : drops) { drop.update(svc, map, collision); }
 	std::erase_if(drops, [](auto const& d) { return d.decayed(); });
 }
 
@@ -35,8 +37,8 @@ void Rain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 		drop.collided() ? raindrop.setSize({dimensions.x, dimensions.x}) : raindrop.setSize(dimensions);
 		drop.collided() ? raindrop.setOrigin({dimensions.x * 0.5f, dimensions.x}) : raindrop.setOrigin({dimensions.x * 0.5f, dimensions.y});
 		raindrop.setPosition(drop.position() - cam);
-		raindrop.setRotation(drop.get_angle());
-		raindrop.setScale(drop.z, raindrop.getScale().y);
+		raindrop.setRotation(sf::degrees(drop.get_angle()));
+		raindrop.setScale({drop.z, raindrop.getScale().y});
 		svc.greyblock_mode() ? drop.collider.render(win, cam) : win.draw(raindrop);
 	}
 }

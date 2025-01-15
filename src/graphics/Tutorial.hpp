@@ -17,6 +17,7 @@ enum class TutorialFlags { jump, sprint, inventory, shoot, map };
 
 class Tutorial {
   public:
+	Tutorial(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 	void turn_on();

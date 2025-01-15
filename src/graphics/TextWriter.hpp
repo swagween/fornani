@@ -24,7 +24,7 @@ struct ServiceProvider;
 namespace text {
 
 struct Message {
-	sf::Text data{};
+	sf::Text data;
 	bool prompt{};
 	int target{};
 };
@@ -112,7 +112,9 @@ class TextWriter {
 
 	std::unordered_map<Codes, char> special_characters{};
 
-	sf::Text working_message{};
+	sf::Text working_message;
+	sf::Text second_working_message;
+	sf::Text third_working_message;
 
 	HelpText help_marker;
 
@@ -133,7 +135,7 @@ class TextWriter {
 
 	automa::ServiceProvider* m_services;
 
-	Message zero_option{}; // for debug
+	Message zero_option; // for debug
 	sf::RectangleShape bounds_box{};
 };
 

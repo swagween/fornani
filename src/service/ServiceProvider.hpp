@@ -18,6 +18,8 @@
 #include "../utils/Random.hpp"
 #include "../utils/Stopwatch.hpp"
 #include "../utils/Ticker.hpp"
+#include "../utils/WorldClock.hpp"
+#include "../setup/Version.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
@@ -33,13 +35,15 @@ struct MapDebug {
 	int active_projectiles{};
 };
 struct ServiceProvider {
-	ServiceProvider(char** argv) : data(*this, argv) {};
+	ServiceProvider(char** argv, fornani::Version& version) : finder(argv), data(*this, argv), version(version), assets{finder} {};
 
-	fornani::WindowManager* window;
+	data::ResourceFinder finder;
 	lookup::Tables tables{};
-	asset::AssetManager assets{};
+	data::TextManager text{finder};
 	data::DataManager data;
-	data::TextManager text{};
+	fornani::Version version{};
+	fornani::WindowManager* window;
+	asset::AssetManager assets;
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
@@ -47,10 +51,11 @@ struct ServiceProvider {
 	util::BitFlags<StateFlags> state_flags{};
 	util::Random random{};
 	util::Ticker ticker{};
+	fornani::WorldClock world_clock{};
 	util::Constants constants{};
 	StateController state_controller{};
 	MenuController menu_controller{};
-	audio::Soundboard soundboard{};
+	audio::Soundboard soundboard{*this};
 	audio::MusicPlayer music{};
 	fornani::QuestTracker quest{};
 	fornani::StatTracker stats{};
@@ -60,7 +65,6 @@ struct ServiceProvider {
 
 	// debug stuff
 	util::Stopwatch stopwatch{};
-	sf::Text debug_text{};
 
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }

@@ -8,11 +8,10 @@
 
 namespace world {
 
-Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int state) : style(style), state(state) {
+Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int state) : style(style), state(state), sprite(svc.assets.t_breakables) {
 	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();
-	sprite.setTexture(svc.assets.t_breakables);
 	sprite.setTextureRect(sf::IntRect{{state * 32, style * 32}, {32, 32}});
 }
 
@@ -41,11 +40,12 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 }
 
 void Breakable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power) {
-	if (proj.stats.transcendent) { return; }
+	if (proj.transcendent()) { return; }
 	if (destroyed()) { return; }
-	if (proj.bounding_box.overlaps(collider.bounding_box)) {
+	if (!collider.vicinity.overlaps(proj.get_bounding_box())) { return; }
+	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			state -= power == 1 ? proj.stats.power : power;
+			state -= power == 1 ? proj.get_power() : power;
 			energy = hit_energy;
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 		}

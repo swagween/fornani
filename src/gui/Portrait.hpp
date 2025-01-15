@@ -28,8 +28,8 @@ class Portrait {
 	[[nodiscard]] auto get_emotion() const -> int { return emotion; }
 
   private:
-	sf::Sprite sprite{};
-	sf::Sprite window{};
+	sf::Sprite sprite;
+	sf::Sprite window;
 	std::string_view label{};
 	util::BitFlags<PortraitFlags> flags{};
 	int id{};

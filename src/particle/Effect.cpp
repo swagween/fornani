@@ -3,8 +3,7 @@
 
 namespace entity {
 
-Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type, int index) : type(type) {
-	if (index <= svc.assets.effect_lookup.size()) { sprite.setTexture(svc.assets.effect_lookup.at(index)); }
+Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type, int index) : type(type), sprite{svc.assets.effect_lookup.at(index)} {
 	auto framerate{16};
 	switch (index) {
 	case 0:
@@ -95,6 +94,6 @@ void Effect::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 }
 
-void Effect::rotate() { sprite.rotate(90); }
+void Effect::rotate() { sprite.rotate(sf::degrees(90)); }
 
 } // namespace vfx

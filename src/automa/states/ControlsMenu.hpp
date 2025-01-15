@@ -7,10 +7,7 @@ namespace automa {
 
 class ControlsMenu : public automa::GameState {
   public:
-	ControlsMenu() = default;
-	ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
-	void init(ServiceProvider& svc, int room_number);
-	void handle_events(ServiceProvider& svc, sf::Event& event);
+	ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
@@ -23,7 +20,7 @@ class ControlsMenu : public automa::GameState {
 	float center_offset{320.f};
 	std::vector<sf::Text> control_list{};
 	util::Cooldown loading{};
-	sf::Text instruction{};
+	sf::Text instruction;
 	bool option_is_selected{};
 	bool binding_mode{};
 	sf::RectangleShape debug{};

@@ -68,7 +68,9 @@
       "base_damage": 2.0,
       "speed": 1.0,
       "loot_multiplier": 4.0,
-      "drop_range": [ 5, 8 ]
+      "drop_range": [ 5, 8 ],
+      "respawn_distance": 6,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -111,7 +113,9 @@
       "base_damage": 1.0,
       "speed": 1.0,
       "loot_multiplier": 4.0,
-      "drop_range": [ 5, 8 ]
+      "drop_range": [ 5, 8 ],
+      "respawn_distance": 6,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -158,7 +162,9 @@
       "base_damage": 1.0,
       "speed": 10.0,
       "loot_multiplier": 0.0,
-      "drop_range": [ 0, 0 ]
+      "drop_range": [ 0, 0 ],
+      "respawn_distance": 4,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -203,7 +209,9 @@
       "base_damage": 1.0,
       "speed": 18.0,
       "loot_multiplier": 0.1,
-      "drop_range": [ 1, 2 ]
+      "drop_range": [ 1, 2 ],
+      "respawn_distance": 1,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -246,11 +254,13 @@
       "hit": -1
     },
     "attributes": {
-      "base_hp": 1280,
+      "base_hp": 600,
       "base_damage": 1.0,
       "speed": 0.5,
       "loot_multiplier": 25.0,
-      "drop_range": [ 25, 30 ]
+      "drop_range": [ 25, 30 ],
+      "respawn_distance": 0,
+      "permadeath": true
     },
     "animation": {
       "duration": 2,
@@ -293,7 +303,9 @@
       "base_damage": 1.0,
       "speed": 0.7,
       "loot_multiplier": 5.0,
-      "drop_range": [ 6, 11 ]
+      "drop_range": [ 6, 11 ],
+      "respawn_distance": 4,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -337,7 +349,9 @@
       "speed": 0.9,
       "loot_multiplier": 6.0,
       "drop_range": [ 6, 11 ],
-      "rare_drop_id": 0
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -382,7 +396,9 @@
       "speed": 0.9,
       "loot_multiplier": 4.0,
       "drop_range": [ 4, 7 ],
-      "rare_drop_id": 0
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": false
     },
     "animation": {
       "duration": 2,
@@ -435,6 +451,95 @@
       "map_collision": true,
       "player_collision": true,
       "rare_drops": false
+    }
+  },
+  "beamstalk": {
+    "metadata": {
+      "id": 10,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [ 80, 80 ],
+      "sprite_dimensions": [ 200, 200 ],
+      "spritesheet_dimensions": [ 3, 28 ],
+      "offset": [ 32, -32 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 1600.0, 1600.0 ],
+      "hostile_range": [ 280.0, 280.0 ],
+      "friction": 0.98,
+      "gravity": 0.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 88,
+      "base_damage": 0.0,
+      "speed": 0.9,
+      "loot_multiplier": 18.0,
+      "drop_range": [ 8, 12 ],
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": false
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": false,
+      "gravity": false,
+      "map_collision": false,
+      "player_collision": false,
+      "foreground": true,
+      "rare_drops": false
+    }
+  },
+  "meatsquash": {
+    "metadata": {
+      "id": 11,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [ 192, 100 ],
+      "sprite_dimensions": [ 256, 256 ],
+      "offset": [ 96, -110 ],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [ 180.0, 180.0 ],
+      "hostile_range": [ 180.0, 180.0 ],
+      "friction": 0.98,
+      "gravity": 0.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 164,
+      "base_damage": 4.0,
+      "speed": 0.9,
+      "loot_multiplier": 18.0,
+      "drop_range": [ 8, 12 ],
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": false
+    },
+    "general": {
+      "mobile": false,
+      "gravity": false,
+      "map_collision": false,
+      "player_collision": true,
+      "foreground": true,
+      "rare_drops": true
     }
   }
 

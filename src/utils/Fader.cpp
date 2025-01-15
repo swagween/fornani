@@ -4,8 +4,7 @@
 
 namespace util {
 
-Fader::Fader(automa::ServiceProvider& svc, int time, std::string_view color) : time(time) {
-	sprite.setTexture(svc.assets.t_fader);
+Fader::Fader(automa::ServiceProvider& svc, int time, std::string_view color) : time(time), sprite{svc.assets.t_fader} {
 	if (color_codes.contains(color)) {
 		lookup = color_codes.at(color)[0];
 		order = color_codes.at(color)[1];

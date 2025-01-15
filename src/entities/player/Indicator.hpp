@@ -17,6 +17,7 @@ class Player;
 }
 
 namespace player {
+enum class IndicatorType { health, orb };
 class Indicator {
   public:
 	Indicator() = default;
@@ -35,12 +36,8 @@ class Indicator {
 		float amount{};
 	} variables{};
 
-	struct {
-		int id{};
-	} meta{};
-
-	sf::Text label{};
-	sf::Font font{};
+	IndicatorType type{};
+	sf::Text label;
 	util::Cooldown addition_limit{};
 	util::Cooldown fadeout{};
 	int fadeout_time{32};

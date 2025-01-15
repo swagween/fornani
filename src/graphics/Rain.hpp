@@ -15,7 +15,7 @@ class Map;
 namespace vfx {
 class Rain {
   public:
-	Rain(int intensity = 1, float fall_speed = 0.999f, float slant = -1.f, bool snow = false);
+	Rain(int intensity = 1, float fall_speed = 0.999f, float slant = -1.f, bool snow = false, bool collision = true);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
   private:
@@ -26,6 +26,7 @@ class Rain {
 	float variance{};
 	float sway{};
 	float z{};
+	bool collision{};
 	sf::Vector2<float> dimensions{};
 	sf::RectangleShape raindrop{};
 };

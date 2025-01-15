@@ -61,7 +61,7 @@ class Drop {
 	sf::Vector2<int> spritesheet_dimensions{};
 	sf::Vector2<float> sprite_dimensions{};
 	sf::Vector2<float> sprite_offset{};
-	anim::AnimatedSprite sprite{};
+	anim::AnimatedSprite sprite;
 	util::Cooldown shine_cooldown{600};
 
 	int num_sprites{}; // 2 for hearts, 4 for orbs

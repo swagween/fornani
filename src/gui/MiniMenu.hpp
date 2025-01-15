@@ -18,7 +18,7 @@ class MiniMenu {
 	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, bool white = false);
 	void overwrite_option(int index, std::string_view replacement);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> position);
-	void render(sf::RenderWindow& win, bool bg = true) const;
+	void render(sf::RenderWindow& win, bool bg = true);
 	void open(automa::ServiceProvider& svc, sf::Vector2<float> position);
 	void close(automa::ServiceProvider& svc);
 	void set_origin(sf::Vector2<float> origin);
@@ -40,7 +40,7 @@ class MiniMenu {
 	int index{};
 	float corner{56.f};
 	float edge{2.f};
-	util::NineSlice sprite{};
+	util::NineSlice sprite;
 	util::Circuit selection{1};
 	std::vector<automa::Option> options;
 };

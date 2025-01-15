@@ -3,22 +3,18 @@
 #include "HelpText.hpp"
 
 namespace text {
-
-void HelpText::init(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) {
-	font.loadFromFile(svc.text.text_font);
-	font.setSmooth(false);
+HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title) {}
+HelpText::HelpText(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) : HelpText(svc) {
 	text_color = svc.styles.colors.ui_white;
 	text_color.a = 0;
 	bg_color = svc.styles.colors.ui_black;
 	bg_color.a = 0;
 	data.setCharacterSize(text_size);
-	data.setFont(font);
 	data.setLineSpacing(1.5f);
 	marker = start + svc.controller_map.digital_action_source_name(code).data() + end;
 	data.setString(marker);
-	data.setFont(font);
 	data.setCharacterSize(text_size);
-	data.setOrigin(data.getLocalBounds().getSize() * 0.5f);
+	data.setOrigin(data.getLocalBounds().getCenter());
 	position = {static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 2.f * pad};
 	data.setPosition(position);
 	delay.start(delay_time);

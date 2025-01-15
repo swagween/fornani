@@ -52,6 +52,7 @@ class Chest : public Entity {
 	vfx::Sparkler sparkler{};
 	anim::Animation animation{};
 	shape::Collider collider{};
+	sf::Sprite sprite;
 
 	util::BitFlags<ChestState> state{};
 	ChestType type{};

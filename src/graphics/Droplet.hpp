@@ -22,7 +22,7 @@ struct DropParams {
 class Droplet {
   public:
 	Droplet(sf::Vector2<float> start, DropParams params, float tweak);
-	void update(automa::ServiceProvider& svc, world::Map& map);
+	void update(automa::ServiceProvider& svc, world::Map& map, bool collision = true);
 	void decay();
 	[[nodiscard]] auto decayed() const -> bool { return post_collision.is_almost_complete(); }
 	[[nodiscard]] auto collided() const -> bool { return collider.collided(); }

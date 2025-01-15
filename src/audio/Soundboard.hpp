@@ -4,6 +4,7 @@
 #include <SFML/Audio.hpp>
 #include "../utils/BitFlags.hpp"
 #include "../utils/Cooldown.hpp"
+#include "Sound.hpp"
 #include <unordered_map>
 
 namespace automa {
@@ -19,7 +20,7 @@ enum class Console { next, done, shift, select, speech, menu_open };
 enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable, door_open, door_unlock };
 enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip };
 enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
-enum class Weapon { bryns_gun, plasmer, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, wasp, underdog, peckett_710 };
+enum class Weapon { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710 };
 enum class Arms { reload };
 enum class Transmission { statics };
 enum class Step { basic, grass };
@@ -34,11 +35,13 @@ enum class Minigus { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, p
 enum class Minigun { charge, reload, neutral, firing };
 enum class Demon { hurt, signal, death, snort };
 enum class Archer { hurt, flee, death };
+enum class Beamstalk { hurt, death };
+enum class Meatsquash { hurt, death, chomp, whip, swallow };
 
 class Soundboard {
   public:
-	Soundboard();
-	void play_sounds(automa::ServiceProvider& svc);
+	Soundboard(automa::ServiceProvider& svc);
+	void play_sounds(automa::ServiceProvider& svc, int echo_count = 0, int echo_rate = 1);
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);
@@ -65,26 +68,17 @@ class Soundboard {
 		util::BitFlags<Minigun> minigun{};
 		util::BitFlags<Demon> demon{};
 		util::BitFlags<Archer> archer{};
+		util::BitFlags<Beamstalk> beamstalk{};
+		util::BitFlags<Meatsquash> meatsquash{};
 	} flags{};
-  private:
-	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0);
-	void repeat(automa::ServiceProvider& svc, sf::Sound& sound, int frequency, float random_pitch_offset = 0.f);
-	void randomize(automa::ServiceProvider& svc, sf::Sound& sound, float random_pitch_offset, float vol = 100.f);
-	void play_at_volume(sf::Sound& sound, float vol);
-	void set_available_sound(sf::SoundBuffer& buffer);
+	
+	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {}, int echo_count = 0, int echo_rate = 64);
 
-	struct {
-		sf::Sound menu{};
-		sf::Sound console{};
-		std::vector<sf::Sound> world{};
-		std::vector<sf::Sound> item{};
-		sf::Sound player{};
-		sf::Sound weapon{};
-		sf::Sound transmission{};
-		sf::Sound step{};
-		std::vector<sf::Sound> critter{};
-	} sounds{};
-	std::vector<sf::Sound> sound_pool{};
+  private:
+	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
+	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
+
+	std::vector<Sound> sound_pool{};
 
 	SoundboardState status{SoundboardState::on};
 

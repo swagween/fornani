@@ -4,14 +4,10 @@
 
 namespace automa {
 
-OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
+OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number) {
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 }
-
-void OptionsMenu::init(ServiceProvider& svc, int room_number) {}
-
-void OptionsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void OptionsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);

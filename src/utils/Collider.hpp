@@ -86,13 +86,15 @@ class Collider {
 	void correct_corner(sf::Vector2<float> mtv);
 	void resolve_depths();
 	void handle_platform_collision(Shape const& cell);
-	bool handle_collider_collision(Shape const& collider, bool soft = false); // returns true if grounded on collider
+	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2<float> velocity = {}); // returns true if grounded on collider
 	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos);
 	void reset();
 	void reset_ground_flags();
+	void set_top_only();
+	void adjust_acceleration();
 
 	bool on_ramp() const;
 	bool has_horizontal_collision() const;
@@ -117,7 +119,9 @@ class Collider {
 	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
-	[[nodiscard]] auto get_below_point() const -> sf::Vector2<float> { return jumpbox.position + jumpbox.dimensions * 0.5f; }
+	[[nodiscard]] auto get_below_point(int side = 0) const -> sf::Vector2<float> {
+		return side == 0 ? jumpbox.position + jumpbox.dimensions * 0.5f : side == -1 ? jumpbox.position + sf::Vector2<float>{0.f, 4.f} : jumpbox.position + jumpbox.dimensions - sf::Vector2<float>{0.f, 4.f};
+	}
 	[[nodiscard]] auto platform_collision() const -> bool { return flags.external_state.test(ExternalState::collider_collision); }
 	[[nodiscard]] auto left() const -> float { return bounding_box.left(); }
 	[[nodiscard]] auto right() const -> float { return bounding_box.right(); }
@@ -170,6 +174,8 @@ class Collider {
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{1.0f};
 	float depth_buffer{1.0f};
+
+	float acceleration_multiplier{1.f};
 
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> sprite_offset{};

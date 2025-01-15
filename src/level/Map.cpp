@@ -11,7 +11,8 @@
 
 namespace world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) : player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), m_services(&svc), m_console(&console) {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console) {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
@@ -31,6 +32,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
 	auto const& tiles = svc.data.map_jsons.at(room_lookup).tiles;
 	inspectable_data = svc.data.map_jsons.at(room_lookup).inspectable_data;
+
+	//check for enemy respawns
+	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
 
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
@@ -62,12 +66,19 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			svc.music.play_looped(10);
 		}
 		if (meta["ambience"].is_string()) {
-			ambience.load(svc.assets.finder, meta["ambience"].as_string());
+			ambience.load(svc.finder, meta["ambience"].as_string());
 			ambience.play();
 		}
+		for (auto& entry : meta["atmosphere"].array_view()) {
+			if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
+		}
+
+		sound.echo_count = meta["sound"]["echo_count"].as<int>();
+		sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
 
 		if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
 		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
+		if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
 
 		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
 		styles.breakables = meta["styles"]["breakables"].as<int>();
@@ -167,11 +178,18 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		for (auto& entry : metadata["enemies"].array_view()) {
 			int id{};
 			sf::Vector2<float> pos{};
+			sf::Vector2<int> start{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
-			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>());
+			start.x = entry["start_direction"][0].as<int>();
+			start.y = entry["start_direction"][1].as<int>();
+			auto variant = entry["variant"].as<int>();
+			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>(), false, variant, start);
 			enemy_catalog.enemies.back()->set_position_from_scaled({pos * svc.constants.cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
+			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
+			std::cout << "Enemy external id: " << enemy_catalog.enemies.back()->get_external_id() << "\n";
+			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
 		}
 		for (auto& entry : metadata["destroyers"].array_view()) {
 			sf::Vector2<int> pos{};
@@ -345,7 +363,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	manage_projectiles(svc);
 	svc.map_debug.active_projectiles = active_projectiles.size();
 	for (auto& proj : active_projectiles) {
-		if (proj.state.test(arms::ProjectileState::destruction_initiated)) { continue; }
+		if (proj.destruction_initiated()) { continue; }
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
 		for (auto& breakable : breakables) { breakable.on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
@@ -361,6 +379,9 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		enemy->post_update(svc, *this, *player);
 	}
 
+	if (fire) {
+		for (auto& f : fire.value()) { f.update(svc, *player, *this, console, inspectable_data); }
+	}
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& grenade : active_grenades) { grenade.update(svc, *player, *this); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
@@ -370,19 +391,22 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
 	for (auto& animator : animators) { animator.update(svc, *player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
+	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& spawner : spawners) { spawner.update(svc, *this); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
+	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& g : grass) { g->update(svc, *this, *player); }
-	player->collider.detect_map_collision(*this);
+	player->handle_map_collision(*this);
 	if (loading.is_complete()) { transition.update(*player); }
+	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
@@ -442,6 +466,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 
 	for (auto& portal : portals) { portal.render(svc, win, cam); }
+	if (fire) {
+		for (auto& f : fire.value()) { f.render(svc, win, cam); }
+	}
 	for (auto& chest : chests) { chest.render(svc, win, cam); }
 	for (auto& npc : npcs) {
 		if (!npc.background()) { npc.render(svc, win, cam); }
@@ -462,10 +489,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
 	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
+	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
 	for (auto& spike : spikes) { spike.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
+	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
 	for (auto& vine : vines) {
 		if (vine->foreground()) { vine->render(svc, win, cam); }
 	}
@@ -476,26 +505,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
 	// map foreground tiles
-	for (int i = 4; i < NUM_LAYERS; ++i) {
-		if (svc.greyblock_mode()) { continue; }
-		layer_textures.at(i).display();
-		layer_sprite.setTexture(layer_textures.at(i).getTexture());
-		layer_sprite.setPosition(-cam);
-		if (i == 7) {
-			obscuring_texture.display();
-			reverse_obscuring_sprite.setTexture(obscuring_texture.getTexture());
-			reverse_obscuring_sprite.setPosition(-cam);
-			obscuring_sprite = layer_sprite;
-			sf::Uint8 alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
-			sf::Uint8 revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
-			obscuring_sprite.setColor(sf::Color{255, 255, 255, alpha});
-			reverse_obscuring_sprite.setColor(sf::Color{255, 255, 255, revalpha});
-			if (alpha != 0) { win.draw(obscuring_sprite); }
-			if (revalpha != 0) { win.draw(reverse_obscuring_sprite); }
-		} else {
-			win.draw(layer_sprite);
-		}
-	}
+		sf::Sprite tex{textures.foreground.getTexture()};
+		tex.setPosition(-cam);
+		win.draw(tex);
 
 	//foreground enemies
 	for (auto& enemy : enemy_catalog.enemies) {
@@ -507,28 +519,42 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		enemy->gui_render(svc, win, cam);
 	}
 
+	if (!svc.greyblock_mode()) {
+		// draw obscuring layer
+		sf::Sprite obscuring{textures.obscuring.getTexture()};
+		sf::Sprite reverse{textures.reverse.getTexture()};
+		obscuring.setPosition(-cam);
+		reverse.setPosition(-cam);
+		std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
+		std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
+		obscuring.setColor(sf::Color{255, 255, 255, alpha});
+		reverse.setColor(sf::Color{255, 255, 255, revalpha});
+		if (alpha != 0) { win.draw(obscuring); }
+		if (revalpha != 0) { win.draw(reverse); }
+	}
+
 	for (auto& effect : effects) { effect.render(svc, win, cam); }
 
 	player->render_indicators(svc, win, cam);
 
-	if (real_dimensions.y < svc.constants.screen_dimensions.y) {
-		float ydiff = (svc.constants.screen_dimensions.y - real_dimensions.y) / 2;
+	if (real_dimensions.y < svc.constants.f_screen_dimensions.y) {
+		auto ydiff = (svc.constants.f_screen_dimensions.y - real_dimensions.y) * 0.5f;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({(float)svc.constants.screen_dimensions.x, ydiff});
-		borderbox.setPosition(0.0f, 0.0f);
+		borderbox.setSize({svc.constants.f_screen_dimensions.x, ydiff});
+		borderbox.setPosition({});
 		win.draw(borderbox);
 
-		borderbox.setPosition(0.0f, real_dimensions.y + ydiff);
+		borderbox.setPosition({0.0f, real_dimensions.y + ydiff});
 		win.draw(borderbox);
 	}
-	if (real_dimensions.x < svc.constants.screen_dimensions.x) {
-		float xdiff = (svc.constants.screen_dimensions.x - real_dimensions.x) / 2;
+	if (real_dimensions.x < svc.constants.f_screen_dimensions.x) {
+		auto xdiff = (svc.constants.f_screen_dimensions.x - real_dimensions.x) * 0.5f;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({xdiff, (float)svc.constants.screen_dimensions.y});
-		borderbox.setPosition(0.0f, 0.0f);
+		borderbox.setSize({xdiff, svc.constants.f_screen_dimensions.y});
+		borderbox.setPosition({});
 		win.draw(borderbox);
 
-		borderbox.setPosition(real_dimensions.x + xdiff, 0.0f);
+		borderbox.setPosition({real_dimensions.x + xdiff, 0.0f});
 		win.draw(borderbox);
 	}
 
@@ -539,52 +565,40 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	if (rain) { rain.value().render(svc, win, cam); }
 
 	if (svc.greyblock_mode()) {
-		center_box.setPosition(0.f, 0.f);
+		center_box.setPosition({});
 		center_box.setFillColor(sf::Color(80, 80, 80, 60));
 		win.draw(center_box);
 		center_box.setPosition(svc.constants.f_screen_dimensions * 0.5f);
 		win.draw(center_box);
 		center_box.setFillColor(sf::Color(100, 100, 100, 60));
-		center_box.setPosition(svc.constants.f_screen_dimensions.x * 0.5f, 0.f);
+		center_box.setPosition({svc.constants.f_screen_dimensions.x * 0.5f, 0.f});
 		win.draw(center_box);
-		center_box.setPosition(0.f, svc.constants.f_screen_dimensions.y * 0.5f);
+		center_box.setPosition({0.f, svc.constants.f_screen_dimensions.y * 0.5f});
 		win.draw(center_box);
-		get_layers().at(MIDDLEGROUND).grid.render(win, cam);
-		for(auto& tile : get_layers().at(MIDDLEGROUND).grid.cells) {
-			if (tile.debug_flag) {
-				svc.debug_text.setString(std::to_string(tile.one_d_index));
-				svc.debug_text.setPosition(tile.position() - cam);
-				win.draw(svc.debug_text);
-			}
-		}
+		get_middleground().grid.render(win, cam);
 	}
 }
 
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc.greyblock_mode()) {
-		background->render(svc, win, cam, real_dimensions);
-		for(auto& layer : scenery_layers) {
+		background->render(svc, win, cam);
+		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
-		for (int i = 0; i < 4; ++i) {
-			layer_textures.at(i).display();
-			layer_sprite.setTexture(layer_textures.at(i).getTexture());
-			layer_sprite.setPosition(-cam);
-			win.draw(layer_sprite);
-			if (i == 0) {
-				for (auto& npc : npcs) {
-					if (npc.background()) { npc.render(svc, win, cam); }
-				}
-			}
+		sf::Sprite tex{textures.background.getTexture()};
+		tex.setPosition(-cam);
+		win.draw(tex);
+		for (auto& npc : npcs) {
+			if (npc.background()) { npc.render(svc, win, cam); }
 		}
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {
 		sf::RectangleShape box{};
-		box.setPosition(0, 0);
 		box.setFillColor(svc.styles.colors.black);
-		box.setSize({(float)svc.constants.screen_dimensions.x, (float)svc.constants.screen_dimensions.y});
+		box.setSize(svc.constants.f_screen_dimensions);
 		win.draw(box);
 	}
+
 	for (auto& vine : vines) {
 		if (!vine->foreground()) { vine->render(svc, win, cam); }
 	}
@@ -602,21 +616,18 @@ void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf
 }
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {
-	if (weapon.attributes.grenade) { active_grenades.push_back(arms::Grenade(svc, pos, weapon.firing_direction)); }
 	active_projectiles.push_back(weapon.projectile);
-	active_projectiles.back().set_sprite(svc);
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed(svc, target);
 	active_projectiles.back().update(svc, *player);
-	active_projectiles.back().sync_position();
-	if (active_projectiles.back().stats.boomerang) { active_projectiles.back().set_boomerang_speed(); }
-	if (active_projectiles.back().stats.spring) {
-		active_projectiles.back().set_hook_speed();
-		active_projectiles.back().hook.grapple_flags.set(arms::GrappleState::probing);
-	}
 
-	active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.emitter.dimensions, weapon.emitter.type, weapon.emitter.color, weapon.firing_direction));
-	if (weapon.secondary_emitter) { active_emitters.push_back(vfx::Emitter(svc, weapon.barrel_point, weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.firing_direction)); }
+	if (weapon.secondary_emitter) {
+		active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.get_firing_direction()));
+	}
+	active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.emitter.dimensions, weapon.emitter.type, weapon.emitter.color, weapon.get_firing_direction()));
+	if (weapon.secondary_emitter) {
+		active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.get_firing_direction()));
+	}
 }
 
 void Map::spawn_enemy(int id, sf::Vector2<float> pos) {
@@ -629,73 +640,88 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	for (auto& proj : active_projectiles) {
 		proj.update(svc, *player);
 		if (proj.whiffed() && !proj.poofed() && !proj.made_contact()) {
-			effects.push_back(entity::Effect(svc, proj.physics.position, proj.physics.velocity * 0.1f, proj.effect_type(), 8));
-			proj.state.set(arms::ProjectileState::poof);
+			effects.push_back(entity::Effect(svc, proj.get_position(), proj.get_velocity(), proj.effect_type(), 8));
+			proj.poof();
 		}
 	}
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 
-	std::erase_if(active_projectiles, [](auto const& p) { return p.state.test(arms::ProjectileState::destroyed); });
+	std::erase_if(active_projectiles, [](auto const& p) { return p.destroyed(); });
 
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
 		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
 		if (player->equipped_weapon().multishot()) {
-			for (int i = 0; i < player->equipped_weapon().attributes.multishot; ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak); }
+			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point()); }
 		} else {
-			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().barrel_point + tweak);
+			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point());
 		}
 		player->equipped_weapon().shoot();
-		if (!player->equipped_weapon().attributes.automatic) { player->controller.set_shot(false); }
+		if (!player->equipped_weapon().automatic()) { player->controller.set_shot(false); }
 	}
 }
 
 void Map::generate_collidable_layer(bool live) {
-	auto& layers = m_services->data.get_layers(room_id);
 	auto pushable_offset = sf::Vector2<float>{1.f, 0.f};
-	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
-		layers.at(MIDDLEGROUND).grid.check_neighbors(cell.one_d_index);
+	for (auto& cell : get_middleground().grid.cells) {
+		get_middleground().grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position(), styles.breakables)); }
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 227)); }
 		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, cell.position(), cell.value)); }
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
+		if (cell.is_target()) { target_points.push_back(cell.get_center()); }
+		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
+		if (cell.is_fire()) {
+			if (!fire) { fire = std::vector<Fire>{}; }
+			fire.value().push_back(Fire(*m_services, cell.position()));
+		}
 	}
 }
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
-	auto ctr{0};
 	for (auto& layer : layers) {
-		layer_textures.at((int)layer.render_order).create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
-		layer_textures.at((int)layer.render_order).clear(sf::Color::Transparent);
-		if(ctr == 7) {
-			obscuring_texture.create(layer.grid.dimensions.x * svc.constants.i_cell_size, layer.grid.dimensions.y * svc.constants.i_cell_size);
-			obscuring_texture.clear(sf::Color::Transparent);
+		auto changed = layer.get_render_order() == 0 || layer.get_render_order() == 4;
+		auto finished = layer.get_render_order() == 3 || layer.get_render_order() == 7;
+		auto& tex = layer.foreground() ? textures.foreground : textures.background;
+		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x) * static_cast<unsigned int>(svc.constants.i_cell_size), static_cast<unsigned int>(layer.grid.dimensions.y) * static_cast<unsigned int>(svc.constants.i_cell_size)};
+		if (changed) {
+			if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
+			tex.clear(sf::Color::Transparent);
 		}
+		if (layer.obscuring()) {
+			if (!textures.obscuring.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
+			if (!textures.reverse.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
+			textures.obscuring.clear(sf::Color::Transparent);
+			textures.reverse.clear(sf::Color::Transparent);
+		}
+		sf::Sprite tile{svc.assets.tilesets.at(style_id)};
 		for (auto& cell : layer.grid.cells) {
 			if (cell.is_occupied() && !cell.is_special()) {
 				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
-				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-				tile_sprite.setPosition(cell.position());
-				layer_textures.at((int)layer.render_order).draw(tile_sprite);
-			} else if (ctr == 7) {
-				auto x_coord = static_cast<int>((1 % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				auto y_coord = static_cast<int>(std::floor(1 / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				tile_sprite.setTexture(svc.assets.tilesets.at(style_id));
-				tile_sprite.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-				tile_sprite.setPosition(cell.position());
-				obscuring_texture.draw(tile_sprite);
+				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+				tile.setPosition(cell.position());
+				layer.obscuring() ? textures.obscuring.draw(tile) : tex.draw(tile);
+			} else {
+				if (layer.obscuring()) {
+					tile.setTextureRect(sf::IntRect({32, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+					tile.setPosition(cell.position());
+					textures.reverse.draw(tile);
+				}
 			}
 		}
-		++ctr;
+		if (finished) { tex.display(); }
+		if (layer.obscuring()) {
+			textures.obscuring.display();
+			textures.reverse.display();
+		}
 	}
 }
 
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
-	auto& grid = foreground ? get_layers().at(7).grid : get_layers().at(world::MIDDLEGROUND).grid;
+	auto& grid = foreground ? get_layers().at(7).grid : get_middleground().grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
@@ -715,7 +741,7 @@ bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 }
 
 bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms) {
-	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+	auto& grid = get_middleground().grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
@@ -736,7 +762,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 }
 
 void Map::handle_cell_collision(shape::CircleCollider& collider) {
-	auto& grid = get_layers().at(world::MIDDLEGROUND).grid;
+	auto& grid = get_middleground().grid;
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
 	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
@@ -753,47 +779,6 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	}
 }
 
-void Map::handle_grappling_hook(automa::ServiceProvider& svc, arms::Projectile& proj) {
-	// do this first block once
-	if (proj.hook.grapple_triggers.test(arms::GrappleTriggers::found) && !proj.hook.grapple_flags.test(arms::GrappleState::anchored) && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) {
-		proj.hook.spring.set_bob(player->collider.get_center());
-		proj.hook.grapple_triggers.reset(arms::GrappleTriggers::found);
-		proj.hook.grapple_flags.set(arms::GrappleState::anchored);
-		proj.hook.grapple_flags.reset(arms::GrappleState::probing);
-		proj.hook.spring.set_force(proj.stats.spring_constant);
-		proj.hook.spring.variables.bob_physics.acceleration += player->collider.physics.acceleration;
-		proj.hook.spring.variables.bob_physics.velocity += player->collider.physics.velocity;
-	}
-	if (player->controller.hook_held() && proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
-		proj.hook.spring.variables.bob_physics.acceleration += player->collider.physics.acceleration;
-		proj.hook.spring.variables.bob_physics.acceleration.x += player->controller.horizontal_movement();
-		proj.lock_to_anchor();
-		proj.hook.spring.update(svc);
-
-		// update rest length
-		auto next_length = proj.stats.spring_slack * abs(player->collider.physics.position.y - proj.hook.spring.get_anchor().y);
-		next_length = std::clamp(next_length, lookup::min_hook_length, lookup::max_hook_length);
-		proj.hook.spring.set_rest_length(next_length);
-
-		// break out if player is far away from bob. we don't want the player to teleport.
-		auto distance = util::magnitude(player->collider.physics.position - proj.hook.spring.get_bob());
-		if (distance > 32.f) { proj.hook.break_free(*player); }
-
-		// handle map collisions while anchored
-		player->collider.predictive_combined.set_position(proj.hook.spring.variables.bob_physics.position);
-		if (check_cell_collision(player->collider)) {
-			player->collider.physics.zero();
-		} else {
-			player->collider.physics.position = proj.hook.spring.variables.bob_physics.position - player->collider.dimensions / 2.f;
-		}
-		player->collider.sync_components();
-	} else if (proj.hook.grapple_flags.test(arms::GrappleState::anchored)) {
-		proj.hook.break_free(*player);
-	}
-
-	if (player->controller.released_hook() && !proj.hook.grapple_flags.test(arms::GrappleState::snaking)) { proj.hook.break_free(*player); }
-}
-
 void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 void Map::clear() {
@@ -808,9 +793,19 @@ void Map::clear() {
 	switch_buttons.clear();
 	chests.clear();
 	npcs.clear();
+	checkpoints.clear();
+}
+
+void Map::wrap(sf::Vector2<float>& position) const {
+	if (position.x < 0.f) { position.x = real_dimensions.x; }
+	if (position.y < 0.f) { position.y = real_dimensions.y; }
+	if (position.x > real_dimensions.x) { position.x = 0.f; }
+	if (position.y > real_dimensions.y) { position.y = 0.f; }
 }
 
 std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
+
+Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(4); }
 
 npc::NPC& Map::get_npc(int id) {
 	for (auto& npc : npcs) {
@@ -828,22 +823,48 @@ sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
 	return Vec(300.f, 390.f);
 }
 
+sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
+	auto ret = sf::Vector2<float>{};
+	auto dist = std::numeric_limits<float>::max();
+	for (auto& target : target_points) {
+		auto test = util::magnitude(from - target);
+		if (test < dist) {
+			ret = target;
+			dist = test;
+		}
+	}
+	return ret;
+}
+
+sf::Vector2<float> Map::last_checkpoint() {
+	for (auto& checkpoint : checkpoints) {
+		if (checkpoint.reached()) { return checkpoint.position(); }
+	}
+	return {};
+}
+
+void Map::debug() {
+	background->debug();
+	//for (auto& atm : atmosphere) { atm.debug(); }
+}
+
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
 }
 
-bool Map::overlaps_middleground(shape::Shape& test) const {
-	auto& layers = m_services->data.get_layers(room_id);
-	for (auto& cell : layers.at(MIDDLEGROUND).grid.cells) {
+bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
+
+bool Map::overlaps_middleground(shape::Shape& test) {
+	for (auto& cell : get_middleground().grid.cells) {
 		if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; }
 	}
 	return false;
 }
 
-std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_index_at_position(position); }
+std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_index_at_position(position); }
 
-int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.get_cell(get_index_at_position(position)).value; }
+int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_cell(get_index_at_position(position)).value; }
 
-Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_layers().at(MIDDLEGROUND).grid.cells.at(get_index_at_position(position)); }
+Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground().grid.cells.at(get_index_at_position(position)); }
 
 } // namespace world

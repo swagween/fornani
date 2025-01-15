@@ -12,11 +12,11 @@ namespace util {
 
 class NineSlice {
   public:
-	void slice(automa::ServiceProvider& svc, int corner_factor, int edge_factor);
+	NineSlice(automa::ServiceProvider& svc, int corner_factor, int edge_factor);
 	void set_texture(sf::Texture& tex);
 	void set_origin(sf::Vector2<float> origin);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float corner_dim, float edge_dim);
-	void render(sf::RenderWindow& win) const;
+	void render(sf::RenderWindow& win);
 	void start(automa::ServiceProvider& svc, sf::Vector2<float> position);
 	void end();
 	void speed_up_appearance(int rate);
@@ -35,8 +35,12 @@ class NineSlice {
 	int appearance_time{32};
 	util::Cooldown appear{appearance_time};
 	float global_scale{};
-	std::array<sf::Sprite, 9> sprites{};
+	sf::Sprite sprite;
 	sf::Vector2<float> native_dimensions{};
+	int corner_factor{};
+	int edge_factor{};
+	float corner_dimensions{};
+	float edge_dimensions{};
 };
 
 } // namespace util

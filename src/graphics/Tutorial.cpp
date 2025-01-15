@@ -3,6 +3,8 @@
 
 namespace text {
 
+Tutorial::Tutorial(automa::ServiceProvider& svc) : help_marker(svc) {}
+
 void Tutorial::update(automa::ServiceProvider& svc) {
 	if (!svc.tutorial()) {
 		helpers.set(TutorialHelpers::closed);
@@ -12,27 +14,27 @@ void Tutorial::update(automa::ServiceProvider& svc) {
 	if (helpers.test(TutorialHelpers::closed)) { return; }
 	if (!helpers.consume(TutorialHelpers::trigger)) { return; }
 	if (!flags.test(TutorialFlags::jump)) {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_jump, "] to jump.", 80, true, true);
+		help_marker = HelpText(svc, "Press [", config::DigitalAction::platformer_jump, "] to jump.", 80, true, true);
 		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::sprint)) {
-		help_marker.init(svc, "Hold [", config::DigitalAction::platformer_sprint, "] to sprint.", 80, true, true);
+		help_marker = HelpText(svc, "Hold [", config::DigitalAction::platformer_sprint, "] to sprint.", 80, true, true);
 		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::inventory)) {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to open inventory.", 200, true, true);
+		help_marker = HelpText(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to open inventory.", 200, true, true);
 		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::shoot)) {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_shoot, "] to shoot.", 200, true, true);
+		help_marker = HelpText(svc, "Press [", config::DigitalAction::platformer_shoot, "] to shoot.", 200, true, true);
 		maximum_display_time.start();
 		return;
 	}
 	if (!flags.test(TutorialFlags::map)) {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_map, "] to open map.", 200, true, true);
+		help_marker = HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to open map.", 200, true, true);
 		maximum_display_time.start();
 		return;
 	}

@@ -31,8 +31,8 @@ class Archer : public Enemy {
 
 	// packages
 	struct {
-		entity::FloatingPart bow{};
-	} parts{};
+		entity::FloatingPart bow;
+	} parts;
 	sf::Vector2<int> bow_dimensions{82, 82};
 
 	entity::Caution caution{};

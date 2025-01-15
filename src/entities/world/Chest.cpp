@@ -7,7 +7,7 @@
 
 namespace entity {
 
-Chest::Chest(automa::ServiceProvider& svc, int id) : id(id) {
+Chest::Chest(automa::ServiceProvider& svc, int id) : id(id), sprite{svc.assets.t_chest} {
 	dimensions = {28, 28};
 	sprite_dimensions = {32, 28};
 	spritesheet_dimensions = {224, 28};
@@ -23,7 +23,6 @@ Chest::Chest(automa::ServiceProvider& svc, int id) : id(id) {
 	drawbox.setSize(dimensions);
 
 	animation.set_params(unopened);
-	sprite.setTexture(svc.assets.t_chest);
 
 	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.ui_white, "chest");
 	sparkler.set_position(collider.physics.position);
@@ -70,7 +69,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 					player.push_to_loadout(item_id);
 					console.display_gun(item_id);
 					console.load_and_launch("chest");
-					console.append(player.arsenal.value().get_weapon_at(item_id).label);
+					console.append(player.arsenal.value().get_weapon_at(item_id).get_label());
 				}
 				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.position, 100)); }
 				if (type == ChestType::item) {
@@ -87,7 +86,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 }
 
 void Chest::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
-	sprite.setPosition(collider.physics.position.x - campos.x, collider.physics.position.y - campos.y + 1);
+	sprite.setPosition({collider.physics.position.x - campos.x, collider.physics.position.y - campos.y + 1});
 	// get UV coords (only one row of sprites is supported)
 	int u = (int)(animation.get_frame() * sprite_dimensions.x);
 	int v = 0;

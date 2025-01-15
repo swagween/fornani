@@ -7,12 +7,50 @@
 namespace enemy {
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console)
-	: Enemy(svc, "minigus"), gun(svc, "minigun", 6), soda(svc, "soda gun", 7), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc),
-	  sparkler(svc, Enemy::collider.vicinity.dimensions, svc.styles.colors.ui_white, "minigus") {
+	: Enemy(svc, "minigus"), gun(svc, 1), soda(svc, 2), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.dimensions, svc.styles.colors.ui_white, "minigus"),
+	  voice{.hurt_1 = sf::Sound(svc.assets.b_minigus_hurt_1),
+			.hurt_2 = sf::Sound(svc.assets.b_minigus_hurt_2),
+			.hurt_3 = sf::Sound(svc.assets.b_minigus_hurt_3),
+			.laugh_1 = sf::Sound(svc.assets.b_minigus_laugh),
+			.laugh_2 = sf::Sound(svc.assets.b_minigus_laugh_2),
+			.grunt = sf::Sound(svc.assets.b_minigus_grunt),
+			.aww = sf::Sound(svc.assets.b_minigus_aww),
+			.babyimhome = sf::Sound(svc.assets.b_minigus_babyimhome),
+			.deepspeak = sf::Sound(svc.assets.b_minigus_deepspeak),
+			.doge = sf::Sound(svc.assets.b_minigus_doge),
+			.dontlookatme = sf::Sound(svc.assets.b_minigus_dontlookatme),
+			.exhale = sf::Sound(svc.assets.b_minigus_exhale),
+			.getit = sf::Sound(svc.assets.b_minigus_getit),
+			.greatidea = sf::Sound(svc.assets.b_minigus_greatidea),
+			.itsagreatday = sf::Sound(svc.assets.b_minigus_itsagreatday),
+			.long_death = sf::Sound(svc.assets.b_minigus_long_death),
+			.long_moan = sf::Sound(svc.assets.b_minigus_long_moan),
+			.momma = sf::Sound(svc.assets.b_minigus_momma),
+			.mother = sf::Sound(svc.assets.b_minigus_mother),
+			.ok_1 = sf::Sound(svc.assets.b_minigus_ok_1),
+			.ok_2 = sf::Sound(svc.assets.b_minigus_ok_2),
+			.pizza = sf::Sound(svc.assets.b_minigus_pizza),
+			.poh = sf::Sound(svc.assets.b_minigus_poh),
+			.quick_breath = sf::Sound(svc.assets.b_minigus_quick_breath),
+			.thatisverysneeze = sf::Sound(svc.assets.b_minigus_thatisverysneeze),
+			.whatisit = sf::Sound(svc.assets.b_minigus_whatisit),
+			.woob = sf::Sound(svc.assets.b_minigus_woob)},
+	  sounds{.jump = sf::Sound(svc.assets.b_minigus_jump),
+			 .land = sf::Sound(svc.assets.b_heavy_land),
+			 .crash = sf::Sound(svc.assets.b_delay_crash),
+			 .step = sf::Sound(svc.assets.b_minigus_step),
+			 .punch = sf::Sound(svc.assets.b_minigus_poh),
+			 .snap = sf::Sound(svc.assets.sharp_click_buffer),
+			 .lose_inv = sf::Sound(svc.assets.b_laser),
+			 .charge = sf::Sound(svc.assets.b_gun_charge),
+			 .build = sf::Sound(svc.assets.b_minigus_build),
+			 .inv = sf::Sound(svc.assets.b_minigus_invincibility),
+			 .soda = sf::Sound(svc.assets.b_soda)},
+	  minigun{.sprite = sf::Sprite(svc.assets.t_minigun)} {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
-	gun.get().projectile.team = arms::TEAMS::SKYCORPS;
-	soda.get().projectile.team = arms::TEAMS::SKYCORPS;
+	gun.get().set_team(arms::Team::skycorps);
+	soda.get().set_team(arms::Team::skycorps);
 	gun.cycle.set_order(3);
 	Enemy::collider.physics.maximum_velocity = {8.f, 18.f};
 	Enemy::collider.physics.set_constant_friction({0.97f, 0.989f});
@@ -25,7 +63,6 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	flags.general.set(GeneralFlags::post_death_render);
 
 	secondary_collider = shape::Collider({48.f, 36.f});
-	minigun.sprite.setTexture(svc.assets.t_minigun);
 	minigun.sprite.setOrigin({(float)minigun.dimensions.x, minigun.dimensions.y * 0.8f});
 	minigun.animation.set_params(minigun.neutral);
 	flags.state.set(StateFlags::vulnerable);
@@ -53,43 +90,8 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	Enemy::direction.lr = dir::LR::left;
 
 	push_conversation("1");
-
-	voice.hurt_1.setBuffer(svc.assets.b_minigus_hurt_1);
-	voice.hurt_2.setBuffer(svc.assets.b_minigus_hurt_2);
-	voice.hurt_3.setBuffer(svc.assets.b_minigus_hurt_3);
-	voice.laugh_1.setBuffer(svc.assets.b_minigus_laugh);
-	voice.laugh_2.setBuffer(svc.assets.b_minigus_laugh_2);
-	voice.aww.setBuffer(svc.assets.b_minigus_aww);
-	voice.babyimhome.setBuffer(svc.assets.b_minigus_babyimhome);
-	voice.deepspeak.setBuffer(svc.assets.b_minigus_deepspeak);
-	voice.doge.setBuffer(svc.assets.b_minigus_doge);
-	voice.dontlookatme.setBuffer(svc.assets.b_minigus_dontlookatme);
-	voice.exhale.setBuffer(svc.assets.b_minigus_exhale);
-	voice.getit.setBuffer(svc.assets.b_minigus_getit);
-	voice.greatidea.setBuffer(svc.assets.b_minigus_greatidea);
-	voice.greatidea.setVolume(30);
-	voice.itsagreatday.setBuffer(svc.assets.b_minigus_itsagreatday);
-	voice.long_death.setBuffer(svc.assets.b_minigus_long_death);
-	voice.long_moan.setBuffer(svc.assets.b_minigus_long_moan);
-	voice.momma.setBuffer(svc.assets.b_minigus_momma);
-	voice.mother.setBuffer(svc.assets.b_minigus_mother);
-	voice.ok_1.setBuffer(svc.assets.b_minigus_ok_1);
-	voice.ok_2.setBuffer(svc.assets.b_minigus_ok_2);
-	voice.pizza.setBuffer(svc.assets.b_minigus_pizza);
-	voice.poh.setBuffer(svc.assets.b_minigus_poh);
-	voice.quick_breath.setBuffer(svc.assets.b_minigus_quick_breath);
-	voice.thatisverysneeze.setBuffer(svc.assets.b_minigus_thatisverysneeze);
-	voice.whatisit.setBuffer(svc.assets.b_minigus_whatisit);
-	voice.woob.setBuffer(svc.assets.b_minigus_woob);
-
-	sounds.land.setBuffer(svc.assets.b_heavy_land);
-	sounds.crash.setBuffer(svc.assets.b_delay_crash);
-	sounds.snap.setBuffer(svc.assets.sharp_click_buffer);
-	sounds.lose_inv.setBuffer(svc.assets.b_laser);
-	sounds.charge.setBuffer(svc.assets.b_gun_charge);
-	sounds.inv.setBuffer(svc.assets.b_minigus_invincibility);
-	sounds.build.setBuffer(svc.assets.b_minigus_build);
-	sounds.soda.setBuffer(svc.assets.b_soda);
+	
+	voice.greatidea.setVolume(30),
 
 	sparkler.set_dimensions(Enemy::collider.vicinity.dimensions);
 }
@@ -125,7 +127,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	}
 
 	auto scl = sf::Vector2<float>{1.0f, 1.0f};
-	sprite_direction.lr = Enemy::sprite.getScale() == scl ? dir::LR::left : dir::LR::right;
+	sprite_direction.lr = sprite.getScale() == scl ? dir::LR::left : dir::LR::right;
 
 	gun.update(svc, map, *this);
 	soda.update(svc, map, *this);
@@ -200,15 +202,15 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	
 
 	minigun.animation.update();
-	if (minigun.sprite.getScale() != Enemy::sprite.getScale()) {
+	if (minigun.sprite.getScale() != visual.sprite.getScale()) {
 		minigun.direction = Enemy::direction;
-		minigun.sprite.setScale(Enemy::sprite.getScale());
+		minigun.sprite.setScale(visual.sprite.getScale());
 	}
 	auto gun_base = Enemy::collider.physics.position + Enemy::collider.dimensions * 0.5f;
 	auto gun_point = Enemy::direction.lr == dir::LR::left ? gun_base - sf::Vector2<float>{(float)minigun.dimensions.x, -6.f} : gun_base + sf::Vector2<float>{(float)minigun.dimensions.x, 6.f};
-	gun.get().barrel_point = gun_point;
+	gun.get().set_barrel_point(gun_point);
 	gun_point.y -= 64;
-	soda.get().barrel_point = gun_point;
+	soda.get().set_barrel_point(gun_point);
 
 	Enemy::direction = post_direction;
 
@@ -283,7 +285,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (cooldowns.vulnerability.is_complete() && flags.state.test(StateFlags::vulnerable)) { state = MinigusState::drink; }
 
 	if (pre_direction.lr != post_direction.lr) { state = MinigusState::turn; }
-	if (!(state == MinigusState::turn) && sprite_direction.lr != post_direction.lr) { Enemy::sprite.scale({-1.f, 1.f}); }
+	if (!(state == MinigusState::turn) && sprite_direction.lr != post_direction.lr) { visual.sprite.scale({-1.f, 1.f}); }
 	movement_direction.lr = Enemy::collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
 
 	if (!status.test(MinigusFlags::battle_mode)) { state = MinigusState::idle; }
@@ -332,17 +334,17 @@ void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	auto u = minigun.animation.get_frame() >= 13 ? 78 : 0;
 	auto v = (minigun.animation.get_frame() % 13) * 30;
 	minigun.sprite.setTextureRect(sf::IntRect({{u, v}, minigun.dimensions}));
-	minigun.sprite.setPosition(Enemy::sprite.getPosition() + minigun.offset);
-	Enemy::sprite.setTexture(flags.state.test(StateFlags::vulnerable) ? svc.assets.t_minigus : svc.assets.t_minigus_inv);
+	minigun.sprite.setPosition(visual.sprite.getPosition() + minigun.offset);
+	visual.sprite.setTexture(flags.state.test(StateFlags::vulnerable) ? svc.assets.t_minigus : svc.assets.t_minigus_inv);
 	if (cooldowns.hurt.running() && flags.state.test(StateFlags::vulnerable) && !(state == MinigusState::build_invincibility)) {
-		Enemy::sprite.setTexture(hurt_color.get_alternator() % 2 == 0 ? svc.assets.t_minigus_blue : svc.assets.t_minigus_red);
+		visual.sprite.setTexture(hurt_color.get_alternator() % 2 == 0 ? svc.assets.t_minigus_blue : svc.assets.t_minigus_red);
 	}
 
-	Enemy::sprite.setPosition(Enemy::sprite.getPosition() + cam); // reset sprite for history
-	if (svc.ticker.every_x_frames(8) && state == MinigusState::rush) { sprite_history.update(Enemy::sprite); }
+	visual.sprite.setPosition(visual.sprite.getPosition() + cam); // reset sprite for history
+	if (svc.ticker.every_x_frames(8) && state == MinigusState::rush) { sprite_history.update(visual.sprite, visual.sprite.getPosition()); }
 	if (svc.ticker.every_x_frames(8) && state != MinigusState::rush) { sprite_history.flush(); }
-	Enemy::sprite.setPosition(Enemy::sprite.getPosition() - cam);
-	win.draw(Enemy::sprite);
+	visual.sprite.setPosition(visual.sprite.getPosition() - cam);
+	win.draw(visual.sprite);
 
 	sparkler.render(svc, win, cam);
 
@@ -394,7 +396,7 @@ fsm::StateFunction Minigus::update_shoot() {
 		gun.cycle.update();
 		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{0.f, 20.f} : sf::Vector2<float>{0.f, 15.f});
 		gun.shoot();
-		m_map->spawn_projectile_at(*m_services, gun.get(), gun.barrel_point());
+		m_map->spawn_projectile_at(*m_services, gun.get(), gun.get().get_barrel_point());
 		m_map->shake_camera();
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}
@@ -410,7 +412,7 @@ fsm::StateFunction Minigus::update_shoot() {
 			minigun.flags.set(MinigunFlags::exhausted);
 			minigun.animation.set_params(minigun.deactivated);
 			counters.snap.cancel();
-			Enemy::sprite.setTexture(m_services->assets.t_minigus);
+			visual.sprite.setTexture(m_services->assets.t_minigus);
 			cooldowns.firing.start();
 
 			if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
@@ -511,7 +513,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		gun.cycle.update();
 		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{0.f, 20.f} : sf::Vector2<float>{0.f, 15.f});
 		gun.shoot();
-		m_map->spawn_projectile_at(*m_services, gun.get(), gun.barrel_point());
+		m_map->spawn_projectile_at(*m_services, gun.get(), gun.get().get_barrel_point());
 		m_map->shake_camera();
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}
@@ -524,7 +526,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		minigun.flags.set(MinigunFlags::exhausted);
 		minigun.animation.set_params(minigun.deactivated);
 		counters.snap.cancel();
-		Enemy::sprite.setTexture(m_services->assets.t_minigus);
+		visual.sprite.setTexture(m_services->assets.t_minigus);
 		cooldowns.firing.start();
 
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
@@ -588,7 +590,7 @@ fsm::StateFunction Minigus::update_turn() {
 	if (animation.just_started() && anim_debug) { std::cout << "turn\n"; }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.complete()) {
-		Enemy::sprite.scale({-1.f, 1.f});
+		visual.sprite.scale({-1.f, 1.f});
 		post_direction = pre_direction;
 		if (invincible()) {
 			counters.invincible_turn.update();
@@ -722,7 +724,7 @@ fsm::StateFunction Minigus::update_build_invincibility() {
 		flags.state.reset(StateFlags::vulnerable);
 		counters.snap.start();
 		sounds.inv.play();
-		Enemy::sprite.setTexture(m_services->assets.t_minigus_inv);
+		visual.sprite.setTexture(m_services->assets.t_minigus_inv);
 		sparkler.set_rate(0.f);
 		state = MinigusState::laugh;
 		animation.set_params(laugh);
@@ -916,7 +918,7 @@ fsm::StateFunction Minigus::update_throw_can() {
 	if (animation.just_started()) { voice.pizza.play(); }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.get_frame() == 62 && !status.test(MinigusFlags::threw_can)) {
-		m_map->spawn_projectile_at(*m_services, soda.get(), soda.get().barrel_point);
+		m_map->spawn_projectile_at(*m_services, soda.get(), soda.get().get_barrel_point());
 		status.set(MinigusFlags::threw_can);
 	}
 	if (animation.complete()) {

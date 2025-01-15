@@ -9,9 +9,14 @@
 namespace gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: vendor_id(vendor_id), portrait(svc), info(svc), selectors{.buy{svc, {2, 1}}, .sell{svc, {2, 1}}}, item_menu(svc, {"sell", "cancel"}, true), orb{.sprite{svc.assets.t_orb, {24, 24}}} {
-	artwork.setTexture(svc.assets.t_vendor_artwork);
-	ui.setTexture(svc.assets.t_vendor_ui);
+	: vendor_id(vendor_id), portrait(svc), info(svc), selectors{.buy{svc, {2, 1}}, .sell{svc, {2, 1}}}, item_menu(svc, {"sell", "cancel"}, true), orb{.sprite{svc.assets.t_orb, {24, 24}}}, artwork{svc.assets.t_vendor_artwork},
+	  ui{svc.assets.t_vendor_ui}, text{.vendor_name{svc.text.fonts.title},
+									   .buy_tab{svc.text.fonts.title},
+									   .sell_tab{svc.text.fonts.title},
+									   .orb_count{svc.text.fonts.title},
+									   .price{svc.text.fonts.title},
+									   .price_number{svc.text.fonts.title},
+									   .item_label{svc.text.fonts.title}} {
 	flags.set(VendorDialogStatus::opened);
 	artwork.setTextureRect(sf::IntRect{{0, (vendor_id - 1) * svc.constants.screen_dimensions.y}, {svc.constants.screen_dimensions}});
 	artwork.setOrigin(svc.constants.f_center_screen);
@@ -47,13 +52,6 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	text.sell_tab.setString("SELL");
 	text.price.setString("PRICE: ");
 	// font
-	text.vendor_name.setFont(svc.text.fonts.title);
-	text.orb_count.setFont(svc.text.fonts.title);
-	text.buy_tab.setFont(svc.text.fonts.title);
-	text.sell_tab.setFont(svc.text.fonts.title);
-	text.price.setFont(svc.text.fonts.title);
-	text.item_label.setFont(svc.text.fonts.title);
-	text.price_number.setFont(svc.text.fonts.title);
 	text.vendor_name.setCharacterSize(16);
 	text.orb_count.setCharacterSize(16);
 	text.buy_tab.setCharacterSize(16);
@@ -68,9 +66,9 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	text.item_label.setFillColor(svc.styles.colors.red);
 	text.price_number.setFillColor(svc.styles.colors.periwinkle);
 	// origins
-	text.vendor_name.setOrigin(text.vendor_name.getLocalBounds().getSize() * 0.5f);
-	text.buy_tab.setOrigin({text.buy_tab.getLocalBounds().getSize().x * 0.5f, 0.f});
-	text.sell_tab.setOrigin({text.sell_tab.getLocalBounds().getSize().x * 0.5f, 0.f});
+	text.vendor_name.setOrigin(text.vendor_name.getLocalBounds().getCenter());
+	text.buy_tab.setOrigin({text.buy_tab.getLocalBounds().getCenter().x, 0.f});
+	text.sell_tab.setOrigin({text.sell_tab.getLocalBounds().getCenter().x, 0.f});
 
 	refresh(svc, player, map);
 	init = true;
@@ -108,7 +106,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	text.sell_tab.setPosition(sf::Vector2<float>{404, 28} + bring_in);
 	text.price.setPosition(ui_constants.price_position + bring_in);
 	text.item_label.setPosition(ui_constants.item_label_position + bring_in);
-	text.price_number.setPosition(sf::Vector2<float>{text.price.getPosition().x + text.price.getLocalBounds().getSize().x, text.price.getPosition().y} + bring_in);
+	text.price_number.setPosition(sf::Vector2<float>{text.price.getPosition().x + text.price.getLocalBounds().size.x, text.price.getPosition().y} + bring_in);
 	ui.setPosition(bring_in);
 	portrait.set_position(portrait_position + bring_in);
 	text.orb_count.setPosition(sf::Vector2<float>{svc.constants.f_screen_dimensions.x - 72.f, 36.f} + bring_in);
@@ -187,6 +185,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						auto item_id = vendor.inventory.items.at(selector.get_current_selection()).get_id();
 						player.give_item(item_id, 1);
 						player.give_drop(item::DropType::orb, -sale_price);
+						balance -= sale_price;
 						vendor.inventory.remove_item(svc, item_id, 1);
 						svc.soundboard.flags.world.set(audio::World::soft_sparkle_high);
 						exchanged = true;
@@ -243,6 +242,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						vendor.inventory.add_item(svc, item.get_id(), 1);
 						player.take_item(item.get_id());
 						player.give_drop(item::DropType::orb, sale_price);
+						balance += sale_price;
 						svc.soundboard.flags.world.set(audio::World::soft_sparkle_high);
 						flags.set(VendorDialogStatus::made_sale);
 						exchanged = true;
@@ -278,7 +278,7 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	auto& vendor = map.get_npc(npc_id).get_vendor();
 	auto& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
 
-	text.orb_count.setOrigin(sf::Vector2<float>{text.orb_count.getLocalBounds().getSize().x, 0.f});
+	text.orb_count.setOrigin(sf::Vector2<float>{text.orb_count.getLocalBounds().size.x, 0.f});
 	win.draw(artwork);
 	win.draw(ui);
 	win.draw(text.vendor_name);

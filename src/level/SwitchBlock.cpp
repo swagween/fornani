@@ -9,11 +9,11 @@
 
 namespace world {
 
-SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id) {
+SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id), sprite{svc.assets.t_switch_blocks}
+{
 	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();
-	sprite.setTexture(svc.assets.t_switch_blocks);
 	sprite.setTextureRect(sf::IntRect{{static_cast<int>(type) * 32, static_cast<int>(state) * 32}, {32, 32}});
 	if (svc.data.switch_is_activated(button_id)) { state = SwitchBlockState::empty; }
 }
@@ -41,11 +41,11 @@ void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 }
 
 void SwitchBlock::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power) {
-	if (proj.stats.transcendent) { return; }
+	if (proj.transcendent()) { return; }
 	if (state == SwitchBlockState::empty) { return; }
-	if (proj.bounding_box.overlaps(collider.bounding_box)) {
+	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, proj.physics.position, {}, 0, 6));
+			map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 6));
 			svc.soundboard.flags.world.set(audio::World::hard_hit);
 		}
 		proj.destroy(false);

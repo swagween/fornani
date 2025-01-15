@@ -11,10 +11,7 @@ namespace automa {
 
 class Dojo : public GameState {
   public:
-	Dojo() = default;
-	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int id = 0);
-	void init(ServiceProvider& svc, int room_number = 100, std::string room_name = "");
-	void handle_events(ServiceProvider& svc, sf::Event& event);
+	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0, std::string_view room_name = "");
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
 	void render(ServiceProvider& svc, sf::RenderWindow& win);
@@ -29,7 +26,7 @@ class Dojo : public GameState {
 	bool open_vendor{};
 	int x{0};
 	util::Cooldown enter_room{};
-	util::Cooldown loading{4};
+	util::Cooldown loading{32};
 	std::optional<gui::VendorDialog> vendor_dialog{};
 
 	//shape::Collider A{};

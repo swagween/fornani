@@ -3,9 +3,8 @@
 #include "../setup/Game.hpp"
 
 namespace automa {
-StateManager::StateManager() { g_current_state = std::make_unique<MainMenu>(); }
 
-StateManager::~StateManager() {}
+StateManager::StateManager(ServiceProvider& svc, player::Player& player) : g_current_state{std::make_unique<MainMenu>(svc, player, "main")} {}
 
 void StateManager::process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game) {
 	if (svc.state_controller.actions.test(Actions::trigger_submenu)) {
@@ -30,7 +29,15 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 	}
 	if (svc.state_controller.actions.test(Actions::player_death)) {
 		if (svc.demo_mode()) {
-			svc.state_controller.next_state = svc.state_controller.demo_level;
+			if (svc.state_controller.actions.test(Actions::retry)) {
+				svc.state_controller.next_state = svc.state_controller.demo_level;
+				svc.state_controller.actions.reset(Actions::retry);
+				player.animation.state = player::AnimState::idle;
+				player.animation.triggers.reset(player::AnimTriggers::end_death);
+			} else {
+				return_to_main_menu(svc, player);
+				return;
+			}
 		} else {
 			if (svc.state_controller.actions.test(Actions::retry)) {
 				svc.state_controller.next_state = svc.state_controller.save_point_id;
@@ -61,8 +68,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			set_current_state(std::make_unique<Intro>(svc, player, "intro"));
 		} else {
 			game.flags.set(fornani::GameFlags::in_game);
-			set_current_state(std::make_unique<Dojo>(svc, player, "dojo"));
-			get_current_state().init(svc, svc.state_controller.next_state);
+			set_current_state(std::make_unique<Dojo>(svc, player, "dojo", svc.state_controller.next_state));
 			if (svc.demo_mode()) { player.set_position(svc.state_controller.player_position); }
 			game.playtest_sync();
 		}
@@ -70,7 +76,11 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 }
 
 void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& player) {
-	set_current_state(std::make_unique<MainMenu>(svc, player, "main"));
+	if (svc.demo_mode()) {
+		svc.state_controller.actions.set(Actions::shutdown);
+	} else {
+		set_current_state(std::make_unique<MainMenu>(svc, player, "main"));
+	}
 	svc.state_controller.actions.reset(Actions::player_death);
 	svc.state_controller.actions.reset(Actions::trigger);
 	svc.state_controller.actions.reset(Actions::retry);

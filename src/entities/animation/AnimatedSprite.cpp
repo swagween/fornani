@@ -30,22 +30,33 @@ void AnimatedSprite::set_params(std::string_view label, bool force) {
 
 void AnimatedSprite::set_dimensions(sf::Vector2<int> dim) { dimensions = dim; }
 
+void AnimatedSprite::set_position(sf::Vector2<float> pos) { position = pos; }
+
+void AnimatedSprite::set_scale(sf::Vector2<float> scale) { sprite.setScale(scale); }
+
 void AnimatedSprite::set_origin(sf::Vector2<float> origin) { sprite.setOrigin(origin); }
 
 void AnimatedSprite::set_texture(sf::Texture& texture) { sprite.setTexture(texture); }
 
-void AnimatedSprite::random_start(automa::ServiceProvider& svc) { animation.frame.set(svc.random.random_range(0, animation.params.duration - 1)); }
+void AnimatedSprite::random_start(automa::ServiceProvider& svc) {
+	if (animation.params.duration > 1) { animation.frame.set(svc.random.random_range(0, animation.params.duration - 1)); }
+}
+
+void AnimatedSprite::handle_rotation(sf::Vector2<float> direction, int num_angles, bool radial) { rotator.handle_rotation(sprite, direction, num_angles, radial); }
 
 void AnimatedSprite::end() { animation.end(); }
 
-void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam, bool debug) {
 	if (!svc.greyblock_mode()) {
 		sprite.setPosition(position - cam);
 		win.draw(sprite);
 	} else {
+		sprite.setPosition(position - cam);
+		win.draw(sprite);
 		drawbox.setPosition(position - cam);
 		win.draw(drawbox);
 	}
+	if (debug) { std::cout << position.y << "\n"; }
 }
 
 } // namespace anim

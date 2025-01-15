@@ -67,8 +67,8 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	state = {};
 	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
 	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	if (directions.actual.lr == dir::LR::right && sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
 	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
@@ -93,12 +93,12 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	hurt_effect.update();
 	if (hurt_effect.running()) {
 		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			sprite.setColor(svc.styles.colors.red);
+			visual.sprite.setColor(svc.styles.colors.red);
 		} else {
-			sprite.setColor(svc.styles.colors.periwinkle);
+			visual.sprite.setColor(svc.styles.colors.periwinkle);
 		}
 	} else {
-		sprite.setColor(svc.styles.colors.white);
+		visual.sprite.setColor(svc.styles.colors.white);
 	}
 
 	if (hostility_triggered()) { state = ThugState::alert; }
@@ -133,7 +133,7 @@ fsm::StateFunction Thug::update_idle() {
 fsm::StateFunction Thug::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		Enemy::sprite.scale({-1.f, 1.f});
+		Enemy::visual.sprite.scale({-1.f, 1.f});
 		directions.actual = directions.desired;
 		state = ThugState::idle;
 		animation.set_params(idle, false);

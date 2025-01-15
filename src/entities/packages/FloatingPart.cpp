@@ -7,9 +7,9 @@
 
 namespace entity {
 
-FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset) {
+FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset) : sprite(tex) {
 	sprite.setTexture(tex);
-	sprite.setOrigin(sprite.getLocalBounds().getSize() * 0.5f);
+	sprite.setOrigin(sprite.getLocalBounds().getCenter());
 	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
 	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
 	gravitator->collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
@@ -41,10 +41,10 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	if (shieldbox) {
 		for (auto& proj : map.active_projectiles) {
-			if (proj.bounding_box.overlaps(shieldbox.value())) {
+			if (proj.get_bounding_box().overlaps(shieldbox.value())) {
 				if (!proj.destruction_initiated()) {
-					map.effects.push_back(entity::Effect(svc, proj.destruction_point + proj.physics.position, {}, 0, 6));
-					if (proj.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+					map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), {}, 0, 6));
+					if (proj.get_direction().up_or_down()) { map.effects.back().rotate(); }
 					svc.soundboard.flags.world.set(audio::World::hard_hit);
 				}
 				proj.destroy(false);
@@ -72,16 +72,16 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 }
 
 void FloatingPart::set_shield(sf::Vector2<float> dim, sf::Vector2<float> pos) {
-	if (dim.x == 0.f || dim.y == 0.f) { dim = sprite.getLocalBounds().getSize(); }
+	if (dim.x == 0.f || dim.y == 0.f) { dim = sprite.getLocalBounds().size; }
 	if (!shieldbox) { shieldbox = shape::Shape(dim); }
-	if (pos.x == 0.f && pos.y == 0.f) { pos = gravitator->position() + sprite.getLocalBounds().getSize() * -0.5f; }
+	if (pos.x == 0.f && pos.y == 0.f) { pos = gravitator->position() - sprite.getLocalBounds().getCenter(); }
 	shieldbox.value().set_position(pos);
 }
 
 void FloatingPart::set_hitbox(sf::Vector2<float> dim, sf::Vector2<float> pos) {
-	if (dim.x == 0.f || dim.y == 0.f) { dim = sprite.getLocalBounds().getSize(); }
+	if (dim.x == 0.f || dim.y == 0.f) { dim = sprite.getLocalBounds().size; }
 	if (!hitbox) { hitbox = shape::Shape(dim); }
-	if (pos.x == 0.f && pos.y == 0.f) { pos = gravitator->position() + sprite.getLocalBounds().getSize() * -0.5f; }
+	if (pos.x == 0.f && pos.y == 0.f) { pos = gravitator->position() - sprite.getLocalBounds().getCenter(); }
 	hitbox.value().set_position(pos);
 }
 

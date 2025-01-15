@@ -15,7 +15,6 @@ namespace gui {
 
 class PauseWindow : public Console {
   public:
-	PauseWindow() = default;
 	PauseWindow(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, Console& console, bool automatic);
 	void render_update(automa::ServiceProvider& svc);
@@ -34,14 +33,11 @@ class PauseWindow : public Console {
 		sf::Vector2<float> title_offset{0.f, -40.f};
 	} ui{};
 
-	sf::Text title{};
-	sf::Font title_font{};
+	sf::Text title;
+	sf::Text widget_label;
 	text::HelpText help_marker;
 
-	sf::Text widget_label{};
-	sf::Font widget_font{};
-
-	MiniMenu menu{};
+	MiniMenu menu;
 };
 
 } // namespace gui

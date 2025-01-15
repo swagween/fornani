@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../utils/Collider.hpp"
+#include "../components/SteeringBehavior.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -33,6 +34,9 @@ class Gravitator {
 	sf::Color color{};
 	sf::RectangleShape box{};
 	float attraction_force{};
+
+  private:
+	components::SteeringBehavior steering{};
 };
 
 } // namespace vfx

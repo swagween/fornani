@@ -5,28 +5,22 @@
 
 namespace gui {
 
-InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc), item_menu(svc, {"use", "cancel"}, true), wardrobe(svc) {
+InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
+	: Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc), item_menu(svc, {"use", "cancel"}, true), wardrobe(svc), help_marker(svc), title{svc.text.fonts.title}, arsenal{svc.text.fonts.title},
+	  item_label{svc.text.fonts.basic}, gun_slot{svc.assets.t_sticker} {
 	title.setString("INVENTORY");
 	title.setCharacterSize(ui.title_size);
-	title_font.loadFromFile(svc.text.title_font);
-	title_font.setSmooth(false);
-	title.setFont(title_font);
 	title.setFillColor(svc.styles.colors.ui_white);
 	title.setLetterSpacing(2.f);
 
 	arsenal.setString("ARSENAL");
 	arsenal.setCharacterSize(ui.title_size);
-	arsenal.setFont(title_font);
 	arsenal.setFillColor(svc.styles.colors.ui_white);
 	arsenal.setLetterSpacing(2.f);
 
-	gun_slot.setTexture(svc.assets.t_sticker);
 	gun_slot.setOrigin({32.f, 32.f});
 
-	item_font.loadFromFile(svc.text.title_font);
-	item_font.setSmooth(false);
 	item_label.setCharacterSize(ui.desc_size);
-	item_label.setFont(item_font);
 	item_label.setFillColor(svc.styles.colors.ui_white);
 
 	info.set_texture(svc.assets.t_console_outline);
@@ -53,7 +47,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : Console::Consol
 
 	mode = Mode::inventory;
 
-	help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true); // XXX this was arms_switch_right
+	help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true); // XXX this was arms_switch_right
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 }
 
@@ -210,7 +204,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 				win.draw(gun_slot);
 				gun->render_ui(svc, win, gunpos);
 				if (gun->selected()) {
-					item_label.setString(gun->label.data());
+					item_label.setString(gun->get_label().data());
 					win.draw(item_label);
 				}
 				++index;
@@ -328,9 +322,9 @@ void InventoryWindow::update_table(player::Player& player, bool new_dim) {
 void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
 	mode = (mode == Mode::inventory) ? Mode::minimap : Mode::inventory;
 	if (mode == Mode::inventory) {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true); // XXX same as above
+		help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true); // XXX same as above
 	} else {
-		help_marker.init(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to view Inventory.", 20, true, true); // XXX same as above
+		help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to view Inventory.", 20, true, true); // XXX same as above
 		minimap.center();
 	}
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});

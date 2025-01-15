@@ -14,7 +14,6 @@ namespace entity {
 
 class FloatingPart {
   public:
-	FloatingPart() = default;
 	FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, dir::Direction direction, sf::Vector2<float> scale, sf::Vector2<float> position);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -25,7 +24,7 @@ class FloatingPart {
 	void move(sf::Vector2<float> distance);
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return gravitator->collider.bounding_box.position; }
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return gravitator->collider.physics.velocity; }
-	sf::Sprite sprite{};
+	sf::Sprite sprite;
 
   private:
 	std::unique_ptr<vfx::Gravitator> gravitator{};

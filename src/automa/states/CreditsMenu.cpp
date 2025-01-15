@@ -4,14 +4,10 @@
 
 namespace automa {
 
-CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int id) : GameState(svc, player, scene, id) {
+CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name, int room_number) : GameState(svc, player, room_name, room_number) {
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 }
-
-void CreditsMenu::init(ServiceProvider& svc, int room_number) {}
-
-void CreditsMenu::handle_events(ServiceProvider& svc, sf::Event& event) {}
 
 void CreditsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);

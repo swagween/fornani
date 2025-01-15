@@ -54,7 +54,7 @@ fsm::StateFunction Eyebit::update_idle() {
 fsm::StateFunction Eyebit::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		sprite_flip();
+		visual.sprite.setScale({-1.f, 1.f});
 		state = {};
 		state.set(EyebitState::idle);
 		animation.set_params(idle);
