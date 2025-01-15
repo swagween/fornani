@@ -147,6 +147,7 @@ class Player {
 	void walk();
 	void hurt(float amount = 1.f, bool force = false);
 	void on_crush(world::Map& map);
+	void handle_map_collision(world::Map& map);
 	void update_antennae();
 	void sync_antennae();
 

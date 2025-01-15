@@ -346,6 +346,15 @@ float Shape::get_height_at(float x) const {
 	return y;
 }
 
+float Shape::get_radial_factor() const {
+	auto a = vertices.at(1).x - vertices.at(0).x;
+	auto b = vertices.at(1).y - vertices.at(0).y;
+	if (a == 0) { return 1.f; }
+	auto c_squared = a * a + b * b;
+	auto c = std::sqrt(c_squared);
+	return a / c;
+}
+
 bool Shape::AABB_handle_left_collision_static(Shape const& immovable) {
 	bool colliding = false;
 	// check that the shape is an initialized quad

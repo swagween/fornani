@@ -404,7 +404,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& g : grass) { g->update(svc, *this, *player); }
-	player->collider.detect_map_collision(*this);
+	player->handle_map_collision(*this);
 	if (loading.is_complete()) { transition.update(*player); }
 	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }

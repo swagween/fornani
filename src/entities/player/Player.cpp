@@ -566,6 +566,8 @@ void Player::on_crush(world::Map& map) {
 	}
 }
 
+void Player::handle_map_collision(world::Map& map) { collider.detect_map_collision(map); }
+
 void Player::update_antennae() {
 	int ctr{0};
 	for (auto& a : antennae) {

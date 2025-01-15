@@ -12,10 +12,9 @@
 #include <cmath>
 #include <cstdlib>
 #include "SoundEffects.hpp"
+#include "../service/ServiceProvider.hpp"
 
 namespace {
-constexpr auto windowWidth = 800u;
-constexpr auto windowHeight = 600u;
 constexpr auto pi = 3.14159265359f;
 constexpr auto sqrt2 = 2.0f * 0.707106781186547524401f;
 
@@ -23,25 +22,9 @@ constexpr auto sqrt2 = 2.0f * 0.707106781186547524401f;
 
 namespace audio {
 
-////////////////////////////////////////////////////////////
-// Base class for effects
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
-// Surround Sound / Positional Audio Effect / Attenuation
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
-// Pitch / Volume Effect
-////////////////////////////////////////////////////////////
 class PitchVolume : public Effect {
   public:
-	PitchVolume() : Effect("Pitch / Volume"), m_pitchText(getFont(), "Pitch: " + std::to_string(m_pitch)), m_volumeText(getFont(), "Volume: " + std::to_string(m_volume)) {
-		// Load the music file
-		if (!m_music.openFromFile(resourcesDir() / "doodle_pop.ogg")) {
-			std::cerr << "Failed to load " << (resourcesDir() / "doodle_pop.ogg").string() << std::endl;
-			std::abort();
-		}
+	PitchVolume(automa::ServiceProvider& svc) : Effect(svc) {
 
 		// Set the music to loop
 		m_music.setLooping(true);
@@ -85,45 +68,7 @@ class PitchVolume : public Effect {
 ////////////////////////////////////////////////////////////
 class Attenuation : public Effect {
   public:
-	Attenuation() : Effect("Attenuation"), m_text(getFont()) {
-		m_listener.setPosition({(windowWidth - 20.f) / 2.f, (windowHeight - 20.f) / 2.f + 100.f});
-		m_listener.setFillColor(sf::Color::Red);
-
-		m_soundShape.setFillColor(sf::Color::Magenta);
-
-		// Sound cone parameters
-		static constexpr auto coneHeight = windowHeight * 2.f;
-		static constexpr auto outerConeAngle = sf::degrees(120.f);
-		static constexpr auto innerConeAngle = sf::degrees(30.f);
-
-		// Set common properties of both cones
-		for (auto* cone : {&m_soundConeOuter, &m_soundConeInner}) {
-			cone->setPointCount(3);
-			cone->setPoint(0, {0.f, 0.f});
-			cone->setPosition({20.f, 20.f});
-		}
-
-		m_soundConeOuter.setFillColor(sf::Color::Black);
-		m_soundConeInner.setFillColor(sf::Color::Cyan);
-
-		// Make each cone based on their angle and height
-		static constexpr auto makeCone = [](auto& shape, auto const& angle) {
-			const auto theta = sf::degrees(90.f) - (angle / 2);
-			const auto x = coneHeight / std::tan(theta.asRadians());
-
-			shape.setPoint(1, {-x, coneHeight});
-			shape.setPoint(2, {x, coneHeight});
-		};
-
-		makeCone(m_soundConeOuter, outerConeAngle);
-		makeCone(m_soundConeInner, innerConeAngle);
-
-		// Load the music file
-		if (!m_music.openFromFile(resourcesDir() / "doodle_pop.ogg")) {
-			std::cerr << "Failed to load " << (resourcesDir() / "doodle_pop.ogg").string() << std::endl;
-			std::abort();
-		}
-
+	Attenuation(automa::ServiceProvider& svc) : Effect(svc) {
 		// Set the music to loop
 		m_music.setLooping(true);
 
@@ -132,22 +77,13 @@ class Attenuation : public Effect {
 
 		// Set direction to face "downwards"
 		m_music.setDirection({0.f, 1.f, 0.f});
-
-		// Set cone
-		m_music.setCone({innerConeAngle, outerConeAngle, 0.f});
 	}
 
 	void onUpdate(float /*time*/, float x, float y) override {
-		m_position = {windowWidth * x - 10.f, windowHeight * y - 10.f};
 		m_music.setPosition({m_position.x, m_position.y, 0.f});
 	}
 
-	void onStart() override {
-		// Synchronize listener audio position with graphical position
-		sf::Listener::setPosition({m_listener.getPosition().x, m_listener.getPosition().y, 0.f});
-
-		m_music.play();
-	}
+	void onStart() override { m_music.play(); }
 
 	void onStop() override { m_music.stop(); }
 
@@ -163,7 +99,7 @@ class Attenuation : public Effect {
 ////////////////////////////////////////////////////////////
 class Tone : public sf::SoundStream, public Effect {
   public:
-	Tone() : Effect("Tone Generator") { sf::SoundStream::initialize(1, sampleRate, {sf::SoundChannel::Mono}); }
+	Tone(automa::ServiceProvider& svc) : Effect(svc) { sf::SoundStream::initialize(1, sampleRate, {sf::SoundChannel::Mono}); }
 
 	void onUpdate(float /*time*/, float x, float y) override {
 		m_amplitude = std::clamp(0.2f * (1.f - y), 0.f, 0.2f);
@@ -238,9 +174,7 @@ class Tone : public sf::SoundStream, public Effect {
 ////////////////////////////////////////////////////////////
 class Doppler : public sf::SoundStream, public Effect {
   public:
-	Doppler() : Effect("Doppler Shift") {
-
-		m_position.y = (windowHeight - 20.f) / 2.f - 40.f;
+	Doppler(automa::ServiceProvider& svc) : Effect(svc) {
 
 		// Set attenuation to a nice value
 		setAttenuation(0.05f);
@@ -252,17 +186,10 @@ class Doppler : public sf::SoundStream, public Effect {
 		m_velocity = std::clamp(150.f * (1.f - y), 0.f, 150.f);
 		m_factor = std::clamp(x, 0.f, 1.f);
 
-		m_position.x = std::fmod(time, 8.f) * windowWidth / 8.f;
-
 		setPosition({m_position.x, m_position.y, 0.f});
 	}
 
-	void onStart() override {
-		// Synchronize listener audio position with graphical position
-		sf::Listener::setPosition({m_listener.getPosition().x, m_listener.getPosition().y, 0.f});
-
-		play();
-	}
+	void onStart() override { play(); }
 
 	void onStop() override { SoundStream::stop(); }
 
@@ -307,32 +234,16 @@ class Doppler : public sf::SoundStream, public Effect {
 class Processing : public Effect {
   public:
 	void onUpdate([[maybe_unused]] float time, float x, float y) override {
-		m_position = {windowWidth * x - 10.f, windowHeight * y - 10.f};
 		m_music.setPosition({m_position.x, m_position.y, 0.f});
 	}
 
-	void onStart() override {
-		// Synchronize listener audio position with graphical position
-		sf::Listener::setPosition({m_listener.getPosition().x, m_listener.getPosition().y, 0.f});
-
-		m_music.play();
-	}
+	void onStart() override { m_music.play(); }
 
 	void onStop() override { m_music.stop(); }
 
   protected:
-	explicit Processing(std::string name) : Effect(std::move(name)) {
-
-		// Load the music file
-		if (!m_music.openFromFile(resourcesDir() / "doodle_pop.ogg")) {
-			std::cerr << "Failed to load " << (resourcesDir() / "doodle_pop.ogg").string() << std::endl;
-			std::abort();
-		}
-
-		// Set the music to loop
+	explicit Processing(automa::ServiceProvider& svc) : Effect(svc) {
 		m_music.setLooping(true);
-
-		// Set attenuation to a nice value
 		m_music.setAttenuation(0.0f);
 	}
 
@@ -343,8 +254,6 @@ class Processing : public Effect {
   private:
 	void onKey(sf::Keyboard::Key key) override {
 		if (key == sf::Keyboard::Key::Space) *m_enabled = !*m_enabled;
-
-		m_enabledText.setString(*m_enabled ? "Processing: Enabled" : "Processing: Disabled");
 	}
 
 	sf::Vector2f m_position;
@@ -421,7 +330,7 @@ class BiquadFilter : public Processing {
 // High-pass Filter (https://github.com/dimtass/DSP-Cpp-filters)
 ////////////////////////////////////////////////////////////
 struct HighPassFilter : BiquadFilter {
-	HighPassFilter() : BiquadFilter("High-pass Filter") {
+	HighPassFilter(automa::ServiceProvider& svc) : BiquadFilter(svc) {
 		static constexpr auto cutoffFrequency = 2000.f;
 
 		auto const c = std::tan(pi * cutoffFrequency / static_cast<float>(getMusic().getSampleRate()));
@@ -442,7 +351,7 @@ struct HighPassFilter : BiquadFilter {
 // Low-pass Filter (https://github.com/dimtass/DSP-Cpp-filters)
 ////////////////////////////////////////////////////////////
 struct LowPassFilter : BiquadFilter {
-	LowPassFilter() : BiquadFilter("Low-pass Filter") {
+	LowPassFilter(automa::ServiceProvider& svc) : BiquadFilter(svc) {
 		static constexpr auto cutoffFrequency = 500.f;
 
 		auto const c = 1.f / std::tan(pi * cutoffFrequency / static_cast<float>(getMusic().getSampleRate()));
@@ -463,7 +372,7 @@ struct LowPassFilter : BiquadFilter {
 // Echo (miniaudio implementation)
 ////////////////////////////////////////////////////////////
 struct Echo : Processing {
-	Echo() : Processing("Echo") {
+	Echo(automa::ServiceProvider& svc) : Processing(svc) {
 		auto& music = getMusic();
 
 		static constexpr auto delay = 0.2f;
@@ -512,7 +421,7 @@ struct Echo : Processing {
 ////////////////////////////////////////////////////////////
 class Reverb : public Processing {
   public:
-	Reverb() : Processing("Reverb") {
+	Reverb(automa::ServiceProvider& svc) : Processing(svc) {
 		auto& music = getMusic();
 
 		static constexpr auto sustain = 0.7f; // [0.f; 1.f]
@@ -635,6 +544,6 @@ Surround::Surround(automa::ServiceProvider& svc) : Effect(svc) {
 	m_music.setAttenuation(0.04f);
 }
 
-Effect::Effect(automa::Serviceprovider& svc) {}
+Effect::Effect(automa::ServiceProvider& svc) {}
 
 } // namespace audio

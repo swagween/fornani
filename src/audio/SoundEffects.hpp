@@ -16,7 +16,7 @@ namespace audio {
 	void stop() { onStop(); }
 
   protected:
-	explicit Effect(automa::Serviceprovider& svc);
+	explicit Effect(automa::ServiceProvider& svc);
 
   private:
 	virtual void onUpdate(float time, float x, float y) = 0;
@@ -29,8 +29,6 @@ namespace audio {
 	  public:
 		Surround(automa::ServiceProvider& svc);
 		void onUpdate(float /*time*/, float x, float y) override {
-			m_position = {windowWidth * x - 10.f, windowHeight * y - 10.f};
-			m_music.setPosition({m_position.x, m_position.y, 0.f});
 		}
 		void onStart() override { m_music.play(); }
 		void onStop() override { m_music.stop(); }

@@ -220,6 +220,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Jump Request: %i", player.controller.get_jump().get_request());
 					ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
 					ImGui::Text("Wallsliding? %s", player.controller.get_wallslide().is_wallsliding() ? "Yes" : "No");
+					ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("X Position: %.2f", player.collider.physics.position.x / 32.f);
 					ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / 32.f);
@@ -227,6 +228,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
 					ImGui::Text("Apparent X Velocity: %.2f", player.collider.physics.apparent_velocity().x);
 					ImGui::Text("Apparent Y Velocity: %.2f", player.collider.physics.apparent_velocity().y);
+					ImGui::Text("Actual X Velocity: %.2f", player.collider.physics.actual_velocity().x);
+					ImGui::Text("Actual Y Velocity: %.2f", player.collider.physics.actual_velocity().y);
+					ImGui::Text("Actual Speed: %.2f", player.collider.physics.actual_speed());
 					ImGui::Separator();
 					ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.categories.inventory.items.size()));
 					ImGui::Text("Visit History: ");

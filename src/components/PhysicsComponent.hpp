@@ -54,6 +54,8 @@ class PhysicsComponent {
 
 	void apply_force(sf::Vector2<float> force);
 	void apply_force_at_angle(float magnitude, float angle);
+	void multiply_velocity(float multiplier);
+	void multiply_acceleration(float multiplier);
 	void update_euler(automa::ServiceProvider& svc);
 	void integrate(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
@@ -68,8 +70,10 @@ class PhysicsComponent {
 	void hitstun();
 	void set_constant_friction(sf::Vector2<float> fric);
 	void set_global_friction(float fric);
+	[[nodiscard]] auto actual_velocity() const -> sf::Vector2<float> { return position - previous_position; }
 	[[nodiscard]] auto apparent_velocity() const -> sf::Vector2<float> { return real_velocity; }
 	[[nodiscard]] auto apparent_acceleration() const -> sf::Vector2<float> { return real_velocity - previous_velocity; }
+	[[nodiscard]] auto actual_speed() const -> float { return actual_velocity().length(); }
 	[[nodiscard]] auto elastic_collision() const -> bool { return velocity.x * previous_velocity.x < elastic_threshold || velocity.y * previous_velocity.y < elastic_threshold; }
 	[[nodiscard]] auto stationary() const -> bool { return abs(velocity.x) < epsilon && abs(velocity.y) < epsilon; }
 

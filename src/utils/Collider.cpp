@@ -164,6 +164,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		}
 
 		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp()) {
+			acceleration_multiplier = cell.get_radial_factor();
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.position.x))); }
 			physics.position.y = cell.position.y + cell.dimensions.y - maximum_ramp_height - dimensions.y;
@@ -393,6 +394,7 @@ void Collider::handle_collider_collision(Collider const& collider, bool soft, bo
 
 void Collider::update(automa::ServiceProvider& svc) {
 	flags.external_state = {};
+	adjust_acceleration();
 	physics.update(svc);
 	sync_components();
 	flags.state.reset(State::just_collided);
@@ -495,6 +497,11 @@ void Collider::reset_ground_flags() {
 }
 
 void Collider::set_top_only() { flags.general.set(General::top_only_collision); }
+
+void Collider::adjust_acceleration() {
+	physics.multiply_acceleration(acceleration_multiplier);
+	acceleration_multiplier = 1.f;
+}
 
 bool Collider::on_ramp() const { return flags.state.test(State::on_ramp); }
 

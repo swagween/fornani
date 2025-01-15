@@ -94,6 +94,7 @@ class Collider {
 	void reset();
 	void reset_ground_flags();
 	void set_top_only();
+	void adjust_acceleration();
 
 	bool on_ramp() const;
 	bool has_horizontal_collision() const;
@@ -173,6 +174,8 @@ class Collider {
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{1.0f};
 	float depth_buffer{1.0f};
+
+	float acceleration_multiplier{1.f};
 
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> sprite_offset{};

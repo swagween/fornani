@@ -11,6 +11,13 @@ void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
 	acceleration.y += (magnitude * sin(angle)) / mass;
 }
 
+void PhysicsComponent::multiply_velocity(float multiplier) {
+	velocity *= multiplier;
+	real_velocity *= multiplier;
+}
+
+void PhysicsComponent::multiply_acceleration(float multiplier) { acceleration *= multiplier; }
+
 void PhysicsComponent::update_euler(automa::ServiceProvider& svc) {
 	integrate(svc);
 	direction.und = velocity.y > 0.f ? dir::UND::down : (velocity.y < 0.f ? dir::UND::up : dir::UND::neutral);
