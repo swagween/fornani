@@ -24,7 +24,7 @@ static auto get_icon_lookup(EInputActionOrigin btn) -> int {
 sf::Vector2i get_key_coordinates(sf::Keyboard::Scancode key) {
 	auto keyi = static_cast<int>(key);
 	auto controller_section = 13; // keyboard button atlas lookup
-	if (keyi >= static_cast<int>(sf::Keyboard::Key::A) && keyi <= static_cast<int>(sf::Keyboard::Key::Pause)) {
+	if (keyi >= static_cast<int>(sf::Keyboard::Scancode::A) && keyi <= static_cast<int>(sf::Keyboard::Scancode::LaunchMediaSelect)) {
 		return {keyi % atlas_width, controller_section + keyi / atlas_width};
 	} else {
 		return {controller_section, 3};

@@ -18,8 +18,8 @@ void NineSlice::update(automa::ServiceProvider& svc, sf::Vector2<float> position
 	edge_dimensions = edge_dim;
 	native_dimensions = dimensions;
 	gravitator.set_target_position(position);
-	gravitator.update(svc); 
-	global_scale = 1.f - static_cast<float>(appear.get_cooldown()) / static_cast<float>(appearance_time);
+	gravitator.update(svc);
+	if (native_scale < 1.f) { global_scale = 1.f - appear.get_cubic_normalized(); }
 	appear.update();
 
 	// set position for the 9-slice console box
@@ -70,17 +70,18 @@ void NineSlice::render(sf::RenderWindow& win) {
 	win.draw(sprite);
 }
 
-void NineSlice::start(automa::ServiceProvider& svc, sf::Vector2<float> position) {
-	global_scale = 0.f;
+void NineSlice::start(automa::ServiceProvider& svc, sf::Vector2<float> position, float start_scale, sf::Vector2<int> direction, float border) {
+	native_scale = start_scale;
+	global_scale = start_scale;
 	appear.start();
-	random_offset = svc.random.random_vector_float(-32.f, 32.f);
-	gravitator.set_position(position + random_offset);
-	gravitator.collider.physics.velocity = svc.random.random_vector_float(-10.f, 10.f);
+	auto x = direction.x == -1 ? -(native_dimensions.x + border) : direction.x == 1 ? svc.constants.f_screen_dimensions.x + native_dimensions.x + border : position.x;
+	auto y = direction.y == -1 ? -(native_dimensions.y + border) : direction.y == 1 ? svc.constants.f_screen_dimensions.y + native_dimensions.y + border : position.y;
+	gravitator.set_position({x, y});
 }
 
 void NineSlice::end() {
 	appear.start();
-	set_scale(0.f);
+	set_scale(native_scale);
 }
 
 void NineSlice::speed_up_appearance(int rate) {
