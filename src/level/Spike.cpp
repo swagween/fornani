@@ -9,7 +9,7 @@
 namespace world {
 
 Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size)
-	: size(size), hitbox(size * 32.f), sprite{texture}, grid_position(position + sf::Vector2<float>{16.f, 16.f}) {
+	: size(size), hitbox(i_size().x == 1 ? size * 32.f : size * 24.f), sprite{texture}, grid_position(position + sf::Vector2<float>{16.f, 16.f}) {
 	direction.x = direction.y != 0 ? 0 : direction.x;
 	i_size().x == 1 ? sprite.setTextureRect(sf::IntRect{{480, 480}, {32, 32}}) : sprite.setTextureRect(sf::IntRect{{0, 0}, {192, 128}});
 	collider = shape::Collider(size * 32.f);
@@ -27,7 +27,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<flo
 	if (facing.und == dir::UND::down) { sprite.setRotation(sf::degrees(180)); }
 	collider.physics.position = position + offset;
 	collider.sync_components();
-	i_size().x == 1 ? hitbox.set_position(position + offset * 0.5f) : hitbox.set_position(position + offset * 0.5f - sf::Vector2<float>{80.f, 48.f});
+	i_size().x == 1 ? hitbox.set_position(position + offset * 0.5f) : hitbox.set_position(position + offset * 0.5f - sf::Vector2<float>{56.f, 48.f});
 }
 
 void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
@@ -61,7 +61,7 @@ void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (svc.greyblock_mode()) {
 		drawbox.setPosition(hitbox.position - cam);
 		drawbox.setSize(hitbox.dimensions);
-		drawbox.setFillColor(svc.styles.colors.red);
+		drawbox.setFillColor(sf::Color{249, 12, 48, 64});
 		collider.render(win, cam);
 		win.draw(drawbox);
 	}

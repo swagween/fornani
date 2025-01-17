@@ -16,7 +16,10 @@ void PhysicsComponent::multiply_velocity(float multiplier) {
 	real_velocity *= multiplier;
 }
 
-void PhysicsComponent::multiply_acceleration(float multiplier) { acceleration *= multiplier; }
+void PhysicsComponent::multiply_acceleration(float multiplier, sf::Vector2<float> weight) {
+	acceleration.x *= weight.x > 0.f ? multiplier * weight.x : 1.f;
+	acceleration.y *= weight.y > 0.f ? multiplier * weight.y : 1.f;
+}
 
 void PhysicsComponent::update_euler(automa::ServiceProvider& svc) {
 	integrate(svc);

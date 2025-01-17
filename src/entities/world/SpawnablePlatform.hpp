@@ -27,7 +27,7 @@ class SpawnablePlatform {
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	[[nodiscard]] auto get_index() const -> int { return index; }
-	[[nodiscard]] auto collidable() const -> bool { return state == SpawnablePlatformState::open || state == SpawnablePlatformState::fading; }
+	[[nodiscard]] auto collidable() const -> bool { return state == SpawnablePlatformState::open || state == SpawnablePlatformState::opening || state == SpawnablePlatformState::fading; }
 
   private:
 

@@ -498,7 +498,7 @@ void Collider::reset_ground_flags() {
 void Collider::set_top_only() { flags.general.set(General::top_only_collision); }
 
 void Collider::adjust_acceleration() {
-	physics.multiply_acceleration(acceleration_multiplier);
+	physics.multiply_acceleration(acceleration_multiplier, {1.f, 0.f});
 	acceleration_multiplier = 1.f;
 }
 

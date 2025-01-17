@@ -40,7 +40,6 @@ void Atmosphere::debug() {
 	ImGuiIO& io = ImGui::GetIO();
 	io.FontGlobalScale = 1.0;
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGuiViewport const* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos({10.f, 200.f}, ImGuiCond_Always);
 	window_flags |= ImGuiWindowFlags_NoMove;
 	ImGui::SetNextWindowBgAlpha(0.65f);

@@ -61,9 +61,9 @@ class Enemy : public entity::Entity {
 	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	virtual void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player){};
-	virtual void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
-	virtual void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam){};
+	virtual void unique_update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player){};
+	virtual void unique_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2<float> cam){};
+	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2<float> cam){};
 	void handle_player_collision(player::Player& player) const;
 	void handle_collision(shape::Collider& other);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);

@@ -29,7 +29,7 @@ class Cutscene {
   public:
 	Cutscene(automa::ServiceProvider& svc, int id, std::string_view label);
 
-	virtual void update(automa::ServiceProvider& svc, gui::Console& console, world::Map& map, player::Player& player) {};
+	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] gui::Console& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player){};
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }
 
   protected:
