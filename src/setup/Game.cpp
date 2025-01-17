@@ -202,6 +202,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Previous Time of Day: %s", services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::day		  ? "Day"
 															: services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight"
 																																			  : "Night");
+					static int clock_speed{services.world_clock.get_rate()};
+					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
+					services.world_clock.set_speed(clock_speed);
 					ImGui::Separator();
 					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
 					ImGui::Separator();
@@ -467,6 +470,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							services.soundboard.flags.menu.set(audio::Menu::select);
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", 20096));
 							player.set_position({21 * 32, 184 * 32});
+						}
+						if (ImGui::Button("Gauntlet")) {
+							services.soundboard.flags.menu.set(audio::Menu::select);
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", 20069));
+							player.set_position({10 * 32, 10 * 32});
 						}
 						/*if (ImGui::Button("Junkyard")) {
 							services.soundboard.flags.menu.set(audio::Menu::select);

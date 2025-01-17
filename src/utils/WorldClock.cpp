@@ -27,6 +27,11 @@ void WorldClock::set_time(int hour, int minute) {
 	increments.minutes.set(minute);
 }
 
+void WorldClock::set_speed(int to_rate, int to_transition) {
+	rate = to_rate;
+	if (to_transition != 4096) { transition = util::Cooldown(to_transition); }
+}
+
 std::string WorldClock::get_string(bool military) {
 	std::string ret{};
 	std::string leading_zero = increments.minutes.get() < 10 ? "0" : "";

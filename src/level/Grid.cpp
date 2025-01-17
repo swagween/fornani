@@ -51,6 +51,32 @@ void Grid::check_neighbors(int i) {
 	cells.at(i).exposed = exposed;
 }
 
+sf::Vector2<int> Grid::get_solid_neighbors(int index) {
+	auto ret = sf::Vector2<int>{};
+	auto right = static_cast<std::size_t>(index + 1);
+	auto left = static_cast<std::size_t>(index - 1);
+	auto up = static_cast<std::size_t>(index - dimensions.x);
+	auto down = static_cast<std::size_t>(index + dimensions.x);
+	auto ui = static_cast<uint32_t>(index);
+	// left neighbor
+	if (index != 0 && index % dimensions.x != 0) {
+		if (cells.at(left).is_solid()) { ret.x = -1; }
+	}
+	// right neighbor
+	if (index != cells.size() - 1 && index % dimensions.x != dimensions.x - 1) {
+		if (cells.at(right).is_solid()) { ret.x = 1; }
+	}
+	// top neighbor
+	if (!(ui < dimensions.x)) {
+		if (cells.at(up).is_solid()) { ret.y = -1; }
+	}
+	// bottom neighbor
+	if (!(ui > cells.size() - dimensions.x - 1)) {
+		if (cells.at(down).is_solid()) { ret.y = 1; }
+	}
+	return ret;
+}
+
 void Grid::seed_vertex(int index) {
 	auto& tile = cells.at(index);
 	tile.set_type();

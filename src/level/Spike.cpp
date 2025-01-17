@@ -8,15 +8,22 @@
 
 namespace world {
 
-Spike::Spike(automa::ServiceProvider& svc, sf::Vector2<float> position, int lookup) : hitbox({32.f, 32.f}) {
+Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<float> position, sf::Vector2<int> direction) : hitbox({32.f, 32.f}), sprite{texture}, grid_position(position + sf::Vector2<float>{16.f, 16.f}) {
+	direction.x = direction.y != 0 ? 0 : direction.x;
+	sprite.setTextureRect(sf::IntRect{{480, 480}, {32, 32}});
 	collider = shape::Collider({32.f, 32.f});
 	auto adjustment = 22.f;
-	facing.und = (lookup == 255 || lookup == 254) ? dir::UND::up : facing.und;
-	facing.und = (lookup == 253 || lookup == 252) ? dir::UND::down : facing.und;
+	facing.und = (direction.y == 1) ? dir::UND::up : facing.und;
+	facing.und = (direction.y == -1) ? dir::UND::down : facing.und;
 	offset.y = (facing.und == dir::UND::up) ? adjustment : facing.und == dir::UND::down ? -adjustment : offset.y;
-	facing.lr = (lookup == 251 || lookup == 250) ? dir::LR::left : facing.lr;
-	facing.lr = (lookup == 249 || lookup == 248) ? dir::LR::right : facing.lr;
+	facing.lr = (direction.x == 1) ? dir::LR::left : facing.lr;
+	facing.lr = (direction.x == -1) ? dir::LR::right : facing.lr;
 	offset.x = (facing.lr == dir::LR::left) ? adjustment : facing.lr == dir::LR::right ? -adjustment : offset.x;
+	sprite.setOrigin({16.f, 16.f});
+	if (facing.lr == dir::LR::left) { sprite.setRotation(sf::degrees(-90)); }
+	if (facing.lr == dir::LR::right) { sprite.setRotation(sf::degrees(90)); }
+	if (facing.und == dir::UND::down) { sprite.setRotation(sf::degrees(180)); }
+	//sprite.setOrigin({});
 	collider.physics.position = position + offset;
 	collider.sync_components();
 	hitbox.set_position(position + offset * 0.5f);
@@ -50,6 +57,8 @@ void Spike::handle_collision(shape::Collider& other) const {
 }
 
 void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	sprite.setPosition(grid_position - cam);
+	win.draw(sprite);
 	if (svc.greyblock_mode()) {
 		drawbox.setPosition(hitbox.position - cam);
 		drawbox.setSize(hitbox.dimensions);

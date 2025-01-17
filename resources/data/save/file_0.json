@@ -5,17 +5,17 @@
   "player_data": {
     "max_hp": 3.000000,
     "hp": 3.000000,
-    "orbs": 480,
+    "orbs": 495,
     "position": {
-      "x": 1288.519775,
-      "y": 395.000000
+      "x": 416.762634,
+      "y": 299.000000
     },
     "arsenal": [
       0,
       1,
       2
     ],
-    "equipped_gun": 1,
+    "equipped_gun": 0,
     "abilities": [
 
     ],
@@ -39,16 +39,16 @@
       }
     ],
     "stats": {
-      "death_count": 37,
-      "bullets_fired": 2781,
+      "death_count": 41,
+      "bullets_fired": 2793,
       "guns_collected": 0,
       "items_collected": 27,
-      "orbs_collected": 480,
+      "orbs_collected": 495,
       "blue_orbs": 1,
       "highest_indicator_amount": 310,
-      "enemies_killed": 7,
-      "rooms_discovered": 24,
-      "seconds_played": 1311.850342,
+      "enemies_killed": 8,
+      "rooms_discovered": 25,
+      "seconds_played": 1358.833374,
       "time_trials": {
         "bryns_gun": 0.000000
       }
@@ -59,7 +59,7 @@
       2
     ]
   },
-  "save_point_id": 20094,
+  "save_point_id": 20069,
   "unlocked_doors": [
 
   ],
@@ -183,7 +183,8 @@
     6001,
     200,
     299,
-    224
+    224,
+    20069
   ],
   "piggybacker": 0,
   "marketplace": [
@@ -213,12 +214,12 @@
       103
     ],
     [
-      7,
-      0
-    ],
-    [
       23,
       6001
+    ],
+    [
+      7,
+      0
     ],
     [
       22,
@@ -227,11 +228,16 @@
   ],
   "map_data": {
     "world_time": {
-      "hours": 21,
-      "minutes": 40
+      "hours": 12,
+      "minutes": 46
     },
     "fallen_enemies": [
-
+      [
+        20094,
+        55482869,
+        4,
+        0
+      ]
     ]
   }
 }

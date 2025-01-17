@@ -18,6 +18,7 @@ class WorldClock {
 	WorldClock();
 	void update(automa::ServiceProvider& svc);
 	void set_time(int hour = 0, int minute = 0);
+	void set_speed(int to_rate, int to_transition = 4096);
 	[[nodiscard]] auto is_daytime() const -> bool { return increments.hours.get() >= 8 && increments.hours.get() < 19; }
 	[[nodiscard]] auto is_nighttime() const -> bool { return increments.hours.get() >= 20 || increments.hours.get() < 7; }
 	[[nodiscard]] auto is_twilight() const -> bool { return !is_daytime() && !is_nighttime(); }
@@ -28,6 +29,7 @@ class WorldClock {
 	[[nodiscard]] auto get_transition() const -> float { return transition.get_normalized(); }
 	[[nodiscard]] auto get_hours() const -> int { return increments.hours.get(); }
 	[[nodiscard]] auto get_minutes() const -> int { return increments.minutes.get(); }
+	[[nodiscard]] auto get_rate() const -> int { return rate; }
 	std::string get_string(bool military = true);
 
   private:
