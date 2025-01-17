@@ -13,6 +13,8 @@ namespace world {
 
 int const CEIL_SLANT_INDEX = 192;
 int const FLOOR_SLANT_INDEX = 208;
+int const ceiling_single_ramp = 224;
+int const floor_single_ramp = 240;
 
 class Grid {
   public:

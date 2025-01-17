@@ -136,17 +136,17 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 		// ground ramp
 		// only handle ramp collisions if the bounding_box is colliding with it
 		if (bounding_box.SAT(cell)) {
-			if (physics.apparent_velocity().y > vert_threshold) {
-				flags.state.set(State::just_landed);
-				flags.animation.set(Animation::just_landed);
-			}
 			flags.state.set(State::tickwise_ramp_collision);
 			if (is_ground_ramp) {
 				flags.external_state.set(ExternalState::on_ramp);
 				physics.position.y -= abs(mtvs.actual.y);
 				//flags.state.set(State::on_flat_surface);
 				// still zero this because of gravity
-				if (!flags.movement.test(Movement::jumping)) {
+				if (!flags.movement.test(Movement::jumping) && bounding_box.bottom() <= cell.bottom()) {
+					if (physics.apparent_velocity().y > vert_threshold) {
+						flags.state.set(State::just_landed);
+						flags.animation.set(Animation::just_landed);
+					}
 					physics.zero_y();
 				}
 				// std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
@@ -162,8 +162,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
 		}
-
 		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp()) {
+			flags.external_state.set(ExternalState::on_ramp);
 			acceleration_multiplier = cell.get_radial_factor();
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.position.x))); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.position.x))); }
@@ -238,9 +238,8 @@ void Collider::correct_x(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	auto xdist = predictive_horizontal.position.x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
-		physics.position.x += correction;
-		physics.zero_x();
-	
+	physics.position.x += correction;
+	physics.zero_x();
 }
 
 void Collider::correct_y(sf::Vector2<float> mtv) {
@@ -249,13 +248,12 @@ void Collider::correct_y(sf::Vector2<float> mtv) {
 	if (abs(mtv.x) > 12.f || abs(mtv.y) > 12.f) {
 		mtv.x = abs(mtv.y) > 0 ? mtv.y : mtv.x;
 		mtv.y = abs(mtv.x) > 0 ? mtv.x : mtv.y;
-		//std::cout << "large MTV!\n";
+		// std::cout << "large MTV!\n";
 	}
 	auto ydist = predictive_vertical.position.y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
-		physics.position.y += correction;
-		physics.zero_y();
-	
+	physics.position.y += correction;
+	physics.zero_y();
 }
 
 void Collider::correct_x_y(sf::Vector2<float> mtv) {
@@ -393,6 +391,7 @@ void Collider::handle_collider_collision(Collider const& collider, bool soft, bo
 }
 
 void Collider::update(automa::ServiceProvider& svc) {
+	if (!on_ramp()) { acceleration_multiplier = 1.f; }
 	flags.external_state = {};
 	adjust_acceleration();
 	physics.update(svc);
@@ -503,7 +502,7 @@ void Collider::adjust_acceleration() {
 	acceleration_multiplier = 1.f;
 }
 
-bool Collider::on_ramp() const { return flags.state.test(State::on_ramp); }
+bool Collider::on_ramp() const { return flags.external_state.test(ExternalState::on_ramp); }
 
 bool Collider::has_horizontal_collision() const { return flags.collision.test(Collision::has_left_collision) || flags.collision.test(Collision::has_right_collision); }
 

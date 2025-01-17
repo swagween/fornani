@@ -6,8 +6,8 @@
 
 namespace world {
 
-Fire::Fire(automa::ServiceProvider& svc, sf::Vector2<float> position)
-	: bounding_box{{48.f, 48.f}}, sprite_offset{-12.f, -38.f}, sparkler(svc, {48.f, 48.f}, sf::Color::White, "fire"), sprite(svc.assets.t_fire, {72, 86}), inspectable(svc, sf::Vector2<uint32_t>{48, 48}, sf::Vector2<uint32_t>{static_cast<uint32_t>(position.x), static_cast<uint32_t>(position.y)}) {
+Fire::Fire(automa::ServiceProvider& svc, sf::Vector2<float> position, int lookup)
+	: size(lookup == 244 ? 2 : 1), bounding_box{{48.f, 48.f}}, sprite_offset{-12.f, -38.f}, sparkler(svc, {48.f, 48.f}, sf::Color::White, "fire"), sprite(svc.assets.t_fire, {72, 86}), inspectable(svc, sf::Vector2<uint32_t>{48, 48}, sf::Vector2<uint32_t>{static_cast<uint32_t>(position.x), static_cast<uint32_t>(position.y)}) {
 	auto bb_offset =  svc.constants.f_cell_vec - bounding_box.dimensions;
 	bounding_box.set_position(position + sf::Vector2<float>{bb_offset.x * 0.5f, bb_offset.y});
 	sprite.push_params("basic", {0, 5, 18, -1});

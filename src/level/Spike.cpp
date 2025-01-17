@@ -8,10 +8,11 @@
 
 namespace world {
 
-Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<float> position, sf::Vector2<int> direction) : hitbox({32.f, 32.f}), sprite{texture}, grid_position(position + sf::Vector2<float>{16.f, 16.f}) {
+Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size)
+	: size(size), hitbox(size * 32.f), sprite{texture}, grid_position(position + sf::Vector2<float>{16.f, 16.f}) {
 	direction.x = direction.y != 0 ? 0 : direction.x;
-	sprite.setTextureRect(sf::IntRect{{480, 480}, {32, 32}});
-	collider = shape::Collider({32.f, 32.f});
+	i_size().x == 1 ? sprite.setTextureRect(sf::IntRect{{480, 480}, {32, 32}}) : sprite.setTextureRect(sf::IntRect{{0, 0}, {192, 128}});
+	collider = shape::Collider(size * 32.f);
 	auto adjustment = 22.f;
 	facing.und = (direction.y == 1) ? dir::UND::up : facing.und;
 	facing.und = (direction.y == -1) ? dir::UND::down : facing.und;
@@ -19,14 +20,14 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<flo
 	facing.lr = (direction.x == 1) ? dir::LR::left : facing.lr;
 	facing.lr = (direction.x == -1) ? dir::LR::right : facing.lr;
 	offset.x = (facing.lr == dir::LR::left) ? adjustment : facing.lr == dir::LR::right ? -adjustment : offset.x;
-	sprite.setOrigin({16.f, 16.f});
+	sprite.setOrigin(size * 16.f);
+	if (svc.random.percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
 	if (facing.lr == dir::LR::left) { sprite.setRotation(sf::degrees(-90)); }
 	if (facing.lr == dir::LR::right) { sprite.setRotation(sf::degrees(90)); }
 	if (facing.und == dir::UND::down) { sprite.setRotation(sf::degrees(180)); }
-	//sprite.setOrigin({});
 	collider.physics.position = position + offset;
 	collider.sync_components();
-	hitbox.set_position(position + offset * 0.5f);
+	i_size().x == 1 ? hitbox.set_position(position + offset * 0.5f) : hitbox.set_position(position + offset * 0.5f - sf::Vector2<float>{80.f, 48.f});
 }
 
 void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
@@ -37,7 +38,6 @@ void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::
 		player.controller.prevent_movement();
 		player.controller.restrict_movement();
 		map.soft_reset.end();
-		std::cout << "ended\n";
 		soft_reset = false;
 	}
 	if (player.hurtbox.overlaps(hitbox) && map.soft_reset.not_started() && !player.invincible()) {
@@ -45,10 +45,9 @@ void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::
 		if (!player.is_dead()) {
 			soft_reset = true;
 			map.soft_reset.start();
-			std::cout << "started\n";
 		}
 	}
-	handle_collision(player.collider);
+	//handle_collision(player.collider);
 }
 
 void Spike::handle_collision(shape::Collider& other) const {

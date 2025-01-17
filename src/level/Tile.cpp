@@ -35,7 +35,7 @@ void Tile::update_polygon(sf::Vector2<float> cam) {}
 
 void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleShape& draw) {
 	draw.setSize({32.f, 32.f});
-	draw.setFillColor(sf::Color{17, 230, 187, 127});
+	draw.setFillColor(sf::Color{17, 230, 187, 45});
 	if (collision_check) {
 		draw.setFillColor(sf::Color{190, 255, 7, 180});
 		if (!surrounded) {}
@@ -54,11 +54,11 @@ void Tile::set_type() {
 		type = TileType::solid;
 		return;
 	}
-	if (value < 208 && value >= 192) {
+	if ((value < 208 && value >= 192) || (value >= ceiling_single_ramp && value <= ceiling_single_ramp + 3)) {
 		type = TileType::ceiling_ramp;
 		return;
 	}
-	if (value < 224 && value >= 208) {
+	if ((value < 224 && value >= 208) || (value >= floor_single_ramp && value <= floor_single_ramp + 3)) {
 		type = TileType::ground_ramp;
 		return;
 	}
@@ -67,7 +67,7 @@ void Tile::set_type() {
 		return;
 	}
 	if (value < 244 && value >= 240) {
-		type = TileType::death_spike;
+		type = TileType::big_spike;
 		return;
 	}
 	if (value < 230 && value >= 228) {
@@ -83,7 +83,11 @@ void Tile::set_type() {
 		return;
 	}
 	if (value == 244) {
-		type = TileType::fire;
+		type = TileType::bonfire;
+		return;
+	}
+	if (value == 245) {
+		type = TileType::campfire;
 		return;
 	}
 	if (value == 246) {
@@ -94,7 +98,8 @@ void Tile::set_type() {
 		type = TileType::breakable;
 		return;
 	}
-	if (value >= 248) { type = TileType::spike; }
+	if (value == 254) { type = TileType::big_spike; }
+	if (value == 255) { type = TileType::spike; }
 }
 
 } // namespace world

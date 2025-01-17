@@ -207,6 +207,10 @@
     {
       "room_id": 20090,
       "label": "OVERTURNED_VINE"
+    },
+    {
+      "room_id": 3000,
+      "label": "RAMP"
     }
   ]
 }
