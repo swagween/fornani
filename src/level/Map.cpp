@@ -62,7 +62,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			cutscene_catalog.push_cutscene(svc, *this, *m_console, cid);
 		}
 		if (meta["music"].is_string()) {
-			svc.music.load(meta["music"].as_string());
+			svc.music.load(svc.finder, meta["music"].as_string());
 			svc.music.play_looped(10);
 		}
 		if (meta["ambience"].is_string()) {
@@ -425,7 +425,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		console.set_source(svc.text.basic);
 		console.load_and_launch("death");
 		flags.state.set(LevelState::game_over);
-		svc.music.load("mortem");
+		svc.music.load(svc.finder, "mortem");
 		svc.music.play_looped(10);
 		svc.soundboard.turn_off();
 		svc.stats.player.death_count.update();
@@ -575,6 +575,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		win.draw(center_box);
 		center_box.setPosition({0.f, svc.constants.f_screen_dimensions.y * 0.5f});
 		win.draw(center_box);
+		sf::Sprite greyblock{textures.greyblock.getTexture()};
+		greyblock.setPosition(-cam);
+		win.draw(greyblock);
 		get_middleground().grid.render(win, cam);
 	}
 }
@@ -718,6 +721,10 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 			textures.obscuring.display();
 			textures.reverse.display();
 		}
+		if (layer.middleground()) {
+			if (!textures.greyblock.resize(size)) { std::cout << "Layer texture not created.\n"; }
+			get_middleground().grid.draw(textures.greyblock);
+		}
 	}
 }
 
@@ -731,7 +738,7 @@ bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;
-			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
+			if (index >= static_cast<unsigned long long>(dimensions.x * dimensions.y) || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_solid()) { continue; }
 			cell.collision_check = true;

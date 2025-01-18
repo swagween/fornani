@@ -14,7 +14,7 @@ Collider::Collider() {
 	sync_components();
 }
 
-Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos, sf::Vector2<float> hbx_offset) : dimensions(dim), hurtbox_offset(hbx_offset) {
+Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> hbx_offset) : dimensions(dim), hurtbox_offset(hbx_offset) {
 	bounding_box.dimensions = dim;
 	jumpbox.dimensions = sf::Vector2<float>(dim.x, default_jumpbox_height);
 	hurtbox.dimensions = sf::Vector2<float>(dim.x - 8.f, dim.y - 8.f + hurtbox_offset.y);
@@ -80,10 +80,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	bool const is_ramp = tile.is_ramp();
 
 	// special tile types
-	if (is_plat) {
-		handle_platform_collision(cell);
-		return;
-	}
+	if (is_plat) { return; }
 	if (is_spike) { return; }
 
 	// store all four mtvs
@@ -95,7 +92,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	// let's first settle all actual block collisions
 	if (!is_ramp) {
 		if (collision_depths) { collision_depths.value().calculate(*this, cell); }
-		bool corner_collision{};
 		bool vert{};
 		if (predictive_vertical.SAT(cell)) {
 			mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
@@ -276,7 +272,6 @@ void Collider::correct_corner(sf::Vector2<float> mtv) {
 		//std::cout << "X Corner correction: " << mtv.x << "\n";
 	} else {
 		auto ydist = predictive_combined.position.y - physics.position.y;
-		auto correction = ydist + mtv.y;
 		physics.position.y = predictive_combined.position.y + mtv.y;
 		physics.zero_y();
 		//std::cout << "Y Corner correction: " << correction << "\n";
@@ -296,8 +291,6 @@ void Collider::resolve_depths() {
 	physics.position.x += depth_diff.x;
 	physics.position.y += depth_diff.y;
 }
-
-void Collider::handle_platform_collision(Shape const& cell) {}
 
 bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2<float> velocity) {
 	auto ret{false};

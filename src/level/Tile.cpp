@@ -31,9 +31,7 @@ void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::M
 	}
 }
 
-void Tile::update_polygon(sf::Vector2<float> cam) {}
-
-void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleShape& draw) {
+void Tile::render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2<float> cam) {
 	draw.setSize({32.f, 32.f});
 	draw.setFillColor(sf::Color{17, 230, 187, 45});
 	if (collision_check) {
@@ -43,9 +41,12 @@ void Tile::render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleSh
 	if (ramp_adjacent()) { draw.setFillColor(sf::Color{240, 155, 7, 180}); }
 	if (covered()) { draw.setFillColor(sf::Color{0, 155, 130, 180}); }
 	draw.setPosition(bounding_box.position - cam);
-	if (is_solid() && !is_spike()) { win.draw(draw); }
-	if (is_occupied()) { bounding_box.render(win, cam); }
+	if (is_occupied() && collision_check) { win.draw(draw); }
 	collision_check = false;
+}
+
+void Tile::draw(sf::RenderTexture& tex) {
+	if (is_occupied()) { bounding_box.draw(tex); }
 }
 
 void Tile::set_type() {

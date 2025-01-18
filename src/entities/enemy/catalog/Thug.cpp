@@ -91,15 +91,6 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	}
 
 	hurt_effect.update();
-	if (hurt_effect.running()) {
-		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			visual.sprite.setColor(svc.styles.colors.red);
-		} else {
-			visual.sprite.setColor(svc.styles.colors.periwinkle);
-		}
-	} else {
-		visual.sprite.setColor(svc.styles.colors.white);
-	}
 
 	if (hostility_triggered()) { state = ThugState::alert; }
 	if (hostile() && !hostility_triggered()) {

@@ -14,8 +14,9 @@
       4
     ],
     "style": 1,
-    "background": 18,
-    "music": "",
+    "background": 18,"music": "whispering_island",
+    "ambience": "overturned",
+    "atmosphere": [1],
     "styles": {
       "breakables": 0
     },

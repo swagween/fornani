@@ -7,15 +7,18 @@
 
 namespace fornani {
 
-Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version), player(services), game_state(services, player) {
+Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player) {
 	services.stopwatch.start();
-	services.window = &window;
 	services.constants.screen_dimensions = window.screen_dimensions;
+	if (!ImGui::SFML::Init(services.window->get())) {
+		std::cout << "ImGui-SFML failed to initialize the window.\n";
+		shutdown();
+		return;
+	}
 	// controls
 	services.data.load_controls(services.controller_map);
 	services.data.load_settings();
 	// sounds
-	services.music.finder.set_resource_path(argv);
 	playtest.m_musicplayer = true;
 	services.music.turn_on();
 	// player
@@ -47,8 +50,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		services.state_controller.player_position = player_position;
 		player.set_position(player_position);
 	} else {
-		game_state.get_current_state().target_folder.paths.scene = services.data.finder.scene_path;
-		game_state.get_current_state().target_folder.paths.region = services.data.finder.scene_path + "/firstwind";
+		game_state.get_current_state().target_folder.paths.scene = services.finder.scene_path;
+		game_state.get_current_state().target_folder.paths.region = services.finder.scene_path + "/firstwind";
 	}
 
 	gui::ActionContextBar ctx_bar(services);
@@ -110,7 +113,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			valid_event = true;
 		}
 		
-
 		SteamAPI_RunCallbacks();
 
 		services.stopwatch.start();
@@ -137,6 +139,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		// ImGui stuff
 		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
+		if (flags.test(GameFlags::playtest)) { services.logger.write_console(ImVec2{400.f, 240.f}, ImVec2{services.window->get().getSize().x - 420.f, services.window->get().getSize().y - 260.f}); }
 		flags.test(GameFlags::playtest) ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 
 		// my renders

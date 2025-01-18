@@ -32,7 +32,7 @@ void Fire::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 	sprite.render(svc, win, cam);
 	sparkler.render(svc, win, cam);
 	inspectable.render(svc, win, cam);
-	if (svc.greyblock_mode()) { bounding_box.render(win, cam); }
+	if (svc.greyblock_mode()) {}
 }
 
 } // namespace world

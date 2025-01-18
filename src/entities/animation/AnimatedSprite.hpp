@@ -39,6 +39,7 @@ class AnimatedSprite {
 	[[nodiscard]] auto size() -> int { return static_cast<int>(params.size()); }
 	[[nodiscard]] auto get_sprite_angle_index() const -> int { return rotator.get_sprite_angle_index(); }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
+	[[nodiscard]] auto get_dimensions() const -> sf::Vector2<float> { return sprite.getGlobalBounds().size; }
 	Animation& get() { return animation; }
 	sf::Sprite& get_sprite() { return sprite; }
 

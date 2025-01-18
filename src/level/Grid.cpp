@@ -256,7 +256,13 @@ void Grid::destroy_cell(sf::Vector2<int> pos) {
 }
 
 void Grid::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	for (auto& cell : cells) { cell.render(win, cam, drawbox); }
+	for (auto& cell : cells) { cell.render(win, drawbox, cam); }
+}
+
+void Grid::draw(sf::RenderTexture& tex) {
+	tex.clear(sf::Color::Transparent);
+	for (auto& cell : cells) { cell.draw(tex); }
+	tex.display();
 }
 
 std::size_t Grid::get_index_at_position(sf::Vector2<float> position) const {

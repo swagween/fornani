@@ -198,6 +198,7 @@ class Map {
 		sf::RenderTexture background{};
 		sf::RenderTexture obscuring{};
 		sf::RenderTexture reverse{};
+		sf::RenderTexture greyblock{};
 	} textures{};
 	std::string_view style_label{};
 

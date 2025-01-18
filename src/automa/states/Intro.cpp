@@ -9,7 +9,7 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	title.setFillColor(svc.styles.colors.ui_black);
 	console = gui::Console(svc);
 	map.load(svc, 0);
-	svc.music.load("respite");
+	svc.music.load(svc.finder, "respite");
 	svc.music.play_looped(20);
 	console.set_source(svc.text.basic);
 	float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();

@@ -31,8 +31,8 @@ struct Tile {
 	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi);
 
 	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
-	void update_polygon(sf::Vector2<float> cam);
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam, sf::RectangleShape& draw);
+	void render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2<float> cam);
+	void draw(sf::RenderTexture& tex);
 	void set_type();
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
 	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner() || is_platform(); }

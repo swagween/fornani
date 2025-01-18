@@ -1,8 +1,9 @@
 #include "WindowManager.hpp"
 #include <iostream>
+#include <imgui-SFML.h>
 
 namespace fornani {
-	
+
 void WindowManager::set() {
 	game_view = sf::View(sf::FloatRect({}, {static_cast<float>(screen_dimensions.x), static_cast<float>(screen_dimensions.y)}));
 	// set view and veiwport for fullscreen mode

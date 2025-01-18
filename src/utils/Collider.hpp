@@ -75,7 +75,7 @@ class Collider {
 
   public:
 	Collider();
-	Collider(sf::Vector2<float> dim, sf::Vector2<float> start_pos = {}, sf::Vector2<float> hbx_offset = {});
+	Collider(sf::Vector2<float> dim, sf::Vector2<float> hbx_offset = {});
 
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
@@ -85,7 +85,6 @@ class Collider {
 	void correct_x_y(sf::Vector2<float> mtv);
 	void correct_corner(sf::Vector2<float> mtv);
 	void resolve_depths();
-	void handle_platform_collision(Shape const& cell);
 	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2<float> velocity = {}); // returns true if grounded on collider
 	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false);
 	void update(automa::ServiceProvider& svc);

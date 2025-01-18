@@ -29,7 +29,6 @@ Application::Application(char** argv) : finder(argv), t_loading(finder.resource_
 	if (!icon.loadFromFile(finder.resource_path + "/image/app/icon.png")) { std::cout << "Failed to load application icon.\n"; };
 	window.get().setIcon({256, 256}, icon.getPixelsPtr());
 
-	assert(ImGui::SFML::Init(window.get()));
 	window.get().clear();
 	window.get().draw(loading);
 	window.get().display();

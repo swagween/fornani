@@ -20,7 +20,7 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	health.set_invincibility(400);
 
-	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT}, sf::Vector2<float>{PLAYER_START_X, PLAYER_START_Y});
+	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT});
 	hurtbox.dimensions = sf::Vector2<float>{12.f, 26.f};
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 

@@ -70,7 +70,7 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 		std::cout << "Steam Input initialized" << std::endl;
 	}
 	// TODO When we have a proper Steam App ID assigned, upload the steam input manifest into the game's depot.
-	std::string input_action_manifest_path = svc.data.finder.resource_path + "\\text\\input\\steam_input_manifest.vdf";
+	std::string input_action_manifest_path = svc.finder.resource_path + "\\text\\input\\steam_input_manifest.vdf";
 	if (!SteamInput()->SetInputActionManifestFilePath(input_action_manifest_path.c_str())) {
 		// uh oh
 		std::cout << "Could not set Action Manifest file path!" << std::endl;

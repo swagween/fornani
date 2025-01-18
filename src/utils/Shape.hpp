@@ -44,6 +44,7 @@ class Shape {
 	sf::Vector2<float> circle_SAT_MTV(sf::CircleShape const& circle);
 	bool overlaps(Shape const& other) const;
 	bool contains_point(Vec point);
+	void draw(sf::RenderTexture& tex);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 
 	[[nodiscard]] auto non_square() const -> bool {

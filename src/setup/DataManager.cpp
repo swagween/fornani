@@ -6,9 +6,10 @@
 
 namespace data {
 
-DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc), finder(argv) { load_data(); }
+DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
+	auto const& finder = m_services->finder;
 	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path};
 	auto room_list = room_path / "level";
@@ -125,7 +126,6 @@ void DataManager::load_data(std::string in_room) {
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
-
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
 	// set file data based on player state
@@ -250,7 +250,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	out_stat["seconds_played"] = m_services->ticker.in_game_seconds_passed.count();
 	out_stat["time_trials"]["bryns_gun"] = s.time_trials.bryns_gun;
 
-	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
+	save.dj::Json::to_file((m_services->finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
 void DataManager::save_settings() {
@@ -259,7 +259,7 @@ void DataManager::save_settings() {
 	settings["gamepad"] = dj::Boolean{m_services->controller_map.is_gamepad_input_enabled()};
 	settings["music_volume"] = m_services->music.volume.multiplier;
 	settings["fullscreen"] = dj::Boolean{m_services->fullscreen()};
-	settings.dj::Json::to_file((finder.resource_path + "/data/config/settings.json").c_str());
+	settings.dj::Json::to_file((m_services->finder.resource_path + "/data/config/settings.json").c_str());
 }
 
 int DataManager::load_progress(player::Player& player, int const file, bool state_switch, bool from_menu) {
@@ -382,7 +382,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 }
 
 void DataManager::load_settings() {
-	settings = dj::Json::from_file((finder.resource_path + "/data/config/settings.json").c_str());
+	settings = dj::Json::from_file((m_services->finder.resource_path + "/data/config/settings.json").c_str());
 	assert(!settings.is_null());
 	m_services->controller_map.enable_autosprint(settings["auto_sprint"].as_bool().value);
 	m_services->set_tutorial(settings["tutorial"].as_bool().value);
@@ -396,7 +396,7 @@ void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
 	files.at(index).save_data = blank_file.save_data;
 	files.at(index).flags.set(fornani::FileFlags::new_file);
-	files.at(index).save_data.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
+	files.at(index).save_data.dj::Json::to_file((m_services->finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
 void DataManager::write_death_count(player::Player& player) {
@@ -404,7 +404,7 @@ void DataManager::write_death_count(player::Player& player) {
 	auto& out_stat = save["player_data"]["stats"];
 	auto const& s = m_services->stats;
 	out_stat["death_count"] = s.player.death_count.get_count();
-	save.dj::Json::to_file((finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
+	save.dj::Json::to_file((m_services->finder.resource_path + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) {
@@ -426,7 +426,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 void DataManager::load_player_params(player::Player& player) {
 
 	// std::cout << "loading player params ...";
-	player_params = dj::Json::from_file((finder.resource_path + "/data/player/physics_params.json").c_str());
+	player_params = dj::Json::from_file((m_services->finder.resource_path + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
 	player.physics_stats.grav = player_params["physics"]["grav"].as<float>();
@@ -451,7 +451,7 @@ void DataManager::load_player_params(player::Player& player) {
 }
 
 void DataManager::save_player_params(player::Player& player) {
-
+	auto const& finder = m_services->finder;
 	// std::cout << "saving player params ...";
 	player_params["physics"]["grav"] = player.physics_stats.grav;
 	player_params["physics"]["ground_fric"] = player.physics_stats.ground_fric;
@@ -607,7 +607,7 @@ auto get_action_by_string(std::string_view id) -> config::DigitalAction {
 
 void DataManager::load_controls(config::ControllerMap& controller) {
 	// XXX change controls json when keybinds get modified
-	controls = dj::Json::from_file((finder.resource_path + "/data/config/control_map.json").c_str());
+	controls = dj::Json::from_file((m_services->finder.resource_path + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
 	assert(controls.contains("controls") && controls["controls"].is_object());
 
@@ -617,9 +617,9 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 	}
 }
 
-void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((finder.resource_path + "/data/config/control_map.json").c_str()); }
+void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((m_services->finder.resource_path + "/data/config/control_map.json").c_str()); }
 
-void DataManager::reset_controls() { controls = dj::Json::from_file((finder.resource_path + "/data/config/defaults.json").c_str()); }
+void DataManager::reset_controls() { controls = dj::Json::from_file((m_services->finder.resource_path + "/data/config/defaults.json").c_str()); }
 
 int DataManager::get_room_index(int id) {
 	auto ctr{0};
