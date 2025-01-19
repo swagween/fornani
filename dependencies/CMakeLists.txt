@@ -1,3 +1,5 @@
+project(fornani-dependencies)
+
 include(FetchContent)
 set(BUILD_SHARED_LIBS OFF)
 
@@ -42,6 +44,11 @@ FetchContent_Declare(
         GIT_TAG main
 )
 FetchContent_MakeAvailable(ccmath)
+
+# Avoid warning about DOWNLOAD_EXTRACT_TIMESTAMP in CMake 3.24 with steamworks.
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+  cmake_policy(SET CMP0135 NEW)
+endif()
 
 # steamworks API
 FetchContent_Declare(

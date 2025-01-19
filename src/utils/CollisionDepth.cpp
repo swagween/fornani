@@ -1,6 +1,6 @@
 #include "CollisionDepth.hpp"
-#include "Shape.hpp"
-#include "Collider.hpp"
+#include "../../include/fornani/utils/Shape.hpp"
+#include "../../include/fornani/utils/Collider.hpp"
 #include <iostream>
 
 namespace util {

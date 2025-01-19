@@ -2,7 +2,7 @@
 #include "Background.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../setup/EnumLookups.hpp"
-#include "../utils/Math.hpp"
+#include "../../include/fornani/utils/Math.hpp"
 #include <algorithm>
 #include <imgui.h>
 

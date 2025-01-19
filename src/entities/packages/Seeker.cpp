@@ -1,4 +1,4 @@
-#include "Seeker.hpp"
+#include "../../../include/fornani/entities/packages/Seeker.hpp"
 #include "../player/Player.hpp"
 #include <algorithm>
 

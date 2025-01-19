@@ -1,4 +1,4 @@
-#include "WindowManager.hpp"
+#include "../../include/fornani/setup/WindowManager.hpp"
 #include <iostream>
 
 namespace fornani {

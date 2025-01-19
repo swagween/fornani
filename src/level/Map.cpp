@@ -7,7 +7,7 @@
 #include "../service/ServiceProvider.hpp"
 #include "../setup/EnumLookups.hpp"
 
-#include "../utils/Math.hpp"
+#include "../../include/fornani/utils/Math.hpp"
 
 namespace world {
 

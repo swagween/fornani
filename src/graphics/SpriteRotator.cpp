@@ -1,6 +1,6 @@
 
 #include "SpriteRotator.hpp"
-#include "../utils/Math.hpp"
+#include "../../include/fornani/utils/Math.hpp"
 #include <numbers>
 
 namespace vfx {

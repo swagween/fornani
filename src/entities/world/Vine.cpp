@@ -2,7 +2,7 @@
 #include "../../level/Map.hpp"
 #include "../../service/ServiceProvider.hpp"
 #include "../player/Player.hpp"
-#include "../../utils/Math.hpp"
+#include "../../../include/fornani/utils/Math.hpp"
 
 namespace entity {
 

@@ -1,9 +1,9 @@
 
-#include "Collider.hpp"
+#include "../../include/fornani/utils/Collider.hpp"
 #include "../service/ServiceProvider.hpp"
 #include "../level/Map.hpp"
 #include <ccmath/math/power/sqrt.hpp>
-#include "../utils/Math.hpp"
+#include "../../include/fornani/utils/Math.hpp"
 
 namespace shape {
 

@@ -1,7 +1,7 @@
 #include "SteeringBehavior.hpp"
 #include "PhysicsComponent.hpp"
 #include "../service/ServiceProvider.hpp"
-#include "../utils/Math.hpp"
+#include "../../include/fornani/utils/Math.hpp"
 #include <algorithm>
 
 namespace components {

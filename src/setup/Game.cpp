@@ -2,8 +2,8 @@
 #include <steam/steam_api.h>
 #include <ctime>
 #include "../gui/ActionContextBar.hpp"
-#include "WindowManager.hpp"
-#include "../utils/Math.hpp"
+#include "../../include/fornani/setup/WindowManager.hpp"
+#include "../../include/fornani/utils/Math.hpp"
 
 namespace fornani {
 

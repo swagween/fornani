@@ -12,6 +12,8 @@ option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the 
 
 add_executable(${PROJECT_NAME})
 
+include(cmake/GenerateDataTemplates.cmake)
+
 add_subdirectory(dependencies)
 target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
 target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)

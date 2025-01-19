@@ -1,5 +1,5 @@
-#include "Caution.hpp"
-#include "Caution.hpp"
+#include "../../../include/fornani/entities/packages/Caution.hpp"
+#include "../../../include/fornani/entities/packages/Caution.hpp"
 #include "../player/Player.hpp"
 #include "../../level/Map.hpp"
 #include <algorithm>
