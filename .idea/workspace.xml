@@ -64,17 +64,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4e7c62b4-9a62-4cf0-8a4b-4bfe119426f6" name="Changes" comment="Continue update of includes for cmake">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/MusicPlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/audio/MusicPlayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/Sound.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/audio/Sound.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/SoundEffects.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/audio/SoundEffects.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/Soundboard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/audio/Soundboard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/automa/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/GameState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/automa/GameState.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/MenuController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/automa/MenuController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/Option.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/automa/Option.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/StateController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/automa/StateController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/StateManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/automa/StateManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/ControlsMenu.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/automa/states/ControlsMenu.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entities/enemy/boss/Minigus.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/enemy/boss/Minigus.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -286,7 +276,7 @@
       <workItem from="1737153087677" duration="17909000" />
       <workItem from="1737220765097" duration="20586000" />
       <workItem from="1737310859066" duration="390000" />
-      <workItem from="1737311313817" duration="14188000" />
+      <workItem from="1737311313817" duration="15111000" />
     </task>
     <task id="LOCAL-00001" summary="Initial work on saving data">
       <option name="closed" value="true" />
@@ -368,7 +358,23 @@
       <option name="project" value="LOCAL" />
       <updated>1737327191783</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Continue update of includes for cmake">
+      <option name="closed" value="true" />
+      <created>1737327370670</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1737327370670</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Continue update of includes for cmake">
+      <option name="closed" value="true" />
+      <created>1737328113174</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1737328113174</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
