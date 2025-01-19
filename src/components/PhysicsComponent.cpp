@@ -1,5 +1,5 @@
-#include "PhysicsComponent.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
 namespace components {

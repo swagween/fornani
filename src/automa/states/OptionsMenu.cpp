@@ -1,6 +1,6 @@
 
-#include "OptionsMenu.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/automa/states/OptionsMenu.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace automa {
 

@@ -1,6 +1,6 @@
 
-#include "AnimatedSprite.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <iostream>
 
 namespace anim {
