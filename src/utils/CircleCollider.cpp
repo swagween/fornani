@@ -1,7 +1,7 @@
-#include "../../include/fornani/utils/CircleCollider.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../level/Map.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/utils/Math.hpp"
 #include <algorithm>
 
 

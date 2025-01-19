@@ -1,7 +1,7 @@
-#include "Ammo.hpp"
-#include "../entities/player/Player.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/weapon/Ammo.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace arms {
 

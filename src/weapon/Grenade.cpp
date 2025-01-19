@@ -1,8 +1,8 @@
 #include "Grenade.hpp"
-#include "../entities/player/Player.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../level/Map.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace arms {
 
