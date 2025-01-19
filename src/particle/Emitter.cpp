@@ -1,5 +1,5 @@
-#include "Emitter.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/particle/Emitter.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace vfx {
 

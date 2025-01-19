@@ -1,8 +1,8 @@
 
-#include "Fire.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../player/Player.hpp"
-#include "../../level/Map.hpp"
+#include "fornani/entities/world/Fire.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/level/Map.hpp"
 
 namespace world {
 

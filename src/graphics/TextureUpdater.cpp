@@ -1,7 +1,5 @@
-#include "TextureUpdater.hpp"
-
+#include "fornani/graphics/TextureUpdater.hpp"
 #include <SFML/Graphics.hpp>
-
 
 namespace flfx {
 
@@ -26,7 +24,6 @@ void TextureUpdater::load_pixel_map(sf::Texture& map_texture) {
 		map.push_back(i);
 	}
 }
-
 
 void TextureUpdater::switch_to_palette(sf::Texture& palette_texture) {
 	dynamic_texture = base_texture;

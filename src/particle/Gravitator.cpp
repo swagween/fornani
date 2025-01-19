@@ -1,6 +1,6 @@
 
-#include "Gravitator.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace vfx {
 

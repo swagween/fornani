@@ -1,4 +1,4 @@
-#include "Wallslide.hpp"
+#include "fornani/entities/player/Wallslide.hpp"
 
 namespace player {
 

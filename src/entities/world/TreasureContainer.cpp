@@ -1,5 +1,5 @@
-#include "TreasureContainer.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/world/TreasureContainer.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace entity {
 

@@ -1,9 +1,7 @@
-#include "ActionContextBar.hpp"
+#include "fornani/gui/ActionContextBar.hpp"
 #include <SFML/Graphics.hpp>
-
-#include "../service/ServiceProvider.hpp"
-#include "ActionControlIconQuery.hpp"
-
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/gui/ActionControlIconQuery.hpp"
 #include <format>
 #include <string>
 

@@ -1,6 +1,6 @@
 
-#include "CutsceneCatalog.hpp"
-#include "cutscenes/LadyNimbusIntro.hpp"
+#include "fornani/story/CutsceneCatalog.hpp"
+#include "fornani/story/cutscenes/LadyNimbusIntro.hpp"
 
 namespace fornani {
 

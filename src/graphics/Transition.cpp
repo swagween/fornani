@@ -1,7 +1,7 @@
 
-#include "Transition.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../entities/player/Player.hpp"
+#include "fornani/graphics/Transition.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 namespace flfx {
 

@@ -1,6 +1,6 @@
-#include "MapTexture.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../level/Map.hpp"
+#include "fornani/graphics/MapTexture.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
 #include <algorithm>
 
 namespace gui {

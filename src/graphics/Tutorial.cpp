@@ -1,5 +1,5 @@
-#include "Tutorial.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/graphics/Tutorial.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace text {
 

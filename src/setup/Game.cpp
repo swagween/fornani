@@ -1,9 +1,9 @@
-#include "Game.hpp"
+#include "fornani/setup/Game.hpp"
 #include <steam/steam_api.h>
 #include <ctime>
-#include "../gui/ActionContextBar.hpp"
-#include "../../include/fornani/setup/WindowManager.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/gui/ActionContextBar.hpp"
+#include "fornani/setup/WindowManager.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace fornani {
 

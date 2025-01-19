@@ -1,6 +1,6 @@
-#include "../service/ServiceProvider.hpp"
-#include "Droplet.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/graphics/Droplet.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace vfx {
 

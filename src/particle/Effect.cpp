@@ -1,5 +1,5 @@
-#include "Effect.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace entity {
 

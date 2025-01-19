@@ -1,8 +1,8 @@
-#include "Tile.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../entities/player/Player.hpp"
-#include "../weapon/Projectile.hpp"
-#include "../level/Map.hpp"
+#include "fornani/level/Tile.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/weapon/Projectile.hpp"
+#include "fornani/level/Map.hpp"
 #include <iostream>
 
 namespace world {

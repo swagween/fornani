@@ -1,4 +1,4 @@
-#include "SpriteHistory.hpp"
+#include "fornani/graphics/SpriteHistory.hpp"
 
 namespace flfx {
 
@@ -9,7 +9,8 @@ void SpriteHistory::update(sf::Sprite next, sf::Vector2<float> position) {
 
 void SpriteHistory::flush() {
 	if (pairs.size() > 0) { pairs.pop_front(); }
-}
+}
+
 void SpriteHistory::drag(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	auto a{dimness_limit};
 	auto range{0.f};

@@ -1,6 +1,6 @@
-#include "MiniMenu.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../automa/GameState.hpp"
+#include "fornani/gui/MiniMenu.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/automa/GameState.hpp"
 #include <algorithm>
 
 namespace gui {

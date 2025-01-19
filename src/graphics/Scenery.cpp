@@ -1,7 +1,7 @@
 
-#include "Scenery.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/graphics/Scenery.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace vfx {
 

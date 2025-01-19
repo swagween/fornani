@@ -1,10 +1,10 @@
-#include "Spawner.hpp"
-#include <cmath>
-#include "../entities/player/Player.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../level/Map.hpp"
-#include "../particle/Effect.hpp"
+#include "fornani/level/Spawner.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/particle/Effect.hpp"
 #include <algorithm>
+#include <cmath>
 
 namespace world {
 

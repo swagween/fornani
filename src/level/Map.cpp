@@ -1,13 +1,12 @@
 
-#include "Map.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/InventoryWindow.hpp"
+#include "fornani/gui/Portrait.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/EnumLookups.hpp"
+#include "fornani/utils/Math.hpp"
 #include <imgui.h>
-#include "../entities/player/Player.hpp"
-#include "../gui/InventoryWindow.hpp"
-#include "../gui/Portrait.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../setup/EnumLookups.hpp"
-
-#include "../../include/fornani/utils/Math.hpp"
 
 namespace world {
 

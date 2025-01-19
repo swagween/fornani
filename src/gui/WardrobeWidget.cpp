@@ -1,7 +1,7 @@
-#include "Portrait.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "WardrobeWidget.hpp"
-#include "../entities/player/Player.hpp"
+#include "fornani/gui/Portrait.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/gui/WardrobeWidget.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 namespace gui {
 

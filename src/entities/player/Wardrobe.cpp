@@ -1,7 +1,7 @@
-#include "Wardrobe.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../../gui/Console.hpp"
-#include "../../graphics/TextureUpdater.hpp"
+#include "fornani/entities/player/Wardrobe.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/graphics/TextureUpdater.hpp"
 
 namespace player {
 
