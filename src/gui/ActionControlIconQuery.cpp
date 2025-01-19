@@ -1,5 +1,5 @@
-#include "ActionControlIconQuery.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/gui/ActionControlIconQuery.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 static auto get_controller_lookup(EInputActionOrigin btn) -> int {
 	if (btn >= EInputActionOrigin::k_EInputActionOrigin_PS4_X && btn <= EInputActionOrigin::k_EInputActionOrigin_PS4_Reserved10) { return 50; }

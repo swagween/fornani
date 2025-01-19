@@ -1,7 +1,7 @@
 
-#include "Console.hpp"
+#include "fornani/gui/Console.hpp"
 #include <algorithm>
-#include "../service/ServiceProvider.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace gui {
 

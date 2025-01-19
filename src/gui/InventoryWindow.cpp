@@ -1,7 +1,7 @@
-#include "InventoryWindow.hpp"
-#include "../entities/player/Player.hpp"
-#include "../level/Map.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/gui/InventoryWindow.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace gui {
 

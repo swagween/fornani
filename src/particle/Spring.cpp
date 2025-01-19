@@ -1,6 +1,6 @@
 
-#include "Spring.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/particle/Spring.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace vfx {
 

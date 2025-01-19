@@ -1,10 +1,10 @@
-#include "VendorDialog.hpp"
+#include "fornani/gui/VendorDialog.hpp"
 #include <algorithm>
-#include "../service/ServiceProvider.hpp"
-#include "../level/Map.hpp"
-#include "../entities/player/Player.hpp"
-#include "../graphics/Transition.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/graphics/Transition.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace gui {
 

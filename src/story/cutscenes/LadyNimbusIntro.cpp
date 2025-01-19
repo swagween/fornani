@@ -1,9 +1,9 @@
 
-#include "LadyNimbusIntro.hpp"
-#include "../../gui/Console.hpp"
-#include "../../level/Map.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../../entities/player/Player.hpp"
+#include "fornani/story/cutscenes/LadyNimbusIntro.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include <iostream>
 
 namespace fornani {

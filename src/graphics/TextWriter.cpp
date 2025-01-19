@@ -1,7 +1,7 @@
-#include "TextWriter.hpp"
+#include "fornani/graphics/TextWriter.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
-#include "../service/ServiceProvider.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace text {
 

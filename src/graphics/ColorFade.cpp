@@ -1,5 +1,5 @@
 
-#include "ColorFade.hpp"
+#include "fornani/graphics/ColorFade.hpp"
 
 namespace vfx {
 ColorFade::ColorFade(std::vector<sf::Color> colors, int threshold, int duration) : colors(colors), threshold(threshold), duration(duration) {}

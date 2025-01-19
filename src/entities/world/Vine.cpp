@@ -1,8 +1,8 @@
-#include "Vine.hpp"
-#include "../../level/Map.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../player/Player.hpp"
-#include "../../../include/fornani/utils/Math.hpp"
+#include "fornani/entities/world/Vine.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace entity {
 

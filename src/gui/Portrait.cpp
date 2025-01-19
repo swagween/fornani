@@ -1,5 +1,5 @@
-#include "Portrait.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/gui/Portrait.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace gui {
 

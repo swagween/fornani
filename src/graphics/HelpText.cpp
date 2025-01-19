@@ -1,6 +1,5 @@
-#include "HelpText.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "HelpText.hpp"
+#include "fornani/graphics/HelpText.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace text {
 HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title) {}

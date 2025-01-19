@@ -1,8 +1,8 @@
 
-#include "Inspectable.hpp"
-#include "../player/Player.hpp"
-#include "../../gui/Console.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/world/Inspectable.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace entity {
 

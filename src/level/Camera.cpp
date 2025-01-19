@@ -1,5 +1,5 @@
-#include "Camera.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/level/Camera.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
 namespace fornani {

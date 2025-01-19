@@ -1,8 +1,8 @@
 
-#include "DataManager.hpp"
-#include "../entities/player/Player.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "ControllerMap.hpp"
+#include "fornani/setup/DataManager.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/ControllerMap.hpp"
 
 namespace data {
 

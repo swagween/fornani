@@ -1,9 +1,8 @@
 
-#include "SavePoint.hpp"
-
-#include "../../service/ServiceProvider.hpp"
-#include "../player/Player.hpp"
-#include "../../gui/Console.hpp"
+#include "fornani/entities/world/SavePoint.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/Console.hpp"
 
 namespace entity {
 

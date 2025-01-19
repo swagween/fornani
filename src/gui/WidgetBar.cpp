@@ -1,8 +1,8 @@
 #include "WidgetBar.hpp"
-#include "../entities/player/Player.hpp"
-#include "../../include/fornani/entities/packages/Health.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/entities/packages/Health.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Math.hpp"
 #include <algorithm>
 
 namespace gui {

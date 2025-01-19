@@ -1,5 +1,5 @@
-#include "Selector.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/gui/Selector.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
 namespace gui {

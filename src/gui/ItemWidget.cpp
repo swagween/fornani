@@ -1,5 +1,5 @@
-#include "ItemWidget.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/gui/ItemWidget.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace gui {
 

@@ -1,7 +1,7 @@
-#include "SpawnablePlatform.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../player/Player.hpp"
-#include "../../../include/fornani/utils/Math.hpp"
+#include "fornani/entities/world/SpawnablePlatform.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace entity {
 

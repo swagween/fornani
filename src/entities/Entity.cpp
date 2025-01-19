@@ -1,5 +1,5 @@
-#include "Entity.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/entities/Entity.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace entity {
 

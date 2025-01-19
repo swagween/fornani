@@ -1,4 +1,4 @@
-#include "Wallet.hpp"
+#include "fornani/entities/player/Wallet.hpp"
 
 namespace player {
 void Wallet::set_balance(int balance) { orbs.set(balance); }

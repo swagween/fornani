@@ -1,6 +1,6 @@
 
-#include "Particle.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/particle/Particle.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <numbers>
 
 namespace vfx {

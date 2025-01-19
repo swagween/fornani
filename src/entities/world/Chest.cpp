@@ -1,9 +1,9 @@
 
-#include "Chest.hpp"
-#include "../../gui/Console.hpp"
-#include "../../level/Map.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../player/Player.hpp"
+#include "fornani/entities/world/Chest.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 namespace entity {
 

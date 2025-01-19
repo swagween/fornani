@@ -1,8 +1,8 @@
 
-#include "Background.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../setup/EnumLookups.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/graphics/Background.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/EnumLookups.hpp"
+#include "fornani/utils/Math.hpp"
 #include <algorithm>
 #include <imgui.h>
 

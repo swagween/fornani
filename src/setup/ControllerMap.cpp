@@ -1,7 +1,7 @@
-#include "ControllerMap.hpp"
+#include "fornani/setup/ControllerMap.hpp"
 #include <steam/isteaminput.h>
 #include <iostream>
-#include "../service/ServiceProvider.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 #ifdef _MSC_VER
 #pragma warning(push)

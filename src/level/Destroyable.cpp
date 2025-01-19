@@ -1,8 +1,8 @@
-#include "Destroyable.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../level/Map.hpp"
-#include "../particle/Effect.hpp"
-#include "../entities/player/Player.hpp"
+#include "fornani/level/Destroyable.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 namespace world {
 

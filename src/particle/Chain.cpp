@@ -1,7 +1,7 @@
 
-#include "Chain.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../entities/player/Player.hpp"
+#include "fornani/particle/Chain.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include <numbers>
 
 namespace vfx {

@@ -1,9 +1,9 @@
-#include "Platform.hpp"
+#include "fornani/level/Platform.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/particle/Effect.hpp"
 #include <cmath>
-#include "../entities/player/Player.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../level/Map.hpp"
-#include "../particle/Effect.hpp"
 
 namespace world {
 

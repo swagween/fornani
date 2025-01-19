@@ -1,6 +1,6 @@
-#include "HUD.hpp"
-#include "../entities/player/Player.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/gui/HUD.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace gui {
 
