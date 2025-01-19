@@ -1,6 +1,6 @@
 
-#include "Intro.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/automa/states/Intro.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace automa {
 

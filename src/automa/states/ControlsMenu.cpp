@@ -1,7 +1,7 @@
 
 #include "fornani/automa/states/ControlsMenu.hpp"
 #include <algorithm>
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace automa {
 

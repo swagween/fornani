@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CircleSensor.hpp"
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/utils/Math.hpp"
 #include <iostream>
 #include <algorithm>
 

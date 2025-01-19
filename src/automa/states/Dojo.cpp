@@ -1,6 +1,6 @@
 
-#include "Dojo.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/automa/states/Dojo.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace automa {
 

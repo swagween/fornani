@@ -1,6 +1,6 @@
 
-#include "CreditsMenu.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/automa/states/CreditsMenu.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace automa {
 

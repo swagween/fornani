@@ -1,7 +1,7 @@
-#include "Firefly.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../../level/Map.hpp"
-#include "../../../include/fornani/utils/Math.hpp"
+#include "fornani/entities/atmosphere/Firefly.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/utils/Math.hpp"
 #include <numbers>
 
 namespace vfx {

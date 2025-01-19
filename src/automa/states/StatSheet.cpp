@@ -1,6 +1,6 @@
 
-#include "StatSheet.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/automa/states/StatSheet.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace automa {
 
