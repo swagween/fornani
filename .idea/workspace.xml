@@ -62,241 +62,9 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e7c62b4-9a62-4cf0-8a4b-4bfe119426f6" name="Changes" comment="Initial work on saving data">
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dependencies/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/data/config/control_map.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/data/config/defaults.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/data/config/settings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/data/config/version.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/data/save/file_0.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/data/save/file_1.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/data/save/file_2.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/data/save/new_game.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/Ambience.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/MusicPlayer.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/Sound.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/SoundEffects.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audio/Soundboard.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/GameState.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/MenuController.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/Option.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/StateController.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/StateManager.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/ControlsMenu.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/CreditsMenu.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/Dojo.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/FileMenu.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/Intro.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/MainMenu.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/OptionsMenu.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/SettingsMenu.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/automa/states/StatSheet.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CircleSensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CircleSensor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CircleSensor.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/PhysicsComponent.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SteeringBehavior.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SteeringBehavior.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SteeringBehavior.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Entity.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/animation/AnimatedSprite.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/animation/Animation.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/atmosphere/Atmosphere.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/atmosphere/Dragonfly.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/atmosphere/Dragonfly.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/atmosphere/Dragonfly.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/atmosphere/Firefly.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/atmosphere/Firefly.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/atmosphere/Firefly.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/Enemy.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/EnemyCatalog.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/boss/Minigus.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Archer.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Beamstalk.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Caster.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Demon.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Eyebit.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Eyebot.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Frdog.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Hauler.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Meatsquash.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Tank.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/enemy/catalog/Thug.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/item/Drop.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/item/Item.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/item/Loot.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/npc/NPC.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/npc/NPCAnimation.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/npc/Vendor.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Attack.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Caution.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/packages/Caution.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Caution.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/FloatingPart.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/packages/FloatingPart.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/FloatingPart.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Health.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/packages/Health.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Health.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Seeker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/packages/Seeker.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Seeker.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Shockwave.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/packages/Shockwave.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/Shockwave.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/WeaponPackage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/packages/WeaponPackage.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/packages/WeaponPackage.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/AbilityManager.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Catalog.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Indicator.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Inventory.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Jump.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Piggybacker.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Player.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/PlayerAnimation.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/PlayerController.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Roll.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Shield.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Slide.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Transponder.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/VisitHistory.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Wallet.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Wallslide.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/player/Wardrobe.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Animator.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/Animator.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Bed.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/Bed.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Chest.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/Chest.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Fire.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/Fire.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Grass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/world/Grass.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Grass.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/Grass.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Inspectable.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/Inspectable.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Portal.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/Portal.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/SavePoint.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/SavePoint.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/SpawnablePlatform.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/world/SpawnablePlatform.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/SpawnablePlatform.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/SpawnablePlatform.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/TreasureContainer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/TreasureContainer.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Vine.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/world/Vine.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/world/Vine.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/world/Vine.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Background.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/Background.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Background.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/Background.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/ColorFade.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/ColorFade.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Droplet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/Droplet.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Droplet.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/Droplet.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/HelpText.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/HelpText.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/MapTexture.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/MapTexture.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Rain.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/Rain.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Scenery.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/Scenery.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Scenery.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/Scenery.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/SpriteHistory.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/SpriteHistory.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/SpriteRotator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/SpriteRotator.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/SpriteRotator.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/SpriteRotator.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Style.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/Style.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/TextWriter.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/TextWriter.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/TextureUpdater.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/TextureUpdater.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Transition.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/Transition.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/Tutorial.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/Tutorial.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/ActionContextBar.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/ActionContextBar.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/ActionControlIconQuery.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/ActionControlIconQuery.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/Console.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/Console.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/HUD.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/HUD.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/InventoryWindow.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/InventoryWindow.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/ItemWidget.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/ItemWidget.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/MiniMap.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/MiniMap.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/MiniMenu.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/MiniMenu.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/PauseWindow.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/PauseWindow.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/Portrait.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/Portrait.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/Selector.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/Selector.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/StatusBar.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/StatusBar.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/VendorDialog.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/VendorDialog.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/VendorDialog.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/VendorDialog.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/WardrobeWidget.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/WardrobeWidget.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/Widget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/Widget.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/Widget.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/Widget.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/WidgetBar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/WidgetBar.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/WidgetBar.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/WidgetBar.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Breakable.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Breakable.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Camera.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Camera.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Checkpoint.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Checkpoint.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Destroyable.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Destroyable.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Grid.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Grid.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Map.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/level/Map.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Map.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Map.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Platform.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Platform.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Pushable.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Pushable.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Spawner.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Spawner.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Spike.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Spike.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/SwitchBlock.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/SwitchBlock.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/SwitchButton.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/SwitchButton.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/level/Tile.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/Tile.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/particle/Chain.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particles/Chain.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/particle/Effect.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particles/Effect.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/particle/Emitter.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particles/Emitter.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/particle/Gravitator.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particles/Gravitator.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/particle/Particle.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particles/Particle.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/particle/Spark.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particles/Spark.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/particle/Sparkler.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particles/Sparkler.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/particle/Spring.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particles/Spring.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/Service.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/service/Service.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/ServiceProvider.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/service/ServiceProvider.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/AccessibilityService.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/AccessibilityService.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/Application.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/Application.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/AssetManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/AssetManager.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/ControllerMap.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/ControllerMap.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/DataManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/DataManager.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/EnumLookups.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/EnumLookups.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/File.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/File.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/Game.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/setup/Game.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/Game.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/Game.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/ResourceFinder.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/ResourceFinder.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/Tables.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/Tables.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/TextManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/setup/TextManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/TextManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/TextManager.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/Version.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/Version.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/WindowManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/setup/WindowManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setup/WindowManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/WindowManager.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/story/Cutscene.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/story/Cutscene.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/story/CutsceneCatalog.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/story/CutsceneCatalog.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/story/QuestTracker.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/story/QuestTracker.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/story/StatTracker.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/story/StatTracker.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/story/cutscenes/LadyNimbusIntro.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/story/cutscene/LadyNimbusIntro.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/AdjacencyList.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/AdjacencyList.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/BitFlags.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/BitFlags.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/CircleCollider.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/CircleCollider.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/CircleCollider.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/CircleCollider.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Circuit.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Circuit.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Collider.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Collider.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Collider.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Collider.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/CollisionDepth.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/CollisionDepth.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/CollisionDepth.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/CollisionDepth.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Constants.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Constants.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Cooldown.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Cooldown.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Counter.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Counter.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Cycle.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Cycle.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Decoder.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Decoder.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Decoder.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Decoder.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Direction.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Direction.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Fader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Fader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Fader.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Fader.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Logger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Logger.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Logger.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Logger.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Math.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Math.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/NineSlice.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/NineSlice.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/NineSlice.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/NineSlice.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/QuestCode.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/QuestCode.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Random.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Random.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/RichText.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/RichText.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Shape.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Shape.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Shape.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Shape.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Shipment.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Shipment.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/StateFlag.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/StateFlag.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/StateFunction.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/StateFunction.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/StateMachine.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/StateMachine.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Stopwatch.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Stopwatch.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Ticker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Ticker.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Ticker.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/Ticker.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/WorldClock.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/WorldClock.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/WorldClock.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/utils/WorldClock.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Ammo.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Ammo.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Ammo.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Ammo.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Arsenal.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Arsenal.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Grenade.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Grenade.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Grenade.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Grenade.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Hotbar.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Hotbar.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Projectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Projectile.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Projectile.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Projectile.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/weapon/Weapon.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/weapon/Weapon.hpp" afterDir="false" />
+    <list default="true" id="4e7c62b4-9a62-4cf0-8a4b-4bfe119426f6" name="Changes" comment="Start initial moving of headers to new fornani include for cmake improvement">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -382,11 +150,11 @@
       <recent name="C:\opensource\fornani\cmake" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\opensource\fornani\include\fornani\weapons" />
       <recent name="C:\opensource\fornani\include\fornani\utils" />
       <recent name="C:\opensource\fornani\include\fornani\story\cutscene" />
       <recent name="C:\opensource\fornani\include\fornani\story" />
       <recent name="C:\opensource\fornani\include\fornani" />
-      <recent name="C:\opensource\fornani\include\fornani\setup" />
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.fornani">
@@ -499,7 +267,7 @@
       <workItem from="1737153087677" duration="17909000" />
       <workItem from="1737220765097" duration="20586000" />
       <workItem from="1737310859066" duration="390000" />
-      <workItem from="1737311313817" duration="3746000" />
+      <workItem from="1737311313817" duration="4447000" />
     </task>
     <task id="LOCAL-00001" summary="Initial work on saving data">
       <option name="closed" value="true" />
@@ -509,7 +277,23 @@
       <option name="project" value="LOCAL" />
       <updated>1737229127634</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Start initial moving of headers to new fornani include for cmake improvement">
+      <option name="closed" value="true" />
+      <created>1737315803459</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1737315803459</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Start initial moving of headers to new fornani include for cmake improvement">
+      <option name="closed" value="true" />
+      <created>1737316168962</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1737316168962</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -533,6 +317,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial work on saving data" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial work on saving data" />
+    <MESSAGE value="Start initial moving of headers to new fornani include for cmake improvement" />
+    <option name="LAST_COMMIT_MESSAGE" value="Start initial moving of headers to new fornani include for cmake improvement" />
   </component>
 </project>
