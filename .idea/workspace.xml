@@ -63,11 +63,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4e7c62b4-9a62-4cf0-8a4b-4bfe119426f6" name="Changes" comment="Continue update of includes for cmake">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/fornani/graphics/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/fornani/gui/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/fornani/level/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/fornani/particle/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/story/cutscene/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/service/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/service/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/setup/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/setup/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/story/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/story/CMakeLists.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +142,7 @@
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "ian/cmake-improvement",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/opensource/fornani/include/fornani/entities/enemy/boss",
+    "last_opened_file_path": "C:/opensource/fornani/include/fornani/story/cutscene",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -155,11 +154,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\opensource\fornani\include\fornani\story\cutscene" />
       <recent name="C:\opensource\fornani\include\fornani\entities\enemy\boss" />
       <recent name="C:\opensource\fornani\include\fornani\entities\enemy\catalog" />
       <recent name="C:\opensource\fornani\include\fornani\entities\animation" />
       <recent name="C:\opensource\fornani\include\fornani\entities\atmosphere" />
-      <recent name="C:\opensource\fornani\include\fornani\entities\enemy" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\opensource\fornani\include\fornani" />
@@ -279,7 +278,7 @@
       <workItem from="1737153087677" duration="17909000" />
       <workItem from="1737220765097" duration="20586000" />
       <workItem from="1737310859066" duration="390000" />
-      <workItem from="1737311313817" duration="13368000" />
+      <workItem from="1737311313817" duration="13612000" />
     </task>
     <task id="LOCAL-00001" summary="Initial work on saving data">
       <option name="closed" value="true" />
@@ -337,7 +336,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737326011695</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Continue update of includes for cmake">
+      <option name="closed" value="true" />
+      <created>1737326456492</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1737326456492</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

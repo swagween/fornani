@@ -1,3 +1,29 @@
 nani_add_headers(
-
+        AdjacencyList.hpp
+        BitFlags.hpp
+        CircleCollider.hpp
+        Circuit.hpp
+        Collider.hpp
+        CollisionDepth.hpp
+        Constants.hpp
+        Cooldown.hpp
+        Counter.hpp
+        Cycle.hpp
+        Decoder.hpp
+        Direction.hpp
+        Fader.hpp
+        Logger.hpp
+        Math.hpp
+        NineSlice.hpp
+        QuestCode.hpp
+        Random.hpp
+        RichText.hpp
+        Shape.hpp
+        Shipment.hpp
+        StateFlag.hpp
+        StateFunction.hpp
+        StateMachine.hpp
+        Stopwatch.hpp
+        Ticker.hpp
+        WorldClock.hpp
 )
