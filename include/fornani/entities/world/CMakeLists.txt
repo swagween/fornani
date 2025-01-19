@@ -1,0 +1,13 @@
+nani_add_headers(
+        Animator.hpp
+        Bed.hpp
+        Chest.hpp
+        Fire.hpp
+        Grass.hpp
+        Inspectable.hpp
+        Portal.hpp
+        SavePoint.hpp
+        SpawnablePlatform.hpp
+        TreasureContainer.hpp
+        Vine.hpp
+)
