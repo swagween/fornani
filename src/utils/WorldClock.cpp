@@ -1,7 +1,5 @@
-#include "../../include/fornani/utils/WorldClock.hpp"
-
-#include "../../include/fornani/utils/WorldClock.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/utils/WorldClock.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani {
 

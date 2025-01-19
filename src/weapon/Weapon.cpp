@@ -1,5 +1,5 @@
-#include "Weapon.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/weapon/Weapon.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace arms {
 

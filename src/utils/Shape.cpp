@@ -1,7 +1,7 @@
 
-#include "../../include/fornani/utils/Shape.hpp"
+#include "fornani/utils/Shape.hpp"
 #include <ccmath/math/power/sqrt.hpp>
-#include "../../include/fornani/utils/Math.hpp"
+#include "fornani/utils/Math.hpp"
 #include <iostream>
 
 namespace shape {
