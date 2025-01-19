@@ -1,3 +1,10 @@
 nani_add_headers(
-
+        Chain.hpp
+        Effect.hpp
+        Emitter.hpp
+        Gravitator.hpp
+        Particle.hpp
+        Spark.hpp
+        Sparkler.hpp
+        Spring.hpp
 )

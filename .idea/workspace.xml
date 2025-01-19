@@ -62,21 +62,12 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e7c62b4-9a62-4cf0-8a4b-4bfe119426f6" name="Changes" comment="Add embedded fonts">
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/animation/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/atmosphere/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/enemy/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/enemy/boss/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/enemy/catalog/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/item/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/npc/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/packages/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/player/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/fornani/entities/world/CMakeLists.txt" afterDir="false" />
+    <list default="true" id="4e7c62b4-9a62-4cf0-8a4b-4bfe119426f6" name="Changes" comment="Continue update of includes for cmake">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/fornani/automa/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/automa/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/fornani/components/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/components/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/fornani/entities/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/entities/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/graphics/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/graphics/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/gui/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/gui/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/level/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/level/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particle/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/CMakeLists.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -288,7 +279,7 @@
       <workItem from="1737153087677" duration="17909000" />
       <workItem from="1737220765097" duration="20586000" />
       <workItem from="1737310859066" duration="390000" />
-      <workItem from="1737311313817" duration="12904000" />
+      <workItem from="1737311313817" duration="13368000" />
     </task>
     <task id="LOCAL-00001" summary="Initial work on saving data">
       <option name="closed" value="true" />
@@ -338,7 +329,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737325086256</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Continue update of includes for cmake">
+      <option name="closed" value="true" />
+      <created>1737326011695</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1737326011695</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -366,6 +365,7 @@
     <MESSAGE value="Additional cleanup of gitignore" />
     <MESSAGE value="More cmake stuff" />
     <MESSAGE value="Add embedded fonts" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add embedded fonts" />
+    <MESSAGE value="Continue update of includes for cmake" />
+    <option name="LAST_COMMIT_MESSAGE" value="Continue update of includes for cmake" />
   </component>
 </project>
