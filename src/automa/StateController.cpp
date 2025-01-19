@@ -1,6 +1,6 @@
 
-#include "StateController.hpp"
-#include "../graphics/Transition.hpp"
+#include "fornani/automa/StateController.hpp"
+#include "fornani/graphics/Transition.hpp"
 
 namespace automa {
 void StateController::switch_rooms(int source, int destination, flfx::Transition& transition) {

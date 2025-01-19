@@ -1,5 +1,5 @@
-#include "Sound.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/audio/Sound.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace audio {
 

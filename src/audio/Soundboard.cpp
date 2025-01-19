@@ -1,6 +1,6 @@
-#include "Soundboard.hpp"
+#include "fornani/audio/Soundboard.hpp"
 #include <algorithm>
-#include "../service/ServiceProvider.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace audio {
 

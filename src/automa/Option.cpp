@@ -1,7 +1,7 @@
 
-#include "Option.hpp"
-#include "GameState.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/automa/Option.hpp"
+#include "fornani/automa/GameState.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace automa {
 

@@ -1,6 +1,6 @@
 
-#include "StateManager.hpp"
-#include "../setup/Game.hpp"
+#include "fornani/automa/StateManager.hpp"
+#include "fornani/setup/Game.hpp"
 
 namespace automa {
 

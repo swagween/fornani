@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "MusicPlayer.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/audio/MusicPlayer.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace audio {
 

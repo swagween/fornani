@@ -11,8 +11,8 @@
 
 #include <cmath>
 #include <cstdlib>
-#include "SoundEffects.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/audio/SoundEffects.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace {
 constexpr auto pi = 3.14159265359f;
