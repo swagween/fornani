@@ -1,5 +1,5 @@
-#include "NPCAnimation.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/npc/NPCAnimation.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <iostream>
 
 namespace npc {

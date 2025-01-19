@@ -1,8 +1,7 @@
-
-#include "NPC.hpp"
-#include "../../gui/Console.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../player/Player.hpp"
+#include "fornani/entities/npc/NPC.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 namespace npc {
 

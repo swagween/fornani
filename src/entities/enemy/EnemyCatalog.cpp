@@ -1,16 +1,16 @@
 #include <iostream>
-#include "EnemyCatalog.hpp"
-#include "../enemy/catalog/Frdog.hpp"
-#include "../enemy/catalog/Tank.hpp"
-#include "../enemy/catalog/Eyebot.hpp"
-#include "../enemy/catalog/Eyebit.hpp"
-#include "../enemy/catalog/Thug.hpp"
-#include "../enemy/catalog/Demon.hpp"
-#include "../enemy/catalog/Caster.hpp"
-#include "../enemy/catalog/Archer.hpp"
-#include "../enemy/catalog/Beamstalk.hpp"
-#include "../enemy/catalog/Meatsquash.hpp"
-#include "../enemy/boss/Minigus.hpp"
+#include "fornani/entities/enemy/EnemyCatalog.hpp"
+#include "fornani/entities/enemy/catalog/Frdog.hpp"
+#include "fornani/entities/enemy/catalog/Tank.hpp"
+#include "fornani/entities/enemy/catalog/Eyebot.hpp"
+#include "fornani/entities/enemy/catalog/Eyebit.hpp"
+#include "fornani/entities/enemy/catalog/Thug.hpp"
+#include "fornani/entities/enemy/catalog/Demon.hpp"
+#include "fornani/entities/enemy/catalog/Caster.hpp"
+#include "fornani/entities/enemy/catalog/Archer.hpp"
+#include "fornani/entities/enemy/catalog/Beamstalk.hpp"
+#include "fornani/entities/enemy/catalog/Meatsquash.hpp"
+#include "fornani/entities/enemy/boss/Minigus.hpp"
 
 namespace enemy {
 

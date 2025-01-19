@@ -1,9 +1,7 @@
-#include "../../../include/fornani/entities/packages/Shockwave.hpp"
-#include "../../../include/fornani/entities/packages/Shockwave.hpp"
-#include "../../../include/fornani/entities/packages/Shockwave.hpp"
-#include "../player/Player.hpp"
-#include "../../level/Map.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/packages/Shockwave.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
 namespace entity {

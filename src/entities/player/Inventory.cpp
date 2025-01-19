@@ -1,6 +1,6 @@
-#include "Inventory.hpp"
-#include "../../gui/Console.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/player/Inventory.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace player {
 

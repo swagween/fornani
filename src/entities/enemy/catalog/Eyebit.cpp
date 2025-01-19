@@ -1,6 +1,6 @@
-#include "Eyebit.hpp"
-#include "../../../service/ServiceProvider.hpp"
-#include "../../player/Player.hpp"
+#include "fornani/entities/enemy/catalog/Eyebit.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 namespace enemy {
 

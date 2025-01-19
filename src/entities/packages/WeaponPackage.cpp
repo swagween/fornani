@@ -1,6 +1,6 @@
-#include "../../../include/fornani/entities/packages/WeaponPackage.hpp"
-#include "../enemy/Enemy.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/packages/WeaponPackage.hpp"
+#include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
 namespace entity {

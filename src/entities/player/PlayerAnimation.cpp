@@ -1,6 +1,6 @@
-#include "PlayerAnimation.hpp"
-#include "Player.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/player/PlayerAnimation.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace player {
 

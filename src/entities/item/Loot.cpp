@@ -1,7 +1,7 @@
 
-#include "Loot.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../player/Player.hpp"
+#include "fornani/entities/item/Loot.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 
 namespace item {

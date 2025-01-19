@@ -1,7 +1,7 @@
-#include "Indicator.hpp"
-#include "../../gui/Console.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "Player.hpp"
+#include "fornani/entities/player/Indicator.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 namespace player {
 

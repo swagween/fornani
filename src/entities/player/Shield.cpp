@@ -1,5 +1,5 @@
-#include "Shield.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/player/Shield.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace player {
 

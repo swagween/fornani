@@ -1,7 +1,7 @@
-#include "Item.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../../gui/Console.hpp"
-#include "../player/Wardrobe.hpp"
+#include "fornani/entities/item/Item.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/entities/player/Wardrobe.hpp"
 #include <algorithm>
 
 namespace item {

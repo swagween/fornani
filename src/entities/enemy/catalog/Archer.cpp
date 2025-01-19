@@ -1,8 +1,7 @@
-#include "Archer.hpp"
-#include "Archer.hpp"
-#include "../../../level/Map.hpp"
-#include "../../../service/ServiceProvider.hpp"
-#include "../../player/Player.hpp"
+#include "fornani/entities/enemy/catalog/Archer.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/entities/player/Player.hpp"
 
 namespace enemy {
 

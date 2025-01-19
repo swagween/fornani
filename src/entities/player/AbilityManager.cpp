@@ -1,6 +1,6 @@
-#include "AbilityManager.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../../gui/Console.hpp"
+#include "fornani/entities/player/AbilityManager.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/gui/Console.hpp"
 
 namespace player {
 

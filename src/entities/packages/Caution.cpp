@@ -1,7 +1,6 @@
-#include "../../../include/fornani/entities/packages/Caution.hpp"
-#include "../../../include/fornani/entities/packages/Caution.hpp"
-#include "../player/Player.hpp"
-#include "../../level/Map.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/level/Map.hpp"
 #include <algorithm>
 
 namespace entity {

@@ -1,5 +1,5 @@
-#include "../../../include/fornani/entities/packages/Seeker.hpp"
-#include "../player/Player.hpp"
+#include "fornani/entities/packages/Seeker.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include <algorithm>
 
 namespace entity {

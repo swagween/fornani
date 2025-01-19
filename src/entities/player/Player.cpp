@@ -1,9 +1,9 @@
-#include "Player.hpp"
-#include "../../gui/Console.hpp"
-#include "../../gui/InventoryWindow.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../../level/Map.hpp"
-#include "../item/Drop.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/gui/InventoryWindow.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/entities/item/Drop.hpp"
 
 namespace player {
 

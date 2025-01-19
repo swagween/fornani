@@ -1,9 +1,6 @@
-#include "Attack.hpp"
-#include "Attack.hpp"
-#include "Attack.hpp"
-#include "Attack.hpp"
-#include "../player/Player.hpp"
-#include "../../level/Map.hpp"
+#include "fornani/entities/packages/Attack.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/level/Map.hpp"
 #include <algorithm>
 
 namespace entity {

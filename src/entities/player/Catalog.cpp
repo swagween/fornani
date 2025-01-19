@@ -1,6 +1,6 @@
-#include "Catalog.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../../gui/Console.hpp"
+#include "fornani/entities/player/Catalog.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/gui/Console.hpp"
 
 namespace player {
 void Catalog::update(automa::ServiceProvider& svc) {

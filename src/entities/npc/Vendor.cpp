@@ -1,5 +1,5 @@
-#include "Vendor.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/npc/Vendor.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include <iostream>
 
 namespace npc {

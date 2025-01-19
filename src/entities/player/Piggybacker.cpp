@@ -1,6 +1,6 @@
-#include "Piggybacker.hpp"
-#include "Player.hpp"
-#include "../../service/ServiceProvider.hpp"
+#include "fornani/entities/player/Piggybacker.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace player {
 

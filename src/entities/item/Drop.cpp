@@ -1,7 +1,6 @@
-
-#include "Drop.hpp"
-#include "../../service/ServiceProvider.hpp"
-#include "../../level/Map.hpp"
+#include "fornani/entities/item/Drop.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/level/Map.hpp"
 
 namespace item {
 
