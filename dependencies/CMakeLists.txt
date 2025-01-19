@@ -70,3 +70,20 @@ if (WIN32)
 elseif (UNIX)
   target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/linux64/libsteam_api.so)
 endif()
+
+add_library(fornani-dependencies INTERFACE)
+add_library(fornani::deps ALIAS fornani-dependencies)
+
+# TODO: Add imgui-sfml
+
+target_link_libraries(fornani-dependencies INTERFACE
+
+        djson::djson
+        ccmath::ccmath
+        ImGui-SFML::ImGui-SFML
+        SFML::System
+        SFML::Graphics
+        SFML::Window
+        SFML::Audio
+        steamworks
+)

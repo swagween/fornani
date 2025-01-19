@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "Ambience.hpp"
-#include "../service/ServiceProvider.hpp"
+#include "fornani/audio/Ambience.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace audio {
 

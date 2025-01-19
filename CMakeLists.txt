@@ -12,26 +12,29 @@ option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the 
 
 add_executable(${PROJECT_NAME})
 
+include(cmake/func/AddTargetSource.cmake)
 include(cmake/GenerateDataTemplates.cmake)
 
+
 add_subdirectory(dependencies)
-target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
-target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
-target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
-target_link_libraries(${PROJECT_NAME} PRIVATE SFML::System SFML::Graphics SFML::Window SFML::Audio)
-target_link_libraries(${PROJECT_NAME} PRIVATE steamworks)
+target_link_directories(${PROJECT_NAME}
+        PRIVATE
+        fornani::deps
+)
+
+# Setup our include structure
+target_include_directories(${PROJECT_NAME}
+        PUBLIC include "${CMAKE_CURRENT_BINARY_DIR}/include"
+        PRIVATE "src"
+)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
-if (CCMATH_ENABLE_RUNTIME_SIMD)
-    target_compile_definitions(${PROJECT_NAME} INTERFACE CCM_CONFIG_USE_RT_SIMD)
-endif ()
-
-file(GLOB_RECURSE sources LIST_DIRECTORIES false CONFIGURE_DEPENDS "src/*.?pp")
 
 target_sources(${PROJECT_NAME} PRIVATE
 main.cpp
-${sources}
 )
+add_subdirectory(include/fornani)
+add_subdirectory(src)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
     add_compile_options(${PROJECT_NAME} INTERFACE /W4056 /W4146 /W4018 /W4056)
@@ -48,7 +51,7 @@ if (WIN32)
           VERBATIM)
 
   #app icon
-  target_sources(${PROJECT_NAME} PRIVATE src/app/app.rc)
+  #target_sources(${PROJECT_NAME} PRIVATE src/app/app.rc) #TODO: MOVE
   if(MSVC)
     set(subsystem $<IF:$<BOOL:$<CONFIG:Debug>>,CONSOLE,WINDOWS>)
     target_link_options(${PROJECT_NAME} PRIVATE

@@ -5,7 +5,7 @@
   </component>
   <component name="BackendCodeEditorMiscSettings">
     <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
-    <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="174" type="long" />
+    <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="178" type="long" />
     <option name="/Default/Housekeeping/OptionsDialog/SelectedPageId/@EntryValue" value="CppFormatterOtherPage" type="string" />
   </component>
   <component name="CMakePresetLoader">{
@@ -62,9 +62,66 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e7c62b4-9a62-4cf0-8a4b-4bfe119426f6" name="Changes" comment="Start initial moving of headers to new fornani include for cmake improvement">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="4e7c62b4-9a62-4cf0-8a4b-4bfe119426f6" name="Changes" comment="Additional cleanup of gitignore">
+      <change afterPath="$PROJECT_DIR$/include/fornani/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/audio/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/automa/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/automa/states/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/components/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/entities/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/graphics/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/gui/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/level/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/particle/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/service/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/setup/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/story/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/utils/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/fornani/weapon/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/audio/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/automa/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/automa/states/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/animation/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/atmosphere/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/enemy/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/enemy/boss/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/enemy/catalog/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/item/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/npc/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/packages/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/player/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/entities/world/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/graphics/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/gui/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/level/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/particle/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/setup/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/story/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/story/cutscenes/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/weapon/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependencies/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particles/Chain.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/Chain.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particles/Effect.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/Effect.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particles/Emitter.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/Emitter.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particles/Gravitator.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/Gravitator.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particles/Particle.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/Particle.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particles/Spark.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/Spark.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particles/Sparkler.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/Sparkler.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/particles/Spring.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/particle/Spring.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/weapons/Ammo.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/weapon/Ammo.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/weapons/Arsenal.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/weapon/Arsenal.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/weapons/Grenade.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/weapon/Grenade.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/weapons/Hotbar.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/weapon/Hotbar.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/weapons/Projectile.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/weapon/Projectile.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/fornani/weapons/Weapon.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/fornani/weapon/Weapon.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/audio/Ambience.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/audio/Ambience.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +133,13 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:vs22 - Debug" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CMakeLists.txt" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
@@ -133,7 +197,7 @@
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "ian/cmake-improvement",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/opensource/fornani/cmake/templates/data/save",
+    "last_opened_file_path": "C:/opensource/fornani/include/fornani/Game/StateMachine",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -145,16 +209,18 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\opensource\fornani\cmake\templates\data\save" />
-      <recent name="C:\opensource\fornani\cmake\templates\data\config" />
-      <recent name="C:\opensource\fornani\cmake" />
+      <recent name="C:\opensource\fornani\include\fornani\Game\StateMachine" />
+      <recent name="C:\opensource\fornani\include\fornani\Engine\StateMachine" />
+      <recent name="C:\opensource\fornani\include\fornani\Game" />
+      <recent name="C:\opensource\fornani\include\fornani\automa\states" />
+      <recent name="C:\opensource\fornani\src\automa\states" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\opensource\fornani\include\fornani" />
       <recent name="C:\opensource\fornani\include\fornani\weapons" />
       <recent name="C:\opensource\fornani\include\fornani\utils" />
       <recent name="C:\opensource\fornani\include\fornani\story\cutscene" />
       <recent name="C:\opensource\fornani\include\fornani\story" />
-      <recent name="C:\opensource\fornani\include\fornani" />
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.fornani">
@@ -267,7 +333,7 @@
       <workItem from="1737153087677" duration="17909000" />
       <workItem from="1737220765097" duration="20586000" />
       <workItem from="1737310859066" duration="390000" />
-      <workItem from="1737311313817" duration="4447000" />
+      <workItem from="1737311313817" duration="11825000" />
     </task>
     <task id="LOCAL-00001" summary="Initial work on saving data">
       <option name="closed" value="true" />
@@ -293,7 +359,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737316168962</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Additional cleanup of gitignore">
+      <option name="closed" value="true" />
+      <created>1737316313296</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1737316313296</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -318,6 +392,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial work on saving data" />
     <MESSAGE value="Start initial moving of headers to new fornani include for cmake improvement" />
-    <option name="LAST_COMMIT_MESSAGE" value="Start initial moving of headers to new fornani include for cmake improvement" />
+    <MESSAGE value="Additional cleanup of gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Additional cleanup of gitignore" />
   </component>
 </project>

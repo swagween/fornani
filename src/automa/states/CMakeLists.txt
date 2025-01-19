@@ -1,0 +1,11 @@
+nani_add_sources(
+        ControlsMenu.cpp
+        CreditsMenu.cpp
+        Dojo.cpp
+        FileMenu.cpp
+        Intro.cpp
+        MainMenu.cpp
+        OptionsMenu.cpp
+        SettingsMenu.cpp
+        StatSheet.cpp
+)

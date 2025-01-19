@@ -1,0 +1,18 @@
+nani_add_sources(
+        ActionContextBar.cpp
+        ActionControlIconQuery.cpp
+        Console.cpp
+        HUD.cpp
+        InventoryWindow.cpp
+        ItemWidget.cpp
+        MiniMap.cpp
+        MiniMenu.cpp
+        PauseWindow.cpp
+        Portrait.cpp
+        Selector.cpp
+        StatusBar.cpp
+        VendorDialog.cpp
+        WardrobeWidget.cpp
+        Widget.cpp
+        WidgetBar.cpp
+)
