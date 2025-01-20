@@ -79,6 +79,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		bool valid_event{true};
 		// check window events
 		while (std::optional const event = services.window->get().pollEvent()) {
+			ZoneScopedN("Event Polling");
 			player.animation.state = {};
 			if (event->is<sf::Event::Closed>()) {
 				shutdown();
@@ -117,20 +118,20 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		
 		SteamAPI_RunCallbacks();
 
-		services.stopwatch.start();
-		// game logic and rendering
-		services.music.update();
-		bool has_focus = services.window->get().hasFocus();
-		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
-			services.controller_map.update();
-			game_state.get_current_state().tick_update(services);
-			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
-		});
-		game_state.get_current_state().frame_update(services);
-		game_state.process_state(services, player, *this);
-		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
-
-		services.stopwatch.stop();
+		{
+			ZoneScopedN("Game Logic & Rendering");
+			// game logic and rendering
+			services.music.update();
+			bool has_focus = services.window->get().hasFocus();
+			services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
+				services.controller_map.update();
+				game_state.get_current_state().tick_update(services);
+				if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
+			});
+			game_state.get_current_state().frame_update(services);
+			game_state.process_state(services, player, *this);
+			if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
+		}
 
 		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 		ImGuiIO& io = ImGui::GetIO();
