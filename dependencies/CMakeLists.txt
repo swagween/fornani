@@ -25,6 +25,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(djson)
 
+# tracy
+FetchContent_Declare(
+        tracy
+        GIT_REPOSITORY https://github.com/wolfpld/tracy
+        GIT_TAG v0.11.1
+)
+FetchContent_MakeAvailable(tracy)
+
 # ccmath
 set(CCMATH_ENABLE_EXTENSIONS ON)
 set(CCMATH_DISABLE_ERRNO ON)
