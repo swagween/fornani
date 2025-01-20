@@ -51,7 +51,6 @@ if (WIN32)
         target_link_options(fornani-launcher PRIVATE
                 /SUBSYSTEM:${subsystem}
                 /ENTRY:mainCRTStartup
-                /EHsc
         )
     endif()
 endif()
