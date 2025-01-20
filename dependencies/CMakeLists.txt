@@ -11,20 +11,9 @@ FetchContent_Declare(sfml
 FetchContent_MakeAvailable(sfml)
 
 # Dear ImGui
-FetchContent_Declare(
-  imgui
-  GIT_REPOSITORY https://github.com/ocornut/imgui
-  GIT_TAG v1.91.6
-)
 
-FetchContent_MakeAvailable(imgui)
+add_subdirectory(imgui)
 
-# ImGui-SFML
-FetchContent_Declare(
-  imgui-sfml
-  GIT_REPOSITORY https://github.com/eliasdaler/imgui-sfml
-  GIT_TAG v3.0
-)
 add_subdirectory(imgui-sfml)
 
 # djson

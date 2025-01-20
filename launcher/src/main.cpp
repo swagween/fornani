@@ -1,7 +1,8 @@
-#include "src/setup/Application.hpp"
+
+#include "fornani/setup/Application.hpp"
+
 #include <steam/steam_api.h>
 #include <iostream>
-#define CCM_CONFIG_NO_FORCED_INLINE
 
 int main(int argc, char** argv) {
 	assert(argc > 0);

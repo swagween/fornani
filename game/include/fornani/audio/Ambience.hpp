@@ -3,7 +3,7 @@
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include "../utils/BitFlags.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include "MusicPlayer.hpp"
 #include <thread>
 
