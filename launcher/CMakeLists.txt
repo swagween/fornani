@@ -12,7 +12,6 @@ target_include_directories(fornani-launcher
         PRIVATE src
 )
 
-
 if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
     add_compile_options(fornani-launcher INTERFACE /W4056 /W4146 /W4018 /W4056)
 endif()
@@ -35,8 +34,6 @@ else()
     message(STATUS "Building ${PROJECT_NAME} with Steam App ID: ${FORNANI_STEAM_APP_ID}")
 endif()
 
-
-
 add_subdirectory(src)
 
 if (WIN32)
@@ -44,7 +41,8 @@ if (WIN32)
             TARGET fornani-launcher
             COMMENT "Copy Steam API DLL"
             PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${steamworks_dll_file} $<TARGET_FILE_DIR:fornani-launcher>/steam_api64.dll
-            VERBATIM)
+            VERBATIM
+    )
 
     if(MSVC)
         set(subsystem $<IF:$<BOOL:$<CONFIG:Debug>>,CONSOLE,WINDOWS>)
@@ -63,5 +61,3 @@ if(FORNANI_DEV_BUILD)
             VERBATIM
     )
 endif()
-
-# Move our template files into the resource directory
