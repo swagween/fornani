@@ -22,6 +22,7 @@ Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : s
 }
 
 void Dragonfly::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (!svc.in_window(sprite.get_sprite_position(), sprite.get_dimensions())) { return; }
 	steering.evade(physics, player.collider.get_center(), forces.evade, 0.05f);
 	steering.seek(physics, map.get_nearest_target_point(physics.position), forces.seek);
 	steering.smooth_random_walk(svc, physics, forces.walk);
@@ -31,7 +32,6 @@ void Dragonfly::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 
 void Dragonfly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (svc.greyblock_mode()) { return; }
-	if (!svc.in_window(physics.position - cam, sprite.get_dimensions())) { return; }
 	sprite.render(svc, win, cam);
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape drawbox{};

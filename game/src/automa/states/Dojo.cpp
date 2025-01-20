@@ -183,6 +183,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	}*/
 
 	player->update(map, console, inventory_window);
+
 	map.update(svc, console, inventory_window);
 
 	if (map.camera_shake()) { camera.begin_shake(); }
@@ -211,7 +212,6 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	// B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
 	// circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()) + camera.get_position());
-
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
 

@@ -16,7 +16,7 @@ set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The Steam app ID assigned
 
 option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the executable, that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION" ON)
 option(FORNANI_BUILD_EDITOR "Build the editor" OFF) # TODO: Bring editor into project
-option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam" ON)
+option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam" OFF)
 
 include(cmake/func/AddTargetSource.cmake)
 include(cmake/GenerateDataTemplates.cmake)

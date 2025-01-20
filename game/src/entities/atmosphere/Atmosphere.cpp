@@ -33,8 +33,10 @@ void vfx::Atmosphere::update(automa::ServiceProvider& svc, world::Map& map, play
 }
 
 void Atmosphere::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	svc.out_value = 0;
 	for (auto& fly : fireflies) { fly->render(svc, win, cam); }
 	for (auto& fly : dragonflies) { fly.render(svc, win, cam); }
+	if (svc.ticker.every_x_frames(60)) { svc.logger.add_log(std::to_string(svc.out_value).c_str()); }
 }
 
 void Atmosphere::debug() {

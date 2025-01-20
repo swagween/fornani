@@ -67,6 +67,7 @@ struct ServiceProvider {
 
 	// debug stuff
 	util::Stopwatch stopwatch{};
+	int out_value{};
 
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
