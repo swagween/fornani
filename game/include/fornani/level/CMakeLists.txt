@@ -1,0 +1,14 @@
+nani_add_headers(
+        Breakable.hpp
+        Camera.hpp
+        Destroyable.hpp
+        Grid.hpp
+        Map.hpp
+        Platform.hpp
+        Pushable.hpp
+        Spawner.hpp
+        Spike.hpp
+        SwitchBlock.hpp
+        SwitchButton.hpp
+        Tile.hpp
+)

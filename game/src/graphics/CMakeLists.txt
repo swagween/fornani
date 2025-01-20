@@ -1,0 +1,15 @@
+nani_add_sources(
+        Background.cpp
+        ColorFade.cpp
+        Droplet.cpp
+        HelpText.cpp
+        MapTexture.cpp
+        Rain.cpp
+        Scenery.cpp
+        SpriteHistory.cpp
+        SpriteRotator.cpp
+        TextureUpdater.cpp
+        TextWriter.cpp
+        Transition.cpp
+        Tutorial.cpp
+)

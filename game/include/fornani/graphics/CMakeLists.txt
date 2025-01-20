@@ -1,0 +1,16 @@
+nani_add_headers(
+        Background.hpp
+        ColorFade.hpp
+        Droplet.hpp
+        HelpText.hpp
+        MapTexture.hpp
+        Rain.hpp
+        Scenery.hpp
+        SpriteHistory.hpp
+        SpriteRotator.hpp
+        Style.hpp
+        TextureUpdater.hpp
+        TextWriter.hpp
+        Transition.hpp
+        Tutorial.hpp
+)

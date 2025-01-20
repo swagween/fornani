@@ -1,0 +1,15 @@
+nani_add_headers(
+        AccessibilityService.hpp
+        Application.hpp
+        AssetManager.hpp
+        ControllerMap.hpp
+        DataManager.hpp
+        EnumLookups.hpp
+        File.hpp
+        Game.hpp
+        ResourceFinder.hpp
+        Tables.hpp
+        TextManager.hpp
+        Version.hpp
+        WindowManager.hpp
+)

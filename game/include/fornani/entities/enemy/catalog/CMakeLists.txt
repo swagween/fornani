@@ -1,0 +1,13 @@
+nani_add_headers(
+        Archer.hpp
+        Beamstalk.hpp
+        Caster.hpp
+        Demon.hpp
+        Eyebit.hpp
+        Eyebot.hpp
+        Frdog.hpp
+        Hauler.hpp
+        Meatsquash.hpp
+        Tank.hpp
+        Thug.hpp
+)

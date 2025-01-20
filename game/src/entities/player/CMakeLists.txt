@@ -1,0 +1,18 @@
+nani_add_sources(
+        AbilityManager.cpp
+        Catalog.cpp
+        Indicator.cpp
+        Inventory.cpp
+        Jump.cpp
+        Piggybacker.cpp
+        Player.cpp
+        PlayerAnimation.cpp
+        PlayerController.cpp
+        Roll.cpp
+        Shield.cpp
+        Slide.cpp
+        Transponder.cpp
+        Wallet.cpp
+        Wallslide.cpp
+        Wardrobe.cpp
+)

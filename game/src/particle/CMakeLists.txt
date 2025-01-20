@@ -1,0 +1,10 @@
+nani_add_sources(
+        Chain.cpp
+        Effect.cpp
+        Emitter.cpp
+        Gravitator.cpp
+        Particle.cpp
+        Spark.cpp
+        Sparkler.cpp
+        Spring.cpp
+)

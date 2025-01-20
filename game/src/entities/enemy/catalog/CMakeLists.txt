@@ -1,0 +1,13 @@
+nani_add_sources(
+        Archer.cpp
+        Beamstalk.cpp
+        Caster.cpp
+        Demon.cpp
+        Eyebit.cpp
+        Eyebot.cpp
+        Frdog.cpp
+        Hauler.cpp
+        Meatsquash.cpp
+        Tank.cpp
+        Thug.cpp
+)
