@@ -18,7 +18,7 @@ Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(sv
 void Console::begin() {
 	flags.set(ConsoleFlags::active);
 	writer.start();
-	sprite.start(*m_services, position);
+	sprite.start(*m_services, position, 1.f, {0, 1}, 16.f);
 }
 
 void Console::update(automa::ServiceProvider& svc) {

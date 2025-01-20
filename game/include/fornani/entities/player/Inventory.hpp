@@ -30,6 +30,7 @@ class Inventory {
 	std::vector<item::Item> items{};
 	std::vector<int> sellable_items{};
 	int items_per_row{12};
+	sf::Vector2<float> ui_offset{};
 };
 
 } // namespace player

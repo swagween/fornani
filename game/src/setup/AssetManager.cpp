@@ -186,7 +186,7 @@ AssetManager::AssetManager(data::ResourceFinder& finder) {
 	t_vine.loadFromFile(finder.resource_path + "/image/tile/vine.png");
 	t_vine_large.loadFromFile(finder.resource_path + "/image/tile/vine_large.png");
 	t_grass.loadFromFile(finder.resource_path + "/image/tile/grass.png");
-	//t_grass_large.loadFromFile(finder.resource_path + "/image/tile/grass_large.png");
+	t_big_spike.loadFromFile(finder.resource_path + "/image/tile/big_spike.png");
 
 	// backgrounds
 	t_bg_dusk.loadFromFile(finder.resource_path + "/image/background/dusk.png");

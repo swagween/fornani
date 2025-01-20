@@ -105,7 +105,7 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	if(flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.demon.set(audio::Demon::hurt);
 		sound.hurt_sound_cooldown.start();
-		hurt_effect.start();
+		hurt_effect.start(128);
 		flags.state.reset(StateFlags::hurt);
 		cooldowns.pre_invisibility.start();
 	}
@@ -113,16 +113,6 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	if (cooldowns.pre_invisibility.is_almost_complete()) {
 		teleport();
 		cooldowns.pre_invisibility.cancel();
-	}
-
-	if (hurt_effect.running()) {
-		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			visual.sprite.setColor(svc.styles.colors.green);
-		} else {
-			visual.sprite.setColor(svc.styles.colors.mythic_green);
-		}
-	} else {
-		visual.sprite.setColor(svc.styles.colors.white);
 	}
 
 	if (alert() && !hostile() && !cooldowns.post_cast.running()) { state = CasterState::prepare; }

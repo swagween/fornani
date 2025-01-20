@@ -1,5 +1,3 @@
-project(fornani-dependencies)
-
 include(FetchContent)
 set(BUILD_SHARED_LIBS OFF)
 
@@ -14,6 +12,13 @@ FetchContent_MakeAvailable(sfml)
 
 add_subdirectory(imgui)
 
+# ImGui-SFML
+set(IMGUI_SFML_FIND_SFML OFF)
+FetchContent_Declare(
+  imgui-sfml
+  GIT_REPOSITORY https://github.com/eliasdaler/imgui-sfml
+  GIT_TAG v3.0
+)
 add_subdirectory(imgui-sfml)
 
 # djson

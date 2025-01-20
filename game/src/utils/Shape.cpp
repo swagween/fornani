@@ -311,25 +311,36 @@ bool Shape::contains_point(Vec point) {
 }
 
 void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (vertices.size() == 4) {
+		auto color = non_square() ? sf::Color{0, 0, 255, 48} : sf::Color{0, 255, 255, 48};
+		sf::Vertex line1[] = {{vertices[0] - cam, color}, {vertices[1] - cam, color}, {vertices[2] - cam, color}};
+		win.draw(line1, 3, sf::PrimitiveType::Triangles);
+		sf::Vertex line2[] = {{vertices[0] - cam, color}, {vertices[2] - cam, color}, {vertices[3] - cam, color}};
+		win.draw(line2, 3, sf::PrimitiveType::Triangles);
+	}
+}
+
+void Shape::draw(sf::RenderTexture& tex) {
+	uint8_t alpha = 212;
 	if (vertices.size() == 3) {
-		sf::Vertex line[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, sf::Color{255, 255, 0, 100}},
-							 {{vertices[1].x - cam.x, vertices[1].y - cam.y}, sf::Color{255, 255, 0, 100}},
-							 {{vertices[2].x - cam.x, vertices[2].y - cam.y}, sf::Color{255, 255, 0, 100}}};
-		win.draw(line, 3, sf::PrimitiveType::Triangles);
+		sf::Vertex line[] = {{vertices[0], sf::Color{255, 255, 0, 100}},
+							 {vertices[1], sf::Color{255, 255, 0, 100}},
+							 {vertices[2], sf::Color{255, 255, 0, 100}}};
+		tex.draw(line, 3, sf::PrimitiveType::Triangles);
 	}
 	if (vertices.size() == 4) {
-		auto color = non_square() ? sf::Color{0, 0, 255, 128} : sf::Color{0, 255, 255, 128};
-		sf::Vertex line1[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, color}, {{vertices[1].x - cam.x, vertices[1].y - cam.y}, color}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, color}};
-		win.draw(line1, 3, sf::PrimitiveType::Triangles);
-		sf::Vertex line2[] = {{{vertices[0].x - cam.x, vertices[0].y - cam.y}, color}, {{vertices[2].x - cam.x, vertices[2].y - cam.y}, color}, {{vertices[3].x - cam.x, vertices[3].y - cam.y}, color}};
-		win.draw(line2, 3, sf::PrimitiveType::Triangles);
+		auto color = non_square() ? sf::Color{80, 80, 255, alpha} : sf::Color{0, 255, 255, alpha};
+		sf::Vertex line1[] = {{vertices[0], color}, {vertices[1], color}, {vertices[2], color}};
+		tex.draw(line1, 3, sf::PrimitiveType::Triangles);
+		sf::Vertex line2[] = {{vertices[0], color}, {vertices[2], color}, {vertices[3], color}};
+		tex.draw(line2, 3, sf::PrimitiveType::Triangles);
 	}
 	for (int i{0}; i < normals.size(); ++i) {
 		if (!non_square()) { break; }
 		auto start = vertices[i] + edges[i] * 0.5f;
 		auto scale = -8.f;
-		sf::Vertex norm[] = {{{start.x - cam.x, start.y - cam.y}, sf::Color{255, 0, 0, 128}}, {{start.x + normals[i].x * scale - cam.x, start.y + normals[i].y * scale - cam.y}, sf::Color{255, 0, 0, 128}}};
-		win.draw(norm, 2, sf::PrimitiveType::Lines);
+		sf::Vertex norm[] = {{start, sf::Color{255, 0, 0, alpha}}, {{start.x + normals[i].x * scale, start.y + normals[i].y * scale}, sf::Color{255, 0, 0, alpha}}};
+		tex.draw(norm, 2, sf::PrimitiveType::Lines);
 	}
 }
 

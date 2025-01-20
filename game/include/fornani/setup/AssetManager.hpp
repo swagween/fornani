@@ -121,6 +121,7 @@ class AssetManager {
 	sf::Texture t_grass_large{};
 	sf::Texture t_treasure_ball{};
 	sf::Texture t_spawnable_platform{};
+	sf::Texture t_big_spike{};
 
 	// animators
 	sf::Texture t_automatic_animators_firstwind{};

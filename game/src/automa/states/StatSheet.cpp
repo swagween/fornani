@@ -23,7 +23,7 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 							 " / 2\n items found: " + std::to_string(player.catalog.categories.inventory.items.size()) + " / 9\n'get bryn's gun' speedrun time: " + svc.stats.tt_formatted() + " seconds";
 	stats.setString(statistics);
 	stats.setLineSpacing(2.0f);
-	svc.music.load("firstwind");
+	svc.music.load(svc.finder, "firstwind");
 	svc.music.play_looped(10);
 	loading.start();
 }

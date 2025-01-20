@@ -9,7 +9,7 @@ Inventory::Inventory() {}
 void Inventory::update(automa::ServiceProvider& svc) {
 	int index{};
 	for (auto& item : items) {
-		item.update(svc, index, items_per_row);
+		item.update(svc, index, items_per_row, ui_offset);
 		++index;
 	}
 }

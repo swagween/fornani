@@ -44,10 +44,10 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 	
 	for (auto& layer : layers) {
 		// backtrack sprites for infinite scroll effect
-		if (layer.final_position.x < -scroll_pane.x && !locked_horizontally()) { layer.physics.position.x = 0.f; }
-		if (layer.final_position.x > 0.f && !locked_horizontally()) { layer.physics.position.x = -scroll_pane.x; }
-		if (layer.final_position.y < -scroll_pane.y && !locked_vertically()) { layer.physics.position.y = layer.physics.position.y + scroll_pane.y; }
-		if (layer.final_position.y > 0.f && !locked_vertically()) { layer.physics.position.y = -scroll_pane.y + layer.physics.position.y; }
+		if (layer.physics.position.x < -scroll_pane.x && !locked_horizontally()) { layer.physics.position.x = 0.f; }
+		if (layer.physics.position.x > 0.f && !locked_horizontally()) { layer.physics.position.x = -scroll_pane.x; }
+		if (layer.physics.position.y < -scroll_pane.y && !locked_vertically()) { layer.physics.position.y = layer.physics.position.y + scroll_pane.y; }
+		if (layer.physics.position.y > 0.f && !locked_vertically()) { layer.physics.position.y = -scroll_pane.y + layer.physics.position.y; }
 
 		layer.final_position = layer.physics.position - cam * layer.parallax;
 

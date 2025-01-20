@@ -5,9 +5,9 @@
 
 namespace npc {
 
-NPC::NPC(automa::ServiceProvider& svc, int id) : id(id), animation_machine(std::make_unique<NPCAnimation>(svc, id)), indicator(svc.assets.t_indicator, {32, 32}), sprite(svc.assets.npcs.contains(label) ? svc.assets.npcs.at(label) : svc.assets.t_null) {
-
-	label = svc.tables.npc_label.at(id);
+NPC::NPC(automa::ServiceProvider& svc, int id)
+	: id(id), label(svc.tables.npc_label.at(id)), animation_machine(std::make_unique<NPCAnimation>(svc, id)), indicator(svc.assets.t_indicator, {32, 32}),
+	  sprite(svc.assets.npcs.contains(label) ? svc.assets.npcs.at(label) : svc.assets.t_null) {
 	indicator.set_origin({0.f, 48.f});
 	indicator.push_params("neutral", {0, 15, 16, 0, true});
 	indicator.end();

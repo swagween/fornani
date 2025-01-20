@@ -54,7 +54,7 @@ class InventoryWindow : public Console {
 		float buffer{40.f};
 		int title_size{16};
 		int desc_size{16};
-		sf::Vector2<float> title_offset{static_cast<float>(corner_factor) * 1.3f, 66.f};
+		sf::Vector2<float> title_offset{static_cast<float>(corner_factor) * 1.3f, 60.f};
 		sf::Vector2<float> arsenal_offset{static_cast<float>(corner_factor) * 1.3f, 276.f};
 		sf::Vector2<float> item_label_offset{static_cast<float>(corner_factor) * 1.3f, 390.f};
 		sf::Vector2<float> item_description_offset{static_cast<float>(corner_factor) * 1.3f, 490.f};
@@ -62,6 +62,7 @@ class InventoryWindow : public Console {
 		sf::Vector2<float> info_offset{66.f, 180.f};
 		sf::Vector2<float> rarity_pad{32.f, 32.f};
 		sf::Vector2<float> wardrobe_offset{380.f, -32.f};
+		sf::Vector2<float> global_offset{};
 	} ui{};
 
 	sf::Text title;

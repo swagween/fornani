@@ -119,7 +119,7 @@ void Weapon::set_position(sf::Vector2<float> pos) { visual.position = pos; }
 
 void Weapon::force_position(sf::Vector2<float> pos) {
 	set_position(pos);
-	physical.physics.position = pos;
+	physical.physics.position = {};
 }
 
 void Weapon::set_barrel_point(sf::Vector2<float> point) { offsets.gameplay.barrel = point; }

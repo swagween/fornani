@@ -19,7 +19,7 @@ class Tables {
 
 	std::string get_npc_label_formatted(int id) {
 		std::string ret = npc_label.at(id).data();
-		std::transform(ret.begin(), ret.end(), ret.begin(), ::toupper);
+		std::transform(ret.begin(), ret.end(), ret.begin(), [](char c) { return static_cast<char>(std::toupper(c)); });
 		return ret;
 	}
 };

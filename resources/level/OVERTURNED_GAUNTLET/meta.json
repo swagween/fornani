@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "room_id": 20069,
+    "metagrid": [
+      0,
+      0
+    ],
+    "dimensions": [
+      96,
+      64
+    ],
+    "chunk_dimensions": [
+      6,
+      4
+    ],
+    "style": 1,
+    "background": 18,"music": "whispering_island",
+    "ambience": "overturned",
+    "atmosphere": [1],
+    "styles": {
+      "breakables": 0
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "scenery": {
+    "vines": [
+      {
+        "position": [
+          42,
+          10
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true,
+        "platform": {
+          "link_indeces": [
+            7
+          ]
+        }
+      },
+      {
+        "position": [
+          35,
+          9
+        ],
+        "length": 14,
+        "size": 2,
+        "foreground": true,
+        "platform": {
+          "link_indeces": [
+            11
+          ]
+        }
+      },
+      {
+        "position": [
+          47,
+          12
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true,
+        "platform": {
+          "link_indeces": [
+            7
+          ]
+        }
+      },
+      {
+        "position": [
+          10,
+          38
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          11,
+          36
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          23,
+          38
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          22,
+          36
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          19,
+          34
+        ],
+        "length": 8,
+        "size": 2,
+        "foreground": true
+      },
+      {
+        "position": [
+          12,
+          35
+        ],
+        "length": 8,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          18,
+          32
+        ],
+        "length": 8,
+        "size": 1,
+        "foreground": true
+      },
+      {
+        "position": [
+          24,
+          36
+        ],
+        "length": 8,
+        "size": 1,
+        "foreground": true
+      }
+    ]
+  },
+  "enemies": [
+    {
+      "id": 11,
+      "position": [
+        16,
+        19
+      ]
+    },
+    {
+      "id": 11,
+      "position": [
+        55,
+        46
+      ]
+    },
+    {
+      "id": 11,
+      "position": [
+        42,
+        52
+      ]
+    },
+    {
+      "id": 11,
+      "position": [
+        28,
+        49
+      ]
+    }
+  ],
+  "save_point": {
+    "id": 0,
+    "position": [
+      13,
+      9
+    ]
+  }
+}

@@ -45,6 +45,8 @@ void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (svc.greyblock_mode()) { return; }
+	if (!svc.in_window(physics.position - cam, sprite.get_dimensions())) { return; }
 	if (trail) { trail.value()->drag(win, cam); }
 	if (glowing) { sprite.render(svc, win, cam); }
 	if (svc.greyblock_mode()) {

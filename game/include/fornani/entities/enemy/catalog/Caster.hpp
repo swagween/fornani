@@ -41,8 +41,6 @@ class Caster : public Enemy {
 		entity::FloatingPart wand;
 	} parts;
 
-	util::Cooldown hurt_effect{};
-
 	struct {
 		util::Cooldown post_cast{512};
 		util::Cooldown awaken{180};

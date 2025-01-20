@@ -11,7 +11,6 @@
 namespace data {
 
 class TextManager {
-
 	public:
 	TextManager(ResourceFinder& finder);
 
@@ -22,9 +21,10 @@ class TextManager {
 
 	dj::Json npc{};
 
-	std::string text_font{};
-	std::string title_font{};
-
+	struct {
+		std::filesystem::path title{};
+		std::filesystem::path basic{};
+	} sources{};
 	struct {
 		sf::Font title{};
 		sf::Font basic{};

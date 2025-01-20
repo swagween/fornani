@@ -21,7 +21,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label),
 	}
 
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 1.0f);
+	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 0.4f);
 	gravitator.collider.physics.maximum_velocity = {640.f, 640.f};
 
 	ui.rarity.setCharacterSize(16);
@@ -61,11 +61,11 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label),
 	drawbox.setOutlineThickness(-1);
 }
 
-void Item::update(automa::ServiceProvider& svc, int index, int items_per_row) {
+void Item::update(automa::ServiceProvider& svc, int index, int items_per_row, sf::Vector2<float> offset) {
 	gravitator.update(svc);
 	auto y_pos = ui.pad.y + static_cast<float>(index / items_per_row) * ui.spacing;
 	auto x_pos = ui.pad.x + static_cast<float>(index % items_per_row) * ui.spacing;
-	auto inv_pos = sf::Vector2<float>{x_pos, y_pos} + ui.offset - sf::Vector2<float>{8.f, 8.f};
+	auto inv_pos = sf::Vector2<float>{x_pos, y_pos} + ui.offset - sf::Vector2<float>{8.f, 8.f} + offset;
 	if (flags.test(ItemFlags::unique)) {
 		variables.quantity = std::clamp(variables.quantity, 0, 1);
 	} else {

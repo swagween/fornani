@@ -58,9 +58,9 @@ class GameState {
 	GameState& operator=(GameState&&) = delete;
 	virtual ~GameState() {}
 
-	virtual void tick_update(ServiceProvider& svc){};
-	virtual void frame_update(ServiceProvider& svc){};
-	virtual void render(ServiceProvider& svc, sf::RenderWindow& win){};
+	virtual void tick_update([[maybe_unused]] ServiceProvider& svc){};
+	virtual void frame_update([[maybe_unused]] ServiceProvider& svc){};
+	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win){};
 
 	bool debug_mode{false};
 	util::BitFlags<GameStateFlags> flags{};

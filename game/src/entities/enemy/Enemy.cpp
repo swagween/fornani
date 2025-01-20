@@ -179,11 +179,13 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	auto sprite_position = collider.physics.position + sprite_offset - cam + random_offset;
+	if (!svc.in_window(sprite_position, visual.sprite.getGlobalBounds().size)) { return; }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
 	drawbox.setOrigin(visual.sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
-	visual.sprite.setPosition(collider.physics.position + sprite_offset - cam + random_offset);
+	visual.sprite.setPosition(sprite_position);
 	win.draw(visual.sprite);
 	if (svc.greyblock_mode()) {
 		win.draw(visual.sprite);

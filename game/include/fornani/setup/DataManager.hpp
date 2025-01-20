@@ -130,8 +130,6 @@ class DataManager {
 	std::vector<int> rooms{};
 	std::vector<int> discovered_rooms{};
 
-	ResourceFinder finder{};
-
 	automa::ServiceProvider* m_services;
 	std::unordered_map<int, npc::Vendor> marketplace{};
 	std::unordered_map<int, int> npc_locations{};

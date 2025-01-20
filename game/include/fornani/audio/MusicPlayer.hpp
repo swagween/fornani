@@ -17,7 +17,7 @@ enum class MusicPlayerState { on };
 
 class MusicPlayer {
   public:
-	void load(std::string_view song_name);
+	void load(data::ResourceFinder& finder, std::string_view song_name);
 	void simple_load(std::string_view source);
 	void play_once(float vol = 100.f);
 	void play_looped(float vol = 100.f);
@@ -36,8 +36,6 @@ class MusicPlayer {
 	[[nodiscard]] auto switched_off() const -> bool { return !flags.state.test(SongState::on); }
 
 	[[nodiscard]] auto playing() const -> bool { return song_first.getStatus() == sf::SoundSource::Status::Playing || song_loop.getStatus() == sf::SoundSource::Status::Playing; }
-
-	data::ResourceFinder finder{};
 
 	struct {
 		float native{};

@@ -36,7 +36,6 @@ class Thug : public Enemy {
 			entity::Attack rush{};
 		} attacks{};
 	entity::Caution caution{};
-	util::Cooldown hurt_effect{};
 
 	struct {
 		util::Cooldown jump{40};

@@ -53,18 +53,8 @@ void Archer::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 
 	hurt_effect.update();
-	if (hurt_effect.running()) {
-		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			visual.sprite.setColor(svc.styles.colors.white);
-		} else {
-			visual.sprite.setColor(svc.styles.colors.goldenrod);
-		}
-	} else {
-		visual.sprite.setColor(svc.styles.colors.white);
-	}
-	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) {
-		state = ArcherState::run;
-	}
+
+	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ArcherState::run; }
 
 	if (alert() && !hostile() && svc.ticker.every_x_ticks(900)) { state = ArcherState::shoot; }
 

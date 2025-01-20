@@ -6,9 +6,8 @@
 namespace text {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc)
-	: m_services(&svc), help_marker(svc), working_message{svc.text.fonts.basic}, second_working_message{svc.text.fonts.basic}, third_working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}} {
-	font.openFromFile(svc.text.text_font);
-	font.setSmooth(false);
+	: m_services(&svc), help_marker(svc), working_message{svc.text.fonts.basic}, second_working_message{svc.text.fonts.basic}, third_working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}},
+	  font{svc.text.fonts.basic} {
 	special_characters.insert({Codes::prompt, '%'});
 	special_characters.insert({Codes::quest, '$'});
 	special_characters.insert({Codes::item, '^'});

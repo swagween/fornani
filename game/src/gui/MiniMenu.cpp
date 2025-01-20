@@ -45,7 +45,7 @@ void MiniMenu::render(sf::RenderWindow& win, bool bg) {
 
 void MiniMenu::open(automa::ServiceProvider& svc, sf::Vector2<float> position) {
 	state.set(MiniMenuState::open);
-	sprite.start(svc, position);
+	sprite.start(svc, position, 0.f, {0, 0});
 }
 
 void MiniMenu::close(automa::ServiceProvider& svc) {

@@ -8,18 +8,31 @@
 
 namespace world {
 
-Spike::Spike(automa::ServiceProvider& svc, sf::Vector2<float> position, int lookup) : hitbox({32.f, 32.f}) {
-	collider = shape::Collider({32.f, 32.f});
-	auto adjustment = 22.f;
-	facing.und = (lookup == 255 || lookup == 254) ? dir::UND::up : facing.und;
-	facing.und = (lookup == 253 || lookup == 252) ? dir::UND::down : facing.und;
-	offset.y = (facing.und == dir::UND::up) ? adjustment : facing.und == dir::UND::down ? -adjustment : offset.y;
-	facing.lr = (lookup == 251 || lookup == 250) ? dir::LR::left : facing.lr;
-	facing.lr = (lookup == 249 || lookup == 248) ? dir::LR::right : facing.lr;
-	offset.x = (facing.lr == dir::LR::left) ? adjustment : facing.lr == dir::LR::right ? -adjustment : offset.x;
+Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size)
+	: size(size), hitbox(i_size().x == 1 ? size * 32.f : size * 24.f), sprite{texture}, grid_position(position + sf::Vector2<float>{16.f, 16.f}) {
+	direction.x = direction.y != 0 ? 0 : direction.x;
+	i_size().x == 1 ? sprite.setTextureRect(sf::IntRect{{480, 480}, {32, 32}}) : sprite.setTextureRect(sf::IntRect{{0, 0}, {192, 128}});
+	collider = shape::Collider(size * 32.f);
+	facing.und = (direction.y == 1) ? dir::UND::up : facing.und;
+	facing.und = (direction.y == -1) ? dir::UND::down : facing.und;
+	facing.lr = (direction.x == 1) ? dir::LR::left : facing.lr;
+	facing.lr = (direction.x == -1) ? dir::LR::right : facing.lr;
+	sprite.setOrigin(size * 16.f);
+	if (svc.random.percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
+	if (facing.lr == dir::LR::left) { sprite.setRotation(sf::degrees(-90)); }
+	if (facing.lr == dir::LR::right) { sprite.setRotation(sf::degrees(90)); }
+	if (facing.und == dir::UND::down) { sprite.setRotation(sf::degrees(180)); }
 	collider.physics.position = position + offset;
 	collider.sync_components();
-	hitbox.set_position(position + offset * 0.5f);
+	auto x_off = 56.f;
+	auto y_off = facing.down() || facing.right() ? 32.f : 32.f;
+	offset = sf::Vector2<float>{x_off, y_off};
+	if (facing.left_or_right()) {
+		offset = {y_off, x_off};
+		auto rotation = sf::Vector2<float>{hitbox.dimensions.y, hitbox.dimensions.x};
+		hitbox.dimensions = rotation;
+	}
+	i_size().x == 1 ? hitbox.set_position(position) : hitbox.set_position(position - offset);
 }
 
 void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
@@ -30,7 +43,6 @@ void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::
 		player.controller.prevent_movement();
 		player.controller.restrict_movement();
 		map.soft_reset.end();
-		std::cout << "ended\n";
 		soft_reset = false;
 	}
 	if (player.hurtbox.overlaps(hitbox) && map.soft_reset.not_started() && !player.invincible()) {
@@ -38,10 +50,8 @@ void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::
 		if (!player.is_dead()) {
 			soft_reset = true;
 			map.soft_reset.start();
-			std::cout << "started\n";
 		}
 	}
-	handle_collision(player.collider);
 }
 
 void Spike::handle_collision(shape::Collider& other) const {
@@ -50,11 +60,12 @@ void Spike::handle_collision(shape::Collider& other) const {
 }
 
 void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	sprite.setPosition(grid_position - cam);
+	win.draw(sprite);
 	if (svc.greyblock_mode()) {
 		drawbox.setPosition(hitbox.position - cam);
 		drawbox.setSize(hitbox.dimensions);
-		drawbox.setFillColor(svc.styles.colors.red);
-		collider.render(win, cam);
+		drawbox.setFillColor(sf::Color{249, 12, 48, 64});
 		win.draw(drawbox);
 	}
 }

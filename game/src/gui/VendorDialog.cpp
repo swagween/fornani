@@ -30,10 +30,8 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 
 	info.dimensions = {svc.constants.f_screen_dimensions.x - 48.f, 110.f};
 	info.position = {svc.constants.f_center_screen.x, 450.f};
-	info.sprite.set_position(info.position);
 	info.flags.reset(ConsoleFlags::portrait_included);
 	info.begin();
-	info.update(svc);
 
 	auto& in_anim = svc.data.drop["orb"]["animation"];
 	for (auto& param : in_anim["params"].array_view()) {
@@ -157,7 +155,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		selector.set_size(static_cast<int>(vendor.inventory.items.size()));
 		if (vendor.inventory.items.size() < 1) { text.price_number.setString("..."); }
 		for (auto& item : vendor.inventory.items) {
-			item.update(svc, ctr, ui_constants.items_per_row);
+			item.update(svc, ctr, ui_constants.items_per_row, {});
 			ctr == selector.get_current_selection() ? item.select() : item.deselect();
 			if (item.selected()) {
 				selector.set_position(item.get_position());
@@ -217,7 +215,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		if (sellable_items.size() < 1) { text.price_number.setString("..."); }
 		for (auto& idx : sellable_items) {
 			auto& item = player_inventory.get_item_at_index(idx);
-			item.update(svc, ctr, ui_constants.items_per_row);
+			item.update(svc, ctr, ui_constants.items_per_row, {});
 			ctr == selector.get_current_selection() ? item.select() : item.deselect();
 			if (item.selected()) {
 				selector.set_position(item.get_position());

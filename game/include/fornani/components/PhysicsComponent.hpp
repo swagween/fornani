@@ -55,7 +55,7 @@ class PhysicsComponent {
 	void apply_force(sf::Vector2<float> force);
 	void apply_force_at_angle(float magnitude, float angle);
 	void multiply_velocity(float multiplier);
-	void multiply_acceleration(float multiplier);
+	void multiply_acceleration(float multiplier, sf::Vector2<float> weight);
 	void update_euler(automa::ServiceProvider& svc);
 	void integrate(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);

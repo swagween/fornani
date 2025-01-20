@@ -109,15 +109,6 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 
 	hurt_effect.update();
-	if (hurt_effect.running()) {
-		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			visual.sprite.setColor(svc.styles.colors.white);
-		} else {
-			visual.sprite.setColor(svc.styles.colors.goldenrod);
-		}
-	} else {
-		visual.sprite.setColor(svc.styles.colors.white);
-	}
 	if (hostile() && !cooldowns.post_rush.running()) { state = DemonState::signal; }
 	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) {
 		state = DemonState::jumpsquat;
