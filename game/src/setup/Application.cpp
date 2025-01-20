@@ -1,9 +1,11 @@
 #include "fornani/setup/Application.hpp"
 
+#include <tracy/Tracy.hpp>
+
 namespace fornani {
 
 Application::Application(char** argv) : finder(argv), t_loading(finder.resource_path + "/image/gui/loading.png"), loading(t_loading) {
-
+	ZoneScopedN("Application::Application");
 	std::cout << "Resource path: " << finder.resource_path << std::endl;
 
 	// load app resources

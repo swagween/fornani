@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <imgui.h>
 
+#include <tracy/Tracy.hpp>
+
 namespace bg {
 
 int const tile_dim{256};
@@ -38,6 +40,7 @@ void Background::update(automa::ServiceProvider& svc) {
 }
 
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	ZoneScopedN("Background::render");
 	auto epsilon = 0.99999f;
 	auto cycle = static_cast<int>(svc.world_clock.get_time_of_day());
 	auto from_cycle = static_cast<int>(svc.world_clock.get_previous_time_of_day());

@@ -2,6 +2,9 @@
 #pragma once
 
 #include "fornani/audio/MusicPlayer.hpp"
+
+#include <tracy/Tracy.hpp>
+
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace audio {
@@ -61,6 +64,7 @@ void MusicPlayer::play_looped(float vol) {
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::update() {
+	ZoneScopedN("MusicPlayer::update");
 	if (global_off()) { return; }
 	volume.actual = volume.native * volume.multiplier;
 	set_volume(volume.actual);

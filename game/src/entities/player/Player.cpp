@@ -1,4 +1,7 @@
 #include "fornani/entities/player/Player.hpp"
+
+#include <tracy/Tracy.hpp>
+
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -154,6 +157,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
+	ZoneScopedN("Player::render");
 	calculate_sprite_offset();
 	if (flags.state.test(State::crushed)) { return; }
 	//debug

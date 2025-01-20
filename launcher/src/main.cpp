@@ -29,6 +29,8 @@ int main(int argc, char** argv) {
 		std::cout << "Failed to init Steam: " << errMsg << std::endl;
 		return 0;
 	}
+
+	std::cout << "SteamAPI has been initialized.\n";
 	app.launch(argv);
 	return 0;
 }

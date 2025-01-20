@@ -1,5 +1,8 @@
 
 #include "fornani/particle/Particle.hpp"
+
+#include <tracy/Tracy.hpp>
+
 #include "fornani/service/ServiceProvider.hpp"
 #include <numbers>
 
@@ -60,7 +63,8 @@ void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 	if (fader) { fader.value().update(); }
 }
 
-void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { 
+void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	ZoneScopedN("Particle::render");
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 	} else {
