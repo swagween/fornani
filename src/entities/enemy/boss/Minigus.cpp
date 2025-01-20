@@ -311,14 +311,14 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (voice_cue == 6) { voice.getit.play(); }
 
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::theme_song)) {
-		svc.music.load("minigus");
+		svc.music.load(svc.finder, "minigus");
 		svc.music.play_looped(25);
 		status.set(MinigusFlags::theme_song);
 	}
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::battle_mode) && m_console->is_complete() && !health_bar.empty() && !status.test(MinigusFlags::exit_scene)) {
 		status.set(MinigusFlags::battle_mode);
 		triggers.reset(npc::NPCTrigger::distant_interact);
-		svc.music.load("scuffle");
+		svc.music.load(svc.finder, "scuffle");
 		svc.music.play_looped(25);
 		cooldowns.vulnerability.start();
 	}
@@ -886,7 +886,7 @@ fsm::StateFunction Minigus::update_exit() {
 		m_map->active_loot.push_back(item::Loot(*m_services, get_attributes().drop_range, get_attributes().loot_multiplier, get_collider().bounding_box.position));
 		state = MinigusState::jumpsquat;
 		animation.set_params(jumpsquat);
-		m_services->music.load("dusken_cove");
+		m_services->music.load(m_services->finder, "dusken_cove");
 		m_services->music.play_looped(30);
 		return MINIGUS_BIND(update_jumpsquat);
 	}

@@ -6,7 +6,7 @@
 
 namespace audio {
 
-void MusicPlayer::load(std::string_view song_name) {
+void MusicPlayer::load(data::ResourceFinder& finder, std::string_view song_name) {
 	if (global_off()) { return; }
 	if (label == song_name && playing()) { return; }
 	if (song_name == "") { return; }
@@ -77,7 +77,7 @@ void MusicPlayer::update() {
 		music_clock.restart();
 	}
 	if (flags.state.test(SongState::looping)) {
-		auto song_dt = (song_loop.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
+		song_dt = (song_loop.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
 		if (song_dt < (last_dt * 2)) {
 			song_loop.play();
 			flags.state.set(SongState::looping);

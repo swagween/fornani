@@ -36,7 +36,6 @@ class Archer : public Enemy {
 	sf::Vector2<int> bow_dimensions{82, 82};
 
 	entity::Caution caution{};
-	util::Cooldown hurt_effect{};
 
 	struct {
 		util::Cooldown jump{40};

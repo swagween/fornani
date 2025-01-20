@@ -26,9 +26,9 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
 	info.set_texture(svc.assets.t_console_outline);
 
 	origin = {ui.corner_pad * 0.5f, ui.corner_pad * 0.5f};
-	title.setPosition(origin + ui.title_offset);
-	arsenal.setPosition(origin + ui.arsenal_offset);
-	item_label.setPosition(origin + ui.item_label_offset);
+	title.setPosition(origin + ui.title_offset + ui.global_offset);
+	arsenal.setPosition(origin + ui.arsenal_offset + ui.global_offset);
+	item_label.setPosition(origin + ui.item_label_offset + ui.global_offset);
 
 	dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
 	position = svc.constants.f_center_screen;
@@ -39,19 +39,29 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
 	info.dimensions = {dimensions.x - 2.f * ui.info_offset.x, dimensions.y * 0.62f - ui.info_offset.y - ui.inner_corner};
 	info.position = svc.constants.f_center_screen;
 	info.position.y += ui.info_offset.y;
-	info.sprite.set_position(info.position);
+	info.sprite.set_position(info.position + ui.global_offset);
 	info.flags.reset(ConsoleFlags::portrait_included);
 	info.update(svc);
 
-	wardrobe.set_position(svc.constants.f_center_screen + ui.wardrobe_offset);
+	wardrobe.set_position(svc.constants.f_center_screen + ui.wardrobe_offset + ui.global_offset);
 
 	mode = Mode::inventory;
 
-	help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true); // XXX this was arms_switch_right
+	help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
+	ui.global_offset = sprite.get_position() - (sprite.get_center() + sf::Vector2<float>{ui.corner_pad, ui.corner_pad} * 0.5f);
+	title.setPosition(origin + ui.title_offset + ui.global_offset);
+	arsenal.setPosition(origin + ui.arsenal_offset + ui.global_offset);
+	item_label.setPosition(origin + ui.item_label_offset + ui.global_offset);
+	info.position = svc.constants.f_center_screen + ui.global_offset;
+	info.position.y += ui.info_offset.y;
+	info.sprite.set_position(info.position);
+	wardrobe.set_position(svc.constants.f_center_screen + ui.wardrobe_offset + ui.global_offset);
+	player.catalog.categories.inventory.ui_offset = ui.global_offset;
+
 	if (mode == Mode::inventory) {
 		title.setString("INVENTORY");
 		auto& player_items = player.catalog.categories.inventory.items;
@@ -165,7 +175,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 			}
 		}
 		auto minimenu_dim = sf::Vector2<float>{108.f, 108.f};
-		item_menu.update(svc, minimenu_dim, selector.get_menu_position());
+		item_menu.update(svc, minimenu_dim, selector.get_menu_position() + ui.global_offset);
 		update_table(player, selector.switched_sections());
 	}
 	if (mode == Mode::minimap) {
@@ -184,7 +194,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 		win.draw(title);
 		win.draw(arsenal);
 		for (auto& item : player.catalog.categories.inventory.items) {
-			item.render(svc, win, {0.f, 0.f});
+			item.render(svc, win, ui.global_offset);
 			if (item.selected()) {
 				item_label.setString(item.get_label().data());
 				win.draw(item_label);
@@ -195,7 +205,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 			auto index{0};
 			auto gunpos = sf::Vector2<float>{};
 			for (auto& gun : player.arsenal.value().get_loadout()) {
-				gunpos = ui.arsenal_position + slot * static_cast<float>(index);
+				gunpos = ui.arsenal_position + slot * static_cast<float>(index) + ui.global_offset;
 				if (!player.hotbar) { gun->set_reserved(); }
 				auto lookup = gun->get_inventory_state();
 				if (selector.get_section() == InventorySection::gun && gun->selected()) { lookup += 2; }

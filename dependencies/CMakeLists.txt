@@ -18,6 +18,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(imgui)
 
 # ImGui-SFML
+set(IMGUI_SFML_FIND_SFML OFF)
 FetchContent_Declare(
   imgui-sfml
   GIT_REPOSITORY https://github.com/eliasdaler/imgui-sfml

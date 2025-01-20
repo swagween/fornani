@@ -51,6 +51,32 @@ void Grid::check_neighbors(int i) {
 	cells.at(i).exposed = exposed;
 }
 
+sf::Vector2<int> Grid::get_solid_neighbors(int index) {
+	auto ret = sf::Vector2<int>{};
+	auto right = static_cast<std::size_t>(index + 1);
+	auto left = static_cast<std::size_t>(index - 1);
+	auto up = static_cast<std::size_t>(index - dimensions.x);
+	auto down = static_cast<std::size_t>(index + dimensions.x);
+	auto ui = static_cast<uint32_t>(index);
+	// left neighbor
+	if (index != 0 && index % dimensions.x != 0) {
+		if (cells.at(left).is_solid()) { ret.x = -1; }
+	}
+	// right neighbor
+	if (index != cells.size() - 1 && index % dimensions.x != dimensions.x - 1) {
+		if (cells.at(right).is_solid()) { ret.x = 1; }
+	}
+	// top neighbor
+	if (!(ui < dimensions.x)) {
+		if (cells.at(up).is_solid()) { ret.y = -1; }
+	}
+	// bottom neighbor
+	if (!(ui > cells.size() - dimensions.x - 1)) {
+		if (cells.at(down).is_solid()) { ret.y = 1; }
+	}
+	return ret;
+}
+
 void Grid::seed_vertex(int index) {
 	auto& tile = cells.at(index);
 	tile.set_type();
@@ -196,6 +222,24 @@ void Grid::seed_vertex(int index) {
 		tile.bounding_box.vertices[1].y += spacing / 2;
 		tile.bounding_box.vertices[0].y += spacing;
 		break;
+	case ceiling_single_ramp: tile.bounding_box.vertices[2].x -= spacing; break;
+	case ceiling_single_ramp + 2: tile.bounding_box.vertices[2].x -= spacing; break;
+	case ceiling_single_ramp + 1: /*nothing*/ break;
+	case ceiling_single_ramp + 3: /*nothing*/ break;
+	case floor_single_ramp:
+		tile.bounding_box.vertices[1].y += spacing;
+		tile.bounding_box.vertices[2].x -= spacing;
+		break;
+	case floor_single_ramp + 2:
+		tile.bounding_box.vertices[1].y += spacing;
+		tile.bounding_box.vertices[2].x -= spacing;
+		break;
+	case floor_single_ramp + 1:
+		tile.bounding_box.vertices[0].y += spacing;
+		break;
+	case floor_single_ramp + 3:
+		tile.bounding_box.vertices[0].y += spacing;
+		break;
 	default: break;
 	}
 	tile.bounding_box.set_normals();
@@ -212,7 +256,13 @@ void Grid::destroy_cell(sf::Vector2<int> pos) {
 }
 
 void Grid::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	for (auto& cell : cells) { cell.render(win, cam, drawbox); }
+	for (auto& cell : cells) { cell.render(win, drawbox, cam); }
+}
+
+void Grid::draw(sf::RenderTexture& tex) {
+	tex.clear(sf::Color::Transparent);
+	for (auto& cell : cells) { cell.draw(tex); }
+	tex.display();
 }
 
 std::size_t Grid::get_index_at_position(sf::Vector2<float> position) const {

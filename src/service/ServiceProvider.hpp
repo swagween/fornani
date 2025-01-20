@@ -19,6 +19,7 @@
 #include "../utils/Stopwatch.hpp"
 #include "../utils/Ticker.hpp"
 #include "../utils/WorldClock.hpp"
+#include "../utils/Logger.hpp"
 #include "../setup/Version.hpp"
 
 namespace automa {
@@ -35,11 +36,11 @@ struct MapDebug {
 	int active_projectiles{};
 };
 struct ServiceProvider {
-	ServiceProvider(char** argv, fornani::Version& version) : finder(argv), data(*this, argv), version(version), assets{finder} {};
+	ServiceProvider(char** argv, fornani::Version& version, fornani::WindowManager& window) : finder(argv), data(*this, argv), version(version), assets{finder}, text{finder}, window(&window) {};
 
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
-	data::TextManager text{finder};
+	data::TextManager text;
 	data::DataManager data;
 	fornani::Version version{};
 	fornani::WindowManager* window;
@@ -61,6 +62,7 @@ struct ServiceProvider {
 	fornani::StatTracker stats{};
 	PlayerDat player_dat{};
 	MapDebug map_debug{};
+	util::Logger logger{};
 	config::AccessibilityService a11y{};
 
 	// debug stuff
@@ -81,5 +83,6 @@ struct ServiceProvider {
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 	[[nodiscard]] auto debug_mode() const -> bool { return debug_flags.test(DebugFlags::debug_mode); }
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
+	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool { return window->in_window(point, dimensions); }
 };
 } // namespace automa

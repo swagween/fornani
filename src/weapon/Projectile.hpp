@@ -73,7 +73,7 @@ class Projectile {
 	[[nodiscard]] auto destruction_initiated() const -> bool { return variables.state.test(ProjectileState::destruction_initiated); }
 	[[nodiscard]] auto destroyed() const -> bool { return variables.state.test(ProjectileState::destroyed); }
 	[[nodiscard]] auto get_damage() const -> float { return metadata.specifications.base_damage * variables.damage_multiplier; }
-	[[nodiscard]] auto get_power() const -> float { return metadata.specifications.power; }
+	[[nodiscard]] auto get_power() const -> float { return static_cast<float>(metadata.specifications.power); }
 	[[nodiscard]] auto whiffed() const -> bool { return variables.state.test(ProjectileState::whiffed); }
 	[[nodiscard]] auto poofed() const -> bool { return variables.state.test(ProjectileState::poof); }
 	[[nodiscard]] auto made_contact() const -> bool { return variables.state.test(ProjectileState::contact); }

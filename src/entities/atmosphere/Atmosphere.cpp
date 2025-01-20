@@ -16,8 +16,9 @@ Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, in
 		auto starty = svc.random.random_range_float(0.f, span.y);
 		fireflies.push_back(std::make_unique<vfx::Firefly>(svc, sf::Vector2<float>{startx, starty}));
 	}
-	if(type == 1) { density = 4;
-	for (auto i{0}; i < density * chunks; ++i) {
+	if (type == 1) {
+		density = 4;
+		for (auto i{0}; i < density * chunks; ++i) {
 			auto startx = svc.random.random_range_float(0.f, span.x);
 			auto starty = svc.random.random_range_float(0.f, span.y);
 			dragonflies.push_back(vfx::Dragonfly(svc, {startx, starty}));
@@ -36,11 +37,9 @@ void Atmosphere::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 }
 
 void Atmosphere::debug() {
-
 	ImGuiIO& io = ImGui::GetIO();
 	io.FontGlobalScale = 1.0;
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGuiViewport const* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos({10.f, 200.f}, ImGuiCond_Always);
 	window_flags |= ImGuiWindowFlags_NoMove;
 	ImGui::SetNextWindowBgAlpha(0.65f);
