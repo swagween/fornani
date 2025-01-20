@@ -16,6 +16,7 @@ set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The Steam app ID assigned
 
 option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the executable, that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION" ON)
 option(FORNANI_BUILD_EDITOR "Build the editor" OFF) # TODO: Bring editor into project
+option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam" ON)
 
 include(cmake/func/AddTargetSource.cmake)
 include(cmake/GenerateDataTemplates.cmake)
@@ -31,10 +32,10 @@ endif ()
 target_compile_definitions(fornani PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
-    add_compile_options(${PROJECT_NAME} INTERFACE /W4056 /W4146 /W4018 /W4056)
+    add_compile_options(fornani INTERFACE /W4056 /W4146 /W4018 /W4056)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(${PROJECT_NAME} INTERFACE -Wno-sign-conversion)
+    add_compile_options(fornani INTERFACE -Wno-sign-conversion)
 endif()
 
 

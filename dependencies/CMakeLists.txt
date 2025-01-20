@@ -1,3 +1,5 @@
+project(fornani-dependencies)
+
 include(FetchContent)
 set(BUILD_SHARED_LIBS OFF)
 
@@ -9,16 +11,10 @@ FetchContent_Declare(sfml
 FetchContent_MakeAvailable(sfml)
 
 # Dear ImGui
-
 add_subdirectory(imgui)
 
-# ImGui-SFML
+# Dear ImGui-SFML
 set(IMGUI_SFML_FIND_SFML OFF)
-FetchContent_Declare(
-  imgui-sfml
-  GIT_REPOSITORY https://github.com/eliasdaler/imgui-sfml
-  GIT_TAG v3.0
-)
 add_subdirectory(imgui-sfml)
 
 # djson
@@ -102,3 +98,10 @@ target_link_libraries(fornani-dependencies INTERFACE
         SFML::Audio
         steamworks
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+    add_compile_options(fornani-dependencies INTERFACE /W2)
+endif()
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(fornani-dependencies INTERFACE -Wno-sign-conversion)
+endif()
