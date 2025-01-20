@@ -26,6 +26,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(djson)
 
 # tracy
+set(TRACY_ENABLE ON)
 FetchContent_Declare(
         tracy
         GIT_REPOSITORY https://github.com/wolfpld/tracy
@@ -103,6 +104,7 @@ target_link_libraries(fornani-dependencies INTERFACE
         SFML::Window
         SFML::Audio
         steamworks
+        Tracy::TracyClient
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)

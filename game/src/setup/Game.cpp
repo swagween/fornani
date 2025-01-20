@@ -5,6 +5,8 @@
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
 
+#include "tracy/Tracy.hpp"
+
 namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player) {
@@ -64,7 +66,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 	sf::Clock delta_clock{};
 
 	while (services.window->get().isOpen()) {
-
+		ZoneScopedN("Game Loop");
 		auto smp = services.random.percent_chance(10) ? 1 : 0;
 		rng_test.sample += smp;
 		++rng_test.total;
