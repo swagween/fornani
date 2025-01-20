@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../../utils/BitFlags.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <string_view>

@@ -6,7 +6,7 @@
 #include <array>
 #include <filesystem>
 #include <string>
-#include "../setup/EnumLookups.hpp"
+#include "fornani/setup/EnumLookups.hpp"
 #include "ResourceFinder.hpp"
 
 namespace asset {

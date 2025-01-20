@@ -2,11 +2,11 @@
 #pragma once
 
 #include <string>
-#include "../../particle/Sparkler.hpp"
-#include "../../utils/Collider.hpp"
-#include "../Entity.hpp"
-#include "../animation/Animation.hpp"
-#include "../item/Item.hpp"
+#include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/entities/Entity.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/entities/item/Item.hpp"
 
 namespace automa {
 struct ServiceProvider;

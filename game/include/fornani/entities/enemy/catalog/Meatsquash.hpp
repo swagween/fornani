@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Enemy.hpp"
+#include "fornani/entities/enemy/Enemy.hpp"
 #define MEATSQUASH_BIND(f) std::bind(&Meatsquash::f, this)
 
 namespace enemy {

@@ -1,14 +1,14 @@
 #pragma once
 
 #include <string>
-#include "../animation/AnimatedSprite.hpp"
-#include "../../particle/Sparkler.hpp"
-#include "../../utils/Collider.hpp"
-#include "../../particle/Gravitator.hpp"
-#include "../../components/CircleSensor.hpp"
-#include "../../../include/fornani/entities/packages/Health.hpp"
-#include "../Entity.hpp"
-#include "../../utils/StateFunction.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/entities/packages/Health.hpp"
+#include "fornani/entities/Entity.hpp"
+#include "fornani/utils/StateFunction.hpp"
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 
 namespace automa {

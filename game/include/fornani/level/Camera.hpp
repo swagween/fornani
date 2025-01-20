@@ -3,9 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "../particle/Gravitator.hpp"
-#include "../utils/Cooldown.hpp"
-#include "../utils/BitFlags.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;

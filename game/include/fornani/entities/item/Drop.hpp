@@ -2,11 +2,11 @@
 #pragma once
 
 #include <string>
-#include "../../utils/CircleCollider.hpp"
-#include "../animation/AnimatedSprite.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../particle/Sparkler.hpp"
-#include "../../utils/StateFunction.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/StateFunction.hpp"
 #define DROP_BIND(f) std::bind(&Drop::f, this)
 
 namespace automa {

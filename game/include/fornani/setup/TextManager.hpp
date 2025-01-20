@@ -2,8 +2,8 @@
 #pragma once
 
 #include <assert.h>
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics/Text.hpp>
-#include <../../../out/vs22-internal/_deps/djson-src/include/djson/json.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <djson/json.hpp>
 #include <iostream>
 #include <string>
 #include "ResourceFinder.hpp"

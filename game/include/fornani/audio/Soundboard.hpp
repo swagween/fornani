@@ -2,8 +2,8 @@
 #pragma once
 
 #include <SFML/Audio.hpp>
-#include "../utils/BitFlags.hpp"
-#include "../utils/Cooldown.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
 #include "Sound.hpp"
 #include <unordered_map>
 

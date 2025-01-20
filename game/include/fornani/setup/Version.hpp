@@ -1,6 +1,6 @@
 #pragma once
 
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include <string_view>
 namespace fornani {
 

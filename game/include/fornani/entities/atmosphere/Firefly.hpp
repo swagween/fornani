@@ -3,11 +3,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../../components/PhysicsComponent.hpp"
-#include "../../components/SteeringBehavior.hpp"
-#include "../animation/AnimatedSprite.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../graphics/SpriteHistory.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/graphics/SpriteHistory.hpp"
 #include <optional>
 #include <memory>
 

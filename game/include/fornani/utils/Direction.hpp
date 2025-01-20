@@ -1,7 +1,7 @@
 
 #pragma once
 #include <string>
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 
 namespace dir {
 

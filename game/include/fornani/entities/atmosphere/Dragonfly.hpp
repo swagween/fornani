@@ -3,9 +3,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../../components/PhysicsComponent.hpp"
-#include "../../components/SteeringBehavior.hpp"
-#include "../animation/AnimatedSprite.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
 
 namespace automa {
 struct ServiceProvider;

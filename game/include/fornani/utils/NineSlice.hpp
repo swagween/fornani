@@ -1,8 +1,8 @@
 #pragma once
 #include <array>
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include "Cooldown.hpp"
-#include "../particle/Gravitator.hpp"
+#include "fornani/particle/Gravitator.hpp"
 
 namespace automa {
 struct ServiceProvider;

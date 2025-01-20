@@ -2,9 +2,9 @@
 #pragma once
 
 #include <string>
-#include "../utils/Shape.hpp"
-#include "../components/PhysicsComponent.hpp"
-#include "../components/CircleSensor.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/components/CircleSensor.hpp"
 #include <optional>
 
 namespace vfx {

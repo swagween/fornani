@@ -9,13 +9,13 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include "../graphics/HelpText.hpp"
-#include "../utils/BitFlags.hpp"
-#include "../utils/Cooldown.hpp"
-#include "../utils/Counter.hpp"
-#include "../utils/Decoder.hpp"
-#include "../utils/QuestCode.hpp"
-#include "../utils/Shipment.hpp"
+#include "fornani/graphics/HelpText.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
+#include "fornani/utils/Decoder.hpp"
+#include "fornani/utils/QuestCode.hpp"
+#include "fornani/utils/Shipment.hpp"
 
 namespace automa {
 struct ServiceProvider;

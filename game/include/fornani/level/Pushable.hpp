@@ -2,11 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <string_view>
-#include "../setup/EnumLookups.hpp"
-#include "../utils/Collider.hpp"
-#include "../utils/Cooldown.hpp"
-#include "../utils/Counter.hpp"
-#include "../entities/animation/Animation.hpp"
+#include "fornani/setup/EnumLookups.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
+#include "fornani/entities/animation/Animation.hpp"
 
 namespace automa {
 struct ServiceProvider;

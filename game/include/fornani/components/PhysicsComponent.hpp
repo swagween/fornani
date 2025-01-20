@@ -7,8 +7,8 @@
 #include <random>
 #include <vector>
 #include <deque>
-#include "../utils/BitFlags.hpp"
-#include "../utils/Direction.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Direction.hpp"
 
 namespace automa {
 struct ServiceProvider;

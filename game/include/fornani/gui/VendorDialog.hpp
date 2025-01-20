@@ -1,11 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../particle/Gravitator.hpp"
+#include "fornani/particle/Gravitator.hpp"
 #include "Portrait.hpp"
 #include "Selector.hpp"
 #include "Console.hpp"
 #include "MiniMenu.hpp"
-#include "../entities/animation/AnimatedSprite.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
 #include <memory>
 
 namespace automa {

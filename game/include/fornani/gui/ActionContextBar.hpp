@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../setup/ControllerMap.hpp"
-#include "../utils/RichText.hpp"
+#include "fornani/setup/ControllerMap.hpp"
+#include "fornani/utils/RichText.hpp"
 
 #include <SFML/Graphics.hpp>
 

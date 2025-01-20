@@ -4,8 +4,8 @@
 #include <optional>
 #include <unordered_map>
 #include <deque>
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Direction.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Direction.hpp"
 #include "Jump.hpp"
 #include "Wallslide.hpp"
 #include "Shield.hpp"

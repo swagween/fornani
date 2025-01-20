@@ -1,11 +1,11 @@
 
 #pragma once
 
-#include "../components/PhysicsComponent.hpp"
-#include "../level/Tile.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/level/Tile.hpp"
 #include "BitFlags.hpp"
 #include "Shape.hpp"
-#include "../../../src/utils/CollisionDepth.hpp"
+#include "fornani/utils/CollisionDepth.hpp"
 #include <optional>
 
 namespace world{

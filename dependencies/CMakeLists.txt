@@ -5,8 +5,8 @@ set(BUILD_SHARED_LIBS OFF)
 
 # SFML
 FetchContent_Declare(sfml
-  GIT_REPOSITORY https://github.com/SFML/SFML
-  GIT_TAG 3.0.0
+        GIT_REPOSITORY https://github.com/SFML/SFML
+        GIT_TAG 3.0.0
 )
 FetchContent_MakeAvailable(sfml)
 
@@ -18,15 +18,16 @@ add_subdirectory(imgui-sfml)
 
 # djson
 FetchContent_Declare(
-    djson
-    GIT_REPOSITORY https://github.com/karnkaul/djson
-    GIT_TAG v2.1.1
+        djson
+        GIT_REPOSITORY https://github.com/karnkaul/djson
+        GIT_TAG v2.1.1
 )
 FetchContent_MakeAvailable(djson)
 
 # ccmath
 set(CCMATH_ENABLE_EXTENSIONS ON)
 set(CCMATH_DISABLE_ERRNO ON)
+set(CCMATH_STRICT_WARNINGS OFF)
 FetchContent_Declare(
         ccmath
         GIT_REPOSITORY https://github.com/Rinzii/ccmath
@@ -34,36 +35,56 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ccmath)
 
+# Disable specific aggressive warnings for ccmath
+# IanP: I will fix this in ccmath at some point but for now we just disable this all.
+if (CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+    target_compile_options(ccmath INTERFACE
+            /W3
+            /W4056
+            /W4146
+            /W4018
+            /W4056
+    )
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|IntelLLVM")
+    target_compile_options(ccmath INTERFACE
+            -Wno-all
+            -Wno-extra
+            -Wno-conversion
+            -Wno-pedantic
+            -Wno-sign-conversion
+    )
+endif ()
+
+
 # Avoid warning about DOWNLOAD_EXTRACT_TIMESTAMP in CMake 3.24 with steamworks.
 if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
-  cmake_policy(SET CMP0135 NEW)
-endif()
+    cmake_policy(SET CMP0135 NEW)
+endif ()
 
 # steamworks API
 FetchContent_Declare(
-  steamworks_archive
-  URL https://github.com/aleokdev/fornani/releases/download/deck-test-1/steamworks_sdk_160.zip
+        steamworks_archive
+        URL https://github.com/aleokdev/fornani/releases/download/deck-test-1/steamworks_sdk_160.zip
 )
 FetchContent_MakeAvailable(steamworks_archive)
 
 add_library(steamworks INTERFACE)
 target_include_directories(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/public)
 if (WIN32)
-  target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.lib)
-  if (MSVC)
-    # Avoid hundreds of strncpy deprecation messages
-    target_compile_definitions(steamworks INTERFACE _CRT_SECURE_NO_WARNINGS)
-  endif()
-  
-  set(steamworks_dll_file ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.dll PARENT_SCOPE)
+    target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.lib)
+    if (MSVC)
+        # Avoid hundreds of strncpy deprecation messages
+        target_compile_definitions(steamworks INTERFACE _CRT_SECURE_NO_WARNINGS)
+    endif ()
+
+    set(steamworks_dll_file ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.dll CACHE STRING "Steamworks DLL")
+    #set(steamworks_dll_file ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.dll PARENT_SCOPE)
 elseif (UNIX)
-  target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/linux64/libsteam_api.so)
-endif()
+    target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/linux64/libsteam_api.so)
+endif ()
 
 add_library(fornani-dependencies INTERFACE)
 add_library(fornani::deps ALIAS fornani-dependencies)
-
-# TODO: Add imgui-sfml
 
 target_link_libraries(fornani-dependencies INTERFACE
 

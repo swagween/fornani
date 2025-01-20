@@ -2,10 +2,10 @@
 #pragma once
 
 #include <string>
-#include "../../setup/EnumLookups.hpp"
-#include "../../utils/Shape.hpp"
-#include "../animation/Animation.hpp"
-#include "../../particle/Sparkler.hpp"
+#include "fornani/setup/EnumLookups.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/particle/Sparkler.hpp"
 
 namespace automa {
 struct ServiceProvider;

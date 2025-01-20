@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "../GameState.hpp"
+#include "fornani/automa/GameState.hpp"
 
 namespace automa {
 

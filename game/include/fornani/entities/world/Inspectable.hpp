@@ -3,9 +3,9 @@
 #include <djson/json.hpp>
 #include <string>
 #include <optional>
-#include "../../utils/Shape.hpp"
-#include "../animation/Animation.hpp"
-#include "../../utils/Circuit.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/utils/Circuit.hpp"
 
 namespace automa {
 struct ServiceProvider;

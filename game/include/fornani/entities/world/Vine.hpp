@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include "../../utils/Shape.hpp"
-#include "../../particle/Chain.hpp"
-#include "../../utils/BitFlags.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/particle/Chain.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include "TreasureContainer.hpp"
 #include "SpawnablePlatform.hpp"
 #include <optional>

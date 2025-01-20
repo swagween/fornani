@@ -2,9 +2,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../utils/Counter.hpp"
-#include "../utils/Cooldown.hpp"
-#include "../utils/BitFlags.hpp"
+#include "fornani/utils/Counter.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include <string_view>
 #include <unordered_map>
 #include <vector>

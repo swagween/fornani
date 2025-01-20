@@ -2,7 +2,7 @@
 #pragma once
 
 #include <SFML/Audio.hpp>
-#include "../utils/Cooldown.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;

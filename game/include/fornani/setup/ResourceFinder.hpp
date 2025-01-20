@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
-#include <../../../out/vs22-internal/_deps/djson-src/include/djson/json.hpp>
+#include <SFML/Graphics.hpp>
+#include <djson/json.hpp>
 #include <filesystem>
 #include <iostream>
 #include <string>

@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../utils/Counter.hpp"
-#include "../../utils/Direction.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
+#include "fornani/utils/Direction.hpp"
 
 namespace player {
 

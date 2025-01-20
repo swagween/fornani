@@ -4,10 +4,10 @@
 #include <vector>
 #include <string_view>
 #include <optional>
-#include "../utils/CircleCollider.hpp"
-#include "../utils/Cooldown.hpp"
-#include "../utils/Fader.hpp"
-#include "../entities/animation/Animation.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Fader.hpp"
+#include "fornani/entities/animation/Animation.hpp"
 
 namespace automa {
 struct ServiceProvider;

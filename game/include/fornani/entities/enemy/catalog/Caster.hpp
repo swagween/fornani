@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Enemy.hpp"
+#include "fornani/entities/enemy/Enemy.hpp"
 #define CASTER_BIND(f) std::bind(&Caster::f, this)
 
 namespace enemy {

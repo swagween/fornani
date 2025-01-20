@@ -2,12 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <string_view>
-#include "../setup/EnumLookups.hpp"
-#include "../utils/Collider.hpp"
-#include "../utils/Cooldown.hpp"
-#include "../entities/animation/Animation.hpp"
-#include "../entities/animation/AnimatedSprite.hpp"
-#include "../utils/StateFunction.hpp"
+#include "fornani/setup/EnumLookups.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/utils/StateFunction.hpp"
 #define SWITCH_BIND(f) std::bind(&SwitchButton::f, this)
 
 namespace automa {

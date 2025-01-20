@@ -7,7 +7,7 @@
 #include <memory>
 #include <unordered_map>
 #include "Weapon.hpp"
-#include "../../include/fornani/utils/Circuit.hpp"
+#include "fornani/utils/Circuit.hpp"
 
 namespace arms {
 

@@ -3,10 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include <string_view>
 #include <unordered_map>
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../graphics/ColorFade.hpp"
-#include "../../particle/Gravitator.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/graphics/ColorFade.hpp"
+#include "fornani/particle/Gravitator.hpp"
 
 namespace automa {
 struct ServiceProvider;

@@ -3,7 +3,7 @@
 #include <string_view>
 #include <array>
 #include <unordered_map>
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include "Cooldown.hpp"
 #include "Counter.hpp"
 

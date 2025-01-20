@@ -2,7 +2,7 @@
 #pragma once
 
 #include <vector>
-#include "../player/Inventory.hpp"
+#include "fornani/entities/player/Inventory.hpp"
 
 namespace automa {
 struct ServiceProvider;

@@ -1,5 +1,5 @@
 #pragma once
-#include <../../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 
 namespace player {
 class Player;

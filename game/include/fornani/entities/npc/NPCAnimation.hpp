@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "../animation/Animation.hpp"
-#include "../../utils/StateFunction.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/utils/StateFunction.hpp"
 #include <string_view>
 #define NPC_BIND(f) std::bind(&NPCAnimation::f, this)
 

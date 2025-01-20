@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../Cutscene.hpp"
+#include "fornani/story/Cutscene.hpp"
 
 namespace fornani {
 

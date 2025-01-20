@@ -1,8 +1,8 @@
 
 #pragma once
 #include <string_view>
-#include "../particle/Gravitator.hpp"
-#include "../particle/Sparkler.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/particle/Sparkler.hpp"
 
 namespace automa {
 struct ServiceProvider;

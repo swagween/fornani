@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../utils/Counter.hpp"
+#include "fornani/utils/Counter.hpp"
 #include <string_view>
 #include <unordered_map>
 #include <vector>

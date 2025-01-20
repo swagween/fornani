@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "../utils/Cooldown.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
 namespace vfx {
 class SpriteRotator {

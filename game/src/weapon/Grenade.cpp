@@ -1,4 +1,4 @@
-#include "Grenade.hpp"
+#include "fornani/weapon/Grenade.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/level/Map.hpp"

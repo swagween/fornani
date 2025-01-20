@@ -1,8 +1,8 @@
 #pragma once
-#include <../../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
-#include "../Entity.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../../../src/utils/Counter.hpp"
+#include <SFML/Graphics.hpp>
+#include "fornani/entities/Entity.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
 
 namespace entity {
 enum class HPState { hit };

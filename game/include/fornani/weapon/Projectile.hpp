@@ -3,19 +3,19 @@
 
 #include <memory>
 #include <unordered_map>
-#include "../components/PhysicsComponent.hpp"
-#include "../components/CircleSensor.hpp"
-#include "../entities/animation/AnimatedSprite.hpp"
-#include "../graphics/SpriteHistory.hpp"
-#include "../particle/Emitter.hpp"
-#include "../particle/Gravitator.hpp"
-#include "../particle/Sparkler.hpp"
-#include "../../include/fornani/utils/BitFlags.hpp"
-#include "../../include/fornani/utils/Cooldown.hpp"
-#include "../../include/fornani/utils/CircleCollider.hpp"
-#include "../../include/fornani/utils/Direction.hpp"
-#include "../../include/fornani/utils/Random.hpp"
-#include "../../include/fornani/utils/Shape.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/graphics/SpriteHistory.hpp"
+#include "fornani/particle/Emitter.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/utils/Direction.hpp"
+#include "fornani/utils/Random.hpp"
+#include "fornani/utils/Shape.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -73,7 +73,7 @@ class Projectile {
 	[[nodiscard]] auto destruction_initiated() const -> bool { return variables.state.test(ProjectileState::destruction_initiated); }
 	[[nodiscard]] auto destroyed() const -> bool { return variables.state.test(ProjectileState::destroyed); }
 	[[nodiscard]] auto get_damage() const -> float { return metadata.specifications.base_damage * variables.damage_multiplier; }
-	[[nodiscard]] auto get_power() const -> float { return metadata.specifications.power; }
+	[[nodiscard]] auto get_power() const -> float { return static_cast<float>(metadata.specifications.power); }
 	[[nodiscard]] auto whiffed() const -> bool { return variables.state.test(ProjectileState::whiffed); }
 	[[nodiscard]] auto poofed() const -> bool { return variables.state.test(ProjectileState::poof); }
 	[[nodiscard]] auto made_contact() const -> bool { return variables.state.test(ProjectileState::contact); }

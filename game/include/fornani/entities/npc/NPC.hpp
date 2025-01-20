@@ -2,11 +2,11 @@
 #pragma once
 
 #include <string>
-#include "../../utils/Collider.hpp"
-#include "../Entity.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/entities/Entity.hpp"
 #include "NPCAnimation.hpp"
 #include "Vendor.hpp"
-#include "../animation/AnimatedSprite.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
 #include <deque>
 #include <string_view>
 

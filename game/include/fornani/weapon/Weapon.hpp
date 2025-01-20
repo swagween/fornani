@@ -4,11 +4,11 @@
 #include <cstdio>
 #include <list>
 #include <memory>
-#include "../../include/fornani/utils/BitFlags.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include "Projectile.hpp"
 #include "Ammo.hpp"
-#include "../entities/animation/AnimatedSprite.hpp"
-#include "../components/SteeringBehavior.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
 #include <optional>
 
 namespace arms {

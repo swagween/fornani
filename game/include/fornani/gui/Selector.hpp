@@ -2,8 +2,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string_view>
-#include "../utils/Circuit.hpp"
-#include "../utils/BitFlags.hpp"
+#include "fornani/utils/Circuit.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;

@@ -3,10 +3,10 @@
 #include <vector>
 #include <string_view>
 #include <SFML/Graphics.hpp>
-#include "../utils/Cooldown.hpp"
-#include "../entities/Entity.hpp"
-#include "../entities/animation/Animation.hpp"
-#include "../components/PhysicsComponent.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/entities/Entity.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
 
 namespace automa {
 struct ServiceProvider;

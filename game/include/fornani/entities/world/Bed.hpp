@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include "../../particle/Sparkler.hpp"
-#include "../../utils/Collider.hpp"
-#include "../Entity.hpp"
+#include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/entities/Entity.hpp"
 
 namespace automa {
 struct ServiceProvider;

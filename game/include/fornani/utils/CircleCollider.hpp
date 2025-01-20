@@ -1,11 +1,11 @@
 #pragma once
 #include <cassert>
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
-#include "../components/CircleSensor.hpp"
-#include "../components/PhysicsComponent.hpp"
+#include <SFML/Graphics.hpp>
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
 #include "Shape.hpp"
 #include "Cooldown.hpp"
-#include "../../../src/utils/Counter.hpp"
+#include "fornani/utils/Counter.hpp"
 #include <utility>
 
 namespace automa {

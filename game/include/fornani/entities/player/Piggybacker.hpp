@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../utils/Counter.hpp"
-#include "../../particle/Gravitator.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
+#include "fornani/particle/Gravitator.hpp"
 #include <string_view>
 
 namespace player {

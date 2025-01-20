@@ -2,11 +2,11 @@
 #include <imgui.h>
 #include <filesystem>
 #include <random>
-#include "../audio/MusicPlayer.hpp"
-#include "../automa/StateManager.hpp"
-#include "../entities/player/Player.hpp"
-#include "../service/ServiceProvider.hpp"
-#include "../utils/BitFlags.hpp"
+#include "fornani/audio/MusicPlayer.hpp"
+#include "fornani/automa/StateManager.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include <imgui-SFML.h>
 
 namespace fornani {

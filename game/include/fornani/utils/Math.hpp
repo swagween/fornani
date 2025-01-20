@@ -1,10 +1,12 @@
 
 #pragma once
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
-#include <../../../out/vs22-internal/_deps/ccmath-src/include/ccmath/math/power/sqrt.hpp>
-#include <../../../out/vs22-internal/_deps/ccmath-src/include/ccmath/math/power/pow.hpp>
-#include <../../../out/vs22-internal/_deps/ccmath-src/include/ccmath/ext/cubic.hpp>
-#include <../../../out/vs22-internal/_deps/ccmath-src/include/ccmath/ext/smoothstep.hpp>
+#include <SFML/Graphics.hpp>
+#include <ccmath/math/power/sqrt.hpp>
+#include <ccmath/math/power/pow.hpp>
+#include <ccmath/ext/cubic.hpp>
+#include <ccmath/ext/smoothstep.hpp>
+#include <ccmath/math/misc/lerp.hpp>
+
 #include <numbers>
 
 namespace util {
@@ -33,6 +35,6 @@ inline float ease_out_back(float progress) {
 inline float smoothstep(float x, float y, float progress) { return ccm::ext::smoothstep(x, y, progress); }
 inline bool same_parity(float a, float b) { return ((static_cast<int>(a) ^ static_cast<int>(b)) & 1) == 0; }
 inline bool same_sign(float a, float b) { return a * b >= 0.f; }
-inline uint8_t get_uint8_from_normal(float normal) { return std::lerp(0, 255, normal); }
+inline uint8_t get_uint8_from_normal(float normal) { return static_cast<uint8_t>(ccm::lerp(0, 255, normal)); } // NOLINT
 
 } // namespace util

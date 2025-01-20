@@ -1,7 +1,7 @@
 
 #pragma once
-#include "../../utils/BitFlags.hpp"
-#include "../item/Item.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/entities/item/Item.hpp"
 #include <vector>
 #include <unordered_map>
 

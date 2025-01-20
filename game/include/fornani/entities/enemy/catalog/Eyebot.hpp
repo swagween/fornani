@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Enemy.hpp"
-#include "../../packages/Seeker.hpp"
+#include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Seeker.hpp"
 #define EYEBOT_BIND(f) std::bind(&Eyebot::f, this)
 
 namespace enemy {

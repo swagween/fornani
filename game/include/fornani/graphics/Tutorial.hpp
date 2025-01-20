@@ -2,8 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <string_view>
-#include "../utils/Cooldown.hpp"
-#include "../utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include "HelpText.hpp"
 
 namespace automa {

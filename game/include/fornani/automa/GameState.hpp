@@ -8,15 +8,15 @@
 #include <filesystem>
 #include <optional>
 #include "Option.hpp"
-#include "../components/PhysicsComponent.hpp"
-#include "../entities/player/Player.hpp"
-#include "../graphics/Background.hpp"
-#include "../gui/Console.hpp"
-#include "../gui/Portrait.hpp"
-#include "../gui/HUD.hpp"
-#include "../level/Map.hpp"
-#include "../gui/InventoryWindow.hpp"
-#include "../gui/PauseWindow.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/graphics/Background.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/gui/Portrait.hpp"
+#include "fornani/gui/HUD.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/gui/InventoryWindow.hpp"
+#include "fornani/gui/PauseWindow.hpp"
 
 namespace player {
 class Player;

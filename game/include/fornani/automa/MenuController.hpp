@@ -2,7 +2,7 @@
 
 #include <string>
 #include <SFML/Graphics.hpp>
-#include "../utils/BitFlags.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace automa {
 

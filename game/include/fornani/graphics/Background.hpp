@@ -4,8 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <unordered_map>
-#include "../components/PhysicsComponent.hpp"
-#include "../utils/BitFlags.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 
 namespace automa {

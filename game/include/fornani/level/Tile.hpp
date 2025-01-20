@@ -1,8 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../setup/EnumLookups.hpp"
-#include "../utils/Shape.hpp"
-#include "../utils/BitFlags.hpp"
+#include "fornani/setup/EnumLookups.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;

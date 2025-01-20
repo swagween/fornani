@@ -4,12 +4,12 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <string>
-#include "../utils/BitFlags.hpp"
-#include "../graphics/TextWriter.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/graphics/TextWriter.hpp"
 #include "Portrait.hpp"
 #include "ItemWidget.hpp"
-#include "../utils/QuestCode.hpp"
-#include "../utils/NineSlice.hpp"
+#include "fornani/utils/QuestCode.hpp"
+#include "fornani/utils/NineSlice.hpp"
 
 namespace gui {
 

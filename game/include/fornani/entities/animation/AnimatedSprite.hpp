@@ -7,10 +7,10 @@
 #include <string_view>
 #include <unordered_map>
 #include "Animation.hpp"
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../utils/Counter.hpp"
-#include "../../graphics/SpriteRotator.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
+#include "fornani/graphics/SpriteRotator.hpp"
 
 namespace automa {
 struct ServiceProvider;

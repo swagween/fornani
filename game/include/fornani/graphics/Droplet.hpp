@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../utils/CircleCollider.hpp"
-#include "../utils/Collider.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/utils/Collider.hpp"
 #include <vector>
 
 namespace automa {

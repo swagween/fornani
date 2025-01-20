@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include "Console.hpp"
 #include "Selector.hpp"
-#include "../level/Map.hpp"
-#include "../graphics/MapTexture.hpp"
-#include "../utils/Circuit.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/graphics/MapTexture.hpp"
+#include "fornani/utils/Circuit.hpp"
 
 namespace player {
 class Player;

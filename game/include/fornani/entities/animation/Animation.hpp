@@ -6,9 +6,9 @@
 #include <list>
 #include <random>
 #include <vector>
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../utils/Counter.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
 
 namespace anim {
 

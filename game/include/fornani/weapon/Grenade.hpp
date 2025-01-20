@@ -1,12 +1,12 @@
 
 #pragma once
 
-#include "../entities/Entity.hpp"
-#include "../../include/fornani/utils/Collider.hpp"
-#include "../utils/Cooldown.hpp"
-#include "../../include/fornani/utils/Direction.hpp"
-#include "../entities/animation/Animation.hpp"
-#include "../components/CircleSensor.hpp"
+#include "fornani/entities/Entity.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Direction.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/components/CircleSensor.hpp"
 
 namespace automa {
 struct ServiceProvider;

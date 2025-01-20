@@ -4,8 +4,8 @@
 #include <string_view>
 #include <optional>
 #include <SFML/Graphics.hpp>
-#include "../utils/Cooldown.hpp"
-#include "../utils/Fader.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Fader.hpp"
 
 namespace automa {
 struct ServiceProvider;

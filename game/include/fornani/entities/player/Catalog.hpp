@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../../utils/BitFlags.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include "AbilityManager.hpp"
 #include "Inventory.hpp"
 #include "Wardrobe.hpp"

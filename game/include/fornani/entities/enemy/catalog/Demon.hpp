@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Enemy.hpp"
+#include "fornani/entities/enemy/Enemy.hpp"
 #define DEMON_BIND(f) std::bind(&Demon::f, this)
 
 namespace enemy {

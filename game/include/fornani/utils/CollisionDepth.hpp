@@ -1,6 +1,6 @@
 #pragma once
 #include <deque>
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include "Counter.hpp"
 
 namespace shape {

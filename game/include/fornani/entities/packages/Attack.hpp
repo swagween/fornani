@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../../components/CircleSensor.hpp"
+#include "fornani/components/CircleSensor.hpp"
 
 namespace player {
 class Player;

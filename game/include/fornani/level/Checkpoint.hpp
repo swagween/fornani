@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../utils/BitFlags.hpp"
-#include "../utils/Shape.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Shape.hpp"
 
 namespace automa {
 struct ServiceProvider;

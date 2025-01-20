@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <memory>
-#include "Firefly.hpp"
-#include "Dragonfly.hpp"
+#include "fornani/entities/atmosphere/Firefly.hpp"
+#include "fornani/entities/atmosphere/Dragonfly.hpp"
 
 namespace automa {
 struct ServiceProvider;

@@ -3,8 +3,8 @@
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include "../utils/BitFlags.hpp"
-#include "../setup/ResourceFinder.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
 
 namespace automa {
 struct ServiceProvider;

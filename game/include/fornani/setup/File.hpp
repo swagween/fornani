@@ -2,7 +2,7 @@
 
 #include <string_view>
 #include <djson/json.hpp>
-#include "../utils/BitFlags.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace fornani {
 

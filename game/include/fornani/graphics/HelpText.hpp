@@ -2,9 +2,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <string_view>
-#include "../utils/BitFlags.hpp"
-#include "../utils/Cooldown.hpp"
-#include "../utils/Counter.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
 
 namespace automa {
 struct ServiceProvider;

@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Counter.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Counter.hpp"
 #include <cmath>
 #include <iostream>
 #include <string>

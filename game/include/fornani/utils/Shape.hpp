@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <array>
 #include <cassert>

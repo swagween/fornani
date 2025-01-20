@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../setup/ControllerMap.hpp"
+#include "fornani/setup/ControllerMap.hpp"
 
 namespace automa {
 struct ServiceProvider;

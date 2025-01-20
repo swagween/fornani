@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "../GameState.hpp"
-#include "../../level/Camera.hpp"
+#include "fornani/automa/GameState.hpp"
+#include "fornani/level/Camera.hpp"
 
 namespace automa {
 

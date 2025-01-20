@@ -2,10 +2,10 @@
 #pragma once
 #include <string_view>
 #include <optional>
-#include "../../utils/BitFlags.hpp"
-#include "../Entity.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/entities/Entity.hpp"
 #include "Drop.hpp"
-#include "../../particle/Gravitator.hpp"
+#include "fornani/particle/Gravitator.hpp"
 
 namespace automa {
 struct ServiceProvider;

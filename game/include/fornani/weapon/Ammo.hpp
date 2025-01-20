@@ -1,11 +1,11 @@
 
 #pragma once
 
-#include "../../include/fornani/utils/Cooldown.hpp"
-#include "../utils/Counter.hpp"
-#include "../../include/fornani/utils/Direction.hpp"
-#include "../../include/fornani/utils/BitFlags.hpp"
-#include "../../include/fornani/entities/packages/Health.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Counter.hpp"
+#include "fornani/utils/Direction.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/entities/packages/Health.hpp"
 
 namespace automa {
 struct ServiceProvider;

@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "../GameState.hpp"
-#include "../../gui/MiniMenu.hpp"
+#include "fornani/automa/GameState.hpp"
+#include "fornani/gui/MiniMenu.hpp"
 
 namespace automa {
 

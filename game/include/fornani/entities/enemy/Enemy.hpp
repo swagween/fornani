@@ -1,19 +1,19 @@
 #pragma once
 
-#include "../Entity.hpp"
-#include "../../utils/Collider.hpp"
-#include "../../utils/BitFlags.hpp"
-#include "../animation/Animation.hpp"
-#include "../../utils/StateFunction.hpp"
-#include "../../utils/Math.hpp"
-#include "../packages/Health.hpp"
-#include "../packages/WeaponPackage.hpp"
-#include "../packages/Caution.hpp"
-#include "../packages/Attack.hpp"
-#include "../packages/Shockwave.hpp"
-#include "../packages/FloatingPart.hpp"
-#include "../player/Indicator.hpp"
-#include "../../audio/Soundboard.hpp"
+#include "fornani/entities/Entity.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/utils/StateFunction.hpp"
+#include "fornani/utils/Math.hpp"
+#include "fornani/entities/packages/Health.hpp"
+#include "fornani/entities/packages/WeaponPackage.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/Attack.hpp"
+#include "fornani/entities/packages/Shockwave.hpp"
+#include "fornani/entities/packages/FloatingPart.hpp"
+#include "fornani/entities/player/Indicator.hpp"
+#include "fornani/audio/Soundboard.hpp"
 #include <string_view>
 #include <iostream>
 

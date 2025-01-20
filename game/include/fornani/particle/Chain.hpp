@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "Spring.hpp"
-#include "../utils/Cooldown.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;

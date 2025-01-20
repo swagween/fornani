@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../particle/Gravitator.hpp"
+#include "fornani/particle/Gravitator.hpp"
 
 namespace automa {
 struct ServiceProvider;

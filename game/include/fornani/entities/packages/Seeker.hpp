@@ -1,6 +1,6 @@
 #pragma once
-#include <../../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
-#include "../../../../src/particle/Gravitator.hpp"
+#include <SFML/Graphics.hpp>
+#include "fornani/particle/Gravitator.hpp"
 
 namespace player {
 class Player;

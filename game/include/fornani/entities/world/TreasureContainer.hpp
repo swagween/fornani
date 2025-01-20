@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include "../item/Drop.hpp"
-#include "../../particle/Gravitator.hpp"
-#include "../../components/CircleSensor.hpp"
-#include "../../../include/fornani/entities/packages/Health.hpp"
+#include "fornani/entities/item/Drop.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/entities/packages/Health.hpp"
 
 namespace automa {
 struct ServiceProvider;

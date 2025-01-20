@@ -1,7 +1,7 @@
 #pragma once
-#include <../../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
-#include "../../components/CircleSensor.hpp"
-#include "../../utils/Cooldown.hpp"
+#include <SFML/Graphics.hpp>
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
 namespace world {
 class Map;

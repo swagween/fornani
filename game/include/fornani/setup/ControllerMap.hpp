@@ -7,7 +7,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
-#include "../utils/BitFlags.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;

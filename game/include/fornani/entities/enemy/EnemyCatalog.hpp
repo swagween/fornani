@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../enemy/catalog/Frdog.hpp"
+#include "fornani/entities/enemy/catalog/Frdog.hpp"
 
 namespace gui {
 class Console;

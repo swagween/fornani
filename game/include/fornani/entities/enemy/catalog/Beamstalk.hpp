@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Enemy.hpp"
+#include "fornani/entities/enemy/Enemy.hpp"
 #define BEAMSTALK_BIND(f) std::bind(&Beamstalk::f, this)
 
 namespace enemy {

@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Direction.hpp"
-#include "../../utils/Cooldown.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Direction.hpp"
+#include "fornani/utils/Cooldown.hpp"
 #include <cmath>
 #include <iostream>
 

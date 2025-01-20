@@ -1,11 +1,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../../utils/BitFlags.hpp"
-#include "../../utils/Cooldown.hpp"
-#include "../../components/CircleSensor.hpp"
-#include "../animation/Animation.hpp"
-#include "../../../include/fornani/entities/packages/Health.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/entities/animation/Animation.hpp"
+#include "fornani/entities/packages/Health.hpp"
 
 namespace automa {
 struct ServiceProvider;

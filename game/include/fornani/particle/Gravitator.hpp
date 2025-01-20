@@ -2,8 +2,8 @@
 #pragma once
 
 #include <string>
-#include "../utils/Collider.hpp"
-#include "../components/SteeringBehavior.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
 
 namespace automa {
 struct ServiceProvider;

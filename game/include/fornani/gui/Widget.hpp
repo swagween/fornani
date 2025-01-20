@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../particle/Gravitator.hpp"
-#include "../utils/Cooldown.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;

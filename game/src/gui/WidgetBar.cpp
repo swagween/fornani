@@ -1,4 +1,4 @@
-#include "WidgetBar.hpp"
+#include "fornani/gui/WidgetBar.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/service/ServiceProvider.hpp"

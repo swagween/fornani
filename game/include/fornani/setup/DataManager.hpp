@@ -8,8 +8,8 @@
 #include <array>
 #include <iostream>
 #include <string>
-#include "../level/Map.hpp"
-#include "../utils/QuestCode.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/utils/QuestCode.hpp"
 #include "File.hpp"
 #include "ResourceFinder.hpp"
 

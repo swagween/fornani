@@ -1,8 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string_view>
-#include "../utils/BitFlags.hpp"
-#include "../utils/Collider.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Collider.hpp"
 
 namespace automa {
 struct ServiceProvider;

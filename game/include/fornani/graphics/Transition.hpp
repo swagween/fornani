@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
-#include "../utils/Cooldown.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
 namespace automa {
 struct ServiceProvider;

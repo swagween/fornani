@@ -1,8 +1,8 @@
 #pragma once
 #include "Game.hpp"
-#include "../setup/ResourceFinder.hpp"
-#include "../setup/Version.hpp"
-#include "../setup/WindowManager.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
+#include "fornani/setup/Version.hpp"
+#include "fornani/setup/WindowManager.hpp"
 
 namespace fornani {
 

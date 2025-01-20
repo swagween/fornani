@@ -2,8 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include "../utils/Direction.hpp"
-#include "../utils/BitFlags.hpp"
+#include "fornani/utils/Direction.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include <iostream>
 
 namespace automa {

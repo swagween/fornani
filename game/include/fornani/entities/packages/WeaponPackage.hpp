@@ -1,8 +1,8 @@
 #pragma once
-#include <../../../../out/vs22-internal/_deps/sfml-src/include/SFML/Graphics.hpp>
-#include "../Entity.hpp"
-#include "../../../../src/weapon/Weapon.hpp"
-#include "../../utils/Cycle.hpp"
+#include <SFML/Graphics.hpp>
+#include "fornani/entities/Entity.hpp"
+#include "fornani/weapon/Weapon.hpp"
+#include "fornani/utils/Cycle.hpp"
 
 namespace enemy {
 class Enemy;

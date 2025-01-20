@@ -5,7 +5,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include "../setup/EnumLookups.hpp"
+#include "fornani/setup/EnumLookups.hpp"
 #include "Tile.hpp"
 #include <djson/json.hpp>
 

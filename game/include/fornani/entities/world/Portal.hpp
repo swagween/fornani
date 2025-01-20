@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "../../utils/Shape.hpp"
-#include "../../utils/BitFlags.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace automa {
 struct ServiceProvider;

@@ -1,9 +1,9 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../animation/AnimatedSprite.hpp"
-#include "../../utils/Shape.hpp"
-#include "../../particle/Sparkler.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/particle/Sparkler.hpp"
 #include "Inspectable.hpp"
 
 namespace world {

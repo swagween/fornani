@@ -1,4 +1,7 @@
 
+# fornani specific
+resources/data/config/*
+resources/data/save/*
 
 # User Specific Generated Files
 **/.vs/*
@@ -59,6 +62,3 @@ compile_commands.json
 # If the user did not configure there project properly then this is here to prevent an accidental push of these files
 cmake-build-*/
 
-#project specific excludes
-!tools/**
-*.log

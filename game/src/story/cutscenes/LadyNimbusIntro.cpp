@@ -1,5 +1,5 @@
 
-#include "fornani/story/cutscenes/LadyNimbusIntro.hpp"
+#include "fornani/story/cutscene/LadyNimbusIntro.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
