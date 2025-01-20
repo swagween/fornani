@@ -28,8 +28,6 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE "src"
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
-
 add_subdirectory(include/fornani)
 add_subdirectory(src)
 

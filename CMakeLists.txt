@@ -12,6 +12,9 @@ project(fornani
   VERSION 1.0
 )
 
+set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
+
+option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the executable, that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION" ON)
 option(FORNANI_BUILD_EDITOR "Build the editor" OFF) # TODO: Bring editor into project
 
 include(cmake/func/AddTargetSource.cmake)
@@ -24,6 +27,8 @@ if (FORNANI_BUILD_EDITOR)
 else ()
     add_subdirectory(launcher)
 endif ()
+
+target_compile_definitions(fornani PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
     add_compile_options(${PROJECT_NAME} INTERFACE /W4056 /W4146 /W4018 /W4056)
