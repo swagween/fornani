@@ -1,0 +1,9 @@
+nani_add_headers(
+        Background.hpp
+        Canvas.hpp
+        Clipboard.hpp
+        EntitySet.hpp
+        Grid.hpp
+        Layer.hpp
+        Tile.hpp
+)

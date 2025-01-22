@@ -1,8 +1,14 @@
 
-#include "fornani/setup/Application.hpp"
+#include "editor/setup/EditorApplication.hpp"
 
-#include <steam/steam_api.h>
+#include <SFML/Graphics.hpp>
+#include "editor/util/Lookup.hpp"
 #include <iostream>
+#include <chrono>
+#include <imgui-SFML.h>
+#include <imgui.h>
+#include <random>
+#include <steam/steam_api.h>
 
 #ifndef FORNANI_STEAM_APP_ID
 #error "FORNANI_STEAM_APP_ID was not defined!"
@@ -14,8 +20,6 @@
 
 int main(int argc, char** argv) {
 	assert(argc > 0);
-	fornani::Application app{argv};
-
 	std::cout << "Current passed steam ID: " << FORNANI_STEAM_APP_ID << "\n";
 
 	if (SteamAPI_RestartAppIfNecessary(FORNANI_STEAM_APP_ID)) {
@@ -29,7 +33,10 @@ int main(int argc, char** argv) {
 	}
 
 	std::cout << "SteamAPI has been initialized.\n";
+
+	pi::EditorApplication app{argv};
 	app.launch(argv);
+    ImGui::SFML::Shutdown();
 
 	return EXIT_SUCCESS;
 }

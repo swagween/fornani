@@ -26,7 +26,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(djson)
 
 # tracy
-set(TRACY_ENABLE ON)
 FetchContent_Declare(
         tracy
         GIT_REPOSITORY https://github.com/wolfpld/tracy

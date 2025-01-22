@@ -4,7 +4,8 @@
 
 namespace fornani {
 
-Application::Application(char** argv) : finder(argv), t_loading(finder.resource_path + "/image/gui/loading.png"), loading(t_loading) {
+
+void Application::init(char** argv) {
 	ZoneScopedN("Application::Application");
 	std::cout << "Resource path: " << finder.resource_path << std::endl;
 

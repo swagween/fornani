@@ -1,0 +1,10 @@
+nani_add_sources(
+        Brush.cpp
+        EntityEditor.cpp
+        Erase.cpp
+        Eyedropper.cpp
+        Fill.cpp
+        Hand.cpp
+        Marquee.cpp
+        Tool.cpp
+)

@@ -3,8 +3,11 @@ include(CMakeDependentOption)
 add_library(fornani)
 add_library(fornani::game ALIAS fornani)
 
-include(${FORNANI_ROOT_DIR}/cmake/func/AddTargetSource.cmake)
+if (NOT DEFINED FORNANI_ROOT_DIR)
+  message(FATAL_ERROR "FORNANI_ROOT_DIR has not been specified! Did you some how call the game cmake only?")
+endif ()
 
+include(${FORNANI_ROOT_DIR}/cmake/func/AddTargetSource.cmake)
 
 target_link_libraries(fornani
         PUBLIC
