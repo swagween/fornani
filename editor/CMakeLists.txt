@@ -1,27 +1,27 @@
-project(fornani-editor)
+project(pioneer)
 
 if (NOT DEFINED FORNANI_ROOT_DIR)
   message(FATAL_ERROR "FORNANI_ROOT_DIR has not been specified! Did you some how call the editor cmake only?")
 endif ()
 
-add_executable(fornani-editor)
-set_target_properties(fornani-editor PROPERTIES OUTPUT_NAME "fornani-editor")
-target_link_libraries(fornani-editor PRIVATE
+add_executable(pioneer)
+set_target_properties(pioneer PROPERTIES OUTPUT_NAME "pioneer")
+target_link_libraries(pioneer PRIVATE
         steamworks
         fornani::deps
         fornani::game
 )
 
-target_include_directories(fornani-editor
+target_include_directories(pioneer
         PUBLIC include "${CMAKE_CURRENT_BINARY_DIR}/include"
         PRIVATE "src"
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
-    add_compile_options(fornani-editor INTERFACE /W4056 /W4146 /W4018 /W4056)
+    add_compile_options(pioneer INTERFACE /W4056 /W4146 /W4018 /W4056)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(fornani-editor INTERFACE -Wno-sign-conversion)
+    add_compile_options(pioneer INTERFACE -Wno-sign-conversion)
 endif()
 
 if (FORNANI_STEAM_APP_ID OR FORNANI_ENABLE_DEV_ID)
@@ -41,15 +41,15 @@ add_subdirectory(src)
 
 if (WIN32)
     add_custom_command(
-            TARGET fornani-editor
+            TARGET pioneer
             COMMENT "Copy Steam API DLL"
-            PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${steamworks_dll_file} $<TARGET_FILE_DIR:fornani-editor>/steam_api64.dll
+            PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${steamworks_dll_file} $<TARGET_FILE_DIR:pioneer>/steam_api64.dll
             VERBATIM
     )
 
     if(MSVC)
         set(subsystem $<IF:$<BOOL:$<CONFIG:Debug>>,CONSOLE,WINDOWS>)
-        target_link_options(fornani-editor PRIVATE
+        target_link_options(pioneer PRIVATE
                 /SUBSYSTEM:${subsystem}
                 /ENTRY:mainCRTStartup
         )
@@ -58,7 +58,7 @@ endif()
 
 if(FORNANI_DEV_BUILD)
     add_custom_command(
-            TARGET fornani-editor
+            TARGET pioneer
             COMMENT "Write steam_appid.txt"
             PRE_LINK COMMAND ${CMAKE_COMMAND} -E echo ${FORNANI_STEAM_APP_ID} > $<TARGET_FILE_DIR:${PROJECT_NAME}>/steam_appid.txt
             VERBATIM

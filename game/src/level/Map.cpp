@@ -444,7 +444,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	ZoneScopedN("Map::render");
-	auto& layers = svc.data.get_layers(room_id);
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);

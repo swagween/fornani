@@ -16,7 +16,7 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 
-	if (flags.test(GameStateFlags::playtest)) { subtitle.setString(svc.version.version_title()); }
+	if (flags.test(GameStateFlags::playtest)) { subtitle.setString(svc.version->version_title()); }
 	subtitle.setLineSpacing(1.5f);
 	subtitle.setLetterSpacing(1.2f);
 	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());

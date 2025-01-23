@@ -1,0 +1,9 @@
+{
+  "title": "pioneer",
+  "build": "alpha",
+  "version": {
+    "major": 2,
+    "minor": 0,
+    "hotfix": 0
+  }
+}

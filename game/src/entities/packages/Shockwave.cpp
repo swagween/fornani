@@ -27,7 +27,7 @@ void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 	}
 }
 
-void Shockwave::set_position(sf::Vector2<float> position) { hit.bounds.setPosition(position); }
+void Shockwave::set_position(sf::Vector2<float> to_position) { hit.bounds.setPosition(to_position); }
 
 void Shockwave::handle_player(player::Player& player) { hit.within_bounds(player.collider.bounding_box) && lifetime.running() ? hit.activate() : hit.deactivate(); }
 

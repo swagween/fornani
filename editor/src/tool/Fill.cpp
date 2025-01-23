@@ -4,7 +4,7 @@
 
 namespace pi {
 
-void Fill::handle_events(Canvas& canvas, sf::Event& e) {
+void Fill::handle_events(Canvas& canvas) {
 	if (in_bounds(canvas.dimensions) && ready && canvas.editable()) {
 		if (contiguous) {
 			fill_section(canvas.tile_val_at(scaled_position().x, scaled_position().y, canvas.active_layer), tile, scaled_position().x, scaled_position().y, canvas);
@@ -15,13 +15,13 @@ void Fill::handle_events(Canvas& canvas, sf::Event& e) {
 	update();
 }
 
-void Fill::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key) {}
+void Fill::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
 void Fill::update() { Tool::update(); }
 
 void Fill::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed) {}
 
-void Fill::fill_section(uint8_t const prev_val, uint8_t const new_val, uint32_t i, uint32_t j, Canvas& canvas) {
+void Fill::fill_section(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas) {
 	if (!canvas.editable()) { return; }
 	if (i < 0 || i >= canvas.dimensions.x || j < 0 || j >= canvas.dimensions.y) {
 		return;
@@ -40,7 +40,7 @@ void Fill::fill_section(uint8_t const prev_val, uint8_t const new_val, uint32_t 
 	}
 }
 
-void Fill::replace_all(uint8_t const prev_val, uint8_t const new_val, uint32_t i, uint32_t j, Canvas& canvas) {
+void Fill::replace_all(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas) {
 	if (pervasive) {
 		for (auto k{0}; k < canvas.get_layers().layers.size(); ++k) { canvas.replace_tile(prev_val, new_val, k); }
 	} else {

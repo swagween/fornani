@@ -1,5 +1,5 @@
 #include <algorithm>
-#include "editor/setup/ResourceFinder.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
 #include "fornani/setup/Application.hpp"
 #include "editor/util/Lookup.hpp"
 #include "editor/automa/Editor.hpp"
@@ -8,12 +8,34 @@
 
 namespace pi {
 
-Editor::Editor(char** argv, WindowManager& window, ResourceFinder& finder) : window(&window), finder(&finder) {
+Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder) : window(&window), finder(&finder), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()) {
 	args = argv;
-	finder.paths.levels = finder.find_directory(argv[0], "demo/resources/level");
-	finder.paths.resources = finder.find_directory(argv[0], "demo/resources");
-	finder.paths.out = finder.find_directory(argv[0], "export/levels");
 	std::cout << "Level path: " << finder.paths.levels << "\n";
+
+	if (!tool_texture.loadFromFile((finder.paths.editor / "gui" / "tools.png").string())) { std::cout << "Failed to load tool texture.\n"; }
+
+	for (int i = 0; i < static_cast<int>(Style::END); ++i) {
+		char const* next = get_style_string.at(static_cast<Style>(i));
+		styles[i] = next;
+	}
+	for (int i = 0; i < static_cast<int>(Backdrop::END); ++i) {
+		char const* next = get_backdrop_string.at(static_cast<Backdrop>(i));
+		bgs[i] = next;
+	}
+
+	finder.paths.room_name = "new_file";
+	std::string msg = "Loading room: " + finder.paths.room_name;
+	console.add_log(msg.data());
+	load();
+	map.get_layers().layers.at(MIDDLEGROUND).active = true;
+	palette.flags.show_entities = false;
+
+	target_shape.setFillColor(sf::Color{110, 90, 200, 80});
+	target_shape.setOutlineColor(sf::Color{240, 230, 255, 100});
+	target_shape.setOutlineThickness(-2);
+	target_shape.setSize({map.f_cell_size(), map.f_cell_size()});
+
+	center_map();
 }
 
 void Editor::run() {
@@ -51,24 +73,11 @@ void Editor::run() {
 			init(finder->paths.room_name);
 		}
 
-		auto event = sf::Event{};
-
-		while (window->get().pollEvent(event)) {
-			ImGui::SFML::ProcessEvent(event);
-			switch (event.type) {
-			case sf::Event::Closed: return;
-			case sf::Event::Resized:
-				window->resize();
-				wallpaper.setSize(window->f_screen_dimensions());
-				break;
-			case sf::Event::KeyPressed:
-				if (event.key.code == sf::Keyboard::A) { current_tool->change_size(-1); }
-				if (event.key.code == sf::Keyboard::D) { current_tool->change_size(1); }
-				if (event.key.code == sf::Keyboard::R) { center_map(); }
-				break;
-			default: break;
-			}
-			handle_events(event, window->get());
+		// events
+		while (std::optional const event = window->get().pollEvent()) {
+			ImGui::SFML::ProcessEvent(window->get(), *event);
+			if (event->is<sf::Event::Closed>()) { return; }
+			handle_events(*event, window->get());
 		}
 
 		// game logic and rendering
@@ -94,127 +103,114 @@ void Editor::run() {
 }
 
 void Editor::init(std::string const& load_path) {
-
-	tool_texture.loadFromFile((finder->paths.local / "gui" / "tools.png").string());
-	sprites.tool.setTexture(tool_texture);
-
-	for (int i = 0; i < static_cast<int>(Style::END); ++i) {
-		char const* next = get_style_string.at(static_cast<Style>(i));
-		styles[i] = next;
-	}
-	for (int i = 0; i < static_cast<int>(Backdrop::END); ++i) {
-		char const* next = get_backdrop_string.at(static_cast<Backdrop>(i));
-		bgs[i] = next;
-	}
-
-	finder->paths.room_name = load_path;
-	std::string msg = "Loading room: " + finder->paths.room_name;
-	console.add_log(msg.data());
-	load();
-	map.get_layers().layers.at(MIDDLEGROUND).active = true;
-	std::cout << static_cast<int>(map.styles.tile) << "\n";
-	sprites.tileset.setTexture(tileset_textures.at(static_cast<int>(map.styles.tile)));
-	palette.flags.show_entities = false;
-
-	target.setFillColor(sf::Color{110, 90, 200, 80});
-	target.setOutlineColor(sf::Color{240, 230, 255, 100});
-	target.setOutlineThickness(-2);
-	target.setSize({map.f_cell_size(), map.f_cell_size()});
-
-	center_map();
 }
 
-void Editor::handle_events(sf::Event& event, sf::RenderWindow& win) {
+void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindow& win) {
 
 	auto& target = palette_mode() ? palette : map;
 
 	current_tool->ready = !window_hovered || palette.hovered();
 	secondary_tool->ready = !window_hovered;
-	if (event.type == sf::Event::EventType::KeyPressed) {
+
+	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 		current_tool->ready = false;
 		secondary_tool->ready = false;
+
+		// modifier and canvas shortcuts
+		if (key_pressed->scancode == sf::Keyboard::Scancode::A) { current_tool->change_size(-1); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::D) { current_tool->change_size(1); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::R) { center_map(); }
+
 		if (!menu_hovered && !popup_open) {
-			if (event.key.code == sf::Keyboard::H) { current_tool = std::move(std::make_unique<Hand>()); }
-			if (event.key.code == sf::Keyboard::B) { current_tool = std::move(std::make_unique<Brush>()); }
-			if (event.key.code == sf::Keyboard::G) { current_tool = std::move(std::make_unique<Fill>()); }
-			if (event.key.code == sf::Keyboard::E) { current_tool = std::move(std::make_unique<Erase>()); }
-			if (event.key.code == sf::Keyboard::M) { current_tool = std::move(std::make_unique<Marquee>()); }
-			if (event.key.code == sf::Keyboard::N) { current_tool = std::move(std::make_unique<EntityEditor>()); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::H) { current_tool = std::move(std::make_unique<Hand>()); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::B) { current_tool = std::move(std::make_unique<Brush>()); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::G) { current_tool = std::move(std::make_unique<Fill>()); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::E) { current_tool = std::move(std::make_unique<Erase>()); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::M) { current_tool = std::move(std::make_unique<Marquee>()); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::N) { current_tool = std::move(std::make_unique<EntityEditor>()); }
 		}
 		if (control_pressed()) {
-			if (event.key.code == sf::Keyboard::X) { current_tool->handle_keyboard_events(target, event.key.code); }
-			if (event.key.code == sf::Keyboard::C) { current_tool->handle_keyboard_events(target, event.key.code); }
-			if (event.key.code == sf::Keyboard::V) { current_tool->handle_keyboard_events(target, event.key.code); }
-			if (event.key.code == sf::Keyboard::R) {
+			if (key_pressed->scancode == sf::Keyboard::Scancode::X) { current_tool->handle_keyboard_events(target, key_pressed->scancode); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::C) { current_tool->handle_keyboard_events(target, key_pressed->scancode); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::V) { current_tool->handle_keyboard_events(target, key_pressed->scancode); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::R) {
 				map.center(window->f_center_screen());
 				map.set_scale(1.f);
 			}
-			if (event.key.code == sf::Keyboard::D) { trigger_demo = true; }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::D) { trigger_demo = true; }
 		}
-		if (event.key.code == sf::Keyboard::Q) { current_tool->handle_keyboard_events(target, event.key.code); }
-		if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift) { pressed_keys.set(PressedKeys::shift); }
-		if (event.key.code == sf::Keyboard::LControl || event.key.code == sf::Keyboard::RControl) {
-			current_tool->handle_keyboard_events(target, event.key.code);
+		if (key_pressed->scancode == sf::Keyboard::Scancode::Q) { current_tool->handle_keyboard_events(target, key_pressed->scancode); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { pressed_keys.set(PressedKeys::shift); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) {
+			current_tool->handle_keyboard_events(target, key_pressed->scancode);
 			pressed_keys.set(PressedKeys::control);
 		}
-		if (event.key.code == sf::Keyboard::Space) { pressed_keys.set(PressedKeys::space); }
-		if (event.key.code == sf::Keyboard::LAlt) {
+		if (key_pressed->scancode == sf::Keyboard::Scancode::Space) { pressed_keys.set(PressedKeys::space); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt) {
 			if (current_tool->type == ToolType::brush) { current_tool = std::move(std::make_unique<Eyedropper>()); }
 		}
-		if (event.key.code == sf::Keyboard::Z) {
+		if (key_pressed->scancode == sf::Keyboard::Scancode::Z) {
 			if (control_pressed() && !shift_pressed()) { map.undo(); }
 			if (control_pressed() && shift_pressed()) { map.redo(); }
 		}
 	}
 
-	if (event.type == sf::Event::EventType::KeyReleased) {
+	if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
 		current_tool->ready = false;
 		secondary_tool->ready = false;
-		if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift) { pressed_keys.reset(PressedKeys::shift); }
-		if (event.key.code == sf::Keyboard::LControl || event.key.code == sf::Keyboard::RControl) { pressed_keys.reset(PressedKeys::control); }
-		if (event.key.code == sf::Keyboard::Space) { pressed_keys.reset(PressedKeys::space); }
-		if (event.key.code == sf::Keyboard::LAlt) {
+		if (key_released->scancode == sf::Keyboard::Scancode::LShift || key_released->scancode == sf::Keyboard::Scancode::RShift) { pressed_keys.reset(PressedKeys::shift); }
+		if (key_released->scancode == sf::Keyboard::Scancode::LControl || key_released->scancode == sf::Keyboard::Scancode::RControl) { pressed_keys.reset(PressedKeys::control); }
+		if (key_released->scancode == sf::Keyboard::Scancode::Space) { pressed_keys.reset(PressedKeys::space); }
+		if (key_released->scancode == sf::Keyboard::Scancode::LAlt) {
 			if (current_tool->type == ToolType::eyedropper) { current_tool = std::move(std::make_unique<Brush>()); }
 		}
 	}
 
 	// zoom controls
-	if (event.type == sf::Event::MouseWheelMoved) {
-		auto delta = event.mouseWheel.delta * zoom_factor * map.get_scale();
+	if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+		auto delta = scrolled->delta * zoom_factor * map.get_scale();
 		if (map.within_zoom_limits(delta)) { map.move(current_tool->f_position() * -delta); }
 		map.zoom(delta);
 	}
 
-	auto& tool = sf::Mouse::isButtonPressed(sf::Mouse::Left) && !space_pressed() ? current_tool : secondary_tool;
-	if ((sf::Mouse::isButtonPressed(sf::Mouse::Left) || sf::Mouse::isButtonPressed(sf::Mouse::Right)) && !menu_hovered && !window_hovered) {
-		pressed_keys.set(PressedKeys::mouse);
-		if (palette.hovered()) { current_tool->clear(); }
-		tool->has_palette_selection = false;
-		target.save_state(*tool);
-		tool->handle_events(target, event);
-		tool->activate();
-		if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
-		if (palette_mode() && current_tool->type != ToolType::marquee) {
-			auto pos = current_tool->get_window_position() - palette.get_position();
-			auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 4);
-			current_tool->store_tile(idx);
-			selected_block = idx;
-			if (!current_tool->is_paintable()) { current_tool = std::move(std::make_unique<Brush>()); }
+	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+		auto left_pressed = button_pressed->button == sf::Mouse::Button::Left;
+		auto right_pressed = button_pressed->button == sf::Mouse::Button::Right;
+		if (left_pressed) { pressed_keys.set(PressedKeys::mouse_left); }
+		if (right_pressed) { pressed_keys.set(PressedKeys::mouse_right); }
+
+		auto& tool = left_pressed ? current_tool : secondary_tool;
+		if ((left_pressed || right_pressed) && !menu_hovered && !window_hovered) {
+			if (palette.hovered()) { current_tool->clear(); }
+			tool->has_palette_selection = false;
+			target.save_state(*tool);
+			if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
+			if (palette_mode() && current_tool->type != ToolType::marquee) {
+				auto pos = current_tool->get_window_position() - palette.get_position();
+				auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 4);
+				current_tool->store_tile(idx);
+				selected_block = idx;
+				if (!current_tool->is_paintable()) { current_tool = std::move(std::make_unique<Brush>()); }
+			}
 		}
-	} else {
-		pressed_keys.reset(PressedKeys::mouse);
-		current_tool->reset();
-		secondary_tool->reset();
+		// select tool gets special treatment, because it can be used without the mouse being pressed (copy/paste)
 	}
-	// select tool gets special treatment, because it can be used without the mouse being pressed (copy/paste)
-	if (tool->type == ToolType::marquee) { tool->handle_events(target, event); }
+
+	auto& tool = left_mouse_pressed() ? current_tool : secondary_tool;
+	tool->handle_events(target);
+
+	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
+		if (button_released->button == sf::Mouse::Button::Left) { pressed_keys.reset(PressedKeys::mouse_left); }
+		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
+	}
 }
 
 void Editor::logic() {
 
-	auto& target = palette_mode() ? palette : map;
-
 	window_hovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemActive();
+
+	left_mouse_pressed() ? current_tool->activate() : current_tool->deactivate();
+	right_mouse_pressed() ? secondary_tool->activate() : secondary_tool->deactivate();
 	palette.active_layer = 4;
 	map.active_layer = active_layer;
 	if (current_tool->trigger_switch) { current_tool = std::move(std::make_unique<Hand>()); }
@@ -240,33 +236,33 @@ void Editor::load() {
 	palette.load(*finder, "palette", true);
 	map.set_origin({});
 	palette.set_origin({});
-	sprites.tileset.setTexture(tileset_textures.at(map.get_i_style()));
 }
 
 bool Editor::save() { return map.save(*finder, finder->paths.room_name); }
 
 void Editor::render(sf::RenderWindow& win) {
 
-	map.render(win, sprites.tileset);
+	auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
+	map.render(win, tileset);
 
 	if (current_tool->ready && current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() &&
 		(current_tool->type == ToolType::brush || current_tool->type == ToolType::fill || current_tool->type == ToolType::erase || current_tool->type == ToolType::entity_editor)) {
 		for (int i = 0; i < current_tool->size; i++) {
 			for (int j = 0; j < current_tool->size; j++) {
-				target.setPosition((current_tool->f_scaled_position().x - i) * map.f_cell_size() + map.get_position().x, (current_tool->f_scaled_position().y - j) * map.f_cell_size() + map.get_position().y);
-				target.setSize({map.f_cell_size(), map.f_cell_size()});
-				win.draw(target);
+				target_shape.setPosition({(current_tool->f_scaled_position().x - i) * map.f_cell_size() + map.get_position().x, (current_tool->f_scaled_position().y - j) * map.f_cell_size() + map.get_position().y});
+				target_shape.setSize({map.f_cell_size(), map.f_cell_size()});
+				win.draw(target_shape);
 			}
 		}
 	}
 
 	if (show_palette) {
 		palette.set_backdrop_color({40, 40, 40, 180});
-		palette.render(win, sprites.tileset);
+		palette.render(win, tileset);
 		if (palette_mode() && palette.hovered()) {
 			selector.setSize({palette.f_cell_size(), palette.f_cell_size()});
-			mouse_pressed() && palette_mode() ? selector.setOutlineColor({55, 255, 255, 180}) : selector.setOutlineColor({255, 255, 255, 80});
-			mouse_pressed() && palette_mode() ? selector.setFillColor({50, 250, 250, 60}) : selector.setFillColor({50, 250, 250, 20});
+			left_mouse_pressed() && palette_mode() ? selector.setOutlineColor({55, 255, 255, 180}) : selector.setOutlineColor({255, 255, 255, 80});
+			right_mouse_pressed() && palette_mode() ? selector.setFillColor({50, 250, 250, 60}) : selector.setFillColor({50, 250, 250, 20});
 			selector.setOutlineThickness(-2.f);
 			selector.setPosition(palette.get_tile_position_at(static_cast<int>(current_tool->get_window_position().x - palette.get_position().x), static_cast<int>(current_tool->get_window_position().y - palette.get_position().y)) + palette.get_position());
 			win.draw(selector);
@@ -274,11 +270,13 @@ void Editor::render(sf::RenderWindow& win) {
 	}
 
 	// render custom cursor
+
+	auto tool = sf::Sprite{tool_texture};
 	auto& canvas = palette_mode() ? palette : map;
 	current_tool->render(canvas, win, canvas.get_position(), !palette_mode());
-	sprites.tool.setTextureRect({{static_cast<int>(current_tool->type) * 32, static_cast<int>(current_tool->status) * 32}, {32, 32}});
-	sprites.tool.setPosition(current_tool->get_window_position());
-	if (!ImGui::GetIO().MouseDrawCursor) { win.draw(sprites.tool); }
+	tool.setTextureRect({{static_cast<int>(current_tool->type) * 32, static_cast<int>(current_tool->status) * 32}, {32, 32}});
+	tool.setPosition(current_tool->get_window_position());
+	if (!ImGui::GetIO().MouseDrawCursor) { win.draw(tool); }
 
 	// ImGui stuff
 	gui_render(win);
@@ -444,7 +442,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 
 				map = Canvas({static_cast<uint32_t>(width * CHUNK_SIZE), static_cast<uint32_t>(height * CHUNK_SIZE)});
 				map.styles.tile = static_cast<Style>(style_current);
-				sprites.tileset.setTexture(tileset_textures.at(style_current));
 				map.bg = static_cast<Backdrop>(bg_current);
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
 				finder->paths.room_name = buffer;
@@ -625,9 +622,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				for (int j = 0; j < num_cols; j++) {
 					auto idx = j + i * num_cols;
 					ImGui::PushID(idx);
-					map.entities.sprites.enemy_thumb.setTextureRect(sf::IntRect({{j * 16, i * 16}, {16, 16}}));
-					map.entities.sprites.enemy_thumb.setScale({2.0f, 2.0f});
-					if (ImGui::ImageButton(map.entities.sprites.enemy_thumb, 2)) {
+					if (ImGui::Button(std::to_string(idx).c_str())) {
 						current_tool = std::move(std::make_unique<EntityEditor>());
 						current_tool->ent_type = EntityType::critter;
 					}
@@ -655,14 +650,14 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					for (int j = 0; j < num_cols; j++) {
 						ImGui::PushID(j + i * num_cols);
 						auto idx = j + i * num_cols;
-						map.entities.sprites.large_animator.setTextureRect(sf::IntRect({{idx * 64, 0}, {64, 64}}));
-						map.entities.sprites.large_animator.setScale({0.5f, 0.5f});
-						if (ImGui::ImageButton(map.entities.sprites.large_animator, 2)) {
-							current_tool = std::move(std::make_unique<EntityEditor>());
-							current_tool->ent_type = EntityType::animator;
-							//current_tool->current_animator = Animator{{.dimensions = sf::Vector2<uint32_t>{2u, 2u}, .id = idx + large_index_multiplier}, false, active_layer >= 4}; // change booleans here later
-							ImGui::CloseCurrentPopup();
-						}
+						//map.entities.sprites.large_animator.setTextureRect(sf::IntRect({{idx * 64, 0}, {64, 64}}));
+						//map.entities.sprites.large_animator.setScale({0.5f, 0.5f});
+						//if (ImGui::ImageButton(map.entities.sprites.large_animator, 2)) {
+						//	current_tool = std::move(std::make_unique<EntityEditor>());
+						//	current_tool->ent_type = EntityType::animator;
+						//	//current_tool->current_animator = Animator{{.dimensions = sf::Vector2<uint32_t>{2u, 2u}, .id = idx + large_index_multiplier}, false, active_layer >= 4}; // change booleans here later
+						//	ImGui::CloseCurrentPopup();
+						//}
 						ImGui::PopID();
 						ImGui::SameLine();
 					}
@@ -675,13 +670,13 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					for (int j = 0; j < num_cols; j++) {
 						ImGui::PushID(j + i * num_cols);
 						auto idx = j + i * num_cols;
-						map.entities.sprites.small_animator.setTextureRect(sf::IntRect({{idx * 32, 0}, {32, 32}}));
-						if (ImGui::ImageButton(map.entities.sprites.small_animator, 2)) {
-							current_tool = std::move(std::make_unique<EntityEditor>());
-							current_tool->ent_type = EntityType::animator;
-							//current_tool->current_animator = Animator{{.dimensions = sf::Vector2<uint32_t>{1u, 1u}, .id = idx + small_index_multiplier}, false, active_layer >= 4}; // change booleans here later
-							ImGui::CloseCurrentPopup();
-						}
+						//map.entities.sprites.small_animator.setTextureRect(sf::IntRect({{idx * 32, 0}, {32, 32}}));
+						//if (ImGui::ImageButton(map.entities.sprites.small_animator, 2)) {
+						//	current_tool = std::move(std::make_unique<EntityEditor>());
+						//	current_tool->ent_type = EntityType::animator;
+						//	//current_tool->current_animator = Animator{{.dimensions = sf::Vector2<uint32_t>{1u, 1u}, .id = idx + small_index_multiplier}, false, active_layer >= 4}; // change booleans here later
+						//	ImGui::CloseCurrentPopup();
+						//}
 						ImGui::PopID();
 						ImGui::SameLine();
 					}
@@ -960,7 +955,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, {1, 0});
 	if (ImGui::Begin("Settings", debug, window_flags)) {
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+		window_flags = ImGuiWindowFlags_None;
 		window_flags |= ImGuiWindowFlags_MenuBar;
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 		ImGui::BeginChild("ChildR", ImVec2(320, 72), true, window_flags);
@@ -968,10 +963,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		if (ImGui::BeginMenu("Tools")) { ImGui::EndMenu(); }
 
 		ImGui::EndMenuBar();
+		static auto tools = sf::Sprite{tool_texture};
 		for (int i = 0; i < NUM_TOOLS; i++) {
-			ImGui::PushID(i);
-			sprites.tool.setTextureRect(sf::IntRect({{i * 32, 0}, {32, 32}}));
-			ImGui::ImageButton(sprites.tool, 2);
+			ImGui::PushID(i); 
+			tools.setTextureRect(sf::IntRect{{i * 32, 0}, {32, 32}});
+			ImGui::ImageButton(std::to_string(i).c_str(), tools, {32.f, 32.f}, sf::Color::Transparent, sf::Color::White);
 			if (ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
@@ -1013,8 +1009,9 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		}
 		ImGui::Separator();
 		ImGui::Text("Current Block:");
-		sprites.tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
-		ImGui::Image(sprites.tileset);
+		auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
+		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
+		ImGui::Image(tileset);
 		if (current_tool->type == ToolType::entity_editor) {
 			ImGui::Text("Current Entity:");
 			switch (current_tool->ent_type) {
@@ -1095,7 +1092,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		};
 		ImGui::PopStyleColor(3);
 		if (ImGui::Button("Export Layer to .png")) {
-			screencap.create(win.getSize().x, win.getSize().y);
+			screencap.resize({win.getSize().x, win.getSize().y});
 			export_layer_texture();
 		};
 		if (ImGui::Button("Undo")) { map.undo(); }
@@ -1104,10 +1101,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 
 		ImGui::Text("Scene Style: ");
 		int style_current = static_cast<int>(map.styles.tile);
-		if (ImGui::Combo("##scenestyle", &style_current, styles, IM_ARRAYSIZE(styles))) {
-			map.styles.tile = static_cast<Style>(style_current);
-			sprites.tileset.setTexture(tileset_textures.at(style_current));
-		}
+		if (ImGui::Combo("##scenestyle", &style_current, styles, IM_ARRAYSIZE(styles))) { map.styles.tile = static_cast<Style>(style_current); }
 		ImGui::Text("Scene Background: ");
 		int bg_current = static_cast<int>(map.bg);
 		if (ImGui::Combo("##scenebg", &bg_current, bgs, IM_ARRAYSIZE(bgs))) { map.bg = static_cast<Backdrop>(bg_current); }
@@ -1147,13 +1141,13 @@ void Editor::help_marker(char const* desc) {
 void Editor::export_layer_texture() {
 	screencap.clear(sf::Color::Transparent);
 	sf::Vector2u mapdim{map.get_real_dimensions()};
-	screencap.create(mapdim.x, mapdim.y);
+	screencap.resize({mapdim.x, mapdim.y});
 	for (int i = 0; i <= active_layer; ++i) {
 		for (auto& cell : map.get_layers().layers.at(i).grid.cells) {
 			if (cell.value > 0) {
 				auto x_coord = (cell.value % 16) * TILE_WIDTH;
 				auto y_coord = std::floor(cell.value / 16) * TILE_WIDTH;
-				tile_sprite.setTexture(tileset_textures.at(static_cast<int>(map.styles.tile)));
+				auto tile_sprite = sf::Sprite{tileset_textures.at(static_cast<int>(map.styles.tile))};
 				tile_sprite.setTextureRect(sf::IntRect({static_cast<int>(x_coord), static_cast<int>(y_coord)}, {32, 32}));
 				tile_sprite.setPosition(cell.scaled_position());
 				screencap.draw(tile_sprite);

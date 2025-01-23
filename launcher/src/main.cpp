@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
 	}
 
 	std::cout << "SteamAPI has been initialized.\n";
+	app.init(argv);
 	app.launch(argv);
 
 	return EXIT_SUCCESS;

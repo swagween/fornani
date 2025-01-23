@@ -59,21 +59,17 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
             std::cout << "Launching demo in room " << room_id << " from folder " << levelpath.filename() << "\n";
             services.state_controller.player_position = player_position;
             player.set_position(player_position);
-        } else {
-            game_state.get_current_state().target_folder.paths.scene = services.finder.scene_path;
-            game_state.get_current_state().target_folder.paths.region = services.finder.scene_path + "/firstwind";
         }
     }
 
     gui::ActionContextBar ctx_bar(services);
 
     std::cout << "> Success\n";
-    //services.stopwatch.stop();
-    //services.stopwatch.print_time();
 
     sf::Clock delta_clock{};
 
     while (services.window->get().isOpen()) {
+
         ZoneScopedN("Game Loop");
 
         auto smp = services.random.percent_chance(10) ? 1 : 0;
@@ -82,7 +78,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
         {
             ZoneScopedN("Check Shutdown Condition");
-            if (services.state_controller.actions.test(automa::Actions::shutdown)) {
+			if (services.state_controller.actions.test(automa::Actions::shutdown)) {
+				std::cout << "Shutdown.\n";
                 break;
             }
             if (services.death_mode()) {

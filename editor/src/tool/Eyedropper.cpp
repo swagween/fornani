@@ -4,12 +4,12 @@
 
 namespace pi {
 
-void Eyedropper::handle_events(Canvas& canvas, sf::Event& e) {
+void Eyedropper::handle_events(Canvas& canvas) {
 	if (in_bounds(canvas.dimensions) && ready) { tile = canvas.tile_val_at(scaled_position().x, scaled_position().y, canvas.active_layer); }
 	update();
 }
 
-void Eyedropper::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key) {}
+void Eyedropper::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
 void Eyedropper::update() { Tool::update(); }
 

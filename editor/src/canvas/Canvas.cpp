@@ -2,7 +2,7 @@
 #include "editor/canvas/Canvas.hpp"
 #include "editor/util/Lookup.hpp"
 #include "editor/tool/Tool.hpp"
-#include "editor/setup/ResourceFinder.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
 #include <cassert>
 
 namespace pi {
@@ -15,7 +15,7 @@ Canvas::Canvas(sf::Vector2<uint32_t> dim, bool editable) : camera{sf::Vector2<fl
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
     clear();
     map_states.push_back(Map());
-	for (int i = 0; i < NUM_LAYERS; ++i) { map_states.back().layers.push_back(Layer(i, (i == MIDDLEGROUND), dim)); }
+	for (uint32_t i = 0; i < NUM_LAYERS; ++i) { map_states.back().layers.push_back(Layer(i, (i == MIDDLEGROUND), dim)); }
 
 	box.setOutlineColor(sf::Color{200, 200, 200, 20});
 	box.setOutlineThickness(-2);
@@ -80,10 +80,10 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	if (flags.show_grid && !states_empty()) {
 		if (get_layers().layers.empty()) { return; }
 		for (auto& cell : get_layers().layers.back().grid.cells) {
-			if (cell.scaled_position().x + camera.bounding_box.left < 0) { continue; }
-			if (cell.scaled_position().x + camera.bounding_box.left > win.getSize().x) { continue; }
-			if (cell.scaled_position().y + camera.bounding_box.top < 0) { continue; }
-			if (cell.scaled_position().y + camera.bounding_box.top > win.getSize().y) { continue; }
+			if (cell.scaled_position().x + camera.bounding_box.position.x < 0) { continue; }
+			if (cell.scaled_position().x + camera.bounding_box.position.x > win.getSize().x) { continue; }
+			if (cell.scaled_position().y + camera.bounding_box.position.y < 0) { continue; }
+			if (cell.scaled_position().y + camera.bounding_box.position.y > win.getSize().y) { continue; }
 			gridbox.setSize({f_cell_size(), f_cell_size()});
 			gridbox.setOrigin(get_origin());
 			gridbox.setPosition(cell.scaled_position() + camera.position);
@@ -97,7 +97,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	}
 }
 
-void Canvas::load(ResourceFinder& finder, std::string const& room_name, bool local) {
+void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bool local) {
 
 	map_states.clear();
 	redo_states.clear();
@@ -106,7 +106,7 @@ void Canvas::load(ResourceFinder& finder, std::string const& room_name, bool loc
 	map_states.push_back(Map());
 	clear();
 
-	auto const& source = local ? finder.paths.local : finder.paths.levels;
+	auto const& source = local ? finder.paths.editor : finder.paths.levels;
 
 	std::string metapath = (source / room_name / "meta.json").string();
 	std::string tilepath = (source / room_name / "tile.json").string();
@@ -125,7 +125,7 @@ void Canvas::load(ResourceFinder& finder, std::string const& room_name, bool loc
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
 	real_dimensions = {static_cast<float>(dimensions.x) * constants.cell_size, static_cast<float>(dimensions.y) * constants.cell_size};
-	for (int i = 0; i < NUM_LAYERS; ++i) { map_states.back().layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
+	for (uint32_t i = 0; i < NUM_LAYERS; ++i) { map_states.back().layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
 
 	auto style_value = meta["style"].as<int>();
 	styles.tile = static_cast<Style>(style_value);
@@ -153,7 +153,7 @@ void Canvas::load(ResourceFinder& finder, std::string const& room_name, bool loc
     
 }
 
-bool Canvas::save(ResourceFinder& finder, std::string const& room_name) {
+bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
 
 	std::filesystem::create_directory(finder.paths.levels / room_name);
 	std::filesystem::create_directory(finder.paths.out / room_name);
@@ -182,8 +182,6 @@ bool Canvas::save(ResourceFinder& finder, std::string const& room_name) {
 	data.meta["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	data.meta["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
 
-	int value{};
-	int counter = 0;
 	entities.save(finder, data.meta, room_name);
 
 	data.tiles["layers"] = wipe;
@@ -192,7 +190,7 @@ bool Canvas::save(ResourceFinder& finder, std::string const& room_name) {
 	int current_layer{};
 	for (auto& layer : map_states.back().layers) {
 		int current_cell{};
-		for (auto& cell : layer.grid.cells) {
+		for ([[maybe_unused]] auto& cell : layer.grid.cells) {
 			data.tiles["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);
 			++current_cell;
 		}
@@ -268,7 +266,7 @@ sf::Vector2<int> Canvas::get_tile_coord(int lookup) {
 	return ret * 32;
 }
 
-void Canvas::replace_tile(uint8_t from, uint8_t to, int layer_index) {
+void Canvas::replace_tile(uint32_t from, uint32_t to, int layer_index) {
 	if (layer_index >= map_states.back().layers.size()) { return; }
 	for (auto& tile : map_states.back().layers.at(layer_index).grid.cells) {
 		if (tile.value == from) { tile.value = to; }

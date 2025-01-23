@@ -28,10 +28,10 @@ void HelpText::render(sf::RenderWindow& win) {
 	delay.update();
 	if (!ready()) { return; }
 	alpha_counter.update();
-	auto alpha = static_cast<int>(-128 * cos(0.06f * alpha_counter.get_count()) + 128);
-	if (flags.test(HelpTextFlags::no_blink)) { alpha = 255; }
-	text_color.a = std::clamp(alpha, 0, 255);
-	bg_color.a = std::clamp(alpha, 0, 255);
+	auto alpha = static_cast<unsigned>(-128 * cos(0.06f * alpha_counter.get_count()) + 128);
+	if (flags.test(HelpTextFlags::no_blink)) { alpha = 255u; }
+	text_color.a = std::clamp(alpha, 0u, 255u);
+	bg_color.a = std::clamp(alpha, 0u, 255u);
 	if (background) {
 		data.setPosition(position + bg_offset);
 		data.setFillColor(bg_color);

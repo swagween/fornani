@@ -14,17 +14,17 @@ void Ammo::set_max(int amount) {
 	magazine.taken_time = 8;
 	if (amount == -1) {
 		flags.set(AmmoFlags::infinite);
-		magazine.set_max(1);
+		magazine.set_max(1.f);
 		refill();
 		return;
 	}
-	magazine.set_max(amount);
+	magazine.set_max(static_cast<float>(amount));
 }
 
 void Ammo::refill() { magazine.refill(); }
 
 void Ammo::use(int amount) {
-	if (!infinite()) { magazine.inflict(amount, true); }
+	if (!infinite()) { magazine.inflict(static_cast<float>(amount), true); }
 }
 
 } // namespace arms

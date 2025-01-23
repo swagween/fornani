@@ -3,7 +3,7 @@
 
 namespace pi {
 
-void Marquee::handle_events(Canvas& canvas, sf::Event& e) {
+void Marquee::handle_events(Canvas& canvas) {
 	sf::Vector2<uint32_t> dim = {static_cast<uint32_t>(canvas.get_real_dimensions().x), static_cast<uint32_t>(canvas.get_real_dimensions().y)};
 	if (in_bounds(dim) && ready) {
 		if (active) {
@@ -40,11 +40,11 @@ void Marquee::handle_events(Canvas& canvas, sf::Event& e) {
 	update();
 }
 
-void Marquee::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key) {
+void Marquee::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {
 	if (!clipboard) { return; }
-	if (key == sf::Keyboard::X) { cut(canvas); }
-	if (key == sf::Keyboard::C) { copy(canvas); }
-	if (key == sf::Keyboard::V && !clipboard.value().empty()) { paste(canvas); }
+	if (scancode == sf::Keyboard::Scancode::X) { cut(canvas); }
+	if (scancode == sf::Keyboard::Scancode::C) { copy(canvas); }
+	if (scancode == sf::Keyboard::Scancode::V && !clipboard.value().empty()) { paste(canvas); }
 }
 
 void Marquee::update() { Tool::update(); }

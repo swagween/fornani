@@ -2,12 +2,12 @@
 #include "editor/canvas/Background.hpp"
 #include <imgui.h>
 #include <algorithm>
-#include "editor/setup/ResourceFinder.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
 #include "editor/canvas/Canvas.hpp"
 
 namespace pi {
 
-Background::Background(ResourceFinder& finder, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "rosy_haze"}, {18, "woods"}} {
+Background::Background(data::ResourceFinder& finder, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "rosy_haze"}, {18, "woods"}} {
 	std::string type = labels.contains(bg_id) ? labels.at(bg_id) : "black";
 	std::string doc = type + ".png";
 	auto bg = dj::Json::from_file((finder.paths.resources / "data/level/background_behaviors.json").string().c_str());
@@ -20,8 +20,7 @@ Background::Background(ResourceFinder& finder, int bg_id) : labels{{0, "dusk"}, 
 	scroll_pane = dimensions;
 	auto index{0};
 	for (auto& layer : in_data["layers"].array_view()) {
-		layers.push_back({index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()});
-		layers.back().sprite.setTexture(texture);
+		layers.push_back(BackgroundLayer(texture, index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()));
 		layers.back().sprite.setTextureRect(sf::IntRect{{0, dimensions.y * index}, dimensions});
 		++index;
 	}
@@ -70,4 +69,6 @@ void Background::debug() {
 	ImGui::End();
 }
 
-} // namespace bg
+BackgroundLayer::BackgroundLayer(sf::Texture& texture, int index, float speed, float parallax) : sprite(texture), render_layer(index), scroll_speed(speed), parallax(parallax) {}
+
+} // namespace pi

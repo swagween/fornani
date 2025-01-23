@@ -8,7 +8,7 @@ EntityEditor::EntityEditor(EntityMode to_mode) {
 	ent_type = EntityType::none;
 }
 
-void EntityEditor::handle_events(Canvas& canvas, sf::Event& e) {
+void EntityEditor::handle_events(Canvas& canvas) {
 	if (in_bounds(canvas.dimensions) && ready && canvas.editable()) {
 		if (selector_mode()) {
 			ent_type = EntityType::none;
@@ -28,8 +28,8 @@ void EntityEditor::handle_events(Canvas& canvas, sf::Event& e) {
 	update();
 }
 
-void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key) {
-	if (key == sf::Keyboard::Q) { trigger_switch = true; }
+void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {
+	if (scancode == sf::Keyboard::Scancode::Q) { trigger_switch = true; }
 }
 
 void EntityEditor::update() {
@@ -50,19 +50,19 @@ void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<flo
 	if (ent_type == EntityType::portal) {
 		for (uint32_t i = 0; i < current_entity.value()->dimensions.x; ++i) {
 			for (uint32_t j = 0; j < current_entity.value()->dimensions.y; ++j) {
-				box.setPosition(current_entity.value()->position.x * canvas.f_cell_size() + i * canvas.f_cell_size() + offset.x, current_entity.value()->position.y * canvas.f_cell_size() + j * canvas.f_cell_size() + offset.y);
+				box.setPosition({current_entity.value()->position.x * canvas.f_cell_size() + i * canvas.f_cell_size() + offset.x, current_entity.value()->position.y * canvas.f_cell_size() + j * canvas.f_cell_size() + offset.y});
 				win.draw(box);
 			}
 		}
 	} else if (ent_type == EntityType::animator) {
 		for (uint32_t i = 0; i < current_entity.value()->dimensions.x; ++i) {
 			for (uint32_t j = 0; j < current_entity.value()->dimensions.y; ++j) {
-				box.setPosition(current_entity.value()->position.x * canvas.f_cell_size() + i * canvas.f_cell_size() + offset.x, current_entity.value()->position.y * canvas.f_cell_size() + j * canvas.f_cell_size() + offset.y);
+				box.setPosition({current_entity.value()->position.x * canvas.f_cell_size() + i * canvas.f_cell_size() + offset.x, current_entity.value()->position.y * canvas.f_cell_size() + j * canvas.f_cell_size() + offset.y});
 				win.draw(box);
 			}
 		}
 	} else {
-		box.setPosition(scaled_position().x * canvas.f_cell_size() + offset.x, scaled_position().y * canvas.f_cell_size() + offset.y);
+		box.setPosition({scaled_position().x * canvas.f_cell_size() + offset.x, scaled_position().y * canvas.f_cell_size() + offset.y});
 		win.draw(box);
 	}
 }

@@ -12,48 +12,39 @@ namespace data {
 namespace fs = std::filesystem;
 
 class ResourceFinder {
-
   public:
-	ResourceFinder() = default;
 	ResourceFinder(char** argv) {
-		set_resource_path(argv);
-		set_scene_path(argv);
+		paths.resources = find_directory(argv[0], "resources");
+		paths.editor = find_directory(argv[0], "resources/editor");
+		paths.levels = find_directory(argv[0], "resources/level");
+		paths.out = find_directory(argv[0], "resources/editor/export");
 	}
 
-	void set_resource_path(char** argv) { resource_path = find_resources(argv[0]).string(); }
-	void set_scene_path(char** argv) { scene_path = find_scenes(argv[0]).string(); }
-
-	fs::path find_resources(fs::path exe) {
-		auto check = [](fs::path const& prefix) {
-			auto path = prefix / "resources";
+	fs::path find_directory(fs::path const& exe, std::string const& target) {
+		auto execpy = fs::path{exe};
+		auto check = [target](fs::path const& prefix) {
+			auto path = prefix / target;
 			if (fs::is_directory(path)) { return path; }
 			return fs::path{};
 		};
-		while (!exe.empty()) {
-			if (auto ret = check(exe); !ret.empty()) { return ret; }
-			auto parent = exe.parent_path();
-			if (exe == parent) { break; }
-			exe = std::move(parent);
-		}
-		return {};
-	}
-	fs::path find_scenes(fs::path exe) {
-		auto check = [](fs::path const& prefix) {
-			auto path = prefix / "resources/scenes";
-			if (fs::is_directory(path)) { return path; }
-			return fs::path{};
-		};
-		while (!exe.empty()) {
-			if (auto ret = check(exe); !ret.empty()) { return ret; }
-			auto parent = exe.parent_path();
-			if (exe == parent) { break; }
-			exe = std::move(parent);
+		while (!execpy.empty()) {
+			if (auto ret = check(execpy); !ret.empty()) { return ret; }
+			auto parent = execpy.parent_path();
+			if (execpy == parent) { break; }
+			execpy = std::move(parent);
 		}
 		return {};
 	}
 
-	std::string resource_path{};
-	std::string scene_path{};
+	[[nodiscard]] auto resource_path() const -> std::string { return paths.resources.string(); }
+
+	struct {
+		fs::path editor{};	   // local assets
+		fs::path levels{};	   // all level data
+		fs::path resources{}; // game texture data
+		fs::path out{};	   // save destination for external use
+		std::string room_name{};
+	} paths{};
 };
 
 } // namespace data

@@ -1,8 +1,9 @@
 
 #include "fornani/automa/states/Dojo.hpp"
 
-#include "../../../../out/vs22-internal-Release/_deps/tracy-src/public/tracy/Tracy.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+
+#include <tracy/Tracy.hpp>
 
 namespace automa {
 
@@ -22,7 +23,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	} else {
 		map.load(svc, room_number);
 		bake_maps(svc, {map.room_id}, true);
-		auto m_id = map.room_id;
 		bake_maps(svc, svc.data.rooms);
 	}
 	hud.orient(svc, player); // reset hud position to corner

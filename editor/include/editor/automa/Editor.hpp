@@ -2,29 +2,30 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <cstdio>
-#include <memory>
-#include <chrono>
-#include <imgui.h>
 #include "editor/canvas/Canvas.hpp"
 #include "editor/util/BitFlags.hpp"
 #include "editor/tool/Tool.hpp"
 #include "editor/setup/WindowManager.hpp"
 #include "editor/gui/Console.hpp"
-#include <SFML/OpenGL.hpp>
+#include "editor/automa/PopupHandler.hpp"
 #include <imgui-SFML.h>
 #include <sstream>
 #include <windows.h>
 #include <string_view>
 #include <filesystem>
-#include "editor/automa/PopupHandler.hpp"
+#include <cstdio>
+#include <memory>
+#include <chrono>
+#include <imgui.h>
+
+namespace data {
+class ResourceFinder;
+}
 
 namespace pi {
 
-class ResourceFinder;
-
 enum class GlobalFlags { shutdown, palette_mode };
-enum class PressedKeys { control, shift, mouse, space };
+enum class PressedKeys { control, shift, mouse_left, mouse_right, space };
 
 inline char const* styles[static_cast<size_t>(Style::END)];
 inline char const* bgs[static_cast<size_t>(Backdrop::END)];
@@ -35,10 +36,10 @@ class Editor {
   public:
 	int const TILE_WIDTH{32};
 	int const NUM_TOOLS{6};
-	Editor(char** argv, WindowManager& window, ResourceFinder& finder);
+	Editor(char** argv, WindowManager& window, data::ResourceFinder& finder);
 	void run();
 	void init(std::string const& load_path);
-	void handle_events(sf::Event& event, sf::RenderWindow& win);
+	void handle_events(std::optional<sf::Event> const event, sf::RenderWindow& win);
 	void logic();
 	void load();
 	bool save();
@@ -50,7 +51,8 @@ class Editor {
 	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position);
 	[[nodiscard]] auto control_pressed() const -> bool { return pressed_keys.test(PressedKeys::control); }
 	[[nodiscard]] auto shift_pressed() const -> bool { return pressed_keys.test(PressedKeys::shift); }
-	[[nodiscard]] auto mouse_pressed() const -> bool { return pressed_keys.test(PressedKeys::mouse); }
+	[[nodiscard]] auto left_mouse_pressed() const -> bool { return pressed_keys.test(PressedKeys::mouse_left); }
+	[[nodiscard]] auto right_mouse_pressed() const -> bool { return pressed_keys.test(PressedKeys::mouse_right); }
 	[[nodiscard]] auto space_pressed() const -> bool { return pressed_keys.test(PressedKeys::space); }
 	[[nodiscard]] auto palette_mode() const -> bool { return flags.test(GlobalFlags::palette_mode); }
 
@@ -59,24 +61,13 @@ class Editor {
 
 	std::vector<sf::Texture> tileset_textures{};
 	sf::Texture tool_texture{};
-	sf::Sprite tool_sprites{};
+
 	sf::RectangleShape wallpaper{};
-	sf::RectangleShape target{};
+	sf::RectangleShape target_shape{};
 	sf::RectangleShape selector{};
-
-	struct {
-		sf::Sprite tool{};
-		sf::Sprite tileset{};
-	} sprites{};
-
-	sf::Texture t_chest{};
-	sf::Sprite s_chest{};
-	sf::Texture t_npc{};
-	sf::Sprite s_npc{};
 
 	// for loading out layer pngs
 	sf::RenderTexture screencap{};
-	sf::Sprite tile_sprite{};
 
 	sf::Vector2<float> mouse_clicked_position{};
 
@@ -93,14 +84,14 @@ class Editor {
 	bool menu_hovered{};
 	bool popup_open{};
 	int active_layer{4};
-	int selected_block{};
+	uint32_t selected_block{};
 
   private:
 	WindowManager* window;
-	ResourceFinder* finder;
+	data::ResourceFinder* finder;
 	PopupHandler popup{};
-	std::unique_ptr<Tool> current_tool = std::make_unique<Hand>();
-	std::unique_ptr<Tool> secondary_tool = std::make_unique<Hand>();
+	std::unique_ptr<Tool> current_tool;
+	std::unique_ptr<Tool> secondary_tool;
 	util::BitFlags<PressedKeys> pressed_keys{};
 	util::BitFlags<GlobalFlags> flags{};
 	char** args{};

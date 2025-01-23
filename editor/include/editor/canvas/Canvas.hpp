@@ -17,6 +17,10 @@
 #include "EntitySet.hpp"
 #include "Background.hpp"
 
+namespace data {
+class ResourceFinder;
+}
+
 namespace pi {
 
 int const NUM_LAYERS{8};
@@ -62,7 +66,6 @@ struct Map {
 };
 
 class Tool;
-class ResourceFinder;
 
 class Canvas {
 
@@ -71,8 +74,8 @@ class Canvas {
 	Canvas(sf::Vector2<uint32_t> dim, bool editable = true);
 	void update(Tool& tool, bool transformed = false);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
-	void load(ResourceFinder& finder, std::string const& room_name, bool local = false);
-	bool save(ResourceFinder& finder, std::string const& room_name);
+	void load(data::ResourceFinder& finder, std::string const& room_name, bool local = false);
+	bool save(data::ResourceFinder& finder, std::string const& room_name);
 	void clear();
 	void save_state(Tool& tool, bool force = false);
 	void undo();
@@ -114,7 +117,7 @@ class Canvas {
 		return point.x > camera.position.x && point.x < real_dimensions.x + camera.position.x && point.y > camera.position.y && point.y < real_dimensions.y + camera.position.y;
 	}
 
-	void replace_tile(uint8_t from, uint8_t to, int layer_index);
+	void replace_tile(uint32_t from, uint32_t to, int layer_index);
 	void edit_tile_at(int i, int j, int new_val, int layer_index);
 	void erase_at(int i, int j, int layer_index);
 	int tile_val_at(int i, int j, int layer);

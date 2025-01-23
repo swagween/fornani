@@ -7,21 +7,15 @@
 
 namespace pi {
 
-EditorApplication::EditorApplication(char** argv) {
+EditorApplication::EditorApplication(char** argv) : finder(argv), metadata(game_info, finder) {
 
-	finder.paths.local = finder.find_directory(argv[0], "assets");
 	// load app resources
-	game_info = dj::Json::from_file((finder.paths.local / "data/config/version.json").string().c_str());
+	game_info = dj::Json::from_file((finder.paths.editor / "data/config/version.json").string().c_str());
 	assert(!game_info.is_null());
 
-	metadata.title = game_info["title"].as_string();
-	metadata.build = game_info["build"].as_string();
-	metadata.major = game_info["version"]["major"].as<int>();
-	metadata.minor = game_info["version"]["minor"].as<int>();
-	metadata.hotfix = game_info["version"]["hotfix"].as<int>();
 	std::cout << "> Launching " << metadata.long_title() << "\n";
 
-	app_settings = dj::Json::from_file((finder.paths.local / "data/config/settings.json").string().c_str());
+	app_settings = dj::Json::from_file((finder.paths.editor / "data/config/settings.json").string().c_str());
 	assert(!app_settings.is_null());
 
 	// create window
@@ -30,8 +24,8 @@ EditorApplication::EditorApplication(char** argv) {
 
 	// set app icon
 	sf::Image icon{};
-	icon.loadFromFile((finder.paths.local / "app" / "icon.png").string());
-	window.get().setIcon(32, 32, icon.getPixelsPtr());
+	icon.loadFromFile((finder.paths.editor / "app" / "icon.png").string());
+	window.get().setIcon({32, 32}, icon.getPixelsPtr());
 
 	ImGui::SFML::Init(window.get());
 	window.get().clear();

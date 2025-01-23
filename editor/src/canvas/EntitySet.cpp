@@ -1,26 +1,16 @@
 
 #include "editor/canvas/EntitySet.hpp"
-#include <cassert>
 #include "editor/canvas/Canvas.hpp"
-#include "editor/setup/ResourceFinder.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
+#include <cassert>
 
 namespace pi {
 
-EntitySet::EntitySet(ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+EntitySet::EntitySet(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	load(finder, metadata, room_name);
 
-	large_animator_textures.loadFromFile((finder.paths.resources / "image" / "animators" / "large_animators_01.png").string());
-	large_animator_thumbs.loadFromFile((finder.paths.resources / "image" / "animators" / "large_animator_thumbs.png").string());
-	small_animator_textures.loadFromFile((finder.paths.resources / "image" / "animators" / "small_animators_01.png").string());
-	enemy_thumbnails.loadFromFile((finder.paths.local / "enemies" / "thumbnails.png").string());
-
-	sprites.current_enemy.setTexture(enemy_thumbnails);
-	sprites.enemy_thumb.setTexture(enemy_thumbnails);
-	sprites.large_animator.setTexture(large_animator_textures);
-	sprites.large_animator_thumb.setTexture(large_animator_thumbs);
-	sprites.small_animator.setTexture(small_animator_textures);
-	sprites.small_animator_thumb.setTexture(small_animator_thumbs);
+	enemy_thumbnails.loadFromFile((finder.paths.editor / "enemies" / "thumbnails.png").string());
 
 	player_box.setFillColor(sf::Color{100, 200, 100, 10});
 	player_box.setOutlineColor(sf::Color{100, 200, 100, 70});
@@ -82,7 +72,7 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> ca
 		ent->drawbox.setOutlineColor(sf::Color{60, 255, 60, 120});
 		ent->drawbox.setOutlineThickness(-2.f);
 		ent->drawbox.setSize(ent->f_dimensions() * map.f_cell_size());
-		ent->drawbox.setPosition((ent->position.x) * map.f_cell_size() + cam.x, (ent->position.y) * map.f_cell_size() + cam.y);
+		ent->drawbox.setPosition({(ent->position.x) * map.f_cell_size() + cam.x, (ent->position.y) * map.f_cell_size() + cam.y});
 		win.draw(ent->drawbox);
 	}
 
@@ -91,13 +81,13 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> ca
 	win.draw(player_box);
 }
 
-void EntitySet::load(ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 	std::string inspectable_path = (finder.paths.levels / room_name / "inspectables.json").string();
 	data.inspectables = dj::Json::from_file((inspectable_path).c_str());
 	variables.music = metadata["music"].as_string();
 }
 
-bool EntitySet::save(ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+bool EntitySet::save(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	// clean jsons
 	data = {};

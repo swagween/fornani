@@ -103,7 +103,7 @@ class ControllerMap {
 
 	/// @brief Process the SFML event given.
 	/// @details Used for keyboard controls.
-	void handle_event(std::optional<sf::Event> const);
+	void handle_event(std::optional<sf::Event> const event);
 
 	/// @brief Returns whether there is a gamepad connected or not.
 	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }

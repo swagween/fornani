@@ -18,8 +18,8 @@ enum class SelectMode { none, select, clipboard };
 class Tool {
   public:
 	Tool& operator=(Tool const&) = delete;
-	virtual void handle_events(Canvas& canvas, sf::Event& e) = 0;
-	virtual void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key) = 0;
+	virtual void handle_events(Canvas& canvas) = 0;
+	virtual void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) = 0;
 	virtual void update() = 0;
 	virtual void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed = true) = 0;
 	virtual void store_tile(int index) = 0;
@@ -63,7 +63,7 @@ class Tool {
 
 	bool primary{};
 	bool trigger_switch{false};
-	uint8_t tile{};
+	uint32_t tile{};
 	std::optional<std::unique_ptr<Entity>> current_entity{};
 
 	ToolType type{};
@@ -85,8 +85,8 @@ class Tool {
 class Hand : public Tool {
   public:
 	Hand() { type = ToolType::hand; }
-	void handle_events(Canvas& canvas, sf::Event& e);
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key);
+	void handle_events(Canvas& canvas);
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed = true);
 	void store_tile(int index);
@@ -96,8 +96,8 @@ class Hand : public Tool {
 class Brush : public Tool {
   public:
 	Brush() { type = ToolType::brush; }
-	void handle_events(Canvas& canvas, sf::Event& e);
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key);
+	void handle_events(Canvas& canvas);
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed = true);
 	void store_tile(int index);
@@ -109,8 +109,8 @@ class Brush : public Tool {
 class Erase : public Tool {
   public:
 	Erase() { type = ToolType::erase; }
-	void handle_events(Canvas& canvas, sf::Event& e);
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key);
+	void handle_events(Canvas& canvas);
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed = true);
 	void store_tile(int index);
@@ -122,22 +122,22 @@ class Erase : public Tool {
 class Fill : public Tool {
   public:
 	Fill() { type = ToolType::fill; };
-	void handle_events(Canvas& canvas, sf::Event& e);
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key);
+	void handle_events(Canvas& canvas);
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed = true);
 	void store_tile(int index);
 	void clear();
 
-	void fill_section(uint8_t const prev_val, uint8_t const new_val, uint32_t i, uint32_t j, Canvas& canvas);
-	void replace_all(uint8_t const prev_val, uint8_t const new_val, uint32_t i, uint32_t j, Canvas& canvas);
+	void fill_section(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas);
+	void replace_all(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas);
 };
 
 class EntityEditor : public Tool {
   public:
 	EntityEditor(EntityMode to_mode = EntityMode::selector);
-	void handle_events(Canvas& canvas, sf::Event& e);
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key);
+	void handle_events(Canvas& canvas);
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed = true);
 	void store_tile(int index);
@@ -171,8 +171,8 @@ struct SelectBox {
 class Marquee : public Tool {
   public:
 	Marquee() { type = ToolType::marquee; }
-	void handle_events(Canvas& canvas, sf::Event& e);
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key);
+	void handle_events(Canvas& canvas);
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed = true);
 	void store_tile(int index);
@@ -189,8 +189,8 @@ class Marquee : public Tool {
 class Eyedropper : public Tool {
   public:
 	Eyedropper() { type = ToolType::eyedropper; }
-	void handle_events(Canvas& canvas, sf::Event& e);
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key);
+	void handle_events(Canvas& canvas);
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed = true);
 	void store_tile(int index);

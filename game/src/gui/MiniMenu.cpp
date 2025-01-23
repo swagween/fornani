@@ -17,15 +17,15 @@ MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> o
 	selection = util::Circuit(static_cast<int>(options.size()));
 }
 
-void MiniMenu::overwrite_option(int index, std::string_view replacement) {
-	if (index >= options.size()) { return; }
-		options.at(index).set_string(replacement);
-	}
+void MiniMenu::overwrite_option(int idx, std::string_view replacement) {
+	if (idx >= options.size()) { return; }
+	options.at(idx).set_string(replacement);
+}
 
-void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> position) {
+void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> at_position) {
 	if (!is_open()) { return; }
 	dimensions = dim;
-	sprite.update(svc, position, dim, corner, edge);
+	sprite.update(svc, at_position, dim, corner, edge);
 	auto spacing = 12.f;
 	auto top_buffer = 18.f;
 	auto ctr{0};
@@ -43,9 +43,9 @@ void MiniMenu::render(sf::RenderWindow& win, bool bg) {
 	for (auto& option : options) { win.draw(option.label); }
 }
 
-void MiniMenu::open(automa::ServiceProvider& svc, sf::Vector2<float> position) {
+void MiniMenu::open(automa::ServiceProvider& svc, sf::Vector2<float> at_position) {
 	state.set(MiniMenuState::open);
-	sprite.start(svc, position, 0.f, {0, 0});
+	sprite.start(svc, at_position, 0.f, {0, 0});
 }
 
 void MiniMenu::close(automa::ServiceProvider& svc) {

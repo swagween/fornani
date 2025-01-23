@@ -2,13 +2,13 @@
 #include "editor/automa/PopupHandler.hpp"
 #include "editor/tool/Tool.hpp"
 #include "editor/gui/Console.hpp"
-#include "editor/setup/ResourceFinder.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
 #include <imgui.h>
 #include <string>
 
 namespace pi {
 
-void PopupHandler::launch(ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool) {
+void PopupHandler::launch(data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool) {
 	if (ImGui::BeginPopupModal("Inspectable Message", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 
 		static bool activate_on_contact{false};

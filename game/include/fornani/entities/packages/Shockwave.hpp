@@ -21,7 +21,7 @@ class Shockwave {
 	Shockwave(sf::Vector2<float> speed);
 	void start(int time = 600);
 	void update(automa::ServiceProvider& svc, world::Map& map);
-	void set_position(sf::Vector2<float> position);
+	void set_position(sf::Vector2<float> to_position);
 	void handle_player(player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 

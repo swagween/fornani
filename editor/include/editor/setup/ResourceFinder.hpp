@@ -5,6 +5,7 @@
 #include <djson/json.hpp>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <string>
 
 namespace pi {
@@ -12,8 +13,9 @@ namespace pi {
 namespace fs = std::filesystem;
 
 class ResourceFinder {
-
   public:
+	ResourceFinder(char** argv) { paths.local = find_directory(argv[0], "assets"); }
+
 	fs::path find_resources(fs::path exe) {
 		auto check = [](fs::path const& prefix) {
 			auto path = prefix / "assets";
@@ -44,7 +46,7 @@ class ResourceFinder {
 		return {};
 	}
 
-	
+  private:
 	struct {
 		std::filesystem::path local{};	   // local assets
 		std::filesystem::path levels{};	   // all level data

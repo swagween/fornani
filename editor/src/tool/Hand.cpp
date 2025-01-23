@@ -4,7 +4,7 @@
 
 namespace pi {
 
-void Hand::handle_events(Canvas& canvas, sf::Event& e) {
+void Hand::handle_events(Canvas& canvas) {
 	if (active) {
 		if (just_clicked) {
 			clicked_position = window_position;
@@ -16,7 +16,7 @@ void Hand::handle_events(Canvas& canvas, sf::Event& e) {
 	}
 }
 
-void Hand::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Key& key) {}
+void Hand::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
 void Hand::update() { Tool::update(); }
 

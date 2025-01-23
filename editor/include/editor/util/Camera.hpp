@@ -12,8 +12,8 @@ class Camera {
 	Camera(sf::Vector2<float> dimensions);
 
 	void update() {
-		bounding_box.left = position.x;
-		bounding_box.top = position.y;
+		bounding_box.position.x = position.x;
+		bounding_box.position.y = position.y;
 	}
 
 	void move(sf::Vector2<float> distance) { position += distance; }
