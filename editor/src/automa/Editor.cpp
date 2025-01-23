@@ -183,6 +183,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 		if ((left_pressed || right_pressed) && !menu_hovered && !window_hovered) {
 			if (palette.hovered()) { current_tool->clear(); }
 			tool->has_palette_selection = false;
+			tool->just_clicked = true;
 			target.save_state(*tool);
 			if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
 			if (palette_mode() && current_tool->type != ToolType::marquee) {
@@ -196,12 +197,11 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 		// select tool gets special treatment, because it can be used without the mouse being pressed (copy/paste)
 	}
 
-	auto& tool = left_mouse_pressed() ? current_tool : secondary_tool;
-	tool->handle_events(target);
-
 	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
 		if (button_released->button == sf::Mouse::Button::Left) { pressed_keys.reset(PressedKeys::mouse_left); }
 		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
+		current_tool->reset();
+		secondary_tool->reset();
 	}
 }
 
@@ -211,6 +211,11 @@ void Editor::logic() {
 
 	left_mouse_pressed() ? current_tool->activate() : current_tool->deactivate();
 	right_mouse_pressed() ? secondary_tool->activate() : secondary_tool->deactivate();
+
+	auto& target = palette_mode() ? palette : map;
+	auto& tool = left_mouse_pressed() ? current_tool : secondary_tool;
+	tool->handle_events(target);
+
 	palette.active_layer = 4;
 	map.active_layer = active_layer;
 	if (current_tool->trigger_switch) { current_tool = std::move(std::make_unique<Hand>()); }
