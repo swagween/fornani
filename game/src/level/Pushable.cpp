@@ -17,8 +17,8 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, in
 	collider.stats.GRAV = 18.0f;
 	mass = static_cast<float>(size);
 	collider.sync_components();
-	auto snap = collider.snap_to_grid(static_cast<float>(size));
-	collider.physics.position = snap;
+	auto lock = collider.snap_to_grid(static_cast<float>(size));
+	collider.physics.position = lock;
 	start_box = collider.bounding_box;
 	sf::IntRect lookup = size == 1 ? sf::IntRect{{style * 2 * svc.constants.i_cell_size, 0}, svc.constants.i_cell_vec} : sf::IntRect{{style * 2 * svc.constants.i_cell_size, svc.constants.i_cell_size}, 2 * svc.constants.i_cell_vec};
 	sprite.setTextureRect(lookup);

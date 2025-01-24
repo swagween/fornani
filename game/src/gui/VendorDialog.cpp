@@ -197,7 +197,6 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 				}
 			} else {
 				if (selector.get_current_selection() < vendor.inventory.items.size()) {
-					auto& item = vendor.inventory.items.at(selector.get_current_selection());
 					item_menu.open(svc, selector.get_menu_position());
 					svc.soundboard.flags.console.set(audio::Console::menu_open);
 				} else {
@@ -254,7 +253,6 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 				}
 			} else {
 				if (selector.get_current_selection() < sellable_items.size()) {
-					auto& item = sellable_items.at(selector.get_current_selection());
 					item_menu.open(svc, selector.get_menu_position());
 					svc.soundboard.flags.console.set(audio::Console::menu_open);
 				} else {

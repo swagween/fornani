@@ -67,7 +67,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	}
 
 	auto const& shielding = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shield).held;
-	auto const& shield_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shield).triggered;
 	auto const& shield_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shield).released;
 
 	auto const& jump_started = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered;

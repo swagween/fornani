@@ -10,8 +10,8 @@ void Ambience::load(data::ResourceFinder& finder, std::string_view source) {
 	tracks.open.turn_on();
 	tracks.closed.turn_on();
 	std::string source_str = source.data();
-	tracks.open.simple_load(finder.resource_path + "/audio/ambience/" + source_str + "/open");
-	tracks.closed.simple_load(finder.resource_path + "/audio/ambience/" + source_str + "/closed");
+	tracks.open.simple_load(finder.resource_path() + "/audio/ambience/" + source_str + "/open");
+	tracks.closed.simple_load(finder.resource_path() + "/audio/ambience/" + source_str + "/closed");
 }
 
 void audio::Ambience::play() {

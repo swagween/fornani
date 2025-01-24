@@ -36,13 +36,13 @@ struct MapDebug {
 	int active_projectiles{};
 };
 struct ServiceProvider {
-	ServiceProvider(char** argv, fornani::Version& version, fornani::WindowManager& window) : finder(argv), data(*this, argv), version(version), assets{finder}, text{finder}, window(&window) {};
+	ServiceProvider(char** argv, fornani::Version& version, fornani::WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
 
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
 	data::TextManager text;
 	data::DataManager data;
-	fornani::Version version{};
+	fornani::Version* version;
 	fornani::WindowManager* window;
 	asset::AssetManager assets;
 	config::ControllerMap controller_map{*this};
@@ -67,6 +67,7 @@ struct ServiceProvider {
 
 	// debug stuff
 	util::Stopwatch stopwatch{};
+	int out_value{};
 
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }

@@ -65,7 +65,7 @@ fsm::StateFunction Beamstalk::update_idle() {
 fsm::StateFunction Beamstalk::update_charge() {
 	animation.label = "charge";
 	if (animation.get_frame() > 6) {
-		if (m_services->ticker.every_x_ticks(fire_rate)) {
+		if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 			m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
 			collider.physics.apply_force({-beam.get().get_recoil(), 0.f});
 		}
@@ -80,7 +80,7 @@ fsm::StateFunction Beamstalk::update_charge() {
 
 fsm::StateFunction Beamstalk::update_shoot() {
 	animation.label = "shoot";
-	if (m_services->ticker.every_x_ticks(fire_rate)) {
+	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 		m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
 		collider.physics.apply_force(beam.get().get_recoil_force());
 	}

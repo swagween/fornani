@@ -1,5 +1,7 @@
 #include "fornani/gui/ActionContextBar.hpp"
 #include <SFML/Graphics.hpp>
+#include <tracy/Tracy.hpp>
+
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/gui/ActionControlIconQuery.hpp"
 #include <format>
@@ -10,6 +12,7 @@ namespace gui {
 ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) { text.setPosition(sf::Vector2f{8.f, svc.constants.f_screen_dimensions.y - 32.f}); }
 
 void ActionContextBar::update(automa::ServiceProvider& svc) {
+	ZoneScopedN("ActionContextBar::update");
 	auto actions_queried_this_frame = svc.controller_map.actions_queried_this_update();
 
 	text.clear_segments();

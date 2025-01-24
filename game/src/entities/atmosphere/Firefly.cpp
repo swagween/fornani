@@ -26,6 +26,7 @@ Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprit
 }
 
 void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
+	if (!svc.in_window(sprite.get_sprite_position(), sprite.get_dimensions())) { return; }
 	light.update();
 	steering.smooth_random_walk(svc, physics, 0.003f);
 	physics.simple_update();
@@ -46,7 +47,7 @@ void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
 
 void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (svc.greyblock_mode()) { return; }
-	if (!svc.in_window(physics.position - cam, sprite.get_dimensions())) { return; }
+	++svc.out_value;
 	if (trail) { trail.value()->drag(win, cam); }
 	if (glowing) { sprite.render(svc, win, cam); }
 	if (svc.greyblock_mode()) {

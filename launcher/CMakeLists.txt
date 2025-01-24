@@ -1,5 +1,9 @@
 project(fornani-launcher)
 
+if (NOT DEFINED FORNANI_ROOT_DIR)
+  message(FATAL_ERROR "FORNANI_ROOT_DIR has not been specified! Did you some how call the launcher cmake only?")
+endif ()
+
 add_executable(fornani-launcher)
 set_target_properties(fornani-launcher PROPERTIES OUTPUT_NAME "fornani")
 target_link_libraries(fornani-launcher PRIVATE
@@ -9,7 +13,8 @@ target_link_libraries(fornani-launcher PRIVATE
 )
 
 target_include_directories(fornani-launcher
-        PRIVATE src
+        PUBLIC include "${CMAKE_CURRENT_BINARY_DIR}/include"
+        PRIVATE "src"
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
@@ -20,20 +25,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 if (FORNANI_STEAM_APP_ID OR FORNANI_ENABLE_DEV_ID)
-    if (FORNANI_STEAM_APP_ID)
-        target_compile_definitions(fornani-launcher PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
-        message(STATUS "Building ${PROJECT_NAME} with Steam App ID: ${FORNANI_STEAM_APP_ID}")
-    else ()
-        set(FORNANI_STEAM_APP_ID 480 CACHE STRING "Default Steam App ID")
-        target_compile_definitions(fornani-launcher PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
-        message(STATUS "Building ${PROJECT_NAME} with Steam App ID: ${FORNANI_STEAM_APP_ID}")
-    endif ()
-else()
-    set(FORNANI_STEAM_APP_ID ${FORNANI_STEAM_APP_ID_DEFAULT} CACHE STRING "Default Steam App ID")
-    target_compile_definitions(fornani-launcher PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
-    message(STATUS "Building ${PROJECT_NAME} with Steam App ID: ${FORNANI_STEAM_APP_ID}")
-endif()
+  if (NOT DEFINED FORNANI_STEAM_APP_ID)
+    set(FORNANI_STEAM_APP_ID 480 CACHE STRING "Developer Steam App ID: 480")
+  endif ()
+  target_compile_definitions(${PROJECT_NAME} PUBLIC FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
+else ()
+  set(FORNANI_STEAM_APP_ID ${FORNANI_STEAM_APP_ID_DEFAULT} CACHE STRING "Default Steam App ID: 3218760")
+  target_compile_definitions(${PROJECT_NAME} PUBLIC FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
+endif ()
+message(STATUS "FORNANI: Building with steam app ID: ${FORNANI_STEAM_APP_ID}")
 
+add_subdirectory(include/launcher)
 add_subdirectory(src)
 
 if (WIN32)

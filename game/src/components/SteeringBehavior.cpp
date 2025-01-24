@@ -36,7 +36,6 @@ void SteeringBehavior::seek(components::PhysicsComponent& physics, sf::Vector2<f
 void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2<float> point, float strength, float max_force) {
 	auto distance = point - physics.position;
 	auto mag = util::magnitude(distance);
-	auto epsilon{0.1f};
 	mag = std::max(0.0001f, mag);
 	auto str = strength / (mag * mag);
 	str = std::clamp(str, 0.f, max_force);

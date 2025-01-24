@@ -2,6 +2,9 @@
 #pragma once
 
 #include "fornani/audio/MusicPlayer.hpp"
+
+#include <tracy/Tracy.hpp>
+
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace audio {
@@ -15,8 +18,8 @@ void MusicPlayer::load(data::ResourceFinder& finder, std::string_view song_name)
 		return;
 	}
 	label = song_name;
-	song_first.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_first.ogg");
-	song_loop.openFromFile(finder.resource_path + "/audio/songs/" + song_name.data() + "_loop.ogg");
+	song_first.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_first.ogg");
+	song_loop.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_loop.ogg");
 	switch_on();
 	flags.state.reset(SongState::looping);
 }
@@ -61,6 +64,7 @@ void MusicPlayer::play_looped(float vol) {
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::update() {
+	ZoneScopedN("MusicPlayer::update");
 	if (global_off()) { return; }
 	volume.actual = volume.native * volume.multiplier;
 	set_volume(volume.actual);

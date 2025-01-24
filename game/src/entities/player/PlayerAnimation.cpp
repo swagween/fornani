@@ -619,7 +619,6 @@ fsm::StateFunction PlayerAnimation::update_get_up() {
 
 fsm::StateFunction PlayerAnimation::update_roll() {
 	animation.label = "roll";
-	auto& slider = m_player->controller.get_slide();
 	auto& controller = m_player->controller;
 	auto sign = m_player->controller.facing_left() ? -1.f: 1.f;
 	m_player->collider.physics.velocity.x = 60.f * sign;
