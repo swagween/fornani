@@ -17,6 +17,7 @@ class Canvas;
 struct Entity {
 	Entity(std::string label, int id = 0, sf::Vector2<uint32_t> position = {}, sf::Vector2<uint32_t> dimensions = {}) : label(label), id(id), position(position), dimensions(dimensions){};
 	virtual ~Entity() = default;
+	virtual std::unique_ptr<Entity> clone() const = 0;
 	virtual void serialize(dj::Json& out) {
 		out["id"] = id;
 		out["position"][0] = position.x;
@@ -35,6 +36,7 @@ struct Entity {
 	sf::Vector2<uint32_t> position{};
 	sf::Vector2<uint32_t> dimensions{};
 	int id{};
+	bool repeatable{};
 
 	// helpers
 	sf::RectangleShape drawbox{};
@@ -50,6 +52,7 @@ struct Inspectable : public Entity {
 	std::vector<std::vector<std::string>> suites{};
 	std::vector<std::vector<std::string>> responses{};
 	int alternates{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<Inspectable>(*this); }
 	void serialize(dj::Json& out) override {
 		Entity::serialize(out);
 		out["activate_on_contact"] = dj::Boolean{activate_on_contact};
@@ -60,16 +63,18 @@ struct Inspectable : public Entity {
 };
 
 struct Critter : public Entity {
-	Critter() : Entity("enemies") {}
+	Critter() : Entity("enemies") { repeatable = true; }
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<Critter>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
 };
 
 struct Animator : public Entity {
-	Animator() : Entity("animators") {}
+	Animator() : Entity("animators") { repeatable = true; }
 	bool automatic{};
 	bool foreground{};
 	int style{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<Animator>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
 };
@@ -82,6 +87,7 @@ struct Portal : public Entity {
 	int destination_map_id{};
 	bool locked{};
 	int key_id{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<Portal>(*this); }
 	void serialize(dj::Json& out) override {
 		Entity::serialize(out);
 		out["activate_on_contact"] = dj::Boolean{activate_on_contact};
@@ -95,13 +101,14 @@ struct Portal : public Entity {
 };
 
 struct InteractiveScenery : public Entity {
-	InteractiveScenery() : Entity("interactive_scenery") {}
+	InteractiveScenery() : Entity("interactive_scenery") { repeatable = true; }
 	int length{};
 	int size{};
 	bool foreground{};
 	int type{};
 	bool has_platform{};
 	std::vector<int> link_indeces{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<InteractiveScenery>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
 };
@@ -110,15 +117,17 @@ struct NPC : public Entity {
 	NPC() : Entity("npcs") {}
 	bool background{};
 	std::vector<std::vector<std::string>> suites{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<NPC>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
 };
 
 struct Platform : public Entity {
-	Platform(sf::Vector2u dim, int extent, std::string type, float start) : Entity("platforms", 0, {}, dim), extent(extent), type(type), start(start) {}
+	Platform(sf::Vector2u dim, int extent, std::string type, float start) : Entity("platforms", 0, {}, dim), extent(extent), type(type), start(start) { repeatable = true; }
 	int extent{};
 	std::string type{};
 	float start{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<Platform>(*this); }
 	void serialize(dj::Json& out) override {
 		Entity::serialize(out);
 		out["extent"] = extent;
@@ -134,6 +143,7 @@ struct Chest : public Entity {
 	int type{};
 	float rarity{};
 	int amount{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<Chest>(*this); }
 	void serialize(dj::Json& out) override {
 		Entity::serialize(out);
 		out["item_id"] = item_id;
@@ -145,17 +155,19 @@ struct Chest : public Entity {
 };
 
 struct Scenery : public Entity {
-	Scenery() : Entity("scenery") {}
+	Scenery() : Entity("scenery") { repeatable = true; }
 	int style{};
 	int layer{};
 	int variant{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<Scenery>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
 };
 
 struct SwitchBlock : public Entity {
-	SwitchBlock() : Entity("switch_blocks") {}
+	SwitchBlock() : Entity("switch_blocks") { repeatable = true; }
 	int type{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<SwitchBlock>(*this); }
 	void serialize(dj::Json& out) override {
 		Entity::serialize(out);
 		out["type"] = type;
@@ -166,6 +178,7 @@ struct SwitchBlock : public Entity {
 struct SwitchButton : public Entity {
 	SwitchButton(int id, int type) : Entity("switches", id), type(type) {}
 	int type{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<SwitchButton>(*this); }
 	void serialize(dj::Json& out) override {
 		Entity::serialize(out);
 		out["type"] = type;
@@ -174,7 +187,8 @@ struct SwitchButton : public Entity {
 };
 
 struct Destroyer : public Entity {
-	Destroyer() : Entity("destroyers") {}
+	Destroyer() : Entity("destroyers") { repeatable = true; }
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<Destroyer>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
 };
@@ -182,6 +196,7 @@ struct Destroyer : public Entity {
 struct SavePoint : public Entity {
 	SavePoint() : Entity("save_point") {}
 	bool placed{};
+	std::unique_ptr<Entity> clone() const override { return std::make_unique<SavePoint>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
 };

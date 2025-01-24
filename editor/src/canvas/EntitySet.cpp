@@ -68,7 +68,7 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> ca
 	vinebox.setSize({map.f_cell_size(), map.f_cell_size()});
 
 	for (auto& ent : variables.entities) {
-		ent->drawbox.setFillColor(sf::Color{255, 60, 60, 120});
+		ent->drawbox.setFillColor(sf::Color{255, 60, 60, 60});
 		ent->drawbox.setOutlineColor(sf::Color{60, 255, 60, 120});
 		ent->drawbox.setOutlineThickness(-2.f);
 		ent->drawbox.setSize(ent->f_dimensions() * map.f_cell_size());

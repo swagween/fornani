@@ -36,6 +36,7 @@ Canvas::Canvas(sf::Vector2<uint32_t> dim, SelectionType type) : camera{sf::Vecto
 }
 
 void Canvas::update(Tool& tool, bool transformed) {
+	real_dimensions = {static_cast<float>(dimensions.x) * f_native_cell_size(), static_cast<float>(dimensions.y) * f_native_cell_size()};
 	if (transformed) {
 		within_bounds(tool.f_position()) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
 	} else {
@@ -215,9 +216,8 @@ void Canvas::clear() {
 
 void Canvas::save_state(Tool& tool, bool force) {
     auto const& type = tool.type;
-    auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;
-    auto just_clicked = !tool.is_active() && tool.is_ready();
-	if ((undoable_tool && just_clicked) || force) {
+    auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;;
+	if ((undoable_tool && tool.clicked() && editable()) || force) {
 		map_states.emplace_back(Map{map_states.back()});
         clear_redo_states();
     }
@@ -227,13 +227,15 @@ void Canvas::undo() {
     if (map_states.size() > 1) {
         redo_states.push_back(map_states.back());
         map_states.pop_back();
+		dimensions = map_states.back().layers.back().dimensions;
     }
 }
 
 void Canvas::redo() {
     if (redo_states.size() > 0) {
         map_states.push_back(redo_states.back());
-        redo_states.pop_back();
+		redo_states.pop_back();
+		dimensions = map_states.back().layers.back().dimensions;
     }
 }
 
@@ -250,6 +252,21 @@ void Canvas::set_origin(sf::Vector2<float> to_origin) { origin = to_origin; }
 void Canvas::set_offset_from_center(sf::Vector2<float> offset) { offset_from_center = offset; }
 
 void Canvas::set_scale(float to_scale) { scale = to_scale; }
+
+void Canvas::resize(sf::Vector2i adjustment) {
+	// map dimensions can't be 0
+	if (adjustment.x < 0 && chunk_dimensions().x == 1) { return; }
+	if (adjustment.y < 0 && chunk_dimensions().y == 1) { return; }
+	auto current = Map{map_states.back()};
+	dimensions.x += adjustment.x * static_cast<int>(chunk_size);
+	dimensions.y += adjustment.y * static_cast<int>(chunk_size);
+	map_states.push_back(Map());
+	for (uint32_t i = 0; i < NUM_LAYERS; ++i) {
+		map_states.back().layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions));
+		map_states.back().layers.back().grid.match(current.layers.at(i).grid);
+	}
+	clear_redo_states();
+}
 
 void Canvas::center(sf::Vector2<float> point) { set_position(point - real_dimensions * 0.5f); }
 

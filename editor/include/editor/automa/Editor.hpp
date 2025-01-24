@@ -56,6 +56,7 @@ class Editor {
 	[[nodiscard]] auto any_mouse_pressed() const -> bool { return left_mouse_pressed() || right_mouse_pressed(); }
 	[[nodiscard]] auto space_pressed() const -> bool { return pressed_keys.test(PressedKeys::space); }
 	[[nodiscard]] auto palette_mode() const -> bool { return flags.test(GlobalFlags::palette_mode); }
+	[[nodiscard]] auto available() const -> bool { return !window_hovered && !menu_hovered && !popup_open; }
 
 	Canvas map{SelectionType::canvas};
 	Canvas palette{SelectionType::palette};

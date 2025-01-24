@@ -88,6 +88,7 @@ class Canvas {
 	void set_origin(sf::Vector2<float> to_origin);
 	void set_offset_from_center(sf::Vector2<float> offset);
 	void set_scale(float to_scale);
+	void resize(sf::Vector2i adjustment);
 	void center(sf::Vector2<float> point);
 	void zoom(float amount);
 	void set_backdrop_color(sf::Color color);
@@ -118,6 +119,8 @@ class Canvas {
 	[[nodiscard]] auto within_bounds(sf::Vector2<float> const& point) const -> bool {
 		return point.x > camera.position.x && point.x < real_dimensions.x + camera.position.x && point.y > camera.position.y && point.y < real_dimensions.y + camera.position.y;
 	}
+	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
+	[[nodiscard]] auto redo_states_size() const -> std::size_t { return redo_states.size(); }
 
 	void replace_tile(uint32_t from, uint32_t to, int layer_index);
 	void edit_tile_at(int i, int j, int new_val, int layer_index);

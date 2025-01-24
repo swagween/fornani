@@ -82,7 +82,7 @@ void PopupHandler::launch(data::ResourceFinder& finder, Console& console, char c
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::platform;
-			tool->current_entity = std::make_unique<pi::Platform>(sf::Vector2<uint32_t>{static_cast<uint32_t>(x), static_cast<uint32_t>(y)}, extent, type, start);
+			tool->current_entity = std::make_unique<Platform>(sf::Vector2<uint32_t>{static_cast<uint32_t>(x), static_cast<uint32_t>(y)}, extent, type, start);
 			console.add_log(std::string{"Initialized platform with type " + type}.c_str());
 			ImGui::CloseCurrentPopup();
 		}

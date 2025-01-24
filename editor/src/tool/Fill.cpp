@@ -1,4 +1,3 @@
-//
 
 #include "editor/tool/Tool.hpp"
 
@@ -6,7 +5,8 @@ namespace pi {
 
 void Fill::update(Canvas& canvas) {
 	Tool::update(canvas);
-	if (in_bounds(canvas.dimensions) && active && canvas.editable()) {
+	if (just_clicked) { just_clicked = false; }
+	if (in_bounds(canvas.dimensions) && active && canvas.editable() && selection_type == canvas.get_selection_type()) {
 		if (contiguous) {
 			fill_section(canvas.tile_val_at(scaled_position().x, scaled_position().y, canvas.active_layer), tile, scaled_position().x, scaled_position().y, canvas);
 		} else {

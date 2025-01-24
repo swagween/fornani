@@ -25,5 +25,49 @@
       "id": 0,
       "source": 0
     }
-  }
+  },
+  "platforms": [
+    {
+      "id": 0,
+      "position": [
+        4,
+        9
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 8,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "id": 0,
+      "position": [
+        7,
+        9
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 8,
+      "type": "standard_up_down",
+      "start": 0.000000
+    },
+    {
+      "id": 0,
+      "position": [
+        10,
+        9
+      ],
+      "dimensions": [
+        2,
+        1
+      ],
+      "extent": 8,
+      "type": "standard_up_down",
+      "start": 0.000000
+    }
+  ]
 }
