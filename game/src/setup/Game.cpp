@@ -484,6 +484,16 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", 3000));
 							player.set_position({7 * 32, 11 * 32});
 						}
+						if (ImGui::Button("Bridge")) {
+							services.soundboard.flags.menu.set(audio::Menu::select);
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", 10001));
+							player.set_position({58 * 32, 32 * 32});
+						}
+						if (ImGui::Button("Vent")) {
+							services.soundboard.flags.menu.set(audio::Menu::select);
+							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", 10002));
+							player.set_position({2 * 32, 10 * 32});
+						}
 						/*if (ImGui::Button("Junkyard")) {
 							services.soundboard.flags.menu.set(audio::Menu::select);
 							game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo"));

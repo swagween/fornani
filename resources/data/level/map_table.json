@@ -21,6 +21,10 @@
       "label": "FIRSTWIND_BOILER_01"
     },
     {
+      "room_id": 10001,
+      "label": "FIRSTWIND_BRIDGE"
+    },
+    {
       "room_id": 123,
       "label": "FIRSTWIND_BRIDGE_01"
     },
@@ -99,6 +103,10 @@
     {
       "room_id": 107,
       "label": "FIRSTWIND_SHAFT_01"
+    },
+    {
+      "room_id": 10002,
+      "label": "FIRSTWIND_TEST"
     },
     {
       "room_id": 199,
