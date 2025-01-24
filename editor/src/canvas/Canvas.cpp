@@ -7,10 +7,10 @@
 
 namespace pi {
 
-Canvas::Canvas(bool editable) : Canvas({}, editable) {}
+Canvas::Canvas(SelectionType type) : Canvas({}, type) {}
 
-Canvas::Canvas(sf::Vector2<uint32_t> dim, bool editable) : camera{sf::Vector2<float>{static_cast<float>(dim.x), static_cast<float>(dim.y)}} {
-	editable ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
+Canvas::Canvas(sf::Vector2<uint32_t> dim, SelectionType type) : camera{sf::Vector2<float>{static_cast<float>(dim.x), static_cast<float>(dim.y)}}, type(type) {
+	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
     dimensions = dim;
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
     clear();
@@ -216,7 +216,7 @@ void Canvas::clear() {
 void Canvas::save_state(Tool& tool, bool force) {
     auto const& type = tool.type;
     auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;
-    auto just_clicked = !tool.is_active() && tool.ready;
+    auto just_clicked = !tool.is_active() && tool.is_ready();
 	if ((undoable_tool && just_clicked) || force) {
 		map_states.emplace_back(Map{map_states.back()});
         clear_redo_states();

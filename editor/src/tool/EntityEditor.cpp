@@ -8,37 +8,31 @@ EntityEditor::EntityEditor(EntityMode to_mode) {
 	ent_type = EntityType::none;
 }
 
-void EntityEditor::handle_events(Canvas& canvas) {
-	if (in_bounds(canvas.dimensions) && ready && canvas.editable()) {
-		if (selector_mode()) {
-			ent_type = EntityType::none;
+void EntityEditor::update(Canvas& canvas) {
+	Tool::update(canvas);
+	if (!in_bounds(canvas.dimensions) || !active || !canvas.editable()) { return; }
+	if (selector_mode()) { ent_type = EntityType::none; }
+	if (placer_mode()) {
+		if (current_entity) {
+			canvas.entities.variables.entities.push_back(std::move(current_entity.value()));
+			current_entity = {}; // free the entity's memory
 		}
-		if (placer_mode()) {
-			if (current_entity) {
-				canvas.entities.variables.entities.push_back(std::move(current_entity.value()));
-				current_entity = {}; // free the entity's memory
-			}
-		}
-		if (eraser_mode()) {
-			ent_type = EntityType::none;
-			std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->position == scaled_position(); });
-		}
-		if (mover_mode()) {}
 	}
-	update();
+	if (eraser_mode()) {
+		ent_type = EntityType::none;
+		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->position == scaled_position(); });
+	}
+	if (mover_mode()) {}
+
+	if (!current_entity) { return; }
+	current_entity.value()->position = scaled_position() - current_entity.value()->dimensions + sf::Vector2<uint32_t>(1, 1);
 }
 
 void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {
 	if (scancode == sf::Keyboard::Scancode::Q) { trigger_switch = true; }
 }
 
-void EntityEditor::update() {
-	Tool::update();
-	if (!current_entity) { return; }
-	current_entity.value()->position = scaled_position() - current_entity.value()->dimensions + sf::Vector2<uint32_t>(1, 1);
-}
-
-void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed) {
+void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {
 	sf::RectangleShape box{};
 
 	box.setOutlineColor(sf::Color{200, 200, 200, 80});

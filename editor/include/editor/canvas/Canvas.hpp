@@ -60,6 +60,7 @@ enum class Style { firstwind, overturned, base, factory, greatwing, provisional,
 
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
+enum class SelectionType { neutral, palette, canvas };
 
 struct Map {
 	std::vector<Layer> layers{};
@@ -70,8 +71,8 @@ class Tool;
 class Canvas {
 
   public:
-	Canvas(bool editable = true);
-	Canvas(sf::Vector2<uint32_t> dim, bool editable = true);
+	Canvas(SelectionType type);
+	Canvas(sf::Vector2<uint32_t> dim, SelectionType type);
 	void update(Tool& tool, bool transformed = false);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
 	void load(data::ResourceFinder& finder, std::string const& room_name, bool local = false);
@@ -92,6 +93,7 @@ class Canvas {
 	void set_backdrop_color(sf::Color color);
 	Map& get_layers();
 	sf::Vector2<int> get_tile_coord(int lookup);
+	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
@@ -183,6 +185,8 @@ class Canvas {
 	sf::RectangleShape chunkbox{};
 	sf::RectangleShape border{};
 	std::unique_ptr<Background> background{};
+
+	SelectionType type{};
 
 	float scale{1.f};
 	float min_scale{0.1f};

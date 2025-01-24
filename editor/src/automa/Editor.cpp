@@ -102,19 +102,14 @@ void Editor::run() {
 	}
 }
 
-void Editor::init(std::string const& load_path) {
-}
+void Editor::init(std::string const& load_path) {}
 
 void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindow& win) {
 
-	auto& target = palette_mode() ? palette : map;
+	auto& source = palette_mode() || current_tool->has_palette_selection ? palette : map;
 
-	current_tool->ready = !window_hovered || palette.hovered();
-	secondary_tool->ready = !window_hovered;
-
+	// keyboard events
 	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-		current_tool->ready = false;
-		secondary_tool->ready = false;
 
 		// modifier and canvas shortcuts
 		if (key_pressed->scancode == sf::Keyboard::Scancode::A) { current_tool->change_size(-1); }
@@ -130,21 +125,18 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::N) { current_tool = std::move(std::make_unique<EntityEditor>()); }
 		}
 		if (control_pressed()) {
-			if (key_pressed->scancode == sf::Keyboard::Scancode::X) { current_tool->handle_keyboard_events(target, key_pressed->scancode); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::C) { current_tool->handle_keyboard_events(target, key_pressed->scancode); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::V) { current_tool->handle_keyboard_events(target, key_pressed->scancode); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::X) { current_tool->handle_keyboard_events(source, key_pressed->scancode); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::C) { current_tool->handle_keyboard_events(source, key_pressed->scancode); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::V && !palette_mode()) { current_tool->handle_keyboard_events(map, key_pressed->scancode); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::R) {
 				map.center(window->f_center_screen());
 				map.set_scale(1.f);
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::D) { trigger_demo = true; }
 		}
-		if (key_pressed->scancode == sf::Keyboard::Scancode::Q) { current_tool->handle_keyboard_events(target, key_pressed->scancode); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::Q) { current_tool->handle_keyboard_events(map, key_pressed->scancode); }
 		if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { pressed_keys.set(PressedKeys::shift); }
-		if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) {
-			current_tool->handle_keyboard_events(target, key_pressed->scancode);
-			pressed_keys.set(PressedKeys::control);
-		}
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) { pressed_keys.set(PressedKeys::control); }
 		if (key_pressed->scancode == sf::Keyboard::Scancode::Space) { pressed_keys.set(PressedKeys::space); }
 		if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt) {
 			if (current_tool->type == ToolType::brush) { current_tool = std::move(std::make_unique<Eyedropper>()); }
@@ -156,8 +148,6 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 	}
 
 	if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
-		current_tool->ready = false;
-		secondary_tool->ready = false;
 		if (key_released->scancode == sf::Keyboard::Scancode::LShift || key_released->scancode == sf::Keyboard::Scancode::RShift) { pressed_keys.reset(PressedKeys::shift); }
 		if (key_released->scancode == sf::Keyboard::Scancode::LControl || key_released->scancode == sf::Keyboard::Scancode::RControl) { pressed_keys.reset(PressedKeys::control); }
 		if (key_released->scancode == sf::Keyboard::Scancode::Space) { pressed_keys.reset(PressedKeys::space); }
@@ -173,54 +163,52 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 		map.zoom(delta);
 	}
 
+	// mouse events
 	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
-		auto left_pressed = button_pressed->button == sf::Mouse::Button::Left;
-		auto right_pressed = button_pressed->button == sf::Mouse::Button::Right;
-		if (left_pressed) { pressed_keys.set(PressedKeys::mouse_left); }
-		if (right_pressed) { pressed_keys.set(PressedKeys::mouse_right); }
-
-		auto& tool = left_pressed ? current_tool : secondary_tool;
-		if ((left_pressed || right_pressed) && !menu_hovered && !window_hovered) {
-			if (palette.hovered()) { current_tool->clear(); }
-			tool->has_palette_selection = false;
-			tool->just_clicked = true;
-			target.save_state(*tool);
-			if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
-			if (palette_mode() && current_tool->type != ToolType::marquee) {
-				auto pos = current_tool->get_window_position() - palette.get_position();
-				auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 4);
-				current_tool->store_tile(idx);
-				selected_block = idx;
-				if (!current_tool->is_paintable()) { current_tool = std::move(std::make_unique<Brush>()); }
-			}
-		}
-		// select tool gets special treatment, because it can be used without the mouse being pressed (copy/paste)
+		if (button_pressed->button == sf::Mouse::Button::Left) { pressed_keys.set(PressedKeys::mouse_left); }
+		if (button_pressed->button == sf::Mouse::Button::Right) { pressed_keys.set(PressedKeys::mouse_right); }
+		if (left_mouse_pressed()) { current_tool->click(); }
+		if (right_mouse_pressed()) { secondary_tool->click(); }
 	}
-
 	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
 		if (button_released->button == sf::Mouse::Button::Left) { pressed_keys.reset(PressedKeys::mouse_left); }
 		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
-		current_tool->reset();
-		secondary_tool->reset();
+		if (left_mouse_pressed()) { current_tool->unsuppress(); }
+		if (right_mouse_pressed()) { secondary_tool->unsuppress(); }
+		if (left_mouse_pressed()) { current_tool->neutralize(); }
+		if (right_mouse_pressed()) { secondary_tool->neutralize(); }
+		if (left_mouse_pressed()) { current_tool->release(); }
+		if (right_mouse_pressed()) { secondary_tool->release(); }
 	}
 }
 
 void Editor::logic() {
-
 	window_hovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemActive();
+	show_palette && !menu_hovered && palette.hovered() && (!current_tool->is_active() || current_tool->type == ToolType::marquee) ? flags.set(GlobalFlags::palette_mode) : flags.reset(GlobalFlags::palette_mode);
+	current_tool->palette_mode = palette_mode();
 
-	left_mouse_pressed() ? current_tool->activate() : current_tool->deactivate();
-	right_mouse_pressed() ? secondary_tool->activate() : secondary_tool->deactivate();
-
-	auto& target = palette_mode() ? palette : map;
+	// tool logic
 	auto& tool = left_mouse_pressed() ? current_tool : secondary_tool;
-	tool->handle_events(target);
+	auto& target = palette_mode() ? palette : map;
+	left_mouse_pressed() && current_tool->is_ready() ? current_tool->activate() : current_tool->deactivate();
+	right_mouse_pressed() && secondary_tool->is_ready() ? secondary_tool->activate() : secondary_tool->deactivate();
+	tool->update(target);
+
+	if ((any_mouse_pressed()) && !menu_hovered && !window_hovered) {
+		target.save_state(*tool);
+		if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
+		if (palette_mode() && current_tool->type != ToolType::marquee) {
+			auto pos = current_tool->get_window_position() - palette.get_position();
+			auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 4);
+			current_tool->store_tile(idx);
+			selected_block = idx;
+			if (!current_tool->is_paintable()) { current_tool = std::move(std::make_unique<Brush>()); }
+		}
+	}
 
 	palette.active_layer = 4;
 	map.active_layer = active_layer;
 	if (current_tool->trigger_switch) { current_tool = std::move(std::make_unique<Hand>()); }
-	current_tool->update();
-	secondary_tool->update();
 	current_tool->tile = selected_block;
 	current_tool->pervasive = tool_flags.pervasive;
 	current_tool->contiguous = tool_flags.contiguous;
@@ -233,7 +221,6 @@ void Editor::logic() {
 
 	map.set_offset_from_center(map.get_position() + map.get_scaled_center() - window->f_center_screen());
 
-	show_palette && !menu_hovered && (palette.hovered() || current_tool->has_palette_selection) && !current_tool->clipboard() ? flags.set(GlobalFlags::palette_mode) : flags.reset(GlobalFlags::palette_mode);
 }
 
 void Editor::load() {
@@ -250,7 +237,7 @@ void Editor::render(sf::RenderWindow& win) {
 	auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
 	map.render(win, tileset);
 
-	if (current_tool->ready && current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() &&
+	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() &&
 		(current_tool->type == ToolType::brush || current_tool->type == ToolType::fill || current_tool->type == ToolType::erase || current_tool->type == ToolType::entity_editor)) {
 		for (int i = 0; i < current_tool->size; i++) {
 			for (int j = 0; j < current_tool->size; j++) {
@@ -264,7 +251,7 @@ void Editor::render(sf::RenderWindow& win) {
 	if (show_palette) {
 		palette.set_backdrop_color({40, 40, 40, 180});
 		palette.render(win, tileset);
-		if (palette_mode() && palette.hovered()) {
+		if (palette_mode()) {
 			selector.setSize({palette.f_cell_size(), palette.f_cell_size()});
 			left_mouse_pressed() && palette_mode() ? selector.setOutlineColor({55, 255, 255, 180}) : selector.setOutlineColor({255, 255, 255, 80});
 			right_mouse_pressed() && palette_mode() ? selector.setFillColor({50, 250, 250, 60}) : selector.setFillColor({50, 250, 250, 20});
@@ -275,10 +262,9 @@ void Editor::render(sf::RenderWindow& win) {
 	}
 
 	// render custom cursor
-
 	auto tool = sf::Sprite{tool_texture};
-	auto& canvas = palette_mode() ? palette : map;
-	current_tool->render(canvas, win, canvas.get_position(), !palette_mode());
+	current_tool->render(map, win, map.get_position());
+	current_tool->render(palette, win, palette.get_position());
 	tool.setTextureRect({{static_cast<int>(current_tool->type) * 32, static_cast<int>(current_tool->status) * 32}, {32, 32}});
 	tool.setPosition(current_tool->get_window_position());
 	if (!ImGui::GetIO().MouseDrawCursor) { win.draw(tool); }
@@ -445,7 +431,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				static int style_current = static_cast<int>(map.styles.tile);
 				static int bg_current = static_cast<int>(map.bg);
 
-				map = Canvas({static_cast<uint32_t>(width * CHUNK_SIZE), static_cast<uint32_t>(height * CHUNK_SIZE)});
+				map = Canvas({static_cast<uint32_t>(width * CHUNK_SIZE), static_cast<uint32_t>(height * CHUNK_SIZE)}, SelectionType::canvas);
 				map.styles.tile = static_cast<Style>(style_current);
 				map.bg = static_cast<Backdrop>(bg_current);
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
@@ -567,6 +553,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				if (ImGui::BeginTabItem("General")) {
 					ImGui::Text("Any Window Hovered: %s", window_hovered ? "Yes" : "No");
 					ImGui::Text("Palette Mode: %s", palette_mode() ? "Yes" : "No");
+					ImGui::Text("Has Palette Selection: %s", current_tool->has_palette_selection ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("Zoom: %.2f", map.get_scale());
 					ImGui::Separator();
@@ -589,14 +576,19 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tool")) {
+					ImGui::Text("Left Mouse: %s", left_mouse_pressed() ? "Pressed" : "");
+					ImGui::Text("Right Mouse: %s", right_mouse_pressed() ? "Pressed" : "");
+					ImGui::Separator();
 					static bool current{};
 					ImGui::Checkbox("##current", &current);
+					ImGui::SameLine();
+					ImGui::Text("%s", current ? "Current" : "Secondary");
 					auto& tool = current ? current_tool : secondary_tool;
 					ImGui::Text("Tool Position: (%.1f,%.1f)", tool->f_position().x, tool->f_position().y);
 					ImGui::Text("Tool Position (scaled): (%i,%i)", tool->scaled_position().x, tool->scaled_position().y);
 					ImGui::Text("Tool Window Position: (%.1f,%.1f)", tool->get_window_position().x, tool->get_window_position().y);
 					ImGui::Text("Tool in Bounds: %s", tool->in_bounds(map.dimensions) ? "Yes" : "No");
-					ImGui::Text("Tool Ready: %s", tool->ready ? "Yes" : "No");
+					ImGui::Text("Tool Ready: %s", tool->is_ready() ? "Yes" : "No");
 					ImGui::Text("Tool Active: %s", tool->is_active() ? "Yes" : "No");
 					ImGui::Text("Label: %s", get_tool_string.at(tool->type).c_str());
 					ImGui::EndTabItem();

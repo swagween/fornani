@@ -9,20 +9,18 @@
 
 namespace pi {
 
-void Erase::handle_events(Canvas& canvas) {
-	if (in_bounds(canvas.dimensions) && ready && canvas.editable()) {
+void Erase::update(Canvas& canvas) {
+	Tool::update(canvas);
+	if (in_bounds(canvas.dimensions) && active && canvas.editable()) {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) { canvas.erase_at(scaled_position().x - i, scaled_position().y - j, canvas.active_layer); }
 		}
 	}
-	update();
 }
 
 void Erase::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Erase::update() { Tool::update(); }
-
-void Erase::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed) {}
+void Erase::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {}
 
 void Erase::store_tile(int index) { tile = index; }
 

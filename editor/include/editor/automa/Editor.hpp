@@ -53,11 +53,12 @@ class Editor {
 	[[nodiscard]] auto shift_pressed() const -> bool { return pressed_keys.test(PressedKeys::shift); }
 	[[nodiscard]] auto left_mouse_pressed() const -> bool { return pressed_keys.test(PressedKeys::mouse_left); }
 	[[nodiscard]] auto right_mouse_pressed() const -> bool { return pressed_keys.test(PressedKeys::mouse_right); }
+	[[nodiscard]] auto any_mouse_pressed() const -> bool { return left_mouse_pressed() || right_mouse_pressed(); }
 	[[nodiscard]] auto space_pressed() const -> bool { return pressed_keys.test(PressedKeys::space); }
 	[[nodiscard]] auto palette_mode() const -> bool { return flags.test(GlobalFlags::palette_mode); }
 
-	Canvas map{};
-	Canvas palette{false};
+	Canvas map{SelectionType::canvas};
+	Canvas palette{SelectionType::palette};
 
 	std::vector<sf::Texture> tileset_textures{};
 	sf::Texture tool_texture{};

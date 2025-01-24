@@ -4,22 +4,20 @@
 
 namespace pi {
 
-void Fill::handle_events(Canvas& canvas) {
-	if (in_bounds(canvas.dimensions) && ready && canvas.editable()) {
+void Fill::update(Canvas& canvas) {
+	Tool::update(canvas);
+	if (in_bounds(canvas.dimensions) && active && canvas.editable()) {
 		if (contiguous) {
 			fill_section(canvas.tile_val_at(scaled_position().x, scaled_position().y, canvas.active_layer), tile, scaled_position().x, scaled_position().y, canvas);
 		} else {
 			replace_all(canvas.tile_val_at(scaled_position().x, scaled_position().y, canvas.active_layer), tile, scaled_position().x, scaled_position().y, canvas);
 		}
 	}
-	update();
 }
 
 void Fill::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Fill::update() { Tool::update(); }
-
-void Fill::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset, bool transformed) {}
+void Fill::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {}
 
 void Fill::fill_section(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas) {
 	if (!canvas.editable()) { return; }
