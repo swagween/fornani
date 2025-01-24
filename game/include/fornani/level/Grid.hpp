@@ -30,7 +30,7 @@ class Grid {
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void draw(sf::RenderTexture& tex);
 	std::size_t get_index_at_position(sf::Vector2<float> position) const;
-	Tile& get_cell(int index);
+	Tile& get_cell(std::size_t index);
 
 	std::vector<Tile> cells{};
 

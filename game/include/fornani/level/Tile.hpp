@@ -63,7 +63,7 @@ struct Tile {
 	sf::Vector2<uint32_t> index{};
 	uint32_t one_d_index{};
 
-	uint8_t value{};
+	uint32_t value{};
 	TileType type{};
 	shape::Shape bounding_box;
 

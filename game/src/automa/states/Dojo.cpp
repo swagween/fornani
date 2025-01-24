@@ -1,6 +1,9 @@
 
 #include "fornani/automa/states/Dojo.hpp"
+
 #include "fornani/service/ServiceProvider.hpp"
+
+#include <tracy/Tracy.hpp>
 
 namespace automa {
 
@@ -20,7 +23,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	} else {
 		map.load(svc, room_number);
 		bake_maps(svc, {map.room_id}, true);
-		auto m_id = map.room_id;
 		bake_maps(svc, svc.data.rooms);
 	}
 	hud.orient(svc, player); // reset hud position to corner
@@ -183,6 +185,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	}*/
 
 	player->update(map, console, inventory_window);
+
 	map.update(svc, console, inventory_window);
 
 	if (map.camera_shake()) { camera.begin_shake(); }
@@ -203,15 +206,15 @@ void Dojo::tick_update(ServiceProvider& svc) {
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {
+	ZoneScopedN("Dojo::frame_update");
 	pause_window.render_update(svc);
 	pause_window.clean_off_trigger();
 }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
-
+	ZoneScopedN("Dojo::render");
 	// B.physics.position = sf::Vector2<float>(sf::Mouse::getPosition());
 	// circle.set_position(sf::Vector2<float>(sf::Mouse::getPosition()) + camera.get_position());
-
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
 

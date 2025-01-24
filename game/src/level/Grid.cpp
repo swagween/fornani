@@ -271,6 +271,6 @@ std::size_t Grid::get_index_at_position(sf::Vector2<float> position) const {
 	return std::clamp(ret, std::size_t{0}, cells.size() - 1);
 }
 
-Tile& Grid::get_cell(int index) { return cells.at(index); }
+Tile& Grid::get_cell(std::size_t index) { return cells.at(index); }
 
 } // namespace world

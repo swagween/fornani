@@ -333,7 +333,7 @@ void TextWriter::process_selection() {
 
 	// check for response events
 	auto ctr{0};
-	for (auto& res : responses.at(iterators.current_response_set)) {
+	for ([[maybe_unused]] auto& res : responses.at(iterators.current_response_set)) {
 		if (ctr == get_current_selection()) {
 			if (ctr < response_keys.size()) { process_quest(response_keys.at(ctr)); }
 			out_quest = {};

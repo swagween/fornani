@@ -1,4 +1,3 @@
-
 #include "fornani/level/Map.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
@@ -7,6 +6,8 @@
 #include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Math.hpp"
 #include <imgui.h>
+
+#include <tracy/Tracy.hpp>
 
 namespace world {
 
@@ -68,9 +69,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			ambience.load(svc.finder, meta["ambience"].as_string());
 			ambience.play();
 		}
-		for (auto& entry : meta["atmosphere"].array_view()) {
-			if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
-		}
+		for (auto& entry : meta["atmosphere"].array_view()) { if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); } }
 
 		sound.echo_count = meta["sound"]["echo_count"].as<int>();
 		sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
@@ -148,9 +147,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
 			auto rev = static_cast<bool>(entry["reversed"].as_bool());
 			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
-			if (entry["platform"]) {
-				for (auto& link : entry["platform"]["link_indeces"].array_view()) { vines.back()->add_platform(svc, link.as<int>()); }
-			}
+			if (entry["platform"]) { for (auto& link : entry["platform"]["link_indeces"].array_view()) { vines.back()->add_platform(svc, link.as<int>()); } }
 		}
 		for (auto& entry : metadata["scenery"]["grass"].array_view()) {
 			sf::Vector2<float> pos{};
@@ -326,18 +323,10 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		}
 	}
 
-	for (auto& grenade : active_grenades) {
-		for (auto& breakable : breakables) {
-			if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); }
-		}
-	}
+	for (auto& grenade : active_grenades) { for (auto& breakable : breakables) { if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); } } }
 
 	// TODO: refactor this
-	if (svc.player_dat.piggy_id != 0) {
-		for (auto& n : npcs) {
-			if (n.get_id() == svc.player_dat.piggy_id) { n.hide(); }
-		}
-	}
+	if (svc.player_dat.piggy_id != 0) { for (auto& n : npcs) { if (n.get_id() == svc.player_dat.piggy_id) { n.hide(); } } }
 	if (svc.player_dat.drop_piggy) {
 		svc.player_dat.drop_piggy = false;
 		for (auto& n : npcs) {
@@ -378,9 +367,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		enemy->post_update(svc, *this, *player);
 	}
 
-	if (fire) {
-		for (auto& f : fire.value()) { f.update(svc, *player, *this, console, inspectable_data); }
-	}
+	if (fire) { for (auto& f : fire.value()) { f.update(svc, *player, *this, console, inspectable_data); } }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& grenade : active_grenades) { grenade.update(svc, *player, *this); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
@@ -456,7 +443,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	auto& layers = svc.data.get_layers(room_id);
+	ZoneScopedN("Map::render");
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);
@@ -464,58 +451,121 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
 
-	for (auto& portal : portals) { portal.render(svc, win, cam); }
+	{
+		ZoneScopedN("Map::render - portals");
+		for (auto& portal : portals) { portal.render(svc, win, cam); }
+	}
 	if (fire) {
+		ZoneScopedN("Map::render - fires");
 		for (auto& f : fire.value()) { f.render(svc, win, cam); }
 	}
-	for (auto& chest : chests) { chest.render(svc, win, cam); }
-	for (auto& npc : npcs) {
-		if (!npc.background()) { npc.render(svc, win, cam); }
+	{
+		ZoneScopedN("Map::render - chests");
+		for (auto& chest : chests) { chest.render(svc, win, cam); }
 	}
-	for (auto& grenade : active_grenades) { grenade.render(svc, win, cam); }
-	player->render(svc, win, cam);
-
-	for (auto& enemy : enemy_catalog.enemies) {
-		if (!enemy->is_foreground()) {
-			enemy->render(svc, win, cam);
-			enemy->unique_render(svc, win, cam);
+	{
+		ZoneScopedN("Map::render - npcs");
+		for (auto& npc : npcs) { if (!npc.background()) { npc.render(svc, win, cam); } }
+	}
+	{
+		ZoneScopedN("Map::render - active grenades");
+		for (auto& grenade : active_grenades) { grenade.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - player");
+		player->render(svc, win, cam);
+	}
+	{
+		ZoneScopedN("Map::render - enemies");
+		for (auto& enemy : enemy_catalog.enemies) {
+			if (!enemy->is_foreground()) {
+				enemy->render(svc, win, cam);
+				enemy->unique_render(svc, win, cam);
+			}
 		}
 	}
-	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
-	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
-	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
-	for (auto& platform : platforms) { platform.render(svc, win, cam); }
-	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
-	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
-	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
-	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
-	for (auto& spike : spikes) { spike.render(svc, win, cam); }
-	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
-	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
-	for (auto& bed : beds) { bed.render(svc, win, cam); }
-	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
-	for (auto& vine : vines) {
-		if (vine->foreground()) { vine->render(svc, win, cam); }
+	{
+		ZoneScopedN("Map::render - active projectiles");
+		for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	}
-	for (auto& g : grass) {
-		if (g->foreground()) { g->render(svc, win, cam); }
+	{
+		ZoneScopedN("Map::render - active loot");
+		for (auto& loot : active_loot) { loot.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - active emmitters");
+		for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - platforms");
+		for (auto& platform : platforms) { platform.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - breakables");
+		for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - pushables");
+		for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - destroyers");
+		for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - checkpoints");
+		for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - spikes");
+		for (auto& spike : spikes) { spike.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - switch blocks");
+		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - switch buttons");
+		for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - beds");
+		for (auto& bed : beds) { bed.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - atmosphere");
+		for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - vines");
+		for (auto& vine : vines) { if (vine->foreground()) { vine->render(svc, win, cam); } }
+	}
+	{
+		ZoneScopedN("Map::render - grass");
+		for (auto& g : grass) { if (g->foreground()) { g->render(svc, win, cam); } }
 	}
 
-	if (save_point.id != -1) { save_point.render(svc, win, cam); }
+	if (save_point.id != -1) {
+		ZoneScopedN("Map::render - save point");
+		save_point.render(svc, win, cam);
+	}
 
 	// map foreground tiles
 	sf::Sprite tex{textures.foreground.getTexture()};
 	tex.setPosition(-cam);
 	if (!svc.greyblock_mode()) { win.draw(tex); }
 
-	// foreground enemies
-	for (auto& enemy : enemy_catalog.enemies) {
-		if (enemy->is_foreground()) {
-			enemy->render(svc, win, cam);
-			enemy->unique_render(svc, win, cam);
+	{
+		ZoneScopedN("Map::render - forground enemies");
+		// foreground enemies
+		for (auto& enemy : enemy_catalog.enemies) {
+			if (enemy->is_foreground()) {
+				enemy->render(svc, win, cam);
+				enemy->unique_render(svc, win, cam);
+			}
+			enemy->render_indicators(svc, win, cam);
+			enemy->gui_render(svc, win, cam);
 		}
-		enemy->render_indicators(svc, win, cam);
-		enemy->gui_render(svc, win, cam);
 	}
 
 	if (!svc.greyblock_mode()) {
@@ -532,7 +582,10 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		if (revalpha != 0) { win.draw(reverse); }
 	}
 
-	for (auto& effect : effects) { effect.render(svc, win, cam); }
+	{
+		ZoneScopedN("Map::render - effects");
+		for (auto& effect : effects) { effect.render(svc, win, cam); }
+	}
 
 	player->render_indicators(svc, win, cam);
 
@@ -557,11 +610,18 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		win.draw(borderbox);
 	}
 
-	for (auto& animator : animators) {
-		if (animator.foreground()) { animator.render(svc, win, cam); }
+	{
+		ZoneScopedN("Map::render - animator");
+		for (auto& animator : animators) { if (animator.foreground()) { animator.render(svc, win, cam); } }
 	}
-	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
-	if (rain) { rain.value().render(svc, win, cam); }
+	{
+		ZoneScopedN("Map::render - inspectables");
+		for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
+	}
+	if (rain) {
+		ZoneScopedN("Map::render - rain");
+		rain.value().render(svc, win, cam);
+	}
 
 	if (svc.greyblock_mode()) {
 		center_box.setPosition({});
@@ -582,17 +642,14 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 }
 
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	ZoneScopedN("Map::render_background");
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
-		for (auto& layer : scenery_layers) {
-			for (auto& piece : layer) { piece->render(svc, win, cam); }
-		}
+		for (auto& layer : scenery_layers) { for (auto& piece : layer) { piece->render(svc, win, cam); } }
 		sf::Sprite tex{textures.background.getTexture()};
 		tex.setPosition(-cam);
 		win.draw(tex);
-		for (auto& npc : npcs) {
-			if (npc.background()) { npc.render(svc, win, cam); }
-		}
+		for (auto& npc : npcs) { if (npc.background()) { npc.render(svc, win, cam); } }
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {
 		sf::RectangleShape box{};
@@ -601,18 +658,13 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		win.draw(box);
 	}
 
-	for (auto& vine : vines) {
-		if (!vine->foreground()) { vine->render(svc, win, cam); }
-	}
-	for (auto& g : grass) {
-		if (!g->foreground()) { g->render(svc, win, cam); }
-	}
-	for (auto& animator : animators) {
-		if (!animator.foreground()) { animator.render(svc, win, cam); }
-	}
+	for (auto& vine : vines) { if (!vine->foreground()) { vine->render(svc, win, cam); } }
+	for (auto& g : grass) { if (!g->foreground()) { g->render(svc, win, cam); } }
+	for (auto& animator : animators) { if (!animator.foreground()) { animator.render(svc, win, cam); } }
 }
 
 void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win) {
+	ZoneScopedN("Map::render_console");
 	if (console.flags.test(gui::ConsoleFlags::active)) { console.render(win); }
 	console.write(win, false);
 }
@@ -653,9 +705,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
 		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
-		if (player->equipped_weapon().multishot()) {
-			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point()); }
-		} else {
+		if (player->equipped_weapon().multishot()) { for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point()); } } else {
 			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point());
 		}
 		player->equipped_weapon().shoot();
@@ -815,18 +865,14 @@ std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_
 Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(4); }
 
 npc::NPC& Map::get_npc(int id) {
-	for (auto& npc : npcs) {
-		if (npc.get_id() == id) { return npc; }
-	}
+	for (auto& npc : npcs) { if (npc.get_id() == id) { return npc; } }
 
 	std::cerr << "Tried to get NPC that didn't exist! ID: " << id << std::endl;
 	std::exit(1);
 }
 
 sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
-	for (auto& portal : portals) {
-		if (portal.get_source() == portal_source_map_id) { return (portal.position); }
-	}
+	for (auto& portal : portals) { if (portal.get_source() == portal_source_map_id) { return (portal.position); } }
 	return Vec(300.f, 390.f);
 }
 
@@ -844,9 +890,7 @@ sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
 }
 
 sf::Vector2<float> Map::last_checkpoint() {
-	for (auto& checkpoint : checkpoints) {
-		if (checkpoint.reached()) { return checkpoint.position(); }
-	}
+	for (auto& checkpoint : checkpoints) { if (checkpoint.reached()) { return checkpoint.position(); } }
 	return {};
 }
 
@@ -862,9 +906,7 @@ bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
 
 bool Map::overlaps_middleground(shape::Shape& test) {
-	for (auto& cell : get_middleground().grid.cells) {
-		if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; }
-	}
+	for (auto& cell : get_middleground().grid.cells) { if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; } }
 	return false;
 }
 

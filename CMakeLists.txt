@@ -3,20 +3,21 @@ cmake_minimum_required(VERSION 3.15)
 
 set(CMAKE_CXX_STANDARD 20)
 
-if (NOT FORNANI_ROOT_DIR)
-    set(FORNANI_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
+if (NOT DEFINED FORNANI_ROOT_DIR)
+  set(FORNANI_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "Fornani root directory")
+endif ()
 
 project(fornani
-  LANGUAGES CXX
-  VERSION 1.0
+        LANGUAGES CXX
+        VERSION 1.0
 )
 
 set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
 
 option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the executable, that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION" ON)
-option(FORNANI_BUILD_EDITOR "Build the editor" OFF) # TODO: Bring editor into project
-option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam" ON)
+option(FORNANI_BUILD_EDITOR "Build the editor" ON) # TODO: Bring editor into project
+option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam" OFF)
+option(FORNANI_ENABLE_PROFILER "Enables tracy profiling" ON)
 
 include(cmake/func/AddTargetSource.cmake)
 include(cmake/GenerateDataTemplates.cmake)
@@ -24,19 +25,25 @@ include(cmake/GenerateDataTemplates.cmake)
 add_subdirectory(dependencies)
 add_subdirectory(game)
 if (FORNANI_BUILD_EDITOR)
-    add_subdirectory(editor)
+  message(STATUS "FORNANI: Building editor!")
+  add_subdirectory(editor)
 else ()
-    add_subdirectory(launcher)
+  message(STATUS "FORNANI: Building launcher!")
+  add_subdirectory(launcher)
 endif ()
 
-target_compile_definitions(fornani PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
+if (CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+  add_compile_options(fornani INTERFACE /W4056 /W4146 /W4018 /W4056)
+endif ()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
-    add_compile_options(fornani INTERFACE /W4056 /W4146 /W4018 /W4056)
-endif()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(fornani INTERFACE -Wno-sign-conversion)
-endif()
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(fornani INTERFACE -Wno-sign-conversion)
+endif ()
+
+if (FORNANI_ENABLE_PROFILER)
+  target_compile_definitions(fornani PRIVATE TRACY_ENABLE)
+  target_compile_definitions(fornani PRIVATE FORNANI_PROFILE)
+endif ()
 
 
 # Generate save files

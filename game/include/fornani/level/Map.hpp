@@ -188,7 +188,6 @@ class Map {
 	enemy::EnemyCatalog enemy_catalog;
 	fornani::CutsceneCatalog cutscene_catalog;
 
-	sf::RectangleShape tile{};
 	sf::RectangleShape borderbox{};
 	sf::RectangleShape center_box{};
 

@@ -25,7 +25,7 @@ void WidgetBar::update(automa::ServiceProvider& svc, entity::Health& health, boo
 			widget.gravitator.set_position(widget.position + randv);
 			widget.shake();
 		}
-		widget.update(svc, health.get_max());
+		widget.update(svc, static_cast<int>(health.get_max()));
 		widget.current_state = health.get_hp() > i ? State::neutral : health.get_taken_point() > i ? State::taken : State::gone;
 		auto flashing = health.restored.running() && health.restored.get_cooldown() % 48 > 24 && health.get_hp() > i;
 		widget.current_state = flashing ? State::added : widget.current_state;

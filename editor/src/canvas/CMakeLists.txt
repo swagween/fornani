@@ -1,0 +1,9 @@
+nani_add_sources(
+        Background.cpp
+        Canvas.cpp
+        Clipboard.cpp
+        EntitySet.cpp
+        Grid.cpp
+        Layer.cpp
+        Tile.cpp
+)
