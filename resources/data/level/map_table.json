@@ -113,6 +113,10 @@
       "label": "INTRO"
     },
     {
+      "room_id": 1,
+      "label": "new_file"
+    },
+    {
       "room_id": 207,
       "label": "OVERTURNED_BRANCHES_01"
     },

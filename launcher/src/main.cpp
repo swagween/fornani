@@ -20,7 +20,8 @@ int main(int argc, char** argv) {
 	// TODO: Maybe move this into a config file?
 	auto config = fornani::logger::Config{};
 	// Required to initialize the logger for the application. This must also stay outside any try/catch block.
-	auto logger = fornani::logger::Instance{logFile, config};
+	auto log_instance = fornani::logger::Instance{logFile, config};
+	fornani::logger::general.info("Logger initialized!");
 
 
 	game::LauncherApplication app{argv};

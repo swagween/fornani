@@ -13,7 +13,7 @@ gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
 	background.setOutlineThickness(2);
 	background.setSize(dimensions);
 	background.setOrigin(dimensions * 0.5f);
-	nani.resize({128, 256});
+	[[maybe_unused]] auto res = nani.resize({128, 256});
 }
 
 void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player) {

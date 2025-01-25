@@ -3,23 +3,29 @@
 
 #include "fornani/audio/MusicPlayer.hpp"
 
-#include <tracy/Tracy.hpp>
+#include <fornani/utils/Tracy.hpp>
 
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace audio {
 
-void MusicPlayer::load(data::ResourceFinder& finder, std::string_view song_name) {
+void MusicPlayer::load(const data::ResourceFinder& finder, const std::string_view song_name) {
 	if (global_off()) { return; }
 	if (label == song_name && playing()) { return; }
-	if (song_name == "") { return; }
+	if (song_name.empty()) { return; }
 	if (song_name == "none") {
 		stop();
 		return;
 	}
 	label = song_name;
-	song_first.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_first.ogg");
-	song_loop.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_loop.ogg");
+	const auto s1_res = song_first.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_first.ogg");
+	const auto s_loop_res = song_loop.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_loop.ogg");
+	if (!s1_res) {
+		NANI_LOG_ERROR(m_logger, "Failed to load song ", finder.resource_path() + "/audio/songs/" + song_name.data() + "_first.ogg", " s1_res was equal to ", s1_res);
+	}
+	if (!s_loop_res) {
+		NANI_LOG_ERROR(m_logger, "Failed to load song ", finder.resource_path() + "/audio/songs/" + song_name.data() + "_loop.ogg", " s_loop_res was equal to ", s_loop_res);
+	}
 	switch_on();
 	flags.state.reset(SongState::looping);
 }
@@ -27,15 +33,21 @@ void MusicPlayer::load(data::ResourceFinder& finder, std::string_view song_name)
 void MusicPlayer::simple_load(std::string_view source) {
 	if (global_off()) { return; }
 	if (label == source && playing()) { return; }
-	if (source == "") { return; }
+	if (source.empty()) { return; }
 	if (source == "none") {
 		stop();
 		return;
 	}
 	label = source;
-	std::string path = source.data();
-	song_first.openFromFile(path + ".ogg");
-	song_loop.openFromFile(path + ".ogg");
+	std::string const path = source.data();
+	const auto s1_res = song_first.openFromFile(path + ".ogg");
+	const auto s_loop_res = song_loop.openFromFile(path + ".ogg");
+	if (!s1_res) {
+		NANI_LOG_ERROR(m_logger, "Failed to load song ", path, ".ogg", " s1_res was equal to ", s1_res);
+	}
+	if (!s_loop_res) {
+		NANI_LOG_ERROR(m_logger, "Failed to load song ", path, ".ogg", " s_loop_res was equal to ", s_loop_res);
+	}
 	switch_on();
 	flags.state.reset(SongState::looping);
 }
@@ -64,7 +76,7 @@ void MusicPlayer::play_looped(float vol) {
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::update() {
-	ZoneScopedN("MusicPlayer::update");
+	NANI_ZoneScopedN("MusicPlayer::update");
 	if (global_off()) { return; }
 	volume.actual = volume.native * volume.multiplier;
 	set_volume(volume.actual);

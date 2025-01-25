@@ -7,6 +7,7 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <numbers>
 #include <vector>
 
 #include <cmath>
@@ -14,9 +15,11 @@
 #include "fornani/audio/SoundEffects.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
+#include <ccmath/math/power/sqrt.hpp>
+
 namespace {
-constexpr auto pi = 3.14159265359f;
-constexpr auto sqrt2 = 2.0f * 0.707106781186547524401f;
+constexpr auto pi = std::numbers::pi_v<float>;
+constexpr auto sqrt2 = ccm::sqrtf(2.0f); //2.0f * 0.707106781186547524401f;
 
 } // namespace
 
@@ -24,7 +27,7 @@ namespace audio {
 
 class PitchVolume : public Effect {
   public:
-	PitchVolume(automa::ServiceProvider& svc) : Effect(svc) {
+	explicit PitchVolume(automa::ServiceProvider& svc) : Effect(svc) {
 
 		// Set the music to loop
 		m_music.setLooping(true);
@@ -79,7 +82,7 @@ class Attenuation : public Effect {
 		m_music.setDirection({0.f, 1.f, 0.f});
 	}
 
-	void onUpdate(float /*time*/, float x, float y) override {
+	void onUpdate(float /*time*/, [[maybe_unused]] float x, [[maybe_unused]] float y) override {
 		m_music.setPosition({m_position.x, m_position.y, 0.f});
 	}
 
@@ -233,7 +236,7 @@ class Doppler : public sf::SoundStream, public Effect {
 ////////////////////////////////////////////////////////////
 class Processing : public Effect {
   public:
-	void onUpdate([[maybe_unused]] float time, float x, float y) override {
+	void onUpdate([[maybe_unused]] float time, [[maybe_unused]] float x, [[maybe_unused]] float y) override {
 		m_music.setPosition({m_position.x, m_position.y, 0.f});
 	}
 

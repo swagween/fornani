@@ -40,30 +40,9 @@ set(CCMATH_STRICT_WARNINGS OFF)
 FetchContent_Declare(
         ccmath
         GIT_REPOSITORY https://github.com/Rinzii/ccmath
-        GIT_TAG main
+        GIT_TAG 7507508 # IanP: This specific commit id is stable but more recent than main
 )
 FetchContent_MakeAvailable(ccmath)
-
-# Disable specific aggressive warnings for ccmath
-# IanP: I will fix this in ccmath at some point but for now we just disable this all.
-if (CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
-    target_compile_options(ccmath INTERFACE
-            /W3
-            /W4056
-            /W4146
-            /W4018
-            /W4056
-    )
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|IntelLLVM")
-    target_compile_options(ccmath INTERFACE
-            -Wno-all
-            -Wno-extra
-            -Wno-conversion
-            -Wno-pedantic
-            -Wno-sign-conversion
-    )
-endif ()
-
 
 # Avoid warning about DOWNLOAD_EXTRACT_TIMESTAMP in CMake 3.24 with steamworks.
 if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")

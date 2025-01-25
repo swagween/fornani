@@ -14,7 +14,7 @@ void Wardrobe::set_palette(sf::Texture& tex) { palette = tex; }
 void Wardrobe::change_outfit(std::vector<std::pair<sf::Vector2<unsigned int>, sf::Color>> replacement) {
 	sf::Image image = palette.copyToImage();
 	for (auto& pixel : replacement) { image.setPixel(pixel.first, pixel.second); }
-	palette.loadFromImage(image);
+	[[maybe_unused]] auto res = palette.loadFromImage(image);
 }
 
 void Wardrobe::update(flfx::TextureUpdater& updater) { 

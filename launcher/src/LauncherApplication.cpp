@@ -6,23 +6,11 @@
 namespace game
 {
 void LauncherApplication::init(char** argv) {
-
 	ZoneScopedN("Application::Application");
-	//std::cout << "Resource path: " << m_finder.resource_path << "\n";
-	NANI_LOG_INFO(m_logger, "Resource path: ", m_finder.resource_path);
-
-	// load app resources
-	m_game_info = dj::Json::from_file((m_finder.resource_path + "/data/config/version.json").c_str());
-	assert(!m_game_info.is_null());
-
-	m_metadata.title = m_game_info["title"].as_string();
-	m_metadata.build = m_game_info["build"].as_string();
-	m_metadata.major = m_game_info["version"]["major"].as<int>();
-	m_metadata.minor = m_game_info["version"]["minor"].as<int>();
-	m_metadata.hotfix = m_game_info["version"]["hotfix"].as<int>();
+	std::cout << "Resource path: " << m_finder.resource_path() << std::endl;
 	std::cout << "> Launching " << m_metadata.long_title() << "\n";
 
-	m_app_settings = dj::Json::from_file((m_finder.resource_path + "/data/config/settings.json").c_str());
+	m_app_settings = dj::Json::from_file((m_finder.resource_path() + "/data/config/settings.json").c_str());
 	assert(!m_app_settings.is_null());
 
 	// create window
@@ -31,7 +19,7 @@ void LauncherApplication::init(char** argv) {
 
 	// set app icon
 	sf::Image icon{};
-	if (!icon.loadFromFile(m_finder.resource_path + "/image/app/icon.png")) { std::cout << "Failed to load application icon.\n"; };
+	if (!icon.loadFromFile(m_finder.resource_path() + "/image/app/icon.png")) { std::cout << "Failed to load application icon.\n"; };
 	m_window.get().setIcon({256, 256}, icon.getPixelsPtr());
 
 	m_window.get().clear();
