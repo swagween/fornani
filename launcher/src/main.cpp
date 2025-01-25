@@ -1,5 +1,5 @@
 
-#include "fornani/setup/Application.hpp"
+#include "launcher/LauncherApplication.hpp"
 
 #include <steam/steam_api.h>
 #include <iostream>
@@ -12,9 +12,19 @@
 #error "FORNANI_STEAM_APP_ID was defined as a negative number!"
 #endif
 
+static constexpr const char * logFile{"fornani.log"};
+
 int main(int argc, char** argv) {
 	assert(argc > 0);
-	fornani::Application app{argv};
+
+	// TODO: Maybe move this into a config file?
+	auto config = fornani::logger::Config{};
+	// Required to initialize the logger for the application. This must also stay outside any try/catch block.
+	auto logger = fornani::logger::Instance{logFile, config};
+
+
+	game::LauncherApplication app{argv};
+	app.init(argv);
 
 	std::cout << "Current passed steam ID: " << FORNANI_STEAM_APP_ID << "\n";
 

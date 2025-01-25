@@ -15,7 +15,7 @@ project(fornani
 set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
 
 option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the executable, that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION" ON)
-option(FORNANI_BUILD_EDITOR "Build the editor" ON) # TODO: Bring editor into project
+option(FORNANI_BUILD_EDITOR "Build the editor" OFF) # TODO: Bring editor into project
 option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam" OFF)
 option(FORNANI_ENABLE_PROFILER "Enables tracy profiling" ON)
 
@@ -30,6 +30,10 @@ if (FORNANI_BUILD_EDITOR)
 else ()
   message(STATUS "FORNANI: Building launcher!")
   add_subdirectory(launcher)
+endif ()
+
+if (FORNANI_DEV_BUILD)
+  message(STATUS "FORNANI: FORNANI_DEV_BUILD is ON. Will write steam_appid.txt next to executable!")
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
