@@ -8,6 +8,7 @@
 #include "editor/setup/WindowManager.hpp"
 #include "editor/gui/Console.hpp"
 #include "editor/automa/PopupHandler.hpp"
+#include "fornani/utils/Cooldown.hpp"
 #include <imgui-SFML.h>
 #include <sstream>
 #include <windows.h>
@@ -27,7 +28,7 @@ namespace pi {
 enum class GlobalFlags { shutdown, palette_mode };
 enum class PressedKeys { control, shift, mouse_left, mouse_right, space };
 
-inline char const* styles[static_cast<size_t>(Style::END)];
+inline char const* styles[static_cast<size_t>(StyleType::END)];
 inline char const* bgs[static_cast<size_t>(Backdrop::END)];
 inline std::string_view const& style_list{};
 inline std::string styles_str{};
@@ -58,8 +59,8 @@ class Editor {
 	[[nodiscard]] auto palette_mode() const -> bool { return flags.test(GlobalFlags::palette_mode); }
 	[[nodiscard]] auto available() const -> bool { return !window_hovered && !menu_hovered && !popup_open; }
 
-	Canvas map{SelectionType::canvas};
-	Canvas palette{SelectionType::palette};
+	Canvas map;
+	Canvas palette;
 
 	std::vector<sf::Texture> tileset_textures{};
 	sf::Texture tool_texture{};
@@ -106,6 +107,7 @@ class Editor {
 		bool contiguous{};
 	} tool_flags{};
 	float zoom_factor{0.05f};
+	::util::Cooldown grid_refresh{};
 };
 
 } // namespace pi

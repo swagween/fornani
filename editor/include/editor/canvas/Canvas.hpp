@@ -13,7 +13,6 @@
 #include <iostream>
 #include <djson/json.hpp>
 #include "editor/util/BitFlags.hpp"
-#include "editor/util/Camera.hpp"
 #include "EntitySet.hpp"
 #include "Background.hpp"
 
@@ -24,31 +23,6 @@ class ResourceFinder;
 namespace pi {
 
 int const NUM_LAYERS{8};
-uint32_t const chunk_size{16};
-
-enum class Backdrop {
-	BG_DUSK,
-	BG_SUNRISE,
-	BG_OPEN_SKY,
-	BG_ROSY_HAZE,
-	BG_NIGHT,
-	BG_DAWN,
-	BG_OVERCAST,
-
-	BG_SLIME,
-	BG_BLACK,
-	BG_NAVY,
-	BG_DIRT,
-	BG_GEAR,
-	BG_LIBRARY,
-	BG_GRANITE,
-	BG_RUINS,
-	BG_CREVASSE,
-	BG_DEEP,
-	BG_GROVE,
-
-	END
-};
 
 enum LAYER_ORDER {
 	BACKGROUND = 0,
@@ -56,7 +30,7 @@ enum LAYER_ORDER {
 	FOREGROUND = 7,
 };
 
-enum class Style { firstwind, overturned, base, factory, greatwing, provisional, END };
+enum class StyleType { firstwind, overturned, base, factory, greatwing, END };
 
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
@@ -66,13 +40,33 @@ struct Map {
 	std::vector<Layer> layers{};
 };
 
+class Style {
+  public:
+	Style(StyleType type) : type(type) {
+		switch (type) {
+		case StyleType::firstwind: label = "firstwind"; break;
+		case StyleType::overturned: label = "overturned"; break;
+		case StyleType::base: label = "base"; break;
+		case StyleType::factory: label = "factory"; break;
+		case StyleType::greatwing: label = "greatwing"; break;
+		default: label = "<none>"; break;
+		}
+	}
+	[[nodiscard]] auto get_label() const -> std::string { return label; };
+	[[nodiscard]] auto get_type() const -> StyleType { return type; };
+
+  private:
+	StyleType type{};
+	std::string label{};
+};
+
 class Tool;
 
 class Canvas {
 
   public:
-	Canvas(SelectionType type);
-	Canvas(sf::Vector2<uint32_t> dim, SelectionType type);
+	Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black);
+	Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop);
 	void update(Tool& tool, bool transformed = false);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
 	void load(data::ResourceFinder& finder, std::string const& room_name, bool local = false);
@@ -90,34 +84,37 @@ class Canvas {
 	void set_scale(float to_scale);
 	void resize(sf::Vector2i adjustment);
 	void center(sf::Vector2<float> point);
+	void constrain(sf::Vector2<float> bounds);
 	void zoom(float amount);
 	void set_backdrop_color(sf::Color color);
+	void set_grid_texture();
 	Map& get_layers();
 	sf::Vector2<int> get_tile_coord(int lookup);
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
-	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<uint32_t> { return dimensions / chunk_size; }
-	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return camera.position; }
-	[[nodiscard]] auto get_scaled_position() const -> sf::Vector2<float> { return camera.position / scale; }
+	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<uint32_t> { return dimensions / u_native_chunk_size(); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
+	[[nodiscard]] auto get_scaled_position() const -> sf::Vector2<float> { return position / scale; }
 	[[nodiscard]] auto get_real_dimensions() const -> sf::Vector2<float> { return real_dimensions * scale; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return real_dimensions * 0.5f; }
 	[[nodiscard]] auto get_origin() const -> sf::Vector2<float> { return origin; }
 	[[nodiscard]] auto get_offset_from_center() const -> sf::Vector2<float> { return offset_from_center; }
 	[[nodiscard]] auto get_scaled_center() const -> sf::Vector2<float> { return real_dimensions * 0.5f * scale; }
+	[[nodiscard]] auto u_native_chunk_size() const -> std::uint32_t { return 16u; }
 	[[nodiscard]] auto i_native_chunk_size() const -> int { return 16; }
-	[[nodiscard]] auto u_cell_size() const -> int { return static_cast<uint32_t>(i_cell_size()); }
+	[[nodiscard]] auto f_native_chunk_size() const -> float { return 16.f; }
+	[[nodiscard]] auto u_cell_size() const -> std::uint32_t { return static_cast<uint32_t>(i_cell_size()); }
 	[[nodiscard]] auto i_cell_size() const -> int { return static_cast<int>(f_cell_size()); }
 	[[nodiscard]] auto f_cell_size() const -> float { return 32.f * scale; }
 	[[nodiscard]] auto f_chunk_size() const -> float { return 16.f * scale; }
 	[[nodiscard]] auto f_native_cell_size() const -> float { return 32.f; }
-	[[nodiscard]] auto f_native_chunk_size() const -> float { return 16.f; }
 	[[nodiscard]] auto get_scale() const -> float { return scale; }
-	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(styles.tile); }
+	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(styles.tile.get_type()); }
 	[[nodiscard]] auto within_zoom_limits(float delta) const -> bool { return get_scale() + delta >= min_scale && get_scale() + delta <= max_scale; }
 	[[nodiscard]] auto within_bounds(sf::Vector2<float> const& point) const -> bool {
-		return point.x > camera.position.x && point.x < real_dimensions.x + camera.position.x && point.y > camera.position.y && point.y < real_dimensions.y + camera.position.y;
+		return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y;
 	}
 	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
 	[[nodiscard]] auto redo_states_size() const -> std::size_t { return redo_states.size(); }
@@ -157,9 +154,9 @@ class Canvas {
 	} constants{};
 
 	struct {
-		Style tile{};
-		int breakable{};
-	} styles{};
+		Style tile;
+	} styles;
+	std::unique_ptr<Background> background{};
 
 	struct {
 		bool flag{};
@@ -171,10 +168,11 @@ class Canvas {
 	sf::Vector2u player_start{};
 	int active_layer{};
 
-	Backdrop bg{};
+	uint32_t room_id{};
 
-	uint32_t room_id{}; // should be assigned to its constituent chunks
   private:
+	sf::Vector2<float> position{};
+	sf::RenderTexture grid_texture{};
 	sf::Vector2<float> origin{};
 	sf::Vector2<float> real_dimensions{};
 	sf::Vector2<float> offset_from_center{};
@@ -182,12 +180,10 @@ class Canvas {
 	std::vector<Map> redo_states{};
 	util::BitFlags<CanvasState> state{};
 	util::BitFlags<CanvasProperties> properties{};
-	Camera camera;
 	sf::RectangleShape box{};
 	sf::RectangleShape gridbox{};
 	sf::RectangleShape chunkbox{};
 	sf::RectangleShape border{};
-	std::unique_ptr<Background> background{};
 
 	SelectionType type{};
 

@@ -2,8 +2,7 @@
 
 namespace pi {
 
-EntityEditor::EntityEditor(EntityMode to_mode) {
-	type = ToolType::entity_editor;
+EntityEditor::EntityEditor(EntityMode to_mode) : Tool("Entity Editor", ToolType::entity_editor) {
 	set_mode(to_mode);
 	ent_type = EntityType::none;
 }
@@ -11,11 +10,27 @@ EntityEditor::EntityEditor(EntityMode to_mode) {
 void EntityEditor::update(Canvas& canvas) {
 	Tool::update(canvas);
 	if (just_clicked) { just_clicked = false; }
+	disable_highlight = false;
+	if (selector_mode()) {
+		disable_highlight = true;
+		ent_type = EntityType::none;
+		for (auto& ent : canvas.entities.variables.entities) { ent->highlighted = ent->position == scaled_position(); }
+	}
 	if (current_entity) { current_entity.value()->position = scaled_position() - current_entity.value()->dimensions + sf::Vector2<uint32_t>(1, 1); }
 	if (!in_bounds(canvas.dimensions) || !active || !canvas.editable()) { return; }
-	if (selector_mode()) { ent_type = EntityType::none; }
+
+	// user has clicked
+
 	if (placer_mode() && is_ready()) {
-		if (current_entity) {
+		if (ent_type == EntityType::player_placer) {
+			canvas.entities.variables.player_start = scaled_position();
+		} else if (ent_type == EntityType::save_point) {
+			if (current_entity) {
+				canvas.entities.variables.save_point = std::move(current_entity.value());
+				current_entity = {};
+			}
+			suppress_until_released();
+		} else if (current_entity) {
 			auto repeat = current_entity.value()->repeatable;
 			auto clone = current_entity.value()->clone();
 			canvas.entities.variables.entities.push_back(std::move(current_entity.value()));
@@ -25,6 +40,7 @@ void EntityEditor::update(Canvas& canvas) {
 				current_entity = {}; // free the entity's memory otherwise
 			}
 			suppress_until_released();
+			entity_mode = EntityMode::selector;
 		}
 	}
 	if (eraser_mode()) {

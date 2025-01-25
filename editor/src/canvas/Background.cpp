@@ -7,14 +7,14 @@
 
 namespace pi {
 
-Background::Background(data::ResourceFinder& finder, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "rosy_haze"}, {18, "woods"}} {
-	std::string type = labels.contains(bg_id) ? labels.at(bg_id) : "black";
-	std::string doc = type + ".png";
+Background::Background(data::ResourceFinder& finder, Backdrop backdrop) : type{backdrop} {
+	std::string bg_type = type.get_label();
+	std::string doc = bg_type + ".png";
 	auto bg = dj::Json::from_file((finder.paths.resources / "data/level/background_behaviors.json").string().c_str());
 	assert(!bg.is_null());
-	texture.loadFromFile((finder.paths.resources / "image/background" / doc).string());
+	if (!texture.loadFromFile((finder.paths.resources / "image/background" / doc).string())) { std::cout << "Failed to load background " << type.get_label() << ".\n"; }
 
-	auto const& in_data = bg[type];
+	auto const& in_data = bg[bg_type];
 	dimensions.x = in_data["dimensions"][0].as<int>();
 	dimensions.y = in_data["dimensions"][1].as<int>();
 	scroll_pane = dimensions;

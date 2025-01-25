@@ -18,27 +18,19 @@ struct Entity {
 	Entity(std::string label, int id = 0, sf::Vector2<uint32_t> position = {}, sf::Vector2<uint32_t> dimensions = {}) : label(label), id(id), position(position), dimensions(dimensions){};
 	virtual ~Entity() = default;
 	virtual std::unique_ptr<Entity> clone() const = 0;
-	virtual void serialize(dj::Json& out) {
-		out["id"] = id;
-		out["position"][0] = position.x;
-		out["position"][1] = position.y;
-		out["dimensions"][0] = dimensions.x;
-		out["dimensions"][1] = dimensions.y;
-	}
-	virtual void unserialize(dj::Json& in) {
-		id = in["id"].as<int>();
-		position.x = in["position"][0].as<uint32_t>();
-		position.y = in["position"][1].as<uint32_t>();
-		dimensions.x = in["dimensions"][0].as<uint32_t>();
-		dimensions.y = in["dimensions"][1].as<uint32_t>();
-	}
+	virtual void serialize(dj::Json& out);
+	virtual void unserialize(dj::Json& in);
 	std::string label{};
 	sf::Vector2<uint32_t> position{};
 	sf::Vector2<uint32_t> dimensions{};
 	int id{};
 	bool repeatable{};
 
+	bool highlighted{};
+	bool selected{};
+
 	// helpers
+	void render(sf::RenderWindow& win, sf::Vector2<float> cam, float size);
 	sf::RectangleShape drawbox{};
 	[[nodiscard]] auto get_label() const -> std::string { return label; }
 	[[nodiscard]] auto f_dimensions() const -> sf::Vector2<float> { return sf::Vector2<float>(dimensions); }
@@ -80,7 +72,8 @@ struct Animator : public Entity {
 };
 
 struct Portal : public Entity {
-	Portal() : Entity("portals") {}
+	Portal(sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_map_id, int destination_map_id, bool locked, int key_id)
+		: Entity("portals", 0, {}, dimensions), activate_on_contact(activate_on_contact), already_open(already_open), source_map_id(source_map_id), destination_map_id(destination_map_id), locked(locked), key_id(key_id) {}
 	bool activate_on_contact{};
 	bool already_open{};
 	int source_map_id{};
@@ -97,7 +90,15 @@ struct Portal : public Entity {
 		out["locked"] = dj::Boolean{locked};
 		out["key_id"] = key_id;
 	}
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override {
+		Entity::unserialize(in);
+		activate_on_contact = static_cast<bool>(in["activate_on_contact"].as_bool());
+		already_open = static_cast<bool>(in["already_open"].as_bool());
+		source_map_id = in["source_map_id"].as<int>();
+		destination_map_id = in["destination_map_id"].as<int>();
+		locked = static_cast<bool>(in["locked"].as_bool());
+		key_id = in["key_id"].as<int>();
+	};
 };
 
 struct InteractiveScenery : public Entity {
@@ -194,8 +195,7 @@ struct Destroyer : public Entity {
 };
 
 struct SavePoint : public Entity {
-	SavePoint() : Entity("save_point") {}
-	bool placed{};
+	SavePoint(int id) : Entity("save_point", id, {}, {1, 1}) {}
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<SavePoint>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
@@ -213,22 +213,14 @@ class EntitySet {
 
 	struct {
 		std::string music{};
+		std::optional<std::unique_ptr<Entity>> save_point{};
 		sf::Vector2<uint32_t> player_start{};
 		std::vector<std::unique_ptr<Entity>> entities{};
 	} variables{};
 
   private:
 	sf::Texture enemy_thumbnails{};
-
 	sf::RectangleShape player_box{};
-	sf::RectangleShape portalbox{};
-	sf::RectangleShape inspbox{};
-	sf::RectangleShape platbox{};
-	sf::RectangleShape chestbox{};
-	sf::RectangleShape savebox{};
-	sf::RectangleShape platextent{};
-	sf::RectangleShape vinebox{};
-	sf::RectangleShape scenerybox{};
 
 	// read and write
 	struct {

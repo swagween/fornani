@@ -7,32 +7,27 @@
 
 namespace pi {
 
-Canvas::Canvas(SelectionType type) : Canvas({}, type) {}
+Canvas::Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop) : Canvas(finder, {}, type, style, backdrop) {}
 
-Canvas::Canvas(sf::Vector2<uint32_t> dim, SelectionType type) : camera{sf::Vector2<float>{static_cast<float>(dim.x), static_cast<float>(dim.y)}}, type(type) {
+Canvas::Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop) : type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
 	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
     dimensions = dim;
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
     clear();
     map_states.push_back(Map());
-	for (uint32_t i = 0; i < NUM_LAYERS; ++i) { map_states.back().layers.push_back(Layer(i, (i == MIDDLEGROUND), dim)); }
+	for (uint32_t i = 0; i < NUM_LAYERS; ++i) { map_states.back().layers.push_back(Layer(i, (i == static_cast<uint32_t>(MIDDLEGROUND)), dim)); }
 
 	box.setOutlineColor(sf::Color{200, 200, 200, 20});
 	box.setOutlineThickness(-2);
 	box.setSize({f_cell_size(), f_cell_size()});
 
 	gridbox.setFillColor(sf::Color::Transparent);
-	gridbox.setOutlineColor(sf::Color{240, 230, 255, 20});
-	gridbox.setOutlineThickness(-1);
-	gridbox.setSize({f_cell_size(), f_cell_size()});
-
+	gridbox.setOutlineColor(sf::Color{255, 255, 255, 80});
 	chunkbox.setFillColor(sf::Color::Transparent);
-	chunkbox.setOutlineColor(sf::Color{80, 230, 255, 16});
-	chunkbox.setOutlineThickness(-2);
-	chunkbox.setSize({f_cell_size() * f_native_chunk_size(), f_cell_size() * f_native_chunk_size()});
+	chunkbox.setOutlineColor(sf::Color{80, 255, 255, 80});
 
 	border.setFillColor(sf::Color::Transparent);
-	border.setOutlineThickness(4);
+	border.setOutlineThickness(4.f);
 }
 
 void Canvas::update(Tool& tool, bool transformed) {
@@ -42,7 +37,6 @@ void Canvas::update(Tool& tool, bool transformed) {
 	} else {
 		within_bounds(tool.get_window_position()) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
 	}
-	camera.update();
 	background->update();
 
 	// update grid
@@ -50,7 +44,7 @@ void Canvas::update(Tool& tool, bool transformed) {
 }
 
 void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
-	if (flags.show_background) { background->render(*this, win, camera.position); }
+	if (flags.show_background) { background->render(*this, win, position); }
 	border.setPosition(get_position());
 	hovered() ? border.setOutlineColor({240, 230, 255, 80}) : border.setOutlineColor({240, 230, 255, 40});
 	border.setSize(get_real_dimensions());
@@ -66,12 +60,12 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 					tileset.setTextureRect(sf::IntRect{get_tile_coord(cell.value), {32, 32}});
 					tileset.setScale({scale * squared, scale * squared});
 					tileset.setOrigin(get_origin());
-					tileset.setPosition(cell.scaled_position() + camera.position);
+					tileset.setPosition(cell.scaled_position() + position);
 					if (layer.render_order != 7 || flags.show_obscured_layer) { win.draw(tileset); }
 				} else if (flags.show_indicated_layers) {
 					box.setScale({scale, scale});
 					box.setOrigin(get_origin());
-					box.setPosition(cell.scaled_position() + camera.position);
+					box.setPosition(cell.scaled_position() + position);
 					win.draw(box);
 				}
 			}
@@ -79,22 +73,11 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	}
 	if (flags.show_entities) { entities.render(*this, win, get_position()); }
 	if (flags.show_grid && !states_empty()) {
-		if (get_layers().layers.empty()) { return; }
-		for (auto& cell : get_layers().layers.back().grid.cells) {
-			if (cell.scaled_position().x + camera.bounding_box.position.x < 0) { continue; }
-			if (cell.scaled_position().x + camera.bounding_box.position.x > win.getSize().x) { continue; }
-			if (cell.scaled_position().y + camera.bounding_box.position.y < 0) { continue; }
-			if (cell.scaled_position().y + camera.bounding_box.position.y > win.getSize().y) { continue; }
-			gridbox.setSize({f_cell_size(), f_cell_size()});
-			gridbox.setOrigin(get_origin());
-			gridbox.setPosition(cell.scaled_position() + camera.position);
-			if (cell.grid_position().x % i_native_chunk_size() == 0 && cell.grid_position().y % i_native_chunk_size() == 0) {
-				chunkbox.setPosition(gridbox.getPosition());
-				chunkbox.setSize({f_cell_size() * f_native_chunk_size(), f_cell_size() * f_native_chunk_size()});
-				win.draw(chunkbox);
-			}
-			win.draw(gridbox);
-		}
+		auto grid_sprite = sf::Sprite(grid_texture.getTexture());
+		grid_sprite.setPosition(position);
+		grid_sprite.setOrigin(get_origin());
+		grid_sprite.setScale({scale, scale});
+		win.draw(grid_sprite);
 	}
 }
 
@@ -117,7 +100,7 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
 	data.tiles = dj::Json::from_file((tilepath).c_str());
 	assert(!data.tiles.is_null());
 
-	if (!local) { entities = EntitySet{finder, data.meta, room_name}; }
+	if (!local) { entities = EntitySet{finder, data.meta["entities"], room_name}; }
 
 	auto const& meta = data.meta["meta"];
 	room_id = meta["room_id"].as<int>();
@@ -126,19 +109,17 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
 	real_dimensions = {static_cast<float>(dimensions.x) * constants.cell_size, static_cast<float>(dimensions.y) * constants.cell_size};
-	for (uint32_t i = 0; i < NUM_LAYERS; ++i) { map_states.back().layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions)); }
+	for (uint32_t i = 0; i < NUM_LAYERS; ++i) { map_states.back().layers.push_back(Layer(i, (i == static_cast<int>(MIDDLEGROUND)), dimensions)); }
 
 	auto style_value = meta["style"].as<int>();
-	styles.tile = static_cast<Style>(style_value);
-	bg = static_cast<Backdrop>(meta["background"].as<int>());
+	styles.tile = Style(static_cast<StyleType>(style_value));
 	entities.variables.music = meta["music"].as_string();
-	styles.breakable = meta["styles"]["breakables"].as<int>();
 	cutscene.flag = static_cast<bool>(meta["cutscene_on_entry"]["flag"].as_bool());
 	cutscene.type = meta["cutscene_on_entry"]["type"].as<int>();
 	cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
 	cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
 
-	background = std::make_unique<Background>(finder, meta["background"].as<int>());
+	background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>()));
 
     // tiles
     int layer_counter{};
@@ -150,8 +131,8 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
             ++cell_counter;
         }
         ++layer_counter;
-    }
-    
+	}
+	set_grid_texture();
 }
 
 bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
@@ -174,16 +155,15 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
 	data.meta["meta"]["dimensions"][1] = dimensions.y;
 	data.meta["meta"]["chunk_dimensions"][0] = chunk_dimensions().x;
 	data.meta["meta"]["chunk_dimensions"][1] = chunk_dimensions().y;
-	data.meta["meta"]["style"] = static_cast<int>(styles.tile);
-	data.meta["meta"]["background"] = static_cast<int>(bg);
+	data.meta["meta"]["style"] = static_cast<int>(styles.tile.get_type());
+	data.meta["meta"]["background"] = static_cast<int>(background->type.get_type());
 	data.meta["meta"]["music"] = entities.variables.music;
-	data.meta["meta"]["styles"]["breakables"] = styles.breakable;
 	data.meta["meta"]["cutscene_on_entry"]["flag"] = dj::Boolean{cutscene.flag};
 	data.meta["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	data.meta["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	data.meta["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
 
-	entities.save(finder, data.meta, room_name);
+	entities.save(finder, data.meta["entities"], room_name);
 
 	data.tiles["layers"] = wipe;
 	for (int i = 0; i < NUM_LAYERS; ++i) { data.tiles["layers"].push_back(wipe); }
@@ -216,7 +196,7 @@ void Canvas::clear() {
 
 void Canvas::save_state(Tool& tool, bool force) {
     auto const& type = tool.type;
-    auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;;
+    auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;
 	if ((undoable_tool && tool.clicked() && editable()) || force) {
 		map_states.emplace_back(Map{map_states.back()});
         clear_redo_states();
@@ -243,9 +223,9 @@ void Canvas::clear_redo_states() { redo_states.clear(); }
 
 void Canvas::unhover() { state.reset(CanvasState::hovered); }
 
-void Canvas::move(sf::Vector2<float> distance) { camera.move(distance); }
+void Canvas::move(sf::Vector2<float> distance) { position += distance; }
 
-void Canvas::set_position(sf::Vector2<float> to_position) { camera.set_position(to_position); }
+void Canvas::set_position(sf::Vector2<float> to_position) { position = to_position; }
 
 void Canvas::set_origin(sf::Vector2<float> to_origin) { origin = to_origin; }
 
@@ -258,21 +238,53 @@ void Canvas::resize(sf::Vector2i adjustment) {
 	if (adjustment.x < 0 && chunk_dimensions().x == 1) { return; }
 	if (adjustment.y < 0 && chunk_dimensions().y == 1) { return; }
 	auto current = Map{map_states.back()};
-	dimensions.x += adjustment.x * static_cast<int>(chunk_size);
-	dimensions.y += adjustment.y * static_cast<int>(chunk_size);
+	dimensions.x += adjustment.x * static_cast<int>(f_native_chunk_size());
+	dimensions.y += adjustment.y * static_cast<int>(f_native_chunk_size());
 	map_states.push_back(Map());
 	for (uint32_t i = 0; i < NUM_LAYERS; ++i) {
-		map_states.back().layers.push_back(Layer(i, (i == MIDDLEGROUND), dimensions));
+		map_states.back().layers.push_back(Layer(i, (i == static_cast<uint32_t>(MIDDLEGROUND)), dimensions));
 		map_states.back().layers.back().grid.match(current.layers.at(i).grid);
 	}
 	clear_redo_states();
+	set_grid_texture();
 }
 
 void Canvas::center(sf::Vector2<float> point) { set_position(point - real_dimensions * 0.5f); }
 
+void Canvas::constrain(sf::Vector2<float> bounds) {
+	position.x = std::clamp(position.x, -get_real_dimensions().x, bounds.x);
+	position.y = std::clamp(position.y, -get_real_dimensions().y, bounds.y);
+}
+
 void Canvas::zoom(float amount) { scale = std::clamp(scale + amount, min_scale, max_scale); }
 
 void Canvas::set_backdrop_color(sf::Color color) { border.setFillColor(color); }
+
+void Canvas::set_grid_texture() {
+	if (get_layers().layers.empty()) { return; }
+	if (!grid_texture.resize(sf::Vector2u{static_cast<uint32_t>(dimensions.x * f_native_cell_size()), static_cast<uint32_t>(dimensions.y * f_native_cell_size())})) {
+		std::cout << "Failed to resize grid texture.\n";
+		return;
+	}
+	grid_texture.clear(sf::Color::Transparent);
+	for (auto i{0}; i < get_layers().layers.back().grid.dimensions.x; ++i) {
+		for (auto j{0}; j < get_layers().layers.back().grid.dimensions.y; ++j) {
+			gridbox.setPosition({static_cast<float>(i * f_native_cell_size()), static_cast<float>(j * f_native_cell_size())});
+			if (i % i_native_chunk_size() == 0 && j % i_native_chunk_size() == 0) {
+				chunkbox.setPosition(gridbox.getPosition());
+				chunkbox.setSize({f_cell_size() * f_native_chunk_size(), f_cell_size() * f_native_chunk_size()});
+				chunkbox.setScale({1.f / scale, 1.f / scale});
+				chunkbox.setOutlineThickness(std::min(-scale * 2.f, -2.f));
+				grid_texture.draw(chunkbox);
+			}
+			gridbox.setSize({f_cell_size(), f_cell_size()});
+			gridbox.setScale({1.f / scale, 1.f / scale});
+			gridbox.setOutlineThickness(std::min(-scale, -1.f));
+			grid_texture.draw(gridbox);
+		}
+	}
+	grid_texture.display();
+}
 
 Map& Canvas::get_layers() { return map_states.back(); }
 

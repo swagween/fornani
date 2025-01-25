@@ -8,21 +8,16 @@
 
 namespace pi {
 
-Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder) : window(&window), finder(&finder), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()) {
+Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder) : window(&window), finder(&finder), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16) {
+
 	args = argv;
 	std::cout << "Level path: " << finder.paths.levels << "\n";
-
 	if (!tool_texture.loadFromFile((finder.paths.editor / "gui" / "tools.png").string())) { std::cout << "Failed to load tool texture.\n"; }
 
-	for (int i = 0; i < static_cast<int>(Style::END); ++i) {
-		char const* next = get_style_string.at(static_cast<Style>(i));
-		styles[i] = next;
-	}
-	for (int i = 0; i < static_cast<int>(Backdrop::END); ++i) {
-		char const* next = get_backdrop_string.at(static_cast<Backdrop>(i));
-		bgs[i] = next;
-	}
+	for (int i = 0; i < static_cast<int>(StyleType::END); ++i) { styles[i] = Style{static_cast<StyleType>(i)}.get_label().c_str(); }
+	for (int i = 0; i < static_cast<int>(Backdrop::END); ++i) { bgs[i] = BackgroundType{static_cast<Backdrop>(i)}.get_label().c_str(); }
 
+	console.add_log("Welcome to Pioneer!");
 	finder.paths.room_name = "new_file";
 	std::string msg = "Loading room: " + finder.paths.room_name;
 	console.add_log(msg.data());
@@ -40,12 +35,10 @@ Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder)
 
 void Editor::run() {
 
-	console.add_log("Welcome to Pioneer!");
-
 	// load the tilesets!
-	for (int i = 0; i < static_cast<int>(Style::END); ++i) {
+	for (int i = 0; i < static_cast<int>(StyleType::END); ++i) {
 		tileset_textures.push_back(sf::Texture());
-		std::string style = get_style_string.at(static_cast<Style>(i));
+		std::string style = Style{static_cast<StyleType>(i)}.get_label();
 		std::string filename = style + "_tiles.png";
 		if (!tileset_textures.back().loadFromFile((finder->paths.resources / "image" / "tile" / filename).string())) { console.add_log(std::string{"Failed to load " + filename}.c_str()); }
 	}
@@ -157,6 +150,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			auto delta = scrolled->delta * zoom_factor * map.get_scale();
 			if (map.within_zoom_limits(delta)) { map.move(current_tool->f_position() * -delta); }
 			map.zoom(delta);
+			grid_refresh.start();
 		}
 	}
 
@@ -180,11 +174,14 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 }
 
 void Editor::logic() {
+
+	map.constrain(window->f_screen_dimensions());
+
 	window_hovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemActive();
 	current_tool->palette_mode = palette_mode();
 
 	// tool logic
-	auto& tool = left_mouse_pressed() ? current_tool : secondary_tool;
+	auto& tool = right_mouse_pressed() ? secondary_tool : current_tool;
 	auto& target = palette_mode() ? palette : map;
 	if (available()) { map.save_state(*tool); }
 
@@ -219,6 +216,8 @@ void Editor::logic() {
 	map.set_offset_from_center(map.get_position() + map.get_scaled_center() - window->f_center_screen());
 	show_palette && available() && palette.hovered() && (!current_tool->is_active() || current_tool->type == ToolType::marquee) ? flags.set(GlobalFlags::palette_mode) : flags.reset(GlobalFlags::palette_mode);
 
+	grid_refresh.update();
+	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
 }
 
 void Editor::load() {
@@ -236,7 +235,7 @@ void Editor::render(sf::RenderWindow& win) {
 	map.render(win, tileset);
 
 	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() &&
-		(current_tool->type == ToolType::brush || current_tool->type == ToolType::fill || current_tool->type == ToolType::erase || current_tool->type == ToolType::entity_editor)) {
+		current_tool->highlight_canvas()) {
 		auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
 		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
 		for (int i = 0; i < current_tool->size; i++) {
@@ -313,6 +312,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 
 	bool insp{};
 	bool plat{};
+	bool port{};
 
 	// Main Menu
 	menu_hovered = false;
@@ -431,12 +431,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::SameLine();
 			if (ImGui::Button("Create")) {
 
-				static int style_current = static_cast<int>(map.styles.tile);
-				static int bg_current = static_cast<int>(map.bg);
+				static int style_current = static_cast<int>(map.styles.tile.get_type());
+				static int bg_current = static_cast<int>(map.background->type.get_type());
 
-				map = Canvas({static_cast<uint32_t>(width * CHUNK_SIZE), static_cast<uint32_t>(height * CHUNK_SIZE)}, SelectionType::canvas);
-				map.styles.tile = static_cast<Style>(style_current);
-				map.bg = static_cast<Backdrop>(bg_current);
+				map = Canvas(*finder, {static_cast<uint32_t>(width * CHUNK_SIZE), static_cast<uint32_t>(height * CHUNK_SIZE)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
 				finder->paths.room_name = buffer;
 				map.room_id = room_id;
@@ -483,14 +481,17 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		bool flag{};
 		if (ImGui::BeginMenu("Insert")) {
 			menu_hovered = true;
+			if (ImGui::MenuItem("Portal", NULL, &port)) {}
 			if (ImGui::MenuItem("Inspectable", NULL, &insp)) {}
 			if (ImGui::MenuItem("Platform", NULL, &plat)) {}
 			if (ImGui::MenuItem("Save Point")) {
-				current_tool = std::move(std::make_unique<EntityEditor>());
+				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->ent_type = EntityType::save_point;
+				current_tool->current_entity = std::make_unique<SavePoint>(map.room_id);
 			}
+			ImGui::Separator();
 			if (ImGui::MenuItem("Player Placer")) {
-				current_tool = std::move(std::make_unique<EntityEditor>());
+				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->ent_type = EntityType::player_placer;
 			}
 			ImGui::EndMenu();
@@ -526,6 +527,12 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		label = "Platform Specifications";
 		popup_open = true;
 	}
+	if (port) {
+		ImGui::OpenPopup("Portal Specifications");
+		label = "Portal Specifications";
+		popup_open = true;
+	}
+
 	popup.launch(*finder, console, label.c_str(), current_tool);
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -574,8 +581,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 						ImGui::Text("Tile Value at Mouse Pos: <invalid>");
 					}
 					ImGui::Separator();
-					ImGui::Text("Current Style: %s", get_style_string.at(map.styles.tile));
-					//ImGui::Text("Current Backdrop: %s", get_backdrop_string.at(map.bg));
+					ImGui::Text("Current Style: %s", map.styles.tile.get_label().c_str());
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tool")) {
@@ -593,7 +599,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::Text("Tool in Bounds: %s", tool->in_bounds(map.dimensions) ? "Yes" : "No");
 					ImGui::Text("Tool Ready: %s", tool->is_ready() ? "Yes" : "No");
 					ImGui::Text("Tool Active: %s", tool->is_active() ? "Yes" : "No");
-					ImGui::Text("Label: %s", get_tool_string.at(tool->type).c_str());
+					ImGui::Text("Label: %s", tool->get_label().c_str());
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Canvas")) {
@@ -700,60 +706,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					current_tool = std::move(std::make_unique<EntityEditor>());
 					current_tool->ent_type = EntityType::animator;
 					//current_tool->current_animator = Animator{{.dimensions = sf::Vector2<uint32_t>{1u, 1u}, .id = id}, true, false, style};
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
-				ImGui::EndPopup();
-			}
-			if (ImGui::Button("Portal")) { ImGui::OpenPopup("Portal Dimensions"); }
-			if (ImGui::BeginPopupModal("Portal Dimensions", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-
-				static int width{0};
-				static int height{0};
-				static int destination{0};
-				static bool activate_on_contact{};
-				static bool already_open{};
-				static bool locked{};
-				static int key_id{};
-
-				ImGui::InputInt("Width", &width);
-				ImGui::Separator();
-				ImGui::NewLine();
-
-				ImGui::InputInt("Height", &height);
-				ImGui::Separator();
-				ImGui::NewLine();
-
-				ImGui::InputInt("Destination Room ID", &destination);
-				ImGui::SameLine();
-				help_marker("Must be an existing room before being activated in-game. By convention, choose a three-digit number where the first digit indicates the region.");
-				ImGui::Separator();
-				ImGui::NewLine();
-
-				ImGui::Checkbox("Already open?", &already_open);
-				ImGui::SameLine();
-				help_marker("Only applies to 1x1 portals that are not activated on contact (doors). If true, the door will appear open.");
-				ImGui::Separator();
-				ImGui::NewLine();
-
-				ImGui::Checkbox("Activate on contact?", &activate_on_contact);
-				ImGui::SameLine();
-				help_marker("If left unchecked, the player will have to inspect the portal to activate it.");
-				ImGui::Separator();
-				ImGui::NewLine();
-
-				ImGui::Checkbox("Locked?", &locked);
-				ImGui::SameLine();
-				ImGui::InputInt("Key ID", &key_id);
-				ImGui::Separator();
-				ImGui::NewLine();
-
-				if (ImGui::Button("Create")) {
-					// switch to entity tool, and store the specified portal for placement
-					current_tool = std::move(std::make_unique<EntityEditor>());
-					current_tool->ent_type = EntityType::portal;
-					//current_tool->current_portal = Portal{{.dimensions = sf::Vector2<uint32_t>{static_cast<uint32_t>(width), static_cast<uint32_t>(height)}}, activate_on_contact, already_open, static_cast<int>(map.room_id), destination, locked, key_id};
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::SameLine();
@@ -972,7 +924,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-				ImGui::Text(get_tool_string.at((ToolType)i).c_str());
+				ImGui::Text(current_tool->get_label().c_str());
 				ImGui::PopTextWrapPos();
 				ImGui::EndTooltip();
 			}
@@ -1093,11 +1045,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		if (ImGui::Button("Redo")) { map.redo(); }
 
 		ImGui::Text("Scene Style: ");
-		int style_current = static_cast<int>(map.styles.tile);
-		if (ImGui::Combo("##scenestyle", &style_current, styles, IM_ARRAYSIZE(styles))) { map.styles.tile = static_cast<Style>(style_current); }
+		int style_current = static_cast<int>(map.styles.tile.get_type());
+		if (ImGui::Combo("##scenestyle", &style_current, styles, IM_ARRAYSIZE(styles))) { map.styles.tile = Style{static_cast<StyleType>(style_current)}; }
 		ImGui::Text("Scene Background: ");
-		int bg_current = static_cast<int>(map.bg);
-		if (ImGui::Combo("##scenebg", &bg_current, bgs, IM_ARRAYSIZE(bgs))) { map.bg = static_cast<Backdrop>(bg_current); }
+		int bg_current = static_cast<int>(map.background->type.get_type());
+		if (ImGui::Combo("##scenebg", &bg_current, bgs, IM_ARRAYSIZE(bgs))) { map.background = std::make_unique<Background>(*finder, static_cast<Backdrop>(bg_current)); }
 
 		// resize map
 		ImGui::Separator();
@@ -1150,23 +1102,26 @@ void Editor::help_marker(char const* desc) {
 void Editor::export_layer_texture() {
 	screencap.clear(sf::Color::Transparent);
 	sf::Vector2u mapdim{map.get_real_dimensions()};
-	screencap.resize({mapdim.x, mapdim.y});
+	if (!screencap.resize({mapdim.x, mapdim.y})) { console.add_log("Export to .png failed!"); };
 	for (int i = 0; i <= active_layer; ++i) {
 		for (auto& cell : map.get_layers().layers.at(i).grid.cells) {
 			if (cell.value > 0) {
 				auto x_coord = (cell.value % 16) * TILE_WIDTH;
 				auto y_coord = std::floor(cell.value / 16) * TILE_WIDTH;
-				auto tile_sprite = sf::Sprite{tileset_textures.at(static_cast<int>(map.styles.tile))};
+				auto tile_sprite = sf::Sprite{tileset_textures.at(static_cast<int>(map.styles.tile.get_type()))};
 				tile_sprite.setTextureRect(sf::IntRect({static_cast<int>(x_coord), static_cast<int>(y_coord)}, {32, 32}));
 				tile_sprite.setPosition(cell.scaled_position());
 				screencap.draw(tile_sprite);
 			}
 		}
 	}
-	std::time_t const now = std::time(nullptr);
-	std::string filedate = std::asctime(std::localtime(&now));
-	std::erase_if(filedate, [](auto const& c) { return c == ':' || isspace(c); });
-	std::string filename = "screenshot_" + filedate + ".png";
+	std::time_t time = std::time({});
+	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
+	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
+	std::string time_str = time_string;
+
+	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
+	std::string filename = "screenshot_" + time_str + ".png";
 	if (screencap.getTexture().copyToImage().saveToFile(filename)) {
 		std::string log = "Screenshot saved to " + filename + "\n";
 		console.add_log(log.data());
@@ -1182,9 +1137,11 @@ void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, s
 	trigger_demo = false;
 	ImGui::SFML::Shutdown();
 	fornani::Application demo{argv};
+	std::cout << "> Launching Demo\n";
 	std::cout << "Editor path: " << path.string() << "\n";
-	std::cout << "AAA room id: " << room_id << std::endl;
-	std::cout << "\n\n" << finder->paths.room_name << "\n\n";
+	std::cout << "Room ID: " << room_id << std::endl;
+	std::cout << "Room Name: " << finder->paths.room_name << "\n";
+	demo.init(argv);
 	demo.launch(argv, true, room_id, finder->paths.room_name, player_position);
 }
 

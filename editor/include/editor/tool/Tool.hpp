@@ -1,11 +1,13 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <optional>
 #include "editor/canvas/Canvas.hpp"
 #include "editor/canvas/Clipboard.hpp"
 #include "editor/util/BitFlags.hpp"
+
+#include <stdio.h>
+#include <optional>
+#include <string_view>
 
 namespace pi {
 
@@ -17,6 +19,7 @@ enum class SelectMode { none, select, clipboard };
 
 class Tool {
   public:
+	Tool(std::string_view label, ToolType type) : label(label), type(type) {}
 	Tool& operator=(Tool const&) = delete;
 	~Tool() = default;
 	virtual void update(Canvas& canvas);
@@ -37,6 +40,7 @@ class Tool {
 	void release();
 	void change_size(int amount);
 
+	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_tooltip() const -> std::string { return tooltip; }
 	[[nodiscard]] auto f_position() const -> sf::Vector2<float> { return position; }
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::floor(position.x / 32.f)), static_cast<uint32_t>(std::floor(position.y / 32.f))}; }
@@ -51,9 +55,10 @@ class Tool {
 	[[nodiscard]] auto clicked() const -> bool { return just_clicked; }
 	[[nodiscard]] auto clipboard() const -> bool { return mode == SelectMode::clipboard; }
 	[[nodiscard]] auto is_usable() const -> bool { return status == ToolStatus::usable; }
+	[[nodiscard]] auto highlight_canvas() const -> bool { return (is_paintable() || type == ToolType::erase || type == ToolType::entity_editor) && !disable_highlight; }
+	[[nodiscard]] auto is_paintable() const -> bool { return type == ToolType::brush || type == ToolType::fill; };
 
 	bool in_bounds(sf::Vector2<uint32_t>& bounds) const;
-	bool is_paintable() const;
 
 	bool pervasive{};
 	bool contiguous{};
@@ -78,9 +83,11 @@ class Tool {
 	ToolStatus status{};
 
   protected:
+	std::string label{};
 	bool active{};
 	bool just_released{};
 	bool just_clicked{true};
+	bool disable_highlight{};
 	SelectMode mode{};
 	SelectionType selection_type{};
 	float scale{};
@@ -97,7 +104,7 @@ class Tool {
 
 class Hand : public Tool {
   public:
-	Hand() { type = ToolType::hand; }
+	Hand() : Tool("Hand", ToolType::hand) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
@@ -107,7 +114,7 @@ class Hand : public Tool {
 
 class Brush : public Tool {
   public:
-	Brush() { type = ToolType::brush; }
+	Brush() : Tool("Brush", ToolType::brush) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
@@ -119,7 +126,7 @@ class Brush : public Tool {
 
 class Erase : public Tool {
   public:
-	Erase() { type = ToolType::erase; }
+	Erase() : Tool("Eraser", ToolType::erase) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
@@ -131,7 +138,7 @@ class Erase : public Tool {
 
 class Fill : public Tool {
   public:
-	Fill() { type = ToolType::fill; };
+	Fill() : Tool("Fill", ToolType::fill) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
@@ -175,10 +182,9 @@ class SelectBox {
 	SelectionType type{};
 };
 
-
 class Marquee : public Tool {
   public:
-	Marquee() { type = ToolType::marquee; }
+	Marquee() : Tool("Marquee", ToolType::marquee) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
@@ -195,7 +201,7 @@ class Marquee : public Tool {
 
 class Eyedropper : public Tool {
   public:
-	Eyedropper() { type = ToolType::eyedropper; }
+	Eyedropper() : Tool("Eyedropper", ToolType::eyedropper) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);

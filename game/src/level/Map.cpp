@@ -51,6 +51,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
 	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 
+	auto const& entities = metadata["entities"];
+
 	if (!soft) {
 		if (meta["cutscene_on_entry"]["flag"].as_bool()) {
 			auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
@@ -82,7 +84,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		styles.breakables = meta["styles"]["breakables"].as<int>();
 		styles.pushables = meta["styles"]["pushables"].as<int>();
 
-		for (auto& entry : metadata["npcs"].array_view()) {
+		for (auto& entry : entities["npcs"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
@@ -96,7 +98,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
 			npcs.back().set_current_location(room_id);
 		}
-		for (auto& entry : metadata["chests"].array_view()) {
+		for (auto& entry : entities["chests"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
@@ -110,7 +112,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			chests.back().set_position_from_scaled(pos);
 		}
 
-		for (auto& entry : metadata["animators"].array_view()) {
+		for (auto& entry : entities["animators"].array_view()) {
 			sf::Vector2<int> scaled_dim{};
 			sf::Vector2<int> scaled_pos{};
 			scaled_pos.x = entry["position"][0].as<int>();
@@ -125,13 +127,13 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto a = entity::Animator(svc, scaled_pos, aid, lg, automatic, foreground, astyle);
 			animators.push_back(a);
 		}
-		for (auto& entry : metadata["beds"].array_view()) {
+		for (auto& entry : entities["beds"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
 			beds.push_back(entity::Bed(svc, pos, room_lookup));
 		}
-		for (auto& entry : metadata["scenery"]["basic"].array_view()) {
+		for (auto& entry : entities["scenery"]["basic"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
@@ -140,7 +142,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto parallax = entry["parallax"].as<float>();
 			scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
 		}
-		for (auto& entry : metadata["scenery"]["vines"].array_view()) {
+		for (auto& entry : entities["scenery"]["vines"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
@@ -149,14 +151,14 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
 			if (entry["platform"]) { for (auto& link : entry["platform"]["link_indeces"].array_view()) { vines.back()->add_platform(svc, link.as<int>()); } }
 		}
-		for (auto& entry : metadata["scenery"]["grass"].array_view()) {
+		for (auto& entry : entities["scenery"]["grass"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
 			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
 			grass.push_back(std::make_unique<entity::Grass>(svc, pos, 8, entry["size"].as<int>(), fg));
 		}
-		for (auto& entry : metadata["inspectables"].array_view()) {
+		for (auto& entry : entities["inspectables"].array_view()) {
 			sf::Vector2<uint32_t> dim{};
 			sf::Vector2<uint32_t> pos{};
 			auto key = entry["key"].as_string();
@@ -171,7 +173,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 		}
 
-		for (auto& entry : metadata["enemies"].array_view()) {
+		for (auto& entry : entities["enemies"].array_view()) {
 			int id{};
 			sf::Vector2<float> pos{};
 			sf::Vector2<int> start{};
@@ -187,7 +189,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			std::cout << "Enemy external id: " << enemy_catalog.enemies.back()->get_external_id() << "\n";
 			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
 		}
-		for (auto& entry : metadata["destroyers"].array_view()) {
+		for (auto& entry : entities["destroyers"].array_view()) {
 			sf::Vector2<int> pos{};
 			pos.x = entry["position"][0].as<int>();
 			pos.y = entry["position"][1].as<int>();
@@ -196,7 +198,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		}
 	}
 
-	for (auto& entry : metadata["portals"].array_view()) {
+	for (auto& entry : entities["portals"].array_view()) {
 		sf::Vector2<uint32_t> pos{};
 		sf::Vector2<uint32_t> dim{};
 		pos.x = entry["position"][0].as<int>();
@@ -215,13 +217,13 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		portals.back().update(svc);
 	}
 
-	auto const& savept = metadata["save_point"];
+	auto const& savept = entities["save_point"];
 	auto save_id = svc.state_controller.save_point_id;
 	save_point.id = savept.contains("position") ? room_id : -1;
 	save_point.scaled_position.x = savept["position"][0].as<int>();
 	save_point.scaled_position.y = savept["position"][1].as<int>();
 
-	for (auto& entry : metadata["platforms"].array_view()) {
+	for (auto& entry : entities["platforms"].array_view()) {
 		sf::Vector2<float> dim{};
 		sf::Vector2<float> pos{};
 		pos.x = entry["position"][0].as<float>();
@@ -235,7 +237,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto type = entry["type"].as_string();
 		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
 	}
-	for (auto& entry : metadata["switch_blocks"].array_view()) {
+	for (auto& entry : entities["switch_blocks"].array_view()) {
 		sf::Vector2<float> pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
@@ -244,7 +246,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto button_id = entry["button_id"].as<int>();
 		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
 	}
-	for (auto& entry : metadata["switches"].array_view()) {
+	for (auto& entry : entities["switches"].array_view()) {
 		sf::Vector2<float> pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();

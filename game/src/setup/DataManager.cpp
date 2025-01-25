@@ -115,7 +115,6 @@ void DataManager::load_data(std::string in_room) {
 	// load marketplace
 	for (auto const& entry : npc.object_view()) {
 		if (!entry.second["vendor"]) { continue; }
-		std::cout << "Loading marketplace data for " << entry.first << ".\n";
 		marketplace.insert({entry.second["vendor"]["id"].as<int>(), npc::Vendor()});
 		auto& vendor = marketplace.at(entry.second["vendor"]["id"].as<int>());
 		vendor.set_upcharge(entry.second["vendor"]["upcharge"].as<float>());

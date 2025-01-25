@@ -3,6 +3,7 @@ nani_add_sources(
         Canvas.cpp
         Clipboard.cpp
         EntitySet.cpp
+        Entity.cpp
         Grid.cpp
         Layer.cpp
         Tile.cpp

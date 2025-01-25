@@ -41,7 +41,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
         services.app_flags.set(automa::AppFlags::fullscreen);
     }
 
-
     measurements.win_size.x = services.window->get().getSize().x;
     measurements.win_size.y = services.window->get().getSize().y;
 

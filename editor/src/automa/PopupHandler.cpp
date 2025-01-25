@@ -8,7 +8,7 @@
 
 namespace pi {
 
-void PopupHandler::launch(data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool) {
+void PopupHandler::launch(data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
 	if (ImGui::BeginPopupModal("Inspectable Message", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 
 		static bool activate_on_contact{false};
@@ -84,6 +84,58 @@ void PopupHandler::launch(data::ResourceFinder& finder, Console& console, char c
 			tool->ent_type = EntityType::platform;
 			tool->current_entity = std::make_unique<Platform>(sf::Vector2<uint32_t>{static_cast<uint32_t>(x), static_cast<uint32_t>(y)}, extent, type, start);
 			console.add_log(std::string{"Initialized platform with type " + type}.c_str());
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupModal("Portal Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+
+		static int width{0};
+		static int height{0};
+		static int destination{0};
+		static bool activate_on_contact{};
+		static bool already_open{};
+		static bool locked{};
+		static int key_id{};
+
+		ImGui::InputInt("Width", &width);
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::InputInt("Height", &height);
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::InputInt("Destination Room ID", &destination);
+		ImGui::SameLine();
+		help_marker("Must be an existing room before being activated in-game. By convention, choose a three-digit number where the first digit indicates the region.");
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::Checkbox("Already open?", &already_open);
+		ImGui::SameLine();
+		help_marker("Only applies to 1x1 portals that are not activated on contact (doors). If true, the door will appear open.");
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::Checkbox("Activate on contact?", &activate_on_contact);
+		ImGui::SameLine();
+		help_marker("If left unchecked, the player will have to inspect the portal to activate it.");
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::Checkbox("Locked?", &locked);
+		ImGui::SameLine();
+		ImGui::InputInt("Key ID", &key_id);
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		if (ImGui::Button("Create")) {
+			// switch to entity tool, and store the specified portal for placement
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<Portal>(sf::Vector2u{static_cast<uint32_t>(width), static_cast<uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
