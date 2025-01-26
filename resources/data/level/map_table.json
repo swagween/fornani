@@ -21,6 +21,10 @@
       "label": "FIRSTWIND_BOILER_01"
     },
     {
+      "room_id": 10001,
+      "label": "FIRSTWIND_BRIDGE"
+    },
+    {
       "room_id": 123,
       "label": "FIRSTWIND_BRIDGE_01"
     },
@@ -101,6 +105,10 @@
       "label": "FIRSTWIND_SHAFT_01"
     },
     {
+      "room_id": 10002,
+      "label": "FIRSTWIND_TEST"
+    },
+    {
       "room_id": 199,
       "label": "FIRSTWIND_WASHROOM_01"
     },
@@ -111,6 +119,18 @@
     {
       "room_id": 0,
       "label": "INTRO"
+    },
+    {
+      "room_id": 1,
+      "label": "new_file"
+    },
+    {
+      "room_id": 1,
+      "label": "new_file"
+    },
+    {
+      "room_id": 0,
+      "label": "out_test"
     },
     {
       "room_id": 207,
@@ -209,8 +229,36 @@
       "label": "OVERTURNED_VINE"
     },
     {
+      "room_id": 20090,
+      "label": "OVERTURNED_VINE"
+    },
+    {
+      "room_id": 0,
+      "label": "palette"
+    },
+    {
+      "room_id": 0,
+      "label": "palette2"
+    },
+    {
+      "room_id": 0,
+      "label": "palette2"
+    },
+    {
       "room_id": 3000,
       "label": "RAMP"
+    },
+    {
+      "room_id": 3000,
+      "label": "RAMP"
+    },
+    {
+      "room_id": 3333,
+      "label": "test_level"
+    },
+    {
+      "room_id": 3333,
+      "label": "test_level"
     }
   ]
 }

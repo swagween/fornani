@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "room_id": 1,
+    "metagrid": [
+      0,
+      0
+    ],
+    "dimensions": [
+      16,
+      16
+    ],
+    "chunk_dimensions": [
+      1,
+      1
+    ],
+    "style": 0,
+    "background": 18,
+    "music": "",
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "entities": {
+    "save_point": {
+      "id": 1,
+      "position": [
+        11,
+        6
+      ],
+      "dimensions": [
+        1,
+        1
+      ]
+    },
+    "inspectables": [
+      {
+        "id": 0,
+        "position": [
+          3,
+          11
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "key": "quiet",
+        "alternates": 0,
+        "quiet0": {
+          "suite": [
+            [
+              "The children are sleeping."
+            ]
+          ]
+        }
+      },
+      {
+        "id": 0,
+        "position": [
+          5,
+          11
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "key": "loud",
+        "alternates": 0,
+        "loud0": {
+          "suite": [
+            [
+              "You woke them up!"
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

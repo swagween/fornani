@@ -1,65 +1,60 @@
 
 cmake_minimum_required(VERSION 3.15)
-project(fornani
-  LANGUAGES CXX
-  VERSION 1.0
-)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(FORNANI_STEAM_APP_ID 3218760 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
-option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the executable, that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION" ON)
-
-add_executable(${PROJECT_NAME})
-
-add_subdirectory(dependencies)
-target_link_libraries(${PROJECT_NAME} PRIVATE djson::djson)
-target_link_libraries(${PROJECT_NAME} PRIVATE ccmath::ccmath)
-target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
-target_link_libraries(${PROJECT_NAME} PRIVATE SFML::System SFML::Graphics SFML::Window SFML::Audio)
-target_link_libraries(${PROJECT_NAME} PRIVATE steamworks)
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
-if (CCMATH_ENABLE_RUNTIME_SIMD)
-    target_compile_definitions(${PROJECT_NAME} INTERFACE CCM_CONFIG_USE_RT_SIMD)
+if (NOT DEFINED FORNANI_ROOT_DIR)
+  set(FORNANI_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "Fornani root directory")
 endif ()
 
-file(GLOB_RECURSE sources LIST_DIRECTORIES false CONFIGURE_DEPENDS "src/*.?pp")
-
-target_sources(${PROJECT_NAME} PRIVATE
-main.cpp
-${sources}
+project(fornani
+        LANGUAGES CXX
+        VERSION 1.0
 )
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
-    add_compile_options(${PROJECT_NAME} INTERFACE /W4056 /W4146 /W4018 /W4056)
-endif()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(${PROJECT_NAME} INTERFACE -Wno-sign-conversion)
-endif()
+set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
 
-if (WIN32)
-  add_custom_command(
-          TARGET ${PROJECT_NAME}
-          COMMENT "Copy Steam API DLL"
-          PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${steamworks_dll_file} $<TARGET_FILE_DIR:${PROJECT_NAME}>/steam_api64.dll
-          VERBATIM)
+option(FORNANI_DEV_BUILD "If enabled, writes a steam_appid.txt file next to the executable, that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION" ON)
+option(FORNANI_BUILD_EDITOR "Build the editor" ON) # TODO: Bring editor into project
+option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam" OFF)
+option(FORNANI_ENABLE_PROFILER "Enables tracy profiling" ON)
 
-  #app icon
-  target_sources(${PROJECT_NAME} PRIVATE src/app/app.rc)
-  if(MSVC)
-    set(subsystem $<IF:$<BOOL:$<CONFIG:Debug>>,CONSOLE,WINDOWS>)
-    target_link_options(${PROJECT_NAME} PRIVATE
-      /SUBSYSTEM:${subsystem}
-      /ENTRY:mainCRTStartup
-    )
-  endif()
-endif()
+include(cmake/func/AddTargetSource.cmake)
+include(cmake/GenerateDataTemplates.cmake)
 
-if(FORNANI_DEV_BUILD)
-add_custom_command(
-        TARGET ${PROJECT_NAME}
-        COMMENT "Write steam_appid.txt"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E echo ${FORNANI_STEAM_APP_ID} > $<TARGET_FILE_DIR:${PROJECT_NAME}>/steam_appid.txt
-        VERBATIM)
-endif()
+add_subdirectory(dependencies)
+add_subdirectory(game)
+if (FORNANI_BUILD_EDITOR)
+  message(STATUS "FORNANI: Building editor!")
+  add_subdirectory(editor)
+else ()
+  message(STATUS "FORNANI: Building launcher!")
+  add_subdirectory(launcher)
+endif ()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+  add_compile_options(fornani INTERFACE /W4056 /W4146 /W4018 /W4056)
+endif ()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(fornani INTERFACE -Wno-sign-conversion)
+endif ()
+
+if (FORNANI_ENABLE_PROFILER)
+  target_compile_definitions(fornani PRIVATE TRACY_ENABLE)
+  target_compile_definitions(fornani PRIVATE FORNANI_PROFILE)
+endif ()
+
+
+# Generate save files
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_0.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_0.json" COPYONLY)
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_1.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_1.json" COPYONLY)
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_2.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_2.json" COPYONLY)
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/new_game.template" "${FORNANI_ROOT_DIR}/resources/data/save/new_game.json" COPYONLY)
+
+# Generate config files
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/control_map.template" "${FORNANI_ROOT_DIR}/resources/data/config/control_map.json" COPYONLY)
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/defaults.template" "${FORNANI_ROOT_DIR}/resources/data/config/defaults.json" COPYONLY)
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/settings.template" "${FORNANI_ROOT_DIR}/resources/data/config/settings.json" COPYONLY)
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/version.template" "${FORNANI_ROOT_DIR}/resources/data/config/version.json" COPYONLY)
+

@@ -1,0 +1,15 @@
+nani_add_sources(
+        Breakable.cpp
+        Camera.cpp
+        Checkpoint.cpp
+        Destroyable.cpp
+        Grid.cpp
+        Map.cpp
+        Platform.cpp
+        Pushable.cpp
+        Spawner.cpp
+        Spike.cpp
+        SwitchBlock.cpp
+        SwitchButton.cpp
+        Tile.cpp
+)
