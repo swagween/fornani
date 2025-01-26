@@ -13,7 +13,7 @@ gui::WardrobeWidget::WardrobeWidget(const automa::ServiceProvider& svc)
 	background.setOutlineThickness(2);
 	background.setSize(dimensions);
 	background.setOrigin(dimensions * 0.5f);
-	if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize({128, 256} failed!"); }
+	//if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize({128, 256} failed!"); }
 }
 
 void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player) {

@@ -129,6 +129,12 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 				trigger_demo = true;
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
+			if (shift_pressed()) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Left) { map.resize({-1, 0}); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Right) { map.resize({1, 0}); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { map.resize({0, -1}); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { map.resize({0, 1}); }
+			}
 		}
 		if (key_pressed->scancode == sf::Keyboard::Scancode::Q) { current_tool->handle_keyboard_events(map, key_pressed->scancode); }
 		if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { pressed_keys.set(PressedKeys::shift); }
@@ -476,10 +482,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Undo", "Ctrl+Z")) { map.undo(); }
 			if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z")) { map.redo(); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("(+) Map Width")) { map.resize({1, 0}); }
-			if (ImGui::MenuItem("(-) Map Width")) { map.resize({-1, 0}); }
-			if (ImGui::MenuItem("(+) Map Height")) { map.resize({0, 1}); }
-			if (ImGui::MenuItem("(-) Map Height")) { map.resize({0, -1}); }
+			if (ImGui::MenuItem("(+) Map Width", "Ctrl+Shift+RightArrow")) { map.resize({1, 0}); }
+			if (ImGui::MenuItem("(-) Map Width", "Ctrl+Shift+LefttArrow")) { map.resize({-1, 0}); }
+			if (ImGui::MenuItem("(+) Map Height", "Ctrl+Shift+DownArrow")) { map.resize({0, 1}); }
+			if (ImGui::MenuItem("(-) Map Height", "Ctrl+Shift+UpArrow")) { map.resize({0, -1}); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Clear Layer")) {
 				map.save_state(*current_tool, true);
