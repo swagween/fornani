@@ -125,6 +125,10 @@
       "label": "new_file"
     },
     {
+      "room_id": 1,
+      "label": "new_file"
+    },
+    {
       "room_id": 0,
       "label": "out_test"
     },

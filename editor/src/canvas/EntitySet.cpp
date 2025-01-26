@@ -42,20 +42,22 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> ca
 }
 
 void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
-	std::string inspectable_path = (finder.paths.levels / room_name / "inspectables.json").string();
-	data.inspectables = dj::Json::from_file((inspectable_path).c_str());
-	variables.music = metadata["music"].as_string();
 	
-	// load variables
-	// save point
-	
-	//variables.save_point = std::make_unique<SavePoint>(metadata["save_point"]["id"].as<int>());
-	//variables.save_point.value()->unserialize(metadata["save_point"]);
+	variables.save_point = std::make_unique<SavePoint>(metadata["save_point"]["id"].as<int>());
+	variables.save_point.value()->unserialize(metadata["save_point"]);
 
 	// general entities
-	for (auto const& [key, entry] : metadata["entities"].object_view()) {
-		/*variables.entities.push_back(std::make_unique<Entity>(std::string{key}));
-		variables.entities.back()->unserialize(entry);*/
+	for (auto const& [key, entry] : metadata.object_view()) {
+		/*if (std::string{key} == "inspectables") {
+			variables.entities.push_back(std::make_unique<Inspectable>(std::string{key}));
+			variables.entities.back()->unserialize(entry);
+		}*/
+		if (std::string{key} == "inspectables") {
+			for (auto& element : entry.array_view()) {
+				variables.entities.push_back(std::make_unique<Inspectable>(std::string{key}));
+				variables.entities.back()->unserialize(element);
+			}
+		}
 	}
 }
 

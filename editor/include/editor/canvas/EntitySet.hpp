@@ -18,7 +18,7 @@ class Canvas;
 struct Entity {
 	Entity(std::string label, int id = 0, sf::Vector2<uint32_t> position = {}, sf::Vector2<uint32_t> dimensions = {}) : label(label), id(id), position(position), dimensions(dimensions){};
 	virtual ~Entity() = default;
-	virtual std::unique_ptr<Entity> clone() const = 0;
+	virtual std::unique_ptr<Entity> clone() const;
 	virtual void serialize(dj::Json& out);
 	virtual void unserialize(dj::Json& in);
 	std::string label{};
@@ -38,6 +38,7 @@ struct Entity {
 };
 
 struct Inspectable : public Entity {
+	Inspectable(std::string label) : Entity("inspectables") {}
 	Inspectable(bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates)
 		: Entity("inspectables", 0, {}, {1, 1}), activate_on_contact(activate_on_contact), key(key), suites(suites), responses(responses), alternates(alternates) {}
 	bool activate_on_contact{};
@@ -68,14 +69,30 @@ struct Inspectable : public Entity {
 			}
 		}
 	}
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override {
+		Entity::unserialize(in);
+		constexpr auto empty_array = R"([])";
+		auto const wipe = dj::Json::parse(empty_array);
+		activate_on_contact = static_cast<bool>(in["activate_on_contact"].as_bool());
+		key = in["key"].as_string();
+		alternates = in["alternates"].as<int>();
+		for (auto i{0}; i <= alternates; ++i) {
+			auto next = std::string{key + std::to_string(i)};
+			for (auto& in_suite : in[next]["suite"].array_view()) {
+				for (auto& message : in_suite.array_view()) { suites.push_back(std::vector<std::string>{message.as_string().data()}); }
+			}
+			for (auto& in_response : in[next]["responses"].array_view()) {
+				for (auto& message : in_response.array_view()) { responses.push_back(std::vector<std::string>{message.as_string().data()}); }
+			}
+		}
+	}
 };
 
 struct Critter : public Entity {
 	Critter() : Entity("enemies") { repeatable = true; }
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<Critter>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct Animator : public Entity {
@@ -85,7 +102,7 @@ struct Animator : public Entity {
 	int style{};
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<Animator>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct Portal : public Entity {
@@ -115,7 +132,7 @@ struct Portal : public Entity {
 		destination_map_id = in["destination_map_id"].as<int>();
 		locked = static_cast<bool>(in["locked"].as_bool());
 		key_id = in["key_id"].as<int>();
-	};
+	}
 };
 
 struct InteractiveScenery : public Entity {
@@ -128,7 +145,7 @@ struct InteractiveScenery : public Entity {
 	std::vector<int> link_indeces{};
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<InteractiveScenery>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct NPC : public Entity {
@@ -137,7 +154,7 @@ struct NPC : public Entity {
 	std::vector<std::vector<std::string>> suites{};
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<NPC>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct Platform : public Entity {
@@ -152,7 +169,7 @@ struct Platform : public Entity {
 		out["type"] = type;
 		out["start"] = start;
 	}
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct Chest : public Entity {
@@ -169,7 +186,7 @@ struct Chest : public Entity {
 		out["rarity"] = rarity;
 		out["amount"] = amount;
 	}
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct Scenery : public Entity {
@@ -179,7 +196,7 @@ struct Scenery : public Entity {
 	int variant{};
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<Scenery>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct SwitchBlock : public Entity {
@@ -190,7 +207,7 @@ struct SwitchBlock : public Entity {
 		Entity::serialize(out);
 		out["type"] = type;
 	}
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct SwitchButton : public Entity {
@@ -201,21 +218,21 @@ struct SwitchButton : public Entity {
 		Entity::serialize(out);
 		out["type"] = type;
 	}
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct Destroyer : public Entity {
 	Destroyer() : Entity("destroyers") { repeatable = true; }
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<Destroyer>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 struct SavePoint : public Entity {
 	SavePoint(int id) : Entity("save_point", id, {}, {1, 1}) {}
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<SavePoint>(*this); }
 	void serialize(dj::Json& out) override { Entity::serialize(out); }
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
+	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 };
 
 class EntitySet {

@@ -132,6 +132,7 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
         }
         ++layer_counter;
 	}
+	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
 	set_grid_texture();
 }
 

@@ -13,6 +13,7 @@ class Grid {
 	Grid(sf::Vector2<uint32_t> d);
 	void set_position(sf::Vector2<float> to_position, float scale);
 	void match(Grid& other);
+	sf::Vector2<uint32_t> first_available_ground();
 	sf::Vector2<uint32_t> dimensions{};
 	std::vector<Tile> cells{};
 };

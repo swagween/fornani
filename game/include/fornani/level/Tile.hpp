@@ -17,15 +17,16 @@ namespace world {
 class Map;
 enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire };
 enum class TileState { ramp_adjacent, big_ramp, covered };
+inline const int special_index_v{448};
 
 struct Tile {
 
 	Tile() = default;
 	constexpr static int evaluate(uint32_t val) {
 		auto ret{4};
-		if (val == 195 || val == 196 || val == 201 || val == 202 || val == 205 || val == 206) { ret = 3; }
-		if (val == 211 || val == 212 || val == 217 || val == 218 || val == 221 || val == 222) { ret = 3; }
-		if ((val >= 224 && val <= 227) || (val >= 240 && val <= 243)) { ret = 3; }
+		if (val == special_index_v + 3 || val == special_index_v + 4 || val == special_index_v + 9 || val == special_index_v + 10 || val == special_index_v + 13 || val == special_index_v + 14) { ret = 3; }
+		if (val == special_index_v + 19 || val == special_index_v + 20 || val == special_index_v + 25 || val == special_index_v + 26 || val == special_index_v + 29 || val == special_index_v + 30) { ret = 3; }
+		if ((val >= special_index_v + 32 && val <= special_index_v + 35) || (val >= special_index_v + 48 && val <= special_index_v + 51)) { ret = 3; }
 		return ret;
 	}
 	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi);
@@ -34,6 +35,7 @@ struct Tile {
 	void render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2<float> cam);
 	void draw(sf::RenderTexture& tex);
 	void set_type();
+	void set_scale(float to_scale) { scale = to_scale; }
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
 	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner() || is_platform(); }
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
@@ -72,6 +74,9 @@ struct Tile {
 	bool exposed{};
 	mutable bool debug_flag{};
 	util::BitFlags<TileState> flags{};
+
+  private:
+	float scale{};
 };
 
 } // namespace world

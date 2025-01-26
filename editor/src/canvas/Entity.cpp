@@ -3,6 +3,8 @@
 
 namespace pi {
 
+std::unique_ptr<Entity> Entity::clone() const { return std::unique_ptr<Entity>(); }
+
 void Entity::serialize(dj::Json& out) {
 	out["id"] = id;
 	out["position"][0] = position.x;

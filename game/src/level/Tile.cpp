@@ -50,54 +50,53 @@ void Tile::draw(sf::RenderTexture& tex) {
 }
 
 void Tile::set_type() {
-	auto special_index{448};
 	type = TileType::empty;
-	if (value < special_index && value > 0) {
+	if (value < special_index_v && value > 0) {
 		type = TileType::solid;
 		return;
 	}
-	if ((value < special_index + 16 && value >= special_index) || (value >= ceiling_single_ramp && value <= ceiling_single_ramp + 3)) {
+	if ((value < special_index_v + 16 && value >= special_index_v) || (value >= ceiling_single_ramp && value <= ceiling_single_ramp + 3)) {
 		type = TileType::ceiling_ramp;
 		return;
 	}
-	if ((value < special_index + 32 && value >= special_index + 16) || (value >= floor_single_ramp && value <= floor_single_ramp + 3)) {
+	if ((value < special_index_v + 32 && value >= special_index_v + 16) || (value >= floor_single_ramp && value <= floor_single_ramp + 3)) {
 		type = TileType::ground_ramp;
 		return;
 	}
-	if (value < special_index + 48 && value >= special_index + 44) {
+	if (value < special_index_v + 48 && value >= special_index_v + 44) {
 		type = TileType::platform;
 		return;
 	}
-	if (value < special_index + 38 && value >= special_index + 36) {
+	if (value < special_index_v + 38 && value >= special_index_v + 36) {
 		type = TileType::pushable;
 		return;
 	}
-	if (value == special_index + 38) {
+	if (value == special_index_v + 38) {
 		type = TileType::target;
 		return;
 	}
-	if (value == special_index + 39) {
+	if (value == special_index_v + 39) {
 		type = TileType::spawner;
 		return;
 	}
-	if (value == special_index + 52) {
+	if (value == special_index_v + 52) {
 		type = TileType::bonfire;
 		return;
 	}
-	if (value == special_index + 53) {
+	if (value == special_index_v + 53) {
 		type = TileType::campfire;
 		return;
 	}
-	if (value == special_index + 54) {
+	if (value == special_index_v + 54) {
 		type = TileType::checkpoint;
 		return;
 	}
-	if (value == special_index + 55) {
+	if (value == special_index_v + 55) {
 		type = TileType::breakable;
 		return;
 	}
-	if (value == special_index + 62) { type = TileType::big_spike; }
-	if (value == special_index + 63) { type = TileType::spike; }
+	if (value == special_index_v + 62) { type = TileType::big_spike; }
+	if (value == special_index_v + 63) { type = TileType::spike; }
 }
 
 } // namespace world
