@@ -14,7 +14,6 @@ float const pad_x{20.f};
 float const pad_y{20.f};
 class Portrait {
   public:
-	Portrait() = default;
 	Portrait(automa::ServiceProvider& svc, bool left = true);
 	void update(automa::ServiceProvider& svc);
 	void set_custom_portrait(sf::Sprite sp);

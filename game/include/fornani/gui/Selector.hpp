@@ -16,7 +16,6 @@ enum class SelectorFlags { switched, went_up };
 
 class Selector {
   public:
-	Selector() = default;
 	Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim);
 	void update();
 	void render(sf::RenderWindow& win) const;

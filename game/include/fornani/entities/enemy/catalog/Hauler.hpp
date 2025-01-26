@@ -10,7 +10,6 @@ namespace enemy {
 class Hauler : public Enemy {
 
 	  public:
-		Hauler() = default;
 		Hauler(automa::ServiceProvider& svc);
 		void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 

@@ -14,7 +14,6 @@ namespace gui {
 enum class MiniMenuState { open };
 class MiniMenu {
   public:
-	MiniMenu() = default;
 	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, bool white = false);
 	void overwrite_option(int idx, std::string_view replacement);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> at_position);

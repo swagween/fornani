@@ -20,7 +20,6 @@ namespace player {
 enum class IndicatorType { health, orb };
 class Indicator {
   public:
-	Indicator() = default;
 	Indicator(automa::ServiceProvider& svc);
 	void init(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> pos = {0.f, 0.f});

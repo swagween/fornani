@@ -31,7 +31,6 @@ class Portal {
 	using Vec = sf::Vector2<float>;
 	using Vecu32 = sf::Vector2<uint32_t>;
 
-	Portal() = default;
 	Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked = false, bool already_open = false, int key_id = 0, int style = 0, sf::Vector2<int> map_dim = {});
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos); // for debugging
