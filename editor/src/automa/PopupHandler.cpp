@@ -28,7 +28,7 @@ void PopupHandler::launch(data::ResourceFinder& finder, Console& console, char c
 			// switch to entity tool, and store the specified inspectable for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::inspectable;
-			tool->current_entity = std::make_unique<Inspectable>(activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{msgbuffer}}, std::vector<std::vector<std::string>>{}, 0);
+			tool->current_entity = std::make_unique<Inspectable>(activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{std::string{msgbuffer}}}, std::vector<std::vector<std::string>>{}, 0);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

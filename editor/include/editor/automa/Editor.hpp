@@ -28,8 +28,6 @@ namespace pi {
 enum class GlobalFlags { shutdown, palette_mode };
 enum class PressedKeys { control, shift, mouse_left, mouse_right, space };
 
-inline char const* styles[static_cast<size_t>(StyleType::END)];
-inline char const* bgs[static_cast<size_t>(Backdrop::END)];
 inline std::string_view const& style_list{};
 inline std::string styles_str{};
 
@@ -75,7 +73,6 @@ class Editor {
 	sf::Vector2<float> mouse_clicked_position{};
 
 	bool mouse_held{};
-	bool show_palette{true};
 	bool show_overlay{};
 	bool demo_mode{};
 
@@ -108,6 +105,21 @@ class Editor {
 	} tool_flags{};
 	float zoom_factor{0.05f};
 	::util::Cooldown grid_refresh{};
+	struct {
+		std::vector<Style> styles{};
+		std::vector<BackgroundType> backdrops{};
+	} m_themes{};
+	struct {
+		std::string style_str[static_cast<size_t>(StyleType::END)];
+		std::string bg_str[static_cast<size_t>(StyleType::END)];
+		char const* styles[static_cast<size_t>(StyleType::END)];
+		char const* backdrops[static_cast<size_t>(Backdrop::END)];
+	} m_labels{};
+	struct {
+		bool sidebar{true};
+		bool console{true};
+		bool palette{true};
+	} m_options{};
 };
 
 } // namespace pi

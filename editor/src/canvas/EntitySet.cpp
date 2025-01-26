@@ -85,9 +85,7 @@ bool EntitySet::save(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 	} else {
 		std::cout << "written to file!\n";
 	}
-	if (!data.inspectables.to_file((finder.paths.levels / room_name / "inspectables.json").string().c_str())) { success = false; }
 	if (!metadata.to_file((finder.paths.out / room_name / "meta.json").string().c_str())) { success = false; }
-	if (!data.inspectables.to_file((finder.paths.out / room_name / "inspectables.json").string().c_str())) { success = false; }
 	return success;
 }
 

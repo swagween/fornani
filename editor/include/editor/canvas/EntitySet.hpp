@@ -5,6 +5,7 @@
 #include <string_view>
 #include <djson/json.hpp>
 #include <filesystem>
+#include <iostream>
 
 namespace data {
 class ResourceFinder;
@@ -47,9 +48,25 @@ struct Inspectable : public Entity {
 	std::unique_ptr<Entity> clone() const override { return std::make_unique<Inspectable>(*this); }
 	void serialize(dj::Json& out) override {
 		Entity::serialize(out);
+		constexpr auto empty_array = R"([])";
+		auto const wipe = dj::Json::parse(empty_array);
 		out["activate_on_contact"] = dj::Boolean{activate_on_contact};
 		out["key"] = key;
 		out["alternates"] = alternates;
+		for (auto i{0}; i <= alternates; ++i) {
+			auto next = std::string{key + std::to_string(i)};
+			out[next].push_back(wipe);
+			for (auto& suite : suites) {
+				auto out_set = wipe;
+				for (auto& message : suite) { out_set.push_back(message); }
+				out[next]["suite"].push_back(out_set);
+			}
+			for (auto& response : responses) {
+				auto out_set = wipe;
+				for (auto& message : response) { out_set.push_back(message); }
+				out[next]["responses"].push_back(out_set);
+			}
+		}
 	}
 	void unserialize(dj::Json& in) override { Entity::unserialize(in); };
 };

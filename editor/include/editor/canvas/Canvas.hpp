@@ -22,12 +22,16 @@ class ResourceFinder;
 
 namespace pi {
 
-int const NUM_LAYERS{8};
-
-enum LAYER_ORDER {
-	BACKGROUND = 0,
-	MIDDLEGROUND = 4,
-	FOREGROUND = 7,
+enum class Layers {
+	background_0,
+	background_1,
+	background_2,
+	background_3,
+	middleground,
+	foreground_1,
+	foreground_2,
+	obscuring,
+	END
 };
 
 enum class StyleType { firstwind, overturned, base, factory, greatwing, END };
@@ -51,13 +55,18 @@ class Style {
 		case StyleType::greatwing: label = "greatwing"; break;
 		default: label = "<none>"; break;
 		}
+		label_c_str = label.c_str();
 	}
+
+	[[nodiscard]] auto get_label_char() -> const char*& { return label_c_str; };
 	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_type() const -> StyleType { return type; };
+	[[nodiscard]] auto get_i_type() const -> int { return static_cast<int>(type); };
 
   private:
 	StyleType type{};
 	std::string label{};
+	char const* label_c_str{};
 };
 
 class Tool;
@@ -88,6 +97,7 @@ class Canvas {
 	void zoom(float amount);
 	void set_backdrop_color(sf::Color color);
 	void set_grid_texture();
+	void activate_middleground();
 	Map& get_layers();
 	sf::Vector2<int> get_tile_coord(int lookup);
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
@@ -118,6 +128,8 @@ class Canvas {
 	}
 	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
 	[[nodiscard]] auto redo_states_size() const -> std::size_t { return redo_states.size(); }
+	[[nodiscard]] auto middleground() const -> int { return static_cast<int>(Layers::middleground); }
+	[[nodiscard]] auto last_layer() const -> int { return static_cast<int>(Layers::END); }
 
 	void replace_tile(uint32_t from, uint32_t to, int layer_index);
 	void edit_tile_at(int i, int j, int new_val, int layer_index);
@@ -126,7 +138,6 @@ class Canvas {
 	int tile_val_at_scaled(int i, int j, int layer);
 	sf::Vector2<float> get_tile_position_at(int i, int j, int layer = 4);
 	Tile& get_tile_at(int i, int j, int layer = 4);
-	TILE_TYPE lookup_type(int idx);
 
 	// layers
 	sf::Vector2<uint32_t> dimensions{};

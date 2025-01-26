@@ -16,9 +16,6 @@
     "style": 0,
     "background": 18,
     "music": "",
-    "styles": {
-      "breakables": 0
-    },
     "cutscene_on_entry": {
       "flag": false,
       "type": 0,
@@ -27,12 +24,28 @@
     }
   },
   "entities": {
-		"save_point": {
-			"id": 228,
-			"position": [
-			12,
-			6
-			]
-		}
-	}
+    "inspectables": [
+      {
+        "id": 0,
+        "position": [
+          11,
+          6
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "key": "ads",
+        "alternates": 0,
+        "ads0": {
+          "suite": [
+            [
+              "gafsd"
+            ]
+          ]
+        }
+      }
+    ]
+  }
 }

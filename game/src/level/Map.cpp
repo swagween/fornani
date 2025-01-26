@@ -31,7 +31,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	}
 	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
 	auto const& tiles = svc.data.map_jsons.at(room_lookup).tiles;
-	inspectable_data = svc.data.map_jsons.at(room_lookup).inspectable_data;
+	inspectable_data = svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"];
 
 	//check for enemy respawns
 	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
@@ -376,7 +376,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
 	for (auto& npc : npcs) { npc.update(svc, *this, console, *player); }
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
-	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, inspectable_data); }
+	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"]); }
 	for (auto& animator : animators) { animator.update(svc, *player); }
 	for (auto& effect : effects) { effect.update(svc, *this); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
@@ -721,7 +721,7 @@ void Map::generate_collidable_layer(bool live) {
 		get_middleground().grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position(), styles.breakables)); }
-		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 227)); }
+		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 483)); }
 		if (cell.is_big_spike()) { spikes.push_back(Spike(*m_services, m_services->assets.t_big_spike, cell.position(), get_middleground().grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f})); }
 		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, m_services->assets.tilesets.at(style_id), cell.position(), get_middleground().grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f})); }
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }

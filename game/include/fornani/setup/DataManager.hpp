@@ -31,7 +31,6 @@ struct MapData {
 	int id{};
 	dj::Json metadata{};
 	dj::Json tiles{};
-	dj::Json inspectable_data{};
 };
 
 struct EnemyState {

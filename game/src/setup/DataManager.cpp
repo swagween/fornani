@@ -47,7 +47,7 @@ void DataManager::load_data(std::string in_room) {
 		assert(!map_jsons.back().metadata.is_null());
 		map_jsons.back().tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
 		assert(!map_jsons.back().tiles.is_null());
-		map_jsons.back().inspectable_data = dj::Json::from_file((room_str + "/inspectables.json").c_str());
+
 		// cache map layers
 		int layer_counter{};
 		sf::Vector2<uint32_t> dimensions{};

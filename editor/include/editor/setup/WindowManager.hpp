@@ -28,7 +28,7 @@ class WindowManager {
 	sf::FloatRect game_port{};
 	bool is_fullscreen{};
 	struct {
-		sf::Vector2u preset{1920, 1040};
+		sf::Vector2u preset{1920, 1080};
 		sf::Vector2u display{};
 		sf::Vector2u current{};
 	} dimensions{};

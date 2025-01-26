@@ -125,6 +125,10 @@
       "label": "new_file"
     },
     {
+      "room_id": 0,
+      "label": "out_test"
+    },
+    {
       "room_id": 207,
       "label": "OVERTURNED_BRANCHES_01"
     },
@@ -223,6 +227,22 @@
     {
       "room_id": 20090,
       "label": "OVERTURNED_VINE"
+    },
+    {
+      "room_id": 0,
+      "label": "palette"
+    },
+    {
+      "room_id": 0,
+      "label": "palette2"
+    },
+    {
+      "room_id": 0,
+      "label": "palette2"
+    },
+    {
+      "room_id": 3000,
+      "label": "RAMP"
     },
     {
       "room_id": 3000,

@@ -23,8 +23,10 @@ class BackgroundType {
 		default: label = "<none>"; break;
 		}
 	}
+	[[nodiscard]] auto get_label_char() const -> const char* { return label.c_str(); };
 	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_type() const -> Backdrop { return type; };
+	[[nodiscard]] auto get_i_type() const -> int { return static_cast<int>(type); };
 
   private:
 	Backdrop type{};

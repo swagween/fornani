@@ -37,11 +37,14 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 		flags.reset(InspectableFlags::hovered);
 	}
 	if (flags.test(InspectableFlags::activated)) {
-		console.set_source(set);
-		if (alternates < 1) { console.load_and_launch(key); } else {
-			std::string new_key = key + std::to_string(current_alt);
-			console.load_and_launch(new_key);
+		auto& target = set;
+		auto i{0};
+		for (auto choice : set.array_view()) {
+			if (choice["key"].as_string() == key) { target = set[i]; }
+			++i;
 		}
+		console.set_source(target);
+		console.load_and_launch(std::string{key + std::to_string(current_alt)});
 	}
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) {
 		animation.set_params(params);

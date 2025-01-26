@@ -50,57 +50,54 @@ void Tile::draw(sf::RenderTexture& tex) {
 }
 
 void Tile::set_type() {
+	auto special_index{448};
 	type = TileType::empty;
-	if (value < 192 && value > 0) {
+	if (value < special_index && value > 0) {
 		type = TileType::solid;
 		return;
 	}
-	if ((value < 208 && value >= 192) || (value >= ceiling_single_ramp && value <= ceiling_single_ramp + 3)) {
+	if ((value < special_index + 16 && value >= special_index) || (value >= ceiling_single_ramp && value <= ceiling_single_ramp + 3)) {
 		type = TileType::ceiling_ramp;
 		return;
 	}
-	if ((value < 224 && value >= 208) || (value >= floor_single_ramp && value <= floor_single_ramp + 3)) {
+	if ((value < special_index + 32 && value >= special_index + 16) || (value >= floor_single_ramp && value <= floor_single_ramp + 3)) {
 		type = TileType::ground_ramp;
 		return;
 	}
-	if (value < 240 && value >= 236) {
+	if (value < special_index + 48 && value >= special_index + 44) {
 		type = TileType::platform;
 		return;
 	}
-	if (value < 244 && value >= 240) {
-		type = TileType::big_spike;
-		return;
-	}
-	if (value < 230 && value >= 228) {
+	if (value < special_index + 38 && value >= special_index + 36) {
 		type = TileType::pushable;
 		return;
 	}
-	if (value == 230) {
+	if (value == special_index + 38) {
 		type = TileType::target;
 		return;
 	}
-	if (value == 231) {
+	if (value == special_index + 39) {
 		type = TileType::spawner;
 		return;
 	}
-	if (value == 244) {
+	if (value == special_index + 52) {
 		type = TileType::bonfire;
 		return;
 	}
-	if (value == 245) {
+	if (value == special_index + 53) {
 		type = TileType::campfire;
 		return;
 	}
-	if (value == 246) {
+	if (value == special_index + 54) {
 		type = TileType::checkpoint;
 		return;
 	}
-	if (value == 247) {
+	if (value == special_index + 55) {
 		type = TileType::breakable;
 		return;
 	}
-	if (value == 254) { type = TileType::big_spike; }
-	if (value == 255) { type = TileType::spike; }
+	if (value == special_index + 62) { type = TileType::big_spike; }
+	if (value == special_index + 63) { type = TileType::spike; }
 }
 
 } // namespace world
