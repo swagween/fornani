@@ -17,12 +17,14 @@ target_include_directories(fornani-launcher
         PRIVATE "src"
 )
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang|IntelLLVM|AppleClang")
+  if ("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC") # clang-cl
     add_compile_options(fornani-launcher INTERFACE /W4056 /W4146 /W4018 /W4056)
-endif()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(fornani-launcher INTERFACE -Wno-sign-conversion)
-endif()
+  endif ()
+  add_compile_options(fornani-launcher INTERFACE -Wno-sign-conversion -Wno-format-security)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  add_compile_options(fornani-launcher INTERFACE /W4056 /W4146 /W4018 /W4056)
+endif ()
 
 if (FORNANI_STEAM_APP_ID OR FORNANI_ENABLE_DEV_ID)
   if (NOT DEFINED FORNANI_STEAM_APP_ID)

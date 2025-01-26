@@ -4,13 +4,13 @@
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
+#include "fornani/utils/Tracy.hpp"
 
-#include "tracy/Tracy.hpp"
 
 namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player) {
-	ZoneScopedN("Game::Game");
+	NANI_ZoneScopedN("Game::Game");
 	//services.stopwatch.start();
 	services.constants.screen_dimensions = window.screen_dimensions;
 	if (!ImGui::SFML::Init(services.window->get())) {
@@ -35,7 +35,7 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 }
 
 void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-    ZoneScopedN("Game::run");
+    NANI_ZoneScopedN("Game::run");
 
     if (services.window->fullscreen()) {
         services.app_flags.set(automa::AppFlags::fullscreen);
@@ -46,7 +46,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
     measurements.win_size.y = services.window->get().getSize().y;
 
     {
-        ZoneScopedN("Demo Mode Setup");
+        NANI_ZoneScopedN("Demo Mode Setup");
         if (demo) {
             services.debug_flags.set(automa::DebugFlags::demo_mode);
             flags.set(GameFlags::in_game);
@@ -70,14 +70,14 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
     while (services.window->get().isOpen()) {
 
-        ZoneScopedN("Game Loop");
+        NANI_ZoneScopedN("Game Loop");
 
         auto smp = services.random.percent_chance(10) ? 1 : 0;
         rng_test.sample += smp;
         ++rng_test.total;
 
         {
-            ZoneScopedN("Check Shutdown Condition");
+            NANI_ZoneScopedN("Check Shutdown Condition");
 			if (services.state_controller.actions.test(automa::Actions::shutdown)) {
 				std::cout << "Shutdown.\n";
                 break;
@@ -90,11 +90,11 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
         services.ticker.start_frame();
 
         {
-            ZoneScopedN("Handle Window Events");
+            NANI_ZoneScopedN("Handle Window Events");
             bool valid_event{true};
 
             while (std::optional const event = services.window->get().pollEvent()) {
-                ZoneScopedN("Event Polling");
+                NANI_ZoneScopedN("Event Polling");
                 player.animation.state = {};
                 if (event->is<sf::Event::Closed>()) {
                     shutdown();
@@ -102,7 +102,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
                 }
 
                 if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-                    ZoneScopedN("Key Press Handling");
+                    NANI_ZoneScopedN("Key Press Handling");
                     if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) {
                         key_flags.set(KeyboardFlags::control);
                     }
@@ -122,7 +122,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
                 }
 
                 if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
-                    ZoneScopedN("Key Release Handling");
+                    NANI_ZoneScopedN("Key Release Handling");
                     if (key_released->scancode == sf::Keyboard::Scancode::LControl) {
                         key_flags.reset(KeyboardFlags::control);
                     }
@@ -137,16 +137,16 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
         }
 
 	    {
-        	ZoneScopedN("Steam API Callbacks");
+        	NANI_ZoneScopedN("Steam API Callbacks");
 		    SteamAPI_RunCallbacks();
 	    }
 
 	    {
-		    ZoneScopedN("Update");
+		    NANI_ZoneScopedN("Update");
         	services.music.update();
         	bool has_focus = services.window->get().hasFocus();
         	services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
-				ZoneScopedN("Update->Tick");
+				NANI_ZoneScopedN("Update->Tick");
 				services.controller_map.update();
 				game_state.get_current_state().tick_update(services);
 				if (services.a11y.is_action_ctx_bar_enabled()) {
@@ -154,7 +154,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				}
 			});
 	        {
-		    	ZoneScopedN("Update->State");
+		    	NANI_ZoneScopedN("Update->State");
 		    	game_state.get_current_state().frame_update(services);
 		    	game_state.process_state(services, player, *this);
 	        }
@@ -163,7 +163,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
         	}
 
 	        {
-		    	ZoneScopedN("Update->ImGUI");
+		    	NANI_ZoneScopedN("Update->ImGUI");
 		    	ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 		    	ImGuiIO& io = ImGui::GetIO();
 		    	io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
@@ -174,7 +174,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 	    }
 
         {
-            ZoneScopedN("Rendering");
+            NANI_ZoneScopedN("Rendering");
             if (flags.test(GameFlags::playtest)) {
                 playtester_portal(services.window->get());
                 services.logger.write_console(
@@ -697,14 +697,13 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	services.window->screencap.update(services.window->get());
 	std::time_t const now = std::time(nullptr);
 
-	std::time_t time = std::time({});
+	const std::time_t time = std::time({});
 	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
 	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
 	std::string time_str = time_string;
 
 	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
-	std::string filename = "screenshot_" + time_str + ".png";
-	if (screencap.copyToImage().saveToFile(filename)) { std::cout << "screenshot saved to " << filename << std::endl; }
+	if (const std::string filename = "screenshot_" + time_str + ".png"; screencap.copyToImage().saveToFile(filename)) { std::cout << "screenshot saved to " << filename << std::endl; }
 }
 
 void Game::playtest_sync() {

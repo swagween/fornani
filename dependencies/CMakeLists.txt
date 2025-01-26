@@ -85,9 +85,11 @@ target_link_libraries(fornani-dependencies INTERFACE
         Tracy::TracyClient
 )
 
-if(MSVC)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang|IntelLLVM|AppleClang")
+  if ("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC") # clang-cl
     add_compile_options(fornani-dependencies INTERFACE /W0)
+  endif ()
+  add_compile_options(fornani-dependencies INTERFACE -w)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  add_compile_options(fornani-dependencies INTERFACE /W0)
 endif ()
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|IntelLLVM|AppleClang")
-    add_compile_options(fornani-dependencies INTERFACE -w)
-endif()

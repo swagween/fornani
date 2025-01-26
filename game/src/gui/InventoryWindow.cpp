@@ -324,6 +324,7 @@ void InventoryWindow::update_table(player::Player& player, bool new_dim) {
 		y_dim = static_cast<int>(std::ceil(static_cast<float>(player_loadout) / static_cast<float>(gpr)));
 		if (new_dim) { selector.set_size(static_cast<int>(player_loadout)); }
 		break;
+	default: NANI_LOG_WARN(m_logger, "InventoryWindow::update_table(): Unknown section requested! Did you forget to add an enum to the switch?"); break;
 	}
 	selector.set_dimensions({x_dim, y_dim});
 	selector.update();

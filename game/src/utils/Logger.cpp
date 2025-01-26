@@ -5,9 +5,12 @@
 namespace util {
 
 void Logger::add_log(char const* message) {
+	if (!message) {
+		return; // Ensure `message` is not null to avoid undefined behavior.
+	}
 	std::string msg = message;
 	msg += "\n";
-	log.add_log(msg.data());
+	log.add_log(msg.c_str());
 }
 
 void Logger::write_console(ImVec2 size, ImVec2 pos) {

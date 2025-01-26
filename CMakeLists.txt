@@ -55,14 +55,6 @@ if (FORNANI_ENABLE_VERBOSE_LOGGING)
   message(STATUS "FORNANI: FORNANI_ENABLE_VERBOSE_LOGGING is ON. Logger will now output verbose logging information!")
 endif ()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
-  add_compile_options(fornani INTERFACE /W4056 /W4146 /W4018 /W4056)
-endif ()
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|IntelLLVM|AppleClang")
-  add_compile_options(fornani INTERFACE -Wno-sign-conversion -Wno-format-security)
-endif ()
-
 if (FORNANI_ENABLE_PROFILER)
   target_compile_definitions(fornani PRIVATE TRACY_ENABLE)
   target_compile_definitions(fornani PRIVATE FORNANI_PROFILE)
