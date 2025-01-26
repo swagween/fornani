@@ -57,7 +57,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(steamworks_archive)
 
 add_library(steamworks INTERFACE)
-target_include_directories(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/public)
+target_include_directories(steamworks SYSTEM INTERFACE ${steamworks_archive_SOURCE_DIR}/public)
 if (WIN32)
     target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.lib)
     if (MSVC)
@@ -85,9 +85,9 @@ target_link_libraries(fornani-dependencies INTERFACE
         Tracy::TracyClient
 )
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
-    add_compile_options(fornani-dependencies INTERFACE /W2)
-endif()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(fornani-dependencies INTERFACE -Wno-sign-conversion)
+if(MSVC)
+    add_compile_options(fornani-dependencies INTERFACE /W0)
+endif ()
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|IntelLLVM|AppleClang")
+    add_compile_options(fornani-dependencies INTERFACE -w)
 endif()
