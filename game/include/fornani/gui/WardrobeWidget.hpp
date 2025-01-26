@@ -13,7 +13,7 @@ class Player;
 namespace gui {
 class WardrobeWidget {
   public:
-	WardrobeWidget(automa::ServiceProvider& svc);
+	WardrobeWidget(const automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos) { position = pos; }
@@ -31,6 +31,8 @@ class WardrobeWidget {
 	sf::RectangleShape background{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> dimensions{128.f, 256.f};
+
+	fornani::Logger m_logger{"gui"};
 };
 
 } // namespace gui

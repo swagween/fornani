@@ -26,7 +26,7 @@ constexpr auto sqrt2 = ccm::sqrtf(2.0f); //2.0f * 0.707106781186547524401f;
 namespace audio {
 
 class PitchVolume : public Effect {
-  public:
+public:
 	explicit PitchVolume(automa::ServiceProvider& svc) : Effect(svc) {
 
 		// Set the music to loop
@@ -60,7 +60,7 @@ class PitchVolume : public Effect {
 
 	void onStop() override { m_music.stop(); }
 
-  private:
+private:
 	float m_pitch{1.f};
 	float m_volume{100.f};
 	sf::Music m_music;
@@ -70,7 +70,7 @@ class PitchVolume : public Effect {
 // Attenuation Effect
 ////////////////////////////////////////////////////////////
 class Attenuation : public Effect {
-  public:
+public:
 	Attenuation(automa::ServiceProvider& svc) : Effect(svc) {
 		// Set the music to loop
 		m_music.setLooping(true);
@@ -82,15 +82,13 @@ class Attenuation : public Effect {
 		m_music.setDirection({0.f, 1.f, 0.f});
 	}
 
-	void onUpdate(float /*time*/, [[maybe_unused]] float x, [[maybe_unused]] float y) override {
-		m_music.setPosition({m_position.x, m_position.y, 0.f});
-	}
+	void onUpdate(float /*time*/, float /*x**/, float /*y*/) override { m_music.setPosition({m_position.x, m_position.y, 0.f}); }
 
 	void onStart() override { m_music.play(); }
 
 	void onStop() override { m_music.stop(); }
 
-  private:
+private:
 	sf::Vector2f m_position;
 	sf::Music m_music;
 
@@ -101,7 +99,7 @@ class Attenuation : public Effect {
 // Tone Generator
 ////////////////////////////////////////////////////////////
 class Tone : public sf::SoundStream, public Effect {
-  public:
+public:
 	Tone(automa::ServiceProvider& svc) : Effect(svc) { sf::SoundStream::initialize(1, sampleRate, {sf::SoundChannel::Mono}); }
 
 	void onUpdate(float /*time*/, float x, float y) override {
@@ -119,7 +117,7 @@ class Tone : public sf::SoundStream, public Effect {
 
 	void onStop() override { SoundStream::stop(); }
 
-  private:
+private:
 	bool onGetData(sf::SoundStream::Chunk& chunk) override {
 		auto const period = 1.f / m_frequency;
 
@@ -176,7 +174,7 @@ class Tone : public sf::SoundStream, public Effect {
 // Dopper Shift Effect
 ////////////////////////////////////////////////////////////
 class Doppler : public sf::SoundStream, public Effect {
-  public:
+public:
 	Doppler(automa::ServiceProvider& svc) : Effect(svc) {
 
 		// Set attenuation to a nice value
@@ -196,7 +194,7 @@ class Doppler : public sf::SoundStream, public Effect {
 
 	void onStop() override { SoundStream::stop(); }
 
-  private:
+private:
 	bool onGetData(sf::SoundStream::Chunk& chunk) override {
 		auto const period = 1.f / m_frequency;
 
@@ -235,16 +233,14 @@ class Doppler : public sf::SoundStream, public Effect {
 // Processing base class
 ////////////////////////////////////////////////////////////
 class Processing : public Effect {
-  public:
-	void onUpdate([[maybe_unused]] float time, [[maybe_unused]] float x, [[maybe_unused]] float y) override {
-		m_music.setPosition({m_position.x, m_position.y, 0.f});
-	}
+public:
+	void onUpdate(float /*time*/, float /*x*/, float /*y*/) override { m_music.setPosition({m_position.x, m_position.y, 0.f}); }
 
 	void onStart() override { m_music.play(); }
 
 	void onStop() override { m_music.stop(); }
 
-  protected:
+protected:
 	explicit Processing(automa::ServiceProvider& svc) : Effect(svc) {
 		m_music.setLooping(true);
 		m_music.setAttenuation(0.0f);
@@ -254,10 +250,8 @@ class Processing : public Effect {
 
 	std::shared_ptr<bool> const& getEnabled() const { return m_enabled; }
 
-  private:
-	void onKey(sf::Keyboard::Key key) override {
-		if (key == sf::Keyboard::Key::Space) *m_enabled = !*m_enabled;
-	}
+private:
+	void onKey(sf::Keyboard::Key key) override { if (key == sf::Keyboard::Key::Space) *m_enabled = !*m_enabled; }
 
 	sf::Vector2f m_position;
 	sf::Music m_music;
@@ -268,7 +262,7 @@ class Processing : public Effect {
 // Biquad Filter (https://github.com/dimtass/DSP-Cpp-filters)
 ////////////////////////////////////////////////////////////
 class BiquadFilter : public Processing {
-  protected:
+protected:
 	struct Coefficients {
 		float a0{};
 		float a1{};
@@ -392,7 +386,7 @@ struct Echo : Processing {
 		// this lambda hence we need to always have a usable state until the Music and the
 		// associated lambda are destroyed
 		music.setEffectProcessor([delayInFrames, enabled = getEnabled(), buffer = std::vector<float>(), cursor = 0u](float const* inputFrames, unsigned int& inputFrameCount, float* outputFrames, unsigned int& outputFrameCount,
-																													 unsigned int frameChannelCount) mutable {
+		                                                                                                             unsigned int frameChannelCount) mutable {
 			// IMPORTANT: The channel count of the audio engine currently sourcing data from this sound
 			// will always be provided in frameChannelCount, this can be different from the channel count
 			// of the audio source so make sure to size your buffers according to the engine and not the source
@@ -423,7 +417,7 @@ struct Echo : Processing {
 // Reverb (https://github.com/sellicott/DSP-FFMpeg-Reverb)
 ////////////////////////////////////////////////////////////
 class Reverb : public Processing {
-  public:
+public:
 	Reverb(automa::ServiceProvider& svc) : Processing(svc) {
 		auto& music = getMusic();
 
@@ -435,7 +429,7 @@ class Reverb : public Processing {
 		// this lambda hence we need to always have a usable state until the Music and the
 		// associated lambda are destroyed
 		music.setEffectProcessor([sampleRate = music.getSampleRate(), filters = std::vector<ReverbFilter<float>>(), enabled = getEnabled()](float const* inputFrames, unsigned int& inputFrameCount, float* outputFrames,
-																																			unsigned int& outputFrameCount, unsigned int frameChannelCount) mutable {
+		                                                                                                                                    unsigned int& outputFrameCount, unsigned int frameChannelCount) mutable {
 			// IMPORTANT: The channel count of the audio engine currently sourcing data from this sound
 			// will always be provided in frameChannelCount, this can be different from the channel count
 			// of the audio source so make sure to size your buffers according to the engine and not the source
@@ -457,10 +451,10 @@ class Reverb : public Processing {
 		});
 	}
 
-  private:
+private:
 	template <typename T>
 	class AllPassFilter {
-	  public:
+	public:
 		AllPassFilter(std::size_t delay, float theGain) : m_buffer(delay, {}), m_gain(theGain) {}
 
 		T operator()(T input) {
@@ -471,7 +465,7 @@ class Reverb : public Processing {
 			return static_cast<T>(-m_gain * input + output);
 		}
 
-	  private:
+	private:
 		std::vector<T> m_buffer;
 		std::size_t m_cursor{};
 		float const m_gain{};
@@ -479,7 +473,7 @@ class Reverb : public Processing {
 
 	template <typename T>
 	class FIRFilter {
-	  public:
+	public:
 		explicit FIRFilter(std::vector<float> taps) : m_taps(std::move(taps)) {}
 
 		T operator()(T input) {
@@ -493,7 +487,7 @@ class Reverb : public Processing {
 			return output;
 		}
 
-	  private:
+	private:
 		std::vector<float> const m_taps;
 		std::vector<T> m_buffer = std::vector<T>(m_taps.size(), {});
 		std::size_t m_cursor{};
@@ -501,13 +495,13 @@ class Reverb : public Processing {
 
 	template <typename T>
 	class ReverbFilter {
-	  public:
+	public:
 		ReverbFilter(unsigned int sampleRate, float feedbackGain)
 			: m_allPass{{{sampleRate / 10, 0.6f}, {sampleRate / 30, -0.6f}, {sampleRate / 90, 0.6f}, {sampleRate / 270, -0.6f}}},
-			  m_fir({0.003369f, 0.002810f, 0.001758f,  0.000340f,  -0.001255f, -0.002793f, -0.004014f, -0.004659f, -0.004516f, -0.003464f, -0.001514f, 0.001148f,  0.004157f,  0.006986f,  0.009003f, 0.009571f,
-					 0.008173f, 0.004560f, -0.001120f, -0.008222f, -0.015581f, -0.021579f, -0.024323f, -0.021933f, -0.012904f, 0.003500f,  0.026890f,  0.055537f,  0.086377f,  0.115331f,  0.137960f, 0.150407f,
-					 0.150407f, 0.137960f, 0.115331f,  0.086377f,  0.055537f,  0.026890f,  0.003500f,  -0.012904f, -0.021933f, -0.024323f, -0.021579f, -0.015581f, -0.008222f, -0.001120f, 0.004560f, 0.008173f,
-					 0.009571f, 0.009003f, 0.006986f,  0.004157f,  0.001148f,  -0.001514f, -0.003464f, -0.004516f, -0.004659f, -0.004014f, -0.002793f, -0.001255f, 0.000340f,  0.001758f,  0.002810f, 0.003369f}),
+			  m_fir({0.003369f, 0.002810f, 0.001758f, 0.000340f, -0.001255f, -0.002793f, -0.004014f, -0.004659f, -0.004516f, -0.003464f, -0.001514f, 0.001148f, 0.004157f, 0.006986f, 0.009003f, 0.009571f,
+			         0.008173f, 0.004560f, -0.001120f, -0.008222f, -0.015581f, -0.021579f, -0.024323f, -0.021933f, -0.012904f, 0.003500f, 0.026890f, 0.055537f, 0.086377f, 0.115331f, 0.137960f, 0.150407f,
+			         0.150407f, 0.137960f, 0.115331f, 0.086377f, 0.055537f, 0.026890f, 0.003500f, -0.012904f, -0.021933f, -0.024323f, -0.021579f, -0.015581f, -0.008222f, -0.001120f, 0.004560f, 0.008173f,
+			         0.009571f, 0.009003f, 0.006986f, 0.004157f, 0.001148f, -0.001514f, -0.003464f, -0.004516f, -0.004659f, -0.004014f, -0.002793f, -0.001255f, 0.000340f, 0.001758f, 0.002810f, 0.003369f}),
 			  m_buffer(sampleRate / 5, {}), // sample rate / 5 = 200ms buffer size
 			  m_feedbackGain(feedbackGain) {}
 
@@ -528,7 +522,7 @@ class Reverb : public Processing {
 			return 0.6f * output + input;
 		}
 
-	  private:
+	private:
 		std::array<AllPassFilter<T>, 4> m_allPass;
 		FIRFilter<T> m_fir;
 		std::vector<T> m_buffer;
