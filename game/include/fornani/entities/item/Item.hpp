@@ -27,7 +27,6 @@ enum class ItemState { equipped };
 
 class Item : public entity::Entity {
   public:
-	Item() = default;
 	Item(automa::ServiceProvider& svc, std::string_view label);
 	void update(automa::ServiceProvider& svc, int index, int items_per_row, sf::Vector2<float> offset);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);

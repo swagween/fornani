@@ -5,7 +5,7 @@
 
 namespace gui {
 
-gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
+gui::WardrobeWidget::WardrobeWidget(const automa::ServiceProvider& svc)
 	: sprites{.base = sf::Sprite{svc.assets.t_wardrobe_base}, .shirt = sf::Sprite{svc.assets.t_wardrobe_blue_shirt}, .pants = sf::Sprite{svc.assets.t_wardrobe_green_pants}, .hairstyle = sf::Sprite{svc.assets.t_wardrobe_default_hair}},
 	  out_nani{svc.assets.t_null} {
 	background.setFillColor(svc.styles.colors.ui_black);
@@ -13,7 +13,7 @@ gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
 	background.setOutlineThickness(2);
 	background.setSize(dimensions);
 	background.setOrigin(dimensions * 0.5f);
-	nani.resize({128, 256});
+	if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize({128, 256} failed!"); }
 }
 
 void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player) {
@@ -22,16 +22,19 @@ void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player
 	case 1: sprites.pants.setTexture(svc.assets.t_wardrobe_red_jeans); break;
 	case 3: sprites.pants.setTexture(svc.assets.t_wardrobe_chalcedony_skirt); break;
 	case 6: sprites.pants.setTexture(svc.assets.t_wardrobe_punk_pants); break;
+	default: break;;
 	}
 	switch (player.catalog.categories.wardrobe.get_variant(player::ApparelType::hairstyle)) {
 	case 0: sprites.hairstyle.setTexture(svc.assets.t_wardrobe_default_hair); break;
 	case 4: sprites.hairstyle.setTexture(svc.assets.t_wardrobe_punk_hair); break;
 	case 7: sprites.hairstyle.setTexture(svc.assets.t_wardrobe_ponytail); break;
+	default: break;;
 	}
 	switch (player.catalog.categories.wardrobe.get_variant(player::ApparelType::shirt)) {
 	case 0: sprites.shirt.setTexture(svc.assets.t_wardrobe_blue_shirt); break;
 	case 2: sprites.shirt.setTexture(svc.assets.t_wardrobe_chalcedony_tee); break;
 	case 5: sprites.shirt.setTexture(svc.assets.t_wardrobe_punk_shirt); break;
+	default: break;;
 	}
 	player.catalog.categories.wardrobe.update(player.texture_updater);
 

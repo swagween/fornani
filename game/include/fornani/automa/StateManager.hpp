@@ -13,6 +13,7 @@
 namespace fornani {
 class Game;
 }
+
 namespace player {
 class Player;
 }
@@ -23,7 +24,7 @@ struct ServiceProvider;
 
 class StateManager {
 
-  public:
+public:
 	StateManager(ServiceProvider& svc, player::Player& player);
 	StateManager& operator=(StateManager&&) = delete;
 	void process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game);
@@ -34,6 +35,7 @@ class StateManager {
 	GameState& set_current_state(std::unique_ptr<automa::GameState> gameState);
 
 	std::unique_ptr<automa::GameState> g_current_state{};
+
 };
 
 } // namespace automa

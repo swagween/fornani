@@ -29,7 +29,6 @@ class SavePoint {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
-	SavePoint() = default;
 	SavePoint(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);

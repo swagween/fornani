@@ -53,7 +53,6 @@ struct Flags {
 
 class Enemy : public entity::Entity {
   public:
-	Enemy() = default;
 	virtual ~Enemy() {}
 	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 	void set_external_id(std::pair<int, sf::Vector2<int>> code);

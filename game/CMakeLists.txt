@@ -12,14 +12,16 @@ include(${FORNANI_ROOT_DIR}/cmake/func/AddTargetSource.cmake)
 target_link_libraries(fornani
         PUBLIC
         # TODO: Start removing all deps that are not used in public headers
-        djson::djson
-        ccmath::ccmath
-        ImGui-SFML::ImGui-SFML
-        SFML::System
+        # The currently disabled targets should be fine.
+        #Though disabling them means they are only accessible in .cpp files which is desired behavior.
+        #djson::djson
+        #ccmath::ccmath
+        #ImGui-SFML::ImGui-SFML
+        #SFML::System
         SFML::Graphics
         SFML::Window
-        SFML::Audio
-        steamworks
+        #SFML::Audio
+        #steamworks
 
         PRIVATE
         fornani::deps
@@ -34,10 +36,12 @@ target_include_directories(fornani
 add_subdirectory(include/fornani)
 add_subdirectory(src)
 
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang|IntelLLVM|AppleClang")
+  if ("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC") # clang-cl
     add_compile_options(fornani INTERFACE /W4056 /W4146 /W4018 /W4056)
-endif()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(fornani INTERFACE -Wno-sign-conversion)
-endif()
+  endif ()
+  add_compile_options(fornani INTERFACE -Wno-sign-conversion -Wno-format-security)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  add_compile_options(fornani INTERFACE /W4056 /W4146 /W4018 /W4056)
+endif ()
+

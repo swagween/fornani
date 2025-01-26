@@ -5,6 +5,7 @@
 #include "MiniMap.hpp"
 #include "MiniMenu.hpp"
 #include "WardrobeWidget.hpp"
+#include "fornani/utils/Logger.hpp"
 
 namespace player {
 class Player;
@@ -20,7 +21,6 @@ enum class Mode{inventory, minimap};
 
 class InventoryWindow : public Console {
   public:
-	InventoryWindow() = default;
 	InventoryWindow(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -72,6 +72,8 @@ class InventoryWindow : public Console {
 	sf::Sprite gun_slot;
 
 	WardrobeWidget wardrobe;
+
+	fornani::Logger m_logger{ "gui" };
 };
 
 } // namespace gui

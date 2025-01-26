@@ -5,6 +5,8 @@
 #include "fornani/utils/Collider.hpp"
 #include "fornani/utils/Counter.hpp"
 #include "fornani/entities/animation/Animation.hpp"
+#include "fornani/utils/Logger.hpp"
+
 
 namespace automa {
 struct ServiceProvider;
@@ -60,5 +62,7 @@ class Platform : public shape::Collider {
 	int style{};
 	int state{};
 	sf::Vector2<int> offset{};
+
+	fornani::Logger m_logger{ "world" };
 };
 } // namespace world
