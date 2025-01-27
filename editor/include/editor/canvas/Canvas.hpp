@@ -40,6 +40,12 @@ enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
 enum class SelectionType { neutral, palette, canvas };
 
+struct Theme {
+	std::string music{};
+	std::string ambience{};
+	std::vector<int> atmosphere{};
+};
+
 constexpr inline int chunk_size_v{16};
 
 struct Map {
@@ -169,6 +175,7 @@ class Canvas {
 	struct {
 		Style tile;
 	} styles;
+	Theme m_theme{};
 	std::unique_ptr<Background> background{};
 
 	struct {

@@ -181,7 +181,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
                     ImVec2{services.window->get().getSize().x - 420.f, services.window->get().getSize().y - 260.f});
             }
 
-            flags.test(GameFlags::playtest) ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
+            flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 
             services.window->get().clear();
             services.window->get().draw(background);

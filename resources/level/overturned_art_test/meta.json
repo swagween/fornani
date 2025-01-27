@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "room_id": 22,
+    "metagrid": [
+      0,
+      0
+    ],
+    "dimensions": [
+      48,
+      32
+    ],
+    "chunk_dimensions": [
+      3,
+      2
+    ],
+    "style": 1,
+    "background": 18,
+    "music": "",
+    "atmosphere": [
+      1
+    ],
+    "ambience": "overturned",
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
+  },
+  "entities": {
+    "save_point": {
+      "id": 0,
+      "position": [
+        0,
+        0
+      ],
+      "dimensions": [
+        0,
+        0
+      ]
+    }
+  }
+}
