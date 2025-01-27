@@ -1,6 +1,6 @@
 #include <algorithm>
 #include "fornani/setup/ResourceFinder.hpp"
-#include "fornani/setup/Application.hpp"
+#include "fornani/core/Application.hpp"
 #include "editor/util/Lookup.hpp"
 #include "editor/automa/Editor.hpp"
 #include "editor/gui/Console.hpp"
@@ -439,7 +439,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				static int style_current = static_cast<int>(map.styles.tile.get_type());
 				static int bg_current = static_cast<int>(map.background->type.get_type());
 
-				map = Canvas(*finder, {static_cast<uint32_t>(width * CHUNK_SIZE), static_cast<uint32_t>(height * CHUNK_SIZE)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
+				map = Canvas(*finder, {static_cast<uint32_t>(width * chunk_size_v), static_cast<uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
 				finder->paths.room_name = buffer;
 				map.room_id = room_id;
@@ -483,7 +483,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z")) { map.redo(); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("(+) Map Width", "Ctrl+Shift+RightArrow")) { map.resize({1, 0}); }
-			if (ImGui::MenuItem("(-) Map Width", "Ctrl+Shift+LefttArrow")) { map.resize({-1, 0}); }
+			if (ImGui::MenuItem("(-) Map Width", "Ctrl+Shift+LeftArrow")) { map.resize({-1, 0}); }
 			if (ImGui::MenuItem("(+) Map Height", "Ctrl+Shift+DownArrow")) { map.resize({0, 1}); }
 			if (ImGui::MenuItem("(-) Map Height", "Ctrl+Shift+UpArrow")) { map.resize({0, -1}); }
 			ImGui::Separator();

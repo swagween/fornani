@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 	const fornani::Logger main_logger{"Main"};
 
 
-	game::LauncherApplication app{argv};
+	launcher::LauncherApplication app{argv};
 	app.init(argv);
 
 	constexpr auto steam_id = FORNANI_STEAM_APP_ID;

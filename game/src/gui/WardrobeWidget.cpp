@@ -10,10 +10,10 @@ gui::WardrobeWidget::WardrobeWidget(const automa::ServiceProvider& svc)
 	  out_nani{svc.assets.t_null} {
 	background.setFillColor(svc.styles.colors.ui_black);
 	background.setOutlineColor(svc.styles.colors.ui_white);
-	background.setOutlineThickness(2);
+	background.setOutlineThickness(2.f);
 	background.setSize(dimensions);
 	background.setOrigin(dimensions * 0.5f);
-	//if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize({128, 256} failed!"); }
+	if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize() failed!"); }
 }
 
 void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player) {

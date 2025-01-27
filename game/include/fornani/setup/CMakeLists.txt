@@ -1,6 +1,5 @@
 nani_add_headers(
         AccessibilityService.hpp
-        Application.hpp
         AssetManager.hpp
         ControllerMap.hpp
         DataManager.hpp

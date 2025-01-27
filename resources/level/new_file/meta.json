@@ -77,6 +77,27 @@
             ]
           ]
         }
+      },
+      {
+        "id": 0,
+        "position": [
+          6,
+          7
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "key": "zach",
+        "alternates": 0,
+        "zach0": {
+          "suite": [
+            [
+              "causey"
+            ]
+          ]
+        }
       }
     ]
   }
