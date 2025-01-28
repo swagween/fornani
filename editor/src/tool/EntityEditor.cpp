@@ -9,45 +9,109 @@ EntityEditor::EntityEditor(EntityMode to_mode) : Tool("Entity Editor", ToolType:
 
 void EntityEditor::update(Canvas& canvas) {
 	Tool::update(canvas);
-	if (just_clicked) { just_clicked = false; }
-	disable_highlight = false;
-	if (selector_mode()) {
-		disable_highlight = true;
-		ent_type = EntityType::none;
-		for (auto& ent : canvas.entities.variables.entities) { ent->highlighted = ent->position == scaled_position(); }
+
+	// set tooltip
+	switch (entity_mode) {
+	case EntityMode::selector: tooltip = "Selector"; break;
+	case EntityMode::editor: tooltip = "Edior"; break;
+	case EntityMode::placer: tooltip = "Placer"; break;
+	case EntityMode::eraser: tooltip = "Eraser"; break;
+	case EntityMode::mover: tooltip = "Mover"; break;
 	}
-	if (current_entity) { current_entity.value()->position = scaled_position() - current_entity.value()->dimensions + sf::Vector2<uint32_t>(1, 1); }
-	if (!in_bounds(canvas.dimensions) || !active || !canvas.editable()) { return; }
 
-	// user has clicked
+	if (just_clicked) { just_clicked = false; }
+	disable_highlight = true;
 
-	if (placer_mode() && is_ready()) {
+	if (entity_menu) {
+		if (active && !canvas.entities.has_entity_at(scaled_position(), true)) {
+			current_entity = {};
+			entity_mode = EntityMode::selector;
+			entity_menu = false;
+		}
+	}
+
+	if (selector_mode()) {
+		ent_type = EntityType::none;
+		for (auto& ent : canvas.entities.variables.entities) {
+			if (!entity_menu || active) { ent->highlighted = ent->contains_position(scaled_position()); }
+			if (active && ent->highlighted && is_ready()) {
+				current_entity = ent->clone();
+				entity_menu = true;
+			}
+		}
+	}
+
+	if (editor_mode()) {
+		// user just saved changes
+		if (!is_ready()) {
+			unsuppress();
+			entity_mode = EntityMode::selector;
+		}
+		// user clicks away
+		if (active && !canvas.entities.has_entity_at(scaled_position(), true)) {
+			current_entity = {};
+			entity_mode = EntityMode::selector;
+			return;
+		}
+		// edit mode
+		if (!is_ready()) { current_entity = {}; }
+		for (auto& ent : canvas.entities.variables.entities) {
+			if (ent->overwrite) {
+				if (current_entity) {
+					ent = std::move(current_entity.value());
+					current_entity = {};
+					break;
+				}
+			}
+		}
+	}
+
+	if (placer_mode() && is_ready() && canvas.editable()) {
+		disable_highlight = false;
+		if (current_entity) { current_entity.value()->get_position() = scaled_position() - current_entity.value()->get_dimensions() + sf::Vector2<uint32_t>(1, 1); }
+		// user duplicated an existing entity
+		if (!current_entity) {
+			for (auto& ent : canvas.entities.variables.entities) {
+				if (ent->highlighted) { current_entity = ent->clone(); }
+			}
+		}
 		if (ent_type == EntityType::player_placer) {
 			canvas.entities.variables.player_start = scaled_position();
 		} else if (ent_type == EntityType::save_point) {
-			if (current_entity) {
+			if (current_entity && active) {
 				canvas.entities.variables.save_point = std::move(current_entity.value());
 				current_entity = {};
 			}
 			suppress_until_released();
-		} else if (current_entity) {
-			auto repeat = current_entity.value()->repeatable;
-			auto clone = current_entity.value()->clone();
-			canvas.entities.variables.entities.push_back(std::move(current_entity.value()));
-			if (repeat) {
-				current_entity = std::move(clone);
-			} else {
-				current_entity = {}; // free the entity's memory otherwise
+		} else if (current_entity && active) {
+			if (!canvas.entities.overlaps(*current_entity.value())) {
+				auto repeat = current_entity.value()->repeatable;
+				auto clone = current_entity.value()->clone();
+				canvas.entities.variables.entities.push_back(std::move(current_entity.value()));
+				if (repeat) {
+					current_entity = std::move(clone);
+				} else {
+					current_entity = {}; // free the entity's memory otherwise
+				}
+				suppress_until_released();
+				entity_mode = EntityMode::selector;
 			}
-			suppress_until_released();
-			entity_mode = EntityMode::selector;
 		}
 	}
+
 	if (eraser_mode()) {
 		ent_type = EntityType::none;
-		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->position == scaled_position(); });
+		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->highlighted; });
+		entity_mode = EntityMode::selector;
 	}
-	if (mover_mode()) {}
+
+	if (mover_mode()) {
+		for (auto& ent : canvas.entities.variables.entities) {
+			if (ent->highlighted) { current_entity = ent->clone(); }
+		}
+		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->highlighted; });
+		entity_mode = EntityMode::placer;
+	}
 }
 
 void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {
@@ -58,31 +122,26 @@ void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<flo
 	if (!canvas.editable()) { return; }
 	if (!current_entity) { return; }
 
-	sf::RectangleShape box{};
-	box.setOutlineColor(sf::Color{200, 200, 200, 80});
-	box.setFillColor(sf::Color{100, 190, 190, 80});
-	box.setOutlineThickness(-2);
-	box.setSize({current_entity.value()->dimensions.x * canvas.f_cell_size(), current_entity.value()->dimensions.y * canvas.f_cell_size()});
-	box.setPosition({(scaled_position().x - current_entity.value()->dimensions.x + 1) * canvas.f_cell_size() + offset.x, (scaled_position().y - current_entity.value()->dimensions.y + 1) * canvas.f_cell_size() + offset.y});
-	win.draw(box);
+	if (!disable_highlight) {
+		sf::RectangleShape box{};
+		box.setOutlineColor(sf::Color{200, 200, 200, 80});
+		box.setFillColor(sf::Color{100, 190, 190, 80});
+		box.setOutlineThickness(-2);
+		box.setSize({current_entity.value()->get_dimensions().x * canvas.f_cell_size(), current_entity.value()->get_dimensions().y * canvas.f_cell_size()});
+		box.setPosition({(scaled_position().x - current_entity.value()->get_dimensions().x + 1) * canvas.f_cell_size() + offset.x, (scaled_position().y - current_entity.value()->get_dimensions().y + 1) * canvas.f_cell_size() + offset.y});
+		win.draw(box);
+	}
 }
 
 void EntityEditor::store_tile(int index) {}
 
 void EntityEditor::clear() {}
 
-void EntityEditor::set_mode(EntityMode to_mode) {
-	entity_mode = to_mode;
-	switch (to_mode) {
-	case EntityMode::selector: tooltip = "Selector"; break;
-	case EntityMode::placer: tooltip = "Placer"; break;
-	case EntityMode::eraser: tooltip = "Eraser"; break;
-	case EntityMode::mover: tooltip = "Mover"; break;
-	}
-}
+void EntityEditor::set_mode(EntityMode to_mode) { entity_mode = to_mode; }
 
 void EntityEditor::set_usability(bool const flag) {
-	if (eraser_mode()) { status = ToolStatus::destructive; }
+	if (placer_mode()) { status = ToolStatus::loaded; }
+	if (selector_mode()) { status = ToolStatus::usable; }
 }
 
 } // namespace pi

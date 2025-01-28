@@ -2,6 +2,9 @@
 #include "editor/canvas/EntitySet.hpp"
 #include "editor/canvas/Canvas.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
+#include "editor/canvas/entity/Inspectable.hpp"
+#include "editor/canvas/entity/Platform.hpp"
+
 #include <cassert>
 
 namespace pi {
@@ -25,18 +28,6 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> ca
 	player_box.setPosition(sf::Vector2<float>{variables.player_start} * map.f_cell_size() + cam);
 	win.draw(player_box);
 
-	// draw save point
-	if (variables.save_point) {
-		auto& save = variables.save_point.value();
-		save->drawbox.setFillColor(sf::Color{220, 20, 220, 128});
-		save->drawbox.setOutlineColor(sf::Color{240, 230, 255, 180});
-		save->drawbox.setOutlineThickness(-1);
-		save->drawbox.setOrigin(map.get_origin());
-		save->drawbox.setSize({map.f_cell_size(), map.f_cell_size()});
-		save->drawbox.setPosition({(save->position.x) * map.f_cell_size() + cam.x, (save->position.y) * map.f_cell_size() + cam.y});
-		win.draw(save->drawbox);
-	}
-
 	// draw general entities
 	for (auto& ent : variables.entities) { ent->render(win, cam, map.f_cell_size()); }
 }
@@ -48,10 +39,6 @@ void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 
 	// general entities
 	for (auto const& [key, entry] : metadata.object_view()) {
-		/*if (std::string{key} == "inspectables") {
-			variables.entities.push_back(std::make_unique<Inspectable>(std::string{key}));
-			variables.entities.back()->unserialize(entry);
-		}*/
 		if (std::string{key} == "inspectables") {
 			for (auto& element : entry.array_view()) {
 				variables.entities.push_back(std::make_unique<Inspectable>(std::string{key}));
@@ -93,9 +80,18 @@ bool EntitySet::save(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 
 void EntitySet::clear() { variables = {}; }
 
-bool EntitySet::has_entity_at(sf::Vector2<uint32_t> pos) const {
+bool EntitySet::has_entity_at(sf::Vector2<uint32_t> pos, bool highlighted_only) const {
 	for (auto& s : variables.entities) {
-		if (s->position.x == pos.x && s->position.y == pos.y) { return true; };
+		if (s->contains_position(pos)) { return highlighted_only ? s->highlighted : true; }
+	}
+	return false;
+}
+
+bool EntitySet::overlaps(Entity& other) const {
+	for (auto i{0u}; i < other.get_dimensions().x; ++i) {
+		for (auto j{0u}; j < other.get_dimensions().y; ++j) {
+			if (has_entity_at(other.get_position() + sf::Vector2u{i, j})) { return true; }
+		}
 	}
 	return false;
 }
