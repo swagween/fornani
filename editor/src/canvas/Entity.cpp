@@ -34,6 +34,8 @@ void Entity::expose() {
 
 void Entity::render(sf::RenderWindow& win, sf::Vector2<float> cam) {}
 
+void Entity::set_position(sf::Vector2u to_position) { position = to_position; }
+
 void Entity::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
 	drawbox.setFillColor(sf::Color{255, 60, 60, 80});
 	drawbox.setOutlineColor(sf::Color{120, 255, 60, 120});

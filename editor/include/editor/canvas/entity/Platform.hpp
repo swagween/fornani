@@ -12,6 +12,7 @@ class Platform : public Entity {
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json& in) override;
+	void expose() override;
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam) override;
 
   private:

@@ -13,8 +13,6 @@ EntitySet::EntitySet(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 
 	load(finder, metadata, room_name);
 
-	enemy_thumbnails.loadFromFile((finder.paths.editor / "enemies" / "thumbnails.png").string());
-
 	player_box.setFillColor(sf::Color{100, 200, 100, 30});
 	player_box.setOutlineColor(sf::Color{100, 200, 100, 120});
 	player_box.setOutlineThickness(-2);

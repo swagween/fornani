@@ -6,6 +6,7 @@
 #include <imgui.h>
 
 namespace pi {
+
 class Entity {
   public:
 	Entity(std::string label, int id = 0, sf::Vector2<uint32_t> position = {}, sf::Vector2<uint32_t> dimensions = {}) : label(label), id(id), position(position), dimensions(dimensions) {};
@@ -15,6 +16,7 @@ class Entity {
 	virtual void unserialize(dj::Json& in);
 	virtual void expose();
 	virtual void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void set_position(sf::Vector2u to_position);
 	bool repeatable{};
 	bool overwrite{};
 
@@ -43,4 +45,5 @@ class Entity {
 	sf::Vector2<uint32_t> position{};
 	sf::Vector2<uint32_t> dimensions{};
 };
+
 } // namespace pi

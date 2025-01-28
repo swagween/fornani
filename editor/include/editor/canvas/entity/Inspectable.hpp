@@ -13,11 +13,7 @@ class Inspectable : public Entity {
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json& in) override;
-	void expose() override {
-		Entity::expose();
-		ImGui::Checkbox("Activate on Contact", &activate_on_contact);
-		ImGui::InputInt("Alternates", &alternates);
-	}
+	void expose() override;
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam) override;
 
   private:
@@ -26,7 +22,6 @@ class Inspectable : public Entity {
 	std::vector<std::vector<std::string>> suites{};
 	std::vector<std::vector<std::string>> responses{};
 	int alternates{};
-
 };
 
 } // namespace pi

@@ -68,7 +68,7 @@ void EntityEditor::update(Canvas& canvas) {
 
 	if (placer_mode() && is_ready() && canvas.editable()) {
 		disable_highlight = false;
-		if (current_entity) { current_entity.value()->get_position() = scaled_position() - current_entity.value()->get_dimensions() + sf::Vector2<uint32_t>(1, 1); }
+		if (current_entity) { current_entity.value()->set_position(scaled_position() - current_entity.value()->get_dimensions() + sf::Vector2<uint32_t>(1, 1)); }
 		// user duplicated an existing entity
 		if (!current_entity) {
 			for (auto& ent : canvas.entities.variables.entities) {

@@ -1,3 +1,4 @@
+add_subdirectory(entity)
 nani_add_headers(
         Background.hpp
         Canvas.hpp
