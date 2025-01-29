@@ -13,8 +13,8 @@ namespace pi {
 
 enum class ToolType { brush, fill, marquee, erase, hand, entity_editor, eyedropper };
 enum class EntityType { none, portal, inspectable, critter, chest, animator, player_placer, platform, save_point, switch_button, switch_block, interactive_scenery, scenery };
-enum class EntityMode { selector, placer, eraser, mover };
-enum class ToolStatus { usable, unusable, destructive };
+enum class EntityMode { selector, placer, eraser, mover, editor };
+enum class ToolStatus { usable, unusable, loaded };
 enum class SelectMode { none, select, clipboard };
 
 class Tool {
@@ -44,6 +44,7 @@ class Tool {
 	[[nodiscard]] auto get_tooltip() const -> std::string { return tooltip; }
 	[[nodiscard]] auto f_position() const -> sf::Vector2<float> { return position; }
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::floor(position.x / 32.f)), static_cast<uint32_t>(std::floor(position.y / 32.f))}; }
+	[[nodiscard]] auto scaled_position_ceiling() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::ceil(position.x / 32.f)), static_cast<uint32_t>(std::ceil(position.y / 32.f))}; }
 	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2<float> { return {static_cast<float>(scaled_position().x), static_cast<float>(scaled_position().y)}; }
 	[[nodiscard]] auto scaled_clicked_position() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::floor(clicked_position.x / 32.f)), static_cast<uint32_t>(std::floor(clicked_position.y / 32.f))}; }
 	[[nodiscard]] auto get_window_position() const -> sf::Vector2<float> { return window_position; }
@@ -55,7 +56,7 @@ class Tool {
 	[[nodiscard]] auto clicked() const -> bool { return just_clicked; }
 	[[nodiscard]] auto clipboard() const -> bool { return mode == SelectMode::clipboard; }
 	[[nodiscard]] auto is_usable() const -> bool { return status == ToolStatus::usable; }
-	[[nodiscard]] auto highlight_canvas() const -> bool { return (is_paintable() || type == ToolType::erase || type == ToolType::entity_editor) && !disable_highlight; }
+	[[nodiscard]] auto highlight_canvas() const -> bool { return (is_paintable() || type == ToolType::erase) && !disable_highlight; }
 	[[nodiscard]] auto is_paintable() const -> bool { return type == ToolType::brush || type == ToolType::fill; };
 
 	bool in_bounds(sf::Vector2<uint32_t>& bounds) const;
@@ -65,6 +66,7 @@ class Tool {
 
 	bool has_palette_selection{};
 	bool palette_mode;
+	bool entity_menu{};
 
 	int xorigin{};
 	int yorigin{};
@@ -80,6 +82,7 @@ class Tool {
 
 	ToolType type{};
 	EntityType ent_type{};
+	EntityMode entity_mode{};
 	ToolStatus status{};
 
   protected:
@@ -163,9 +166,7 @@ class EntityEditor : public Tool {
 	[[nodiscard]] auto placer_mode() const -> bool { return entity_mode == EntityMode::placer; }
 	[[nodiscard]] auto eraser_mode() const -> bool { return entity_mode == EntityMode::eraser; }
 	[[nodiscard]] auto mover_mode() const -> bool { return entity_mode == EntityMode::mover; }
-
-  private:
-	EntityMode entity_mode{};
+	[[nodiscard]] auto editor_mode() const -> bool { return entity_mode == EntityMode::editor; }
 };
 
 class SelectBox {

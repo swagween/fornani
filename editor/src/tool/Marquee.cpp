@@ -22,7 +22,10 @@ void Marquee::update(Canvas& canvas) {
 	if (canvas.get_selection_type() != selection_type) { return; }
 
 	sf::Vector2<uint32_t> adjustment{};
-	auto real_diff = sf::Vector2<int>{scaled_position()} - sf::Vector2<int>{scaled_clicked_position()};
+	auto x = scaled_clicked_position().x > scaled_position().x ? scaled_position().x : scaled_position_ceiling().x;
+	auto y = scaled_clicked_position().y > scaled_position().y ? scaled_position().y : scaled_position_ceiling().y;
+	auto boundary_position = sf::Vector2<int>{static_cast<int>(x), static_cast<int>(y)};
+	auto real_diff = boundary_position - sf::Vector2<int>{scaled_clicked_position()};
 
 	auto diff = sf::Vector2u{static_cast<uint32_t>(abs(real_diff.x)), static_cast<uint32_t>(abs(real_diff.y))};
 	// positive selection

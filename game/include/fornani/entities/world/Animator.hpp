@@ -24,7 +24,6 @@ class Animator : public Entity {
 
   public:
 
-	Animator() = default;
 	Animator(automa::ServiceProvider& svc, sf::Vector2<int> pos, int id, bool large, bool automatic = false, bool foreground = false, int style = 0);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;

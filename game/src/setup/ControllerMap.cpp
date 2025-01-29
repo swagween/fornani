@@ -49,6 +49,7 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	default: assert(false && "Invalid action set in get_action_set_from_action");
 	}
 	assert(false && "Invalid action set in get_action_set_from_action");
+	return ActionSet::Platformer; // This will never be hit
 }
 
 /// @brief Gets the action set that should also be active when the given action set is active.

@@ -8,7 +8,6 @@ namespace automa {
 
 class Intro : public GameState {
   public:
-	Intro() = default;
 	Intro(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);

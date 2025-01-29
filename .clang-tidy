@@ -3,6 +3,8 @@ Checks: 'clang-analyzer-*,
 	concurrency-*,
 	cppcoreguidelines-*,
 	-cppcoreguidelines-non-private-member-variables-in-classes,
+	-cppcoreguidelines-special-member-functions,
+	-cppcoreguidelines-avoid-magic-numbers,
 	misc-*,
 	-misc-non-private-member-variables-in-classes,
 	modernize-*,
@@ -12,5 +14,7 @@ Checks: 'clang-analyzer-*,
 	readability-*,
 	-readability-identifier-length,
 	-readability-uppercase-literal-suffix 
-	-readability-magic-numbers'
+	-readability-magic-numbers,
+	-readability-uppercase-literal-suffix,
+	'
 ...

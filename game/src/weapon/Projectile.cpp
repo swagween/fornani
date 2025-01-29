@@ -197,10 +197,14 @@ void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
 	switch (physical.direction.lr) {
 	case dir::LR::left: physical.physics.velocity = {-metadata.specifications.speed, var}; break;
 	case dir::LR::right: physical.physics.velocity = {metadata.specifications.speed, var}; break;
+	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?");
+		break;
 	}
 	switch (physical.direction.und) {
 	case dir::UND::up: physical.physics.velocity = {var, -metadata.specifications.speed}; break;
 	case dir::UND::down: physical.physics.velocity = {var, metadata.specifications.speed}; break;
+	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?");
+		break;
 	}
 	if (sprite_flip()) {
 		auto scale = physical.direction.left_or_right() ? sf::Vector2<float>{1.f, -1.f} : sf::Vector2<float>{-1.f, 1.f};

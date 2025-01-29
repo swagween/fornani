@@ -1,19 +1,22 @@
 
 #pragma once
 
+#include "fornani/setup/EnumLookups.hpp"
+#include "ResourceFinder.hpp"
+#include "fornani/utils/Logger.hpp"
+
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+
 #include <array>
 #include <filesystem>
 #include <string>
-#include "fornani/setup/EnumLookups.hpp"
-#include "ResourceFinder.hpp"
 
 namespace asset {
 
 class AssetManager {
   public:
-	AssetManager(data::ResourceFinder& finder);
+	AssetManager(const data::ResourceFinder& finder);
 
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
@@ -365,6 +368,8 @@ class AssetManager {
 	std::vector<sf::SoundBuffer> vs_carl{};
 	std::vector<sf::SoundBuffer> vs_hologus{};
 	std::unordered_map<std::string_view, std::vector<sf::SoundBuffer>> npc_sounds{};
+
+	fornani::Logger m_logger{"asset"};
 };
 
 } // namespace asset
