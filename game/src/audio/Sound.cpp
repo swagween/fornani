@@ -3,16 +3,16 @@
 
 namespace audio {
 
-Sound::Sound(sf::SoundBuffer& buffer, int echo_count, int echo_rate) {
+Sound::Sound(const sf::SoundBuffer& buffer, int echo_count, int echo_rate) {
 	sounds.clear();
 	echo.rate = echo_rate;
 	echo.count = util::Cooldown{echo_count};
 	echo.repeater.start(echo.rate);
 	echo.count.start();
-	for (auto i{0}; i <= echo_count; ++i) { sounds.push_back(sf::Sound(buffer)); }
+	for (auto i{0}; i <= echo_count; ++i) { sounds.emplace_back(buffer); }
 }
 
-void Sound::update(automa::ServiceProvider& svc) {
+void Sound::update(automa::ServiceProvider& /*svc*/) {
 	echo.repeater.update();
 	if (!is_echoing()) { return; }
 	if (echo.rate < 1) { return; }

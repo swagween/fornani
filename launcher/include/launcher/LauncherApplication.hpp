@@ -1,10 +1,12 @@
-
 #pragma once
 
-#include "fornani/setup/Application.hpp"
+#include "fornani/core/Application.hpp"
 
+namespace launcher {
 
-class LauncherApplication : public fornani::Application
-{
+class LauncherApplication : public fornani::Application {
+  public:
+	LauncherApplication(char** argv, char const* loading_screen = "/image/gui/loading.png") : Application(argv, loading_screen){};
+};
 
-}; // class LauncherApplication
+} // namespace game

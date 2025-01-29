@@ -1,6 +1,3 @@
-
-#pragma once
-
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 

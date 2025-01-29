@@ -14,6 +14,7 @@
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/utils/Direction.hpp"
+#include "fornani/utils/Logger.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/utils/Shape.hpp"
 
@@ -135,6 +136,8 @@ class Projectile {
 	util::Cooldown lifetime{};
 	util::Cooldown damage_timer{};
 	Weapon* m_weapon;
+
+	fornani::Logger m_logger{ "world" };
 };
 
 } // namespace arms

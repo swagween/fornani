@@ -36,7 +36,6 @@ static int const fast_writing_speed{1};
 
 class TextWriter {
   public:
-	TextWriter() = default;
 	TextWriter(automa::ServiceProvider& svc);
 	void start();
 	void update();

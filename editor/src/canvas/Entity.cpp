@@ -1,5 +1,6 @@
 
-#include "editor/canvas/EntitySet.hpp"
+#include "editor/canvas/Entity.hpp"
+#include <imgui.h>
 
 namespace pi {
 
@@ -20,6 +21,20 @@ void Entity::unserialize(dj::Json& in) {
 	dimensions.x = in["dimensions"][0].as<uint32_t>();
 	dimensions.y = in["dimensions"][1].as<uint32_t>();
 }
+
+void Entity::expose() {
+	ImGui::Text("Category: %s", label.c_str());
+	ImGui::Separator();
+	ImGui::InputInt("Entity ID", &id);
+	ImGui::Text("Position: (%i", position.x);
+	ImGui::SameLine();
+	ImGui::Text(", %i)", position.y);
+	ImGui::Separator();
+}
+
+void Entity::render(sf::RenderWindow& win, sf::Vector2<float> cam) {}
+
+void Entity::set_position(sf::Vector2u to_position) { position = to_position; }
 
 void Entity::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
 	drawbox.setFillColor(sf::Color{255, 60, 60, 80});

@@ -11,7 +11,6 @@ namespace enemy {
 class Eyebot : public Enemy {
 
   public:
-	Eyebot() = default;
 	Eyebot(automa::ServiceProvider& svc);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 

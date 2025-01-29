@@ -95,7 +95,6 @@ class Map {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
-	Map() = default;
 	Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
 	~Map() {}
 

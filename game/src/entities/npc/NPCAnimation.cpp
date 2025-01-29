@@ -4,34 +4,34 @@
 
 namespace npc {
 
-NPCAnimation::NPCAnimation(automa::ServiceProvider& svc, int id) : label(label) {
+NPCAnimation::NPCAnimation(automa::ServiceProvider& svc, int id) {
 
-	label = svc.tables.npc_label.at(id);
-	auto const& in_data = svc.data.npc[label];
+	m_label = svc.tables.npc_label.at(id);
+	auto const& in_data = svc.data.npc[m_label];
 
 	NPC_idle.lookup = in_data["animation"]["idle"][0].as<int>();
 	NPC_idle.duration = in_data["animation"]["idle"][1].as<int>();
 	NPC_idle.framerate = in_data["animation"]["idle"][2].as<int>();
 	NPC_idle.num_loops = in_data["animation"]["idle"][3].as<int>();
-	NPC_idle.repeat_last_frame = (bool)in_data["animation"]["idle"][4].as_bool();
+	NPC_idle.repeat_last_frame = static_cast<bool>(in_data["animation"]["idle"][4].as_bool());
 
 	NPC_walk.lookup = in_data["animation"]["walk"][0].as<int>();
 	NPC_walk.duration = in_data["animation"]["walk"][1].as<int>();
 	NPC_walk.framerate = in_data["animation"]["walk"][2].as<int>();
 	NPC_walk.num_loops = in_data["animation"]["walk"][3].as<int>();
-	NPC_walk.repeat_last_frame = (bool)in_data["animation"]["walk"][4].as_bool();
+	NPC_walk.repeat_last_frame = static_cast<bool>(in_data["animation"]["walk"][4].as_bool());
 
 	NPC_turn.lookup = in_data["animation"]["turn"][0].as<int>();
 	NPC_turn.duration = in_data["animation"]["turn"][1].as<int>();
 	NPC_turn.framerate = in_data["animation"]["turn"][2].as<int>();
 	NPC_turn.num_loops = in_data["animation"]["turn"][3].as<int>();
-	NPC_turn.repeat_last_frame = (bool)in_data["animation"]["turn"][4].as_bool();
+	NPC_turn.repeat_last_frame = static_cast<bool>(in_data["animation"]["turn"][4].as_bool());
 
 	NPC_inspect.lookup = in_data["animation"]["inspect"][0].as<int>();
 	NPC_inspect.duration = in_data["animation"]["inspect"][1].as<int>();
 	NPC_inspect.framerate = in_data["animation"]["inspect"][2].as<int>();
 	NPC_inspect.num_loops = in_data["animation"]["inspect"][3].as<int>();
-	NPC_inspect.repeat_last_frame = (bool)in_data["animation"]["inspect"][4].as_bool();
+	NPC_inspect.repeat_last_frame = static_cast<bool>(in_data["animation"]["inspect"][4].as_bool());
 
 	animation_flags.set(NPCAnimState::idle);
 	animation.set_params(NPC_idle);
@@ -58,7 +58,6 @@ fsm::StateFunction NPCAnimation::update_idle() {
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::idle);
-	//std::cout << "i";
 	return std::move(state_function);
 }
 

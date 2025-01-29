@@ -133,6 +133,10 @@
       "label": "out_test"
     },
     {
+      "room_id": 22,
+      "label": "overturned_art_test"
+    },
+    {
       "room_id": 207,
       "label": "OVERTURNED_BRANCHES_01"
     },

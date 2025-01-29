@@ -10,7 +10,6 @@ namespace enemy {
 class Frdog : public Enemy {
 
   public:
-	Frdog() = default;
 	Frdog(automa::ServiceProvider& svc);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 

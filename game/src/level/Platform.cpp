@@ -59,13 +59,12 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	auto old_position = physics.position;
-	auto skip_value{16.f};
+	const auto old_position = physics.position;
 	auto edge_start = 0.f;
 	player.collider.handle_collider_collision(*this);
 	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
 	player.on_crush(map);
-	for (auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
+	for (const auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
 	switch_up.update();
 
 	//map changes
@@ -79,12 +78,8 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			if (wallslider.overlaps(pushable.get_bounding_box())) { pushable.set_moving(); }
 		}
 	}
-	for (auto& block : map.switch_blocks) {
-		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
-	}
-	for (auto& platform : map.platforms) {
-		if (&platform != this && native_direction.lr != platform.native_direction.lr) { handle_collider_collision(platform.hurtbox); }
-	}
+	for (auto& block : map.switch_blocks) { if (block.on()) { handle_collider_collision(block.get_hurtbox()); } }
+	for (auto& platform : map.platforms) { if (&platform != this && native_direction.lr != platform.native_direction.lr) { handle_collider_collision(platform.hurtbox); } }
 	if (flags.state.test(PlatformState::moving)) {
 		if (native_direction.lr == dir::LR::left) {
 			if (Collider::flags.external_state.consume(shape::ExternalState::horiz_collider_collision) && !switch_up.running()) {
@@ -102,18 +97,18 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	direction.lr = player.controller.direction.lr == dir::LR::left ? dir::LR::right : dir::LR::left;
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
-		auto start = track[x];
-		auto end = track[x + 1];
-		auto len = compute_length(end - start);
-		auto edge_end = edge_start + (len / path_length);
-		if (edge_end >= path_position) {
+		const auto start = track[x];
+		const auto end = track[x + 1];
+		const auto len = compute_length(end - start);
+		if (const auto edge_end = edge_start + (len / path_length); edge_end >= path_position) {
+			constexpr auto skip_value{16.f};
 			physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
 			physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
 			physics.velocity = physics.position - old_position;
 			physics.real_velocity = physics.velocity;
 			// set direction
-			direction.lr = physics.velocity.x > 0.0f ? dir ::LR::right : dir::LR::left;
-			direction.und = physics.velocity.y > 0.0f ? dir ::UND::down : dir::UND::up;
+			direction.lr = physics.velocity.x > 0.0f ? dir::LR::right : dir::LR::left;
+			direction.und = physics.velocity.y > 0.0f ? dir::UND::down : dir::UND::up;
 
 			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky)) {
 				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.collider.physics.forced_momentum = physics.position - old_position; }
@@ -124,9 +119,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 				}
 			}
 			break;
-		} else {
-			edge_start = edge_end;
-		}
+		} else { edge_start = edge_end; }
 	}
 
 	if (player.controller.direction.lr != direction.lr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
@@ -134,8 +127,12 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		state = 2;
 		if (player.collider.jumpbox.overlaps(bounding_box)) {
 			switch (direction.lr) {
-			case dir::LR::left: state = 3; break;
-			case dir::LR::right: state = 4; break;
+			case dir::LR::left: state = 3;
+				break;
+			case dir::LR::right: state = 4;
+				break;
+			default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?");
+				break;
 			}
 		}
 	}
@@ -143,9 +140,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		if (player.collider.jumpbox.overlaps(bounding_box)) {
 			path_position += metrics.speed;
 			state = 7;
-		} else {
-			state = 8;
-		}
+		} else { state = 8; }
 	} else {
 		state = flags.attributes.test(PlatformAttributes::sticky) ? 0 : 1;
 		path_position += metrics.speed;
@@ -155,11 +150,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	sync_components();
 
-	if (old_position != physics.position) {
-		flags.state.set(PlatformState::moving);
-	} else {
-		flags.state.reset(PlatformState::moving);
-	}
+	if (old_position != physics.position) { flags.state.set(PlatformState::moving); } else { flags.state.reset(PlatformState::moving); }
 
 	counter.update();
 	animation.update();
@@ -168,16 +159,14 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	track_shape.setPosition(-cam);
 	sprite.setPosition(physics.position - cam);
-	auto u = state * 96;
-	auto v = animation.get_frame() * 224;
+	const auto u = state * 96;
+	const auto v = animation.get_frame() * 224;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
 	sprite.setTextureRect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(dimensions)));
 	if (svc.greyblock_mode()) {
 		win.draw(track_shape);
 		Collider::render(win, cam);
-	} else {
-		win.draw(sprite);
-	}
+	} else { win.draw(sprite); }
 }
 
 void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
@@ -193,7 +182,7 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 }
 
 void Platform::switch_directions() {
-	std::reverse(std::begin(track), std::end(track));
+	std::ranges::reverse(track);
 	path_position = 1.0f - path_position;
 }
 

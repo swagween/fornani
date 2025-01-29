@@ -4,7 +4,7 @@
 
 namespace audio {
 
-Soundboard::Soundboard(automa::ServiceProvider& svc) {
+Soundboard::Soundboard(automa::ServiceProvider& /*svc*/) {
 	//for (int i{0}; i < 64; ++i) { sound_pool.push_back(Sound(svc.assets.click_buffer)); }
 }
 

@@ -40,6 +40,14 @@ enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
 enum class SelectionType { neutral, palette, canvas };
 
+struct Theme {
+	std::string music{};
+	std::string ambience{};
+	std::vector<int> atmosphere{};
+};
+
+constexpr inline int chunk_size_v{16};
+
 struct Map {
 	std::vector<Layer> layers{};
 };
@@ -112,13 +120,13 @@ class Canvas {
 	[[nodiscard]] auto get_origin() const -> sf::Vector2<float> { return origin; }
 	[[nodiscard]] auto get_offset_from_center() const -> sf::Vector2<float> { return offset_from_center; }
 	[[nodiscard]] auto get_scaled_center() const -> sf::Vector2<float> { return real_dimensions * 0.5f * scale; }
-	[[nodiscard]] auto u_native_chunk_size() const -> std::uint32_t { return 16u; }
-	[[nodiscard]] auto i_native_chunk_size() const -> int { return 16; }
-	[[nodiscard]] auto f_native_chunk_size() const -> float { return 16.f; }
+	[[nodiscard]] auto u_native_chunk_size() const -> std::uint32_t { return static_cast<std::uint32_t>(chunk_size_v); }
+	[[nodiscard]] auto i_native_chunk_size() const -> int { return chunk_size_v; }
+	[[nodiscard]] auto f_native_chunk_size() const -> float { return static_cast<float>(chunk_size_v); }
 	[[nodiscard]] auto u_cell_size() const -> std::uint32_t { return static_cast<uint32_t>(i_cell_size()); }
 	[[nodiscard]] auto i_cell_size() const -> int { return static_cast<int>(f_cell_size()); }
-	[[nodiscard]] auto f_cell_size() const -> float { return 32.f * scale; }
-	[[nodiscard]] auto f_chunk_size() const -> float { return 16.f * scale; }
+	[[nodiscard]] auto f_cell_size() const -> float { return f_native_cell_size() * scale; }
+	[[nodiscard]] auto f_chunk_size() const -> float { return f_native_chunk_size() * scale; }
 	[[nodiscard]] auto f_native_cell_size() const -> float { return 32.f; }
 	[[nodiscard]] auto get_scale() const -> float { return scale; }
 	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(styles.tile.get_type()); }
@@ -167,6 +175,7 @@ class Canvas {
 	struct {
 		Style tile;
 	} styles;
+	Theme m_theme{};
 	std::unique_ptr<Background> background{};
 
 	struct {

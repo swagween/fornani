@@ -2,6 +2,9 @@
 #include "editor/automa/PopupHandler.hpp"
 #include "editor/tool/Tool.hpp"
 #include "editor/gui/Console.hpp"
+#include "editor/canvas/entity/Inspectable.hpp"
+#include "editor/canvas/entity/Platform.hpp"
+#include "editor/canvas/entity/Portal.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 #include <imgui.h>
 #include <string>

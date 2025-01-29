@@ -11,7 +11,6 @@ namespace enemy {
 class Eyebit : public Enemy {
 
   public:
-	Eyebit() = default;
 	Eyebit(automa::ServiceProvider& svc, bool spawned = false);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 

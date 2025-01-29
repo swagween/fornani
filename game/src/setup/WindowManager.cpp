@@ -1,16 +1,17 @@
 #include "fornani/setup/WindowManager.hpp"
 #include <iostream>
+
 #include <imgui-SFML.h>
 
 namespace fornani {
 
 void WindowManager::set() {
 	game_view = sf::View(sf::FloatRect({}, {static_cast<float>(screen_dimensions.x), static_cast<float>(screen_dimensions.y)}));
-	// set view and veiwport for fullscreen mode
-	auto aspect_ratio = static_cast<float>(aspects.x) / static_cast<float>(aspects.y);
-	auto display_ratio = static_cast<float>(display_dimensions.x) / static_cast<float>(display_dimensions.y);
-	auto letterbox = std::min(display_ratio, aspect_ratio) / std::max(display_ratio, aspect_ratio);
-	auto vertical = display_ratio < aspect_ratio;
+	// set view and viewport for fullscreen mode
+	const auto aspect_ratio = static_cast<float>(aspects.x) / static_cast<float>(aspects.y);
+	const auto display_ratio = static_cast<float>(display_dimensions.x) / static_cast<float>(display_dimensions.y);
+	const auto letterbox = std::min(display_ratio, aspect_ratio) / std::max(display_ratio, aspect_ratio);
+	const auto vertical = display_ratio < aspect_ratio;
 	auto resize_ratio = vertical ? sf::Vector2<float>(1.f, letterbox) : sf::Vector2<float>(letterbox, 1.f);
 	auto offset = vertical ? sf::Vector2<float>(0.f, (1.f - letterbox) * 0.5f) : sf::Vector2<float>((1.f - letterbox) * 0.5f, 0.f);
 	game_port = is_fullscreen ? sf::FloatRect{{offset.x, offset.y}, {resize_ratio.x, resize_ratio.y}} : sf::FloatRect({}, {1.f, 1.f});
@@ -18,13 +19,13 @@ void WindowManager::set() {
 	window.setView(game_view);
 	if (is_fullscreen) { window.setMouseCursorVisible(false); }
 
-	screencap.resize(window.getSize());
+	if (!screencap.resize(window.getSize())) { NANI_LOG_WARN(m_logger, "Failed to resize window."); }
 	window.setVerticalSyncEnabled(true);
 	window.setFramerateLimit(60);
 	window.setKeyRepeatEnabled(false);
 }
 
-void fornani::WindowManager::create(std::string title, bool const fullscreen) {
+void WindowManager::create(const std::string& title, bool const fullscreen) {
 	is_fullscreen = fullscreen;
 	// set window constants
 	screen_dimensions = {aspects.x / 4, aspects.y / 4};
@@ -32,8 +33,11 @@ void fornani::WindowManager::create(std::string title, bool const fullscreen) {
 	display_dimensions = {static_cast<unsigned>(sf::VideoMode::getDesktopMode().size.x), static_cast<unsigned>(sf::VideoMode::getDesktopMode().size.y)};
 	mode = fullscreen ? sf::VideoMode(display_dimensions) : sf::VideoMode(u_screen_dimensions);
 	if (!mode.isValid() && fullscreen) {
-		std::cout << "Number of valid fullscreen modes: " << mode.getFullscreenModes().size() << "\n";
-		std::cout << "Failed to extract a valid fullscreen mode.\n";
+		NANI_LOG_WARN(
+			m_logger,
+			"Number of valid fullscreen modes: {}\n"
+			"Failed to extract a valid fullscreen mode.",
+			sf::VideoMode::getFullscreenModes().size());
 		mode = sf::VideoMode(u_screen_dimensions);
 		is_fullscreen = false;
 	}
@@ -43,6 +47,6 @@ void fornani::WindowManager::create(std::string title, bool const fullscreen) {
 
 void WindowManager::restore_view() { window.setView(game_view); }
 
-void WindowManager::set_screencap() { screencap.resize(window.getSize()); }
+void WindowManager::set_screencap() { if (!screencap.resize(window.getSize())) { NANI_LOG_WARN(m_logger, "Window resize failed!"); } }
 
 } // namespace fornani

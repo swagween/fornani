@@ -114,7 +114,9 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
 	
 	auto style_value = meta["style"].as<int>();
 	styles.tile = Style(static_cast<StyleType>(style_value));
-	entities.variables.music = meta["music"].as_string();
+	m_theme.music = meta["music"].as_string();
+	m_theme.ambience = meta["ambience"].as_string();
+	for (auto& in : meta["atmosphere"].array_view()) { m_theme.atmosphere.push_back(in.as<int>()); };
 	cutscene.flag = static_cast<bool>(meta["cutscene_on_entry"]["flag"].as_bool());
 	cutscene.type = meta["cutscene_on_entry"]["type"].as<int>();
 	cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
@@ -158,7 +160,9 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
 	data.meta["meta"]["chunk_dimensions"][1] = chunk_dimensions().y;
 	data.meta["meta"]["style"] = static_cast<int>(styles.tile.get_type());
 	data.meta["meta"]["background"] = static_cast<int>(background->type.get_type());
-	data.meta["meta"]["music"] = entities.variables.music;
+	data.meta["meta"]["music"] = m_theme.music;
+	for (auto& entry : m_theme.atmosphere) { data.meta["meta"]["atmosphere"].push_back(entry); }
+	data.meta["meta"]["ambience"] = m_theme.ambience;
 	data.meta["meta"]["cutscene_on_entry"]["flag"] = dj::Boolean{cutscene.flag};
 	data.meta["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	data.meta["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
@@ -182,8 +186,8 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
 	auto success{true};
 	if (!data.meta.to_file((finder.paths.levels / room_name / "meta.json").string().c_str())) { success = false; }
 	if (!data.tiles.to_file((finder.paths.levels / room_name / "tile.json").string().c_str())) { success = false; }
-	if (!data.meta.to_file((finder.paths.out / room_name / "meta.json").string().c_str())) { success = false; }
-	if (!data.tiles.to_file((finder.paths.out / room_name / "tile.json").string().c_str())) { success = false; }
+	/*if (!data.meta.to_file((finder.paths.out / room_name / "meta.json").string().c_str())) { success = false; }
+	if (!data.tiles.to_file((finder.paths.out / room_name / "tile.json").string().c_str())) { success = false; }*/
 
     return success;
 }
@@ -193,6 +197,7 @@ void Canvas::clear() {
 		for (auto& layer : map_states.back().layers) { layer.erase(); }
         map_states.back().layers.clear();
     }
+	m_theme.atmosphere.clear();
 }
 
 void Canvas::save_state(Tool& tool, bool force) {

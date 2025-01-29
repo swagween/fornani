@@ -14,7 +14,7 @@ void Wardrobe::set_palette(sf::Texture& tex) { palette = tex; }
 void Wardrobe::change_outfit(std::vector<std::pair<sf::Vector2<unsigned int>, sf::Color>> replacement) {
 	sf::Image image = palette.copyToImage();
 	for (auto& pixel : replacement) { image.setPixel(pixel.first, pixel.second); }
-	palette.loadFromImage(image);
+	if (!palette.loadFromImage(image)) { NANI_LOG_WARN(m_logger, "Outfit palette could not be loaded."); }
 }
 
 void Wardrobe::update(flfx::TextureUpdater& updater) { 

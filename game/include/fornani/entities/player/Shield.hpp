@@ -18,7 +18,6 @@ enum class ShieldState { shielding, wobbling, popping, recovery };
 
 class Shield {
   public:
-	Shield() = default;
 	Shield(automa::ServiceProvider& svc);
 	void start();
 	void pop();

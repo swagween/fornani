@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
+#include "fornani/utils/Logger.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -17,7 +18,7 @@ enum class MusicPlayerState { on };
 
 class MusicPlayer {
   public:
-	void load(data::ResourceFinder& finder, std::string_view song_name);
+	void load(const data::ResourceFinder& finder, std::string_view song_name);
 	void simple_load(std::string_view source);
 	void play_once(float vol = 100.f);
 	void play_looped(float vol = 100.f);
@@ -63,6 +64,8 @@ class MusicPlayer {
 	sf::Clock music_tick{};
 
 	std::string label{};
+
+	fornani::Logger m_logger{"Audio"};
 };
 
 } // namespace audio

@@ -1,6 +1,6 @@
 #include <algorithm>
 #include "fornani/setup/ResourceFinder.hpp"
-#include "fornani/setup/Application.hpp"
+#include "fornani/core/Application.hpp"
 #include "editor/util/Lookup.hpp"
 #include "editor/automa/Editor.hpp"
 #include "editor/gui/Console.hpp"
@@ -68,7 +68,7 @@ void Editor::run() {
 		if (trigger_demo) {
 			auto ppos = static_cast<sf::Vector2<float>>(map.entities.variables.player_start) * 32.f;
 			launch_demo(args, map.room_id, finder->paths.room_name, ppos);
-			ImGui::SFML::Init(window->get());
+			if (!ImGui::SFML::Init(window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
 			init(finder->paths.room_name);
 		}
 
@@ -129,6 +129,12 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 				trigger_demo = true;
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
+			if (shift_pressed()) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Left) { map.resize({-1, 0}); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Right) { map.resize({1, 0}); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { map.resize({0, -1}); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { map.resize({0, 1}); }
+			}
 		}
 		if (key_pressed->scancode == sf::Keyboard::Scancode::Q) { current_tool->handle_keyboard_events(map, key_pressed->scancode); }
 		if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { pressed_keys.set(PressedKeys::shift); }
@@ -300,22 +306,43 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	current_tool->set_window_position(sf::Vector2<float>{io.MousePos.x, io.MousePos.y});
 	secondary_tool->set_window_position(sf::Vector2<float>{io.MousePos.x, io.MousePos.y});
 
-	if (current_tool->type == ToolType::marquee && !window_hovered) {
-		ImGui::BeginTooltip();
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::Text("Press `Ctrl+X` to cut selection.");
-		ImGui::Text("Press `Ctrl+C` to copy selection.");
-		ImGui::Text("Press `Ctrl+V` to paste selection.");
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
+	if(current_tool->entity_menu) {
+		if (current_tool->current_entity) { ImGui::OpenPopup("Entity Options"); }
 	}
-
-	if (current_tool->type == ToolType::entity_editor && !window_hovered) {
-		ImGui::BeginTooltip();
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::Text(current_tool->get_tooltip().c_str());
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
+	if (current_tool->entity_mode == EntityMode::editor) {
+		if (current_tool->current_entity) { ImGui::OpenPopup("Edit Entity"); }
+	}
+	if (ImGui::BeginPopupContextWindow("Entity Options")) {
+		if (ImGui::MenuItem("Edit")) {
+			current_tool->entity_mode = EntityMode::editor;
+			current_tool->entity_menu = false;
+		}
+		if (ImGui::MenuItem("Move")) {
+			current_tool->entity_mode = EntityMode::mover;
+			current_tool->entity_menu = false;
+		}
+		if (ImGui::MenuItem("Duplicate")) {
+			current_tool->entity_mode = EntityMode::placer;
+			current_tool->entity_menu = false;
+		}
+		if (ImGui::MenuItem("Delete")) {
+			current_tool->entity_mode = EntityMode::eraser;
+			current_tool->entity_menu = false;
+		}
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupContextWindow("Edit Entity")) {
+		if (current_tool->current_entity) {
+			current_tool->current_entity.value()->expose();
+			if (ImGui::Button("Save Changes")) {
+				for (auto& ent : map.entities.variables.entities) {
+					if (ent->highlighted) { ent->overwrite = true; }
+				}
+				current_tool->suppress_until_released();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::EndPopup();
 	}
 
 	bool insp{};
@@ -433,7 +460,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				static int style_current = static_cast<int>(map.styles.tile.get_type());
 				static int bg_current = static_cast<int>(map.background->type.get_type());
 
-				map = Canvas(*finder, {static_cast<uint32_t>(width * CHUNK_SIZE), static_cast<uint32_t>(height * CHUNK_SIZE)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
+				map = Canvas(*finder, {static_cast<uint32_t>(width * chunk_size_v), static_cast<uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
 				finder->paths.room_name = buffer;
 				map.room_id = room_id;
@@ -476,10 +503,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Undo", "Ctrl+Z")) { map.undo(); }
 			if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z")) { map.redo(); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("(+) Map Width")) { map.resize({1, 0}); }
-			if (ImGui::MenuItem("(-) Map Width")) { map.resize({-1, 0}); }
-			if (ImGui::MenuItem("(+) Map Height")) { map.resize({0, 1}); }
-			if (ImGui::MenuItem("(-) Map Height")) { map.resize({0, -1}); }
+			if (ImGui::MenuItem("(+) Map Width", "Ctrl+Shift+RightArrow")) { map.resize({1, 0}); }
+			if (ImGui::MenuItem("(-) Map Width", "Ctrl+Shift+LeftArrow")) { map.resize({-1, 0}); }
+			if (ImGui::MenuItem("(+) Map Height", "Ctrl+Shift+DownArrow")) { map.resize({0, 1}); }
+			if (ImGui::MenuItem("(-) Map Height", "Ctrl+Shift+UpArrow")) { map.resize({0, -1}); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Clear Layer")) {
 				map.save_state(*current_tool, true);
@@ -539,7 +566,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("(-) size", "A")) { current_tool->change_size(-1); }
 			if (ImGui::MenuItem("(+) size", "D")) { current_tool->change_size(1); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Hand", "H / Spacebar")) { current_tool = std::move(std::make_unique<Hand>()); }
+			if (ImGui::MenuItem("Hand", "H")) { current_tool = std::move(std::make_unique<Hand>()); }
 			if (ImGui::MenuItem("Eyedropper", "Alt")) { current_tool = std::move(std::make_unique<Eyedropper>()); }
 			if (ImGui::MenuItem("Fill", "G")) { current_tool = std::move(std::make_unique<Fill>()); }
 			if (ImGui::MenuItem("Marquee", "M")) { current_tool = std::move(std::make_unique<Marquee>()); }
@@ -600,8 +627,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	ImVec2 window_pos;
 	ImVec2 prev_window_pos{};
 	ImVec2 prev_window_size{};
-	window_pos.x = PAD;
-	window_pos.y = work_pos.y + palette.dimensions.y * palette.f_cell_size() + 2 * PAD;
+	window_pos.x = work_pos.x + palette.dimensions.x * palette.f_cell_size() + 2 * PAD;
+	window_pos.y = PAD;
 	window_flags |= ImGuiWindowFlags_NoMove;
 
 	ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
@@ -791,6 +818,23 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::End();
 		}
 		if (m_options.console) { console.write_console(prev_window_size, prev_window_pos); }
+	}
+	if (current_tool->type == ToolType::marquee && available()) {
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::Text("Press `Ctrl+X` to cut selection.");
+		ImGui::Text("Press `Ctrl+C` to copy selection.");
+		ImGui::Text("Press `Ctrl+V` to paste selection.");
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
+
+	if (current_tool->type == ToolType::entity_editor && !window_hovered && current_tool->entity_mode != EntityMode::editor && !current_tool->entity_menu) {
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::Text(current_tool->get_tooltip().c_str());
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
 	}
 }
 
