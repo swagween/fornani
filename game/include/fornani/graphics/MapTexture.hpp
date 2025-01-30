@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -42,7 +42,7 @@ class MapTexture {
 	sf::Vector2<float> map_dimensions{};
 	util::BitFlags<MapTextureFlags> flags{};
 
-	fornani::Logger m_logger {"graphics"};
+	fornani::io::Logger m_logger {"graphics"};
 };
 
 } // namespace gui

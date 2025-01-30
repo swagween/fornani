@@ -3,7 +3,7 @@
 
 #include <fornani/utils/Tracy.hpp>
 
-#include "fornani/setup/Game.hpp"
+#include "../../include/fornani/core/Game.hpp"
 
 namespace automa {
 

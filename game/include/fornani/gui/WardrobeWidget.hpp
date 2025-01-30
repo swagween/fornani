@@ -32,7 +32,7 @@ class WardrobeWidget {
 	sf::Vector2<float> position{};
 	sf::Vector2<float> dimensions{128.f, 256.f};
 
-	fornani::Logger m_logger{"gui"};
+	fornani::io::Logger m_logger{"gui"};
 };
 
 } // namespace gui

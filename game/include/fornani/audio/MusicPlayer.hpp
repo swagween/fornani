@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -65,7 +65,7 @@ class MusicPlayer {
 
 	std::string label{};
 
-	fornani::Logger m_logger{"Audio"};
+	fornani::io::Logger m_logger{"Audio"};
 };
 
 } // namespace audio

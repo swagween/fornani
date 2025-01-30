@@ -1,4 +1,4 @@
-#include "fornani/setup/AssetManager.hpp"
+#include "../../include/fornani/core/AssetManager.hpp"
 
 namespace asset {
 AssetManager::AssetManager(const data::ResourceFinder& finder) {

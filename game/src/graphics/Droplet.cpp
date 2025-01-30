@@ -2,6 +2,8 @@
 #include "fornani/graphics/Droplet.hpp"
 #include "fornani/utils/Math.hpp"
 
+#include <numbers>
+
 namespace vfx {
 
 Droplet::Droplet(sf::Vector2<float> start, DropParams params, float tweak) : collider(shape::CircleCollider(3.f)), params(params) {

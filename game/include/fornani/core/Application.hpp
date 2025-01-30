@@ -1,5 +1,5 @@
 #pragma once
-#include "fornani/setup/Game.hpp"
+#include "Game.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 #include "fornani/setup/Version.hpp"
 #include "fornani/setup/WindowManager.hpp"
@@ -23,7 +23,7 @@ class Application {
 	WindowManager m_window{};
 	sf::Texture m_t_loading{};
 	sf::Sprite m_loading;
-	fornani::Logger m_logger{"Application"};
+	io::Logger m_logger{"Application"};
 };
 
 } // namespace fornani
