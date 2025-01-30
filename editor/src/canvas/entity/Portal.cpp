@@ -30,6 +30,9 @@ void Portal::unserialize(dj::Json& in) {
 
 void Portal::expose() { Entity::expose(); }
 
-void Portal::render(sf::RenderWindow& win, sf::Vector2<float> cam) {}
+void Portal::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
+	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
+	Entity::render(win, cam, size);
+}
 
 } // namespace pi

@@ -22,6 +22,9 @@ void Platform::expose() {
 	ImGui::SliderFloat("start", &start, 0.f, 1.f, "%.3f");
 }
 
-void Platform::render(sf::RenderWindow& win, sf::Vector2<float> cam) {}
+void Platform::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
+	highlighted ? drawbox.setFillColor(sf::Color{255, 255, 60, 180}) : drawbox.setFillColor(sf::Color{255, 255, 60, 80});
+	Entity::render(win, cam, size);
+}
 
 } // namespace pi

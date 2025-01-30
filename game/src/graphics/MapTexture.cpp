@@ -46,8 +46,8 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		map_texture.draw(portal_box);
 	}
 	for (auto& breakable : map.breakables) {
-		breakable_box.setPosition(breakable.get_bounding_box().position / scale);
-		breakable_box.setSize(breakable.get_bounding_box().dimensions / scale);
+		breakable_box.setPosition(breakable.get_bounding_box().get_position() / scale);
+		breakable_box.setSize(breakable.get_bounding_box().get_dimensions() / scale);
 		map_texture.draw(breakable_box);
 	}
 	if (map.save_point.id > 0) {
@@ -61,7 +61,6 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		map_texture.clear(sf::Color::Transparent);
 	}
 	map_texture.display();
-	svc.stopwatch.stop();
 }
 
 sf::Sprite MapTexture::sprite() { return sf::Sprite(map_texture.getTexture()); }

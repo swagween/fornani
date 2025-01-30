@@ -40,7 +40,7 @@ void Tile::render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2<f
 	}
 	if (ramp_adjacent()) { draw.setFillColor(sf::Color{240, 155, 7, 180}); }
 	if (covered()) { draw.setFillColor(sf::Color{0, 155, 130, 180}); }
-	draw.setPosition(bounding_box.position - cam);
+	draw.setPosition(bounding_box.get_position() - cam);
 	if (is_occupied() && collision_check) { win.draw(draw); }
 	collision_check = false;
 }

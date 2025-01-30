@@ -6,9 +6,13 @@
 
 namespace data {
 
-DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) { load_data(); }
+DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) {
+	load_data();
+}
 
 void DataManager::load_data(std::string in_room) {
+	m_services->stopwatch.start();
+	std::cout << "> Start Timer...\n";
 	auto const& finder = m_services->finder;
 	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path()};
@@ -53,12 +57,12 @@ void DataManager::load_data(std::string in_room) {
 		sf::Vector2<uint32_t> dimensions{};
 		dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
 		dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
-		map_layers.push_back(std::vector<world::Layer>());
-		map_layers.back().reserve(num_layers);
+		std::vector<world::Layer> next{};
 		for (int i = 0; i < num_layers; ++i) {
-			map_layers.at(room_counter).push_back(world::Layer(i, (i == 4), dimensions, map_jsons.back().tiles["layers"][layer_counter]));
+			next.push_back(world::Layer(i, (i == 4), dimensions, map_jsons.back().tiles["layers"][layer_counter]));
 			++layer_counter;
 		}
+		map_layers.push_back(next);
 		++room_counter;
 	}
 
@@ -122,6 +126,9 @@ void DataManager::load_data(std::string in_room) {
 		for (auto& item : entry.second["vendor"]["uncommon_items"].array_view()) { vendor.uncommon_items.push_back(item.as<int>()); }
 		for (auto& item : entry.second["vendor"]["rare_items"].array_view()) { vendor.rare_items.push_back(item.as<int>()); }
 	}
+	m_services->stopwatch.stop();
+	m_services->stopwatch.print_time();
+	m_services->stopwatch.start();
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {

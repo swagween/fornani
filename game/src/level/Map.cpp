@@ -318,7 +318,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 				enemy->health_indicator.add(grenade.get_damage());
 				if (enemy->just_died() && enemy->spawn_loot()) {
 					svc.stats.enemy.enemies_killed.update();
-					active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
+					active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.get_position()));
 					svc.soundboard.flags.frdog.set(audio::Frdog::death);
 				}
 			}
@@ -902,7 +902,7 @@ void Map::debug() {
 }
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
-	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
+	return abs(first.get_position().x + first.get_dimensions().x * 0.5f - second.get_position().x) < lookup::unit_size_f * collision_barrier && abs(first.get_position().y - second.get_position().y) < lookup::unit_size_f * collision_barrier;
 }
 
 bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }

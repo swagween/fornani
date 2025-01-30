@@ -57,6 +57,9 @@ void Inspectable::expose() {
 	ImGui::InputInt("Alternates", &alternates);
 }
 
-void Inspectable::render(sf::RenderWindow& win, sf::Vector2<float> cam) { Entity::render(win, cam); }
+void Inspectable::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
+	highlighted ? drawbox.setFillColor(sf::Color{255, 100, 60, 180}) : drawbox.setFillColor(sf::Color{255, 60, 60, 80});
+	Entity::render(win, cam, size);
+}
 
 } // namespace pi

@@ -58,9 +58,9 @@ struct Tile {
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool { return (value >= 208 && value < 212) || (value == 216 || value == 217) || (value == 220 || value == 221) || (value == 240 || value == 242); }
 	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
-	[[nodiscard]] auto scaled_position() const -> sf::Vector2<int> { return sf::Vector2<int>{static_cast<int>(bounding_box.position.x), static_cast<int>(bounding_box.position.y)}; }
-	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return bounding_box.position + bounding_box.dimensions * 0.5f; }
-	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounding_box.position; }
+	[[nodiscard]] auto scaled_position() const -> sf::Vector2<int> { return sf::Vector2<int>{static_cast<int>(bounding_box.get_position().x), static_cast<int>(bounding_box.get_position().y)}; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return bounding_box.get_position() + bounding_box.get_dimensions() * 0.5f; }
+	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounding_box.get_position(); }
 
 	sf::Vector2<uint32_t> index{};
 	uint32_t one_d_index{};

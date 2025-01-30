@@ -11,7 +11,6 @@ namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player) {
 	NANI_ZoneScopedN("Game::Game");
-	//services.stopwatch.start();
 	services.constants.screen_dimensions = window.screen_dimensions;
 	if (!ImGui::SFML::Init(services.window->get())) {
 		std::cout << "ImGui-SFML failed to initialize the window.\n";
@@ -64,6 +63,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
     gui::ActionContextBar ctx_bar(services);
 
     std::cout << "> Success\n";
+	services.stopwatch.stop();
+	services.stopwatch.print_time();
 
     sf::Clock delta_clock{};
 

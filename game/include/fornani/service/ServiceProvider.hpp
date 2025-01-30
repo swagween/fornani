@@ -38,6 +38,7 @@ struct MapDebug {
 struct ServiceProvider {
 	ServiceProvider(char** argv, fornani::Version& version, fornani::WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
 
+	util::Stopwatch stopwatch{};
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
 	data::TextManager text;
@@ -66,7 +67,6 @@ struct ServiceProvider {
 	config::AccessibilityService a11y{};
 
 	// debug stuff
-	util::Stopwatch stopwatch{};
 	int out_value{};
 
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }

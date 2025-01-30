@@ -46,10 +46,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 
 	// TODO: load hurtboxes and colliders
 
-	physical.alert_range.dimensions.x = in_physical["alert_range"][0].as<float>();
-	physical.alert_range.dimensions.y = in_physical["alert_range"][1].as<float>();
-	physical.hostile_range.dimensions.x = in_physical["hostile_range"][0].as<float>();
-	physical.hostile_range.dimensions.y = in_physical["hostile_range"][1].as<float>();
+	physical.alert_range.set_dimensions({in_physical["alert_range"][0].as<float>(), in_physical["alert_range"][1].as<float>()});
+	physical.hostile_range.set_dimensions({in_physical["hostile_range"][0].as<float>(), in_physical["hostile_range"][1].as<float>()});
 
 	attributes.base_damage = in_attributes["base_damage"].as<float>();
 	attributes.base_hp = in_attributes["base_hp"].as<float>();
@@ -152,8 +150,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	health.update();
 
 	//update ranges
-	physical.alert_range.set_position(collider.bounding_box.position - (physical.alert_range.dimensions * 0.5f) + (collider.dimensions * 0.5f));
-	physical.hostile_range.set_position(collider.bounding_box.position - (physical.hostile_range.dimensions * 0.5f) + (collider.dimensions * 0.5f));
+	physical.alert_range.set_position(collider.bounding_box.get_position() - (physical.alert_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
+	physical.hostile_range.set_position(collider.bounding_box.get_position() - (physical.hostile_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
 	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
 		if (!alert()) { flags.triggers.set(Triggers::alert); }
 		flags.state.set(StateFlags::alert);
@@ -190,16 +188,16 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (svc.greyblock_mode()) {
 		win.draw(visual.sprite);
 		drawbox.setOrigin({0.f, 0.f});
-		drawbox.setSize({(float)collider.hurtbox.dimensions.x, (float)collider.hurtbox.dimensions.y});
+		drawbox.setSize({(float)collider.hurtbox.get_dimensions().x, (float)collider.hurtbox.get_dimensions().y});
 		drawbox.setOutlineColor(svc.styles.colors.ui_white);
-		drawbox.setPosition(collider.hurtbox.position - cam);
+		drawbox.setPosition(collider.hurtbox.get_position() - cam);
 		win.draw(drawbox);
-		drawbox.setPosition(physical.alert_range.position - cam);
-		drawbox.setSize(physical.alert_range.dimensions);
+		drawbox.setPosition(physical.alert_range.get_position() - cam);
+		drawbox.setSize(physical.alert_range.get_dimensions());
 		drawbox.setOutlineColor(sf::Color{80, 20, 60, 80});
 		win.draw(drawbox);
-		drawbox.setPosition(physical.hostile_range.position - cam);
-		drawbox.setSize(physical.hostile_range.dimensions);
+		drawbox.setPosition(physical.hostile_range.get_position() - cam);
+		drawbox.setSize(physical.hostile_range.get_dimensions());
 		drawbox.setOutlineColor(sf::Color{140, 30, 60, 110});
 		win.draw(drawbox);
 		collider.render(win, cam);
@@ -256,7 +254,7 @@ void Enemy::on_crush(world::Map& map) {
 	}
 }
 
-bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.dimensions.x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
+bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.get_dimensions().x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
 
 void Enemy::set_position_from_scaled(sf::Vector2<float> pos) {
 	auto new_pos = pos;

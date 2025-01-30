@@ -4,6 +4,7 @@
 namespace audio {
 
 void Ambience::load(data::ResourceFinder& finder, std::string_view source) {
+	if (source.empty()) { return; }
 	tracks.open.turn_on();
 	tracks.closed.turn_on();
 	std::string source_str = source.data();

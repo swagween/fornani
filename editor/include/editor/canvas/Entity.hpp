@@ -15,7 +15,7 @@ class Entity {
 	virtual void serialize(dj::Json& out);
 	virtual void unserialize(dj::Json& in);
 	virtual void expose();
-	virtual void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	virtual void render(sf::RenderWindow& win, sf::Vector2<float> cam, float size);
 	void set_position(sf::Vector2u to_position);
 	bool repeatable{};
 	bool overwrite{};
@@ -24,7 +24,6 @@ class Entity {
 	bool selected{};
 
 	// helpers
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam, float size);
 	sf::RectangleShape drawbox{};
 	[[nodiscard]] auto get_label() const -> std::string { return label; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2u { return position; }

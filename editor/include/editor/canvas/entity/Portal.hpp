@@ -13,7 +13,7 @@ class Portal : public Entity {
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json& in) override;
 	void expose() override;
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) override;
 
   private:
 	bool activate_on_contact{};

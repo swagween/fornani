@@ -74,7 +74,7 @@ class Layer {
 	[[nodiscard]] auto middleground() const -> bool { return render_order == 4; }
 	[[nodiscard]] auto obscuring() const -> bool { return render_order == 7; }
 	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
-	Grid grid;
+	Grid grid{};
 	bool collidable{};
 	sf::Vector2<uint32_t> dimensions{};
 

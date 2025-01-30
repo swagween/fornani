@@ -23,9 +23,9 @@ Canvas::Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, Selectio
 	box.setSize({f_cell_size(), f_cell_size()});
 
 	gridbox.setFillColor(sf::Color::Transparent);
-	gridbox.setOutlineColor(sf::Color{255, 255, 255, 80});
+	gridbox.setOutlineColor(sf::Color{255, 255, 255, 255});
 	chunkbox.setFillColor(sf::Color::Transparent);
-	chunkbox.setOutlineColor(sf::Color{80, 255, 255, 80});
+	chunkbox.setOutlineColor(sf::Color{80, 255, 160, 255});
 
 	border.setFillColor(sf::Color::Transparent);
 	border.setOutlineThickness(4.f);
@@ -78,6 +78,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 		grid_sprite.setPosition(position);
 		grid_sprite.setOrigin(get_origin());
 		grid_sprite.setScale({scale, scale});
+		grid_sprite.setColor(sf::Color{255, 255, 255, 20});
 		win.draw(grid_sprite);
 	}
 }
@@ -282,7 +283,7 @@ void Canvas::set_grid_texture() {
 				chunkbox.setPosition(gridbox.getPosition());
 				chunkbox.setSize({f_cell_size() * f_native_chunk_size(), f_cell_size() * f_native_chunk_size()});
 				chunkbox.setScale({1.f / scale, 1.f / scale});
-				chunkbox.setOutlineThickness(std::min(-scale * 2.f, -2.f));
+				chunkbox.setOutlineThickness(std::min(-scale * 2.f, -4.f));
 				grid_texture.draw(chunkbox);
 			}
 			gridbox.setSize({f_cell_size(), f_cell_size()});

@@ -55,7 +55,7 @@ void Animator::update(automa::ServiceProvider& svc, player::Player& player) {
 }
 void Animator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	activated ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
-	drawbox.setSize(bounding_box.dimensions);
+	drawbox.setSize(bounding_box.get_dimensions());
 	drawbox.setPosition(position - cam);
 	sprite.setPosition(position - cam);
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {

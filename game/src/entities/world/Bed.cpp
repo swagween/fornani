@@ -16,7 +16,7 @@ Bed::Bed(automa::ServiceProvider& svc, sf::Vector2<float> position, int room) : 
 void Bed::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player, flfx::Transition& transition) {
 	fadeout.update();
 	sparkler.update(svc);
-	sparkler.set_position(bounding_box.position);
+	sparkler.set_position(bounding_box.get_position());
 	if (player.collider.bounding_box.overlaps(bounding_box)) {
 		flags.set(BedFlags::active);
 		sparkler.activate();
