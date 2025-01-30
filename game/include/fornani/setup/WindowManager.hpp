@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
 namespace fornani {
 
@@ -37,7 +37,7 @@ class WindowManager {
 	sf::Vector2<int> aspects{3840, 2048};
 	bool is_fullscreen{};
 
-	fornani::Logger m_logger { "windowing" };
+	fornani::io::Logger m_logger { "windowing" };
 };
 
 } // namespace fornani

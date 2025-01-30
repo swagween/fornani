@@ -1,4 +1,4 @@
-#include "fornani/utils/Logger.hpp"
+#include "../../include/fornani/io/Logger.hpp"
 #include <imgui.h>
 
 
@@ -25,7 +25,7 @@ void Logger::write_console(ImVec2 size, ImVec2 pos) {
 
 } // namespace util
 
-#include "fornani/utils/Logger.hpp"
+#include "../../include/fornani/io/Logger.hpp"
 
 #include <atomic>
 #include <condition_variable>
@@ -43,7 +43,7 @@ void Logger::write_console(ImVec2 size, ImVec2 pos) {
 #endif
 
 
-namespace fornani::logger
+namespace fornani::io::logger
 {
     ThreadId Context::getThreadId()
     {
@@ -80,7 +80,7 @@ namespace fornani::logger
     }
 } // namespace fornani::logger
 
-namespace fornani::logger
+namespace fornani::io::logger
 {
     namespace
     {
@@ -364,7 +364,7 @@ namespace fornani::logger
     }
 } // namespace fornani::logger
 
-namespace fornani
+namespace fornani::io
 {
     void logger::print(logger::Level level, std::string_view category, std::string_view message)
     {

@@ -40,7 +40,7 @@ set(CCMATH_STRICT_WARNINGS OFF)
 FetchContent_Declare(
         ccmath
         GIT_REPOSITORY https://github.com/Rinzii/ccmath
-        GIT_TAG 7507508 # IanP: This specific commit id is stable but more recent than main
+        GIT_TAG 15260da #7507508 # IanP: This specific commit id is stable but more recent than main
 )
 FetchContent_MakeAvailable(ccmath)
 

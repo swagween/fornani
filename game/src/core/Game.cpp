@@ -1,4 +1,4 @@
-#include "fornani/setup/Game.hpp"
+#include "../../include/fornani/core/Game.hpp"
 #include <steam/steam_api.h>
 #include <ctime>
 #include "fornani/gui/ActionContextBar.hpp"

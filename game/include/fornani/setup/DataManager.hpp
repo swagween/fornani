@@ -10,7 +10,7 @@
 #include <string>
 #include "fornani/level/Map.hpp"
 #include "fornani/utils/QuestCode.hpp"
-#include "File.hpp"
+#include "../io/File.hpp"
 #include "ResourceFinder.hpp"
 
 namespace automa {
