@@ -83,7 +83,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	}
 }
 
-void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bool local) {
+void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
 
 	map_states.clear();
 	redo_states.clear();
@@ -94,13 +94,10 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
 
 	auto const& source = local ? finder.paths.editor : finder.paths.levels;
 
-	std::string metapath = (source / room_name / "meta.json").string();
-	std::string tilepath = (source / room_name / "tile.json").string();
+	std::string metapath = (source / region / std::string{room_name + ".json"}).string();
 
 	data.meta = dj::Json::from_file((metapath).c_str());
 	assert(!data.meta.is_null());
-	data.tiles = dj::Json::from_file((tilepath).c_str());
-	assert(!data.tiles.is_null());
 
 	if (!local) { entities = EntitySet{finder, data.meta["entities"], room_name}; }
 
@@ -129,7 +126,7 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
     int layer_counter{};
     for (auto& layer : map_states.back().layers) {
         int cell_counter{};
-        for (auto& cell : data.tiles["layers"][layer_counter].array_view()) {
+        for (auto& cell : data.meta["tile"]["layers"][layer_counter].array_view()) {
             layer.grid.cells.at(cell_counter).value = cell.as<int>();
             ++cell_counter;
         }
@@ -139,10 +136,9 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
 	set_grid_texture();
 }
 
-bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
+bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::string const& room_name) {
 
-	std::filesystem::create_directory(finder.paths.levels / room_name);
-	std::filesystem::create_directory(finder.paths.out / room_name);
+	std::filesystem::create_directory(finder.paths.levels / region);
 
 	// clean jsons
 	data = {};
@@ -171,24 +167,21 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
 
 	entities.save(finder, data.meta["entities"], room_name);
 
-	data.tiles["layers"] = wipe;
-	for (auto i{0}; i < last_layer(); ++i) { data.tiles["layers"].push_back(wipe); }
+	data.meta["tile"]["layers"] = wipe;
+	for (auto i{0}; i < last_layer(); ++i) { data.meta["tile"]["layers"].push_back(wipe); }
 	// push layer data
 	int current_layer{};
 	for (auto& layer : map_states.back().layers) {
 		int current_cell{};
 		for ([[maybe_unused]] auto& cell : layer.grid.cells) {
-			data.tiles["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);
+			data.meta["tile"]["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);
 			++current_cell;
 		}
 		++current_layer;
 	}
 
 	auto success{true};
-	if (!data.meta.to_file((finder.paths.levels / room_name / "meta.json").string().c_str())) { success = false; }
-	if (!data.tiles.to_file((finder.paths.levels / room_name / "tile.json").string().c_str())) { success = false; }
-	/*if (!data.meta.to_file((finder.paths.out / room_name / "meta.json").string().c_str())) { success = false; }
-	if (!data.tiles.to_file((finder.paths.out / room_name / "tile.json").string().c_str())) { success = false; }*/
+	if (!data.meta.to_file((finder.paths.levels / region / std::string{room_name + ".json"}).string().c_str())) { success = false; }
 
     return success;
 }

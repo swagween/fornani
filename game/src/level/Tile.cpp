@@ -33,15 +33,14 @@ void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::M
 
 void Tile::render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2<float> cam) {
 	draw.setSize({32.f, 32.f});
-	draw.setFillColor(sf::Color{17, 230, 187, 45});
-	if (collision_check) {
-		draw.setFillColor(sf::Color{190, 255, 7, 180});
-		if (!surrounded) {}
-	}
-	if (ramp_adjacent()) { draw.setFillColor(sf::Color{240, 155, 7, 180}); }
-	if (covered()) { draw.setFillColor(sf::Color{0, 155, 130, 180}); }
+	draw.setFillColor(sf::Color::Transparent);
+	draw.setOutlineThickness(-2.f);
+	one_d_index % 2 == 0 ? draw.setOutlineColor(sf::Color{17, 230, 187, 45}) : draw.setOutlineColor(sf::Color{38, 230, 220, 45});
+	if (collision_check) { draw.setOutlineColor(sf::Color{190, 255, 7, 180}); }
+	if (covered()) { draw.setOutlineColor(sf::Color{0, 155, 130, 180}); }
+	if (ramp_adjacent()) { draw.setOutlineColor(sf::Color{240, 10, 7, 180}); }
 	draw.setPosition(bounding_box.get_position() - cam);
-	if (is_occupied() && collision_check) { win.draw(draw); }
+	if (is_occupied()) { win.draw(draw); }
 	collision_check = false;
 }
 

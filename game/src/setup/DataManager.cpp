@@ -17,19 +17,20 @@ void DataManager::load_data(std::string in_room) {
 	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path()};
 	auto room_list = room_path / "level";
-	for (auto const& this_room : std::filesystem::recursive_directory_iterator(room_list)) {
-		if (!this_room.is_directory()) { continue; }
-		auto room_data = dj::Json::from_file((this_room.path() / "meta.json").string().c_str());
-		if (room_data.is_null()) { continue; }
-		auto this_id = room_data["meta"]["room_id"].as<int>();
-		auto this_name = this_room.path().filename().string();
-		auto entry = dj::Json{};
-		entry["room_id"] = this_id;
-		entry["label"] = this_name;
-		map_table["rooms"].push_back(entry);
+	for (auto const& this_region : std::filesystem::recursive_directory_iterator(room_list)) {
+		if (!this_region.is_directory()) { continue; }
+		for (auto const& this_room : std::filesystem::recursive_directory_iterator(this_region)) {
+			auto room_data = dj::Json::from_file((this_room.path()).string().c_str());
+			if (room_data.is_null()) { continue; }
+			auto this_id = room_data["meta"]["room_id"].as<int>();
+			auto this_name = this_room.path().filename().string();
+			auto entry = dj::Json{};
+			entry["room_id"] = this_id;
+			entry["label"] = this_name;
+			map_table["rooms"].push_back(entry);
+		}
 	}
 	map_table.dj::Json::to_file((finder.resource_path() + "/data/level/map_table.json").c_str());
-
 	map_table = dj::Json::from_file((finder.resource_path() + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) {
@@ -49,8 +50,6 @@ void DataManager::load_data(std::string in_room) {
 		room_str = m_services->tables.get_map_label.contains(room) ? finder.resource_path() + "/level/" + m_services->tables.get_map_label.at(room) : finder.resource_path() + "/level/" + in_room;
 		map_jsons.back().metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
 		assert(!map_jsons.back().metadata.is_null());
-		map_jsons.back().tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
-		assert(!map_jsons.back().tiles.is_null());
 
 		// cache map layers
 		int layer_counter{};
@@ -59,7 +58,7 @@ void DataManager::load_data(std::string in_room) {
 		dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
 		std::vector<world::Layer> next{};
 		for (int i = 0; i < num_layers; ++i) {
-			next.push_back(world::Layer(i, (i == 4), dimensions, map_jsons.back().tiles["layers"][layer_counter]));
+			next.push_back(world::Layer(i, (i == 4), dimensions, map_jsons.back().metadata["tile"]["layers"][layer_counter]));
 			++layer_counter;
 		}
 		map_layers.push_back(next);

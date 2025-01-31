@@ -86,8 +86,8 @@ class Canvas {
 	Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop);
 	void update(Tool& tool, bool transformed = false);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
-	void load(data::ResourceFinder& finder, std::string const& room_name, bool local = false);
-	bool save(data::ResourceFinder& finder, std::string const& room_name);
+	void load(data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
+	bool save(data::ResourceFinder& finder, std::string const& region, std::string const& room_name);
 	void clear();
 	void save_state(Tool& tool, bool force = false);
 	void undo();
@@ -165,7 +165,6 @@ class Canvas {
 	// read and write
 	struct {
 		dj::Json meta{};
-		dj::Json tiles{};
 	} data{};
 
 	struct {

@@ -125,10 +125,6 @@
       "label": "new_file"
     },
     {
-      "room_id": 1,
-      "label": "new_file"
-    },
-    {
       "room_id": 0,
       "label": "out_test"
     },
@@ -255,6 +251,10 @@
     {
       "room_id": 3000,
       "label": "RAMP"
+    },
+    {
+      "room_id": 667,
+      "label": "rampy"
     },
     {
       "room_id": 3333,

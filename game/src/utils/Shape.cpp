@@ -323,6 +323,7 @@ std::vector<sf::Vector2<float>> Shape::get_edges() const {
 }
 
 float Shape::get_height_at(float x) const {
+	if (!non_square()) { return 0.f; }
 	auto rise = vertices.at(0).y - vertices.at(1).y;
 	auto run = vertices.at(1).x - vertices.at(0).x;
 	auto sign = vertices.at(1).y > vertices.at(0).y ? -1.f : 1.f;
@@ -332,8 +333,8 @@ float Shape::get_height_at(float x) const {
 	auto min_height = vertices.size() == 4 ? std::min(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::min(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);
 	// y intercept is always the left ramp height
 	auto b = vertices.size() == 4 ? vertices.at(3).y - vertices.at(0).y : vertices.at(2).y - vertices.at(0).y;
-	auto y = std::min(slope * x + b, max_height);
-	return y;
+	auto y = slope * x + b;
+	return std::clamp(y, 0.f, abs(max_height));
 }
 
 float Shape::get_radial_factor() const {

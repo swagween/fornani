@@ -30,7 +30,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		++ctr;
 	}
 	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
-	auto const& tiles = svc.data.map_jsons.at(room_lookup).tiles;
 	inspectable_data = svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"];
 
 	//check for enemy respawns

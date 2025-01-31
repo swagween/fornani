@@ -20,6 +20,8 @@ class ResourceFinder {
 		paths.out = find_directory(argv[0], "resources/editor/export");
 	}
 
+	fs::path region_and_room() const { return fs::path{paths.region + paths.room_name}; }
+
 	fs::path find_directory(fs::path const& exe, std::string const& target) {
 		auto execpy = fs::path{exe};
 		auto check = [target](fs::path const& prefix) {
@@ -43,6 +45,7 @@ class ResourceFinder {
 		fs::path levels{};	   // all level data
 		fs::path resources{}; // game texture data
 		fs::path out{};	   // save destination for external use
+		std::string region{};
 		std::string room_name{};
 	} paths{};
 };

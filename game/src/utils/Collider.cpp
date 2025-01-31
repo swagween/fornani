@@ -24,7 +24,7 @@ void Collider::sync_components() {
 	bounding_box.set_position(physics.position);
 	bounding_box.set_dimensions(dimensions);
 	vicinity.set_dimensions({dimensions.x + 2.f * vicinity_pad, dimensions.y + 2.f * vicinity_pad});
-	wallslider.set_dimensions({dimensions.x + 2.f * wallslide_pad, dimensions.y * 0.7f});
+	wallslider.set_dimensions({dimensions.x + 2.f * wallslide_pad, dimensions.y * 0.6f});
 
 	vertical.set_dimensions({1.f, dimensions.y - 2.f * depth_buffer});
 	horizontal.set_dimensions({dimensions.x - 2.f * depth_buffer, 1.f});
@@ -144,11 +144,14 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
 		}
+		// collider is on a ramp
 		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp()) {
 			flags.external_state.set(ExternalState::on_ramp);
 			acceleration_multiplier = cell.get_radial_factor();
-			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x - cell.get_position().x))); }
-			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(abs(physics.position.x + dimensions.x - cell.get_position().x))); }
+			auto to_the_right = physics.position.x + dimensions.x > cell.get_position().x + 32.f;
+			auto positive_input = to_the_right ? cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x) : cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x);
+			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(physics.position.x - cell.get_position().x)); }
+			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, positive_input); }
 			physics.position.y = cell.get_position().y + cell.get_dimensions().y - maximum_ramp_height - dimensions.y;
 			if ((physics.apparent_velocity().x >= 0.f && tile.is_negative_ramp()) || (physics.apparent_velocity().x <= 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
 		} else if (flags.state.test(State::on_flat_surface)) {

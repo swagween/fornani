@@ -26,8 +26,9 @@ Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder)
 	}
 
 	console.add_log("Welcome to Pioneer!");
+	finder.paths.region = "config";
 	finder.paths.room_name = "new_file";
-	std::string msg = "Loading room: " + finder.paths.room_name;
+	std::string msg = "Loading room: <" + finder.paths.room_name + "> from <" + finder.region_and_room().string() + ">";
 	console.add_log(msg.data());
 	load();
 	map.activate_middleground();
@@ -235,13 +236,13 @@ void Editor::logic() {
 }
 
 void Editor::load() {
-	map.load(*finder, finder->paths.room_name);
-	palette.load(*finder, "palette", true);
+	map.load(*finder, finder->paths.region, finder->paths.room_name);
+	palette.load(*finder, "palette", "palette", true);
 	map.set_origin({});
 	palette.set_origin({});
 }
 
-bool Editor::save() { return map.save(*finder, finder->paths.room_name); }
+bool Editor::save() { return map.save(*finder, finder->paths.region, finder->paths.room_name); }
 
 void Editor::render(sf::RenderWindow& win) {
 

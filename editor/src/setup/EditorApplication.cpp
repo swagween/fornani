@@ -24,7 +24,7 @@ EditorApplication::EditorApplication(char** argv) : finder(argv), metadata(game_
 
 	// set app icon
 	sf::Image icon{};
-	icon.loadFromFile((finder.paths.editor / "app" / "icon.png").string());
+	if (!icon.loadFromFile((finder.paths.editor / "app" / "icon.png").string())) { std::cout << "Failed to load Icon.\n"; }
 	window.get().setIcon({32, 32}, icon.getPixelsPtr());
 
 	ImGui::SFML::Init(window.get());
