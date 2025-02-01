@@ -5,4 +5,5 @@ nani_add_sources(
         Game.cpp
         TextManager.cpp
         WindowManager.cpp
+        ResourceFinder.cpp
 )

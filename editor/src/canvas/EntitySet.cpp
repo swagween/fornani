@@ -4,6 +4,7 @@
 #include "fornani/setup/ResourceFinder.hpp"
 #include "editor/canvas/entity/Inspectable.hpp"
 #include "editor/canvas/entity/Platform.hpp"
+#include "editor/canvas/entity/SavePoint.hpp"
 
 #include <cassert>
 
@@ -31,9 +32,6 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> ca
 }
 
 void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
-	
-	variables.save_point = std::make_unique<SavePoint>(metadata["save_point"]["id"].as<int>());
-	variables.save_point.value()->unserialize(metadata["save_point"]);
 
 	// general entities
 	for (auto const& [key, entry] : metadata.object_view()) {
@@ -42,6 +40,10 @@ void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 				variables.entities.push_back(std::make_unique<Inspectable>(std::string{key}));
 				variables.entities.back()->unserialize(element);
 			}
+		}
+		if (std::string{key} == "save_point") {
+			variables.entities.push_back(std::make_unique<SavePoint>(entry["id"].as<int>()));
+			variables.entities.back()->unserialize(entry);
 		}
 	}
 }
@@ -55,15 +57,16 @@ bool EntitySet::save(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 	constexpr auto empty_array = R"([])";
 	auto const wipe = dj::Json::parse(empty_array);
 
-	// save point
-	if (variables.save_point) { variables.save_point.value()->serialize(metadata["save_point"]); }
-
 	// general entities
 	for (auto& ent : variables.entities) {
 		auto label = ent->get_label();
-		auto entry = wipe;
-		ent->serialize(entry);
-		metadata[label].push_back(entry);
+		if (ent->unique) {
+			ent->serialize(metadata[label]);
+		} else {
+			auto entry = wipe;
+			ent->serialize(entry);
+			metadata[label].push_back(entry);
+		}
 	}
 
 	auto success{true};

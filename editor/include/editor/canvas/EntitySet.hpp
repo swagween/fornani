@@ -125,14 +125,6 @@ class Canvas;
 //	void expose() override { Entity::expose(); }
 //};
 
-struct SavePoint : public Entity {
-	SavePoint(int id) : Entity("save_point", id, {}, {1, 1}) {}
-	std::unique_ptr<Entity> clone() const override { return std::make_unique<SavePoint>(*this); }
-	void serialize(dj::Json& out) override { Entity::serialize(out); }
-	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-	void expose() override { Entity::expose(); }
-};
-
 class EntitySet {
   public:
 	EntitySet() = default;
@@ -145,7 +137,6 @@ class EntitySet {
 	bool overlaps(Entity& other) const;
 
 	struct {
-		std::optional<std::unique_ptr<Entity>> save_point{};
 		sf::Vector2<uint32_t> player_start{};
 		std::vector<std::unique_ptr<Entity>> entities{};
 	} variables{};

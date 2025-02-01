@@ -4,6 +4,7 @@
 #include "editor/util/Lookup.hpp"
 #include "editor/automa/Editor.hpp"
 #include "editor/gui/Console.hpp"
+#include "editor/canvas/entity/SavePoint.hpp"
 #include <filesystem>
 
 namespace pi {
@@ -27,8 +28,8 @@ Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder)
 
 	console.add_log("Welcome to Pioneer!");
 	finder.paths.region = "config";
-	finder.paths.room_name = "new_file";
-	std::string msg = "Loading room: <" + finder.paths.room_name + "> from <" + finder.region_and_room().string() + ">";
+	finder.paths.room_name = "new_file.json";
+	std::string msg = "Loading room: <" + finder.region_and_room().string() + ">";
 	console.add_log(msg.data());
 	load();
 	map.activate_middleground();
@@ -190,14 +191,14 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 
 void Editor::logic() {
 
+	auto& target = palette_mode() ? palette : map;
+	auto& tool = right_mouse_pressed() ? secondary_tool : current_tool;
 	map.constrain(window->f_screen_dimensions());
 
 	window_hovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemActive();
 	current_tool->palette_mode = palette_mode();
 
 	// tool logic
-	auto& tool = right_mouse_pressed() ? secondary_tool : current_tool;
-	auto& target = palette_mode() ? palette : map;
 	if (available()) { map.save_state(*tool); }
 
 	left_mouse_pressed() && current_tool->is_ready() && available() ? current_tool->activate() : current_tool->deactivate();
@@ -211,7 +212,10 @@ void Editor::logic() {
 			auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 4);
 			current_tool->store_tile(idx);
 			selected_block = idx;
-			if (!current_tool->is_paintable()) { current_tool = std::move(std::make_unique<Brush>()); }
+			if (!current_tool->is_paintable()) {
+				current_tool = std::move(std::make_unique<Brush>());
+				current_tool->suppress_until_released();
+			}
 		}
 	}
 
@@ -233,11 +237,18 @@ void Editor::logic() {
 
 	grid_refresh.update();
 	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
+
+	// set tool positions
+	ImGuiIO& io = ImGui::GetIO();
+	current_tool->set_position((sf::Vector2<float>{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
+	secondary_tool->set_position((sf::Vector2<float>{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
+	current_tool->set_window_position(sf::Vector2<float>{io.MousePos.x, io.MousePos.y});
+	secondary_tool->set_window_position(sf::Vector2<float>{io.MousePos.x, io.MousePos.y});
 }
 
 void Editor::load() {
 	map.load(*finder, finder->paths.region, finder->paths.room_name);
-	palette.load(*finder, "palette", "palette", true);
+	palette.load(*finder, "palette", "palette.json", true);
 	map.set_origin({});
 	palette.set_origin({});
 }
@@ -300,12 +311,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar
 	ImVec2 work_size = viewport->WorkSize;
 	auto f_work_size = sf::Vector2<float>{static_cast<float>(work_size.x), static_cast<float>(work_size.y)};
-
-	auto& target = palette_mode() ? palette : map;
-	current_tool->set_position((sf::Vector2<float>{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
-	secondary_tool->set_position((sf::Vector2<float>{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
-	current_tool->set_window_position(sf::Vector2<float>{io.MousePos.x, io.MousePos.y});
-	secondary_tool->set_window_position(sf::Vector2<float>{io.MousePos.x, io.MousePos.y});
 
 	if(current_tool->entity_menu) {
 		if (current_tool->current_entity) { ImGui::OpenPopup("Entity Options"); }
@@ -374,12 +379,14 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ofn.lpstrFilter = "Json Files\0*.json\0Any File\0*.*\0Folders\0\0";
 				ofn.lpstrFile = filename;
 				ofn.nMaxFile = MAX_PATH;
-				ofn.lpstrTitle = "Select a [meta.json] to load.";
+				ofn.lpstrTitle = "Select a .json file to load.";
 				ofn.Flags = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST;
 
 				if (GetOpenFileNameA(&ofn)) {
 					auto open_path = std::filesystem::path{filename};
-					finder->paths.room_name = open_path.parent_path().filename().string();
+					finder->paths.region = open_path.parent_path().filename().string();
+					finder->paths.room_name = open_path.filename().string();
+					console.add_log(std::string{"region: " + finder->paths.region}.c_str());
 					console.add_log(std::string{"filename: " + finder->paths.room_name}.c_str());
 					load();
 				} else {
@@ -413,12 +420,14 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		if (ImGui::BeginPopupModal("New File", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 			popup_open = true;
 			ImGui::Text("Please enter a new room name.");
-			ImGui::Text("Convention is all caps, snake-case, and of the format `REGION_ROOM_NUMBER`.");
+			ImGui::Text("Convention is all lowercase, snake-case, and of the format `room_name`.");
 			ImGui::Separator();
 			ImGui::NewLine();
-			static char buffer[128] = "";
+			static char regbuffer[128] = "";
+			static char roombuffer[128] = "";
 
-			ImGui::InputTextWithHint("Folder Name", "DOJO_CORRIDOR_01", buffer, IM_ARRAYSIZE(buffer));
+			ImGui::InputTextWithHint("Region Name", "firstwind", regbuffer, IM_ARRAYSIZE(regbuffer));
+			ImGui::InputTextWithHint("Room Name", "boiler_room", roombuffer, IM_ARRAYSIZE(roombuffer));
 			ImGui::Separator();
 			ImGui::NewLine();
 
@@ -463,7 +472,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 
 				map = Canvas(*finder, {static_cast<uint32_t>(width * chunk_size_v), static_cast<uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
-				finder->paths.room_name = buffer;
+				finder->paths.region = regbuffer;
+				finder->paths.room_name = std::string{roombuffer} + ".json";
 				map.room_id = room_id;
 				save();
 				load();
@@ -477,25 +487,29 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		if (save_as_popup) { ImGui::OpenPopup("Save As"); }
 		if (ImGui::BeginPopupModal("Save As", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 			popup_open = true;
-			ImGui::Text("Please enter a unique room name.");
-			ImGui::Text("Convention is all caps, snake-case, and of the format `Style_NAME_INDEX`.");
+			ImGui::Text("Please enter a new room name.");
+			ImGui::Text("Convention is all lowercase, snake-case, and of the format `room_name`.");
 			ImGui::Separator();
 			ImGui::NewLine();
-			static char buffer[128] = "";
+			static char regbuffer[128] = "";
+			static char roombuffer[128] = "";
 
-			ImGui::InputTextWithHint("Folder Name", "DOJO_CORRIDOR_01", buffer, IM_ARRAYSIZE(buffer));
+			ImGui::InputTextWithHint("Region Name", "firstwind", regbuffer, IM_ARRAYSIZE(regbuffer));
+			ImGui::InputTextWithHint("Room Name", "boiler_room", roombuffer, IM_ARRAYSIZE(roombuffer));
 			ImGui::Separator();
 			ImGui::NewLine();
 
 			if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
 			ImGui::SameLine();
 			if (ImGui::Button("Create")) {
-				finder->paths.room_name = buffer;
+				finder->paths.region = regbuffer;
+				finder->paths.room_name = std::string{roombuffer} + ".json";
 				save();
 				ImGui::CloseCurrentPopup();
 			}
 
-			ImGui::TextUnformatted(buffer);
+			ImGui::TextUnformatted(regbuffer);
+			ImGui::TextUnformatted(roombuffer);
 
 			ImGui::EndPopup();
 		}
@@ -549,7 +563,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Platform", NULL, &plat)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-				current_tool->ent_type = EntityType::save_point;
 				current_tool->current_entity = std::make_unique<SavePoint>(map.room_id);
 			}
 			ImGui::Separator();
@@ -684,6 +697,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::Text("Tool Position: (%.1f,%.1f)", tool->f_position().x, tool->f_position().y);
 					ImGui::Text("Tool Position (scaled): (%i,%i)", tool->scaled_position().x, tool->scaled_position().y);
 					ImGui::Text("Tool Window Position: (%.1f,%.1f)", tool->get_window_position().x, tool->get_window_position().y);
+					ImGui::Text("Tool Window Position (scaled): (%.1f,%.1f)", tool->get_window_position_scaled().x, tool->get_window_position_scaled().y);
 					ImGui::Text("Tool in Bounds: %s", tool->in_bounds(map.dimensions) ? "Yes" : "No");
 					ImGui::Text("Tool Ready: %s", tool->is_ready() ? "Yes" : "No");
 					ImGui::Text("Tool Active: %s", tool->is_active() ? "Yes" : "No");
@@ -691,6 +705,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Canvas")) {
+					ImGui::Text("Map hovered? %s", map.hovered() ? "Yes" : "No");
+					ImGui::Text("Palette hovered? %s", palette.hovered() ? "Yes" : "No");
 					ImGui::Text("Map undo states: %i", map.undo_states_size());
 					ImGui::Text("Map redo states: %i", map.redo_states_size());
 					ImGui::EndTabItem();

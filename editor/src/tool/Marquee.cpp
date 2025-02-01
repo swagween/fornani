@@ -9,11 +9,13 @@ void Marquee::update(Canvas& canvas) {
 	Tool::update(canvas);
 	if (just_clicked) {
 		clicked_position = position;
-		selection = SelectBox(scaled_clicked_position(), {}, selection_type);
-		clipboard = {};
-		mode = SelectMode::select;
 		just_clicked = false;
 		activate();
+		if (canvas.hovered()) {
+			selection = SelectBox(scaled_clicked_position(), {}, selection_type);
+			clipboard = {};
+			mode = SelectMode::select;
+		}
 	}
 	if (just_released) {}
 	sf::Vector2<uint32_t> dim = {static_cast<uint32_t>(canvas.get_real_dimensions().x), static_cast<uint32_t>(canvas.get_real_dimensions().y)};

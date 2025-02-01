@@ -84,7 +84,7 @@ class Canvas {
   public:
 	Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black);
 	Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop);
-	void update(Tool& tool, bool transformed = false);
+	void update(Tool& tool);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
 	void load(data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
 	bool save(data::ResourceFinder& finder, std::string const& region, std::string const& room_name);
@@ -93,6 +93,7 @@ class Canvas {
 	void undo();
 	void redo();
 	void clear_redo_states();
+	void hover();
 	void unhover();
 	void move(sf::Vector2<float> distance);
 	void set_position(sf::Vector2<float> to_position);

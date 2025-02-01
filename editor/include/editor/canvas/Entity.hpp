@@ -19,6 +19,7 @@ class Entity {
 	void set_position(sf::Vector2u to_position);
 	bool repeatable{};
 	bool overwrite{};
+	bool unique{};
 
 	bool highlighted{};
 	bool selected{};

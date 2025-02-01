@@ -23,7 +23,7 @@ void Platform::expose() {
 }
 
 void Platform::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
-	highlighted ? drawbox.setFillColor(sf::Color{255, 255, 60, 180}) : drawbox.setFillColor(sf::Color{255, 255, 60, 80});
+	highlighted ? drawbox.setFillColor(sf::Color{255, 255, 60, 100}) : drawbox.setFillColor(sf::Color{255, 255, 60, 40});
 	Entity::render(win, cam, size);
 }
 

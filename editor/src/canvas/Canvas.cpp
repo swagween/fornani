@@ -31,10 +31,10 @@ Canvas::Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, Selectio
 	border.setOutlineThickness(4.f);
 }
 
-void Canvas::update(Tool& tool, bool transformed) {
+void Canvas::update(Tool& tool) {
 	real_dimensions = {static_cast<float>(dimensions.x) * f_native_cell_size(), static_cast<float>(dimensions.y) * f_native_cell_size()};
-	if (transformed) {
-		within_bounds(tool.f_position()) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
+	if (editable()) {
+		tool.in_bounds(dimensions) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
 	} else {
 		within_bounds(tool.get_window_position()) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
 	}
@@ -94,7 +94,7 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
 
 	auto const& source = local ? finder.paths.editor : finder.paths.levels;
 
-	std::string metapath = (source / region / std::string{room_name + ".json"}).string();
+	std::string metapath = (source / std::filesystem::path{region} / std::filesystem::path{room_name}).string();
 
 	data.meta = dj::Json::from_file((metapath).c_str());
 	assert(!data.meta.is_null());
@@ -181,7 +181,7 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::
 	}
 
 	auto success{true};
-	if (!data.meta.to_file((finder.paths.levels / region / std::string{room_name + ".json"}).string().c_str())) { success = false; }
+	if (!data.meta.to_file((finder.paths.levels / region / room_name).string().c_str())) { success = false; }
 
     return success;
 }
@@ -222,6 +222,8 @@ void Canvas::redo() {
 }
 
 void Canvas::clear_redo_states() { redo_states.clear(); }
+
+void Canvas::hover() { state.set(CanvasState::hovered); }
 
 void Canvas::unhover() { state.reset(CanvasState::hovered); }
 

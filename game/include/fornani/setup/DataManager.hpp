@@ -30,7 +30,6 @@ namespace data {
 struct MapData {
 	int id{};
 	dj::Json metadata{};
-	dj::Json tiles{};
 };
 
 struct EnemyState {
@@ -71,6 +70,8 @@ class DataManager {
 	void respawn_enemy(int room_id, int id);
 	void respawn_enemies(int room_id, int distance);
 	void respawn_all();
+
+	bool is_duplicate_room(int id) const;
 	bool door_is_unlocked(int id) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;

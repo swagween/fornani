@@ -11,6 +11,7 @@ resources/editor/export/*
 .idea/*
 .vs/*
 .vscode/*
+screenshots/*
 build/*
 out/*
 .cache

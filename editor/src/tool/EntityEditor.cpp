@@ -76,13 +76,7 @@ void EntityEditor::update(Canvas& canvas) {
 			}
 		}
 		if (ent_type == EntityType::player_placer) {
-			canvas.entities.variables.player_start = scaled_position();
-		} else if (ent_type == EntityType::save_point) {
-			if (current_entity && active) {
-				canvas.entities.variables.save_point = std::move(current_entity.value());
-				current_entity = {};
-			}
-			suppress_until_released();
+			if (active) { canvas.entities.variables.player_start = scaled_position(); }
 		} else if (current_entity && active) {
 			if (!canvas.entities.overlaps(*current_entity.value())) {
 				auto repeat = current_entity.value()->repeatable;
