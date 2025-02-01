@@ -634,7 +634,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		popup_open = true;
 	}
 
-	popup.launch(*finder, console, label.c_str(), current_tool);
+	popup.launch(*finder, console, label.c_str(), current_tool, map.room_id);
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
@@ -903,6 +903,7 @@ void Editor::center_map() {
 
 void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position) {
 	trigger_demo = false;
+	pressed_keys = {};
 	ImGui::SFML::Shutdown();
 	fornani::Application demo{argv};
 	std::cout << "> Launching Demo\n";

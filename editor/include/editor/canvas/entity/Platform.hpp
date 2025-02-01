@@ -7,6 +7,7 @@ namespace pi {
 
 class Platform : public Entity {
   public:
+	Platform();
 	Platform(sf::Vector2u dim, int extent, std::string type, float start);
 
 	std::unique_ptr<Entity> clone() const override;

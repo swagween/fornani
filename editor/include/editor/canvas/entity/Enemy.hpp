@@ -9,10 +9,10 @@
 
 namespace pi {
 
-class SavePoint : public Entity {
+class Enemy : public Entity {
   public:
-	SavePoint();
-	SavePoint(int id);
+	Enemy();
+	Enemy(int id);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json& in) override;

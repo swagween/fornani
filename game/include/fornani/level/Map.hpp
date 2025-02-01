@@ -219,11 +219,11 @@ class Map {
 	automa::ServiceProvider* m_services;
 	gui::Console* m_console;
 
-	util::Cooldown loading{}; // shouldn't exist
 	util::Cooldown spawning{2};
 	util::Counter spawn_counter{};
 	struct {
-		util::Cooldown fade_obscured{128};
+		util::Cooldown fade_obscured{};
+		util::Cooldown loading{};
 	} cooldowns{};
 
 	// debug

@@ -5,8 +5,16 @@
       "label": "new_file.json"
     },
     {
+      "room_id": 103,
+      "label": "atrium.json"
+    },
+    {
       "room_id": 100,
       "label": "prison.json"
+    },
+    {
+      "room_id": 102,
+      "label": "vent.json"
     },
     {
       "room_id": 198,

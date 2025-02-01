@@ -3,4 +3,5 @@ nani_add_headers(
         Platform.hpp
         Portal.hpp
         SavePoint.hpp
+        Enemy.hpp
 )

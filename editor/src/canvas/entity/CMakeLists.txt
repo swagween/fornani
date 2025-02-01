@@ -3,4 +3,5 @@ nani_add_sources(
         Platform.cpp
         Portal.cpp
         SavePoint.cpp
+        Enemy.cpp
 )

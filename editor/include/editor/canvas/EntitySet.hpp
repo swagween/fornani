@@ -19,14 +19,6 @@ namespace pi {
 
 class Canvas;
 
-//struct Critter : public Entity {
-//	Critter() : Entity("enemies") { repeatable = true; }
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<Critter>(*this); }
-//	void serialize(dj::Json& out) override { Entity::serialize(out); }
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-//};
-//
 //struct Animator : public Entity {
 //	Animator() : Entity("animators") { repeatable = true; }
 //	bool automatic{};

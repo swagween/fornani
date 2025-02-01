@@ -12,7 +12,7 @@
 namespace world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console) {}
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{128}, .loading{2}} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
@@ -261,16 +261,15 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		generate_layer_textures(svc);
 		player->map_reset();
 		transition.end();
-		loading.start(16);
+		cooldowns.fade_obscured.start();
+		cooldowns.loading.start();
 	}
 }
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
-	// if (svc.ticker.every_x_ticks(400)) { std::cout << "Collidable cells: " << collidable_indeces.size() << "\n"; }
 	auto& layers = svc.data.get_layers(room_id);
-	loading.update();
-	//if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
 	flags.state.reset(LevelState::camera_shake);
+	cooldowns.loading.update();
 
 	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 
@@ -289,7 +288,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
-	if (off_the_bottom(player->collider.physics.position) && loading.is_complete()) {
+	if (off_the_bottom(player->collider.physics.position) && cooldowns.loading.is_complete()) {
 		player->hurt(64.f);
 		player->freeze_position();
 	}
@@ -392,7 +391,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& g : grass) { g->update(svc, *this, *player); }
 	player->handle_map_collision(*this);
-	if (loading.is_complete()) { transition.update(*player); }
+	if (cooldowns.loading.is_complete()) { transition.update(*player); }
 	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
@@ -406,8 +405,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	ambience.set_balance(cooldowns.fade_obscured.get_normalized() * 100.f);
 
 	// check if player died
-	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && loading.is_complete()) {
-		// std::cout << "Launch death console.\n";
+	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && cooldowns.loading.is_complete()) {
 		svc.app_flags.reset(automa::AppFlags::in_game);
 		console.set_source(svc.text.basic);
 		console.load_and_launch("death");

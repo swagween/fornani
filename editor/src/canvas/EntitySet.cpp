@@ -4,6 +4,8 @@
 #include "fornani/setup/ResourceFinder.hpp"
 #include "editor/canvas/entity/Inspectable.hpp"
 #include "editor/canvas/entity/Platform.hpp"
+#include "editor/canvas/entity/Portal.hpp"
+#include "editor/canvas/entity/Enemy.hpp"
 #include "editor/canvas/entity/SavePoint.hpp"
 
 #include <cassert>
@@ -37,12 +39,30 @@ void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 	for (auto const& [key, entry] : metadata.object_view()) {
 		if (std::string{key} == "inspectables") {
 			for (auto& element : entry.array_view()) {
-				variables.entities.push_back(std::make_unique<Inspectable>(std::string{key}));
+				variables.entities.push_back(std::make_unique<Inspectable>());
+				variables.entities.back()->unserialize(element);
+			}
+		}
+		if (std::string{key} == "platforms") {
+			for (auto& element : entry.array_view()) {
+				variables.entities.push_back(std::make_unique<Platform>());
+				variables.entities.back()->unserialize(element);
+			}
+		}
+		if (std::string{key} == "portals") {
+			for (auto& element : entry.array_view()) {
+				variables.entities.push_back(std::make_unique<Portal>());
+				variables.entities.back()->unserialize(element);
+			}
+		}
+		if (std::string{key} == "enemies") {
+			for (auto& element : entry.array_view()) {
+				variables.entities.push_back(std::make_unique<Enemy>());
 				variables.entities.back()->unserialize(element);
 			}
 		}
 		if (std::string{key} == "save_point") {
-			variables.entities.push_back(std::make_unique<SavePoint>(entry["id"].as<int>()));
+			variables.entities.push_back(std::make_unique<SavePoint>());
 			variables.entities.back()->unserialize(entry);
 		}
 	}

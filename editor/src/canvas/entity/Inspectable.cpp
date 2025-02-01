@@ -3,10 +3,10 @@
 
 namespace pi {
 
-Inspectable::Inspectable(std::string label) : Entity("inspectables") {}
+Inspectable::Inspectable() : Entity("inspectables") {}
 
 Inspectable::Inspectable(bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates)
-	: Entity("inspectables", 0, {}, {1, 1}), activate_on_contact(activate_on_contact), key(key), suites(suites), responses(responses), alternates(alternates) {}
+	: Entity("inspectables", 0, {1, 1}), activate_on_contact(activate_on_contact), key(key), suites(suites), responses(responses), alternates(alternates) {}
 
 std::unique_ptr<Entity> Inspectable::clone() const { return std::make_unique<Inspectable>(*this); }
 
