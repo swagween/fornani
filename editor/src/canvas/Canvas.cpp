@@ -52,7 +52,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	win.draw(border);
 	if (!states_empty()) {
 		for (auto& layer : get_layers().layers) {
-			box.setFillColor(sf::Color{40, 240, 80, 40});
+			box.setFillColor(sf::Color{40, 240, 80, 20});
 			for (auto& cell : layer.grid.cells) {
 				cell.set_scale(scale);
 				if (cell.value == 0) { continue; }
@@ -103,24 +103,32 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
 
 	auto const& meta = data.meta["meta"];
 	room_id = meta["room_id"].as<int>();
+	minimap = static_cast<bool>(meta["minimap"].as_bool());
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
 	real_dimensions = {static_cast<float>(dimensions.x) * constants.cell_size, static_cast<float>(dimensions.y) * constants.cell_size};
 	for (auto i{0}; i < last_layer(); ++i) { map_states.back().layers.push_back(Layer(i, i == middleground(), dimensions)); }
-	
 	auto style_value = meta["style"].as<int>();
 	styles.tile = Style(static_cast<StyleType>(style_value));
 	m_theme.music = meta["music"].as_string();
 	m_theme.ambience = meta["ambience"].as_string();
 	for (auto& in : meta["atmosphere"].array_view()) { m_theme.atmosphere.push_back(in.as<int>()); };
-	cutscene.flag = static_cast<bool>(meta["cutscene_on_entry"]["flag"].as_bool());
-	cutscene.type = meta["cutscene_on_entry"]["type"].as<int>();
-	cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
-	cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
-
-	background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>()));
+	if (meta["camera_effects"]) {
+		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
+		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
+		m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
+		m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
+		m_camera_effects.frequency_in_seconds = meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>();
+	}
+	if (meta["cutscene_on_entry"]) {
+		cutscene.flag = static_cast<bool>(meta["cutscene_on_entry"]["flag"].as_bool());
+		cutscene.type = meta["cutscene_on_entry"]["type"].as<int>();
+		cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
+		cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
+	}
+	if (meta["background"]) { background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>())); }
 
     // tiles
     int layer_counter{};
@@ -138,7 +146,7 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
 
 bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::string const& room_name) {
 
-	std::filesystem::create_directory(finder.paths.levels / region);
+	std::filesystem::create_directory(finder.paths.levels / std::filesystem::path{region});
 
 	// clean jsons
 	data = {};
@@ -149,6 +157,7 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::
 
 	// data.meta
 	data.meta["meta"]["room_id"] = room_id;
+	data.meta["meta"]["minimap"] = dj::Boolean{minimap};
 	data.meta["meta"]["metagrid"][0] = metagrid_coordinates.x;
 	data.meta["meta"]["metagrid"][1] = metagrid_coordinates.y;
 	data.meta["meta"]["dimensions"][0] = dimensions.x;
@@ -160,12 +169,15 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::
 	data.meta["meta"]["music"] = m_theme.music;
 	for (auto& entry : m_theme.atmosphere) { data.meta["meta"]["atmosphere"].push_back(entry); }
 	data.meta["meta"]["ambience"] = m_theme.ambience;
+	data.meta["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;
+	data.meta["meta"]["camera_effects"]["shake"]["energy"] = m_camera_effects.shake_properties.energy;
+	data.meta["meta"]["camera_effects"]["shake"]["start_time"] = m_camera_effects.shake_properties.start_time;
+	data.meta["meta"]["camera_effects"]["shake"]["dampen_factor"] = m_camera_effects.shake_properties.dampen_factor;
+	data.meta["meta"]["camera_effects"]["shake"]["frequency_in_seconds"] = m_camera_effects.frequency_in_seconds;
 	data.meta["meta"]["cutscene_on_entry"]["flag"] = dj::Boolean{cutscene.flag};
 	data.meta["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	data.meta["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	data.meta["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
-
-	entities.save(finder, data.meta["entities"], room_name);
 
 	data.meta["tile"]["layers"] = wipe;
 	for (auto i{0}; i < last_layer(); ++i) { data.meta["tile"]["layers"].push_back(wipe); }
@@ -181,9 +193,9 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::
 	}
 
 	auto success{true};
+	if (!entities.save(finder, data.meta["entities"], room_name)) { success = false; }
 	if (!data.meta.to_file((finder.paths.levels / region / room_name).string().c_str())) { success = false; }
-
-    return success;
+	return success;
 }
 
 void Canvas::clear() {

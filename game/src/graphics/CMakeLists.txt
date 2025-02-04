@@ -1,5 +1,6 @@
 nani_add_sources(
         Background.cpp
+        CameraController.cpp
         ColorFade.cpp
         Droplet.cpp
         HelpText.cpp

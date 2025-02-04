@@ -13,7 +13,6 @@ void Marquee::update(Canvas& canvas) {
 		activate();
 		if (canvas.hovered()) {
 			selection = SelectBox(scaled_clicked_position(), {}, selection_type);
-			clipboard = {};
 			mode = SelectMode::select;
 		}
 	}
@@ -41,11 +40,11 @@ void Marquee::update(Canvas& canvas) {
 	}
 	// negative selection
 	if (scaled_position().x < scaled_clicked_position().x) {
-		adjustment.x = diff.x;
+		adjustment.x = diff.x + 1;
 		selection.value().position.x = scaled_position().x;
 	}
 	if (scaled_position().y < scaled_clicked_position().y) {
-		adjustment.y = diff.y;
+		adjustment.y = diff.y + 1;
 		selection.value().position.y = scaled_position().y;
 	}
 	selection.value().adjust(adjustment);
@@ -122,11 +121,11 @@ void Marquee::copy(Canvas& canvas) {
 }
 
 void Marquee::paste(Canvas& canvas) {
-	if (!clipboard || !selection) { return; }
+	if (!clipboard) { return; }
 	if (!canvas.editable()) { return; }
 	canvas.save_state(*this, true);
-	for (uint32_t i = 0; i < selection.value().dimensions.x; ++i) {
-		for (uint32_t j = 0; j < selection.value().dimensions.y; ++j) {
+	for (uint32_t i = 0; i < clipboard.value().scaled_dimensions().x; ++i) {
+		for (uint32_t j = 0; j < clipboard.value().scaled_dimensions().y; ++j) {
 			auto edit_x = scaled_position().x + i - clipboard.value().scaled_dimensions().x + 1;
 			auto edit_y = scaled_position().y + j - clipboard.value().scaled_dimensions().y + 1;
 			if (edit_x < canvas.dimensions.x && edit_y < canvas.dimensions.y) {
@@ -143,8 +142,8 @@ void Marquee::paste(Canvas& canvas) {
 void Marquee::clear() {
 	if (!selection) { return; }
 	if (!selection.value().empty()) {
-		clipboard = Clipboard(selection.value().dimensions);
-		selection = {};
+		//clipboard = Clipboard(selection.value().dimensions);
+		//selection = {};
 	}
 }
 

@@ -87,7 +87,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed};
+enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed, shake_camera };
 enum class Triggers { hurt };
 
 struct PlayerFlags {

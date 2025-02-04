@@ -26,9 +26,13 @@ Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder)
 		m_labels.backdrops[i] = m_labels.bg_str[i].c_str();
 	}
 
+	user_data = dj::Json::from_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str());
+	assert(!user_data.is_null());
 	console.add_log("Welcome to Pioneer!");
 	finder.paths.region = "config";
 	finder.paths.room_name = "new_file.json";
+	finder.paths.region = user_data["region"].as_string();
+	finder.paths.room_name = user_data["room"].as_string();
 	std::string msg = "Loading room: <" + finder.region_and_room().string() + ">";
 	console.add_log(msg.data());
 	load();
@@ -65,7 +69,10 @@ void Editor::run() {
 	// editor loop
 	while (window->get().isOpen()) {
 
-		if (flags.test(GlobalFlags::shutdown)) { return; }
+		if (flags.test(GlobalFlags::shutdown)) {
+			shutdown(*finder);
+			return;
+		}
 
 		if (trigger_demo) {
 			auto ppos = static_cast<sf::Vector2<float>>(map.entities.variables.player_start) * 32.f;
@@ -77,7 +84,10 @@ void Editor::run() {
 		// events
 		while (std::optional const event = window->get().pollEvent()) {
 			ImGui::SFML::ProcessEvent(window->get(), *event);
-			if (event->is<sf::Event::Closed>()) { return; }
+			if (event->is<sf::Event::Closed>()) {
+				shutdown(*finder);
+				return;
+			}
 			handle_events(*event, window->get());
 		}
 
@@ -201,6 +211,8 @@ void Editor::logic() {
 	// tool logic
 	if (available()) { map.save_state(*tool); }
 
+	if (window_hovered || popup_open || menu_hovered) { target.unhover(); }
+
 	left_mouse_pressed() && current_tool->is_ready() && available() ? current_tool->activate() : current_tool->deactivate();
 	right_mouse_pressed() && secondary_tool->is_ready() && available() ? secondary_tool->activate() : secondary_tool->deactivate();
 	tool->update(target);
@@ -237,6 +249,9 @@ void Editor::logic() {
 
 	grid_refresh.update();
 	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
+
+	map.flags.show_all_layers = shift_pressed() ? map.flags.show_current_layer : !map.flags.show_current_layer;
+	map.flags.show_current_layer = shift_pressed() ? map.flags.show_all_layers : !map.flags.show_all_layers;
 
 	// set tool positions
 	ImGuiIO& io = ImGui::GetIO();
@@ -277,7 +292,7 @@ void Editor::render(sf::RenderWindow& win) {
 	}
 
 	if (m_options.palette) {
-		palette.set_backdrop_color({40, 40, 40, 180});
+		palette.hovered() ? palette.set_backdrop_color({60, 60, 60, 255}) : palette.set_backdrop_color({40, 40, 40, 180});
 		palette.render(win, tileset);
 		if (palette_mode()) {
 			selector.setSize({palette.f_cell_size(), palette.f_cell_size()});
@@ -354,6 +369,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool insp{};
 	bool plat{};
 	bool port{};
+	bool enem{};
+	bool open_themes{};
 
 	// Main Menu
 	menu_hovered = false;
@@ -553,6 +570,9 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				}
 				ImGui::EndMenu();
 			}
+			if (ImGui::MenuItem("Include in Minimap", "", &map.minimap)) {}
+			if (ImGui::MenuItem("Themes", "", &open_themes)) {}
+			
 			ImGui::EndMenu();
 		}
 		bool flag{};
@@ -561,6 +581,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Portal", NULL, &port)) {}
 			if (ImGui::MenuItem("Inspectable", NULL, &insp)) {}
 			if (ImGui::MenuItem("Platform", NULL, &plat)) {}
+			if (ImGui::MenuItem("Enemy", NULL, &enem)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<SavePoint>(map.room_id);
@@ -592,6 +613,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			menu_hovered = true;
 			if (ImGui::MenuItem("Export Layer to .png")) { export_layer_texture(); }
 			ImGui::Separator();
+			if (ImGui::MenuItem("Demo fullscreen", "", &m_demo.fullscreen)) {}
 			if (ImGui::MenuItem("Save and Launch Demo", "Ctrl+D")) {
 				save();
 				trigger_demo = true;
@@ -617,6 +639,13 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		ImGui::EndMainMenuBar();
 	}
 
+	if (open_themes) { ImGui::OpenPopup("Level Themes"); }
+	if (ImGui::BeginPopupModal("Level Themes", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::Text("Ambience");
+		// ImGui::InputText()
+		ImGui::EndPopup();
+	}
+
 	std::string label{};
 	if (insp) {
 		ImGui::OpenPopup("Inspectable Message");
@@ -631,6 +660,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (port) {
 		ImGui::OpenPopup("Portal Specifications");
 		label = "Portal Specifications";
+		popup_open = true;
+	}
+	if (enem) {
+		ImGui::OpenPopup("Enemy Specifications");
+		label = "Enemy Specifications";
 		popup_open = true;
 	}
 
@@ -662,6 +696,12 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
+					ImGui::Text("paths/resources: %s", finder->paths.resources.string().c_str());
+					ImGui::Text("paths/editor...: %s", finder->paths.editor.string().c_str());
+					ImGui::Text("paths/levels...: %s", finder->paths.levels.string().c_str());
+					ImGui::Text("region: %s", finder->paths.region.c_str());
+					ImGui::Text("room..: %s", finder->paths.room_name.c_str());
+					ImGui::Separator();
 					ImGui::Text("Any Window Hovered: %s", window_hovered ? "Yes" : "No");
 					ImGui::Text("Palette Mode: %s", palette_mode() ? "Yes" : "No");
 					ImGui::Text("Has Palette Selection: %s", current_tool->has_palette_selection ? "Yes" : "No");
@@ -822,7 +862,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Layer")) {
-					ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers);
+					if (ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers)) { map.flags.show_current_layer = !map.flags.show_all_layers; };
 					ImGui::Checkbox("Show Obscured Layer", &map.flags.show_obscured_layer);
 					ImGui::Checkbox("Show Indicated Layers", &map.flags.show_indicated_layers);
 					ImGui::EndTabItem();
@@ -904,14 +944,21 @@ void Editor::center_map() {
 void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position) {
 	trigger_demo = false;
 	pressed_keys = {};
+	current_tool->current_entity = {};
 	ImGui::SFML::Shutdown();
 	fornani::Application demo{argv};
 	std::cout << "> Launching Demo\n";
 	std::cout << "Editor path: " << path.string() << "\n";
 	std::cout << "Room ID: " << room_id << std::endl;
 	std::cout << "Room Name: " << finder->paths.room_name << "\n";
-	demo.init(argv);
+	demo.init(argv, {true, m_demo.fullscreen});
 	demo.launch(argv, true, room_id, finder->paths.room_name, player_position);
+}
+
+void Editor::shutdown(data::ResourceFinder& finder) {
+	user_data["region"] = finder.paths.region;
+	user_data["room"] = finder.paths.room_name;
+	if (!user_data.to_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str())) { std::cout << "Failed to save user data.\n"; }
 }
 
 } // namespace pi

@@ -16,7 +16,7 @@ namespace entity {
 
 class Effect : public Entity {
 	public:
-	Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type = 0, int index = 0);
+	Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type = 0, int index = 0, sf::Vector2i reflections = {});
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void rotate();

@@ -13,8 +13,8 @@ void EntityEditor::update(Canvas& canvas) {
 	// set tooltip
 	switch (entity_mode) {
 	case EntityMode::selector: tooltip = "Selector"; break;
-	case EntityMode::editor: tooltip = "Edior"; break;
-	case EntityMode::placer: tooltip = "Placer"; break;
+	case EntityMode::editor: tooltip = "Editor"; break;
+	case EntityMode::placer: tooltip = "Placer (press Q to cancel)"; break;
 	case EntityMode::eraser: tooltip = "Eraser"; break;
 	case EntityMode::mover: tooltip = "Mover"; break;
 	}
@@ -86,9 +86,9 @@ void EntityEditor::update(Canvas& canvas) {
 					current_entity = std::move(clone);
 				} else {
 					current_entity = {}; // free the entity's memory otherwise
+					entity_mode = EntityMode::selector;
 				}
 				suppress_until_released();
-				entity_mode = EntityMode::selector;
 			}
 		}
 	}
@@ -109,7 +109,10 @@ void EntityEditor::update(Canvas& canvas) {
 }
 
 void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {
-	if (scancode == sf::Keyboard::Scancode::Q) { trigger_switch = true; }
+	if (scancode == sf::Keyboard::Scancode::Q) {
+		current_entity = {}; // free the entity's memory otherwise
+		entity_mode = EntityMode::selector;
+	}
 }
 
 void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {

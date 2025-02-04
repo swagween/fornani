@@ -3,7 +3,7 @@
 
 namespace entity {
 
-Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type, int index) : type(type), sprite{svc.assets.effect_lookup.at(index)} {
+Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type, int index, sf::Vector2i reflections) : type(type), sprite{svc.assets.effect_lookup.at(index)} {
 	auto framerate{16};
 	switch (index) {
 	case 0:
@@ -65,6 +65,19 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		sprite_dimensions = {64, 64};
 		spritesheet_dimensions = {1, 6};
 		break;
+	case 11:
+		// hit flash
+		sprite.setOrigin({32.f, 32.f});
+		sprite_dimensions = {64, 64};
+		spritesheet_dimensions = {1, 3};
+		framerate = 32;
+		break;
+	}
+	if(reflections.x == 1) {
+		if (svc.random.percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
+	}
+	if (reflections.y == 1) {
+		if (svc.random.percent_chance(50)) { sprite.setScale({1.f, -1.f}); }
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
 	drawbox.setFillColor(sf::Color::Transparent);

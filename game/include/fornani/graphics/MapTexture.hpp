@@ -23,6 +23,7 @@ class MapTexture {
 	void bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current = false, bool undiscovered = false);
 	void set_current() { flags.set(MapTextureFlags::current); }
 	[[nodiscard]] auto is_current() const -> bool { return flags.test(MapTextureFlags::current); }
+	[[nodiscard]] auto to_ignore() const -> bool { return ignore; }
 	sf::Sprite sprite();
 	sf::RenderTexture& get();
 	sf::Vector2<float> get_position();
@@ -41,6 +42,7 @@ class MapTexture {
 	sf::Vector2<int> global_offset{};
 	sf::Vector2<float> map_dimensions{};
 	util::BitFlags<MapTextureFlags> flags{};
+	bool ignore{};
 
 	fornani::Logger m_logger {"graphics"};
 };

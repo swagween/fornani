@@ -15,7 +15,7 @@ class ResourceFinder {
   public:
 	ResourceFinder(char** argv);
 	fs::path region_and_room() const;
-	fs::path find_directory(fs::path const& exe, std::string const& target);
+	fs::path find_directory(fs::path const& exe, fs::path const& target);
 
 	[[nodiscard]] auto resource_path() const -> std::string { return paths.resources.string(); }
 

@@ -17,8 +17,20 @@
       "label": "vent.json"
     },
     {
+      "room_id": 299,
+      "label": "dojo.json"
+    },
+    {
+      "room_id": 200,
+      "label": "glade.json"
+    },
+    {
       "room_id": 198,
       "label": "palette_test.json"
+    },
+    {
+      "room_id": 300,
+      "label": "test.json"
     }
   ]
 }

@@ -1,29 +1,30 @@
 {
-  "meta": {
-    "room_id": 102,
-    "metagrid": [
-      2,
-      0
-    ],
-    "dimensions": [
-      48,
-      16
-    ],
-    "chunk_dimensions": [
-      3,
-      1
-    ],
-    "style": 0,
-    "background": 18,
-    "music": "",
-    "ambience": "",
-    "cutscene_on_entry": {
-      "flag": false,
-      "type": 0,
-      "id": 0,
-      "source": 0
-    }
-  },
+	"meta": {
+		"room_id": 102,
+		"minimap": true,
+		"metagrid": [
+			2,
+			0
+		],
+		"dimensions": [
+			48,
+			16
+		],
+		"chunk_dimensions": [
+			3,
+			1
+		],
+		"style": 0,
+		"background": 18,
+		"music": "",
+		"ambience": "",
+		"cutscene_on_entry": {
+			"flag": false,
+			"type": 0,
+			"id": 0,
+			"source": 0
+		}
+	},
   "entities": {
     "portals": [
       {

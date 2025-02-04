@@ -3,11 +3,11 @@
 
 namespace pi {
 
-Enemy::Enemy() : Entity("enemies") {}
+Enemy::Enemy() : Entity("enemies") { repeatable = true; }
 
 Enemy::Enemy(int id) : Entity("enemies", id, {1, 1}) { repeatable = true; }
 
-std::unique_ptr<Entity> Enemy::clone() const { return std::make_unique<Entity>(*this); }
+std::unique_ptr<Entity> Enemy::clone() const { return std::make_unique<Enemy>(*this); }
 
 void Enemy::serialize(dj::Json& out) { Entity::serialize(out); }
 

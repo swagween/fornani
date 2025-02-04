@@ -54,7 +54,7 @@ class Tool {
 	[[nodiscard]] auto is_ready() const -> bool { return ready; }
 	[[nodiscard]] auto is_active() const -> bool { return active; }
 	[[nodiscard]] auto clicked() const -> bool { return just_clicked; }
-	[[nodiscard]] auto clipboard() const -> bool { return mode == SelectMode::clipboard; }
+	[[nodiscard]] auto has_clipboard() const -> bool { return mode == SelectMode::clipboard; }
 	[[nodiscard]] auto is_usable() const -> bool { return status == ToolStatus::usable; }
 	[[nodiscard]] auto highlight_canvas() const -> bool { return (is_paintable() || type == ToolType::erase) && !disable_highlight; }
 	[[nodiscard]] auto is_paintable() const -> bool { return type == ToolType::brush || type == ToolType::fill; };
@@ -100,6 +100,7 @@ class Tool {
 	sf::Vector2<float> relative_position{};
 	sf::Vector2<float> window_position{};
 	std::string tooltip{};
+	std::optional<Clipboard> clipboard{};
 
   private:
 	bool ready{true};
@@ -197,7 +198,6 @@ class Marquee : public Tool {
 
   private:
 	std::optional<SelectBox> selection{};
-	std::optional<Clipboard> clipboard{};
 };
 
 class Eyedropper : public Tool {

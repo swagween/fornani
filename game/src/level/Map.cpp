@@ -12,7 +12,8 @@
 namespace world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{128}, .loading{2}} {}
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{128}, .loading{2}}, barrier{1.f, 1.f},
+	  scaled_barrier{barrier * svc.constants.cell_size} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
@@ -37,6 +38,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
+	if (meta["minimap"].as_bool()) { flags.properties.set(MapProperties::minimap); }
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
@@ -71,6 +73,14 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			ambience.play();
 		}
 		for (auto& entry : meta["atmosphere"].array_view()) { if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); } }
+		if (meta["camera_effects"]) {
+			m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
+			m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
+			m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
+			m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
+			m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
+			m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
+		}
 
 		sound.echo_count = meta["sound"]["echo_count"].as<int>();
 		sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
@@ -270,6 +280,17 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
 	cooldowns.loading.update();
+
+	// camera effects
+	if (svc.ticker.every_second() && m_camera_effects.shake_properties.shaking) {
+		m_camera_effects.cooldown.update();
+		if (m_camera_effects.cooldown.is_complete()) {
+			svc.camera_controller.shake(m_camera_effects.shake_properties);
+			auto shake_time = m_camera_effects.cooldown.get_native_time();
+			auto diff = svc.random.random_range(-shake_time / 2, shake_time / 2);
+			m_camera_effects.cooldown.start(shake_time + diff);
+		}
+	}
 
 	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 
@@ -551,7 +572,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	// map foreground tiles
 	sf::Sprite tex{textures.foreground.getTexture()};
-	tex.setPosition(-cam);
+	tex.setPosition(-cam - scaled_barrier);
 	if (!svc.greyblock_mode()) { win.draw(tex); }
 
 	{
@@ -571,8 +592,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		// draw obscuring layer
 		sf::Sprite obscuring{textures.obscuring.getTexture()};
 		sf::Sprite reverse{textures.reverse.getTexture()};
-		obscuring.setPosition(-cam);
-		reverse.setPosition(-cam);
+		obscuring.setPosition(-cam - scaled_barrier);
+		reverse.setPosition(-cam - scaled_barrier);
 		std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
 		std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
 		obscuring.setColor(sf::Color{255, 255, 255, alpha});
@@ -646,7 +667,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		background->render(svc, win, cam);
 		for (auto& layer : scenery_layers) { for (auto& piece : layer) { piece->render(svc, win, cam); } }
 		sf::Sprite tex{textures.background.getTexture()};
-		tex.setPosition(-cam);
+		tex.setPosition(-cam - scaled_barrier);
 		win.draw(tex);
 		for (auto& npc : npcs) { if (npc.background()) { npc.render(svc, win, cam); } }
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
@@ -734,10 +755,12 @@ void Map::generate_collidable_layer(bool live) {
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
 	for (auto& layer : layers) {
+		auto is_middleground = layer.get_render_order() == 4;
 		auto changed = layer.get_render_order() == 0 || layer.get_render_order() == 4;
 		auto finished = layer.get_render_order() == 3 || layer.get_render_order() == 7;
 		auto& tex = layer.foreground() ? textures.foreground : textures.background;
-		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x) * static_cast<unsigned int>(svc.constants.i_cell_size), static_cast<unsigned int>(layer.grid.dimensions.y) * static_cast<unsigned int>(svc.constants.i_cell_size)};
+		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size),
+						  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size)};
 		if (changed) {
 			if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
 			tex.clear(sf::Color::Transparent);
@@ -754,12 +777,13 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-				tile.setPosition(cell.position());
+				tile.setPosition(cell.position() + scaled_barrier);
 				layer.obscuring() ? textures.obscuring.draw(tile) : tex.draw(tile);
+				if (is_middleground) { draw_barrier(tex, tile, cell); }
 			} else {
 				if (layer.obscuring()) {
 					tile.setTextureRect(sf::IntRect({32, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-					tile.setPosition(cell.position());
+					tile.setPosition(cell.position() + scaled_barrier);
 					textures.reverse.draw(tile);
 				}
 			}
@@ -914,5 +938,41 @@ std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get
 int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_cell(get_index_at_position(position)).value; }
 
 Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground().grid.cells.at(get_index_at_position(position)); }
+
+void world::Map::draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell) {
+	sf::Vector2f offset = 2.f * scaled_barrier;
+	if (cell.index.x == 0) {
+		tile.setPosition(cell.position());
+		tex.draw(tile);
+	}
+	if (cell.index.y == 0) {
+		tile.setPosition(cell.position());
+		tex.draw(tile);
+	}
+	if(cell.index.x == dimensions.x - 1) {
+		tile.setPosition(cell.position() + offset);
+		tex.draw(tile);
+	}
+	if (cell.index.y == dimensions.y - 1) {
+		tile.setPosition(cell.position() + offset);
+		tex.draw(tile);
+	}
+	if (cell.index.x == 0 && cell.index.y == dimensions.y - 1) {
+		tile.setPosition(cell.position() + sf::Vector2f{0.f, scaled_barrier.y});
+		tex.draw(tile);
+		tile.setPosition(cell.position() + sf::Vector2f{0.f, 2.f * scaled_barrier.y});
+		tex.draw(tile);
+		tile.setPosition(cell.position() + sf::Vector2f{scaled_barrier.x, 2.f * scaled_barrier.y});
+		tex.draw(tile);
+	}
+	if (cell.index.y == 0 && cell.index.x == dimensions.x - 1) {
+		tile.setPosition(cell.position() + sf::Vector2f{scaled_barrier.x, 0.f});
+		tex.draw(tile);
+		tile.setPosition(cell.position() + sf::Vector2f{2.f * scaled_barrier.x, 0.f});
+		tex.draw(tile);
+		tile.setPosition(cell.position() + sf::Vector2f{2.f * scaled_barrier.x, scaled_barrier.y});
+		tex.draw(tile);
+	}
+}
 
 } // namespace world

@@ -3,7 +3,7 @@
 
 namespace pi {
 
-Platform::Platform() : Entity("platforms") {}
+Platform::Platform() : Entity("platforms") { repeatable = true; }
 
 Platform::Platform(sf::Vector2u dim, int extent, std::string type, float start) : Entity("platforms", 0, dim), extent(extent), type(type), start(start) { repeatable = true; }
 

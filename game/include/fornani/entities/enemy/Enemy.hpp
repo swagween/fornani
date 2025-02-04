@@ -113,6 +113,7 @@ class Enemy : public entity::Entity {
 	Flags flags{};
 	Attributes attributes{};
 	util::Cooldown post_death{};
+	util::Cooldown hitstun{};
 	int afterlife{200};
 
 	util::Cooldown hurt_effect{};

@@ -1,9 +1,10 @@
 {
   "meta": {
-    "room_id": 198,
+	"room_id": 198,
+	"minimap": false,
     "metagrid": [
       0,
-      0
+      -1
     ],
     "dimensions": [
       48,

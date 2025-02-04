@@ -48,6 +48,7 @@ class Editor {
 	void export_layer_texture();
 	void center_map();
 	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position);
+	void shutdown(data::ResourceFinder& finder);
 	[[nodiscard]] auto control_pressed() const -> bool { return pressed_keys.test(PressedKeys::control); }
 	[[nodiscard]] auto shift_pressed() const -> bool { return pressed_keys.test(PressedKeys::shift); }
 	[[nodiscard]] auto left_mouse_pressed() const -> bool { return pressed_keys.test(PressedKeys::mouse_left); }
@@ -94,6 +95,7 @@ class Editor {
 	std::unique_ptr<Tool> secondary_tool;
 	util::BitFlags<PressedKeys> pressed_keys{};
 	util::BitFlags<GlobalFlags> flags{};
+	dj::Json user_data{};
 	char** args{};
 	Console console{};
 	struct {
@@ -120,6 +122,9 @@ class Editor {
 		bool console{true};
 		bool palette{true};
 	} m_options{};
+	struct {
+		bool fullscreen{};
+	} m_demo{};
 };
 
 } // namespace pi

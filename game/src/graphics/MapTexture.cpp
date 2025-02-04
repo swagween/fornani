@@ -21,6 +21,10 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.c
 
 void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
 	map.load(svc, room, true);
+	if (!map.is_minimap()) {
+		ignore = true;
+		return;
+	}
 	tile_color = map.native_style_id == 0 ? svc.styles.colors.blue : svc.styles.colors.fucshia;
 	tile_color.a = 100;
 	global_offset = map.metagrid_coordinates * 16;

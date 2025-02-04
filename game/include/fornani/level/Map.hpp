@@ -14,6 +14,7 @@
 #include "fornani/graphics/Background.hpp"
 #include "fornani/graphics/Scenery.hpp"
 #include "fornani/graphics/Transition.hpp"
+#include "fornani/graphics/CameraController.hpp"
 #include "fornani/graphics/Rain.hpp"
 #include "Grid.hpp"
 #include "fornani/utils/Random.hpp"
@@ -61,6 +62,7 @@ namespace world {
 
 enum class LevelState { game_over, camera_shake, spawn_enemy };
 enum class MapState { unobscure };
+enum class MapProperties { minimap };
 
 // a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
 // for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
@@ -131,6 +133,7 @@ class Map {
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
+	[[nodiscard]] auto is_minimap() const -> bool { return flags.properties.test(MapProperties::minimap); }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
 	Tile& get_cell_at_position(sf::Vector2<float> position);
@@ -189,6 +192,8 @@ class Map {
 
 	sf::RectangleShape borderbox{};
 	sf::RectangleShape center_box{};
+	sf::Vector2f barrier;
+	sf::Vector2f scaled_barrier;
 
 	// layers
 	struct {
@@ -231,10 +236,16 @@ class Map {
 	util::Cooldown end_demo{500};
 
   private:
+	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell);
 	int abyss_distance{400};
+	struct {
+		fornani::graphics::ShakeProperties shake_properties{};
+		util::Cooldown cooldown{};
+	} m_camera_effects{};
 	struct {
 		util::BitFlags<LevelState> state{};
 		util::BitFlags<MapState> map_state{};
+		util::BitFlags<MapProperties> properties{};
 	} flags{};
 	struct {
 		int echo_rate{};

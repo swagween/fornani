@@ -246,8 +246,8 @@ AssetManager::AssetManager(const data::ResourceFinder& finder) {
 		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/vfx/peckett_effect.png] from file.", finder.resource_path());
 	if (!t_bg_effect.loadFromFile(finder.resource_path() + "/image/vfx/bryns_gun_effect.png"))
 		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/vfx/bryns_gun_effect.png] from file.", finder.resource_path());
-	if (!t_small_flash.loadFromFile(finder.resource_path() + "/image/vfx/small_flash.png"))
-		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/vfx/small_flash.png] from file.", finder.resource_path());
+	if (!t_small_flash.loadFromFile(finder.resource_path() + "/image/vfx/small_flash.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/vfx/small_flash.png] from file.", finder.resource_path());
+	if (!t_hit_flash.loadFromFile(finder.resource_path() + "/image/vfx/hit_flash.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/vfx/hit_flash.png] from file.", finder.resource_path());
 	if (!t_smoke.loadFromFile(finder.resource_path() + "/image/vfx/smoke.png"))
 		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/vfx/smoke.png] from file.", finder.resource_path());
 	if (!t_green_beam_effect.loadFromFile(finder.resource_path() + "/image/vfx/green_beam_effect.png"))
@@ -337,7 +337,7 @@ AssetManager::AssetManager(const data::ResourceFinder& finder) {
 	background_lookup.insert({0, t_bg_dusk});
 	background_lookup.insert({1, t_bg_sunrise});
 	background_lookup.insert({2, t_bg_opensky});
-	background_lookup.insert({3, t_bg_rosyhaze});
+	background_lookup.insert({3, t_bg_woods});
 	background_lookup.insert({4, t_bg_dawn});
 	background_lookup.insert({5, t_bg_night});
 	background_lookup.insert({6, t_bg_overcast});
@@ -401,6 +401,7 @@ AssetManager::AssetManager(const data::ResourceFinder& finder) {
 	effect_lookup.insert({8, t_bullet_hit});
 	effect_lookup.insert({9, t_doublejump});
 	effect_lookup.insert({10, t_dust});
+	effect_lookup.insert({11, t_hit_flash});
 
 	// title stuff
 	if (!t_title.loadFromFile(finder.resource_path() + "/image/gui/title.png"))

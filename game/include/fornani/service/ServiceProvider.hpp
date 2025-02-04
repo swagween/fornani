@@ -21,6 +21,7 @@
 #include "fornani/utils/Stopwatch.hpp"
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
+#include "fornani/graphics/CameraController.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
@@ -65,6 +66,7 @@ struct ServiceProvider {
 	MapDebug map_debug{};
 	util::Logger logger{};
 	config::AccessibilityService a11y{};
+	fornani::graphics::CameraController camera_controller{};
 
 	// debug stuff
 	int out_value{};

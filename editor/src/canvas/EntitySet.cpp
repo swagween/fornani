@@ -89,13 +89,8 @@ bool EntitySet::save(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 		}
 	}
 
-	auto success{true};
-	if (!metadata.to_file((finder.paths.levels / room_name / "meta.json").string().c_str())) {
-		success = false;
-	} else {
-		std::cout << "written to file!\n";
-	}
-	return success;
+	if (!metadata.to_file((finder.paths.levels / room_name / "meta.json").string().c_str())) { return false; }
+	return true;
 }
 
 void EntitySet::clear() { variables = {}; }

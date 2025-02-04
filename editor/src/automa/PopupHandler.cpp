@@ -5,6 +5,7 @@
 #include "editor/canvas/entity/Inspectable.hpp"
 #include "editor/canvas/entity/Platform.hpp"
 #include "editor/canvas/entity/Portal.hpp"
+#include "editor/canvas/entity/Enemy.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 #include <imgui.h>
 #include <string>
@@ -145,6 +146,19 @@ void PopupHandler::launch(data::ResourceFinder& finder, Console& console, char c
 		ImGui::SameLine();
 		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupModal("Enemy Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static int id{};
+		ImGui::InputInt("ID", &id);
+		if (ImGui::Button("Create")) {
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<Enemy>(id);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	
 	}
 }
 

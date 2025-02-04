@@ -1,20 +1,19 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <stdio.h>
-#include <string>
-#include "Layer.hpp"
-#include <fstream>
-#include <vector>
-#include <cstdio>
-#include <filesystem>
-#include <system_error>
-#include <iostream>
-#include <djson/json.hpp>
+#include "fornani/graphics/CameraController.hpp"
 #include "editor/util/BitFlags.hpp"
 #include "EntitySet.hpp"
 #include "Background.hpp"
+#include "Layer.hpp"
+
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <iostream>
+
+#include <SFML/Graphics.hpp>
+#include <djson/json.hpp>
 
 namespace data {
 class ResourceFinder;
@@ -155,6 +154,7 @@ class Canvas {
 	struct {
 		bool show_grid{true};
 		bool show_all_layers{true};
+		bool show_current_layer{false};
 		bool show_obscured_layer{true};
 		bool show_indicated_layers{true};
 		bool show_entities{true};
@@ -163,7 +163,6 @@ class Canvas {
 
 	EntitySet entities;
 
-	// read and write
 	struct {
 		dj::Json meta{};
 	} data{};
@@ -175,6 +174,7 @@ class Canvas {
 	struct {
 		Style tile;
 	} styles;
+
 	Theme m_theme{};
 	std::unique_ptr<Background> background{};
 
@@ -185,10 +185,17 @@ class Canvas {
 		int source{};
 	} cutscene{};
 
+	struct {
+		fornani::graphics::ShakeProperties shake_properties{};
+		int frequency_in_seconds{};
+	} m_camera_effects{};
+
 	sf::Vector2u player_start{};
 	int active_layer{};
 
 	uint32_t room_id{};
+
+	bool minimap{};
 
   private:
 	sf::Vector2<float> position{};

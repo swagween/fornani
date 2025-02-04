@@ -100,6 +100,13 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) { metadata.external_id = code.first * 2719 + code.second.x * 13219 + code.second.y * 49037; }
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (hitstun.running()) {
+		hitstun.update();
+		if (svc.ticker.every_x_ticks(4)) {
+		} else {
+			return;
+		}
+	}
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	sound.hurt_sound_cooldown.update();
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
@@ -235,6 +242,8 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			health.inflict(proj.get_damage());
 			health_indicator.add(-proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
+			map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 11, {1, 1}));
+			hitstun.start(64);
 		}
 	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
 		map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 6));
