@@ -70,6 +70,8 @@ void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 
 bool EntitySet::save(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
+	if (variables.entities.empty()) { return true; }
+
 	// clean jsons
 	data = {};
 

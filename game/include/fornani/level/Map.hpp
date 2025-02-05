@@ -40,9 +40,7 @@
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 
-int const NUM_LAYERS{8};
-int const CHUNK_SIZE{16};
-int const CELL_SIZE{32};
+constexpr unsigned int const u_chunk_size_v{16u};
 
 namespace automa {
 struct ServiceProvider;
@@ -63,25 +61,32 @@ namespace world {
 enum class LevelState { game_over, camera_shake, spawn_enemy };
 enum class MapState { unobscure };
 enum class MapProperties { minimap };
-
-// a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
-// for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
+enum class LayerType { background, middleground, foreground, obscuring };
 
 class Layer {
   public:
 	Layer() = default;
-	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(c), dimensions(dim), grid(dim, source) {}
-	[[nodiscard]] auto background() const -> bool { return render_order < 4; }
-	[[nodiscard]] auto foreground() const -> bool { return render_order > 3; }
-	[[nodiscard]] auto middleground() const -> bool { return render_order == 4; }
-	[[nodiscard]] auto obscuring() const -> bool { return render_order == 7; }
+	Layer(uint8_t o, sf::Vector2i partition, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source) {
+		auto order = static_cast<int>(o);
+		if (order < partition.x) { type = LayerType::background; }
+		if (order == partition.x) { type = LayerType::middleground; }
+		if (order > partition.x) { type = LayerType::foreground; }
+		if (order == partition.y - 1) { type = LayerType::obscuring; }
+	}
+	[[nodiscard]] auto background() const -> bool { return type == LayerType::background; }
+	[[nodiscard]] auto foreground() const -> bool { return type == LayerType::foreground; }
+	[[nodiscard]] auto middleground() const -> bool { return type == LayerType::middleground; }
+	[[nodiscard]] auto obscuring() const -> bool { return type == LayerType::obscuring; }
 	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
+	[[nodiscard]] auto get_i_render_order() const -> int { return static_cast<int>(render_order); }
+	[[nodiscard]] auto get_layer_type() const -> LayerType { return type; }
 	Grid grid{};
 	bool collidable{};
 	sf::Vector2<uint32_t> dimensions{};
 
   private:
 	uint8_t render_order{};
+	LayerType type{};
 };
 
 struct EnemySpawn {
@@ -89,13 +94,10 @@ struct EnemySpawn {
 	int id{};
 };
 
-// a Map is just a set of layers that will render on top of each other
-
 class Map {
 
   public:
 	using Vec = sf::Vector2<float>;
-	using Vecu16 = sf::Vector2<uint32_t>;
 
 	Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
 	~Map() {}
@@ -119,6 +121,7 @@ class Map {
 	void wrap(sf::Vector2<float>& position) const;
 	std::vector<Layer>& get_layers();
 	Layer& get_middleground();
+	Layer& get_obscuring_layer();
 	npc::NPC& get_npc(int id);
 	Vec get_spawn_position(int portal_source_map_id);
 	sf::Vector2<float> get_nearest_target_point(sf::Vector2<float> from);
@@ -133,6 +136,7 @@ class Map {
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
+	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2u { return dimensions / u_chunk_size_v; }
 	[[nodiscard]] auto is_minimap() const -> bool { return flags.properties.test(MapProperties::minimap); }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
@@ -140,10 +144,8 @@ class Map {
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
-	// std::vector<Layer> layers{};
 	Vec real_dimensions{};	   // pixel dimensions (maybe useless)
-	Vecu16 dimensions{};	   // points on the 32x32-unit grid
-	Vecu16 chunk_dimensions{}; // how many chunks (16x16 squares) in the room
+	sf::Vector2u dimensions{};	   // points on the 32x32-unit grid
 
 	dj::Json inspectable_data{};
 
@@ -251,6 +253,7 @@ class Map {
 		int echo_rate{};
 		int echo_count{};
 	} sound{};
+	int m_middleground{};
 };
 
 } // namespace world

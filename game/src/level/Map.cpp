@@ -43,14 +43,13 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
-	chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
-	chunk_dimensions.y = meta["chunk_dimensions"][1].as<int>();
-	real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
+	real_dimensions = {static_cast<float>(dimensions.x) * svc.constants.cell_size, static_cast<float>(dimensions.y) * svc.constants.cell_size};
 	auto style_value = meta["style"].as<int>();
 	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
 	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
 	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
+	m_middleground = svc.data.map_jsons.at(room_lookup).metadata["tile"]["middleground"].as<int>();
 
 	auto const& entities = metadata["entities"];
 
@@ -755,10 +754,10 @@ void Map::generate_collidable_layer(bool live) {
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
 	for (auto& layer : layers) {
-		auto is_middleground = layer.get_render_order() == 4;
-		auto changed = layer.get_render_order() == 0 || layer.get_render_order() == 4;
-		auto finished = layer.get_render_order() == 3 || layer.get_render_order() == 7;
-		auto& tex = layer.foreground() ? textures.foreground : textures.background;
+		auto changed{layer.get_i_render_order() == 0 || layer.middleground()};
+		auto finished{layer.get_i_render_order() == m_middleground - 1 || layer.obscuring()};
+		auto& tex{layer.foreground() || layer.middleground() || layer.obscuring() ? textures.foreground : textures.background};
+
 		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size),
 						  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size)};
 		if (changed) {
@@ -779,7 +778,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
 				tile.setPosition(cell.position() + scaled_barrier);
 				layer.obscuring() ? textures.obscuring.draw(tile) : tex.draw(tile);
-				if (is_middleground) { draw_barrier(tex, tile, cell); }
+				if (layer.middleground()) { draw_barrier(tex, tile, cell); }
 			} else {
 				if (layer.obscuring()) {
 					tile.setTextureRect(sf::IntRect({32, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
@@ -801,7 +800,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 }
 
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
-	auto& grid = foreground ? get_layers().at(7).grid : get_middleground().grid;
+	auto& grid = foreground ? get_obscuring_layer().grid : get_middleground().grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
@@ -885,7 +884,9 @@ void Map::wrap(sf::Vector2<float>& position) const {
 
 std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
 
-Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(4); }
+Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
+
+Layer& Map::get_obscuring_layer() { return m_services->data.get_layers(room_id).at(static_cast<std::size_t>(m_services->data.get_layers(room_id).size() - 1)); }
 
 npc::NPC& Map::get_npc(int id) {
 	for (auto& npc : npcs) { if (npc.get_id() == id) { return npc; } }

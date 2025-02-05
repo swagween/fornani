@@ -1,15 +1,18 @@
-#include <algorithm>
+
 #include "fornani/setup/ResourceFinder.hpp"
 #include "fornani/core/Application.hpp"
 #include "editor/util/Lookup.hpp"
 #include "editor/automa/Editor.hpp"
 #include "editor/gui/Console.hpp"
 #include "editor/canvas/entity/SavePoint.hpp"
+
 #include <filesystem>
+#include <algorithm>
 
 namespace pi {
 
-Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder) : window(&window), finder(&finder), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16) {
+Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder)
+	: window(&window), finder(&finder), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0} {
 
 	args = argv;
 	std::cout << "Level path: " << finder.paths.levels << "\n";
@@ -43,6 +46,7 @@ Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder)
 	target_shape.setOutlineColor(sf::Color{240, 230, 255, 100});
 	target_shape.setOutlineThickness(-2);
 	target_shape.setSize({map.f_cell_size(), map.f_cell_size()});
+
 
 	center_map();
 }
@@ -131,11 +135,27 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::E) { current_tool = std::move(std::make_unique<Erase>()); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::M) { current_tool = std::move(std::make_unique<Marquee>()); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::N) { current_tool = std::move(std::make_unique<EntityEditor>()); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_clipboard = {}; }
 		}
 		if (control_pressed()) {
-			if (key_pressed->scancode == sf::Keyboard::Scancode::X) { current_tool->handle_keyboard_events(source, key_pressed->scancode); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::C) { current_tool->handle_keyboard_events(source, key_pressed->scancode); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::V && !palette_mode()) { current_tool->handle_keyboard_events(map, key_pressed->scancode); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::X) {
+				current_tool->handle_keyboard_events(source, key_pressed->scancode);
+				if (current_tool->selection) {
+					m_clipboard = Clipboard(current_tool->selection.value().dimensions);
+					m_clipboard.value().cut(source, *current_tool);
+				}
+			}
+			if (key_pressed->scancode == sf::Keyboard::Scancode::C) {
+				current_tool->handle_keyboard_events(source, key_pressed->scancode);
+				if (current_tool->selection) {
+					m_clipboard = Clipboard(current_tool->selection.value().dimensions);
+					m_clipboard.value().copy(source, *current_tool);
+				}
+			}
+			if (key_pressed->scancode == sf::Keyboard::Scancode::V && !palette_mode()) {
+				current_tool->handle_keyboard_events(map, key_pressed->scancode);
+				if (m_clipboard) { m_clipboard.value().paste(map, *current_tool); }
+			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::D) {
 				save();
 				trigger_demo = true;
@@ -209,9 +229,7 @@ void Editor::logic() {
 	current_tool->palette_mode = palette_mode();
 
 	// tool logic
-	if (available()) { map.save_state(*tool); }
-
-	if (window_hovered || popup_open || menu_hovered) { target.unhover(); }
+	if (available() && !palette_mode()) { map.save_state(*tool); }
 
 	left_mouse_pressed() && current_tool->is_ready() && available() ? current_tool->activate() : current_tool->deactivate();
 	right_mouse_pressed() && secondary_tool->is_ready() && available() ? secondary_tool->activate() : secondary_tool->deactivate();
@@ -231,7 +249,7 @@ void Editor::logic() {
 		}
 	}
 
-	palette.active_layer = 4;
+	palette.active_layer = 0;
 	map.active_layer = active_layer;
 	if (current_tool->trigger_switch) { current_tool = std::move(std::make_unique<Hand>()); }
 	current_tool->tile = selected_block;
@@ -241,6 +259,10 @@ void Editor::logic() {
 
 	map.update(*current_tool);
 	palette.update(*current_tool);
+	if (window_hovered || popup_open || menu_hovered) {
+		map.unhover();
+		palette.unhover();
+	}
 	palette.set_position({12.f, 32.f});
 	if (palette.hovered()) { map.unhover(); }
 
@@ -266,6 +288,7 @@ void Editor::load() {
 	palette.load(*finder, "palette", "palette.json", true);
 	map.set_origin({});
 	palette.set_origin({});
+	reset_layers();
 }
 
 bool Editor::save() { return map.save(*finder, finder->paths.region, finder->paths.room_name); }
@@ -275,8 +298,9 @@ void Editor::render(sf::RenderWindow& win) {
 	auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
 	map.render(win, tileset);
 
+	auto soft_palette_mode = m_options.palette && available() && palette.hovered();
 	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() &&
-		current_tool->highlight_canvas()) {
+		current_tool->highlight_canvas() && !soft_palette_mode) {
 		auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
 		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
 		for (int i = 0; i < current_tool->size; i++) {
@@ -291,8 +315,10 @@ void Editor::render(sf::RenderWindow& win) {
 		}
 	}
 
+	if (m_clipboard && (control_pressed() || current_tool->type == ToolType::marquee) && !current_tool->is_active()) { m_clipboard.value().render(map, *current_tool, win, map.get_position()); }
+
 	if (m_options.palette) {
-		palette.hovered() ? palette.set_backdrop_color({60, 60, 60, 255}) : palette.set_backdrop_color({40, 40, 40, 180});
+		palette.hovered() ? palette.set_backdrop_color({90, 90, 90, 255}) : palette.set_backdrop_color({40, 40, 40, 180});
 		palette.render(win, tileset);
 		if (palette_mode()) {
 			selector.setSize({palette.f_cell_size(), palette.f_cell_size()});
@@ -535,6 +561,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Undo", "Ctrl+Z")) { map.undo(); }
 			if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z")) { map.redo(); }
 			ImGui::Separator();
+			if (ImGui::MenuItem("Clear Clipboard", "Esc")) { m_clipboard = {}; }
+			ImGui::Separator();
 			if (ImGui::MenuItem("(+) Map Width", "Ctrl+Shift+RightArrow")) { map.resize({1, 0}); }
 			if (ImGui::MenuItem("(-) Map Width", "Ctrl+Shift+LeftArrow")) { map.resize({-1, 0}); }
 			if (ImGui::MenuItem("(+) Map Height", "Ctrl+Shift+DownArrow")) { map.resize({0, 1}); }
@@ -641,8 +669,15 @@ void Editor::gui_render(sf::RenderWindow& win) {
 
 	if (open_themes) { ImGui::OpenPopup("Level Themes"); }
 	if (ImGui::BeginPopupModal("Level Themes", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-		ImGui::Text("Ambience");
-		// ImGui::InputText()
+		static char musbuffer[128] = "";
+		static char ambbuffer[128] = "";
+		ImGui::InputTextWithHint("Music", "whispering_island", musbuffer, IM_ARRAYSIZE(musbuffer));
+		ImGui::InputTextWithHint("Ambience", "overturned", ambbuffer, IM_ARRAYSIZE(ambbuffer));
+		if (ImGui::Button("Apply")) {
+			if (std::string{musbuffer}.size() > 0) { map.m_theme.music = musbuffer; }
+			if (std::string{ambbuffer}.size() > 0) { map.m_theme.ambience = ambbuffer; }
+			ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
 	}
 
@@ -749,6 +784,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::Text("Palette hovered? %s", palette.hovered() ? "Yes" : "No");
 					ImGui::Text("Map undo states: %i", map.undo_states_size());
 					ImGui::Text("Map redo states: %i", map.redo_states_size());
+					ImGui::Separator();
+					ImGui::Text("Number of Layers: %i", map.get_layers().layers.size());
+					ImGui::Text("Middleground: %i", map.get_layers().get_middleground());
+					ImGui::Text("Active Layer: %i", active_layer);
+					for (auto& layer : map.get_layers().layers) { ImGui::Text("Layer: %i", layer.render_order); }
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
@@ -810,7 +850,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::Text("Brush Size");
 			ImGui::SliderInt("##brushsz", &current_tool->size, 1, 16);
 			if (current_tool->type == ToolType::marquee) {
-				if (ImGui::Checkbox("Pervasive", &tool_flags.pervasive)) { current_tool->clear(); }
+				if (ImGui::Checkbox("Pervasive", &tool_flags.pervasive)) {}
 				help_marker("If checked, actions will apply to all layers.");
 			} else if (current_tool->type == ToolType::fill) {
 				if (ImGui::Checkbox("Pervasive", &tool_flags.pervasive)) {}
@@ -837,14 +877,30 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			} else {
 				ImGui::Text("Tool Position : ---");
 			}
-
+			ImGui::Separator();
+			static int m = map.get_layers().get_middleground();
+			ImGui::Text("Middleground: ");
+			ImGui::SameLine();
+			if (ImGui::InputInt("##smg", &m)) {
+				m = std::clamp(m, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
+				map.get_layers().set_middleground(m);
+				std::cout << "set middleground to " << m << std::endl;
+				reset_layers();
+			}
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 			ImGui::BeginChild("ChildS", ImVec2(320, 172), true, window_flags);
 			ImGui::BeginMenuBar();
-			if (ImGui::BeginMenu("Current Layer")) { ImGui::EndMenu(); }
+			if (ImGui::BeginMenu("Current Layer")) {
+				if (ImGui::MenuItem("Insert Layer Above")) {}
+				if (ImGui::MenuItem("Insert Layer Below")) {}
+				if (ImGui::MenuItem("Delete Current Layer")) { delete_current_layer(); }
+				ImGui::EndMenu();
+			}
 			ImGui::EndMenuBar();
-			for (int i = 0; i < 8; ++i) {
-				if (ImGui::Selectable(layer_name.at(i), active_layer == i)) { active_layer = i; }
+			auto ctr{0};
+			for (auto& layer : map.get_layers().layers) {
+				if (ImGui::Selectable(m_labels.layers[ctr], active_layer == ctr)) { active_layer = ctr; }
+				++ctr;
 			}
 			ImGui::EndChild();
 			ImGui::PopStyleVar();
@@ -875,15 +931,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::End();
 		}
 		if (m_options.console) { console.write_console(prev_window_size, prev_window_pos); }
-	}
-	if (current_tool->type == ToolType::marquee && available()) {
-		ImGui::BeginTooltip();
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::Text("Press `Ctrl+X` to cut selection.");
-		ImGui::Text("Press `Ctrl+C` to copy selection.");
-		ImGui::Text("Press `Ctrl+V` to paste selection.");
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
 	}
 
 	if (current_tool->type == ToolType::entity_editor && !window_hovered && current_tool->entity_mode != EntityMode::editor && !current_tool->entity_menu) {
@@ -959,6 +1006,29 @@ void Editor::shutdown(data::ResourceFinder& finder) {
 	user_data["region"] = finder.paths.region;
 	user_data["room"] = finder.paths.room_name;
 	if (!user_data.to_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str())) { std::cout << "Failed to save user data.\n"; }
+}
+
+void Editor::reset_layers() {
+	map.get_layers().set_labels();
+	for (int i = 0; i < static_cast<int>(map.get_layers().layers.size()); ++i) {
+		m_labels.layer_str[i] = map.get_layers().get_layer_name(i);
+		m_labels.layers[i] = m_labels.layer_str[i].c_str();
+	}
+}
+
+void Editor::delete_current_layer() {
+	auto& layers = map.get_layers().layers;
+	if (layers.size() <= 1) {
+		console.add_log("Cannot delete only layer.");
+		return;
+	}
+	map.save_state(*current_tool, true);
+	auto al = active_layer;
+	std::erase_if(layers, [al](auto const& l) { return l.render_order == al; });
+	if (layers.size() <= 1) { return; }
+	if (active_layer >= layers.size()) { --active_layer; }
+	if (map.get_layers().get_middleground() >= layers.size()) { map.get_layers().set_middleground(layers.size() - 1); }
+	reset_layers();
 }
 
 } // namespace pi

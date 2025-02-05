@@ -7,16 +7,18 @@
 
 namespace pi {
 
-Canvas::Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop) : Canvas(finder, {}, type, style, backdrop) {}
+Canvas::Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
 
-Canvas::Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop) : type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
+Canvas::Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
 	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
     dimensions = dim;
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
     clear();
     map_states.push_back(Map());
 
-	for (auto i{0}; i < last_layer(); ++i) { map_states.back().layers.push_back(Layer(i, i == middleground(), dim)); }
+	for (auto i{0}; i < num_layers; ++i) { map_states.back().layers.push_back(Layer(i, i == default_middleground_v, dim)); }
+	map_states.back().set_middleground(default_middleground_v);
+	map_states.back().set_labels();
 
 	box.setOutlineColor(sf::Color{200, 200, 200, 20});
 	box.setOutlineThickness(-2);
@@ -109,7 +111,6 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
 	real_dimensions = {static_cast<float>(dimensions.x) * constants.cell_size, static_cast<float>(dimensions.y) * constants.cell_size};
-	for (auto i{0}; i < last_layer(); ++i) { map_states.back().layers.push_back(Layer(i, i == middleground(), dimensions)); }
 	auto style_value = meta["style"].as<int>();
 	styles.tile = Style(static_cast<StyleType>(style_value));
 	m_theme.music = meta["music"].as_string();
@@ -131,16 +132,19 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
 	if (meta["background"]) { background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>())); }
 
     // tiles
-    int layer_counter{};
-    for (auto& layer : map_states.back().layers) {
+	auto counter{0};
+	map_states.back().set_middleground(data.meta["tile"]["middleground"].as<int>());
+	for (auto& layer : data.meta["tile"]["layers"].array_view()) {
+		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions));
         int cell_counter{};
-        for (auto& cell : data.meta["tile"]["layers"][layer_counter].array_view()) {
-            layer.grid.cells.at(cell_counter).value = cell.as<int>();
+        for (auto& cell : layer.array_view()) {
+            map_states.back().layers.back().grid.cells.at(cell_counter).value = cell.as<int>();
             ++cell_counter;
         }
-        ++layer_counter;
+		++counter;
 	}
 	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
+	map_states.back().set_labels();
 	set_grid_texture();
 }
 
@@ -162,8 +166,6 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::
 	data.meta["meta"]["metagrid"][1] = metagrid_coordinates.y;
 	data.meta["meta"]["dimensions"][0] = dimensions.x;
 	data.meta["meta"]["dimensions"][1] = dimensions.y;
-	data.meta["meta"]["chunk_dimensions"][0] = chunk_dimensions().x;
-	data.meta["meta"]["chunk_dimensions"][1] = chunk_dimensions().y;
 	data.meta["meta"]["style"] = static_cast<int>(styles.tile.get_type());
 	data.meta["meta"]["background"] = static_cast<int>(background->type.get_type());
 	data.meta["meta"]["music"] = m_theme.music;
@@ -184,6 +186,7 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::
 	// push layer data
 	int current_layer{};
 	for (auto& layer : map_states.back().layers) {
+		if (map_states.back().get_middleground() == current_layer) { data.meta["tile"]["middleground"] = current_layer; }
 		int current_cell{};
 		for ([[maybe_unused]] auto& cell : layer.grid.cells) {
 			data.meta["tile"]["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);

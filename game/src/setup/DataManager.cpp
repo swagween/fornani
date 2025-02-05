@@ -29,14 +29,15 @@ void DataManager::load_data(std::string in_room) {
 			map_jsons.push_back(MapData{this_id, room_data});
 			
 			// cache map layers
-			int layer_counter{};
 			sf::Vector2<uint32_t> dimensions{};
 			dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
 			dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
 			std::vector<world::Layer> next{};
-			for (int i = 0; i < num_layers; ++i) {
-				next.push_back(world::Layer(i, (i == 4), dimensions, map_jsons.back().metadata["tile"]["layers"][layer_counter]));
-				++layer_counter;
+			auto& in_tile = map_jsons.back().metadata["tile"];
+			uint8_t ctr{0u};
+			for (auto& layer : in_tile["layers"].array_view()) {
+				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr]));
+				++ctr;
 			}
 			map_layers.push_back(next);
 
@@ -62,7 +63,7 @@ void DataManager::load_data(std::string in_room) {
 		file.id = ctr;
 		file.label = "file_" + std::to_string(ctr);
 		file.save_data = dj::Json::from_file((finder.resource_path() + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
-		if ((dj::Boolean)file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::FileFlags::new_file); }
+		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::FileFlags::new_file); }
 		++ctr;
 	}
 	blank_file.save_data = dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());

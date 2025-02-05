@@ -12,7 +12,7 @@ namespace bg {
 
 int const tile_dim{256};
 
-Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "rosy_haze"}, {18, "woods"}} {
+Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "woods"}, {18, "woods"}} {
 	auto type = labels.contains(bg_id) ? labels.at(bg_id) : "black";
 	auto const& in_data = svc.data.background[type];
 	dimensions.x = in_data["dimensions"][0].as<int>();

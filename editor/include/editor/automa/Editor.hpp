@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "editor/canvas/Canvas.hpp"
 #include "editor/util/BitFlags.hpp"
+#include "editor/canvas/Clipboard.hpp"
 #include "editor/tool/Tool.hpp"
 #include "editor/setup/WindowManager.hpp"
 #include "editor/gui/Console.hpp"
@@ -28,8 +29,7 @@ namespace pi {
 enum class GlobalFlags { shutdown, palette_mode };
 enum class PressedKeys { control, shift, mouse_left, mouse_right, space };
 
-inline std::string_view const& style_list{};
-inline std::string styles_str{};
+constexpr static uint8_t max_layers_v{32};
 
 class Editor {
   public:
@@ -49,6 +49,8 @@ class Editor {
 	void center_map();
 	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position);
 	void shutdown(data::ResourceFinder& finder);
+	void reset_layers();
+	void delete_current_layer();
 	[[nodiscard]] auto control_pressed() const -> bool { return pressed_keys.test(PressedKeys::control); }
 	[[nodiscard]] auto shift_pressed() const -> bool { return pressed_keys.test(PressedKeys::shift); }
 	[[nodiscard]] auto left_mouse_pressed() const -> bool { return pressed_keys.test(PressedKeys::mouse_left); }
@@ -84,13 +86,14 @@ class Editor {
 	bool window_hovered{};
 	bool menu_hovered{};
 	bool popup_open{};
-	int active_layer{4};
+	int active_layer{};
 	uint32_t selected_block{};
 
   private:
 	WindowManager* window;
 	data::ResourceFinder* finder;
 	PopupHandler popup{};
+	std::optional<Clipboard> m_clipboard{};
 	std::unique_ptr<Tool> current_tool;
 	std::unique_ptr<Tool> secondary_tool;
 	util::BitFlags<PressedKeys> pressed_keys{};
@@ -114,8 +117,10 @@ class Editor {
 	struct {
 		std::string style_str[static_cast<size_t>(StyleType::END)];
 		std::string bg_str[static_cast<size_t>(StyleType::END)];
+		std::string layer_str[max_layers_v];
 		char const* styles[static_cast<size_t>(StyleType::END)];
 		char const* backdrops[static_cast<size_t>(Backdrop::END)];
+		char const* layers[max_layers_v];
 	} m_labels{};
 	struct {
 		bool sidebar{true};
