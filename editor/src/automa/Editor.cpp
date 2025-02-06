@@ -137,6 +137,10 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_clipboard = {}; }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Tab) { map.flags.show_grid = !map.flags.show_grid; }
 		}
+		if(shift_pressed() && !control_pressed()) {
+			if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { active_layer = std::clamp(active_layer - 1, 0, static_cast<int>(map.get_layers().layers.size())); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { active_layer = std::clamp(active_layer + 1, 0, static_cast<int>(map.get_layers().layers.size())); }
+		}
 		if (control_pressed()) {
 			if (key_pressed->scancode == sf::Keyboard::Scancode::X) {
 				current_tool->handle_keyboard_events(source, key_pressed->scancode);
@@ -225,6 +229,7 @@ void Editor::logic() {
 	auto& target = palette_mode() ? palette : map;
 	auto& tool = right_mouse_pressed() ? secondary_tool : current_tool;
 	map.constrain(window->f_screen_dimensions());
+	m_middleground = map.get_layers().get_middleground();
 
 	window_hovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemActive();
 	current_tool->palette_mode = palette_mode();
@@ -240,7 +245,7 @@ void Editor::logic() {
 		if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
 		if (palette_mode() && current_tool->type != ToolType::marquee) {
 			auto pos = current_tool->get_window_position() - palette.get_position();
-			auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 4);
+			auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 0);
 			current_tool->store_tile(idx);
 			selected_block = idx;
 			if (!current_tool->is_paintable()) {
@@ -523,8 +528,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				load();
 				reset_layers();
 				map.center(window->f_center_screen());
-				std::string message = "Created new room with id " + std::to_string(room_id) + " and name " + finder->paths.room_name;
-				console.add_log(message.data());
+				console.add_log(std::string{"In folder " + finder->paths.region}.c_str());
+				console.add_log(std::string{"Created new room with id " + std::to_string(room_id) + " and name " + finder->paths.room_name}.c_str());
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -880,21 +885,25 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ImGui::Text("Tool Position : ---");
 			}
 			ImGui::Separator();
-			static int m = map.get_layers().get_middleground();
 			ImGui::Text("Middleground: ");
 			ImGui::SameLine();
-			if (ImGui::InputInt("##smg", &m)) {
-				m = std::clamp(m, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
-				map.get_layers().set_middleground(m);
-				std::cout << "set middleground to " << m << std::endl;
+			if (ImGui::InputInt("##smg", &m_middleground)) {
+				m_middleground = std::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
+				map.get_layers().set_middleground(m_middleground);
 				reset_layers();
 			}
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 			ImGui::BeginChild("ChildS", ImVec2(320, 172), true, window_flags);
 			ImGui::BeginMenuBar();
 			if (ImGui::BeginMenu("Current Layer")) {
-				if (ImGui::MenuItem("Insert Layer Above")) {}
-				if (ImGui::MenuItem("Insert Layer Below")) {}
+				if (ImGui::MenuItem("Insert Layer in Front")) {
+					map.get_layers().add_layer(active_layer, 1);
+					reset_layers();
+				}
+				if (ImGui::MenuItem("Insert Layer Behind")) {
+					map.get_layers().add_layer(active_layer, 0);
+					reset_layers();
+				}
 				if (ImGui::MenuItem("Delete Current Layer")) { delete_current_layer(); }
 				ImGui::EndMenu();
 			}
@@ -1025,12 +1034,10 @@ void Editor::delete_current_layer() {
 		return;
 	}
 	map.save_state(*current_tool, true);
-	auto al = active_layer;
-	std::erase_if(layers, [al](auto const& l) { return l.render_order == al; });
-	if (layers.size() <= 1) { return; }
-	if (active_layer >= layers.size()) { --active_layer; }
-	if (map.get_layers().get_middleground() >= layers.size()) { map.get_layers().set_middleground(layers.size() - 1); }
+	map.get_layers().delete_layer_at(active_layer);
 	reset_layers();
+	if (layers.size() <= 1) { return; }
+	active_layer = std::clamp(active_layer, 0, static_cast<int>(layers.size()) - 1);
 }
 
 } // namespace pi

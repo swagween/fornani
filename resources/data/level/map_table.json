@@ -5,6 +5,10 @@
       "label": "new_file.json"
     },
     {
+      "room_id": 0,
+      "label": "asdasd.json"
+    },
+    {
       "room_id": 103,
       "label": "atrium.json"
     },
@@ -17,8 +21,8 @@
       "label": "vent.json"
     },
     {
-      "room_id": 0,
-      "label": "yeye.json"
+      "room_id": 450,
+      "label": "delete_test.json"
     },
     {
       "room_id": 299,

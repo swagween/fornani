@@ -2,6 +2,7 @@ nani_add_sources(
         Background.cpp
         CameraController.cpp
         ColorFade.cpp
+        DayNightShifter.cpp
         Droplet.cpp
         HelpText.cpp
         MapTexture.cpp
