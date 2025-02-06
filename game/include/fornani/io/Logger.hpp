@@ -99,7 +99,7 @@ class Logger {
 // Thread safe logger class
 // If you have questions about this, ask Ian.
 
-namespace fornani::logger {
+namespace fornani::io::logger {
     /**
      * \brief Log Level.
      */
@@ -319,7 +319,7 @@ namespace fornani::logger {
                int curLine, std::string_view message);
 } // namespace fornani::logger
 
-namespace fornani {
+namespace fornani::io {
     class Logger {
     public:
         using Level = logger::Level;

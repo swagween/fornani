@@ -16,6 +16,7 @@
 #include "fornani/graphics/Transition.hpp"
 #include "fornani/graphics/CameraController.hpp"
 #include "fornani/graphics/Rain.hpp"
+#include "fornani/graphics/DayNightShifter.hpp"
 #include "Grid.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/utils/Shape.hpp"
@@ -199,8 +200,12 @@ class Map {
 
 	// layers
 	struct {
-		sf::RenderTexture foreground{};
-		sf::RenderTexture background{};
+		sf::RenderTexture foreground_day{};
+		sf::RenderTexture background_day{};
+		sf::RenderTexture foreground_twilight{};
+		sf::RenderTexture background_twilight{};
+		sf::RenderTexture foreground_night{};
+		sf::RenderTexture background_night{};
 		sf::RenderTexture obscuring{};
 		sf::RenderTexture reverse{};
 		sf::RenderTexture greyblock{};
@@ -243,6 +248,7 @@ class Map {
 	struct {
 		fornani::graphics::ShakeProperties shake_properties{};
 		util::Cooldown cooldown{};
+		graphics::DayNightShifter shifter{};
 	} m_camera_effects{};
 	struct {
 		util::BitFlags<LevelState> state{};

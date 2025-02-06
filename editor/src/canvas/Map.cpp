@@ -18,4 +18,27 @@ void Map::set_middleground(int to_middleground) {
 	m_middleground = to_middleground;
 }
 
+void Map::delete_layer_at(std::size_t const index) {
+	if (layers.size() <= 1) { return; }
+	std::erase_if(layers, [index](auto const& l) { return l.render_order == index; });
+	reorder();
+	if (index < m_middleground) { --m_middleground; }
+}
+
+void Map::add_layer(int at, int direction) {
+	if (layers.empty()) { return; }
+	auto dimensions = layers.back().dimensions;
+	layers.insert(layers.begin() + at + direction, Layer(at, false, dimensions));
+	if (direction == 0) { ++m_middleground; }
+	reorder();
+}
+
+void Map::reorder() {
+	auto ctr{0};
+	for (auto& layer : layers) {
+		layer.render_order = ctr;
+		++ctr;
+	}
+}
+
 }

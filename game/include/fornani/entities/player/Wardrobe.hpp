@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <string_view>
 
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -36,7 +36,7 @@ class Wardrobe {
 	std::unordered_map<ApparelType, int> apparel{};
 	sf::Texture palette{};
 
-	fornani::Logger m_logger { "entities" };
+	fornani::io::Logger m_logger { "entities" };
 };
 
 } // namespace player
