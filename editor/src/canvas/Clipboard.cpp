@@ -21,11 +21,15 @@ void Clipboard::clear_clipboard() { m_cell_values.clear(); }
 
 uint32_t Clipboard::get_value_at(size_t i, size_t j) { return m_cell_values.back().at(i + j * m_dimensions.x); }
 
-uint32_t Clipboard::get_value_at(size_t i, size_t j, size_t layer) { return m_cell_values.at(layer).at(i + j * m_dimensions.x); }
+uint32_t Clipboard::get_value_at(size_t i, size_t j, size_t layer) {
+	if (layer >= m_cell_values.size()) { return 0u; }
+	return m_cell_values.at(layer).at(i + j * m_dimensions.x);
+}
 
 void Clipboard::cut(Canvas& canvas, Tool& tool) {
 	if (!tool.selection) { return; }
 	m_mode = SelectMode::clipboard;
+	source = canvas.get_selection_type();
 	m_dimensions = tool.selection.value().dimensions;
 	canvas.save_state(tool, true);
 	for (uint32_t i = 0; i < tool.selection.value().dimensions.x; ++i) {
@@ -42,6 +46,7 @@ void Clipboard::cut(Canvas& canvas, Tool& tool) {
 void Clipboard::copy(Canvas& canvas, Tool& tool) {
 	if (!tool.selection) { return; }
 	m_mode = SelectMode::clipboard;
+	source = canvas.get_selection_type();
 	m_dimensions = tool.selection.value().dimensions;
 	for (uint32_t i = 0; i < tool.selection.value().dimensions.x; ++i) {
 		for (uint32_t j = 0; j < tool.selection.value().dimensions.y; ++j) {
@@ -61,7 +66,7 @@ void Clipboard::paste(Canvas& canvas, Tool& tool) {
 			auto edit_x = tool.scaled_position().x + i - scaled_dimensions().x + 1;
 			auto edit_y = tool.scaled_position().y + j - scaled_dimensions().y + 1;
 			if (edit_x < canvas.dimensions.x && edit_y < canvas.dimensions.y) {
-				if (tool.pervasive) {
+				if (tool.pervasive && source != SelectionType::palette) {
 					for (auto k{0}; k < canvas.get_layers().layers.size(); ++k) { canvas.edit_tile_at(edit_x, edit_y, get_value_at(i, j, k), k); }
 				} else {
 					canvas.edit_tile_at(edit_x, edit_y, get_value_at(i, j), canvas.active_layer);

@@ -133,7 +133,6 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
 
     // tiles
 	auto counter{0};
-	map_states.back().set_middleground(data.meta["tile"]["middleground"].as<int>());
 	for (auto& layer : data.meta["tile"]["layers"].array_view()) {
 		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions));
         int cell_counter{};
@@ -143,6 +142,7 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
         }
 		++counter;
 	}
+	map_states.back().set_middleground(data.meta["tile"]["middleground"].as<int>());
 	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
 	map_states.back().set_labels();
 	set_grid_texture();

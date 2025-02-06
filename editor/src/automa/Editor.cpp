@@ -47,7 +47,6 @@ Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder)
 	target_shape.setOutlineThickness(-2);
 	target_shape.setSize({map.f_cell_size(), map.f_cell_size()});
 
-
 	center_map();
 }
 
@@ -136,6 +135,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::M) { current_tool = std::move(std::make_unique<Marquee>()); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::N) { current_tool = std::move(std::make_unique<EntityEditor>()); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_clipboard = {}; }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::Tab) { map.flags.show_grid = !map.flags.show_grid; }
 		}
 		if (control_pressed()) {
 			if (key_pressed->scancode == sf::Keyboard::Scancode::X) {
@@ -156,7 +156,8 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 				current_tool->handle_keyboard_events(map, key_pressed->scancode);
 				if (m_clipboard) { m_clipboard.value().paste(map, *current_tool); }
 			}
-			if (key_pressed->scancode == sf::Keyboard::Scancode::D) {
+			if (key_pressed->scancode == sf::Keyboard::Scancode::D) { m_clipboard = {}; }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
 				save();
 				trigger_demo = true;
 			}
@@ -520,6 +521,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				map.room_id = room_id;
 				save();
 				load();
+				reset_layers();
 				map.center(window->f_center_screen());
 				std::string message = "Created new room with id " + std::to_string(room_id) + " and name " + finder->paths.room_name;
 				console.add_log(message.data());
@@ -561,7 +563,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Undo", "Ctrl+Z")) { map.undo(); }
 			if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z")) { map.redo(); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Clear Clipboard", "Esc")) { m_clipboard = {}; }
+			if (ImGui::MenuItem("Clear Clipboard", "Ctrl+D")) { m_clipboard = {}; }
 			ImGui::Separator();
 			if (ImGui::MenuItem("(+) Map Width", "Ctrl+Shift+RightArrow")) { map.resize({1, 0}); }
 			if (ImGui::MenuItem("(-) Map Width", "Ctrl+Shift+LeftArrow")) { map.resize({-1, 0}); }
@@ -642,7 +644,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Export Layer to .png")) { export_layer_texture(); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Demo fullscreen", "", &m_demo.fullscreen)) {}
-			if (ImGui::MenuItem("Save and Launch Demo", "Ctrl+D")) {
+			if (ImGui::MenuItem("Save and Launch Demo", "Ctrl+L")) {
 				save();
 				trigger_demo = true;
 			}

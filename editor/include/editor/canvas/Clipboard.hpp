@@ -37,6 +37,7 @@ class Clipboard {
 	std::vector<std::vector<uint32_t>> m_cell_values{};
 	SelectMode m_mode{};
 	sf::RectangleShape m_box{};
+	SelectionType source{};
 };
 
 } // namespace pi

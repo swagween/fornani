@@ -96,6 +96,7 @@ class Canvas {
 	sf::Vector2<int> get_tile_coord(int lookup);
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
+	[[nodiscard]] auto is_palette() const -> bool { return type == SelectionType::palette; }
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
 	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<uint32_t> { return dimensions / u_native_chunk_size(); }
