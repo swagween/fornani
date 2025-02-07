@@ -41,7 +41,6 @@ int main(int argc, char** argv) {
 	}
 
 	NANI_LOG_INFO(main_logger, "SteamAPI has been initialized.");
-	app.init(argv);
 	app.launch(argv);
 
 	return EXIT_SUCCESS;

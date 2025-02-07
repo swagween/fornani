@@ -1,12 +1,14 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <array>
-#include <unordered_map>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/graphics/DayNightShifter.hpp"
 
+#include <array>
+#include <unordered_map>
+
+#include <SFML/Graphics.hpp>
 
 namespace automa {
 struct ServiceProvider;
@@ -51,6 +53,7 @@ class Background {
 		util::BitFlags<BackgroundAttributes> vertical{};
 		util::BitFlags<BackgroundAttributes> horizontal{};
 	} attributes{};
+	graphics::DayNightShifter shifter{};
 };
 
 } // namespace bg

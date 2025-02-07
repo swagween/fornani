@@ -17,7 +17,7 @@ namespace world {
 class Map;
 enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire };
 enum class TileState { ramp_adjacent, big_ramp, covered };
-inline const int special_index_v{448};
+constexpr static int special_index_v{448};
 
 struct Tile {
 
@@ -56,11 +56,14 @@ struct Tile {
 	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_big_spike(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
-	[[nodiscard]] auto is_negative_ramp() const -> bool { return (value >= 208 && value < 212) || (value == 216 || value == 217) || (value == 220 || value == 221) || (value == 240 || value == 242); }
+	[[nodiscard]] auto is_negative_ramp() const -> bool {
+		return (value >= special_index_v + 16 && value < special_index_v + 20) || (value == special_index_v + 24 || value == special_index_v + 25) || (value == special_index_v + 28 || value == special_index_v + 29) ||
+			   (value == special_index_v + 48 || value == special_index_v + 50);
+	}
 	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
-	[[nodiscard]] auto scaled_position() const -> sf::Vector2<int> { return sf::Vector2<int>{static_cast<int>(bounding_box.position.x), static_cast<int>(bounding_box.position.y)}; }
-	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return bounding_box.position + bounding_box.dimensions * 0.5f; }
-	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounding_box.position; }
+	[[nodiscard]] auto scaled_position() const -> sf::Vector2<int> { return sf::Vector2<int>{static_cast<int>(bounding_box.get_position().x), static_cast<int>(bounding_box.get_position().y)}; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return bounding_box.get_position() + bounding_box.get_dimensions() * 0.5f; }
+	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounding_box.get_position(); }
 
 	sf::Vector2<uint32_t> index{};
 	uint32_t one_d_index{};

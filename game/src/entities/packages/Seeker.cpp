@@ -18,6 +18,6 @@ Seeker::Seeker(float force, float friction) {
 
 void Seeker::update(automa::ServiceProvider& svc) { gravitator->update(svc); }
 
-void Seeker::seek_player(player::Player& player) { gravitator->set_target_position(player.collider.hurtbox.position); }
+void Seeker::seek_player(player::Player& player) { gravitator->set_target_position(player.collider.hurtbox.get_position()); }
 
 } // namespace entity

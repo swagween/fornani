@@ -21,6 +21,10 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.c
 
 void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
 	map.load(svc, room, true);
+	if (!map.is_minimap()) {
+		ignore = true;
+		return;
+	}
 	tile_color = map.native_style_id == 0 ? svc.styles.colors.blue : svc.styles.colors.fucshia;
 	tile_color.a = 100;
 	global_offset = map.metagrid_coordinates * 16;
@@ -46,8 +50,8 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		map_texture.draw(portal_box);
 	}
 	for (auto& breakable : map.breakables) {
-		breakable_box.setPosition(breakable.get_bounding_box().position / scale);
-		breakable_box.setSize(breakable.get_bounding_box().dimensions / scale);
+		breakable_box.setPosition(breakable.get_bounding_box().get_position() / scale);
+		breakable_box.setSize(breakable.get_bounding_box().get_dimensions() / scale);
 		map_texture.draw(breakable_box);
 	}
 	if (map.save_point.id > 0) {
@@ -61,7 +65,6 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		map_texture.clear(sf::Color::Transparent);
 	}
 	map_texture.display();
-	svc.stopwatch.stop();
 }
 
 sf::Sprite MapTexture::sprite() { return sf::Sprite(map_texture.getTexture()); }

@@ -24,7 +24,7 @@ void Player::init(automa::ServiceProvider& svc) {
 	health.set_invincibility(400);
 
 	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT});
-	hurtbox.dimensions = sf::Vector2<float>{12.f, 26.f};
+	hurtbox.set_dimensions(sf::Vector2<float>{12.f, 26.f});
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
@@ -121,7 +121,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched || grounded()) { collider.physics.forced_acceleration = {}; }
 
 	collider.update(*m_services);
-	hurtbox.set_position(collider.hurtbox.position - sf::Vector2<float>{0.f, 14.f});
+	hurtbox.set_position(collider.hurtbox.get_position() - sf::Vector2<float>{0.f, 14.f});
 	health.update();
 	health_indicator.update(*m_services, collider.physics.position);
 	orb_indicator.update(*m_services, collider.physics.position);
@@ -138,7 +138,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 		}
 	}
 
-	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(12)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up))); }
+	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(12)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up))); }
 	
 	update_antennae();
 	// piggybacker
@@ -188,8 +188,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(svc.styles.colors.green);
 		box.setOutlineThickness(-1);
-		box.setPosition(hurtbox.position - campos);
-		box.setSize(hurtbox.dimensions);
+		box.setPosition(hurtbox.get_position() - campos);
+		box.setSize(hurtbox.get_dimensions());
 		win.draw(box);
 	} else {
 		antennae[1].render(svc, win, campos, 1);
@@ -392,7 +392,7 @@ void Player::jump(world::Map& map) {
 		animation.state = AnimState::rise;
 		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
 		if (m_services->ticker.every_x_ticks(20)) {
-			map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
+			map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
 		}
 		if (tutorial.current_state == text::TutorialFlags::jump) {
 			tutorial.flags.set(text::TutorialFlags::jump);
@@ -404,13 +404,13 @@ void Player::jump(world::Map& map) {
 		collider.flags.movement.reset(shape::Movement::jumping);
 	}
 	if (controller.get_jump().jumpsquat_trigger()) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
 		controller.get_jump().start_jumpsquat();
 		controller.get_jump().reset_jumpsquat_trigger();
 		collider.flags.movement.set(shape::Movement::jumping);
 	}
 	if (controller.get_jump().jumpsquatting()) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.position, collider.jumpbox.dimensions, "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
 		controller.get_jump().stop_jumpsquatting();
 		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
@@ -469,7 +469,7 @@ void Player::shield() {
 		return;
 	}
 	controller.get_shield().update(*m_services);
-	controller.get_shield().sensor.bounds.setPosition(collider.bounding_box.position + collider.bounding_box.dimensions * 0.5f);
+	controller.get_shield().sensor.bounds.setPosition(collider.bounding_box.get_position() + collider.bounding_box.get_dimensions() * 0.5f);
 }
 
 void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
@@ -495,11 +495,11 @@ void Player::freeze_position() {
 void Player::update_direction() {
 	directions.movement.lr = collider.physics.apparent_velocity().x > 0.f ? dir::LR::right : dir::LR::left;
 	if (controller.facing_left()) {
-		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
+		anchor_point = {collider.physics.position.x + collider.bounding_box.get_dimensions().x / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.get_dimensions().y / 2};
 	} else if (controller.facing_right()) {
-		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2 + ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
+		anchor_point = {collider.physics.position.x + collider.bounding_box.get_dimensions().x / 2 + ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.get_dimensions().y / 2};
 	} else {
-		anchor_point = {collider.physics.position.x + collider.bounding_box.dimensions.x / 2, collider.physics.position.y + collider.bounding_box.dimensions.y / 2};
+		anchor_point = {collider.physics.position.x + collider.bounding_box.get_dimensions().x / 2, collider.physics.position.y + collider.bounding_box.get_dimensions().y / 2};
 	}
 	// set directions for grappling hook
 	//if (arsenal) { equipped_weapon().projectile.hook.probe_direction = controller.direction; }
@@ -624,6 +624,7 @@ void Player::sync_antennae() {
 bool Player::grounded() const { return collider.flags.state.test(shape::State::grounded); }
 
 bool Player::fire_weapon() {
+	flags.state.reset(State::shake_camera);
 	if (!arsenal || !hotbar) { return false; }
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));

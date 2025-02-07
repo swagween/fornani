@@ -4,6 +4,7 @@
 #include "editor/canvas/Canvas.hpp"
 #include "editor/canvas/Clipboard.hpp"
 #include "editor/util/BitFlags.hpp"
+#include "editor/util/SelectBox.hpp"
 
 #include <stdio.h>
 #include <optional>
@@ -15,7 +16,6 @@ enum class ToolType { brush, fill, marquee, erase, hand, entity_editor, eyedropp
 enum class EntityType { none, portal, inspectable, critter, chest, animator, player_placer, platform, save_point, switch_button, switch_block, interactive_scenery, scenery };
 enum class EntityMode { selector, placer, eraser, mover, editor };
 enum class ToolStatus { usable, unusable, loaded };
-enum class SelectMode { none, select, clipboard };
 
 class Tool {
   public:
@@ -54,7 +54,7 @@ class Tool {
 	[[nodiscard]] auto is_ready() const -> bool { return ready; }
 	[[nodiscard]] auto is_active() const -> bool { return active; }
 	[[nodiscard]] auto clicked() const -> bool { return just_clicked; }
-	[[nodiscard]] auto clipboard() const -> bool { return mode == SelectMode::clipboard; }
+	[[nodiscard]] auto has_clipboard() const -> bool { return mode == SelectMode::clipboard; }
 	[[nodiscard]] auto is_usable() const -> bool { return status == ToolStatus::usable; }
 	[[nodiscard]] auto highlight_canvas() const -> bool { return (is_paintable() || type == ToolType::erase) && !disable_highlight; }
 	[[nodiscard]] auto is_paintable() const -> bool { return type == ToolType::brush || type == ToolType::fill; };
@@ -65,7 +65,7 @@ class Tool {
 	bool contiguous{};
 
 	bool has_palette_selection{};
-	bool palette_mode;
+	bool palette_mode{};
 	bool entity_menu{};
 
 	int xorigin{};
@@ -79,6 +79,7 @@ class Tool {
 	bool trigger_switch{false};
 	uint32_t tile{};
 	std::optional<std::unique_ptr<Entity>> current_entity{};
+	std::optional<SelectBox> selection{};
 
 	ToolType type{};
 	EntityType ent_type{};
@@ -169,20 +170,6 @@ class EntityEditor : public Tool {
 	[[nodiscard]] auto editor_mode() const -> bool { return entity_mode == EntityMode::editor; }
 };
 
-class SelectBox {
-  public:
-	SelectBox(sf::Vector2<uint32_t> pos, sf::Vector2<uint32_t> dim, SelectionType type) : position(pos), dimensions(dim), type(type) {}
-	void adjust(sf::Vector2<uint32_t> adjustment) { dimensions = adjustment; }
-	[[nodiscard]] auto get_type() const -> SelectionType { return type; }
-	[[nodiscard]] auto f_position() const -> sf::Vector2<float> { return {static_cast<float>(position.x), static_cast<float>(position.y)}; }
-	[[nodiscard]] auto empty() const -> bool { return dimensions.x * dimensions.y == 0; }
-	sf::Vector2<uint32_t> position{};
-	sf::Vector2<uint32_t> dimensions{};
-
-  private:
-	SelectionType type{};
-};
-
 class Marquee : public Tool {
   public:
 	Marquee() : Tool("Marquee", ToolType::marquee) {}
@@ -190,14 +177,7 @@ class Marquee : public Tool {
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
 	void store_tile(int index);
-	void cut(Canvas& canvas);
-	void copy(Canvas& canvas);
-	void paste(Canvas& canvas);
 	void clear();
-
-  private:
-	std::optional<SelectBox> selection{};
-	std::optional<Clipboard> clipboard{};
 };
 
 class Eyedropper : public Tool {

@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-void Application::init(char** argv) {
+void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 	NANI_ZoneScopedN("Application::Application");
 	std::cout << "Resource path: " << m_finder.resource_path() << std::endl;
 	std::cout << "> Launching " << m_metadata.long_title() << "\n";
@@ -14,7 +14,8 @@ void Application::init(char** argv) {
 	assert(!m_app_settings.is_null());
 
 	// create window
-	m_window.create(m_metadata.long_title(), static_cast<bool>(m_app_settings["fullscreen"].as_bool()));
+	auto fullscreen = demo_fullscreen.first ? demo_fullscreen.second : static_cast<bool>(m_app_settings["fullscreen"].as_bool());
+	m_window.create(m_metadata.long_title(), fullscreen);
 	m_window.set();
 
 	// set app icon

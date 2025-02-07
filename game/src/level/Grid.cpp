@@ -222,27 +222,36 @@ void Grid::seed_vertex(int index) {
 		tile.bounding_box.vertices[1].y += spacing / 2;
 		tile.bounding_box.vertices[0].y += spacing;
 		break;
-	case ceiling_single_ramp: tile.bounding_box.vertices[2].x -= spacing; break;
-	case ceiling_single_ramp + 2: tile.bounding_box.vertices[2].x -= spacing; break;
-	case ceiling_single_ramp + 1: /*nothing*/ break;
-	case ceiling_single_ramp + 3: /*nothing*/ break;
+	case ceiling_single_ramp:
+		tile.bounding_box.vertices[2].x -= spacing;
+		tile.flags.set(TileState::big_ramp);
+		break;
+	case ceiling_single_ramp + 2:
+		tile.bounding_box.vertices[2].x -= spacing;
+		tile.flags.set(TileState::big_ramp);
+		break;
+	case ceiling_single_ramp + 1: tile.flags.set(TileState::big_ramp); break;
+	case ceiling_single_ramp + 3: tile.flags.set(TileState::big_ramp); break;
 	case floor_single_ramp:
 		tile.bounding_box.vertices[1].y += spacing;
 		tile.bounding_box.vertices[2].x -= spacing;
+		tile.flags.set(TileState::big_ramp);
 		break;
 	case floor_single_ramp + 2:
 		tile.bounding_box.vertices[1].y += spacing;
 		tile.bounding_box.vertices[2].x -= spacing;
+		tile.flags.set(TileState::big_ramp);
 		break;
 	case floor_single_ramp + 1:
 		tile.bounding_box.vertices[0].y += spacing;
+		tile.flags.set(TileState::big_ramp);
 		break;
 	case floor_single_ramp + 3:
 		tile.bounding_box.vertices[0].y += spacing;
+		tile.flags.set(TileState::big_ramp);
 		break;
 	default: break;
 	}
-	tile.bounding_box.set_normals();
 	auto above = static_cast<int>(index - dimensions.x);
 	if (above >= 0) {
 		if (cells.at(static_cast<size_t>(above)).is_occupied()) { tile.flags.set(TileState::covered); }

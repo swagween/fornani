@@ -64,19 +64,19 @@ void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& 
 
 	// left
 	collision_ray.setSize({out_depth.left, 2.f});
-	collision_ray.setPosition({bounding_box.left() - cam.x, bounding_box.top() + bounding_box.dimensions.y * 0.5f - cam.y});
+	collision_ray.setPosition({bounding_box.left() - cam.x, bounding_box.top() + bounding_box.get_dimensions().y * 0.5f - cam.y});
 	win.draw(collision_ray);
 	// right
 	collision_ray.setSize({out_depth.right, 2.f});
-	collision_ray.setPosition({bounding_box.right() - cam.x, bounding_box.top() + bounding_box.dimensions.y * 0.5f - cam.y});
+	collision_ray.setPosition({bounding_box.right() - cam.x, bounding_box.top() + bounding_box.get_dimensions().y * 0.5f - cam.y});
 	win.draw(collision_ray);
 	// top
 	collision_ray.setSize({2.f, out_depth.top});
-	collision_ray.setPosition({bounding_box.left() - cam.x + bounding_box.dimensions.x * 0.5f, bounding_box.top() - cam.y});
+	collision_ray.setPosition({bounding_box.left() - cam.x + bounding_box.get_dimensions().x * 0.5f, bounding_box.top() - cam.y});
 	win.draw(collision_ray);
 	// bottom
 	collision_ray.setSize({2.f, out_depth.bottom});
-	collision_ray.setPosition({bounding_box.left() - cam.x + bounding_box.dimensions.x * 0.5f, bounding_box.bottom() - cam.y});
+	collision_ray.setPosition({bounding_box.left() - cam.x + bounding_box.get_dimensions().x * 0.5f, bounding_box.bottom() - cam.y});
 	win.draw(collision_ray);
 }
 

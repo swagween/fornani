@@ -27,7 +27,7 @@ class Checkpoint {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void unflag() { flags.reset(CheckpointState::reached); }
 	[[nodiscard]] auto reached() const -> bool { return flags.test(CheckpointState::reached); }
-	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounds.position; }
+	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounds.get_position(); }
   private:
 	shape::Shape bounds{};
 	util::BitFlags<CheckpointState> flags{};

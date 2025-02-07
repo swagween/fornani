@@ -21,6 +21,7 @@
 #include "fornani/utils/Stopwatch.hpp"
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
+#include "fornani/graphics/CameraController.hpp"
 
 namespace automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
@@ -38,6 +39,7 @@ struct MapDebug {
 struct ServiceProvider {
 	ServiceProvider(char** argv, fornani::Version& version, fornani::WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
 
+	util::Stopwatch stopwatch{};
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
 	data::TextManager text;
@@ -64,9 +66,9 @@ struct ServiceProvider {
 	MapDebug map_debug{};
 	util::Logger logger{};
 	config::AccessibilityService a11y{};
+	fornani::graphics::CameraController camera_controller{};
 
 	// debug stuff
-	util::Stopwatch stopwatch{};
 	int out_value{};
 
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }

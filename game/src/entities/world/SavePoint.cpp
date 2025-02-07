@@ -27,7 +27,7 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 	sparkler.update(svc);
 	intensity < 2 ? sparkler.set_color(svc.styles.colors.periwinkle) : sparkler.set_color(svc.styles.colors.ui_white);
 
-	sf::Vector2<float> proximity_offset = proximity_box.dimensions * 0.5f + dimensions * 0.5f;
+	sf::Vector2<float> proximity_offset = proximity_box.get_dimensions() * 0.5f + dimensions * 0.5f;
 	position = static_cast<Vec>(scaled_position) * 32.f;
 	sparkler.set_position(position);
 	bounding_box.set_position(position);

@@ -6,6 +6,7 @@
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/graphics/CameraController.hpp"
 
 namespace automa {
 struct ServiceProvider;
@@ -50,16 +51,12 @@ class Camera {
 	sf::Vector2<float> target{};
 	sf::Vector2<float> map_bounds_offset{};
 	util::BitFlags<CamFlags> flags{};
-
 	float grav_force{CAM_GRAV};
 
 	struct {
 		util::Cooldown timer{};
 		util::Cooldown dampen{};
-		float energy{0.4f};
-		int dampen_factor{30};
-		int start_time{400};
-		int frequency{10};
+		graphics::ShakeProperties properties{};
 	} shake{};
 };
 

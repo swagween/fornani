@@ -11,7 +11,6 @@ namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player) {
 	NANI_ZoneScopedN("Game::Game");
-	//services.stopwatch.start();
 	services.constants.screen_dimensions = window.screen_dimensions;
 	if (!ImGui::SFML::Init(services.window->get())) {
 		std::cout << "ImGui-SFML failed to initialize the window.\n";
@@ -45,25 +44,26 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
     measurements.win_size.y = services.window->get().getSize().y;
 
     {
-        NANI_ZoneScopedN("Demo Mode Setup");
-        if (demo) {
-            services.debug_flags.set(automa::DebugFlags::demo_mode);
-            flags.set(GameFlags::in_game);
-            game_state.get_current_state().target_folder.paths.scene = levelpath;
-            services.music.turn_off();
-            services.data.load_progress(player, 0);
-            game_state.set_current_state(
-                std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
-            services.state_controller.demo_level = room_id;
-            std::cout << "Launching demo in room " << room_id << " from folder " << levelpath.filename() << "\n";
-            services.state_controller.player_position = player_position;
-            player.set_position(player_position);
-        }
-    }
+		NANI_ZoneScopedN("Demo Mode Setup");
+		if (demo) {
+			services.debug_flags.set(automa::DebugFlags::demo_mode);
+			flags.set(GameFlags::in_game);
+			game_state.get_current_state().target_folder.paths.scene = levelpath;
+			services.music.turn_off();
+			services.data.load_progress(player, 0);
+			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
+			services.state_controller.demo_level = room_id;
+			std::cout << "Launching demo in room " << room_id << " from folder " << levelpath.filename() << "\n";
+			services.state_controller.player_position = player_position;
+			player.set_position(player_position);
+		}
+	}
 
     gui::ActionContextBar ctx_bar(services);
 
     std::cout << "> Success\n";
+	services.stopwatch.stop();
+	services.stopwatch.print_time();
 
     sf::Clock delta_clock{};
 
@@ -164,7 +164,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 	        {
 		    	NANI_ZoneScopedN("Update->ImGUI");
 		    	ImGui::SetMouseCursor(ImGuiMouseCursor_None);
-		    	ImGuiIO& io = ImGui::GetIO();
+				ImGuiIO& io = ImGui::GetIO();
+				io.IniFilename = NULL;
+				io.LogFilename = NULL;
 		    	io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
 		    	services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
 		    	ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
@@ -709,10 +711,13 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	const std::time_t time = std::time({});
 	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
 	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
-	std::string time_str = time_string;
+	auto time_str = std::string{time_string};
 
 	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
-	if (const std::string filename = "screenshot_" + time_str + ".png"; screencap.copyToImage().saveToFile(filename)) { std::cout << "screenshot saved to " << filename << std::endl; }
+	auto destination = std::filesystem::path{services.finder.paths.screenshots.string()};
+	auto filename = std::filesystem::path{"screenshot_" + time_str + ".png"};
+	auto target = destination / filename;
+	if (screencap.copyToImage().saveToFile(target.string())) { std::cout << "screenshot " + filename.string() + " saved to " << destination.string() << std::endl; }
 }
 
 void Game::playtest_sync() {

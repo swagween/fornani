@@ -20,25 +20,17 @@ class Shape {
 	Shape(Vec dim = {32.f, 32.f}, int num_vertices = 4);
 
 	void set_position(const Vec new_pos);
-	void update();
-	void set_normals();
+	void set_dimensions(Vec const new_dim);
 
-	Vec get_center();
+	Vec perp(Vec edg) const;
 
-	Vec perp(Vec edg);
-
-	Vec getNormalized(const Vec v);
-	float dotProduct(const Vec a, const Vec b);
-	Vec getNormal(const Vec v);
-	Vec projectOnAxis(const std::vector<Vec> vertices, const Vec axis);
+	Vec get_normalized(Vec const v);
+	Vec get_normal(const Vec v);
+	Vec project_on_axis(const std::vector<Vec> vertices, const Vec axis);
 	Vec project_circle_on_axis(Vec center, float radius, const Vec axis);
-	bool areOverlapping(Vec const& a, Vec const& b);
-	float getOverlapLength(Vec const& a, Vec const& b);
-	Vec getCenter(Shape const& shape);
-	Vec getThisCenter();
-	std::vector<Vec> getVertices(Shape const& shape);
+	std::vector<Vec> get_vertices(Shape const& shape);
 	std::vector<sf::Vector2<float>> get_poles(sf::CircleShape const& circle);
-	Vec testCollisionGetMTV(Shape const& obb1, Shape const& obb2);
+	Vec get_MTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
 	bool circle_SAT(sf::CircleShape const& circle);
 	sf::Vector2<float> circle_SAT_MTV(sf::CircleShape const& circle);
@@ -46,16 +38,23 @@ class Shape {
 	bool contains_point(Vec point);
 	void draw(sf::RenderTexture& tex);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	std::vector<Vec> get_normals() const;
+	std::vector<Vec> get_edges() const;
 
+	[[nodiscard]] auto dot_product(Vec const a, Vec const b) const -> float { return a.x * b.x + a.y * b.y; }
+	[[nodiscard]] auto are_overlapping(Vec const a, Vec const b) const -> bool { return a.x <= b.y && a.y >= b.x; }
+	[[nodiscard]] auto get_overlap_length(Vec const a, Vec const b) const -> float { return are_overlapping(a, b) ? std::min(a.y, b.y) - std::max(a.x, b.x) : 0.f; }
 	[[nodiscard]] auto non_square() const -> bool {
-		if (num_sides < 4) { return true; }
+		if (vertices.size() < 4) { return true; }
 		return vertices[0].y != vertices[1].y || vertices[2].y != vertices[3].y;
 	}
-	[[nodiscard]] auto left() const -> float { return position.x; }
-	[[nodiscard]] auto right() const -> float { return position.x + dimensions.x; }
-	[[nodiscard]] auto top() const -> float { return position.y; }
-	[[nodiscard]] auto bottom() const -> float { return position.y + dimensions.y; }
-	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return position + dimensions * 0.5f; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
+	[[nodiscard]] auto get_dimensions() const -> sf::Vector2<float> { return non_square() ? sf::Vector2<float>{32.f, 32.f} : vertices[2] - vertices[0]; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return get_position() + get_dimensions() * 0.5f; }
+	[[nodiscard]] auto left() const -> float { return get_position().x; }
+	[[nodiscard]] auto right() const -> float { return get_position().x + get_dimensions().x; }
+	[[nodiscard]] auto top() const -> float { return get_position().y; }
+	[[nodiscard]] auto bottom() const -> float { return get_position().y + get_dimensions().y; }
 	[[nodiscard]] float get_height_at(float x) const;
 	[[nodiscard]] float get_radial_factor() const;
 
@@ -65,15 +64,10 @@ class Shape {
 	bool AABB_is_right_collision(Shape const& immovable);
 
 	std::vector<Vec> vertices{};
-	std::vector<Vec> edges{};
-	std::vector<Vec> normals{};
-	Vec axis{};
 
-	// for hurtboxes
-	Vec dimensions{};
-	Vec position{};
+  private:
+	sf::Vector2<float> position;
 	int tile_id{};
-	int num_sides{};
 };
 
 } // namespace shape

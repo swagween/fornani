@@ -122,11 +122,11 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 		sf::RectangleShape box{};
-		box.setSize(start_box.dimensions);
+		box.setSize(start_box.get_dimensions());
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(sf::Color::Green);
 		box.setOutlineThickness(-1);
-		box.setPosition(start_box.position - cam);
+		box.setPosition(start_box.get_position() - cam);
 		win.draw(box);
 	} else {
 		win.draw(sprite);

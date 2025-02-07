@@ -1,20 +1,20 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <stdio.h>
-#include <string>
-#include "Layer.hpp"
-#include <fstream>
-#include <vector>
-#include <cstdio>
-#include <filesystem>
-#include <system_error>
-#include <iostream>
-#include <djson/json.hpp>
+#include "fornani/graphics/CameraController.hpp"
 #include "editor/util/BitFlags.hpp"
+#include "editor/util/SelectBox.hpp"
 #include "EntitySet.hpp"
 #include "Background.hpp"
+#include "Map.hpp"
+
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <iostream>
+
+#include <SFML/Graphics.hpp>
+#include <djson/json.hpp>
 
 namespace data {
 class ResourceFinder;
@@ -22,23 +22,10 @@ class ResourceFinder;
 
 namespace pi {
 
-enum class Layers {
-	background_0,
-	background_1,
-	background_2,
-	background_3,
-	middleground,
-	foreground_1,
-	foreground_2,
-	obscuring,
-	END
-};
-
 enum class StyleType { firstwind, overturned, base, factory, greatwing, END };
 
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
-enum class SelectionType { neutral, palette, canvas };
 
 struct Theme {
 	std::string music{};
@@ -47,10 +34,8 @@ struct Theme {
 };
 
 constexpr inline int chunk_size_v{16};
-
-struct Map {
-	std::vector<Layer> layers{};
-};
+constexpr inline int default_num_layers_v{8};
+constexpr inline int default_middleground_v{4};
 
 class Style {
   public:
@@ -82,17 +67,18 @@ class Tool;
 class Canvas {
 
   public:
-	Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black);
-	Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop);
-	void update(Tool& tool, bool transformed = false);
+	Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
+	Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
+	void update(Tool& tool);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
-	void load(data::ResourceFinder& finder, std::string const& room_name, bool local = false);
-	bool save(data::ResourceFinder& finder, std::string const& room_name);
+	void load(data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
+	bool save(data::ResourceFinder& finder, std::string const& region, std::string const& room_name);
 	void clear();
 	void save_state(Tool& tool, bool force = false);
 	void undo();
 	void redo();
 	void clear_redo_states();
+	void hover();
 	void unhover();
 	void move(sf::Vector2<float> distance);
 	void set_position(sf::Vector2<float> to_position);
@@ -110,6 +96,7 @@ class Canvas {
 	sf::Vector2<int> get_tile_coord(int lookup);
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
+	[[nodiscard]] auto is_palette() const -> bool { return type == SelectionType::palette; }
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
 	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<uint32_t> { return dimensions / u_native_chunk_size(); }
@@ -136,16 +123,16 @@ class Canvas {
 	}
 	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
 	[[nodiscard]] auto redo_states_size() const -> std::size_t { return redo_states.size(); }
-	[[nodiscard]] auto middleground() const -> int { return static_cast<int>(Layers::middleground); }
-	[[nodiscard]] auto last_layer() const -> int { return static_cast<int>(Layers::END); }
+	[[nodiscard]] auto middleground() const -> int { return map_states.back().get_middleground(); }
+	[[nodiscard]] auto last_layer() const -> int { return static_cast<int>(map_states.back().layers.size() - 1); }
 
 	void replace_tile(uint32_t from, uint32_t to, int layer_index);
 	void edit_tile_at(int i, int j, int new_val, int layer_index);
 	void erase_at(int i, int j, int layer_index);
 	int tile_val_at(int i, int j, int layer);
 	int tile_val_at_scaled(int i, int j, int layer);
-	sf::Vector2<float> get_tile_position_at(int i, int j, int layer = 4);
-	Tile& get_tile_at(int i, int j, int layer = 4);
+	sf::Vector2<float> get_tile_position_at(int i, int j, int layer = 0);
+	Tile& get_tile_at(int i, int j, int layer = 0);
 
 	// layers
 	sf::Vector2<uint32_t> dimensions{};
@@ -154,6 +141,7 @@ class Canvas {
 	struct {
 		bool show_grid{true};
 		bool show_all_layers{true};
+		bool show_current_layer{false};
 		bool show_obscured_layer{true};
 		bool show_indicated_layers{true};
 		bool show_entities{true};
@@ -162,10 +150,8 @@ class Canvas {
 
 	EntitySet entities;
 
-	// read and write
 	struct {
 		dj::Json meta{};
-		dj::Json tiles{};
 	} data{};
 
 	struct {
@@ -175,6 +161,7 @@ class Canvas {
 	struct {
 		Style tile;
 	} styles;
+
 	Theme m_theme{};
 	std::unique_ptr<Background> background{};
 
@@ -185,10 +172,17 @@ class Canvas {
 		int source{};
 	} cutscene{};
 
+	struct {
+		fornani::graphics::ShakeProperties shake_properties{};
+		int frequency_in_seconds{};
+	} m_camera_effects{};
+
 	sf::Vector2u player_start{};
 	int active_layer{};
 
 	uint32_t room_id{};
+
+	bool minimap{};
 
   private:
 	sf::Vector2<float> position{};

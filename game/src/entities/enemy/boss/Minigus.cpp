@@ -7,7 +7,7 @@
 namespace enemy {
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console)
-	: Enemy(svc, "minigus"), gun(svc, 1), soda(svc, 2), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.dimensions, svc.styles.colors.ui_white, "minigus"),
+	: Enemy(svc, "minigus"), gun(svc, 1), soda(svc, 2), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.get_dimensions(), svc.styles.colors.ui_white, "minigus"),
 	  voice{.hurt_1 = sf::Sound(svc.assets.b_minigus_hurt_1),
 			.hurt_2 = sf::Sound(svc.assets.b_minigus_hurt_2),
 			.hurt_3 = sf::Sound(svc.assets.b_minigus_hurt_3),
@@ -82,7 +82,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	attacks.rush.origin = {40.f, 10.f};
 	attacks.rush.hit_offset = {-20.f, 0.f};
 
-	distant_range.dimensions = {900, 200};
+	distant_range.set_dimensions({900, 200});
 	Enemy::collider.stats.GRAV = 6.0f;
 	pre_direction.lr = dir::LR::left;
 	post_direction.lr = dir::LR::left;
@@ -93,13 +93,13 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	
 	voice.greatidea.setVolume(30),
 
-	sparkler.set_dimensions(Enemy::collider.vicinity.dimensions);
+	sparkler.set_dimensions(Enemy::collider.vicinity.get_dimensions());
 }
 
 void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	directions.actual = post_direction;
 	sparkler.update(svc);
-	sparkler.set_position(Enemy::collider.vicinity.position);
+	sparkler.set_position(Enemy::collider.vicinity.get_position());
 	health_bar.update(svc, health.get_normalized());
 
 	if (map.off_the_bottom(Enemy::collider.physics.position)) {
@@ -116,7 +116,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		attacks.rush.origin.x = 40.f;
 		attacks.rush.hit_offset.x = -20.f;
 	} else {
-		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.dimensions.x, 0.f};
+		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
 		attacks.punch.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.uppercut.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.rush.set_position(Enemy::collider.physics.position + dir_offset);
@@ -148,8 +148,8 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	attacks.uppercut.handle_player(player);
 	attacks.rush.handle_player(player);
 
-	attacks.left_shockwave.origin = Enemy::collider.physics.position + sf::Vector2<float>{0.f, Enemy::collider.bounding_box.dimensions.y};
-	attacks.right_shockwave.origin = Enemy::collider.physics.position + Enemy::collider.bounding_box.dimensions;
+	attacks.left_shockwave.origin = Enemy::collider.physics.position + sf::Vector2<float>{0.f, Enemy::collider.bounding_box.get_dimensions().y};
+	attacks.right_shockwave.origin = Enemy::collider.physics.position + Enemy::collider.bounding_box.get_dimensions();
 	attacks.left_shockwave.update(svc, map);
 	attacks.right_shockwave.update(svc, map);
 
@@ -222,7 +222,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	secondary_collider.physics.position.x += Enemy::direction.lr == dir::LR::left ? 0 : Enemy::collider.dimensions.x - secondary_collider.dimensions.x;
 	secondary_collider.sync_components();
 	if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.collider.handle_collider_collision(secondary_collider); }
-	distant_range.set_position(Enemy::collider.bounding_box.position - (distant_range.dimensions * 0.5f) + (Enemy::collider.dimensions * 0.5f));
+	distant_range.set_position(Enemy::collider.bounding_box.get_position() - (distant_range.get_dimensions() * 0.5f) + (Enemy::collider.dimensions * 0.5f));
 	player.collider.bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
 	player.on_crush(map);
 
@@ -883,7 +883,7 @@ fsm::StateFunction Minigus::update_struggle() {
 fsm::StateFunction Minigus::update_exit() {
 	if (animation.just_started() && anim_debug) { std::cout << "exit\n"; }
 	if (status.test(MinigusFlags::over_and_out) && m_console->is_complete()) {
-		m_map->active_loot.push_back(item::Loot(*m_services, get_attributes().drop_range, get_attributes().loot_multiplier, get_collider().bounding_box.position));
+		m_map->active_loot.push_back(item::Loot(*m_services, get_attributes().drop_range, get_attributes().loot_multiplier, get_collider().bounding_box.get_position()));
 		state = MinigusState::jumpsquat;
 		animation.set_params(jumpsquat);
 		m_services->music.load(m_services->finder, "dusken_cove");

@@ -10,6 +10,11 @@ Camera::Camera() {
 }
 
 void Camera::update(automa::ServiceProvider& svc) {
+	if (svc.camera_controller.is_shaking()) {
+		shake.properties = svc.camera_controller.get_shake_properties();
+		begin_shake();
+		svc.camera_controller.cancel();
+	}
 	screen_dimensions = svc.constants.screen_dimensions;
 	auto screen_dimensions_f = sf::Vector2<float>(screen_dimensions);
 	bounding_box.setSize(screen_dimensions_f);
@@ -24,9 +29,9 @@ void Camera::update(automa::ServiceProvider& svc) {
 		flags.reset(CamFlags::shake);
 		display_position = bounding_box.getPosition() + map_bounds_offset;
 	}
-	if (shake.timer.running() && shake.timer.get_cooldown() % shake.frequency == 0) {
+	if (shake.timer.running() && shake.timer.get_cooldown() % shake.properties.frequency == 0) {
 		shake.dampen.update();
-		auto diff = (float)shake.dampen.get_cooldown() * shake.energy;
+		auto diff = static_cast<float>(shake.dampen.get_cooldown()) * shake.properties.energy;
 		if (abs(diff) < 0.1f) {
 			shake.timer.cancel();
 			diff = 0.f;
@@ -68,8 +73,8 @@ void Camera::center(sf::Vector2<float> new_position) {
 void Camera::force_center(sf::Vector2<float> new_position) { set_position(new_position - bounding_box.getSize() * 0.5f); }
 
 void Camera::begin_shake() {
-	shake.timer.start(shake.start_time);
-	shake.dampen.start(shake.dampen_factor);
+	shake.timer.start(shake.properties.start_time);
+	shake.dampen.start(shake.properties.dampen_factor);
 }
 
 } // namespace fornani

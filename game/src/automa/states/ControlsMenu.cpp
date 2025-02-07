@@ -49,7 +49,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		auto tab_to_switch_to = (current_tab + 1) % 4;
 		change_scene(svc, tabs[tab_to_switch_to]);
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && !binding_mode) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		svc.state_controller.submenu = menu_type::options;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);

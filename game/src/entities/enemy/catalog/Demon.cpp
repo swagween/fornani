@@ -45,7 +45,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 		attacks.rush.origin.x = 20.f;
 		attacks.rush.hit_offset.x = 0.f;
 	} else {
-		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.dimensions.x, 0.f};
+		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
 		attacks.stab.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.rush.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.stab.origin.x = 10.f;

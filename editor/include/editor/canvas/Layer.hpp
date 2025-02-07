@@ -19,6 +19,8 @@ class Layer {
 	bool collidable{};
 	bool active{};
 	sf::Vector2<uint32_t> dimensions{};
+	std::string label{};
+	char const* label_cstr{};
 };
 
 } // namespace pi
