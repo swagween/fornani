@@ -133,6 +133,7 @@ class Player {
 	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
+	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2<float> { return collider.get_center() + camera_offset; }
 
 	// moves
 	void jump(world::Map& map);
@@ -199,6 +200,7 @@ class Player {
 	std::optional<arms::Arsenal> arsenal{};
 	std::optional<arms::Hotbar> hotbar{};
 
+	sf::Vector2<float> camera_offset{};
 	sf::Vector2<float> anchor_point{};
 	sf::Vector2<float> sprite_offset{10.f, -3.f};
 	sf::Vector2<float> sprite_dimensions{};
