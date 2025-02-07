@@ -78,7 +78,7 @@ void Editor::run() {
 		}
 
 		if (trigger_demo) {
-			auto ppos = static_cast<sf::Vector2<float>>(map.entities.variables.player_start) * 32.f;
+			auto ppos = shift_pressed() ? sf::Vector2<float>{map.entities.variables.player_hot_start} * 32.f : sf::Vector2<float>{map.entities.variables.player_start} * 32.f;
 			launch_demo(args, map.room_id, finder->paths.room_name, ppos);
 			if (!ImGui::SFML::Init(window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
 			init(finder->paths.room_name);
@@ -167,6 +167,11 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
 			if (shift_pressed()) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
+					map.entities.variables.player_hot_start = current_tool->scaled_position();
+					save();
+					trigger_demo = true;
+				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Left) { map.resize({-1, 0}); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Right) { map.resize({1, 0}); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { map.resize({0, -1}); }

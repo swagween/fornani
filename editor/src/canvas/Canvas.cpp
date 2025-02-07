@@ -259,9 +259,10 @@ void Canvas::resize(sf::Vector2i adjustment) {
 	auto current = Map{map_states.back()};
 	dimensions.x += adjustment.x * static_cast<int>(f_native_chunk_size());
 	dimensions.y += adjustment.y * static_cast<int>(f_native_chunk_size());
+	auto num_layers = map_states.back().layers.size();
 	map_states.push_back(Map());
-	for (auto i{0}; i < last_layer(); ++i) {
-		map_states.back().layers.push_back(Layer(i, i == middleground(), dimensions));
+	for (auto i{0}; i < num_layers; ++i) {
+		map_states.back().layers.push_back(Layer(i, i == current.get_middleground(), dimensions));
 		map_states.back().layers.back().grid.match(current.layers.at(i).grid);
 	}
 	clear_redo_states();

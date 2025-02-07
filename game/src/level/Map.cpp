@@ -797,7 +797,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 					if (layer.middleground()) { draw_barrier(tex, tile, cell); }
 				} else {
 					if (layer.obscuring()) {
-						tile.setTextureRect(sf::IntRect({32, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+						tile.setTextureRect(sf::IntRect({0, 192}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
 						tile.setPosition(cell.position() + scaled_barrier);
 						textures.reverse.draw(tile);
 					}

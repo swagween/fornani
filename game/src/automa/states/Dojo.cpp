@@ -189,7 +189,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	map.update(svc, console, inventory_window);
 
 	//if (map.camera_shake()) { camera.begin_shake(); }
-	camera.center(player->anchor_point);
+	camera.center(player->get_camera_focus_point());
 	camera.update(svc);
 	camera.restrict_movement(map.real_dimensions);
 
