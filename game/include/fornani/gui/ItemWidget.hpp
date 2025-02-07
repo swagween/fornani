@@ -4,11 +4,11 @@
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/particle/Sparkler.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 enum class WidgetFlags { gun };
 

@@ -20,7 +20,7 @@
 #include <chrono>
 #include <imgui.h>
 
-namespace data {
+namespace fornani::data {
 class ResourceFinder;
 }
 
@@ -35,10 +35,10 @@ class Editor {
   public:
 	int const TILE_WIDTH{32};
 	int const NUM_TOOLS{6};
-	Editor(char** argv, WindowManager& window, data::ResourceFinder& finder);
+	Editor(char** argv, WindowManager& window, fornani::data::ResourceFinder& finder);
 	void run();
 	void init(std::string const& load_path);
-	void handle_events(std::optional<sf::Event> const event, sf::RenderWindow& win);
+	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win);
 	void logic();
 	void load();
 	bool save();
@@ -48,7 +48,7 @@ class Editor {
 	void export_layer_texture();
 	void center_map();
 	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position);
-	void shutdown(data::ResourceFinder& finder);
+	void shutdown(fornani::data::ResourceFinder& finder);
 	void reset_layers();
 	void delete_current_layer();
 	[[nodiscard]] auto control_pressed() const -> bool { return pressed_keys.test(PressedKeys::control); }
@@ -91,7 +91,7 @@ class Editor {
 
   private:
 	WindowManager* window;
-	data::ResourceFinder* finder;
+	fornani::data::ResourceFinder* finder;
 	PopupHandler popup{};
 	std::optional<Clipboard> m_clipboard{};
 	std::unique_ptr<Tool> current_tool;
@@ -109,7 +109,7 @@ class Editor {
 		bool contiguous{};
 	} tool_flags{};
 	float zoom_factor{0.05f};
-	::util::Cooldown grid_refresh{};
+	fornani::util::Cooldown grid_refresh{};
 	struct {
 		std::vector<Style> styles{};
 		std::vector<BackgroundType> backdrops{};

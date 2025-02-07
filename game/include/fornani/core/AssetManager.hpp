@@ -8,7 +8,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
-namespace asset {
+namespace fornani::asset {
 
 class AssetManager {
   public:

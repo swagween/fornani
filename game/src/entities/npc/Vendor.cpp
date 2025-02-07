@@ -2,7 +2,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include <iostream>
 
-namespace npc {
+namespace fornani::npc {
 
 void Vendor::generate_inventory(automa::ServiceProvider& svc) {
 	inventory.clear();

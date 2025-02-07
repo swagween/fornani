@@ -3,11 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Scenery {
   public:

@@ -15,7 +15,7 @@
 
 #include "fornani/utils/FixedString.hpp"
 
-namespace util {
+namespace fornani::util {
 struct AppLog {
 	ImGuiTextBuffer Buf;
 	ImGuiTextFilter Filter;
@@ -43,7 +43,7 @@ struct AppLog {
 			if (Buf[old_size] == '\n') LineOffsets.push_back(old_size + 1);
 	}
 
-	void draw(char const* title, bool* p_open = NULL) {
+	void draw(char const* title, bool* p_open = nullptr) {
 		if (!ImGui::Begin(title, p_open)) {
 			ImGui::End();
 			return;

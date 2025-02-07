@@ -1,6 +1,6 @@
 #include "fornani/entities/player/Slide.hpp"
 
-namespace player {
+namespace fornani::player {
 
 void Slide::update() {
 	begin_slide.update();

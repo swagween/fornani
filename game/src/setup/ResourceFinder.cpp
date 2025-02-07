@@ -1,7 +1,7 @@
 
 #include "fornani/setup/ResourceFinder.hpp"
 
-namespace data {
+namespace fornani::data {
 
 ResourceFinder::ResourceFinder(char** argv) {
 	paths.resources = find_directory(argv[0], fs::path{"resources"});

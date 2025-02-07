@@ -7,15 +7,15 @@
 #include "fornani/utils/StateFunction.hpp"
 #include "fornani/entities/Entity.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 const sf::Vector2<float> large_animator_offset{16.f, 16.f};
 enum class AnimatorAttributes{large, automatic, foreground};

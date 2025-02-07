@@ -2,7 +2,7 @@
 #include "fornani/automa/states/FileMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player, console), file_select_menu(svc, {"play", "stats", "delete"}) {
 	current_selection = util::Circuit(num_files);

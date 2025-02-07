@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string>
 
-namespace player {
+namespace fornani::player {
 
 class Wallet {
   public:
@@ -21,4 +21,4 @@ class Wallet {
 	util::Counter orbs{};
 };
 
-} // namespace player
+} // namespace fornani::player

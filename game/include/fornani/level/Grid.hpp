@@ -9,12 +9,12 @@
 #include "Tile.hpp"
 #include <djson/json.hpp>
 
-namespace world {
+namespace fornani::world {
 
-int const CEIL_SLANT_INDEX = 448;
-int const FLOOR_SLANT_INDEX = 464;
-int const ceiling_single_ramp = 480;
-int const floor_single_ramp = 496;
+constexpr int CEIL_SLANT_INDEX = 448;
+constexpr int FLOOR_SLANT_INDEX = 464;
+constexpr int ceiling_single_ramp = 480;
+constexpr int floor_single_ramp = 496;
 
 class Grid {
   public:

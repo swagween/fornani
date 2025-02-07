@@ -8,7 +8,7 @@
 #include <string>
 #include "ResourceFinder.hpp"
 
-namespace data {
+namespace fornani::data {
 
 class TextManager {
 	public:

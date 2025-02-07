@@ -1,7 +1,7 @@
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace audio {
+namespace fornani::audio {
 
 void Ambience::load(data::ResourceFinder& finder, std::string_view source) {
 	if (source.empty()) { return; }

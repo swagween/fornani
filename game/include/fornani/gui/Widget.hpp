@@ -3,15 +3,15 @@
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace gui {
+namespace fornani::gui {
 enum class State { added, neutral, taken, gone };
 class Widget {
   public:

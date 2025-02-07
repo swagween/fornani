@@ -3,7 +3,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define HAULER_BIND(f) std::bind(&Hauler::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 	enum class HaulerState { idle, turn, run, haul, alert, jump, hurt };
 

@@ -4,7 +4,7 @@
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Counter.hpp"
 
-namespace entity {
+namespace fornani::entity {
 enum class HPState { hit };
 class Health : public Entity {
 	float const default_max{8.f};
@@ -43,4 +43,4 @@ class Health : public Entity {
 	int invincibility_time{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

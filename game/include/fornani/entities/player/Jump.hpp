@@ -5,7 +5,7 @@
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Counter.hpp"
 
-namespace player {
+namespace fornani::player {
 
 constexpr static int request_time{16};
 constexpr static int cooldown_time{40};
@@ -71,4 +71,4 @@ class Jump {
 	util::Cooldown coyote_time{8};
 };
 
-} // namespace player
+} // namespace fornani::player

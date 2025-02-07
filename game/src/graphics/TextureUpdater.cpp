@@ -1,7 +1,7 @@
 #include "fornani/graphics/TextureUpdater.hpp"
 #include <SFML/Graphics.hpp>
 
-namespace flfx {
+namespace fornani::flfx {
 
 void TextureUpdater::load_pixel_map(sf::Texture& map_texture) {
 	map.clear();

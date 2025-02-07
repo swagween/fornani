@@ -2,7 +2,7 @@
 #include "fornani/automa/states/StatSheet.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), stats(svc.text.fonts.basic), title(svc.text.fonts.title) {
 	current_selection = util::Circuit(static_cast<int>(options.size()));

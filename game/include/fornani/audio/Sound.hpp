@@ -4,11 +4,11 @@
 #include <SFML/Audio.hpp>
 #include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace audio {
+namespace fornani::audio {
 
 class Sound {
   public:

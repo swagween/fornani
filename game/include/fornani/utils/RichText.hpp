@@ -4,7 +4,7 @@
 #include <variant>
 #include <vector>
 
-namespace util {
+namespace fornani::util {
 
 class RichText : public sf::Drawable, public sf::Transformable {
   public:
@@ -34,7 +34,7 @@ class RichText : public sf::Drawable, public sf::Transformable {
 	}
 
 	// Draw all segments
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		states.transform *= getTransform(); // Apply transformations
 
 		for (auto const& segment : m_segments) {

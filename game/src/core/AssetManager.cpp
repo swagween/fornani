@@ -1,9 +1,9 @@
-#include "../../include/fornani/core/AssetManager.hpp"
+#include "fornani/core/AssetManager.hpp"
 
-namespace asset {
+namespace fornani::asset {
 AssetManager::AssetManager(const data::ResourceFinder& finder) {
 
-	if (!t_null.loadFromFile(finder.resource_path() + "/image/app/null.png")) { std::cout << "Failed to load texture.\n"; };
+	if (!t_null.loadFromFile(finder.resource_path() + "/image/app/null.png")) { NANI_LOG_WARN(m_logger, "Failed to load texture."); };
 
 	// TODO: This manner of loading assets is extremely cumbersome.
 	//		 We honestly should move this into an unordered_map or something.

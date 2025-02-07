@@ -1,9 +1,7 @@
 
 #include "fornani/graphics/CameraController.hpp"
 
-namespace fornani {
-
-namespace graphics {
+namespace fornani::graphics {
 
 void CameraController::shake(ShakeProperties properties) { shake_properties = properties; }
 
@@ -11,6 +9,4 @@ void CameraController::shake(int frequency, float energy, int start_time, int da
 
 void CameraController::cancel() { shake_properties = {}; }
 
-} // namespace graphics
-
-} // namespace fornani
+} // namespace fornani::graphics

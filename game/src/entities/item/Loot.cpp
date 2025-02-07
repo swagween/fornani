@@ -4,7 +4,7 @@
 #include "fornani/entities/player/Player.hpp"
 
 
-namespace item {
+namespace fornani::item {
 Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos, int delay_time, bool special, int special_id) {
 
 	auto drop_rate = svc.random.random_range(drop_range.x, drop_range.y);

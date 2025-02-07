@@ -2,15 +2,15 @@
 #pragma once
 #include <string_view>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace gui {
+namespace fornani::gui {
 class WardrobeWidget {
   public:
 	WardrobeWidget(const automa::ServiceProvider& svc);

@@ -3,7 +3,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
 	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.texture_lookup.at(label))} {

@@ -4,11 +4,11 @@
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 enum class PortraitFlags { custom };
 float const pad_x{20.f};
 float const pad_y{20.f};

@@ -10,11 +10,11 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Direction.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace components {
+namespace fornani::components {
 
 sf::Vector2<float> const FRICTION_DEFAULT = {0.9f, 0.9f};
 float const MASS_DEFAULT = 1.0f;
@@ -83,4 +83,4 @@ class PhysicsComponent {
 	float epsilon{0.0001f};
 };
 
-} // namespace components
+} // namespace fornani::components

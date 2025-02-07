@@ -7,7 +7,7 @@
 #include "fornani/components/CircleSensor.hpp"
 #include <optional>
 
-namespace vfx {
+namespace fornani::vfx {
 struct SpringParameters {
 	float dampen_factor{};
 	float spring_constant{};

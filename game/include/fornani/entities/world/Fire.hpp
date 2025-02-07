@@ -6,7 +6,7 @@
 #include "fornani/particle/Sparkler.hpp"
 #include "Inspectable.hpp"
 
-namespace world {
+namespace fornani::world {
 class Map;
 class Fire {
   public:

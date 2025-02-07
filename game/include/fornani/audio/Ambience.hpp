@@ -7,11 +7,11 @@
 #include "MusicPlayer.hpp"
 #include <thread>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace audio {
+namespace fornani::audio {
 
 class Ambience {
   public:

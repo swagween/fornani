@@ -17,11 +17,11 @@
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/utils/Shipment.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace text {
+namespace fornani::text {
 
 struct Message {
 	sf::Text data;

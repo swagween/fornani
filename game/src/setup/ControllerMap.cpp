@@ -11,7 +11,7 @@
 #pragma warning(error : 4061) // Missing enum variants in switch cases
 #endif
 
-namespace config {
+namespace fornani::config {
 
 auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	switch (action) {

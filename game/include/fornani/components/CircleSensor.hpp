@@ -5,7 +5,7 @@
 #include "fornani/utils/Shape.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
-namespace components {
+namespace fornani::components {
 enum class SensorState { active };
 class CircleSensor {
   public:

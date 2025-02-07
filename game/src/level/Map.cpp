@@ -9,7 +9,7 @@
 
 #include <tracy/Tracy.hpp>
 
-namespace world {
+namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
 	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{128}, .loading{2}}, barrier{1.f, 1.f},

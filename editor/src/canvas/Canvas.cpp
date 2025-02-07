@@ -7,9 +7,9 @@
 
 namespace pi {
 
-Canvas::Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
+Canvas::Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
 
-Canvas::Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
+Canvas::Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
 	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
     dimensions = dim;
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
@@ -85,7 +85,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	}
 }
 
-void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
+void Canvas::load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
 
 	map_states.clear();
 	redo_states.clear();
@@ -148,7 +148,7 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
 	set_grid_texture();
 }
 
-bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::string const& room_name) {
+bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name) {
 
 	std::filesystem::create_directory(finder.paths.levels / std::filesystem::path{region});
 

@@ -13,15 +13,15 @@
 #include "WidgetBar.hpp"
 #include "fornani/utils/Stopwatch.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 class HUD {
 

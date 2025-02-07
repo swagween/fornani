@@ -10,7 +10,7 @@
 #include <cmath>
 #include <vector>
 
-namespace shape {
+namespace fornani::shape {
 
 class Shape {
 

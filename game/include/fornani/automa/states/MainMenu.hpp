@@ -3,7 +3,7 @@
 
 #include "fornani/automa/GameState.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 class MainMenu : public GameState {
   public:

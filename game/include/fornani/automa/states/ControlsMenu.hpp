@@ -3,9 +3,9 @@
 
 #include "fornani/automa/GameState.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
-class ControlsMenu : public automa::GameState {
+class ControlsMenu : public GameState {
   public:
 	ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc);

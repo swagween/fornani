@@ -23,39 +23,39 @@
 #include "VisitHistory.hpp"
 #include "Piggybacker.hpp"
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 class InventoryWindow;
 } // namespace gui
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace item {
+namespace fornani::item {
 enum class DropType;
 }
 
-namespace player {
+namespace fornani::player {
 
-float const PLAYER_WIDTH = 20.0f;
-float const PLAYER_HEIGHT = 20.0f;
-float const head_height{8.f};
-float const PLAYER_START_X = 100.0f;
-float const PLAYER_START_Y = 100.0f;
-float const JUMPBOX_HEIGHT = 8.0f;
-float const DETECTOR_WIDTH = 8.0f;
-float const DETECTOR_HEIGHT = 22.0f;
-float const WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
-float const DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
-int const JUMP_BUFFER_TIME = 12;
-int const INVINCIBILITY_TIME = 200;
-int const ANCHOR_BUFFER = 50;
-int const num_sprites{220};
+constexpr float PLAYER_WIDTH = 20.0f;
+constexpr float PLAYER_HEIGHT = 20.0f;
+constexpr float head_height{8.f};
+constexpr float PLAYER_START_X = 100.0f;
+constexpr float PLAYER_START_Y = 100.0f;
+constexpr float JUMPBOX_HEIGHT = 8.0f;
+constexpr float DETECTOR_WIDTH = 8.0f;
+constexpr float DETECTOR_HEIGHT = 22.0f;
+constexpr float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
+constexpr float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
+constexpr int JUMP_BUFFER_TIME = 12;
+constexpr int INVINCIBILITY_TIME = 200;
+constexpr int ANCHOR_BUFFER = 50;
+constexpr int num_sprites{220};
 
 constexpr inline float antenna_force{0.18f};
 constexpr inline float antenna_speed{336.f};

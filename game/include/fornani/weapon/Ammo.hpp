@@ -7,15 +7,15 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/entities/packages/Health.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace arms {
+namespace fornani::arms {
 enum class AmmoFlags { infinite };
 class Ammo {
   public:

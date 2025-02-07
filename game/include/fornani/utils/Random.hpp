@@ -6,7 +6,7 @@
 #include <memory>
 #include <random>
 
-namespace util {
+namespace fornani::util {
 
 class Random {
 

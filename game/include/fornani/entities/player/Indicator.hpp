@@ -8,15 +8,15 @@
 #include "fornani/graphics/ColorFade.hpp"
 #include "fornani/particle/Gravitator.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace player {
+namespace fornani::player {
 enum class IndicatorType { health, orb };
 class Indicator {
   public:
@@ -47,4 +47,4 @@ class Indicator {
 	vfx::ColorFade color_fade{};
 	vfx::Gravitator gravitator{};
 };
-} // namespace player
+} // namespace fornani::player

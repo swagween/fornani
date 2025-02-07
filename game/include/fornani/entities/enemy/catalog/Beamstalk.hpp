@@ -3,7 +3,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define BEAMSTALK_BIND(f) std::bind(&Beamstalk::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class BeamstalkState { idle, charge, shoot, relax };
 

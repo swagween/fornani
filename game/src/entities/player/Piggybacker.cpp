@@ -2,7 +2,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace player {
+namespace fornani::player {
 
 Piggybacker::Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2<float> position) : sprite{svc.assets.npcs.at(label)} {
 	auto const& in_data = svc.data.npc[label];

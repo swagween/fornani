@@ -2,11 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include "fornani/particle/Gravitator.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 enum class BarState { full, empty };
 class StatusBar {
   public:

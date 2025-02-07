@@ -7,7 +7,7 @@
 #include <format>
 #include <string>
 
-namespace gui {
+namespace fornani::gui {
 
 ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) { text.setPosition(sf::Vector2f{8.f, svc.constants.f_screen_dimensions.y - 32.f}); }
 

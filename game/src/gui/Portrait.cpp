@@ -1,7 +1,7 @@
 #include "fornani/gui/Portrait.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left), sprite{svc.assets.t_portraits}, window{svc.assets.t_portrait_window} {
 	dimensions = sf::Vector2<float>{128, 256};

@@ -11,7 +11,7 @@
 
 namespace pi {
 
-Editor::Editor(char** argv, WindowManager& window, data::ResourceFinder& finder)
+Editor::Editor(char** argv, WindowManager& window, fornani::data::ResourceFinder& finder)
 	: window(&window), finder(&finder), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0} {
 
 	args = argv;
@@ -1013,7 +1013,7 @@ void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, s
 	demo.launch(argv, true, room_id, finder->paths.room_name, player_position);
 }
 
-void Editor::shutdown(data::ResourceFinder& finder) {
+void Editor::shutdown(fornani::data::ResourceFinder& finder) {
 	user_data["region"] = finder.paths.region;
 	user_data["room"] = finder.paths.room_name;
 	if (!user_data.to_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str())) { std::cout << "Failed to save user data.\n"; }

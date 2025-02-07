@@ -8,19 +8,19 @@
 #include "fornani/utils/CollisionDepth.hpp"
 #include <optional>
 
-namespace world{
+namespace fornani::world{
 class Map;
 }
 
-namespace shape {
+namespace fornani::shape {
 
-float const default_dim = 24.0f;
-float const vicinity_pad = 32.f;
-float const wallslide_pad = 5.f;
+constexpr float default_dim = 24.0f;
+constexpr float vicinity_pad = 32.f;
+constexpr float wallslide_pad = 5.f;
 
-float const default_jumpbox_height = 4.0f;
-float const default_detector_width = 4.f;
-float const default_detector_height = 18.f;
+constexpr float default_jumpbox_height = 4.0f;
+constexpr float default_detector_width = 4.f;
+constexpr float default_detector_height = 18.f;
 
 enum class General { ignore_resolution, complex, pushable, soft, top_only_collision };
 enum class Animation { just_landed, sliding };

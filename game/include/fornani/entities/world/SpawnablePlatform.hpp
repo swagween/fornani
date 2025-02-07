@@ -11,14 +11,14 @@
 #include "fornani/utils/StateFunction.hpp"
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 enum class SpawnablePlatformState { open, opening, fading, closing, dormant };
 class SpawnablePlatform {
   public:
@@ -47,4 +47,4 @@ class SpawnablePlatform {
 	anim::AnimatedSprite sprite;
 	Health health{};
 };
-} // namespace entity
+} // namespace fornani::entity

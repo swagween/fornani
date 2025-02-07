@@ -4,7 +4,7 @@
 #include "fornani/entities/packages/Seeker.hpp"
 #define EYEBIT_BIND(f) std::bind(&Eyebit::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 	enum class EyebitState { idle, turn };
 

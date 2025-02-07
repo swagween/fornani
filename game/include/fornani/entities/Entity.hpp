@@ -4,17 +4,16 @@
 #include <SFML/Audio.hpp>
 #include "fornani/utils/Direction.hpp"
 #include "fornani/utils/BitFlags.hpp"
-#include <iostream>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 enum class State { flip };
 

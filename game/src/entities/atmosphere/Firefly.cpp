@@ -4,7 +4,7 @@
 #include "fornani/utils/Math.hpp"
 #include <numbers>
 
-namespace vfx {
+namespace fornani::vfx {
 
 Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_firefly, {9, 9}) {
 	physics.set_global_friction(0.99f);

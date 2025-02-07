@@ -5,7 +5,7 @@
 #include <deque>
 #include <algorithm>
 
-namespace flfx {
+namespace fornani::flfx {
 
 class SpriteHistory {
   public:

@@ -4,7 +4,7 @@
 
 #include <numbers>
 
-namespace vfx {
+namespace fornani::vfx {
 
 Droplet::Droplet(sf::Vector2<float> start, DropParams params, float tweak) : collider(shape::CircleCollider(3.f)), params(params) {
 	collider.physics.position = start;

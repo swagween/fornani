@@ -12,7 +12,7 @@
 #include "Cooldown.hpp"
 #include "BitFlags.hpp"
 
-namespace util {
+namespace fornani::util {
 
 using Clk = std::chrono::steady_clock;
 using Sec = std::chrono::duration<float>;

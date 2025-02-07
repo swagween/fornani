@@ -1,7 +1,7 @@
 #include "fornani/weapon/Weapon.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	: metadata{.id = id, .label = enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()},

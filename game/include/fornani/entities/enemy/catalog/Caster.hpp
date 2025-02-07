@@ -3,7 +3,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define CASTER_BIND(f) std::bind(&Caster::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class CasterState { idle, turn, signal, dormant, prepare };
 enum class CasterVariant { apprentice, tyrant };

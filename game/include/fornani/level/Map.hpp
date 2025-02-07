@@ -43,21 +43,21 @@
 
 constexpr unsigned int const u_chunk_size_v{16u};
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 class Portrait;
 class InventoryWindow;
 }
 
-namespace world {
+namespace fornani::world {
 
 enum class LevelState { game_over, camera_shake, spawn_enemy };
 enum class MapState { unobscure };

@@ -12,8 +12,8 @@
 
 namespace pi {
 
-void PopupHandler::launch(data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
-	if (ImGui::BeginPopupModal("Inspectable Message", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
+	if (ImGui::BeginPopupModal("Inspectable Message", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 
 		static bool activate_on_contact{false};
 		static char keybuffer[128] = "";

@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 enum class MenuStatus { vendor };
 

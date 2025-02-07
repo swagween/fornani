@@ -4,9 +4,9 @@
 #include "fornani/automa/GameState.hpp"
 #include "fornani/gui/MiniMenu.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
-class FileMenu : public automa::GameState {
+class FileMenu : public GameState {
 
 	static int const num_files{3};
 

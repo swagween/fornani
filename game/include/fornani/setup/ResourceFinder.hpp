@@ -4,10 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <filesystem>
-#include <iostream>
 #include <string>
 
-namespace data {
+namespace fornani::data {
 
 namespace fs = std::filesystem;
 

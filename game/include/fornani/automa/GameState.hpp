@@ -18,11 +18,11 @@
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace automa {
+namespace fornani::automa {
 
 // globals
 
@@ -84,4 +84,4 @@ class GameState {
 	float top_buffer{80.f};
 };
 
-} // namespace automa
+} // namespace fornani::automa

@@ -65,6 +65,8 @@ class Game {
 	player::Player player;
 	automa::StateManager game_state;
 	sf::RectangleShape background{};
+
+	io::Logger m_logger{ "core" };
 };
 
 } // namespace fornani

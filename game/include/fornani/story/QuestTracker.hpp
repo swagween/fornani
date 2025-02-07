@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 namespace fornani {

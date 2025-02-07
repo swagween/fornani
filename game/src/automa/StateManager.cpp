@@ -5,7 +5,7 @@
 
 #include "../../include/fornani/core/Game.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 StateManager::StateManager(ServiceProvider& svc, player::Player& player) : g_current_state{std::make_unique<MainMenu>(svc, player, "main")} {}
 

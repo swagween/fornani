@@ -7,15 +7,15 @@
 #include "fornani/graphics/MapTexture.hpp"
 #include "fornani/utils/Circuit.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 class Portal;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 enum class ChunkType { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 

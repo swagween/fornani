@@ -5,11 +5,11 @@
 #include "fornani/utils/Collider.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Gravitator {
 

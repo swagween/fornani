@@ -5,7 +5,7 @@
 #include "Cooldown.hpp"
 #include <string>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 

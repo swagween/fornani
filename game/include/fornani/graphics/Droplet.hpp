@@ -5,15 +5,15 @@
 #include "fornani/utils/Collider.hpp"
 #include <vector>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 struct DropParams {
 	float slant{};
 	float sway{};

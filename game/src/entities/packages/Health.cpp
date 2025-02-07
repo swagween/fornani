@@ -2,7 +2,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
-namespace entity {
+namespace fornani::entity {
 
 void Health::set_max(float amount) {
 	max_hp = amount;

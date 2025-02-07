@@ -6,19 +6,19 @@
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/entities/packages/Health.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace arms {
+namespace fornani::arms {
 class Projectile;
 }
 
-namespace entity {
+namespace fornani::entity {
 class TreasureContainer {
   public:
 	TreasureContainer(automa::ServiceProvider& svc, item::Rarity rarity, sf::Vector2<float> position, int index = 0);
@@ -38,4 +38,4 @@ class TreasureContainer {
 	Health health{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

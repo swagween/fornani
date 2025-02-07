@@ -7,7 +7,7 @@
 #include "fornani/level/Breakable.hpp"
 #include <algorithm>
 
-namespace world {
+namespace fornani::world {
 
 SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> position, int id, int type, Map& map) : sprite(svc.assets.t_switches, {32, 16}), id(id), type(static_cast<SwitchType>(type)) {
 	collider = shape::Collider({32.f, 14.f});

@@ -1,7 +1,7 @@
 #pragma once
 #include "BitFlags.hpp"
 
-namespace util {
+namespace fornani::util {
 enum class Flags { state, trigger };
 class StateFlag {
 	constexpr void set() {

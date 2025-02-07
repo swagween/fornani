@@ -11,7 +11,7 @@
 #include "fornani/components/SteeringBehavior.hpp"
 #include <optional>
 
-namespace arms {
+namespace fornani::arms {
 
 enum class WeaponState { unlocked, equipped, reloading };
 enum class InventoryState { reserve, hotbar };

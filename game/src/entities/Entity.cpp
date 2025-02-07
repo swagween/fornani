@@ -4,7 +4,7 @@
 
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Entity::Entity(automa::ServiceProvider& svc) {}
 

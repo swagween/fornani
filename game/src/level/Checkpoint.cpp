@@ -4,7 +4,7 @@
 #include "fornani/particle/Effect.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace world {
+namespace fornani::world {
 
 Checkpoint::Checkpoint(automa::ServiceProvider& svc, sf::Vector2<float> pos) : bounds({32.f, 32.f}) { bounds.set_position(pos); }
 

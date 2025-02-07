@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace util {
+namespace fornani::util {
 
 std::vector<int> Decoder::decode(std::string const& input, char const& delimiter) {
 	std::vector<int> ret{};

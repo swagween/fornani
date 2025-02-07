@@ -6,15 +6,15 @@
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Counter.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace config {
+namespace fornani::config {
 enum class DigitalAction;
 }
 
-namespace text {
+namespace fornani::text {
 
 enum class HelpTextFlags { no_blink, time_limit };
 
@@ -47,4 +47,4 @@ class HelpText {
 	sf::Vector2<float> bg_offset{2.f, 2.f};
 };
 
-} // namespace text
+} // namespace fornani::text

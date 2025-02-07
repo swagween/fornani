@@ -1,7 +1,7 @@
 #include "fornani/particle/Sparkler.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions, sf::Color color, std::string_view type) : dimensions(dimensions), color(color), type(type) {
 	auto const& in_data = svc.data.sparkler[type];

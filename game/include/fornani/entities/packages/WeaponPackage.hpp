@@ -4,11 +4,11 @@
 #include "fornani/weapon/Weapon.hpp"
 #include "fornani/utils/Cycle.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 class Enemy;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class WeaponPackage : public Entity {
   public:
@@ -30,4 +30,4 @@ class WeaponPackage : public Entity {
 	std::unique_ptr<arms::Weapon> weapon;
 };
 
-} // namespace entity
+} // namespace fornani::entity

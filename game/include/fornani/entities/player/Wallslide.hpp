@@ -4,7 +4,7 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
-namespace player {
+namespace fornani::player {
 
 constexpr static int perfect_walljump{4};
 constexpr static int walljump_request_time{12};
@@ -31,4 +31,4 @@ class Wallslide {
 	util::Cooldown walljump_request{};
 };
 
-} // namespace player
+} // namespace fornani::player

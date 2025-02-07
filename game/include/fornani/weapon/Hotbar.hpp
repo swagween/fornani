@@ -9,7 +9,7 @@
 #include "Arsenal.hpp"
 #include "fornani/utils/Circuit.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 class Hotbar {
   public:

@@ -1,7 +1,7 @@
 #include "fornani/utils/NineSlice.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace util {
+namespace fornani::util {
 
 NineSlice::NineSlice(automa::ServiceProvider& svc, int corner_factor, int edge_factor) : sprite{svc.assets.t_blue_console}, corner_factor(corner_factor), edge_factor(edge_factor) {
 	float fric{0.93f};

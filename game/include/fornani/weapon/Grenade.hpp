@@ -8,19 +8,19 @@
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/components/CircleSensor.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace arms {
+namespace fornani::arms {
 enum class GrenadeFlags { detonated };
 int const detonation_time{600};
 class Grenade : public shape::Collider, public entity::Entity {

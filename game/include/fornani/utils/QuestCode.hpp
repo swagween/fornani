@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-namespace util {
+namespace fornani::util {
 
 	struct QuestKey {
 	int type{};

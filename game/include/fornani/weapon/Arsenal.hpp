@@ -9,7 +9,7 @@
 #include "Weapon.hpp"
 #include "fornani/utils/Circuit.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 class Arsenal {
   public:

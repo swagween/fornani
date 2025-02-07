@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Archer::Archer(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "archer"), m_services(&svc), m_map(&map), parts{.bow{svc.assets.t_archer_bow, 0.8f, 0.85f, {-42.f, -34.f}}} {

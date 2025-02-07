@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace npc {
+namespace fornani::npc {
 
 NPC::NPC(automa::ServiceProvider& svc, int id)
 	: id(id), label(svc.tables.npc_label.at(id)), animation_machine(std::make_unique<NPCAnimation>(svc, id)), indicator(svc.assets.t_indicator, {32, 32}),

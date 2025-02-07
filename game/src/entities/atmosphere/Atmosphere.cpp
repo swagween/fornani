@@ -9,7 +9,7 @@
 
 #include <tracy/Tracy.hpp>
 
-namespace vfx {
+namespace fornani::vfx {
 
 Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, int type) {
 	auto density{32};

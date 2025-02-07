@@ -12,11 +12,11 @@
 #include "fornani/utils/Counter.hpp"
 #include "fornani/graphics/SpriteRotator.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace anim {
+namespace fornani::anim {
 
 class AnimatedSprite {
   public:

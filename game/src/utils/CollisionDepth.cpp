@@ -3,7 +3,7 @@
 #include "fornani/utils/Collider.hpp"
 #include <iostream>
 
-namespace util {
+namespace fornani::util {
 
 void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const& other) {
 	if (iterations.get_count() == 0) { collision_direction = CollisionDirection::none; }
