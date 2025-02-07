@@ -10,23 +10,23 @@
 #include <deque>
 #include <string_view>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace npc {
+namespace fornani::npc {
 
 enum class NPCState { engaged, force_interact, introduced, background, talking, cutscene, piggybacking, hidden };
 enum class NPCTrigger { distant_interact, engaged, cutscene };
@@ -77,4 +77,4 @@ class NPC : public entity::Entity {
 	} physical{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

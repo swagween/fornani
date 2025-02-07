@@ -11,15 +11,15 @@
 #include <optional>
 #include <memory>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Firefly {
   public:

@@ -3,7 +3,7 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
-namespace dir {
+namespace fornani::dir {
 
 // the exclusion of "N" in the class name is purposeful; there is no "neutral" direction between L and R.
 // the neutral state is used for setting the und state in specific use cases, like weapon direction.

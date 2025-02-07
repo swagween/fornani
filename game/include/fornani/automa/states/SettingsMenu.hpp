@@ -3,12 +3,12 @@
 
 #include "fornani/automa/GameState.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 enum class Toggles { autosprint, tutorial, gamepad, music, fullscreen };
 enum class MenuMode { adjust };
 
-class SettingsMenu : public automa::GameState {
+class SettingsMenu : public GameState {
   public:
 	SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc);

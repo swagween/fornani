@@ -3,7 +3,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define THUG_BIND(f) std::bind(&Thug::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class ThugState { idle, turn, run, jump, alert, rush, punch };
 

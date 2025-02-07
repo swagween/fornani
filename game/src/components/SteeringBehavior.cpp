@@ -4,7 +4,7 @@
 #include "fornani/utils/Math.hpp"
 #include <algorithm>
 
-namespace components {
+namespace fornani::components {
 
 void SteeringBehavior::smooth_random_walk(automa::ServiceProvider& svc, components::PhysicsComponent& physics, float dampen, float radius) {
 	wander = physics.position + util::unit(physics.velocity) * (radius + radius / 3.f);

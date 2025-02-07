@@ -3,7 +3,7 @@
 #include "fornani/automa/GameState.hpp"
 #include <algorithm>
 
-namespace gui {
+namespace fornani::gui {
 
 MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, bool white) : sprite{svc, static_cast<int>(corner), static_cast<int>(edge)} {
 	white ? sprite.set_texture(svc.assets.t_cream_console) : sprite.set_texture(svc.assets.t_blue_console);

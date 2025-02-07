@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <numbers>
 
-namespace entity {
+namespace fornani::entity {
 
 FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset) : sprite(tex) {
 	sprite.setTexture(tex);

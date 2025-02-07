@@ -3,7 +3,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null} {
 	background_color = svc.styles.colors.ui_black;

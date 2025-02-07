@@ -5,7 +5,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy) : metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.projectile_textures.at(label)}} {
 

@@ -12,7 +12,7 @@
 
 namespace pi {
 
-EntitySet::EntitySet(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+EntitySet::EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	load(finder, metadata, room_name);
 
@@ -33,7 +33,7 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> ca
 	for (auto& ent : variables.entities) { ent->render(win, cam, map.f_cell_size()); }
 }
 
-void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+void EntitySet::load(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	// general entities
 	for (auto const& [key, entry] : metadata.object_view()) {
@@ -68,7 +68,7 @@ void EntitySet::load(data::ResourceFinder& finder, dj::Json& metadata, std::stri
 	}
 }
 
-bool EntitySet::save(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+bool EntitySet::save(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	if (variables.entities.empty()) { return true; }
 

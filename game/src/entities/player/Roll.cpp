@@ -1,6 +1,6 @@
 #include "fornani/entities/player/Roll.hpp"
 
-namespace player {
+namespace fornani::player {
 void Roll::update() { roll_window.update(); }
 void Roll::reset() { flags.set(RollFlags::can_roll); }
 void Roll::roll() { flags.set(RollFlags::rolling); }

@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Animator::Animator(automa::ServiceProvider& svc, sf::Vector2<int> pos, int id, bool large, bool automatic, bool foreground, int style)
 	: scaled_position(pos), id(id), sprite{(large ? svc.assets.t_large_animators : svc.assets.t_small_animators)} {

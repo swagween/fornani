@@ -3,7 +3,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Eyebot::Eyebot(automa::ServiceProvider& svc) : Enemy(svc, "eyebot") {
 	animation.set_params(idle);

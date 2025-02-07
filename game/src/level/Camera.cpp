@@ -16,7 +16,7 @@ void Camera::update(automa::ServiceProvider& svc) {
 		svc.camera_controller.cancel();
 	}
 	screen_dimensions = svc.constants.screen_dimensions;
-	auto screen_dimensions_f = sf::Vector2<float>(screen_dimensions);
+	auto const screen_dimensions_f = sf::Vector2<float>(screen_dimensions);
 	bounding_box.setSize(screen_dimensions_f);
 	gravitator.update(svc);
 	bounding_box.setPosition(gravitator.collider.physics.position);
@@ -43,10 +43,10 @@ void Camera::update(automa::ServiceProvider& svc) {
 }
 
 void Camera::restrict_movement(sf::Vector2<float>& bounds) {
-	auto top_left = bounding_box.getPosition();
+	auto const top_left = bounding_box.getPosition();
 	auto bottom_right = bounds - bounding_box.getSize();
 	bottom_right = {std::max(bottom_right.x, 0.f), std::max(bottom_right.y, 0.f)};
-	sf::Vector2<float> clamped_pos = {std::clamp(top_left.x, 0.f, bottom_right.x), std::clamp(top_left.y, 0.f, bottom_right.y)};
+	sf::Vector2 const clamped_pos = {std::clamp(top_left.x, 0.f, bottom_right.x), std::clamp(top_left.y, 0.f, bottom_right.y)};
 	bounding_box.setPosition(clamped_pos);
 	gravitator.set_position(clamped_pos);
 	target = clamped_pos;

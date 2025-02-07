@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim, float size) : dimensions(dim), size(size) {
 	gravitator = vfx::Gravitator({0, 0}, svc.styles.colors.bright_orange, 0.9f);

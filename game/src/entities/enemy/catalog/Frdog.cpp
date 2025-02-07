@@ -2,7 +2,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Frdog::Frdog(automa::ServiceProvider& svc) : Enemy(svc, "frdog") { animation.set_params(idle); }
 

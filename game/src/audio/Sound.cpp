@@ -1,7 +1,7 @@
 #include "fornani/audio/Sound.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace audio {
+namespace fornani::audio {
 
 Sound::Sound(const sf::SoundBuffer& buffer, int echo_count, int echo_rate) {
 	sounds.clear();

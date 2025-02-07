@@ -7,11 +7,11 @@
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/entities/packages/Health.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 
 enum class ShieldTrigger { shield_up, shield_down, hit };
 enum class ShieldState { shielding, wobbling, popping, recovery };

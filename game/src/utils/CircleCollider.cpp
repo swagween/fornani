@@ -5,7 +5,7 @@
 #include <algorithm>
 
 
-namespace shape {
+namespace fornani::shape {
 
 CircleCollider::CircleCollider(float radius) : sensor{radius} { sensor.bounds.setOrigin({radius, radius}); }
 

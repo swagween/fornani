@@ -6,22 +6,22 @@
 #include "editor/util/BitFlags.hpp"
 #include "editor/util/SelectBox.hpp"
 
-#include <stdio.h>
+#include <cstdio>
 #include <optional>
 #include <string_view>
 
 namespace pi {
 
-enum class ToolType { brush, fill, marquee, erase, hand, entity_editor, eyedropper };
-enum class EntityType { none, portal, inspectable, critter, chest, animator, player_placer, platform, save_point, switch_button, switch_block, interactive_scenery, scenery };
-enum class EntityMode { selector, placer, eraser, mover, editor };
-enum class ToolStatus { usable, unusable, loaded };
+enum class ToolType : std::uint8_t { brush, fill, marquee, erase, hand, entity_editor, eyedropper };
+enum class EntityType : std::uint8_t { none, portal, inspectable, critter, chest, animator, player_placer, platform, save_point, switch_button, switch_block, interactive_scenery, scenery };
+enum class EntityMode : std::uint8_t { selector, placer, eraser, mover, editor };
+enum class ToolStatus : std::uint8_t { usable, unusable, loaded };
 
 class Tool {
   public:
 	Tool(std::string_view label, ToolType type) : label(label), type(type) {}
 	Tool& operator=(Tool const&) = delete;
-	~Tool() = default;
+	virtual ~Tool() = default;
 	virtual void update(Canvas& canvas);
 	virtual void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) = 0;
 	virtual void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) = 0;
@@ -110,59 +110,55 @@ class Hand : public Tool {
   public:
 	Hand() : Tool("Hand", ToolType::hand) {}
 	void update(Canvas& canvas) override;
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
-	void store_tile(int index);
-	void clear();
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void store_tile(int index) override;
+	void clear() override;
 };
 
 class Brush : public Tool {
   public:
 	Brush() : Tool("Brush", ToolType::brush) {}
 	void update(Canvas& canvas) override;
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
-	void store_tile(int index);
-	void clear();
-
-  private:
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void store_tile(int index) override;
+	void clear() override;
 };
 
 class Erase : public Tool {
   public:
 	Erase() : Tool("Eraser", ToolType::erase) {}
 	void update(Canvas& canvas) override;
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
-	void store_tile(int index);
-	void clear();
-
-  private:
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void store_tile(int index) override;
+	void clear() override;
 };
 
 class Fill : public Tool {
   public:
 	Fill() : Tool("Fill", ToolType::fill) {}
 	void update(Canvas& canvas) override;
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
-	void store_tile(int index);
-	void clear();
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void store_tile(int index) override;
+	void clear() override;
 
-	void fill_section(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas);
-	void replace_all(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas);
+	void fill_section(uint32_t prev_val, uint32_t new_val, uint32_t i, uint32_t j, Canvas& canvas);
+	void replace_all(uint32_t prev_val, uint32_t new_val, uint32_t i, uint32_t j, Canvas& canvas);
 };
 
 class EntityEditor : public Tool {
   public:
-	EntityEditor(EntityMode to_mode = EntityMode::selector);
+	explicit EntityEditor(EntityMode to_mode = EntityMode::selector);
 	void update(Canvas& canvas) override;
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
-	void store_tile(int index);
-	void clear();
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void store_tile(int index) override;
+	void clear() override;
 	void set_mode(EntityMode to_mode);
-	void set_usability(bool const flag) override;
+	void set_usability(bool flag) override;
 	[[nodiscard]] auto selector_mode() const -> bool { return entity_mode == EntityMode::selector; }
 	[[nodiscard]] auto placer_mode() const -> bool { return entity_mode == EntityMode::placer; }
 	[[nodiscard]] auto eraser_mode() const -> bool { return entity_mode == EntityMode::eraser; }
@@ -174,20 +170,20 @@ class Marquee : public Tool {
   public:
 	Marquee() : Tool("Marquee", ToolType::marquee) {}
 	void update(Canvas& canvas) override;
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
-	void store_tile(int index);
-	void clear();
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void store_tile(int index) override;
+	void clear() override;
 };
 
 class Eyedropper : public Tool {
   public:
 	Eyedropper() : Tool("Eyedropper", ToolType::eyedropper) {}
 	void update(Canvas& canvas) override;
-	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode);
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset);
-	void store_tile(int index);
-	void clear();
+	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void store_tile(int index) override;
+	void clear() override;
 };
 
 } // namespace pi

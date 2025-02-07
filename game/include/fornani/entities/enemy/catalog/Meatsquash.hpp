@@ -3,7 +3,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define MEATSQUASH_BIND(f) std::bind(&Meatsquash::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class MeatsquashState { idle, chomp, swallow, open };
 

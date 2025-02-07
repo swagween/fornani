@@ -7,7 +7,7 @@
 #include "fornani/graphics/SpriteHistory.hpp"
 #define MINIGUS_BIND(f) std::bind(&Minigus::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle, exit, drink, throw_can };
 enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene, over_and_out, goodbye, threw_can, punched, soda_pop, second_phase };

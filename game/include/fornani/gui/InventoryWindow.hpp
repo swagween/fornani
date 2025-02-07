@@ -7,15 +7,15 @@
 #include "WardrobeWidget.hpp"
 #include "fornani/io/Logger.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace item {
+namespace fornani::item {
 class Item;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 enum class Mode{inventory, minimap};
 

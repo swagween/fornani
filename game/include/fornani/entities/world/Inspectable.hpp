@@ -7,19 +7,19 @@
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/utils/Circuit.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 enum class InspectableAttributes { activate_on_contact };
 enum class InspectableFlags { hovered, hovered_trigger, activated, destroy, engaged };
@@ -57,4 +57,4 @@ class Inspectable {
 	anim::Parameters params{0, 14, 18, 0};
 };
 
-} // namespace entity
+} // namespace fornani::entity

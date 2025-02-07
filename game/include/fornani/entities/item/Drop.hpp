@@ -9,15 +9,15 @@
 #include "fornani/utils/StateFunction.hpp"
 #define DROP_BIND(f) std::bind(&Drop::f, this)
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace item {
+namespace fornani::item {
 
 enum class DropType { heart, orb, gem };
 enum Rarity { common, uncommon, rare, priceless };

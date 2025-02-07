@@ -10,16 +10,16 @@
 #include <unordered_map>
 #include <vector>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
-namespace world {
+namespace fornani::world {
 class Map;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
 namespace fornani {

@@ -12,7 +12,7 @@ class EditorApplication {
 	void launch(char** argv);
 
   private:
-	data::ResourceFinder finder;
+	fornani::data::ResourceFinder finder;
 	dj::Json game_info{};
 	dj::Json app_settings{};
 	fornani::Version metadata;

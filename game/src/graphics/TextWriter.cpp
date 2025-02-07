@@ -3,7 +3,7 @@
 #include <string>
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace text {
+namespace fornani::text {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc)
 	: m_services(&svc), help_marker(svc), working_message{svc.text.fonts.basic}, second_working_message{svc.text.fonts.basic}, third_working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}},

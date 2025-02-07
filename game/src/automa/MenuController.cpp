@@ -1,7 +1,7 @@
 
 #include "fornani/automa/MenuController.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 void MenuController::open_vendor_dialog(int id) {
 	status.set(MenuStatus::vendor);

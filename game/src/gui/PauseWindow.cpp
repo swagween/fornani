@@ -2,7 +2,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 PauseWindow::PauseWindow(automa::ServiceProvider& svc)
 	: Console::Console(svc), selector(svc, {2, 1}), menu(svc, {"resume", "quit"}), title(svc.text.fonts.title), widget_label(svc.text.fonts.basic),

@@ -8,20 +8,20 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/graphics/CameraController.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
 namespace fornani {
 
-float const CAM_FRICTION = 0.89f;
-float const CAM_MASS = 1.0f;
-float const CAM_GRAV = 0.09f;
+constexpr float CAM_FRICTION = 0.89f;
+constexpr float CAM_MASS = 1.0f;
+constexpr float CAM_GRAV = 0.09f;
 
-int const CX_OFFSET = 60;
-int const CY_OFFSET = 60;
+constexpr int CX_OFFSET = 60;
+constexpr int CY_OFFSET = 60;
 
-int const border_buffer{32};
+constexpr int border_buffer{32};
 
 enum class CamFlags { shake };
 

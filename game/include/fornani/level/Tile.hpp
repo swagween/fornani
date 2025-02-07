@@ -4,16 +4,16 @@
 #include "fornani/utils/Shape.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
-namespace arms {
+namespace fornani::arms {
 class Projectile;
 }
-namespace world {
+namespace fornani::world {
 class Map;
 enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire };
 enum class TileState { ramp_adjacent, big_ramp, covered };

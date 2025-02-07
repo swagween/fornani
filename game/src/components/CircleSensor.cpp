@@ -3,7 +3,7 @@
 
 #include <ccmath/ext/clamp.hpp>
 
-namespace components {
+namespace fornani::components {
 
 CircleSensor::CircleSensor() {
 	bounds.setRadius(32);

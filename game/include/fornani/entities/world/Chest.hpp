@@ -8,23 +8,23 @@
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/entities/item/Item.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 static inline anim::Parameters unopened{0, 1, 80, -1};
 static inline anim::Parameters shine{1, 5, 24, 0};
@@ -66,4 +66,4 @@ class Chest : public Entity {
 	} loot{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

@@ -37,7 +37,7 @@ class WindowManager {
 	sf::Vector2<int> aspects{3840, 2048};
 	bool is_fullscreen{};
 
-	fornani::io::Logger m_logger { "windowing" };
+	io::Logger m_logger { "windowing" };
 };
 
 } // namespace fornani

@@ -5,16 +5,16 @@
 #include <string>
 #include <unordered_map>
 
-namespace lookup {
+namespace fornani::lookup {
 
 
-inline const float SPACING{ 32.0f };
+inline constexpr float SPACING{ 32.0f };
 
-const inline float unit_size_f{ 32.0f };
-inline int const unit_size_i{32};
+inline constexpr float unit_size_f{ 32.0f };
+inline constexpr int unit_size_i{32};
 
-inline float const min_hook_length{32.f};
-inline float const max_hook_length{256.f};
+inline constexpr float min_hook_length{32.f};
+inline constexpr float max_hook_length{256.f};
 
 enum class Style { firstwind, overturned, base, factory, greatwing, provisional, END };
 

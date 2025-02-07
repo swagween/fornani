@@ -23,7 +23,7 @@ constexpr auto sqrt2 = ccm::sqrtf(2.0f); //2.0f * 0.707106781186547524401f;
 
 } // namespace
 
-namespace audio {
+namespace fornani::audio {
 
 class PitchVolume : public Effect {
 public:

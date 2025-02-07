@@ -5,7 +5,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include <numbers>
 
-namespace vfx {
+namespace fornani::vfx {
 
 Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_dragonfly, {16, 16}) {
 	physics.set_global_friction(0.97f);

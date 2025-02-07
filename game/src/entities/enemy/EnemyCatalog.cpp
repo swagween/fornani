@@ -12,7 +12,7 @@
 #include "fornani/entities/enemy/catalog/Meatsquash.hpp"
 #include "fornani/entities/enemy/boss/Minigus.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {}
 

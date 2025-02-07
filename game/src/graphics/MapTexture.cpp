@@ -3,7 +3,7 @@
 #include "fornani/level/Map.hpp"
 #include <algorithm>
 
-namespace gui {
+namespace fornani::gui {
 
 MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.colors.ui_white}, tile_color{svc.styles.colors.blue} {
 	border_color.a = 200;

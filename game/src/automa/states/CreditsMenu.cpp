@@ -2,7 +2,7 @@
 #include "fornani/automa/states/CreditsMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name, int room_number) : GameState(svc, player, room_name, room_number) {
 	left_dot.set_position(options.at(current_selection.get()).left_offset);

@@ -7,7 +7,7 @@
 
 #include <unordered_set>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
@@ -15,7 +15,7 @@ namespace sf {
 class RenderWindow;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 class ActionContextBar {
   public:

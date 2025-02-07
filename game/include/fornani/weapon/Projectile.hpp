@@ -18,15 +18,15 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/utils/Shape.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace arms {
+namespace fornani::arms {
 
 class Weapon;
 enum class Team { nani, skycorps, guardian, pioneer, beast };

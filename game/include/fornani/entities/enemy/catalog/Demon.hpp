@@ -3,7 +3,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define DEMON_BIND(f) std::bind(&Demon::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class DemonState { idle, turn, run, jump, signal, rush, stab, dormant, jumpsquat };
 enum class DemonVariant { warrior, spearman };

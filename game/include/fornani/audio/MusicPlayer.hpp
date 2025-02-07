@@ -7,11 +7,11 @@
 #include "fornani/setup/ResourceFinder.hpp"
 #include "fornani/io/Logger.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace audio {
+namespace fornani::audio {
 
 enum class SongState { playing, paused, on, looping };
 enum class MusicPlayerState { on };

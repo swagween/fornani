@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 Scenery::Scenery(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int layer, int variant, float parallax) : position(position), properties{style, layer, variant, parallax}, sprite{svc.assets.get_scenery(style)} {
 	auto u = variant * dimensions.x;

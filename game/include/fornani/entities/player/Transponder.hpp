@@ -8,15 +8,15 @@
 #include "fornani/utils/Shipment.hpp"
 #include "fornani/utils/QuestCode.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 
 // a small class to handle player interaction with inspectables, NPCs, or anything else that will trigger the console.
 // the transponder will respond to player inputs and set the state of the console and player accordingly.
@@ -60,4 +60,4 @@ class Transponder {
 	util::BitFlags<TransponderActions> actions{};
 };
 
-} // namespace player
+} // namespace fornani::player

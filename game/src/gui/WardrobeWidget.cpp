@@ -3,7 +3,7 @@
 #include "fornani/gui/WardrobeWidget.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 gui::WardrobeWidget::WardrobeWidget(const automa::ServiceProvider& svc)
 	: sprites{.base = sf::Sprite{svc.assets.t_wardrobe_base}, .shirt = sf::Sprite{svc.assets.t_wardrobe_blue_shirt}, .pants = sf::Sprite{svc.assets.t_wardrobe_green_pants}, .hairstyle = sf::Sprite{svc.assets.t_wardrobe_default_hair}},

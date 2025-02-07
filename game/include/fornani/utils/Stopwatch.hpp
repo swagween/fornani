@@ -8,7 +8,7 @@
 #include <random>
 #include <format>
 
-namespace util {
+namespace fornani::util {
 
 class Stopwatch {
 

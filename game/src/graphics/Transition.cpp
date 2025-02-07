@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace flfx {
+namespace fornani::flfx {
 
 Transition::Transition(automa::ServiceProvider& svc, int d) : duration(d) {
 	cooldown = util::Cooldown{d};

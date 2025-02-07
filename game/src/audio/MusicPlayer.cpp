@@ -2,7 +2,7 @@
 #include "fornani/utils/Tracy.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace audio {
+namespace fornani::audio {
 
 void MusicPlayer::load(const data::ResourceFinder& finder, const std::string_view song_name) {
 	if (global_off()) { return; }

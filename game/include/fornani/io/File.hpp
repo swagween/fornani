@@ -4,7 +4,7 @@
 #include <djson/json.hpp>
 #include "fornani/utils/BitFlags.hpp"
 
-namespace fornani {
+namespace fornani::io {
 
 enum class FileFlags{ new_file };
 

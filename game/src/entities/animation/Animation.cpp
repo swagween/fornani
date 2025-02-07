@@ -2,7 +2,7 @@
 #include "fornani/entities/animation/Animation.hpp"
 #include <iostream>
 
-namespace anim {
+namespace fornani::anim {
 
 void Animation::refresh() {
 	frame.start();

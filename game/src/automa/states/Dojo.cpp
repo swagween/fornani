@@ -5,7 +5,7 @@
 
 #include <tracy/Tracy.hpp>
 
-namespace automa {
+namespace fornani::automa {
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
 	: GameState(svc, player, scene, room_number), map(svc, player, console), gui_map(svc, player, console){

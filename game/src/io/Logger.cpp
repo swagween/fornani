@@ -2,7 +2,7 @@
 #include <imgui.h>
 
 
-namespace util {
+namespace fornani::util {
 
 void Logger::add_log(char const* message) {
 	if (!message) {

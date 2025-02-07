@@ -5,15 +5,15 @@
 #include <vector>
 #include <unordered_map>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 
 class Inventory {
   public:
@@ -33,4 +33,4 @@ class Inventory {
 	sf::Vector2<float> ui_offset{};
 };
 
-} // namespace player
+} // namespace fornani::player

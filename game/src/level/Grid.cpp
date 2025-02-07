@@ -1,7 +1,7 @@
 
 #include "fornani/level/Grid.hpp"
 
-namespace world {
+namespace fornani::world {
 
 Grid::Grid(sf::Vector2<uint32_t> d, dj::Json& source) : dimensions(d) {
 	auto size = static_cast<std::size_t>(dimensions.x * dimensions.y);

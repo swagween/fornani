@@ -7,7 +7,7 @@
 #include "fornani/gui/VendorDialog.hpp"
 #include <optional>
 
-namespace automa {
+namespace fornani::automa {
 
 class Dojo : public GameState {
   public:

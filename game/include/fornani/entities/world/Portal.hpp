@@ -4,21 +4,21 @@
 #include "fornani/utils/Shape.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
-namespace flfx {
+namespace fornani::flfx {
 class Transition;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 enum class PortalAttributes { activate_on_contact, already_open };
 enum class PortalState { activated, ready, locked, unlocked };

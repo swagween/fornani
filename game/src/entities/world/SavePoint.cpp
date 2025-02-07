@@ -4,7 +4,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/Console.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 SavePoint::SavePoint(automa::ServiceProvider& svc) : sprite{svc.assets.savepoint} {
 	id = -1;

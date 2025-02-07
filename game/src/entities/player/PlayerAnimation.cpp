@@ -2,7 +2,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace player {
+namespace fornani::player {
 
 PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr) {
 	state_function = state_function();

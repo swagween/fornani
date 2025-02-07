@@ -9,7 +9,7 @@
 #include <ccmath/math/basic/fabs.hpp>
 #include <ccmath/math/nearest/floor.hpp>
 
-namespace util {
+namespace fornani::util {
 
 inline float magnitude(sf::Vector2<float> vec) { return ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }
 inline sf::Vector2<float> unit(sf::Vector2<float> vec) {

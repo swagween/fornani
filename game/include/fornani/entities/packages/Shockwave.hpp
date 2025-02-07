@@ -3,17 +3,17 @@
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class Shockwave {
   public:
@@ -32,4 +32,4 @@ class Shockwave {
 	util::Cooldown lifetime{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

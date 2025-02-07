@@ -2,7 +2,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-namespace util {
+namespace fornani::util {
 
 struct Constants {
 	sf::Vector2<int> const tileset_scaled{16, 16};

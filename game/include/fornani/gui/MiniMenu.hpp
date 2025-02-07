@@ -6,11 +6,11 @@
 #include "fornani/automa/Option.hpp"
 #include <string_view>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 enum class MiniMenuState { open };
 class MiniMenu {
   public:

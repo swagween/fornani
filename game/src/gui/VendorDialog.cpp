@@ -6,7 +6,7 @@
 #include "fornani/graphics/Transition.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
 	: vendor_id(vendor_id), portrait(svc), info(svc), selectors{.buy{svc, {2, 1}}, .sell{svc, {2, 1}}}, item_menu(svc, {"sell", "cancel"}, true), orb{.sprite{svc.assets.t_orb, {24, 24}}}, artwork{svc.assets.t_vendor_artwork},

@@ -14,11 +14,11 @@ namespace fornani {
 class Game;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace automa {
+namespace fornani::automa {
 
 struct ServiceProvider;
 
@@ -38,4 +38,4 @@ public:
 
 };
 
-} // namespace automa
+} // namespace fornani::automa

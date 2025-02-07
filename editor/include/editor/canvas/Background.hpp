@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <string>
 
-namespace data {
+namespace fornani::data {
 class ResourceFinder;
 }
 
@@ -48,7 +48,7 @@ struct BackgroundLayer {
 
 class Background {
   public:
-	Background(data::ResourceFinder& finder, Backdrop backdrop);
+	Background(fornani::data::ResourceFinder& finder, Backdrop backdrop);
 
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float>& campos);

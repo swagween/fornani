@@ -5,7 +5,7 @@
 #include "fornani/automa/StateController.hpp"
 #include "fornani/graphics/Style.hpp"
 #include "fornani/setup/AccessibilityService.hpp"
-#include "../core/AssetManager.hpp"
+#include "fornani/core/AssetManager.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 #include "fornani/setup/DataManager.hpp"
 #include "fornani/setup/Tables.hpp"
@@ -23,7 +23,7 @@
 #include "fornani/utils/WorldClock.hpp"
 #include "fornani/graphics/CameraController.hpp"
 
-namespace automa {
+namespace fornani::automa {
 enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
 enum class AppFlags { fullscreen, tutorial, in_game };
 enum class StateFlags { hide_hud, no_menu };
@@ -37,15 +37,15 @@ struct MapDebug {
 	int active_projectiles{};
 };
 struct ServiceProvider {
-	ServiceProvider(char** argv, fornani::Version& version, fornani::WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
+	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
 
 	util::Stopwatch stopwatch{};
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
 	data::TextManager text;
 	data::DataManager data;
-	fornani::Version* version;
-	fornani::WindowManager* window;
+	Version* version;
+	WindowManager* window;
 	asset::AssetManager assets;
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
@@ -54,19 +54,19 @@ struct ServiceProvider {
 	util::BitFlags<StateFlags> state_flags{};
 	util::Random random{};
 	util::Ticker ticker{};
-	fornani::WorldClock world_clock{};
+	WorldClock world_clock{};
 	util::Constants constants{};
 	StateController state_controller{};
 	MenuController menu_controller{};
 	audio::Soundboard soundboard{*this};
 	audio::MusicPlayer music{};
-	fornani::QuestTracker quest{};
-	fornani::StatTracker stats{};
+	QuestTracker quest{};
+	StatTracker stats{};
 	PlayerDat player_dat{};
 	MapDebug map_debug{};
 	util::Logger logger{};
 	config::AccessibilityService a11y{};
-	fornani::graphics::CameraController camera_controller{};
+	graphics::CameraController camera_controller{};
 
 	// debug stuff
 	int out_value{};
@@ -88,4 +88,4 @@ struct ServiceProvider {
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
 	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool { return window->in_window(point, dimensions); }
 };
-} // namespace automa
+} // namespace fornani::automa

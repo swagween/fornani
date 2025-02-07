@@ -4,7 +4,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Grass::Grass(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground)
 	: length(length), size(size), position(position), chain(svc, {0.98f, 0.84f, static_cast<float>(size) * 0.001f, -3.2f}, position + sf::Vector2<float>{16.f, 32.f}, length, true),

@@ -4,7 +4,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Bed::Bed(automa::ServiceProvider& svc, sf::Vector2<float> position, int room) : room(room) {
 	sparkler = vfx::Sparkler(svc, {64.f, 32.f}, svc.styles.colors.ui_white, "bed");

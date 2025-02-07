@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "demon"), m_services(&svc), m_map(&map),

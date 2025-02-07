@@ -4,7 +4,7 @@
 #include "fornani/particle/Effect.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace world {
+namespace fornani::world {
 
 Destroyable::Destroyable(automa::ServiceProvider& svc, sf::Vector2<int> pos, int quest_id, int style_id) : position(pos), quest_id(quest_id), sprite{svc.assets.tilesets.at(style_id)} {
 	collider = shape::Collider({32.f, 32.f});

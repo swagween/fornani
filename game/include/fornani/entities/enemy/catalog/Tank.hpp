@@ -3,7 +3,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define TANK_BIND(f) std::bind(&Tank::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class TankState { idle, turn, run, shoot, alert };
 

@@ -2,11 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include "fornani/particle/Gravitator.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class Seeker {
   public:
@@ -25,4 +25,4 @@ class Seeker {
 	std::unique_ptr<vfx::Gravitator> gravitator{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

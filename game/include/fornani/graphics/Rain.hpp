@@ -4,15 +4,15 @@
 #include "Droplet.hpp"
 #include <vector>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 class Rain {
   public:
 	Rain(int intensity = 1, float fall_speed = 0.999f, float slant = -1.f, bool snow = false, bool collision = true);
@@ -30,4 +30,4 @@ class Rain {
 	sf::Vector2<float> dimensions{};
 	sf::RectangleShape raindrop{};
 };
-} // namespace vfx
+} // namespace fornani::vfx

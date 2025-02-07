@@ -7,7 +7,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace player {
+namespace fornani::player {
 
 enum class SlideFlags { break_out, started };
 
