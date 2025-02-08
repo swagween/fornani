@@ -15,8 +15,7 @@ Editor::Editor(char** argv, WindowManager& window, fornani::data::ResourceFinder
 	: window(&window), finder(&finder), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0} {
 
 	args = argv;
-	std::cout << "Level path: " << finder.paths.levels << "\n";
-	if (!tool_texture.loadFromFile((finder.paths.editor / "gui" / "tools.png").string())) { std::cout << "Failed to load tool texture.\n"; }
+	if (!tool_texture.loadFromFile((finder.paths.editor / "gui" / "tools.png").string())) { console.add_log("Failed to load tool texture.\n"); }
 
 	for (int i = 0; i < static_cast<int>(StyleType::END); ++i) {
 		m_themes.styles.push_back(Style{static_cast<StyleType>(i)});
@@ -445,22 +444,22 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					load();
 				} else {
 					switch (CommDlgExtendedError()) {
-					case CDERR_DIALOGFAILURE: std::cout << "CDERR_DIALOGFAILURE\n"; break;
-					case CDERR_FINDRESFAILURE: std::cout << "CDERR_FINDRESFAILURE\n"; break;
-					case CDERR_INITIALIZATION: std::cout << "CDERR_INITIALIZATION\n"; break;
-					case CDERR_LOADRESFAILURE: std::cout << "CDERR_LOADRESFAILURE\n"; break;
-					case CDERR_LOADSTRFAILURE: std::cout << "CDERR_LOADSTRFAILURE\n"; break;
-					case CDERR_LOCKRESFAILURE: std::cout << "CDERR_LOCKRESFAILURE\n"; break;
-					case CDERR_MEMALLOCFAILURE: std::cout << "CDERR_MEMALLOCFAILURE\n"; break;
-					case CDERR_MEMLOCKFAILURE: std::cout << "CDERR_MEMLOCKFAILURE\n"; break;
-					case CDERR_NOHINSTANCE: std::cout << "CDERR_NOHINSTANCE\n"; break;
-					case CDERR_NOHOOK: std::cout << "CDERR_NOHOOK\n"; break;
-					case CDERR_NOTEMPLATE: std::cout << "CDERR_NOTEMPLATE\n"; break;
-					case CDERR_STRUCTSIZE: std::cout << "CDERR_STRUCTSIZE\n"; break;
-					case FNERR_BUFFERTOOSMALL: std::cout << "FNERR_BUFFERTOOSMALL\n"; break;
-					case FNERR_INVALIDFILENAME: std::cout << "FNERR_INVALIDFILENAME\n"; break;
-					case FNERR_SUBCLASSFAILURE: std::cout << "FNERR_SUBCLASSFAILURE\n"; break;
-					default: std::cout << "You cancelled.\n";
+					case CDERR_DIALOGFAILURE: console.add_log("CDERR_DIALOGFAILURE"); break;
+					case CDERR_FINDRESFAILURE: console.add_log("CDERR_FINDRESFAILURE"); break;
+					case CDERR_INITIALIZATION: console.add_log("CDERR_INITIALIZATION"); break;
+					case CDERR_LOADRESFAILURE: console.add_log("CDERR_LOADRESFAILURE"); break;
+					case CDERR_LOADSTRFAILURE: console.add_log("CDERR_LOADSTRFAILURE"); break;
+					case CDERR_LOCKRESFAILURE: console.add_log("CDERR_LOCKRESFAILURE"); break;
+					case CDERR_MEMALLOCFAILURE: console.add_log("CDERR_MEMALLOCFAILURE"); break;
+					case CDERR_MEMLOCKFAILURE: console.add_log("CDERR_MEMLOCKFAILURE"); break;
+					case CDERR_NOHINSTANCE: console.add_log("CDERR_NOHINSTANCE"); break;
+					case CDERR_NOHOOK: console.add_log("CDERR_NOHOOK"); break;
+					case CDERR_NOTEMPLATE: console.add_log("CDERR_NOTEMPLATE"); break;
+					case CDERR_STRUCTSIZE: console.add_log("CDERR_STRUCTSIZE"); break;
+					case FNERR_BUFFERTOOSMALL: console.add_log("FNERR_BUFFERTOOSMALL"); break;
+					case FNERR_INVALIDFILENAME: console.add_log("FNERR_INVALIDFILENAME"); break;
+					case FNERR_SUBCLASSFAILURE: console.add_log("FNERR_SUBCLASSFAILURE"); break;
+					default: console.add_log("You cancelled.");
 					}
 				}
 			}
@@ -1025,10 +1024,10 @@ void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, s
 	current_tool->current_entity = {};
 	ImGui::SFML::Shutdown();
 	fornani::Application demo{argv};
-	std::cout << "> Launching Demo\n";
-	std::cout << "Editor path: " << path.string() << "\n";
-	std::cout << "Room ID: " << room_id << std::endl;
-	std::cout << "Room Name: " << finder->paths.room_name << "\n";
+	console.add_log("> Launching Demo\n");
+	console.add_log(std::string{"Editor path: " + path.string()}.c_str());
+	console.add_log(std::string{"Room ID: " + std::to_string(room_id)}.c_str());
+	console.add_log(std::string{"Room Name: " + finder->paths.room_name}.c_str());
 	demo.init(argv, {true, m_demo.fullscreen});
 	demo.launch(argv, true, room_id, finder->paths.room_name, player_position);
 }
@@ -1036,7 +1035,7 @@ void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, s
 void Editor::shutdown(fornani::data::ResourceFinder& finder) {
 	user_data["region"] = finder.paths.region;
 	user_data["room"] = finder.paths.room_name;
-	if (!user_data.to_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str())) { std::cout << "Failed to save user data.\n"; }
+	if (!user_data.to_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str())) {console.add_log("Failed to save user data."); }
 }
 
 void Editor::reset_layers() {
