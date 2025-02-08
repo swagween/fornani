@@ -1,7 +1,7 @@
 #include "fornani/entities/world/TreasureContainer.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 TreasureContainer::TreasureContainer(automa::ServiceProvider& svc, item::Rarity rarity, sf::Vector2<float> position, int index) : rarity(rarity), index(index), sprite{svc.assets.t_treasure_ball} {
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);

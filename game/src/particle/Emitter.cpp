@@ -1,7 +1,7 @@
 #include "fornani/particle/Emitter.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, std::string_view type, sf::Color color, dir::Direction direction)
 	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {

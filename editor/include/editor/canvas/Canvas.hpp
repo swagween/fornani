@@ -12,12 +12,11 @@
 #include <vector>
 #include <deque>
 #include <filesystem>
-#include <iostream>
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 
-namespace data {
+namespace fornani::data {
 class ResourceFinder;
 }
 
@@ -69,12 +68,12 @@ class Tool;
 class Canvas {
 
   public:
-	Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
-	Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
+	Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
+	Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
 	void update(Tool& tool);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
-	void load(data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
-	bool save(data::ResourceFinder& finder, std::string const& region, std::string const& room_name);
+	void load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
+	bool save(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name);
 	void clear();
 	void save_state(Tool& tool, bool force = false);
 	void undo();
@@ -207,6 +206,9 @@ class Canvas {
 	float scale{1.f};
 	float min_scale{0.1f};
 	float max_scale{4.f};
+
+	fornani::io::Logger m_logger{"pioneer"};
+
 };
 
 } // namespace pi

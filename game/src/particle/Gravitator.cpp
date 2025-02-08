@@ -2,7 +2,7 @@
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size) : scaled_position(pos), dimensions(size), color(col), attraction_force(agf) {
 	collider = shape::Collider(sf::Vector2<float>{4.f, 4.f}, sf::Vector2<float>{pos.x, pos.x});

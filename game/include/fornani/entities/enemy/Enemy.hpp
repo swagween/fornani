@@ -8,28 +8,23 @@
 #include "fornani/utils/Math.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/packages/WeaponPackage.hpp"
-#include "fornani/entities/packages/Caution.hpp"
-#include "fornani/entities/packages/Attack.hpp"
-#include "fornani/entities/packages/Shockwave.hpp"
-#include "fornani/entities/packages/FloatingPart.hpp"
 #include "fornani/entities/player/Indicator.hpp"
 #include "fornani/audio/Soundboard.hpp"
 #include <string_view>
-#include <iostream>
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace arns {
+namespace fornani::arns {
 class Projectile;
 }
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
@@ -148,4 +143,4 @@ class Enemy : public entity::Entity {
 	float hit_energy{6.f};
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

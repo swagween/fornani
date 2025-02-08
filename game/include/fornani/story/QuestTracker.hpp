@@ -1,14 +1,13 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include "fornani/utils/Counter.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include <string_view>
 #include <unordered_map>
 #include <vector>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 namespace fornani {

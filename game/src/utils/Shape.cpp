@@ -2,9 +2,8 @@
 #include "fornani/utils/Shape.hpp"
 #include <ccmath/math/power/sqrt.hpp>
 #include "fornani/utils/Math.hpp"
-#include <iostream>
 
-namespace shape {
+namespace fornani::shape {
 
 Shape::Shape(Vec dim, int num_vertices) {
 	vertices.reserve(num_vertices);

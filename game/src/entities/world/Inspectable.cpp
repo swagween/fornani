@@ -4,7 +4,7 @@
 #include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key, int room_id, int alternates, int native, bool aoc)
 	: scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates), sprite(svc.assets.t_inspectable) {

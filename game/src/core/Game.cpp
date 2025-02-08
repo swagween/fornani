@@ -1,11 +1,13 @@
-#include "fornani/setup/Game.hpp"
-#include <steam/steam_api.h>
-#include <ctime>
+#include "fornani/core/Game.hpp"
+#include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Tracy.hpp"
 
+#include <steam/steam_api.h>
+#include <ctime>
+#include <iostream>
 
 namespace fornani {
 
@@ -53,7 +55,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			services.data.load_progress(player, 0);
 			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
 			services.state_controller.demo_level = room_id;
-			std::cout << "Launching demo in room " << room_id << " from folder " << levelpath.filename() << "\n";
+			NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
 			services.state_controller.player_position = player_position;
 			player.set_position(player_position);
 		}
@@ -61,7 +63,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
     gui::ActionContextBar ctx_bar(services);
 
-    std::cout << "> Success\n";
+    NANI_LOG_INFO(m_logger, "> Success");
 	services.stopwatch.stop();
 	services.stopwatch.print_time();
 

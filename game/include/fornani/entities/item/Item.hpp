@@ -1,25 +1,24 @@
 
 #pragma once
-#include <string_view>
 #include <optional>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/entities/Entity.hpp"
 #include "Drop.hpp"
 #include "fornani/particle/Gravitator.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 enum class ApparelType;
 }
 
-namespace item {
+namespace fornani::item {
 
 enum class ItemFlags { unique, revealed, usable, equippable, sellable };
 enum class UIFlags { selected };
@@ -89,4 +88,4 @@ class Item : public entity::Entity {
 	} ui;
 };
 
-} // namespace player
+} // namespace fornani::player

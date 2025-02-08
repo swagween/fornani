@@ -5,15 +5,15 @@
 #include "Drop.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace item {
+namespace fornani::item {
 
 enum class LootState { heart_dropped };
 
@@ -36,4 +36,4 @@ class Loot {
 	util::BitFlags<LootState> flags{};
 };
 
-} // namespace item
+} // namespace fornani::item

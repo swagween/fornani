@@ -5,16 +5,15 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/graphics/DayNightShifter.hpp"
 
-#include <array>
 #include <unordered_map>
 
 #include <SFML/Graphics.hpp>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace bg {
+namespace fornani::bg {
 
 enum class BackgroundAttributes { lock };
 

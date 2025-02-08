@@ -4,7 +4,7 @@
 #include <functional>
 #include <utility>
 
-namespace fsm {
+namespace fornani::fsm {
 
 /** A StateFunction is a function which does some computation and returns
  *  another StateFunction (possibly the same).

@@ -5,7 +5,7 @@
 #include "fornani/utils/Math.hpp"
 #include <algorithm>
 
-namespace gui {
+namespace fornani::gui {
 
 void WidgetBar::set(automa::ServiceProvider& svc, int amount, sf::Vector2<int> dimensions, sf::Texture& texture, sf::Vector2<float> origin, float pad) {
 	widgets.clear();

@@ -3,12 +3,12 @@
 #include <SFML/Graphics.hpp>
 #include "Counter.hpp"
 
-namespace shape {
+namespace fornani::shape {
 class Shape;
 class Collider;
 }
 
-namespace util {
+namespace fornani::util {
 
 	enum class CollisionDirection { none, vertical, horizontal };
 

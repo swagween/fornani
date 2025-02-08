@@ -15,7 +15,7 @@ struct Tile {
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2<float> { return position * scale; }
 	[[nodiscard]] auto grid_position() const -> sf::Vector2<int> { return sf::Vector2<int>{position / 32.f}; }
 	[[nodiscard]] auto set_position(sf::Vector2<float> to_position) { position = to_position; }
-	[[nodiscard]] auto is_solid() const -> bool { return value > 0 && value < world::special_index_v; }
+	[[nodiscard]] auto is_solid() const -> bool { return value > 0 && value < fornani::world::special_index_v; }
     
     sf::Vector2<uint32_t> index{};
 	uint32_t one_d_index{};

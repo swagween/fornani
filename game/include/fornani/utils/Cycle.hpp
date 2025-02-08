@@ -1,7 +1,7 @@
 
 #pragma once
 
-namespace util {
+namespace fornani::util {
 
 class Cycle {
   public:

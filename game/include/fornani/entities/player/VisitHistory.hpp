@@ -2,7 +2,7 @@
 #pragma once
 #include <vector>
 
-namespace player {
+namespace fornani::player {
 class VisitHistory {
   public:
 	[[nodiscard]] auto distance_traveled_from(int room_id) -> int {
@@ -28,4 +28,4 @@ class VisitHistory {
 	int far_distance{6};
 	size_t max_size{64};
 };
-} // namespace player
+} // namespace fornani::player

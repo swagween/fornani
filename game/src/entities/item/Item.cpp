@@ -4,7 +4,7 @@
 #include "fornani/entities/player/Wardrobe.hpp"
 #include <algorithm>
 
-namespace item {
+namespace fornani::item {
 
 Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label), sprite(svc.assets.t_items), ui{.rarity{svc.text.fonts.title}, .quantity{svc.text.fonts.basic}} {
 	auto const& in_data = svc.data.item[label];

@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <chrono>
 #include <optional>
 #include <unordered_map>
 #include <deque>
@@ -12,11 +11,11 @@
 #include "Slide.hpp"
 #include "Roll.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 
 constexpr static int dash_time{32};
 constexpr static int quick_turn_sample_size{24};

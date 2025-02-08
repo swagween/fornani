@@ -1,8 +1,7 @@
 
 #pragma once
 
-namespace fornani {
-namespace graphics {
+namespace fornani::graphics {
 
 struct ShakeProperties {
 	bool shaking{};
@@ -29,5 +28,4 @@ class CameraController {
 	ShakeProperties shake_properties{};
 };
 
-} // namespace graphics
-} // namespace fornani
+} // namespace fornani::graphics

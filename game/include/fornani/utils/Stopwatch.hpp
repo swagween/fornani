@@ -3,12 +3,11 @@
 
 #include <chrono>
 #include <deque>
-#include <iostream>
-#include <memory>
-#include <random>
 #include <format>
 
-namespace util {
+#include "fornani/io/Logger.hpp"
+
+namespace fornani::util {
 
 class Stopwatch {
 
@@ -27,7 +26,7 @@ class Stopwatch {
 	};
 	float seconds_passed() const { return seconds.count(); }
 	float get_snapshot() const { return snapshot.average_elapsed_ms; }
-	void print_time() const { std::cout << "Elapsed Time: " << std::format("{:.5f}", seconds.count()) << " seconds.\n"; }
+	void print_time() const { NANI_LOG_DEBUG(m_logger, "Elapsed Time: {:.5f} seconds", seconds.count()); }
 
 	Time elapsed_time{};
 	Tpt start_time = Clk::now();
@@ -50,6 +49,8 @@ class Stopwatch {
 		++snapshot.current_tick;
 		if (snapshot.current_tick % snapshot.interval == 0) { snapshot.average_elapsed_ms = average; }
 	}
+
+	io::Logger m_logger{"stopwatch"};
 };
 
 } // namespace util

@@ -1,15 +1,12 @@
 
 #pragma once
 
-#include <iostream>
-#include <optional>
-#include <unordered_map>
 #include "fornani/utils/StateFunction.hpp"
 #include "fornani/utils/Counter.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 #define PA_BIND(f) std::bind(&PlayerAnimation::f, this)
 
-namespace player {
+namespace fornani::player {
 
 class Player;
 

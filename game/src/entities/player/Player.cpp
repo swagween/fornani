@@ -8,7 +8,7 @@
 #include "fornani/level/Map.hpp"
 #include "fornani/entities/item/Drop.hpp"
 
-namespace player {
+namespace fornani::player {
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.t_nani}, camera_offset{32.f, -64.f} {}

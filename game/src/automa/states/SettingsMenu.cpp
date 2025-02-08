@@ -2,7 +2,7 @@
 #include "fornani/automa/states/SettingsMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
 	: GameState(svc, player, scene, room_number), toggleables{.autosprint = options.at(static_cast<int>(Toggles::autosprint)).label,

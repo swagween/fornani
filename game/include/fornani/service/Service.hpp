@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-namespace forloop {
+namespace fornani::forloop {
 
 template <typename T>
 using Ptr = T*;

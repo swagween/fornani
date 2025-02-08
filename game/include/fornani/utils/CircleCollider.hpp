@@ -1,22 +1,21 @@
 #pragma once
-#include <cassert>
+
 #include <SFML/Graphics.hpp>
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 #include "Shape.hpp"
-#include "Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
+
 #include <utility>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace shape {
+namespace fornani::shape {
 enum class CircleColliderFlags { collided };
 class CircleCollider {
   public:

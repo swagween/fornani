@@ -1,8 +1,7 @@
 #include "fornani/entities/npc/NPCAnimation.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <iostream>
 
-namespace npc {
+namespace fornani::npc {
 
 NPCAnimation::NPCAnimation(automa::ServiceProvider& svc, int id) {
 

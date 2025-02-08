@@ -1,18 +1,16 @@
 
 #pragma once
-#include <vector>
-#include <string_view>
+
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Cooldown.hpp"
 #include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class Effect : public Entity {
 	public:

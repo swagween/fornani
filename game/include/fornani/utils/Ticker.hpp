@@ -3,16 +3,11 @@
 
 #include <chrono>
 #include <deque>
-#include <functional>
-#include <iostream>
-#include <memory>
-#include <random>
 #include <thread>
-#include <utility>
 #include "Cooldown.hpp"
 #include "BitFlags.hpp"
 
-namespace util {
+namespace fornani::util {
 
 using Clk = std::chrono::steady_clock;
 using Sec = std::chrono::duration<float>;

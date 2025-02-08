@@ -2,17 +2,13 @@
 #pragma once
 
 #include "fornani/setup/EnumLookups.hpp"
-#include "ResourceFinder.hpp"
-#include "fornani/utils/Logger.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
+#include "fornani/io/Logger.hpp"
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <array>
-#include <filesystem>
-#include <string>
-
-namespace asset {
+namespace fornani::asset {
 
 class AssetManager {
   public:
@@ -370,7 +366,7 @@ class AssetManager {
 	std::vector<sf::SoundBuffer> vs_hologus{};
 	std::unordered_map<std::string_view, std::vector<sf::SoundBuffer>> npc_sounds{};
 
-	fornani::Logger m_logger{"asset"};
+	fornani::io::Logger m_logger{"asset"};
 };
 
 } // namespace asset

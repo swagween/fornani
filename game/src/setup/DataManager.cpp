@@ -1,10 +1,13 @@
 
 #include "fornani/setup/DataManager.hpp"
+
+#include <iostream>
+
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 
-namespace data {
+namespace fornani::data {
 
 DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) {
 	load_data();
@@ -65,7 +68,7 @@ void DataManager::load_data(std::string in_room) {
 		file.id = ctr;
 		file.label = "file_" + std::to_string(ctr);
 		file.save_data = dj::Json::from_file((finder.resource_path() + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
-		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::FileFlags::new_file); }
+		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::io::FileFlags::new_file); }
 		++ctr;
 	}
 	blank_file.save_data = dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
@@ -376,7 +379,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
 	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
 	m_services->ticker.set_time(m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>()));
-	if (files.at(file).flags.test(fornani::FileFlags::new_file)) { s.player.death_count.set(0); }
+	if (files.at(file).flags.test(fornani::io::FileFlags::new_file)) { s.player.death_count.set(0); }
 
 	return room_id;
 }
@@ -395,7 +398,7 @@ void DataManager::load_settings() {
 void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
 	files.at(index).save_data = blank_file.save_data;
-	files.at(index).flags.set(fornani::FileFlags::new_file);
+	files.at(index).flags.set(fornani::io::FileFlags::new_file);
 	files.at(index).save_data.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
@@ -407,7 +410,7 @@ void DataManager::write_death_count(player::Player& player) {
 	save.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
-std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) {
+std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) const {
 
 	auto const& save = blank_file.save_data;
 	assert(!save.is_null());

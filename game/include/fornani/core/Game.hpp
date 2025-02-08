@@ -1,8 +1,5 @@
 #pragma once
-#include <imgui.h>
 #include <filesystem>
-#include <random>
-#include "fornani/audio/MusicPlayer.hpp"
 #include "fornani/automa/StateManager.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -65,6 +62,8 @@ class Game {
 	player::Player player;
 	automa::StateManager game_state;
 	sf::RectangleShape background{};
+
+	io::Logger m_logger{ "core" };
 };
 
 } // namespace fornani

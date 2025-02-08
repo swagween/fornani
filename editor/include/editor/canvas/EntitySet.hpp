@@ -9,9 +9,8 @@
 
 #include <string_view>
 #include <filesystem>
-#include <iostream>
 
-namespace data {
+namespace fornani::data {
 class ResourceFinder;
 }
 
@@ -120,10 +119,10 @@ class Canvas;
 class EntitySet {
   public:
 	EntitySet() = default;
-	EntitySet(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void load(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
-	bool save(data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	void load(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	bool save(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void clear();
 	bool has_entity_at(sf::Vector2<uint32_t> pos, bool highlighted_only = false) const;
 	bool overlaps(Entity& other) const;

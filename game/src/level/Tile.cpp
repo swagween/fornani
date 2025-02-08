@@ -3,9 +3,8 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/weapon/Projectile.hpp"
 #include "fornani/level/Map.hpp"
-#include <iostream>
 
-namespace world {
+namespace fornani::world {
 
 Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi) : index(i), value(val), one_d_index(odi), bounding_box({32.f, 32.f}, evaluate(val)) {
 	set_type();

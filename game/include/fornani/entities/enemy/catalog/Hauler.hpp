@@ -1,9 +1,10 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Caution.hpp"
 #define HAULER_BIND(f) std::bind(&Hauler::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 	enum class HaulerState { idle, turn, run, haul, alert, jump, hurt };
 

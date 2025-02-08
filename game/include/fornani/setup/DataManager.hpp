@@ -2,30 +2,27 @@
 
 #pragma once
 
-#include <assert.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <array>
-#include <iostream>
 #include <string>
+#include "fornani/io/File.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/utils/QuestCode.hpp"
-#include "File.hpp"
-#include "ResourceFinder.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace config {
+namespace fornani::config {
 class ControllerMap;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace data {
+namespace fornani::data {
 
 struct MapData {
 	int id{};
@@ -50,9 +47,9 @@ class DataManager {
 	void load_settings();
 	void delete_file(int index);
 	void write_death_count(player::Player& player);
-	std::string_view load_blank_save(player::Player& player, bool state_switch = false);
+	std::string_view load_blank_save(player::Player& player, bool state_switch = false) const;
 	dj::Json& get_save() { return files.at(current_save).save_data; }
-	fornani::File& get_file() { return files.at(current_save); }
+	fornani::io::File& get_file() { return files.at(current_save); }
 
 	// tweaking
 	void load_player_params(player::Player& player);
@@ -114,8 +111,8 @@ class DataManager {
 	dj::Json hulmet{};
 
 	int current_save{};
-	std::array<fornani::File, 3> files{};
-	fornani::File blank_file{};
+	std::array<fornani::io::File, 3> files{};
+	fornani::io::File blank_file{};
 
 	dj::Json player_params{};
 	dj::Json menu{};

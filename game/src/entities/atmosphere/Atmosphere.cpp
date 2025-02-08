@@ -2,14 +2,13 @@
 
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <iostream>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 #include <imgui.h>
 
 #include <tracy/Tracy.hpp>
 
-namespace vfx {
+namespace fornani::vfx {
 
 Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, int type) {
 	auto density{32};

@@ -3,7 +3,7 @@
 #include "fornani/level/Map.hpp"
 #include <algorithm>
 
-namespace entity {
+namespace fornani::entity {
 void Caution::update() {}
 
 void Caution::avoid_player(player::Player& player) {}

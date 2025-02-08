@@ -5,7 +5,10 @@
 #include <unordered_map>
 #include <string>
 
-namespace data {
+#include "fornani/io/Logger.hpp"
+
+
+namespace fornani::data {
 class ResourceFinder;
 }
 
@@ -48,7 +51,7 @@ struct BackgroundLayer {
 
 class Background {
   public:
-	Background(data::ResourceFinder& finder, Backdrop backdrop);
+	Background(fornani::data::ResourceFinder& finder, Backdrop backdrop);
 
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -63,6 +66,8 @@ class Background {
 	sf::Vector2<int> start_offset{};
 	bool* b_debug{};
 	sf::Texture texture{};
+
+	fornani::io::Logger m_logger{"pioneer"};
 };
 
 } // namespace pi

@@ -2,11 +2,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <cstdio>
-#include <memory>
 #include <random>
 
-namespace util {
+namespace fornani::util {
 
 class Random {
 

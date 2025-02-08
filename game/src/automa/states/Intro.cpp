@@ -2,7 +2,7 @@
 #include "fornani/automa/states/Intro.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player, console) {
 	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));

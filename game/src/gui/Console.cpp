@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc), item_widget(svc), sprite(svc, corner_factor, edge_factor) {
 	origin = {pad, svc.constants.screen_dimensions.y - pad_y};

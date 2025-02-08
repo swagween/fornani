@@ -1,11 +1,9 @@
 
 #pragma once
 
-#include <cstdio>
 #include <list>
-#include <memory>
 
-namespace {
+namespace fornani::util {
 
 template <typename T>
 class AdjacencyList {

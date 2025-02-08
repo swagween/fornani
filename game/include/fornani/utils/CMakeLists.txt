@@ -12,7 +12,6 @@ nani_add_headers(
         Decoder.hpp
         Direction.hpp
         Fader.hpp
-        Logger.hpp
         Math.hpp
         NineSlice.hpp
         QuestCode.hpp

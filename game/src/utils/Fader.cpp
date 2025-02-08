@@ -2,7 +2,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 
 
-namespace util {
+namespace fornani::util {
 
 Fader::Fader(automa::ServiceProvider& svc, int time, std::string_view color) : time(time), sprite{svc.assets.t_fader} {
 	if (color_codes.contains(color)) {

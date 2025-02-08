@@ -4,7 +4,7 @@
 #include <ccmath/math/power/sqrt.hpp>
 #include "fornani/utils/Math.hpp"
 
-namespace shape {
+namespace fornani::shape {
 
 Collider::Collider() {
 	dimensions = sf::Vector2<float>{default_dim, default_dim};

@@ -2,20 +2,16 @@
 #pragma once
 
 #include <chrono>
-#include <cmath>
-#include <list>
-#include <random>
-#include <vector>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Counter.hpp"
 
-namespace anim {
+namespace fornani::anim {
 
-int const DEFAULT_FRAMERATE = 8;
-int const DEFAULT_DURATION = 8;
-int const DEFAULT_NUM_BEHAVIORS = 1;
-int const animation_multiplier = 64;
+constexpr int DEFAULT_FRAMERATE = 8;
+constexpr int DEFAULT_DURATION = 8;
+constexpr int DEFAULT_NUM_BEHAVIORS = 1;
+constexpr int animation_multiplier = 64;
 
 struct Parameters {
 	int lookup{};
@@ -63,4 +59,4 @@ struct Animation {
 
 };
 
-} // namespace anim
+} // namespace fornani::anim

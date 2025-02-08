@@ -7,11 +7,11 @@
 #include "Sound.hpp"
 #include <unordered_map>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace audio {
+namespace fornani::audio {
 
 enum class SoundboardState { on, off };
 

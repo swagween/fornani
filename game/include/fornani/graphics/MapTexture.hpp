@@ -2,17 +2,17 @@
 
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 enum class MapTextureFlags { current };
 
@@ -44,7 +44,7 @@ class MapTexture {
 	util::BitFlags<MapTextureFlags> flags{};
 	bool ignore{};
 
-	fornani::Logger m_logger {"graphics"};
+	io::Logger m_logger {"graphics"};
 };
 
-} // namespace gui
+} // namespace fornani::gui

@@ -3,11 +3,10 @@
 
 #include "fornani/automa/GameState.hpp"
 #include "fornani/level/Camera.hpp"
-#include "fornani/utils/Collider.hpp"
 #include "fornani/gui/VendorDialog.hpp"
 #include <optional>
 
-namespace automa {
+namespace fornani::automa {
 
 class Dojo : public GameState {
   public:

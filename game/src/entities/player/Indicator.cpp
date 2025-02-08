@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace player {
+namespace fornani::player {
 
 Indicator::Indicator(automa::ServiceProvider& svc) : label{svc.text.fonts.title} {}
 

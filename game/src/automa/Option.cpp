@@ -3,7 +3,7 @@
 #include "fornani/automa/GameState.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 Option::Option(ServiceProvider& svc, std::string_view lbl, bool red) : red(red), label(svc.text.fonts.title) {
 	label.setString(lbl.data());

@@ -3,17 +3,16 @@
 
 #include <steam/isteaminput.h>
 #include <SFML/Graphics.hpp>
-#include <cstdint>
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace config {
+namespace fornani::config {
 
 enum class DigitalAction : int {
 	// Platformer controls

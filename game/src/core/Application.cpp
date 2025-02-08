@@ -1,6 +1,8 @@
 
 #include "fornani/core/Application.hpp"
 
+#include <iostream>
+
 #include "fornani/utils/Tracy.hpp"
 
 namespace fornani {
@@ -29,7 +31,7 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 }
 
 void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-	std::unique_ptr game = std::make_unique<fornani::Game>(argv, m_window, m_metadata);
+	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata);
 	game->run(demo, room_id, levelpath, player_position);
 }
 

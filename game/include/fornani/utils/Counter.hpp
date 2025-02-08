@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <limits>
 
-namespace util {
+namespace fornani::util {
 
 class Counter {
   public:

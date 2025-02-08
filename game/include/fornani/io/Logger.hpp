@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <imgui.h>
 
 
@@ -15,7 +14,7 @@
 
 #include "fornani/utils/FixedString.hpp"
 
-namespace util {
+namespace fornani::util {
 struct AppLog {
 	ImGuiTextBuffer Buf;
 	ImGuiTextFilter Filter;
@@ -43,7 +42,7 @@ struct AppLog {
 			if (Buf[old_size] == '\n') LineOffsets.push_back(old_size + 1);
 	}
 
-	void draw(char const* title, bool* p_open = NULL) {
+	void draw(char const* title, bool* p_open = nullptr) {
 		if (!ImGui::Begin(title, p_open)) {
 			ImGui::End();
 			return;
@@ -99,7 +98,7 @@ class Logger {
 // Thread safe logger class
 // If you have questions about this, ask Ian.
 
-namespace fornani::logger {
+namespace fornani::io::logger {
     /**
      * \brief Log Level.
      */
@@ -319,7 +318,7 @@ namespace fornani::logger {
                int curLine, std::string_view message);
 } // namespace fornani::logger
 
-namespace fornani {
+namespace fornani::io {
     class Logger {
     public:
         using Level = logger::Level;
@@ -394,6 +393,9 @@ namespace fornani {
         inline Logger const general{"general"};
     } // namespace logger
 } // namespace fornani
+
+
+
 
 // NOLINTBEGIN
 #define INTERNAL_NANI_LOG(logger, level, message, ...)                                                                                                          \

@@ -2,7 +2,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/gui/Console.hpp"
 
-namespace player {
+namespace fornani::player {
 
 void AbilityManager::update(automa::ServiceProvider& svc) {}
 

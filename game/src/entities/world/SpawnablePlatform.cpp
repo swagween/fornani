@@ -3,7 +3,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index) : index(index), sprite(svc.assets.t_spawnable_platform, {64, 64}) {
 	collider = shape::Collider({64.f, 64.f});

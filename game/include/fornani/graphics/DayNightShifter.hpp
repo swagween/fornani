@@ -3,11 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace graphics {
+namespace fornani::graphics {
 
 class DayNightShifter {
   public:

@@ -3,7 +3,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define FRDOG_BIND(f) std::bind(&Frdog::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 	enum class AnimState { idle, turn, run, hurt, charge, bark, spew, sit, sleep };
 

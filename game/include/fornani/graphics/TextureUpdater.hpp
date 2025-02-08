@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-namespace flfx {
+namespace fornani::flfx {
 
 class TextureUpdater {
 

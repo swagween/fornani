@@ -1,23 +1,23 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace shape {
+namespace fornani::shape {
 class Collider;
 }
 
-namespace dir {
+namespace fornani::dir {
 struct Direction;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class Caution {
   public:

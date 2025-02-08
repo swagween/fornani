@@ -4,7 +4,7 @@
 #include <vector>
 #include "Spark.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Sparkler {
   public:

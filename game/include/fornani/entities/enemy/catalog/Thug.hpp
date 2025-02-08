@@ -1,9 +1,11 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Attack.hpp"
+#include "fornani/entities/packages/Caution.hpp"
 #define THUG_BIND(f) std::bind(&Thug::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class ThugState { idle, turn, run, jump, alert, rush, punch };
 

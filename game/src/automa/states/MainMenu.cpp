@@ -2,7 +2,7 @@
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
 	: GameState(svc, player, scene, room_number), subtitle{svc.text.fonts.basic}, instruction(svc.text.fonts.basic), title(svc.assets.t_title) {

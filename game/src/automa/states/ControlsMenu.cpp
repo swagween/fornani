@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 constexpr std::array<std::string_view, 4> tabs = {"controls_platformer", "controls_inventory", "controls_map", "controls_menu"};
 constexpr std::array<std::string_view, 4> tab_id_prefixes = {"platformer_", "inventory_", "map_", "menu_"};

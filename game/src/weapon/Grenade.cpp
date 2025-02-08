@@ -4,7 +4,7 @@
 #include "fornani/level/Map.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir::Direction direction) : Collider({16.f, 16.f}), sprite{svc.assets.t_grenade} {
 	switch (direction.inter) {

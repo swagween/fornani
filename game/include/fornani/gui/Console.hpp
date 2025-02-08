@@ -2,23 +2,21 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <array>
 #include <string>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/graphics/TextWriter.hpp"
 #include "Portrait.hpp"
 #include "ItemWidget.hpp"
-#include "fornani/utils/QuestCode.hpp"
 #include "fornani/utils/NineSlice.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
-int const corner_factor{56};
-int const edge_factor{2};
-float const height_factor{3.0f};
+constexpr int corner_factor{56};
+constexpr int edge_factor{2};
+constexpr float height_factor{3.0f};
 
-float const pad{168.f};
-float const text_pad{8.0f};
+constexpr float pad{168.f};
+constexpr float text_pad{8.0f};
 
 enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item, exited };
 

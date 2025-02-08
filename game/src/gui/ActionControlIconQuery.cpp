@@ -38,7 +38,7 @@ sf::Vector2i get_controller_button_coordinates(EInputActionOrigin btn) {
 	return {buttoni % atlas_width, controller_section + buttoni / atlas_width};
 }
 
-namespace gui {
+namespace fornani::gui {
 
 auto get_action_control_icon(automa::ServiceProvider& svc, config::DigitalAction action) -> sf::Sprite {
 	auto source = svc.controller_map.digital_action_source(action);

@@ -6,22 +6,21 @@
 #include "Console.hpp"
 #include "MiniMenu.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include <memory>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
-namespace npc {
+namespace fornani::npc {
 class Vendor;
 }
-namespace flfx {
+namespace fornani::flfx {
 class Transition;
 }
 
-namespace gui {
+namespace fornani::gui {
 enum class VendorDialogStatus { opened, made_sale };
 enum class VendorState { sell, buy };
 class VendorDialog {

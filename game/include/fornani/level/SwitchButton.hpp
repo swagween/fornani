@@ -1,28 +1,25 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #include <string_view>
-#include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Collider.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include "fornani/entities/animation/Animation.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SWITCH_BIND(f) std::bind(&SwitchButton::f, this)
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace arms {
+namespace fornani::arms {
 class Projectile;
 }
 
-namespace world {
+namespace fornani::world {
 
 enum class SwitchType { toggler, permanent, movable, alternator };
 enum class SwitchButtonState { unpressed, pressed };

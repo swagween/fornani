@@ -1,7 +1,7 @@
 
 #include "fornani/utils/Ticker.hpp"
 
-namespace util {
+namespace fornani::util {
 
 void Ticker::start_frame() {
 	++num_frames;

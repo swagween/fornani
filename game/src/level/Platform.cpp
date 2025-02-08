@@ -5,7 +5,7 @@
 #include "fornani/particle/Effect.hpp"
 #include <cmath>
 
-namespace world {
+namespace fornani::world {
 
 Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point, int style)
 	: shape::Collider(dimensions, position), path_position(start_point), sprite{svc.assets.platform_lookup.at(style)} {

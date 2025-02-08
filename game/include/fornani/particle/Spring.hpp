@@ -1,13 +1,12 @@
 
 #pragma once
 
-#include <string>
-#include "fornani/utils/Shape.hpp"
+
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/CircleSensor.hpp"
 #include <optional>
 
-namespace vfx {
+namespace fornani::vfx {
 struct SpringParameters {
 	float dampen_factor{};
 	float spring_constant{};

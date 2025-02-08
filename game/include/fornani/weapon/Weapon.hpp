@@ -2,8 +2,6 @@
 #pragma once
 
 #include <cstdio>
-#include <list>
-#include <memory>
 #include "fornani/utils/BitFlags.hpp"
 #include "Projectile.hpp"
 #include "Ammo.hpp"
@@ -11,7 +9,7 @@
 #include "fornani/components/SteeringBehavior.hpp"
 #include <optional>
 
-namespace arms {
+namespace fornani::arms {
 
 enum class WeaponState { unlocked, equipped, reloading };
 enum class InventoryState { reserve, hotbar };

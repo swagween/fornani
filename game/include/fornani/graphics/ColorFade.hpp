@@ -5,7 +5,7 @@
 #include <vector>
 #include "fornani/utils/Cooldown.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 class ColorFade{
   public:
 	ColorFade() = default;

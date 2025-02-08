@@ -1,10 +1,9 @@
 
 #pragma once
 
-#include <cstdio>
 #include <memory>
 
-namespace fsm {
+namespace fornani::fsm {
 
 template <typename State>
 class StateMachine {

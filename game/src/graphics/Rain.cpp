@@ -1,7 +1,7 @@
 #include "fornani/graphics/Rain.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 Rain::Rain(int intensity, float fall_speed, float slant, bool snow, bool collision) : intensity(intensity), fall_speed(fall_speed), slant(slant), collision(collision) {
 	auto color = sf::Color{163, 206, 229, 100};

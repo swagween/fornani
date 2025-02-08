@@ -4,7 +4,7 @@
 #include "fornani/automa/GameState.hpp"
 #include "fornani/level/Camera.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 class Intro : public GameState {
   public:

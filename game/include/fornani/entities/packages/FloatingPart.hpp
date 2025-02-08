@@ -2,15 +2,15 @@
 #include <SFML/Graphics.hpp>
 #include "fornani/particle/Gravitator.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class FloatingPart {
   public:

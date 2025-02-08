@@ -1,23 +1,22 @@
 #pragma once
 
-#include <string>
 #include "fornani/utils/Shape.hpp"
 #include "fornani/particle/Chain.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 enum class GrassFlags { foreground };
 enum class GrassType { normal, bush };
 class Grass {
@@ -45,4 +44,4 @@ class Grass {
 	} constants{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

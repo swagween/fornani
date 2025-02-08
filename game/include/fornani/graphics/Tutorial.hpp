@@ -1,16 +1,15 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string_view>
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "HelpText.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace text {
+namespace fornani::text {
 
 enum class TutorialHelpers { trigger, render, closed };
 enum class TutorialFlags { jump, sprint, inventory, shoot, map };
@@ -34,4 +33,4 @@ class Tutorial {
 	util::Cooldown maximum_display_time{4800};
 };
 
-} // namespace flfx
+} // namespace fornani::flfx

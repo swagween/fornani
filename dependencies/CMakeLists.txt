@@ -40,7 +40,7 @@ set(CCMATH_STRICT_WARNINGS OFF)
 FetchContent_Declare(
         ccmath
         GIT_REPOSITORY https://github.com/Rinzii/ccmath
-        GIT_TAG 7507508 # IanP: This specific commit id is stable but more recent than main
+        GIT_TAG 15260da # IanP: This specific commit id is stable but more recent than main
 )
 FetchContent_MakeAvailable(ccmath)
 
@@ -60,11 +60,8 @@ add_library(steamworks INTERFACE)
 target_include_directories(steamworks SYSTEM INTERFACE ${steamworks_archive_SOURCE_DIR}/public)
 if (WIN32)
     target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.lib)
-    if (MSVC)
-        # Avoid hundreds of strncpy deprecation messages
-        target_compile_definitions(steamworks INTERFACE _CRT_SECURE_NO_WARNINGS)
-    endif ()
-
+    # Avoid hundreds of strncpy deprecation messages
+    target_compile_definitions(steamworks INTERFACE _CRT_SECURE_NO_WARNINGS)
     set(steamworks_dll_file ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.dll CACHE STRING "Steamworks DLL")
 elseif (UNIX)
     target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/linux64/libsteam_api.so)

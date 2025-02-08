@@ -5,7 +5,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Chest::Chest(automa::ServiceProvider& svc, int id) : id(id), sprite{svc.assets.t_chest} {
 	dimensions = {28, 28};

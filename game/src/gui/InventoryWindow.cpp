@@ -3,7 +3,7 @@
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
 	: Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc), item_menu(svc, {"use", "cancel"}, true), wardrobe(svc), help_marker(svc), title{svc.text.fonts.title}, arsenal{svc.text.fonts.title},

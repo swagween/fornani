@@ -4,10 +4,8 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Direction.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include <cmath>
-#include <iostream>
 
-namespace player {
+namespace fornani::player {
 
 enum class SlideFlags { break_out, started };
 

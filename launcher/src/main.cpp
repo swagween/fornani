@@ -1,8 +1,6 @@
-
 #include "launcher/LauncherApplication.hpp"
 
 #include <steam/steam_api.h>
-#include <iostream>
 
 #ifndef FORNANI_STEAM_APP_ID
 #error "FORNANI_STEAM_APP_ID was not defined!"
@@ -18,10 +16,10 @@ int main(int argc, char** argv) {
 	assert(argc > 0);
 
 	// TODO: Maybe move this into a config file?
-	auto config = fornani::logger::Config{};
+	auto config = fornani::io::logger::Config{};
 	// Required to initialize the logger for the application. This must also stay outside any try/catch block.
-	auto log_instance = fornani::logger::Instance{logFile, config};
-	const fornani::Logger main_logger{"Main"};
+	auto log_instance = fornani::io::logger::Instance{logFile, config};
+	const fornani::io::Logger main_logger{"Main"};
 
 
 	launcher::LauncherApplication app{argv};

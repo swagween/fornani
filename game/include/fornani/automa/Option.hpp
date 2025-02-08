@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <string_view>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 struct Option {
 	Option(ServiceProvider& svc, std::string_view lbl, bool red = false);
@@ -19,4 +19,4 @@ struct Option {
 	bool red{};
 	void update(ServiceProvider& svc, int selection);
 };
-} // namespace automa
+} // namespace fornani::automa

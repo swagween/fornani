@@ -60,12 +60,13 @@ void Marquee::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scan
 void Marquee::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {
 	sf::RectangleShape box{};
 	switch (mode) {
+	case SelectMode::none: break;
 	case SelectMode::clipboard:
 		[[fallthrough]];
 	case SelectMode::select:
 		if (!selection) { break; }
 		if (canvas.get_selection_type() != selection.value().get_type()) { break; } // don't render if the types don't match
-		std::uint8_t red = selection.value().get_type() == SelectionType::canvas ? 100 : 255;
+		std::uint8_t const red = selection.value().get_type() == SelectionType::canvas ? 100 : 255;
 		box.setOutlineColor(sf::Color{red, 255, 160, 180});
 		box.setFillColor(sf::Color{red, 100, 180, 40});
 		box.setOutlineThickness(-2);

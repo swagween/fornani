@@ -2,11 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include "fornani/components/CircleSensor.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class Attack {
   public:
@@ -22,4 +22,4 @@ class Attack {
 	sf::Vector2<float> hit_offset{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

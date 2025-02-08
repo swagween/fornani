@@ -2,9 +2,8 @@
 #pragma once
 
 #include <bitset>
-#include <utility>
 
-namespace util {
+namespace fornani::util {
 
 template <typename Enum, std::size_t Size = 32u>
 struct BitFlags {

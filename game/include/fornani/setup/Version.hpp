@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string_view>
 #include <djson/json.hpp>
 #include "fornani/setup/ResourceFinder.hpp"
 
@@ -10,6 +9,7 @@ namespace fornani {
 class Version {
   public:
 	Version(dj::Json& info, data::ResourceFinder& finder) {
+		// TODO: Move this to a cmake config file instead of looking for a json file.
 		// load version info
 		info = dj::Json::from_file((finder.resource_path() + "/data/config/version.json").c_str());
 		assert(!info.is_null());

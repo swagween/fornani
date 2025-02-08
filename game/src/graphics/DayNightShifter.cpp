@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace graphics {
+namespace fornani::graphics {
 
 void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Sprite& sprite, int ctr) {
 	auto cycle = static_cast<int>(svc.world_clock.get_time_of_day());

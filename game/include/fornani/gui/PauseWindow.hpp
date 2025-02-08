@@ -3,15 +3,15 @@
 #include "MiniMenu.hpp"
 #include "Selector.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace automa {
+namespace fornani::automa {
 class GameState;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 class PauseWindow : public Console {
   public:

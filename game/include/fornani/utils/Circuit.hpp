@@ -2,7 +2,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace util {
+namespace fornani::util {
 
 class Circuit {
   public:

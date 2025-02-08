@@ -3,9 +3,16 @@
 
 #include <fornani/utils/Tracy.hpp>
 
-#include "fornani/setup/Game.hpp"
+#include "../../include/fornani/core/Game.hpp"
+#include "fornani/automa/states/ControlsMenu.hpp"
+#include "fornani/automa/states/CreditsMenu.hpp"
+#include "fornani/automa/states/Intro.hpp"
+#include "fornani/automa/states/MainMenu.hpp"
+#include "fornani/automa/states/OptionsMenu.hpp"
+#include "fornani/automa/states/SettingsMenu.hpp"
+#include "fornani/automa/states/StatSheet.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 StateManager::StateManager(ServiceProvider& svc, player::Player& player) : g_current_state{std::make_unique<MainMenu>(svc, player, "main")} {}
 

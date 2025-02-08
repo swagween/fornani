@@ -1,15 +1,10 @@
 
 #pragma once
 
-#include <array>
-#include <cstdio>
-#include <list>
 #include <memory>
-#include <unordered_map>
 #include "Weapon.hpp"
-#include "fornani/utils/Circuit.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 class Arsenal {
   public:

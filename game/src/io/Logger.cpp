@@ -1,8 +1,18 @@
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 #include <imgui.h>
 
+#include <atomic>
+#include <condition_variable>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <mutex>
+#include <thread>
+#include <vector>
+#include <cassert>
 
-namespace util {
+
+namespace fornani::util {
 
 void Logger::add_log(char const* message) {
 	if (!message) {
@@ -25,25 +35,13 @@ void Logger::write_console(ImVec2 size, ImVec2 pos) {
 
 } // namespace util
 
-#include "fornani/utils/Logger.hpp"
-
-#include <atomic>
-#include <condition_variable>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <mutex>
-#include <thread>
-#include <vector>
-#include <cassert>
-
 #if defined(_WIN32)
 	#define WINDOWS_MEAN_AND_LEAN
     #include "Windows.h" // for OutputDebugStringA
 #endif
 
 
-namespace fornani::logger
+namespace fornani::io::logger
 {
     ThreadId Context::getThreadId()
     {
@@ -80,7 +78,7 @@ namespace fornani::logger
     }
 } // namespace fornani::logger
 
-namespace fornani::logger
+namespace fornani::io::logger
 {
     namespace
     {
@@ -364,7 +362,7 @@ namespace fornani::logger
     }
 } // namespace fornani::logger
 
-namespace fornani
+namespace fornani::io
 {
     void logger::print(logger::Level level, std::string_view category, std::string_view message)
     {

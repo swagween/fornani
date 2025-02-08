@@ -1,26 +1,25 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string_view>
-#include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Collider.hpp"
 #include "fornani/utils/Counter.hpp"
 #include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace arms {
+namespace fornani::arms {
 class Projectile;
 }
 
-namespace world {
+namespace fornani::world {
 
 enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side };
 enum class PlatformState { moving };
@@ -63,6 +62,6 @@ class Platform : public shape::Collider {
 	int state{};
 	sf::Vector2<int> offset{};
 
-	fornani::Logger m_logger{ "world" };
+	fornani::io::Logger m_logger{ "world" };
 };
 } // namespace world

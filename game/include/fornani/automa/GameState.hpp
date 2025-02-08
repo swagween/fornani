@@ -3,26 +3,22 @@
 
 #include <SFML/Graphics.hpp>
 #include <chrono>
-#include <cstdio>
-#include <memory>
 #include <filesystem>
-#include <optional>
 #include "Option.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Background.hpp"
 #include "fornani/gui/Console.hpp"
-#include "fornani/gui/Portrait.hpp"
 #include "fornani/gui/HUD.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace automa {
+namespace fornani::automa {
 
 // globals
 
@@ -84,4 +80,4 @@ class GameState {
 	float top_buffer{80.f};
 };
 
-} // namespace automa
+} // namespace fornani::automa

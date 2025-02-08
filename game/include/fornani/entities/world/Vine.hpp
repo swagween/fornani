@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "fornani/utils/Shape.hpp"
 #include "fornani/particle/Chain.hpp"
 #include "fornani/utils/BitFlags.hpp"
@@ -10,19 +9,19 @@
 #include <vector>
 #include <memory>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 enum class VineFlags { foreground, reverse };
 class Vine {
   public:

@@ -1,7 +1,6 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <string_view>
 #include <optional>
 #include "fornani/utils/CircleCollider.hpp"
@@ -9,15 +8,15 @@
 #include "fornani/utils/Fader.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 enum class ParticleType{ animated, colliding };
 class Particle {
   public:

@@ -1,32 +1,27 @@
 
 #pragma once
 
-#include <memory>
-#include <unordered_map>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/particle/Emitter.hpp"
 #include "fornani/particle/Gravitator.hpp"
-#include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/utils/Direction.hpp"
-#include "fornani/utils/Logger.hpp"
-#include "fornani/utils/Random.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/utils/Shape.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace arms {
+namespace fornani::arms {
 
 class Weapon;
 enum class Team { nani, skycorps, guardian, pioneer, beast };
@@ -137,7 +132,7 @@ class Projectile {
 	util::Cooldown damage_timer{};
 	Weapon* m_weapon;
 
-	fornani::Logger m_logger{ "world" };
+	fornani::io::Logger m_logger{ "world" };
 };
 
 } // namespace arms

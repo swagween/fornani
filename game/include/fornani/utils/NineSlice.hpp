@@ -1,14 +1,13 @@
 #pragma once
-#include <array>
 #include <SFML/Graphics.hpp>
 #include "Cooldown.hpp"
 #include "fornani/particle/Gravitator.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace util {
+namespace fornani::util {
 
 class NineSlice {
   public:

@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <djson/json.hpp>
-#include <array>
 #include <deque>
 #include <string>
 #include <string_view>
@@ -12,16 +11,15 @@
 #include "fornani/graphics/HelpText.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
 #include "fornani/utils/Decoder.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/utils/Shipment.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace text {
+namespace fornani::text {
 
 struct Message {
 	sf::Text data;

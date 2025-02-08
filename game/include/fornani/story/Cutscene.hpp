@@ -2,23 +2,20 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Counter.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include <string_view>
-#include <unordered_map>
-#include <vector>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
-namespace world {
+namespace fornani::world {
 class Map;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
 namespace fornani {

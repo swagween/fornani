@@ -5,19 +5,19 @@
 #include "Spring.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 class Chain {
   public:
 	Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2<float> position, int num_links, bool reversed = false);

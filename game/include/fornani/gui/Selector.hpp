@@ -1,15 +1,14 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string_view>
 #include "fornani/utils/Circuit.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 enum class InventorySection { item, gun, END };
 enum class SelectorFlags { switched, went_up };
