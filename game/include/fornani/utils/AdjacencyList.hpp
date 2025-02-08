@@ -13,7 +13,7 @@ class AdjacencyList {
 	~AdjacencyList() { adjlist.clear(); }
 	AdjacencyList& operator=(AdjacencyList&&) = delete;
 
-	void add_edge(T& u, T& v, bool bidirectional) {
+	void add_edge(T& u, T& v, bool const bidirectional) {
 		adjlist.push_back(u);
 		if (bidirectional) { adjlist.push_back(v); }
 	}
@@ -22,4 +22,4 @@ class AdjacencyList {
 	int size{};
 };
 
-} // namespace
+} // namespace fornani::util

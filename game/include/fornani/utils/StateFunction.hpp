@@ -17,14 +17,14 @@ struct StateFunction {
 	StateFunction(T const& f) : f(f) {}
 	StateFunction(StateFunction&& s) = default;
 	StateFunction(StateFunction const& s) = delete;
-	StateFunction operator()() { return f(); }
-	StateFunction& operator=(StateFunction&& s) {
+	StateFunction operator()() const { return f(); }
+	StateFunction& operator=(StateFunction&& s) noexcept {
 		f = std::move(s.f);
 		return *this;
 	}
 	StateFunction& operator=(StateFunction const&) = delete;
-	operator bool() const { return bool(f); }
+	explicit operator bool() const { return static_cast<bool>(f); }
 	std::function<StateFunction()> f;
 };
 
-} // end namespace fsm
+} // namespace fornani::fsm

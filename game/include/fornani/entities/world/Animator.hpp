@@ -15,7 +15,7 @@ class Player;
 
 namespace fornani::entity {
 
-const sf::Vector2<float> large_animator_offset{16.f, 16.f};
+constexpr sf::Vector2 large_animator_offset{16.f, 16.f};
 enum class AnimatorAttributes{large, automatic, foreground};
 
 class Animator : public Entity {

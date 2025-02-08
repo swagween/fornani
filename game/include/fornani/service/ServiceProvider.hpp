@@ -3,9 +3,11 @@
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/automa/MenuController.hpp"
 #include "fornani/automa/StateController.hpp"
-#include "fornani/graphics/Style.hpp"
-#include "fornani/setup/AccessibilityService.hpp"
 #include "fornani/core/AssetManager.hpp"
+#include "fornani/graphics/CameraController.hpp"
+#include "fornani/graphics/Style.hpp"
+#include "fornani/io/Logger.hpp"
+#include "fornani/setup/AccessibilityService.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 #include "fornani/setup/DataManager.hpp"
 #include "fornani/setup/Tables.hpp"
@@ -16,19 +18,17 @@
 #include "fornani/story/StatTracker.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Constants.hpp"
-#include "fornani/io/Logger.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/utils/Stopwatch.hpp"
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
-#include "fornani/graphics/CameraController.hpp"
 
 namespace fornani::automa {
-enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
-enum class AppFlags { fullscreen, tutorial, in_game };
-enum class StateFlags { hide_hud, no_menu };
+enum class DebugFlags : uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
+enum class AppFlags : uint8_t { fullscreen, tutorial, in_game };
+enum class StateFlags : uint8_t { hide_hud, no_menu };
 struct PlayerDat {
-	void set_piggy_id(int id) { piggy_id = id; }
+	void set_piggy_id(int const id) { piggy_id = id; }
 	void unpiggy() { drop_piggy = true; }
 	int piggy_id{};
 	bool drop_piggy{};

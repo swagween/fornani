@@ -16,5 +16,6 @@ Checks: 'clang-analyzer-*,
 	-readability-uppercase-literal-suffix 
 	-readability-magic-numbers,
 	-readability-uppercase-literal-suffix,
+	-google-default-arguments,
 	'
 ...

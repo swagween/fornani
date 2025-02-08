@@ -12,7 +12,7 @@ namespace fornani::audio {
 
 class Sound {
   public:
-	Sound(const sf::SoundBuffer& buffer, int echo_count = 0, int echo_rate = 16);
+	explicit Sound(const sf::SoundBuffer& buffer, int echo_count = 0, int echo_rate = 16);
 	void update(automa::ServiceProvider& svc);
 	void play();
 	void set_volume(float volume);

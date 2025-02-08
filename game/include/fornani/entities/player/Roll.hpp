@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-enum class RollFlags { rolling, can_roll };
+enum class RollFlags : uint8_t { rolling, can_roll };
 
 class Roll {
   public:

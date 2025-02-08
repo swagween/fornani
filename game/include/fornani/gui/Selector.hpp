@@ -1,8 +1,8 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Circuit.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Circuit.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -10,8 +10,8 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class InventorySection { item, gun, END };
-enum class SelectorFlags { switched, went_up };
+enum class InventorySection : uint8_t { item, gun, END };
+enum class SelectorFlags : uint8_t { switched, went_up };
 
 class Selector {
   public:
@@ -49,4 +49,4 @@ class Selector {
 	} sections{};
 };
 
-} // namespace gui
+} // namespace fornani::gui

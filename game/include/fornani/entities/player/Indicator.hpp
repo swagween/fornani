@@ -14,10 +14,10 @@ class Player;
 }
 
 namespace fornani::player {
-enum class IndicatorType { health, orb };
+enum class IndicatorType : uint8_t { health, orb };
 class Indicator {
   public:
-	Indicator(automa::ServiceProvider& svc);
+	explicit Indicator(automa::ServiceProvider& svc);
 	void init(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> pos = {0.f, 0.f});
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);

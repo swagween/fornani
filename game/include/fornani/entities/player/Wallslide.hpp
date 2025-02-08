@@ -9,8 +9,8 @@ namespace fornani::player {
 constexpr static int perfect_walljump{4};
 constexpr static int walljump_request_time{12};
 
-enum class WallslideTrigger { walljump_requested };
-enum class WallslideState { wallsliding, walljump };
+enum class WallslideTrigger : uint8_t { walljump_requested };
+enum class WallslideState : uint8_t { wallsliding, walljump };
 
 class Wallslide {
   public:

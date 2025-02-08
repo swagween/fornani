@@ -2,9 +2,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/Animation.hpp"
-#include "fornani/components/PhysicsComponent.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -12,11 +12,11 @@ struct ServiceProvider;
 
 namespace fornani::entity {
 
-class Effect : public Entity {
-	public:
+class Effect final : public Entity {
+  public:
 	Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type = 0, int index = 0, sf::Vector2i reflections = {});
-	void update(automa::ServiceProvider& svc, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void update(automa::ServiceProvider& svc, world::Map& map) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void rotate();
 	[[nodiscard]] auto done() -> bool { return animation.complete(); }
 
@@ -27,4 +27,4 @@ class Effect : public Entity {
 	sf::Sprite sprite;
 };
 
-} // namespace vfx
+} // namespace fornani::entity

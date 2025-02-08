@@ -26,7 +26,8 @@ class Chain {
 	void set_gravity(float g) { grav = g; }
 	std::vector<Spring> links{};
 	std::vector<components::PhysicsComponent> joints{};
-	bool moving() const;
+	[[nodiscard]] bool moving() const;
+
   private:
 	sf::Vector2<float> root{};
 	float external_dampen{0.05f};
@@ -34,4 +35,4 @@ class Chain {
 	util::Cooldown intro{8};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

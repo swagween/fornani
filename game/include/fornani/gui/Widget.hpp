@@ -12,7 +12,7 @@ class Player;
 }
 
 namespace fornani::gui {
-enum class State { added, neutral, taken, gone };
+enum class State : uint8_t { added, neutral, taken, gone };
 class Widget {
   public:
 	Widget(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<int> dim, int index);
@@ -33,4 +33,4 @@ class Widget {
 	util::Cooldown shaking{100};
 };
 
-} // namespace gui
+} // namespace fornani::gui

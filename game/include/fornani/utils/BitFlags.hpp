@@ -13,7 +13,7 @@ struct BitFlags {
 	void set(Enum e) { bits.set(static_cast<std::size_t>(e)); }
 	void reset(Enum e) { bits.reset(static_cast<std::size_t>(e)); }
 	bool consume(Enum e) {
-		bool ret = bits[static_cast<std::size_t>(e)];
+		bool const ret = bits[static_cast<std::size_t>(e)];
 		reset(e);
 		return ret;
 	}
@@ -21,4 +21,4 @@ struct BitFlags {
 	bool operator==(BitFlags const&) const = default;
 };
 
-} // namespace util
+} // namespace fornani::util

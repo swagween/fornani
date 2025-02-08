@@ -13,12 +13,12 @@ struct ServiceProvider;
 
 namespace fornani::player {
 
-enum class ShieldTrigger { shield_up, shield_down, hit };
-enum class ShieldState { shielding, wobbling, popping, recovery };
+enum class ShieldTrigger : uint8_t { shield_up, shield_down, hit };
+enum class ShieldState : uint8_t { shielding, wobbling, popping, recovery };
 
 class Shield {
   public:
-	Shield(automa::ServiceProvider& svc);
+	explicit Shield(automa::ServiceProvider& svc);
 	void start();
 	void pop();
 	void end();

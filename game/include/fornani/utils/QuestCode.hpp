@@ -4,18 +4,18 @@
 
 namespace fornani::util {
 
-	struct QuestKey {
+struct QuestKey {
 	int type{};
 	int id{};
 	int source_id{};
 	int amount{1};
 	int hard_set{};
 	friend bool operator==(QuestKey const& lhs, QuestKey const& rhs) { return lhs.type == rhs.type && lhs.id == rhs.id && lhs.source_id == rhs.source_id; }
-	};
+};
 
 class QuestCode {
   public:
-	constexpr QuestCode(int code) : code(code) {
+	constexpr explicit QuestCode(int code) : code(code) {
 		if (code < 1) { return; }
 		auto extraction = static_cast<float>(code);
 		auto ctr(0);
@@ -40,4 +40,4 @@ class QuestCode {
 	int code{};
 };
 
-} // namespace util
+} // namespace fornani::util

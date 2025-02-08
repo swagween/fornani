@@ -5,12 +5,12 @@
 
 namespace fornani::automa {
 
-class ControlsMenu : public GameState {
+class ControlsMenu final : public GameState {
   public:
 	ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name = "", int room_number = 0);
-	void tick_update(ServiceProvider& svc);
-	void frame_update(ServiceProvider& svc);
-	void render(ServiceProvider& svc, sf::RenderWindow& win);
+	void tick_update(ServiceProvider& svc) override;
+	void frame_update(ServiceProvider& svc) override;
+	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void refresh_controls(ServiceProvider& svc);
 	void restore_defaults(ServiceProvider& svc);
 
@@ -26,4 +26,4 @@ class ControlsMenu : public GameState {
 	sf::RectangleShape debug{};
 };
 
-} // namespace automa
+} // namespace fornani::automa

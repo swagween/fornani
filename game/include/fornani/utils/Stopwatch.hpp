@@ -24,8 +24,8 @@ class Stopwatch {
 		snapshot.history.push_back(elapsed_time.count());
 		calculate_snapshot();
 	};
-	float seconds_passed() const { return seconds.count(); }
-	float get_snapshot() const { return snapshot.average_elapsed_ms; }
+	[[nodiscard]] float seconds_passed() const { return seconds.count(); }
+	[[nodiscard]] float get_snapshot() const { return snapshot.average_elapsed_ms; }
 	void print_time() const { NANI_LOG_DEBUG(m_logger, "Elapsed Time: {:.5f} seconds", seconds.count()); }
 
 	Time elapsed_time{};
@@ -53,4 +53,4 @@ class Stopwatch {
 	io::Logger m_logger{"stopwatch"};
 };
 
-} // namespace util
+} // namespace fornani::util

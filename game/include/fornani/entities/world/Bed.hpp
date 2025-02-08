@@ -25,7 +25,7 @@ class Transition;
 }
 
 namespace fornani::entity {
-enum class BedFlags { active, engaged };
+enum class BedFlags : uint8_t { active, engaged };
 class Bed {
   public:
 	Bed(automa::ServiceProvider& svc, sf::Vector2<float> position, int room);

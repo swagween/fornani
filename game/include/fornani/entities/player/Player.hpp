@@ -1,30 +1,31 @@
 
 #pragma once
 
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/graphics/TextureUpdater.hpp"
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/QuestCode.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/graphics/Tutorial.hpp"
-#include "fornani/weapon/Hotbar.hpp"
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/entities/packages/Caution.hpp"
 #include "Catalog.hpp"
 #include "Indicator.hpp"
-#include "Wallet.hpp"
+#include "Piggybacker.hpp"
 #include "PlayerAnimation.hpp"
 #include "PlayerController.hpp"
 #include "Transponder.hpp"
 #include "VisitHistory.hpp"
-#include "Piggybacker.hpp"
+#include "Wallet.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/entities/item/Drop.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/Health.hpp"
+#include "fornani/graphics/SpriteHistory.hpp"
+#include "fornani/graphics/TextureUpdater.hpp"
+#include "fornani/graphics/Tutorial.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/QuestCode.hpp"
+#include "fornani/weapon/Hotbar.hpp"
 
 namespace fornani::gui {
 class Console;
 class InventoryWindow;
-} // namespace gui
+} // namespace fornani::gui
 
 namespace fornani::world {
 class Map;
@@ -32,10 +33,6 @@ class Map;
 
 namespace fornani::automa {
 struct ServiceProvider;
-}
-
-namespace fornani::item {
-enum class DropType;
 }
 
 namespace fornani::player {
@@ -85,8 +82,8 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed };
-enum class Triggers { hurt };
+enum class State : uint8_t { killed, dir_switch, show_weapon, impart_recoil, crushed };
+enum class Triggers : uint8_t { hurt };
 
 struct PlayerFlags {
 	util::BitFlags<State> state{};
@@ -95,9 +92,10 @@ struct PlayerFlags {
 
 class Player {
   public:
-	Player(automa::ServiceProvider& svc);
+	explicit Player(automa::ServiceProvider& svc);
 	~Player() {}
 
+	// TODO: Should we allow this?
 	// init (violates RAII but must happen after resource path is set)
 	void init(automa::ServiceProvider& svc);
 	// member functions
@@ -126,7 +124,7 @@ class Player {
 	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
 	[[nodiscard]] auto pushing() const -> bool { return animation.state == AnimState::push || animation.state == AnimState::between_push; }
 	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(Abilities::shield); }
-	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.categories.inventory.has_item(id); }
+	[[nodiscard]] auto has_item(int const id) const -> bool { return catalog.categories.inventory.has_item(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
@@ -179,7 +177,7 @@ class Player {
 	// for debug mode
 	std::string print_direction(bool lr);
 
-	//for ledge testing
+	// for ledge testing
 	entity::Caution caution{};
 
 	// components
@@ -211,8 +209,8 @@ class Player {
 	PlayerStats player_stats{0.06f};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
-	util::Cooldown hurt_cooldown{}; //for animation
-	util::Cooldown force_cooldown{}; //for player hurt forces
+	util::Cooldown hurt_cooldown{};	 // for animation
+	util::Cooldown force_cooldown{}; // for player hurt forces
 	struct {
 		util::Cooldown tutorial{400};
 		util::Cooldown sprint_tutorial{800};
@@ -258,4 +256,4 @@ class Player {
 	} directions{};
 };
 
-} // namespace player
+} // namespace fornani::player

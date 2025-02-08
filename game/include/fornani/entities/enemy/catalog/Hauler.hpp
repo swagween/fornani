@@ -6,12 +6,12 @@
 
 namespace fornani::enemy {
 
-	enum class HaulerState { idle, turn, run, haul, alert, jump, hurt };
+	enum class HaulerState : uint8_t { idle, turn, run, haul, alert, jump, hurt };
 
-class Hauler : public Enemy {
+class Hauler final : public Enemy {
 
 	  public:
-		Hauler(automa::ServiceProvider& svc);
+	explicit Hauler(automa::ServiceProvider& svc);
 		void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
 		fsm::StateFunction state_function = std::bind(&Hauler::update_idle, this);
@@ -46,4 +46,4 @@ class Hauler : public Enemy {
 
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

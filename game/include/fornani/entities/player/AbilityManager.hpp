@@ -12,7 +12,7 @@ class Console;
 
 namespace fornani::player {
 
-enum class Abilities { wall_slide, dash, double_jump, respiration, shield };
+enum class Abilities : uint8_t { wall_slide, dash, double_jump, respiration, shield };
 
 class AbilityManager {
   public:

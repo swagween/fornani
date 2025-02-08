@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string_view>
 #include <djson/json.hpp>
+#include <string_view>
 #include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::io {
 
-enum class FileFlags{ new_file };
+enum class FileFlags : uint8_t { new_file };
 
 class File {
   public:
@@ -22,4 +22,4 @@ class File {
 	util::BitFlags<FileFlags> flags{};
 };
 
-} // namespace lookup
+} // namespace fornani::io

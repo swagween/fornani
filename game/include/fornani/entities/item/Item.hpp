@@ -20,15 +20,15 @@ enum class ApparelType;
 
 namespace fornani::item {
 
-enum class ItemFlags { unique, revealed, usable, equippable, sellable };
-enum class UIFlags { selected };
-enum class ItemState { equipped };
+enum class ItemFlags : uint8_t { unique, revealed, usable, equippable, sellable };
+enum class UIFlags : uint8_t { selected };
+enum class ItemState : uint8_t { equipped };
 
-class Item : public entity::Entity {
+class Item final : public entity::Entity {
   public:
 	Item(automa::ServiceProvider& svc, std::string_view label);
 	void update(automa::ServiceProvider& svc, int index, int items_per_row, sf::Vector2<float> offset);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void add_item(int amount);
 	void subtract_item(int amount);
 	void set_id(int new_id);

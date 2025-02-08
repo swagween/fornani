@@ -1,9 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string_view>
+#include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/Collider.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SWITCH_BIND(f) std::bind(&SwitchButton::f, this)
 
@@ -21,8 +21,8 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SwitchType { toggler, permanent, movable, alternator };
-enum class SwitchButtonState { unpressed, pressed };
+enum class SwitchType : uint8_t { toggler, permanent, movable, alternator };
+enum class SwitchButtonState : uint8_t { unpressed, pressed };
 
 class SwitchButton {
   public:
@@ -58,4 +58,4 @@ class SwitchButton {
 	sf::RectangleShape sensorbox{};
 };
 
-} // namespace world
+} // namespace fornani::world

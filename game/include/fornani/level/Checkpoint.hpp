@@ -18,7 +18,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class CheckpointState { reached };
+enum class CheckpointState : uint8_t { reached };
 
 class Checkpoint {
   public:
@@ -28,9 +28,10 @@ class Checkpoint {
 	void unflag() { flags.reset(CheckpointState::reached); }
 	[[nodiscard]] auto reached() const -> bool { return flags.test(CheckpointState::reached); }
 	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounds.get_position(); }
+
   private:
 	shape::Shape bounds{};
 	util::BitFlags<CheckpointState> flags{};
 };
 
-} // namespace world
+} // namespace fornani::world

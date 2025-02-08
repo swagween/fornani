@@ -13,30 +13,30 @@ struct ServiceProvider;
 
 namespace fornani::audio {
 
-enum class SoundboardState { on, off };
+enum class SoundboardState : uint8_t { on, off };
 
-enum class Menu { select, shift, forward_switch, backward_switch };
-enum class Console { next, done, shift, select, speech, menu_open };
-enum class World { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable, door_open, door_unlock };
-enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip };
-enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
-enum class Weapon { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710 };
-enum class Arms { reload };
-enum class Transmission { statics };
-enum class Step { basic, grass };
+enum class Menu : uint8_t { select, shift, forward_switch, backward_switch };
+enum class Console : uint8_t { next, done, shift, select, speech, menu_open };
+enum class World : uint8_t { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable, door_open, door_unlock };
+enum class Item : uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip };
+enum class Player : uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
+enum class Weapon : uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710 };
+enum class Arms : uint8_t { reload };
+enum class Transmission : uint8_t { statics };
+enum class Step : uint8_t { basic, grass };
 
 // critters
-enum class Enemy { hit_squeak, hit_high, hit_medium, hit_low };
-enum class Frdog { hurt, death };
-enum class Hulmet { hurt };
-enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
-enum class Thug { alert_1, alert_2, hurt_1, hurt_2, death };
-enum class Minigus { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost, ok };
-enum class Minigun { charge, reload, neutral, firing };
-enum class Demon { hurt, signal, death, snort };
-enum class Archer { hurt, flee, death };
-enum class Beamstalk { hurt, death };
-enum class Meatsquash { hurt, death, chomp, whip, swallow };
+enum class Enemy : uint8_t { hit_squeak, hit_high, hit_medium, hit_low };
+enum class Frdog : uint8_t { hurt, death };
+enum class Hulmet : uint8_t { hurt };
+enum class Tank : uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
+enum class Thug : uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
+enum class Minigus : uint8_t { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost, ok };
+enum class Minigun : uint8_t { charge, reload, neutral, firing };
+enum class Demon : uint8_t { hurt, signal, death, snort };
+enum class Archer : uint8_t { hurt, flee, death };
+enum class Beamstalk : uint8_t { hurt, death };
+enum class Meatsquash : uint8_t { hurt, death, chomp, whip, swallow };
 
 class Soundboard {
   public:
