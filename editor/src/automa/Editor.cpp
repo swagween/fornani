@@ -78,7 +78,7 @@ void Editor::run() {
 		}
 
 		if (trigger_demo) {
-			auto ppos = static_cast<sf::Vector2<float>>(map.entities.variables.player_start) * 32.f;
+			auto ppos = shift_pressed() ? sf::Vector2<float>{map.entities.variables.player_hot_start} * 32.f : sf::Vector2<float>{map.entities.variables.player_start} * 32.f;
 			launch_demo(args, map.room_id, finder->paths.room_name, ppos);
 			if (!ImGui::SFML::Init(window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
 			init(finder->paths.room_name);
@@ -167,6 +167,11 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
 			if (shift_pressed()) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
+					map.entities.variables.player_hot_start = current_tool->scaled_position();
+					save();
+					trigger_demo = true;
+				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Left) { map.resize({-1, 0}); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Right) { map.resize({1, 0}); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { map.resize({0, -1}); }
@@ -278,8 +283,8 @@ void Editor::logic() {
 	grid_refresh.update();
 	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
 
-	map.flags.show_all_layers = shift_pressed() ? map.flags.show_current_layer : !map.flags.show_current_layer;
-	map.flags.show_current_layer = shift_pressed() ? map.flags.show_all_layers : !map.flags.show_all_layers;
+	map.flags.show_all_layers = shift_pressed() && !control_pressed() ? map.flags.show_current_layer : !map.flags.show_current_layer;
+	map.flags.show_current_layer = shift_pressed() && !control_pressed() ? map.flags.show_all_layers : !map.flags.show_all_layers;
 
 	// set tool positions
 	ImGuiIO& io = ImGui::GetIO();
@@ -884,27 +889,41 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			} else {
 				ImGui::Text("Tool Position : ---");
 			}
-			ImGui::Separator();
-			ImGui::Text("Middleground: ");
-			ImGui::SameLine();
-			if (ImGui::InputInt("##smg", &m_middleground)) {
-				m_middleground = std::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
-				map.get_layers().set_middleground(m_middleground);
-				reset_layers();
-			}
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 			ImGui::BeginChild("ChildS", ImVec2(320, 172), true, window_flags);
 			ImGui::BeginMenuBar();
-			if (ImGui::BeginMenu("Current Layer")) {
-				if (ImGui::MenuItem("Insert Layer in Front")) {
-					map.get_layers().add_layer(active_layer, 1);
-					reset_layers();
-				}
-				if (ImGui::MenuItem("Insert Layer Behind")) {
-					map.get_layers().add_layer(active_layer, 0);
-					reset_layers();
-				}
+			if (ImGui::BeginMenu("Actions")) {
+				if (ImGui::MenuItem("Insert Layer in Front")) { map.get_layers().add_layer(active_layer, 1); }
+				if (ImGui::MenuItem("Insert Layer Behind")) { map.get_layers().add_layer(active_layer, 0); }
 				if (ImGui::MenuItem("Delete Current Layer")) { delete_current_layer(); }
+				reset_layers();
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Properties")) {
+				ImGui::Text("Middleground: ");
+				ImGui::SameLine();
+				if (ImGui::InputInt("##smg", &m_middleground)) {
+					m_middleground = std::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
+					map.get_layers().set_middleground(m_middleground);
+				}
+				auto ho{map.get_layers().m_flags.has_obscuring_layer};
+				if (ImGui::MenuItem("Include Obscuring Layer", "", &map.get_layers().m_flags.has_obscuring_layer)) {
+					if (map.get_layers().m_flags.has_reverse_obscuring_layer && !map.get_layers().m_flags.has_obscuring_layer) { map.get_layers().m_flags.has_reverse_obscuring_layer = false; }
+					if (map.get_layers().layers.size() - m_middleground < 2 && !ho) { map.get_layers().add_layer(m_middleground, 1); }
+				}
+				auto hro{map.get_layers().m_flags.has_reverse_obscuring_layer};
+				if (ImGui::MenuItem("Include Reverse Obscuring Layer", "", &map.get_layers().m_flags.has_reverse_obscuring_layer)) {
+					if (map.get_layers().m_flags.has_reverse_obscuring_layer && !map.get_layers().m_flags.has_obscuring_layer) { map.get_layers().m_flags.has_obscuring_layer = true; }
+					if (!hro) {
+						if (map.get_layers().layers.size() - m_middleground < 3) {
+							map.get_layers().add_layer(m_middleground, 1);
+							map.get_layers().add_layer(m_middleground, 1);
+						} else if (map.get_layers().layers.size() - m_middleground < 2) {
+							map.get_layers().add_layer(m_middleground, 1);
+						}
+					}
+				}
+				reset_layers();
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
@@ -930,7 +949,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				}
 				if (ImGui::BeginTabItem("Layer")) {
 					if (ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers)) { map.flags.show_current_layer = !map.flags.show_all_layers; };
-					ImGui::Checkbox("Show Obscured Layer", &map.flags.show_obscured_layer);
+					ImGui::Checkbox("Show Obscuring Layer", &map.flags.show_obscured_layer);
+					ImGui::Checkbox("Show Reverse Obscuring Layer", &map.flags.show_reverse_obscured_layer);
 					ImGui::Checkbox("Show Indicated Layers", &map.flags.show_indicated_layers);
 					ImGui::EndTabItem();
 				}
@@ -1032,6 +1052,11 @@ void Editor::delete_current_layer() {
 	if (layers.size() <= 1) {
 		console.add_log("Cannot delete only layer.");
 		return;
+	}
+	if (map.get_layers().m_flags.has_reverse_obscuring_layer && layers.at(active_layer).render_order == layers.size() - 2) { map.get_layers().m_flags.has_reverse_obscuring_layer = false; }
+	if (map.get_layers().m_flags.has_obscuring_layer && layers.at(active_layer).render_order == layers.size() - 1) {
+		map.get_layers().m_flags.has_obscuring_layer = false;
+		map.get_layers().m_flags.has_reverse_obscuring_layer = false;
 	}
 	map.save_state(*current_tool, true);
 	map.get_layers().delete_layer_at(active_layer);

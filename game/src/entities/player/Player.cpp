@@ -10,7 +10,8 @@
 
 namespace fornani::player {
 
-Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.t_nani} {}
+Player::Player(automa::ServiceProvider& svc)
+	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.t_nani}, camera_offset{32.f, -64.f} {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -52,6 +53,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	tutorial.update(*m_services);
 	cooldowns.tutorial.update();
+	camera_offset.x = controller.facing_left() ? -32.f : 32.f;
 
 	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
 
@@ -624,7 +626,6 @@ void Player::sync_antennae() {
 bool Player::grounded() const { return collider.flags.state.test(shape::State::grounded); }
 
 bool Player::fire_weapon() {
-	flags.state.reset(State::shake_camera);
 	if (!arsenal || !hotbar) { return false; }
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));

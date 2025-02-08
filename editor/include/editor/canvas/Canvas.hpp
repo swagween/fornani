@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <filesystem>
 
 #include <SFML/Graphics.hpp>
@@ -35,6 +36,7 @@ struct Theme {
 constexpr inline int chunk_size_v{16};
 constexpr inline int default_num_layers_v{8};
 constexpr inline int default_middleground_v{4};
+constexpr inline std::size_t max_undo_states_v{64};
 
 class Style {
   public:
@@ -142,6 +144,7 @@ class Canvas {
 		bool show_all_layers{true};
 		bool show_current_layer{false};
 		bool show_obscured_layer{true};
+		bool show_reverse_obscured_layer{true};
 		bool show_indicated_layers{true};
 		bool show_entities{true};
 		bool show_background{};
@@ -189,8 +192,8 @@ class Canvas {
 	sf::Vector2<float> origin{};
 	sf::Vector2<float> real_dimensions{};
 	sf::Vector2<float> offset_from_center{};
-	std::vector<Map> map_states{};
-	std::vector<Map> redo_states{};
+	std::deque<Map> map_states{};
+	std::deque<Map> redo_states{};
 	util::BitFlags<CanvasState> state{};
 	util::BitFlags<CanvasProperties> properties{};
 	sf::RectangleShape box{};

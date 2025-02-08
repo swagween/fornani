@@ -37,6 +37,10 @@
       "label": "palette_test.json"
     },
     {
+      "room_id": 298,
+      "label": "resize_test.json"
+    },
+    {
       "room_id": 300,
       "label": "test.json"
     }

@@ -91,13 +91,11 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 void ControlsMenu::frame_update(ServiceProvider& svc) {}
 
 void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-
 	if (loading.is_complete()) {
 		for (auto& option : options) { win.draw(option.label); }
 		for (auto& control : control_list) { win.draw(control); }
 		win.draw(instruction);
 	}
-
 	left_dot.render(svc, win, {});
 	right_dot.render(svc, win, {});
 }

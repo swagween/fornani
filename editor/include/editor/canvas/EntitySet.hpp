@@ -129,6 +129,7 @@ class EntitySet {
 
 	struct {
 		sf::Vector2<uint32_t> player_start{};
+		sf::Vector2<uint32_t> player_hot_start{};
 		std::vector<std::unique_ptr<Entity>> entities{};
 	} variables{};
 

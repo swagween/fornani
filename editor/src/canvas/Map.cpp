@@ -6,8 +6,12 @@ namespace pi {
 
 void Map::set_labels() {
 	auto ctr{0};
-	for(auto& layer : layers) {
-		layer.label = ctr < m_middleground ? "background " + std::to_string(ctr) : ctr == m_middleground ? "middleground / collidable" : ctr == layers.size() - 1 ? "obscuring" : "foreground " + std::to_string(ctr - m_middleground);
+	for (auto& layer : layers) {
+		layer.label = ctr < m_middleground		 ? "background " + std::to_string(ctr)
+					  : ctr == m_middleground	 ? "middleground / collidable"
+					  : ctr == layers.size() - 1 && m_flags.has_obscuring_layer ? "obscuring"
+					  : ctr == layers.size() - 2 && m_flags.has_reverse_obscuring_layer ? "reverse obscuring"
+												 : "foreground " + std::to_string(ctr - m_middleground);
 		++ctr;
 	}
 }
