@@ -22,7 +22,7 @@ struct Parameters {
 	bool interruptible{};
 };
 
-enum class State { param_switch, keyframe, oneoff_complete };
+enum class State : uint8_t { param_switch, keyframe, oneoff_complete };
 
 struct Animation {
 
@@ -33,7 +33,7 @@ struct Animation {
 	void refresh();
 	void start();
 	void update();
-	void set_params(Parameters const new_params, bool hard = true);
+	void set_params(Parameters new_params, bool hard = true);
 	void switch_params();
 	void end() { frame.cancel(); }
 	int get_frame() const;

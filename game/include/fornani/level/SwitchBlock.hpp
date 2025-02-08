@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Collider.hpp"
 #include "SwitchButton.hpp"
+#include "fornani/utils/Collider.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -19,7 +19,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class SwitchBlockState { full, top, bottom, empty };
+enum class SwitchBlockState : uint8_t { full, top, bottom, empty };
 
 class SwitchBlock {
   public:
@@ -27,7 +27,7 @@ class SwitchBlock {
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam, bool background = false);
-	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power = 1);
+	void on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj, int power = 1);
 	void turn_off() { state = SwitchBlockState::empty; }
 	void turn_on() { state = SwitchBlockState::full; }
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
@@ -45,4 +45,4 @@ class SwitchBlock {
 	SwitchBlockState previous_state{};
 	int button_id{};
 };
-} // namespace world
+} // namespace fornani::world

@@ -9,7 +9,7 @@ namespace fornani::enemy {
 
 enum class ThugState { idle, turn, run, jump, alert, rush, punch };
 
-class Thug : public Enemy {
+class Thug final : public Enemy {
 
 	  public:
 		Thug() = delete;
@@ -60,4 +60,4 @@ class Thug : public Enemy {
 
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

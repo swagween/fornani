@@ -7,11 +7,11 @@ struct ServiceProvider;
 }
 
 namespace fornani::gui {
-enum class BarState { full, empty };
+enum class BarState : uint8_t { full, empty };
 class StatusBar {
   public:
 	StatusBar() = default;
-	StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim = {8, 2}, float size = 600.f);
+	explicit StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim = {8, 2}, float size = 600.f);
 	void update(automa::ServiceProvider& svc, float current);
 	void render(sf::RenderWindow& win);
 	BarState current_state{};
@@ -32,4 +32,4 @@ class StatusBar {
 	} debug_rects{};
 };
 
-} // namespace gui
+} // namespace fornani::gui

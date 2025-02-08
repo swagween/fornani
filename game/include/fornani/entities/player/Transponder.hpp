@@ -19,7 +19,7 @@ namespace fornani::player {
 // the transponder will respond to player inputs and set the state of the console and player accordingly.
 
 // these are all triggers, so they will be reset each tick
-enum class TransponderActions { skip_ahead, next, exit, down, up, select, skip_released };
+enum class TransponderActions : uint8_t { skip_ahead, next, exit, down, up, select, skip_released };
 
 class Transponder {
   public:

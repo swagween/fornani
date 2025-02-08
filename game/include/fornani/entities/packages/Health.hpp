@@ -5,12 +5,12 @@
 #include "fornani/utils/Counter.hpp"
 
 namespace fornani::entity {
-enum class HPState { hit };
-class Health : public Entity {
-	float const default_max{8.f};
+enum class HPState : uint8_t { hit };
+class Health final : public Entity {
+	const float default_max{8.f};
   public:
 	void update();
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	[[nodiscard]] auto get_hp() const -> float { return hp; }
 	[[nodiscard]] auto get_max() const -> float { return max_hp; }
 	[[nodiscard]] auto get_limit() const -> float { return hp_limit; }

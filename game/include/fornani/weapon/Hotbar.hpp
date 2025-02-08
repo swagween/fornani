@@ -8,7 +8,7 @@ namespace fornani::arms {
 
 class Hotbar {
   public:
-	Hotbar(int size);
+	explicit Hotbar(int size);
 	void add(int id);
 	void remove(int id);
 	void switch_weapon(automa::ServiceProvider& svc, int next);
@@ -21,7 +21,7 @@ class Hotbar {
 	[[nodiscard]] auto size() const -> size_t { return ids.size(); }
 	[[nodiscard]] auto switched() const -> bool { return selection.get() != previous; }
 
-	//for debug
+	// for debug
 	[[nodiscard]] auto get_ids() -> std::vector<int>& { return ids; }
 
   private:
@@ -31,4 +31,4 @@ class Hotbar {
 	int previous{-1};
 };
 
-} // namespace arms
+} // namespace fornani::arms

@@ -22,7 +22,7 @@ class Player;
 }
 
 namespace fornani::entity {
-enum class VineFlags { foreground, reverse };
+enum class VineFlags : uint8_t { foreground, reverse };
 class Vine {
   public:
 	Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length = 5, int size = 1, bool foreground = true, bool reversed = false);

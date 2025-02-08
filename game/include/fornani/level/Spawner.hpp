@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Collider.hpp"
 #include "fornani/entities/animation/Animation.hpp"
+#include "fornani/utils/Collider.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -17,19 +17,18 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SpawnerAttributes { };
+enum class SpawnerAttributes {};
 
 class Spawner {
   public:
 	Spawner(automa::ServiceProvider& svc, sf::Vector2<float> position, int enemy_id = 0);
 	void update(automa::ServiceProvider& svc, Map& map);
-	void set_id(int id) { enemy_id = id; }
+	void set_id(int const id) { enemy_id = id; }
 
   private:
 	sf::Vector2<float> position{};
 	util::BitFlags<SpawnerAttributes> attributes{};
 	int enemy_id{};
 	util::Cooldown spawn_timer{512};
-
 };
-} // namespace world
+} // namespace fornani::world

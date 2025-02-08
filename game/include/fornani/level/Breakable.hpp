@@ -16,7 +16,7 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class BreakableAttributes { bulletproof };
+enum class BreakableAttributes : uint8_t { bulletproof };
 
 class Breakable {
   public:
@@ -41,6 +41,5 @@ class Breakable {
 	float dampen{0.1f};
 	float hit_energy{8.f};
 	sf::Vector2<float> random_offset{};
-
 };
-} // namespace world
+} // namespace fornani::world

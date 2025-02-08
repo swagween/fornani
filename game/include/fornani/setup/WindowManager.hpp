@@ -13,7 +13,7 @@ class WindowManager {
 	sf::View get_view() const { return game_view; }
 	sf::FloatRect get_viewport() const { return game_port; }
 	void set();
-	void create(const std::string& title, bool const fullscreen);
+	void create(std::string const& title, bool fullscreen);
 	void restore_view();
 	void set_screencap();
 	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2<float> { return sf::Vector2<float>{static_cast<float>(screen_dimensions.x), static_cast<float>(screen_dimensions.y)}; }
@@ -37,7 +37,7 @@ class WindowManager {
 	sf::Vector2<int> aspects{3840, 2048};
 	bool is_fullscreen{};
 
-	io::Logger m_logger { "windowing" };
+	io::Logger m_logger{"windowing"};
 };
 
 } // namespace fornani

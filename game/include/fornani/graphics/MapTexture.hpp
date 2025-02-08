@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/io/Logger.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -14,12 +14,12 @@ class Map;
 
 namespace fornani::gui {
 
-enum class MapTextureFlags { current };
+enum class MapTextureFlags : uint8_t { current };
 
 class MapTexture {
   public:
 	MapTexture() = default;
-	MapTexture(automa::ServiceProvider& svc);
+	explicit MapTexture(automa::ServiceProvider& svc);
 	void bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current = false, bool undiscovered = false);
 	void set_current() { flags.set(MapTextureFlags::current); }
 	[[nodiscard]] auto is_current() const -> bool { return flags.test(MapTextureFlags::current); }
@@ -44,7 +44,7 @@ class MapTexture {
 	util::BitFlags<MapTextureFlags> flags{};
 	bool ignore{};
 
-	io::Logger m_logger {"graphics"};
+	io::Logger m_logger{"graphics"};
 };
 
 } // namespace fornani::gui

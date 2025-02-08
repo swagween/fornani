@@ -1,11 +1,11 @@
 
 #pragma once
 
-#include "fornani/utils/Counter.hpp"
-#include "fornani/utils/QuestCode.hpp"
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+#include "fornani/utils/Counter.hpp"
+#include "fornani/utils/QuestCode.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -14,8 +14,8 @@ namespace fornani {
 
 // needs some further thinking
 
-enum class QuestStatus { not_started, started, complete };
-enum class QuestType { null, inspectable, item, npc, standard, destroyers, time_trials, fetch_text, cutscene, hidden_npcs }; // don't reorder these
+enum class QuestStatus : uint8_t { not_started, started, complete };
+enum class QuestType : uint8_t { null, inspectable, item, npc, standard, destroyers, time_trials, fetch_text, cutscene, hidden_npcs }; // don't reorder these
 
 struct Quest {
 	int id{};
@@ -23,9 +23,9 @@ struct Quest {
 	QuestStatus status{QuestStatus::not_started};
 	util::Counter progression{};
 	std::vector<int> sources{};
-	void progress(int source, int amount = 1, bool hard_set = false) {
+	void progress(int const source, int const amount = 1, bool const hard_set = false) {
 		// don't progress quests from the same source
-		for (auto& src : sources) {
+		for (auto const& src : sources) {
 			if (src == source && !hard_set) { return; }
 		}
 		for (int i = 0; i < amount; ++i) { progression.update(); }
@@ -35,8 +35,8 @@ struct Quest {
 
 struct QuestSuite {
 	std::unordered_map<int, Quest> quests{};
-	int get_progression(int id) { return quests.contains(id) ? quests.at(id).progression.get_count() : 0; };
-	void reset(int id) {
+	int get_progression(int const id) const { return quests.contains(id) ? quests.at(id).progression.get_count() : 0; };
+	void reset(int const id) {
 		if (quests.contains(id)) { quests.at(id).progression.start(); }
 	};
 };

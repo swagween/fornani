@@ -10,7 +10,7 @@ namespace fornani::enemy {
 enum class ArcherState { idle, turn, run, jump, shoot };
 enum class ArcherVariant { huntress, defender };
 
-class Archer : public Enemy {
+class Archer final : public Enemy {
 
   public:
 	Archer() = delete;
@@ -59,4 +59,4 @@ class Archer : public Enemy {
 	bool change_state(ArcherState next, anim::Parameters params);
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

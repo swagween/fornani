@@ -8,12 +8,12 @@
 
 namespace fornani::automa {
 
-class Dojo : public GameState {
+class Dojo final : public GameState {
   public:
 	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0, std::string_view room_name = "");
-	void tick_update(ServiceProvider& svc);
-	void frame_update(ServiceProvider& svc);
-	void render(ServiceProvider& svc, sf::RenderWindow& win);
+	void tick_update(ServiceProvider& svc) override;
+	void frame_update(ServiceProvider& svc) override;
+	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void toggle_inventory(ServiceProvider& svc);
 	void toggle_pause_menu(ServiceProvider& svc);
 	void bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current = false);

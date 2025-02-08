@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Shape.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Shape.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -14,8 +14,8 @@ class Projectile;
 }
 namespace fornani::world {
 class Map;
-enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire };
-enum class TileState { ramp_adjacent, big_ramp, covered };
+enum class TileType : uint8_t { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire };
+enum class TileState : uint8_t { ramp_adjacent, big_ramp, covered };
 constexpr static int special_index_v{448};
 
 struct Tile {
@@ -81,4 +81,4 @@ struct Tile {
 	float scale{};
 };
 
-} // namespace world
+} // namespace fornani::world

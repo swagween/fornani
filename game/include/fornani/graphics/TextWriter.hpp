@@ -27,14 +27,14 @@ struct Message {
 	int target{};
 };
 
-enum class Codes { prompt, quest, item, voice, emotion, hash };
-enum class MessageState { writing, selection_mode, cannot_skip, response_trigger, done_writing, started_delay };
-static int const default_writing_speed{8};
-static int const fast_writing_speed{1};
+enum class Codes : uint8_t { prompt, quest, item, voice, emotion, hash };
+enum class MessageState : uint8_t { writing, selection_mode, cannot_skip, response_trigger, done_writing, started_delay };
+static constexpr int default_writing_speed{8};
+static constexpr int fast_writing_speed{1};
 
 class TextWriter {
   public:
-	TextWriter(automa::ServiceProvider& svc);
+	explicit TextWriter(automa::ServiceProvider& svc);
 	void start();
 	void update();
 	void set_position(sf::Vector2<float> pos);
@@ -136,4 +136,4 @@ class TextWriter {
 	sf::RectangleShape bounds_box{};
 };
 
-} // namespace text
+} // namespace fornani::text

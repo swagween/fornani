@@ -1,12 +1,12 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string_view>
 #include <optional>
+#include <string_view>
+#include "fornani/entities/animation/Animation.hpp"
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Fader.hpp"
-#include "fornani/entities/animation/Animation.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -17,7 +17,7 @@ class Map;
 }
 
 namespace fornani::vfx {
-enum class ParticleType{ animated, colliding };
+enum class ParticleType : uint8_t { animated, colliding };
 class Particle {
   public:
 	Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction);
@@ -39,4 +39,4 @@ class Particle {
 	util::BitFlags<ParticleType> flags{};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

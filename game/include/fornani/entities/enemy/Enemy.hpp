@@ -26,10 +26,10 @@ class Projectile;
 
 namespace fornani::enemy {
 
-enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
-enum class Triggers { hostile, alert };
-enum class Variant { beast, soldier, elemental, worker, guardian };
+enum class GeneralFlags : uint8_t { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
+enum class StateFlags : uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
+enum class Triggers : uint8_t { hostile, alert };
+enum class Variant : uint8_t { beast, soldier, elemental, worker, guardian };
 struct Attributes {
 	float base_hp{};
 	float base_damage{};
@@ -48,7 +48,6 @@ struct Flags {
 
 class Enemy : public entity::Entity {
   public:
-	virtual ~Enemy() {}
 	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 	void set_external_id(std::pair<int, sf::Vector2<int>> code);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
