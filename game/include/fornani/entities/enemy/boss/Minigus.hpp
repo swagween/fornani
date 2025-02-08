@@ -1,10 +1,12 @@
 #pragma once
 
-#include "fornani/entities/npc/NPC.hpp"
 #include "fornani/entities/enemy/Enemy.hpp"
-#include "fornani/components/CircleSensor.hpp"
-#include "fornani/gui/StatusBar.hpp"
+#include "fornani/entities/npc/NPC.hpp"
+#include "fornani/entities/packages/Attack.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/Shockwave.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
+#include "fornani/gui/StatusBar.hpp"
 #define MINIGUS_BIND(f) std::bind(&Minigus::f, this)
 
 namespace fornani::enemy {

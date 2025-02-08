@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <string>
 #include "fornani/utils/Collider.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 

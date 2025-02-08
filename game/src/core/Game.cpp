@@ -1,13 +1,13 @@
 #include "fornani/core/Game.hpp"
-#include <steam/steam_api.h>
-#include <ctime>
-#include <iostream>
-
+#include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Tracy.hpp"
 
+#include <steam/steam_api.h>
+#include <ctime>
+#include <iostream>
 
 namespace fornani {
 

@@ -2,13 +2,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <array>
 #include <string>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/graphics/TextWriter.hpp"
 #include "Portrait.hpp"
 #include "ItemWidget.hpp"
-#include "fornani/utils/QuestCode.hpp"
 #include "fornani/utils/NineSlice.hpp"
 
 namespace fornani::gui {

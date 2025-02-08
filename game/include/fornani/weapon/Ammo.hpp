@@ -2,8 +2,6 @@
 #pragma once
 
 #include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
-#include "fornani/utils/Direction.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/entities/packages/Health.hpp"
 

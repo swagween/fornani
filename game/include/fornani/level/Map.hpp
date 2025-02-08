@@ -16,7 +16,6 @@
 #include "fornani/graphics/Rain.hpp"
 #include "fornani/graphics/DayNightShifter.hpp"
 #include "Grid.hpp"
-#include "fornani/utils/Random.hpp"
 #include "fornani/utils/Shape.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/weapon/Projectile.hpp"
@@ -39,11 +38,12 @@
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 
-#include <string>
-#include <vector>
 #include <optional>
+#include <vector>
 
-constexpr unsigned int const u_chunk_size_v{16u};
+#include "fornani/particle/Emitter.hpp"
+
+constexpr unsigned int u_chunk_size_v{16u};
 
 namespace fornani::automa {
 struct ServiceProvider;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
 
@@ -16,7 +15,7 @@ enum class Status { out_of_bounds };
 class StateController {
 
   public:
-	inline void refresh(int id) { source_id = id; }
+	void refresh(int id) { source_id = id; }
 	void switch_rooms(int source, int destination, flfx::Transition& transition);
 	int next_state{};
 	int demo_level{};

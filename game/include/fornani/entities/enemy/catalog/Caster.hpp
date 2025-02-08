@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/FloatingPart.hpp"
 #define CASTER_BIND(f) std::bind(&Caster::f, this)
 
 namespace fornani::enemy {

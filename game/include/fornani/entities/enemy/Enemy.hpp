@@ -8,10 +8,6 @@
 #include "fornani/utils/Math.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/packages/WeaponPackage.hpp"
-#include "fornani/entities/packages/Caution.hpp"
-#include "fornani/entities/packages/Attack.hpp"
-#include "fornani/entities/packages/Shockwave.hpp"
-#include "fornani/entities/packages/FloatingPart.hpp"
 #include "fornani/entities/player/Indicator.hpp"
 #include "fornani/audio/Soundboard.hpp"
 #include <string_view>

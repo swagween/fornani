@@ -1,6 +1,7 @@
+#pragma once
+
 #include <SFML/Graphics.hpp>
 #include <string>
-#include <string_view>
 #include <variant>
 #include <vector>
 

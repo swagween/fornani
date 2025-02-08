@@ -2,8 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <vector>
-#include "fornani/utils/Cooldown.hpp"
 
 namespace fornani::vfx {
 class SpriteRotator {

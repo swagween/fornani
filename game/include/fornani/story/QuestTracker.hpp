@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include "fornani/utils/Counter.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include <string_view>

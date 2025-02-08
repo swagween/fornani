@@ -2,10 +2,8 @@
 
 #include <djson/json.hpp>
 #include <string>
-#include <optional>
 #include "fornani/utils/Shape.hpp"
 #include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/Circuit.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;

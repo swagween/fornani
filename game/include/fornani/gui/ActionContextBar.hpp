@@ -5,7 +5,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <unordered_set>
 
 namespace fornani::automa {
 struct ServiceProvider;

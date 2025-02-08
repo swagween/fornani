@@ -6,7 +6,6 @@
 #include "Console.hpp"
 #include "MiniMenu.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include <memory>
 
 namespace fornani::automa {
 struct ServiceProvider;

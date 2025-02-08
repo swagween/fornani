@@ -2,12 +2,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Counter.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include <string_view>
-#include <unordered_map>
-#include <vector>
 
 namespace fornani::automa {
 struct ServiceProvider;

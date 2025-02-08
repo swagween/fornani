@@ -1,9 +1,7 @@
 
 #pragma once
 
-#include <cstdio>
 #include <list>
-#include <memory>
 
 namespace fornani::util {
 

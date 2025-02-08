@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Caution.hpp"
 #define TANK_BIND(f) std::bind(&Tank::f, this)
 
 namespace fornani::enemy {

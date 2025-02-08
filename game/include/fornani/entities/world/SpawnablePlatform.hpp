@@ -1,13 +1,10 @@
 #pragma once
 
-#include <string>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/Collider.hpp"
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/entities/packages/Health.hpp"
-#include "fornani/entities/Entity.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 

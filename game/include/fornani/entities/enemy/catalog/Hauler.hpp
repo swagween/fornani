@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Caution.hpp"
 #define HAULER_BIND(f) std::bind(&Hauler::f, this)
 
 namespace fornani::enemy {

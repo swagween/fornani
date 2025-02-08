@@ -2,8 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <cstdio>
-#include <memory>
 #include <random>
 
 namespace fornani::util {

@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <unordered_map>
 
 namespace fornani::lookup {

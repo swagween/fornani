@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/BitFlags.hpp"

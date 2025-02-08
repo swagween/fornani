@@ -1,11 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #include <string_view>
-#include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Collider.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include "fornani/entities/animation/Animation.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SWITCH_BIND(f) std::bind(&SwitchButton::f, this)

@@ -1,11 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <string_view>
-#include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Collider.hpp"
-#include "fornani/utils/Counter.hpp"
-#include "fornani/entities/animation/Animation.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;

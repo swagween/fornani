@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Shape.hpp"
 #include "fornani/utils/BitFlags.hpp"
 

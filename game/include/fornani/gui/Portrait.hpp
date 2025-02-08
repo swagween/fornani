@@ -1,6 +1,5 @@
 
 #pragma once
-#include <string_view>
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/utils/BitFlags.hpp"
 

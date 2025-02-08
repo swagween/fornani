@@ -1,9 +1,6 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string_view>
-#include <unordered_map>
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/graphics/ColorFade.hpp"
 #include "fornani/particle/Gravitator.hpp"

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "fornani/entities/item/Drop.hpp"
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/components/CircleSensor.hpp"
