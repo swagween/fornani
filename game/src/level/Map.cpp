@@ -52,6 +52,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
 	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 	m_middleground = svc.data.map_jsons.at(room_lookup).metadata["tile"]["middleground"].as<int>();
+	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["obscuring"].as_bool() ? flags.properties.set(MapProperties::has_obscuring_layer) : flags.properties.reset(MapProperties::has_obscuring_layer);
+	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? flags.properties.set(MapProperties::has_reverse_obscuring_layer) : flags.properties.reset(MapProperties::has_reverse_obscuring_layer);
 
 	auto const& entities = metadata["entities"];
 
@@ -573,7 +575,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	// map foreground tiles
 	if (!svc.greyblock_mode()) {
-		std::vector<sf::Sprite> sprites{sf::Sprite{textures.foreground_day.getTexture()}, sf::Sprite{textures.foreground_twilight.getTexture()}, sf::Sprite{textures.foreground_night.getTexture()}};
+		std::vector<sf::Sprite> sprites{sf::Sprite{textures.foreground.day.getTexture()}, sf::Sprite{textures.foreground.twilight.getTexture()}, sf::Sprite{textures.foreground.night.getTexture()}};
 		auto ctr{0};
 		for (auto& sprite : sprites) {
 			sprite.setPosition(-cam - scaled_barrier);
@@ -597,16 +599,29 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	if (!svc.greyblock_mode()) {
 		// draw obscuring layer
-		sf::Sprite obscuring{textures.obscuring.getTexture()};
-		sf::Sprite reverse{textures.reverse.getTexture()};
-		obscuring.setPosition(-cam - scaled_barrier);
-		reverse.setPosition(-cam - scaled_barrier);
-		std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
-		std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
-		obscuring.setColor(sf::Color{255, 255, 255, alpha});
-		reverse.setColor(sf::Color{255, 255, 255, revalpha});
-		if (alpha != 0) { win.draw(obscuring); }
-		if (revalpha != 0) { win.draw(reverse); }
+		if (textures.obscuring) {
+			std::vector<sf::Sprite> obs_sprites{sf::Sprite{textures.obscuring.value().day.getTexture()}, sf::Sprite{textures.obscuring.value().twilight.getTexture()}, sf::Sprite{textures.obscuring.value().night.getTexture()}};
+
+			auto ctr{0};
+			for (auto& sprite : obs_sprites) {
+				sprite.setPosition(-cam - scaled_barrier);
+				std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
+				if (alpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, alpha); }
+				++ctr;
+			}
+		}
+		if (textures.reverse_obscuring) {
+			std::vector<sf::Sprite> rev_sprites{sf::Sprite{textures.reverse_obscuring.value().day.getTexture()}, sf::Sprite{textures.reverse_obscuring.value().twilight.getTexture()},
+												sf::Sprite{textures.reverse_obscuring.value().night.getTexture()}};
+
+			auto ctr{0};
+			for (auto& sprite : rev_sprites) {
+				sprite.setPosition(-cam - scaled_barrier);
+				std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
+				if (revalpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, revalpha); }
+				++ctr;
+			}
+		}
 	}
 
 	{
@@ -673,7 +688,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
 		for (auto& layer : scenery_layers) { for (auto& piece : layer) { piece->render(svc, win, cam); } }
-		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background_day.getTexture()}, sf::Sprite{textures.background_twilight.getTexture()}, sf::Sprite{textures.background_night.getTexture()}};
+		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background.day.getTexture()}, sf::Sprite{textures.background.twilight.getTexture()}, sf::Sprite{textures.background.night.getTexture()}};
 		auto ctr{0};
 		for (auto& sprite : sprites) {
 			sprite.setPosition(-cam - scaled_barrier);
@@ -733,6 +748,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 
 	std::erase_if(active_projectiles, [](auto const& p) { return p.destroyed(); });
 
+	// TODO: refactor this and move it into appropriate classes
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
 		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
@@ -740,7 +756,9 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point());
 		}
 		player->equipped_weapon().shoot();
-		if (!player->equipped_weapon().automatic()) { player->controller.set_shot(false); }
+		if (!player->equipped_weapon().automatic()) {
+			player->controller.set_shot(false);
+		}
 	}
 }
 
@@ -765,16 +783,17 @@ void Map::generate_collidable_layer(bool live) {
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
+	if (has_obscuring_layer()) { textures.obscuring = LayerTexture(); }
+	if (has_reverse_obscuring_layer()) { textures.reverse_obscuring = LayerTexture(); }
 	for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
 		for (auto& layer : layers) {
 			auto changed{layer.get_i_render_order() == 0 || layer.middleground()};
-			auto finished{layer.get_i_render_order() == m_middleground - 1 || layer.obscuring()};
+			auto finished{layer.get_i_render_order() == m_middleground - 1 || layer.get_i_render_order() == layers.size() - 1};
 			auto time = static_cast<fornani::TimeOfDay>(cycle);
-			auto& tex {
-				time == fornani::TimeOfDay::day ? (layer.foreground() || layer.middleground() || layer.obscuring() ? textures.foreground_day : textures.background_day) :
-				(time == fornani::TimeOfDay::twilight ? (layer.foreground() || layer.middleground() || layer.obscuring() ? textures.foreground_twilight : textures.background_twilight) :
-				layer.foreground() || layer.middleground() || layer.obscuring() ? textures.foreground_night : textures.background_night)
-			};
+			auto& tex{time == fornani::TimeOfDay::day ? (!layer.background() ? textures.foreground.day : textures.background.day)
+													  : (time == fornani::TimeOfDay::twilight ? (!layer.background() ? textures.foreground.twilight : textures.background.twilight)
+														 : !layer.background()				  ? textures.foreground.night
+																							  : textures.background.night)};
 
 			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size),
 							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size)};
@@ -783,10 +802,14 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				tex.clear(sf::Color::Transparent);
 			}
 			if (layer.obscuring()) {
-				if (!textures.obscuring.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
-				if (!textures.reverse.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
-				textures.obscuring.clear(sf::Color::Transparent);
-				textures.reverse.clear(sf::Color::Transparent);
+				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
+				if (!obs_tex.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
+				obs_tex.clear(sf::Color::Transparent);
+			}
+			if (layer.reverse_obscuring()) {
+				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
+				if (!rev_obs_tex.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
+				rev_obs_tex.clear(sf::Color::Transparent);
 			}
 			sf::Sprite tile{svc.assets.tilesets.at(style_id)};
 			for (auto& cell : layer.grid.cells) {
@@ -795,20 +818,29 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 					auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
 					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
 					tile.setPosition(cell.position() + scaled_barrier);
-					layer.obscuring() ? textures.obscuring.draw(tile) : tex.draw(tile);
-					if (layer.middleground()) { draw_barrier(tex, tile, cell); }
-				} else {
+					auto normal{true};
 					if (layer.obscuring()) {
-						tile.setTextureRect(sf::IntRect({0, 192}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-						tile.setPosition(cell.position() + scaled_barrier);
-						textures.reverse.draw(tile);
+						auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
+						obs_tex.draw(tile);
+						normal = false;
 					}
+					if (layer.reverse_obscuring()) {
+						auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
+						rev_obs_tex.draw(tile);
+						normal = false;
+					}
+					if (normal) { tex.draw(tile); }
+					if (layer.middleground()) { draw_barrier(tex, tile, cell); }
 				}
 			}
 			if (finished) { tex.display(); }
 			if (layer.obscuring()) {
-				textures.obscuring.display();
-				textures.reverse.display();
+				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
+				obs_tex.display();
+			}
+			if (layer.reverse_obscuring()) {
+				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
+				rev_obs_tex.display();
 			}
 			if (layer.middleground()) {
 				if (!textures.greyblock.resize(size)) { std::cout << "Layer texture not created.\n"; }

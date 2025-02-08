@@ -87,7 +87,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed, shake_camera };
+enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed };
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -133,6 +133,7 @@ class Player {
 	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
+	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2<float> { return collider.get_center() + camera_offset; }
 
 	// moves
