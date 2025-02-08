@@ -3,7 +3,6 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/weapon/Projectile.hpp"
 #include "fornani/level/Map.hpp"
-#include <iostream>
 
 namespace fornani::world {
 

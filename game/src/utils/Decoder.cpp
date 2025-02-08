@@ -1,5 +1,4 @@
 #include "fornani/utils/Decoder.hpp"
-#include <iostream>
 #include <sstream>
 
 namespace fornani::util {

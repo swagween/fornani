@@ -1,8 +1,9 @@
 #pragma once
 
-#include "fornani/setup/Version.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
 #include "editor/setup/WindowManager.hpp"
+#include "fornani/io/Logger.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
+#include "fornani/setup/Version.hpp"
 
 namespace pi {
 
@@ -17,6 +18,9 @@ class EditorApplication {
 	dj::Json app_settings{};
 	fornani::Version metadata;
 	WindowManager window{};
+
+	fornani::io::Logger m_logger{"pioneer"};
+
 };
 
 } // namespace pi

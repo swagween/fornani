@@ -9,7 +9,6 @@
 
 #include <string_view>
 #include <filesystem>
-#include <iostream>
 
 namespace fornani::data {
 class ResourceFinder;

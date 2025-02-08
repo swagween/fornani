@@ -1,8 +1,6 @@
-
 #include "launcher/LauncherApplication.hpp"
 
 #include <steam/steam_api.h>
-#include <iostream>
 
 #ifndef FORNANI_STEAM_APP_ID
 #error "FORNANI_STEAM_APP_ID was not defined!"

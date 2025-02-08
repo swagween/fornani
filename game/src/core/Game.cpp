@@ -1,6 +1,8 @@
 #include "fornani/core/Game.hpp"
 #include <steam/steam_api.h>
 #include <ctime>
+#include <iostream>
+
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
@@ -53,7 +55,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			services.data.load_progress(player, 0);
 			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
 			services.state_controller.demo_level = room_id;
-			NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().c_str());
+			NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
 			services.state_controller.player_position = player_position;
 			player.set_position(player_position);
 		}

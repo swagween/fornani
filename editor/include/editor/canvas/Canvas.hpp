@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-#include <iostream>
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
@@ -204,6 +203,9 @@ class Canvas {
 	float scale{1.f};
 	float min_scale{0.1f};
 	float max_scale{4.f};
+
+	fornani::io::Logger m_logger{"pioneer"};
+
 };
 
 } // namespace pi

@@ -1,4 +1,3 @@
-#include <iostream>
 #include "fornani/entities/enemy/EnemyCatalog.hpp"
 #include "fornani/entities/enemy/catalog/Frdog.hpp"
 #include "fornani/entities/enemy/catalog/Tank.hpp"

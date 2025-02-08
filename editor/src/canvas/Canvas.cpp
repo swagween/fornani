@@ -282,7 +282,7 @@ void Canvas::set_backdrop_color(sf::Color color) { border.setFillColor(color); }
 void Canvas::set_grid_texture() {
 	if (get_layers().layers.empty()) { return; }
 	if (!grid_texture.resize(sf::Vector2u{static_cast<uint32_t>(dimensions.x * f_native_cell_size()), static_cast<uint32_t>(dimensions.y * f_native_cell_size())})) {
-		std::cout << "Failed to resize grid texture.\n";
+		NANI_LOG_WARN(m_logger, "Failed to resize grid texture.");
 		return;
 	}
 	grid_texture.clear(sf::Color::Transparent);

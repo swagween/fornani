@@ -5,6 +5,9 @@
 #include <unordered_map>
 #include <string>
 
+#include "fornani/io/Logger.hpp"
+
+
 namespace fornani::data {
 class ResourceFinder;
 }
@@ -63,6 +66,8 @@ class Background {
 	sf::Vector2<int> start_offset{};
 	bool* b_debug{};
 	sf::Texture texture{};
+
+	fornani::io::Logger m_logger{"pioneer"};
 };
 
 } // namespace pi

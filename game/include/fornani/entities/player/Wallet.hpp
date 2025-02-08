@@ -1,10 +1,8 @@
 
 #pragma once
 
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Counter.hpp"
-#include <cmath>
-#include <iostream>
+
 #include <string>
 
 namespace fornani::player {

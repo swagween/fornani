@@ -1,11 +1,8 @@
 
 #pragma once
 
-#include <assert.h>
 #include <SFML/Graphics/Text.hpp>
 #include <djson/json.hpp>
-#include <iostream>
-#include <string>
 #include "ResourceFinder.hpp"
 
 namespace fornani::data {
