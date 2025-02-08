@@ -1,13 +1,9 @@
 
 #pragma once
 
-#include <math.h>
-#include <stdio.h>
+
 #include <SFML/Graphics.hpp>
 #include <algorithm>
-#include <array>
-#include <cassert>
-#include <cmath>
 #include <vector>
 
 namespace fornani::shape {

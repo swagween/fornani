@@ -1,11 +1,6 @@
 
 #pragma once
 
-#include <array>
-#include <cstdio>
-#include <list>
-#include <memory>
-#include <unordered_map>
 #include "Arsenal.hpp"
 #include "fornani/utils/Circuit.hpp"
 

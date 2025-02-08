@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <string>
-#include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Shape.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/particle/Sparkler.hpp"

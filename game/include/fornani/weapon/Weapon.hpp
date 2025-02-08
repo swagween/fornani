@@ -2,8 +2,6 @@
 #pragma once
 
 #include <cstdio>
-#include <list>
-#include <memory>
 #include "fornani/utils/BitFlags.hpp"
 #include "Projectile.hpp"
 #include "Ammo.hpp"

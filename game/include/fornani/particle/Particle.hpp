@@ -1,7 +1,6 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <string_view>
 #include <optional>
 #include "fornani/utils/CircleCollider.hpp"

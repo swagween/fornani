@@ -1,11 +1,8 @@
 
 #pragma once
 
-#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
 #include "MusicPlayer.hpp"
-#include <thread>
 
 namespace fornani::automa {
 struct ServiceProvider;

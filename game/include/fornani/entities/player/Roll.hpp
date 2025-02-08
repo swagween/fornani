@@ -3,7 +3,6 @@
 
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
 #include "fornani/utils/Direction.hpp"
 
 namespace fornani::player {

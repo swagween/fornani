@@ -1,21 +1,16 @@
 
 #pragma once
 
-#include <memory>
-#include <unordered_map>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/particle/Emitter.hpp"
 #include "fornani/particle/Gravitator.hpp"
-#include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/utils/Direction.hpp"
 #include "fornani/io/Logger.hpp"
-#include "fornani/utils/Random.hpp"
 #include "fornani/utils/Shape.hpp"
 
 namespace fornani::automa {

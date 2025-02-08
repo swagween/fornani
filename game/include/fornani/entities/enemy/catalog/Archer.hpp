@@ -1,6 +1,8 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/FloatingPart.hpp"
 #define ARCHER_BIND(f) std::bind(&Archer::f, this)
 
 namespace fornani::enemy {

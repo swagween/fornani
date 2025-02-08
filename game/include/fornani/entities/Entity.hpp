@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #include "fornani/utils/Direction.hpp"
 #include "fornani/utils/BitFlags.hpp"
 

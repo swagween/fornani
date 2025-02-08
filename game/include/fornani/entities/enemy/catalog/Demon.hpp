@@ -1,6 +1,9 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Attack.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/FloatingPart.hpp"
 #define DEMON_BIND(f) std::bind(&Demon::f, this)
 
 namespace fornani::enemy {

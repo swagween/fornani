@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <array>
-#include <memory>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
 #include "fornani/graphics/TextureUpdater.hpp"

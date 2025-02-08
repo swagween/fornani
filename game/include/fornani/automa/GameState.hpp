@@ -3,16 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <chrono>
-#include <cstdio>
-#include <memory>
 #include <filesystem>
-#include <optional>
 #include "Option.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Background.hpp"
 #include "fornani/gui/Console.hpp"
-#include "fornani/gui/Portrait.hpp"
 #include "fornani/gui/HUD.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/gui/InventoryWindow.hpp"

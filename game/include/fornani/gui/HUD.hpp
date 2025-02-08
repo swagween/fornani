@@ -1,14 +1,8 @@
 
 #pragma once
 
-#include <array>
-#include <cstdio>
-#include <list>
-#include <memory>
 #include <string>
-#include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/entities/animation/Animation.hpp"
 #include "fornani/particle/Gravitator.hpp"
 #include "WidgetBar.hpp"
 #include "fornani/utils/Stopwatch.hpp"

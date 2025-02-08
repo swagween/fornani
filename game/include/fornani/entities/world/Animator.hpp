@@ -1,10 +1,8 @@
 
 #pragma once
 
-#include <string>
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/utils/Shape.hpp"
-#include "fornani/utils/StateFunction.hpp"
 #include "fornani/entities/Entity.hpp"
 
 namespace fornani::automa {

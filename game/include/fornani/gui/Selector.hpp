@@ -1,7 +1,6 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string_view>
 #include "fornani/utils/Circuit.hpp"
 #include "fornani/utils/BitFlags.hpp"
 

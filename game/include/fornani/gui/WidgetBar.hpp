@@ -1,7 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/Cooldown.hpp"
 #include "Widget.hpp"
 
 namespace fornani::automa {

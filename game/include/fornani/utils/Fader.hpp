@@ -1,6 +1,5 @@
 #pragma once
-#include <cassert>
-#include <string_view>
+
 #include <array>
 #include <unordered_map>
 #include <SFML/Graphics.hpp>

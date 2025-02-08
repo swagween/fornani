@@ -1,5 +1,4 @@
 #pragma once
-#include <array>
 #include <SFML/Graphics.hpp>
 #include "Cooldown.hpp"
 #include "fornani/particle/Gravitator.hpp"

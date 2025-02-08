@@ -1,9 +1,8 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/utils/Collider.hpp"
-#include <vector>
+#include "fornani/utils/Cooldown.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;

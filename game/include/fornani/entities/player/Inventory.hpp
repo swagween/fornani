@@ -1,9 +1,7 @@
 
 #pragma once
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/entities/item/Item.hpp"
 #include <vector>
-#include <unordered_map>
 
 namespace fornani::automa {
 struct ServiceProvider;

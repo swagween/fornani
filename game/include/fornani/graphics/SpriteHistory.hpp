@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <deque>
-#include <algorithm>
 
 namespace fornani::flfx {
 

@@ -1,13 +1,8 @@
 
 #pragma once
 
-#include <array>
-#include <cstdio>
-#include <list>
 #include <memory>
-#include <unordered_map>
 #include "Weapon.hpp"
-#include "fornani/utils/Circuit.hpp"
 
 namespace fornani::arms {
 

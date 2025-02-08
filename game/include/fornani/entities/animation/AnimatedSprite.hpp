@@ -2,14 +2,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <cmath>
-#include <list>
 #include <string_view>
 #include <unordered_map>
 #include "Animation.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
 #include "fornani/graphics/SpriteRotator.hpp"
 
 namespace fornani::automa {

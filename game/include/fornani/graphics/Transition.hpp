@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <array>
 #include "fornani/utils/Cooldown.hpp"
 
 namespace fornani::automa {

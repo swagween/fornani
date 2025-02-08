@@ -1,8 +1,7 @@
 
 #pragma once
 
-#include <string>
-#include "fornani/utils/Shape.hpp"
+
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/CircleSensor.hpp"
 #include <optional>

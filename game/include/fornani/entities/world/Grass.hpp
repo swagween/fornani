@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "fornani/utils/Shape.hpp"
 #include "fornani/particle/Chain.hpp"
 #include "fornani/utils/BitFlags.hpp"

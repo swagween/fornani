@@ -2,7 +2,6 @@
 #pragma once
 
 #include <bitset>
-#include <utility>
 
 namespace fornani::util {
 

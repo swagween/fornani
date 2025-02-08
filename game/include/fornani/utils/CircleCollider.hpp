@@ -1,11 +1,10 @@
 #pragma once
-#include <cassert>
+
 #include <SFML/Graphics.hpp>
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 #include "Shape.hpp"
-#include "Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
+
 #include <utility>
 
 namespace fornani::automa {

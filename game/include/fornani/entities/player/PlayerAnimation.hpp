@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <optional>
-#include <unordered_map>
 #include "fornani/utils/StateFunction.hpp"
 #include "fornani/utils/Counter.hpp"
 #include "fornani/entities/animation/Animation.hpp"

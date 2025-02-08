@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <imgui.h>
 
 
@@ -394,6 +393,9 @@ namespace fornani::io {
         inline Logger const general{"general"};
     } // namespace logger
 } // namespace fornani
+
+
+
 
 // NOLINTBEGIN
 #define INTERNAL_NANI_LOG(logger, level, message, ...)                                                                                                          \
