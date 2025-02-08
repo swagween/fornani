@@ -4,8 +4,6 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Direction.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include <cmath>
-#include <iostream>
 
 namespace fornani::player {
 

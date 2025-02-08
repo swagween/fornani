@@ -1,6 +1,5 @@
 #include "fornani/entities/npc/NPCAnimation.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <iostream>
 
 namespace fornani::npc {
 

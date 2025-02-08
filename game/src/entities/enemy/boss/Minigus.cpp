@@ -1,8 +1,11 @@
 #include "fornani/entities/enemy/boss/Minigus.hpp"
+
+#include <iostream>
+
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
 
 namespace fornani::enemy {
 

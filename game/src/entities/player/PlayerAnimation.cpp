@@ -1,4 +1,7 @@
 #include "fornani/entities/player/PlayerAnimation.hpp"
+
+#include <iostream>
+
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 

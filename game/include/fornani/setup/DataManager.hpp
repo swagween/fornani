@@ -2,16 +2,13 @@
 
 #pragma once
 
-#include <assert.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <array>
-#include <iostream>
 #include <string>
+#include "fornani/io/File.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/utils/QuestCode.hpp"
-#include "fornani/io/File.hpp"
-#include "ResourceFinder.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;

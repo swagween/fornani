@@ -1,7 +1,6 @@
 
 #include "fornani/story/Cutscene.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <iostream>
 
 namespace fornani {
 

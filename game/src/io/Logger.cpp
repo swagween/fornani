@@ -1,5 +1,15 @@
-#include "../../include/fornani/io/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 #include <imgui.h>
+
+#include <atomic>
+#include <condition_variable>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <mutex>
+#include <thread>
+#include <vector>
+#include <cassert>
 
 
 namespace fornani::util {
@@ -24,18 +34,6 @@ void Logger::write_console(ImVec2 size, ImVec2 pos) {
 }
 
 } // namespace util
-
-#include "../../include/fornani/io/Logger.hpp"
-
-#include <atomic>
-#include <condition_variable>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <mutex>
-#include <thread>
-#include <vector>
-#include <cassert>
 
 #if defined(_WIN32)
 	#define WINDOWS_MEAN_AND_LEAN

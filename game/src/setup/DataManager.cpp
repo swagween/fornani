@@ -1,5 +1,8 @@
 
 #include "fornani/setup/DataManager.hpp"
+
+#include <iostream>
+
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"

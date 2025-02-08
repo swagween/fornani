@@ -1,13 +1,11 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <cmath>
-#include <iostream>
-#include <vector>
-#include "fornani/setup/EnumLookups.hpp"
 #include "Tile.hpp"
+
 #include <djson/json.hpp>
+
+#include <vector>
 
 namespace fornani::world {
 

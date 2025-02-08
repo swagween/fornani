@@ -1,6 +1,5 @@
 
 #include "fornani/entities/animation/Animation.hpp"
-#include <iostream>
 
 namespace fornani::anim {
 

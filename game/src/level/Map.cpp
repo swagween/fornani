@@ -9,6 +9,8 @@
 
 #include <tracy/Tracy.hpp>
 
+#include <iostream>
+
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)

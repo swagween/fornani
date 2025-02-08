@@ -15,7 +15,6 @@
 #include "fornani/entities/player/Indicator.hpp"
 #include "fornani/audio/Soundboard.hpp"
 #include <string_view>
-#include <iostream>
 
 namespace fornani::player {
 class Player;
