@@ -570,9 +570,15 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 
 	// map foreground tiles
-	sf::Sprite tex{textures.foreground.getTexture()};
-	tex.setPosition(-cam - scaled_barrier);
-	if (!svc.greyblock_mode()) { win.draw(tex); }
+	if (!svc.greyblock_mode()) {
+		std::vector<sf::Sprite> sprites{sf::Sprite{textures.foreground_day.getTexture()}, sf::Sprite{textures.foreground_twilight.getTexture()}, sf::Sprite{textures.foreground_night.getTexture()}};
+		auto ctr{0};
+		for (auto& sprite : sprites) {
+			sprite.setPosition(-cam - scaled_barrier);
+			m_camera_effects.shifter.render(svc, win, sprite, ctr);
+			++ctr;
+		}
+	}
 
 	{
 		ZoneScopedN("Map::render - forground enemies");
@@ -665,9 +671,13 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
 		for (auto& layer : scenery_layers) { for (auto& piece : layer) { piece->render(svc, win, cam); } }
-		sf::Sprite tex{textures.background.getTexture()};
-		tex.setPosition(-cam - scaled_barrier);
-		win.draw(tex);
+		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background_day.getTexture()}, sf::Sprite{textures.background_twilight.getTexture()}, sf::Sprite{textures.background_night.getTexture()}};
+		auto ctr{0};
+		for (auto& sprite : sprites) {
+			sprite.setPosition(-cam - scaled_barrier);
+			m_camera_effects.shifter.render(svc, win, sprite, ctr);
+			++ctr;
+		}
 		for (auto& npc : npcs) { if (npc.background()) { npc.render(svc, win, cam); } }
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {
@@ -753,48 +763,55 @@ void Map::generate_collidable_layer(bool live) {
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
-	for (auto& layer : layers) {
-		auto changed{layer.get_i_render_order() == 0 || layer.middleground()};
-		auto finished{layer.get_i_render_order() == m_middleground - 1 || layer.obscuring()};
-		auto& tex{layer.foreground() || layer.middleground() || layer.obscuring() ? textures.foreground : textures.background};
+	for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
+		for (auto& layer : layers) {
+			auto changed{layer.get_i_render_order() == 0 || layer.middleground()};
+			auto finished{layer.get_i_render_order() == m_middleground - 1 || layer.obscuring()};
+			auto time = static_cast<fornani::TimeOfDay>(cycle);
+			auto& tex {
+				time == fornani::TimeOfDay::day ? (layer.foreground() || layer.middleground() || layer.obscuring() ? textures.foreground_day : textures.background_day) :
+				(time == fornani::TimeOfDay::twilight ? (layer.foreground() || layer.middleground() || layer.obscuring() ? textures.foreground_twilight : textures.background_twilight) :
+				layer.foreground() || layer.middleground() || layer.obscuring() ? textures.foreground_night : textures.background_night)
+			};
 
-		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size),
-						  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size)};
-		if (changed) {
-			if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
-			tex.clear(sf::Color::Transparent);
-		}
-		if (layer.obscuring()) {
-			if (!textures.obscuring.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
-			if (!textures.reverse.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
-			textures.obscuring.clear(sf::Color::Transparent);
-			textures.reverse.clear(sf::Color::Transparent);
-		}
-		sf::Sprite tile{svc.assets.tilesets.at(style_id)};
-		for (auto& cell : layer.grid.cells) {
-			if (cell.is_occupied() && !cell.is_special()) {
-				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-				tile.setPosition(cell.position() + scaled_barrier);
-				layer.obscuring() ? textures.obscuring.draw(tile) : tex.draw(tile);
-				if (layer.middleground()) { draw_barrier(tex, tile, cell); }
-			} else {
-				if (layer.obscuring()) {
-					tile.setTextureRect(sf::IntRect({32, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size),
+							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size)};
+			if (changed) {
+				if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
+				tex.clear(sf::Color::Transparent);
+			}
+			if (layer.obscuring()) {
+				if (!textures.obscuring.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
+				if (!textures.reverse.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
+				textures.obscuring.clear(sf::Color::Transparent);
+				textures.reverse.clear(sf::Color::Transparent);
+			}
+			sf::Sprite tile{svc.assets.tilesets.at(style_id)};
+			for (auto& cell : layer.grid.cells) {
+				if (cell.is_occupied() && !cell.is_special()) {
+					auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size) + (cycle * 512);
+					auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
+					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
 					tile.setPosition(cell.position() + scaled_barrier);
-					textures.reverse.draw(tile);
+					layer.obscuring() ? textures.obscuring.draw(tile) : tex.draw(tile);
+					if (layer.middleground()) { draw_barrier(tex, tile, cell); }
+				} else {
+					if (layer.obscuring()) {
+						tile.setTextureRect(sf::IntRect({32, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+						tile.setPosition(cell.position() + scaled_barrier);
+						textures.reverse.draw(tile);
+					}
 				}
 			}
-		}
-		if (finished) { tex.display(); }
-		if (layer.obscuring()) {
-			textures.obscuring.display();
-			textures.reverse.display();
-		}
-		if (layer.middleground()) {
-			if (!textures.greyblock.resize(size)) { std::cout << "Layer texture not created.\n"; }
-			get_middleground().grid.draw(textures.greyblock);
+			if (finished) { tex.display(); }
+			if (layer.obscuring()) {
+				textures.obscuring.display();
+				textures.reverse.display();
+			}
+			if (layer.middleground()) {
+				if (!textures.greyblock.resize(size)) { std::cout << "Layer texture not created.\n"; }
+				get_middleground().grid.draw(textures.greyblock);
+			}
 		}
 	}
 }

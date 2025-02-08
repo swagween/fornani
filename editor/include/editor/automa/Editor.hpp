@@ -130,6 +130,7 @@ class Editor {
 	struct {
 		bool fullscreen{};
 	} m_demo{};
+	int m_middleground{};
 };
 
 } // namespace pi
