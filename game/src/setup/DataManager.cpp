@@ -34,9 +34,11 @@ void DataManager::load_data(std::string in_room) {
 			dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
 			std::vector<world::Layer> next{};
 			auto& in_tile = map_jsons.back().metadata["tile"];
+			auto ho{static_cast<bool>(in_tile["flags"]["obscuring"].as_bool())};
+			auto hro{static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool())};
 			uint8_t ctr{0u};
 			for (auto& layer : in_tile["layers"].array_view()) {
-				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr]));
+				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], ho, hro));
 				++ctr;
 			}
 			map_layers.push_back(next);

@@ -30,15 +30,17 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 	global_offset = map.metagrid_coordinates * 16;
 	map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions);
 	auto const& middleground = map.get_middleground();
+	auto const& obscuring = map.get_obscuring_layer();
 	if (!map_texture.resize({map.dimensions.x * static_cast<unsigned int>((32.f / scale)), map.dimensions.y * static_cast<unsigned int>(32.f / scale)})) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
 	map_texture.clear(sf::Color::Transparent);
 	for (auto& cell : middleground.grid.cells) {
+		auto obscured{obscuring.grid.cells.at(cell.one_d_index).is_occupied() && map.has_obscuring_layer()};
 		if (!cell.is_breakable()) {
 			tile_box.setPosition(cell.position() / scale);
 			if (!cell.is_occupied()) {
 				tile_box.setFillColor(tile_color);
-				map_texture.draw(tile_box);
-			} else if (cell.exposed) {
+				if (!obscured) { map_texture.draw(tile_box); }
+			} else if (cell.exposed && !obscured) {
 				tile_box.setFillColor(border_color);
 				map_texture.draw(tile_box);
 			}

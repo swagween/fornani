@@ -18,6 +18,10 @@ class Map {
 	void reorder();
 	[[nodiscard]] auto get_middleground() const -> int { return m_middleground; }
 	[[nodiscard]] auto get_layer_name(int index) const -> char const* { return layers.at(index).label.c_str(); }
+	struct {
+		bool has_obscuring_layer{};
+		bool has_reverse_obscuring_layer{};
+	} m_flags{};
 
   private:
 	int m_middleground{};

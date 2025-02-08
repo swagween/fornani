@@ -64,7 +64,13 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 					tileset.setScale({scale * squared, scale * squared});
 					tileset.setOrigin(get_origin());
 					tileset.setPosition(cell.scaled_position() + position);
-					if (layer.render_order != 7 || flags.show_obscured_layer) { win.draw(tileset); }
+					if (layer.render_order == get_layers().layers.size() - 1) {
+						if (flags.show_obscured_layer) { win.draw(tileset); }
+					} else if (layer.render_order == get_layers().layers.size() - 2) {
+						if (flags.show_reverse_obscured_layer) { win.draw(tileset); }
+					} else {
+						win.draw(tileset);
+					}
 				} else if (flags.show_indicated_layers) {
 					box.setScale({scale, scale});
 					box.setOrigin(get_origin());
@@ -143,6 +149,8 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& region, std::
 		++counter;
 	}
 	map_states.back().set_middleground(data.meta["tile"]["middleground"].as<int>());
+	map_states.back().m_flags.has_obscuring_layer = static_cast<bool>(data.meta["tile"]["flags"]["obscuring"].as_bool());
+	map_states.back().m_flags.has_reverse_obscuring_layer = static_cast<bool>(data.meta["tile"]["flags"]["reverse_obscuring"].as_bool());
 	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
 	map_states.back().set_labels();
 	set_grid_texture();
@@ -185,6 +193,8 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& region, std::
 	for (auto i{0}; i < last_layer(); ++i) { data.meta["tile"]["layers"].push_back(wipe); }
 	// push layer data
 	int current_layer{};
+	data.meta["tile"]["flags"]["obscuring"] = dj::Boolean{map_states.back().m_flags.has_obscuring_layer};
+	data.meta["tile"]["flags"]["reverse_obscuring"] = dj::Boolean{map_states.back().m_flags.has_reverse_obscuring_layer};
 	for (auto& layer : map_states.back().layers) {
 		if (map_states.back().get_middleground() == current_layer) { data.meta["tile"]["middleground"] = current_layer; }
 		int current_cell{};
@@ -214,6 +224,7 @@ void Canvas::save_state(Tool& tool, bool force) {
     auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;
 	if ((undoable_tool && tool.clicked() && editable()) || force) {
 		map_states.emplace_back(Map{map_states.back()});
+		if (map_states.size() > max_undo_states_v) { map_states.pop_front(); }
         clear_redo_states();
     }
 }

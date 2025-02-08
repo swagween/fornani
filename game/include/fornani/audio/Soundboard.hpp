@@ -91,19 +91,21 @@ class Soundboard {
 	} cooldowns{};
 
 	std::unordered_map<int, std::unordered_map<int, Step>> get_step_sound{{1,
-																		   {{1, Step::grass},
-																			{208, Step::grass},
-																			{209, Step::grass},
-																			{210, Step::grass},
-																			{211, Step::grass},
-																			{212, Step::grass},
-																			{213, Step::grass},
-																			{214, Step::grass},
-																			{215, Step::grass},
-																			{220, Step::grass},
-																			{221, Step::grass},
-																			{222, Step::grass},
-																			{223, Step::grass}}}};
+																		   {{96, Step::grass},
+																			{464, Step::grass},
+																			{465, Step::grass},
+																			{466, Step::grass},
+																			{467, Step::grass},
+																			{468, Step::grass},
+																			{469, Step::grass},
+																			{470, Step::grass},
+																			{471, Step::grass},
+																			{476, Step::grass},
+																			{477, Step::grass},
+																			{478, Step::grass},
+																			{479, Step::grass},
+																			{496, Step::grass},
+																			{497, Step::grass}}}};
 };
 
 } // namespace audio

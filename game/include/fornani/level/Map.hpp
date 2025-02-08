@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
 #include "fornani/entities/enemy/EnemyCatalog.hpp"
 #include "fornani/entities/world/Animator.hpp"
 #include "fornani/entities/world/Inspectable.hpp"
@@ -41,6 +39,10 @@
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 
+#include <string>
+#include <vector>
+#include <optional>
+
 constexpr unsigned int const u_chunk_size_v{16u};
 
 namespace automa {
@@ -61,23 +63,31 @@ namespace world {
 
 enum class LevelState { game_over, camera_shake, spawn_enemy };
 enum class MapState { unobscure };
-enum class MapProperties { minimap };
-enum class LayerType { background, middleground, foreground, obscuring };
+enum class MapProperties { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
+enum class LayerType { background, middleground, foreground, reverse_obscuring, obscuring };
+
+struct LayerTexture {
+	sf::RenderTexture day{};
+	sf::RenderTexture twilight{};
+	sf::RenderTexture night{};
+};
 
 class Layer {
   public:
 	Layer() = default;
-	Layer(uint8_t o, sf::Vector2i partition, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source) {
+	Layer(uint8_t o, sf::Vector2i partition, sf::Vector2<uint32_t> dim, dj::Json& source, bool has_obscuring, bool has_reverse_obscuring) : render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source) {
 		auto order = static_cast<int>(o);
 		if (order < partition.x) { type = LayerType::background; }
 		if (order == partition.x) { type = LayerType::middleground; }
 		if (order > partition.x) { type = LayerType::foreground; }
-		if (order == partition.y - 1) { type = LayerType::obscuring; }
+		if (order == partition.y - 2 && has_reverse_obscuring) { type = LayerType::reverse_obscuring; }
+		if (order == partition.y - 1 && has_obscuring) { type = LayerType::obscuring; }
 	}
 	[[nodiscard]] auto background() const -> bool { return type == LayerType::background; }
 	[[nodiscard]] auto foreground() const -> bool { return type == LayerType::foreground; }
 	[[nodiscard]] auto middleground() const -> bool { return type == LayerType::middleground; }
 	[[nodiscard]] auto obscuring() const -> bool { return type == LayerType::obscuring; }
+	[[nodiscard]] auto reverse_obscuring() const -> bool { return type == LayerType::reverse_obscuring; }
 	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
 	[[nodiscard]] auto get_i_render_order() const -> int { return static_cast<int>(render_order); }
 	[[nodiscard]] auto get_layer_type() const -> LayerType { return type; }
@@ -139,6 +149,8 @@ class Map {
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
 	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2u { return dimensions / u_chunk_size_v; }
 	[[nodiscard]] auto is_minimap() const -> bool { return flags.properties.test(MapProperties::minimap); }
+	[[nodiscard]] auto has_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_obscuring_layer); }
+	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_reverse_obscuring_layer); }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
 	Tile& get_cell_at_position(sf::Vector2<float> position);
@@ -200,16 +212,13 @@ class Map {
 
 	// layers
 	struct {
-		sf::RenderTexture foreground_day{};
-		sf::RenderTexture background_day{};
-		sf::RenderTexture foreground_twilight{};
-		sf::RenderTexture background_twilight{};
-		sf::RenderTexture foreground_night{};
-		sf::RenderTexture background_night{};
-		sf::RenderTexture obscuring{};
-		sf::RenderTexture reverse{};
 		sf::RenderTexture greyblock{};
+		LayerTexture foreground{};
+		LayerTexture background{};
+		std::optional<LayerTexture> obscuring{};
+		std::optional<LayerTexture> reverse_obscuring{};
 	} textures{};
+
 	std::string_view style_label{};
 
 	int room_lookup{};
