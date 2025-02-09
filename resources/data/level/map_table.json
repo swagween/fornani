@@ -5,10 +5,6 @@
       "label": "new_file.json"
     },
     {
-      "room_id": 0,
-      "label": "asdasd.json"
-    },
-    {
       "room_id": 103,
       "label": "atrium.json"
     },
@@ -21,20 +17,16 @@
       "label": "vent.json"
     },
     {
-      "room_id": 450,
-      "label": "delete_test.json"
+      "room_id": 295,
+      "label": "brick.json"
     },
     {
       "room_id": 299,
       "label": "dojo.json"
     },
     {
-      "room_id": 200,
-      "label": "glade.json"
-    },
-    {
-      "room_id": 198,
-      "label": "palette_test.json"
+      "room_id": 201,
+      "label": "ibo_rests.json"
     },
     {
       "room_id": 298,

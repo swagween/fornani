@@ -93,7 +93,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			}
 			vert = true;
 		}
-		if (predictive_horizontal.SAT(cell) && !tile.ramp_adjacent() && !vert) {
+		auto skip_the_corner{tile.ramp_adjacent() && on_ramp()};
+		if (predictive_horizontal.SAT(cell) && !skip_the_corner && !vert) {
 			mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);
@@ -101,8 +102,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.external_state.reset(ExternalState::vert_world_collision);
 			correct_x(mtvs.horizontal);
 		}
-		if (predictive_combined.SAT(cell) && !tile.ramp_adjacent()) {
-			// if (abs(mtvs.combined.x > 0.0001f)) { std::cout << "Combined MTV reading: " << mtvs.combined.x << "\n"; }
+		if (predictive_combined.SAT(cell) && !skip_the_corner) {
 			flags.collision.set(Collision::any_collision);
 			flags.dash.set(Dash::dash_cancel_collision);
 			flags.external_state.set(ExternalState::world_collision);

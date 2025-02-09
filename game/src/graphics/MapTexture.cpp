@@ -22,13 +22,16 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.c
 void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
 	map.load(svc, room, true);
 	if (!map.is_minimap()) {
+		map_texture.clear(sf::Color::Transparent);
+		map_texture.display();
 		ignore = true;
 		return;
 	}
-	tile_color = map.native_style_id == 0 ? svc.styles.colors.blue : svc.styles.colors.fucshia;
+	tile_color = map.native_style_id == 0 ? svc.styles.colors.fucshia : svc.styles.colors.blue;
 	tile_color.a = 100;
 	global_offset = map.metagrid_coordinates * 16;
 	map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions);
+
 	auto const& middleground = map.get_middleground();
 	auto const& obscuring = map.get_obscuring_layer();
 	if (!map_texture.resize({map.dimensions.x * static_cast<unsigned int>((32.f / scale)), map.dimensions.y * static_cast<unsigned int>(32.f / scale)})) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }

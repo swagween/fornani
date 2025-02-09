@@ -60,6 +60,7 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 
 fsm::StateFunction PlayerAnimation::update_sprint() {
 	animation.label = "sprint";
+	m_player->controller.reset_vertical_movement();
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
 	if (!m_player->firing_weapon()) {
@@ -306,6 +307,7 @@ fsm::StateFunction PlayerAnimation::update_stop() {
 
 fsm::StateFunction PlayerAnimation::update_inspect() {
 	animation.label = "inspect";
+	m_player->controller.reset_vertical_movement();
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
@@ -529,6 +531,7 @@ fsm::StateFunction PlayerAnimation::update_backflip() {
 fsm::StateFunction PlayerAnimation::update_slide() {
 	animation.label = "slide";
 	auto& slider = m_player->controller.get_slide();
+	m_player->controller.reset_vertical_movement();
 	slider.calculate();
 	if (!slider.started()) {
 		slider.start();
@@ -627,6 +630,7 @@ fsm::StateFunction PlayerAnimation::update_get_up() {
 fsm::StateFunction PlayerAnimation::update_roll() {
 	animation.label = "roll";
 	auto& controller = m_player->controller;
+	controller.reset_vertical_movement();
 	auto sign = m_player->controller.moving_left() ? -1.f: 1.f;
 	if (!m_player->controller.moving()) { sign = m_player->controller.facing_left() ? -1.f : 1.f; }
 	m_player->collider.physics.velocity.x = 60.f * sign;

@@ -53,7 +53,15 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	tutorial.update(*m_services);
 	cooldowns.tutorial.update();
+
+	// camera stuff
 	camera_offset.x = controller.facing_left() ? -32.f : 32.f;
+	if (controller.sprinting()) { controller.reset_vertical_movement(); }
+	m_camera.physics.set_global_friction(0.88f);
+	auto skew{controller.vertical_movement() < 0.f ? 120.f : 160.f};
+	m_camera.target.seek(m_camera.physics, sf::Vector2f{0.f, skew} * controller.vertical_movement(), 0.001f);
+	m_camera.physics.simple_update();
+	camera_offset.y = -64.f + m_camera.physics.position.y;
 
 	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
 

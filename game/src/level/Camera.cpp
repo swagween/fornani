@@ -6,7 +6,7 @@ namespace fornani {
 
 Camera::Camera() {
 	gravitator = vfx::Gravitator(gravitator.collider.physics.position, sf::Color::Transparent, CAM_GRAV);
-	gravitator.collider.physics = components::PhysicsComponent({CAM_FRICTION, CAM_FRICTION}, CAM_MASS);
+	gravitator.collider.physics = components::PhysicsComponent({0.92f, 0.92f}, CAM_MASS);
 }
 
 void Camera::update(automa::ServiceProvider& svc) {

@@ -180,6 +180,7 @@ class AssetManager {
 	sf::Texture t_bg_deep{};
 	sf::Texture t_bg_grove{};
 	sf::Texture t_bg_woods{};
+	sf::Texture t_bg_canopy{};
 
 	//scenery
 	sf::Texture t_overturned_scenery{};

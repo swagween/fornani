@@ -82,7 +82,6 @@ class Editor {
 	int large_index_multiplier{100};
 	int small_index_multiplier{200};
 
-	bool trigger_demo{false};
 	bool window_hovered{};
 	bool menu_hovered{};
 	bool popup_open{};
@@ -129,6 +128,8 @@ class Editor {
 	} m_options{};
 	struct {
 		bool fullscreen{};
+		bool trigger_demo{};
+		bool custom_position{};
 	} m_demo{};
 	int m_middleground{};
 };

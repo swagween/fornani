@@ -1,9 +1,10 @@
+
 #include "fornani/entities/player/PlayerController.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {
 
-PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc) {
+PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc), cooldowns{.inspect{64}} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
@@ -84,7 +85,12 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
 	auto const& down_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).triggered;
 
-	auto const& inspected = svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered && grounded() && !left && !right;
+	auto it{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered};
+	auto ir{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).released};
+	auto ih{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).held && cooldowns.inspect.is_almost_complete()};
+	auto const& inspected = (ir) && grounded() && !left && !right;
+	cooldowns.inspect.update();
+	if (it) { cooldowns.inspect.start(); }
 
 	/* Dash ability and grappling hook will remain out of scope for the demo. */
 
@@ -225,6 +231,8 @@ void PlayerController::decrement_requests() {
 void PlayerController::reset_dash_count() { dash_count = 0; }
 
 void PlayerController::cancel_dash_request() { dash_request = -1; }
+
+void player::PlayerController::reset_vertical_movement() { key_map[ControllerInput::move_y] = 0.f; }
 
 void PlayerController::dash() { dash_count = 1; }
 

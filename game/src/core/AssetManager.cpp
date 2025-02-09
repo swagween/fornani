@@ -331,14 +331,16 @@ AssetManager::AssetManager(const data::ResourceFinder& finder) {
 		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/background/dirt.png] from file.", finder.resource_path());
 	if (!t_bg_grove.loadFromFile(finder.resource_path() + "/image/background/glade.png"))
 		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/background/glade.png] from file.", finder.resource_path());
-	if (!t_bg_woods.loadFromFile(finder.resource_path() + "/image/background/woods.png"))
-		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/background/woods.png] from file.", finder.resource_path());
+	if (!t_bg_woods.loadFromFile(finder.resource_path() + "/image/background/woods.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/background/woods.png] from file.", finder.resource_path());
+	if (!t_bg_canopy.loadFromFile(finder.resource_path() + "/image/background/canopy.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/background/canopy.png] from file.", finder.resource_path());
 
 	background_lookup.insert({0, t_bg_dusk});
 	background_lookup.insert({1, t_bg_sunrise});
 	background_lookup.insert({2, t_bg_opensky});
 	background_lookup.insert({3, t_bg_woods});
-	background_lookup.insert({4, t_bg_dawn});
+	background_lookup.insert({4, t_bg_canopy});
+
+	// these will change
 	background_lookup.insert({5, t_bg_night});
 	background_lookup.insert({6, t_bg_overcast});
 	background_lookup.insert({7, t_bg_slime});

@@ -76,8 +76,8 @@ void Editor::run() {
 			return;
 		}
 
-		if (trigger_demo) {
-			auto ppos = shift_pressed() ? sf::Vector2<float>{map.entities.variables.player_hot_start} * 32.f : sf::Vector2<float>{map.entities.variables.player_start} * 32.f;
+		if (m_demo.trigger_demo) {
+			auto ppos = m_demo.custom_position ? sf::Vector2<float>{map.entities.variables.player_hot_start} * 32.f : sf::Vector2<float>{map.entities.variables.player_start} * 32.f;
 			launch_demo(args, map.room_id, finder->paths.room_name, ppos);
 			if (!ImGui::SFML::Init(window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
 			init(finder->paths.room_name);
@@ -162,14 +162,15 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::D) { m_clipboard = {}; }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
 				save();
-				trigger_demo = true;
+				m_demo.trigger_demo = true;
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
 			if (shift_pressed()) {
 				if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
 					map.entities.variables.player_hot_start = current_tool->scaled_position();
 					save();
-					trigger_demo = true;
+					m_demo.trigger_demo = true;
+					m_demo.custom_position = true;
 				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Left) { map.resize({-1, 0}); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Right) { map.resize({1, 0}); }
@@ -655,9 +656,9 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Demo fullscreen", "", &m_demo.fullscreen)) {}
 			if (ImGui::MenuItem("Save and Launch Demo", "Ctrl+L")) {
 				save();
-				trigger_demo = true;
+				m_demo.trigger_demo = true;
 			}
-			if (ImGui::MenuItem("Launch Demo without Saving")) { trigger_demo = true; }
+			if (ImGui::MenuItem("Launch Demo without Saving")) { m_demo.trigger_demo = true; }
 			ImGui::EndMenu();
 		}
 
@@ -1019,15 +1020,14 @@ void Editor::center_map() {
 }
 
 void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position) {
-	trigger_demo = false;
+	m_demo.trigger_demo = false;
+	m_demo.custom_position = false;
 	pressed_keys = {};
 	current_tool->current_entity = {};
 	ImGui::SFML::Shutdown();
 	fornani::Application demo{argv};
-	console.add_log("> Launching Demo\n");
-	console.add_log(std::string{"Editor path: " + path.string()}.c_str());
-	console.add_log(std::string{"Room ID: " + std::to_string(room_id)}.c_str());
-	console.add_log(std::string{"Room Name: " + finder->paths.room_name}.c_str());
+	console.add_log("> Launching Demo");
+	console.add_log(std::string{"Room ID: " + std::to_string(room_id) + "; Room Name: " + finder->paths.room_name}.c_str());
 	demo.init(argv, {true, m_demo.fullscreen});
 	demo.launch(argv, true, room_id, finder->paths.room_name, player_position);
 }

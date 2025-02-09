@@ -14,7 +14,7 @@ class ResourceFinder;
 
 namespace pi {
 
-enum class Backdrop { black, night, dusk, woods, END };
+enum class Backdrop { black, night, dusk, woods, canopy, END };
 class BackgroundType {
   public:
 	BackgroundType(Backdrop type) : type(type) {
@@ -23,6 +23,7 @@ class BackgroundType {
 		case Backdrop::night: label = "night"; break;
 		case Backdrop::dusk: label = "dusk"; break;
 		case Backdrop::woods: label = "woods"; break;
+		case Backdrop::canopy: label = "canopy"; break;
 		default: label = "<none>"; break;
 		}
 	}

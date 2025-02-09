@@ -46,6 +46,7 @@ class PlayerController {
 	void decrement_requests();
 	void reset_dash_count();
 	void cancel_dash_request();
+	void reset_vertical_movement();
 	void dash();
 	void walljump();
 	void autonomous_walk();
@@ -142,6 +143,10 @@ class PlayerController {
 
 	int dash_request{};
 	int dash_count{};
+
+	struct {
+		util::Cooldown inspect{};
+	} cooldowns{};
 
 	std::deque<float> horizontal_inputs{};
 };

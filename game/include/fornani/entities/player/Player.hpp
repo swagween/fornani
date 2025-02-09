@@ -12,6 +12,7 @@
 #include "fornani/weapon/Hotbar.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/packages/Caution.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
 #include "Catalog.hpp"
 #include "Indicator.hpp"
 #include "Wallet.hpp"
@@ -256,6 +257,10 @@ class Player {
 		dir::Direction right_squish{};
 		dir::Direction movement{};
 	} directions{};
+	struct {
+		components::SteeringBehavior target{};
+		components::PhysicsComponent physics{};
+	} m_camera{};
 };
 
 } // namespace player

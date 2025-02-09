@@ -7,7 +7,6 @@ ResourceFinder::ResourceFinder(char** argv) {
 	paths.resources = find_directory(argv[0], fs::path{"resources"});
 	paths.editor = find_directory(argv[0], paths.resources / fs::path{"editor"});
 	paths.levels = find_directory(argv[0],  paths.resources / fs::path{"level"});
-	paths.screenshots = fs::path{argv[0]};
 }
 
 fs::path ResourceFinder::region_and_room() const { return fs::path{paths.region} / fs::path{paths.room_name}; }
