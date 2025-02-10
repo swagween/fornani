@@ -5,21 +5,20 @@
 
 #include <SFML/Graphics.hpp>
 
-
 namespace fornani::automa {
 struct ServiceProvider;
-}
+} // namespace fornani::automa
 
 namespace sf {
 class RenderWindow;
-}
+} // namespace sf
 
 namespace fornani::gui {
 
 class ActionContextBar {
   public:
 	ActionContextBar() = default;
-	ActionContextBar(automa::ServiceProvider& svc);
+	explicit ActionContextBar(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
@@ -28,4 +27,4 @@ class ActionContextBar {
 	util::RichText text{};
 };
 
-} // namespace gui
+} // namespace fornani::gui

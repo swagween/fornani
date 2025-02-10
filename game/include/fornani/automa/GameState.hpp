@@ -22,9 +22,9 @@ namespace fornani::automa {
 
 // globals
 
-enum class GameStateFlags { playtest };
+enum class GameStateFlags : uint8_t { playtest };
 
-enum class MenuSelection { play, options, quit, controls, tutorial, credits, settings };
+enum class MenuSelection : uint8_t { play, options, quit, controls, tutorial, credits, settings };
 
 constexpr inline float dot_force{0.9f};
 constexpr inline float dot_fric{0.86f};

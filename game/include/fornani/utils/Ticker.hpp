@@ -4,8 +4,8 @@
 #include <chrono>
 #include <deque>
 #include <thread>
-#include "Cooldown.hpp"
 #include "BitFlags.hpp"
+#include "Cooldown.hpp"
 
 namespace fornani::util {
 
@@ -16,10 +16,10 @@ using Mil = std::chrono::milliseconds;
 enum class TickerFlags { forced_slowdown, paused };
 enum class Period { second, twenty_minutes };
 struct PeriodicBool {
-	PeriodicBool(Sec period) : period(period) {}
+	explicit PeriodicBool(Sec const period) : period(period) {}
 	Sec period{};
 	Sec elapsed{};
-	constexpr bool tick(Sec dt) {
+	constexpr bool tick(Sec const dt) {
 		elapsed += dt;
 		if (elapsed >= period) {
 			elapsed = std::chrono::seconds{0};
@@ -132,4 +132,4 @@ class Ticker {
 	Cooldown freezeframe{};
 };
 
-} // namespace util
+} // namespace fornani::util

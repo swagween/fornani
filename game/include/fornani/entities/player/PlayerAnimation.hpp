@@ -10,8 +10,8 @@ namespace fornani::player {
 
 class Player;
 
-enum class AnimState { idle, turn, sharp_turn, run, sprint, shield, between_push, push, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, walljump, die, backflip, slide, get_up, roll, shoot };
-enum class AnimTriggers { flip, end_death };
+enum class AnimState : uint8_t { idle, turn, sharp_turn, run, sprint, shield, between_push, push, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, walljump, die, backflip, slide, get_up, roll, shoot };
+enum class AnimTriggers : uint8_t { flip, end_death };
 int const rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
 inline anim::Parameters idle{20, 8, 7 * rate, -1, false, true};

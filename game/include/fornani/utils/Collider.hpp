@@ -1,14 +1,14 @@
 
 #pragma once
 
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/level/Tile.hpp"
+#include <optional>
 #include "BitFlags.hpp"
 #include "Shape.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/level/Tile.hpp"
 #include "fornani/utils/CollisionDepth.hpp"
-#include <optional>
 
-namespace fornani::world{
+namespace fornani::world {
 class Map;
 }
 
@@ -22,9 +22,9 @@ constexpr float default_jumpbox_height = 4.0f;
 constexpr float default_detector_width = 4.f;
 constexpr float default_detector_height = 18.f;
 
-enum class General { ignore_resolution, complex, pushable, soft, top_only_collision };
-enum class Animation { just_landed, sliding };
-enum class State {
+enum class General : uint8_t { ignore_resolution, complex, pushable, soft, top_only_collision };
+enum class Animation : uint8_t { just_landed, sliding };
+enum class State : uint8_t {
 	just_collided,
 	is_any_jump_collision,
 	is_any_collision,
@@ -40,7 +40,7 @@ enum class State {
 	on_flat_surface,
 	tickwise_ramp_collision
 };
-enum class ExternalState {
+enum class ExternalState : uint8_t {
 	grounded,
 	collider_collision,
 	vert_collider_collision,
@@ -54,18 +54,11 @@ enum class ExternalState {
 	tile_debug_flag,
 	ceiling_ramp_hit
 };
-enum class PermaFlags { world_grounded, downhill };
+enum class PermaFlags : uint8_t { world_grounded, downhill };
 
-enum class Collision {
-	any_collision,
-	has_left_collision,
-	has_right_collision,
-	has_top_collision,
-	has_bottom_collision,
-	ramp_collision
-};
-enum class Dash { dash_cancel_collision };
-enum class Movement { dashing, jumping };
+enum class Collision : uint8_t { any_collision, has_left_collision, has_right_collision, has_top_collision, has_bottom_collision, ramp_collision };
+enum class Dash : uint8_t { dash_cancel_collision };
+enum class Movement : uint8_t { dashing, jumping };
 
 struct PhysicsStats {
 	float GRAV{0.002f};
@@ -75,7 +68,7 @@ class Collider {
 
   public:
 	Collider();
-	Collider(sf::Vector2<float> dim, sf::Vector2<float> hbx_offset = {});
+	explicit Collider(sf::Vector2<float> dim, sf::Vector2<float> hbx_offset = {});
 
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
@@ -185,4 +178,4 @@ class Collider {
 	sf::RectangleShape draw_hurtbox{};
 };
 
-} // namespace shape
+} // namespace fornani::shape

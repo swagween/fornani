@@ -12,10 +12,12 @@ namespace fornani::asset {
 
 class AssetManager {
   public:
-	AssetManager(const data::ResourceFinder& finder);
+	explicit AssetManager(const data::ResourceFinder& finder);
 
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
+
+	// TODO: Dear god we need to clean this up...
 
 	sf::Texture t_null{};
 

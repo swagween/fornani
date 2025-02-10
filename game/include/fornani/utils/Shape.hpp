@@ -1,7 +1,6 @@
 
 #pragma once
 
-
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <vector>
@@ -13,17 +12,17 @@ class Shape {
   public:
 	using Vec = sf::Vector2<float>;
 
-	Shape(Vec dim = {32.f, 32.f}, int num_vertices = 4);
+	explicit Shape(Vec dim = {32.f, 32.f}, int num_vertices = 4);
 
-	void set_position(const Vec new_pos);
+	void set_position(Vec const new_pos);
 	void set_dimensions(Vec const new_dim);
 
 	Vec perp(Vec edg) const;
 
 	Vec get_normalized(Vec const v);
-	Vec get_normal(const Vec v);
-	Vec project_on_axis(const std::vector<Vec> vertices, const Vec axis);
-	Vec project_circle_on_axis(Vec center, float radius, const Vec axis);
+	Vec get_normal(Vec const v);
+	Vec project_on_axis(std::vector<Vec> const vertices, Vec const axis);
+	Vec project_circle_on_axis(Vec center, float radius, Vec const axis);
 	std::vector<Vec> get_vertices(Shape const& shape);
 	std::vector<sf::Vector2<float>> get_poles(sf::CircleShape const& circle);
 	Vec get_MTV(Shape const& obb1, Shape const& obb2);
@@ -66,4 +65,4 @@ class Shape {
 	int tile_id{};
 };
 
-} // namespace shape
+} // namespace fornani::shape

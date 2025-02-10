@@ -8,12 +8,12 @@ struct ServiceProvider;
 }
 
 namespace fornani::gui {
-enum class PortraitFlags { custom };
-float const pad_x{20.f};
-float const pad_y{20.f};
+enum class PortraitFlags : uint8_t { custom };
+constexpr float pad_x{20.f};
+constexpr float pad_y{20.f};
 class Portrait {
   public:
-	Portrait(automa::ServiceProvider& svc, bool left = true);
+	explicit Portrait(automa::ServiceProvider& svc, bool left = true);
 	void update(automa::ServiceProvider& svc);
 	void set_custom_portrait(sf::Sprite sp);
 	void render(sf::RenderWindow& win);
@@ -41,4 +41,4 @@ class Portrait {
 	vfx::Gravitator gravitator{};
 };
 
-} // namespace gui
+} // namespace fornani::gui

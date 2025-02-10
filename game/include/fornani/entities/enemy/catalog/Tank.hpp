@@ -6,9 +6,9 @@
 
 namespace fornani::enemy {
 
-enum class TankState { idle, turn, run, shoot, alert };
+enum class TankState : uint8_t { idle, turn, run, shoot, alert };
 
-class Tank : public Enemy {
+class Tank final : public Enemy {
 
 	  public:
 		Tank() = delete;

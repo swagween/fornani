@@ -1,42 +1,42 @@
 
 #pragma once
 
-#include "fornani/entities/enemy/EnemyCatalog.hpp"
-#include "fornani/entities/world/Animator.hpp"
-#include "fornani/entities/world/Inspectable.hpp"
-#include "fornani/entities/world/Portal.hpp"
-#include "fornani/entities/world/SavePoint.hpp"
-#include "fornani/entities/world/Vine.hpp"
-#include "fornani/entities/world/Grass.hpp"
-#include "fornani/entities/world/Fire.hpp"
-#include "fornani/graphics/Background.hpp"
-#include "fornani/graphics/Scenery.hpp"
-#include "fornani/graphics/Transition.hpp"
-#include "fornani/graphics/CameraController.hpp"
-#include "fornani/graphics/Rain.hpp"
-#include "fornani/graphics/DayNightShifter.hpp"
-#include "Grid.hpp"
-#include "fornani/utils/Shape.hpp"
-#include "fornani/particle/Effect.hpp"
-#include "fornani/weapon/Projectile.hpp"
-#include "fornani/entities/item/Loot.hpp"
-#include "fornani/entities/world/Chest.hpp"
-#include "fornani/entities/npc/NPC.hpp"
-#include "fornani/entities/world/Bed.hpp"
-#include "Platform.hpp"
 #include "Breakable.hpp"
+#include "Checkpoint.hpp"
+#include "Destroyable.hpp"
+#include "Grid.hpp"
+#include "Platform.hpp"
 #include "Pushable.hpp"
 #include "Spawner.hpp"
 #include "Spike.hpp"
 #include "SwitchBlock.hpp"
-#include "Destroyable.hpp"
-#include "Checkpoint.hpp"
-#include "fornani/weapon/Grenade.hpp"
-#include "fornani/story/CutsceneCatalog.hpp"
-#include "fornani/utils/Stopwatch.hpp"
-#include "fornani/utils/CircleCollider.hpp"
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
+#include "fornani/entities/enemy/EnemyCatalog.hpp"
+#include "fornani/entities/item/Loot.hpp"
+#include "fornani/entities/npc/NPC.hpp"
+#include "fornani/entities/world/Animator.hpp"
+#include "fornani/entities/world/Bed.hpp"
+#include "fornani/entities/world/Chest.hpp"
+#include "fornani/entities/world/Fire.hpp"
+#include "fornani/entities/world/Grass.hpp"
+#include "fornani/entities/world/Inspectable.hpp"
+#include "fornani/entities/world/Portal.hpp"
+#include "fornani/entities/world/SavePoint.hpp"
+#include "fornani/entities/world/Vine.hpp"
+#include "fornani/graphics/Background.hpp"
+#include "fornani/graphics/CameraController.hpp"
+#include "fornani/graphics/DayNightShifter.hpp"
+#include "fornani/graphics/Rain.hpp"
+#include "fornani/graphics/Scenery.hpp"
+#include "fornani/graphics/Transition.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/story/CutsceneCatalog.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/utils/Stopwatch.hpp"
+#include "fornani/weapon/Grenade.hpp"
+#include "fornani/weapon/Projectile.hpp"
 
 #include <optional>
 #include <vector>
@@ -57,14 +57,14 @@ namespace fornani::gui {
 class Console;
 class Portrait;
 class InventoryWindow;
-}
+} // namespace fornani::gui
 
 namespace fornani::world {
 
-enum class LevelState { game_over, camera_shake, spawn_enemy };
-enum class MapState { unobscure };
-enum class MapProperties { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
-enum class LayerType { background, middleground, foreground, reverse_obscuring, obscuring };
+enum class LevelState : uint8_t { game_over, camera_shake, spawn_enemy };
+enum class MapState : uint8_t { unobscure };
+enum class MapProperties : uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
+enum class LayerType : uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
 
 struct LayerTexture {
 	sf::RenderTexture day{};
@@ -158,7 +158,7 @@ class Map {
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
 	Vec real_dimensions{};	   // pixel dimensions (maybe useless)
-	sf::Vector2u dimensions{};	   // points on the 32x32-unit grid
+	sf::Vector2u dimensions{}; // points on the 32x32-unit grid
 
 	dj::Json inspectable_data{};
 
@@ -203,7 +203,7 @@ class Map {
 	flfx::Transition soft_reset;
 
 	enemy::EnemyCatalog enemy_catalog;
-	fornani::CutsceneCatalog cutscene_catalog;
+	CutsceneCatalog cutscene_catalog;
 
 	sf::RectangleShape borderbox{};
 	sf::RectangleShape center_box{};
@@ -255,7 +255,7 @@ class Map {
 	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell);
 	int abyss_distance{400};
 	struct {
-		fornani::graphics::ShakeProperties shake_properties{};
+		graphics::ShakeProperties shake_properties{};
 		util::Cooldown cooldown{};
 		graphics::DayNightShifter shifter{};
 	} m_camera_effects{};
@@ -271,4 +271,4 @@ class Map {
 	int m_middleground{};
 };
 
-} // namespace world
+} // namespace fornani::world

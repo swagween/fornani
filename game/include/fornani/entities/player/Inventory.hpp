@@ -24,7 +24,7 @@ class Inventory {
 	item::Item& get_item(int id);
 	item::Item& get_item_at_index(int index);
 	void clear();
-	bool has_item(int id) const;
+	[[nodiscard]] bool has_item(int id) const;
 	std::vector<item::Item> items{};
 	std::vector<int> sellable_items{};
 	int items_per_row{12};

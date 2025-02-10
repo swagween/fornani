@@ -13,8 +13,8 @@ struct ServiceProvider;
 
 namespace fornani::audio {
 
-enum class SongState { playing, paused, on, looping };
-enum class MusicPlayerState { on };
+enum class SongState : uint8_t { playing, paused, on, looping };
+enum class MusicPlayerState : uint8_t { on };
 
 class MusicPlayer {
   public:
@@ -65,7 +65,7 @@ class MusicPlayer {
 
 	std::string label{};
 
-	fornani::io::Logger m_logger{"Audio"};
+	io::Logger m_logger{"Audio"};
 };
 
 } // namespace audio

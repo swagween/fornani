@@ -6,11 +6,11 @@
 #include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::components {
-enum class SensorState { active };
+enum class SensorState : uint8_t { active };
 class CircleSensor {
   public:
 	CircleSensor();
-	CircleSensor(float radius);
+	explicit CircleSensor(float radius);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> position);
 	sf::CircleShape bounds{};
@@ -26,4 +26,4 @@ class CircleSensor {
 	util::BitFlags<SensorState> state{};
 };
 
-} // namespace components
+} // namespace fornani::components

@@ -11,7 +11,7 @@ namespace fornani::enemy {
 enum class DemonState { idle, turn, run, jump, signal, rush, stab, dormant, jumpsquat };
 enum class DemonVariant { warrior, spearman };
 
-class Demon : public Enemy {
+class Demon final : public Enemy {
 
   public:
 	Demon() = delete;
@@ -77,4 +77,4 @@ class Demon : public Enemy {
 	bool change_state(DemonState next, anim::Parameters params);
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

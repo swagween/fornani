@@ -1,19 +1,18 @@
-
 #pragma once
 
 #include "fornani/automa/GameState.hpp"
 
 namespace fornani::automa {
 
-enum class Toggles { autosprint, tutorial, gamepad, music, fullscreen };
-enum class MenuMode { adjust };
+enum class Toggles : uint8_t { autosprint, tutorial, gamepad, music, fullscreen };
+enum class MenuMode : uint8_t { adjust };
 
-class SettingsMenu : public GameState {
+class SettingsMenu final : public GameState {
   public:
 	SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
-	void tick_update(ServiceProvider& svc);
-	void frame_update(ServiceProvider& svc);
-	void render(ServiceProvider& svc, sf::RenderWindow& win);
+	void tick_update(ServiceProvider& svc) override;
+	void frame_update(ServiceProvider& svc) override;
+	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	[[nodiscard]] auto adjust_mode() const -> bool { return mode_flags.test(MenuMode::adjust); }
 
   private:
@@ -38,4 +37,4 @@ class SettingsMenu : public GameState {
 	sf::Text music_label;
 };
 
-} // namespace automa
+} // namespace fornani::automa

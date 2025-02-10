@@ -11,7 +11,7 @@ namespace fornani::audio {
 
 class Effect {
 public:
-	void update(float time, float x, float y) { onUpdate(time, x, y); }
+	void update(float const time, float const x, float const y) { onUpdate(time, x, y); }
 	void start() { onStart(); }
 	void stop() { onStop(); }
 

@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-enum class SlideFlags { break_out, started };
+enum class SlideFlags : uint8_t { break_out, started };
 
 class Slide {
   public:

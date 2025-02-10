@@ -6,12 +6,12 @@
 
 namespace fornani::enemy {
 
-	enum class EyebitState { idle, turn };
+	enum class EyebitState : uint8_t { idle, turn };
 
-class Eyebit : public Enemy {
+class Eyebit final : public Enemy {
 
   public:
-	Eyebit(automa::ServiceProvider& svc, bool spawned = false);
+	explicit Eyebit(automa::ServiceProvider& svc, bool spawned = false);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
 	fsm::StateFunction state_function = std::bind(&Eyebit::update_idle, this);
@@ -31,4 +31,4 @@ class Eyebit : public Enemy {
 
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

@@ -5,18 +5,18 @@
 namespace fornani::player {
 class VisitHistory {
   public:
-	[[nodiscard]] auto distance_traveled_from(int room_id) -> int {
+	[[nodiscard]] auto distance_traveled_from(int const room_id) const -> int {
 		auto cache = std::vector<int>{};
 		for (auto& room : room_deque) {
 			if (room == room_id) { cache.clear(); }
-			if (std::find(cache.begin(), cache.end(), room) == cache.end()) { cache.push_back(room); }
+			if (std::ranges::find(cache, room) == cache.end()) { cache.push_back(room); }
 		}
 		return static_cast<int>(cache.size());
 	}
 	[[nodiscard]] auto distance_traveled() const -> int { return static_cast<int>(rooms_visited.size()); }
 	[[nodiscard]] auto traveled_far() const -> bool { return rooms_visited.size() > far_distance; }
 	constexpr void clear() { rooms_visited.clear(); }
-	void push_room(int id) {
+	void push_room(int const id) {
 		if (std::ranges::find(rooms_visited.begin(), rooms_visited.end(), id) == rooms_visited.end()) { rooms_visited.push_back(id); }
 		room_deque.push_back(id);
 		if (room_deque.size() >= max_size) { room_deque.pop_front(); }

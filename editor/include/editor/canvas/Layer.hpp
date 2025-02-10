@@ -7,7 +7,7 @@ namespace pi {
 
 class Layer {
   public:
-	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim) : render_order(o), collidable(c), dimensions(dim), grid{dim} {}
+	Layer(uint8_t const o, bool const c, sf::Vector2<uint32_t> dim) : grid{dim}, render_order(o), collidable(c), dimensions(dim) {}
 	void clear();
 	void erase();
 	void set_position(sf::Vector2<float> to_position, float scale);

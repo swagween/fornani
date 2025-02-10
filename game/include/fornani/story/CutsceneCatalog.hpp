@@ -23,7 +23,7 @@ namespace fornani {
 class CutsceneCatalog {
   public:
 	CutsceneCatalog() = default;
-	CutsceneCatalog(automa::ServiceProvider& svc);
+	explicit CutsceneCatalog(automa::ServiceProvider& svc);
 	void update();
 	void push_cutscene(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, int id);
 

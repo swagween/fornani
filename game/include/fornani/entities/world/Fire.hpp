@@ -1,5 +1,5 @@
-
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/Shape.hpp"

@@ -8,10 +8,10 @@
 namespace fornani::data {
 
 class TextManager {
-	public:
-	TextManager(ResourceFinder& finder);
+  public:
+	explicit TextManager(ResourceFinder& finder);
 
-	//jsons
+	// jsons
 	dj::Json console{};
 	dj::Json inspectables{};
 	dj::Json basic{};
@@ -28,4 +28,4 @@ class TextManager {
 	} fonts{};
 };
 
-} // namespace data
+} // namespace fornani::data
