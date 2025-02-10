@@ -1,17 +1,17 @@
 
 #pragma once
 
-#include "fornani/graphics/CameraController.hpp"
+#include "Background.hpp"
+#include "EntitySet.hpp"
+#include "Map.hpp"
 #include "editor/util/BitFlags.hpp"
 #include "editor/util/SelectBox.hpp"
-#include "EntitySet.hpp"
-#include "Background.hpp"
-#include "Map.hpp"
+#include "fornani/graphics/CameraController.hpp"
 
-#include <string>
-#include <vector>
 #include <deque>
 #include <filesystem>
+#include <string>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
@@ -22,7 +22,7 @@ class ResourceFinder;
 
 namespace pi {
 
-enum class StyleType { firstwind, overturned, base, factory, greatwing, END };
+enum class StyleType : uint8_t { firstwind, overturned, base, factory, greatwing, END };
 
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
@@ -52,7 +52,7 @@ class Style {
 		label_c_str = label.c_str();
 	}
 
-	[[nodiscard]] auto get_label_char() -> const char*& { return label_c_str; };
+	[[nodiscard]] auto get_label_char() -> char const*& { return label_c_str; };
 	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_type() const -> StyleType { return type; };
 	[[nodiscard]] auto get_i_type() const -> int { return static_cast<int>(type); };
@@ -119,9 +119,7 @@ class Canvas {
 	[[nodiscard]] auto get_scale() const -> float { return scale; }
 	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(styles.tile.get_type()); }
 	[[nodiscard]] auto within_zoom_limits(float delta) const -> bool { return get_scale() + delta >= min_scale && get_scale() + delta <= max_scale; }
-	[[nodiscard]] auto within_bounds(sf::Vector2<float> const& point) const -> bool {
-		return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y;
-	}
+	[[nodiscard]] auto within_bounds(sf::Vector2<float> const& point) const -> bool { return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y; }
 	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
 	[[nodiscard]] auto redo_states_size() const -> std::size_t { return redo_states.size(); }
 	[[nodiscard]] auto middleground() const -> int { return map_states.back().get_middleground(); }
@@ -208,7 +206,6 @@ class Canvas {
 	float max_scale{4.f};
 
 	fornani::io::Logger m_logger{"pioneer"};
-
 };
 
 } // namespace pi

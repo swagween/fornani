@@ -7,11 +7,11 @@
 
 namespace fornani::automa {
 struct ServiceProvider;
-}
+} // namespace fornani::automa
 
 namespace sf {
 class RenderWindow;
-}
+} // namespace sf
 
 namespace fornani::gui {
 

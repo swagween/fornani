@@ -1,15 +1,15 @@
 
 #pragma once
 
+#include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
-#include <imgui.h>
 
 namespace pi {
 
 class Entity {
   public:
-	Entity(std::string label, int id = 0, sf::Vector2<uint32_t> dimensions = {}) : label(label), id(id), dimensions(dimensions) {};
+	explicit Entity(std::string const& label, int const id = 0, sf::Vector2<uint32_t> dimensions = {}) : id(id), label(label), dimensions(dimensions) {};
 	virtual ~Entity() = default;
 	virtual std::unique_ptr<Entity> clone() const;
 	virtual void serialize(dj::Json& out);

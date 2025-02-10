@@ -1,10 +1,8 @@
 
 #pragma once
 
-#include "editor/canvas/Tile.hpp"
-#include <stdio.h>
 #include <vector>
-#include <cmath>
+#include "editor/canvas/Tile.hpp"
 
 namespace pi {
 
