@@ -30,7 +30,7 @@ class VendorDialog {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map);
 	void close();
 	void update_table(player::Player& player, world::Map& map, bool new_dim);
-	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
+	void refresh(player::Player& player, world::Map& map) const;
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
 	[[nodiscard]] auto made_profit() const -> bool { return balance > 0.f; }

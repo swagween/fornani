@@ -1,7 +1,8 @@
 #include "fornani/entities/enemy/catalog/Hauler.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::enemy {
 
@@ -34,7 +35,7 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 		state.set(HaulerState::alert);
 	}
 	if (hostile() && !hostility_triggered()) {
-		if (m_services->random.percent_chance(fire_chance) || caution.danger()) {
+		if (util::Random::percent_chance(fire_chance) || caution.danger()) {
 			state.set(HaulerState::haul);
 		} else {
 			state.set(HaulerState::run);
@@ -51,14 +52,14 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (svc.random.percent_chance(4) && !caution.danger()) {
+		if (util::Random::percent_chance(4) && !caution.danger()) {
 			state.set(HaulerState::run);
 			running_time.start(400);
 		}
 	}
 
 	if(flags.state.test(StateFlags::hurt)) {
-		if (m_services->random.percent_chance(50)) {
+		if (util::Random::percent_chance(50)) {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_1);
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_2);
@@ -175,7 +176,7 @@ fsm::StateFunction Hauler::update_alert() {
 		m_services->soundboard.flags.tank.set(audio::Tank::alert_1);
 	}
 	if (animation.complete()) {
-		if (m_services->random.percent_chance(fire_chance) || caution.danger()) {
+		if (util::Random::percent_chance(fire_chance) || caution.danger()) {
 			state.set(HaulerState::haul);
 		} else {
 			state.set(HaulerState::run);

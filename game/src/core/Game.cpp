@@ -9,6 +9,8 @@
 #include <ctime>
 #include <iostream>
 
+#include "fornani/utils/Random.hpp"
+
 namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player) {
@@ -36,16 +38,14 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 }
 
 void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-    NANI_ZoneScopedN("Game::run");
+	NANI_ZoneScopedN("Game::run");
 
-    if (services.window->fullscreen()) {
-        services.app_flags.set(automa::AppFlags::fullscreen);
-    }
+	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 
-    measurements.win_size.x = services.window->get().getSize().x;
-    measurements.win_size.y = services.window->get().getSize().y;
+	measurements.win_size.x = services.window->get().getSize().x;
+	measurements.win_size.y = services.window->get().getSize().y;
 
-    {
+	{
 		NANI_ZoneScopedN("Demo Mode Setup");
 		if (demo) {
 			services.debug_flags.set(automa::DebugFlags::demo_mode);
@@ -61,151 +61,132 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		}
 	}
 
-    gui::ActionContextBar ctx_bar(services);
+	gui::ActionContextBar ctx_bar(services);
 
-    NANI_LOG_INFO(m_logger, "> Success");
+	NANI_LOG_INFO(m_logger, "> Success");
 	services.stopwatch.stop();
 	services.stopwatch.print_time();
 
-    sf::Clock delta_clock{};
+	sf::Clock delta_clock{};
 
-    while (services.window->get().isOpen()) {
+	while (services.window->get().isOpen()) {
 
-        NANI_ZoneScopedN("Game Loop");
+		NANI_ZoneScopedN("Game Loop");
 
-        auto smp = services.random.percent_chance(10) ? 1 : 0;
-        rng_test.sample += smp;
-        ++rng_test.total;
+		auto smp = util::Random::percent_chance(10) ? 1 : 0;
+		rng_test.sample += smp;
+		++rng_test.total;
 
-        {
-            NANI_ZoneScopedN("Check Shutdown Condition");
+		{
+			NANI_ZoneScopedN("Check Shutdown Condition");
 			if (services.state_controller.actions.test(automa::Actions::shutdown)) {
 				std::cout << "Shutdown.\n";
-                break;
-            }
-            if (services.death_mode()) {
-                flags.reset(GameFlags::in_game);
-            }
-        }
+				break;
+			}
+			if (services.death_mode()) { flags.reset(GameFlags::in_game); }
+		}
 
-        services.ticker.start_frame();
+		services.ticker.start_frame();
 
-        {
-            NANI_ZoneScopedN("Handle Window Events");
-            bool valid_event{true};
+		{
+			NANI_ZoneScopedN("Handle Window Events");
+			bool valid_event{true};
 
-            while (std::optional const event = services.window->get().pollEvent()) {
-                NANI_ZoneScopedN("Event Polling");
-                player.animation.state = {};
-                if (event->is<sf::Event::Closed>()) {
-                    shutdown();
-                    return;
-                }
+			while (std::optional const event = services.window->get().pollEvent()) {
+				NANI_ZoneScopedN("Event Polling");
+				player.animation.state = {};
+				if (event->is<sf::Event::Closed>()) {
+					shutdown();
+					return;
+				}
 
-                if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-                    NANI_ZoneScopedN("Key Press Handling");
-                    if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) {
-                        key_flags.set(KeyboardFlags::control);
-                    }
-                    if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_flags.test(KeyboardFlags::control)) {
-                        services.toggle_debug();
-                        if (flags.test(GameFlags::playtest)) {
-                            flags.reset(GameFlags::playtest);
-                            services.soundboard.flags.menu.set(audio::Menu::forward_switch);
-                        } else {
-                            flags.set(GameFlags::playtest);
-                            services.soundboard.flags.menu.set(audio::Menu::backward_switch);
-                        }
-                    }
-                    if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) {
-                        take_screenshot(services.window->screencap);
-                    }
-                }
+				if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+					NANI_ZoneScopedN("Key Press Handling");
+					if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { key_flags.set(KeyboardFlags::control); }
+					if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_flags.test(KeyboardFlags::control)) {
+						services.toggle_debug();
+						if (flags.test(GameFlags::playtest)) {
+							flags.reset(GameFlags::playtest);
+							services.soundboard.flags.menu.set(audio::Menu::forward_switch);
+						} else {
+							flags.set(GameFlags::playtest);
+							services.soundboard.flags.menu.set(audio::Menu::backward_switch);
+						}
+					}
+					if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
+				}
 
-                if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
-                    NANI_ZoneScopedN("Key Release Handling");
-                    if (key_released->scancode == sf::Keyboard::Scancode::LControl) {
-                        key_flags.reset(KeyboardFlags::control);
-                    }
-                }
+				if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
+					NANI_ZoneScopedN("Key Release Handling");
+					if (key_released->scancode == sf::Keyboard::Scancode::LControl) { key_flags.reset(KeyboardFlags::control); }
+				}
 
-                services.controller_map.handle_event(*event);
-                if (valid_event) {
-                    ImGui::SFML::ProcessEvent(services.window->get(), *event);
-                }
-                valid_event = true;
-            }
-        }
+				services.controller_map.handle_event(*event);
+				if (valid_event) { ImGui::SFML::ProcessEvent(services.window->get(), *event); }
+				valid_event = true;
+			}
+		}
 
-	    {
-        	NANI_ZoneScopedN("Steam API Callbacks");
-		    SteamAPI_RunCallbacks();
-	    }
+		{
+			NANI_ZoneScopedN("Steam API Callbacks");
+			SteamAPI_RunCallbacks();
+		}
 
-	    {
-		    NANI_ZoneScopedN("Update");
-        	services.music.update();
-        	bool has_focus = services.window->get().hasFocus();
-        	services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
+		{
+			NANI_ZoneScopedN("Update");
+			services.music.update();
+			bool has_focus = services.window->get().hasFocus();
+			services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
 				NANI_ZoneScopedN("Update->Tick");
 				services.controller_map.update();
 				game_state.get_current_state().tick_update(services);
-				if (services.a11y.is_action_ctx_bar_enabled()) {
-					ctx_bar.update(services);
-				}
+				if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
 			});
-	        {
-		    	NANI_ZoneScopedN("Update->State");
-		    	game_state.get_current_state().frame_update(services);
-		    	game_state.process_state(services, player, *this);
-	        }
-        	if (services.state_controller.actions.consume(automa::Actions::screenshot)) {
-        		take_screenshot(services.window->screencap);
-        	}
+			{
+				NANI_ZoneScopedN("Update->State");
+				game_state.get_current_state().frame_update(services);
+				game_state.process_state(services, player, *this);
+			}
+			if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
 
-	        {
-		    	NANI_ZoneScopedN("Update->ImGUI");
-		    	ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+			{
+				NANI_ZoneScopedN("Update->ImGUI");
+				ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 				ImGuiIO& io = ImGui::GetIO();
 				io.IniFilename = NULL;
 				io.LogFilename = NULL;
-		    	io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
-		    	services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
-		    	ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
-		    	delta_clock.restart();
-	        }
-	    }
+				io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
+				services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
+				ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
+				delta_clock.restart();
+			}
+		}
 
-        {
-            NANI_ZoneScopedN("Rendering");
-            if (flags.test(GameFlags::playtest)) {
-                playtester_portal(services.window->get());
-                services.logger.write_console(
-                    ImVec2{400.f, 240.f},
-                    ImVec2{services.window->get().getSize().x - 420.f, services.window->get().getSize().y - 260.f});
-            }
+		{
+			NANI_ZoneScopedN("Rendering");
+			if (flags.test(GameFlags::playtest)) {
+				playtester_portal(services.window->get());
+				services.logger.write_console(ImVec2{400.f, 240.f}, ImVec2{services.window->get().getSize().x - 420.f, services.window->get().getSize().y - 260.f});
+			}
 
-            flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
+			flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 
-            services.window->get().clear();
-            services.window->get().draw(background);
+			services.window->get().clear();
+			services.window->get().draw(background);
 
-            game_state.get_current_state().render(services, services.window->get());
+			game_state.get_current_state().render(services, services.window->get());
 
-            if (services.a11y.is_action_ctx_bar_enabled()) {
-                ctx_bar.render(services.window->get());
-            }
+			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(services.window->get()); }
 
-            ImGui::SFML::Render(services.window->get());
-            services.window->get().display();
-        }
+			ImGui::SFML::Render(services.window->get());
+			services.window->get().display();
+		}
 
-        services.ticker.end_frame();
-    }
+		services.ticker.end_frame();
+	}
 
-    shutdown();
+	shutdown();
 }
-
 
 void Game::shutdown() {
 	services.music.stop();
@@ -714,7 +695,7 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	services.window->screencap.update(services.window->get());
 	std::time_t const now = std::time(nullptr);
 
-	const std::time_t time = std::time({});
+	std::time_t const time = std::time({});
 	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
 	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
 	auto time_str = std::string{time_string};

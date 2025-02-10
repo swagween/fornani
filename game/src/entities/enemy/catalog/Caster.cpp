@@ -1,13 +1,13 @@
 #include "fornani/entities/enemy/catalog/Caster.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::enemy {
 
 Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, "caster"), m_services(&svc), m_map(&map),
-	  parts{.scepter{svc.assets.t_caster_scepter, 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.t_caster_wand, 2.0f, 0.85f, {-40.f, 48.f}}}, energy_ball(svc, 3) {
+	: Enemy(svc, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.t_caster_scepter, 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.t_caster_wand, 2.0f, 0.85f, {-40.f, 48.f}}}, energy_ball(svc, 3) {
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.9f, 0.9f};
@@ -22,7 +22,7 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	target.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.96f, 0.98f}, 1.0f);
 	target.collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
 
-	variant = svc.random.percent_chance(15) ? CasterVariant::tyrant : CasterVariant::apprentice;
+	variant = util::Random::percent_chance(15) ? CasterVariant::tyrant : CasterVariant::apprentice;
 	if (variant == CasterVariant::apprentice) { flags.general.reset(GeneralFlags::rare_drops); }
 
 	cooldowns.awaken.start();
@@ -47,7 +47,7 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 				idle_distance.y = -120.f;
 			}
 			if (directions.actual.lr == dir::LR::right) { idle_distance.x *= -1; }
-			if (svc.random.percent_chance(12) && svc.ticker.every_x_ticks(10)) { idle_distance.x *= -1; }
+			if (util::Random::percent_chance(12) && svc.ticker.every_x_ticks(10)) { idle_distance.x *= -1; }
 			target.set_target_position(player.collider.get_center() + idle_distance);
 		}
 		if (state == CasterState::signal) {
@@ -102,7 +102,7 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
 	secondary_collider.sync_components();
 
-	if(flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
+	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.demon.set(audio::Demon::hurt);
 		sound.hurt_sound_cooldown.start();
 		hurt_effect.start(128);
@@ -133,12 +133,12 @@ void Caster::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	if (svc.greyblock_mode()) {}
 }
 
-void Caster::teleport() { 
+void Caster::teleport() {
 	auto original = collider.physics.position;
 	bool done{};
 	int ctr{};
 	while (!done && ctr < 32) {
-		auto attempt = m_services->random.random_vector_float(-300.f, 300.f);
+		auto attempt = util::Random::random_vector_float(-300.f, 300.f);
 		collider.physics.position += attempt;
 		collider.sync_components();
 		if (m_map->overlaps_middleground(collider.bounding_box)) {
@@ -192,7 +192,7 @@ fsm::StateFunction Caster::update_prepare() {
 	return CASTER_BIND(update_prepare);
 };
 
-fsm::StateFunction Caster::update_signal() { 
+fsm::StateFunction Caster::update_signal() {
 	animation.label = "signal";
 	if (animation.just_started()) {
 		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
@@ -261,4 +261,4 @@ bool Caster::change_state(CasterState next, anim::Parameters params) {
 	return false;
 }
 
-} // namespace enemy
+} // namespace fornani::enemy

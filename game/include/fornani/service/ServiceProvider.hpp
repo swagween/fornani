@@ -18,7 +18,6 @@
 #include "fornani/story/StatTracker.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Constants.hpp"
-#include "fornani/utils/Random.hpp"
 #include "fornani/utils/Stopwatch.hpp"
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
@@ -52,7 +51,6 @@ struct ServiceProvider {
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::BitFlags<AppFlags> app_flags{};
 	util::BitFlags<StateFlags> state_flags{};
-	util::Random random{};
 	util::Ticker ticker{};
 	WorldClock world_clock{};
 	util::Constants constants{};

@@ -1,7 +1,8 @@
 #include "fornani/entities/enemy/Enemy.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::enemy {
 
@@ -134,7 +135,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	// shake
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = svc.random.random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
 
 	if (flags.general.test(GeneralFlags::map_collision)) {
 		for (auto& breakable : map.breakables) { breakable.handle_collision(collider); }
@@ -156,7 +157,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	animation.update();
 	health.update();
 
-	//update ranges
+	// update ranges
 	physical.alert_range.set_position(collider.bounding_box.get_position() - (physical.alert_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
 	physical.hostile_range.set_position(collider.bounding_box.get_position() - (physical.hostile_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
 	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
@@ -272,4 +273,4 @@ void Enemy::set_position_from_scaled(sf::Vector2<float> pos) {
 	set_position(new_pos);
 }
 
-} // namespace enemy
+} // namespace fornani::enemy

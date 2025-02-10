@@ -15,7 +15,7 @@ class Portrait {
   public:
 	explicit Portrait(automa::ServiceProvider& svc, bool left = true);
 	void update(automa::ServiceProvider& svc);
-	void set_custom_portrait(sf::Sprite sp);
+	void set_custom_portrait(sf::Sprite const& sp);
 	void render(sf::RenderWindow& win);
 	void reset(automa::ServiceProvider& svc);
 	void set_position(sf::Vector2<float> pos);

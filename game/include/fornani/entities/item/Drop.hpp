@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "fornani/utils/CircleCollider.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/Cooldown.hpp"
 #include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define DROP_BIND(f) std::bind(&Drop::f, this)
 
@@ -27,7 +27,7 @@ class Drop {
 
   public:
 	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0, int special_id = 0);
-	void seed(automa::ServiceProvider& svc, float probability);
+	void seed(float probability);
 	void set_value();
 	void set_texture(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, world::Map& map);
@@ -88,4 +88,4 @@ class Drop {
 	bool dead{};
 };
 
-} // namespace item
+} // namespace fornani::item

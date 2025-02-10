@@ -27,7 +27,7 @@ class Vine {
   public:
 	Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length = 5, int size = 1, bool foreground = true, bool reversed = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
+	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void add_platform(automa::ServiceProvider& svc, int link_index);
 	[[nodiscard]] auto foreground() const -> bool { return flags.test(VineFlags::foreground); }

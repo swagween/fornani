@@ -21,7 +21,7 @@ class FloatingPart {
 	void set_force(float force) const { gravitator->attraction_force = force; }
 	void set_shield(sf::Vector2<float> dim = {}, sf::Vector2<float> pos = {});
 	void set_hitbox(sf::Vector2<float> dim = {}, sf::Vector2<float> pos = {});
-	void move(sf::Vector2<float> distance);
+	void move(sf::Vector2<float> distance) const;
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return gravitator->collider.bounding_box.get_position(); }
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return gravitator->collider.physics.velocity; }
 	sf::Sprite sprite;

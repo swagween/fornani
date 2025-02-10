@@ -24,7 +24,7 @@ class AnimatedSprite {
 	void set_scale(sf::Vector2<float> scale);
 	void set_origin(sf::Vector2<float> origin);
 	void set_texture(sf::Texture& texture);
-	void random_start(automa::ServiceProvider& svc);
+	void random_start();
 	void handle_rotation(sf::Vector2<float> direction, int num_angles, bool radial = true);
 	void end();
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam, bool debug = false);

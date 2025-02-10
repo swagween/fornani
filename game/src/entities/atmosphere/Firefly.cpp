@@ -1,25 +1,26 @@
 #include "fornani/entities/atmosphere/Firefly.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
-#include "fornani/utils/Math.hpp"
 #include <numbers>
+#include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Math.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::vfx {
 
 Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_firefly, {9, 9}) {
 	physics.set_global_friction(0.99f);
 	physics.position = start;
-	physics.velocity = svc.random.random_vector_float(-1.f, 1.f);
+	physics.velocity = util::Random::random_vector_float(-1.f, 1.f);
 	sprite.push_params("invisible", {10, 1, 32, -1});
 	sprite.push_params("glowing", {0, 10, 24, 0});
 	sprite.set_params("invisible");
-	auto rand_time = svc.random.random_range(100, 500);
+	auto rand_time = util::Random::random_range(100, 500);
 	light = util::Cooldown(rand_time);
-	auto offset = svc.random.random_range(0, light.get_native_time());
+	auto offset = util::Random::random_range(0, light.get_native_time());
 	light.start(offset);
 	sprite.set_origin({4.5f, 4.5f});
-	variant = svc.random.percent_chance(60) ? 0 : svc.random.percent_chance(50) ? 1 : svc.random.percent_chance(50) ? 2 : 3;
-	if (variant == 0 && svc.random.percent_chance(30)) {
+	variant = util::Random::percent_chance(60) ? 0 : util::Random::percent_chance(50) ? 1 : util::Random::percent_chance(50) ? 2 : 3;
+	if (variant == 0 && util::Random::percent_chance(30)) {
 		trail = std::make_unique<flfx::SpriteHistory>();
 		trail.value()->set_sample_size(12);
 	}
@@ -28,7 +29,7 @@ Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprit
 void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
 	if (!svc.in_window(sprite.get_sprite_position(), sprite.get_dimensions())) { return; }
 	light.update();
-	steering.smooth_random_walk(svc, physics, 0.003f);
+	steering.smooth_random_walk(physics, 0.003f);
 	physics.simple_update();
 	map.wrap(physics.position);
 	if (light.is_complete()) {
@@ -60,4 +61,4 @@ void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	}
 }
 
-} // namespace vfx
+} // namespace fornani::vfx

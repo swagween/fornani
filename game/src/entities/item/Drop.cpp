@@ -1,6 +1,7 @@
 #include "fornani/entities/item/Drop.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::item {
 
@@ -34,28 +35,27 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 		sprite.push_params(param["label"].as_string(), a);
 	}
 	sprite.set_params("neutral", true);
-	sf::Vector2<int> dim{static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)};
+	sf::Vector2 const dim{static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)};
 	sprite.set_dimensions(dim);
 
 	// randomly seed the animation start frame so drops in the same loot animate out of sync
-	sprite.random_start(svc);
+	sprite.random_start();
 
-	auto rand_cooldown_offset = svc.random.random_range(0, 50);
-	auto rand_shine_offset = svc.random.random_range(0, 600);
+	auto rand_cooldown_offset = util::Random::random_range(0, 50);
+	auto const rand_shine_offset = util::Random::random_range(0, 600);
 	if (type == DropType::gem) { rand_cooldown_offset += 2000; }
 	lifespan.start(4500 + rand_cooldown_offset);
 	shine_cooldown.start(shine_cooldown.get_native_time() + rand_shine_offset);
 	delay.start(delay_time);
-	seed(svc, probability);
+	seed(probability);
 	set_value();
 	set_texture(svc);
 
 	sparkler.set_dimensions(drop_dimensions);
 }
 
-void Drop::seed(automa::ServiceProvider& svc, float probability) {
-	auto random_sample = svc.random.random_range_float(0.0f, 1.0f);
-	if (random_sample < probability * constants.priceless) {
+void Drop::seed(float probability) {
+	if (auto const random_sample = util::Random::random_range_float(0.0f, 1.0f); random_sample < probability * constants.priceless) {
 		rarity = priceless;
 	} else if (random_sample < probability * constants.rare) {
 		rarity = rare;
@@ -85,7 +85,7 @@ void Drop::set_value() {
 	case common: value = 1; break;
 	}
 
-	//gem
+	// gem
 	if (type == DropType::gem) { value = special_id; }
 }
 
@@ -185,4 +185,4 @@ bool Drop::is_completely_gone() const { return afterlife.is_complete() && lifesp
 
 bool Drop::is_inactive() const { return lifespan.is_complete() && !afterlife.is_complete(); }
 
-} // namespace item
+} // namespace fornani::item

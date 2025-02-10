@@ -5,10 +5,11 @@
 
 #include <tracy/Tracy.hpp>
 
+#include "fornani/utils/Random.hpp"
+
 namespace fornani::automa {
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
-	: GameState(svc, player, scene, room_number), map(svc, player, console), gui_map(svc, player, console){
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player, console), gui_map(svc, player, console) {
 	svc.menu_controller.reset_vendor_dialog();
 	open_vendor = false;
 	if (!svc.data.room_discovered(room_number)) {
@@ -161,7 +162,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	}
 
 	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items.empty()) {
-		svc.random.set_vendor_seed();
+		util::Random::set_vendor_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 		player->visit_history.clear();
 	}
@@ -188,7 +189,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	map.update(svc, console, inventory_window);
 
-	//if (map.camera_shake()) { camera.begin_shake(); }
+	// if (map.camera_shake()) { camera.begin_shake(); }
 	camera.center(player->get_camera_focus_point());
 	camera.update(svc);
 	camera.restrict_movement(map.real_dimensions);
@@ -260,7 +261,7 @@ void Dojo::toggle_pause_menu(ServiceProvider& svc) {
 }
 
 void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
-	for (auto& id : ids) {
+	for (auto const& id : ids) {
 		if (id == 0) { continue; } // intro
 		gui_map.clear();
 		if (svc.data.room_discovered(id)) {
@@ -271,4 +272,4 @@ void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
 	}
 }
 
-} // namespace automa
+} // namespace fornani::automa

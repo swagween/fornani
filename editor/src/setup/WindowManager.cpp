@@ -1,7 +1,7 @@
 #include "editor/setup/WindowManager.hpp"
 
 namespace pi {
-	
+
 void WindowManager::set() {
 
 	game_view = sf::View(sf::FloatRect({}, {static_cast<float>(dimensions.current.x), static_cast<float>(dimensions.current.y)}));
@@ -11,7 +11,7 @@ void WindowManager::set() {
 	game_view.setViewport(game_port);
 	window.setView(game_view);
 
-	screencap.resize(window.getSize());
+	if (!screencap.resize(window.getSize())) { NANI_LOG_WARN(m_logger, "Failed to resize screencap."); }
 	window.setVerticalSyncEnabled(true);
 	window.setFramerateLimit(60);
 	window.setKeyRepeatEnabled(false);
@@ -34,7 +34,9 @@ void WindowManager::create(std::string title, bool const fullscreen) {
 
 void WindowManager::restore_view() { window.setView(game_view); }
 
-void WindowManager::set_screencap() { screencap.resize(window.getSize()); }
+void WindowManager::set_screencap() {
+	if (!screencap.resize(window.getSize())) { NANI_LOG_WARN(m_logger, "Failed to resize screencap."); }
+}
 
 void WindowManager::resize() {
 	dimensions.current = window.getSize();

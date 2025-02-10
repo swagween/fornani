@@ -1,10 +1,12 @@
 #include "fornani/level/Breakable.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
-#include "fornani/particle/Effect.hpp"
 #include <algorithm>
 #include <cmath>
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::world {
 
@@ -19,7 +21,7 @@ void Breakable::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (destroyed()) { return; }
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = svc.random.random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
 	handle_collision(player.collider);
 }
 
@@ -39,7 +41,7 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	}
 }
 
-void Breakable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power) {
+void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj, int power) {
 	if (proj.transcendent()) { return; }
 	if (destroyed()) { return; }
 	if (!collider.vicinity.overlaps(proj.get_bounding_box())) { return; }
@@ -68,4 +70,4 @@ void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, int powe
 	}
 }
 
-} // namespace world
+} // namespace fornani::world

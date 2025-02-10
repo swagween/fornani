@@ -1,7 +1,8 @@
 #include "fornani/entities/enemy/catalog/Thug.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::enemy {
 
@@ -76,11 +77,11 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	player.collider.handle_collider_collision(secondary_collider);
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (svc.random.percent_chance(20) && !caution.danger()) { state = ThugState::run; }
+		if (util::Random::percent_chance(20) && !caution.danger()) { state = ThugState::run; }
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
-		if (m_services->random.percent_chance(50)) {
+		if (util::Random::percent_chance(50)) {
 			m_services->soundboard.flags.thug.set(audio::Thug::hurt_1);
 		} else {
 			m_services->soundboard.flags.thug.set(audio::Thug::hurt_2);
@@ -93,9 +94,7 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	hurt_effect.update();
 
 	if (hostility_triggered()) { state = ThugState::alert; }
-	if (hostile() && !hostility_triggered()) {
-		state = ThugState::run;
-	} // player is already in hostile range
+	if (hostile() && !hostility_triggered()) { state = ThugState::run; } // player is already in hostile range
 
 	if (just_died()) { m_services->soundboard.flags.thug.set(audio::Thug::death); }
 
@@ -162,10 +161,10 @@ fsm::StateFunction Thug::update_jump() {
 	return THUG_BIND(update_jump);
 }
 
-fsm::StateFunction Thug::update_alert() { 
+fsm::StateFunction Thug::update_alert() {
 	animation.label = "alert";
 	if (animation.just_started()) {
-		if (m_services->random.percent_chance(50)) {
+		if (util::Random::percent_chance(50)) {
 			m_services->soundboard.flags.thug.set(audio::Thug::alert_1);
 		} else {
 			m_services->soundboard.flags.thug.set(audio::Thug::alert_2);
@@ -214,4 +213,4 @@ bool Thug::change_state(ThugState next, anim::Parameters params) {
 	return false;
 }
 
-} // namespace enemy
+} // namespace fornani::enemy

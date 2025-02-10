@@ -2,6 +2,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::gui {
 
@@ -87,7 +88,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 				}
 			}
 		}
-		if(player.arsenal) {
+		if (player.arsenal) {
 			auto ctr{0};
 			for (auto& gun : player.arsenal.value().get_loadout()) {
 				ctr == selector.get_current_selection() ? gun->select() : gun->deselect();
@@ -106,7 +107,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && selector.get_section() == InventorySection::item) {
 				if (item_menu.is_open()) {
 					switch (item_menu.get_selection()) {
-					case 0: 
+					case 0:
 						if (selector.get_current_selection() < player_items.size()) { use_item(svc, player, map, player_items.at(selector.get_current_selection())); }
 						break;
 					case 1:
@@ -223,7 +224,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 		if (!player.catalog.categories.inventory.items.empty() && info.extended() && selector.get_section() == InventorySection::item) { selector.render(win); }
 		if (info.active()) { info.render(win); }
 		if (info.extended()) { info.write(win, true); }
-		//if (player.has_map()) { help_marker.render(win); }
+		// if (player.has_map()) { help_marker.render(win); }
 		item_menu.render(win);
 		wardrobe.render(svc, win, cam);
 	}
@@ -234,15 +235,14 @@ void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player)
 	update_table(player, true);
 	selector.switch_sections({0, 0});
 	flags.set(ConsoleFlags::active);
-	Console::begin();
+	begin();
 	info.begin();
 	wardrobe.update(svc, player);
-	auto& player_items = player.catalog.categories.inventory.items;
-	for (auto& item : player_items) {
-		auto randx = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.x);
-		auto randy = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.y);
-		auto top = svc.random.percent_chance(50);
-		auto startpos = top ? sf::Vector2<float>{randx, -ui.buffer} : sf::Vector2<float>{-ui.buffer, randy};
+	for (auto& player_items = player.catalog.categories.inventory.items; auto& item : player_items) {
+		auto const randx = util::Random::random_range_float(0.f, svc.constants.f_screen_dimensions.x);
+		auto const randy = util::Random::random_range_float(0.f, svc.constants.f_screen_dimensions.y);
+		auto const top = util::Random::percent_chance(50);
+		auto const startpos = top ? sf::Vector2{randx, -ui.buffer} : sf::Vector2{-ui.buffer, randy};
 		item.gravitator.set_position(startpos);
 	}
 }
@@ -250,16 +250,18 @@ void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player)
 void InventoryWindow::update_wardrobe(automa::ServiceProvider& svc, player::Player& player) { wardrobe.update(svc, player); }
 
 void InventoryWindow::close() {
-	Console::end();
+	end();
 	info.end();
 }
 
 void InventoryWindow::select() {
-	//item_menu.open(*m_services, selector.get_menu_position());
-	//m_services->soundboard.flags.console.set(audio::Console::menu_open);
+	// TODO: Maybe remove this or actually implement it?
+	// item_menu.open(*m_services, selector.get_menu_position());
+	// m_services->soundboard.flags.console.set(audio::Console::menu_open);
 }
 
-void InventoryWindow::cancel() { //item_menu.close(*m_services); 
+void InventoryWindow::cancel() { // item_menu.close(*m_services);
+								 // TODO: Maybe remove this or actually implement it?
 }
 
 void InventoryWindow::move(player::Player& player, sf::Vector2<int> direction, bool has_arsenal) {
@@ -277,8 +279,9 @@ void InventoryWindow::move(player::Player& player, sf::Vector2<int> direction, b
 void InventoryWindow::use_item(automa::ServiceProvider& svc, player::Player& player, world::Map& map, item::Item& item) {
 	if (!item.usable() && !item.equippable()) { return; }
 
-	//special cases
+	// special cases
 	switch (item.get_id()) {
+	default:
 	case 16:
 		switch_modes(svc);
 		svc.soundboard.flags.menu.set(audio::Menu::select);
@@ -291,7 +294,7 @@ void InventoryWindow::use_item(automa::ServiceProvider& svc, player::Player& pla
 		break;
 	}
 
-	//equippables
+	// equippables
 	if (item.equippable()) {
 		if (item.is_equipped()) {
 			player.unequip_item(item.get_apparel_type(), item.get_id());
@@ -301,7 +304,7 @@ void InventoryWindow::use_item(automa::ServiceProvider& svc, player::Player& pla
 		svc.soundboard.flags.item.set(audio::Item::equip);
 		wardrobe.update(svc, player);
 	}
-	
+
 	item_menu.close(svc);
 	update_table(player, item.depleted());
 }
@@ -341,4 +344,4 @@ void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 }
 
-} // namespace gui
+} // namespace fornani::gui

@@ -1,5 +1,6 @@
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::entity {
 
@@ -7,7 +8,7 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 	auto framerate{16};
 	switch (index) {
 	case 0:
-		//smoke
+		// smoke
 		sprite_dimensions = {36, 36};
 		spritesheet_dimensions = {4, 7};
 		break;
@@ -26,7 +27,7 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		spritesheet_dimensions = {4, 10};
 		break;
 	case 4:
-		//spawn
+		// spawn
 		sprite.setOrigin({16.f, 16.f});
 		sprite_dimensions = {32, 32};
 		spritesheet_dimensions = {1, 4};
@@ -42,13 +43,13 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		spritesheet_dimensions = {1, 4};
 		break;
 	case 7:
-		//smoke puff
+		// smoke puff
 		sprite.setOrigin({16.f, 16.f});
 		sprite_dimensions = {32, 32};
 		spritesheet_dimensions = {4, 4};
 		break;
 	case 8:
-		//bullet hit
+		// bullet hit
 		sprite.setOrigin({16.f, 16.f});
 		sprite_dimensions = {32, 32};
 		spritesheet_dimensions = {4, 4};
@@ -73,11 +74,11 @@ Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2
 		framerate = 32;
 		break;
 	}
-	if(reflections.x == 1) {
-		if (svc.random.percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
+	if (reflections.x == 1) {
+		if (util::Random::percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
 	}
 	if (reflections.y == 1) {
-		if (svc.random.percent_chance(50)) { sprite.setScale({1.f, -1.f}); }
+		if (util::Random::percent_chance(50)) { sprite.setScale({1.f, -1.f}); }
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
 	drawbox.setFillColor(sf::Color::Transparent);
@@ -109,4 +110,4 @@ void Effect::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 void Effect::rotate() { sprite.rotate(sf::degrees(90)); }
 
-} // namespace vfx
+} // namespace fornani::entity

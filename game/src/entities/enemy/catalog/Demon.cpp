@@ -1,7 +1,8 @@
 #include "fornani/entities/enemy/catalog/Demon.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::enemy {
 
@@ -26,7 +27,7 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 	attacks.rush.origin = {20.f, 16.f};
 	attacks.rush.hit_offset = {0.f, 0.f};
 
-	variant = svc.random.percent_chance(50) ? DemonVariant::spearman : DemonVariant::warrior;
+	variant = util::Random::percent_chance(50) ? DemonVariant::spearman : DemonVariant::warrior;
 	if (variant == DemonVariant::spearman) { health.set_max(56); }
 
 	cooldowns.awaken.start();
@@ -64,7 +65,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	if (state == DemonState::rush && attacks.rush.sensor.active() && !cooldowns.rush_hit.running()) {
 		auto sign = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
 		if ((sign == -1.f && player_behind(player)) || (sign == 1.f && !player_behind(player))) {
-			//player.hurt(1);
+			// player.hurt(1);
 			player.accumulated_forces.push_back({sign * 2.f, -2.f});
 			attacks.rush.sensor.deactivate();
 			cooldowns.rush_hit.start();
@@ -98,10 +99,10 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	if (player.collider.hurtbox.overlaps(secondary_collider.bounding_box) && !is_dormant()) { player.hurt(); }
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (svc.random.percent_chance(4) && !caution.danger()) { state = DemonState::run; }
+		if (util::Random::percent_chance(4) && !caution.danger()) { state = DemonState::run; }
 	}
 
-	if(flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
+	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.demon.set(audio::Demon::hurt);
 		sound.hurt_sound_cooldown.start();
 		hurt_effect.start(128);
@@ -110,12 +111,10 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 
 	hurt_effect.update();
 	if (hostile() && !cooldowns.post_rush.running()) { state = DemonState::signal; }
-	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) {
-		state = DemonState::jumpsquat;
-	} // player is already in hostile range
+	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = DemonState::jumpsquat; } // player is already in hostile range
 
 	if (alert() && !hostile() && svc.ticker.every_x_ticks(32)) {
-		if (svc.random.percent_chance(50)) {
+		if (util::Random::percent_chance(50)) {
 			state = DemonState::run;
 		} else {
 			state = DemonState::jumpsquat;
@@ -186,7 +185,7 @@ fsm::StateFunction Demon::update_jump() {
 	animation.label = "jump";
 	if (animation.just_started()) {
 		cooldowns.jump.start();
-		rand_jump = m_services->random.percent_chance(50) ? -1.f : 1.f;
+		rand_jump = util::Random::percent_chance(50) ? -1.f : 1.f;
 		if (cooldowns.post_rush.running()) { rand_jump = directions.actual.lr == dir::LR::left ? 1.f : -1.f; } // always jump backwards after a rush otherwise it feels unfair
 	}
 	if (cooldowns.jump.running()) { collider.physics.apply_force({0, -2.5f}); }
@@ -202,11 +201,9 @@ fsm::StateFunction Demon::update_jump() {
 	return DEMON_BIND(update_jump);
 }
 
-fsm::StateFunction Demon::update_signal() { 
+fsm::StateFunction Demon::update_signal() {
 	animation.label = "signal";
-	if (animation.just_started()) {
-		m_services->soundboard.flags.demon.set(audio::Demon::signal);
-	}
+	if (animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::signal); }
 	shake();
 	if (animation.complete()) {
 		if (directions.actual.lr != directions.desired.lr) {
@@ -285,4 +282,4 @@ bool Demon::change_state(DemonState next, anim::Parameters params) {
 	return false;
 }
 
-} // namespace enemy
+} // namespace fornani::enemy
