@@ -1,5 +1,5 @@
 #include "fornani/core/CrashHandler.hpp"
-#include "fornani/io/ExeHelpers.hpp"
+#include "fornani/io/PathHelpers.hpp"
 #include "launcher/LauncherApplication.hpp"
 
 #include <steam/steam_api.h>

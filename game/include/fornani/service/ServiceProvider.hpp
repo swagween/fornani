@@ -35,29 +35,33 @@ struct PlayerDat {
 struct MapDebug {
 	int active_projectiles{};
 };
+// TODO: Honestly the entire ServiceProvider needs to go but it's gonna be a slow process of eliminating it.
+/*
+ * Here
+ */
 struct ServiceProvider {
 	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
 
-	util::Stopwatch stopwatch{};
+	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
 	data::TextManager text;
 	data::DataManager data;
-	Version* version;
-	WindowManager* window;
+	Version* version;	   // TODO: Remove. Make Free-Standing.
+	WindowManager* window; // TODO: Move this into the Application class and make it into a MonoInstance
 	asset::AssetManager assets;
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::BitFlags<AppFlags> app_flags{};
 	util::BitFlags<StateFlags> state_flags{};
-	util::Ticker ticker{};
+	util::Ticker ticker{}; // TODO: Remove. Make Free-Standing. This one is gonna be hard to remove as the underlying logic needs to change for many functions.
 	WorldClock world_clock{};
-	util::Constants constants{};
+	util::Constants constants{}; // TODO: Remove. Make Free-Standing.
 	StateController state_controller{};
 	MenuController menu_controller{};
-	audio::Soundboard soundboard{*this};
-	audio::MusicPlayer music{};
+	audio::Soundboard soundboard{*this}; // TODO: Remove. Make Free-Standing. Maybe?
+	audio::MusicPlayer music{};			 // TODO: Remove. Make Free-Standing. Maybe?
 	QuestTracker quest{};
 	StatTracker stats{};
 	PlayerDat player_dat{};
@@ -69,6 +73,7 @@ struct ServiceProvider {
 	// debug stuff
 	int out_value{};
 
+	// TODO: Much of this honestly should be handled by different areas of the project instead of by the ServiceProvider.
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
 	void toggle_debug() { debug_mode() ? debug_flags.reset(DebugFlags::debug_mode) : debug_flags.set(DebugFlags::debug_mode); }

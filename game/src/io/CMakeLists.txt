@@ -1,4 +1,4 @@
 nani_add_sources(
-        ExeHelpers.cpp
+        PathHelpers.cpp
         Logger.cpp
 )

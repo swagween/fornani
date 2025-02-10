@@ -11,7 +11,7 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "fornani/utils/FixedString.hpp"
+#include "fornani/ftl/FixedString.hpp"
 
 namespace fornani::util {
 struct AppLog {
