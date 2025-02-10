@@ -6,6 +6,8 @@
 
 namespace fornani::core {
 
+// TODO: This needs a lot of work, but it's a start.
+
 /**
  * @brief Structure holding crash details.
  *
