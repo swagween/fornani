@@ -16,8 +16,8 @@ Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "arch
 	directions.movement.lr = dir::LR::neutral;
 
 	variant = util::Random::percent_chance(70) ? ArcherVariant::huntress : ArcherVariant::defender;
-	parts.bow.sprite.setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
-	parts.bow.sprite.setOrigin({32.f, 32.f});
+	parts.bow.sprite->setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
+	parts.bow.sprite->setOrigin({32.f, 32.f});
 }
 
 void Archer::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -128,11 +128,11 @@ fsm::StateFunction Archer::update_jump() {
 
 fsm::StateFunction Archer::update_shoot() {
 	auto bow_frame = animation.frame_timer.get_cooldown() >= animation.params.framerate / 2 ? 1 : 2;
-	parts.bow.sprite.setTextureRect(sf::IntRect{{82 * bow_frame, 0}, bow_dimensions});
+	parts.bow.sprite->setTextureRect(sf::IntRect{{82 * bow_frame, 0}, bow_dimensions});
 	if (animation.complete()) {
 		state = ArcherState::idle;
 		animation.set_params(idle);
-		parts.bow.sprite.setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
+		parts.bow.sprite->setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
 		return ARCHER_BIND(update_idle);
 	}
 	state = ArcherState::shoot;

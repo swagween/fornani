@@ -26,8 +26,8 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	if (variant == CasterVariant::apprentice) { flags.general.reset(GeneralFlags::rare_drops); }
 
 	cooldowns.awaken.start();
-	parts.scepter.sprite.setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
-	parts.wand.sprite.setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
+	parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
+	parts.wand.sprite->setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
 }
 
 void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -196,12 +196,12 @@ fsm::StateFunction Caster::update_signal() {
 	animation.label = "signal";
 	if (animation.just_started()) {
 		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
-		parts.scepter.sprite.rotate(sf::degrees(90.f) * sign);
+		parts.scepter.sprite->rotate(sf::degrees(90.f) * sign);
 		cooldowns.rapid_fire.start(208);
 	}
 	if (m_services->ticker.every_x_ticks(20)) { flash.update(); }
-	parts.scepter.sprite.setTextureRect(sf::IntRect{{0, 20 + 20 * flash.get_alternator()}, scepter_dimensions});
-	parts.wand.sprite.setTextureRect(sf::IntRect{{0, 62 + 62 * flash.get_alternator()}, wand_dimensions});
+	parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 20 + 20 * flash.get_alternator()}, scepter_dimensions});
+	parts.wand.sprite->setTextureRect(sf::IntRect{{0, 62 + 62 * flash.get_alternator()}, wand_dimensions});
 	if (variant == CasterVariant::tyrant) { cooldowns.rapid_fire.update(); }
 	if (cooldowns.rapid_fire.is_almost_complete()) {
 		m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);
@@ -209,10 +209,10 @@ fsm::StateFunction Caster::update_signal() {
 		m_services->soundboard.flags.weapon.set(audio::Weapon::energy_ball);
 	}
 	if (animation.complete()) {
-		parts.scepter.sprite.setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
-		parts.wand.sprite.setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
+		parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
+		parts.wand.sprite->setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
 		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
-		parts.scepter.sprite.rotate(sf::degrees(-90.f) * sign);
+		parts.scepter.sprite->rotate(sf::degrees(-90.f) * sign);
 		cooldowns.post_cast.start();
 		if (variant == CasterVariant::apprentice) {
 			m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);

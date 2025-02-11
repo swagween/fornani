@@ -17,6 +17,10 @@
       "label": "vent.json"
     },
     {
+      "room_id": 2665,
+      "label": "arena.json"
+    },
+    {
       "room_id": 295,
       "label": "brick.json"
     },
