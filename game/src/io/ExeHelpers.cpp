@@ -18,7 +18,7 @@ namespace fornani::io {
 
 auto abs_exe_path() -> std::filesystem::path {
 #if defined(_WIN32) || defined(_WIN64)
-	std::array<wchar_t, FILENAME_MAX> path = {0};
+	std::array<wchar_t, FILENAME_MAX> path = {};
 	if (GetModuleFileNameW(nullptr, path.data(), FILENAME_MAX) == 0) { throw std::runtime_error("Failed to get executable path on Windows."); }
 	return {path.data()};
 
