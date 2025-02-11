@@ -1,6 +1,8 @@
+
 #include "fornani/entities/packages/Attack.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
+
 #include <algorithm>
 
 namespace fornani::entity {
@@ -24,5 +26,9 @@ void Attack::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	sensor.render(win, cam);
 	hit.render(win, cam);
 }
+
+void Attack::enable() { hit.activate(); }
+
+void Attack::disable() { hit.deactivate(); }
 
 } // namespace entity

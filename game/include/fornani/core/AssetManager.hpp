@@ -76,6 +76,10 @@ class AssetManager {
 	sf::Texture t_archer_arrow{};
 	sf::Texture t_beamstalk{};
 	sf::Texture t_meatsquash{};
+	sf::Texture t_fork_imp{};
+	sf::Texture t_knife_imp{};
+	sf::Texture t_imp_fork{};
+	sf::Texture t_imp_knife{};
 
 	// gui
 	sf::Texture t_ui{};

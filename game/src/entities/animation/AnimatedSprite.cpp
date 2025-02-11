@@ -24,7 +24,7 @@ void AnimatedSprite::set_params(std::string_view label, bool force) {
 	if (params.contains(label)) {
 		animation.set_params(params.at(label), force);
 	} else {
-		std::cout << "Invalid animation parameterization request in AnimatedSprite.cpp\n";
+		std::cout << "Invalid animation parameterization request in AnimatedSprite.cpp with label <" + std::string{label} + ">\n";
 	}
 }
 

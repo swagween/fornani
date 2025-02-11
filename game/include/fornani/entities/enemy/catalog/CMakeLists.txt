@@ -7,6 +7,7 @@ nani_add_headers(
         Eyebot.hpp
         Frdog.hpp
         Hauler.hpp
+        Imp.hpp
         Meatsquash.hpp
         Tank.hpp
         Thug.hpp

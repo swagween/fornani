@@ -15,6 +15,8 @@ class Attack {
 	void set_position(sf::Vector2<float> position);
 	void handle_player(player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void enable();
+	void disable();
 
 	components::CircleSensor sensor{};
 	components::CircleSensor hit{};

@@ -1,6 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "fornani/particle/Gravitator.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+
+#include <vector>
 
 namespace fornani::player {
 class Player;
@@ -14,7 +17,9 @@ namespace fornani::entity {
 
 class FloatingPart {
   public:
-	FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset);
+	FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset = {});
+	FloatingPart(sf::Texture& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2<float> offset = {});
+	FloatingPart(sf::Color color, sf::Vector2f dimensions, float force, float friction, sf::Vector2<float> offset = {});
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, dir::Direction direction, sf::Vector2<float> scale, sf::Vector2<float> position);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos) { gravitator->set_position(pos); }
@@ -24,7 +29,8 @@ class FloatingPart {
 	void move(sf::Vector2<float> distance);
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return gravitator->collider.bounding_box.get_position(); }
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return gravitator->collider.physics.velocity; }
-	sf::Sprite sprite;
+	std::optional<sf::Sprite> sprite{};
+	std::optional<anim::AnimatedSprite> animated_sprite{};
 
   private:
 	std::unique_ptr<vfx::Gravitator> gravitator{};
@@ -37,6 +43,8 @@ class FloatingPart {
 		float magnitude{4.f};
 	} movement{};
 	bool init{};
+	bool textured{};
+	std::optional<sf::RectangleShape> drawbox{};
 	std::optional<shape::Shape> hitbox{};
 	std::optional<shape::Shape> shieldbox{};
 	sf::RectangleShape debugbox{};

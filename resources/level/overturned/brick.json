@@ -7224,5 +7224,30 @@
     },
     "middleground": 2
   },
-  "entities": null
+  "entities": {
+    "enemies": [
+      {
+        "id": 8,
+        "position": [
+          12,
+          18
+        ],
+        "dimensions": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": 8,
+        "position": [
+          20,
+          19
+        ],
+        "dimensions": [
+          1,
+          1
+        ]
+      }
+    ]
+  }
 }
