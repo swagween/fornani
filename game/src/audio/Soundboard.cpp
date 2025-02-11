@@ -1,11 +1,11 @@
 #include "fornani/audio/Soundboard.hpp"
-#include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::audio {
 
 Soundboard::Soundboard(automa::ServiceProvider& /*svc*/) {
-	//for (int i{0}; i < 64; ++i) { sound_pool.push_back(Sound(svc.assets.click_buffer)); }
+	// for (int i{0}; i < 64; ++i) { sound_pool.push_back(Sound(svc.assets.click_buffer)); }
 }
 
 void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int echo_rate) {
@@ -39,12 +39,9 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 
 	// world
 	if (flags.world.test(World::load)) { play(svc, svc.assets.load_buffer, 0.f, 40.f); }
-	if (flags.world.test(World::save)) { play(svc, svc.assets.save_buffer);
-	}
-	if (flags.world.test(World::soft_sparkle)) { play(svc, svc.assets.soft_sparkle_buffer);
-	}
-	if (flags.world.test(World::soft_sparkle_high)) { play(svc, svc.assets.soft_sparkle_high_buffer);
-	}
+	if (flags.world.test(World::save)) { play(svc, svc.assets.save_buffer); }
+	if (flags.world.test(World::soft_sparkle)) { play(svc, svc.assets.soft_sparkle_buffer); }
+	if (flags.world.test(World::soft_sparkle_high)) { play(svc, svc.assets.soft_sparkle_high_buffer); }
 	if (flags.world.test(World::chest)) { play(svc, svc.assets.chest_buffer, 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::breakable_shatter)) { play(svc, svc.assets.shatter_buffer, 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::breakable_hit)) { play(svc, svc.assets.b_breakable_hit, 0.1f); }
@@ -64,8 +61,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 	if (flags.world.test(World::soft_tap)) { play(svc, svc.assets.b_soft_tap, 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::thud)) { play(svc, svc.assets.b_thud, 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::small_crash)) { play(svc, svc.assets.b_small_crash, 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
-	if (flags.world.test(World::switch_press)) { play(svc, svc.assets.b_switch_press, 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate);
-	}
+	if (flags.world.test(World::switch_press)) { play(svc, svc.assets.b_switch_press, 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::block_toggle)) { play(svc, svc.assets.b_block_toggle, 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::door_open)) { play(svc, svc.assets.b_door_open, 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::door_unlock)) { play(svc, svc.assets.b_door_unlock); }
@@ -77,15 +73,13 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 	if (flags.tank.test(Tank::alert_1)) { play(svc, svc.assets.tank_alert1_buffer); }
 	if (flags.tank.test(Tank::alert_2)) { play(svc, svc.assets.tank_alert2_buffer); }
 	if (flags.tank.test(Tank::hurt_1)) { play(svc, svc.assets.tank_hurt1_buffer); }
-	if (flags.tank.test(Tank::hurt_2)) { play(svc, svc.assets.tank_hurt2_buffer, 0.f, 50.f);
-	}
+	if (flags.tank.test(Tank::hurt_2)) { play(svc, svc.assets.tank_hurt2_buffer, 0.f, 50.f); }
 	if (flags.tank.test(Tank::death)) { play(svc, svc.assets.tank_death_buffer); }
 	// thug
 	if (flags.thug.test(Thug::alert_1)) { play(svc, svc.assets.tank_alert1_buffer); }
 	if (flags.thug.test(Thug::alert_2)) { play(svc, svc.assets.tank_alert2_buffer); }
 	if (flags.thug.test(Thug::hurt_1)) { play(svc, svc.assets.tank_hurt1_buffer); }
-	if (flags.thug.test(Thug::hurt_2)) { play(svc, svc.assets.tank_hurt2_buffer, 0.f, 50.f);
-	}
+	if (flags.thug.test(Thug::hurt_2)) { play(svc, svc.assets.tank_hurt2_buffer, 0.f, 50.f); }
 	if (flags.thug.test(Thug::death)) { play(svc, svc.assets.tank_death_buffer); }
 
 	// demon
@@ -161,7 +155,7 @@ void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequenc
 }
 
 void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2<float> distance) {
-	auto random_pitch = random_pitch_offset == 0.f ? 0.f : svc.random.random_range_float(-random_pitch_offset, random_pitch_offset);
+	auto random_pitch = random_pitch_offset == 0.f ? 0.f : util::Random::random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.set_pitch(1.f + random_pitch);
 	sound.set_volume(vol);
 	auto scalar = util::magnitude(distance) / attenuation;
@@ -184,4 +178,4 @@ void Soundboard::play_step(int tile_value, int style_id, bool land) {
 
 auto Soundboard::number_of_playng_sounds() -> int { return static_cast<int>(sound_pool.size()); }
 
-} // namespace audio
+} // namespace fornani::audio

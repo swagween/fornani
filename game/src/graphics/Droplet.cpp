@@ -1,8 +1,10 @@
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/graphics/Droplet.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 
 #include <numbers>
+
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::vfx {
 
@@ -22,15 +24,15 @@ void Droplet::update(automa::ServiceProvider& svc, world::Map& map, bool collisi
 		collider.handle_map_collision(map);
 		collider.physics.acceleration = {};
 	}
-	auto slope = position() - collider.physics.previous_position;
-	auto mag = util::magnitude(slope);
-	auto adjacent = collider.physics.previous_position.x - position().x;
+	auto const slope = position() - collider.physics.previous_position;
+	auto const mag = util::magnitude(slope);
+	auto const adjacent = collider.physics.previous_position.x - position().x;
 	angle = static_cast<float>(tan(adjacent / mag) * 180.0 / std::numbers::pi);
 	if (collider.collided() && collision) {
 		decay();
 		collider.physics.velocity.x *= 0.9f;
 	} else {
-		auto offset = svc.random.random_range_float(0.f, static_cast<float>(std::numbers::pi));
+		auto const offset = util::Random::random_range_float(0.f, static_cast<float>(std::numbers::pi));
 		collider.physics.position.x += sin(counter.get_count() * 0.01f + offset) * params.sway;
 	}
 }
@@ -39,4 +41,4 @@ void Droplet::decay() {
 	if (!post_collision.running()) { post_collision.start(); }
 }
 
-} // namespace vfx
+} // namespace fornani::vfx

@@ -2,10 +2,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/graphics/CameraController.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -22,7 +22,7 @@ constexpr int CY_OFFSET = 60;
 
 constexpr int border_buffer{32};
 
-enum class CamFlags { shake };
+enum class CamFlags : uint8_t { shake };
 
 class Camera {
   public:
@@ -40,7 +40,7 @@ class Camera {
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return display_position; }
 	[[nodiscard]] auto within_frame(int x, int y) const -> bool { return (x > 0) && (x < screen_dimensions.x + border_buffer) && (y > 0) && (y < screen_dimensions.y + border_buffer); }
 
-	private:
+  private:
 	vfx::Gravitator gravitator{};
 	sf::Vector2<int> screen_dimensions{};
 	sf::RectangleShape bounding_box{};
@@ -59,4 +59,4 @@ class Camera {
 	} shake{};
 };
 
-} // namespace cam
+} // namespace fornani

@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <numbers>
 
+#include "fornani/utils/Random.hpp"
+
 namespace fornani::entity {
 
 FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset) : sprite{tex}, textured{true}, init{true} {
@@ -57,7 +59,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	actual = direction.lr == dir::LR::left ? position + left : position + right;
 	movement.time += movement.rate;
-	auto tweak = movement.magnitude * std::sin(movement.time);
+	auto const tweak = movement.magnitude * std::sin(movement.time);
 	if (tweak == 0.f) { movement.time = 0.f; }
 	actual.y += tweak;
 	gravitator->set_target_position(actual);
@@ -116,6 +118,6 @@ void FloatingPart::set_hitbox(sf::Vector2<float> dim, sf::Vector2<float> pos) {
 	hitbox.value().set_position(pos);
 }
 
-void FloatingPart::move(sf::Vector2<float> distance) { gravitator->set_target_position(gravitator->position() + distance); }
+void FloatingPart::move(sf::Vector2<float> distance) const { gravitator->set_target_position(gravitator->position() + distance); }
 
-} // namespace entity
+} // namespace fornani::entity

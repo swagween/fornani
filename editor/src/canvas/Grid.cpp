@@ -31,11 +31,12 @@ void Grid::match(Grid& other) {
 	}
 }
 
-sf::Vector2<uint32_t> Grid::first_available_ground() {
-	for (auto& cell : cells) {
+sf::Vector2<uint32_t> Grid::first_available_ground() const {
+	for (auto const& cell : cells) {
 		if (static_cast<std::size_t>(cell.one_d_index + dimensions.x) >= cells.size()) { return sf::Vector2u{}; }
-		if (cell.value == 0 && cells.at(static_cast<std::size_t>(cell.one_d_index + dimensions.x)).is_solid()) { return sf::Vector2u{cell.grid_position()}; }
+		if (cell.value == 0 && cells.at(cell.one_d_index + dimensions.x).is_solid()) { return sf::Vector2u{cell.grid_position()}; }
 	}
+	return sf::Vector2u{};
 }
 
 } // namespace pi

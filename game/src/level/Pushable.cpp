@@ -1,10 +1,12 @@
 #include "fornani/level/Pushable.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
-#include "fornani/particle/Effect.hpp"
 #include <algorithm>
 #include <cmath>
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::world {
 
@@ -27,13 +29,13 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, in
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = svc.random.random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
 	weakened.update();
 	if (weakened.is_complete()) { hit_count.start(); }
 	player.on_crush(map);
 	for (auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
 
-	//reset position if it's far away, and if the player isn't overlapping the start position
+	// reset position if it's far away, and if the player isn't overlapping the start position
 	if (hit_count.get_count() > 2 || map.off_the_bottom(collider.physics.position)) {
 		bool can_respawn = true;
 		if (player.collider.bounding_box.overlaps(start_box)) { can_respawn = false; }
@@ -47,7 +49,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		hit_count.start();
 	}
 
-	//player pushes block
+	// player pushes block
 	if (player.collider.wallslider.overlaps(collider.bounding_box) && player.pushing()) {
 		if (player.controller.moving_left() && player.collider.physics.position.x > collider.physics.position.x) { collider.physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.collider.physics.position.x < collider.physics.position.x) { collider.physics.acceleration.x = speed / mass; }
@@ -56,8 +58,8 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		state.set(PushableState::moving);
 	}
 
-	//debug
-	if(state.test(PushableState::moved)) {
+	// debug
+	if (state.test(PushableState::moved)) {
 		/*if (svc.ticker.every_x_ticks(400)) {
 			std::cout << "X: " << collider.physics.position.x << "\n";
 			std::cout << "Y: " << collider.physics.position.y << "\n";
@@ -80,19 +82,19 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (abs(collider.physics.forced_momentum.x) > 0.1f || abs(collider.physics.forced_momentum.y) > 0.1f) { set_moving(); }
 	collider.physics.impart_momentum();
 	if (!collider.has_jump_collision()) { collider.physics.forced_momentum = {}; }
-	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { collider.physics.forced_momentum = {}; }
+	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) {
+		collider.physics.forced_momentum = {};
+	}
 	collider.update(svc);
 	collider.detect_map_collision(map);
 	for (auto& other : map.pushables) {
 		if (&other == this) { continue; }
 		if (other.collider.wallslider.overlaps(collider.bounding_box)) {
-			if (collider.pushes(other.collider)) {
-				other.collider.physics.velocity.x = collider.physics.velocity.x * 2.f;
-			}
+			if (collider.pushes(other.collider)) { other.collider.physics.velocity.x = collider.physics.velocity.x * 2.f; }
 		}
 		collider.handle_collider_collision(other.collider.bounding_box);
 	}
-	//for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
+	// for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
@@ -117,7 +119,7 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	if (abs(random_offset.x) > 0.f || abs(random_offset.y) > 0.f) { snap = collider.physics.position; } // don't snap if shaking
 	if (abs(collider.physics.velocity.x) > 0.1f || abs(collider.physics.velocity.y) > 0.1f) { set_moving(); }
 	if (is_moving()) { snap = collider.physics.position; } // don't snap if moving
-	state.reset(PushableState::moving); // we only use this flag for rendering
+	state.reset(PushableState::moving);					   // we only use this flag for rendering
 	sprite.setPosition(snap - cam + random_offset - sprite_offset);
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
@@ -154,4 +156,4 @@ void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
 	map.effects.push_back(entity::Effect(svc, collider.physics.position + offset, {}, 0, index));
 }
 
-} // namespace world
+} // namespace fornani::world

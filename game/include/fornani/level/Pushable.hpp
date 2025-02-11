@@ -18,8 +18,8 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class PushableAttributes { bulletproof };
-enum class PushableState { moved, moving };
+enum class PushableAttributes : uint8_t { bulletproof };
+enum class PushableState : uint8_t { moved, moving };
 
 class Pushable {
   public:
@@ -32,8 +32,8 @@ class Pushable {
 	void set_moving() { state.set(PushableState::moving); }
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
-	[[nodiscard]] auto unmoved() { return !state.test(PushableState::moved); }
-	[[nodiscard]] auto is_moving() { return state.test(PushableState::moving); }
+	[[nodiscard]] auto unmoved() const { return !state.test(PushableState::moved); }
+	[[nodiscard]] auto is_moving() const { return state.test(PushableState::moving); }
 	shape::Collider collider{};
 	shape::Shape start_box{};
 
@@ -55,4 +55,4 @@ class Pushable {
 	util::Counter hit_count{};
 	util::Cooldown weakened{64};
 };
-} // namespace world
+} // namespace fornani::world

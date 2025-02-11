@@ -1,11 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/particle/Gravitator.hpp"
-#include "Portrait.hpp"
-#include "Selector.hpp"
 #include "Console.hpp"
 #include "MiniMenu.hpp"
+#include "Portrait.hpp"
+#include "Selector.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/particle/Gravitator.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -21,8 +21,8 @@ class Transition;
 }
 
 namespace fornani::gui {
-enum class VendorDialogStatus { opened, made_sale };
-enum class VendorState { sell, buy };
+enum class VendorDialogStatus : uint8_t { opened, made_sale };
+enum class VendorState : uint8_t { sell, buy };
 class VendorDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
@@ -30,11 +30,12 @@ class VendorDialog {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map);
 	void close();
 	void update_table(player::Player& player, world::Map& map, bool new_dim);
-	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
+	void refresh(player::Player& player, world::Map& map) const;
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
 	[[nodiscard]] auto made_profit() const -> bool { return balance > 0.f; }
 	[[nodiscard]] auto opening() const -> bool { return intro.running() || bring_in_cooldown.running(); }
+
   private:
 	struct {
 		Selector buy;
@@ -78,4 +79,4 @@ class VendorDialog {
 	} orb;
 };
 
-} // namespace gui
+} // namespace fornani::gui

@@ -5,12 +5,12 @@
 
 namespace fornani::automa {
 
-class StatSheet : public GameState {
+class StatSheet final : public GameState {
   public:
 	StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
-	void tick_update(ServiceProvider& svc);
-	void frame_update(ServiceProvider& svc);
-	void render(ServiceProvider& svc, sf::RenderWindow& win);
+	void tick_update(ServiceProvider& svc) override;
+	void frame_update(ServiceProvider& svc) override;
+	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 
   private:
 	sf::Text title;
@@ -19,4 +19,4 @@ class StatSheet : public GameState {
 	util::Cooldown loading{2};
 };
 
-} // namespace automa
+} // namespace fornani::automa

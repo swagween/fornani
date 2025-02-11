@@ -189,4 +189,4 @@ class Minigus : public Enemy, public npc::NPC {
 	bool change_state(MinigusState next, anim::Parameters params);
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

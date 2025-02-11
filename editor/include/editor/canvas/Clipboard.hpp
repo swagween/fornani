@@ -5,13 +5,13 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <cassert>
 #include <optional>
 #include <vector>
-#include <cassert>
 
 namespace pi {
 
-enum class SelectMode { none, select, clipboard };
+enum class SelectMode : uint8_t { none, select, clipboard };
 
 class Canvas;
 class Tool;

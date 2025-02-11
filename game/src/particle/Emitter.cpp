@@ -1,5 +1,6 @@
 #include "fornani/particle/Emitter.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::vfx {
 
@@ -10,7 +11,7 @@ Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::
 	variables.rate = in_data["rate"].as<float>();
 	particle_dimensions.x = in_data["dimensions"][0].as<float>();
 	particle_dimensions.y = in_data["dimensions"][1].as<float>();
-	
+
 	cooldown = util::Cooldown(variables.load);
 	cooldown.start();
 	drawbox.setFillColor(sf::Color::Transparent);
@@ -22,9 +23,9 @@ Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::
 void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 	cooldown.update();
 	if (cooldown.is_complete()) { deactivate(); }
-	if (active && (svc.random.percent_chance(variables.rate) || particles.empty())) {
-		auto x = svc.random.random_range_float(0.f, dimensions.x);
-		auto y = svc.random.random_range_float(0.f, dimensions.y);
+	if (active && (util::Random::percent_chance(variables.rate) || particles.empty())) {
+		auto x = util::Random::random_range_float(0.f, dimensions.x);
+		auto y = util::Random::random_range_float(0.f, dimensions.y);
 		sf::Vector2<float> point{position.x + x, position.y + y};
 		particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
 	}
@@ -46,4 +47,4 @@ void Emitter::set_dimensions(sf::Vector2<float> dim) { dimensions = dim; }
 
 void Emitter::deactivate() { active = false; }
 
-} // namespace vfx
+} // namespace fornani::vfx

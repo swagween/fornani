@@ -1,22 +1,21 @@
 
 #pragma once
 
-#include <cstdio>
-#include "fornani/utils/BitFlags.hpp"
-#include "Projectile.hpp"
-#include "Ammo.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
 #include <optional>
+#include "Ammo.hpp"
+#include "Projectile.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::arms {
 
-enum class WeaponState { unlocked, equipped, reloading };
-enum class InventoryState { reserve, hotbar };
-enum class UIFlags { selected };
+enum class WeaponState : uint8_t { unlocked, equipped, reloading };
+enum class InventoryState : uint8_t { reserve, hotbar };
+enum class UIFlags : uint8_t { selected };
 enum class UIColor { white, periwinkle, green, orange, fucshia, purple, mythic };
 
-enum class WeaponAttributes { automatic };
+enum class WeaponAttributes : uint8_t { automatic };
 struct WeaponSpecifications {
 	int cooldown_time{};
 	int multishot{};
@@ -145,4 +144,4 @@ class Weapon {
 	} cooldowns{};
 };
 
-} // namespace arms
+} // namespace fornani::arms

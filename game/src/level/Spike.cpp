@@ -1,10 +1,12 @@
 #include "fornani/level/Spike.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
-#include "fornani/particle/Effect.hpp"
 #include <algorithm>
 #include <cmath>
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/level/Map.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::world {
 
@@ -18,7 +20,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<flo
 	facing.lr = (direction.x == 1) ? dir::LR::left : facing.lr;
 	facing.lr = (direction.x == -1) ? dir::LR::right : facing.lr;
 	sprite.setOrigin(size * 16.f);
-	if (svc.random.percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
+	if (util::Random::percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
 	if (facing.lr == dir::LR::left) { sprite.setRotation(sf::degrees(-90)); }
 	if (facing.lr == dir::LR::right) { sprite.setRotation(sf::degrees(90)); }
 	if (facing.und == dir::UND::down) { sprite.setRotation(sf::degrees(180)); }
@@ -70,4 +72,4 @@ void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	}
 }
 
-} // namespace world
+} // namespace fornani::world

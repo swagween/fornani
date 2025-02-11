@@ -1,33 +1,32 @@
 #include "fornani/entities/world/Vine.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
 #include "fornani/utils/Math.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::entity {
 
 Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground, bool reversed)
-	: length(length), size(size), position(position), chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, position, length, reversed), sprite{size == 1 ? svc.assets.t_vine : svc.assets.t_vine_large}
-{
+	: position(position), length(length), size(size), chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, position, length, reversed), sprite{size == 1 ? svc.assets.t_vine : svc.assets.t_vine_large} {
 	drawbox.setOutlineColor(svc.styles.colors.blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize({8.f, 8.f});
 	if (reversed) { flags.set(VineFlags::reverse); }
 	auto index = util::Circuit(4);
-	auto last_index = svc.random.random_range(0, 3);
+	auto last_index = util::Random::random_range(0, 3);
 	auto ctr{0};
 	for (auto& link : chain.links) {
-		index.set(svc.random.random_range(0, index.get_order()));
+		index.set(util::Random::random_range(0, index.get_order()));
 		if (index.get() == last_index) { index.modulate(1); }
-		auto sign = svc.random.percent_chance(50) ? -1 : 1;
+		auto const sign = util::Random::percent_chance(50) ? -1 : 1;
 		encodings.push_back({index.get(), sign});
 		last_index = index.get();
 		// optionally add treasure container to vine segment
-		if (svc.random.percent_chance(5)) {
+		if (util::Random::percent_chance(5)) {
 			auto rarity = item::Rarity::common;
-			auto random_sample = svc.random.random_range_float(0.0f, 1.0f);
-			if (random_sample < constants.priceless) {
+			if (auto random_sample = util::Random::random_range_float(0.0f, 1.0f); random_sample < constants.priceless) {
 				rarity = item::Rarity::priceless;
 			} else if (random_sample < constants.rare) {
 				rarity = item::Rarity::rare;
@@ -48,15 +47,15 @@ Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length
 void Vine::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	chain.update(svc, map, player);
 	if (treasure_balls) {
-		for (auto& ball : treasure_balls.value()) { ball->update(svc, chain.links.at(ball->get_index()).get_bob()); }
+		for (auto const& ball : treasure_balls.value()) { ball->update(svc, chain.links.at(ball->get_index()).get_bob()); }
 		std::erase_if(treasure_balls.value(), [](auto const& b) { return b->destroyed(); });
 	}
-	if(spawnable_platforms) {
-		for (auto& plat : spawnable_platforms.value()) { plat->update(svc, player, chain.links.at(plat->get_index()).get_bob()); }
+	if (spawnable_platforms) {
+		for (auto const& plat : spawnable_platforms.value()) { plat->update(svc, player, chain.links.at(plat->get_index()).get_bob()); }
 	}
 }
 
-void Vine::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
+void Vine::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const {
 	if (treasure_balls) {
 		for (auto& ball : treasure_balls.value()) { ball->on_hit(svc, map, proj); }
 	}
@@ -66,11 +65,9 @@ void Vine::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectil
 }
 
 void Vine::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (svc.greyblock_mode()) {
-		chain.render(svc, win, cam);
-	}
+	if (svc.greyblock_mode()) { chain.render(svc, win, cam); }
 	if (treasure_balls) {
-		for (auto& ball : treasure_balls.value()) { ball->render(svc, win, cam); }
+		for (auto const& ball : treasure_balls.value()) { ball->render(svc, win, cam); }
 	}
 	int ctr{0};
 	if (!svc.greyblock_mode()) {
@@ -83,11 +80,11 @@ void Vine::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 		}
 	}
 	if (spawnable_platforms) {
-		for (auto& plat : spawnable_platforms.value()) { plat->render(svc, win, cam); }
+		for (auto const& plat : spawnable_platforms.value()) { plat->render(svc, win, cam); }
 	}
 }
 
-void Vine::add_platform(automa::ServiceProvider& svc, int link_index) { 
+void Vine::add_platform(automa::ServiceProvider& svc, int link_index) {
 	treasure_balls = {}; // don't want them to get in the way
 	if (link_index > chain.links.size() || link_index < 0) { return; }
 	auto& link = chain.links.at(link_index);
@@ -95,4 +92,4 @@ void Vine::add_platform(automa::ServiceProvider& svc, int link_index) {
 	spawnable_platforms.value().push_back(std::make_unique<SpawnablePlatform>(svc, link.get_anchor(), link_index));
 }
 
-} // namespace entity
+} // namespace fornani::entity

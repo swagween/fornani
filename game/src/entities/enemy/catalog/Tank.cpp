@@ -1,7 +1,8 @@
 #include "fornani/entities/enemy/catalog/Tank.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::enemy {
 
@@ -37,14 +38,14 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
 	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
 	secondary_collider.sync_components();
-	
+
 	player.collider.handle_collider_collision(secondary_collider);
 	if (svc.ticker.every_x_ticks(20)) {
-		if (svc.random.percent_chance(8) && !caution.danger()) { state = TankState::run; }
+		if (util::Random::percent_chance(8) && !caution.danger()) { state = TankState::run; }
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
-		if (m_services->random.percent_chance(50)) {
+		if (util::Random::percent_chance(50)) {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_1);
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_2);
@@ -58,7 +59,7 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 	if (hostility_triggered()) { state = TankState::alert; }
 	if (hostile() && !hostility_triggered()) {
-		if (m_services->random.percent_chance(fire_chance) || caution.danger()) {
+		if (util::Random::percent_chance(fire_chance) || caution.danger()) {
 			state = TankState::shoot;
 		} else {
 			state = TankState::run;
@@ -128,10 +129,10 @@ fsm::StateFunction Tank::update_shoot() {
 	return TANK_BIND(update_shoot);
 }
 
-fsm::StateFunction Tank::update_alert() { 
+fsm::StateFunction Tank::update_alert() {
 	animation.label = "alert";
 	if (animation.just_started()) {
-		if (m_services->random.percent_chance(50)) {
+		if (util::Random::percent_chance(50)) {
 			m_services->soundboard.flags.tank.set(audio::Tank::alert_1);
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::alert_2);
@@ -159,4 +160,4 @@ bool Tank::change_state(TankState next, anim::Parameters params) {
 	return false;
 }
 
-} // namespace enemy
+} // namespace fornani::enemy

@@ -15,7 +15,7 @@ namespace fornani::gui {
 
 class PauseWindow : public Console {
   public:
-	PauseWindow(automa::ServiceProvider& svc);
+	explicit PauseWindow(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, Console& console, bool automatic);
 	void render_update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win);
@@ -40,4 +40,4 @@ class PauseWindow : public Console {
 	MiniMenu menu;
 };
 
-} // namespace gui
+} // namespace fornani::gui

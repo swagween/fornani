@@ -9,7 +9,7 @@ namespace fornani::enemy {
 enum class CasterState { idle, turn, signal, dormant, prepare };
 enum class CasterVariant { apprentice, tyrant };
 
-class Caster : public Enemy {
+class Caster final : public Enemy {
 
   public:
 	Caster() = delete;

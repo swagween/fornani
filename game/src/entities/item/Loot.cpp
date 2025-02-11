@@ -1,27 +1,27 @@
 
 #include "fornani/entities/item/Loot.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
-
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani::item {
 Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos, int delay_time, bool special, int special_id) {
 
-	auto drop_rate = svc.random.random_range(drop_range.x, drop_range.y);
+	auto const drop_rate = util::Random::random_range(drop_range.x, drop_range.y);
 	position = pos;
 
 	std::string_view key{};
 	for (int i = 0; i < drop_rate; ++i) {
-		if (svc.random.percent_chance(0.08f) && special) {
+		if (util::Random::percent_chance(0.08f) && special) {
 			key = "gem";
-		} else if (svc.random.percent_chance(8) && !flags.test(LootState::heart_dropped)) {
+		} else if (util::Random::percent_chance(8) && !flags.test(LootState::heart_dropped)) {
 			key = "heart";
 			flags.set(LootState::heart_dropped);
 		} else {
 			key = "orb";
 		}
-		float randx = svc.random.random_range_float(-40.0f, 40.0f);
-		float randy = svc.random.random_range_float(-40.0f, 40.0f);
+		float randx = util::Random::random_range_float(-40.0f, 40.0f);
+		float randy = util::Random::random_range_float(-40.0f, 40.0f);
 		drops.push_back(std::make_unique<Drop>(svc, key, probability, delay_time, special_id));
 		drops.back()->set_position(pos);
 		drops.back()->apply_force({randx, randy});
@@ -38,7 +38,7 @@ void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 				svc.soundboard.flags.item.set(audio::Item::gem);
 			} else if (drop->get_type() == DropType::heart) {
 				svc.soundboard.flags.item.set(audio::Item::heal);
-			} else if(drop->get_rarity() == common) {
+			} else if (drop->get_rarity() == common) {
 				svc.soundboard.flags.item.set(audio::Item::orb_low);
 			} else if (drop->get_rarity() == uncommon) {
 				svc.soundboard.flags.item.set(audio::Item::orb_medium);
@@ -58,4 +58,4 @@ void Loot::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 
 void Loot::set_position(sf::Vector2<float> pos) { position = pos; }
 
-} // namespace item
+} // namespace fornani::item

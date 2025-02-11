@@ -1,5 +1,5 @@
 nani_add_headers(
-        ExeHelpers.hpp
+        PathHelpers.hpp
         File.hpp
         Logger.hpp
 )

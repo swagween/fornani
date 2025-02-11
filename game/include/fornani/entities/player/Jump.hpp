@@ -10,9 +10,9 @@ namespace fornani::player {
 constexpr static int request_time{16};
 constexpr static int cooldown_time{40};
 
-enum class JumpTrigger { just_jumped, jump_launched, jumpsquat, is_released };
+enum class JumpTrigger : uint8_t { just_jumped, jump_launched, jumpsquat, is_released };
 
-enum class JumpState {
+enum class JumpState : uint8_t {
 	can_jump,	   // true if the player is grounded (USED)
 	jump_held,	   // to prevent deceleration being called after jumping
 	jumpsquatting, // (USED)
@@ -21,7 +21,7 @@ enum class JumpState {
 	jump_began     // true if just jumped, but must be active for a cooldown period to avoid next-frame cancelling
 };
 
-enum class DoublejumpState { can_doublejump };
+enum class DoublejumpState : uint8_t { can_doublejump };
 
 class Jump {
   public:

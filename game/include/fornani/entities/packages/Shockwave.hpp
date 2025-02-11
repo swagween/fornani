@@ -18,7 +18,7 @@ namespace fornani::entity {
 class Shockwave {
   public:
 	Shockwave() = default;
-	Shockwave(sf::Vector2<float> speed);
+	explicit Shockwave(sf::Vector2<float> speed);
 	void start(int time = 600);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void set_position(sf::Vector2<float> to_position);

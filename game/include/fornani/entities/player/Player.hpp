@@ -21,6 +21,7 @@
 #include "Transponder.hpp"
 #include "VisitHistory.hpp"
 #include "Piggybacker.hpp"
+#include "fornani/entities/item/Drop.hpp"
 
 namespace fornani::gui {
 class Console;
@@ -33,10 +34,6 @@ class Map;
 
 namespace fornani::automa {
 struct ServiceProvider;
-}
-
-namespace fornani::item {
-enum class DropType;
 }
 
 namespace fornani::player {

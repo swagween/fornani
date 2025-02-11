@@ -15,7 +15,7 @@ struct ServiceProvider;
 
 namespace fornani::bg {
 
-enum class BackgroundAttributes { lock };
+enum class BackgroundAttributes : uint8_t { lock };
 
 struct BackgroundLayer {
 	int render_layer{};

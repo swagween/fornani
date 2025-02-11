@@ -9,11 +9,11 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class WidgetFlags { gun };
+enum class WidgetFlags : uint8_t { gun };
 
 class ItemWidget {
   public:
-	ItemWidget(automa::ServiceProvider& svc);
+	explicit ItemWidget(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);
 	void reset(automa::ServiceProvider& svc);
@@ -28,7 +28,7 @@ class ItemWidget {
 		sf::Sprite gun;
 	} sprites;
 	sf::CircleShape sticker{};
-	
+
 	std::string_view label{};
 	int id{};
 	util::BitFlags<WidgetFlags> flags{};
@@ -43,4 +43,4 @@ class ItemWidget {
 	vfx::Sparkler sparkler{};
 };
 
-} // namespace gui
+} // namespace fornani::gui

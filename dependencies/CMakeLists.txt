@@ -44,6 +44,23 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ccmath)
 
+# Used for assertions and crash handling
+
+FetchContent_Declare(
+        cpptrace
+        GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace
+        GIT_TAG v0.7.5
+)
+FetchContent_MakeAvailable(cpptrace)
+
+FetchContent_Declare(
+        libassert
+        GIT_REPOSITORY https://github.com/jeremy-rifkin/libassert
+        GIT_TAG v2.1.4
+)
+FetchContent_MakeAvailable(libassert)
+
+
 # Avoid warning about DOWNLOAD_EXTRACT_TIMESTAMP in CMake 3.24 with steamworks.
 if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
     cmake_policy(SET CMP0135 NEW)
@@ -80,13 +97,22 @@ target_link_libraries(fornani-dependencies INTERFACE
         SFML::Audio
         steamworks
         Tracy::TracyClient
+
+        cpptrace::cpptrace
+        libassert::assert
 )
 
+if (WIN32 AND NOT FORNANI_PRODUCTION_BUILD AND NOT DEFINED FORNANI_DISABLE_DBGHELP)
+    target_link_libraries(fornani-dependencies INTERFACE
+            Dbghelp
+    )
+endif ()
+
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang|IntelLLVM|AppleClang")
-  if ("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC") # clang-cl
-    add_compile_options(fornani-dependencies INTERFACE /W0)
-  endif ()
-  add_compile_options(fornani-dependencies INTERFACE -w)
+    if ("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC") # clang-cl
+        add_compile_options(fornani-dependencies INTERFACE /W0)
+    endif ()
+    add_compile_options(fornani-dependencies INTERFACE -w)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  add_compile_options(fornani-dependencies INTERFACE /W0)
+    add_compile_options(fornani-dependencies INTERFACE /W0)
 endif ()

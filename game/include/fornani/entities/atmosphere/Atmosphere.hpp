@@ -7,15 +7,15 @@
 
 namespace fornani::automa {
 struct ServiceProvider;
-}
+} // namespace fornani::automa
 
 namespace fornani::world {
 class Map;
-}
+} // namespace fornani::world
 
 namespace fornani::player {
 class Player;
-}
+} // namespace fornani::player
 
 namespace fornani::vfx {
 class Atmosphere {

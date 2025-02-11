@@ -13,11 +13,11 @@
 
 namespace fornani::automa {
 struct ServiceProvider;
-}
+} // namespace fornani::automa
 
 namespace fornani::world {
 class Map;
-}
+} // namespace fornani::world
 
 namespace fornani::vfx {
 
@@ -36,4 +36,4 @@ class Firefly {
 	std::optional<std::unique_ptr<flfx::SpriteHistory>> trail{};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx
