@@ -153,8 +153,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				NANI_ZoneScopedN("Update->ImGUI");
 				ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 				ImGuiIO& io = ImGui::GetIO();
-				io.IniFilename = NULL;
-				io.LogFilename = NULL;
+				io.IniFilename = nullptr;
+				io.LogFilename = nullptr;
 				io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
 				services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
 				ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
