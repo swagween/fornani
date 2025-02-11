@@ -2,7 +2,7 @@
 #pragma once
 
 /*
- * Cross-platform helpers to get location of calling executable.
+ * Cross-system helpers to get location of calling executable.
  * Supported platforms:
  * - Windows
  * - Linux
