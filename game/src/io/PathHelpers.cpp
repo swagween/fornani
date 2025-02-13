@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <mutex>
 #include <string>
+#include <vector> // NOLINT
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <shlobj.h> // For SHGetFolderPathA
@@ -32,8 +33,19 @@ namespace {
 std::string thread_safe_getenv(char const* var) {
 	static std::mutex env_mutex;
 	std::lock_guard lock(env_mutex);
+	// MSVC gets upset if we don't use there "secure" versions so we just use it to get them off our back.
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+	char* buffer = nullptr;
+	size_t size = 0;
+	// _dupenv_s allocates memory for the environment variable's value.
+	if (errno_t const err = _dupenv_s(&buffer, &size, var); err != 0 || buffer == nullptr) { return std::string(); }
+	std::string result(buffer);
+	std::free(buffer); // Free the allocated buffer.
+	return result;
+#else
 	char const* value = std::getenv(var);
 	return value ? std::string(value) : std::string();
+#endif
 }
 } // namespace
 
@@ -73,7 +85,7 @@ auto abs_exe_path() -> std::filesystem::path {
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 	std::array<char, FILENAME_MAX> path;
 	size_t size = path.size();
-	int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1};
+	std::array<int, 4> mib = {CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1};
 
 	if (sysctl(mib, 4, path.data(), &size, nullptr, 0) == -1) {
 		return {}; // Failed to get executable path on BSD
@@ -84,7 +96,7 @@ auto abs_exe_path() -> std::filesystem::path {
 		return std::filesystem::canonical(std::filesystem::path(path.data()));
 	} catch (...) { return std::filesystem::path(path.data()); }
 #else
-	return {};
+	return {}; // Unsupported platform. Return empty path.
 #endif
 }
 

@@ -97,6 +97,7 @@ class MonoInstance {
 	MonoInstance(MonoInstance&&) = delete;
 	MonoInstance& operator=(MonoInstance const&) = delete;
 	MonoInstance& operator=(MonoInstance&&) = delete;
+	{ static }
 
 	/**
 	 * @brief Retrieves the unique instance that owns the resource.

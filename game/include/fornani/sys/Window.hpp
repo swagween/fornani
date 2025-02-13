@@ -116,9 +116,9 @@ class Window : public ftl::MonoInstance<Window> {
 
 	virtual void close();
 
-	// virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
 	sf::Vector2u resize(sf::Vector2u const& extent);
+
+	// virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	template <util::Derives<sf::RenderTarget> T, typename... ArgsT>
 		requires util::ConstructibleUserType<T, ArgsT...>
@@ -139,49 +139,27 @@ class Window : public ftl::MonoInstance<Window> {
 	//////////////////////////////////////////////////////////////////////////////
 
 	core::Event<void()> PreClosed;
-
 	core::Event<void()> Closed;
-
 	core::Event<void()> PostClosed;
-
 	core::Event<void()> ProcessEventsLoopTop;
-
 	core::Event<void(sf::Vector2u)> Resized;
-
 	core::Event<void()> FocusLost;
-
 	core::Event<void()> FocusGained;
-
 	using KeyEvent = core::Event<void(sf::Keyboard::Key, sf::Keyboard::Scancode, bool, bool, bool, bool)>;
-
 	KeyEvent KeyPressed;
-
 	KeyEvent KeyReleased;
-
 	core::Event<void(sf::Mouse::Wheel, float, sf::Vector2i)> MouseWheelScrolled;
-
 	core::Event<void(sf::Mouse::Button, sf::Vector2i)> MouseButtonPressed;
-
 	core::Event<void(sf::Mouse::Button, sf::Vector2i)> MouseButtonReleased;
-
 	core::Event<void(sf::Vector2i)> MouseMoved;
-
 	core::Event<void(sf::Vector2i)> MouseMovedRaw;
-
 	core::Event<void()> MouseEntered;
-
 	core::Event<void()> MouseExited;
-
 	core::Event<void(unsigned int, unsigned int)> JoystickButtonPressed;
-
 	core::Event<void(unsigned int, unsigned int)> JoystickButtonReleased;
-
 	core::Event<void(unsigned int, sf::Joystick::Axis, float)> JoystickMoved;
-
 	core::Event<void(unsigned int)> JoystickConnected;
-
 	core::Event<void(unsigned int)> JoystickDisconnected;
-
 	core::Event<void()> PolledEvents;
 };
 

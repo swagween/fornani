@@ -38,7 +38,9 @@ bool Window::create() {
 	}
 	}
 
-	auto const vid_mode = sf::VideoMode(m_properties.extent, m_properties.bit_depth);
+	sf::Window
+
+		auto const vid_mode = sf::VideoMode(m_properties.extent, m_properties.bit_depth);
 
 	setRenderTarget<sf::RenderWindow>(vid_mode, m_properties.title, mode, state);
 
