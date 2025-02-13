@@ -91,8 +91,9 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	}
 }
 
-void Canvas::load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
+bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
 
+	auto success{true};
 	map_states.clear();
 	redo_states.clear();
 
@@ -105,6 +106,13 @@ void Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	std::string metapath = (source / std::filesystem::path{region} / std::filesystem::path{room_name}).string();
 
 	data.meta = dj::Json::from_file((metapath).c_str());
+	if (data.meta.is_null()) {
+		finder.paths.region = "config";
+		finder.paths.room_name = "new_file.json";
+		metapath = (source / finder.paths.region / finder.paths.room_name).string();
+		data.meta = dj::Json::from_file((metapath).c_str());
+		success = false;
+	}
 	assert(!data.meta.is_null());
 
 	if (!local) { entities = EntitySet{finder, data.meta["entities"], room_name}; }
@@ -154,6 +162,7 @@ void Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
 	map_states.back().set_labels();
 	set_grid_texture();
+	return success;
 }
 
 bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name) {

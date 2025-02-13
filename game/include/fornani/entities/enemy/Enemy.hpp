@@ -10,6 +10,7 @@
 #include "fornani/entities/packages/WeaponPackage.hpp"
 #include "fornani/entities/player/Indicator.hpp"
 #include "fornani/audio/Soundboard.hpp"
+#include "fornani/io/Logger.hpp"
 #include <string_view>
 
 namespace fornani::player {
@@ -140,6 +141,7 @@ class Enemy : public entity::Entity {
 	float energy{};
 	float dampen{0.1f};
 	float hit_energy{6.f};
+	fornani::io::Logger m_logger{"Enemy"};
 };
 
 } // namespace fornani::enemy

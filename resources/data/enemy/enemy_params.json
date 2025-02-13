@@ -420,14 +420,14 @@
 		},
 		"physical": {
 			"dimensions": [ 14, 14 ],
-			"sprite_dimensions": [ 66, 40 ],
-			"offset": [ 11, -16 ],
+			"sprite_dimensions": [ 80, 40 ],
+			"offset": [ 11, -18 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 1600.0, 1600.0 ],
 			"hostile_range": [ 280.0, 280.0 ],
 			"friction": 0.98,
-			"gravity": 3.0
+			"gravity": 8.0
 		},
 		"visual": {
 			"effect_type": 0,

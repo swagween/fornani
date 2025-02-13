@@ -6,16 +6,33 @@
 
 namespace fornani::enemy {
 
+constexpr static int imp_framerate{16};
+
 Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "imp"), m_services(&svc), m_map(&map),
-	  parts{.knife{svc.assets.t_imp_knife, {72, 40}, {{0, 1, 32, -1}, {1, 1, 32, 0}, {2, 1, 32, -1}, {3, 3, 32, 0}, {5, 1, 32, 0}, {6, 1, 32, 0}}, {"idle", "lift", "run", "attack", "dormant", "swoosh"}, 2.0f, 0.85f, {0.f, 0.f}},
-			.fork{svc.assets.t_imp_fork, {82, 34}, {{0, 1, 32, -1}, {1, 1, 32, 0}, {2, 1, 32, -1}, {3, 3, 32, 9}, {0, 1, 32, -1}, {6, 1, 32, 0}}, {"idle", "lift", "run", "attack", "dormant", "swoosh"}, 2.0f, 0.85f, {0.f, 0.f}},
-			.hand{svc.styles.colors.ui_black, {4.f, 4.f}, 2.0f, 0.85f}} {
+	  parts{.weapon = util::Random::percent_chance(50) ? entity::FloatingPart{svc.assets.t_imp_knife,
+																			  {72, 40},
+																			  {{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 0}, {5, 1, imp_framerate, 0}, {6, 1, imp_framerate, 0}},
+																			  {"idle", "lift", "run", "attack", "dormant", "swoosh"},
+																			  2.0f,
+																			  0.85f,
+																			  {0.f, -20.f},
+																			  1}
+													   : entity::FloatingPart{svc.assets.t_imp_fork,
+																			  {82, 34},
+																			  {{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 9}, {0, 1, imp_framerate, -1}, {6, 1, imp_framerate, 0}},
+																			  {"idle", "lift", "run", "attack", "dormant", "swoosh"},
+																			  2.0f,
+																			  0.85f,
+																			  {0.f, -40.f},
+																			  2},
+			.hand{svc.styles.colors.ui_black, {4.f, 4.f}, 2.0f, 0.85f, {-32.f, 8.f}}},
+	  dormant{0, 1, imp_framerate, -1}, idle{1, 6, imp_framerate, -1}, turn{7, 3, imp_framerate, 0}, run{10, 8, imp_framerate, -1}, jump{18, 5, imp_framerate, 0}, fall{24, 3, imp_framerate, -1}, attack{27, 7, imp_framerate, 0} {
+
 	animation.set_params(dormant);
-	collider.physics.maximum_velocity = {8.f, 12.f};
+	collider.physics.maximum_velocity = {40.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
 	collider.flags.general.set(shape::General::complex);
-	secondary_collider = shape::Collider({22.f, 22.f});
 	directions.desired.lr = dir::LR::left;
 	directions.actual.lr = dir::LR::left;
 	directions.movement.lr = dir::LR::neutral;
@@ -24,10 +41,9 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
 	attacks.stab.hit.bounds.setRadius(28);
 	attacks.stab.origin = {-10.f, -26.f};
 
-	variant = util::Random::percent_chance(50) ? ImpVariant::fork : ImpVariant::knife;
+	variant = parts.weapon.get_id() == 1 ? ImpVariant::knife : ImpVariant::fork;
 	if (variant == ImpVariant::knife) { visual.sprite.setTexture(svc.assets.t_knife_imp); }
-	parts.fork.animated_sprite->set_params("idle");
-	parts.knife.animated_sprite->set_params("idle");
+	parts.weapon.animated_sprite->set_params("idle");
 
 	cooldowns.awaken.start();
 }
@@ -47,8 +63,6 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 		attacks.stab.origin.x = 10.f;
 	}
 
-	attacks.stab.disable();
-
 	cooldowns.post_jump.update();
 	cooldowns.post_attack.update();
 
@@ -56,27 +70,13 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 	attacks.stab.handle_player(player);
 
 	flags.state.set(StateFlags::vulnerable); // imp is always vulnerable
-	caution.avoid_ledges(map, collider, directions.actual, 3);
 
-	// reset animation states to determine next animation state
-	state = {};
-	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
-	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
-		parts.knife.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
-		parts.fork.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
+		parts.weapon.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
 		parts.hand.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
 	}
-	if (variant == ImpVariant::fork) { parts.fork.set_hitbox(); }
-	if (variant == ImpVariant::knife) { parts.knife.set_hitbox(); }
-
-	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 10.f};
-	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
-	secondary_collider.sync_components();
-	if (player.collider.hurtbox.overlaps(secondary_collider.bounding_box) && !is_dormant()) { player.hurt(); }
+	parts.weapon.set_hitbox();
 
 	if (svc.ticker.every_x_ticks(200)) {
 		if (util::Random::percent_chance(4) && !caution.danger()) { state = ImpState::run; }
@@ -90,8 +90,9 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 	}
 
 	hurt_effect.update();
-	if (hostile() && !cooldowns.post_attack.running()) { state = ImpState::fall; }
-	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ImpState::jump; } // player is already in hostile range
+	if (hostile() && !cooldowns.post_attack.running()) { state = ImpState::attack; }
+	//if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ImpState::jump; } // player is already in hostile range
+	if (!collider.grounded()) { state = ImpState::fall; }
 
 	if (alert() && !hostile() && svc.ticker.every_x_ticks(32)) {
 		if (util::Random::percent_chance(50)) {
@@ -110,10 +111,7 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 void Imp::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died() || state == ImpState::dormant) { return; }
-	switch (variant) {
-	case ImpVariant::fork: parts.fork.render(svc, win, cam); break;
-	case ImpVariant::knife: parts.knife.render(svc, win, cam); break;
-	}
+	parts.weapon.render(svc, win, cam);
 	parts.hand.render(svc, win, cam);
 	if (svc.greyblock_mode()) {
 		if (state == ImpState::attack) { attacks.stab.render(win, cam); }
@@ -122,8 +120,8 @@ void Imp::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 
 fsm::StateFunction Imp::update_idle() {
 	animation.label = "idle";
-	parts.fork.animated_sprite->set_params("idle");
-	parts.knife.animated_sprite->set_params("idle");
+	parts.weapon.animated_sprite->set_params("idle");
+	attacks.stab.disable();
 	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
 	if (change_state(ImpState::fall, fall)) { return IMP_BIND(update_fall); }
@@ -135,7 +133,10 @@ fsm::StateFunction Imp::update_idle() {
 
 fsm::StateFunction Imp::update_turn() {
 	animation.label = "turn";
-	if (animation.complete()) {
+	animation.log_info();
+	attacks.stab.disable();
+	if (animation.totally_complete()) {
+		NANI_LOG_INFO(m_logger, "finished!");
 		visual.sprite.scale({-1.f, 1.f});
 		directions.actual = directions.desired;
 		state = ImpState::idle;
@@ -148,6 +149,10 @@ fsm::StateFunction Imp::update_turn() {
 
 fsm::StateFunction Imp::update_run() {
 	animation.label = "run";
+	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("lift");
+	}
+	if (parts.weapon.animated_sprite->complete()) { parts.weapon.animated_sprite->set_params("run"); }
+	attacks.stab.disable();
 	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger() || animation.complete()) {
@@ -163,16 +168,20 @@ fsm::StateFunction Imp::update_run() {
 
 fsm::StateFunction Imp::update_jump() {
 	animation.label = "jump";
+	auto jumpsquat_frame{1};
+	attacks.stab.disable();
 	if (animation.just_started()) {
 		cooldowns.jump.start();
 		rand_jump = util::Random::percent_chance(50) ? -1.f : 1.f;
 		if (cooldowns.post_attack.running()) { rand_jump = directions.actual.lr == dir::LR::left ? 1.f : -1.f; } // always jump backwards after a attack otherwise it feels unfair
 	}
-	if (cooldowns.jump.running()) { collider.physics.apply_force({0, -2.5f}); }
-	if (!collider.grounded()) { collider.physics.apply_force({rand_jump * 2.f, 0.f}); }
-	cooldowns.jump.update();
-	if (cooldowns.jump.is_complete() && collider.grounded()) {
+	if (cooldowns.jump.running() && animation.get_frame_count() > jumpsquat_frame) { collider.physics.apply_force({0, -3.5f}); }
+	if (!collider.grounded() && animation.get_frame_count() > jumpsquat_frame) { collider.physics.apply_force({rand_jump * 2.f, 0.f}); }
+	if (animation.get_frame_count() > jumpsquat_frame) { cooldowns.jump.update(); }
+	if (cooldowns.jump.is_complete()) {
 		cooldowns.post_jump.start();
+		if (change_state(ImpState::fall, fall)) { return IMP_BIND(update_fall); }
+		if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
 		state = ImpState::idle;
 		animation.set_params(idle);
 		return IMP_BIND(update_idle);
@@ -183,42 +192,39 @@ fsm::StateFunction Imp::update_jump() {
 
 fsm::StateFunction Imp::update_fall() {
 	animation.label = "fall";
-	shake();
-	if (animation.complete()) {
-		if (directions.actual.lr != directions.desired.lr) {
-			state = ImpState::turn;
-			animation.set_params(turn);
-			return IMP_BIND(update_turn);
-		}
-		state = ImpState::attack;
-		animation.set_params(attack);
-		return IMP_BIND(update_attack);
+	attacks.stab.disable();
+	if (collider.grounded()) {
+		if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
+		state = ImpState::idle;
+		animation.set_params(idle);
+		return IMP_BIND(update_idle);
 	}
 	state = ImpState::fall;
 	return IMP_BIND(update_fall);
 }
 
 fsm::StateFunction Imp::update_attack() {
+	animation.label = "attack";
 	attacks.stab.enable();
-	if (caution.danger()) {
-		state = ImpState::idle;
-		animation.set_params(idle);
-		return IMP_BIND(update_idle);
-	}
+	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("attack"); }
+	if (parts.weapon.animated_sprite->complete()) { parts.weapon.animated_sprite->set_params("swoosh"); }
 	auto force{16.f};
 	force *= directions.actual.lr == dir::LR::left ? -1.f : 1.f;
 	collider.physics.apply_force({force, 0.f});
 	if (animation.complete()) {
 		cooldowns.post_attack.start();
+		if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
 		state = ImpState::idle;
 		animation.set_params(idle);
 		return IMP_BIND(update_idle);
-	};
+	}
 	state = ImpState::attack;
 	return IMP_BIND(update_attack);
 }
 
 fsm::StateFunction Imp::update_dormant() {
+	animation.label = "dormant";
+	parts.weapon.animated_sprite->set_params("dormant");
 	hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();

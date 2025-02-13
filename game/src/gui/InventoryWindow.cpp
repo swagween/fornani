@@ -31,7 +31,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
 	arsenal.setPosition(origin + ui.arsenal_offset + ui.global_offset);
 	item_label.setPosition(origin + ui.item_label_offset + ui.global_offset);
 
-	dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
+	dimensions = svc.constants.f_screen_dimensions - sf::Vector2f{ui.buffer, ui.buffer};
 	position = svc.constants.f_center_screen;
 	flags.reset(ConsoleFlags::portrait_included);
 	Console::update(svc);
@@ -228,7 +228,10 @@ void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& playe
 		item_menu.render(win);
 		wardrobe.render(svc, win, cam);
 	}
-	if (mode == Mode::minimap) { minimap.render(svc, win, cam); }
+	if (mode == Mode::minimap) {
+		Console::render(win);
+		minimap.render(svc, win, cam);
+	}
 }
 
 void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player) {

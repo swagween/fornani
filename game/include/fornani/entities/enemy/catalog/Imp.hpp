@@ -37,8 +37,7 @@ class Imp final : public Enemy {
 
 	// packages
 	struct {
-		entity::FloatingPart knife;
-		entity::FloatingPart fork;
+		entity::FloatingPart weapon;
 		entity::FloatingPart hand;
 	} parts;
 
@@ -48,7 +47,7 @@ class Imp final : public Enemy {
 	entity::Caution caution{};
 
 	struct {
-		util::Cooldown jump{40};
+		util::Cooldown jump{80};
 		util::Cooldown post_jump{400};
 		util::Cooldown rush_hit{600};
 		util::Cooldown post_attack{128};
@@ -56,13 +55,13 @@ class Imp final : public Enemy {
 	} cooldowns{};
 
 	// lookup, duration, framerate, num_loops
-	anim::Parameters dormant{0, 1, 32, -1};
-	anim::Parameters idle{1, 6, 28, -1};
-	anim::Parameters turn{7, 3, 48, 1};
-	anim::Parameters run{10, 8, 28, -1};
-	anim::Parameters jump{18, 5, 48, 0};
-	anim::Parameters fall{24, 3, 58, -1};
-	anim::Parameters attack{27, 7, 22, 0};
+	anim::Parameters dormant{};
+	anim::Parameters idle{};
+	anim::Parameters turn{};
+	anim::Parameters run{};
+	anim::Parameters jump{};
+	anim::Parameters fall{};
+	anim::Parameters attack{};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;

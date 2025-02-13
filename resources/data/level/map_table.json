@@ -5,6 +5,14 @@
       "label": "new_file.json"
     },
     {
+      "room_id": 99,
+      "label": "placeholder.json"
+    },
+    {
+      "room_id": 98,
+      "label": "placeholder_2.json"
+    },
+    {
       "room_id": 103,
       "label": "atrium.json"
     },
@@ -27,6 +35,10 @@
     {
       "room_id": 299,
       "label": "dojo.json"
+    },
+    {
+      "room_id": 20099,
+      "label": "enemy_debug.json"
     },
     {
       "room_id": 201,

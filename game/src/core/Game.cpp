@@ -166,7 +166,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			NANI_ZoneScopedN("Rendering");
 			if (flags.test(GameFlags::playtest)) {
 				playtester_portal(services.window->get());
-				services.logger.write_console(ImVec2{400.f, 240.f}, ImVec2{services.window->get().getSize().x - 420.f, services.window->get().getSize().y - 260.f});
+				//services.logger.write_console(ImVec2{400.f, 240.f}, ImVec2{services.window->get().getSize().x - 420.f, services.window->get().getSize().y - 260.f});
 			}
 
 			flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
@@ -229,6 +229,18 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
 					ImGui::Separator();
+					ImGui::Text("Ticker");
+					ImGui::Text("dt: %.8f", services.ticker.dt.count());
+					ImGui::Separator();
+					ImGui::Text("Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
+					ImGui::Text("Seconds Passed In-Game: %.2f", services.ticker.in_game_seconds_passed.count());
+					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
+					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
+					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
+					ImGui::Separator();
+					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
+					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
+					ImGui::Separator();
 					ImGui::Text("World Time (military): %s", services.world_clock.get_string().c_str());
 					ImGui::Text("World Time: %s", services.world_clock.get_string(false).c_str());
 					ImGui::Text("Time of Day: %s", services.world_clock.get_time_of_day() == fornani::TimeOfDay::day ? "Day" : services.world_clock.get_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight" : "Night");
@@ -279,18 +291,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						ImGui::SameLine();
 					}
 
-					ImGui::Separator();
-					ImGui::Text("Ticker");
-					ImGui::Text("dt: %.8f", services.ticker.dt.count());
-					ImGui::Separator();
-					ImGui::Text("Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
-					ImGui::Text("Seconds Passed In-Game: %.2f", services.ticker.in_game_seconds_passed.count());
-					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
-					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
-					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
-					ImGui::Separator();
-					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
-					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tests")) {

@@ -31,10 +31,8 @@ Editor::Editor(char** argv, WindowManager& window, fornani::data::ResourceFinder
 	user_data = dj::Json::from_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str());
 	assert(!user_data.is_null());
 	console.add_log("Welcome to Pioneer!");
-	finder.paths.region = "config";
-	finder.paths.room_name = "new_file.json";
-	finder.paths.region = user_data["region"].as_string();
-	finder.paths.room_name = user_data["room"].as_string();
+	finder.paths.region = user_data["region"] ? user_data["region"].as_string() : "config";
+	finder.paths.room_name = user_data["room"] ? user_data["room"].as_string() : "new_file.json";
 	std::string msg = "Loading room: <" + finder.region_and_room().string() + ">";
 	console.add_log(msg.data());
 	load();
@@ -295,8 +293,8 @@ void Editor::logic() {
 }
 
 void Editor::load() {
-	map.load(*finder, finder->paths.region, finder->paths.room_name);
-	palette.load(*finder, "palette", "palette.json", true);
+	if (!map.load(*finder, finder->paths.region, finder->paths.room_name)) { console.add_log("Encountered an error loading file!"); }
+	if (!palette.load(*finder, "palette", "palette.json", true)) { console.add_log("Encountered an error loading palette!"); }
 	map.set_origin({});
 	palette.set_origin({});
 	reset_layers();

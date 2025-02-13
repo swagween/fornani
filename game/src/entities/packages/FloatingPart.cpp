@@ -11,7 +11,7 @@
 
 namespace fornani::entity {
 
-FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset) : sprite{tex}, textured{true}, init{true} {
+FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset, int id) : sprite{tex}, textured{true}, init{true}, m_id{id} {
 	sprite->setOrigin(sprite->getLocalBounds().getCenter());
 	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
 	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
@@ -24,8 +24,8 @@ FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Ve
 	debugbox.setOutlineThickness(-1);
 }
 
-FloatingPart::FloatingPart(sf::Texture& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2<float> offset)
-	: textured{true}, init{true} {
+FloatingPart::FloatingPart(sf::Texture& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2<float> offset, int id)
+	: textured{true}, init{true}, m_id{id} {
 	animated_sprite = anim::AnimatedSprite(tex, dimensions);
 	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
 	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
@@ -42,13 +42,16 @@ FloatingPart::FloatingPart(sf::Texture& tex, sf::Vector2i dimensions, std::vecto
 	}
 }
 
-FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force, float friction, sf::Vector2<float> offset) : textured{false}, init{true} {
+FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force, float friction, sf::Vector2<float> offset, int id) : textured{false}, init{true}, m_id{id} {
 	drawbox = sf::RectangleShape();
 	drawbox->setSize(dimensions);
 	drawbox->setFillColor(color);
 	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
 	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
 	gravitator->collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
+	left = offset;
+	right = offset;
+	right.x *= -1.f;
 }
 
 void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, dir::Direction direction, sf::Vector2<float> scale, sf::Vector2<float> position) {
@@ -64,7 +67,10 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	actual.y += tweak;
 	gravitator->set_target_position(actual);
 	gravitator->update(svc);
-	if (animated_sprite) { animated_sprite->update(position); }
+	if (animated_sprite) {
+		animated_sprite->update(gravitator->position());
+		animated_sprite->set_scale(scale);
+	}
 	if (sprite) { sprite->setScale(scale); }
 	if (hitbox) {
 		if (player.collider.hurtbox.overlaps(hitbox.value())) { player.hurt(); }

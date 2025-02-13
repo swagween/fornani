@@ -98,16 +98,15 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	drawbox.setOutlineThickness(-1);
 }
 
-void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) { metadata.external_id = code.first * 2719 + code.second.x * 13219 + code.second.y * 49037; }
+void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) { 
+	// TODO: find a better way to generate unique external IDs
+	metadata.external_id = code.first * 2719 + code.second.x * 13219 + code.second.y * 49037;
+}
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	if (hitstun.running()) {
-		hitstun.update();
-		if (svc.ticker.every_x_ticks(4)) {
-		} else {
-			return;
-		}
-	}
+	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
+	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
+	
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	sound.hurt_sound_cooldown.update();
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
@@ -127,15 +126,23 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		post_death.update();
 		return;
 	}
-	Entity::update(svc, map);
-	collider.update(svc);
-	secondary_collider.update(svc);
-	health_indicator.update(svc, collider.physics.position);
-
 	// shake
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
+	if (hitstun.running()) {
+		hitstun.update();
+		if (svc.ticker.every_x_ticks(4)) {
+		} else {
+			return;
+		}
+	}
+
+	// stuff that slows down from hitstun
+	Entity::update(svc, map);
+	collider.update(svc);
+	secondary_collider.update(svc);
+	health_indicator.update(svc, collider.physics.position);
 
 	if (flags.general.test(GeneralFlags::map_collision)) {
 		for (auto& breakable : map.breakables) { breakable.handle_collision(collider); }
@@ -176,6 +183,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	// animate
 	auto column{0};
 	if (hurt_effect.running()) { column = (hurt_effect.get_cooldown() / 32) % 2 == 0 ? 1 : 2; }
+	if (hurt_effect.running()) { shake(); }
 	auto u = column * sprite_dimensions.x;
 	auto v = static_cast<int>(animation.get_frame()) * sprite_dimensions.y;
 	visual.sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
@@ -185,18 +193,23 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	auto sprite_position = collider.physics.position + sprite_offset - cam + random_offset;
+
+	// exit conditions
 	if (!svc.in_window(sprite_position, visual.sprite.getGlobalBounds().size)) { return; }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
+
 	drawbox.setOrigin(visual.sprite.getOrigin());
 	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
 	visual.sprite.setPosition(sprite_position);
 	win.draw(visual.sprite);
 	if (svc.greyblock_mode()) {
 		win.draw(visual.sprite);
-		drawbox.setOrigin({0.f, 0.f});
-		drawbox.setSize({(float)collider.hurtbox.get_dimensions().x, (float)collider.hurtbox.get_dimensions().y});
+		drawbox.setOrigin({});
+		drawbox.setSize(collider.hurtbox.get_dimensions());
 		drawbox.setOutlineColor(svc.styles.colors.ui_white);
 		drawbox.setPosition(collider.hurtbox.get_position() - cam);
 		win.draw(drawbox);
