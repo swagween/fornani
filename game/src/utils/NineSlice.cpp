@@ -26,6 +26,17 @@ void NineSlice::update(automa::ServiceProvider& svc, sf::Vector2<float> position
 	sprite.setPosition(gravitator.collider.physics.position);
 }
 
+void NineSlice::direct_update(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float corner_dim, float edge_dim) {
+	corner_dimensions = corner_dim;
+	edge_dimensions = edge_dim;
+	native_dimensions = dimensions;
+	global_scale = 1.f;
+	native_scale = 1.f;
+
+	// set position for the 9-slice console box
+	sprite.setPosition(position);
+}
+
 void NineSlice::render(sf::RenderWindow& win) {
 	
 	auto middle = sf::Vector2<float>{(native_dimensions.x - 2.f * corner_dimensions) / edge_dimensions, (native_dimensions.y - 2.f * corner_dimensions) / edge_dimensions};

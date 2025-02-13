@@ -93,6 +93,9 @@ class DataManager {
 	int get_npc_location(int npc_id);
 	std::vector<world::Layer>& get_layers(int id);
 
+	// gui
+	dj::Json m_console_paths{};
+
 	dj::Json weapon{};
 	dj::Json enemy_weapon{};
 	dj::Json drop{};

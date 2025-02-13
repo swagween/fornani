@@ -27,9 +27,9 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc)
 	position = svc.constants.f_center_screen;
 	flags.reset(ConsoleFlags::portrait_included);
 
-	sprite.set_position(svc.constants.f_center_screen);
-	sprite.set_force(1.2f);
-	sprite.set_fric(0.90f);
+	m_nineslice.set_position(svc.constants.f_center_screen);
+	m_nineslice.set_force(1.2f);
+	m_nineslice.set_fric(0.90f);
 	menu.set_force(1.2f);
 	menu.set_fric(0.90f);
 }

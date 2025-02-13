@@ -8,6 +8,7 @@
 #include "fornani/graphics/TextWriter.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/NineSlice.hpp"
+#include "fornani/utils/RectPath.hpp"
 
 namespace fornani::gui {
 
@@ -52,7 +53,7 @@ class Console {
 
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
 	[[nodiscard]] auto is_complete() const -> bool { return writer.empty(); }
-	[[nodiscard]] auto extended() const -> bool { return sprite.is_extended(); }
+	[[nodiscard]] auto extended() const -> bool { return m_nineslice.is_extended(); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
 	[[nodiscard]] auto exited() const -> bool { return flags.test(ConsoleFlags::exited); }
 	[[nodiscard]] auto consume_exited() -> bool { return flags.consume(ConsoleFlags::exited); }
@@ -61,7 +62,8 @@ class Console {
 	sf::Vector2<float> dimensions{};
 	sf::Vector2<float> text_origin{};
 	util::BitFlags<ConsoleFlags> flags{};
-	util::NineSlice sprite;
+	util::NineSlice m_nineslice;
+	util::RectPath m_path;
 
 	dj::Json text_suite{};
 

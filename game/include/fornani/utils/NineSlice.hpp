@@ -15,6 +15,7 @@ class NineSlice {
 	void set_texture(sf::Texture& tex);
 	void set_origin(sf::Vector2<float> origin);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float corner_dim, float edge_dim);
+	void direct_update(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float corner_dim, float edge_dim);
 	void render(sf::RenderWindow& win);
 	void start(automa::ServiceProvider& svc, sf::Vector2<float> position, float start_scale = 1.f, sf::Vector2<int> direction = {0, -1}, float border = 0.f);
 	void end();

@@ -5,8 +5,8 @@ nani_add_sources(
         Decoder.cpp
         Fader.cpp
         NineSlice.cpp
+        RectPath.cpp
         Shape.cpp
         Ticker.cpp
         WorldClock.cpp
-
 )

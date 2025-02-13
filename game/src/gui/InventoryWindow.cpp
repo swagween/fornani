@@ -35,12 +35,12 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
 	position = svc.constants.f_center_screen;
 	flags.reset(ConsoleFlags::portrait_included);
 	Console::update(svc);
-	sprite.set_position(position);
+	m_nineslice.set_position(position);
 
 	info.dimensions = {dimensions.x - 2.f * ui.info_offset.x, dimensions.y * 0.62f - ui.info_offset.y - ui.inner_corner};
 	info.position = svc.constants.f_center_screen;
 	info.position.y += ui.info_offset.y;
-	info.sprite.set_position(info.position + ui.global_offset);
+	info.m_nineslice.set_position(info.position + ui.global_offset);
 	info.flags.reset(ConsoleFlags::portrait_included);
 	info.update(svc);
 
@@ -53,13 +53,13 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
-	ui.global_offset = sprite.get_position() - (sprite.get_center() + sf::Vector2<float>{ui.corner_pad, ui.corner_pad} * 0.5f);
+	ui.global_offset = m_nineslice.get_position() - (m_nineslice.get_center() + sf::Vector2<float>{ui.corner_pad, ui.corner_pad} * 0.5f);
 	title.setPosition(origin + ui.title_offset + ui.global_offset);
 	arsenal.setPosition(origin + ui.arsenal_offset + ui.global_offset);
 	item_label.setPosition(origin + ui.item_label_offset + ui.global_offset);
 	info.position = svc.constants.f_center_screen + ui.global_offset;
 	info.position.y += ui.info_offset.y;
-	info.sprite.set_position(info.position);
+	info.m_nineslice.set_position(info.position);
 	wardrobe.set_position(svc.constants.f_center_screen + ui.wardrobe_offset + ui.global_offset);
 	player.catalog.categories.inventory.ui_offset = ui.global_offset;
 

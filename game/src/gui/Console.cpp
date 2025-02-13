@@ -5,7 +5,7 @@
 
 namespace fornani::gui {
 
-Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc), item_widget(svc), sprite(svc, corner_factor, edge_factor) {
+Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc), item_widget(svc), m_nineslice(svc, corner_factor, edge_factor), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard"} {
 	origin = {pad, svc.constants.screen_dimensions.y - pad_y};
 	text_suite = svc.text.console;
 	set_texture(svc.assets.t_ui);
@@ -18,14 +18,15 @@ Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(sv
 void Console::begin() {
 	flags.set(ConsoleFlags::active);
 	writer.start();
-	sprite.start(*m_services, position, 1.f, {0, 1}, 16.f);
+	m_path.set_section("open");
 }
 
 void Console::update(automa::ServiceProvider& svc) {
-	sprite.update(svc, position, dimensions, corner_factor, edge_factor);
+	if (active()) { m_path.update(); }
+	m_nineslice.direct_update(svc, m_path.get_position(), m_path.get_dimensions(), corner_factor, edge_factor);
 	writer.set_bounds(sf::Vector2<float>{position.x + dimensions.x * 0.5f - 2.f * border.left, position.y + dimensions.y * 0.5f - border.top});
 	writer.set_position(position + sf::Vector2<float>{border.left, border.top} - dimensions * 0.5f);
-	if (sprite.is_extended()) { flags.set(ConsoleFlags::extended); }
+	if (m_nineslice.is_extended()) { flags.set(ConsoleFlags::extended); }
 	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
 	writer.update();
 
@@ -41,7 +42,7 @@ void Console::update(automa::ServiceProvider& svc) {
 }
 
 void Console::render(sf::RenderWindow& win) {
-	sprite.render(win);
+	m_nineslice.render(win);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.render(*m_services, win); }
 	if (flags.test(ConsoleFlags::portrait_included)) {
 		portrait.render(win);
@@ -52,7 +53,7 @@ void Console::render(sf::RenderWindow& win) {
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
 
-void Console::set_texture(sf::Texture& tex) { sprite.set_texture(tex); }
+void Console::set_texture(sf::Texture& tex) { m_nineslice.set_texture(tex); }
 
 void Console::load_and_launch(std::string_view key) {
 	if (!flags.test(ConsoleFlags::loaded)) {
@@ -92,7 +93,7 @@ void Console::end() {
 	flags.reset(ConsoleFlags::extended);
 	flags.reset(ConsoleFlags::display_item);
 	flags.set(ConsoleFlags::off_trigger);
-	sprite.end();
+	m_path.reset();
 }
 
 void Console::clean_off_trigger() { flags.reset(ConsoleFlags::off_trigger); }
