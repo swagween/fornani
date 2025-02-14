@@ -1,3 +1,4 @@
+
 #include "fornani/graphics/TextWriter.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -81,6 +82,15 @@ void TextWriter::update() {
 	++tick_count;
 }
 
+void TextWriter::flush() {
+	suite.clear();
+	responses.clear();
+	working_message.setString("");
+	second_working_message.setString("");
+	third_working_message.setString("");
+	working_str = {};
+}
+
 void TextWriter::set_position(sf::Vector2<float> pos) { position = pos; }
 
 void TextWriter::set_bounds(sf::Vector2<float> new_bounds) { bounds = new_bounds; }
@@ -115,8 +125,7 @@ void TextWriter::wrap() {
 }
 
 void TextWriter::load_single_message(std::string_view message) {
-	suite.clear();
-	responses.clear();
+	flush();
 	auto message_container = std::deque<Message>{};
 	message_container.push_back({sf::Text(font), false});
 	message_container.back().data.setString(message.data());
@@ -125,8 +134,7 @@ void TextWriter::load_single_message(std::string_view message) {
 }
 
 void TextWriter::load_message(dj::Json& source, std::string_view key) {
-	suite.clear();
-	responses.clear();
+	flush();
 
 	// suite
 	for (auto& set : source[key]["suite"].array_view()) {
@@ -179,9 +187,10 @@ void TextWriter::write_instant_message(sf::RenderWindow& win) {
 }
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
-	// win.draw(bounds_box);
+	//win.draw(bounds_box);
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
+	suite.at(iterators.current_suite_set).front().data.setPosition(position);
 	if (!writing()) {
 		win.draw(suite.at(iterators.current_suite_set).front().data);
 		if (!selection_mode()) { help_marker.render(win); }
@@ -190,6 +199,9 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	}
 	help_marker.start();
 	working_message.setFillColor(m_services->styles.colors.blue);
+	working_message.setPosition(position);
+	second_working_message.setPosition(position);
+	third_working_message.setPosition(position);
 	win.draw(working_message);
 	if (working_message.getString().getSize() > 1) { win.draw(second_working_message); }
 	if (second_working_message.getString().getSize() > 1) { win.draw(third_working_message); }

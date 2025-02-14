@@ -133,7 +133,7 @@ fsm::StateFunction Imp::update_idle() {
 
 fsm::StateFunction Imp::update_turn() {
 	animation.label = "turn";
-	animation.log_info();
+	//animation.log_info();
 	attacks.stab.disable();
 	if (animation.totally_complete()) {
 		NANI_LOG_INFO(m_logger, "finished!");

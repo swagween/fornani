@@ -37,6 +37,7 @@ class TextWriter {
 	explicit TextWriter(automa::ServiceProvider& svc);
 	void start();
 	void update();
+	void flush();
 	void set_position(sf::Vector2<float> pos);
 	void set_bounds(sf::Vector2<float> new_bounds);
 	void wrap();

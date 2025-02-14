@@ -20,12 +20,13 @@ struct PathSection {
 
 class RectPath {
   public:
-	RectPath(data::ResourceFinder& finder, std::filesystem::path source, std::string_view type);
+	RectPath(data::ResourceFinder& finder, std::filesystem::path source, std::string_view type, int interpolation = 64);
 	void update();
 	void set_section(std::string_view to_section);
 	void reset();
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_current_position; }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return m_current_dimensions; }
+	[[nodiscard]] auto finished() const -> bool;
   private:
 	std::vector<PathSection> m_sections{};
 	int m_current_section{};
@@ -33,7 +34,7 @@ class RectPath {
 	float m_scale{};
 	sf::Vector2<float> m_current_position{};
 	sf::Vector2<float> m_current_dimensions{};
-	util::Cooldown interpolation;
+	util::Cooldown m_interpolation;
 };
 
 } // namespace fornani::util

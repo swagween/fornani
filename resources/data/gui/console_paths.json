@@ -5,43 +5,11 @@
 			"path": [
 				{
 					"position": [ 240, 257 ],
-					"dimensions": [ 36, 60 ]
-				},
-				{
-					"position": [ 240, 227.5 ],
-					"dimensions": [ 36, 57 ]
-				},
-				{
-					"position": [ 240, 147 ],
-					"dimensions": [ 36, 122 ]
-				},
-				{
-					"position": [ 240, 161 ],
-					"dimensions": [ 36, 122 ]
-				},
-				{
-					"position": [ 240, 164 ],
-					"dimensions": [ 40, 122 ]
-				},
-				{
-					"position": [ 240, 159 ],
-					"dimensions": [ 82, 106 ]
+					"dimensions": [ 58, 60 ]
 				},
 				{
 					"position": [ 240, 190 ],
-					"dimensions": [ 408, 106 ]
-				},
-				{
-					"position": [ 240, 190 ],
-					"dimensions": [ 400, 112 ]
-				},
-				{
-					"position": [ 240, 190 ],
-					"dimensions": [ 388, 120 ]
-				},
-				{
-					"position": [ 240, 190 ],
-					"dimensions": [ 385, 122 ]
+					"dimensions": [ 312, 85 ]
 				}
 			]
 		},
@@ -55,5 +23,4 @@
 			]
 		}
 	]
-
 }

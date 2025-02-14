@@ -5,12 +5,13 @@
 
 namespace fornani::gui {
 
-Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc), item_widget(svc), m_nineslice(svc, corner_factor, edge_factor), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard"} {
+Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc), item_widget(svc), m_nineslice(svc, corner_factor, edge_factor), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64} {
 	origin = {pad, svc.constants.screen_dimensions.y - pad_y};
 	text_suite = svc.text.console;
 	set_texture(svc.assets.t_ui);
 
-	dimensions = sf::Vector2<float>{(float)svc.constants.screen_dimensions.x - 2 * pad, (float)svc.constants.screen_dimensions.y / height_factor};
+	dimensions = sf::Vector2<float>{svc.constants.f_screen_dimensions.x - 2 * pad, svc.constants.f_screen_dimensions.y / height_factor};
+	// 312, 85
 	position = sf::Vector2<float>{svc.constants.f_center_screen.x, origin.y - dimensions.y * 0.5f};
 	text_origin = sf::Vector2<float>{20.0f, 20.0f};
 }
@@ -23,6 +24,8 @@ void Console::begin() {
 
 void Console::update(automa::ServiceProvider& svc) {
 	if (active()) { m_path.update(); }
+	position = m_path.get_position();
+	dimensions = m_path.get_dimensions();
 	m_nineslice.direct_update(svc, m_path.get_position(), m_path.get_dimensions(), corner_factor, edge_factor);
 	writer.set_bounds(sf::Vector2<float>{position.x + dimensions.x * 0.5f - 2.f * border.left, position.y + dimensions.y * 0.5f - border.top});
 	writer.set_position(position + sf::Vector2<float>{border.left, border.top} - dimensions * 0.5f);
