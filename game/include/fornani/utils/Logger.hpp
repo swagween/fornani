@@ -398,12 +398,19 @@ namespace fornani {
 // NOLINTBEGIN
 #define INTERNAL_NANI_LOG(logger, level, message, ...)                                                                                                          \
 	do {                                                                                                                                                       \
-		logger.verbose_##level(__func__, __FILE__, __LINE__, message, __VA_ARGS__);                                                                          \
+		logger.verbose_##level(__func__, __FILE__, __LINE__, message, ##__VA_ARGS__);                                                                          \
 	} while ((void)0, 0)
-
+#if defined(__APPLE__) && defined(__clang__)
+#define NANI_LOG(logger, message, ...)		INTERNAL_NANI_LOG(logger, log, message, ##__VA_ARGS__)
+#define NANI_LOG_ERROR(logger, message, ...) INTERNAL_NANI_LOG(logger, error, message, ##__VA_ARGS__)
+#define NANI_LOG_WARN(logger, message, ...)	INTERNAL_NANI_LOG(logger, warn, message, ##__VA_ARGS__)
+#define NANI_LOG_INFO(logger, message, ...)	INTERNAL_NANI_LOG(logger, info, message, ##__VA_ARGS__)
+#define NANI_LOG_DEBUG(logger, message, ...) INTERNAL_NANI_LOG(logger, debug, message, ##__VA_ARGS__)
+#else
 #define NANI_LOG(logger, message, ...)		INTERNAL_NANI_LOG(logger, log, message, __VA_ARGS__)
 #define NANI_LOG_ERROR(logger, message, ...) INTERNAL_NANI_LOG(logger, error, message, __VA_ARGS__)
 #define NANI_LOG_WARN(logger, message, ...)	INTERNAL_NANI_LOG(logger, warn, message, __VA_ARGS__)
 #define NANI_LOG_INFO(logger, message, ...)	INTERNAL_NANI_LOG(logger, info, message, __VA_ARGS__)
 #define NANI_LOG_DEBUG(logger, message, ...) INTERNAL_NANI_LOG(logger, debug, message, __VA_ARGS__)
+#endif
 // NOLINTEND

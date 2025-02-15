@@ -26,6 +26,26 @@
       }
     },
     {
+      "name": "ninja-apple-llvm-clang-x64",
+      "description": "Build configuration using Ninja Multi-config / Homebrew LLVM Clang on x64",
+      "inherits": "default",
+      "binaryDir": "${sourceDir}/out/apple-llvm-clang",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "/usr/local/opt/llvm/bin/clang",
+        "CMAKE_CXX_COMPILER": "/usr/local/opt/llvm/bin/clang++"
+      }
+    },
+    {
+      "name": "ninja-apple-llvm-clang-arm",
+      "description": "Build configuration using Ninja Multi-config / Homebrew LLVM Clang on arm",
+      "inherits": "default",
+      "binaryDir": "${sourceDir}/out/apple-llvm-clang",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "/opt/homebrew/opt/llvm/bin/clang",
+        "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++"
+      }
+    },
+    {
       "name": "ninja-ubsan",
       "description": "UBSan build configuration using Ninja Multi-config",
       "inherits": "default",
