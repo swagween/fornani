@@ -7,34 +7,36 @@
 
 namespace pi {
 
-Canvas::Canvas(data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop) : Canvas(finder, {}, type, style, backdrop) {}
+Canvas::Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
 
-Canvas::Canvas(data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop) : type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
+Canvas::Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
 	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
     dimensions = dim;
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
     clear();
     map_states.push_back(Map());
 
-	for (auto i{0}; i < last_layer(); ++i) { map_states.back().layers.push_back(Layer(i, i == middleground(), dim)); }
+	for (auto i{0}; i < num_layers; ++i) { map_states.back().layers.push_back(Layer(i, i == default_middleground_v, dim)); }
+	map_states.back().set_middleground(default_middleground_v);
+	map_states.back().set_labels();
 
 	box.setOutlineColor(sf::Color{200, 200, 200, 20});
 	box.setOutlineThickness(-2);
 	box.setSize({f_cell_size(), f_cell_size()});
 
 	gridbox.setFillColor(sf::Color::Transparent);
-	gridbox.setOutlineColor(sf::Color{255, 255, 255, 80});
+	gridbox.setOutlineColor(sf::Color{255, 255, 255, 255});
 	chunkbox.setFillColor(sf::Color::Transparent);
-	chunkbox.setOutlineColor(sf::Color{80, 255, 255, 80});
+	chunkbox.setOutlineColor(sf::Color{80, 255, 160, 255});
 
 	border.setFillColor(sf::Color::Transparent);
 	border.setOutlineThickness(4.f);
 }
 
-void Canvas::update(Tool& tool, bool transformed) {
+void Canvas::update(Tool& tool) {
 	real_dimensions = {static_cast<float>(dimensions.x) * f_native_cell_size(), static_cast<float>(dimensions.y) * f_native_cell_size()};
-	if (transformed) {
-		within_bounds(tool.f_position()) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
+	if (editable()) {
+		tool.in_bounds(dimensions) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
 	} else {
 		within_bounds(tool.get_window_position()) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
 	}
@@ -52,7 +54,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	win.draw(border);
 	if (!states_empty()) {
 		for (auto& layer : get_layers().layers) {
-			box.setFillColor(sf::Color{40, 240, 80, 40});
+			box.setFillColor(sf::Color{40, 240, 80, 20});
 			for (auto& cell : layer.grid.cells) {
 				cell.set_scale(scale);
 				if (cell.value == 0) { continue; }
@@ -62,7 +64,13 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 					tileset.setScale({scale * squared, scale * squared});
 					tileset.setOrigin(get_origin());
 					tileset.setPosition(cell.scaled_position() + position);
-					if (layer.render_order != 7 || flags.show_obscured_layer) { win.draw(tileset); }
+					if (layer.render_order == get_layers().layers.size() - 1) {
+						if (flags.show_obscured_layer) { win.draw(tileset); }
+					} else if (layer.render_order == get_layers().layers.size() - 2) {
+						if (flags.show_reverse_obscured_layer) { win.draw(tileset); }
+					} else {
+						win.draw(tileset);
+					}
 				} else if (flags.show_indicated_layers) {
 					box.setScale({scale, scale});
 					box.setOrigin(get_origin());
@@ -78,11 +86,12 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 		grid_sprite.setPosition(position);
 		grid_sprite.setOrigin(get_origin());
 		grid_sprite.setScale({scale, scale});
+		grid_sprite.setColor(sf::Color{255, 255, 255, 20});
 		win.draw(grid_sprite);
 	}
 }
 
-void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bool local) {
+void Canvas::load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
 
 	map_states.clear();
 	redo_states.clear();
@@ -93,55 +102,63 @@ void Canvas::load(data::ResourceFinder& finder, std::string const& room_name, bo
 
 	auto const& source = local ? finder.paths.editor : finder.paths.levels;
 
-	std::string metapath = (source / room_name / "meta.json").string();
-	std::string tilepath = (source / room_name / "tile.json").string();
+	std::string metapath = (source / std::filesystem::path{region} / std::filesystem::path{room_name}).string();
 
 	data.meta = dj::Json::from_file((metapath).c_str());
 	assert(!data.meta.is_null());
-	data.tiles = dj::Json::from_file((tilepath).c_str());
-	assert(!data.tiles.is_null());
 
 	if (!local) { entities = EntitySet{finder, data.meta["entities"], room_name}; }
 
 	auto const& meta = data.meta["meta"];
 	room_id = meta["room_id"].as<int>();
+	minimap = static_cast<bool>(meta["minimap"].as_bool());
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
 	real_dimensions = {static_cast<float>(dimensions.x) * constants.cell_size, static_cast<float>(dimensions.y) * constants.cell_size};
-	for (auto i{0}; i < last_layer(); ++i) { map_states.back().layers.push_back(Layer(i, i == middleground(), dimensions)); }
-	
 	auto style_value = meta["style"].as<int>();
 	styles.tile = Style(static_cast<StyleType>(style_value));
 	m_theme.music = meta["music"].as_string();
 	m_theme.ambience = meta["ambience"].as_string();
 	for (auto& in : meta["atmosphere"].array_view()) { m_theme.atmosphere.push_back(in.as<int>()); };
-	cutscene.flag = static_cast<bool>(meta["cutscene_on_entry"]["flag"].as_bool());
-	cutscene.type = meta["cutscene_on_entry"]["type"].as<int>();
-	cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
-	cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
-
-	background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>()));
+	if (meta["camera_effects"]) {
+		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
+		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
+		m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
+		m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
+		m_camera_effects.frequency_in_seconds = meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>();
+	}
+	if (meta["cutscene_on_entry"]) {
+		cutscene.flag = static_cast<bool>(meta["cutscene_on_entry"]["flag"].as_bool());
+		cutscene.type = meta["cutscene_on_entry"]["type"].as<int>();
+		cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
+		cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
+	}
+	if (meta["background"]) { background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>())); }
 
     // tiles
-    int layer_counter{};
-    for (auto& layer : map_states.back().layers) {
+	auto counter{0};
+	for (auto& layer : data.meta["tile"]["layers"].array_view()) {
+		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions));
         int cell_counter{};
-        for (auto& cell : data.tiles["layers"][layer_counter].array_view()) {
-            layer.grid.cells.at(cell_counter).value = cell.as<int>();
+        for (auto& cell : layer.array_view()) {
+            map_states.back().layers.back().grid.cells.at(cell_counter).value = cell.as<int>();
             ++cell_counter;
         }
-        ++layer_counter;
+		++counter;
 	}
+	map_states.back().set_middleground(data.meta["tile"]["middleground"].as<int>());
+	map_states.back().m_flags.has_obscuring_layer = static_cast<bool>(data.meta["tile"]["flags"]["obscuring"].as_bool());
+	map_states.back().m_flags.has_reverse_obscuring_layer = static_cast<bool>(data.meta["tile"]["flags"]["reverse_obscuring"].as_bool());
 	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
+	map_states.back().set_labels();
 	set_grid_texture();
 }
 
-bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
+bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name) {
 
-	std::filesystem::create_directory(finder.paths.levels / room_name);
-	std::filesystem::create_directory(finder.paths.out / room_name);
+	std::filesystem::create_directory(finder.paths.levels / std::filesystem::path{region});
 
 	// clean jsons
 	data = {};
@@ -152,44 +169,46 @@ bool Canvas::save(data::ResourceFinder& finder, std::string const& room_name) {
 
 	// data.meta
 	data.meta["meta"]["room_id"] = room_id;
+	data.meta["meta"]["minimap"] = dj::Boolean{minimap};
 	data.meta["meta"]["metagrid"][0] = metagrid_coordinates.x;
 	data.meta["meta"]["metagrid"][1] = metagrid_coordinates.y;
 	data.meta["meta"]["dimensions"][0] = dimensions.x;
 	data.meta["meta"]["dimensions"][1] = dimensions.y;
-	data.meta["meta"]["chunk_dimensions"][0] = chunk_dimensions().x;
-	data.meta["meta"]["chunk_dimensions"][1] = chunk_dimensions().y;
 	data.meta["meta"]["style"] = static_cast<int>(styles.tile.get_type());
 	data.meta["meta"]["background"] = static_cast<int>(background->type.get_type());
 	data.meta["meta"]["music"] = m_theme.music;
 	for (auto& entry : m_theme.atmosphere) { data.meta["meta"]["atmosphere"].push_back(entry); }
 	data.meta["meta"]["ambience"] = m_theme.ambience;
+	data.meta["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;
+	data.meta["meta"]["camera_effects"]["shake"]["energy"] = m_camera_effects.shake_properties.energy;
+	data.meta["meta"]["camera_effects"]["shake"]["start_time"] = m_camera_effects.shake_properties.start_time;
+	data.meta["meta"]["camera_effects"]["shake"]["dampen_factor"] = m_camera_effects.shake_properties.dampen_factor;
+	data.meta["meta"]["camera_effects"]["shake"]["frequency_in_seconds"] = m_camera_effects.frequency_in_seconds;
 	data.meta["meta"]["cutscene_on_entry"]["flag"] = dj::Boolean{cutscene.flag};
 	data.meta["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	data.meta["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	data.meta["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
 
-	entities.save(finder, data.meta["entities"], room_name);
-
-	data.tiles["layers"] = wipe;
-	for (auto i{0}; i < last_layer(); ++i) { data.tiles["layers"].push_back(wipe); }
+	data.meta["tile"]["layers"] = wipe;
+	for (auto i{0}; i < last_layer(); ++i) { data.meta["tile"]["layers"].push_back(wipe); }
 	// push layer data
 	int current_layer{};
+	data.meta["tile"]["flags"]["obscuring"] = dj::Boolean{map_states.back().m_flags.has_obscuring_layer};
+	data.meta["tile"]["flags"]["reverse_obscuring"] = dj::Boolean{map_states.back().m_flags.has_reverse_obscuring_layer};
 	for (auto& layer : map_states.back().layers) {
+		if (map_states.back().get_middleground() == current_layer) { data.meta["tile"]["middleground"] = current_layer; }
 		int current_cell{};
 		for ([[maybe_unused]] auto& cell : layer.grid.cells) {
-			data.tiles["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);
+			data.meta["tile"]["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);
 			++current_cell;
 		}
 		++current_layer;
 	}
 
 	auto success{true};
-	if (!data.meta.to_file((finder.paths.levels / room_name / "meta.json").string().c_str())) { success = false; }
-	if (!data.tiles.to_file((finder.paths.levels / room_name / "tile.json").string().c_str())) { success = false; }
-	/*if (!data.meta.to_file((finder.paths.out / room_name / "meta.json").string().c_str())) { success = false; }
-	if (!data.tiles.to_file((finder.paths.out / room_name / "tile.json").string().c_str())) { success = false; }*/
-
-    return success;
+	if (!entities.save(finder, data.meta["entities"], room_name)) { success = false; }
+	if (!data.meta.to_file((finder.paths.levels / region / room_name).string().c_str())) { success = false; }
+	return success;
 }
 
 void Canvas::clear() {
@@ -205,6 +224,7 @@ void Canvas::save_state(Tool& tool, bool force) {
     auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;
 	if ((undoable_tool && tool.clicked() && editable()) || force) {
 		map_states.emplace_back(Map{map_states.back()});
+		if (map_states.size() > max_undo_states_v) { map_states.pop_front(); }
         clear_redo_states();
     }
 }
@@ -229,6 +249,8 @@ void Canvas::redo() {
 
 void Canvas::clear_redo_states() { redo_states.clear(); }
 
+void Canvas::hover() { state.set(CanvasState::hovered); }
+
 void Canvas::unhover() { state.reset(CanvasState::hovered); }
 
 void Canvas::move(sf::Vector2<float> distance) { position += distance; }
@@ -248,9 +270,10 @@ void Canvas::resize(sf::Vector2i adjustment) {
 	auto current = Map{map_states.back()};
 	dimensions.x += adjustment.x * static_cast<int>(f_native_chunk_size());
 	dimensions.y += adjustment.y * static_cast<int>(f_native_chunk_size());
+	auto num_layers = map_states.back().layers.size();
 	map_states.push_back(Map());
-	for (auto i{0}; i < last_layer(); ++i) {
-		map_states.back().layers.push_back(Layer(i, i == middleground(), dimensions));
+	for (auto i{0}; i < num_layers; ++i) {
+		map_states.back().layers.push_back(Layer(i, i == current.get_middleground(), dimensions));
 		map_states.back().layers.back().grid.match(current.layers.at(i).grid);
 	}
 	clear_redo_states();
@@ -271,7 +294,7 @@ void Canvas::set_backdrop_color(sf::Color color) { border.setFillColor(color); }
 void Canvas::set_grid_texture() {
 	if (get_layers().layers.empty()) { return; }
 	if (!grid_texture.resize(sf::Vector2u{static_cast<uint32_t>(dimensions.x * f_native_cell_size()), static_cast<uint32_t>(dimensions.y * f_native_cell_size())})) {
-		std::cout << "Failed to resize grid texture.\n";
+		NANI_LOG_WARN(m_logger, "Failed to resize grid texture.");
 		return;
 	}
 	grid_texture.clear(sf::Color::Transparent);
@@ -282,7 +305,7 @@ void Canvas::set_grid_texture() {
 				chunkbox.setPosition(gridbox.getPosition());
 				chunkbox.setSize({f_cell_size() * f_native_chunk_size(), f_cell_size() * f_native_chunk_size()});
 				chunkbox.setScale({1.f / scale, 1.f / scale});
-				chunkbox.setOutlineThickness(std::min(-scale * 2.f, -2.f));
+				chunkbox.setOutlineThickness(std::min(-scale * 2.f, -4.f));
 				grid_texture.draw(chunkbox);
 			}
 			gridbox.setSize({f_cell_size(), f_cell_size()});

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.15)
 set(CMAKE_CXX_STANDARD 20)
 
 if (NOT DEFINED FORNANI_ROOT_DIR)
-  set(FORNANI_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "Fornani root directory")
+    set(FORNANI_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "Fornani root directory")
 endif ()
 
 project(fornani
@@ -14,6 +14,7 @@ project(fornani
 
 set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
 
+option(FORNANI_PRODUCTION_BUILD "If enabled, will build the game in production mode" OFF)
 option(
         FORNANI_DEV_BUILD
         "If enabled, writes a steam_appid.txt file next to the executable,
@@ -31,33 +32,26 @@ option(
         OFF
 )
 
+include(cmake/helpers/OptionMessages.cmake)
+
 include(cmake/func/AddTargetSource.cmake)
 include(cmake/GenerateDataTemplates.cmake)
 
 add_subdirectory(dependencies)
 add_subdirectory(game)
 if (FORNANI_BUILD_EDITOR)
-  message(STATUS "FORNANI: Building editor!")
-  add_subdirectory(editor)
+    add_subdirectory(editor)
 endif ()
-message(STATUS "FORNANI: Building launcher!")
 add_subdirectory(launcher)
 
-if (FORNANI_DEV_BUILD)
-  message(STATUS "FORNANI: FORNANI_DEV_BUILD is ON. Will write steam_appid.txt next to executable!")
-endif ()
 
 if (FORNANI_ENABLE_PROFILER)
-  message(STATUS "FORNANI: FORNANI_ENABLE_PROFILER is ON. Profiling will now be enabled in the executable!")
+    target_compile_definitions(fornani PRIVATE TRACY_ENABLE)
+    target_compile_definitions(fornani PRIVATE FORNANI_PROFILE)
 endif ()
 
-if (FORNANI_ENABLE_VERBOSE_LOGGING)
-  message(STATUS "FORNANI: FORNANI_ENABLE_VERBOSE_LOGGING is ON. Logger will now output verbose logging information!")
-endif ()
-
-if (FORNANI_ENABLE_PROFILER)
-  target_compile_definitions(fornani PRIVATE TRACY_ENABLE)
-  target_compile_definitions(fornani PRIVATE FORNANI_PROFILE)
+if (DEFINED FORNANI_DISABLE_DBGHELP)
+    target_compile_definitions(fornani PRIVATE NANI_DISABLE_ADVANCED_CRASH_REPORTING)
 endif ()
 
 # TODO: This is kinda janky and is only a stop gap. At some point we will have cmake handle packaging and this will have to change.

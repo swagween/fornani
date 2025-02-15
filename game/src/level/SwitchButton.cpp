@@ -7,7 +7,7 @@
 #include "fornani/level/Breakable.hpp"
 #include <algorithm>
 
-namespace world {
+namespace fornani::world {
 
 SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> position, int id, int type, Map& map) : sprite(svc.assets.t_switches, {32, 16}), id(id), type(static_cast<SwitchType>(type)) {
 	collider = shape::Collider({32.f, 14.f});
@@ -19,7 +19,7 @@ SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> posi
 	collider.sync_components();
 	collider.collision_depths = util::CollisionDepth();
 	collider.flags.general.set(shape::General::soft);
-	sensor.dimensions = {28.f, 16.f};
+	sensor.set_dimensions({28.f, 16.f});
 	sensor.set_position(position);
 	sprite.push_params("neutral", {0, 1, 28, -1});
 	sprite.push_params("shine", {1, 4, 28, 0});
@@ -97,8 +97,8 @@ void SwitchButton::handle_collision(shape::Collider& other) const { other.handle
 void SwitchButton::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
-		sensorbox.setPosition(sensor.position - cam);
-		sensorbox.setSize(sensor.dimensions);
+		sensorbox.setPosition(sensor.get_position() - cam);
+		sensorbox.setSize(sensor.get_dimensions());
 		sensorbox.setFillColor(sf::Color::Transparent);
 		sensorbox.setOutlineThickness(-4);
 		pressed() ? sensorbox.setOutlineColor(svc.styles.colors.dark_fucshia) : sensorbox.setOutlineColor(svc.styles.colors.mythic_green);

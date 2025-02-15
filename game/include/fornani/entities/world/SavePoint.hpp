@@ -1,25 +1,23 @@
 
 #pragma once
 
-#include <string>
-#include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Shape.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/particle/Sparkler.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 	inline anim::Parameters anim_params{0, 12, 24, -1};
 
@@ -29,7 +27,7 @@ class SavePoint {
 	using Vec = sf::Vector2<float>;
 	using Vecu16 = sf::Vector2<uint32_t>;
 
-	SavePoint(automa::ServiceProvider& svc);
+	explicit SavePoint(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);

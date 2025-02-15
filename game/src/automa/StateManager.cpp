@@ -3,9 +3,16 @@
 
 #include <fornani/utils/Tracy.hpp>
 
-#include "fornani/setup/Game.hpp"
+#include "../../include/fornani/core/Game.hpp"
+#include "fornani/automa/states/ControlsMenu.hpp"
+#include "fornani/automa/states/CreditsMenu.hpp"
+#include "fornani/automa/states/Intro.hpp"
+#include "fornani/automa/states/MainMenu.hpp"
+#include "fornani/automa/states/OptionsMenu.hpp"
+#include "fornani/automa/states/SettingsMenu.hpp"
+#include "fornani/automa/states/StatSheet.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 StateManager::StateManager(ServiceProvider& svc, player::Player& player) : g_current_state{std::make_unique<MainMenu>(svc, player, "main")} {}
 
@@ -74,7 +81,6 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		} else {
 			game.flags.set(fornani::GameFlags::in_game);
 			set_current_state(std::make_unique<Dojo>(svc, player, "dojo", svc.state_controller.next_state));
-			if (svc.demo_mode()) { player.set_position(svc.state_controller.player_position); }
 			game.playtest_sync();
 		}
 	}

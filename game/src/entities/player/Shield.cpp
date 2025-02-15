@@ -1,7 +1,7 @@
 #include "fornani/entities/player/Shield.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace player {
+namespace fornani::player {
 
 Shield::Shield(automa::ServiceProvider& svc) : sprite{svc.assets.t_shield} {
 	sensor.bounds.setRadius(28);

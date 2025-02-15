@@ -1,5 +1,4 @@
 #include "editor/setup/WindowManager.hpp"
-#include <iostream>
 
 namespace pi {
 	
@@ -24,8 +23,8 @@ void WindowManager::create(std::string title, bool const fullscreen) {
 	dimensions.display = sf::Vector2u{sf::VideoMode::getDesktopMode().size};
 	mode = is_fullscreen ? sf::VideoMode(dimensions.display) : sf::VideoMode(dimensions.preset);
 	if (!mode.isValid()) {
-		std::cout << "Number of valid fullscreen modes: " << mode.getFullscreenModes().size() << "\n";
-		std::cout << "Failed to extract a valid fullscreen mode.\n";
+		NANI_LOG_INFO(m_logger, "Number of valid fullscreen modes: {}", mode.getFullscreenModes().size());
+		NANI_LOG_WARN(m_logger, "Failed to extract a valid fullscreen mode.");
 		mode = sf::VideoMode(dimensions.preset);
 		is_fullscreen = false;
 	}

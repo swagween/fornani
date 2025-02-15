@@ -4,7 +4,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include <numbers>
 
-namespace vfx {
+namespace fornani::vfx {
 
 Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2<float> position, int num_links, bool reversed) : root(position) {
 	for (int i{0}; i < num_links; ++i) { links.push_back(Spring({params})); }

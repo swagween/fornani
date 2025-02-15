@@ -1,14 +1,13 @@
 #pragma once
-#include <array>
 #include <SFML/Graphics.hpp>
 #include "Cooldown.hpp"
 #include "fornani/particle/Gravitator.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace util {
+namespace fornani::util {
 
 class NineSlice {
   public:
@@ -20,10 +19,10 @@ class NineSlice {
 	void start(automa::ServiceProvider& svc, sf::Vector2<float> position, float start_scale = 1.f, sf::Vector2<int> direction = {0, -1}, float border = 0.f);
 	void end();
 	void speed_up_appearance(int rate);
-	void set_appearance_time(int time) { appearance_time = time; }
-	void set_scale(float scale) { global_scale = scale; }
-	void set_force(float force) { gravitator.attraction_force = force; }
-	void set_fric(float fric) { gravitator.collider.physics.set_global_friction(fric); }
+	void set_appearance_time(int const time) { appearance_time = time; }
+	void set_scale(float const scale) { global_scale = scale; }
+	void set_force(float const force) { gravitator.attraction_force = force; }
+	void set_fric(float const fric) { gravitator.collider.physics.set_global_friction(fric); }
 	void set_position(sf::Vector2<float> pos) { gravitator.set_position(pos); }
 	[[nodiscard]] auto is_extended() const -> bool { return appear.is_complete() && global_scale == 1.f; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return native_dimensions * 0.5f; }
@@ -44,4 +43,4 @@ class NineSlice {
 	float edge_dimensions{};
 };
 
-} // namespace util
+} // namespace fornani::util

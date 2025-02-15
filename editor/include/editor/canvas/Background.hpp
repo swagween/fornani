@@ -2,16 +2,18 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
-namespace data {
+#include "fornani/io/Logger.hpp"
+
+namespace fornani::data {
 class ResourceFinder;
 }
 
 namespace pi {
 
-enum class Backdrop { black, night, dusk, woods, END };
+enum class Backdrop : uint8_t { black, night, dusk, woods, END };
 class BackgroundType {
   public:
 	BackgroundType(Backdrop type) : type(type) {
@@ -23,7 +25,7 @@ class BackgroundType {
 		default: label = "<none>"; break;
 		}
 	}
-	[[nodiscard]] auto get_label_char() const -> const char* { return label.c_str(); };
+	[[nodiscard]] auto get_label_char() const -> char const* { return label.c_str(); };
 	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_type() const -> Backdrop { return type; };
 	[[nodiscard]] auto get_i_type() const -> int { return static_cast<int>(type); };
@@ -48,7 +50,7 @@ struct BackgroundLayer {
 
 class Background {
   public:
-	Background(data::ResourceFinder& finder, Backdrop backdrop);
+	Background(fornani::data::ResourceFinder& finder, Backdrop backdrop);
 
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -63,6 +65,8 @@ class Background {
 	sf::Vector2<int> start_offset{};
 	bool* b_debug{};
 	sf::Texture texture{};
+
+	fornani::io::Logger m_logger{"pioneer"};
 };
 
 } // namespace pi

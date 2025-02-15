@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 
-namespace style {
+namespace fornani::style {
 
 class Style {
   public:

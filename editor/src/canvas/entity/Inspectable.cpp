@@ -3,10 +3,10 @@
 
 namespace pi {
 
-Inspectable::Inspectable(std::string label) : Entity("inspectables") {}
+Inspectable::Inspectable() : Entity("inspectables") {}
 
 Inspectable::Inspectable(bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates)
-	: Entity("inspectables", 0, {}, {1, 1}), activate_on_contact(activate_on_contact), key(key), suites(suites), responses(responses), alternates(alternates) {}
+	: Entity("inspectables", 0, {1, 1}), activate_on_contact(activate_on_contact), key(key), suites(suites), responses(responses), alternates(alternates) {}
 
 std::unique_ptr<Entity> Inspectable::clone() const { return std::make_unique<Inspectable>(*this); }
 
@@ -57,6 +57,9 @@ void Inspectable::expose() {
 	ImGui::InputInt("Alternates", &alternates);
 }
 
-void Inspectable::render(sf::RenderWindow& win, sf::Vector2<float> cam) { Entity::render(win, cam); }
+void Inspectable::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
+	highlighted ? drawbox.setFillColor(sf::Color{255, 100, 60, 180}) : drawbox.setFillColor(sf::Color{255, 60, 60, 80});
+	Entity::render(win, cam, size);
+}
 
 } // namespace pi

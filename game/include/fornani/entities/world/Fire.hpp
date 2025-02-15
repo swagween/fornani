@@ -1,12 +1,12 @@
-
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/Shape.hpp"
 #include "fornani/particle/Sparkler.hpp"
 #include "Inspectable.hpp"
 
-namespace world {
+namespace fornani::world {
 class Map;
 class Fire {
   public:

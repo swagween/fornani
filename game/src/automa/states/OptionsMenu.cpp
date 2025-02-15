@@ -2,7 +2,7 @@
 #include "fornani/automa/states/OptionsMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number) {
 	left_dot.set_position(options.at(current_selection.get()).left_offset);

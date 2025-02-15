@@ -2,7 +2,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Eyebit::Eyebit(automa::ServiceProvider& svc, bool spawned) : Enemy(svc, "eyebit", spawned) {
 	animation.set_params(idle);

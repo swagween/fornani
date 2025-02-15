@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction) : Enemy(svc, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, 5), fire_rate{4} {
 	animation.set_params(idle);

@@ -1,7 +1,7 @@
 #include "fornani/entities/player/PlayerController.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace player {
+namespace fornani::player {
 
 PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc) {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));

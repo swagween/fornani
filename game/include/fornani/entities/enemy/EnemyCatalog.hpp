@@ -2,21 +2,21 @@
 #pragma once
 #include "fornani/entities/enemy/catalog/Frdog.hpp"
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace enemy {
+namespace fornani::enemy {
 
 class EnemyCatalog {
   public:
 	EnemyCatalog() = default;
-	EnemyCatalog(automa::ServiceProvider& svc);
+	explicit EnemyCatalog(automa::ServiceProvider& svc);
 	~EnemyCatalog() {}
 	void update();
 	void push_enemy(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, int id, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 
-	std::vector<std::unique_ptr<enemy::Enemy>> enemies{};
+	std::vector<std::unique_ptr<Enemy>> enemies{};
 };
 
 } // namespace enemy

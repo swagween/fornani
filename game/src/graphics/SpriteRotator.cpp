@@ -2,7 +2,7 @@
 #include "fornani/utils/Math.hpp"
 #include <numbers>
 
-namespace vfx {
+namespace fornani::vfx {
 
 void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2<float> direction, int num_angles, bool radial) {
 

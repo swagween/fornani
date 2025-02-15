@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace world {
+namespace fornani::world {
 
 Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size)
 	: size(size), hitbox(i_size().x == 1 ? size * 32.f : size * 24.f), sprite{texture}, grid_position(position + sf::Vector2<float>{16.f, 16.f}) {
@@ -29,8 +29,8 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<flo
 	offset = sf::Vector2<float>{x_off, y_off};
 	if (facing.left_or_right()) {
 		offset = {y_off, x_off};
-		auto rotation = sf::Vector2<float>{hitbox.dimensions.y, hitbox.dimensions.x};
-		hitbox.dimensions = rotation;
+		auto rotation = sf::Vector2<float>{hitbox.get_dimensions().y, hitbox.get_dimensions().x};
+		hitbox.set_dimensions(rotation);
 	}
 	i_size().x == 1 ? hitbox.set_position(position) : hitbox.set_position(position - offset);
 }
@@ -63,8 +63,8 @@ void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	sprite.setPosition(grid_position - cam);
 	win.draw(sprite);
 	if (svc.greyblock_mode()) {
-		drawbox.setPosition(hitbox.position - cam);
-		drawbox.setSize(hitbox.dimensions);
+		drawbox.setPosition(hitbox.get_position() - cam);
+		drawbox.setSize(hitbox.get_dimensions());
 		drawbox.setFillColor(sf::Color{249, 12, 48, 64});
 		win.draw(drawbox);
 	}

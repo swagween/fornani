@@ -1,65 +1,66 @@
 
 #include "fornani/setup/DataManager.hpp"
+
+#include <iostream>
+
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 
-namespace data {
+namespace fornani::data {
 
-DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) { load_data(); }
+DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) {
+	load_data();
+}
 
 void DataManager::load_data(std::string in_room) {
+	m_services->stopwatch.start();
+	std::cout << "> Start Timer...\n";
 	auto const& finder = m_services->finder;
 	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path()};
 	auto room_list = room_path / "level";
-	for (auto const& this_room : std::filesystem::recursive_directory_iterator(room_list)) {
-		if (!this_room.is_directory()) { continue; }
-		auto room_data = dj::Json::from_file((this_room.path() / "meta.json").string().c_str());
-		if (room_data.is_null()) { continue; }
-		auto this_id = room_data["meta"]["room_id"].as<int>();
-		auto this_name = this_room.path().filename().string();
-		auto entry = dj::Json{};
-		entry["room_id"] = this_id;
-		entry["label"] = this_name;
-		map_table["rooms"].push_back(entry);
+	for (auto const& this_region : std::filesystem::recursive_directory_iterator(room_list)) {
+		if (!this_region.is_directory()) { continue; }
+		for (auto const& this_room : std::filesystem::recursive_directory_iterator(this_region)) {
+			if (this_room.path().extension() != ".json") { continue; }
+			auto room_data = dj::Json::from_file((this_room.path()).string().c_str());
+			if (room_data.is_null()) { continue; }
+			auto this_id = room_data["meta"]["room_id"].as<int>();
+			auto this_name = this_room.path().filename().string();
+			if (is_duplicate_room(this_id)) { continue; }
+			map_jsons.push_back(MapData{this_id, room_data});
+			
+			// cache map layers
+			sf::Vector2<uint32_t> dimensions{};
+			dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
+			dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
+			std::vector<world::Layer> next{};
+			auto& in_tile = map_jsons.back().metadata["tile"];
+			auto ho{static_cast<bool>(in_tile["flags"]["obscuring"].as_bool())};
+			auto hro{static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool())};
+			uint8_t ctr{0u};
+			for (auto& layer : in_tile["layers"].array_view()) {
+				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], ho, hro));
+				++ctr;
+			}
+			map_layers.push_back(next);
+
+			// write to map table
+			auto entry = dj::Json{};
+			entry["room_id"] = this_id;
+			entry["label"] = this_name;
+			map_table["rooms"].push_back(entry);
+		}
 	}
 	map_table.dj::Json::to_file((finder.resource_path() + "/data/level/map_table.json").c_str());
-
 	map_table = dj::Json::from_file((finder.resource_path() + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].array_view()) {
-		m_services->tables.get_map_label.insert(std::make_pair(room["room_id"].as<int>(), room["label"].as_string()));
+		auto id = room["room_id"].as<int>();
+		if (m_services->tables.get_map_label.contains(id)) { continue; }
+		m_services->tables.get_map_label.insert(std::make_pair(id, room["label"].as_string()));
 		rooms.push_back(room["room_id"].as<int>());
-	}
-
-	// load map
-	// std::cout << "loading map data...";
-	std::string room_str{};
-	int room_counter{};
-	map_jsons.reserve(rooms.size());
-	map_layers.reserve(rooms.size());
-	for (auto& room : rooms) {
-		map_jsons.push_back(MapData());
-		map_jsons.back().id = room;
-		room_str = m_services->tables.get_map_label.contains(room) ? finder.resource_path() + "/level/" + m_services->tables.get_map_label.at(room) : finder.resource_path() + "/level/" + in_room;
-		map_jsons.back().metadata = dj::Json::from_file((room_str + "/meta.json").c_str());
-		assert(!map_jsons.back().metadata.is_null());
-		map_jsons.back().tiles = dj::Json::from_file((room_str + "/tile.json").c_str());
-		assert(!map_jsons.back().tiles.is_null());
-
-		// cache map layers
-		int layer_counter{};
-		sf::Vector2<uint32_t> dimensions{};
-		dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
-		dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
-		map_layers.push_back(std::vector<world::Layer>());
-		map_layers.back().reserve(num_layers);
-		for (int i = 0; i < num_layers; ++i) {
-			map_layers.at(room_counter).push_back(world::Layer(i, (i == 4), dimensions, map_jsons.back().tiles["layers"][layer_counter]));
-			++layer_counter;
-		}
-		++room_counter;
 	}
 
 	auto ctr{0};
@@ -67,7 +68,7 @@ void DataManager::load_data(std::string in_room) {
 		file.id = ctr;
 		file.label = "file_" + std::to_string(ctr);
 		file.save_data = dj::Json::from_file((finder.resource_path() + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
-		if ((dj::Boolean)file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::FileFlags::new_file); }
+		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::io::FileFlags::new_file); }
 		++ctr;
 	}
 	blank_file.save_data = dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
@@ -122,6 +123,9 @@ void DataManager::load_data(std::string in_room) {
 		for (auto& item : entry.second["vendor"]["uncommon_items"].array_view()) { vendor.uncommon_items.push_back(item.as<int>()); }
 		for (auto& item : entry.second["vendor"]["rare_items"].array_view()) { vendor.rare_items.push_back(item.as<int>()); }
 	}
+	m_services->stopwatch.stop();
+	m_services->stopwatch.print_time();
+	m_services->stopwatch.start();
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
@@ -375,7 +379,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
 	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
 	m_services->ticker.set_time(m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>()));
-	if (files.at(file).flags.test(fornani::FileFlags::new_file)) { s.player.death_count.set(0); }
+	if (files.at(file).flags.test(fornani::io::FileFlags::new_file)) { s.player.death_count.set(0); }
 
 	return room_id;
 }
@@ -394,7 +398,7 @@ void DataManager::load_settings() {
 void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
 	files.at(index).save_data = blank_file.save_data;
-	files.at(index).flags.set(fornani::FileFlags::new_file);
+	files.at(index).flags.set(fornani::io::FileFlags::new_file);
 	files.at(index).save_data.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
@@ -406,7 +410,7 @@ void DataManager::write_death_count(player::Player& player) {
 	save.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
 }
 
-std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) {
+std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) const {
 
 	auto const& save = blank_file.save_data;
 	assert(!save.is_null());
@@ -419,7 +423,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	// load player's arsenal
 	player.arsenal = {};
 
-	return m_services->tables.get_map_label.at(100);
+	return m_services->tables.get_map_label.at(1);
 }
 
 void DataManager::load_player_params(player::Player& player) {
@@ -520,6 +524,13 @@ void DataManager::respawn_enemies(int room_id, int distance) {
 
 void DataManager::respawn_all() {
 	std::erase_if(fallen_enemies, [](auto const& i) { return !i.permanent; });
+}
+
+bool data::DataManager::is_duplicate_room(int id) const {
+	for (auto& json : map_jsons) {
+		if (json.id == id) { return true; }
+	}
+	return false;
 }
 
 bool DataManager::door_is_unlocked(int id) const {

@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace world {
+namespace fornani::world {
 
 Spawner::Spawner(automa::ServiceProvider& svc, sf::Vector2<float> position, int enemy_id) : position(position), enemy_id(enemy_id) {
 	auto random_offset = svc.random.random_range(0, spawn_timer.get_native_time() * 2);

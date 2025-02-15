@@ -5,7 +5,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Chest::Chest(automa::ServiceProvider& svc, int id) : id(id), sprite{svc.assets.t_chest} {
 	dimensions = {28, 28};
@@ -71,7 +71,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 					console.load_and_launch("chest");
 					console.append(player.arsenal.value().get_weapon_at(item_id).get_label());
 				}
-				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.position, 100)); }
+				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.get_position(), 100)); }
 				if (type == ChestType::item) {
 					player.give_item(item_id, 1);
 					console.display_item(item_id);

@@ -2,14 +2,11 @@
 
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/Counter.hpp"
-#include <string_view>
-#include <unordered_map>
-#include <vector>
 
 namespace fornani {
 
 struct StatTracker {
-	
+
 	struct {
 		util::Counter death_count{};
 		util::Counter items_collected{};
@@ -36,7 +33,7 @@ struct StatTracker {
 		float bryns_gun{};
 	} time_trials{};
 
-	constexpr auto float_to_seconds(float const time) {
+	static constexpr auto float_to_seconds(float const time) {
 		using namespace std::chrono;
 		return round<nanoseconds>(duration<float>{time});
 	}

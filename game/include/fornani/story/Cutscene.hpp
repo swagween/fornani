@@ -2,34 +2,32 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Counter.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/BitFlags.hpp"
 #include <string_view>
-#include <unordered_map>
-#include <vector>
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
-namespace world {
+namespace fornani::world {
 class Map;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
 namespace fornani {
 
-enum class CutsceneFlags { complete };
+enum class CutsceneFlags : uint8_t { complete };
 
 class Cutscene {
   public:
+	virtual ~Cutscene() = default;
 	Cutscene(automa::ServiceProvider& svc, int id, std::string_view label);
 
-	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] gui::Console& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player){};
+	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] gui::Console& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player) {};
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }
 
   protected:

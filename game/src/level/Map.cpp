@@ -9,10 +9,13 @@
 
 #include <tracy/Tracy.hpp>
 
-namespace world {
+#include <iostream>
+
+namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console) {}
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{128}, .loading{2}}, barrier{1.f, 1.f},
+	  scaled_barrier{barrier * svc.constants.cell_size} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
@@ -30,7 +33,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		++ctr;
 	}
 	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
-	auto const& tiles = svc.data.map_jsons.at(room_lookup).tiles;
 	inspectable_data = svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"];
 
 	//check for enemy respawns
@@ -38,18 +40,20 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
+	if (meta["minimap"].as_bool()) { flags.properties.set(MapProperties::minimap); }
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
-	chunk_dimensions.x = meta["chunk_dimensions"][0].as<int>();
-	chunk_dimensions.y = meta["chunk_dimensions"][1].as<int>();
-	real_dimensions = {(float)dimensions.x * svc.constants.cell_size, (float)dimensions.y * svc.constants.cell_size};
+	real_dimensions = {static_cast<float>(dimensions.x) * svc.constants.cell_size, static_cast<float>(dimensions.y) * svc.constants.cell_size};
 	auto style_value = meta["style"].as<int>();
 	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
 	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
 	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
+	m_middleground = svc.data.map_jsons.at(room_lookup).metadata["tile"]["middleground"].as<int>();
+	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["obscuring"].as_bool() ? flags.properties.set(MapProperties::has_obscuring_layer) : flags.properties.reset(MapProperties::has_obscuring_layer);
+	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? flags.properties.set(MapProperties::has_reverse_obscuring_layer) : flags.properties.reset(MapProperties::has_reverse_obscuring_layer);
 
 	auto const& entities = metadata["entities"];
 
@@ -72,6 +76,14 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			ambience.play();
 		}
 		for (auto& entry : meta["atmosphere"].array_view()) { if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); } }
+		if (meta["camera_effects"]) {
+			m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
+			m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
+			m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
+			m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
+			m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
+			m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
+		}
 
 		sound.echo_count = meta["sound"]["echo_count"].as<int>();
 		sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
@@ -262,16 +274,26 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		generate_layer_textures(svc);
 		player->map_reset();
 		transition.end();
-		loading.start(16);
+		cooldowns.fade_obscured.start();
+		cooldowns.loading.start();
 	}
 }
 
 void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
-	// if (svc.ticker.every_x_ticks(400)) { std::cout << "Collidable cells: " << collidable_indeces.size() << "\n"; }
 	auto& layers = svc.data.get_layers(room_id);
-	loading.update();
-	//if (loading.running()) { generate_layer_textures(svc); } // band-aid fix for weird artifacting for 1x1 levels
 	flags.state.reset(LevelState::camera_shake);
+	cooldowns.loading.update();
+
+	// camera effects
+	if (svc.ticker.every_second() && m_camera_effects.shake_properties.shaking) {
+		m_camera_effects.cooldown.update();
+		if (m_camera_effects.cooldown.is_complete()) {
+			svc.camera_controller.shake(m_camera_effects.shake_properties);
+			auto shake_time = m_camera_effects.cooldown.get_native_time();
+			auto diff = svc.random.random_range(-shake_time / 2, shake_time / 2);
+			m_camera_effects.cooldown.start(shake_time + diff);
+		}
+	}
 
 	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 
@@ -290,7 +312,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
-	if (off_the_bottom(player->collider.physics.position) && loading.is_complete()) {
+	if (off_the_bottom(player->collider.physics.position) && cooldowns.loading.is_complete()) {
 		player->hurt(64.f);
 		player->freeze_position();
 	}
@@ -318,7 +340,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 				enemy->health_indicator.add(grenade.get_damage());
 				if (enemy->just_died() && enemy->spawn_loot()) {
 					svc.stats.enemy.enemies_killed.update();
-					active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.position));
+					active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.get_position()));
 					svc.soundboard.flags.frdog.set(audio::Frdog::death);
 				}
 			}
@@ -393,7 +415,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& g : grass) { g->update(svc, *this, *player); }
 	player->handle_map_collision(*this);
-	if (loading.is_complete()) { transition.update(*player); }
+	if (cooldowns.loading.is_complete()) { transition.update(*player); }
 	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
@@ -407,8 +429,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 	ambience.set_balance(cooldowns.fade_obscured.get_normalized() * 100.f);
 
 	// check if player died
-	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && loading.is_complete()) {
-		// std::cout << "Launch death console.\n";
+	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && cooldowns.loading.is_complete()) {
 		svc.app_flags.reset(automa::AppFlags::in_game);
 		console.set_source(svc.text.basic);
 		console.load_and_launch("death");
@@ -553,9 +574,15 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 
 	// map foreground tiles
-	sf::Sprite tex{textures.foreground.getTexture()};
-	tex.setPosition(-cam);
-	if (!svc.greyblock_mode()) { win.draw(tex); }
+	if (!svc.greyblock_mode()) {
+		std::vector<sf::Sprite> sprites{sf::Sprite{textures.foreground.day.getTexture()}, sf::Sprite{textures.foreground.twilight.getTexture()}, sf::Sprite{textures.foreground.night.getTexture()}};
+		auto ctr{0};
+		for (auto& sprite : sprites) {
+			sprite.setPosition(-cam - scaled_barrier);
+			m_camera_effects.shifter.render(svc, win, sprite, ctr);
+			++ctr;
+		}
+	}
 
 	{
 		ZoneScopedN("Map::render - forground enemies");
@@ -572,16 +599,29 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	if (!svc.greyblock_mode()) {
 		// draw obscuring layer
-		sf::Sprite obscuring{textures.obscuring.getTexture()};
-		sf::Sprite reverse{textures.reverse.getTexture()};
-		obscuring.setPosition(-cam);
-		reverse.setPosition(-cam);
-		std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
-		std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
-		obscuring.setColor(sf::Color{255, 255, 255, alpha});
-		reverse.setColor(sf::Color{255, 255, 255, revalpha});
-		if (alpha != 0) { win.draw(obscuring); }
-		if (revalpha != 0) { win.draw(reverse); }
+		if (textures.obscuring) {
+			std::vector<sf::Sprite> obs_sprites{sf::Sprite{textures.obscuring.value().day.getTexture()}, sf::Sprite{textures.obscuring.value().twilight.getTexture()}, sf::Sprite{textures.obscuring.value().night.getTexture()}};
+
+			auto ctr{0};
+			for (auto& sprite : obs_sprites) {
+				sprite.setPosition(-cam - scaled_barrier);
+				std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
+				if (alpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, alpha); }
+				++ctr;
+			}
+		}
+		if (textures.reverse_obscuring) {
+			std::vector<sf::Sprite> rev_sprites{sf::Sprite{textures.reverse_obscuring.value().day.getTexture()}, sf::Sprite{textures.reverse_obscuring.value().twilight.getTexture()},
+												sf::Sprite{textures.reverse_obscuring.value().night.getTexture()}};
+
+			auto ctr{0};
+			for (auto& sprite : rev_sprites) {
+				sprite.setPosition(-cam - scaled_barrier);
+				std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
+				if (revalpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, revalpha); }
+				++ctr;
+			}
+		}
 	}
 
 	{
@@ -648,9 +688,13 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
 		for (auto& layer : scenery_layers) { for (auto& piece : layer) { piece->render(svc, win, cam); } }
-		sf::Sprite tex{textures.background.getTexture()};
-		tex.setPosition(-cam);
-		win.draw(tex);
+		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background.day.getTexture()}, sf::Sprite{textures.background.twilight.getTexture()}, sf::Sprite{textures.background.night.getTexture()}};
+		auto ctr{0};
+		for (auto& sprite : sprites) {
+			sprite.setPosition(-cam - scaled_barrier);
+			m_camera_effects.shifter.render(svc, win, sprite, ctr);
+			++ctr;
+		}
 		for (auto& npc : npcs) { if (npc.background()) { npc.render(svc, win, cam); } }
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {
@@ -704,6 +748,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 
 	std::erase_if(active_projectiles, [](auto const& p) { return p.destroyed(); });
 
+	// TODO: refactor this and move it into appropriate classes
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
 		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
@@ -711,7 +756,9 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point());
 		}
 		player->equipped_weapon().shoot();
-		if (!player->equipped_weapon().automatic()) { player->controller.set_shot(false); }
+		if (!player->equipped_weapon().automatic()) {
+			player->controller.set_shot(false);
+		}
 	}
 }
 
@@ -736,51 +783,75 @@ void Map::generate_collidable_layer(bool live) {
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
-	for (auto& layer : layers) {
-		auto changed = layer.get_render_order() == 0 || layer.get_render_order() == 4;
-		auto finished = layer.get_render_order() == 3 || layer.get_render_order() == 7;
-		auto& tex = layer.foreground() ? textures.foreground : textures.background;
-		sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x) * static_cast<unsigned int>(svc.constants.i_cell_size), static_cast<unsigned int>(layer.grid.dimensions.y) * static_cast<unsigned int>(svc.constants.i_cell_size)};
-		if (changed) {
-			if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
-			tex.clear(sf::Color::Transparent);
-		}
-		if (layer.obscuring()) {
-			if (!textures.obscuring.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
-			if (!textures.reverse.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
-			textures.obscuring.clear(sf::Color::Transparent);
-			textures.reverse.clear(sf::Color::Transparent);
-		}
-		sf::Sprite tile{svc.assets.tilesets.at(style_id)};
-		for (auto& cell : layer.grid.cells) {
-			if (cell.is_occupied() && !cell.is_special()) {
-				auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-				tile.setPosition(cell.position());
-				layer.obscuring() ? textures.obscuring.draw(tile) : tex.draw(tile);
-			} else {
-				if (layer.obscuring()) {
-					tile.setTextureRect(sf::IntRect({32, 0}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-					tile.setPosition(cell.position());
-					textures.reverse.draw(tile);
+	if (has_obscuring_layer()) { textures.obscuring = LayerTexture(); }
+	if (has_reverse_obscuring_layer()) { textures.reverse_obscuring = LayerTexture(); }
+	for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
+		for (auto& layer : layers) {
+			auto changed{layer.get_i_render_order() == 0 || layer.middleground()};
+			auto finished{layer.get_i_render_order() == m_middleground - 1 || layer.get_i_render_order() == layers.size() - 1};
+			auto time = static_cast<fornani::TimeOfDay>(cycle);
+			auto& tex{time == fornani::TimeOfDay::day ? (!layer.background() ? textures.foreground.day : textures.background.day)
+													  : (time == fornani::TimeOfDay::twilight ? (!layer.background() ? textures.foreground.twilight : textures.background.twilight)
+														 : !layer.background()				  ? textures.foreground.night
+																							  : textures.background.night)};
+
+			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size),
+							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size)};
+			if (changed) {
+				if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
+				tex.clear(sf::Color::Transparent);
+			}
+			if (layer.obscuring()) {
+				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
+				if (!obs_tex.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
+				obs_tex.clear(sf::Color::Transparent);
+			}
+			if (layer.reverse_obscuring()) {
+				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
+				if (!rev_obs_tex.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
+				rev_obs_tex.clear(sf::Color::Transparent);
+			}
+			sf::Sprite tile{svc.assets.tilesets.at(style_id)};
+			for (auto& cell : layer.grid.cells) {
+				if (cell.is_occupied() && !cell.is_special()) {
+					auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size) + (cycle * 512);
+					auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
+					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
+					tile.setPosition(cell.position() + scaled_barrier);
+					auto normal{true};
+					if (layer.obscuring()) {
+						auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
+						obs_tex.draw(tile);
+						normal = false;
+					}
+					if (layer.reverse_obscuring()) {
+						auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
+						rev_obs_tex.draw(tile);
+						normal = false;
+					}
+					if (normal) { tex.draw(tile); }
+					if (layer.middleground()) { draw_barrier(tex, tile, cell); }
 				}
 			}
-		}
-		if (finished) { tex.display(); }
-		if (layer.obscuring()) {
-			textures.obscuring.display();
-			textures.reverse.display();
-		}
-		if (layer.middleground()) {
-			if (!textures.greyblock.resize(size)) { std::cout << "Layer texture not created.\n"; }
-			get_middleground().grid.draw(textures.greyblock);
+			if (finished) { tex.display(); }
+			if (layer.obscuring()) {
+				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
+				obs_tex.display();
+			}
+			if (layer.reverse_obscuring()) {
+				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
+				rev_obs_tex.display();
+			}
+			if (layer.middleground()) {
+				if (!textures.greyblock.resize(size)) { std::cout << "Layer texture not created.\n"; }
+				get_middleground().grid.draw(textures.greyblock);
+			}
 		}
 	}
 }
 
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
-	auto& grid = foreground ? get_layers().at(7).grid : get_middleground().grid;
+	auto& grid = foreground ? get_obscuring_layer().grid : get_middleground().grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
@@ -864,7 +935,9 @@ void Map::wrap(sf::Vector2<float>& position) const {
 
 std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
 
-Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(4); }
+Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
+
+Layer& Map::get_obscuring_layer() { return m_services->data.get_layers(room_id).at(static_cast<std::size_t>(m_services->data.get_layers(room_id).size() - 1)); }
 
 npc::NPC& Map::get_npc(int id) {
 	for (auto& npc : npcs) { if (npc.get_id() == id) { return npc; } }
@@ -902,7 +975,7 @@ void Map::debug() {
 }
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
-	return abs(first.position.x + first.dimensions.x * 0.5f - second.position.x) < lookup::unit_size_f * collision_barrier && abs(first.position.y - second.position.y) < lookup::unit_size_f * collision_barrier;
+	return abs(first.get_position().x + first.get_dimensions().x * 0.5f - second.get_position().x) < lookup::unit_size_f * collision_barrier && abs(first.get_position().y - second.get_position().y) < lookup::unit_size_f * collision_barrier;
 }
 
 bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
@@ -917,5 +990,41 @@ std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get
 int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_cell(get_index_at_position(position)).value; }
 
 Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground().grid.cells.at(get_index_at_position(position)); }
+
+void world::Map::draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell) {
+	sf::Vector2f offset = 2.f * scaled_barrier;
+	if (cell.index.x == 0) {
+		tile.setPosition(cell.position());
+		tex.draw(tile);
+	}
+	if (cell.index.y == 0) {
+		tile.setPosition(cell.position());
+		tex.draw(tile);
+	}
+	if(cell.index.x == dimensions.x - 1) {
+		tile.setPosition(cell.position() + offset);
+		tex.draw(tile);
+	}
+	if (cell.index.y == dimensions.y - 1) {
+		tile.setPosition(cell.position() + offset);
+		tex.draw(tile);
+	}
+	if (cell.index.x == 0 && cell.index.y == dimensions.y - 1) {
+		tile.setPosition(cell.position() + sf::Vector2f{0.f, scaled_barrier.y});
+		tex.draw(tile);
+		tile.setPosition(cell.position() + sf::Vector2f{0.f, 2.f * scaled_barrier.y});
+		tex.draw(tile);
+		tile.setPosition(cell.position() + sf::Vector2f{scaled_barrier.x, 2.f * scaled_barrier.y});
+		tex.draw(tile);
+	}
+	if (cell.index.y == 0 && cell.index.x == dimensions.x - 1) {
+		tile.setPosition(cell.position() + sf::Vector2f{scaled_barrier.x, 0.f});
+		tex.draw(tile);
+		tile.setPosition(cell.position() + sf::Vector2f{2.f * scaled_barrier.x, 0.f});
+		tex.draw(tile);
+		tile.setPosition(cell.position() + sf::Vector2f{2.f * scaled_barrier.x, scaled_barrier.y});
+		tex.draw(tile);
+	}
+}
 
 } // namespace world

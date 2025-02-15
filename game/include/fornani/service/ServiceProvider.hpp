@@ -3,9 +3,11 @@
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/automa/MenuController.hpp"
 #include "fornani/automa/StateController.hpp"
+#include "fornani/core/AssetManager.hpp"
+#include "fornani/graphics/CameraController.hpp"
 #include "fornani/graphics/Style.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/setup/AccessibilityService.hpp"
-#include "fornani/setup/AssetManager.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 #include "fornani/setup/DataManager.hpp"
 #include "fornani/setup/Tables.hpp"
@@ -16,18 +18,17 @@
 #include "fornani/story/StatTracker.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Constants.hpp"
-#include "fornani/utils/Logger.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/utils/Stopwatch.hpp"
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
 
-namespace automa {
-enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
-enum class AppFlags { fullscreen, tutorial, in_game };
-enum class StateFlags { hide_hud, no_menu };
+namespace fornani::automa {
+enum class DebugFlags : uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
+enum class AppFlags : uint8_t { fullscreen, tutorial, in_game };
+enum class StateFlags : uint8_t { hide_hud, no_menu };
 struct PlayerDat {
-	void set_piggy_id(int id) { piggy_id = id; }
+	void set_piggy_id(int const id) { piggy_id = id; }
 	void unpiggy() { drop_piggy = true; }
 	int piggy_id{};
 	bool drop_piggy{};
@@ -36,14 +37,15 @@ struct MapDebug {
 	int active_projectiles{};
 };
 struct ServiceProvider {
-	ServiceProvider(char** argv, fornani::Version& version, fornani::WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
+	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
 
+	util::Stopwatch stopwatch{};
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
 	data::TextManager text;
 	data::DataManager data;
-	fornani::Version* version;
-	fornani::WindowManager* window;
+	Version* version;
+	WindowManager* window;
 	asset::AssetManager assets;
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
@@ -52,21 +54,21 @@ struct ServiceProvider {
 	util::BitFlags<StateFlags> state_flags{};
 	util::Random random{};
 	util::Ticker ticker{};
-	fornani::WorldClock world_clock{};
+	WorldClock world_clock{};
 	util::Constants constants{};
 	StateController state_controller{};
 	MenuController menu_controller{};
 	audio::Soundboard soundboard{*this};
 	audio::MusicPlayer music{};
-	fornani::QuestTracker quest{};
-	fornani::StatTracker stats{};
+	QuestTracker quest{};
+	StatTracker stats{};
 	PlayerDat player_dat{};
 	MapDebug map_debug{};
 	util::Logger logger{};
 	config::AccessibilityService a11y{};
+	graphics::CameraController camera_controller{};
 
 	// debug stuff
-	util::Stopwatch stopwatch{};
 	int out_value{};
 
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
@@ -86,4 +88,4 @@ struct ServiceProvider {
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
 	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool { return window->in_window(point, dimensions); }
 };
-} // namespace automa
+} // namespace fornani::automa

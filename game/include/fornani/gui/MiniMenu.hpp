@@ -1,17 +1,17 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/NineSlice.hpp"
-#include "fornani/utils/Circuit.hpp"
-#include "fornani/automa/Option.hpp"
 #include <string_view>
+#include "fornani/automa/Option.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Circuit.hpp"
+#include "fornani/utils/NineSlice.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
-enum class MiniMenuState { open };
+namespace fornani::gui {
+enum class MiniMenuState : uint8_t { open };
 class MiniMenu {
   public:
 	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, bool white = false);
@@ -23,9 +23,9 @@ class MiniMenu {
 	void set_origin(sf::Vector2<float> origin);
 	void up(automa::ServiceProvider& svc);
 	void down(automa::ServiceProvider& svc);
-	void speed_up_appearance(int rate) { sprite.speed_up_appearance(rate); }
-	void set_force(float force) { sprite.set_force(force); }
-	void set_fric(float fric) { sprite.set_fric(fric); }
+	void speed_up_appearance(int const rate) { sprite.speed_up_appearance(rate); }
+	void set_force(float const force) { sprite.set_force(force); }
+	void set_fric(float const fric) { sprite.set_fric(fric); }
 	sf::Vector2<float> get_dimensions() const;
 	[[nodiscard]] auto is_open() const -> bool { return state.test(MiniMenuState::open); }
 	[[nodiscard]] auto get_selection() const -> int { return selection.get(); }
@@ -44,4 +44,4 @@ class MiniMenu {
 	std::vector<automa::Option> options;
 };
 
-} // namespace gui
+} // namespace fornani::gui

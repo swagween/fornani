@@ -1,19 +1,18 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/utils/Collider.hpp"
-#include <vector>
+#include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 struct DropParams {
 	float slant{};
 	float sway{};

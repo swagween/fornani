@@ -1,19 +1,14 @@
 
 #pragma once
 
-#include <array>
-#include <cstdio>
-#include <list>
 #include <memory>
-#include <unordered_map>
 #include "Weapon.hpp"
-#include "fornani/utils/Circuit.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 class Arsenal {
   public:
-	Arsenal(automa::ServiceProvider& svc);
+	explicit Arsenal(automa::ServiceProvider& svc);
 
 	void push_to_loadout(int id);
 	void pop_from_loadout(int id);
@@ -30,4 +25,4 @@ class Arsenal {
 	automa::ServiceProvider* m_services{};
 };
 
-} // namespace arms
+} // namespace fornani::arms

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <numbers>
 
-namespace entity {
+namespace fornani::entity {
 
 FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset) : sprite(tex) {
 	sprite.setTexture(tex);
@@ -59,13 +59,13 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 	if(svc.greyblock_mode()) {
 		gravitator->render(svc, win, cam);
 		if (hitbox) {
-			debugbox.setSize(hitbox.value().dimensions);
-			debugbox.setPosition(hitbox.value().position);
+			debugbox.setSize(hitbox.value().get_dimensions());
+			debugbox.setPosition(hitbox.value().get_position());
 			win.draw(debugbox);
 		}
 		if (shieldbox) {
-			debugbox.setSize(shieldbox.value().dimensions);
-			debugbox.setPosition(shieldbox.value().position);
+			debugbox.setSize(shieldbox.value().get_dimensions());
+			debugbox.setPosition(shieldbox.value().get_position());
 			win.draw(debugbox);
 		}
 	}

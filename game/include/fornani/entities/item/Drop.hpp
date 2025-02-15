@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <string>
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/Cooldown.hpp"
@@ -9,20 +8,20 @@
 #include "fornani/utils/StateFunction.hpp"
 #define DROP_BIND(f) std::bind(&Drop::f, this)
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace item {
+namespace fornani::item {
 
-enum class DropType { heart, orb, gem };
-enum Rarity { common, uncommon, rare, priceless };
-enum class GemType { rhenite, sapphire };
-enum class DropFlags { neutral, shining };
+enum class DropType : uint8_t { heart, orb, gem };
+enum Rarity : uint8_t { common, uncommon, rare, priceless };
+enum class GemType : uint8_t { rhenite, sapphire };
+enum class DropFlags : uint8_t { neutral, shining };
 
 class Drop {
 

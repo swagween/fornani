@@ -1,6 +1,6 @@
 #include "fornani/graphics/SpriteHistory.hpp"
 
-namespace flfx {
+namespace fornani::flfx {
 
 void SpriteHistory::update(sf::Sprite next, sf::Vector2<float> position) {
 	pairs.push_back({next, position});

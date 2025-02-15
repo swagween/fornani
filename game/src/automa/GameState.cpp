@@ -2,7 +2,7 @@
 #include "fornani/automa/GameState.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
 	: player(&player), hud(svc, player), inventory_window(svc), scene(scene), pause_window(svc), console(svc) {

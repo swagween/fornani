@@ -1,28 +1,25 @@
 
 #pragma once
 
-#include <iostream>
-#include <optional>
-#include <unordered_map>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Shipment.hpp"
 #include "fornani/utils/QuestCode.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 
 // a small class to handle player interaction with inspectables, NPCs, or anything else that will trigger the console.
 // the transponder will respond to player inputs and set the state of the console and player accordingly.
 
 // these are all triggers, so they will be reset each tick
-enum class TransponderActions { skip_ahead, next, exit, down, up, select, skip_released };
+enum class TransponderActions : uint8_t { skip_ahead, next, exit, down, up, select, skip_released };
 
 class Transponder {
   public:
@@ -60,4 +57,4 @@ class Transponder {
 	util::BitFlags<TransponderActions> actions{};
 };
 
-} // namespace player
+} // namespace fornani::player

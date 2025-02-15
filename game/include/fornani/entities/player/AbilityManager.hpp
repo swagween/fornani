@@ -1,20 +1,18 @@
 
 #pragma once
 #include "fornani/utils/BitFlags.hpp"
-#include <unordered_map>
-#include <string_view>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 
-enum class Abilities { wall_slide, dash, double_jump, respiration, shield };
+enum class Abilities : uint8_t { wall_slide, dash, double_jump, respiration, shield };
 
 class AbilityManager {
   public:
@@ -29,4 +27,4 @@ class AbilityManager {
 	util::BitFlags<Abilities> ability_flags{};
 };
 
-} // namespace player
+} // namespace fornani::player

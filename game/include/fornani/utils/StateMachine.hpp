@@ -1,16 +1,15 @@
 
 #pragma once
 
-#include <cstdio>
 #include <memory>
 
-namespace fsm {
+namespace fornani::fsm {
 
 template <typename State>
 class StateMachine {
 
   public:
-	StateMachine() { current_state = std::make_unique<State>(); }
+	StateMachine() : current_state(std::make_unique<State>()) {}
 	~StateMachine() { current_state.reset(); }
 	StateMachine& operator=(StateMachine&&) = delete;
 
@@ -26,4 +25,4 @@ class StateMachine {
 	std::unique_ptr<State> current_state{};
 };
 
-} // namespace fsm
+} // namespace fornani::fsm

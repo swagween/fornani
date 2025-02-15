@@ -1,13 +1,14 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Attack.hpp"
 #define MEATSQUASH_BIND(f) std::bind(&Meatsquash::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
-enum class MeatsquashState { idle, chomp, swallow, open };
+enum class MeatsquashState : uint8_t { idle, chomp, swallow, open };
 
-class Meatsquash : public Enemy {
+class Meatsquash final : public Enemy {
 
   public:
 	Meatsquash() = delete;

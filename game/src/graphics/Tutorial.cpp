@@ -1,7 +1,7 @@
 #include "fornani/graphics/Tutorial.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace text {
+namespace fornani::text {
 
 Tutorial::Tutorial(automa::ServiceProvider& svc) : help_marker(svc) {}
 

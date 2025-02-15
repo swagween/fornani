@@ -1,23 +1,22 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string_view>
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/BitFlags.hpp"
 #include "HelpText.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace text {
+namespace fornani::text {
 
-enum class TutorialHelpers { trigger, render, closed };
-enum class TutorialFlags { jump, sprint, inventory, shoot, map };
+enum class TutorialHelpers : uint8_t { trigger, render, closed };
+enum class TutorialFlags : uint8_t { jump, sprint, inventory, shoot, map };
 
 class Tutorial {
   public:
-	Tutorial(automa::ServiceProvider& svc);
+	explicit Tutorial(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 	void turn_on();
@@ -34,4 +33,4 @@ class Tutorial {
 	util::Cooldown maximum_display_time{4800};
 };
 
-} // namespace flfx
+} // namespace fornani::text

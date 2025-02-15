@@ -3,7 +3,7 @@
 #include <numbers>
 #include <ccmath/math/power/sqrt.hpp>
 
-namespace vfx {
+namespace fornani::vfx {
 
 Spark::Spark(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Color color, std::string_view type) : type(type) {
 	auto const& in_data = svc.data.sparkler[type];

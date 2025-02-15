@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Hauler::Hauler(automa::ServiceProvider& svc) : Enemy(svc, "hauler") , m_services(&svc) {
 	animation.set_params(idle);

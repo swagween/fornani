@@ -2,27 +2,27 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <vector>
+#include "fornani/graphics/CameraController.hpp"
 #include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
 namespace fornani {
 
-float const CAM_FRICTION = 0.89f;
-float const CAM_MASS = 1.0f;
-float const CAM_GRAV = 0.09f;
+constexpr float CAM_FRICTION = 0.89f;
+constexpr float CAM_MASS = 1.0f;
+constexpr float CAM_GRAV = 0.09f;
 
-int const CX_OFFSET = 60;
-int const CY_OFFSET = 60;
+constexpr int CX_OFFSET = 60;
+constexpr int CY_OFFSET = 60;
 
-int const border_buffer{32};
+constexpr int border_buffer{32};
 
-enum class CamFlags { shake };
+enum class CamFlags : uint8_t { shake };
 
 class Camera {
   public:
@@ -40,7 +40,7 @@ class Camera {
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return display_position; }
 	[[nodiscard]] auto within_frame(int x, int y) const -> bool { return (x > 0) && (x < screen_dimensions.x + border_buffer) && (y > 0) && (y < screen_dimensions.y + border_buffer); }
 
-	private:
+  private:
 	vfx::Gravitator gravitator{};
 	sf::Vector2<int> screen_dimensions{};
 	sf::RectangleShape bounding_box{};
@@ -50,17 +50,13 @@ class Camera {
 	sf::Vector2<float> target{};
 	sf::Vector2<float> map_bounds_offset{};
 	util::BitFlags<CamFlags> flags{};
-
 	float grav_force{CAM_GRAV};
 
 	struct {
 		util::Cooldown timer{};
 		util::Cooldown dampen{};
-		float energy{0.4f};
-		int dampen_factor{30};
-		int start_time{400};
-		int frequency{10};
+		graphics::ShakeProperties properties{};
 	} shake{};
 };
 
-} // namespace cam
+} // namespace fornani

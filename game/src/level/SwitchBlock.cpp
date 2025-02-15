@@ -7,7 +7,7 @@
 #include "fornani/level/SwitchBlock.hpp"
 #include <algorithm>
 
-namespace world {
+namespace fornani::world {
 
 SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id), sprite{svc.assets.t_switch_blocks}
 {

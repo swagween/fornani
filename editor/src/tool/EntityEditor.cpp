@@ -13,8 +13,8 @@ void EntityEditor::update(Canvas& canvas) {
 	// set tooltip
 	switch (entity_mode) {
 	case EntityMode::selector: tooltip = "Selector"; break;
-	case EntityMode::editor: tooltip = "Edior"; break;
-	case EntityMode::placer: tooltip = "Placer"; break;
+	case EntityMode::editor: tooltip = "Editor"; break;
+	case EntityMode::placer: tooltip = "Placer (press Q to cancel)"; break;
 	case EntityMode::eraser: tooltip = "Eraser"; break;
 	case EntityMode::mover: tooltip = "Mover"; break;
 	}
@@ -76,13 +76,7 @@ void EntityEditor::update(Canvas& canvas) {
 			}
 		}
 		if (ent_type == EntityType::player_placer) {
-			canvas.entities.variables.player_start = scaled_position();
-		} else if (ent_type == EntityType::save_point) {
-			if (current_entity && active) {
-				canvas.entities.variables.save_point = std::move(current_entity.value());
-				current_entity = {};
-			}
-			suppress_until_released();
+			if (active) { canvas.entities.variables.player_start = scaled_position(); }
 		} else if (current_entity && active) {
 			if (!canvas.entities.overlaps(*current_entity.value())) {
 				auto repeat = current_entity.value()->repeatable;
@@ -92,9 +86,9 @@ void EntityEditor::update(Canvas& canvas) {
 					current_entity = std::move(clone);
 				} else {
 					current_entity = {}; // free the entity's memory otherwise
+					entity_mode = EntityMode::selector;
 				}
 				suppress_until_released();
-				entity_mode = EntityMode::selector;
 			}
 		}
 	}
@@ -115,7 +109,10 @@ void EntityEditor::update(Canvas& canvas) {
 }
 
 void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {
-	if (scancode == sf::Keyboard::Scancode::Q) { trigger_switch = true; }
+	if (scancode == sf::Keyboard::Scancode::Q) {
+		current_entity = {}; // free the entity's memory otherwise
+		entity_mode = EntityMode::selector;
+	}
 }
 
 void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {

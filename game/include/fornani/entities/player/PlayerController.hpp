@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <chrono>
 #include <optional>
 #include <unordered_map>
 #include <deque>
@@ -12,28 +11,28 @@
 #include "Slide.hpp"
 #include "Roll.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 
 constexpr static int dash_time{32};
 constexpr static int quick_turn_sample_size{24};
 constexpr static float backwards_dampen{0.5f};
 
-enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
-enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released, hold_left, hold_right, hold_up, hold_down };
-enum class MovementState { restricted, grounded, walking_autonomously, walljumping };
-enum class HardState { no_move, has_arsenal };
+enum class ControllerInput : uint8_t { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
+enum class TransponderInput : uint8_t { skip, next, exit, down, up, left, right, select, skip_released, hold_left, hold_right, hold_up, hold_down };
+enum class MovementState : uint8_t { restricted, grounded, walking_autonomously, walljumping };
+enum class HardState : uint8_t { no_move, has_arsenal };
 
-enum class Hook { hook_released, hook_held };
-enum class Sprint { released };
+enum class Hook : uint8_t { hook_released, hook_held };
+enum class Sprint : uint8_t { released };
 
 class PlayerController {
 
   public:
-	PlayerController(automa::ServiceProvider& svc);
+	explicit PlayerController(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc);
 	void clean();
@@ -75,7 +74,7 @@ class PlayerController {
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
 	[[nodiscard]] auto sliding() -> bool { return key_map[ControllerInput::slide] != 0.f; }
 	[[nodiscard]] auto released_hook() -> bool {
-		auto ret = hook_flags.test(Hook::hook_released);
+		auto const ret = hook_flags.test(Hook::hook_released);
 		hook_flags.reset(Hook::hook_released);
 		return ret;
 	}

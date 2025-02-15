@@ -1,85 +1,103 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include "fornani/entities/enemy/EnemyCatalog.hpp"
-#include "fornani/entities/world/Animator.hpp"
-#include "fornani/entities/world/Inspectable.hpp"
-#include "fornani/entities/world/Portal.hpp"
-#include "fornani/entities/world/SavePoint.hpp"
-#include "fornani/entities/world/Vine.hpp"
-#include "fornani/entities/world/Grass.hpp"
-#include "fornani/entities/world/Fire.hpp"
-#include "fornani/graphics/Background.hpp"
-#include "fornani/graphics/Scenery.hpp"
-#include "fornani/graphics/Transition.hpp"
-#include "fornani/graphics/Rain.hpp"
-#include "Grid.hpp"
-#include "fornani/utils/Random.hpp"
-#include "fornani/utils/Shape.hpp"
-#include "fornani/particle/Effect.hpp"
-#include "fornani/weapon/Projectile.hpp"
-#include "fornani/entities/item/Loot.hpp"
-#include "fornani/entities/world/Chest.hpp"
-#include "fornani/entities/npc/NPC.hpp"
-#include "fornani/entities/world/Bed.hpp"
-#include "Platform.hpp"
 #include "Breakable.hpp"
+#include "Checkpoint.hpp"
+#include "Destroyable.hpp"
+#include "Grid.hpp"
+#include "Platform.hpp"
 #include "Pushable.hpp"
 #include "Spawner.hpp"
 #include "Spike.hpp"
 #include "SwitchBlock.hpp"
-#include "Destroyable.hpp"
-#include "Checkpoint.hpp"
-#include "fornani/weapon/Grenade.hpp"
-#include "fornani/story/CutsceneCatalog.hpp"
-#include "fornani/utils/Stopwatch.hpp"
-#include "fornani/utils/CircleCollider.hpp"
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
+#include "fornani/entities/enemy/EnemyCatalog.hpp"
+#include "fornani/entities/item/Loot.hpp"
+#include "fornani/entities/npc/NPC.hpp"
+#include "fornani/entities/world/Animator.hpp"
+#include "fornani/entities/world/Bed.hpp"
+#include "fornani/entities/world/Chest.hpp"
+#include "fornani/entities/world/Fire.hpp"
+#include "fornani/entities/world/Grass.hpp"
+#include "fornani/entities/world/Inspectable.hpp"
+#include "fornani/entities/world/Portal.hpp"
+#include "fornani/entities/world/SavePoint.hpp"
+#include "fornani/entities/world/Vine.hpp"
+#include "fornani/graphics/Background.hpp"
+#include "fornani/graphics/CameraController.hpp"
+#include "fornani/graphics/DayNightShifter.hpp"
+#include "fornani/graphics/Rain.hpp"
+#include "fornani/graphics/Scenery.hpp"
+#include "fornani/graphics/Transition.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/story/CutsceneCatalog.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/utils/Shape.hpp"
+#include "fornani/utils/Stopwatch.hpp"
+#include "fornani/weapon/Grenade.hpp"
+#include "fornani/weapon/Projectile.hpp"
 
-int const NUM_LAYERS{8};
-int const CHUNK_SIZE{16};
-int const CELL_SIZE{32};
+#include <optional>
+#include <vector>
 
-namespace automa {
+#include "fornani/particle/Emitter.hpp"
+
+constexpr unsigned int u_chunk_size_v{16u};
+
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 class Portrait;
 class InventoryWindow;
-}
+} // namespace fornani::gui
 
-namespace world {
+namespace fornani::world {
 
-enum class LevelState { game_over, camera_shake, spawn_enemy };
-enum class MapState { unobscure };
+enum class LevelState : uint8_t { game_over, camera_shake, spawn_enemy };
+enum class MapState : uint8_t { unobscure };
+enum class MapProperties : uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
+enum class LayerType : uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
 
-// a Layer is a grid with a render priority and a flag to determine if scene entities can collide with it.
-// for for loop, the current convention is that the only collidable layer is layer 4 (index 3), or the middleground.
+struct LayerTexture {
+	sf::RenderTexture day{};
+	sf::RenderTexture twilight{};
+	sf::RenderTexture night{};
+};
 
 class Layer {
   public:
 	Layer() = default;
-	Layer(uint8_t o, bool c, sf::Vector2<uint32_t> dim, dj::Json& source) : render_order(o), collidable(c), dimensions(dim), grid(dim, source) {}
-	[[nodiscard]] auto background() const -> bool { return render_order < 4; }
-	[[nodiscard]] auto foreground() const -> bool { return render_order > 3; }
-	[[nodiscard]] auto middleground() const -> bool { return render_order == 4; }
-	[[nodiscard]] auto obscuring() const -> bool { return render_order == 7; }
+	Layer(uint8_t o, sf::Vector2i partition, sf::Vector2<uint32_t> dim, dj::Json& source, bool has_obscuring, bool has_reverse_obscuring) : render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source) {
+		auto order = static_cast<int>(o);
+		if (order < partition.x) { type = LayerType::background; }
+		if (order == partition.x) { type = LayerType::middleground; }
+		if (order > partition.x) { type = LayerType::foreground; }
+		if (order == partition.y - 2 && has_reverse_obscuring) { type = LayerType::reverse_obscuring; }
+		if (order == partition.y - 1 && has_obscuring) { type = LayerType::obscuring; }
+	}
+	[[nodiscard]] auto background() const -> bool { return type == LayerType::background; }
+	[[nodiscard]] auto foreground() const -> bool { return type == LayerType::foreground; }
+	[[nodiscard]] auto middleground() const -> bool { return type == LayerType::middleground; }
+	[[nodiscard]] auto obscuring() const -> bool { return type == LayerType::obscuring; }
+	[[nodiscard]] auto reverse_obscuring() const -> bool { return type == LayerType::reverse_obscuring; }
 	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
-	Grid grid;
+	[[nodiscard]] auto get_i_render_order() const -> int { return static_cast<int>(render_order); }
+	[[nodiscard]] auto get_layer_type() const -> LayerType { return type; }
+	Grid grid{};
 	bool collidable{};
 	sf::Vector2<uint32_t> dimensions{};
 
   private:
 	uint8_t render_order{};
+	LayerType type{};
 };
 
 struct EnemySpawn {
@@ -87,13 +105,10 @@ struct EnemySpawn {
 	int id{};
 };
 
-// a Map is just a set of layers that will render on top of each other
-
 class Map {
 
   public:
 	using Vec = sf::Vector2<float>;
-	using Vecu16 = sf::Vector2<uint32_t>;
 
 	Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
 	~Map() {}
@@ -117,6 +132,7 @@ class Map {
 	void wrap(sf::Vector2<float>& position) const;
 	std::vector<Layer>& get_layers();
 	Layer& get_middleground();
+	Layer& get_obscuring_layer();
 	npc::NPC& get_npc(int id);
 	Vec get_spawn_position(int portal_source_map_id);
 	sf::Vector2<float> get_nearest_target_point(sf::Vector2<float> from);
@@ -131,16 +147,18 @@ class Map {
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
+	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2u { return dimensions / u_chunk_size_v; }
+	[[nodiscard]] auto is_minimap() const -> bool { return flags.properties.test(MapProperties::minimap); }
+	[[nodiscard]] auto has_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_obscuring_layer); }
+	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_reverse_obscuring_layer); }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
 	Tile& get_cell_at_position(sf::Vector2<float> position);
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
-	// std::vector<Layer> layers{};
 	Vec real_dimensions{};	   // pixel dimensions (maybe useless)
-	Vecu16 dimensions{};	   // points on the 32x32-unit grid
-	Vecu16 chunk_dimensions{}; // how many chunks (16x16 squares) in the room
+	sf::Vector2u dimensions{}; // points on the 32x32-unit grid
 
 	dj::Json inspectable_data{};
 
@@ -185,19 +203,22 @@ class Map {
 	flfx::Transition soft_reset;
 
 	enemy::EnemyCatalog enemy_catalog;
-	fornani::CutsceneCatalog cutscene_catalog;
+	CutsceneCatalog cutscene_catalog;
 
 	sf::RectangleShape borderbox{};
 	sf::RectangleShape center_box{};
+	sf::Vector2f barrier;
+	sf::Vector2f scaled_barrier;
 
 	// layers
 	struct {
-		sf::RenderTexture foreground{};
-		sf::RenderTexture background{};
-		sf::RenderTexture obscuring{};
-		sf::RenderTexture reverse{};
 		sf::RenderTexture greyblock{};
+		LayerTexture foreground{};
+		LayerTexture background{};
+		std::optional<LayerTexture> obscuring{};
+		std::optional<LayerTexture> reverse_obscuring{};
 	} textures{};
+
 	std::string_view style_label{};
 
 	int room_lookup{};
@@ -219,11 +240,11 @@ class Map {
 	automa::ServiceProvider* m_services;
 	gui::Console* m_console;
 
-	util::Cooldown loading{}; // shouldn't exist
 	util::Cooldown spawning{2};
 	util::Counter spawn_counter{};
 	struct {
-		util::Cooldown fade_obscured{128};
+		util::Cooldown fade_obscured{};
+		util::Cooldown loading{};
 	} cooldowns{};
 
 	// debug
@@ -231,15 +252,23 @@ class Map {
 	util::Cooldown end_demo{500};
 
   private:
+	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell);
 	int abyss_distance{400};
+	struct {
+		graphics::ShakeProperties shake_properties{};
+		util::Cooldown cooldown{};
+		graphics::DayNightShifter shifter{};
+	} m_camera_effects{};
 	struct {
 		util::BitFlags<LevelState> state{};
 		util::BitFlags<MapState> map_state{};
+		util::BitFlags<MapProperties> properties{};
 	} flags{};
 	struct {
 		int echo_rate{};
 		int echo_count{};
 	} sound{};
+	int m_middleground{};
 };
 
-} // namespace world
+} // namespace fornani::world

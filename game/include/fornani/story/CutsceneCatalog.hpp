@@ -1,25 +1,21 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include "fornani/utils/Counter.hpp"
 #include "Cutscene.hpp"
 
 #include <memory>
-#include <string_view>
-#include <unordered_map>
 #include <vector>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
-namespace world {
+namespace fornani::world {
 class Map;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
 namespace fornani {
@@ -27,7 +23,7 @@ namespace fornani {
 class CutsceneCatalog {
   public:
 	CutsceneCatalog() = default;
-	CutsceneCatalog(automa::ServiceProvider& svc);
+	explicit CutsceneCatalog(automa::ServiceProvider& svc);
 	void update();
 	void push_cutscene(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, int id);
 

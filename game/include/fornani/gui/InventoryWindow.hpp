@@ -1,27 +1,27 @@
 
 #pragma once
 #include "Console.hpp"
-#include "Selector.hpp"
 #include "MiniMap.hpp"
 #include "MiniMenu.hpp"
+#include "Selector.hpp"
 #include "WardrobeWidget.hpp"
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace item {
+namespace fornani::item {
 class Item;
 }
 
-namespace gui {
+namespace fornani::gui {
 
-enum class Mode{inventory, minimap};
+enum class Mode : uint8_t { inventory, minimap };
 
 class InventoryWindow : public Console {
   public:
-	InventoryWindow(automa::ServiceProvider& svc);
+	explicit InventoryWindow(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void open(automa::ServiceProvider& svc, player::Player& player);
@@ -73,7 +73,7 @@ class InventoryWindow : public Console {
 
 	WardrobeWidget wardrobe;
 
-	fornani::Logger m_logger{ "gui" };
+	io::Logger m_logger{"gui"};
 };
 
-} // namespace gui
+} // namespace fornani::gui

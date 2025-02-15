@@ -4,7 +4,6 @@ nani_add_sources(
         CollisionDepth.cpp
         Decoder.cpp
         Fader.cpp
-        Logger.cpp
         NineSlice.cpp
         Shape.cpp
         Ticker.cpp

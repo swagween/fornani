@@ -3,7 +3,9 @@
 
 namespace pi {
 
-Platform::Platform(sf::Vector2u dim, int extent, std::string type, float start) : Entity("platforms", 0, {}, dim), extent(extent), type(type), start(start) { repeatable = true; }
+Platform::Platform() : Entity("platforms") { repeatable = true; }
+
+Platform::Platform(sf::Vector2u dim, int extent, std::string type, float start) : Entity("platforms", 0, dim), extent(extent), type(type), start(start) { repeatable = true; }
 
 std::unique_ptr<Entity> Platform::clone() const { return std::make_unique<Platform>(*this); }
 
@@ -22,6 +24,9 @@ void Platform::expose() {
 	ImGui::SliderFloat("start", &start, 0.f, 1.f, "%.3f");
 }
 
-void Platform::render(sf::RenderWindow& win, sf::Vector2<float> cam) {}
+void Platform::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
+	highlighted ? drawbox.setFillColor(sf::Color{255, 255, 60, 100}) : drawbox.setFillColor(sf::Color{255, 255, 60, 40});
+	Entity::render(win, cam, size);
+}
 
 } // namespace pi

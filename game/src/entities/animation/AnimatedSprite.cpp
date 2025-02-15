@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include <iostream>
 
-namespace anim {
+namespace fornani::anim {
 
 AnimatedSprite::AnimatedSprite(sf::Texture& texture, sf::Vector2<int> dimensions) : sprite(texture), dimensions(dimensions) {}
 

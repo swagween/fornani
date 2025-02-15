@@ -1,22 +1,22 @@
 #pragma once
 
-#include <string>
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
 
-namespace flfx {
+namespace fornani::flfx {
 class Transition;
-}
-namespace automa {
+} // namespace fornani::flfx
 
-enum class menu_type { main, file_select, options, settings, credits, controls, tutorial };
-enum class Actions { trigger_submenu, save_loaded, exit_submenu, trigger, shutdown, player_death, intro_done, retry, death_mode, sleep, main_menu, print_stats, screenshot, end_demo, delete_file };
-enum class Status { out_of_bounds };
+namespace fornani::automa {
+
+enum class menu_type : uint8_t { main, file_select, options, settings, credits, controls, tutorial };
+enum class Actions : uint8_t { trigger_submenu, save_loaded, exit_submenu, trigger, shutdown, player_death, intro_done, retry, death_mode, sleep, main_menu, print_stats, screenshot, end_demo, delete_file };
+enum class Status : uint8_t { out_of_bounds };
 
 class StateController {
 
   public:
-	inline void refresh(int id) { source_id = id; }
+	void refresh(int const id) { source_id = id; }
 	void switch_rooms(int source, int destination, flfx::Transition& transition);
 	int next_state{};
 	int demo_level{};
@@ -28,4 +28,4 @@ class StateController {
 	util::BitFlags<Status> status{};
 };
 
-}
+} // namespace fornani::automa

@@ -5,19 +5,19 @@
 #include "Spring.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 class Chain {
   public:
 	Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2<float> position, int num_links, bool reversed = false);
@@ -26,7 +26,8 @@ class Chain {
 	void set_gravity(float g) { grav = g; }
 	std::vector<Spring> links{};
 	std::vector<components::PhysicsComponent> joints{};
-	bool moving() const;
+	[[nodiscard]] bool moving() const;
+
   private:
 	sf::Vector2<float> root{};
 	float external_dampen{0.05f};
@@ -34,4 +35,4 @@ class Chain {
 	util::Cooldown intro{8};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

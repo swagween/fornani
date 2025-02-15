@@ -1,20 +1,21 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <array>
-#include <unordered_map>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/graphics/DayNightShifter.hpp"
 
+#include <unordered_map>
 
-namespace automa {
+#include <SFML/Graphics.hpp>
+
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace bg {
+namespace fornani::bg {
 
-enum class BackgroundAttributes { lock };
+enum class BackgroundAttributes : uint8_t { lock };
 
 struct BackgroundLayer {
 	int render_layer{};
@@ -51,6 +52,7 @@ class Background {
 		util::BitFlags<BackgroundAttributes> vertical{};
 		util::BitFlags<BackgroundAttributes> horizontal{};
 	} attributes{};
+	graphics::DayNightShifter shifter{};
 };
 
 } // namespace bg

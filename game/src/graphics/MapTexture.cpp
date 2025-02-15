@@ -3,7 +3,7 @@
 #include "fornani/level/Map.hpp"
 #include <algorithm>
 
-namespace gui {
+namespace fornani::gui {
 
 MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.colors.ui_white}, tile_color{svc.styles.colors.blue} {
 	border_color.a = 200;
@@ -21,20 +21,26 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.c
 
 void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
 	map.load(svc, room, true);
+	if (!map.is_minimap()) {
+		ignore = true;
+		return;
+	}
 	tile_color = map.native_style_id == 0 ? svc.styles.colors.blue : svc.styles.colors.fucshia;
 	tile_color.a = 100;
 	global_offset = map.metagrid_coordinates * 16;
 	map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions);
 	auto const& middleground = map.get_middleground();
+	auto const& obscuring = map.get_obscuring_layer();
 	if (!map_texture.resize({map.dimensions.x * static_cast<unsigned int>((32.f / scale)), map.dimensions.y * static_cast<unsigned int>(32.f / scale)})) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
 	map_texture.clear(sf::Color::Transparent);
 	for (auto& cell : middleground.grid.cells) {
+		auto obscured{obscuring.grid.cells.at(cell.one_d_index).is_occupied() && map.has_obscuring_layer()};
 		if (!cell.is_breakable()) {
 			tile_box.setPosition(cell.position() / scale);
 			if (!cell.is_occupied()) {
 				tile_box.setFillColor(tile_color);
-				map_texture.draw(tile_box);
-			} else if (cell.exposed) {
+				if (!obscured) { map_texture.draw(tile_box); }
+			} else if (cell.exposed && !obscured) {
 				tile_box.setFillColor(border_color);
 				map_texture.draw(tile_box);
 			}
@@ -46,8 +52,8 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		map_texture.draw(portal_box);
 	}
 	for (auto& breakable : map.breakables) {
-		breakable_box.setPosition(breakable.get_bounding_box().position / scale);
-		breakable_box.setSize(breakable.get_bounding_box().dimensions / scale);
+		breakable_box.setPosition(breakable.get_bounding_box().get_position() / scale);
+		breakable_box.setSize(breakable.get_bounding_box().get_dimensions() / scale);
 		map_texture.draw(breakable_box);
 	}
 	if (map.save_point.id > 0) {
@@ -61,7 +67,6 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		map_texture.clear(sf::Color::Transparent);
 	}
 	map_texture.display();
-	svc.stopwatch.stop();
 }
 
 sf::Sprite MapTexture::sprite() { return sf::Sprite(map_texture.getTexture()); }

@@ -3,7 +3,7 @@
 #include "fornani/level/Map.hpp"
 #include <algorithm>
 
-namespace entity {
+namespace fornani::entity {
 
 void Attack::update() {
 	hit.bounds.setOrigin({hit.bounds.getRadius(), hit.bounds.getRadius()});

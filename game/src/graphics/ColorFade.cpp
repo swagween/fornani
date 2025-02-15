@@ -1,7 +1,7 @@
 
 #include "fornani/graphics/ColorFade.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 ColorFade::ColorFade(std::vector<sf::Color> colors, int threshold, int duration) : colors(colors), threshold(threshold), duration(duration) {}
 
 void ColorFade::change_colors(std::vector<sf::Color> to_colors) { colors = to_colors; }

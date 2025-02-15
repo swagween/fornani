@@ -3,7 +3,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/level/Map.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null} {
 	background_color = svc.styles.colors.ui_black;
@@ -64,6 +64,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		player_box.getFillColor() == svc.styles.colors.periwinkle ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.periwinkle);
 	}
 	for (auto& room : atlas) {
+		if (room->to_ignore()) { continue; }
 		if (room->is_current()) { player_box.setPosition((player_position / scale) + room->get_position() * ratio + position); }
 		map_sprite.setTexture(room->get().getTexture());
 		map_sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int>>(room->get().getSize())));
@@ -78,7 +79,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		auto tl = room->get_position() * ratio + position;
 		auto br = tl + map_sprite.getLocalBounds().size * global_ratio;
 		auto pos = view.getCenter();
-		if( pos.x > tl.x && pos.x < br.x && pos.y > tl.y && pos.y < br.y) { win.draw(room_border); }
+		if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y) { win.draw(room_border); }
 		win.draw(player_box);
 	}
 	cursor.vert.setPosition(svc.constants.f_center_screen);

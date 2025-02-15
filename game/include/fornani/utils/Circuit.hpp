@@ -1,16 +1,16 @@
 #pragma once
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 
-namespace util {
+namespace fornani::util {
 
 class Circuit {
   public:
-	constexpr Circuit(int order, int selection = 0) : order(order), selection(selection) { assert(order > 0 && selection >= 0); }
-	constexpr void modulate(int amount) { selection = (selection + order + amount) % order; }
+	constexpr explicit Circuit(int const order, int const selection = 0) : order(order), selection(selection) { assert(order > 0 && selection >= 0); }
+	constexpr void modulate(int const amount) { selection = (selection + order + amount) % order; }
 	constexpr void zero() { selection = 0; }
-	constexpr void set(int to_selection) { selection = to_selection % order; }
-	constexpr void set_order(int to_order) {
+	constexpr void set(int const to_selection) { selection = to_selection % order; }
+	constexpr void set_order(int const to_order) {
 		order = to_order;
 		selection = std::min(selection, order - 1);
 	}
@@ -23,4 +23,4 @@ class Circuit {
 	int selection{};
 };
 
-} // namespace util
+} // namespace fornani::util

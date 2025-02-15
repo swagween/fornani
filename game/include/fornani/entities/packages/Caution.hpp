@@ -1,23 +1,23 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace shape {
+namespace fornani::shape {
 class Collider;
 }
 
-namespace dir {
+namespace fornani::dir {
 struct Direction;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class Caution {
   public:
@@ -25,7 +25,7 @@ class Caution {
 	void update();
 	void avoid_player(player::Player& player);
 	void avoid_ledges(world::Map& map, shape::Collider& collider, dir::Direction& direction, int height);
-	bool danger() const;
+	[[nodiscard]] bool danger() const;
 
 	sf::Vector2<float> retreat{};
 	struct {

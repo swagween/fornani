@@ -3,19 +3,19 @@
 #include "MiniMenu.hpp"
 #include "Selector.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace automa {
+namespace fornani::automa {
 class GameState;
 }
 
-namespace gui {
+namespace fornani::gui {
 
 class PauseWindow : public Console {
   public:
-	PauseWindow(automa::ServiceProvider& svc);
+	explicit PauseWindow(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, Console& console, bool automatic);
 	void render_update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win);
@@ -40,4 +40,4 @@ class PauseWindow : public Console {
 	MiniMenu menu;
 };
 
-} // namespace gui
+} // namespace fornani::gui

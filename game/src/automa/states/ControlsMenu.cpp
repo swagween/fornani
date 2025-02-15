@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 constexpr std::array<std::string_view, 4> tabs = {"controls_platformer", "controls_inventory", "controls_map", "controls_menu"};
 constexpr std::array<std::string_view, 4> tab_id_prefixes = {"platformer_", "inventory_", "map_", "menu_"};
@@ -49,7 +49,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		auto tab_to_switch_to = (current_tab + 1) % 4;
 		change_scene(svc, tabs[tab_to_switch_to]);
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && !binding_mode) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		svc.state_controller.submenu = menu_type::options;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
@@ -91,13 +91,11 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 void ControlsMenu::frame_update(ServiceProvider& svc) {}
 
 void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-
 	if (loading.is_complete()) {
 		for (auto& option : options) { win.draw(option.label); }
 		for (auto& control : control_list) { win.draw(control); }
 		win.draw(instruction);
 	}
-
 	left_dot.render(svc, win, {});
 	right_dot.render(svc, win, {});
 }

@@ -2,35 +2,31 @@
 
 #pragma once
 
-#include <assert.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <array>
-#include <iostream>
 #include <string>
+#include "fornani/io/File.hpp"
 #include "fornani/level/Map.hpp"
 #include "fornani/utils/QuestCode.hpp"
-#include "File.hpp"
-#include "ResourceFinder.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace config {
+namespace fornani::config {
 class ControllerMap;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace data {
+namespace fornani::data {
 
 struct MapData {
 	int id{};
 	dj::Json metadata{};
-	dj::Json tiles{};
 };
 
 struct EnemyState {
@@ -47,13 +43,13 @@ class DataManager {
 	void load_data(std::string in_room = "");
 	void save_progress(player::Player& player, int save_point_id);
 	void save_settings();
-	int load_progress(player::Player& player, int const file, bool state_switch = false, bool from_menu = true);
+	int load_progress(player::Player& player, int file, bool state_switch = false, bool from_menu = true);
 	void load_settings();
 	void delete_file(int index);
 	void write_death_count(player::Player& player);
-	std::string_view load_blank_save(player::Player& player, bool state_switch = false);
+	std::string_view load_blank_save(player::Player& player, bool state_switch = false) const;
 	dj::Json& get_save() { return files.at(current_save).save_data; }
-	fornani::File& get_file() { return files.at(current_save); }
+	io::File& get_file() { return files.at(current_save); }
 
 	// tweaking
 	void load_player_params(player::Player& player);
@@ -71,6 +67,8 @@ class DataManager {
 	void respawn_enemy(int room_id, int id);
 	void respawn_enemies(int room_id, int distance);
 	void respawn_all();
+
+	bool is_duplicate_room(int id) const;
 	bool door_is_unlocked(int id) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
@@ -113,8 +111,8 @@ class DataManager {
 	dj::Json hulmet{};
 
 	int current_save{};
-	std::array<fornani::File, 3> files{};
-	fornani::File blank_file{};
+	std::array<io::File, 3> files{};
+	io::File blank_file{};
 
 	dj::Json player_params{};
 	dj::Json menu{};
@@ -143,4 +141,4 @@ class DataManager {
 	std::vector<util::QuestKey> quest_progressions{};
 };
 
-} // namespace data
+} // namespace fornani::data

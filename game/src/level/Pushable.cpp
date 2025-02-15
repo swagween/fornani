@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace world {
+namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.t_pushables} {
 	collider = shape::Collider({svc.constants.cell_size * static_cast<float>(size) - 4.f, svc.constants.cell_size * static_cast<float>(size) - 1.f});
@@ -122,11 +122,11 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 		sf::RectangleShape box{};
-		box.setSize(start_box.dimensions);
+		box.setSize(start_box.get_dimensions());
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(sf::Color::Green);
 		box.setOutlineThickness(-1);
-		box.setPosition(start_box.position - cam);
+		box.setPosition(start_box.get_position() - cam);
 		win.draw(box);
 	} else {
 		win.draw(sprite);

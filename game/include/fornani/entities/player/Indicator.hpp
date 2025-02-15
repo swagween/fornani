@@ -1,26 +1,23 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string_view>
-#include <unordered_map>
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/graphics/ColorFade.hpp"
 #include "fornani/particle/Gravitator.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace player {
-enum class IndicatorType { health, orb };
+namespace fornani::player {
+enum class IndicatorType : uint8_t { health, orb };
 class Indicator {
   public:
-	Indicator(automa::ServiceProvider& svc);
+	explicit Indicator(automa::ServiceProvider& svc);
 	void init(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> pos = {0.f, 0.f});
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -47,4 +44,4 @@ class Indicator {
 	vfx::ColorFade color_fade{};
 	vfx::Gravitator gravitator{};
 };
-} // namespace player
+} // namespace fornani::player

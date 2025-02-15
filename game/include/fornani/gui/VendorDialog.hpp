@@ -1,29 +1,28 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/particle/Gravitator.hpp"
-#include "Portrait.hpp"
-#include "Selector.hpp"
 #include "Console.hpp"
 #include "MiniMenu.hpp"
+#include "Portrait.hpp"
+#include "Selector.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include <memory>
+#include "fornani/particle/Gravitator.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
-namespace npc {
+namespace fornani::npc {
 class Vendor;
 }
-namespace flfx {
+namespace fornani::flfx {
 class Transition;
 }
 
-namespace gui {
-enum class VendorDialogStatus { opened, made_sale };
-enum class VendorState { sell, buy };
+namespace fornani::gui {
+enum class VendorDialogStatus : uint8_t { opened, made_sale };
+enum class VendorState : uint8_t { sell, buy };
 class VendorDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
@@ -36,6 +35,7 @@ class VendorDialog {
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
 	[[nodiscard]] auto made_profit() const -> bool { return balance > 0.f; }
 	[[nodiscard]] auto opening() const -> bool { return intro.running() || bring_in_cooldown.running(); }
+
   private:
 	struct {
 		Selector buy;
@@ -79,4 +79,4 @@ class VendorDialog {
 	} orb;
 };
 
-} // namespace gui
+} // namespace fornani::gui

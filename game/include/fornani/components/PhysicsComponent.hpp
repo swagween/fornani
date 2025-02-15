@@ -2,34 +2,31 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <chrono>
 #include <cmath>
 #include <random>
-#include <vector>
-#include <deque>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Direction.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
-}
+} // namespace fornani::automa
 
-namespace components {
+namespace fornani::components {
 
-sf::Vector2<float> const FRICTION_DEFAULT = {0.9f, 0.9f};
-float const MASS_DEFAULT = 1.0f;
-float const UNIVERSAL_MAX_SPEED = 64.0f;
-float const TERMINAL_VELOCITY = 1.8f;
-float const default_grav = 1.0f;
-float const elastic_threshold{-0.01f};
+constexpr sf::Vector2 FRICTION_DEFAULT = {0.9f, 0.9f};
+constexpr float MASS_DEFAULT = 1.0f;
+constexpr float UNIVERSAL_MAX_SPEED = 64.0f;
+constexpr float TERMINAL_VELOCITY = 1.8f;
+constexpr float default_grav = 1.0f;
+constexpr float elastic_threshold{-0.01f};
 
 enum class State { grounded };
 
 class PhysicsComponent {
   public:
 	PhysicsComponent() : ground_friction(FRICTION_DEFAULT), air_friction(FRICTION_DEFAULT), mass(MASS_DEFAULT){};
-	PhysicsComponent(sf::Vector2<float> fric, float ma, sf::Vector2<float> max_vel = sf::Vector2<float>{UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED}, float grav = 0.0f)
-		: ground_friction(fric), air_friction(fric), mass(ma), maximum_velocity(max_vel), gravity(grav) {}
+	PhysicsComponent(sf::Vector2<float> fric, float ma, sf::Vector2<float> max_vel = sf::Vector2{UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED}, float grav = 0.0f)
+		: ground_friction(fric), air_friction(fric), mass(ma), gravity(grav), maximum_velocity(max_vel) {}
 
 	// basic physics variables
 	sf::Vector2<float> acceleration{};
@@ -83,4 +80,4 @@ class PhysicsComponent {
 	float epsilon{0.0001f};
 };
 
-} // namespace components
+} // namespace fornani::components

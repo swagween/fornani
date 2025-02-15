@@ -4,7 +4,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
-namespace entity {
+namespace fornani::entity {
 
 Shockwave::Shockwave(sf::Vector2<float> speed) : speed(speed) {
 	hit.bounds.setRadius(16.f);

@@ -1,39 +1,34 @@
 
 #pragma once
 
-#include <memory>
-#include <unordered_map>
-#include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/CircleSensor.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/particle/Emitter.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/particle/Gravitator.hpp"
-#include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/CircleCollider.hpp"
+#include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Direction.hpp"
-#include "fornani/utils/Logger.hpp"
-#include "fornani/utils/Random.hpp"
 #include "fornani/utils/Shape.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace arms {
+namespace fornani::arms {
 
 class Weapon;
-enum class Team { nani, skycorps, guardian, pioneer, beast };
-enum class ProjectileType { bullet, missile, melee };
-enum class RenderType { animated, single_sprite, multi_sprite };
+enum class Team : uint8_t { nani, skycorps, guardian, pioneer, beast };
+enum class ProjectileType : uint8_t { bullet, missile, melee };
+enum class RenderType : uint8_t { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip };
+enum class ProjectileAttributes : uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip };
 struct ProjectileSpecifications {
 	float base_damage{};
 	int power{};
@@ -51,7 +46,7 @@ struct ProjectileSpecifications {
 	float elasticty{};
 };
 
-enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
+enum class ProjectileState : uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
 
 class Projectile {
   public:
@@ -137,7 +132,7 @@ class Projectile {
 	util::Cooldown damage_timer{};
 	Weapon* m_weapon;
 
-	fornani::Logger m_logger{ "world" };
+	io::Logger m_logger{"world"};
 };
 
-} // namespace arms
+} // namespace fornani::arms

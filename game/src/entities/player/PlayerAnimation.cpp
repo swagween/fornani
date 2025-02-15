@@ -1,8 +1,11 @@
 #include "fornani/entities/player/PlayerAnimation.hpp"
+
+#include <iostream>
+
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace player {
+namespace fornani::player {
 
 PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr) {
 	state_function = state_function();
@@ -59,13 +62,15 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 	animation.label = "sprint";
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
-	if (change_state(AnimState::slide, slide, true)) { return PA_BIND(update_slide); }
-	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
-	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
+	if (!m_player->firing_weapon()) {
+		if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
+		if (change_state(AnimState::slide, slide, true)) { return PA_BIND(update_slide); }
+		if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
+		if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
+	}
 	if (change_state(AnimState::stop, stop)) { return PA_BIND(update_stop); }
 	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::run, run)) { return PA_BIND(update_run); }
-	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::suspend, suspend)) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::fall, fall)) { return PA_BIND(update_fall); }
 	if (change_state(AnimState::idle, idle)) { return PA_BIND(update_idle); }
@@ -138,9 +143,11 @@ fsm::StateFunction PlayerAnimation::update_run() {
 	if (change_state(AnimState::die, die, true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, rise)) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::sprint, sprint)) { return PA_BIND(update_sprint); }
-	if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
-	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
-	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
+	if (!m_player->firing_weapon()) {
+		if (change_state(AnimState::slide, slide)) { return PA_BIND(update_slide); }
+		if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
+		if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
+	}
 	if (change_state(AnimState::inspect, inspect)) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::stop, stop)) { return PA_BIND(update_stop); }
 	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
@@ -620,19 +627,14 @@ fsm::StateFunction PlayerAnimation::update_get_up() {
 fsm::StateFunction PlayerAnimation::update_roll() {
 	animation.label = "roll";
 	auto& controller = m_player->controller;
-	auto sign = m_player->controller.facing_left() ? -1.f: 1.f;
+	auto sign = m_player->controller.moving_left() ? -1.f: 1.f;
+	if (!m_player->controller.moving()) { sign = m_player->controller.facing_left() ? -1.f : 1.f; }
 	m_player->collider.physics.velocity.x = 60.f * sign;
 	if (!controller.roll.rolling()) {
 		controller.roll.direction.lr = controller.direction.lr;
 		m_player->m_services->soundboard.flags.player.set(audio::Player::roll);
 	}
 	controller.roll.roll();
-	if (controller.roll.direction.lr != controller.direction.lr) {
-		m_player->collider.physics.hard_stop_x();
-		state = AnimState::sharp_turn;
-		animation.set_params(sharp_turn);
-		return PA_BIND(update_sharp_turn);
-	}
 	if (change_state(AnimState::inspect, inspect)) {
 		m_player->collider.physics.stop_x();
 		controller.roll.break_out();
@@ -656,17 +658,30 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	}
 
 	if (animation.complete()) {
-		if (controller.sliding()) {
+		if (controller.sliding() && !m_player->firing_weapon()) {
 			state = AnimState::slide;
 			animation.set_params(slide);
 			return PA_BIND(update_slide);
 		} else {
 			controller.roll.break_out();
+			if (controller.sprinting()) {
+				state = AnimState::sprint;
+				animation.set_params(sprint);
+				return PA_BIND(update_sprint);
+			}
 			state = AnimState::idle;
 			animation.set_params(idle);
 			return PA_BIND(update_idle);
 		}
 	}
+
+	if (controller.roll.direction.lr != controller.direction.lr) {
+		m_player->collider.physics.hard_stop_x();
+		state = AnimState::sharp_turn;
+		animation.set_params(sharp_turn);
+		return PA_BIND(update_sharp_turn);
+	}
+
 	state = AnimState::roll;
 	return PA_BIND(update_roll);
 }
