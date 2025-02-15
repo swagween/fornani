@@ -45,7 +45,7 @@ class InventoryWindow : public Console {
 	MiniMap minimap;
 	Mode mode{};
 	MiniMenu item_menu;
-	text::HelpText help_marker;
+	graphics::HelpText help_marker;
 
   private:
 	struct {

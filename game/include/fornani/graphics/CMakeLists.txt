@@ -12,7 +12,6 @@ nani_add_headers(
         SpriteRotator.hpp
         Style.hpp
         TextureUpdater.hpp
-        TextWriter.hpp
         Transition.hpp
         Tutorial.hpp
 )

@@ -593,7 +593,7 @@
         146,
         144,
         145,
-        145,
+        208,
         146,
         144,
         145,
@@ -8266,6 +8266,27 @@
           "suite": [
             [
               "Testing RectPath"
+            ]
+          ]
+        }
+      },
+      {
+        "id": 0,
+        "position": [
+          16,
+          17
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "key": "longer",
+        "alternates": 0,
+        "longer0": {
+          "suite": [
+            [
+              "This message is quite long and it should go on to the next line and show what long messages look like."
             ]
           ]
         }

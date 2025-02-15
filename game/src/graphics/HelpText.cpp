@@ -1,8 +1,10 @@
 #include "fornani/graphics/HelpText.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace fornani::text {
+namespace fornani::graphics {
+
 HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title) {}
+
 HelpText::HelpText(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) : HelpText(svc) {
 	text_color = svc.styles.colors.ui_white;
 	text_color.a = 0;
@@ -54,4 +56,5 @@ void HelpText::reset() {
 	text_color.a = 0;
 	alpha_counter.start();
 }
+
 } // namespace text

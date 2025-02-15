@@ -16,7 +16,7 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
 																			  {"idle", "lift", "run", "attack", "dormant", "swoosh"},
 																			  2.0f,
 																			  0.85f,
-																			  {0.f, -20.f},
+																			  {0.f, -30.f},
 																			  1}
 													   : entity::FloatingPart{svc.assets.t_imp_fork,
 																			  {82, 34},
@@ -24,7 +24,7 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
 																			  {"idle", "lift", "run", "attack", "dormant", "swoosh"},
 																			  2.0f,
 																			  0.85f,
-																			  {0.f, -40.f},
+																			  {0.f, -30.f},
 																			  2},
 			.hand{svc.styles.colors.ui_black, {4.f, 4.f}, 2.0f, 0.85f, {-32.f, 8.f}}},
 	  dormant{0, 1, imp_framerate, -1}, idle{1, 6, imp_framerate, -1}, turn{7, 3, imp_framerate, 0}, run{10, 8, imp_framerate, -1}, jump{18, 5, imp_framerate, 0}, fall{24, 3, imp_framerate, -1}, attack{27, 7, imp_framerate, 0} {
@@ -124,6 +124,7 @@ fsm::StateFunction Imp::update_idle() {
 	attacks.stab.disable();
 	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
+	if (change_state(ImpState::attack, attack)) { return IMP_BIND(update_attack); }
 	if (change_state(ImpState::fall, fall)) { return IMP_BIND(update_fall); }
 	if (change_state(ImpState::run, run)) { return IMP_BIND(update_run); }
 	if (change_state(ImpState::jump, jump)) { return IMP_BIND(update_jump); }

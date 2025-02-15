@@ -10,7 +10,6 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 													 .gamepad = options.at(static_cast<int>(Toggles::gamepad)).label,
 													 .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label},
 	  music_label{options.at(static_cast<int>(Toggles::music)).label}, toggle_options{.enabled{svc.text.fonts.title}, .disabled{svc.text.fonts.title}}, sliders{.music_volume{svc.text.fonts.title}} {
-	console = gui::Console(svc);
 	console.set_source(svc.text.basic);
 	player.map_reset();
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
@@ -104,8 +103,8 @@ void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	left_dot.render(svc, win, {0, 0});
 	right_dot.render(svc, win, {0, 0});
-	if (console.flags.test(gui::ConsoleFlags::active)) { console.render(win); }
-	console.write(win, false);
+	if (console.active()) { console.render(win); }
+	console.write(win, true);
 }
 
 } // namespace automa

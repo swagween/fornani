@@ -11,6 +11,7 @@ nani_add_sources(
         Portrait.cpp
         Selector.cpp
         StatusBar.cpp
+        TextWriter.cpp
         VendorDialog.cpp
         WardrobeWidget.cpp
         Widget.cpp

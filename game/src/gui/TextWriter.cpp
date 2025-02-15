@@ -1,14 +1,14 @@
 
-#include "fornani/graphics/TextWriter.hpp"
-#include <SFML/Graphics.hpp>
-#include <string>
+#include "fornani/gui/TextWriter.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace fornani::text {
+#include <SFML/Graphics.hpp>
 
-TextWriter::TextWriter(automa::ServiceProvider& svc)
-	: m_services(&svc), help_marker(svc), working_message{svc.text.fonts.basic}, second_working_message{svc.text.fonts.basic}, third_working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}},
-	  font{svc.text.fonts.basic} {
+#include <string>
+
+namespace fornani::gui {
+
+TextWriter::TextWriter(automa::ServiceProvider& svc) : m_services(&svc), help_marker(svc), working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}}, m_font{&svc.text.fonts.basic} {
 	special_characters.insert({Codes::prompt, '%'});
 	special_characters.insert({Codes::quest, '$'});
 	special_characters.insert({Codes::item, '^'});
@@ -20,6 +20,19 @@ TextWriter::TextWriter(automa::ServiceProvider& svc)
 	bounds_box.setFillColor(sf::Color(200, 200, 10, 80));
 	bounds_box.setOutlineColor(sf::Color(255, 255, 255, 180));
 	bounds_box.setOutlineThickness(-1);
+	cursor.setFillColor(svc.styles.colors.ui_white);
+	cursor.setSize({10.f, 16.f});
+	NANI_LOG_INFO(m_logger, "Private constructor called first.");
+}
+
+TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) : TextWriter(svc) {
+	load_message(source, key);
+	NANI_LOG_INFO(m_logger, "Public constructor called second.");
+}
+
+TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message) : TextWriter(svc) {
+	load_single_message(message);
+	NANI_LOG_INFO(m_logger, "Public constructor called second.");
 }
 
 void TextWriter::start() {
@@ -33,13 +46,7 @@ void TextWriter::start() {
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 
 	working_message = suite.at(iterators.current_suite_set).front().data;
-	// calculate number of lines and call wrap() that many times.
-	// can't call wrap() tick-wise because it's very slow
-	auto num_glyphs = suite.at(iterators.current_suite_set).front().data.getString().getSize();
-	auto length = suite.at(iterators.current_suite_set).front().data.getCharacterSize() + suite.at(iterators.current_suite_set).front().data.getLineSpacing();
-	auto gpl = bounds.x / length;
-	auto num_lines = num_glyphs / gpl;
-	for (int i = 0; i < num_lines; ++i) { wrap(); }
+	constrain();
 
 	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::prompt);
 	check_for_event(suite.at(iterators.current_suite_set).front(), Codes::voice);
@@ -68,10 +75,6 @@ void TextWriter::update() {
 	if (tick_count % writing_speed == 0) {
 		char const next_char = (char)suite.at(iterators.current_suite_set).front().data.getString().getData()[glyph_count];
 		working_str += next_char;
-		third_working_message = second_working_message;
-		third_working_message.setFillColor(m_services->styles.colors.ui_white);
-		second_working_message = working_message;
-		second_working_message.setFillColor(m_services->styles.colors.periwinkle);
 		working_message.setString(working_str);
 		++glyph_count;
 	}
@@ -86,8 +89,6 @@ void TextWriter::flush() {
 	suite.clear();
 	responses.clear();
 	working_message.setString("");
-	second_working_message.setString("");
-	third_working_message.setString("");
 	working_str = {};
 }
 
@@ -124,10 +125,26 @@ void TextWriter::wrap() {
 	}
 }
 
+void TextWriter::constrain() {
+	if (iterators.current_suite_set >= suite.size()) { return; }
+	if (suite.at(iterators.current_suite_set).empty()) { return; }
+	auto const& current_message{suite.at(iterators.current_suite_set).front().data};
+	// calculate number of lines and call wrap() that many times.
+	// can't call wrap() tick-wise because it's very slow.
+	auto num_glyphs = current_message.getString().getSize();
+	auto length = current_message.getCharacterSize() + current_message.getLineSpacing();
+	auto gpl = bounds.x / length;
+	auto num_lines = num_glyphs / gpl;
+	for (int i = 0; i < num_lines; ++i) { wrap(); }
+	NANI_LOG_INFO(m_logger, "Num glyphs: {}", num_glyphs);
+	NANI_LOG_INFO(m_logger, "Glyphs per line: {}", gpl);
+	NANI_LOG_INFO(m_logger, "Num lines: {}", num_lines);
+}
+
 void TextWriter::load_single_message(std::string_view message) {
 	flush();
 	auto message_container = std::deque<Message>{};
-	message_container.push_back({sf::Text(font), false});
+	message_container.push_back({sf::Text(*m_font), false});
 	message_container.back().data.setString(message.data());
 	stylize(message_container.back().data, true);
 	suite.push_back(message_container);
@@ -140,7 +157,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	for (auto& set : source[key]["suite"].array_view()) {
 		auto this_set = std::deque<Message>{};
 		for (auto& msg : set.array_view()) {
-			this_set.push_back({sf::Text(font), false});
+			this_set.push_back({sf::Text(*m_font), false});
 			this_set.back().data.setString(msg.as_string().data());
 			stylize(this_set.back().data, true);
 		}
@@ -150,14 +167,14 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	for (auto& set : source[key]["responses"].array_view()) {
 		auto this_set = std::deque<Message>{};
 		for (auto& msg : set.array_view()) {
-			this_set.push_back({sf::Text(font), false});
+			this_set.push_back({sf::Text(*m_font), false});
 			this_set.back().data.setString(msg.as_string().data());
 			stylize(this_set.back().data, false);
 		}
 		responses.push_back(this_set);
 	}
 	working_message = suite.at(iterators.current_suite_set).front().data;
-	help_marker = text::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
+	help_marker = graphics::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
 }
 
 void TextWriter::append(std::string_view content) {
@@ -170,7 +187,7 @@ void TextWriter::append(std::string_view content) {
 void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 	msg.setCharacterSize(text_size);
 	msg.setFillColor(m_services->styles.colors.ui_white);
-	msg.setFont(font);
+	msg.setFont(*m_font);
 	msg.setLineSpacing(1.5f);
 	if (is_suite) {
 		msg.setPosition(position);
@@ -181,30 +198,41 @@ void TextWriter::stylize(sf::Text& msg, bool is_suite) const {
 
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);
+	static bool show_cursor;
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
-	win.draw(suite.at(iterators.current_suite_set).front().data);
+	auto& current_message{suite.at(iterators.current_suite_set).front().data};
+	working_message = current_message;
+	deactivate();
+	write_gradual_message(win);
 }
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
-	//win.draw(bounds_box);
+	// win.draw(bounds_box);
+	static bool show_cursor;
+	auto cursor_offset{sf::Vector2f{8.f, 0.f}};
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
-	suite.at(iterators.current_suite_set).front().data.setPosition(position);
+	auto& current_message{suite.at(iterators.current_suite_set).front().data};
+	current_message.setPosition(position);
 	if (!writing()) {
-		win.draw(suite.at(iterators.current_suite_set).front().data);
+		win.draw(current_message);
 		if (!selection_mode()) { help_marker.render(win); }
 		flags.set(MessageState::done_writing);
+		if (m_services->ticker.every_x_frames(24)) { show_cursor = !show_cursor; }
+		auto last_glyph_position = current_message.findCharacterPos(working_message.getString().getSize() - 1);
+		cursor.setPosition(last_glyph_position + cursor_offset);
+		if (show_cursor) { win.draw(cursor); }
 		return;
 	}
+	show_cursor = true;
 	help_marker.start();
-	working_message.setFillColor(m_services->styles.colors.blue);
+	working_message.setFillColor(m_services->styles.colors.ui_white);
 	working_message.setPosition(position);
-	second_working_message.setPosition(position);
-	third_working_message.setPosition(position);
+	auto last_glyph_position = working_message.findCharacterPos(working_message.getString().getSize() - 1);
+	cursor.setPosition(last_glyph_position + cursor_offset);
 	win.draw(working_message);
-	if (working_message.getString().getSize() > 1) { win.draw(second_working_message); }
-	if (second_working_message.getString().getSize() > 1) { win.draw(third_working_message); }
+	win.draw(cursor);
 }
 
 void TextWriter::write_responses(sf::RenderWindow& win) {
@@ -365,8 +393,8 @@ void TextWriter::process_selection() {
 	}
 	check_for_event(suite.at(iterators.current_suite_set).back(), Codes::prompt);
 	auto response_target = suite.at(iterators.current_suite_set).back().target;
-	//std::cout << static_cast<std::string>(suite.at(iterators.current_suite_set).back().data.getString()) << "\n";
-	//std::cout << "Response Target: " << response_target << "\n";
+	// std::cout << static_cast<std::string>(suite.at(iterators.current_suite_set).back().data.getString()) << "\n";
+	// std::cout << "Response Target: " << response_target << "\n";
 	for (auto i{0}; i <= response_target; ++i) { responses.pop_front(); }
 
 	m_services->soundboard.flags.console.set(audio::Console::next);
@@ -383,6 +411,7 @@ void TextWriter::process_quest(util::QuestKey out) {
 }
 
 void TextWriter::shutdown() {
+	flush();
 	reset();
 	suite.clear();
 	responses.clear();
@@ -406,4 +435,4 @@ int TextWriter::get_current_selection() const { return iterators.current_selecti
 
 int TextWriter::get_current_suite_set() const { return iterators.current_suite_set; }
 
-} // namespace text
+} // namespace fornani::gui

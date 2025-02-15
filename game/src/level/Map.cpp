@@ -746,7 +746,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win) {
 	ZoneScopedN("Map::render_console");
 	if (console.flags.test(gui::ConsoleFlags::active)) { console.render(win); }
-	console.write(win, false);
+	console.write(win);
 }
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {

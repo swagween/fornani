@@ -48,7 +48,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
 
 	mode = Mode::inventory;
 
-	help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true);
+	help_marker = graphics::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true);
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
 }
 
@@ -80,10 +80,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 				if (item.depleted()) { selector.go_left(); }
 				if (item.selected()) {
 					selector.set_position(item.get_position());
-					if (info.extended()) {
-						info.writer.load_single_message(item.get_description());
-						info.writer.wrap();
-					}
+					if (info.extended()) { info.load_single_message(item.get_description()); }
 					item.set_rarity_position(info.position + info.dimensions * 0.5f - ui.rarity_pad);
 				}
 			}
@@ -94,10 +91,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 				ctr == selector.get_current_selection() ? gun->select() : gun->deselect();
 				if (selector.get_section() != InventorySection::gun) { gun->deselect(); }
 				if (selector.get_section() == InventorySection::gun) {
-					if (gun->selected() && info.extended()) {
-						info.writer.load_single_message(gun->get_description());
-						info.writer.wrap();
-					}
+					if (gun->selected() && info.extended()) { info.load_single_message(gun->get_description()); }
 				}
 				++ctr;
 			}
@@ -339,9 +333,9 @@ void InventoryWindow::update_table(player::Player& player, bool new_dim) {
 void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
 	mode = (mode == Mode::inventory) ? Mode::minimap : Mode::inventory;
 	if (mode == Mode::inventory) {
-		help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true); // XXX same as above
+		help_marker = graphics::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true); // XXX same as above
 	} else {
-		help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to view Inventory.", 20, true, true); // XXX same as above
+		help_marker = graphics::HelpText(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to view Inventory.", 20, true, true); // XXX same as above
 		minimap.center();
 	}
 	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});

@@ -35,7 +35,7 @@ class PauseWindow : public Console {
 
 	sf::Text title;
 	sf::Text widget_label;
-	text::HelpText help_marker;
+	graphics::HelpText help_marker;
 
 	MiniMenu menu;
 };

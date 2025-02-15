@@ -40,7 +40,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 		for (auto& choice : set.array_view()) {
 			if (choice["key"].as_string() == std::string{key}) {
 				console.set_source(choice);
-				console.load_and_launch(std::string{key + std::to_string(current_alt)});
+				console.load_and_launch(std::string{key + std::to_string(current_alt)}, gui::OutputType::instant);
 			}
 		}
 	}

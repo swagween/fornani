@@ -159,10 +159,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 			ctr == selector.get_current_selection() ? item.select() : item.deselect();
 			if (item.selected()) {
 				selector.set_position(item.get_position());
-				if (info.extended()) {
-					info.writer.load_single_message(item.get_description());
-					info.writer.wrap();
-				}
+				if (info.extended()) { info.load_single_message(item.get_description()); }
 				item.set_rarity_position(info.position + info.dimensions * 0.5f - ui_constants.rarity_pad);
 				auto f_value = static_cast<float>(item.get_value());
 				sale_price = f_value + f_value * vendor.get_upcharge();
@@ -218,10 +215,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 			ctr == selector.get_current_selection() ? item.select() : item.deselect();
 			if (item.selected()) {
 				selector.set_position(item.get_position());
-				if (info.extended()) {
-					info.writer.load_single_message(item.get_description());
-					info.writer.wrap();
-				}
+				if (info.extended()) { info.load_single_message(item.get_description()); }
 				item.set_rarity_position(info.position + info.dimensions * 0.5f - ui_constants.rarity_pad);
 				auto const f_value = static_cast<float>(item.get_value());
 				sale_price = f_value - f_value * vendor.get_upcharge();

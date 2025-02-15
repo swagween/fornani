@@ -1,9 +1,6 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <chrono>
-#include <filesystem>
 #include "Option.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/entities/player/Player.hpp"
@@ -13,6 +10,10 @@
 #include "fornani/level/Map.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <filesystem>
 
 namespace fornani::player {
 class Player;

@@ -14,12 +14,13 @@
 #include "fornani/utils/Decoder.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/utils/Shipment.hpp"
+#include "fornani/io/Logger.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace fornani::text {
+namespace fornani::gui {
 
 struct Message {
 	sf::Text data;
@@ -34,17 +35,14 @@ static constexpr int fast_writing_speed{1};
 
 class TextWriter {
   public:
-	explicit TextWriter(automa::ServiceProvider& svc);
+	explicit TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key);
+	explicit TextWriter(automa::ServiceProvider& svc, std::string_view message);
 	void start();
 	void update();
 	void flush();
 	void set_position(sf::Vector2<float> pos);
 	void set_bounds(sf::Vector2<float> new_bounds);
-	void wrap();
-	void load_single_message(std::string_view message);
-	void load_message(dj::Json& source, std::string_view key);
 	void append(std::string_view content);
-	void stylize(sf::Text& msg, bool is_suite) const;
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);
 	void write_responses(sf::RenderWindow& win);
@@ -99,6 +97,13 @@ class TextWriter {
 	util::Decoder decoder{};
 
   private:
+	explicit TextWriter(automa::ServiceProvider& svc);
+	void load_single_message(std::string_view message);
+	void load_message(dj::Json& source, std::string_view key);
+	void stylize(sf::Text& msg, bool is_suite) const;
+	void wrap();
+	void constrain();
+
 	std::deque<std::deque<Message>> suite{};
 	std::deque<std::deque<Message>> responses{};
 
@@ -111,13 +116,11 @@ class TextWriter {
 	std::unordered_map<Codes, char> special_characters{};
 
 	sf::Text working_message;
-	sf::Text second_working_message;
-	sf::Text third_working_message;
 
-	HelpText help_marker;
+	graphics::HelpText help_marker;
 
 	std::string working_str{};
-	sf::Font font{};
+	sf::Font* m_font;
 	int glyph_count{};
 	int tick_count{};
 	int writing_speed{default_writing_speed};
@@ -130,11 +133,14 @@ class TextWriter {
 	float pad{30};
 
 	sf::RectangleShape indicator{};
+	sf::RectangleShape cursor{};
 
 	automa::ServiceProvider* m_services;
 
 	Message zero_option; // for debug
 	sf::RectangleShape bounds_box{};
+
+	io::Logger m_logger{"TextWriter"};
 };
 
 } // namespace fornani::text

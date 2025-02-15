@@ -29,7 +29,7 @@ class Tutorial {
 	util::BitFlags<TutorialFlags> flags{};
 	util::BitFlags<TutorialHelpers> helpers{};
 	TutorialFlags current_state{};
-	text::HelpText help_marker;
+	graphics::HelpText help_marker;
 	util::Cooldown maximum_display_time{4800};
 };
 

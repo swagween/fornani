@@ -13,7 +13,7 @@ namespace fornani::config {
 enum class DigitalAction;
 }
 
-namespace fornani::text {
+namespace fornani::graphics {
 
 enum class HelpTextFlags : uint8_t { no_blink, time_limit };
 

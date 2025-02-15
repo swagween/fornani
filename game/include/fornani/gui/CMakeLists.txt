@@ -11,6 +11,7 @@ nani_add_headers(
         Portrait.hpp
         Selector.hpp
         StatusBar.hpp
+        TextWriter.hpp
         VendorDialog.hpp
         WardrobeWidget.hpp
         Widget.hpp

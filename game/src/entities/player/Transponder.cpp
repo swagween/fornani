@@ -1,6 +1,6 @@
 #include "fornani/entities/player/Transponder.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {
 
@@ -14,45 +14,43 @@ void Transponder::update(automa::ServiceProvider& svc, gui::Console& console) {
 	track_shipments(console);
 
 	// selection mode stuff
-	if (up()) { console.writer.adjust_selection(-1); }
-	if (down()) { console.writer.adjust_selection(1); }
-	if (selected()) { console.writer.process_selection(); }
+	if (up()) { console.writer->adjust_selection(-1); }
+	if (down()) { console.writer->adjust_selection(1); }
+	if (selected()) { console.writer->process_selection(); }
 
 	// text stuff
 	if (skipped_ahead()) {
-		if (console.writer.writing() && console.writer.can_skip()) { console.writer.skip_ahead(); }
+		if (console.writer->writing() && console.writer->can_skip()) { console.writer->skip_ahead(); }
 	}
-	if (requested_next() && !console.writer.delaying()) {
-		if (!console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::next); }
-		console.writer.request_next();
-		console.writer.reset_delay();
+	if (requested_next() && !console.writer->delaying()) {
+		if (!console.writer->writing()) { svc.soundboard.flags.console.set(audio::Console::next); }
+		console.writer->request_next();
+		console.writer->reset_delay();
 	}
+	if (skip_released()) { console.writer->enable_skip(); }
+	if (console.writer->writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
+
 	if (exited()) {
-		if (console.writer.complete()) {
+		if (console.writer->complete()) {
 			svc.soundboard.flags.console.set(audio::Console::done);
 			flush_shipments();
-			console.writer.shutdown();
+			console.writer->shutdown();
 			console.end();
 		}
 	}
-	if (skip_released()) { console.writer.enable_skip(); }
-	if (console.writer.writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
-
 	end();
 }
 
 void Transponder::track_shipments(gui::Console& console) {
-	shipments.item.set(console.writer.communicators.out_item.get_residue());
-	shipments.quest.set(console.writer.communicators.out_quest.get_residue());
-	shipments.voice.set(console.writer.communicators.out_voice.get_residue());
-	shipments.emotion.set(console.writer.communicators.out_emotion.get_residue());
-	shipments.reveal_item.set(console.writer.communicators.reveal_item.get_residue());
-	out_quest = console.writer.out_quest;
+	shipments.item.set(console.writer->communicators.out_item.get_residue());
+	shipments.quest.set(console.writer->communicators.out_quest.get_residue());
+	shipments.voice.set(console.writer->communicators.out_voice.get_residue());
+	shipments.emotion.set(console.writer->communicators.out_emotion.get_residue());
+	shipments.reveal_item.set(console.writer->communicators.reveal_item.get_residue());
+	out_quest = console.writer->out_quest;
 }
 
-void Transponder::flush_shipments() {
-	shipments = {};
-}
+void Transponder::flush_shipments() { shipments = {}; }
 
 void Transponder::end() { actions = {}; }
 
@@ -84,4 +82,4 @@ bool Transponder::up() const { return actions.test(TransponderActions::up); }
 
 bool Transponder::selected() const { return actions.test(TransponderActions::select); }
 
-} // namespace player
+} // namespace fornani::player

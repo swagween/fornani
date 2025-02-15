@@ -1,14 +1,17 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <string>
 #include "ItemWidget.hpp"
 #include "Portrait.hpp"
-#include "fornani/graphics/TextWriter.hpp"
+#include "fornani/gui/TextWriter.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/NineSlice.hpp"
 #include "fornani/utils/RectPath.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <memory>
+#include <string>
 
 namespace fornani::gui {
 
@@ -19,7 +22,8 @@ constexpr float height_factor{3.0f};
 constexpr float pad{168.f};
 constexpr float text_pad{8.0f};
 
-enum class ConsoleFlags : uint8_t { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item, exited };
+enum class ConsoleFlags : uint8_t { active, selection_mode, portrait_included, off_trigger, extended, display_item, exited };
+enum class OutputType { instant, gradual };
 
 struct Border {
 	float left{};
@@ -39,10 +43,12 @@ class Console {
 
 	void set_source(dj::Json& json);
 	void set_texture(sf::Texture& tex);
-	void load_and_launch(std::string_view key);
+	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual);
+	void load_single_message(std::string_view message);
 	void display_item(int item_id);
 	void display_gun(int gun_id);
-	void write(sf::RenderWindow& win, bool instant = true);
+	void write(sf::RenderWindow& win, bool instant);
+	void write(sf::RenderWindow& win);
 	void append(std::string_view key);
 	void end();
 	void end_tick();
@@ -52,7 +58,7 @@ class Console {
 	std::string get_key();
 
 	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
-	[[nodiscard]] auto is_complete() const -> bool { return writer.empty(); }
+	[[nodiscard]] auto is_complete() const -> bool { return !static_cast<bool>(writer); }
 	[[nodiscard]] auto extended() const -> bool { return m_nineslice.is_extended(); }
 	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
 	[[nodiscard]] auto exited() const -> bool { return flags.test(ConsoleFlags::exited); }
@@ -74,7 +80,7 @@ class Console {
 
 	automa::ServiceProvider* m_services;
 
-	text::TextWriter writer;
+	std::unique_ptr<TextWriter> writer;
 	std::string native_key{};
 
 	struct {
@@ -86,6 +92,7 @@ class Console {
 
   protected:
 	sf::Vector2<float> origin{}; // bottom left corner
+	OutputType m_output_type{};
 };
 
 } // namespace fornani::gui
