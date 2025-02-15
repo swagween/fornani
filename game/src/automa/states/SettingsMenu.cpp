@@ -26,7 +26,7 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 
 void SettingsMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	if (!console.active()) {
+	if (!console.is_active()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			current_selection.modulate(1);
 			if (mode_flags.test(MenuMode::adjust)) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
@@ -86,7 +86,6 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 	player->controller.update(svc);
 	player->controller.clean();
 	player->flags.triggers = {};
-	console.end_tick();
 	svc.soundboard.play_sounds(svc);
 }
 
@@ -102,7 +101,7 @@ void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	left_dot.render(svc, win, {0, 0});
 	right_dot.render(svc, win, {0, 0});
-	if (console.active()) { console.render(win); }
+	console.render(win);
 	console.write(win, true);
 }
 

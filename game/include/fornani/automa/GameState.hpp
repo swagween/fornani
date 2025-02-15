@@ -7,9 +7,9 @@
 #include "fornani/graphics/Background.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/HUD.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"
+#include "fornani/level/Map.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -55,17 +55,15 @@ class GameState {
 	GameState& operator=(GameState&&) = delete;
 	virtual ~GameState() {}
 
-	virtual void tick_update([[maybe_unused]] ServiceProvider& svc){};
-	virtual void frame_update([[maybe_unused]] ServiceProvider& svc){};
-	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win){};
+	virtual void tick_update([[maybe_unused]] ServiceProvider& svc) {};
+	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {};
+	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {};
 
 	bool debug_mode{false};
 	util::BitFlags<GameStateFlags> flags{};
 
 	std::string_view scene{};
 	gui::Console console;
-	gui::InventoryWindow inventory_window;
-	gui::PauseWindow pause_window;
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
@@ -79,6 +77,9 @@ class GameState {
 	util::Circuit current_selection{1};
 	float spacing{24.f};
 	float top_buffer{80.f};
+
+  protected:
+	io::Logger m_logger{"GameState"};
 };
 
 } // namespace fornani::automa

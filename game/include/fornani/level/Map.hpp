@@ -115,10 +115,9 @@ class Map {
 
 	// methods
 	void load(automa::ServiceProvider& svc, int room_number, bool soft = false);
-	void update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window);
+	void update(automa::ServiceProvider& svc, gui::Console& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target = {});
 	void spawn_enemy(int id, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);

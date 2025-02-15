@@ -324,21 +324,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Map...: %s", player.tutorial.flags.test(text::TutorialFlags::map) ? "Yes" : "No");
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Inventory")) {
-					ImGui::Text("MiniMap Scale..: %f", game_state.get_current_state().inventory_window.minimap.get_scale());
-					ImGui::Text("MiniMap Ratio..: %f", game_state.get_current_state().inventory_window.minimap.get_ratio());
-					ImGui::Text("MiniMap X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().x);
-					ImGui::Text("MiniMap Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().y);
-					ImGui::Separator();
-					ImGui::Text("MiniMap Extent Left..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().position.x);
-					ImGui::Text("MiniMap Extent Top..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().position.y);
-					ImGui::Text("MiniMap Extent Width..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().size.x);
-					ImGui::Text("MiniMap Extent Height..: %f", game_state.get_current_state().inventory_window.minimap.get_extent().size.y);
-					ImGui::Separator();
-					ImGui::Text("MiniMap Center X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().x);
-					ImGui::Text("MiniMap Center Y Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_center_position().y);
-					ImGui::EndTabItem();
-				}
+				if (ImGui::BeginTabItem("Inventory")) { ImGui::EndTabItem(); }
 				if (ImGui::BeginTabItem("NPC")) {
 					ImGui::Separator();
 					for (auto& entry : services.data.npc_locations) {

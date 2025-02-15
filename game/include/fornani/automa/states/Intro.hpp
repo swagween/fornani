@@ -14,8 +14,8 @@ class Intro final : public GameState {
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void toggle_pause_menu(ServiceProvider& svc);
 
-	world::Map map;
 	sf::RectangleShape title{};
+	std::optional<gui::PauseWindow> pause_window{};
 };
 
 } // namespace fornani::automa

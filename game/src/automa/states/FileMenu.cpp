@@ -29,7 +29,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 void FileMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	if (!console.active()) {
+	if (!console.is_active()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			if (file_select_menu.is_open()) {
 				file_select_menu.down(svc);
@@ -115,7 +115,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->collider.flags.state.set(shape::State::grounded);
 
 	player->set_position({svc.constants.screen_dimensions.x * 0.5f + 80, 360});
-	player->update(map, console, inventory_window);
+	player->update(map);
 	player->controller.direction.lr = dir::LR::left;
 
 	console.update(svc);
@@ -126,7 +126,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.clean();
 	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
-	console.end_tick();
 }
 
 void FileMenu::frame_update(ServiceProvider& svc) {}
@@ -142,7 +141,7 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		hud.render(*player, win);
 		file_select_menu.render(win);
 	}
-	if (console.flags.test(gui::ConsoleFlags::active)) { console.render(win); }
+	console.render(win);
 	console.write(win, false);
 }
 
@@ -155,4 +154,4 @@ void FileMenu::refresh(ServiceProvider& svc) {
 	for (auto& option : options) { option.update(svc, current_selection.get()); }
 }
 
-} // namespace automa
+} // namespace fornani::automa

@@ -16,7 +16,7 @@
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{128}, .loading{2}}, barrier{1.f, 1.f},
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}}, barrier{1.f, 1.f},
 	  scaled_barrier{barrier * svc.constants.cell_size} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
@@ -285,7 +285,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	}
 }
 
-void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::InventoryWindow& inventory_window) {
+void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
 	cooldowns.loading.update();
@@ -313,8 +313,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);
 	}
-
-	inventory_window.update(svc, *player, *this);
 
 	player->collider.reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
@@ -475,10 +473,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console, gui::Inven
 			svc.state_controller.actions.set(automa::Actions::trigger);
 		}
 	}
-
-	console.clean_off_trigger();
-	inventory_window.clean_off_trigger();
-	inventory_window.info.clean_off_trigger();
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -741,12 +735,6 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	for (auto& animator : animators) {
 		if (!animator.foreground()) { animator.render(svc, win, cam); }
 	}
-}
-
-void Map::render_console(automa::ServiceProvider& svc, gui::Console& console, sf::RenderWindow& win) {
-	ZoneScopedN("Map::render_console");
-	if (console.flags.test(gui::ConsoleFlags::active)) { console.render(win); }
-	console.write(win);
 }
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {

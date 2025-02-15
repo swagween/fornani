@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "fornani/automa/GameState.hpp"
-#include "fornani/level/Camera.hpp"
-#include "fornani/gui/VendorDialog.hpp"
 #include <optional>
+#include "fornani/automa/GameState.hpp"
+#include "fornani/gui/VendorDialog.hpp"
+#include "fornani/level/Camera.hpp"
 
 namespace fornani::automa {
 
@@ -27,10 +27,12 @@ class Dojo final : public GameState {
 	util::Cooldown enter_room{};
 	util::Cooldown loading{32};
 	std::optional<gui::VendorDialog> vendor_dialog{};
+	std::optional<gui::PauseWindow> pause_window{};
+	std::optional<gui::InventoryWindow> inventory_window{};
 
-	//shape::Collider A{};
-	//shape::Collider B{};
-	//shape::CircleCollider circle{16.f};
+	// shape::Collider A{};
+	// shape::Collider B{};
+	// shape::CircleCollider circle{16.f};
 };
 
-} // namespace automa
+} // namespace fornani::automa

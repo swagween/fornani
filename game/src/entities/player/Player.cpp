@@ -47,7 +47,7 @@ void Player::init(automa::ServiceProvider& svc) {
 	catalog.categories.wardrobe.set_palette(svc.assets.t_palette_nani);
 }
 
-void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window) {
+void Player::update(world::Map& map) {
 	caution.avoid_ledges(map, collider, controller.direction, 8);
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	tutorial.update(*m_services);

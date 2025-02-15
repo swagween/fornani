@@ -29,8 +29,6 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	portrait.set_id(npc_id);
 	info.set_texture(svc.assets.t_console_outline);
 
-	info.dimensions = {svc.constants.f_screen_dimensions.x - 48.f, 110.f};
-	info.position = {svc.constants.f_center_screen.x, 450.f};
 	info.flags.reset(ConsoleFlags::portrait_included);
 	info.begin();
 
@@ -159,8 +157,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 			ctr == selector.get_current_selection() ? item.select() : item.deselect();
 			if (item.selected()) {
 				selector.set_position(item.get_position());
-				if (info.extended()) { info.load_single_message(item.get_description()); }
-				item.set_rarity_position(info.position + info.dimensions * 0.5f - ui_constants.rarity_pad);
+				info.load_single_message(item.get_description());
 				auto f_value = static_cast<float>(item.get_value());
 				sale_price = f_value + f_value * vendor.get_upcharge();
 				text.price_number.setString(std::format("{}", sale_price));
@@ -215,8 +212,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 			ctr == selector.get_current_selection() ? item.select() : item.deselect();
 			if (item.selected()) {
 				selector.set_position(item.get_position());
-				if (info.extended()) { info.load_single_message(item.get_description()); }
-				item.set_rarity_position(info.position + info.dimensions * 0.5f - ui_constants.rarity_pad);
+				info.load_single_message(item.get_description());
 				auto const f_value = static_cast<float>(item.get_value());
 				sale_price = f_value - f_value * vendor.get_upcharge();
 				text.price_number.setString(std::format("{}", sale_price));
@@ -279,8 +275,10 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	win.draw(text.price_number);
 	orb.sprite.render(svc, win, {});
 	portrait.render(win);
-	if (info.active()) { info.render(win); }
-	if (info.extended()) { info.write(win, true); }
+	if (info.is_active()) {
+		info.render(win);
+		info.write(win, true);
+	}
 	switch (state) {
 	case VendorState::buy:
 		if (vendor.inventory.items.empty()) { break; }

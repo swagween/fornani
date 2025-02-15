@@ -61,7 +61,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	collider.reset();
 	collider.physics.acceleration = {};
 
-	console.active() ? state_flags.set(NPCState::talking) : state_flags.reset(NPCState::talking);
+	console.is_active() ? state_flags.set(NPCState::talking) : state_flags.reset(NPCState::talking);
 	if (player.collider.bounding_box.overlaps(collider.bounding_box) || (triggers.test(NPCTrigger::distant_interact) && state_flags.test(NPCState::force_interact))) {
 		if (!state_flags.test(NPCState::engaged)) { triggers.set(NPCTrigger::engaged); }
 		state_flags.set(NPCState::engaged);
@@ -85,7 +85,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 			}
 		}
 	}
-	if (console.off() && state_flags.test(NPCState::engaged)) { pop_conversation(); }
+	if (!console.is_active() && state_flags.test(NPCState::engaged)) { pop_conversation(); }
 	triggers = {};
 }
 
