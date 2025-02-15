@@ -1,32 +1,31 @@
 
 #pragma once
 
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/graphics/TextureUpdater.hpp"
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/QuestCode.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/graphics/Tutorial.hpp"
-#include "fornani/weapon/Hotbar.hpp"
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/entities/packages/Caution.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
 #include "Catalog.hpp"
 #include "Indicator.hpp"
-#include "Wallet.hpp"
+#include "Piggybacker.hpp"
 #include "PlayerAnimation.hpp"
 #include "PlayerController.hpp"
-#include "Transponder.hpp"
 #include "VisitHistory.hpp"
-#include "Piggybacker.hpp"
+#include "Wallet.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/entities/item/Drop.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/Health.hpp"
+#include "fornani/graphics/SpriteHistory.hpp"
+#include "fornani/graphics/TextureUpdater.hpp"
+#include "fornani/graphics/Tutorial.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/QuestCode.hpp"
+#include "fornani/weapon/Hotbar.hpp"
 
 namespace fornani::gui {
 class Console;
 class InventoryWindow;
-} // namespace gui
+} // namespace fornani::gui
 
 namespace fornani::world {
 class Map;
@@ -106,7 +105,6 @@ class Player {
 	void update_animation();
 	void update_sprite();
 	void handle_turning();
-	void update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void flash_sprite();
 	void calculate_sprite_offset();
 	void set_idle();
@@ -177,12 +175,11 @@ class Player {
 	// for debug mode
 	std::string print_direction(bool lr);
 
-	//for ledge testing
+	// for ledge testing
 	entity::Caution caution{};
 
 	// components
 	PlayerController controller;
-	Transponder transponder{};
 	shape::Collider collider{};
 	shape::Shape hurtbox{};
 	PlayerAnimation animation;
@@ -209,8 +206,8 @@ class Player {
 	PlayerStats player_stats{0.06f};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
-	util::Cooldown hurt_cooldown{}; //for animation
-	util::Cooldown force_cooldown{}; //for player hurt forces
+	util::Cooldown hurt_cooldown{};	 // for animation
+	util::Cooldown force_cooldown{}; // for player hurt forces
 	struct {
 		util::Cooldown tutorial{400};
 		util::Cooldown sprint_tutorial{800};
@@ -260,4 +257,4 @@ class Player {
 	} m_camera{};
 };
 
-} // namespace player
+} // namespace fornani::player

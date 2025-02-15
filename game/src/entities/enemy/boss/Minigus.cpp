@@ -94,10 +94,10 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	Enemy::direction.lr = dir::LR::left;
 
 	push_conversation("1");
-	
+
 	voice.greatidea.setVolume(30),
 
-	sparkler.set_dimensions(Enemy::collider.vicinity.get_dimensions());
+		sparkler.set_dimensions(Enemy::collider.vicinity.get_dimensions());
 }
 
 void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -197,13 +197,12 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 			}
 		}
 	}
-		for (auto& breakable : map.breakables) {
-			if (Enemy::collider.jumpbox.overlaps(breakable.get_bounding_box())) { breakable.on_smash(svc, map, 4); }
-			if (state == MinigusState::rush && attacks.rush.hit.within_bounds(breakable.get_bounding_box())) {
-				if (svc.ticker.every_x_ticks(18)) { breakable.on_smash(svc, map, 1); }
-			}
+	for (auto& breakable : map.breakables) {
+		if (Enemy::collider.jumpbox.overlaps(breakable.get_bounding_box())) { breakable.on_smash(svc, map, 4); }
+		if (state == MinigusState::rush && attacks.rush.hit.within_bounds(breakable.get_bounding_box())) {
+			if (svc.ticker.every_x_ticks(18)) { breakable.on_smash(svc, map, 1); }
 		}
-	
+	}
 
 	minigun.animation.update();
 	if (minigun.sprite.getScale() != visual.sprite.getScale()) {
@@ -306,7 +305,8 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) { triggers.set(npc::NPCTrigger::distant_interact); }
 
 	NPC::update(svc, map, *m_console, player);
-	auto voice_cue = player.transponder.shipments.voice.consume_pulse();
+	// auto voice_cue = player.transponder.shipments.voice.consume_pulse();
+	auto voice_cue{1};
 	if (voice_cue == 1) { voice.greatidea.play(); }
 	if (voice_cue == 2) { voice.dontlookatme.play(); }
 	if (voice_cue == 3) { voice.laugh_1.play(); }
@@ -472,7 +472,7 @@ fsm::StateFunction Minigus::update_hurt() {
 fsm::StateFunction Minigus::update_jump() {
 	if (animation.just_started() && anim_debug) { std::cout << "jump\n"; }
 	if (animation.just_started()) { voice.woob.play(); }
-	//std::cout << animation.global_counter.get_count() << "\n";
+	// std::cout << animation.global_counter.get_count() << "\n";
 	cooldowns.jump.update();
 	if (animation.just_started()) { cooldowns.jump.start(); }
 	auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
@@ -570,20 +570,19 @@ fsm::StateFunction Minigus::update_reload() {
 				animation.set_params(shoot);
 				return MINIGUS_BIND(update_shoot);
 			}
-				state = MinigusState::jump_shoot;
-				animation.set_params(jump_shoot);
-				return MINIGUS_BIND(update_jump_shoot);
-			
+			state = MinigusState::jump_shoot;
+			animation.set_params(jump_shoot);
+			return MINIGUS_BIND(update_jump_shoot);
+
 		} else {
 			if (util::Random::percent_chance(40)) {
 				state = MinigusState::laugh;
 				animation.set_params(laugh);
 				return MINIGUS_BIND(update_laugh);
 			}
-				state = MinigusState::run;
-				animation.set_params(run);
-				return MINIGUS_BIND(update_run);
-			
+			state = MinigusState::run;
+			animation.set_params(run);
+			return MINIGUS_BIND(update_run);
 		}
 	}
 	state = MinigusState::reload;
@@ -603,7 +602,7 @@ fsm::StateFunction Minigus::update_turn() {
 				animation.set_params(reload);
 				return MINIGUS_BIND(update_reload);
 			}
-			if(counters.invincible_turn.get_count() > 3) {
+			if (counters.invincible_turn.get_count() > 3) {
 				counters.invincible_turn.start();
 				state = MinigusState::rush;
 				animation.set_params(rush);
@@ -943,4 +942,4 @@ bool Minigus::change_state(MinigusState next, anim::Parameters params) {
 	return false;
 }
 
-} // namespace enemy
+} // namespace fornani::enemy

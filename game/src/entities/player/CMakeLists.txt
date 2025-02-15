@@ -11,7 +11,6 @@ nani_add_sources(
         Roll.cpp
         Shield.cpp
         Slide.cpp
-        Transponder.cpp
         Wallet.cpp
         Wallslide.cpp
         Wardrobe.cpp

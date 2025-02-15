@@ -166,7 +166,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			NANI_ZoneScopedN("Rendering");
 			if (flags.test(GameFlags::playtest)) {
 				playtester_portal(services.window->get());
-				//services.logger.write_console(ImVec2{400.f, 240.f}, ImVec2{services.window->get().getSize().x - 420.f, services.window->get().getSize().y - 260.f});
+				// services.logger.write_console(ImVec2{400.f, 240.f}, ImVec2{services.window->get().getSize().x - 420.f, services.window->get().getSize().y - 260.f});
 			}
 
 			flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
@@ -324,12 +324,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Map...: %s", player.tutorial.flags.test(text::TutorialFlags::map) ? "Yes" : "No");
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Transponder")) {
-					ImGui::Text("Voice Shipment..: %i", player.transponder.shipments.voice.get_residue());
-					ImGui::Text("Emotion Shipment: %i", player.transponder.shipments.emotion.get_residue());
-					ImGui::Text("Item Shipment...: %i", player.transponder.shipments.item.get_residue());
-					ImGui::Text("Quest Shipment..: %i", player.transponder.shipments.quest.get_residue());
-					ImGui::Separator();
+				if (ImGui::BeginTabItem("Inventory")) {
 					ImGui::Text("MiniMap Scale..: %f", game_state.get_current_state().inventory_window.minimap.get_scale());
 					ImGui::Text("MiniMap Ratio..: %f", game_state.get_current_state().inventory_window.minimap.get_ratio());
 					ImGui::Text("MiniMap X Pos..: %f", game_state.get_current_state().inventory_window.minimap.get_position().x);

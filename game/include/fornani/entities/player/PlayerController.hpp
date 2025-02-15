@@ -1,15 +1,15 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <deque>
 #include <optional>
 #include <unordered_map>
-#include <deque>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Direction.hpp"
 #include "Jump.hpp"
-#include "Wallslide.hpp"
+#include "Roll.hpp"
 #include "Shield.hpp"
 #include "Slide.hpp"
-#include "Roll.hpp"
+#include "Wallslide.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Direction.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -22,7 +22,6 @@ constexpr static int quick_turn_sample_size{24};
 constexpr static float backwards_dampen{0.5f};
 
 enum class ControllerInput : uint8_t { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
-enum class TransponderInput : uint8_t { skip, next, exit, down, up, left, right, select, skip_released, hold_left, hold_right, hold_up, hold_down };
 enum class MovementState : uint8_t { restricted, grounded, walking_autonomously, walljumping };
 enum class HardState : uint8_t { no_move, has_arsenal };
 
@@ -86,19 +85,6 @@ class PlayerController {
 	[[nodiscard]] auto can_dash() const -> bool { return dash_count == 0; }
 	[[nodiscard]] auto can_jump() const -> bool { return (flags.test(MovementState::grounded) || jump.coyote()) || jump.can_doublejump() || wallslide.is_wallsliding(); }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
-	[[nodiscard]] auto transponder_skip() const -> bool { return transponder_flags.test(TransponderInput::skip); }
-	[[nodiscard]] auto transponder_skip_released() const -> bool { return transponder_flags.test(TransponderInput::skip_released); }
-	[[nodiscard]] auto transponder_next() const -> bool { return transponder_flags.test(TransponderInput::next); }
-	[[nodiscard]] auto transponder_exit() const -> bool { return transponder_flags.test(TransponderInput::skip); }
-	[[nodiscard]] auto transponder_up() const -> bool { return transponder_flags.test(TransponderInput::up); }
-	[[nodiscard]] auto transponder_down() const -> bool { return transponder_flags.test(TransponderInput::down); }
-	[[nodiscard]] auto transponder_left() const -> bool { return transponder_flags.test(TransponderInput::left); }
-	[[nodiscard]] auto transponder_right() const -> bool { return transponder_flags.test(TransponderInput::right); }
-	[[nodiscard]] auto transponder_select() const -> bool { return transponder_flags.test(TransponderInput::select); }
-	[[nodiscard]] auto transponder_hold_up() const -> bool { return transponder_flags.test(TransponderInput::hold_up); }
-	[[nodiscard]] auto transponder_hold_down() const -> bool { return transponder_flags.test(TransponderInput::hold_down); }
-	[[nodiscard]] auto transponder_hold_left() const -> bool { return transponder_flags.test(TransponderInput::hold_left); }
-	[[nodiscard]] auto transponder_hold_right() const -> bool { return transponder_flags.test(TransponderInput::hold_right); }
 
 	[[nodiscard]] auto get_dash_request() const -> int { return dash_request; }
 	[[nodiscard]] auto get_dash_count() const -> int { return dash_count; }
@@ -130,12 +116,11 @@ class PlayerController {
 
   private:
 	std::unordered_map<ControllerInput, float> key_map{};
-	util::BitFlags<MovementState> flags{}; // unused
+	util::BitFlags<MovementState> flags{};	// unused
 	util::BitFlags<HardState> hard_state{}; // unused
 	util::BitFlags<Sprint> sprint_flags{};
-	util::BitFlags<TransponderInput> transponder_flags{};
 	util::BitFlags<Hook> hook_flags{};
-	
+
 	Jump jump{};
 	Wallslide wallslide{};
 	Shield shield;
@@ -150,4 +135,4 @@ class PlayerController {
 
 	std::deque<float> horizontal_inputs{};
 };
-} // namespace player
+} // namespace fornani::player

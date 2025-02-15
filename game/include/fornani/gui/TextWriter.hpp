@@ -9,12 +9,12 @@
 #include <string_view>
 #include <unordered_map>
 #include "fornani/graphics/HelpText.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Decoder.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/utils/Shipment.hpp"
-#include "fornani/io/Logger.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -48,7 +48,7 @@ class TextWriter {
 	void write_responses(sf::RenderWindow& win);
 	void activate();
 	void deactivate();
-	void request_next();
+	bool request_next();
 	void check_for_event(Message& msg, Codes code, bool response = false);
 	void adjust_selection(int amount);
 	void process_selection();
@@ -143,4 +143,4 @@ class TextWriter {
 	io::Logger m_logger{"TextWriter"};
 };
 
-} // namespace fornani::text
+} // namespace fornani::gui

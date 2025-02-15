@@ -4,6 +4,7 @@
 #include "ItemWidget.hpp"
 #include "Portrait.hpp"
 #include "fornani/gui/TextWriter.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/NineSlice.hpp"
 #include "fornani/utils/RectPath.hpp"
@@ -12,6 +13,10 @@
 
 #include <memory>
 #include <string>
+
+namespace fornani::config {
+class ControllerMap;
+}
 
 namespace fornani::gui {
 
@@ -91,8 +96,10 @@ class Console {
 	Border border{48.f, 40.f, 26.f, 26.f};
 
   protected:
+	void handle_inputs(config::ControllerMap& controller);
 	sf::Vector2<float> origin{}; // bottom left corner
 	OutputType m_output_type{};
+	io::Logger m_logger{"Console"};
 };
 
 } // namespace fornani::gui

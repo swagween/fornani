@@ -6,9 +6,9 @@ namespace fornani::automa {
 
 SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
 	: GameState(svc, player, scene, room_number), toggleables{.autosprint = options.at(static_cast<int>(Toggles::autosprint)).label,
-													 .tutorial = options.at(static_cast<int>(Toggles::tutorial)).label,
-													 .gamepad = options.at(static_cast<int>(Toggles::gamepad)).label,
-													 .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label},
+															  .tutorial = options.at(static_cast<int>(Toggles::tutorial)).label,
+															  .gamepad = options.at(static_cast<int>(Toggles::gamepad)).label,
+															  .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label},
 	  music_label{options.at(static_cast<int>(Toggles::music)).label}, toggle_options{.enabled{svc.text.fonts.title}, .disabled{svc.text.fonts.title}}, sliders{.music_volume{svc.text.fonts.title}} {
 	console.set_source(svc.text.basic);
 	player.map_reset();
@@ -84,7 +84,6 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 	}
 	console.update(svc);
 	player->controller.update(svc);
-	player->update_transponder(console, inventory_window);
 	player->controller.clean();
 	player->flags.triggers = {};
 	console.end_tick();
@@ -107,4 +106,4 @@ void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	console.write(win, true);
 }
 
-} // namespace automa
+} // namespace fornani::automa

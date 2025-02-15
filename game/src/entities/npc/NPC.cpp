@@ -1,7 +1,7 @@
 #include "fornani/entities/npc/NPC.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
 
 namespace fornani::npc {
 
@@ -23,9 +23,7 @@ NPC::NPC(automa::ServiceProvider& svc, int id)
 
 	sprite.setOrigin({in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>()});
 
-	if (in_data["vendor"] && svc.data.marketplace.contains(id)) {
-		vendor = &svc.data.marketplace.at(id);
-	}
+	if (in_data["vendor"] && svc.data.marketplace.contains(id)) { vendor = &svc.data.marketplace.at(id); }
 
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
@@ -44,7 +42,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	if (piggybacking()) { current_location = -1; }
 	svc.data.set_npc_location(id, current_location);
 	if (state_flags.test(NPCState::hidden)) { return; }
-	svc.player_dat.piggy_id == id ? state_flags.set(NPCState::piggybacking) : state_flags.reset(NPCState::piggybacking); 
+	svc.player_dat.piggy_id == id ? state_flags.set(NPCState::piggybacking) : state_flags.reset(NPCState::piggybacking);
 	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
 	Entity::update(svc, map);
 	if (abs(collider.physics.velocity.x) > physical.walk_threshold) { animation_machine->animation_flags.set(NPCAnimState::walk); }
@@ -75,12 +73,14 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 	if (state_flags.test(NPCState::engaged) || state_flags.test(NPCState::cutscene)) {
 		// voice cues
-		auto voice_cue = player.transponder.shipments.voice.consume_pulse();
+		// auto voice_cue = player.transponder.shipments.voice.consume_pulse();
+		// TODO: properly handle voice cues from the console
+		auto voice_cue{1};
 		if (voice_cue != 0) {
 			if (svc.assets.npc_sounds.contains(label)) {
 				auto index = voice_cue - 1;
 				if (index < svc.assets.npc_sounds.at(label).size()) {
-					//voice_sound.setBuffer(svc.assets.npc_sounds.at(label).at(index));
+					// voice_sound.setBuffer(svc.assets.npc_sounds.at(label).at(index));
 				}
 			}
 		}
@@ -145,4 +145,4 @@ void NPC::pop_conversation() {
 
 void NPC::flush_conversations() { conversations.clear(); }
 
-} // namespace npc
+} // namespace fornani::npc

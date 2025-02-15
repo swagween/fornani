@@ -73,7 +73,7 @@ void TextWriter::update() {
 	if (!writing()) { return; }
 
 	if (tick_count % writing_speed == 0) {
-		char const next_char = (char)suite.at(iterators.current_suite_set).front().data.getString().getData()[glyph_count];
+		char const next_char = static_cast<char>(suite.at(iterators.current_suite_set).front().data.getString().getData()[glyph_count]);
 		working_str += next_char;
 		working_message.setString(working_str);
 		++glyph_count;
@@ -114,7 +114,7 @@ void TextWriter::wrap() {
 				} else {
 					// splice!
 					std::string left = suite.at(iterators.current_suite_set).front().data.getString().substring(0, last_space_index);
-					std::string right = suite.at(iterators.current_suite_set).front().data.getString().substring(last_space_index + 1, suite.at(iterators.current_suite_set).front().data.getString().getSize() - 1);
+					std::string right = suite.at(iterators.current_suite_set).front().data.getString().substring(static_cast<std::size_t>(last_space_index + 1), suite.at(iterators.current_suite_set).front().data.getString().getSize() - 1);
 					left += '\n';
 
 					suite.at(iterators.current_suite_set).front().data.setString(left + right);
@@ -267,35 +267,36 @@ void TextWriter::activate() { flags.set(MessageState::writing); }
 
 void TextWriter::deactivate() { flags.reset(MessageState::writing); }
 
-void TextWriter::request_next() {
-	if (writing()) { return; }
+bool TextWriter::request_next() {
+	if (writing()) { return true; }
 	if (suite.empty() || iterators.current_suite_set >= suite.size()) {
 		reset();
-		return;
+		return false;
 	}
 	if (suite.at(iterators.current_suite_set).empty()) {
 		reset();
-		return;
+		return false;
 	}
 	if (suite.at(iterators.current_suite_set).front().prompt) {
 		flags.set(MessageState::selection_mode); // check for response events
-		if (iterators.current_response_set >= responses.size()) { return; }
+		if (iterators.current_response_set >= responses.size()) { return false; }
 		for (auto& res : responses.at(iterators.current_response_set)) {
 			check_for_event(res, Codes::item, true);
 			check_for_event(res, Codes::quest, true);
 			check_for_event(res, Codes::prompt, true);
 		}
-		return;
+		return true;
 	} else {
 		suite.at(iterators.current_suite_set).pop_front();
 		if (suite.at(iterators.current_suite_set).empty()) {
 			shutdown();
-			return;
+			return false;
 		}
 		reset();
 		activate();
 		start();
 	}
+	return true;
 }
 
 void TextWriter::check_for_event(Message& msg, Codes code, bool response) {

@@ -2,16 +2,15 @@
 
 #include <tracy/Tracy.hpp>
 
+#include "fornani/entities/item/Drop.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/level/Map.hpp"
-#include "fornani/entities/item/Drop.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {
 
-Player::Player(automa::ServiceProvider& svc)
-	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.t_nani}, camera_offset{32.f, -64.f} {}
+Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.t_nani}, camera_offset{32.f, -64.f} {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -77,7 +76,6 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
 
-	update_transponder(console, inventory_window);
 	if (!catalog.categories.abilities.has_ability(Abilities::double_jump)) { controller.get_jump().jump_counter.cancel(); }
 	controller.update(*m_services);
 	if (collider.hit_ceiling_ramp()) { controller.get_jump().cancel(); }
@@ -125,8 +123,7 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
 	accumulated_forces.clear();
 	collider.physics.impart_momentum();
-	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) {
-		collider.physics.forced_momentum = {}; }
+	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { collider.physics.forced_momentum = {}; }
 	auto switched = directions.movement.lr != controller.direction.lr || !controller.moving();
 	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched || grounded()) { collider.physics.forced_acceleration = {}; }
 
@@ -148,8 +145,10 @@ void Player::update(world::Map& map, gui::Console& console, gui::InventoryWindow
 		}
 	}
 
-	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(12)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up))); }
-	
+	if (animation.state == AnimState::slide && m_services->ticker.every_x_ticks(12)) {
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
+	}
+
 	update_antennae();
 	// piggybacker
 	if (m_services->player_dat.piggy_id == 0 && piggybacker) { piggybacker = {}; }
@@ -170,10 +169,10 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	ZoneScopedN("Player::render");
 	calculate_sprite_offset();
 	if (flags.state.test(State::crushed)) { return; }
-	//debug
+	// debug
 	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.green;
 
-	//piggybacker
+	// piggybacker
 	if (piggybacker) { piggybacker.value().render(svc, win, campos); }
 
 	// dashing effect
@@ -239,7 +238,9 @@ void Player::update_animation() {
 			handle_turning();
 		}
 	} else {
-		if (collider.physics.apparent_velocity().y > -thresholds.suspend && collider.physics.apparent_velocity().y < thresholds.suspend && !controller.get_wallslide().is_wallsliding() && !controller.is_walljumping()) { animation.state = AnimState::suspend; }
+		if (collider.physics.apparent_velocity().y > -thresholds.suspend && collider.physics.apparent_velocity().y < thresholds.suspend && !controller.get_wallslide().is_wallsliding() && !controller.is_walljumping()) {
+			animation.state = AnimState::suspend;
+		}
 	}
 
 	if (collider.physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.state = AnimState::fall; }
@@ -275,7 +276,7 @@ void Player::update_animation() {
 	}
 
 	if (controller.roll.is_valid() && grounded() && controller.moving()) { animation.state = AnimState::roll; }
-	//for sliding down ramps
+	// for sliding down ramps
 	animation.state == AnimState::slide ? collider.flags.animation.set(shape::Animation::sliding) : collider.flags.animation.reset(shape::Animation::sliding);
 	if (animation.state == AnimState::roll) { collider.flags.animation.set(shape::Animation::sliding); }
 
@@ -311,67 +312,6 @@ void Player::handle_turning() {
 	if (controller.facing_right() && sprite.getScale() == left_scale) { animation.state = collider.physics.velocity.x < -thresholds.quick_turn ? AnimState::sharp_turn : AnimState::turn; }
 }
 
-void Player::update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window) {
-	if (inventory_window.active()) {
-		controller.restrict_movement();
-		controller.prevent_movement();
-		if (controller.transponder_up()) { inventory_window.move(*this, {0, -1}, static_cast<bool>(arsenal)); }
-		if (controller.transponder_down()) { inventory_window.move(*this, {0, 1}, static_cast<bool>(arsenal)); }
-		if (controller.transponder_left()) { inventory_window.move(*this, {-1, 0}); }
-		if (controller.transponder_right()) { inventory_window.move(*this, {1, 0}); }
-		if (controller.transponder_hold_up() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, -1.f}); }
-		if (controller.transponder_hold_down() && inventory_window.is_minimap()) { inventory_window.minimap.move({0.f, 1.f}); }
-		if (controller.transponder_hold_left() && inventory_window.is_minimap()) { inventory_window.minimap.move({-1.f, 0.f}); }
-		if (controller.transponder_hold_right() && inventory_window.is_minimap()) { inventory_window.minimap.move({1.f, 0.f}); }
-		if (controller.transponder_select() && inventory_window.is_minimap()) { inventory_window.minimap.toggle_scale(); }
-		transponder.update(*m_services, inventory_window);
-		if (tutorial.current_state == text::TutorialFlags::inventory) {
-			tutorial.flags.set(text::TutorialFlags::inventory);
-			tutorial.current_state = text::TutorialFlags::shoot;
-			tutorial.turn_off();
-		}
-		if (inventory_window.is_minimap()) {
-			if (tutorial.current_state == text::TutorialFlags::map) {
-				tutorial.flags.set(text::TutorialFlags::map);
-				tutorial.turn_off();
-				tutorial.close_for_good();
-			}
-		}
-	}
-	if (console.active()) {
-		controller.restrict_movement();
-		controller.prevent_movement();
-		if (controller.transponder_skip()) { transponder.skip_ahead(); }
-		if (controller.transponder_skip_released()) { transponder.enable_skip(); }
-		if (controller.transponder_next()) { transponder.next(); }
-		if (controller.transponder_exit()) { transponder.exit(); }
-		if (controller.transponder_up()) { transponder.go_up(); }
-		if (controller.transponder_down()) { transponder.go_down(); }
-		if (controller.transponder_select()) { transponder.select(); }
-		transponder.update(*m_services, console);
-		auto emotion = transponder.shipments.emotion.get_residue();
-		if (console.portrait.get_emotion() != emotion && emotion != 0) { console.portrait.set_emotion(emotion); }
-	}
-	transponder.end();
-	if (transponder.shipments.item.get_residue() > 0) {
-		give_item(transponder.shipments.item.get_residue(), 1);
-		console.display_item(transponder.shipments.item.get_residue());
-		transponder.shipments.item = {};
-		console.writer->communicators.out_item = {};
-	}
-	auto qs = transponder.shipments.quest.consume_pulse();
-	auto ri = transponder.shipments.reveal_item.consume_pulse();
-	if (qs > 0) { /* do something with quest tracker */
-		quest_code = util::QuestCode(qs);
-		if (quest_code.value().destroy_inspectable()) { m_services->quest.progress(static_cast<fornani::QuestType>(transponder.out_quest.type), transponder.out_quest.id, 1); }
-		if (ri > 0) { catalog.categories.inventory.reveal_item(ri); }
-		// std::cout << "Transponded: " << transponder.out_quest.type << ", " << transponder.out_quest.id << ", " << transponder.out_quest.source_id << "\n";
-		//  handle other quest code types
-		quest_code = {};
-		transponder.out_quest = {};
-	}
-}
-
 void Player::flash_sprite() {
 	if ((health.invincibility.get_cooldown() / 30) % 2 == 0) {
 		sprite.setColor(m_services->styles.colors.red);
@@ -391,9 +331,7 @@ void Player::set_idle() {
 	animation.state_function = std::bind(&PlayerAnimation::update_idle, &animation);
 }
 
-void Player::piggyback(int id) {
-	piggybacker = Piggybacker(*m_services, m_services->tables.npc_label.at(id), collider.physics.position);
-}
+void Player::piggyback(int id) { piggybacker = Piggybacker(*m_services, m_services->tables.npc_label.at(id), collider.physics.position); }
 
 void Player::jump(world::Map& map) {
 	if (is_dead() || animation.state == AnimState::die) { return; }
@@ -433,9 +371,7 @@ void Player::jump(world::Map& map) {
 		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
 		controller.get_jump().reset();
 	}
-	if (collider.flags.state.test(shape::State::just_landed)) {
-		controller.get_jump().reset_jumping();
-	}
+	if (collider.flags.state.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
 	if (catalog.categories.abilities.has_ability(Abilities::double_jump)) {
 		if (controller.get_jump().just_doublejumped()) {
 			collider.physics.velocity.y = 0.f;
@@ -512,7 +448,7 @@ void Player::update_direction() {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.get_dimensions().x / 2, collider.physics.position.y + collider.bounding_box.get_dimensions().y / 2};
 	}
 	// set directions for grappling hook
-	//if (arsenal) { equipped_weapon().projectile.hook.probe_direction = controller.direction; }
+	// if (arsenal) { equipped_weapon().projectile.hook.probe_direction = controller.direction; }
 }
 
 void Player::update_weapon() {
@@ -797,4 +733,4 @@ std::string Player::print_direction(bool lr) {
 	return "NULL";
 }
 
-} // namespace player
+} // namespace fornani::player

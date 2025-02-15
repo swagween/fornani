@@ -11,7 +11,6 @@ nani_add_headers(
         Roll.hpp
         Shield.hpp
         Slide.hpp
-        Transponder.hpp
         VisitHistory.hpp
         Wallet.hpp
         Wardrobe.hpp
