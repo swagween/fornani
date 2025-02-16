@@ -38,9 +38,24 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Configure
+    - name: Configure (Windows)
+      if: runner.os == 'Windows'
+      shell: cmd
       run: |
-        cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
+        cmake -B build -G "Ninja Multi-Config" %matrix.platform.flags% %matrix.config.flags%
 
-    - name: Build
+    - name: Configure (Non-Windows)
+      if: runner.os != 'Windows'
+      run: cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
+
+    - name: Build (Windows)
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: |
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
+        cmake --build build --config Release
+
+    - name: Build (Non-Windows)
+      if: runner.os != 'Windows'
       run: cmake --build build --config Release
