@@ -8,7 +8,7 @@ defaults:
 
 jobs:
   build:
-    name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
+    name: "${{ matrix.platform.name }} - ${{ matrix.config.name }}"
     runs-on: ${{ matrix.platform.os }}
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
@@ -17,47 +17,58 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { name: Windows VS2022, os: windows-2022 }
-          - { name: Linux GCC,      os: ubuntu-latest }
-          - { name: Linux Clang,    os: ubuntu-latest, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
-          - { name: macOS AppleClang, os: macos-latest }
+          - name: 'Windows VS2022'
+            os: 'windows-2022'
+            shell: 'cmd'
+            init: 'call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\Tools\\VsDevCmd.bat"'
+            flags: ''
+          - name: 'Linux GCC'
+            os: 'ubuntu-latest'
+            shell: 'bash'
+            init: ''
+            flags: ''
+          - name: 'Linux Clang'
+            os: 'ubuntu-latest'
+            shell: 'bash'
+            init: ''
+            flags: '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++'
+          - name: 'macOS AppleClang'
+            os: 'macos-latest'
+            shell: 'bash'
+            init: ''
+            flags: ''
         config:
-          - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
+          - name: 'Static'
+            flags: '-DBUILD_SHARED_LIBS=FALSE'
 
     steps:
-    - name: Install Linux Dependencies
-      if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev ninja-build
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Install Ninja (Windows)
-      if: runner.os == 'Windows'
-      run: choco install ninja
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
+            choco install ninja -y
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y ninja-build \
+              libxrandr-dev libxcursor-dev libxi-dev libudev-dev \
+              libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install ninja
+          else
+            exit 1
+          fi
 
-    - name: Install Ninja (macOS)
-      if: runner.os == 'macOS'
-      run: brew install ninja
+      - name: Configure
+        shell: ${{ matrix.platform.shell }}
+        run: |
+          ${{ matrix.platform.init }}
+          cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
 
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Configure (Windows)
-      if: runner.os == 'Windows'
-      shell: cmd
-      run: |
-        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
-        cmake -B build -G "Ninja Multi-Config" %matrix.platform.flags% %matrix.config.flags%
-
-    - name: Configure (Non-Windows)
-      if: runner.os != 'Windows'
-      run: cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
-
-    - name: Build (Windows)
-      if: runner.os == 'Windows'
-      shell: cmd
-      run: |
-        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
-        cmake --build build --config Release
-
-    - name: Build (Non-Windows)
-      if: runner.os != 'Windows'
-      run: cmake --build build --config Release
+      - name: Build
+        shell: ${{ matrix.platform.shell }}
+        run: |
+          ${{ matrix.platform.init }}
+          cmake --build build --config Release
