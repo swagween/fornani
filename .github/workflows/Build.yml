@@ -17,29 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: 'Windows VS2022'
-            os: 'windows-2022'
-            shell: 'cmd'
-            init: 'call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\Tools\\VsDevCmd.bat"'
-            flags: ''
-          - name: 'Linux GCC'
-            os: 'ubuntu-latest'
-            shell: 'bash'
-            init: ''
-            flags: ''
-          - name: 'Linux Clang'
-            os: 'ubuntu-latest'
-            shell: 'bash'
-            init: ''
-            flags: '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++'
-          - name: 'macOS AppleClang'
-            os: 'macos-latest'
-            shell: 'bash'
-            init: ''
-            flags: ''
+        - { name: Windows VS2022, os: windows-2022, shell: cmd, init:  call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" }
+        - { name: Linux GCC, os: ubuntu-latest, shell: bash }
+        - { name: Linux Clang, os: ubuntu-latest, shell: bash, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        - { name: macOS AppleClang, os: macos-latest, shell: bash }
         config:
-          - name: 'Static'
-            flags: '-DBUILD_SHARED_LIBS=FALSE'
+        - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
 
     steps:
       - name: Checkout
