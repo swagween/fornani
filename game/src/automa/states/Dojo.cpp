@@ -132,6 +132,9 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		player->visit_history.clear();
 	}
 
+	if (inventory_window) { inventory_window.value()->update(svc); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc); }
+
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
@@ -162,9 +165,11 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
 	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
+	if (inventory_window) (inventory_window.value()->render(win));
 	map.soft_reset.render(win);
 	map.transition.render(win);
 	console.render(win);
+	console.write(win);
 	player->tutorial.render(win);
 	if (svc.debug_mode()) { map.debug(); }
 }

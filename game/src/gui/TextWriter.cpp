@@ -24,22 +24,11 @@ TextWriter::TextWriter(automa::ServiceProvider& svc)
 	bounds_box.setOutlineThickness(-1);
 	cursor.setFillColor(svc.styles.colors.ui_white);
 	cursor.setSize({10.f, 16.f});
-	sf::Text testy{svc.text.fonts.basic};
-	testy.setString("AAAA");
-	NANI_LOG_DEBUG(m_logger, "AAAA: {}", testy.getLocalBounds().size.x);
-	testy.setString("AA\nAA");
-	NANI_LOG_DEBUG(m_logger, "AA<newln>AA: {}", testy.getLocalBounds().size.x);
 }
 
-TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) : TextWriter(svc) {
-	NANI_LOG_INFO(m_logger, "Json load.");
-	load_message(source, key);
-}
+TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) : TextWriter(svc) { load_message(source, key); }
 
-TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message) : TextWriter(svc) {
-	NANI_LOG_INFO(m_logger, "Single Message load.");
-	load_single_message(message);
-}
+TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message) : TextWriter(svc) { load_single_message(message); }
 
 void TextWriter::start() {
 
@@ -48,19 +37,14 @@ void TextWriter::start() {
 	indicator.setOrigin({2.f, 2.f});
 	indicator.setFillColor(m_services->styles.colors.bright_orange);
 
-	NANI_LOG_INFO(m_logger, "start() called.");
 	if (iterators.current_suite_set >= suite.size()) { return; }
-	NANI_LOG_INFO(m_logger, "current suite set iterator is less than size.");
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
-	NANI_LOG_INFO(m_logger, "current suite set is not empty.");
 
 	working_message = suite.at(iterators.current_suite_set).front().data;
-	NANI_LOG_INFO(m_logger, "working message set.");
 	constrain();
 
 	m_mode = WriterMode::write;
 	m_delay.start();
-	NANI_LOG_INFO(m_logger, "start() completed.");
 }
 
 void TextWriter::update() {
@@ -70,10 +54,6 @@ void TextWriter::update() {
 	m_delay.update();
 
 	// delay before next suite
-	/*if (flags.test(MessageState::done_writing) && !flags.test(MessageState::started_delay)) {
-		delay.start();
-		flags.set(MessageState::started_delay);
-	}*/
 	if (is_writing() && !m_delay.running()) { m_delay.start(); }
 
 	// escape if bounds are invalid
@@ -145,7 +125,6 @@ void TextWriter::constrain() {
 	auto new_str{std::string{current_message.getString()}};
 	std::erase_if(new_str, [](auto const& c) { return c == '\n'; });
 	current_message.setString(new_str);
-	NANI_LOG_DEBUG(m_logger, "string to be constrained: {}", new_str);
 	wrap();
 }
 
@@ -161,7 +140,6 @@ void TextWriter::load_single_message(std::string_view message) {
 void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	flush();
 
-	NANI_LOG_INFO(m_logger, "Flushed.");
 	// suite
 	for (auto& set : source[key]["suite"].array_view()) {
 		auto this_set = std::deque<Message>{};
@@ -172,7 +150,6 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 		}
 		suite.push_back(this_set);
 	}
-	NANI_LOG_INFO(m_logger, "Suite loaded.");
 	working_message = suite.at(iterators.current_suite_set).front().data;
 	help_marker = graphics::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
 }
@@ -234,7 +211,6 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 }
 
 void TextWriter::reset() {
-	m_mode = WriterMode::write;
 	m_writing_speed = default_writing_speed_v;
 	help_marker.reset();
 	m_counters = {};
