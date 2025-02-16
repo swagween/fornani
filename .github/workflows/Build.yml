@@ -15,24 +15,29 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2019, os: windows-2019  }
-        - { name: Windows VS2022, os: windows-2022  }
+        - { name: Windows VS2019, os: windows-2019, flags: -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl  }
+        - { name: Windows VS2022, os: windows-2022, flags: -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl  }
         - { name: Linux GCC,      os: ubuntu-latest }
         - { name: Linux Clang,    os: ubuntu-latest, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
-        - { name: macOS,          os: macos-latest  }
+        - { name: macOS AppleClang,          os: macos-latest  }
         config:
         - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
 
     steps:
     - name: Install Linux Dependencies
       if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
+      run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev ninja-build
+
+    - name: Install Ninja (Windows)
+      if: runner.os == 'Windows'
+      run: choco install ninja
 
     - name: Checkout
       uses: actions/checkout@v4
 
     - name: Configure
-      run: cmake -B build ${{matrix.platform.flags}} ${{matrix.config.flags}}
+      run: |
+        cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
 
     - name: Build
       run: cmake --build build --config Release
