@@ -1,9 +1,0 @@
-nani_add_sources(
-        Attack.cpp
-        Caution.cpp
-        FloatingPart.cpp
-        Health.cpp
-        Seeker.cpp
-        Shockwave.cpp
-        WeaponPackage.cpp
-)
