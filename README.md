@@ -1,7 +1,1 @@
-fornani
-
-a 2D action adventure currently in development.
-
-join the discord: [https://discord.gg/kg6bVRWE](https://discord.gg/X6FseJzGV6)
-
-Hit ctrl + p for debug menu
+Steam SDK v1.61.0 for x64 used by Fornani
