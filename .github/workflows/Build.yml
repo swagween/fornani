@@ -46,13 +46,13 @@ jobs:
         run: |
           if ($env:RUNNER_OS -eq 'Windows') {
             # Dot-source Developer PowerShell to initialize the MSVC environment
-            . "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\Start-DeveloperPowerShell.ps1"
+            . "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\Launch-VsDevShell.ps1"
           }
           cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
 
       - name: Build
         run: |
           if ($env:RUNNER_OS -eq 'Windows') {
-            . "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\Start-DeveloperPowerShell.ps1"
+            . "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\Launch-VsDevShell.ps1"
           }
           cmake --build build --config Release
