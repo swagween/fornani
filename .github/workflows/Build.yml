@@ -10,17 +10,19 @@ jobs:
   build:
     name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
     runs-on: ${{ matrix.platform.os }}
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
 
     strategy:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2022, os: windows-2022 }
-        - { name: Linux GCC,      os: ubuntu-latest }
-        - { name: Linux Clang,    os: ubuntu-latest, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
-        - { name: macOS AppleClang, os: macos-latest  }
+          - { name: Windows VS2022, os: windows-2022 }
+          - { name: Linux GCC,      os: ubuntu-latest }
+          - { name: Linux Clang,    os: ubuntu-latest, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+          - { name: macOS AppleClang, os: macos-latest }
         config:
-        - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
+          - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
 
     steps:
     - name: Install Linux Dependencies
