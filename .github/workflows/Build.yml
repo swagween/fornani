@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          if ($env:RUNNER_OS -eq 'Windows_NT') {
+          if ($env:RUNNER_OS -eq 'Windows') {
             choco install ninja -y
           } elseif ($env:RUNNER_OS -eq 'Linux') {
             sudo apt-get update
@@ -44,15 +44,14 @@ jobs:
 
       - name: Configure
         run: |
-          if ($env:RUNNER_OS -eq 'Windows_NT') {
-            # Use cmd to run the Visual Studio initialization script
+          if ($env:RUNNER_OS -eq 'Windows') {
             cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"'
           }
           cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
 
       - name: Build
         run: |
-          if ($env:RUNNER_OS -eq 'Windows_NT') {
+          if ($env:RUNNER_OS -eq 'Windows') {
             cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"'
           }
           cmake --build build --config Release
