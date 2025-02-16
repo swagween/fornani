@@ -84,7 +84,7 @@ target_include_directories(steamworks SYSTEM INTERFACE
 # On Windows, link the 64-bit library & define _CRT_SECURE_NO_WARNINGS
 if(WIN32)
     target_link_libraries(steamworks INTERFACE
-            "${steamworks_sdk_SOURCE_DIR}/lib/steam/steam_api64.dll"
+            "${steamworks_sdk_SOURCE_DIR}/lib/steam/steam_api64.lib"
     )
     target_compile_definitions(steamworks INTERFACE _CRT_SECURE_NO_WARNINGS)
 
