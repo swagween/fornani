@@ -39,13 +39,6 @@ add_subdirectory(include/editor)
 add_subdirectory(src)
 
 if (WIN32)
-    add_custom_command(
-            TARGET pioneer
-            COMMENT "Copy Steam API DLL"
-            PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${steamworks_dll_file} $<TARGET_FILE_DIR:pioneer>/steam_api64.dll
-            VERBATIM
-    )
-
     if (MSVC)
         set(subsystem $<IF:$<BOOL:$<CONFIG:Debug>>,CONSOLE,WINDOWS>)
         target_link_options(pioneer PRIVATE
@@ -54,6 +47,8 @@ if (WIN32)
         )
     endif ()
 endif ()
+
+copy_steamworks_dll(pioneer)
 
 if (FORNANI_DEV_BUILD)
     add_custom_command(

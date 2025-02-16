@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <mutex>
+#include <atomic>
 #include <thread>
 #include <vector>
 #include <cassert>
@@ -226,42 +227,68 @@ namespace fornani::io::logger
             }
         };
 
-        struct FileSink : Sink
-        {
-            std::string path{};
-            std::mutex mutex{};
-            std::string buffer{};
+		struct FileSink : Sink
+		{
+			std::string path{};
+			std::mutex mutex{};
+			std::string buffer{};
 
-            std::condition_variable_any cv{};
-            std::jthread thread{};
+			std::condition_variable cv{};
+			std::atomic_bool stop_requested{false};
+			std::thread thread;
 
-            FileSink(std::string file_path) : path(std::move(file_path)), thread([this](std::stop_token const & stop) { run(stop); }) {}
+			FileSink(std::string file_path)
+				: path(std::move(file_path)), thread(&FileSink::run, this)
+			{
+			}
 
-            void run(std::stop_token const & stop)
-            {
-                if (fs::exists(path)) { fs::remove(path); }
-                while (!stop.stop_requested())
-                {
-                    auto lock = std::unique_lock{mutex};
-                    cv.wait(lock, stop, [this] { return !buffer.empty(); });
-                    if (buffer.empty()) { continue; }
-                    if (auto file = std::ofstream{path, std::ios::binary | std::ios::app})
-                    {
-                        file << buffer;
-                        buffer.clear();
-                    }
-                }
-            }
+			~FileSink() {
+				{
+					std::lock_guard<std::mutex> lock(mutex);
+					stop_requested = true;
+				}
+				cv.notify_one();
+				if (thread.joinable()) {
+					thread.join();
+				}
+			}
 
-            void handle(std::string_view const formatted, [[maybe_unused]] Context const & context) final
-            {
-                auto lock = std::unique_lock{mutex};
-                buffer.append(formatted);
-                lock.unlock();
-                cv.notify_one();
-            }
-        };
-    } // namespace
+			void run() {
+				if (fs::exists(path)) {
+					fs::remove(path);
+				}
+				while (true)
+				{
+					std::unique_lock<std::mutex> lock(mutex);
+					cv.wait(lock, [this] { return stop_requested.load() || !buffer.empty(); });
+
+					// If no data remains and shutdown has been requested, exit the loop.
+					if (buffer.empty() && stop_requested.load()) {
+						break;
+					}
+
+					// Move the current buffer out so we can release the lock while writing.
+					std::string data = std::move(buffer);
+					buffer.clear();
+					lock.unlock();
+
+					if (auto file = std::ofstream{path, std::ios::binary | std::ios::app})
+					{
+						file << data;
+					}
+				}
+			}
+
+			void handle(std::string_view const formatted, [[maybe_unused]] Context const & context) final
+			{
+				{
+					std::lock_guard<std::mutex> lock(mutex);
+					buffer.append(formatted);
+				}
+				cv.notify_one();
+			}
+		};
+	} // namespace
 
     struct Instance::Impl
     {

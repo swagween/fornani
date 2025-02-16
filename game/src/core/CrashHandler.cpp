@@ -14,7 +14,9 @@
 
 #if !defined(NANI_PRODUCTION) || !defined(NANI_DISABLE_ADVANCED_CRASH_REPORTING)
 // Include cpptrace only in non-production builds.
+#if defined(_WIN32)
 #include <dbghelp.h>
+#endif
 #include <cpptrace/cpptrace.hpp>
 
 #endif

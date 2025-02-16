@@ -11,17 +11,8 @@ include(${FORNANI_ROOT_DIR}/cmake/func/AddTargetSource.cmake)
 
 target_link_libraries(fornani
         PUBLIC
-        # TODO: Start removing all deps that are not used in public headers
-        # The currently disabled targets should be fine.
-        #Though disabling them means they are only accessible in .cpp files which is desired behavior.
-        #djson::djson
-        #ccmath::ccmath
-        #ImGui-SFML::ImGui-SFML
-        #SFML::System
         SFML::Graphics
         SFML::Window
-        #SFML::Audio
-        #steamworks
 
         PRIVATE
         fornani::deps
