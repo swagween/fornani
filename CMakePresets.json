@@ -16,6 +16,16 @@
       }
     },
     {
+      "name": "ninja-gcc",
+      "description": "Build configuration using Ninja Multi-config / gcc",
+      "inherits": "default",
+      "binaryDir": "${sourceDir}/out/gcc",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
       "name": "ninja-clang",
       "description": "Build configuration using Ninja Multi-config / clang",
       "inherits": "default",
