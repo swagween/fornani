@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 defaults:
   run:
-    shell: bash
+    shell: pwsh
 
 jobs:
   build:
@@ -17,40 +17,42 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { name: "Windows VS2022", os: windows-2022, shell: cmd, init: 'call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"' }
-          - { name: "Linux GCC",      os: ubuntu-latest, shell: bash, init: "" }
-          - { name: "Linux Clang",    os: ubuntu-latest, shell: bash, flags: "-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++", init: "" }
-          - { name: "macOS AppleClang", os: macos-latest, shell: bash, init: "" }
+          - { name: "Windows VS2022", os: windows-2022, flags: "" }
+          - { name: "Linux GCC",      os: ubuntu-latest, flags: "" }
+          - { name: "Linux Clang",    os: ubuntu-latest, flags: "-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++" }
+          - { name: "macOS AppleClang", os: macos-latest, flags: "" }
         config:
-          - { name: Static, flags: "-DBUILD_SHARED_LIBS=FALSE" }
+          - { name: "Static", flags: "-DBUILD_SHARED_LIBS=FALSE" }
 
     steps:
-      - name: Install Dependencies
-        shell: bash
-        run: |
-          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
-            choco install ninja -y
-          elif [[ "$RUNNER_OS" == "Linux" ]]; then
-            sudo apt-get update
-            sudo apt-get install -y ninja-build libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install ninja
-          else
-            echo "Unsupported OS: $RUNNER_OS"
-            exit 1
-          fi
-
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure
-        shell: ${{ matrix.platform.shell }}
+      - name: Install Dependencies
         run: |
-          ${{ matrix.platform.init }}
+          if ($env:RUNNER_OS -eq 'Windows_NT') {
+            choco install ninja -y
+          } elseif ($env:RUNNER_OS -eq 'Linux') {
+            sudo apt-get update
+            sudo apt-get install -y ninja-build libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
+          } elseif ($env:RUNNER_OS -eq 'macOS') {
+            brew install ninja
+          } else {
+            Write-Error "Unsupported OS: $env:RUNNER_OS"
+            exit 1
+          }
+
+      - name: Configure
+        run: |
+          if ($env:RUNNER_OS -eq 'Windows_NT') {
+            # Use cmd to run the Visual Studio initialization script
+            cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"'
+          }
           cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
 
       - name: Build
-        shell: ${{ matrix.platform.shell }}
         run: |
-          ${{ matrix.platform.init }}
+          if ($env:RUNNER_OS -eq 'Windows_NT') {
+            cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"'
+          }
           cmake --build build --config Release
