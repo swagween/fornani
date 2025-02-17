@@ -22,7 +22,7 @@ option(
         ON
 )
 option(FORNANI_BUILD_EDITOR "Build the editor. This should never be enabled in production!" ON)
-option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam. This should never be enabled in production!" ON)
+option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam. This should never be enabled in production!" OFF)
 option(FORNANI_ENABLE_PROFILER "Enables tracy profiling. This should never be enabled in production!" OFF)
 option(
         FORNANI_ENABLE_VERBOSE_LOGGING
