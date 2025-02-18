@@ -6,6 +6,10 @@
 #include "editor/gui/Console.hpp"
 #include "editor/canvas/entity/SavePoint.hpp"
 
+#ifdef _WIN32
+#include "fornani/core/platform/win32/Windows.hpp"
+#endif
+
 #include <filesystem>
 #include <algorithm>
 
@@ -420,6 +424,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
 			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 			ImGui::Separator();
+#ifdef _WIN32
 			if (ImGui::MenuItem("Open")) {
 				popup_open = true;
 				char filename[MAX_PATH];
@@ -462,10 +467,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					}
 				}
 			}
+#endif
 			ImGui::Separator();
 			if (ImGui::MenuItem("Save", "Ctrl+S")) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
-			if (ImGui::MenuItem("Save As", NULL, &save_as_popup)) {}
-			if (ImGui::MenuItem("Close", NULL)) { flags.set(GlobalFlags::shutdown); }
+			if (ImGui::MenuItem("Save As", nullptr, &save_as_popup)) {}
+			if (ImGui::MenuItem("Close", nullptr)) { flags.set(GlobalFlags::shutdown); }
 			ImGui::EndMenu();
 		}
 		if (new_popup) { ImGui::OpenPopup("New File"); }

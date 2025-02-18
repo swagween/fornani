@@ -61,28 +61,74 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(libassert)
 
 
-# Avoid warning about DOWNLOAD_EXTRACT_TIMESTAMP in CMake 3.24 with steamworks.
-if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+
+# Avoid warning about DOWNLOAD_EXTRACT_TIMESTAMP in CMake 3.24+
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
     cmake_policy(SET CMP0135 NEW)
-endif ()
+endif()
 
-# steamworks API
+# Replace the old steamworks_archive with a new fetch from your GitHub release:
 FetchContent_Declare(
-        steamworks_archive
-        URL https://github.com/aleokdev/fornani/releases/download/deck-test-1/steamworks_sdk_160.zip
+        steamworks_sdk
+        URL https://github.com/swagween/fornani/releases/download/Steamworks_v1.61.0/SteamworksSDK-v1.61.0_x64.zip
 )
-FetchContent_MakeAvailable(steamworks_archive)
+FetchContent_MakeAvailable(steamworks_sdk)
 
+# Create an INTERFACE library to hold include paths & linking info
 add_library(steamworks INTERFACE)
-target_include_directories(steamworks SYSTEM INTERFACE ${steamworks_archive_SOURCE_DIR}/public)
-if (WIN32)
-    target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.lib)
-    # Avoid hundreds of strncpy deprecation messages
+target_include_directories(steamworks SYSTEM INTERFACE
+        $<BUILD_INTERFACE:${steamworks_sdk_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)
+
+# On Windows, link the 64-bit library & define _CRT_SECURE_NO_WARNINGS
+if(WIN32)
+    target_link_libraries(steamworks INTERFACE
+            "${steamworks_sdk_SOURCE_DIR}/lib/steam/steam_api64.lib"
+    )
     target_compile_definitions(steamworks INTERFACE _CRT_SECURE_NO_WARNINGS)
-    set(steamworks_dll_file ${steamworks_archive_SOURCE_DIR}/redistributable_bin/win64/steam_api64.dll CACHE STRING "Steamworks DLL")
-elseif (UNIX)
-    target_link_libraries(steamworks INTERFACE ${steamworks_archive_SOURCE_DIR}/redistributable_bin/linux64/libsteam_api.so)
-endif ()
+
+    # Keep track of the DLL location in case you want to copy it next to your exe
+    set(STEAMWORKS_DYNLIB_FILE
+            "${steamworks_sdk_SOURCE_DIR}/bin/steam/steam_api64.dll"
+            CACHE STRING "Steamworks DLL location"
+    )
+    set(STEAMWORKS_DYNLIB_FILE_NAME
+            "steam_api64.dll"
+            CACHE STRING "Steamworks DLL nam"
+    )
+elseif(APPLE)
+    # On Unix like systems, link the .so
+    target_link_libraries(steamworks INTERFACE
+            "${steamworks_sdk_SOURCE_DIR}/lib/steam/libsteam_api.dylib"
+    )
+    set(STEAMWORKS_DYNLIB_FILE
+            "${steamworks_sdk_SOURCE_DIR}/lib/steam/libsteam_api.dylib"
+            CACHE STRING "Steamworks DLL location"
+    )
+    set(STEAMWORKS_DYNLIB_FILE_NAME
+            "libsteam_api.dylib"
+            CACHE STRING "Steamworks DLL nam"
+    )
+elseif(UNIX)
+    # On Unix like systems, link the .so
+    target_link_libraries(steamworks INTERFACE
+            "${steamworks_sdk_SOURCE_DIR}/bin/steam/libsteam_api.so"
+    )
+endif()
+
+# (Optional) Provide a function to copy the Steamworks DLL next to an .exe
+# Call this from your main project once you know the name of your executable.
+function(copy_steamworks_dll target)
+    if(WIN32 OR APPLE)
+        add_custom_command(
+                TARGET ${target}
+                COMMENT "Copying Steamworks DLL next to ${target}"
+                PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${STEAMWORKS_DYNLIB_FILE} $<TARGET_FILE_DIR:${target}>/${STEAMWORKS_DYNLIB_FILE_NAME}
+                VERBATIM
+        )
+    endif()
+endfunction()
 
 add_library(fornani-dependencies INTERFACE)
 add_library(fornani::deps ALIAS fornani-dependencies)

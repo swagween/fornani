@@ -40,13 +40,6 @@ add_subdirectory(include/launcher)
 add_subdirectory(src)
 
 if (WIN32)
-    add_custom_command(
-            TARGET fornani-launcher
-            COMMENT "Copy Steam API DLL"
-            PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${steamworks_dll_file} $<TARGET_FILE_DIR:fornani-launcher>/steam_api64.dll
-            VERBATIM
-    )
-
     if (MSVC)
         set(subsystem $<IF:$<BOOL:$<CONFIG:Debug>>,CONSOLE,WINDOWS>)
         target_link_options(fornani-launcher PRIVATE
@@ -55,6 +48,8 @@ if (WIN32)
         )
     endif ()
 endif ()
+
+copy_steamworks_dll(fornani-launcher)
 
 if (FORNANI_DEV_BUILD)
     add_custom_command(
