@@ -80,15 +80,29 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	svc.soundboard.play_sounds(svc, map.get_echo_count(), map.get_echo_rate());
 
+	// set action set
+	svc.controller_map.set_action_set(config::ActionSet::Platformer);
+	if (pause_window) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
+	if (inventory_window) { svc.controller_map.set_action_set(config::ActionSet::Inventory); }
+	if (console.is_active()) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
+
+	console.update(svc);
+
 	if (pause_window) {
-		svc.controller_map.set_action_set(config::ActionSet::Menu);
-		if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
-		// pause_window.update(svc, console, false);
+		pause_window.value()->update(svc, console);
+		if (pause_window.value()->settings_requested()) {
+			flags.set(GameStateFlags::settings_request);
+			pause_window.value()->reset();
+		}
+		if (pause_window.value()->controls_requested()) {
+			flags.set(GameStateFlags::controls_request);
+			pause_window.value()->reset();
+		}
+		if (pause_window.value()->exit_requested()) { pause_window = {}; }
 		return;
 	}
 
-	svc.world_clock.update(svc);
-
+	// TODO: move this somehwere else
 	if (vendor_dialog) {
 		if (open_vendor) {
 			map.transition.end();
@@ -104,15 +118,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		return;
 	}
 
-	// set action set
-	svc.controller_map.set_action_set(config::ActionSet::Platformer);
-	if (pause_window) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
-	if (inventory_window) { svc.controller_map.set_action_set(config::ActionSet::Inventory); }
-	if (console.is_active()) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
-
-	// pause the game if controller was disconnected
-	if (svc.controller_map.process_gamepad_disconnection()) { toggle_pause_menu(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { toggle_pause_menu(svc); }
+	svc.world_clock.update(svc);
 
 	if (console.is_complete()) {
 		if (svc.menu_controller.vendor_dialog_opened()) {
@@ -136,7 +142,11 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		inventory_window.value()->update(svc, *player, map);
 		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
 	}
+
+	// in-game menus
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, gui_map); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
 
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
@@ -153,8 +163,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	player->controller.clean();
 	player->flags.triggers = {};
-	if (pause_window) { /*pause_window->update(svc, console, true);*/
-	}
+
 	map.background->update(svc);
 	hud.update(svc, *player);
 }
@@ -171,34 +180,11 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (inventory_window) (inventory_window.value()->render(svc, win));
 	map.soft_reset.render(win);
 	map.transition.render(win);
+	if (pause_window) { pause_window.value()->render(svc, win); }
 	console.render(win);
 	console.write(win);
 	player->tutorial.render(win);
 	if (svc.debug_mode()) { map.debug(); }
-}
-
-void Dojo::toggle_inventory(ServiceProvider& svc) {
-	/*if (pause_window.is_active()) { return; }
-	if (inventory_window.active()) {
-		svc.soundboard.flags.console.set(audio::Console::done);
-		inventory_window.close();
-	} else {
-		inventory_window.minimap.update(svc, map, *player);
-		inventory_window.open(svc, *player);
-		svc.soundboard.flags.console.set(audio::Console::menu_open);
-		inventory_window.set_item_size(static_cast<int>(player->catalog.categories.inventory.items.size()));
-	}*/
-}
-
-void Dojo::toggle_pause_menu(ServiceProvider& svc) {
-	/*if (pause_window.active()) {
-		pause_window.close();
-		svc.soundboard.flags.console.set(audio::Console::done);
-	} else {
-		pause_window.open();
-		svc.soundboard.flags.console.set(audio::Console::menu_open);
-	}
-	svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause();*/
 }
 
 void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {

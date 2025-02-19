@@ -21,9 +21,7 @@ class Player;
 
 namespace fornani::automa {
 
-// globals
-
-enum class GameStateFlags : uint8_t { playtest };
+enum class GameStateFlags : uint8_t { playtest, settings_request, controls_request, ready };
 
 enum class MenuSelection : uint8_t { play, options, quit, controls, tutorial, credits, settings };
 
@@ -58,6 +56,8 @@ class GameState {
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc) {};
 	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {};
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {};
+
+	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }
 
 	bool debug_mode{false};
 	util::BitFlags<GameStateFlags> flags{};

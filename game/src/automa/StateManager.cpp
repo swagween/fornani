@@ -3,38 +3,46 @@
 
 #include <fornani/utils/Tracy.hpp>
 
-#include "../../include/fornani/core/Game.hpp"
 #include "fornani/automa/states/ControlsMenu.hpp"
 #include "fornani/automa/states/CreditsMenu.hpp"
+#include "fornani/automa/states/Dojo.hpp"
+#include "fornani/automa/states/FileMenu.hpp"
 #include "fornani/automa/states/Intro.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/automa/states/OptionsMenu.hpp"
 #include "fornani/automa/states/SettingsMenu.hpp"
 #include "fornani/automa/states/StatSheet.hpp"
+#include "fornani/core/Game.hpp"
 
 namespace fornani::automa {
 
-StateManager::StateManager(ServiceProvider& svc, player::Player& player) : g_current_state{std::make_unique<MainMenu>(svc, player, "main")} {}
+StateManager::StateManager(ServiceProvider& svc, player::Player& player, MenuType type) {
+	switch (type) {
+	case MenuType::main: g_current_state = std::make_unique<MainMenu>(svc, player, "main"); break;
+	case MenuType::settings: g_current_state = std::make_unique<SettingsMenu>(svc, player, "settings"); break;
+	case MenuType::controls: g_current_state = std::make_unique<ControlsMenu>(svc, player, "controls"); break;
+	}
+}
 
 void StateManager::process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game) {
 	NANI_ZoneScopedN("StateManager::process_state");
 	if (svc.state_controller.actions.test(Actions::trigger_submenu)) {
 		switch (svc.state_controller.submenu) {
-		case menu_type::file_select:
+		case MenuType::file_select:
 			set_current_state(std::make_unique<FileMenu>(svc, player, "file"));
 			game.playtest_sync();
 			break;
-		case menu_type::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, "options")); break;
-		case menu_type::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player, "settings")); break;
-		case menu_type::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player, "controls_platformer")); break;
-		case menu_type::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player, "credits")); break;
+		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, "options")); break;
+		case MenuType::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player, "settings")); break;
+		case MenuType::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player, "controls_platformer")); break;
+		case MenuType::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player, "credits")); break;
 		default: break;
 		}
 		svc.state_controller.actions.reset(Actions::trigger_submenu);
 	}
 	if (svc.state_controller.actions.test(Actions::exit_submenu)) {
 		switch (svc.state_controller.submenu) {
-		case menu_type::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, "options")); break;
+		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, "options")); break;
 		default: set_current_state(std::make_unique<MainMenu>(svc, player, "main")); break;
 		}
 		svc.state_controller.actions.reset(Actions::exit_submenu);
@@ -115,4 +123,4 @@ auto StateManager::set_current_state(std::unique_ptr<GameState> gameState) -> Ga
 	return get_current_state();
 }
 
-} // namespace automa
+} // namespace fornani::automa

@@ -61,9 +61,10 @@ class Game {
 
 	player::Player player;
 	automa::StateManager game_state;
+	std::optional<std::unique_ptr<automa::StateManager>> m_game_menu;
 	sf::RectangleShape background{};
 
-	io::Logger m_logger{ "core" };
+	io::Logger m_logger{"core"};
 };
 
 } // namespace fornani

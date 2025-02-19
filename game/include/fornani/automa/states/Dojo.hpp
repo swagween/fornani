@@ -16,8 +16,6 @@ class Dojo final : public GameState {
 	void tick_update(ServiceProvider& svc) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
-	void toggle_inventory(ServiceProvider& svc);
-	void toggle_pause_menu(ServiceProvider& svc);
 	void bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current = false);
 
 	world::Map map;
@@ -25,16 +23,11 @@ class Dojo final : public GameState {
 	fornani::Camera camera{};
 	bool show_colliders{false};
 	bool open_vendor{};
-	int x{0};
 	util::Cooldown enter_room{};
 	util::Cooldown loading{32};
 	std::optional<gui::VendorDialog> vendor_dialog{};
-	std::optional<gui::PauseWindow> pause_window{};
+	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};
-
-	// shape::Collider A{};
-	// shape::Collider B{};
-	// shape::CircleCollider circle{16.f};
 };
 
 } // namespace fornani::automa

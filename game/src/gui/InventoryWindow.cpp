@@ -22,6 +22,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map)
 	m_debug.boundary.setSize(boundary.size);
 	m_debug.boundary.setPosition(boundary.position);
 	m_dashboard->set_position(m_cell_dimensions * 0.5f + sf::Vector2f{0.f, 100.f}, true);
+	svc.soundboard.flags.console.set(audio::Console::menu_open);
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {

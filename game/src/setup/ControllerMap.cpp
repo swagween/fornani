@@ -326,26 +326,26 @@ void ControllerMap::open_bindings_overlay() const {
 	SteamInput()->ShowBindingPanel(controller_handle);
 }
 auto ControllerMap::key_to_string(sf::Keyboard::Scancode key) const -> std::string_view {
-	static std::unordered_map<sf::Keyboard::Scancode, std::string_view> map{{sf::Keyboard::Scancode::A, "A"},			 {sf::Keyboard::Scancode::B, "B"},
-																	   {sf::Keyboard::Scancode::C, "C"},			 {sf::Keyboard::Scancode::D, "D"},
-																	   {sf::Keyboard::Scancode::E, "E"},			 {sf::Keyboard::Scancode::F, "F"},
-																	   {sf::Keyboard::Scancode::G, "G"},			 {sf::Keyboard::Scancode::H, "H"},
-																	   {sf::Keyboard::Scancode::I, "I"},			 {sf::Keyboard::Scancode::J, "J"},
-																	   {sf::Keyboard::Scancode::K, "K"},			 {sf::Keyboard::Scancode::L, "L"},
-																	   {sf::Keyboard::Scancode::M, "M"},			 {sf::Keyboard::Scancode::N, "N"},
-																	   {sf::Keyboard::Scancode::O, "O"},			 {sf::Keyboard::Scancode::P, "P"},
-																	   {sf::Keyboard::Scancode::Q, "Q"},			 {sf::Keyboard::Scancode::R, "R"},
-																	   {sf::Keyboard::Scancode::S, "S"},			 {sf::Keyboard::Scancode::T, "T"},
-																	   {sf::Keyboard::Scancode::U, "U"},			 {sf::Keyboard::Scancode::V, "V"},
-																	   {sf::Keyboard::Scancode::W, "W"},			 {sf::Keyboard::Scancode::X, "X"},
-																	   {sf::Keyboard::Scancode::Y, "Y"},			 {sf::Keyboard::Scancode::Z, "Z"},
-																	   {sf::Keyboard::Scancode::LShift, "LShift"}, {sf::Keyboard::Scancode::RShift, "RShift"},
-																	   {sf::Keyboard::Scancode::Left, "Left"},	 {sf::Keyboard::Scancode::Right, "Right"},
-																	   {sf::Keyboard::Scancode::Up, "Up"},		 {sf::Keyboard::Scancode::Down, "Down"},
-																	   {sf::Keyboard::Scancode::Period, "Period"}, {sf::Keyboard::Scancode::Num1, "1"},
-																	   {sf::Keyboard::Scancode::Num2, "2"},		 {sf::Keyboard::Scancode::Num3, "3"},
-																	   {sf::Keyboard::Scancode::Space, "Space"},	 {sf::Keyboard::Scancode::LControl, "LControl"},
-																	   {sf::Keyboard::Scancode::Escape, "Esc"},	 {sf::Keyboard::Scancode::Unknown, "None"}};
+	static std::unordered_map<sf::Keyboard::Scancode, std::string_view> map{{sf::Keyboard::Scancode::A, "A"},			{sf::Keyboard::Scancode::B, "B"},
+																			{sf::Keyboard::Scancode::C, "C"},			{sf::Keyboard::Scancode::D, "D"},
+																			{sf::Keyboard::Scancode::E, "E"},			{sf::Keyboard::Scancode::F, "F"},
+																			{sf::Keyboard::Scancode::G, "G"},			{sf::Keyboard::Scancode::H, "H"},
+																			{sf::Keyboard::Scancode::I, "I"},			{sf::Keyboard::Scancode::J, "J"},
+																			{sf::Keyboard::Scancode::K, "K"},			{sf::Keyboard::Scancode::L, "L"},
+																			{sf::Keyboard::Scancode::M, "M"},			{sf::Keyboard::Scancode::N, "N"},
+																			{sf::Keyboard::Scancode::O, "O"},			{sf::Keyboard::Scancode::P, "P"},
+																			{sf::Keyboard::Scancode::Q, "Q"},			{sf::Keyboard::Scancode::R, "R"},
+																			{sf::Keyboard::Scancode::S, "S"},			{sf::Keyboard::Scancode::T, "T"},
+																			{sf::Keyboard::Scancode::U, "U"},			{sf::Keyboard::Scancode::V, "V"},
+																			{sf::Keyboard::Scancode::W, "W"},			{sf::Keyboard::Scancode::X, "X"},
+																			{sf::Keyboard::Scancode::Y, "Y"},			{sf::Keyboard::Scancode::Z, "Z"},
+																			{sf::Keyboard::Scancode::LShift, "LShift"}, {sf::Keyboard::Scancode::RShift, "RShift"},
+																			{sf::Keyboard::Scancode::Left, "Left"},		{sf::Keyboard::Scancode::Right, "Right"},
+																			{sf::Keyboard::Scancode::Up, "Up"},			{sf::Keyboard::Scancode::Down, "Down"},
+																			{sf::Keyboard::Scancode::Period, "Period"}, {sf::Keyboard::Scancode::Num1, "1"},
+																			{sf::Keyboard::Scancode::Num2, "2"},		{sf::Keyboard::Scancode::Num3, "3"},
+																			{sf::Keyboard::Scancode::Space, "Space"},	{sf::Keyboard::Scancode::LControl, "LControl"},
+																			{sf::Keyboard::Scancode::Escape, "Esc"},	{sf::Keyboard::Scancode::Unknown, "None"}};
 
 	return map.at(key);
 }
@@ -431,7 +431,7 @@ auto ControllerMap::get_action_by_identifier(std::string_view id) -> config::Dig
 	return map.at(id);
 }
 
-} // namespace config
+} // namespace fornani::config
 
 #ifdef _MSC_VER
 #pragma warning(pop)

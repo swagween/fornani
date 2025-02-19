@@ -5,7 +5,7 @@
 namespace fornani::automa {
 
 enum class Toggles : uint8_t { autosprint, tutorial, gamepad, music, fullscreen };
-enum class MenuMode : uint8_t { adjust };
+enum class MenuMode : uint8_t { ready, adjust };
 
 class SettingsMenu final : public GameState {
   public:
@@ -13,11 +13,11 @@ class SettingsMenu final : public GameState {
 	void tick_update(ServiceProvider& svc) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
-	[[nodiscard]] auto adjust_mode() const -> bool { return mode_flags.test(MenuMode::adjust); }
+	[[nodiscard]] auto adjust_mode() const -> bool { return m_mode == MenuMode::adjust; }
 
   private:
 	util::BitFlags<Toggles> toggles{};
-	util::BitFlags<MenuMode> mode_flags{};
+	MenuMode m_mode{};
 	struct {
 		sf::Text enabled;
 		sf::Text disabled;

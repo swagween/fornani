@@ -34,7 +34,6 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 
 	// debug stuff
 	m_debug.box.setPosition(m_physical.physics.position - cam);
-	// win.draw(m_debug.box);
 	auto pos{sf::Vector2f{}};
 	auto ctr{0};
 	auto dist{256.f};
@@ -57,7 +56,6 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 
 	// real renders
 	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam); }
-	// for (auto& child : children) { child.render(win, cam); }
 }
 
 bool Dashboard::handle_inputs(config::ControllerMap& controller) { return m_gizmos.at(m_current_gizmo)->handle_inputs(controller); }
@@ -72,10 +70,6 @@ void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 
 void Dashboard::set_selection(sf::Vector2i to_selection) { m_selected_position = to_selection; }
 
-void Dashboard::hover(sf::Vector2i direction) {
-	for (auto& gizmo : m_gizmos) {
-		// if (gizmo.get_relative_position() == direction) { gizmo.set_hovered(); }
-	}
-}
+void Dashboard::hover(sf::Vector2i direction) {}
 
 } // namespace fornani::gui

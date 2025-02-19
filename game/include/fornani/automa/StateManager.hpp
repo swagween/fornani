@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fornani/automa/states/FileMenu.hpp"
-#include "fornani/automa/states/Dojo.hpp"
+#include "fornani/automa/GameState.hpp"
+#include "fornani/automa/StateController.hpp"
 
 namespace fornani {
 class Game;
@@ -17,8 +17,8 @@ struct ServiceProvider;
 
 class StateManager {
 
-public:
-	StateManager(ServiceProvider& svc, player::Player& player);
+  public:
+	StateManager(ServiceProvider& svc, player::Player& player, MenuType type);
 	StateManager& operator=(StateManager&&) = delete;
 	void process_state(ServiceProvider& svc, player::Player& player, Game& game);
 	void return_to_main_menu(ServiceProvider& svc, player::Player& player);
@@ -28,7 +28,6 @@ public:
 	GameState& set_current_state(std::unique_ptr<GameState> gameState);
 
 	std::unique_ptr<GameState> g_current_state{};
-
 };
 
 } // namespace fornani::automa

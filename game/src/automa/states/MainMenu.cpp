@@ -56,12 +56,12 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::play)) {
-			svc.state_controller.submenu = menu_type::file_select;
+			svc.state_controller.submenu = MenuType::file_select;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::options)) {
-			svc.state_controller.submenu = menu_type::options;
+			svc.state_controller.submenu = MenuType::options;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}

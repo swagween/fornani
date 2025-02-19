@@ -1,11 +1,16 @@
+
 #pragma once
-#include <SFML/Graphics.hpp>
-#include "Console.hpp"
-#include "MiniMenu.hpp"
-#include "Portrait.hpp"
-#include "Selector.hpp"
+
 #include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/gui/MiniMenu.hpp"
+#include "fornani/gui/Portrait.hpp"
+#include "fornani/gui/Selector.hpp"
 #include "fornani/particle/Gravitator.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <optional>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -42,7 +47,7 @@ class VendorDialog {
 		Selector sell;
 	} selectors;
 	Console info;
-	MiniMenu item_menu;
+	std::optional<MiniMenu> m_item_menu{};
 	util::Cooldown intro{200};
 	util::Cooldown bring_in_cooldown{200};
 	util::BitFlags<VendorDialogStatus> flags{};

@@ -435,8 +435,6 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
 
-	console.update(svc);
-
 	player->collider.reset_ground_flags();
 
 	// ambience

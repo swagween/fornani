@@ -1,7 +1,7 @@
 #pragma once
-#include "Console.hpp"
-#include "MiniMenu.hpp"
-#include "Selector.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/gui/MiniMenu.hpp"
+#include "fornani/gui/Selector.hpp"
 
 namespace fornani::player {
 class Player;
@@ -13,6 +13,23 @@ class GameState;
 
 namespace fornani::gui {
 
-class PauseWindow {};
+enum class PauseWindowState { active, settings, controls, exit, quit };
+
+class PauseWindow {
+  public:
+	PauseWindow(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc, Console& console);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);
+	void reset();
+	[[nodiscard]] auto settings_requested() const -> bool { return m_state == PauseWindowState::settings; }
+	[[nodiscard]] auto controls_requested() const -> bool { return m_state == PauseWindowState::controls; }
+	[[nodiscard]] auto exit_requested() const -> bool { return m_state == PauseWindowState::exit; }
+
+  private:
+	MiniMenu m_menu;
+	sf::Vector2f m_dimensions{};
+	sf::RectangleShape m_background{};
+	PauseWindowState m_state{};
+};
 
 } // namespace fornani::gui

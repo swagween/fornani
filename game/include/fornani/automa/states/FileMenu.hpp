@@ -4,6 +4,8 @@
 #include "fornani/automa/GameState.hpp"
 #include "fornani/gui/MiniMenu.hpp"
 
+#include <optional>
+
 namespace fornani::automa {
 
 class FileMenu final : public GameState {
@@ -18,10 +20,11 @@ class FileMenu final : public GameState {
 	void refresh(ServiceProvider& svc);
 
 	sf::RectangleShape title{};
-private:
+
+  private:
 	util::Cooldown loading{};
 	world::Map map;
-	gui::MiniMenu file_select_menu;
+	std::optional<gui::MiniMenu> m_file_select_menu{};
 };
 
-}
+} // namespace fornani::automa
