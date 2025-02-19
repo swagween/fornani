@@ -5,13 +5,15 @@
 #include "Circuit.hpp"
 #include "Cooldown.hpp"
 
+#include <cstdint>
+
 namespace fornani::automa {
 struct ServiceProvider;
 }
 
 namespace fornani {
 
-enum class TimeOfDay : uint8_t { day, twilight, night, END };
+enum class TimeOfDay : std::uint8_t { day, twilight, night, END };
 
 class WorldClock {
   public:

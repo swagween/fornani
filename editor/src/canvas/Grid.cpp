@@ -1,6 +1,8 @@
 
 #include "editor/canvas/Grid.hpp"
 
+#include <cmath>
+
 namespace pi {
 
 Grid::Grid(sf::Vector2<uint32_t> d) : dimensions(d) {

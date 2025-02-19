@@ -1,5 +1,8 @@
 
 #include "fornani/utils/RectPath.hpp"
+
+#include <ccmath/math/misc/lerp.hpp>
+
 #include "fornani/setup/ResourceFinder.hpp"
 
 #include <djson/json.hpp>
@@ -32,10 +35,10 @@ void RectPath::update() {
 		return;
 	}
 
-	m_current_position.x = std::lerp(previous_position.x, target_position.x, m_interpolation.get_inverse_cubic_normalized());
-	m_current_position.y = std::lerp(previous_position.y, target_position.y, m_interpolation.get_inverse_cubic_normalized());
-	m_current_dimensions.x = std::lerp(previous_dimensions.x, target_dimensions.x, m_interpolation.get_inverse_cubic_normalized());
-	m_current_dimensions.y = std::lerp(previous_dimensions.y, target_dimensions.y, m_interpolation.get_inverse_cubic_normalized());
+	m_current_position.x = ccm::lerp(previous_position.x, target_position.x, m_interpolation.get_inverse_cubic_normalized());
+	m_current_position.y = ccm::lerp(previous_position.y, target_position.y, m_interpolation.get_inverse_cubic_normalized());
+	m_current_dimensions.x = ccm::lerp(previous_dimensions.x, target_dimensions.x, m_interpolation.get_inverse_cubic_normalized());
+	m_current_dimensions.y = ccm::lerp(previous_dimensions.y, target_dimensions.y, m_interpolation.get_inverse_cubic_normalized());
 	
 }
 

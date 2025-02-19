@@ -15,7 +15,8 @@ namespace fornani::anim {
 
 class AnimatedSprite {
   public:
-	explicit AnimatedSprite(sf::Texture& texture, sf::Vector2<int> dimensions = {32, 32});
+	// ReSharper disable once CppNonExplicitConvertingConstructor
+	AnimatedSprite(sf::Texture& texture, sf::Vector2<int> dimensions = {32, 32});
 	void update(sf::Vector2<float> pos, int u = 0, int v = 0, bool horiz = false);
 	void push_params(std::string_view label, Parameters in_params);
 	void set_params(std::string_view label, bool force = false);

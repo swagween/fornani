@@ -53,7 +53,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (player.collider.wallslider.overlaps(collider.bounding_box) && player.pushing()) {
 		if (player.controller.moving_left() && player.collider.physics.position.x > collider.physics.position.x) { collider.physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.collider.physics.position.x < collider.physics.position.x) { collider.physics.acceleration.x = speed / mass; }
-		if (abs(collider.physics.acceleration.x) > 0.f) { svc.soundboard.flags.world.set(audio::World::pushable); }
+		if (ccm::abs(collider.physics.acceleration.x) > 0.f) { svc.soundboard.flags.world.set(audio::World::pushable); }
 		state.set(PushableState::moved);
 		state.set(PushableState::moving);
 	}
@@ -79,7 +79,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 	}
 	if (size == 1) { collider.handle_collider_collision(player.collider.bounding_box); } // big ones should crush the player
-	if (abs(collider.physics.forced_momentum.x) > 0.1f || abs(collider.physics.forced_momentum.y) > 0.1f) { set_moving(); }
+	if (ccm::abs(collider.physics.forced_momentum.x) > 0.1f || ccm::abs(collider.physics.forced_momentum.y) > 0.1f) { set_moving(); }
 	collider.physics.impart_momentum();
 	if (!collider.has_jump_collision()) { collider.physics.forced_momentum = {}; }
 	if (collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) {
@@ -116,8 +116,8 @@ void Pushable::handle_collision(shape::Collider& other) const { other.handle_col
 
 void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	snap = collider.snap_to_grid(1, 4.f, 2.f);
-	if (abs(random_offset.x) > 0.f || abs(random_offset.y) > 0.f) { snap = collider.physics.position; } // don't snap if shaking
-	if (abs(collider.physics.velocity.x) > 0.1f || abs(collider.physics.velocity.y) > 0.1f) { set_moving(); }
+	if (ccm::abs(random_offset.x) > 0.f || ccm::abs(random_offset.y) > 0.f) { snap = collider.physics.position; } // don't snap if shaking
+	if (ccm::abs(collider.physics.velocity.x) > 0.1f || ccm::abs(collider.physics.velocity.y) > 0.1f) { set_moving(); }
 	if (is_moving()) { snap = collider.physics.position; } // don't snap if moving
 	state.reset(PushableState::moving);					   // we only use this flag for rendering
 	sprite.setPosition(snap - cam + random_offset - sprite_offset);

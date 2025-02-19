@@ -19,7 +19,7 @@ void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2<float> direc
 	auto half_pi = pi / 2.f;
 	auto one_quarter_pi = pi / 4.f;
 
-	auto modulus = std::fmodf(angle + pi, half_pi);
+	auto modulus = std::fmod(angle + pi, half_pi);
 	for (int i{num_angles - 1}; i >= 0; --i) {
 		if (modulus <= ((2 * i + 1) * pi) / (num_angles * 4.f)) { sprite_angle_index = i; }
 	}

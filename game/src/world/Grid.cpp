@@ -1,6 +1,8 @@
 
 #include "fornani/world/Grid.hpp"
 
+#include <cmath>
+
 namespace fornani::world {
 
 Grid::Grid(sf::Vector2<uint32_t> d, dj::Json& source) : dimensions(d) {

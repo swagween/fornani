@@ -110,7 +110,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	}
 	for (auto& destroyer : map.destroyers) { collider.handle_collision(destroyer.get_bounding_box()); }
 	for (auto& spike : map.spikes) { collider.handle_collision(spike.get_bounding_box()); }
-	if (collider.collided() && type == DropType::gem && !is_inactive() && abs(collider.physics.velocity.y) > 1.f) { svc.soundboard.flags.world.set(audio::World::wall_hit); }
+	if (collider.collided() && type == DropType::gem && !is_inactive() && ccm::abs(collider.physics.velocity.y) > 1.f) { svc.soundboard.flags.world.set(audio::World::wall_hit); }
 
 	collider.physics.acceleration = {};
 	lifespan.update();

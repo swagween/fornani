@@ -121,7 +121,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.state.set(State::tickwise_ramp_collision);
 			if (is_ground_ramp) {
 				flags.external_state.set(ExternalState::on_ramp);
-				physics.position.y -= abs(mtvs.actual.y);
+				physics.position.y -= ccm::abs(mtvs.actual.y);
 				//flags.state.set(State::on_flat_surface);
 				// still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping) && bounding_box.bottom() <= cell.bottom()) {
@@ -136,7 +136,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			}
 			if (is_ceiling_ramp) {
 				tile.debug_flag = true;
-				physics.position.y += abs(mtvs.combined.y) * 4.f;
+				physics.position.y += ccm::abs(mtvs.combined.y) * 4.f;
 				if (physics.apparent_velocity().y < 0.f) { physics.zero_y(); }
 				flags.external_state.set(ExternalState::ceiling_ramp_hit);
 			}
@@ -230,9 +230,9 @@ void Collider::correct_x(sf::Vector2<float> mtv) {
 void Collider::correct_y(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	// for large mtv values, overcorrect to prevent clipping
-	if (abs(mtv.x) > 12.f || abs(mtv.y) > 12.f) {
-		mtv.x = abs(mtv.y) > 0 ? mtv.y : mtv.x;
-		mtv.y = abs(mtv.x) > 0 ? mtv.x : mtv.y;
+	if (ccm::abs(mtv.x) > 12.f || ccm::abs(mtv.y) > 12.f) {
+		mtv.x = ccm::abs(mtv.y) > 0 ? mtv.y : mtv.x;
+		mtv.y = ccm::abs(mtv.x) > 0 ? mtv.x : mtv.y;
 		// std::cout << "large MTV!\n";
 	}
 	auto ydist = predictive_vertical.get_position().y + vertical_detector_buffer - physics.position.y;
@@ -255,7 +255,7 @@ void Collider::correct_x_y(sf::Vector2<float> mtv) {
 
 void Collider::correct_corner(sf::Vector2<float> mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
-	if (abs(mtv.x) >= abs(mtv.y)) {
+	if (ccm::abs(mtv.x) >= ccm::abs(mtv.y)) {
 		physics.position.x = predictive_combined.get_position().x + mtv.x;
 		physics.zero_x();
 		//std::cout << "X Corner correction: " << mtv.x << "\n";
@@ -311,7 +311,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	bool corner_collision{true};
 	if (predictive_vertical.SAT(collider)) {
 		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
-		// if (abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
+		// if (ccm::abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
 		if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 			flags.state.set(State::just_landed);
 			flags.animation.set(Animation::just_landed);
