@@ -28,14 +28,14 @@
 
 /// STEP TWO: Include windows.h
 
-#if defined(_WINDOWS_) && !defined(IMPACT_MINIMAL_WINDOWS_INCLUDE)
+#if defined(_WINDOWS_) && !defined(FORNANI_MINIMAL_WINDOWS_INCLUDE)
     GEN_MESSAGE ( " " )
     GEN_MESSAGE ( "You have included windows.h before MinWindows.h" )
     GEN_MESSAGE ( "All useless stuff from the windows headers won't be excluded !!!" )
     GEN_MESSAGE ( " " )
 #endif // _WINDOWS_
 
-#define IMPACT_MINIMAL_WINDOWS_INCLUDE
+#define FORNANI_MINIMAL_WINDOWS_INCLUDE
 
 // WIN32_LEAN_AND_MEAN excludes rarely used services from windows headers.
 #define WIN32_LEAN_AND_MEAN
@@ -232,7 +232,7 @@ struct IUnknown;
 /// STEP FOUR: Perform some minor changes to the Windows API
 
 // In RELEASE disable OutputDebugString
-    #if defined(_RELEASE) && !IMPACT_PLATFORM_DESKTOP && !defined(IMPACT_RELEASE_LOGGING)
+    #if defined(FORNANI_PRODUCTION) && !defined(FORNANI_PRODUCTION_LOGGING)
         #undef OutputDebugString
         #define OutputDebugString(...) (void) 0
     #endif
