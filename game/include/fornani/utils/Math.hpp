@@ -19,7 +19,7 @@ inline sf::Vector2<float> unit(sf::Vector2<float> vec) {
 	if (denominator == 0.f) { return sf::Vector2{1.f, 0.f}; }
 	return vec / denominator;
 }
-inline float direction(sf::Vector2<float> vec) { return std::atan2f(vec.y, vec.x); } // TODO: Switch to ccm::atan2f when done.
+inline float direction(sf::Vector2<float> vec) { return ::std::atan2(vec.y, vec.x); } // TODO: Switch to ccm::atan2f when done.
 inline sf::Vector2<float> absolute_distance(sf::Vector2<float> source, sf::Vector2<float> destination) { return sf::Vector2<float>{ccm::abs(source.x - destination.x), ccm::abs(source.y - destination.y)}; }
 inline sf::Vector2<float> round_to_even(sf::Vector2<float> input) {
 	auto ret = input;
