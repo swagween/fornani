@@ -2,13 +2,17 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
+#include <cmath>
+
+// TODO: Replace functions in here with ccmath functions instead.
+
 namespace fornani::components {
 
 void PhysicsComponent::apply_force(sf::Vector2<float> force) { sf::operator+=(acceleration, force); }
 
 void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
-	acceleration.x += (magnitude * cos(angle)) / mass;
-	acceleration.y += (magnitude * sin(angle)) / mass;
+	acceleration.x += (magnitude * std::cos(angle)) / mass;
+	acceleration.y += (magnitude * std::sin(angle)) / mass;
 }
 
 void PhysicsComponent::multiply_velocity(float multiplier) {
