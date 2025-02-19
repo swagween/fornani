@@ -12,10 +12,10 @@ void SteeringBehavior::smooth_random_walk(PhysicsComponent& physics, float dampe
 	wander = physics.position + util::unit(physics.velocity) * (radius + radius / 3.f);
 	wander_radius = radius;
 	wander_displacement += util::Random::random_range_float(-0.08f, 0.08f);
-	auto const theta = wander_displacement + atan2f(physics.velocity.y, physics.velocity.x);
-	auto const x = radius * cos(theta);
-	auto const y = radius * sin(theta);
-	auto const target = wander + sf::Vector2{x, y};
+	float const theta = wander_displacement + ::std::atan2(physics.velocity.y, physics.velocity.x);
+	float const x = radius * ::std::cos(theta);
+	float const y = radius * ::std::sin(theta);
+	auto const target = wander + sf::Vector2<float>{x, y};
 	auto const steering = util::unit(target - physics.position) * dampen;
 	physics.apply_force(steering);
 }
@@ -24,7 +24,7 @@ void SteeringBehavior::target(components::PhysicsComponent& physics, sf::Vector2
 	auto distance = point - physics.position;
 	auto mag = util::magnitude(distance);
 	auto epsilon{0.1f};
-	if (abs(mag) < epsilon) { physics.position = point; }
+	if (std::abs(mag) < epsilon) { physics.position = point; }
 	physics.apply_force(distance * strength);
 }
 
