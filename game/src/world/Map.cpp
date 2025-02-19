@@ -1,7 +1,7 @@
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include <imgui.h>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/gui/InventoryWindow.hpp"
+#include "fornani/gui/Console.hpp"
 #include "fornani/gui/Portrait.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/EnumLookups.hpp"
@@ -20,7 +20,6 @@ Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& con
 	  scaled_barrier{barrier * svc.constants.cell_size} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
-
 	// for debugging
 	center_box.setSize(svc.constants.f_screen_dimensions * 0.5f);
 	flags.state.reset(LevelState::game_over);
@@ -60,6 +59,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	auto const& entities = metadata["entities"];
 
 	if (!soft) {
+		svc.current_room = room_number;
 		if (meta["cutscene_on_entry"]["flag"].as_bool()) {
 			auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
 			auto cid = meta["cutscene_on_entry"]["id"].as<int>();

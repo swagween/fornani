@@ -1,13 +1,14 @@
 
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::gui {
 
-InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : m_cell_dimensions{svc.constants.f_screen_dimensions} {
+InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map)
+	: m_cell_dimensions{svc.constants.f_screen_dimensions}, m_dashboard{std::make_unique<Dashboard>(svc, map, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_debug{.sprite{sf::Sprite{svc.assets.t_inv_test}}} {
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.constants.f_screen_dimensions);
 	m_debug.border.setOutlineColor(svc.styles.colors.green);
@@ -18,23 +19,40 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc) : m_cell_dimensio
 	boundary.size = svc.constants.f_screen_dimensions * 3.f;
 	boundary.position = -1.f * svc.constants.f_screen_dimensions;
 	m_debug.boundary.setFillColor(svc.styles.colors.ui_black);
-	m_debug.boundary.setOutlineColor(svc.styles.colors.blue);
-	m_debug.boundary.setOutlineThickness(-16.f);
 	m_debug.boundary.setSize(boundary.size);
 	m_debug.boundary.setPosition(boundary.position);
+	m_dashboard->set_position(m_cell_dimensions * 0.5f + sf::Vector2f{0.f, 100.f}, true);
 }
 
-void InventoryWindow::update(automa::ServiceProvider& svc) {
+void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
+
 	auto& controller = svc.controller_map;
-	if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) { m_grid_position.y = std::clamp(m_grid_position.y - 1.f, -1.f, 1.f); }
-	if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) { m_grid_position.y = std::clamp(m_grid_position.y + 1.f, -1.f, 1.f); }
-	if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) { m_grid_position.x = std::clamp(m_grid_position.x - 1.f, -1.f, 1.f); }
-	if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) { m_grid_position.x = std::clamp(m_grid_position.x + 1.f, -1.f, 1.f); }
-	m_camera.steering.seek(m_camera.physics, sf::Vector2f{m_cell_dimensions.x * m_grid_position.x, m_cell_dimensions.y * m_grid_position.y}, 0.002f);
+
+	if (m_view == InventoryView::focused) {
+		if (!m_dashboard->handle_inputs(controller)) { m_grid_position = {}; }
+	}
+	if (m_view == InventoryView::dashboard) {
+		if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) { m_dashboard->set_selection({0, -1}); }
+		if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) { m_dashboard->set_selection({0, 1}); }
+		if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) { m_dashboard->set_selection({-1, 0}); }
+		if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) { m_dashboard->set_selection({1, 0}); }
+		if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = std::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
+			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = std::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
+			m_view = InventoryView::focused;
+		}
+	}
+
+	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
+
+	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x, m_cell_dimensions.y * m_grid_position.y} + sf::Vector2f{m_dashboard->get_selected_position()} * 32.f};
+	m_camera.steering.seek(m_camera.physics, target, 0.003f);
 	m_camera.physics.simple_update();
+	m_dashboard->set_position(m_cell_dimensions * 0.5f);
+	m_dashboard->update(svc, player, map);
 }
 
-void InventoryWindow::render(sf::RenderWindow& win) {
+void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
 	m_debug.boundary.setPosition(-m_cell_dimensions - m_camera.physics.position);
 	m_debug.border.setPosition(-m_camera.physics.position);
 	win.draw(m_debug.boundary);
@@ -45,6 +63,12 @@ void InventoryWindow::render(sf::RenderWindow& win) {
 			win.draw(m_debug.center);
 		}
 	}
+
+	m_debug.sprite.setOrigin({582.f, 378.f});
+	m_debug.sprite.setScale({2.f, 2.f});
+	m_debug.sprite.setPosition(m_dashboard->get_position() - m_camera.physics.position * m_camera.parallax);
+	win.draw(m_debug.sprite);
+	m_dashboard->render(svc, win, m_camera.physics.position * m_camera.parallax);
 }
 
 } // namespace fornani::gui

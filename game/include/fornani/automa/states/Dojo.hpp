@@ -3,7 +3,7 @@
 
 #include "fornani/automa/GameState.hpp"
 #include "fornani/gui/VendorDialog.hpp"
-#include "fornani/level/Camera.hpp"
+#include "fornani/world/Camera.hpp"
 
 #include <memory>
 #include <optional>

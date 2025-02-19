@@ -1,5 +1,5 @@
 
-#include "fornani/level/Grid.hpp"
+#include "fornani/world/Grid.hpp"
 
 namespace fornani::world {
 

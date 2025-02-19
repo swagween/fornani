@@ -1,11 +1,11 @@
-#include "fornani/level/SwitchButton.hpp"
+#include "fornani/world/SwitchButton.hpp"
+#include <algorithm>
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/particle/Effect.hpp"
-#include "fornani/level/Breakable.hpp"
-#include <algorithm>
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Breakable.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::world {
 
@@ -57,25 +57,19 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	// press permanent switches forever
 	if (type == SwitchType::permanent && pressed()) { svc.data.activate_switch(id); }
 
-	//assume unpressed, then check everything for a press
+	// assume unpressed, then check everything for a press
 	if (type != SwitchType::permanent) { state = SwitchButtonState::unpressed; }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& platform : map.platforms) {
-		if (platform.bounding_box.overlaps(sensor)) {
-			state = SwitchButtonState::pressed;
-		}
+		if (platform.bounding_box.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 	}
 	for (auto& chest : map.chests) {
-		if (chest.get_jumpbox().overlaps(sensor)) {
-			state = SwitchButtonState::pressed;
-		}
+		if (chest.get_jumpbox().overlaps(sensor)) { state = SwitchButtonState::pressed; }
 	}
 	for (auto& pushable : map.pushables) {
 		if (pushable.collider.jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 	}
-	if (player.collider.jumpbox.overlaps(sensor)) {
-		state = SwitchButtonState::pressed;
-	}
+	if (player.collider.jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 
 	collider.detect_map_collision(map);
 	handle_collision(player.collider);
@@ -112,9 +106,7 @@ void SwitchButton::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::P
 	if (proj.transcendent()) { return; }
 	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		state = SwitchButtonState::pressed;
-		if (!proj.destruction_initiated()) {
-			svc.soundboard.flags.world.set(audio::World::breakable_hit);
-		}
+		if (!proj.destruction_initiated()) { svc.soundboard.flags.world.set(audio::World::breakable_hit); }
 		proj.destroy(false);
 	}
 }
@@ -207,4 +199,4 @@ bool SwitchButton::change_state(SwitchButtonState next, std::string_view tag) {
 	return false;
 }
 
-} // namespace world
+} // namespace fornani::world

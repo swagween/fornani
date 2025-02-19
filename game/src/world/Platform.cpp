@@ -1,9 +1,9 @@
-#include "fornani/level/Platform.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
-#include "fornani/particle/Effect.hpp"
+#include "fornani/world/Platform.hpp"
 #include <cmath>
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::world {
 
@@ -59,17 +59,17 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	const auto old_position = physics.position;
+	auto const old_position = physics.position;
 	auto edge_start = 0.f;
 	player.collider.handle_collider_collision(*this);
 	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
 	player.on_crush(map);
-	for (const auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
+	for (auto const& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
 	switch_up.update();
 
-	//map changes
+	// map changes
 
-	//platform changes
+	// platform changes
 	for (auto& breakable : map.breakables) { handle_collider_collision(breakable.get_hurtbox()); }
 	for (auto& pushable : map.pushables) {
 		// platform should reverse direction upon hitting the sides or top of a pushable
@@ -78,8 +78,12 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			if (wallslider.overlaps(pushable.get_bounding_box())) { pushable.set_moving(); }
 		}
 	}
-	for (auto& block : map.switch_blocks) { if (block.on()) { handle_collider_collision(block.get_hurtbox()); } }
-	for (auto& platform : map.platforms) { if (&platform != this && native_direction.lr != platform.native_direction.lr) { handle_collider_collision(platform.hurtbox); } }
+	for (auto& block : map.switch_blocks) {
+		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
+	}
+	for (auto& platform : map.platforms) {
+		if (&platform != this && native_direction.lr != platform.native_direction.lr) { handle_collider_collision(platform.hurtbox); }
+	}
 	if (flags.state.test(PlatformState::moving)) {
 		if (native_direction.lr == dir::LR::left) {
 			if (Collider::flags.external_state.consume(shape::ExternalState::horiz_collider_collision) && !switch_up.running()) {
@@ -97,10 +101,10 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	direction.lr = player.controller.direction.lr == dir::LR::left ? dir::LR::right : dir::LR::left;
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
-		const auto start = track[x];
-		const auto end = track[x + 1];
-		const auto len = compute_length(end - start);
-		if (const auto edge_end = edge_start + (len / path_length); edge_end >= path_position) {
+		auto const start = track[x];
+		auto const end = track[x + 1];
+		auto const len = compute_length(end - start);
+		if (auto const edge_end = edge_start + (len / path_length); edge_end >= path_position) {
 			constexpr auto skip_value{16.f};
 			physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
 			physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
@@ -119,7 +123,9 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 				}
 			}
 			break;
-		} else { edge_start = edge_end; }
+		} else {
+			edge_start = edge_end;
+		}
 	}
 
 	if (player.controller.direction.lr != direction.lr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
@@ -127,12 +133,9 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		state = 2;
 		if (player.collider.jumpbox.overlaps(bounding_box)) {
 			switch (direction.lr) {
-			case dir::LR::left: state = 3;
-				break;
-			case dir::LR::right: state = 4;
-				break;
-			default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?");
-				break;
+			case dir::LR::left: state = 3; break;
+			case dir::LR::right: state = 4; break;
+			default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
 			}
 		}
 	}
@@ -140,7 +143,9 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		if (player.collider.jumpbox.overlaps(bounding_box)) {
 			path_position += metrics.speed;
 			state = 7;
-		} else { state = 8; }
+		} else {
+			state = 8;
+		}
 	} else {
 		state = flags.attributes.test(PlatformAttributes::sticky) ? 0 : 1;
 		path_position += metrics.speed;
@@ -150,7 +155,11 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	sync_components();
 
-	if (old_position != physics.position) { flags.state.set(PlatformState::moving); } else { flags.state.reset(PlatformState::moving); }
+	if (old_position != physics.position) {
+		flags.state.set(PlatformState::moving);
+	} else {
+		flags.state.reset(PlatformState::moving);
+	}
 
 	counter.update();
 	animation.update();
@@ -159,14 +168,16 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	track_shape.setPosition(-cam);
 	sprite.setPosition(physics.position - cam);
-	const auto u = state * 96;
-	const auto v = animation.get_frame() * 224;
+	auto const u = state * 96;
+	auto const v = animation.get_frame() * 224;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
 	sprite.setTextureRect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(dimensions)));
 	if (svc.greyblock_mode()) {
 		win.draw(track_shape);
 		Collider::render(win, cam);
-	} else { win.draw(sprite); }
+	} else {
+		win.draw(sprite);
+	}
 }
 
 void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
@@ -186,4 +197,4 @@ void Platform::switch_directions() {
 	path_position = 1.0f - path_position;
 }
 
-} // namespace world
+} // namespace fornani::world

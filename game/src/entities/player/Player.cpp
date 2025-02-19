@@ -5,8 +5,8 @@
 #include "fornani/entities/item/Drop.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::player {
 

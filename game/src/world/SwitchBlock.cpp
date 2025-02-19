@@ -1,10 +1,10 @@
-#include "fornani/level/SwitchBlock.hpp"
+#include "fornani/world/SwitchBlock.hpp"
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/particle/Effect.hpp"
-#include "fornani/level/SwitchBlock.hpp"
+#include "fornani/world/SwitchBlock.hpp"
 #include <algorithm>
 
 namespace fornani::world {

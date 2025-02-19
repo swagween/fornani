@@ -1,5 +1,5 @@
 #include "fornani/entities/enemy/catalog/Meatsquash.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 

@@ -1,21 +1,21 @@
 #include "fornani/graphics/MapTexture.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
 #include <algorithm>
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::gui {
 
-MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.colors.ui_white}, tile_color{svc.styles.colors.blue} {
-	border_color.a = 200;
+MapTexture::MapTexture(automa::ServiceProvider& svc) : border_color{svc.styles.colors.pioneer_red}, tile_color{svc.styles.colors.pioneer_red} {
+	tile_color.a = 144;
 	tile_box.setFillColor(tile_color);
 	tile_box.setSize({4.f, 4.f});
-	plat_box.setFillColor(svc.styles.colors.periwinkle);
+	plat_box.setFillColor(svc.styles.colors.dark_fucshia);
 	plat_box.setSize({4.f, 4.f});
-	portal_box.setFillColor(svc.styles.colors.green);
+	portal_box.setFillColor(svc.styles.colors.dark_fucshia);
 	portal_box.setSize({4.f, 4.f});
-	breakable_box.setFillColor(svc.styles.colors.dark_goldenrod);
+	breakable_box.setFillColor(svc.styles.colors.dark_fucshia);
 	breakable_box.setSize({4.f, 4.f});
-	save_box.setFillColor(svc.styles.colors.periwinkle);
+	save_box.setFillColor(svc.styles.colors.dark_fucshia);
 	save_box.setSize({4.f, 4.f});
 }
 
@@ -27,8 +27,6 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		ignore = true;
 		return;
 	}
-	tile_color = map.native_style_id == 0 ? svc.styles.colors.fucshia : svc.styles.colors.blue;
-	tile_color.a = 100;
 	global_offset = map.metagrid_coordinates * 16;
 	map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions);
 
@@ -60,10 +58,10 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		map_texture.draw(breakable_box);
 	}
 	if (map.save_point.id > 0) {
-		save_box.setPosition(sf::Vector2 <float>(map.save_point.scaled_position) * 32.f / scale);
+		save_box.setPosition(sf::Vector2<float>(map.save_point.scaled_position) * 32.f / scale);
 		map_texture.draw(save_box);
 	}
-	if (undiscovered) { 
+	if (undiscovered) {
 		curtain.setSize({static_cast<float>(map.dimensions.x) * (32.f / scale), static_cast<float>(map.dimensions.y) * (32.f / scale)});
 		curtain.setFillColor(svc.styles.colors.navy_blue);
 		map_texture.draw(curtain);
@@ -80,4 +78,4 @@ sf::Vector2<float> MapTexture::get_position() { return sf::Vector2<float>(static
 
 sf::Vector2<float> MapTexture::get_dimensions() const { return map_dimensions; }
 
-} // namespace text
+} // namespace fornani::gui

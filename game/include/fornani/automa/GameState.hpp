@@ -9,7 +9,7 @@
 #include "fornani/gui/HUD.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 
 #include <SFML/Graphics.hpp>
 

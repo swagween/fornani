@@ -132,8 +132,11 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		player->visit_history.clear();
 	}
 
-	if (inventory_window) { inventory_window.value()->update(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc); }
+	if (inventory_window) {
+		inventory_window.value()->update(svc, *player, map);
+		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, gui_map); }
 
 	enter_room.update();
 	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
@@ -165,7 +168,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
 	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
-	if (inventory_window) (inventory_window.value()->render(win));
+	if (inventory_window) (inventory_window.value()->render(svc, win));
 	map.soft_reset.render(win);
 	map.transition.render(win);
 	console.render(win);

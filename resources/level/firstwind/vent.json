@@ -1,67 +1,34 @@
 {
-	"meta": {
-		"room_id": 102,
-		"minimap": true,
-		"metagrid": [
-			2,
-			0
-		],
-		"dimensions": [
-			48,
-			16
-		],
-		"chunk_dimensions": [
-			3,
-			1
-		],
-		"style": 0,
-		"background": 18,
-		"music": "",
-		"ambience": "",
-		"cutscene_on_entry": {
-			"flag": false,
-			"type": 0,
-			"id": 0,
-			"source": 0
-		}
-	},
-  "entities": {
-    "portals": [
-      {
-        "id": 0,
-        "position": [
-          3,
-          3
-        ],
-        "dimensions": [
-          1,
-          1
-        ],
-        "activate_on_contact": false,
-        "already_open": true,
-        "source_id": 102,
-        "destination_id": 100,
-        "locked": false,
-        "key_id": 0
-      },
-      {
-        "id": 0,
-        "position": [
-          47,
-          6
-        ],
-        "dimensions": [
-          1,
-          2
-        ],
-        "activate_on_contact": true,
-        "already_open": false,
-        "source_id": 102,
-        "destination_id": 103,
-        "locked": false,
-        "key_id": 0
+  "meta": {
+    "room_id": 102,
+    "minimap": true,
+    "metagrid": [
+      2,
+      0
+    ],
+    "dimensions": [
+      48,
+      16
+    ],
+    "style": 0,
+    "background": 18,
+    "music": "",
+    "ambience": "",
+    "camera_effects": {
+      "shake": {
+        "frequency": 20,
+        "energy": 0.200000,
+        "start_time": 1600,
+        "dampen_factor": 30,
+        "frequency_in_seconds": 30
       }
-    ]
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
   },
   "tile": {
     "layers": [
@@ -6225,6 +6192,49 @@
         0,
         0
       ]
+    ],
+    "flags": {
+      "obscuring": false,
+      "reverse_obscuring": false
+    },
+    "middleground": 4
+  },
+  "entities": {
+    "portals": [
+      {
+        "id": 0,
+        "position": [
+          3,
+          3
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "already_open": true,
+        "source_id": 102,
+        "destination_id": 100,
+        "locked": false,
+        "key_id": 0
+      },
+      {
+        "id": 0,
+        "position": [
+          47,
+          6
+        ],
+        "dimensions": [
+          1,
+          2
+        ],
+        "activate_on_contact": true,
+        "already_open": false,
+        "source_id": 102,
+        "destination_id": 103,
+        "locked": false,
+        "key_id": 0
+      }
     ]
   }
 }

@@ -4,7 +4,7 @@
 #include "Console.hpp"
 #include "Selector.hpp"
 #include "fornani/graphics/MapTexture.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/utils/Circuit.hpp"
 
 namespace fornani::player {

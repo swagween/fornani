@@ -1,17 +1,18 @@
 
-#include "fornani/setup/ResourceFinder.hpp"
-#include "fornani/core/Application.hpp"
-#include "editor/util/Lookup.hpp"
 #include "editor/automa/Editor.hpp"
-#include "editor/gui/Console.hpp"
 #include "editor/canvas/entity/SavePoint.hpp"
+#include "editor/gui/Console.hpp"
+#include "editor/util/Lookup.hpp"
+#include "fornani/core/Application.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
 
 #ifdef _WIN32
-#include "fornani/core/platform/win32/Windows.hpp"
+// TODO: debloat include
+#include <Windows.h>
 #endif
 
-#include <filesystem>
 #include <algorithm>
+#include <filesystem>
 
 namespace pi {
 
@@ -62,7 +63,7 @@ void Editor::run() {
 	}
 
 	init("new_file");
-	
+
 	bool debug_mode = false;
 
 	wallpaper.setSize(window->f_screen_dimensions());
@@ -138,7 +139,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_clipboard = {}; }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Tab) { map.flags.show_grid = !map.flags.show_grid; }
 		}
-		if(shift_pressed() && !control_pressed()) {
+		if (shift_pressed() && !control_pressed()) {
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { active_layer = std::clamp(active_layer - 1, 0, static_cast<int>(map.get_layers().layers.size())); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { active_layer = std::clamp(active_layer + 1, 0, static_cast<int>(map.get_layers().layers.size())); }
 		}
@@ -280,7 +281,7 @@ void Editor::logic() {
 	if (palette.hovered()) { map.unhover(); }
 
 	map.set_offset_from_center(map.get_position() + map.get_scaled_center() - window->f_center_screen());
-	m_options.palette && available() && palette.hovered() && (!current_tool->is_active() || current_tool->type == ToolType::marquee) ? flags.set(GlobalFlags::palette_mode) : flags.reset(GlobalFlags::palette_mode);
+	m_options.palette&& available() && palette.hovered() && (!current_tool -> is_active() || current_tool->type == ToolType::marquee) ? flags.set(GlobalFlags::palette_mode) : flags.reset(GlobalFlags::palette_mode);
 
 	grid_refresh.update();
 	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
@@ -312,8 +313,7 @@ void Editor::render(sf::RenderWindow& win) {
 	map.render(win, tileset);
 
 	auto soft_palette_mode = m_options.palette && available() && palette.hovered();
-	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() &&
-		current_tool->highlight_canvas() && !soft_palette_mode) {
+	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() && current_tool->highlight_canvas() && !soft_palette_mode) {
 		auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
 		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
 		for (int i = 0; i < current_tool->size; i++) {
@@ -338,7 +338,8 @@ void Editor::render(sf::RenderWindow& win) {
 			left_mouse_pressed() && palette_mode() ? selector.setOutlineColor({55, 255, 255, 180}) : selector.setOutlineColor({255, 255, 255, 80});
 			right_mouse_pressed() && palette_mode() ? selector.setFillColor({50, 250, 250, 60}) : selector.setFillColor({50, 250, 250, 20});
 			selector.setOutlineThickness(-2.f);
-			selector.setPosition(palette.get_tile_position_at(static_cast<int>(current_tool->get_window_position().x - palette.get_position().x), static_cast<int>(current_tool->get_window_position().y - palette.get_position().y)) + palette.get_position());
+			selector.setPosition(palette.get_tile_position_at(static_cast<int>(current_tool->get_window_position().x - palette.get_position().x), static_cast<int>(current_tool->get_window_position().y - palette.get_position().y)) +
+								 palette.get_position());
 			win.draw(selector);
 		}
 	}
@@ -366,7 +367,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	ImVec2 work_size = viewport->WorkSize;
 	auto f_work_size = sf::Vector2<float>{static_cast<float>(work_size.x), static_cast<float>(work_size.y)};
 
-	if(current_tool->entity_menu) {
+	if (current_tool->entity_menu) {
 		if (current_tool->current_entity) { ImGui::OpenPopup("Entity Options"); }
 	}
 	if (current_tool->entity_mode == EntityMode::editor) {
@@ -616,7 +617,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			}
 			if (ImGui::MenuItem("Include in Minimap", "", &map.minimap)) {}
 			if (ImGui::MenuItem("Themes", "", &open_themes)) {}
-			
+
 			ImGui::EndMenu();
 		}
 		bool flag{};
@@ -692,7 +693,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		if (ImGui::Button("Apply")) {
 			if (std::string{musbuffer}.size() > 0) { map.m_theme.music = musbuffer; }
 			if (std::string{ambbuffer}.size() > 0) { map.m_theme.ambience = ambbuffer; }
-			ImGui::CloseCurrentPopup(); }
+			ImGui::CloseCurrentPopup();
+		}
 		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
 	}
@@ -1039,7 +1041,7 @@ void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, s
 void Editor::shutdown(fornani::data::ResourceFinder& finder) {
 	user_data["region"] = finder.paths.region;
 	user_data["room"] = finder.paths.room_name;
-	if (!user_data.to_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str())) {console.add_log("Failed to save user data."); }
+	if (!user_data.to_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str())) { console.add_log("Failed to save user data."); }
 }
 
 void Editor::reset_layers() {

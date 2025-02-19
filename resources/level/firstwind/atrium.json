@@ -1,96 +1,34 @@
 {
-	"meta": {
-		"room_id": 103,
-		"minimap": true,
-		"metagrid": [
-			5,
-			-1
-		],
-		"dimensions": [
-			64,
-			96
-		],
-		"chunk_dimensions": [
-			4,
-			6
-		],
-		"style": 0,
-		"background": 18,
-		"music": "",
-		"ambience": "",
-		"cutscene_on_entry": {
-			"flag": false,
-			"type": 0,
-			"id": 0,
-			"source": 0
-		}
-	},
-  "entities": {
-    "portals": [
-      {
-        "id": 0,
-        "position": [
-          0,
-          22
-        ],
-        "dimensions": [
-          1,
-          2
-        ],
-        "activate_on_contact": true,
-        "already_open": false,
-        "source_id": 103,
-        "destination_id": 102,
-        "locked": false,
-        "key_id": 0
-      }
+  "meta": {
+    "room_id": 103,
+    "minimap": true,
+    "metagrid": [
+      5,
+      -1
     ],
-    "enemies": [
-      {
-        "id": 9,
-        "position": [
-          19,
-          20
-        ],
-        "dimensions": [
-          1,
-          1
-        ]
-      },
-      {
-        "id": 9,
-        "position": [
-          22,
-          14
-        ],
-        "dimensions": [
-          1,
-          1
-        ]
-      },
-      {
-        "id": 9,
-        "position": [
-          18,
-          14
-        ],
-        "dimensions": [
-          1,
-          1
-        ]
-      },
-      {
-        "id": 9,
-        "position": [
-          16,
-          20
-        ],
-        "dimensions": [
-          1,
-          1
-        ]
+    "dimensions": [
+      64,
+      96
+    ],
+    "style": 0,
+    "background": 18,
+    "music": "",
+    "ambience": "",
+    "camera_effects": {
+      "shake": {
+        "frequency": 20,
+        "energy": 0.200000,
+        "start_time": 1600,
+        "dampen_factor": 30,
+        "frequency_in_seconds": 30
       }
-    ]
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
   },
   "tile": {
     "layers": [
@@ -49262,6 +49200,78 @@
         0,
         0
       ]
+    ],
+    "flags": {
+      "obscuring": false,
+      "reverse_obscuring": false
+    },
+    "middleground": 4
+  },
+  "entities": {
+    "portals": [
+      {
+        "id": 0,
+        "position": [
+          0,
+          22
+        ],
+        "dimensions": [
+          1,
+          2
+        ],
+        "activate_on_contact": true,
+        "already_open": false,
+        "source_id": 103,
+        "destination_id": 102,
+        "locked": false,
+        "key_id": 0
+      }
+    ],
+    "enemies": [
+      {
+        "id": 9,
+        "position": [
+          19,
+          20
+        ],
+        "dimensions": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": 9,
+        "position": [
+          22,
+          14
+        ],
+        "dimensions": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": 9,
+        "position": [
+          18,
+          14
+        ],
+        "dimensions": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": 9,
+        "position": [
+          16,
+          20
+        ],
+        "dimensions": [
+          1,
+          1
+        ]
+      }
     ]
   }
 }

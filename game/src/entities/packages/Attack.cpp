@@ -1,7 +1,7 @@
 
 #include "fornani/entities/packages/Attack.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 
 #include <algorithm>
 

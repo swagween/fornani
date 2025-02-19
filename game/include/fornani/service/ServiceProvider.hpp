@@ -69,6 +69,7 @@ struct ServiceProvider {
 	util::Logger logger{};
 	config::AccessibilityService a11y{};
 	graphics::CameraController camera_controller{};
+	int current_room{}; // TODO: Find a better way to deliver this info to the MiniMap.
 
 	// debug stuff
 	int out_value{};

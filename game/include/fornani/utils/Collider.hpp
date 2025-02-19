@@ -5,8 +5,8 @@
 #include "BitFlags.hpp"
 #include "Shape.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/level/Tile.hpp"
 #include "fornani/utils/CollisionDepth.hpp"
+#include "fornani/world/Tile.hpp"
 
 namespace fornani::world {
 class Map;

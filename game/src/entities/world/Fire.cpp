@@ -2,7 +2,7 @@
 #include "fornani/entities/world/Fire.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::world {
 

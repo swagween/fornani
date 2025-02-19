@@ -1,8 +1,8 @@
-#include "fornani/level/Destroyable.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
-#include "fornani/particle/Effect.hpp"
+#include "fornani/world/Destroyable.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/particle/Effect.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::world {
 
@@ -52,4 +52,4 @@ void Destroyable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Pr
 
 shape::Shape& Destroyable::get_bounding_box() { return collider.bounding_box; }
 
-} // namespace world
+} // namespace fornani::world

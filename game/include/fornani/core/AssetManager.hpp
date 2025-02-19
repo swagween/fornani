@@ -1,9 +1,9 @@
 
 #pragma once
 
+#include "fornani/io/Logger.hpp"
 #include "fornani/setup/EnumLookups.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
-#include "fornani/io/Logger.hpp"
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -12,7 +12,7 @@ namespace fornani::asset {
 
 class AssetManager {
   public:
-	explicit AssetManager(const data::ResourceFinder& finder);
+	explicit AssetManager(data::ResourceFinder const& finder);
 
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
@@ -20,6 +20,8 @@ class AssetManager {
 	// TODO: Dear god we need to clean this up...
 
 	sf::Texture t_null{};
+
+	sf::Texture t_inv_test{};
 
 	// player and NPCs!
 	sf::Texture t_nani{};
@@ -118,7 +120,7 @@ class AssetManager {
 	sf::Texture t_platform_firstwind{};
 	sf::Texture t_platform_overturned{};
 
-	//world stuff
+	// world stuff
 	sf::Texture t_portals{};
 	sf::Texture t_vine{};
 	sf::Texture t_vine_large{};
@@ -188,7 +190,7 @@ class AssetManager {
 	sf::Texture t_bg_woods{};
 	sf::Texture t_bg_canopy{};
 
-	//scenery
+	// scenery
 	sf::Texture t_overturned_scenery{};
 	sf::Texture t_firefly{};
 	sf::Texture t_dragonfly{};
@@ -376,4 +378,4 @@ class AssetManager {
 	fornani::io::Logger m_logger{"asset"};
 };
 
-} // namespace asset
+} // namespace fornani::asset

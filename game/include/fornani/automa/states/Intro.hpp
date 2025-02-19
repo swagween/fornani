@@ -2,7 +2,7 @@
 #pragma once
 
 #include "fornani/automa/GameState.hpp"
-#include "fornani/level/Camera.hpp"
+#include "fornani/world/Camera.hpp"
 
 namespace fornani::automa {
 

@@ -2,6 +2,8 @@ nani_add_headers(
         ActionContextBar.hpp
         ActionControlIconQuery.hpp
         Console.hpp
+        Dashboard.hpp
+        Gizmo.hpp
         HUD.hpp
         InventoryWindow.hpp
         ItemWidget.hpp
@@ -17,3 +19,4 @@ nani_add_headers(
         Widget.hpp
         WidgetBar.hpp
 )
+add_subdirectory(gizmos)

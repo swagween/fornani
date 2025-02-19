@@ -29,6 +29,7 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 
 	if (!t_vendor_artwork.loadFromFile(finder.resource_path() + "/image/gui/vendor_artwork.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/vendor_artwork.png] from file.", finder.resource_path());
 	if (!t_vendor_ui.loadFromFile(finder.resource_path() + "/image/gui/vendor_interface.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/vendor_interface.png] from file.", finder.resource_path());
+	if (!t_inv_test.loadFromFile(finder.resource_path() + "/image/gui/inv_test.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/inv_test.png] from file.", finder.resource_path());
 
 	if (!t_palette_nani.loadFromFile(finder.resource_path() + "/image/character/nani_palette_default.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/character/nani_palette_default.png] from file.", finder.resource_path());
 	if (!t_palette_nanidiv.loadFromFile(finder.resource_path() + "/image/character/nani_palette_divine.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/character/nani_palette_divine.png] from file.", finder.resource_path());

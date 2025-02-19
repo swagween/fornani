@@ -3,7 +3,7 @@
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 #include <imgui.h>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 #include <tracy/Tracy.hpp>

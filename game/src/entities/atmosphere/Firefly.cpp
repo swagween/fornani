@@ -1,6 +1,6 @@
 #include "fornani/entities/atmosphere/Firefly.hpp"
 #include <numbers>
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Random.hpp"

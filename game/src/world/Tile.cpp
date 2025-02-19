@@ -1,8 +1,8 @@
-#include "fornani/level/Tile.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Tile.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/weapon/Projectile.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::world {
 
@@ -97,4 +97,4 @@ void Tile::set_type() {
 	if (value == special_index_v + 63) { type = TileType::spike; }
 }
 
-} // namespace world
+} // namespace fornani::world

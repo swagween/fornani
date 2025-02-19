@@ -2,10 +2,10 @@
 #include <algorithm>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Transition.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::gui {
 

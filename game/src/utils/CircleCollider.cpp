@@ -1,6 +1,6 @@
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/utils/Math.hpp"
 #include <algorithm>
 

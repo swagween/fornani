@@ -1,8 +1,8 @@
-#include "fornani/level/Spawner.hpp"
+#include "fornani/world/Spawner.hpp"
 #include <algorithm>
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 

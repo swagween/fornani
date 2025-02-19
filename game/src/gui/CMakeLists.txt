@@ -2,6 +2,8 @@ nani_add_sources(
         ActionContextBar.cpp
         ActionControlIconQuery.cpp
         Console.cpp
+        Dashboard.cpp
+        Gizmo.cpp
         HUD.cpp
         InventoryWindow.cpp
         ItemWidget.cpp
@@ -17,3 +19,4 @@ nani_add_sources(
         Widget.cpp
         WidgetBar.cpp
 )
+add_subdirectory(gizmos)

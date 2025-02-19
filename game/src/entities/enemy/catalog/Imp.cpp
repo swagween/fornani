@@ -1,8 +1,8 @@
 #include "fornani/entities/enemy/catalog/Imp.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
@@ -91,7 +91,7 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 	hurt_effect.update();
 	if (hostile() && !cooldowns.post_attack.running()) { state = ImpState::attack; }
-	//if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ImpState::jump; } // player is already in hostile range
+	// if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ImpState::jump; } // player is already in hostile range
 	if (!collider.grounded()) { state = ImpState::fall; }
 
 	if (alert() && !hostile() && svc.ticker.every_x_ticks(32)) {
@@ -134,7 +134,7 @@ fsm::StateFunction Imp::update_idle() {
 
 fsm::StateFunction Imp::update_turn() {
 	animation.label = "turn";
-	//animation.log_info();
+	// animation.log_info();
 	attacks.stab.disable();
 	if (animation.totally_complete()) {
 		NANI_LOG_INFO(m_logger, "finished!");
@@ -150,8 +150,7 @@ fsm::StateFunction Imp::update_turn() {
 
 fsm::StateFunction Imp::update_run() {
 	animation.label = "run";
-	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("lift");
-	}
+	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("lift"); }
 	if (parts.weapon.animated_sprite->complete()) { parts.weapon.animated_sprite->set_params("run"); }
 	attacks.stab.disable();
 	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;

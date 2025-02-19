@@ -1,87 +1,34 @@
 {
-	"meta": {
-		"room_id": 100,
-		"minimap": true,
-		"metagrid": [
-			0,
-			0
-		],
-		"dimensions": [
-			32,
-			16
-		],
-		"chunk_dimensions": [
-			2,
-			1
-		],
-		"style": 0,
-		"background": 18,
-		"music": "",
-		"ambience": "",
-		"camera_effects": {
-			"shake": {
-				"frequency": 20,
-				"energy": 0.2,
-				"start_time": 1600,
-				"dampen_factor": 30,
-				"frequency_in_seconds": 30
-			}
-		},
-		"cutscene_on_entry": {
-			"flag": false,
-			"type": 0,
-			"id": 0,
-			"source": 0
-		}
-	},
-  "entities": {
-    "save_point": {
-      "id": 100,
-      "position": [
-        11,
-        13
-      ],
-      "dimensions": [
-        1,
-        1
-      ]
-    },
-    "portals": [
-      {
-        "id": 0,
-        "position": [
-          26,
-          13
-        ],
-        "dimensions": [
-          1,
-          1
-        ],
-        "activate_on_contact": false,
-        "already_open": false,
-        "source_id": 100,
-        "destination_id": 101,
-        "locked": false,
-        "key_id": 0
-      },
-      {
-        "id": 0,
-        "position": [
-          20,
-          3
-        ],
-        "dimensions": [
-          1,
-          1
-        ],
-        "activate_on_contact": false,
-        "already_open": true,
-        "source_id": 100,
-        "destination_id": 102,
-        "locked": false,
-        "key_id": 0
+  "meta": {
+    "room_id": 100,
+    "minimap": true,
+    "metagrid": [
+      0,
+      0
+    ],
+    "dimensions": [
+      32,
+      16
+    ],
+    "style": 0,
+    "background": 18,
+    "music": "",
+    "ambience": "",
+    "camera_effects": {
+      "shake": {
+        "frequency": 20,
+        "energy": 0.200000,
+        "start_time": 1600,
+        "dampen_factor": 30,
+        "frequency_in_seconds": 30
       }
-    ]
+    },
+    "cutscene_on_entry": {
+      "flag": false,
+      "type": 0,
+      "id": 0,
+      "source": 0
+    }
   },
   "tile": {
     "layers": [
@@ -4197,6 +4144,60 @@
         0,
         0
       ]
+    ],
+    "flags": {
+      "obscuring": false,
+      "reverse_obscuring": false
+    },
+    "middleground": 4
+  },
+  "entities": {
+    "save_point": {
+      "id": 100,
+      "position": [
+        11,
+        13
+      ],
+      "dimensions": [
+        1,
+        1
+      ]
+    },
+    "portals": [
+      {
+        "id": 0,
+        "position": [
+          26,
+          13
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "already_open": false,
+        "source_id": 100,
+        "destination_id": 101,
+        "locked": false,
+        "key_id": 0
+      },
+      {
+        "id": 0,
+        "position": [
+          20,
+          3
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "already_open": true,
+        "source_id": 100,
+        "destination_id": 102,
+        "locked": false,
+        "key_id": 0
+      }
     ]
   }
 }

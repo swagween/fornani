@@ -7,8 +7,8 @@
 #include <array>
 #include <string>
 #include "fornani/io/File.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/utils/QuestCode.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
