@@ -7,6 +7,7 @@
 #include <ccmath/ext/smoothstep.hpp>
 #include <ccmath/math/misc/lerp.hpp>
 
+#include <cmath>
 #include <numbers>
 
 namespace util {
