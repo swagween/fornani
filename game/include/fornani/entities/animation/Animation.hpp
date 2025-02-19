@@ -2,20 +2,17 @@
 #pragma once
 
 #include <chrono>
-#include <cmath>
-#include <list>
-#include <random>
-#include <vector>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Counter.hpp"
+#include "fornani/io/Logger.hpp"
 
-namespace anim {
+namespace fornani::anim {
 
-int const DEFAULT_FRAMERATE = 8;
-int const DEFAULT_DURATION = 8;
-int const DEFAULT_NUM_BEHAVIORS = 1;
-int const animation_multiplier = 64;
+constexpr int DEFAULT_FRAMERATE = 8;
+constexpr int DEFAULT_DURATION = 8;
+constexpr int DEFAULT_NUM_BEHAVIORS = 1;
+constexpr int animation_multiplier = 64;
 
 struct Parameters {
 	int lookup{};
@@ -26,7 +23,7 @@ struct Parameters {
 	bool interruptible{};
 };
 
-enum class State { param_switch, keyframe, oneoff_complete };
+enum class State : uint8_t { param_switch, keyframe, oneoff_complete };
 
 struct Animation {
 
@@ -37,9 +34,10 @@ struct Animation {
 	void refresh();
 	void start();
 	void update();
-	void set_params(Parameters const new_params, bool hard = true);
+	void set_params(Parameters new_params, bool hard = true);
 	void switch_params();
 	void end() { frame.cancel(); }
+	void log_info() const;
 	int get_frame() const;
 
 	[[nodiscard]] auto active() const -> bool { return frame_timer.running(); }
@@ -50,9 +48,11 @@ struct Animation {
 		if (frame.canceled()) { ret = true; }
 		return ret;
 	}
+	[[nodiscard]] auto totally_complete() const -> bool { return frame.get_count() == params.duration - 1 && frame_timer.is_almost_complete(); }
 	[[nodiscard]] auto keyframe_over() -> bool { return flags.consume(State::keyframe); }
 	[[nodiscard]] auto keyframe_started() const -> bool { return frame_timer.get_cooldown() == params.framerate; }
 	[[nodiscard]] auto just_started() const -> bool { return global_counter.get_count() == 1; }
+	[[nodiscard]] auto get_frame_count() const -> int { return frame.get_count(); }
 
 	util::Cooldown frame_timer{};
 	util::Counter global_counter{};
@@ -60,7 +60,8 @@ struct Animation {
 	util::Counter frame{};
 
 	util::BitFlags<State> flags{};
+	io::Logger m_logger{"Animation"};
 
 };
 
-} // namespace anim
+} // namespace fornani::anim

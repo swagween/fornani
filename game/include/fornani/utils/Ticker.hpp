@@ -3,16 +3,11 @@
 
 #include <chrono>
 #include <deque>
-#include <functional>
-#include <iostream>
-#include <memory>
-#include <random>
 #include <thread>
-#include <utility>
-#include "Cooldown.hpp"
 #include "BitFlags.hpp"
+#include "Cooldown.hpp"
 
-namespace util {
+namespace fornani::util {
 
 using Clk = std::chrono::steady_clock;
 using Sec = std::chrono::duration<float>;
@@ -21,10 +16,10 @@ using Mil = std::chrono::milliseconds;
 enum class TickerFlags { forced_slowdown, paused };
 enum class Period { second, twenty_minutes };
 struct PeriodicBool {
-	PeriodicBool(Sec period) : period(period) {}
+	explicit PeriodicBool(Sec const period) : period(period) {}
 	Sec period{};
 	Sec elapsed{};
-	constexpr bool tick(Sec dt) {
+	constexpr bool tick(Sec const dt) {
 		elapsed += dt;
 		if (elapsed >= period) {
 			elapsed = std::chrono::seconds{0};
@@ -137,4 +132,4 @@ class Ticker {
 	Cooldown freezeframe{};
 };
 
-} // namespace util
+} // namespace fornani::util

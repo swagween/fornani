@@ -1,9 +1,10 @@
+
 #include "fornani/entities/player/PlayerController.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace player {
+namespace fornani::player {
 
-PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc) {
+PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc), cooldowns{.inspect = util::Cooldown(64)} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
@@ -21,37 +22,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		prevent_movement();
 		key_map[ControllerInput::move_x] = direction.lr == dir::LR::left ? -1.f : 1.f;
 	}
-	if (hard_state.test(HardState::no_move) || walking_autonomously()) {
-		// XXX these are placeholder bindings
-		auto const& transponder_skip = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered;
-		auto const& transponder_skip_released = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).released;
-		auto const& transponder_next = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered;
-		auto const& transponder_exit = svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered;
-		auto const& transponder_down = svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered;
-		auto const& transponder_up = svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered;
-		auto const& transponder_left = svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered;
-		auto const& transponder_right = svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered;
-		auto const& transponder_hold_down = svc.controller_map.digital_action_status(config::DigitalAction::menu_down).held;
-		auto const& transponder_hold_up = svc.controller_map.digital_action_status(config::DigitalAction::menu_up).held;
-		auto const& transponder_hold_left = svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held;
-		auto const& transponder_hold_right = svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held;
-		auto const& transponder_select = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered;
-		// transponder flags
-		transponder_skip ? transponder_flags.set(TransponderInput::skip) : transponder_flags.reset(TransponderInput::skip);
-		transponder_skip_released ? transponder_flags.set(TransponderInput::skip_released) : transponder_flags.reset(TransponderInput::skip_released);
-		transponder_next ? transponder_flags.set(TransponderInput::next) : transponder_flags.reset(TransponderInput::next);
-		transponder_exit ? transponder_flags.set(TransponderInput::exit) : transponder_flags.reset(TransponderInput::exit);
-		transponder_down ? transponder_flags.set(TransponderInput::down) : transponder_flags.reset(TransponderInput::down);
-		transponder_up ? transponder_flags.set(TransponderInput::up) : transponder_flags.reset(TransponderInput::up);
-		transponder_left ? transponder_flags.set(TransponderInput::left) : transponder_flags.reset(TransponderInput::left);
-		transponder_right ? transponder_flags.set(TransponderInput::right) : transponder_flags.reset(TransponderInput::right);
-		transponder_select ? transponder_flags.set(TransponderInput::select) : transponder_flags.reset(TransponderInput::select);
-		transponder_hold_down ? transponder_flags.set(TransponderInput::hold_down) : transponder_flags.reset(TransponderInput::hold_down);
-		transponder_hold_up ? transponder_flags.set(TransponderInput::hold_up) : transponder_flags.reset(TransponderInput::hold_up);
-		transponder_hold_left ? transponder_flags.set(TransponderInput::hold_left) : transponder_flags.reset(TransponderInput::hold_left);
-		transponder_hold_right ? transponder_flags.set(TransponderInput::hold_right) : transponder_flags.reset(TransponderInput::hold_right);
-		return;
-	}
+	if (hard_state.test(HardState::no_move) || walking_autonomously()) { return; }
 
 	auto const& left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).held;
 	auto const& right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).held;
@@ -84,7 +55,12 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
 	auto const& down_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).triggered;
 
-	auto const& inspected = svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered && grounded() && !left && !right;
+	auto it{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered};
+	auto ir{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).released};
+	auto ih{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).held && cooldowns.inspect.is_almost_complete()};
+	auto const& inspected = (ir) && grounded() && !left && !right;
+	cooldowns.inspect.update();
+	if (it) { cooldowns.inspect.start(); }
 
 	/* Dash ability and grappling hook will remain out of scope for the demo. */
 
@@ -153,9 +129,9 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		direction.und = dir::UND::neutral;
 		direction.und = up ? dir::UND::up : direction.und;
 		direction.und = down && !grounded() ? dir::UND::down : direction.und;
-	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) && has_arsenal()){
+	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) && has_arsenal()) {
 		key_map[ControllerInput::move_x] *= backwards_dampen;
-	}else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left))) {
+	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left))) {
 		key_map[ControllerInput::slide] = 0.f;
 	}
 
@@ -226,6 +202,8 @@ void PlayerController::reset_dash_count() { dash_count = 0; }
 
 void PlayerController::cancel_dash_request() { dash_request = -1; }
 
+void player::PlayerController::reset_vertical_movement() { key_map[ControllerInput::move_y] = 0.f; }
+
 void PlayerController::dash() { dash_count = 1; }
 
 void PlayerController::walljump() { flags.set(MovementState::walljumping); }
@@ -274,4 +252,4 @@ std::optional<float> PlayerController::get_controller_state(ControllerInput key)
 	}
 }
 
-} // namespace player
+} // namespace fornani::player

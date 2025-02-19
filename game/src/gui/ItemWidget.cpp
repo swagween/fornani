@@ -1,7 +1,7 @@
 #include "fornani/gui/ItemWidget.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 ItemWidget::ItemWidget(automa::ServiceProvider& svc) : sprites{.item = sf::Sprite{svc.assets.t_items}, .gun = sf::Sprite{svc.assets.t_guns}} {
 	dimensions = sf::Vector2<float>{32.f, 32.f};

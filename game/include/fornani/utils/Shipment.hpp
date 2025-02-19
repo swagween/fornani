@@ -1,7 +1,7 @@
 #pragma once
 #include <utility>
 
-namespace util {
+namespace fornani::util {
 
 class Shipment {
   public:

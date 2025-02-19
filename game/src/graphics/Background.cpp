@@ -8,11 +8,11 @@
 
 #include <tracy/Tracy.hpp>
 
-namespace bg {
+namespace fornani::bg {
 
-int const tile_dim{256};
+constexpr int tile_dim{256};
 
-Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "rosy_haze"}, {18, "woods"}} {
+Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "woods"}, {4, "canopy"}, {18, "woods"}} {
 	auto type = labels.contains(bg_id) ? labels.at(bg_id) : "black";
 	auto const& in_data = svc.data.background[type];
 	dimensions.x = in_data["dimensions"][0].as<int>();
@@ -42,8 +42,6 @@ void Background::update(automa::ServiceProvider& svc) {
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	ZoneScopedN("Background::render");
 	auto epsilon = 0.99999f;
-	auto cycle = static_cast<int>(svc.world_clock.get_time_of_day());
-	auto from_cycle = static_cast<int>(svc.world_clock.get_previous_time_of_day());
 	
 	for (auto& layer : layers) {
 		// backtrack sprites for infinite scroll effect
@@ -63,18 +61,9 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 			for (auto i{0}; i < 2; ++i) {
 				for (auto j{0}; j < 2; ++j) {
 					sprite.setPosition(layer.final_position + sf::Vector2<float>{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
-					if (cycle == ctr) {
-						uint8_t alpha = from_cycle > cycle ? 255 : util::get_uint8_from_normal(1.f - svc.world_clock.get_transition());
-						sprite.setColor({255, 255, 255, alpha});
-						win.draw(sprite);
-					} else if (ctr == from_cycle && svc.world_clock.is_transitioning()) {
-						uint8_t alpha = from_cycle <= cycle ? 255 : util::get_uint8_from_normal(svc.world_clock.get_transition());
-						sprite.setColor({255, 255, 255, alpha});
-						win.draw(sprite);
-					}
+					shifter.render(svc, win, sprite, ctr);
 				}
 			}
-			sprite.setColor(sf::Color::White);
 			++ctr;
 		}
 	}

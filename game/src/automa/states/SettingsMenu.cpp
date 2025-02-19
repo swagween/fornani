@@ -2,17 +2,15 @@
 #include "fornani/automa/states/SettingsMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
 	: GameState(svc, player, scene, room_number), toggleables{.autosprint = options.at(static_cast<int>(Toggles::autosprint)).label,
-													 .tutorial = options.at(static_cast<int>(Toggles::tutorial)).label,
-													 .gamepad = options.at(static_cast<int>(Toggles::gamepad)).label,
-													 .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label},
+															  .tutorial = options.at(static_cast<int>(Toggles::tutorial)).label,
+															  .gamepad = options.at(static_cast<int>(Toggles::gamepad)).label,
+															  .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label},
 	  music_label{options.at(static_cast<int>(Toggles::music)).label}, toggle_options{.enabled{svc.text.fonts.title}, .disabled{svc.text.fonts.title}}, sliders{.music_volume{svc.text.fonts.title}} {
-	console = gui::Console(svc);
 	console.set_source(svc.text.basic);
-	player.map_reset();
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 	toggle_options.enabled.setString("enabled");
@@ -26,25 +24,26 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 }
 
 void SettingsMenu::tick_update(ServiceProvider& svc) {
+	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	if (!console.active()) {
+	if (!console.is_active()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			current_selection.modulate(1);
-			if (mode_flags.test(MenuMode::adjust)) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
-			mode_flags.reset(MenuMode::adjust);
+			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
+			m_mode = MenuMode::ready;
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 			current_selection.modulate(-1);
-			if (mode_flags.test(MenuMode::adjust)) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
-			mode_flags.reset(MenuMode::adjust);
+			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
+			m_mode = MenuMode::ready;
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 			if (adjust_mode()) {
-				mode_flags.reset(MenuMode::adjust);
+				m_mode = MenuMode::ready;
 			} else {
-				svc.state_controller.submenu = menu_type::options;
+				svc.state_controller.submenu = MenuType::options;
 				svc.state_controller.actions.set(Actions::exit_submenu);
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 				svc.data.save_settings();
@@ -57,7 +56,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 			case static_cast<int>(Toggles::autosprint): svc.controller_map.enable_autosprint(!svc.controller_map.is_autosprint_enabled()); break;
 			case static_cast<int>(Toggles::tutorial): svc.toggle_tutorial(); break;
 			case static_cast<int>(Toggles::gamepad): svc.controller_map.enable_gamepad_input(!svc.controller_map.is_gamepad_input_enabled()); break;
-			case static_cast<int>(Toggles::music): adjust_mode() ? mode_flags.reset(MenuMode::adjust) : mode_flags.set(MenuMode::adjust); break;
+			case static_cast<int>(Toggles::music): m_mode = adjust_mode() ? MenuMode::ready : MenuMode ::adjust; break;
 			case static_cast<int>(Toggles::fullscreen):
 				svc.toggle_fullscreen();
 				console.load_and_launch("fullscreen");
@@ -84,11 +83,6 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held && update_volume) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
 	}
 	console.update(svc);
-	player->controller.update(svc);
-	player->update_transponder(console, inventory_window);
-	player->controller.clean();
-	player->flags.triggers = {};
-	console.end_tick();
 	svc.soundboard.play_sounds(svc);
 }
 
@@ -104,8 +98,8 @@ void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	left_dot.render(svc, win, {0, 0});
 	right_dot.render(svc, win, {0, 0});
-	if (console.flags.test(gui::ConsoleFlags::active)) { console.render(win); }
-	console.write(win, false);
+	console.render(win);
+	console.write(win, true);
 }
 
-} // namespace automa
+} // namespace fornani::automa

@@ -4,7 +4,7 @@
 #include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key, int room_id, int alternates, int native, bool aoc)
 	: scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates), sprite(svc.assets.t_inspectable) {
@@ -25,7 +25,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 	flags.reset(InspectableFlags::activated);
 	animation.update();
 
-	//check for quest-based alternates
+	// check for quest-based alternates
 	auto quest_status = svc.quest.get_progression(fornani::QuestType::inspectable, native_id);
 	if (quest_status > 0) { current_alt = quest_status; }
 
@@ -40,16 +40,16 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 		for (auto& choice : set.array_view()) {
 			if (choice["key"].as_string() == std::string{key}) {
 				console.set_source(choice);
-				console.load_and_launch(std::string{key + std::to_string(current_alt)});
+				console.load_and_launch(std::string{key + std::to_string(current_alt)}, gui::OutputType::instant);
 			}
 		}
 	}
-	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) {
-		animation.set_params(params);
-	}
+	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) { animation.set_params(params); }
 	if (console.get_key() == key) { flags.set(InspectableFlags::engaged); }
 	if (flags.test(InspectableFlags::engaged)) {
-		if (player.transponder.shipments.quest.get_residue() == 9) {
+		// if (player.transponder.shipments.quest.get_residue() == 9) {
+		//  TODO: properly handle inspectable codes from console
+		if (0 == 9) {
 			flags.set(InspectableFlags::destroy);
 			svc.data.destroy_inspectable(id);
 		}
@@ -72,7 +72,7 @@ void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Ve
 		}
 		box.setOutlineColor(sf::Color::White);
 		box.setOutlineThickness(-1);
-		box.setPosition(bounding_box.position - campos);
+		box.setPosition(bounding_box.get_position() - campos);
 		box.setSize(dimensions);
 		win.draw(box);
 	} else if (!attributes.test(InspectableAttributes::activate_on_contact)) {
@@ -80,4 +80,4 @@ void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Ve
 	}
 }
 
-} // namespace entity
+} // namespace fornani::entity

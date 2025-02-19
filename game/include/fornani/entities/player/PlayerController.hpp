@@ -1,39 +1,37 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <chrono>
+#include <deque>
 #include <optional>
 #include <unordered_map>
-#include <deque>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Direction.hpp"
 #include "Jump.hpp"
-#include "Wallslide.hpp"
+#include "Roll.hpp"
 #include "Shield.hpp"
 #include "Slide.hpp"
-#include "Roll.hpp"
+#include "Wallslide.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Direction.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 
 constexpr static int dash_time{32};
 constexpr static int quick_turn_sample_size{24};
 constexpr static float backwards_dampen{0.5f};
 
-enum class ControllerInput { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
-enum class TransponderInput { skip, next, exit, down, up, left, right, select, skip_released, hold_left, hold_right, hold_up, hold_down };
-enum class MovementState { restricted, grounded, walking_autonomously, walljumping };
-enum class HardState { no_move, has_arsenal };
+enum class ControllerInput : uint8_t { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
+enum class MovementState : uint8_t { restricted, grounded, walking_autonomously, walljumping };
+enum class HardState : uint8_t { no_move, has_arsenal };
 
-enum class Hook { hook_released, hook_held };
-enum class Sprint { released };
+enum class Hook : uint8_t { hook_released, hook_held };
+enum class Sprint : uint8_t { released };
 
 class PlayerController {
 
   public:
-	PlayerController(automa::ServiceProvider& svc);
+	explicit PlayerController(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc);
 	void clean();
@@ -47,6 +45,7 @@ class PlayerController {
 	void decrement_requests();
 	void reset_dash_count();
 	void cancel_dash_request();
+	void reset_vertical_movement();
 	void dash();
 	void walljump();
 	void autonomous_walk();
@@ -75,7 +74,7 @@ class PlayerController {
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
 	[[nodiscard]] auto sliding() -> bool { return key_map[ControllerInput::slide] != 0.f; }
 	[[nodiscard]] auto released_hook() -> bool {
-		auto ret = hook_flags.test(Hook::hook_released);
+		auto const ret = hook_flags.test(Hook::hook_released);
 		hook_flags.reset(Hook::hook_released);
 		return ret;
 	}
@@ -86,19 +85,6 @@ class PlayerController {
 	[[nodiscard]] auto can_dash() const -> bool { return dash_count == 0; }
 	[[nodiscard]] auto can_jump() const -> bool { return (flags.test(MovementState::grounded) || jump.coyote()) || jump.can_doublejump() || wallslide.is_wallsliding(); }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
-	[[nodiscard]] auto transponder_skip() const -> bool { return transponder_flags.test(TransponderInput::skip); }
-	[[nodiscard]] auto transponder_skip_released() const -> bool { return transponder_flags.test(TransponderInput::skip_released); }
-	[[nodiscard]] auto transponder_next() const -> bool { return transponder_flags.test(TransponderInput::next); }
-	[[nodiscard]] auto transponder_exit() const -> bool { return transponder_flags.test(TransponderInput::skip); }
-	[[nodiscard]] auto transponder_up() const -> bool { return transponder_flags.test(TransponderInput::up); }
-	[[nodiscard]] auto transponder_down() const -> bool { return transponder_flags.test(TransponderInput::down); }
-	[[nodiscard]] auto transponder_left() const -> bool { return transponder_flags.test(TransponderInput::left); }
-	[[nodiscard]] auto transponder_right() const -> bool { return transponder_flags.test(TransponderInput::right); }
-	[[nodiscard]] auto transponder_select() const -> bool { return transponder_flags.test(TransponderInput::select); }
-	[[nodiscard]] auto transponder_hold_up() const -> bool { return transponder_flags.test(TransponderInput::hold_up); }
-	[[nodiscard]] auto transponder_hold_down() const -> bool { return transponder_flags.test(TransponderInput::hold_down); }
-	[[nodiscard]] auto transponder_hold_left() const -> bool { return transponder_flags.test(TransponderInput::hold_left); }
-	[[nodiscard]] auto transponder_hold_right() const -> bool { return transponder_flags.test(TransponderInput::hold_right); }
 
 	[[nodiscard]] auto get_dash_request() const -> int { return dash_request; }
 	[[nodiscard]] auto get_dash_count() const -> int { return dash_count; }
@@ -130,12 +116,11 @@ class PlayerController {
 
   private:
 	std::unordered_map<ControllerInput, float> key_map{};
-	util::BitFlags<MovementState> flags{}; // unused
+	util::BitFlags<MovementState> flags{};	// unused
 	util::BitFlags<HardState> hard_state{}; // unused
 	util::BitFlags<Sprint> sprint_flags{};
-	util::BitFlags<TransponderInput> transponder_flags{};
 	util::BitFlags<Hook> hook_flags{};
-	
+
 	Jump jump{};
 	Wallslide wallslide{};
 	Shield shield;
@@ -144,6 +129,10 @@ class PlayerController {
 	int dash_request{};
 	int dash_count{};
 
+	struct {
+		util::Cooldown inspect{};
+	} cooldowns{};
+
 	std::deque<float> horizontal_inputs{};
 };
-} // namespace player
+} // namespace fornani::player

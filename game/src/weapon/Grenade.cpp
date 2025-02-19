@@ -1,10 +1,10 @@
 #include "fornani/weapon/Grenade.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir::Direction direction) : Collider({16.f, 16.f}), sprite{svc.assets.t_grenade} {
 	switch (direction.inter) {
@@ -34,7 +34,7 @@ Grenade::Grenade(automa::ServiceProvider& svc, sf::Vector2<float> position, dir:
 	sensor.bounds.setRadius(3 * svc.constants.cell_size);
 	sensor.bounds.setRadius(3 * svc.constants.cell_size);
 
-	Entity::dimensions = Collider::bounding_box.dimensions;
+	Entity::dimensions = Collider::bounding_box.get_dimensions();
 	sprite_dimensions = {16, 22};
 	Entity::sprite_offset = {8, 6};
 	drawbox.setSize({Entity::dimensions});
@@ -59,7 +59,7 @@ void Grenade::update(automa::ServiceProvider& svc, player::Player& player, world
 	reset_ground_flags();
 	physics.acceleration = {};
 
-	sensor.bounds.setPosition(physics.position + Collider::bounding_box.dimensions * 0.5f);
+	sensor.bounds.setPosition(physics.position + Collider::bounding_box.get_dimensions() * 0.5f);
 
 	detonator.update();
 	animation.update();

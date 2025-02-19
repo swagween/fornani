@@ -8,33 +8,29 @@
 #include "fornani/utils/Math.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/packages/WeaponPackage.hpp"
-#include "fornani/entities/packages/Caution.hpp"
-#include "fornani/entities/packages/Attack.hpp"
-#include "fornani/entities/packages/Shockwave.hpp"
-#include "fornani/entities/packages/FloatingPart.hpp"
 #include "fornani/entities/player/Indicator.hpp"
 #include "fornani/audio/Soundboard.hpp"
+#include "fornani/io/Logger.hpp"
 #include <string_view>
-#include <iostream>
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace arns {
+namespace fornani::arns {
 class Projectile;
 }
 
-namespace enemy {
+namespace fornani::enemy {
 
-enum class GeneralFlags { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
-enum class Triggers { hostile, alert };
-enum class Variant { beast, soldier, elemental, worker, guardian };
+enum class GeneralFlags : uint8_t { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
+enum class StateFlags : uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
+enum class Triggers : uint8_t { hostile, alert };
+enum class Variant : uint8_t { beast, soldier, elemental, worker, guardian };
 struct Attributes {
 	float base_hp{};
 	float base_damage{};
@@ -53,7 +49,6 @@ struct Flags {
 
 class Enemy : public entity::Entity {
   public:
-	virtual ~Enemy() {}
 	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 	void set_external_id(std::pair<int, sf::Vector2<int>> code);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
@@ -113,6 +108,7 @@ class Enemy : public entity::Entity {
 	Flags flags{};
 	Attributes attributes{};
 	util::Cooldown post_death{};
+	util::Cooldown hitstun{};
 	int afterlife{200};
 
 	util::Cooldown hurt_effect{};
@@ -145,6 +141,7 @@ class Enemy : public entity::Entity {
 	float energy{};
 	float dampen{0.1f};
 	float hit_energy{6.f};
+	fornani::io::Logger m_logger{"Enemy"};
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

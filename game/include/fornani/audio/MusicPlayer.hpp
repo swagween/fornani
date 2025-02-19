@@ -5,16 +5,16 @@
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace audio {
+namespace fornani::audio {
 
-enum class SongState { playing, paused, on, looping };
-enum class MusicPlayerState { on };
+enum class SongState : uint8_t { playing, paused, on, looping };
+enum class MusicPlayerState : uint8_t { on };
 
 class MusicPlayer {
   public:
@@ -65,7 +65,7 @@ class MusicPlayer {
 
 	std::string label{};
 
-	fornani::Logger m_logger{"Audio"};
+	io::Logger m_logger{"Audio"};
 };
 
 } // namespace audio

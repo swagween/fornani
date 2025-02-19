@@ -2,18 +2,17 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <array>
 #include "fornani/utils/Cooldown.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace flfx {
+namespace fornani::flfx {
 
 class Transition {
 

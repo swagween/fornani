@@ -2,7 +2,7 @@
 #include "fornani/particle/Spring.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 Spring::Spring(SpringParameters params) : params(params) {
 	variables.bob_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});

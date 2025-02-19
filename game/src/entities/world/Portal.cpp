@@ -4,7 +4,7 @@
 #include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace entity {
+namespace fornani::entity {
 
 Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, bool already_open, int key_id, int style, sf::Vector2<int> map_dim)
 	: scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}), sprite{svc.assets.t_portals} {
@@ -32,7 +32,7 @@ void Portal::update(automa::ServiceProvider& svc) {
 	position = static_cast<Vec>(scaled_position * svc.constants.u32_cell_size);
 	dimensions = static_cast<Vec>(scaled_dimensions * svc.constants.u32_cell_size);
 	bounding_box.set_position(position);
-	bounding_box.dimensions = dimensions;
+	bounding_box.set_dimensions(dimensions);
 	lookup.position.x = static_cast<int>(state) * svc.constants.i_cell_size;
 }
 
@@ -46,7 +46,7 @@ void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec cam
 		}
 		is_bottom() ? box.setOutlineColor(sf::Color::Blue) : box.setOutlineColor(sf::Color::White);
 		box.setOutlineThickness(-1);
-		box.setPosition(bounding_box.position - campos);
+		box.setPosition(bounding_box.get_position() - campos);
 		box.setSize(dimensions);
 		win.draw(box);
 	} else if (!flags.attributes.test(PortalAttributes::activate_on_contact)) {

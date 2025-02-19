@@ -1,93 +1,51 @@
+
 #include "fornani/gui/PauseWindow.hpp"
-#include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
-PauseWindow::PauseWindow(automa::ServiceProvider& svc)
-	: Console::Console(svc), selector(svc, {2, 1}), menu(svc, {"resume", "quit"}), title(svc.text.fonts.title), widget_label(svc.text.fonts.basic),
-	  help_marker{svc, "Press [", config::DigitalAction::platformer_toggle_pause, "] to resume game.", 20, true} {
-	title.setString("PAUSED");
-	title.setCharacterSize(ui.title_size);
-	title.setFillColor(svc.styles.colors.ui_white);
-	title.setLetterSpacing(2.f);
-
-	widget_label.setString("Press [Enter] to return to Main Menu.");
-	widget_label.setCharacterSize(ui.widget_size);
-	widget_label.setFillColor(svc.styles.colors.ui_white);
-
-	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
-
-	origin = svc.constants.f_center_screen;
-	title.setOrigin(title.getLocalBounds().getCenter());
-	title.setPosition(origin + ui.title_offset);
-	widget_label.setPosition(origin + ui.widget_label_offset);
-	dimensions = {180.f, 180.f};
-
-	position = svc.constants.f_center_screen;
-	flags.reset(ConsoleFlags::portrait_included);
-
-	sprite.set_position(svc.constants.f_center_screen);
-	sprite.set_force(1.2f);
-	sprite.set_fric(0.90f);
-	menu.set_force(1.2f);
-	menu.set_fric(0.90f);
+PauseWindow::PauseWindow(automa::ServiceProvider& svc) : m_menu(svc, {"resume", "settings", "controls", "quit"}, svc.constants.f_center_screen + sf::Vector2f{0.f, 32.f}), m_dimensions{120.f, 120.f} {
+	m_background.setSize(svc.constants.f_screen_dimensions);
+	auto color = svc.styles.colors.ui_black;
+	color.a = 180;
+	m_background.setFillColor(color);
+	m_menu.set_force(1.2f);
+	m_menu.set_fric(0.90f);
+	svc.soundboard.flags.console.set(audio::Console::menu_open);
 }
 
-void PauseWindow::update(automa::ServiceProvider& svc, Console& console, bool automatic) {
-	Console::update(svc);
-	menu.update(svc, {128.f, 128.f}, {svc.constants.f_center_screen.x, svc.constants.f_center_screen.y + 32.f});
-	selector.update();
-	if (active()) {
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-			menu.down(svc);
-		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-			menu.up(svc);
-		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
-			switch (menu.get_selection()) {
-			case 0:
-				flags.set(ConsoleFlags::exited);
-				close();
-				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-				break;
-			case 1:
-				if (automatic) {
-					m_services->state_controller.actions.set(automa::Actions::main_menu);
-					console.end();
-				} else {
-					console.set_source(svc.text.basic);
-					console.load_and_launch("menu_return");
-				}
-				flags.set(ConsoleFlags::exited);
-				close();
-				break;
-			}
+void PauseWindow::update(automa::ServiceProvider& svc, Console& console) {
+	m_menu.update(svc, m_dimensions, svc.constants.f_center_screen);
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { m_menu.down(svc); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { m_menu.up(svc); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+		switch (m_menu.get_selection()) {
+		case 0:
+			m_state = PauseWindowState::exit;
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			break;
+		case 1:
+			m_state = PauseWindowState::settings;
+			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+			break;
+		case 2:
+			m_state = PauseWindowState::controls;
+			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+			break;
+		case 3:
+			console.set_source(svc.text.basic);
+			console.load_and_launch("menu_return");
+			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+			break;
 		}
 	}
 }
 
-void PauseWindow::render_update(automa::ServiceProvider& svc) {
+void PauseWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
+	win.draw(m_background);
+	m_menu.render(win, false);
 }
 
-void PauseWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
-	if (!active()) { return; }
-	Console::render(win);
-	win.draw(title);
-	// win.draw(widget_label);
-	// help_marker.render(win);
-	menu.render(win, false);
-}
+void gui::PauseWindow::reset() { m_state = PauseWindowState::active; }
 
-void PauseWindow::open() {
-	Console::begin();
-	menu.open(*m_services, m_services->constants.f_center_screen);
-}
-
-void PauseWindow::close() {
-	Console::end();
-	menu.close(*m_services);
-}
-
-} // namespace gui
+} // namespace fornani::gui

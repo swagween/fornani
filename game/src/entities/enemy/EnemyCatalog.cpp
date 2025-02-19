@@ -1,4 +1,3 @@
-#include <iostream>
 #include "fornani/entities/enemy/EnemyCatalog.hpp"
 #include "fornani/entities/enemy/catalog/Frdog.hpp"
 #include "fornani/entities/enemy/catalog/Tank.hpp"
@@ -10,9 +9,10 @@
 #include "fornani/entities/enemy/catalog/Archer.hpp"
 #include "fornani/entities/enemy/catalog/Beamstalk.hpp"
 #include "fornani/entities/enemy/catalog/Meatsquash.hpp"
+#include "fornani/entities/enemy/catalog/Imp.hpp"
 #include "fornani/entities/enemy/boss/Minigus.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {}
 
@@ -33,6 +33,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, gui
 	case 9: enemies.push_back(std::make_unique<Archer>(svc, map)); break;
 	case 10: enemies.push_back(std::make_unique<Beamstalk>(svc, map, start_direction)); break;
 	case 11: enemies.push_back(std::make_unique<Meatsquash>(svc, map)); break;
+	case 12: enemies.push_back(std::make_unique<Imp>(svc, map)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	}
 }

@@ -32,17 +32,13 @@ void Entity::expose() {
 	ImGui::Separator();
 }
 
-void Entity::render(sf::RenderWindow& win, sf::Vector2<float> cam) {}
-
 void Entity::set_position(sf::Vector2u to_position) { position = to_position; }
 
 void Entity::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
-	drawbox.setFillColor(sf::Color{255, 60, 60, 80});
-	drawbox.setOutlineColor(sf::Color{120, 255, 60, 120});
+	drawbox.setOutlineColor(sf::Color{255, 255, 220, 60});
 	drawbox.setOutlineThickness(-2.f);
 	if (highlighted) {
-		drawbox.setFillColor(sf::Color{255, 100, 60, 180});
-		drawbox.setOutlineColor(sf::Color{255, 255, 60, 210});
+		drawbox.setOutlineColor(sf::Color{255, 255, 220, 160});
 		drawbox.setOutlineThickness(2.f);
 	}
 	drawbox.setSize(f_dimensions() * size);

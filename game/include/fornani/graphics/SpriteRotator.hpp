@@ -2,10 +2,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <vector>
-#include "fornani/utils/Cooldown.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 class SpriteRotator {
   public:
 	void handle_rotation(sf::Sprite& sprite, sf::Vector2<float> direction, int num_angles, bool radial = true);

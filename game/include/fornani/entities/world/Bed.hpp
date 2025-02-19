@@ -1,32 +1,31 @@
 #pragma once
 
-#include <string>
 #include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/Collider.hpp"
 #include "fornani/entities/Entity.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace flfx {
+namespace fornani::flfx {
 class Transition;
 }
 
-namespace entity {
-enum class BedFlags { active, engaged };
+namespace fornani::entity {
+enum class BedFlags : uint8_t { active, engaged };
 class Bed {
   public:
 	Bed(automa::ServiceProvider& svc, sf::Vector2<float> position, int room);
@@ -40,4 +39,4 @@ class Bed {
 	int room{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

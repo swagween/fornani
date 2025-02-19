@@ -2,7 +2,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
-namespace arms {
+namespace fornani::arms {
 
 Hotbar::Hotbar(int size) : selection{std::clamp(size, 1, 3)} {}
 

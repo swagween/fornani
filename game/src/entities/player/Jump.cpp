@@ -1,6 +1,6 @@
 #include "fornani/entities/player/Jump.hpp"
 
-namespace player {
+namespace fornani::player {
 
 void Jump::update() {
 	cooldown.update();

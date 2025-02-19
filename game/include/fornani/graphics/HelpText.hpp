@@ -1,26 +1,25 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string_view>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Counter.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace config {
+namespace fornani::config {
 enum class DigitalAction;
 }
 
-namespace text {
+namespace fornani::graphics {
 
-enum class HelpTextFlags { no_blink, time_limit };
+enum class HelpTextFlags : uint8_t { no_blink, time_limit };
 
 class HelpText {
   public:
-	HelpText(automa::ServiceProvider& svc);
+	explicit HelpText(automa::ServiceProvider& svc);
 	HelpText(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end = "", int delay_time = 195, bool include_background = false, bool no_blink = false);
 	void render(sf::RenderWindow& win);
 	void set_color(sf::Color color);
@@ -47,4 +46,4 @@ class HelpText {
 	sf::Vector2<float> bg_offset{2.f, 2.f};
 };
 
-} // namespace text
+} // namespace fornani::text

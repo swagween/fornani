@@ -1,30 +1,30 @@
 
 #pragma once
 
+#include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
-#include <imgui.h>
 
 namespace pi {
 
 class Entity {
   public:
-	Entity(std::string label, int id = 0, sf::Vector2<uint32_t> position = {}, sf::Vector2<uint32_t> dimensions = {}) : label(label), id(id), position(position), dimensions(dimensions) {};
+	explicit Entity(std::string const& label, int const id = 0, sf::Vector2<uint32_t> dimensions = {}) : id(id), label(label), dimensions(dimensions) {};
 	virtual ~Entity() = default;
 	virtual std::unique_ptr<Entity> clone() const;
 	virtual void serialize(dj::Json& out);
 	virtual void unserialize(dj::Json& in);
 	virtual void expose();
-	virtual void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	virtual void render(sf::RenderWindow& win, sf::Vector2<float> cam, float size);
 	void set_position(sf::Vector2u to_position);
 	bool repeatable{};
 	bool overwrite{};
+	bool unique{};
 
 	bool highlighted{};
 	bool selected{};
 
 	// helpers
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam, float size);
 	sf::RectangleShape drawbox{};
 	[[nodiscard]] auto get_label() const -> std::string { return label; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2u { return position; }

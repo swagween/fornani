@@ -2,69 +2,71 @@
 #include "fornani/gui/Console.hpp"
 #include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/ControllerMap.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
-Console::Console(automa::ServiceProvider& svc) : portrait(svc), nani_portrait(svc, false), writer(svc), m_services(&svc), item_widget(svc), sprite(svc, corner_factor, edge_factor) {
-	origin = {pad, svc.constants.screen_dimensions.y - pad_y};
+Console::Console(automa::ServiceProvider& svc)
+	: portrait(svc), nani_portrait(svc, false), m_services(&svc), item_widget(svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64},
+	  m_styling{.corner_factor{56}, .edge_factor{2}, .padding_scale{0.8f}}, m_nineslice(svc, m_styling.corner_factor, m_styling.edge_factor), m_mode{ConsoleMode::off} {
 	text_suite = svc.text.console;
 	set_texture(svc.assets.t_ui);
-
-	dimensions = sf::Vector2<float>{(float)svc.constants.screen_dimensions.x - 2 * pad, (float)svc.constants.screen_dimensions.y / height_factor};
-	position = sf::Vector2<float>{svc.constants.f_center_screen.x, origin.y - dimensions.y * 0.5f};
-	text_origin = sf::Vector2<float>{20.0f, 20.0f};
 }
 
 void Console::begin() {
-	flags.set(ConsoleFlags::active);
-	writer.start();
-	sprite.start(*m_services, position, 1.f, {0, 1}, 16.f);
+	m_mode = ConsoleMode::writing;
+	m_path.set_section("open");
+	NANI_LOG_INFO(m_logger, "Console began.");
 }
 
 void Console::update(automa::ServiceProvider& svc) {
-	sprite.update(svc, position, dimensions, corner_factor, edge_factor);
-	writer.set_bounds(sf::Vector2<float>{position.x + dimensions.x * 0.5f - 2.f * border.left, position.y + dimensions.y * 0.5f - border.top});
-	writer.set_position(position + sf::Vector2<float>{border.left, border.top} - dimensions * 0.5f);
-	if (sprite.is_extended()) { flags.set(ConsoleFlags::extended); }
-	writer.selection_mode() ? flags.set(ConsoleFlags::selection_mode) : flags.reset(ConsoleFlags::selection_mode);
-	writer.update();
-
-	if (flags.test(ConsoleFlags::active)) {
-		portrait.update(svc);
-		nani_portrait.update(svc);
-		if (flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
-		if (writer.response_triggered()) {
-			nani_portrait.reset(*m_services);
-			writer.reset_response();
-		}
+	if (!is_active()) { return; }
+	if (!writer) { return; }
+	handle_inputs(svc.controller_map);
+	if (is_active()) { m_path.update(); }
+	if (m_path.finished() && writer) {
+		if (writer->is_stalling()) { writer->start(); }
 	}
+	if (!writer) { return; }
+	if (writer->is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
+	position = m_path.get_position();
+	dimensions = m_path.get_dimensions();
+	m_nineslice.direct_update(svc, m_path.get_position(), m_path.get_dimensions(), m_styling.corner_factor, m_styling.edge_factor);
+	writer->set_bounds(sf::FloatRect{position - dimensions * m_styling.padding_scale * 0.5f, dimensions * m_styling.padding_scale});
+	writer->update();
+	portrait.update(svc);
+	nani_portrait.update(svc);
+	if (flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
 }
 
 void Console::render(sf::RenderWindow& win) {
-	sprite.render(win);
+	if (!writer || !is_active()) { return; }
+	m_nineslice.render(win);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.render(*m_services, win); }
 	if (flags.test(ConsoleFlags::portrait_included)) {
 		portrait.render(win);
-		writer.responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
+		// writer->responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
 		nani_portrait.render(win);
 	}
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
 
-void Console::set_texture(sf::Texture& tex) { sprite.set_texture(tex); }
+void Console::set_texture(sf::Texture& tex) { m_nineslice.set_texture(tex); }
 
-void Console::load_and_launch(std::string_view key) {
-	if (!flags.test(ConsoleFlags::loaded)) {
-		native_key = key;
-		writer.load_message(text_suite, key);
-		portrait.reset(*m_services);
-		nani_portrait.reset(*m_services);
-		item_widget.reset(*m_services);
-		flags.set(ConsoleFlags::loaded);
-		begin();
-	}
+void Console::load_and_launch(std::string_view key, OutputType type) {
+	NANI_LOG_INFO(m_logger, "Loading...");
+	writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
+	NANI_LOG_INFO(m_logger, "Writer created...");
+	m_output_type = type;
+	native_key = key;
+	portrait.reset(*m_services);
+	nani_portrait.reset(*m_services);
+	item_widget.reset(*m_services);
+	begin();
 }
+
+void Console::load_single_message(std::string_view message) { writer = std::make_unique<TextWriter>(*m_services, message); }
 
 void Console::display_item(int item_id) {
 	flags.set(ConsoleFlags::display_item);
@@ -77,29 +79,21 @@ void Console::display_gun(int gun_id) {
 }
 
 void Console::write(sf::RenderWindow& win, bool instant) {
-	if (!flags.test(ConsoleFlags::active)) { return; }
-	if (!extended()) { return; }
-	instant ? writer.write_instant_message(win) : writer.write_gradual_message(win);
-	writer.write_responses(win);
+	if (!is_active()) { return; }
+	if (!writer) { return; }
+	instant ? writer->write_instant_message(win) : writer->write_gradual_message(win);
 }
 
-void Console::append(std::string_view key) { writer.append(key); }
+void Console::write(sf::RenderWindow& win) { write(win, m_output_type == OutputType::instant); }
+
+void Console::append(std::string_view key) { writer->append(key); }
 
 void Console::end() {
-	writer.flush_communicators();
-	flags.reset(ConsoleFlags::active);
-	flags.reset(ConsoleFlags::portrait_included);
-	flags.reset(ConsoleFlags::extended);
-	flags.reset(ConsoleFlags::display_item);
-	flags.set(ConsoleFlags::off_trigger);
-	sprite.end();
-}
-
-void Console::clean_off_trigger() { flags.reset(ConsoleFlags::off_trigger); }
-
-void Console::end_tick() {
-	if (!flags.test(ConsoleFlags::active)) { flags.reset(ConsoleFlags::loaded); }
-	clean_off_trigger();
+	writer->flush();
+	m_mode = ConsoleMode::off;
+	m_path.reset();
+	writer = {};
+	NANI_LOG_INFO(m_logger, "Console ended.");
 }
 
 void Console::include_portrait(int id) {
@@ -109,4 +103,30 @@ void Console::include_portrait(int id) {
 
 std::string Console::get_key() { return native_key; }
 
-} // namespace gui
+void Console::handle_inputs(config::ControllerMap& controller) {
+	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
+	auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).triggered;
+	auto const& canceled = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered;
+	auto const& next = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
+	auto const& exit = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered;
+	auto const& skip = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
+	auto const& skip_released = controller.digital_action_status(config::DigitalAction::menu_select).released;
+	static bool finished{};
+
+	if (skip && writer->is_ready()) { writer->speed_up(); }
+	if (skip_released) { writer->slow_down(); }
+	if (next && writer->is_ready()) {
+		m_services->soundboard.flags.console.set(audio::Console::next);
+		finished = writer->request_next();
+		NANI_LOG_INFO(m_logger, "Requested next: {}", finished);
+	}
+	if (exit || finished) {
+		if (writer->exit_requested()) {
+			m_services->soundboard.flags.console.set(audio::Console::done);
+			writer->shutdown();
+			end();
+		}
+	}
+}
+
+} // namespace fornani::gui

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "fornani/utils/Shape.hpp"
 #include "fornani/particle/Chain.hpp"
 #include "fornani/utils/BitFlags.hpp"
@@ -10,25 +9,25 @@
 #include <vector>
 #include <memory>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
-enum class VineFlags { foreground, reverse };
+namespace fornani::entity {
+enum class VineFlags : uint8_t { foreground, reverse };
 class Vine {
   public:
 	Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length = 5, int size = 1, bool foreground = true, bool reversed = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
+	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void add_platform(automa::ServiceProvider& svc, int link_index);
 	[[nodiscard]] auto foreground() const -> bool { return flags.test(VineFlags::foreground); }

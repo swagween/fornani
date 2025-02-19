@@ -1,7 +1,7 @@
 #include "fornani/utils/NineSlice.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace util {
+namespace fornani::util {
 
 NineSlice::NineSlice(automa::ServiceProvider& svc, int corner_factor, int edge_factor) : sprite{svc.assets.t_blue_console}, corner_factor(corner_factor), edge_factor(edge_factor) {
 	float fric{0.93f};
@@ -24,6 +24,17 @@ void NineSlice::update(automa::ServiceProvider& svc, sf::Vector2<float> position
 
 	// set position for the 9-slice console box
 	sprite.setPosition(gravitator.collider.physics.position);
+}
+
+void NineSlice::direct_update(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float corner_dim, float edge_dim) {
+	corner_dimensions = corner_dim;
+	edge_dimensions = edge_dim;
+	native_dimensions = dimensions;
+	global_scale = 1.f;
+	native_scale = 1.f;
+
+	// set position for the 9-slice console box
+	sprite.setPosition(position);
 }
 
 void NineSlice::render(sf::RenderWindow& win) {

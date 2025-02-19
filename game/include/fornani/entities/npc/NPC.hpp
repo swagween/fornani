@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <string>
 #include "fornani/utils/Collider.hpp"
 #include "fornani/entities/Entity.hpp"
 #include "NPCAnimation.hpp"
@@ -10,32 +9,32 @@
 #include <deque>
 #include <string_view>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace npc {
+namespace fornani::npc {
 
-enum class NPCState { engaged, force_interact, introduced, background, talking, cutscene, piggybacking, hidden };
-enum class NPCTrigger { distant_interact, engaged, cutscene };
+enum class NPCState : uint8_t { engaged, force_interact, introduced, background, talking, cutscene, piggybacking, hidden };
+enum class NPCTrigger : uint8_t { distant_interact, engaged, cutscene };
 
 class NPC : public entity::Entity {
   public:
 	NPC(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) override;
 	void force_engage();
 	void set_position(sf::Vector2<float> pos);
 	void apply_force(sf::Vector2<float> force) { collider.physics.apply_force(force); };
@@ -55,7 +54,7 @@ class NPC : public entity::Entity {
 	[[nodiscard]] auto is_vendor() const -> bool { return static_cast<bool>(vendor); }
 	[[nodiscard]] auto piggybacking() const -> bool { return state_flags.test(NPCState::piggybacking); }
 	[[nodiscard]] auto hidden() const -> bool { return state_flags.test(NPCState::hidden); }
-	Vendor& get_vendor() { return *vendor.value(); }
+	Vendor& get_vendor() const { return *vendor.value(); }
 
 	std::string_view label{};
 
@@ -77,4 +76,4 @@ class NPC : public entity::Entity {
 	} physical{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

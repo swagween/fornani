@@ -13,7 +13,7 @@ EditorApplication::EditorApplication(char** argv) : finder(argv), metadata(game_
 	game_info = dj::Json::from_file((finder.paths.editor / "data/config/version.json").string().c_str());
 	assert(!game_info.is_null());
 
-	std::cout << "> Launching " << metadata.long_title() << "\n";
+	NANI_LOG_INFO(m_logger, "> Launching {}", metadata.long_title());
 
 	app_settings = dj::Json::from_file((finder.paths.editor / "data/config/settings.json").string().c_str());
 	assert(!app_settings.is_null());
@@ -24,10 +24,10 @@ EditorApplication::EditorApplication(char** argv) : finder(argv), metadata(game_
 
 	// set app icon
 	sf::Image icon{};
-	icon.loadFromFile((finder.paths.editor / "app" / "icon.png").string());
+	if (!icon.loadFromFile((finder.paths.editor / "app" / "icon.png").string())) { NANI_LOG_WARN(m_logger, "Failed to load Icon."); }
 	window.get().setIcon({32, 32}, icon.getPixelsPtr());
 
-	ImGui::SFML::Init(window.get());
+	if (!ImGui::SFML::Init(window.get())) { NANI_LOG_ERROR(m_logger, "Failed to init SFML window."); };
 	window.get().clear();
 	window.get().display();
 }

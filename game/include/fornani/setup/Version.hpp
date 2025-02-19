@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string_view>
 #include <djson/json.hpp>
 #include "fornani/setup/ResourceFinder.hpp"
 
@@ -10,6 +9,7 @@ namespace fornani {
 class Version {
   public:
 	Version(dj::Json& info, data::ResourceFinder& finder) {
+		// TODO: Move this to a cmake config file instead of looking for a json file.
 		// load version info
 		info = dj::Json::from_file((finder.resource_path() + "/data/config/version.json").c_str());
 		assert(!info.is_null());
@@ -20,9 +20,9 @@ class Version {
 		minor = info["version"]["minor"].as<int>();
 		hotfix = info["version"]["hotfix"].as<int>();
 	}
-	std::string version() const { return "v" + std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(hotfix); }
-	std::string long_title() const { return title.data() + std::string{" ("} + build.data() + std::string{" "} + version().data() + std::string{")"}; }
-	std::string version_title() const { return build.data() + std::string{" "} + version().data(); }
+	[[nodiscard]] std::string version() const { return "v" + std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(hotfix); }
+	[[nodiscard]] std::string long_title() const { return title.data() + std::string{" ("} + build.data() + std::string{" "} + version().data() + std::string{")"}; }
+	[[nodiscard]] std::string version_title() const { return build.data() + std::string{" "} + version().data(); }
 
   private:
 	std::string title{};

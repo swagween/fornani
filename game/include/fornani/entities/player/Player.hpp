@@ -1,61 +1,56 @@
 
 #pragma once
 
-#include <array>
-#include <memory>
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/graphics/TextureUpdater.hpp"
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/QuestCode.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/graphics/Tutorial.hpp"
-#include "fornani/weapon/Hotbar.hpp"
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/entities/packages/Caution.hpp"
 #include "Catalog.hpp"
 #include "Indicator.hpp"
-#include "Wallet.hpp"
+#include "Piggybacker.hpp"
 #include "PlayerAnimation.hpp"
 #include "PlayerController.hpp"
-#include "Transponder.hpp"
 #include "VisitHistory.hpp"
-#include "Piggybacker.hpp"
+#include "Wallet.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
+#include "fornani/entities/item/Drop.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/Health.hpp"
+#include "fornani/graphics/SpriteHistory.hpp"
+#include "fornani/graphics/TextureUpdater.hpp"
+#include "fornani/graphics/Tutorial.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/QuestCode.hpp"
+#include "fornani/weapon/Hotbar.hpp"
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 class InventoryWindow;
-} // namespace gui
+} // namespace fornani::gui
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace item {
-enum class DropType;
-}
+namespace fornani::player {
 
-namespace player {
-
-float const PLAYER_WIDTH = 20.0f;
-float const PLAYER_HEIGHT = 20.0f;
-float const head_height{8.f};
-float const PLAYER_START_X = 100.0f;
-float const PLAYER_START_Y = 100.0f;
-float const JUMPBOX_HEIGHT = 8.0f;
-float const DETECTOR_WIDTH = 8.0f;
-float const DETECTOR_HEIGHT = 22.0f;
-float const WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
-float const DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
-int const JUMP_BUFFER_TIME = 12;
-int const INVINCIBILITY_TIME = 200;
-int const ANCHOR_BUFFER = 50;
-int const num_sprites{220};
+constexpr float PLAYER_WIDTH = 20.0f;
+constexpr float PLAYER_HEIGHT = 20.0f;
+constexpr float head_height{8.f};
+constexpr float PLAYER_START_X = 100.0f;
+constexpr float PLAYER_START_Y = 100.0f;
+constexpr float JUMPBOX_HEIGHT = 8.0f;
+constexpr float DETECTOR_WIDTH = 8.0f;
+constexpr float DETECTOR_HEIGHT = 22.0f;
+constexpr float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
+constexpr float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
+constexpr int JUMP_BUFFER_TIME = 12;
+constexpr int INVINCIBILITY_TIME = 200;
+constexpr int ANCHOR_BUFFER = 50;
+constexpr int num_sprites{220};
 
 constexpr inline float antenna_force{0.18f};
 constexpr inline float antenna_speed{336.f};
@@ -87,7 +82,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed};
+enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed };
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -103,14 +98,13 @@ class Player {
 	// init (violates RAII but must happen after resource path is set)
 	void init(automa::ServiceProvider& svc);
 	// member functions
-	void update(world::Map& map, gui::Console& console, gui::InventoryWindow& inventory_window);
+	void update(world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
 	void update_sprite();
 	void handle_turning();
-	void update_transponder(gui::Console& console, gui::InventoryWindow& inventory_window);
 	void flash_sprite();
 	void calculate_sprite_offset();
 	void set_idle();
@@ -133,6 +127,8 @@ class Player {
 	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
+	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
+	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2<float> { return collider.get_center() + camera_offset; }
 
 	// moves
 	void jump(world::Map& map);
@@ -179,12 +175,11 @@ class Player {
 	// for debug mode
 	std::string print_direction(bool lr);
 
-	//for ledge testing
+	// for ledge testing
 	entity::Caution caution{};
 
 	// components
 	PlayerController controller;
-	Transponder transponder{};
 	shape::Collider collider{};
 	shape::Shape hurtbox{};
 	PlayerAnimation animation;
@@ -199,6 +194,7 @@ class Player {
 	std::optional<arms::Arsenal> arsenal{};
 	std::optional<arms::Hotbar> hotbar{};
 
+	sf::Vector2<float> camera_offset{};
 	sf::Vector2<float> anchor_point{};
 	sf::Vector2<float> sprite_offset{10.f, -3.f};
 	sf::Vector2<float> sprite_dimensions{};
@@ -210,8 +206,8 @@ class Player {
 	PlayerStats player_stats{0.06f};
 	PhysicsStats physics_stats{};
 	PlayerFlags flags{};
-	util::Cooldown hurt_cooldown{}; //for animation
-	util::Cooldown force_cooldown{}; //for player hurt forces
+	util::Cooldown hurt_cooldown{};	 // for animation
+	util::Cooldown force_cooldown{}; // for player hurt forces
 	struct {
 		util::Cooldown tutorial{400};
 		util::Cooldown sprint_tutorial{800};
@@ -255,6 +251,10 @@ class Player {
 		dir::Direction right_squish{};
 		dir::Direction movement{};
 	} directions{};
+	struct {
+		components::SteeringBehavior target{};
+		components::PhysicsComponent physics{};
+	} m_camera{};
 };
 
-} // namespace player
+} // namespace fornani::player

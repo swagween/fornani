@@ -1,19 +1,18 @@
 
 #pragma once
-#include <string_view>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace gui {
+namespace fornani::gui {
 class WardrobeWidget {
   public:
-	WardrobeWidget(const automa::ServiceProvider& svc);
+	explicit WardrobeWidget(automa::ServiceProvider const& svc);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos) { position = pos; }
@@ -32,7 +31,7 @@ class WardrobeWidget {
 	sf::Vector2<float> position{};
 	sf::Vector2<float> dimensions{128.f, 256.f};
 
-	fornani::Logger m_logger{"gui"};
+	io::Logger m_logger{"gui"};
 };
 
-} // namespace gui
+} // namespace fornani::gui

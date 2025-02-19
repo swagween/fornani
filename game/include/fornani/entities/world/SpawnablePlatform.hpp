@@ -1,25 +1,22 @@
 #pragma once
 
-#include <string>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/Collider.hpp"
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/entities/packages/Health.hpp"
-#include "fornani/entities/Entity.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
-enum class SpawnablePlatformState { open, opening, fading, closing, dormant };
+namespace fornani::entity {
+enum class SpawnablePlatformState : uint8_t { open, opening, fading, closing, dormant };
 class SpawnablePlatform {
   public:
 	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index = 0);
@@ -47,4 +44,4 @@ class SpawnablePlatform {
 	anim::AnimatedSprite sprite;
 	Health health{};
 };
-} // namespace entity
+} // namespace fornani::entity

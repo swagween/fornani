@@ -1,29 +1,33 @@
-#pragma once
-#include <SFML/Graphics.hpp>
-#include "fornani/particle/Gravitator.hpp"
-#include "Portrait.hpp"
-#include "Selector.hpp"
-#include "Console.hpp"
-#include "MiniMenu.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include <memory>
 
-namespace automa {
+#pragma once
+
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/gui/MiniMenu.hpp"
+#include "fornani/gui/Portrait.hpp"
+#include "fornani/gui/Selector.hpp"
+#include "fornani/particle/Gravitator.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <optional>
+
+namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
-namespace npc {
+namespace fornani::npc {
 class Vendor;
 }
-namespace flfx {
+namespace fornani::flfx {
 class Transition;
 }
 
-namespace gui {
-enum class VendorDialogStatus { opened, made_sale };
-enum class VendorState { sell, buy };
+namespace fornani::gui {
+enum class VendorDialogStatus : uint8_t { opened, made_sale };
+enum class VendorState : uint8_t { sell, buy };
 class VendorDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
@@ -31,18 +35,19 @@ class VendorDialog {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map);
 	void close();
 	void update_table(player::Player& player, world::Map& map, bool new_dim);
-	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
+	void refresh(player::Player& player, world::Map& map) const;
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
 	[[nodiscard]] auto made_profit() const -> bool { return balance > 0.f; }
 	[[nodiscard]] auto opening() const -> bool { return intro.running() || bring_in_cooldown.running(); }
+
   private:
 	struct {
 		Selector buy;
 		Selector sell;
 	} selectors;
 	Console info;
-	MiniMenu item_menu;
+	std::optional<MiniMenu> m_item_menu{};
 	util::Cooldown intro{200};
 	util::Cooldown bring_in_cooldown{200};
 	util::BitFlags<VendorDialogStatus> flags{};
@@ -79,4 +84,4 @@ class VendorDialog {
 	} orb;
 };
 
-} // namespace gui
+} // namespace fornani::gui

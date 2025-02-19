@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
-namespace arms {
+namespace fornani::arms {
 
 Arsenal::Arsenal(automa::ServiceProvider& svc) : m_services(&svc) {}
 

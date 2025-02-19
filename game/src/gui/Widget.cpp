@@ -4,7 +4,7 @@
 #include "fornani/utils/Math.hpp"
 #include <algorithm>
 
-namespace gui {
+namespace fornani::gui {
 
 Widget::Widget(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<int> dim, int index) : dimensions(dim), index(index), sprite{texture} {
 	gravitator = vfx::Gravitator({}, svc.styles.colors.bright_orange, 0.9f);

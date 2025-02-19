@@ -1,13 +1,11 @@
 
 #pragma once
 
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Counter.hpp"
-#include <cmath>
-#include <iostream>
+
 #include <string>
 
-namespace player {
+namespace fornani::player {
 
 class Wallet {
   public:
@@ -21,4 +19,4 @@ class Wallet {
 	util::Counter orbs{};
 };
 
-} // namespace player
+} // namespace fornani::player

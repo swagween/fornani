@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
-namespace entity {
+namespace fornani::entity {
 
 WeaponPackage::WeaponPackage(automa::ServiceProvider& svc, int id) { weapon = std::make_unique<arms::Weapon>(svc, id, true); }
 

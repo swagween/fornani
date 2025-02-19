@@ -2,7 +2,7 @@
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
 	: GameState(svc, player, scene, room_number), subtitle{svc.text.fonts.basic}, instruction(svc.text.fonts.basic), title(svc.assets.t_title) {
@@ -56,12 +56,12 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::play)) {
-			svc.state_controller.submenu = menu_type::file_select;
+			svc.state_controller.submenu = MenuType::file_select;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::options)) {
-			svc.state_controller.submenu = menu_type::options;
+			svc.state_controller.submenu = MenuType::options;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}

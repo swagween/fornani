@@ -3,12 +3,11 @@
 
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
 #include "fornani/utils/Direction.hpp"
 
-namespace player {
+namespace fornani::player {
 
-enum class RollFlags { rolling, can_roll };
+enum class RollFlags : uint8_t { rolling, can_roll };
 
 class Roll {
   public:

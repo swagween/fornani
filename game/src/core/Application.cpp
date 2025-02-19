@@ -1,11 +1,13 @@
 
 #include "fornani/core/Application.hpp"
 
+#include <iostream>
+
 #include "fornani/utils/Tracy.hpp"
 
 namespace fornani {
 
-void Application::init(char** argv) {
+void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 	NANI_ZoneScopedN("Application::Application");
 	std::cout << "Resource path: " << m_finder.resource_path() << std::endl;
 	std::cout << "> Launching " << m_metadata.long_title() << "\n";
@@ -14,7 +16,8 @@ void Application::init(char** argv) {
 	assert(!m_app_settings.is_null());
 
 	// create window
-	m_window.create(m_metadata.long_title(), static_cast<bool>(m_app_settings["fullscreen"].as_bool()));
+	auto fullscreen = demo_fullscreen.first ? demo_fullscreen.second : static_cast<bool>(m_app_settings["fullscreen"].as_bool());
+	m_window.create(m_metadata.long_title(), fullscreen);
 	m_window.set();
 
 	// set app icon
@@ -28,7 +31,7 @@ void Application::init(char** argv) {
 }
 
 void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-	std::unique_ptr game = std::make_unique<fornani::Game>(argv, m_window, m_metadata);
+	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata);
 	game->run(demo, room_id, levelpath, player_position);
 }
 

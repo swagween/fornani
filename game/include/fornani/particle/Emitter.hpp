@@ -4,7 +4,7 @@
 #include <vector>
 #include "Particle.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Emitter {
   public:

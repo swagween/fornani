@@ -1,17 +1,19 @@
 
 #pragma once
 
+#include <string>
 #include "Circuit.hpp"
 #include "Cooldown.hpp"
-#include <string>
 
-namespace automa {
+#include <cstdint>
+
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
 namespace fornani {
 
-enum class TimeOfDay { day, twilight, night, END };
+enum class TimeOfDay : std::uint8_t { day, twilight, night, END };
 
 class WorldClock {
   public:
@@ -23,7 +25,7 @@ class WorldClock {
 	[[nodiscard]] auto is_nighttime() const -> bool { return increments.hours.get() >= 20 || increments.hours.get() < 7; }
 	[[nodiscard]] auto is_twilight() const -> bool { return !is_daytime() && !is_nighttime(); }
 	[[nodiscard]] auto is_transitioning() const -> bool { return transition.running(); }
-	[[nodiscard]] auto num_cycles() const -> int { return static_cast<int>(TimeOfDay::END); }
+	[[nodiscard]] static auto num_cycles() -> int { return static_cast<int>(TimeOfDay::END); }
 	[[nodiscard]] auto get_time_of_day() const -> TimeOfDay { return is_daytime() ? TimeOfDay::day : is_nighttime() ? TimeOfDay::night : TimeOfDay::twilight; }
 	[[nodiscard]] auto get_previous_time_of_day() const -> TimeOfDay { return previous_time_of_day; }
 	[[nodiscard]] auto get_transition() const -> float { return transition.get_normalized(); }

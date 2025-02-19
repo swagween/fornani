@@ -1,6 +1,6 @@
 #include "fornani/setup/TextManager.hpp"
 
-namespace data {
+namespace fornani::data {
 
 TextManager::TextManager(ResourceFinder& finder) : sources{.title{finder.resource_path() + "/text/fonts/kongtext.ttf"}, .basic{finder.resource_path() + "/text/fonts/pixelFJ8pt1.ttf"}}, fonts{.title = sf::Font{sources.title}, .basic = sf::Font{sources.basic}} {
 	//test

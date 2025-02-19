@@ -4,12 +4,12 @@
 #include <vector>
 #include "Spark.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Sparkler {
   public:
 	Sparkler() = default;
-	Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions = {2.f, 2.f}, sf::Color color = sf::Color::White, std::string_view type = "");
+	explicit Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions = {2.f, 2.f}, sf::Color color = sf::Color::White, std::string_view type = "");
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos);
@@ -35,4 +35,4 @@ class Sparkler {
 	bool active{true};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

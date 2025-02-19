@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "fornani/io/Logger.hpp"
+
 namespace pi {
 
 class WindowManager {
@@ -32,6 +34,8 @@ class WindowManager {
 		sf::Vector2u display{};
 		sf::Vector2u current{};
 	} dimensions{};
+
+	fornani::io::Logger m_logger{ "pioneer" };
 };
 
 } // namespace pi

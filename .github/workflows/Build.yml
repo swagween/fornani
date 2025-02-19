@@ -1,0 +1,59 @@
+name: Build
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
+    runs-on: ${{ matrix.platform.os }}
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { name: "Windows VS2022", os: windows-2022, flags: "" }
+          - { name: "Linux GCC",      os: ubuntu-latest, flags: "" }
+          - { name: "Linux Clang",    os: ubuntu-latest, flags: "-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++" }
+          - { name: "macOS AppleClang", os: macos-latest, flags: "" }
+        config:
+          - { name: "Static", flags: "-DBUILD_SHARED_LIBS=FALSE" }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          if ($env:RUNNER_OS -eq 'Windows') {
+            choco install ninja -y
+          } elseif ($env:RUNNER_OS -eq 'Linux') {
+            sudo apt-get update
+            sudo apt-get install -y ninja-build libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
+          } elseif ($env:RUNNER_OS -eq 'macOS') {
+            brew install ninja
+          } else {
+            Write-Error "Unsupported OS: $env:RUNNER_OS"
+            exit 1
+          }
+
+      - name: Configure
+        run: |
+          if ($env:RUNNER_OS -eq 'Windows') {
+            . "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -HostArch amd64
+            Set-Location $env:GITHUB_WORKSPACE
+          }
+          cmake -B build -G "Ninja Multi-Config" ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
+
+      - name: Build
+        run: |
+          if ($env:RUNNER_OS -eq 'Windows') {
+            . "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -HostArch amd64
+            Set-Location $env:GITHUB_WORKSPACE
+          }
+          cmake --build build --config Release

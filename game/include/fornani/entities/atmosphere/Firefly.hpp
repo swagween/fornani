@@ -11,15 +11,15 @@
 #include <optional>
 #include <memory>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
-}
+} // namespace fornani::automa
 
-namespace world {
+namespace fornani::world {
 class Map;
-}
+} // namespace fornani::world
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Firefly {
   public:
@@ -36,4 +36,4 @@ class Firefly {
 	std::optional<std::unique_ptr<flfx::SpriteHistory>> trail{};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

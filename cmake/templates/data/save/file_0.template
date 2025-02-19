@@ -7,8 +7,8 @@
     "hp": 3.000000,
     "orbs": 495,
     "position": {
-      "x": 415.256104,
-      "y": 299.000000
+      "x": 352.256104,
+      "y": 320.000000
     },
     "arsenal": [
       0,
@@ -24,20 +24,32 @@
       "shirt": 0,
       "pants": 0
     },
-    "items": [
-      {
-        "id": 20,
-        "quantity": 1
-      },
-      {
-        "id": 1,
-        "quantity": 1
-      },
-      {
-        "id": 16,
-        "quantity": 1
-      }
-    ],
+	"items": [
+		{
+			"id": 22,
+			"quantity": 1
+		},
+		{
+			"id": 20,
+			"quantity": 1
+		},
+		{
+			"id": 1,
+			"quantity": 1
+		},
+		{
+			"id": 16,
+			"quantity": 1
+		},
+		{
+			"id": 97,
+			"quantity": 1
+		},
+		{
+			"id": 81,
+			"quantity": 1
+		}
+	],
     "stats": {
       "death_count": 84,
       "bullets_fired": 2793,
@@ -59,7 +71,7 @@
       2
     ]
   },
-  "save_point_id": 20069,
+  "save_point_id": 99,
   "unlocked_doors": [
 
   ],
@@ -161,30 +173,8 @@
   },
   "discovered_rooms": [
     100,
-    101,
     102,
-    104,
-    106,
-    117,
-    20094,
-    219,
-    222,
-    227,
-    228,
-    112,
-    121,
-    103,
-    110,
-    108,
-    116,
-    107,
-    115,
-    122,
-    6001,
-    200,
-    299,
-    224,
-    20069
+    103
   ],
   "piggybacker": 0,
   "marketplace": [

@@ -1,6 +1,6 @@
 #include "fornani/entities/player/Wallslide.hpp"
 
-namespace player {
+namespace fornani::player {
 
 void Wallslide::start() { states.set(WallslideState::wallsliding); }
 

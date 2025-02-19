@@ -1,11 +1,13 @@
 #include "fornani/gui/WidgetBar.hpp"
-#include "fornani/entities/player/Player.hpp"
+#include <algorithm>
 #include "fornani/entities/packages/Health.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
-#include <algorithm>
 
-namespace gui {
+#include "fornani/utils/Random.hpp"
+
+namespace fornani::gui {
 
 void WidgetBar::set(automa::ServiceProvider& svc, int amount, sf::Vector2<int> dimensions, sf::Texture& texture, sf::Vector2<float> origin, float pad) {
 	widgets.clear();
@@ -21,13 +23,13 @@ void WidgetBar::update(automa::ServiceProvider& svc, entity::Health& health, boo
 	int i{};
 	for (auto& widget : widgets) {
 		if (shake) {
-			auto randv = svc.random.random_vector_float(-16.f, 16.f);
+			auto const randv = util::Random::random_vector_float(-16.f, 16.f);
 			widget.gravitator.set_position(widget.position + randv);
 			widget.shake();
 		}
 		widget.update(svc, static_cast<int>(health.get_max()));
 		widget.current_state = health.get_hp() > i ? State::neutral : health.get_taken_point() > i ? State::taken : State::gone;
-		auto flashing = health.restored.running() && health.restored.get_cooldown() % 48 > 24 && health.get_hp() > i;
+		auto const flashing = health.restored.running() && health.restored.get_cooldown() % 48 > 24 && health.get_hp() > i;
 		widget.current_state = flashing ? State::added : widget.current_state;
 		++i;
 	}
@@ -37,4 +39,4 @@ void WidgetBar::render(sf::RenderWindow& win) {
 	for (auto& widget : widgets) { widget.render(win); }
 }
 
-} // namespace gui
+} // namespace fornani::gui

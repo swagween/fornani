@@ -1,9 +1,10 @@
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace audio {
+namespace fornani::audio {
 
 void Ambience::load(data::ResourceFinder& finder, std::string_view source) {
+	if (source.empty()) { return; }
 	tracks.open.turn_on();
 	tracks.closed.turn_on();
 	std::string source_str = source.data();
@@ -11,7 +12,7 @@ void Ambience::load(data::ResourceFinder& finder, std::string_view source) {
 	tracks.closed.simple_load(finder.resource_path() + "/audio/ambience/" + source_str + "/closed");
 }
 
-void audio::Ambience::play() {
+void Ambience::play() {
 	tracks.open.switch_on();
 	tracks.closed.switch_on();
 	tracks.open.play_looped(5);
@@ -27,4 +28,4 @@ void Ambience::set_balance(float balance) {
 	tracks.closed.set_volume(inverse);
 }
 
-} // namespace audio
+} // namespace fornani::audio
