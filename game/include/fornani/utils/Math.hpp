@@ -6,7 +6,7 @@
 #include <ccmath/math/basic/fabs.hpp>
 #include <ccmath/math/misc/lerp.hpp>
 #include <ccmath/math/nearest/floor.hpp>
-#include <ccmath/math/power/pow.hpp>
+//#include <ccmath/math/power/pow.hpp> // This is having issues
 #include <ccmath/math/power/sqrt.hpp>
 
 #include <cmath>
