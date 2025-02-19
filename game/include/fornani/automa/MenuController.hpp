@@ -2,9 +2,11 @@
 
 #include "fornani/utils/BitFlags.hpp"
 
+#include <cstdint>
+
 namespace fornani::automa {
 
-enum class MenuStatus : uint8_t { vendor };
+enum class MenuStatus : std::uint8_t { vendor };
 
 class MenuController {
   public:
