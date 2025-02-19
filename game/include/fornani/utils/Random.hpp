@@ -12,7 +12,7 @@ struct Random {
 	// Generates a random integer in the range [lo, hi] using a provided seed
 	static int random_range(int lo, int hi, int seed) {
 		seeded_engine.seed(seed);
-		return std::uniform_int_distribution{lo, hi}(seeded_engine);
+		return std::uniform_int_distribution<int>{lo, hi}(seeded_engine);
 	}
 
 	// Generates a random float in the range [lo, hi]
@@ -34,13 +34,13 @@ struct Random {
 
 	// Returns 0 or 1 based on a coin flip using an unsigned logic
 	static int unsigned_coin_flip() {
-		auto const result = std::uniform_real_distribution{-1.0f, 1.0f}(engine);
+		auto const result = std::uniform_real_distribution<float>{-1.0f, 1.0f}(engine);
 		return (result > 0.0f) ? 0 : 1;
 	}
 
 	// Returns -1 or 1 based on a coin flip using a signed logic
 	static int signed_coin_flip() {
-		auto const result = std::uniform_real_distribution{-1.0f, 1.0f}(engine);
+		auto const result = std::uniform_real_distribution<float>{-1.0f, 1.0f}(engine);
 		return (result > 0.0f) ? -1 : 1;
 	}
 
@@ -49,7 +49,7 @@ struct Random {
 
 	// Returns true with a probability corresponding to the provided percent chance
 	static bool percent_chance(float percent) {
-		auto const result = std::uniform_real_distribution{0.0f, 100.0f}(engine);
+		auto const result = std::uniform_real_distribution<float>{0.0f, 100.0f}(engine);
 		return result < percent;
 	}
 
