@@ -1,19 +1,18 @@
 
 #pragma once
-#include "fornani/utils/BitFlags.hpp"
 #include "AbilityManager.hpp"
 #include "Inventory.hpp"
 #include "Wardrobe.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace player {
+namespace fornani::player {
 
 class Catalog {
   public:
@@ -29,4 +28,4 @@ class Catalog {
 	} categories{};
 };
 
-} // namespace player
+} // namespace fornani::player

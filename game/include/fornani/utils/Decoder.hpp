@@ -1,10 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <string_view>
+#include <string>
 #include <vector>
 
-namespace util {
+namespace fornani::util {
 
 class Decoder {
   public:

@@ -1,14 +1,17 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Attack.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/FloatingPart.hpp"
 #define DEMON_BIND(f) std::bind(&Demon::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class DemonState { idle, turn, run, jump, signal, rush, stab, dormant, jumpsquat };
 enum class DemonVariant { warrior, spearman };
 
-class Demon : public Enemy {
+class Demon final : public Enemy {
 
   public:
 	Demon() = delete;
@@ -74,4 +77,4 @@ class Demon : public Enemy {
 	bool change_state(DemonState next, anim::Parameters params);
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

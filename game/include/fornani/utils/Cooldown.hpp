@@ -3,14 +3,14 @@
 #include <algorithm>
 #include <limits>
 
-namespace util {
+namespace fornani::util {
 
 class Cooldown {
   public:
 	Cooldown() = default;
-	Cooldown(int time) : native_time(time) {}
+	explicit Cooldown(int const time) : native_time(time) {}
 	constexpr void start() { decrementor = native_time; }
-	constexpr void start(int time) { decrementor = time; }
+	constexpr void start(int const time) { decrementor = time; }
 	constexpr void update() { decrementor = std::clamp(decrementor - 1, 0, std::numeric_limits<int>::max()); }
 	constexpr void reverse() { decrementor = std::clamp(decrementor + 1, 0, native_time); }
 	constexpr void cancel() { decrementor = 0; }
@@ -25,6 +25,9 @@ class Cooldown {
 	[[nodiscard]] auto get_normalized() const -> float { return static_cast<float>(decrementor) / static_cast<float>(native_time); }
 	[[nodiscard]] auto get_quadratic_normalized() const -> float { return static_cast<float>(decrementor * decrementor) / static_cast<float>(native_time * native_time); }
 	[[nodiscard]] auto get_cubic_normalized() const -> float { return static_cast<float>(decrementor * decrementor * decrementor) / static_cast<float>(native_time * native_time * native_time); }
+	[[nodiscard]] auto get_inverse_normalized() const -> float { return 1.f - get_normalized(); }
+	[[nodiscard]] auto get_inverse_quadratic_normalized() const -> float { return 1.f - get_quadratic_normalized(); }
+	[[nodiscard]] auto get_inverse_cubic_normalized() const -> float { return 1.f - get_cubic_normalized(); }
 	[[nodiscard]] auto get_native_time() const -> int { return native_time; }
 	[[nodiscard]] auto null() const -> bool { return decrementor == -1; }
 
@@ -33,4 +36,4 @@ class Cooldown {
 	int native_time{};
 };
 
-} // namespace util
+} // namespace fornani::util

@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 void Ammo::update() {
 	restored.update();

@@ -2,7 +2,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/gui/Console.hpp"
 
-namespace player {
+namespace fornani::player {
 void Catalog::update(automa::ServiceProvider& svc) {
 	categories.inventory.update(svc);
 	categories.abilities.update(svc);

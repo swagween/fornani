@@ -1,9 +1,10 @@
 #include "fornani/entities/enemy/catalog/Eyebot.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Eyebot::Eyebot(automa::ServiceProvider& svc) : Enemy(svc, "eyebot") {
 	animation.set_params(idle);
@@ -14,16 +15,16 @@ void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	if (just_died()) {
 		for (int i{0}; i < 3; ++i) {
-			auto randx = svc.random.random_range_float(-60.f, 60.f);
-			auto randy = svc.random.random_range_float(-60.f, 60.f);
-			sf::Vector2<float> rand_vec{randx, randy};
-			sf::Vector2<float> spawn = collider.physics.position + rand_vec;
+			auto const randx = util::Random::random_range_float(-60.f, 60.f);
+			auto const randy = util::Random::random_range_float(-60.f, 60.f);
+			sf::Vector2 const rand_vec{randx, randy};
+			sf::Vector2<float> const spawn = collider.physics.position + rand_vec;
 			map.spawn_enemy(5, spawn);
 		}
 	}
 
 	if (died()) {
-		Enemy::update(svc, map, player);
+		update(svc, map, player);
 		return;
 	}
 	if (!seeker_cooldown.is_complete()) { seeker.set_position(collider.physics.position); }
@@ -79,4 +80,4 @@ fsm::StateFunction Eyebot::update_turn() {
 	return EYEBOT_BIND(update_turn);
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

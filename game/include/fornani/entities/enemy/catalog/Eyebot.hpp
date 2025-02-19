@@ -4,14 +4,14 @@
 #include "fornani/entities/packages/Seeker.hpp"
 #define EYEBOT_BIND(f) std::bind(&Eyebot::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 	enum class EyebotState { idle, turn };
 
-class Eyebot : public Enemy {
+class Eyebot final : public Enemy {
 
   public:
-	Eyebot(automa::ServiceProvider& svc);
+	explicit Eyebot(automa::ServiceProvider& svc);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
 	fsm::StateFunction state_function = std::bind(&Eyebot::update_idle, this);
@@ -31,4 +31,4 @@ class Eyebot : public Enemy {
 
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

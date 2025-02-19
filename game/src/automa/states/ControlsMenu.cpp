@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
 constexpr std::array<std::string_view, 4> tabs = {"controls_platformer", "controls_inventory", "controls_map", "controls_menu"};
 constexpr std::array<std::string_view, 4> tab_id_prefixes = {"platformer_", "inventory_", "map_", "menu_"};
@@ -28,6 +28,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 }
 
 void ControlsMenu::tick_update(ServiceProvider& svc) {
+	binding_mode ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered && !binding_mode) {
@@ -49,9 +50,17 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		auto tab_to_switch_to = (current_tab + 1) % 4;
 		change_scene(svc, tabs[tab_to_switch_to]);
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && !binding_mode) {
-		svc.state_controller.submenu = menu_type::options;
-		svc.state_controller.actions.set(Actions::exit_submenu);
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+		if (binding_mode) {
+			binding_mode = false;
+			option_is_selected = false;
+			auto& control = control_list.at(current_selection.get());
+			restore_defaults(svc);
+			// TODO: set new control here. this is a temporary fix for the hard lock
+		} else {
+			svc.state_controller.submenu = MenuType::options;
+			svc.state_controller.actions.set(Actions::exit_submenu);
+		}
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
 	auto pressed_select = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered;
@@ -67,6 +76,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 			restore_defaults(svc);
 		} else if (!binding_mode) {
 			option_is_selected = !option_is_selected;
+			binding_mode = true;
 			auto& control = control_list.at(current_selection.get());
 			control.setString("Press a key");
 			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
@@ -85,19 +95,16 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
 	svc.soundboard.play_sounds(svc);
-	binding_mode = option_is_selected;
 }
 
 void ControlsMenu::frame_update(ServiceProvider& svc) {}
 
 void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-
 	if (loading.is_complete()) {
 		for (auto& option : options) { win.draw(option.label); }
 		for (auto& control : control_list) { win.draw(control); }
 		win.draw(instruction);
 	}
-
 	left_dot.render(svc, win, {});
 	right_dot.render(svc, win, {});
 }
@@ -160,4 +167,4 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	refresh_controls(svc);
 }
 
-} // namespace automa
+} // namespace fornani::automa

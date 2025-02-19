@@ -1,30 +1,30 @@
 
 #pragma once
 
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/level/Tile.hpp"
+#include <optional>
 #include "BitFlags.hpp"
 #include "Shape.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/utils/CollisionDepth.hpp"
-#include <optional>
+#include "fornani/world/Tile.hpp"
 
-namespace world{
+namespace fornani::world {
 class Map;
 }
 
-namespace shape {
+namespace fornani::shape {
 
-float const default_dim = 24.0f;
-float const vicinity_pad = 32.f;
-float const wallslide_pad = 5.f;
+constexpr float default_dim = 24.0f;
+constexpr float vicinity_pad = 32.f;
+constexpr float wallslide_pad = 5.f;
 
-float const default_jumpbox_height = 4.0f;
-float const default_detector_width = 4.f;
-float const default_detector_height = 18.f;
+constexpr float default_jumpbox_height = 4.0f;
+constexpr float default_detector_width = 4.f;
+constexpr float default_detector_height = 18.f;
 
-enum class General { ignore_resolution, complex, pushable, soft, top_only_collision };
-enum class Animation { just_landed, sliding };
-enum class State {
+enum class General : uint8_t { ignore_resolution, complex, pushable, soft, top_only_collision };
+enum class Animation : uint8_t { just_landed, sliding };
+enum class State : uint8_t {
 	just_collided,
 	is_any_jump_collision,
 	is_any_collision,
@@ -40,7 +40,7 @@ enum class State {
 	on_flat_surface,
 	tickwise_ramp_collision
 };
-enum class ExternalState {
+enum class ExternalState : uint8_t {
 	grounded,
 	collider_collision,
 	vert_collider_collision,
@@ -54,18 +54,11 @@ enum class ExternalState {
 	tile_debug_flag,
 	ceiling_ramp_hit
 };
-enum class PermaFlags { world_grounded, downhill };
+enum class PermaFlags : uint8_t { world_grounded, downhill };
 
-enum class Collision {
-	any_collision,
-	has_left_collision,
-	has_right_collision,
-	has_top_collision,
-	has_bottom_collision,
-	ramp_collision
-};
-enum class Dash { dash_cancel_collision };
-enum class Movement { dashing, jumping };
+enum class Collision : uint8_t { any_collision, has_left_collision, has_right_collision, has_top_collision, has_bottom_collision, ramp_collision };
+enum class Dash : uint8_t { dash_cancel_collision };
+enum class Movement : uint8_t { dashing, jumping };
 
 struct PhysicsStats {
 	float GRAV{0.002f};
@@ -75,7 +68,7 @@ class Collider {
 
   public:
 	Collider();
-	Collider(sf::Vector2<float> dim, sf::Vector2<float> hbx_offset = {});
+	explicit Collider(sf::Vector2<float> dim, sf::Vector2<float> hbx_offset = {});
 
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
@@ -119,7 +112,7 @@ class Collider {
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
 	[[nodiscard]] auto get_below_point(int side = 0) const -> sf::Vector2<float> {
-		return side == 0 ? jumpbox.position + jumpbox.dimensions * 0.5f : side == -1 ? jumpbox.position + sf::Vector2<float>{0.f, 4.f} : jumpbox.position + jumpbox.dimensions - sf::Vector2<float>{0.f, 4.f};
+		return side == 0 ? jumpbox.get_position() + jumpbox.get_dimensions() * 0.5f : side == -1 ? jumpbox.get_position() + sf::Vector2<float>{0.f, 4.f} : jumpbox.get_position() + jumpbox.get_dimensions() - sf::Vector2<float>{0.f, 4.f};
 	}
 	[[nodiscard]] auto platform_collision() const -> bool { return flags.external_state.test(ExternalState::collider_collision); }
 	[[nodiscard]] auto left() const -> float { return bounding_box.left(); }
@@ -185,4 +178,4 @@ class Collider {
 	sf::RectangleShape draw_hurtbox{};
 };
 
-} // namespace shape
+} // namespace fornani::shape

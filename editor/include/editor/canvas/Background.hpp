@@ -5,13 +5,16 @@
 #include <unordered_map>
 #include <string>
 
-namespace data {
+#include "fornani/io/Logger.hpp"
+
+
+namespace fornani::data {
 class ResourceFinder;
 }
 
 namespace pi {
 
-enum class Backdrop { black, night, dusk, woods, END };
+enum class Backdrop { black, night, dusk, woods, canopy, END };
 class BackgroundType {
   public:
 	BackgroundType(Backdrop type) : type(type) {
@@ -20,6 +23,7 @@ class BackgroundType {
 		case Backdrop::night: label = "night"; break;
 		case Backdrop::dusk: label = "dusk"; break;
 		case Backdrop::woods: label = "woods"; break;
+		case Backdrop::canopy: label = "canopy"; break;
 		default: label = "<none>"; break;
 		}
 	}
@@ -48,7 +52,7 @@ struct BackgroundLayer {
 
 class Background {
   public:
-	Background(data::ResourceFinder& finder, Backdrop backdrop);
+	Background(fornani::data::ResourceFinder& finder, Backdrop backdrop);
 
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float>& campos);
@@ -63,6 +67,8 @@ class Background {
 	sf::Vector2<int> start_offset{};
 	bool* b_debug{};
 	sf::Texture texture{};
+
+	fornani::io::Logger m_logger{"pioneer"};
 };
 
 } // namespace pi

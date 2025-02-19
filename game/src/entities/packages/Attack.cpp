@@ -1,9 +1,11 @@
+
 #include "fornani/entities/packages/Attack.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
+
 #include <algorithm>
 
-namespace entity {
+namespace fornani::entity {
 
 void Attack::update() {
 	hit.bounds.setOrigin({hit.bounds.getRadius(), hit.bounds.getRadius()});
@@ -24,5 +26,9 @@ void Attack::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	sensor.render(win, cam);
 	hit.render(win, cam);
 }
+
+void Attack::enable() { hit.activate(); }
+
+void Attack::disable() { hit.deactivate(); }
 
 } // namespace entity

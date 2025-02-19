@@ -1,6 +1,7 @@
-#include <imgui.h>
-#include <iostream>
 #include "editor/gui/Console.hpp"
+#include <imgui.h>
+
+#include <string>
 
 namespace pi {
 
@@ -20,9 +21,9 @@ void Console::write_console(ImVec2 prev_size, ImVec2 prev_pos) {
 	work_size.y = port_size.y - prev_size.y - 3.f * pad;
 	ImGui::SetNextWindowPos(work_pos, ImGuiCond_Always);
 	ImGui::SetNextWindowSize(work_size);
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	ImGuiWindowFlags const window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-	if (ImGui::Begin("Console", NULL, window_flags)) { log.draw("Console", NULL); }
+	if (ImGui::Begin("Console", nullptr, window_flags)) { log.draw("Console", nullptr); }
 	ImGui::End();
 }
 

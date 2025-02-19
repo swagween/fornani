@@ -5,19 +5,19 @@
 #include "fornani/entities/atmosphere/Firefly.hpp"
 #include "fornani/entities/atmosphere/Dragonfly.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
-}
+} // namespace fornani::automa
 
-namespace world {
+namespace fornani::world {
 class Map;
-}
+} // namespace fornani::world
 
-namespace player {
+namespace fornani::player {
 class Player;
-}
+} // namespace fornani::player
 
-namespace vfx {
+namespace fornani::vfx {
 class Atmosphere {
   public:
 	Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, int type);
@@ -36,4 +36,4 @@ class Atmosphere {
 		float evade{};
 	} forces{};
 };
-} // namespace npc
+} // namespace fornani::npc

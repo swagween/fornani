@@ -2,16 +2,16 @@
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace vfx {
+namespace fornani::vfx {
 
 Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size) : scaled_position(pos), dimensions(size), color(col), attraction_force(agf) {
 	collider = shape::Collider(sf::Vector2<float>{4.f, 4.f}, sf::Vector2<float>{pos.x, pos.x});
-	collider.bounding_box.dimensions = Vec(4, 4);
+	collider.bounding_box.set_dimensions({4.f, 4.f});
 	collider.physics.position = static_cast<Vec>(pos) * lookup::unit_size_f;
-	collider.bounding_box = shape::Shape(collider.bounding_box.dimensions);
+	collider.bounding_box = shape::Shape(collider.bounding_box.get_dimensions());
 	collider.bounding_box.set_position(static_cast<Vec>(pos));
 	box.setSize(dimensions);
-	box.setPosition(collider.bounding_box.position);
+	box.setPosition(collider.bounding_box.get_position());
 	box.setFillColor(color);
 }
 
@@ -48,7 +48,7 @@ void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec
 	}
 
 	box.setFillColor(prev_color);
-	box.setPosition(collider.bounding_box.position - campos);
+	box.setPosition(collider.bounding_box.get_position() - campos);
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(box);

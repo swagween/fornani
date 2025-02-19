@@ -1,12 +1,13 @@
+#pragma once
+
 #include <SFML/Graphics.hpp>
 #include <string>
-#include <string_view>
 #include <variant>
 #include <vector>
 
-namespace util {
+namespace fornani::util {
 
-class RichText : public sf::Drawable, public sf::Transformable {
+class RichText final : public sf::Drawable, public sf::Transformable {
   public:
 	/// @brief Append some text to the list of segments.
 	void add_text(std::string_view text, sf::Font const& font, unsigned int size, sf::Color color = sf::Color::White) {
@@ -34,7 +35,7 @@ class RichText : public sf::Drawable, public sf::Transformable {
 	}
 
 	// Draw all segments
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		states.transform *= getTransform(); // Apply transformations
 
 		for (auto const& segment : m_segments) {
@@ -54,4 +55,4 @@ class RichText : public sf::Drawable, public sf::Transformable {
 	std::vector<Segment> m_segments{};
 };
 
-} // namespace util
+} // namespace fornani::util

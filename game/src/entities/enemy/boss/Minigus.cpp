@@ -1,13 +1,17 @@
 #include "fornani/entities/enemy/boss/Minigus.hpp"
-#include "fornani/gui/Console.hpp"
-#include "fornani/level/Map.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/entities/player/Player.hpp"
 
-namespace enemy {
+#include <iostream>
+
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
+
+namespace fornani::enemy {
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console)
-	: Enemy(svc, "minigus"), gun(svc, 1), soda(svc, 2), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.dimensions, svc.styles.colors.ui_white, "minigus"),
+	: Enemy(svc, "minigus"), gun(svc, 1), soda(svc, 2), m_services(&svc), npc::NPC(svc, 7), m_map(&map), m_console(&console), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.get_dimensions(), svc.styles.colors.ui_white, "minigus"),
 	  voice{.hurt_1 = sf::Sound(svc.assets.b_minigus_hurt_1),
 			.hurt_2 = sf::Sound(svc.assets.b_minigus_hurt_2),
 			.hurt_3 = sf::Sound(svc.assets.b_minigus_hurt_3),
@@ -82,7 +86,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	attacks.rush.origin = {40.f, 10.f};
 	attacks.rush.hit_offset = {-20.f, 0.f};
 
-	distant_range.dimensions = {900, 200};
+	distant_range.set_dimensions({900, 200});
 	Enemy::collider.stats.GRAV = 6.0f;
 	pre_direction.lr = dir::LR::left;
 	post_direction.lr = dir::LR::left;
@@ -90,16 +94,16 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	Enemy::direction.lr = dir::LR::left;
 
 	push_conversation("1");
-	
+
 	voice.greatidea.setVolume(30),
 
-	sparkler.set_dimensions(Enemy::collider.vicinity.dimensions);
+		sparkler.set_dimensions(Enemy::collider.vicinity.get_dimensions());
 }
 
 void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	directions.actual = post_direction;
 	sparkler.update(svc);
-	sparkler.set_position(Enemy::collider.vicinity.position);
+	sparkler.set_position(Enemy::collider.vicinity.get_position());
 	health_bar.update(svc, health.get_normalized());
 
 	if (map.off_the_bottom(Enemy::collider.physics.position)) {
@@ -116,7 +120,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 		attacks.rush.origin.x = 40.f;
 		attacks.rush.hit_offset.x = -20.f;
 	} else {
-		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.dimensions.x, 0.f};
+		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
 		attacks.punch.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.uppercut.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.rush.set_position(Enemy::collider.physics.position + dir_offset);
@@ -148,8 +152,8 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	attacks.uppercut.handle_player(player);
 	attacks.rush.handle_player(player);
 
-	attacks.left_shockwave.origin = Enemy::collider.physics.position + sf::Vector2<float>{0.f, Enemy::collider.bounding_box.dimensions.y};
-	attacks.right_shockwave.origin = Enemy::collider.physics.position + Enemy::collider.bounding_box.dimensions;
+	attacks.left_shockwave.origin = Enemy::collider.physics.position + sf::Vector2<float>{0.f, Enemy::collider.bounding_box.get_dimensions().y};
+	attacks.right_shockwave.origin = Enemy::collider.physics.position + Enemy::collider.bounding_box.get_dimensions();
 	attacks.left_shockwave.update(svc, map);
 	attacks.right_shockwave.update(svc, map);
 
@@ -193,13 +197,12 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 			}
 		}
 	}
-		for (auto& breakable : map.breakables) {
-			if (Enemy::collider.jumpbox.overlaps(breakable.get_bounding_box())) { breakable.on_smash(svc, map, 4); }
-			if (state == MinigusState::rush && attacks.rush.hit.within_bounds(breakable.get_bounding_box())) {
-				if (svc.ticker.every_x_ticks(18)) { breakable.on_smash(svc, map, 1); }
-			}
+	for (auto& breakable : map.breakables) {
+		if (Enemy::collider.jumpbox.overlaps(breakable.get_bounding_box())) { breakable.on_smash(svc, map, 4); }
+		if (state == MinigusState::rush && attacks.rush.hit.within_bounds(breakable.get_bounding_box())) {
+			if (svc.ticker.every_x_ticks(18)) { breakable.on_smash(svc, map, 1); }
 		}
-	
+	}
 
 	minigun.animation.update();
 	if (minigun.sprite.getScale() != visual.sprite.getScale()) {
@@ -222,7 +225,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	secondary_collider.physics.position.x += Enemy::direction.lr == dir::LR::left ? 0 : Enemy::collider.dimensions.x - secondary_collider.dimensions.x;
 	secondary_collider.sync_components();
 	if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.collider.handle_collider_collision(secondary_collider); }
-	distant_range.set_position(Enemy::collider.bounding_box.position - (distant_range.dimensions * 0.5f) + (Enemy::collider.dimensions * 0.5f));
+	distant_range.set_position(Enemy::collider.bounding_box.get_position() - (distant_range.get_dimensions() * 0.5f) + (Enemy::collider.dimensions * 0.5f));
 	player.collider.bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
 	player.on_crush(map);
 
@@ -236,9 +239,9 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 
 	if (flags.state.test(StateFlags::hurt)) {
 		cooldowns.hurt.start();
-		if (svc.random.percent_chance(40)) {
+		if (util::Random::percent_chance(40)) {
 			voice.hurt_1.play();
-		} else if (svc.random.percent_chance(40)) {
+		} else if (util::Random::percent_chance(40)) {
 			voice.hurt_2.play();
 		} else {
 			voice.hurt_3.play();
@@ -249,13 +252,13 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (just_died()) {}
 
 	if (minigun.flags.test(MinigunFlags::exhausted) && cooldowns.firing.is_complete()) {
-		if (svc.random.percent_chance(12)) { state = MinigusState::reload; }
+		if (util::Random::percent_chance(12)) { state = MinigusState::reload; }
 	}
 
 	if (gun.clip_cooldown.is_complete() && !minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && hostile()) {
-		// if (m_services->random.percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
-		if (m_services->random.percent_chance(fire_chance)) {
-			if (m_services->random.percent_chance(50)) {
+		// if (util::Random::percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
+		if (util::Random::percent_chance(fire_chance)) {
+			if (util::Random::percent_chance(50)) {
 				state = MinigusState::jump_shoot;
 			} else {
 				state = MinigusState::shoot;
@@ -264,7 +267,7 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	}
 
 	if (player.collider.bounding_box.overlaps(Enemy::collider.vicinity)) {
-		if (m_services->random.percent_chance(30)) {
+		if (util::Random::percent_chance(30)) {
 			state = MinigusState::run;
 		} else {
 			state = MinigusState::jumpsquat;
@@ -293,8 +296,8 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (!status.test(MinigusFlags::second_phase) && half_health()) { state = MinigusState::struggle; }
 
 	if (half_health()) {
-		auto pos = secondary_collider.physics.position + svc.random.random_vector_float(10.f, 40.f);
-		if (svc.ticker.every_x_ticks(10) && svc.random.percent_chance(5)) { map.effects.push_back(entity::Effect(svc, pos, {0.f, 4.f}, 3, 7)); }
+		auto pos = secondary_collider.physics.position + util::Random::random_vector_float(10.f, 40.f);
+		if (svc.ticker.every_x_ticks(10) && util::Random::percent_chance(5)) { map.effects.push_back(entity::Effect(svc, pos, {0.f, 4.f}, 3, 7)); }
 	}
 
 	// NPC stuff
@@ -302,7 +305,8 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) { triggers.set(npc::NPCTrigger::distant_interact); }
 
 	NPC::update(svc, map, *m_console, player);
-	auto voice_cue = player.transponder.shipments.voice.consume_pulse();
+	// auto voice_cue = player.transponder.shipments.voice.consume_pulse();
+	auto voice_cue{1};
 	if (voice_cue == 1) { voice.greatidea.play(); }
 	if (voice_cue == 2) { voice.dontlookatme.play(); }
 	if (voice_cue == 3) { voice.laugh_1.play(); }
@@ -421,7 +425,7 @@ fsm::StateFunction Minigus::update_shoot() {
 				animation.set_params(rush);
 				return MINIGUS_BIND(update_rush);
 			}
-			if (m_services->random.percent_chance(50)) {
+			if (util::Random::percent_chance(50)) {
 				state = MinigusState::run;
 				animation.set_params(run);
 				return MINIGUS_BIND(update_run);
@@ -468,7 +472,7 @@ fsm::StateFunction Minigus::update_hurt() {
 fsm::StateFunction Minigus::update_jump() {
 	if (animation.just_started() && anim_debug) { std::cout << "jump\n"; }
 	if (animation.just_started()) { voice.woob.play(); }
-	//std::cout << animation.global_counter.get_count() << "\n";
+	// std::cout << animation.global_counter.get_count() << "\n";
 	cooldowns.jump.update();
 	if (animation.just_started()) { cooldowns.jump.start(); }
 	auto sign = Enemy::direction.lr == dir::LR::left ? -1.f : 1.f;
@@ -537,7 +541,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 			return MINIGUS_BIND(update_rush);
 		}
 
-		if (m_services->random.percent_chance(50)) {
+		if (util::Random::percent_chance(50)) {
 			state = MinigusState::idle;
 			animation.set_params(idle);
 			return MINIGUS_BIND(update_idle);
@@ -561,25 +565,24 @@ fsm::StateFunction Minigus::update_reload() {
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
 
 		if (invincible()) {
-			if (m_services->random.percent_chance(50)) {
+			if (util::Random::percent_chance(50)) {
 				state = MinigusState::shoot;
 				animation.set_params(shoot);
 				return MINIGUS_BIND(update_shoot);
 			}
-				state = MinigusState::jump_shoot;
-				animation.set_params(jump_shoot);
-				return MINIGUS_BIND(update_jump_shoot);
-			
+			state = MinigusState::jump_shoot;
+			animation.set_params(jump_shoot);
+			return MINIGUS_BIND(update_jump_shoot);
+
 		} else {
-			if (m_services->random.percent_chance(40)) {
+			if (util::Random::percent_chance(40)) {
 				state = MinigusState::laugh;
 				animation.set_params(laugh);
 				return MINIGUS_BIND(update_laugh);
 			}
-				state = MinigusState::run;
-				animation.set_params(run);
-				return MINIGUS_BIND(update_run);
-			
+			state = MinigusState::run;
+			animation.set_params(run);
+			return MINIGUS_BIND(update_run);
 		}
 	}
 	state = MinigusState::reload;
@@ -599,13 +602,13 @@ fsm::StateFunction Minigus::update_turn() {
 				animation.set_params(reload);
 				return MINIGUS_BIND(update_reload);
 			}
-			if(counters.invincible_turn.get_count() > 3) {
+			if (counters.invincible_turn.get_count() > 3) {
 				counters.invincible_turn.start();
 				state = MinigusState::rush;
 				animation.set_params(rush);
 				return MINIGUS_BIND(update_rush);
 			}
-			if (m_services->random.percent_chance(50)) {
+			if (util::Random::percent_chance(50)) {
 				state = MinigusState::shoot;
 				animation.set_params(shoot);
 				return MINIGUS_BIND(update_shoot);
@@ -737,7 +740,7 @@ fsm::StateFunction Minigus::update_build_invincibility() {
 fsm::StateFunction Minigus::update_laugh() {
 	if (animation.just_started() && anim_debug) { std::cout << "laugh\n"; }
 	if (animation.just_started()) {
-		if (m_services->random.percent_chance(50)) {
+		if (util::Random::percent_chance(50)) {
 			voice.laugh_1.play();
 		} else {
 			voice.laugh_2.play();
@@ -752,7 +755,7 @@ fsm::StateFunction Minigus::update_laugh() {
 				return MINIGUS_BIND(update_snap);
 			}
 			if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
-			if (m_services->random.percent_chance(50)) {
+			if (util::Random::percent_chance(50)) {
 				state = MinigusState::shoot;
 				animation.set_params(shoot);
 				return MINIGUS_BIND(update_shoot);
@@ -778,8 +781,8 @@ fsm::StateFunction Minigus::update_snap() {
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.complete()) {
 		for (int i{0}; i < 2; ++i) {
-			auto randx = m_services->random.random_range_float(-80.f, 80.f);
-			auto randy = m_services->random.random_range_float(-160.f, 0.f);
+			auto randx = util::Random::random_range_float(-80.f, 80.f);
+			auto randy = util::Random::random_range_float(-160.f, 0.f);
 			sf::Vector2<float> rand_vec{randx, randy};
 			sf::Vector2<float> spawn = Enemy::collider.get_center() + rand_vec;
 			m_map->spawn_enemy(5, spawn);
@@ -822,7 +825,7 @@ fsm::StateFunction Minigus::update_struggle() {
 	minigun.animation.set_params(minigun.neutral);
 	minigun.state = MinigunState::neutral;
 	// always do
-	sf::Vector2<float> pos = secondary_collider.physics.position + m_services->random.random_vector_float(0.f, 50.f);
+	sf::Vector2<float> pos = secondary_collider.physics.position + util::Random::random_vector_float(0.f, 50.f);
 	if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, pos, {}, 3, 0)); }
 	Enemy::shake();
 	Enemy::sprite_shake(*m_services, 20, 8);
@@ -883,7 +886,7 @@ fsm::StateFunction Minigus::update_struggle() {
 fsm::StateFunction Minigus::update_exit() {
 	if (animation.just_started() && anim_debug) { std::cout << "exit\n"; }
 	if (status.test(MinigusFlags::over_and_out) && m_console->is_complete()) {
-		m_map->active_loot.push_back(item::Loot(*m_services, get_attributes().drop_range, get_attributes().loot_multiplier, get_collider().bounding_box.position));
+		m_map->active_loot.push_back(item::Loot(*m_services, get_attributes().drop_range, get_attributes().loot_multiplier, get_collider().bounding_box.get_position()));
 		state = MinigusState::jumpsquat;
 		animation.set_params(jumpsquat);
 		m_services->music.load(m_services->finder, "dusken_cove");
@@ -939,4 +942,4 @@ bool Minigus::change_state(MinigusState next, anim::Parameters params) {
 	return false;
 }
 
-} // namespace enemy
+} // namespace fornani::enemy

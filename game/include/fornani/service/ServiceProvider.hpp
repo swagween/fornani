@@ -3,9 +3,11 @@
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/automa/MenuController.hpp"
 #include "fornani/automa/StateController.hpp"
+#include "fornani/core/AssetManager.hpp"
+#include "fornani/graphics/CameraController.hpp"
 #include "fornani/graphics/Style.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/setup/AccessibilityService.hpp"
-#include "fornani/setup/AssetManager.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 #include "fornani/setup/DataManager.hpp"
 #include "fornani/setup/Tables.hpp"
@@ -16,18 +18,16 @@
 #include "fornani/story/StatTracker.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Constants.hpp"
-#include "fornani/utils/Logger.hpp"
-#include "fornani/utils/Random.hpp"
 #include "fornani/utils/Stopwatch.hpp"
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
 
-namespace automa {
-enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
-enum class AppFlags { fullscreen, tutorial, in_game };
-enum class StateFlags { hide_hud, no_menu };
+namespace fornani::automa {
+enum class DebugFlags : uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
+enum class AppFlags : uint8_t { fullscreen, tutorial, in_game };
+enum class StateFlags : uint8_t { hide_hud, no_menu };
 struct PlayerDat {
-	void set_piggy_id(int id) { piggy_id = id; }
+	void set_piggy_id(int const id) { piggy_id = id; }
 	void unpiggy() { drop_piggy = true; }
 	int piggy_id{};
 	bool drop_piggy{};
@@ -35,40 +35,46 @@ struct PlayerDat {
 struct MapDebug {
 	int active_projectiles{};
 };
+// TODO: Honestly the entire ServiceProvider needs to go but it's gonna be a slow process of eliminating it.
+/*
+ * Here
+ */
 struct ServiceProvider {
-	ServiceProvider(char** argv, fornani::Version& version, fornani::WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
+	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
 
+	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
 	data::TextManager text;
 	data::DataManager data;
-	fornani::Version* version;
-	fornani::WindowManager* window;
+	Version* version;	   // TODO: Remove. Make Free-Standing.
+	WindowManager* window; // TODO: Move this into the Application class and make it into a MonoInstance
 	asset::AssetManager assets;
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::BitFlags<AppFlags> app_flags{};
 	util::BitFlags<StateFlags> state_flags{};
-	util::Random random{};
-	util::Ticker ticker{};
-	fornani::WorldClock world_clock{};
-	util::Constants constants{};
+	util::Ticker ticker{}; // TODO: Remove. Make Free-Standing. This one is gonna be hard to remove as the underlying logic needs to change for many functions.
+	WorldClock world_clock{};
+	util::Constants constants{}; // TODO: Remove. Make Free-Standing.
 	StateController state_controller{};
 	MenuController menu_controller{};
-	audio::Soundboard soundboard{*this};
-	audio::MusicPlayer music{};
-	fornani::QuestTracker quest{};
-	fornani::StatTracker stats{};
+	audio::Soundboard soundboard{*this}; // TODO: Remove. Make Free-Standing. Maybe?
+	audio::MusicPlayer music{};			 // TODO: Remove. Make Free-Standing. Maybe?
+	QuestTracker quest{};
+	StatTracker stats{};
 	PlayerDat player_dat{};
 	MapDebug map_debug{};
 	util::Logger logger{};
 	config::AccessibilityService a11y{};
+	graphics::CameraController camera_controller{};
+	int current_room{}; // TODO: Find a better way to deliver this info to the MiniMap.
 
 	// debug stuff
-	util::Stopwatch stopwatch{};
 	int out_value{};
 
+	// TODO: Much of this honestly should be handled by different areas of the project instead of by the ServiceProvider.
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
 	void toggle_debug() { debug_mode() ? debug_flags.reset(DebugFlags::debug_mode) : debug_flags.set(DebugFlags::debug_mode); }
@@ -86,4 +92,4 @@ struct ServiceProvider {
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
 	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool { return window->in_window(point, dimensions); }
 };
-} // namespace automa
+} // namespace fornani::automa

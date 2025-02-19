@@ -8,4 +8,5 @@ nani_add_headers(
         Grid.hpp
         Layer.hpp
         Tile.hpp
+        Map.hpp
 )

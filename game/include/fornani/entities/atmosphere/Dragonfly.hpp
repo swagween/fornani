@@ -7,19 +7,19 @@
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
-}
+} // namespace fornani::automa
 
-namespace world {
+namespace fornani::world {
 class Map;
-}
+} // namespace fornani::world
 
-namespace player {
+namespace fornani::player {
 class Player;
-}
+} // namespace fornani::player
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Dragonfly {
   public:
@@ -40,4 +40,4 @@ class Dragonfly {
 	} forces{};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

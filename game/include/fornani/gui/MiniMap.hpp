@@ -3,21 +3,21 @@
 #include <SFML/Graphics.hpp>
 #include "Console.hpp"
 #include "Selector.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/graphics/MapTexture.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/utils/Circuit.hpp"
 
-namespace player {
+namespace fornani::player {
 class Player;
 }
 
-namespace entity {
+namespace fornani::entity {
 class Portal;
 }
 
-namespace gui {
+namespace fornani::gui {
 
-enum class ChunkType { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
+enum class ChunkType : uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 
 struct Chunk {
 	sf::Vector2<uint32_t> position{};
@@ -29,7 +29,7 @@ struct Chunk {
 
 class MiniMap {
   public:
-	MiniMap(automa::ServiceProvider& svc);
+	explicit MiniMap(automa::ServiceProvider& svc);
 	void bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current = false, bool undiscovered = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -37,7 +37,7 @@ class MiniMap {
 	void move(sf::Vector2<float> direction);
 	void center();
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
-	[[nodiscard]] auto get_extent() const -> sf::FloatRect{ return extent; }
+	[[nodiscard]] auto get_extent() const -> sf::FloatRect { return extent; }
 	[[nodiscard]] auto get_center_position() const -> sf::Vector2<float> { return center_position; }
 	[[nodiscard]] auto get_scale() const -> float { return scale; }
 	[[nodiscard]] auto get_ratio() const -> float { return ratio; }
@@ -71,4 +71,4 @@ class MiniMap {
 	util::Circuit scalar{3};
 };
 
-} // namespace gui
+} // namespace fornani::gui

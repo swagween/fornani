@@ -1,10 +1,10 @@
 #include "fornani/entities/packages/Shockwave.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include <algorithm>
 
-namespace entity {
+namespace fornani::entity {
 
 Shockwave::Shockwave(sf::Vector2<float> speed) : speed(speed) {
 	hit.bounds.setRadius(16.f);

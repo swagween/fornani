@@ -1,13 +1,14 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Caution.hpp"
 #define TANK_BIND(f) std::bind(&Tank::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
-enum class TankState { idle, turn, run, shoot, alert };
+enum class TankState : uint8_t { idle, turn, run, shoot, alert };
 
-class Tank : public Enemy {
+class Tank final : public Enemy {
 
 	  public:
 		Tank() = delete;

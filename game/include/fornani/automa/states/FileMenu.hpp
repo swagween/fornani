@@ -4,24 +4,27 @@
 #include "fornani/automa/GameState.hpp"
 #include "fornani/gui/MiniMenu.hpp"
 
-namespace automa {
+#include <optional>
 
-class FileMenu : public automa::GameState {
+namespace fornani::automa {
 
-	static int const num_files{3};
+class FileMenu final : public GameState {
+
+	static constexpr int num_files{3};
 
   public:
 	FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
-	void tick_update(ServiceProvider& svc);
-	void frame_update(ServiceProvider& svc);
-	void render(ServiceProvider& svc, sf::RenderWindow& win);
+	void tick_update(ServiceProvider& svc) override;
+	void frame_update(ServiceProvider& svc) override;
+	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void refresh(ServiceProvider& svc);
 
 	sf::RectangleShape title{};
-private:
+
+  private:
 	util::Cooldown loading{};
 	world::Map map;
-	gui::MiniMenu file_select_menu;
+	std::optional<gui::MiniMenu> m_file_select_menu{};
 };
 
-}
+} // namespace fornani::automa

@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 
-namespace style {
+namespace fornani::style {
 
 class Style {
   public:
@@ -31,6 +31,7 @@ class Style {
 		sf::Color beige{217, 214, 160};
 		sf::Color treasure_blue{15, 104, 248};
 		sf::Color bright_purple{219, 194, 255};
+		sf::Color pioneer_red{229, 59, 68};
 	} colors{};
 
 	std::unordered_map<std::string_view, sf::Color> spray_colors{{"clover", colors.green},
@@ -44,4 +45,4 @@ class Style {
 																 {"Wasp", colors.ui_white}};
 };
 
-} // namespace style
+} // namespace fornani::style

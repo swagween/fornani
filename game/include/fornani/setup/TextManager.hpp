@@ -1,20 +1,17 @@
 
 #pragma once
 
-#include <assert.h>
 #include <SFML/Graphics/Text.hpp>
 #include <djson/json.hpp>
-#include <iostream>
-#include <string>
 #include "ResourceFinder.hpp"
 
-namespace data {
+namespace fornani::data {
 
 class TextManager {
-	public:
-	TextManager(ResourceFinder& finder);
+  public:
+	explicit TextManager(ResourceFinder& finder);
 
-	//jsons
+	// jsons
 	dj::Json console{};
 	dj::Json inspectables{};
 	dj::Json basic{};
@@ -31,4 +28,4 @@ class TextManager {
 	} fonts{};
 };
 
-} // namespace data
+} // namespace fornani::data

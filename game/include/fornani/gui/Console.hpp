@@ -1,38 +1,33 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <array>
-#include <string>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/graphics/TextWriter.hpp"
-#include "Portrait.hpp"
 #include "ItemWidget.hpp"
-#include "fornani/utils/QuestCode.hpp"
+#include "Portrait.hpp"
+#include "fornani/gui/TextWriter.hpp"
+#include "fornani/io/Logger.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/NineSlice.hpp"
+#include "fornani/utils/RectPath.hpp"
 
-namespace gui {
+#include <SFML/Graphics.hpp>
 
-int const corner_factor{56};
-int const edge_factor{2};
-float const height_factor{3.0f};
+#include <memory>
+#include <string>
 
-float const pad{168.f};
-float const text_pad{8.0f};
+namespace fornani::config {
+class ControllerMap;
+}
 
-enum class ConsoleFlags { active, loaded, selection_mode, portrait_included, off_trigger, extended, display_item, exited };
+namespace fornani::gui {
 
-struct Border {
-	float left{};
-	float right{};
-	float top{};
-	float bottom{};
-};
+enum class ConsoleMode { writing, responding, off };
+enum class ConsoleFlags : uint8_t { portrait_included, display_item };
+enum class OutputType { instant, gradual };
 
 class Console {
 
   public:
-	Console(automa::ServiceProvider& svc);
+	explicit Console(automa::ServiceProvider& svc);
 
 	void begin();
 	void update(automa::ServiceProvider& svc);
@@ -40,30 +35,24 @@ class Console {
 
 	void set_source(dj::Json& json);
 	void set_texture(sf::Texture& tex);
-	void load_and_launch(std::string_view key);
+	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual);
+	void load_single_message(std::string_view message);
 	void display_item(int item_id);
 	void display_gun(int gun_id);
-	void write(sf::RenderWindow& win, bool instant = true);
+	void write(sf::RenderWindow& win, bool instant);
+	void write(sf::RenderWindow& win);
 	void append(std::string_view key);
 	void end();
-	void end_tick();
-	void clean_off_trigger();
 	void include_portrait(int id);
 
 	std::string get_key();
 
-	[[nodiscard]] auto active() const -> bool { return flags.test(ConsoleFlags::active); }
-	[[nodiscard]] auto is_complete() const -> bool { return writer.empty(); }
-	[[nodiscard]] auto extended() const -> bool { return sprite.is_extended(); }
-	[[nodiscard]] auto off() const -> bool { return flags.test(ConsoleFlags::off_trigger); }
-	[[nodiscard]] auto exited() const -> bool { return flags.test(ConsoleFlags::exited); }
-	[[nodiscard]] auto consume_exited() -> bool { return flags.consume(ConsoleFlags::exited); }
+	[[nodiscard]] auto is_active() const -> bool { return m_mode == ConsoleMode::writing || m_mode == ConsoleMode::responding; }
+	[[nodiscard]] auto is_complete() const -> bool { return !is_active(); }
+	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
 
-	sf::Vector2<float> position{};
-	sf::Vector2<float> dimensions{};
-	sf::Vector2<float> text_origin{};
 	util::BitFlags<ConsoleFlags> flags{};
-	util::NineSlice sprite;
+	util::RectPath m_path;
 
 	dj::Json text_suite{};
 
@@ -74,7 +63,7 @@ class Console {
 
 	automa::ServiceProvider* m_services;
 
-	text::TextWriter writer;
+	std::unique_ptr<TextWriter> writer;
 	std::string native_key{};
 
 	struct {
@@ -82,15 +71,20 @@ class Console {
 		int out_emotion{};
 	} communicators{};
 
-	Border border{
-		48.f,
-		40.f,
-		26.f,
-		26.f
-	};
+  protected:
+	void handle_inputs(config::ControllerMap& controller);
 
-	protected:
-	sf::Vector2<float> origin{}; // bottom left corner
+	sf::Vector2<float> position{};
+	sf::Vector2<float> dimensions{};
+	OutputType m_output_type{};
+	ConsoleMode m_mode{};
+	io::Logger m_logger{"Console"};
+	struct {
+		int corner_factor{};
+		int edge_factor{};
+		float padding_scale{};
+	} m_styling{};
+	util::NineSlice m_nineslice;
 };
 
-} // namespace gui
+} // namespace fornani::gui

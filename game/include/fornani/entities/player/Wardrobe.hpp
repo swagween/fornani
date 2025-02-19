@@ -5,21 +5,21 @@
 #include <unordered_map>
 #include <string_view>
 
-#include "fornani/utils/Logger.hpp"
+#include "fornani/io/Logger.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace gui {
+namespace fornani::gui {
 class Console;
 }
 
-namespace flfx {
+namespace fornani::flfx {
 class TextureUpdater;
 }
 
-namespace player {
+namespace fornani::player {
 
 enum class ApparelType { shirt, pants, hairstyle, jacket, headgear, END };
 
@@ -36,7 +36,7 @@ class Wardrobe {
 	std::unordered_map<ApparelType, int> apparel{};
 	sf::Texture palette{};
 
-	fornani::Logger m_logger { "entities" };
+	io::Logger m_logger { "entities" };
 };
 
-} // namespace player
+} // namespace fornani::player

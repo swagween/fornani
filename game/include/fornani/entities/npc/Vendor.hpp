@@ -4,12 +4,12 @@
 #include <vector>
 #include "fornani/entities/player/Inventory.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace npc {
-enum class VendorType { surveyor, gunsmith, engineer, fortuneteller };
+namespace fornani::npc {
+enum class VendorType : uint8_t { surveyor, gunsmith, engineer, fortuneteller };
 /* NPCs will optionally have this package */
 class Vendor {
   public:
@@ -24,4 +24,4 @@ class Vendor {
 	float upcharge{0.2f};
 	int stock_size{6};
 };
-} // namespace npc
+} // namespace fornani::npc

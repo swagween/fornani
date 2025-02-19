@@ -1,16 +1,16 @@
 #pragma once
-#include <deque>
 #include <SFML/Graphics.hpp>
+#include <deque>
 #include "Counter.hpp"
 
-namespace shape {
+namespace fornani::shape {
 class Shape;
 class Collider;
-}
+} // namespace fornani::shape
 
-namespace util {
+namespace fornani::util {
 
-	enum class CollisionDirection { none, vertical, horizontal };
+enum class CollisionDirection : uint8_t { none, vertical, horizontal };
 
 struct Depth {
 	float left{};
@@ -38,7 +38,7 @@ class CollisionDepth {
 	[[nodiscard]] auto right_depth() const -> float { return out_depth.right; }
 	[[nodiscard]] auto top_depth() const -> float { return out_depth.top; }
 	[[nodiscard]] auto bottom_depth() const -> float { return out_depth.bottom; }
-	
+
   private:
 	void try_push();
 
@@ -54,4 +54,4 @@ class CollisionDepth {
 	sf::RectangleShape collision_ray{};
 };
 
-} // namespace util
+} // namespace fornani::util

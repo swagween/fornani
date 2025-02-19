@@ -1,17 +1,16 @@
 
 #pragma once
-#include <vector>
-#include <string_view>
+
 #include <optional>
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Fader.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace vfx {
+namespace fornani::vfx {
 
 class Spark {
   public:

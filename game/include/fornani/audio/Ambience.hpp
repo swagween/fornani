@@ -1,17 +1,14 @@
 
 #pragma once
 
-#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
 #include "MusicPlayer.hpp"
-#include <thread>
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace audio {
+namespace fornani::audio {
 
 class Ambience {
   public:

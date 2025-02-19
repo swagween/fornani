@@ -1,14 +1,16 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/Caution.hpp"
+#include "fornani/entities/packages/FloatingPart.hpp"
 #define ARCHER_BIND(f) std::bind(&Archer::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class ArcherState { idle, turn, run, jump, shoot };
 enum class ArcherVariant { huntress, defender };
 
-class Archer : public Enemy {
+class Archer final : public Enemy {
 
   public:
 	Archer() = delete;
@@ -57,4 +59,4 @@ class Archer : public Enemy {
 	bool change_state(ArcherState next, anim::Parameters params);
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

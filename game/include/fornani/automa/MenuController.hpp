@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string>
-#include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+#include <cstdint>
 
-enum class MenuStatus { vendor };
+namespace fornani::automa {
+
+enum class MenuStatus : std::uint8_t { vendor };
 
 class MenuController {
   public:
@@ -18,5 +18,4 @@ class MenuController {
 	util::BitFlags<MenuStatus> status{};
 	int menu_id{};
 };
-
-}
+} // namespace fornani::automa

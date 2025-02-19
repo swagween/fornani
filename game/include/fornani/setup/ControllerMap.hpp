@@ -3,17 +3,16 @@
 
 #include <steam/isteaminput.h>
 #include <SFML/Graphics.hpp>
-#include <cstdint>
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include "fornani/utils/BitFlags.hpp"
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace config {
+namespace fornani::config {
 
 enum class DigitalAction : int {
 	// Platformer controls
@@ -55,20 +54,20 @@ enum class DigitalAction : int {
 	COUNT
 };
 
-enum class AnalogAction {
+enum class AnalogAction : uint8_t {
 	// Map controls
 	map_movement,
 };
 
-enum class ActionSet {
+enum class ActionSet : uint8_t {
 	Platformer,
 	Inventory,
 	Map,
 	Menu,
 };
 
-enum class ControllerType { keyboard, gamepad };
-enum class ControllerStatus { gamepad_connected };
+enum class ControllerType : uint8_t { keyboard, gamepad };
+enum class ControllerStatus : uint8_t { gamepad_connected };
 
 struct DigitalActionSource {
 	EInputActionOrigin controller_origin{};
@@ -76,7 +75,7 @@ struct DigitalActionSource {
 };
 
 struct DigitalActionStatus {
-	DigitalActionStatus(DigitalAction action) : action(action) {}
+	explicit DigitalActionStatus(DigitalAction const action) : action(action) {}
 	DigitalAction action{};
 	bool held{};
 	bool triggered{};
@@ -84,7 +83,7 @@ struct DigitalActionStatus {
 };
 
 struct AnalogActionStatus {
-	AnalogActionStatus(AnalogAction action) : action(action) {}
+	explicit AnalogActionStatus(AnalogAction const action) : action(action) {}
 	AnalogAction action{};
 
 	float x{};
@@ -93,7 +92,7 @@ struct AnalogActionStatus {
 
 class ControllerMap {
   public:
-	ControllerMap(automa::ServiceProvider& svc);
+	explicit ControllerMap(automa::ServiceProvider& svc);
 
 	ControllerMap(ControllerMap const&) = delete;
 	ControllerMap operator=(ControllerMap const&) = delete;
@@ -193,4 +192,4 @@ class ControllerMap {
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_disconnection, SteamInputDeviceDisconnected_t);
 };
 
-} // namespace config
+} // namespace fornani::config

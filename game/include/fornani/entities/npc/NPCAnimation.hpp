@@ -6,11 +6,11 @@
 #include <string_view>
 #define NPC_BIND(f) std::bind(&NPCAnimation::f, this)
 
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace npc {
+namespace fornani::npc {
 
 enum class NPCAnimState { idle, turn, walk, inspect };
 enum class NPCCommunication { sprite_flip };

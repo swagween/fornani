@@ -1,23 +1,18 @@
 
 #include "fornani/weapon/Projectile.hpp"
-#include "fornani/weapon/Weapon.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
+#include "fornani/utils/Random.hpp"
+#include "fornani/weapon/Weapon.hpp"
 
-namespace arms {
+namespace fornani::arms {
 
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy) : metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.projectile_textures.at(label)}} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id]["class_package"]["projectile"] : svc.data.weapon["weapons"][id]["class_package"]["projectile"];
 
 	metadata.type = static_cast<ProjectileType>(in_data["type"].as<int>());
-	// package
-	/*switch (metadata.type) {
-	case ProjectileType::bullet: package.bullet = std::make_unique<BulletPackage>(svc, svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this); break;
-	case ProjectileType::missile: break;
-	case ProjectileType::melee: break;
-	}*/
 	physical.bounding_box = shape::Shape({in_data["dimensions"][0].as<float>(), in_data["dimensions"][1].as<float>()});
 	visual.sprite.set_dimensions({in_data["dimensions"][0].as<int>(), in_data["dimensions"][1].as<int>()});
 
@@ -25,7 +20,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
 	metadata.specifications.speed = in_data["attributes"]["speed"].as<float>();
 	metadata.specifications.speed_variance = in_data["attributes"]["speed_variance"].as<float>();
-	metadata.specifications.speed += svc.random.random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
+	metadata.specifications.speed += util::Random::random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
 	metadata.specifications.variance = in_data["attributes"]["variance"].as<float>();
 	metadata.specifications.stun_time = in_data["attributes"]["stun_time"].as<float>();
 	metadata.specifications.knockback = in_data["attributes"]["knockback"].as<float>();
@@ -52,22 +47,22 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	metadata.specifications.lifespan = in_data["attributes"]["lifespan"].as<int>();
 	metadata.specifications.lifespan_variance = in_data["attributes"]["lifespan_variance"].as<int>();
-	auto var = svc.random.random_range(-metadata.specifications.lifespan_variance, metadata.specifications.lifespan_variance);
+	auto var = util::Random::random_range(-metadata.specifications.lifespan_variance, metadata.specifications.lifespan_variance);
 	lifetime = util::Cooldown{metadata.specifications.lifespan + var};
 	damage_timer = util::Cooldown{in_data["attributes"]["damage_rate"].as<int>()};
 
 	physical.physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physical.physics.velocity.x = metadata.specifications.speed;
 	if (metadata.specifications.dampen_factor != 0.f) {
-		auto var = svc.random.random_range_float(-metadata.specifications.dampen_variance, metadata.specifications.dampen_variance);
+		auto var = util::Random::random_range_float(-metadata.specifications.dampen_variance, metadata.specifications.dampen_variance);
 		physical.physics.set_global_friction(metadata.specifications.dampen_factor + var);
 	}
 
 	// circle
-	if (metadata.attributes.test(ProjectileAttributes::circle)) { physical.sensor = components::CircleSensor(physical.bounding_box.dimensions.x * 0.5f); }
-	visual.sprite.set_origin(physical.bounding_box.dimensions * 0.5f);
+	if (metadata.attributes.test(ProjectileAttributes::circle)) { physical.sensor = components::CircleSensor(physical.bounding_box.get_dimensions().x * 0.5f); }
+	visual.sprite.set_origin(physical.bounding_box.get_dimensions() * 0.5f);
 
-	physical.max_dimensions = physical.bounding_box.dimensions;
+	physical.max_dimensions = physical.bounding_box.get_dimensions();
 	physical.physics.gravity = metadata.specifications.gravity;
 
 	variables.state.set(ProjectileState::initialized);
@@ -89,7 +84,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		physical.physics.simple_update();
 	} else if (wander()) {
 		physical.physics.set_global_friction(0.9f);
-		physical.steering.smooth_random_walk(svc, physical.physics,	0.01f);
+		physical.steering.smooth_random_walk(physical.physics, 0.01f);
 		physical.physics.simple_update();
 	} else {
 		physical.physics.update_euler(svc);
@@ -97,20 +92,20 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	// animation
 	if (visual.num_angles > 0 && !sprite_flip()) { visual.sprite.handle_rotation(physical.physics.velocity, visual.num_angles); }
-	visual.sprite.update(physical.bounding_box.position + physical.bounding_box.dimensions * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true);
-	if (physical.sensor) { visual.sprite.update(physical.bounding_box.position + physical.bounding_box.dimensions * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true); }
+	visual.sprite.update(physical.bounding_box.get_position() + physical.bounding_box.get_dimensions() * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true);
+	if (physical.sensor) { visual.sprite.update(physical.bounding_box.get_position() + physical.bounding_box.get_dimensions() * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true); }
 
 	if (physical.direction.lr == dir::LR::left) {
-		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x, physical.physics.position.y - physical.bounding_box.dimensions.y / 2});
+		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x, physical.physics.position.y - physical.bounding_box.get_dimensions().y / 2});
 	} else if (physical.direction.lr == dir::LR::right) {
-		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.dimensions.x, physical.physics.position.y - physical.bounding_box.dimensions.y / 2});
+		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.get_dimensions().x, physical.physics.position.y - physical.bounding_box.get_dimensions().y / 2});
 	} else if (physical.direction.und == dir::UND::up) {
-		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.dimensions.x / 2, physical.physics.position.y});
+		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.get_dimensions().x / 2, physical.physics.position.y});
 	} else if (physical.direction.und == dir::UND::down) {
-		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.dimensions.x / 2, physical.physics.position.y - physical.bounding_box.dimensions.y});
+		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.get_dimensions().x / 2, physical.physics.position.y - physical.bounding_box.get_dimensions().y});
 	}
 
-	if (physical.sensor) { physical.sensor.value().set_position(physical.bounding_box.position); }
+	if (physical.sensor) { physical.sensor.value().set_position(physical.bounding_box.get_position()); }
 
 	if (lifetime.is_complete()) {
 		variables.state.set(ProjectileState::whiffed);
@@ -154,13 +149,13 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 	// proj bounding box for debug
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape box{};
-		box.setSize(physical.bounding_box.dimensions);
+		box.setSize(physical.bounding_box.get_dimensions());
 		if (variables.state.test(ProjectileState::destruction_initiated)) {
 			box.setFillColor(sf::Color{255, 255, 60, 160});
 		} else {
 			box.setFillColor(sf::Color{255, 255, 255, 160});
 		}
-		box.setPosition(physical.bounding_box.position - cam);
+		box.setPosition(physical.bounding_box.get_position() - cam);
 		win.draw(box);
 		if (physical.sensor) { physical.sensor.value().render(win, cam); }
 		physical.collider.render(win, cam);
@@ -178,9 +173,9 @@ void Projectile::destroy(bool completely, bool whiffed) {
 
 	if (!variables.state.test(ProjectileState::destruction_initiated)) {
 		if (physical.direction.lr == dir::LR::left || physical.direction.und == dir::UND::up) {
-			variables.destruction_point = physical.bounding_box.position;
+			variables.destruction_point = physical.bounding_box.get_position();
 		} else {
-			variables.destruction_point = physical.bounding_box.position + physical.bounding_box.dimensions;
+			variables.destruction_point = physical.bounding_box.get_position() + physical.bounding_box.get_dimensions();
 		}
 		variables.state.set(ProjectileState::destruction_initiated);
 	}
@@ -189,7 +184,7 @@ void Projectile::destroy(bool completely, bool whiffed) {
 }
 
 void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
-	float var = svc.random.random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
+	float var = util::Random::random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
 	if (omnidirectional()) {
 		physical.physics.velocity = util::unit(target) * metadata.specifications.speed;
 		return;
@@ -197,24 +192,24 @@ void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
 	switch (physical.direction.lr) {
 	case dir::LR::left: physical.physics.velocity = {-metadata.specifications.speed, var}; break;
 	case dir::LR::right: physical.physics.velocity = {metadata.specifications.speed, var}; break;
-	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?");
-		break;
+	case dir::LR::neutral: break;
+	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
 	}
 	switch (physical.direction.und) {
 	case dir::UND::up: physical.physics.velocity = {var, -metadata.specifications.speed}; break;
 	case dir::UND::down: physical.physics.velocity = {var, metadata.specifications.speed}; break;
-	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?");
-		break;
+	case dir::UND::neutral: break;
+	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
 	}
 	if (sprite_flip()) {
 		auto scale = physical.direction.left_or_right() ? sf::Vector2<float>{1.f, -1.f} : sf::Vector2<float>{-1.f, 1.f};
-		if (svc.random.percent_chance(50)) { visual.sprite.set_scale(scale); }
+		if (util::Random::percent_chance(50)) { visual.sprite.set_scale(scale); }
 	}
 }
 
 void Projectile::set_position(sf::Vector2<float> pos) {
 	physical.physics.position = pos;
-	physical.bounding_box.position = pos;
+	physical.bounding_box.set_position(pos);
 	variables.fired_point = pos;
 	visual.sprite.set_position(pos);
 }
@@ -229,4 +224,4 @@ void Projectile::damage_over_time() {
 	if (damage_timer.is_complete()) { damage_timer.start(); }
 }
 
-} // namespace arms
+} // namespace fornani::arms

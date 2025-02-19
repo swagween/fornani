@@ -1,6 +1,8 @@
 nani_add_headers(
         Background.hpp
+        CameraController.hpp
         ColorFade.hpp
+        DayNightShifter.hpp
         Droplet.hpp
         HelpText.hpp
         MapTexture.hpp
@@ -10,7 +12,6 @@ nani_add_headers(
         SpriteRotator.hpp
         Style.hpp
         TextureUpdater.hpp
-        TextWriter.hpp
         Transition.hpp
         Tutorial.hpp
 )

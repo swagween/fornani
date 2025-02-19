@@ -2,7 +2,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include <algorithm>
 
-namespace entity {
+namespace fornani::entity {
 
 Seeker::Seeker() {
 	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Transparent, 0.02f);
@@ -18,6 +18,6 @@ Seeker::Seeker(float force, float friction) {
 
 void Seeker::update(automa::ServiceProvider& svc) { gravitator->update(svc); }
 
-void Seeker::seek_player(player::Player& player) { gravitator->set_target_position(player.collider.hurtbox.position); }
+void Seeker::seek_player(player::Player& player) { gravitator->set_target_position(player.collider.hurtbox.get_position()); }
 
 } // namespace entity

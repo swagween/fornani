@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-namespace forloop {
+namespace fornani::forloop {
 
 template <typename T>
 using Ptr = T*;
@@ -35,7 +35,7 @@ class Service<Type>::Instance {
 
 	template <typename... Args>
 		requires(std::is_constructible_v<Type, Args...>)
-	Instance(Args&&... args) : m_t(std::forward<Args>(args)...) {
+	explicit Instance(Args&&... args) : m_t(std::forward<Args>(args)...) {
 		provide(&m_t);
 	}
 
@@ -48,4 +48,4 @@ class Service<Type>::Instance {
 	Type m_t{};
 };
 
-} // namespace forloop
+} // namespace fornani::forloop

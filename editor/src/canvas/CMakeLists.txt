@@ -8,4 +8,5 @@ nani_add_sources(
         Grid.cpp
         Layer.cpp
         Tile.cpp
+        Map.cpp
 )

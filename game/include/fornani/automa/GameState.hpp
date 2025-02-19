@@ -1,34 +1,29 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <chrono>
-#include <cstdio>
-#include <memory>
-#include <filesystem>
-#include <optional>
 #include "Option.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Background.hpp"
 #include "fornani/gui/Console.hpp"
-#include "fornani/gui/Portrait.hpp"
 #include "fornani/gui/HUD.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"
+#include "fornani/world/Map.hpp"
 
-namespace player {
+#include <SFML/Graphics.hpp>
+
+#include <filesystem>
+
+namespace fornani::player {
 class Player;
 }
 
-namespace automa {
+namespace fornani::automa {
 
-// globals
+enum class GameStateFlags : uint8_t { playtest, settings_request, controls_request, ready };
 
-enum class GameStateFlags { playtest };
-
-enum class MenuSelection { play, options, quit, controls, tutorial, credits, settings };
+enum class MenuSelection : uint8_t { play, options, quit, controls, tutorial, credits, settings };
 
 constexpr inline float dot_force{0.9f};
 constexpr inline float dot_fric{0.86f};
@@ -58,17 +53,17 @@ class GameState {
 	GameState& operator=(GameState&&) = delete;
 	virtual ~GameState() {}
 
-	virtual void tick_update([[maybe_unused]] ServiceProvider& svc){};
-	virtual void frame_update([[maybe_unused]] ServiceProvider& svc){};
-	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win){};
+	virtual void tick_update([[maybe_unused]] ServiceProvider& svc) {};
+	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {};
+	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {};
+
+	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }
 
 	bool debug_mode{false};
 	util::BitFlags<GameStateFlags> flags{};
 
 	std::string_view scene{};
 	gui::Console console;
-	gui::InventoryWindow inventory_window;
-	gui::PauseWindow pause_window;
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
@@ -82,6 +77,9 @@ class GameState {
 	util::Circuit current_selection{1};
 	float spacing{24.f};
 	float top_buffer{80.f};
+
+  protected:
+	io::Logger m_logger{"GameState"};
 };
 
-} // namespace automa
+} // namespace fornani::automa

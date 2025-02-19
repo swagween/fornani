@@ -1,6 +1,8 @@
 nani_add_sources(
         Background.cpp
+        CameraController.cpp
         ColorFade.cpp
+        DayNightShifter.cpp
         Droplet.cpp
         HelpText.cpp
         MapTexture.cpp
@@ -9,7 +11,6 @@ nani_add_sources(
         SpriteHistory.cpp
         SpriteRotator.cpp
         TextureUpdater.cpp
-        TextWriter.cpp
         Transition.cpp
         Tutorial.cpp
 )

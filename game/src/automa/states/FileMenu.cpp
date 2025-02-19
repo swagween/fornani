@@ -2,9 +2,9 @@
 #include "fornani/automa/states/FileMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace automa {
+namespace fornani::automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player, console), file_select_menu(svc, {"play", "stats", "delete"}) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player, console) {
 	current_selection = util::Circuit(num_files);
 	svc.data.load_blank_save(player);
 	console = gui::Console(svc);
@@ -29,10 +29,10 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 
 void FileMenu::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	if (!console.active()) {
+	if (!console.is_active()) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-			if (file_select_menu.is_open()) {
-				file_select_menu.down(svc);
+			if (m_file_select_menu) {
+				m_file_select_menu->down(svc);
 			} else {
 				current_selection.modulate(1);
 				svc.data.load_blank_save(*player);
@@ -41,8 +41,8 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 			}
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-			if (file_select_menu.is_open()) {
-				file_select_menu.up(svc);
+			if (m_file_select_menu) {
+				m_file_select_menu->up(svc);
 			} else {
 				current_selection.modulate(-1);
 				svc.data.load_blank_save(*player);
@@ -51,18 +51,18 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 			}
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
-			if (file_select_menu.is_open()) {
-				file_select_menu.close(svc);
+			if (m_file_select_menu) {
+				m_file_select_menu = {};
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			} else {
-				svc.state_controller.submenu = menu_type::main;
+				svc.state_controller.submenu = MenuType::main;
 				svc.state_controller.actions.set(Actions::exit_submenu);
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			}
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
-			if (file_select_menu.is_open()) {
-				switch (file_select_menu.get_selection()) {
+			if (m_file_select_menu) {
+				switch (m_file_select_menu->get_selection()) {
 				case 0:
 					svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get(), true);
 					svc.state_controller.actions.set(Actions::trigger);
@@ -77,11 +77,11 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 					break;
 				case 2:
 					console.load_and_launch("delete_file");
-					file_select_menu.close(svc);
+					m_file_select_menu = {};
 					break;
 				}
 			} else {
-				file_select_menu.open(svc, options.at(current_selection.get()).position);
+				m_file_select_menu = gui::MiniMenu(svc, {"play", "stats", "delete"}, options.at(current_selection.get()).position);
 				svc.soundboard.flags.console.set(audio::Console::menu_open);
 			}
 		}
@@ -99,7 +99,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	auto& opt = options.at(current_selection.get());
 	auto minimenu_dim = sf::Vector2<float>{128.f, 128.f};
 	auto minimenu_pos = opt.position + sf::Vector2<float>(opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f);
-	file_select_menu.update(svc, minimenu_dim, minimenu_pos);
+	if (m_file_select_menu) { m_file_select_menu->update(svc, minimenu_dim, minimenu_pos); }
 
 	left_dot.update(svc);
 	right_dot.update(svc);
@@ -115,7 +115,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->collider.flags.state.set(shape::State::grounded);
 
 	player->set_position({svc.constants.screen_dimensions.x * 0.5f + 80, 360});
-	player->update(map, console, inventory_window);
+	player->update(map);
 	player->controller.direction.lr = dir::LR::left;
 
 	console.update(svc);
@@ -126,7 +126,6 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.clean();
 	svc.soundboard.play_sounds(svc);
 	player->flags.triggers = {};
-	console.end_tick();
 }
 
 void FileMenu::frame_update(ServiceProvider& svc) {}
@@ -140,9 +139,9 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		left_dot.render(svc, win, {});
 		right_dot.render(svc, win, {});
 		hud.render(*player, win);
-		file_select_menu.render(win);
+		if (m_file_select_menu) { m_file_select_menu->render(win); }
 	}
-	if (console.flags.test(gui::ConsoleFlags::active)) { console.render(win); }
+	console.render(win);
 	console.write(win, false);
 }
 
@@ -155,4 +154,4 @@ void FileMenu::refresh(ServiceProvider& svc) {
 	for (auto& option : options) { option.update(svc, current_selection.get()); }
 }
 
-} // namespace automa
+} // namespace fornani::automa

@@ -3,22 +3,22 @@
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
-namespace world {
+namespace fornani::world {
 class Map;
 }
-namespace player {
+namespace fornani::player {
 class Player;
 }
-namespace automa {
+namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace entity {
+namespace fornani::entity {
 
 class Shockwave {
   public:
 	Shockwave() = default;
-	Shockwave(sf::Vector2<float> speed);
+	explicit Shockwave(sf::Vector2<float> speed);
 	void start(int time = 600);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void set_position(sf::Vector2<float> to_position);
@@ -32,4 +32,4 @@ class Shockwave {
 	util::Cooldown lifetime{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

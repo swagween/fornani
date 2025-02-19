@@ -1,344 +1,75 @@
+
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
-InventoryWindow::InventoryWindow(automa::ServiceProvider& svc)
-	: Console::Console(svc), info(svc), selector(svc, {2, 1}), minimap(svc), item_menu(svc, {"use", "cancel"}, true), wardrobe(svc), help_marker(svc), title{svc.text.fonts.title}, arsenal{svc.text.fonts.title},
-	  item_label{svc.text.fonts.basic}, gun_slot{svc.assets.t_sticker} {
-	title.setString("INVENTORY");
-	title.setCharacterSize(ui.title_size);
-	title.setFillColor(svc.styles.colors.ui_white);
-	title.setLetterSpacing(2.f);
-
-	arsenal.setString("ARSENAL");
-	arsenal.setCharacterSize(ui.title_size);
-	arsenal.setFillColor(svc.styles.colors.ui_white);
-	arsenal.setLetterSpacing(2.f);
-
-	gun_slot.setOrigin({32.f, 32.f});
-
-	item_label.setCharacterSize(ui.desc_size);
-	item_label.setFillColor(svc.styles.colors.ui_white);
-
-	info.set_texture(svc.assets.t_console_outline);
-
-	origin = {ui.corner_pad * 0.5f, ui.corner_pad * 0.5f};
-	title.setPosition(origin + ui.title_offset + ui.global_offset);
-	arsenal.setPosition(origin + ui.arsenal_offset + ui.global_offset);
-	item_label.setPosition(origin + ui.item_label_offset + ui.global_offset);
-
-	dimensions = sf::Vector2<float>{svc.constants.screen_dimensions.x - ui.corner_pad, svc.constants.screen_dimensions.y - ui.corner_pad};
-	position = svc.constants.f_center_screen;
-	flags.reset(ConsoleFlags::portrait_included);
-	Console::update(svc);
-	sprite.set_position(position);
-
-	info.dimensions = {dimensions.x - 2.f * ui.info_offset.x, dimensions.y * 0.62f - ui.info_offset.y - ui.inner_corner};
-	info.position = svc.constants.f_center_screen;
-	info.position.y += ui.info_offset.y;
-	info.sprite.set_position(info.position + ui.global_offset);
-	info.flags.reset(ConsoleFlags::portrait_included);
-	info.update(svc);
-
-	wardrobe.set_position(svc.constants.f_center_screen + ui.wardrobe_offset + ui.global_offset);
-
-	mode = Mode::inventory;
-
-	help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true);
-	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
+InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map)
+	: m_cell_dimensions{svc.constants.f_screen_dimensions}, m_dashboard{std::make_unique<Dashboard>(svc, map, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_debug{.sprite{sf::Sprite{svc.assets.t_inv_test}}} {
+	m_debug.border.setFillColor(sf::Color{12, 12, 20});
+	m_debug.border.setSize(svc.constants.f_screen_dimensions);
+	m_debug.border.setOutlineColor(svc.styles.colors.green);
+	m_debug.border.setOutlineThickness(-2.f);
+	m_debug.center.setFillColor(svc.styles.colors.red);
+	m_debug.center.setRadius(32.f);
+	m_debug.center.setOrigin({32.f, 32.f});
+	boundary.size = svc.constants.f_screen_dimensions * 3.f;
+	boundary.position = -1.f * svc.constants.f_screen_dimensions;
+	m_debug.boundary.setFillColor(svc.styles.colors.ui_black);
+	m_debug.boundary.setSize(boundary.size);
+	m_debug.boundary.setPosition(boundary.position);
+	m_dashboard->set_position(m_cell_dimensions * 0.5f + sf::Vector2f{0.f, 100.f}, true);
+	svc.soundboard.flags.console.set(audio::Console::menu_open);
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
-	ui.global_offset = sprite.get_position() - (sprite.get_center() + sf::Vector2<float>{ui.corner_pad, ui.corner_pad} * 0.5f);
-	title.setPosition(origin + ui.title_offset + ui.global_offset);
-	arsenal.setPosition(origin + ui.arsenal_offset + ui.global_offset);
-	item_label.setPosition(origin + ui.item_label_offset + ui.global_offset);
-	info.position = svc.constants.f_center_screen + ui.global_offset;
-	info.position.y += ui.info_offset.y;
-	info.sprite.set_position(info.position);
-	wardrobe.set_position(svc.constants.f_center_screen + ui.wardrobe_offset + ui.global_offset);
-	player.catalog.categories.inventory.ui_offset = ui.global_offset;
 
-	if (mode == Mode::inventory) {
-		title.setString("INVENTORY");
-		auto& player_items = player.catalog.categories.inventory.items;
-		if (active()) {
-			Console::update(svc);
-			if (Console::extended()) { info.active() ? info.update(svc) : info.begin(); }
-		} else {
-			info.update(svc);
+	auto& controller = svc.controller_map;
+
+	if (m_view == InventoryView::focused) {
+		if (!m_dashboard->handle_inputs(controller)) { m_grid_position = {}; }
+	}
+	if (m_view == InventoryView::dashboard) {
+		if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) { m_dashboard->set_selection({0, -1}); }
+		if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) { m_dashboard->set_selection({0, 1}); }
+		if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) { m_dashboard->set_selection({-1, 0}); }
+		if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) { m_dashboard->set_selection({1, 0}); }
+		if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = std::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
+			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = std::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
+			m_view = InventoryView::focused;
 		}
-		for (auto& item : player_items) {
-			item.selection_index == selector.get_current_selection() ? item.select() : item.deselect();
-			if (selector.get_section() != InventorySection::item) { item.deselect(); }
-			if (selector.get_section() == InventorySection::item) {
-				if (player_items.size() == 1) { item.select(); }
-				if (item.depleted()) { selector.go_left(); }
-				if (item.selected()) {
-					selector.set_position(item.get_position());
-					if (info.extended()) {
-						info.writer.load_single_message(item.get_description());
-						info.writer.wrap();
-					}
-					item.set_rarity_position(info.position + info.dimensions * 0.5f - ui.rarity_pad);
-				}
-			}
+	}
+
+	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
+
+	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x, m_cell_dimensions.y * m_grid_position.y} + sf::Vector2f{m_dashboard->get_selected_position()} * 32.f};
+	m_camera.steering.seek(m_camera.physics, target, 0.003f);
+	m_camera.physics.simple_update();
+	m_dashboard->set_position(m_cell_dimensions * 0.5f);
+	m_dashboard->update(svc, player, map);
+}
+
+void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
+	m_debug.boundary.setPosition(-m_cell_dimensions - m_camera.physics.position);
+	m_debug.border.setPosition(-m_camera.physics.position);
+	win.draw(m_debug.boundary);
+	win.draw(m_debug.border);
+	for (auto i{-1}; i < 4; i += 2) {
+		for (auto j{-1}; j < 4; j += 2) {
+			m_debug.center.setPosition(sf::Vector2f{m_cell_dimensions.x * 0.5f * static_cast<float>(i) - m_camera.physics.position.x, m_cell_dimensions.y * 0.5f * static_cast<float>(j) - m_camera.physics.position.y});
+			win.draw(m_debug.center);
 		}
-		if(player.arsenal) {
-			auto ctr{0};
-			for (auto& gun : player.arsenal.value().get_loadout()) {
-				ctr == selector.get_current_selection() ? gun->select() : gun->deselect();
-				if (selector.get_section() != InventorySection::gun) { gun->deselect(); }
-				if (selector.get_section() == InventorySection::gun) {
-					if (gun->selected() && info.extended()) {
-						info.writer.load_single_message(gun->get_description());
-						info.writer.wrap();
-					}
-				}
-				++ctr;
-			}
-		}
-		info.update(svc);
-		if (active()) {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && selector.get_section() == InventorySection::item) {
-				if (item_menu.is_open()) {
-					switch (item_menu.get_selection()) {
-					case 0: 
-						if (selector.get_current_selection() < player_items.size()) { use_item(svc, player, map, player_items.at(selector.get_current_selection())); }
-						break;
-					case 1:
-						item_menu.close(svc);
-						svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-						break;
-					}
-				} else {
-					if (selector.get_current_selection() < player_items.size()) {
-						auto& item = player_items.at(selector.get_current_selection());
-						if (item.equippable()) {
-							item.is_equipped() ? item_menu.overwrite_option(0, "remove") : item_menu.overwrite_option(0, "equip");
-						} else {
-							item_menu.overwrite_option(0, "use");
-						}
-						if (item.has_menu()) {
-							item_menu.open(svc, selector.get_menu_position());
-							svc.soundboard.flags.console.set(audio::Console::menu_open);
-						} else {
-							svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-						}
-					}
-				}
-			}
-			if (player.arsenal) {
-				auto& player_loadout = player.arsenal.value().get_loadout();
-				if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && selector.get_section() == InventorySection::gun) {
-					if (item_menu.is_open()) {
-						switch (item_menu.get_selection()) {
-						case 0:
-							if (selector.get_current_selection() < player_loadout.size()) {
-								auto& gun = player_loadout.at(selector.get_current_selection());
-								if (player.hotbar) {
-									player.hotbar.value().has(gun->get_id()) ? player.remove_from_hotbar(gun->get_id()) : player.add_to_hotbar(gun->get_id());
-								} else {
-									player.add_to_hotbar(gun->get_id());
-								}
-								svc.soundboard.flags.item.set(audio::Item::equip);
-								item_menu.close(svc);
-							}
-							break;
-						case 1:
-							item_menu.close(svc);
-							svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-							break;
-						}
-					} else {
-						if (selector.get_current_selection() < player_loadout.size()) {
-							auto& gun = player_loadout.at(selector.get_current_selection());
-							if (player.hotbar) {
-								player.hotbar.value().has(gun->get_id()) ? item_menu.overwrite_option(0, "remove") : item_menu.overwrite_option(0, "equip");
-							} else {
-								item_menu.overwrite_option(0, "equip");
-							}
-							item_menu.open(svc, selector.get_menu_position());
-							svc.soundboard.flags.console.set(audio::Console::menu_open);
-						}
-					}
-				}
-			}
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
-				if (item_menu.is_open()) {
-					item_menu.close(svc);
-					svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-				}
-			}
-		}
-		auto minimenu_dim = sf::Vector2<float>{108.f, 108.f};
-		item_menu.update(svc, minimenu_dim, selector.get_menu_position() + ui.global_offset);
-		update_table(player, selector.switched_sections());
-	}
-	if (mode == Mode::minimap) {
-		title.setString("MAP");
-		Console::update(svc);
-		minimap.update(svc, map, player);
-		selector.update();
-	}
-}
-
-void InventoryWindow::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (!active()) { return; }
-	if (mode == Mode::inventory) {
-		Console::render(win);
-		if (!Console::extended()) { return; }
-		win.draw(title);
-		win.draw(arsenal);
-		for (auto& item : player.catalog.categories.inventory.items) {
-			item.render(svc, win, ui.global_offset);
-			if (item.selected()) {
-				item_label.setString(item.get_label().data());
-				win.draw(item_label);
-			}
-		}
-		if (player.arsenal) {
-			auto slot = sf::Vector2<float>{72.f, 0.f};
-			auto index{0};
-			auto gunpos = sf::Vector2<float>{};
-			for (auto& gun : player.arsenal.value().get_loadout()) {
-				gunpos = ui.arsenal_position + slot * static_cast<float>(index) + ui.global_offset;
-				if (!player.hotbar) { gun->set_reserved(); }
-				auto lookup = gun->get_inventory_state();
-				if (selector.get_section() == InventorySection::gun && gun->selected()) { lookup += 2; }
-				gun_slot.setTextureRect(sf::IntRect{{0, lookup * 64}, {64, 64}});
-				gun_slot.setPosition(gunpos + sf::Vector2<float>{24.f, 24.f});
-				win.draw(gun_slot);
-				gun->render_ui(svc, win, gunpos);
-				if (gun->selected()) {
-					item_label.setString(gun->get_label().data());
-					win.draw(item_label);
-				}
-				++index;
-			}
-		}
-		if (!player.catalog.categories.inventory.items.empty() && info.extended() && selector.get_section() == InventorySection::item) { selector.render(win); }
-		if (info.active()) { info.render(win); }
-		if (info.extended()) { info.write(win, true); }
-		//if (player.has_map()) { help_marker.render(win); }
-		item_menu.render(win);
-		wardrobe.render(svc, win, cam);
-	}
-	if (mode == Mode::minimap) { minimap.render(svc, win, cam); }
-}
-
-void InventoryWindow::open(automa::ServiceProvider& svc, player::Player& player) {
-	update_table(player, true);
-	selector.switch_sections({0, 0});
-	flags.set(ConsoleFlags::active);
-	Console::begin();
-	info.begin();
-	wardrobe.update(svc, player);
-	auto& player_items = player.catalog.categories.inventory.items;
-	for (auto& item : player_items) {
-		auto randx = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.x);
-		auto randy = svc.random.random_range_float(0.f, svc.constants.f_screen_dimensions.y);
-		auto top = svc.random.percent_chance(50);
-		auto startpos = top ? sf::Vector2<float>{randx, -ui.buffer} : sf::Vector2<float>{-ui.buffer, randy};
-		item.gravitator.set_position(startpos);
-	}
-}
-
-void InventoryWindow::update_wardrobe(automa::ServiceProvider& svc, player::Player& player) { wardrobe.update(svc, player); }
-
-void InventoryWindow::close() {
-	Console::end();
-	info.end();
-}
-
-void InventoryWindow::select() {
-	//item_menu.open(*m_services, selector.get_menu_position());
-	//m_services->soundboard.flags.console.set(audio::Console::menu_open);
-}
-
-void InventoryWindow::cancel() { //item_menu.close(*m_services); 
-}
-
-void InventoryWindow::move(player::Player& player, sf::Vector2<int> direction, bool has_arsenal) {
-	if (item_menu.is_open()) {
-		if (direction.y == -1) { item_menu.up(*m_services); }
-		if (direction.y == 1) { item_menu.down(*m_services); }
-	} else {
-		if (direction.x == -1) { selector.go_left(); }
-		if (direction.x == 1) { selector.go_right(); }
-		if (direction.y == -1) { selector.go_up(has_arsenal); }
-		if (direction.y == 1) { selector.go_down(has_arsenal); }
-	}
-}
-
-void InventoryWindow::use_item(automa::ServiceProvider& svc, player::Player& player, world::Map& map, item::Item& item) {
-	if (!item.usable() && !item.equippable()) { return; }
-
-	//special cases
-	switch (item.get_id()) {
-	case 16:
-		switch_modes(svc);
-		svc.soundboard.flags.menu.set(audio::Menu::select);
-		break;
-	case 22:
-		player.health.refill();
-		svc.soundboard.flags.world.set(audio::World::soft_sparkle);
-		svc.soundboard.flags.item.set(audio::Item::heal);
-		player.take_item(22);
-		break;
 	}
 
-	//equippables
-	if (item.equippable()) {
-		if (item.is_equipped()) {
-			player.unequip_item(item.get_apparel_type(), item.get_id());
-		} else {
-			player.equip_item(item.get_apparel_type(), item.get_id());
-		}
-		svc.soundboard.flags.item.set(audio::Item::equip);
-		wardrobe.update(svc, player);
-	}
-	
-	item_menu.close(svc);
-	update_table(player, item.depleted());
+	m_debug.sprite.setOrigin({582.f, 378.f});
+	m_debug.sprite.setScale({2.f, 2.f});
+	m_debug.sprite.setPosition(m_dashboard->get_position() - m_camera.physics.position * m_camera.parallax);
+	win.draw(m_debug.sprite);
+	m_dashboard->render(svc, win, m_camera.physics.position * m_camera.parallax);
 }
 
-void InventoryWindow::update_table(player::Player& player, bool new_dim) {
-	auto& player_items = player.catalog.categories.inventory.items;
-	auto player_loadout = player.arsenal ? player.arsenal.value().get_loadout().size() : 0;
-	auto ipr = player.catalog.categories.inventory.items_per_row;
-	auto gpr = 12;
-	auto x_dim{0};
-	auto y_dim{0};
-	switch (selector.get_section()) {
-	case InventorySection::item:
-		x_dim = std::min(static_cast<int>(player_items.size()), ipr);
-		y_dim = static_cast<int>(std::ceil(static_cast<float>(player_items.size()) / static_cast<float>(ipr)));
-		if (new_dim) { selector.set_size(static_cast<int>(player_items.size())); }
-		break;
-	case InventorySection::gun:
-		x_dim = std::min(static_cast<int>(player_loadout), gpr);
-		y_dim = static_cast<int>(std::ceil(static_cast<float>(player_loadout) / static_cast<float>(gpr)));
-		if (new_dim) { selector.set_size(static_cast<int>(player_loadout)); }
-		break;
-	default: NANI_LOG_WARN(m_logger, "InventoryWindow::update_table(): Unknown section requested! Did you forget to add an enum to the switch?"); break;
-	}
-	selector.set_dimensions({x_dim, y_dim});
-	selector.update();
-}
-
-void InventoryWindow::switch_modes(automa::ServiceProvider& svc) {
-	mode = (mode == Mode::inventory) ? Mode::minimap : Mode::inventory;
-	if (mode == Mode::inventory) {
-		help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_map, "] to view Map.", 20, true, true); // XXX same as above
-	} else {
-		help_marker = text::HelpText(svc, "Press [", config::DigitalAction::platformer_open_inventory, "] to view Inventory.", 20, true, true); // XXX same as above
-		minimap.center();
-	}
-	help_marker.set_position({static_cast<float>(svc.constants.screen_dimensions.x) * 0.5f, static_cast<float>(svc.constants.screen_dimensions.y) - 30.f});
-}
-
-} // namespace gui
+} // namespace fornani::gui

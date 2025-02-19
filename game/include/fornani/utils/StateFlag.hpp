@@ -1,7 +1,7 @@
 #pragma once
 #include "BitFlags.hpp"
 
-namespace util {
+namespace fornani::util {
 enum class Flags { state, trigger };
 class StateFlag {
 	constexpr void set() {
@@ -14,12 +14,12 @@ class StateFlag {
 	}
 	[[nodiscard]] constexpr auto test() const -> bool { return flags.test(Flags::state); }
 	[[nodiscard]] constexpr auto consume_trigger() const -> bool {
-		auto ret = flags.test(Flags::trigger);
+		auto const ret = flags.test(Flags::trigger);
 		flags.reset(Flags::trigger);
 		return ret;
 	}
-  private:
+
 	BitFlags<Flags> flags{};
 };
 
-} // namespace util
+} // namespace fornani::util

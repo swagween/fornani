@@ -2,7 +2,7 @@
 #include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace player {
+namespace fornani::player {
 
 Inventory::Inventory() {}
 

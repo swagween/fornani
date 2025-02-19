@@ -1,9 +1,9 @@
 #include "fornani/entities/enemy/catalog/Meatsquash.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 
-namespace enemy {
+namespace fornani::enemy {
 
 Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "meatsquash"), m_services(&svc), m_map(&map) {
 	animation.set_params(idle);

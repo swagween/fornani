@@ -1,14 +1,15 @@
 #pragma once
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include "fornani/entities/packages/FloatingPart.hpp"
 #define CASTER_BIND(f) std::bind(&Caster::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class CasterState { idle, turn, signal, dormant, prepare };
 enum class CasterVariant { apprentice, tyrant };
 
-class Caster : public Enemy {
+class Caster final : public Enemy {
 
   public:
 	Caster() = delete;

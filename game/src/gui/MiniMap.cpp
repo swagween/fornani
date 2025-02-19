@@ -1,11 +1,11 @@
 #include "fornani/gui/MiniMap.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/level/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
-MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null} {
+MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null}, window_scale{0.8f} {
 	background_color = svc.styles.colors.ui_black;
 	background_color.a = 210;
 	background.setFillColor(background_color);
@@ -15,15 +15,13 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.as
 	room_border.setOutlineColor(svc.styles.colors.blue);
 	room_border.setOutlineThickness(-2.f);
 	room_border.setFillColor(sf::Color::Transparent);
-	player_box.setFillColor(svc.styles.colors.periwinkle);
-	player_box.setOutlineColor(svc.styles.colors.ui_white);
-	player_box.setOutlineThickness(2.f);
+	player_box.setFillColor(svc.styles.colors.pioneer_red);
 	player_box.setSize({16.f, 16.f});
 	player_box.setOrigin({8.f, 8.f});
-	cursor.vert.setFillColor(svc.styles.colors.ui_white);
+	cursor.vert.setFillColor(svc.styles.colors.pioneer_red);
 	cursor.vert.setSize({2.f, 16.f});
 	cursor.vert.setOrigin({1.f, 8.f});
-	cursor.horiz.setFillColor(svc.styles.colors.ui_white);
+	cursor.horiz.setFillColor(svc.styles.colors.pioneer_red);
 	cursor.horiz.setSize({16.f, 2.f});
 	cursor.horiz.setOrigin({8.f, 1.f});
 	toggle_scale();
@@ -40,30 +38,31 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool
 }
 
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	view = svc.window->get_view();
-	auto port = svc.window->get_viewport();
-	port.size.x *= window_scale;
-	port.size.y *= window_scale;
-	port.position.x = (1.f - port.size.x) * 0.5f;
-	port.position.y = (1.f - port.size.y) * 0.5f;
-	view.setViewport(port);
 	background.setSize(svc.constants.f_screen_dimensions);
 	border.setSize(svc.constants.f_screen_dimensions);
 	ratio = 32.f / scale;
 	player_position = player.collider.physics.position;
-	center_position = (position - view.getCenter()) / ratio;
 }
 
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+	view = svc.window->get_view();
+	auto port = svc.window->get_viewport();
+	port.size.x *= 0.7f;
+	port.size.y *= 0.7f;
+	port.position.x = (1.f - port.size.x) * 0.5f - cam.x / svc.window->get().getSize().x + 0.06f;
+	port.position.y = (1.f - port.size.y) * 0.5f - cam.y / svc.window->get().getSize().y + 0.05f;
+	view.setViewport(port);
+	center_position = (position - view.getCenter()) / ratio;
 	// render minimap
 	global_ratio = ratio * 0.25f;
 	win.setView(view);
-	win.draw(background);
+	// win.draw(background);
 	if (svc.ticker.every_x_frames(10)) {
 		room_border.getFillColor() == svc.styles.colors.ui_white ? room_border.setOutlineColor(svc.styles.colors.periwinkle) : room_border.setOutlineColor(svc.styles.colors.ui_white);
-		player_box.getFillColor() == svc.styles.colors.periwinkle ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.periwinkle);
+		player_box.getFillColor() == svc.styles.colors.pioneer_red ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.pioneer_red);
 	}
 	for (auto& room : atlas) {
+		if (room->to_ignore()) { continue; }
 		if (room->is_current()) { player_box.setPosition((player_position / scale) + room->get_position() * ratio + position); }
 		map_sprite.setTexture(room->get().getTexture());
 		map_sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int>>(room->get().getSize())));
@@ -78,14 +77,14 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		auto tl = room->get_position() * ratio + position;
 		auto br = tl + map_sprite.getLocalBounds().size * global_ratio;
 		auto pos = view.getCenter();
-		if( pos.x > tl.x && pos.x < br.x && pos.y > tl.y && pos.y < br.y) { win.draw(room_border); }
+		// if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y) { win.draw(room_border); }
 		win.draw(player_box);
 	}
 	cursor.vert.setPosition(svc.constants.f_center_screen);
 	cursor.horiz.setPosition(svc.constants.f_center_screen);
 	win.draw(cursor.vert);
 	win.draw(cursor.horiz);
-	win.draw(border);
+	// win.draw(border);
 	svc.window->restore_view();
 }
 
@@ -135,4 +134,4 @@ void Chunk::generate() {
 	}
 }
 
-} // namespace gui
+} // namespace fornani::gui

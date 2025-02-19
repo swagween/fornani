@@ -3,14 +3,14 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define FRDOG_BIND(f) std::bind(&Frdog::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 	enum class AnimState { idle, turn, run, hurt, charge, bark, spew, sit, sleep };
 
-class Frdog : public Enemy {
+class Frdog final : public Enemy {
 
   public:
-	Frdog(automa::ServiceProvider& svc);
+	explicit Frdog(automa::ServiceProvider& svc);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
 	fsm::StateFunction state_function = std::bind(&Frdog::update_idle, this);

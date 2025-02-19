@@ -3,15 +3,15 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #define BEAMSTALK_BIND(f) std::bind(&Beamstalk::f, this)
 
-namespace enemy {
+namespace fornani::enemy {
 
 enum class BeamstalkState { idle, charge, shoot, relax };
 
-class Beamstalk : public Enemy {
+class Beamstalk final : public Enemy {
 
   public:
 	Beamstalk() = delete;
-	~Beamstalk() override {}
+	~Beamstalk() override = default;
 	Beamstalk& operator=(Beamstalk&&) = delete;
 	Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
@@ -45,4 +45,4 @@ class Beamstalk : public Enemy {
 	bool change_state(BeamstalkState next, anim::Parameters params);
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

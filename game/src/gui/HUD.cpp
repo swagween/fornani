@@ -2,7 +2,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace gui {
+namespace fornani::gui {
 
 HUD::HUD(automa::ServiceProvider& svc, player::Player& player) : sprites{.orb = sf::Sprite{svc.assets.t_hud_orb_font}, .gun = sf::Sprite{svc.assets.t_hud_gun}, .pointer = sf::Sprite{svc.assets.t_hud_pointer}} {
 	orient(svc, player, false);

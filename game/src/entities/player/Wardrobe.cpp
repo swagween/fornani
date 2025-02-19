@@ -3,7 +3,7 @@
 #include "fornani/gui/Console.hpp"
 #include "fornani/graphics/TextureUpdater.hpp"
 
-namespace player {
+namespace fornani::player {
 
 Wardrobe::Wardrobe() {
 	for (int i{}; i < static_cast<int>(ApparelType::END); ++i) { apparel.insert({static_cast<ApparelType>(i), 0}); }
