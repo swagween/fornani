@@ -1,5 +1,5 @@
-
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include <ccmath/ext/cubic.hpp>
 #include <ccmath/ext/smoothstep.hpp>
@@ -9,6 +9,8 @@
 #include <ccmath/math/power/pow.hpp>
 #include <ccmath/math/power/sqrt.hpp>
 
+#include <cmath>
+
 namespace fornani::util {
 
 inline float magnitude(sf::Vector2<float> vec) { return ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }
@@ -17,7 +19,7 @@ inline sf::Vector2<float> unit(sf::Vector2<float> vec) {
 	if (denominator == 0.f) { return sf::Vector2{1.f, 0.f}; }
 	return vec / denominator;
 }
-inline float direction(sf::Vector2<float> vec) { return atan2f(vec.y, vec.x); }
+inline float direction(sf::Vector2<float> vec) { return std::atan2f(vec.y, vec.x); } // TODO: Switch to ccm::atan2f when done.
 inline sf::Vector2<float> absolute_distance(sf::Vector2<float> source, sf::Vector2<float> destination) { return sf::Vector2<float>{ccm::abs(source.x - destination.x), ccm::abs(source.y - destination.y)}; }
 inline sf::Vector2<float> round_to_even(sf::Vector2<float> input) {
 	auto ret = input;
