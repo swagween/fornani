@@ -39,13 +39,13 @@ include(cmake/GenerateDataTemplates.cmake)
 
 add_subdirectory(dependencies)
 add_subdirectory(game)
-if (FORNANI_BUILD_EDITOR)
+if (FORNANI_BUILD_EDITOR AND NOT DEFINED FORNANI_ENABLE_PRODUCTION_BUILD)
     add_subdirectory(editor)
 endif ()
 add_subdirectory(launcher)
 
 
-if (FORNANI_ENABLE_PROFILER)
+if (FORNANI_ENABLE_PROFILER AND NOT DEFINED FORNANI_ENABLE_PRODUCTION_BUILD)
     target_compile_definitions(fornani PRIVATE TRACY_ENABLE)
     target_compile_definitions(fornani PRIVATE FORNANI_PROFILE)
 endif ()
@@ -54,12 +54,18 @@ if (DEFINED FORNANI_DISABLE_DBGHELP)
     target_compile_definitions(fornani PRIVATE NANI_DISABLE_ADVANCED_CRASH_REPORTING)
 endif ()
 
+if (DEFINED FORNANI_ENABLE_PRODUCTION_BUILD)
+    target_compile_definitions(fornani PRIVATE FORNANI_PRODUCTION)
+endif ()
+
 # TODO: This is kinda janky and is only a stop gap. At some point we will have cmake handle packaging and this will have to change.
 
 # Generate save files
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_0.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_0.json" COPYONLY)
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_1.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_1.json" COPYONLY)
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_2.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_2.json" COPYONLY)
+if (NOT DEFINED FORNANI_ENABLE_PRODUCTION_BUILD)
+    configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_0.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_0.json" COPYONLY)
+    configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_1.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_1.json" COPYONLY)
+    configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_2.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_2.json" COPYONLY)
+endif ()
 configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/new_game.template" "${FORNANI_ROOT_DIR}/resources/data/save/new_game.json" COPYONLY)
 
 # Generate config files
