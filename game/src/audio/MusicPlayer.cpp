@@ -1,25 +1,20 @@
-
-#pragma once
-
 #include "fornani/audio/MusicPlayer.hpp"
-
-#include <tracy/Tracy.hpp>
-
+#include "fornani/utils/Tracy.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace audio {
 
-void MusicPlayer::load(data::ResourceFinder& finder, std::string_view song_name) {
+void MusicPlayer::load(const data::ResourceFinder& finder, const std::string_view song_name) {
 	if (global_off()) { return; }
 	if (label == song_name && playing()) { return; }
-	if (song_name == "") { return; }
+	if (song_name.empty()) { return; }
 	if (song_name == "none") {
 		stop();
 		return;
 	}
 	label = song_name;
-	song_first.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_first.ogg");
-	song_loop.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_loop.ogg");
+	if (!song_first.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_first.ogg")) { NANI_LOG_WARN(m_logger, "Failed to load song: [{}/audio/songs/{}_first.ogg]", finder.resource_path(), song_name.data()); }
+	if (!song_loop.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_loop.ogg")) { NANI_LOG_WARN(m_logger, "Failed to load song: [{}/audio/songs/{}_loop.ogg] ", finder.resource_path(), song_name.data()); }
 	switch_on();
 	flags.state.reset(SongState::looping);
 }
@@ -27,15 +22,15 @@ void MusicPlayer::load(data::ResourceFinder& finder, std::string_view song_name)
 void MusicPlayer::simple_load(std::string_view source) {
 	if (global_off()) { return; }
 	if (label == source && playing()) { return; }
-	if (source == "") { return; }
+	if (source.empty()) { return; }
 	if (source == "none") {
 		stop();
 		return;
 	}
 	label = source;
-	std::string path = source.data();
-	song_first.openFromFile(path + ".ogg");
-	song_loop.openFromFile(path + ".ogg");
+	std::string const path = source.data();
+	if (!song_first.openFromFile(path + ".ogg")) { NANI_LOG_WARN(m_logger, "Failed to load song [{}.ogg]", path); }
+	if (!song_loop.openFromFile(path + ".ogg")) { NANI_LOG_WARN(m_logger, "Failed to load song: [{}.ogg]", path); }
 	switch_on();
 	flags.state.reset(SongState::looping);
 }
@@ -64,7 +59,7 @@ void MusicPlayer::play_looped(float vol) {
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::update() {
-	ZoneScopedN("MusicPlayer::update");
+	NANI_ZoneScopedN("MusicPlayer::update");
 	if (global_off()) { return; }
 	volume.actual = volume.native * volume.multiplier;
 	set_volume(volume.actual);

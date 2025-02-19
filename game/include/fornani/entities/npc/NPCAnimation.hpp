@@ -33,7 +33,7 @@ class NPCAnimation {
 	fsm::StateFunction update_turn();
 	fsm::StateFunction update_walk();
 	fsm::StateFunction update_inspect();
-	std::string_view label{};
+	std::string_view m_label{};
 };
 
 } // namespace npc

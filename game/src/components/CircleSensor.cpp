@@ -1,9 +1,7 @@
-#pragma once
-
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/utils/Math.hpp"
-#include <iostream>
-#include <algorithm>
+
+#include <ccmath/ext/clamp.hpp>
 
 namespace components {
 
@@ -35,9 +33,9 @@ void CircleSensor::set_position(sf::Vector2<float> position) { bounds.setPositio
 
 bool CircleSensor::within_bounds(shape::Shape& shape) const {
 	if (shape.non_square()) { return shape.circle_SAT(bounds); }
-	auto x = std::clamp(bounds.getPosition().x, shape.position.x, shape.position.x + shape.dimensions.x);
-	auto y = std::clamp(bounds.getPosition().y, shape.position.y, shape.position.y + shape.dimensions.y);
-	sf::Vector2<float> closest{x, y};
+	const auto x = ccm::ext::clamp(bounds.getPosition().x, shape.position.x, shape.position.x + shape.dimensions.x);
+	const auto y = ccm::ext::clamp(bounds.getPosition().y, shape.position.y, shape.position.y + shape.dimensions.y);
+	const sf::Vector2 closest{x, y};
 	return util::magnitude(closest - bounds.getPosition()) < bounds.getRadius();
 }
 

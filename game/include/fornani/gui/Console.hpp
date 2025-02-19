@@ -32,7 +32,6 @@ struct Border {
 class Console {
 
   public:
-	Console() = default;
 	Console(automa::ServiceProvider& svc);
 
 	void begin();

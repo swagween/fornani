@@ -1,7 +1,7 @@
 
 #include "fornani/automa/StateManager.hpp"
 
-#include <tracy/Tracy.hpp>
+#include <fornani/utils/Tracy.hpp>
 
 #include "fornani/setup/Game.hpp"
 
@@ -10,7 +10,7 @@ namespace automa {
 StateManager::StateManager(ServiceProvider& svc, player::Player& player) : g_current_state{std::make_unique<MainMenu>(svc, player, "main")} {}
 
 void StateManager::process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game) {
-	ZoneScopedN("StateManager::process_state");
+	NANI_ZoneScopedN("StateManager::process_state");
 	if (svc.state_controller.actions.test(Actions::trigger_submenu)) {
 		switch (svc.state_controller.submenu) {
 		case menu_type::file_select:
@@ -21,6 +21,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		case menu_type::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player, "settings")); break;
 		case menu_type::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player, "controls_platformer")); break;
 		case menu_type::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player, "credits")); break;
+		default: break;
 		}
 		svc.state_controller.actions.reset(Actions::trigger_submenu);
 	}

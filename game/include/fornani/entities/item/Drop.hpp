@@ -27,7 +27,6 @@ enum class DropFlags { neutral, shining };
 class Drop {
 
   public:
-	Drop() = default;
 	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0, int special_id = 0);
 	void seed(automa::ServiceProvider& svc, float probability);
 	void set_value();

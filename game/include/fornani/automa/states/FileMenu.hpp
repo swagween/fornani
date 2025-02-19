@@ -11,7 +11,6 @@ class FileMenu : public automa::GameState {
 	static int const num_files{3};
 
   public:
-	FileMenu() = default;
 	FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc);
 	void frame_update(ServiceProvider& svc);
