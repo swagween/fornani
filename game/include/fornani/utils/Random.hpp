@@ -69,9 +69,9 @@ struct Random {
 	inline static std::default_random_engine engine{std::random_device{}()};
 	inline static std::default_random_engine seeded_engine{std::random_device{}()};
 	inline static struct {
-		int vendor{1997};
-		int test{2007};
-	} seeds{};
+		int vendor;
+		int test;
+	} seeds = {1997, 2007};
 };
 
 } // namespace fornani::util
