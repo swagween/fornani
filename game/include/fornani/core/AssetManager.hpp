@@ -95,6 +95,12 @@ class AssetManager {
 	sf::Texture t_portrait_window{};
 	sf::Texture t_controller_button_icons{};
 
+	// inventory window
+	sf::Texture t_map_screen{};
+	sf::Texture t_map_gizmo{};
+	sf::Texture t_dashboard{};
+	sf::Texture t_clock_gizmo{};
+
 	sf::Texture t_vendor_artwork{};
 	sf::Texture t_vendor_ui{};
 

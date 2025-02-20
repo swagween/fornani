@@ -48,6 +48,14 @@ class Dashboard {
 	sf::Vector2i m_selected_position{};
 	int m_current_gizmo{};
 
+	sf::Sprite m_sprite;
+	struct {
+		sf::IntRect top_left;
+		sf::IntRect top_right;
+		sf::IntRect bottom;
+		sf::IntRect base;
+	} m_rects;
+
 	struct {
 		components::SteeringBehavior steering{};
 		components::PhysicsComponent physics{};

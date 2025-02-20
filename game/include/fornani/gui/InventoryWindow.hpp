@@ -35,6 +35,7 @@ class InventoryWindow {
 	sf::FloatRect boundary{};
 	sf::Vector2f m_grid_position{};
 	sf::Vector2f m_cell_dimensions{};
+	sf::RectangleShape m_background{};
 	std::unique_ptr<Dashboard> m_dashboard{};
 	InventoryView m_view{};
 
@@ -46,7 +47,6 @@ class InventoryWindow {
 
 	struct {
 		sf::RectangleShape border{};
-		sf::RectangleShape boundary{};
 		sf::CircleShape center{};
 
 		sf::Sprite sprite;

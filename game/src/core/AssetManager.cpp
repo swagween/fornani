@@ -27,6 +27,11 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	npcs.insert({"lady_nimbus", t_lady_nimbus});
 	npcs.insert({"justin", t_justin});
 
+	if (!t_map_screen.loadFromFile(finder.resource_path() + "/image/gui/map_screen.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/map_screen.png] from file.", finder.resource_path());
+	if (!t_map_gizmo.loadFromFile(finder.resource_path() + "/image/gui/map_gizmo.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/map_gizmo.png] from file.", finder.resource_path());
+	if (!t_dashboard.loadFromFile(finder.resource_path() + "/image/gui/dashboard.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/dashboard.png] from file.", finder.resource_path());
+	if (!t_clock_gizmo.loadFromFile(finder.resource_path() + "/image/gui/clock_gizmo.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/clock_gizmo.png] from file.", finder.resource_path());
+
 	if (!t_vendor_artwork.loadFromFile(finder.resource_path() + "/image/gui/vendor_artwork.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/vendor_artwork.png] from file.", finder.resource_path());
 	if (!t_vendor_ui.loadFromFile(finder.resource_path() + "/image/gui/vendor_interface.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/vendor_interface.png] from file.", finder.resource_path());
 	if (!t_inv_test.loadFromFile(finder.resource_path() + "/image/gui/inv_test.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/inv_test.png] from file.", finder.resource_path());

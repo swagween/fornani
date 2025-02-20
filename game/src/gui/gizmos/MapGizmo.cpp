@@ -7,10 +7,11 @@
 
 namespace fornani::gui {
 
-MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map) : Gizmo("Minimap"), m_minimap(svc) {
+MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map) : Gizmo("Minimap"), m_minimap(svc), m_sprite{svc.assets.t_map_gizmo}, m_map_screen(svc, 48, 1) {
 	m_position = sf::Vector2f{0.f, svc.constants.f_screen_dimensions.y};
 	for (auto& id : svc.data.discovered_rooms) { m_minimap.bake(svc, map, id, id == svc.current_room); }
 	m_minimap.center();
+	m_sprite.setScale(svc.constants.texture_scale);
 }
 
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {

@@ -7,7 +7,8 @@
 
 namespace fornani::gui {
 
-Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f dimensions) : m_physical{.dimensions{dimensions}} {
+Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f dimensions)
+	: m_physical{.dimensions{dimensions}}, m_sprite{svc.assets.t_dashboard}, m_rects{.top_left{{}, {153, 124}}, .top_right{{153, 0}, {64, 127}}, .bottom{{26, 127}, {184, 137}}, .base{{217, 0}, {222, 212}}} {
 	m_debug.box.setFillColor(sf::Color{180, 150, 20, 50});
 	m_debug.box.setOutlineThickness(-2.f);
 	m_debug.box.setOutlineColor(sf::Color{220, 180, 10, 180});
@@ -21,7 +22,12 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f
 		m_debug.buttons.back().box.setOrigin({32.f, 32.f});
 	}
 
-	m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map));
+	// populate dashboard depending on the player's inventory
+	auto const& items = svc.data.get_player_items();
+	for (auto& i : items.array_view()) {
+		if (i["id"].as<int>() == 16) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map)); }
+	}
+	m_sprite.setScale(svc.constants.texture_scale);
 }
 
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
@@ -47,7 +53,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 		case 3: button.position = {-1, 0}; break;
 		}
 		button.state = button.position == m_selected_position ? GizmoButtonState::hovered : GizmoButtonState::off;
-		if (button.state == GizmoButtonState::hovered) { m_current_gizmo = std::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1)); }
+		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_gizmo = std::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1)); }
 		button.box.setPosition(svc.constants.f_center_screen + pos);
 		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(svc.styles.colors.bright_orange) : button.box.setOutlineColor(svc.styles.colors.dark_fucshia);
 		// win.draw(button.box);
@@ -56,9 +62,24 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 
 	// real renders
 	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam); }
+	m_sprite.setTextureRect(m_rects.base);
+	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{14, 68} - cam);
+	win.draw(m_sprite);
+	m_sprite.setTextureRect(m_rects.top_left);
+	m_sprite.setPosition(m_physical.physics.position - cam);
+	win.draw(m_sprite);
+	m_sprite.setTextureRect(m_rects.top_right);
+	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{290, 0} - cam);
+	win.draw(m_sprite);
+	m_sprite.setTextureRect(m_rects.bottom);
+	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{52, 224} - cam);
+	win.draw(m_sprite);
 }
 
-bool Dashboard::handle_inputs(config::ControllerMap& controller) { return m_gizmos.at(m_current_gizmo)->handle_inputs(controller); }
+bool Dashboard::handle_inputs(config::ControllerMap& controller) {
+	if (m_gizmos.empty() || m_gizmos.size() <= m_current_gizmo) { return false; }
+	return m_gizmos.at(m_current_gizmo)->handle_inputs(controller);
+}
 
 void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 	if (force) {

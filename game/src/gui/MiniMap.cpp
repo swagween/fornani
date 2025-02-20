@@ -19,11 +19,11 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.as
 	player_box.setSize({16.f, 16.f});
 	player_box.setOrigin({8.f, 8.f});
 	cursor.vert.setFillColor(svc.styles.colors.pioneer_red);
-	cursor.vert.setSize({2.f, 16.f});
-	cursor.vert.setOrigin({1.f, 8.f});
+	cursor.vert.setSize({4.f, 16.f});
+	cursor.vert.setOrigin({2.f, 8.f});
 	cursor.horiz.setFillColor(svc.styles.colors.pioneer_red);
-	cursor.horiz.setSize({16.f, 2.f});
-	cursor.horiz.setOrigin({8.f, 1.f});
+	cursor.horiz.setSize({16.f, 4.f});
+	cursor.horiz.setOrigin({8.f, 2.f});
 	toggle_scale();
 }
 
@@ -47,10 +47,13 @@ void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	view = svc.window->get_view();
 	auto port = svc.window->get_viewport();
-	port.size.x *= 0.7f;
-	port.size.y *= 0.7f;
-	port.position.x = (1.f - port.size.x) * 0.5f - cam.x / svc.window->get().getSize().x + 0.06f;
-	port.position.y = (1.f - port.size.y) * 0.5f - cam.y / svc.window->get().getSize().y + 0.05f;
+	port.size.x *= 0.67f;
+	port.size.y *= 0.67f;
+
+	// TODO: these mysterious values will be the RectPath position divided by screen dimensions
+	port.position.x = 0.2396f - cam.x / view.getSize().x;
+	port.position.y = 0.18f - cam.y / view.getSize().y;
+
 	view.setViewport(port);
 	center_position = (position - view.getCenter()) / ratio;
 	// render minimap
