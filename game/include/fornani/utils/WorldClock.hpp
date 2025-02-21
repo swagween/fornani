@@ -21,6 +21,7 @@ class WorldClock {
 	void update(automa::ServiceProvider& svc);
 	void set_time(int hour = 0, int minute = 0);
 	void set_speed(int to_rate, int to_transition = 4096);
+	[[nodiscard]] auto get_normalized_time() const -> float { return static_cast<float>(get_hours() * 60 + get_minutes()) / 1440.f; }
 	[[nodiscard]] auto is_daytime() const -> bool { return increments.hours.get() >= 8 && increments.hours.get() < 19; }
 	[[nodiscard]] auto is_nighttime() const -> bool { return increments.hours.get() >= 20 || increments.hours.get() < 7; }
 	[[nodiscard]] auto is_twilight() const -> bool { return !is_daytime() && !is_nighttime(); }

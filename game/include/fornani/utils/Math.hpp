@@ -6,12 +6,15 @@
 #include <ccmath/math/basic/fabs.hpp>
 #include <ccmath/math/misc/lerp.hpp>
 #include <ccmath/math/nearest/floor.hpp>
-//#include <ccmath/math/power/pow.hpp> // This is having issues
+// #include <ccmath/math/power/pow.hpp> // This is having issues
 #include <ccmath/math/power/sqrt.hpp>
 
 #include <cmath>
+#include <numbers>
 
 namespace fornani::util {
+
+constexpr auto f_pi{static_cast<float>(std::numbers::pi)};
 
 inline float magnitude(sf::Vector2<float> vec) { return ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }
 inline sf::Vector2<float> unit(sf::Vector2<float> vec) {
@@ -19,7 +22,10 @@ inline sf::Vector2<float> unit(sf::Vector2<float> vec) {
 	if (denominator == 0.f) { return sf::Vector2{1.f, 0.f}; }
 	return vec / denominator;
 }
-inline float direction(sf::Vector2<float> vec) { return ::std::atan2(vec.y, vec.x); } // TODO: Switch to ccm::atan2f when done.
+// θ = atan(y / x)
+inline float get_angle_from_direction(sf::Vector2<float> vec) { return ::std::atan2(vec.y, vec.x); } // TODO: Switch to ccm::atan2f when done.
+// v = (cos(−θ), sin(−θ))
+inline sf::Vector2<float> get_direction_from_angle(float angle) { return sf::Vector2f{::std::cos(-angle), ::std::sin(-angle)}; } // TODO: Switch to ccm::cos2f and ccm::sin2f when done.
 inline sf::Vector2<float> absolute_distance(sf::Vector2<float> source, sf::Vector2<float> destination) { return sf::Vector2<float>{ccm::abs(source.x - destination.x), ccm::abs(source.y - destination.y)}; }
 inline sf::Vector2<float> round_to_even(sf::Vector2<float> input) {
 	auto ret = input;

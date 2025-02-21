@@ -10,7 +10,7 @@ void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2<float> direc
 	sprite.setRotation(sf::degrees(0.f));
 
 	sprite_angle_index = 0;
-	auto angle = util::direction(direction);
+	auto angle = util::get_angle_from_direction(direction);
 
 	auto pi = static_cast<float>(std::numbers::pi);
 	auto two_pi = pi * 2.f;
