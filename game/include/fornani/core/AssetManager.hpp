@@ -17,7 +17,7 @@ class AssetManager {
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
 
-	sf::Texture& get_texture(std::string_view const& label);
+	sf::Texture& get_texture(std::string const& label);
 
 	// TODO: Dear god we need to clean this up...
 	// working on it :)
@@ -386,7 +386,7 @@ class AssetManager {
 	std::unordered_map<std::string_view, std::vector<sf::SoundBuffer>> npc_sounds{};
 
   private:
-	std::unordered_map<std::string_view, sf::Texture> m_textures{};
+	std::unordered_map<std::string, sf::Texture> m_textures{};
 	fornani::io::Logger m_logger{"asset"};
 };
 

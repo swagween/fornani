@@ -19,14 +19,6 @@ namespace fornani::gui {
 
 enum class ChunkType : uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 
-struct Chunk {
-	sf::Vector2<uint32_t> position{};
-	uint64_t one_d_index{};
-	sf::RectangleShape drawbox{};
-	ChunkType type{};
-	void generate();
-};
-
 class MiniMap {
   public:
 	explicit MiniMap(automa::ServiceProvider& svc);
@@ -59,15 +51,12 @@ class MiniMap {
 	sf::RenderTexture minimap_texture{};
 	sf::RectangleShape player_box{};
 	sf::Sprite map_sprite;
-	sf::RectangleShape background{};
 	sf::RectangleShape border{};
-	sf::RectangleShape room_border{};
 	struct {
 		sf::RectangleShape vert{};
 		sf::RectangleShape horiz{};
 	} cursor{};
 	sf::Color background_color{};
-	std::vector<Chunk> grid{};
 	std::vector<std::unique_ptr<MapTexture>> atlas{};
 	util::Circuit scalar{3};
 };

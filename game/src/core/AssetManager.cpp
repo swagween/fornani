@@ -14,7 +14,7 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	// null texture for lookup failures
 	if (!t_null.loadFromFile(finder.resource_path() / p_app / fs::path{"null.png"})) { NANI_LOG_WARN(m_logger, "Failed to load texture."); };
 
-	// pupolate texture map
+	// populate texture map
 	m_textures.insert({"clock_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_gizmo.png"}}});
 	// all the other map insertions will go here
 
@@ -473,6 +473,6 @@ sf::Texture& AssetManager::get_scenery(int style) {
 	return scenery_lookup.at(style);
 }
 
-sf::Texture& AssetManager::get_texture(std::string_view const& label) { return m_textures.contains(label) ? m_textures.at(label) : t_null; }
+sf::Texture& AssetManager::get_texture(std::string const& label) { return m_textures.contains(label) ? m_textures.at(label) : t_null; }
 
 } // namespace fornani::asset

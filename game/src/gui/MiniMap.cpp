@@ -7,15 +7,9 @@
 namespace fornani::gui {
 
 MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null}, window_scale{0.67f} {
-	background_color = svc.styles.colors.ui_black;
-	background_color.a = 210;
-	background.setFillColor(background_color);
-	border.setOutlineColor(svc.styles.colors.ui_white);
+	border.setOutlineColor(svc.styles.colors.pioneer_dark_red);
 	border.setOutlineThickness(-4.f);
 	border.setFillColor(sf::Color::Transparent);
-	room_border.setOutlineColor(svc.styles.colors.blue);
-	room_border.setOutlineThickness(-2.f);
-	room_border.setFillColor(sf::Color::Transparent);
 	player_box.setFillColor(svc.styles.colors.pioneer_red);
 	player_box.setSize({16.f, 16.f});
 	player_box.setOrigin({8.f, 8.f});
@@ -39,7 +33,6 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool
 }
 
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	background.setSize(svc.constants.f_screen_dimensions);
 	border.setSize(svc.constants.f_screen_dimensions);
 	ratio = 32.f / scale;
 	player_position = player.collider.physics.position;
@@ -55,18 +48,15 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	port.position.y = 0.18f - cam.y / view.getSize().y;
 
 	view.setViewport(port);
-	center_position = (position - view.getCenter()) / ratio;
+	center_position = ((position - view.getCenter()) / ratio);
 	// render minimap
 	global_ratio = ratio * 0.25f;
 	win.setView(view);
 	// win.draw(background);
-	if (svc.ticker.every_x_frames(10)) {
-		room_border.getFillColor() == svc.styles.colors.ui_white ? room_border.setOutlineColor(svc.styles.colors.periwinkle) : room_border.setOutlineColor(svc.styles.colors.ui_white);
-		player_box.getFillColor() == svc.styles.colors.pioneer_red ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.pioneer_red);
-	}
+	if (svc.ticker.every_x_frames(10)) { player_box.getFillColor() == svc.styles.colors.pioneer_red ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.pioneer_red); }
 	for (auto& room : atlas) {
 		if (room->to_ignore()) { continue; }
-		if (room->is_current()) { player_box.setPosition((player_position / scale) + room->get_position() * ratio + position); }
+		if (room->is_current()) { player_box.setPosition(((player_position / scale) / window_scale + room->get_position() * ratio + position)); }
 		map_sprite.setTexture(room->get().getTexture());
 		map_sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int>>(room->get().getSize())));
 		map_sprite.setScale(sf::Vector2f{global_ratio, global_ratio} / window_scale);
@@ -77,27 +67,21 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 			for (auto j{-1}; j < 2; ++j) {
 				if ((std::abs(i) % 2 == 0 && std::abs(j) % 2 == 0) || (std::abs(i) % 2 == 1 && std::abs(j) % 2 == 1)) { continue; }
 				auto skew{sf::Vector2f{static_cast<float>(i), static_cast<float>(j)}};
-				outline.setPosition((room->get_position() * ratio + position) + skew * 2.f);
+				outline.setPosition((room->get_position() * ratio + position) + skew * 2.f / window_scale);
 				win.draw(outline);
 			}
 		}
-		room_border.setPosition(map_sprite.getPosition());
-		room_border.setOrigin(map_sprite.getOrigin());
-		room_border.setSize(map_sprite.getLocalBounds().size);
-		room_border.setScale(map_sprite.getScale());
-		room_border.setOutlineThickness(scale / 4.f);
 		win.draw(map_sprite);
 		auto tl = room->get_position() * ratio + position;
 		auto br = tl + map_sprite.getLocalBounds().size * global_ratio;
 		auto pos = view.getCenter();
-		// if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y) { win.draw(room_border); }
 		win.draw(player_box);
 	}
 	cursor.vert.setPosition(svc.constants.f_center_screen);
 	cursor.horiz.setPosition(svc.constants.f_center_screen);
 	win.draw(cursor.vert);
 	win.draw(cursor.horiz);
-	// win.draw(border);
+	win.draw(border);
 	svc.window->restore_view();
 }
 
@@ -129,23 +113,9 @@ void MiniMap::move(sf::Vector2<float> direction) {
 void MiniMap::center() {
 	for (auto& room : atlas) {
 		if (room->is_current()) {
-			position = -room->get_position() * ratio + view.getCenter() - (player_position / scale);
+			position = -room->get_position() * ratio + view.getCenter() * window_scale;
 			return;
 		}
-	}
-}
-
-void Chunk::generate() {
-	switch (type) {
-	case ChunkType::top_left: break;
-	case ChunkType::top: break;
-	case ChunkType::top_right: break;
-	case ChunkType::bottom_left: break;
-	case ChunkType::bottom: break;
-	case ChunkType::bottom_right: break;
-	case ChunkType::left: break;
-	case ChunkType::right: break;
-	case ChunkType::inner: break;
 	}
 }
 

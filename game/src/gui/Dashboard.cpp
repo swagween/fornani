@@ -58,7 +58,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_gizmo = std::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1)); }
 		button.box.setPosition(svc.constants.f_center_screen + pos);
 		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(svc.styles.colors.bright_orange) : button.box.setOutlineColor(svc.styles.colors.dark_fucshia);
-		// win.draw(button.box);
+		win.draw(button.box);
 		++ctr;
 	}
 
