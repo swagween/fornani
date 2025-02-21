@@ -1,12 +1,12 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "editor/canvas/Canvas.hpp"
 #include "editor/canvas/Clipboard.hpp"
-#include "editor/util/BitFlags.hpp"
 #include "editor/util/SelectBox.hpp"
 
-#include <cstdio>
 #include <optional>
 #include <string_view>
 

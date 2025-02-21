@@ -368,7 +368,7 @@ inline Logger const general{"general"};
 } // namespace fornani::io
 
 // NOLINTBEGIN
-#if defined(__clang__) && defined(__APPLE__)
+#if defined(__GNUC__) || defined(__clang__)
 #define INTERNAL_NANI_LOG(logger, level, message, ...)                                                                                                                                                                                         \
 	do { logger.verbose_##level(__func__, __FILE__, __LINE__, message, ##__VA_ARGS__); } while ((void)0, 0)
 

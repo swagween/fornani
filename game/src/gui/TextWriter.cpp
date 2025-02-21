@@ -85,7 +85,7 @@ void TextWriter::flush() {
 
 void TextWriter::set_bounds(sf::FloatRect to_bounds) {
 	m_bounds = to_bounds;
-	if (abs(m_bounds.size.x - m_previous_bounds.size.x) > m_delta_threshold) {
+	if (ccm::abs(m_bounds.size.x - m_previous_bounds.size.x) > m_delta_threshold) {
 		constrain();
 		m_previous_bounds = m_bounds;
 	}

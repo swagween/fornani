@@ -27,7 +27,7 @@ sf::Vector2<float> Shape::perp(Vec edg) const {
 	float a_squared = temp.x * temp.x;
 	float b_squared = temp.y * temp.y;
 	mag = sqrt(a_squared + b_squared);
-	if (abs(mag) > 0) {
+	if (ccm::abs(mag) > 0) {
 		temp.x = temp.x / mag;
 		temp.y = temp.y / mag;
 	}
@@ -328,12 +328,12 @@ float Shape::get_height_at(float x) const {
 	auto sign = vertices.at(1).y > vertices.at(0).y ? -1.f : 1.f;
 	if (run == 0.f) { return 0.f; }
 	auto slope = rise / run;
-	auto max_height = vertices.size() == 4 ? std::max(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::max(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);
-	auto min_height = vertices.size() == 4 ? std::min(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::min(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);
+	auto max_height = vertices.size() == 4 ? ccm::max(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::max(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);
+	auto min_height = vertices.size() == 4 ? ccm::min(vertices.at(2).y - vertices.at(1).y, vertices.at(3).y - vertices.at(0).y) : std::min(vertices.at(2).y - vertices.at(0).y, vertices.at(2).y - vertices.at(1).y);
 	// y intercept is always the left ramp height
 	auto b = vertices.size() == 4 ? vertices.at(3).y - vertices.at(0).y : vertices.at(2).y - vertices.at(0).y;
 	auto y = slope * x + b;
-	return std::clamp(y, 0.f, abs(max_height));
+	return ccm::ext::clamp(y, 0.f, ccm::abs(max_height));
 }
 
 float Shape::get_radial_factor() const {

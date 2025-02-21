@@ -1,3 +1,3 @@
 nani_add_sources(
-    app.rc
+        app_icon_data.hpp
 )

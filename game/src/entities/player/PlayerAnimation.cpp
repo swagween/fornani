@@ -456,7 +456,7 @@ fsm::StateFunction PlayerAnimation::update_walljump() {
 	animation.label = "walljump";
 	if (cooldowns.walljump.running()) {
 		auto sign = m_player->moving_left() ? -1.f : 1.f;
-		if (abs(m_player->collider.physics.apparent_velocity().x) < 0.01f) { sign = m_player->controller.facing_left() ? 1.f : -1.f; }
+		if (ccm::abs(m_player->collider.physics.apparent_velocity().x) < 0.01f) { sign = m_player->controller.facing_left() ? 1.f : -1.f; }
 		m_player->collider.physics.forced_acceleration = {0.8f * sign, 0.f};
 		m_player->controller.stop();
 	} else {

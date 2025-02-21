@@ -34,7 +34,7 @@ void Camera::update(automa::ServiceProvider& svc) {
 	if (shake.timer.running() && shake.timer.get_cooldown() % shake.properties.frequency == 0) {
 		shake.dampen.update();
 		auto diff = static_cast<float>(shake.dampen.get_cooldown()) * shake.properties.energy;
-		if (abs(diff) < 0.1f) {
+		if (ccm::abs(diff) < 0.1f) {
 			shake.timer.cancel();
 			diff = 0.f;
 		}

@@ -1,5 +1,7 @@
 #include "fornani/graphics/SpriteHistory.hpp"
 
+#include <ccmath/math/misc/lerp.hpp>
+
 namespace fornani::flfx {
 
 void SpriteHistory::update(sf::Sprite next, sf::Vector2<float> position) {
@@ -18,7 +20,7 @@ void SpriteHistory::drag(sf::RenderWindow& win, sf::Vector2<float> cam) {
 		pair.first.setColor(sf::Color(255, 255, 255, a));
 		pair.first.setPosition(pair.second - cam);
 		win.draw(pair.first);
-		a = std::lerp(dimness_limit, 255, range);
+		a = ccm::lerp(dimness_limit, 255, range);
 		a = std::clamp(a, 0, 255);
 		range += 1.f / static_cast<float>(pairs.size());
 	}

@@ -2,6 +2,8 @@
 #pragma once
 #include "fornani/utils/BitFlags.hpp"
 
+#include <cstdint>
+
 namespace fornani::automa {
 struct ServiceProvider;
 }
@@ -12,7 +14,7 @@ class Console;
 
 namespace fornani::player {
 
-enum class Abilities : uint8_t { wall_slide, dash, double_jump, respiration, shield };
+enum class Abilities : std::uint8_t { wall_slide, dash, double_jump, respiration, shield };
 
 class AbilityManager {
   public:

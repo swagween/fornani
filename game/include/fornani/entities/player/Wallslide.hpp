@@ -4,13 +4,15 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
+#include <cstdint>
+
 namespace fornani::player {
 
 constexpr static int perfect_walljump{4};
 constexpr static int walljump_request_time{12};
 
-enum class WallslideTrigger : uint8_t { walljump_requested };
-enum class WallslideState : uint8_t { wallsliding, walljump };
+enum class WallslideTrigger : std::uint8_t { walljump_requested };
+enum class WallslideState : std::uint8_t { wallsliding, walljump };
 
 class Wallslide {
   public:
