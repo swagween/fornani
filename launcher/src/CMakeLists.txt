@@ -3,3 +3,5 @@ nani_add_sources(
 
         LauncherApplication.cpp
 )
+
+add_subdirectory(app) # Has to be last

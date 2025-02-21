@@ -9,7 +9,7 @@ namespace fornani {
 
 class WindowManager {
   public:
-	sf::RenderWindow& get() { return window; }
+	sf::RenderWindow& get() { return m_window; }
 	sf::View get_view() const { return game_view; }
 	sf::FloatRect get_viewport() const { return game_port; }
 	void set();
@@ -30,7 +30,7 @@ class WindowManager {
 	sf::Vector2u display_dimensions{};
 
   private:
-	sf::RenderWindow window;
+	sf::RenderWindow m_window;
 	sf::View game_view{};
 	sf::VideoMode mode{};
 	sf::FloatRect game_port{};
