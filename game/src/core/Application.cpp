@@ -20,11 +20,6 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 	m_window.create(m_metadata.long_title(), fullscreen);
 	m_window.set();
 
-	// set app icon
-	sf::Image icon{};
-	if (!icon.loadFromFile(m_finder.resource_path() + "/image/app/icon.png")) { std::cout << "Failed to load application icon.\n"; };
-	m_window.get().setIcon({256, 256}, icon.getPixelsPtr());
-
 	m_window.get().clear();
 	m_window.get().draw(m_loading);
 	m_window.get().display();
