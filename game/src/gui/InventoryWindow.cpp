@@ -20,7 +20,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map)
 	boundary.position = -1.f * svc.constants.f_screen_dimensions;
 	m_background.setFillColor(svc.styles.colors.pioneer_black);
 	m_background.setSize(svc.constants.f_screen_dimensions);
-	m_dashboard->set_position(sf::Vector2f{250.f, 64.f}, true);
+	m_dashboard->set_position(sf::Vector2f{250.f, 32.f}, true);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
 }
 

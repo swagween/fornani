@@ -5,10 +5,6 @@
 #include "fornani/gui/MiniMap.hpp"
 #include "fornani/utils/NineSlice.hpp"
 
-namespace fornani::world {
-class Map;
-}
-
 namespace fornani::gui {
 
 class MapGizmo : public Gizmo {
@@ -19,9 +15,12 @@ class MapGizmo : public Gizmo {
 	bool handle_inputs(config::ControllerMap& controller) override;
 
   private:
-	MiniMap m_minimap;
+	std::unique_ptr<MiniMap> m_minimap{};
 	util::NineSlice m_map_screen;
 	sf::Sprite m_sprite;
+	struct {
+		bool toggled{};
+	} m_flags{};
 	struct {
 		struct {
 			sf::IntRect top_left;

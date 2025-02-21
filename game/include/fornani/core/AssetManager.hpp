@@ -17,7 +17,10 @@ class AssetManager {
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
 
+	sf::Texture& get_texture(std::string_view const& label);
+
 	// TODO: Dear god we need to clean this up...
+	// working on it :)
 
 	sf::Texture t_null{};
 
@@ -94,6 +97,7 @@ class AssetManager {
 	sf::Texture t_cream_console{};
 	sf::Texture t_portrait_window{};
 	sf::Texture t_controller_button_icons{};
+	sf::Texture t_clock_hand{};
 
 	// inventory window
 	sf::Texture t_map_screen{};
@@ -381,6 +385,8 @@ class AssetManager {
 	std::vector<sf::SoundBuffer> vs_hologus{};
 	std::unordered_map<std::string_view, std::vector<sf::SoundBuffer>> npc_sounds{};
 
+  private:
+	std::unordered_map<std::string_view, sf::Texture> m_textures{};
 	fornani::io::Logger m_logger{"asset"};
 };
 

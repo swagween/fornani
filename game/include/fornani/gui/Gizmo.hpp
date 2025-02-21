@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/io/Logger.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -37,7 +38,12 @@ class Gizmo {
 
   protected:
 	std::string m_label{};
-	sf::Vector2f m_position{};
+
+	// the actual position of the gizmo, will generally target m_placement
+	components::PhysicsComponent m_physics{};
+	// the (x, y) of the target top left position of gizmo. all constituent parts will refer to this position for drawing.
+	sf::Vector2f m_placement{};
+	//
 	io::Logger m_logger{"Gizmo"};
 };
 

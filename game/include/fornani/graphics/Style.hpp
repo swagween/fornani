@@ -32,6 +32,7 @@ class Style {
 		sf::Color treasure_blue{15, 104, 248};
 		sf::Color bright_purple{219, 194, 255};
 		sf::Color pioneer_red{229, 59, 68};
+		sf::Color pioneer_dark_red{80, 22, 34};
 		sf::Color pioneer_black{16, 8, 28};
 	} colors{};
 

@@ -16,4 +16,5 @@ bool Gizmo::handle_inputs(config::ControllerMap& controller) {
 	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) { return false; }
 	return true;
 }
+
 } // namespace fornani::gui

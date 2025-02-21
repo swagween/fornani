@@ -4,8 +4,8 @@
 #include "Console.hpp"
 #include "Selector.hpp"
 #include "fornani/graphics/MapTexture.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/utils/Circuit.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::player {
 class Player;
@@ -33,6 +33,7 @@ class MiniMap {
 	void bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current = false, bool undiscovered = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void clear_atlas();
 	void toggle_scale();
 	void move(sf::Vector2<float> direction);
 	void center();
@@ -47,7 +48,7 @@ class MiniMap {
 	float global_ratio{};
 	float ratio{};
 	float speed{1.5f};
-	float window_scale{0.85f};
+	float window_scale{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> previous_position{};
 	sf::Vector2<float> center_position{};

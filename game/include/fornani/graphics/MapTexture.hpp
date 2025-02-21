@@ -24,8 +24,7 @@ class MapTexture {
 	void set_current() { flags.set(MapTextureFlags::current); }
 	[[nodiscard]] auto is_current() const -> bool { return flags.test(MapTextureFlags::current); }
 	[[nodiscard]] auto to_ignore() const -> bool { return ignore; }
-	sf::Sprite sprite();
-	sf::RenderTexture& get();
+	sf::RenderTexture& get(bool border = false);
 	sf::Vector2<float> get_position();
 	sf::Vector2<float> get_dimensions() const;
 	sf::RectangleShape tile_box{};
@@ -36,7 +35,8 @@ class MapTexture {
 	sf::RectangleShape curtain{};
 
   private:
-	sf::RenderTexture map_texture{};
+	sf::RenderTexture m_center_texture{};
+	sf::RenderTexture m_border_texture{};
 	sf::Color tile_color{};
 	sf::Color border_color{};
 	sf::Vector2<int> global_offset{};

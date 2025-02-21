@@ -1,12 +1,33 @@
 #include "fornani/core/AssetManager.hpp"
 
 namespace fornani::asset {
+
 AssetManager::AssetManager(data::ResourceFinder const& finder) {
 
-	if (!t_null.loadFromFile(finder.resource_path() + "/image/app/null.png")) { NANI_LOG_WARN(m_logger, "Failed to load texture."); };
+	// doing stuff the new way will be done up here. the goal is to slowly but surely get rid of the bottom
+
+	namespace fs = std::filesystem;
+	auto p_folder{fs::path{"image"}};
+	auto p_gui{p_folder / fs::path{"gui"}};
+	auto p_app{p_folder / fs::path{"app"}};
+
+	// null texture for lookup failures
+	if (!t_null.loadFromFile(finder.resource_path() / p_app / fs::path{"null.png"})) { NANI_LOG_WARN(m_logger, "Failed to load texture."); };
+
+	// pupolate texture map
+	m_textures.insert({"clock_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_gizmo.png"}}});
+	// all the other map insertions will go here
+
+	/////////////////////// old stuff below here, let's try to destroy it //////////////////////////////////////
 
 	// TODO: This manner of loading assets is extremely cumbersome.
 	//		 We honestly should move this into an unordered_map or something.
+
+	if (!t_map_screen.loadFromFile(finder.resource_path() + "/image/gui/map_screen.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/map_screen.png] from file.", finder.resource_path());
+	if (!t_map_gizmo.loadFromFile(finder.resource_path() + "/image/gui/map_gizmo.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/map_gizmo.png] from file.", finder.resource_path());
+	if (!t_dashboard.loadFromFile(finder.resource_path() + "/image/gui/dashboard.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/dashboard.png] from file.", finder.resource_path());
+	if (!t_clock_gizmo.loadFromFile(finder.resource_path() + "/image/gui/clock_gizmo.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/clock_gizmo.png] from file.", finder.resource_path());
+	if (!t_clock_hand.loadFromFile(finder.resource_path() + "/image/gui/clock_hand.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/clock_hand.png] from file.", finder.resource_path());
 
 	if (!t_nani.loadFromFile(finder.resource_path() + "/image/character/nani.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/character/nani.png] from file.", finder.resource_path());
 	if (!t_portraits.loadFromFile(finder.resource_path() + "/image/character/portraits.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/character/portraits.png] from file.", finder.resource_path());
@@ -26,11 +47,6 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	npcs.insert({"bit", t_bit});
 	npcs.insert({"lady_nimbus", t_lady_nimbus});
 	npcs.insert({"justin", t_justin});
-
-	if (!t_map_screen.loadFromFile(finder.resource_path() + "/image/gui/map_screen.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/map_screen.png] from file.", finder.resource_path());
-	if (!t_map_gizmo.loadFromFile(finder.resource_path() + "/image/gui/map_gizmo.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/map_gizmo.png] from file.", finder.resource_path());
-	if (!t_dashboard.loadFromFile(finder.resource_path() + "/image/gui/dashboard.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/dashboard.png] from file.", finder.resource_path());
-	if (!t_clock_gizmo.loadFromFile(finder.resource_path() + "/image/gui/clock_gizmo.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/clock_gizmo.png] from file.", finder.resource_path());
 
 	if (!t_vendor_artwork.loadFromFile(finder.resource_path() + "/image/gui/vendor_artwork.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/vendor_artwork.png] from file.", finder.resource_path());
 	if (!t_vendor_ui.loadFromFile(finder.resource_path() + "/image/gui/vendor_interface.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/vendor_interface.png] from file.", finder.resource_path());
@@ -438,5 +454,7 @@ sf::Texture& AssetManager::get_scenery(int style) {
 	if (!scenery_lookup.contains(style)) { return scenery_lookup.at(1); }
 	return scenery_lookup.at(style);
 }
+
+sf::Texture& AssetManager::get_texture(std::string_view const& label) { return m_textures.contains(label) ? m_textures.at(label) : t_null; }
 
 } // namespace fornani::asset

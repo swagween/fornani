@@ -1,6 +1,7 @@
 
 #include "fornani/gui/Dashboard.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/gizmos/ClockGizmo.hpp"
 #include "fornani/gui/gizmos/MapGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
@@ -27,6 +28,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f
 	for (auto& i : items.array_view()) {
 		if (i["id"].as<int>() == 16) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map)); }
 	}
+	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map)); // have to stick this in the for loop once we have a clock item
 	m_sprite.setScale(svc.constants.texture_scale);
 }
 
@@ -72,7 +74,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{290, 0} - cam);
 	win.draw(m_sprite);
 	m_sprite.setTextureRect(m_rects.bottom);
-	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{52, 224} - cam);
+	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{52, 218} - cam);
 	win.draw(m_sprite);
 }
 
@@ -85,7 +87,7 @@ void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 	if (force) {
 		m_physical.physics.position = to_position;
 	} else {
-		m_physical.steering.seek(m_physical.physics, to_position, 0.001f);
+		m_physical.steering.seek(m_physical.physics, to_position, 0.002f);
 	}
 }
 

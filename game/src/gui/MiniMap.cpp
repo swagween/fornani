@@ -1,3 +1,4 @@
+
 #include "fornani/gui/MiniMap.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -5,7 +6,7 @@
 
 namespace fornani::gui {
 
-MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null}, window_scale{0.8f} {
+MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null}, window_scale{0.67f} {
 	background_color = svc.styles.colors.ui_black;
 	background_color.a = 210;
 	background.setFillColor(background_color);
@@ -47,8 +48,7 @@ void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	view = svc.window->get_view();
 	auto port = svc.window->get_viewport();
-	port.size.x *= 0.67f;
-	port.size.y *= 0.67f;
+	port.size *= window_scale;
 
 	// TODO: these mysterious values will be the RectPath position divided by screen dimensions
 	port.position.x = 0.2396f - cam.x / view.getSize().x;
@@ -69,8 +69,18 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		if (room->is_current()) { player_box.setPosition((player_position / scale) + room->get_position() * ratio + position); }
 		map_sprite.setTexture(room->get().getTexture());
 		map_sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int>>(room->get().getSize())));
-		map_sprite.setScale({global_ratio, global_ratio});
+		map_sprite.setScale(sf::Vector2f{global_ratio, global_ratio} / window_scale);
 		map_sprite.setPosition(room->get_position() * ratio + position);
+		auto outline{sf::Sprite{room->get(true).getTexture()}};
+		outline.setScale(sf::Vector2f{global_ratio, global_ratio} / window_scale);
+		for (auto i{-1}; i < 2; ++i) {
+			for (auto j{-1}; j < 2; ++j) {
+				if ((std::abs(i) % 2 == 0 && std::abs(j) % 2 == 0) || (std::abs(i) % 2 == 1 && std::abs(j) % 2 == 1)) { continue; }
+				auto skew{sf::Vector2f{static_cast<float>(i), static_cast<float>(j)}};
+				outline.setPosition((room->get_position() * ratio + position) + skew * 2.f);
+				win.draw(outline);
+			}
+		}
 		room_border.setPosition(map_sprite.getPosition());
 		room_border.setOrigin(map_sprite.getOrigin());
 		room_border.setSize(map_sprite.getLocalBounds().size);
@@ -90,6 +100,8 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	// win.draw(border);
 	svc.window->restore_view();
 }
+
+void MiniMap::clear_atlas() { atlas.clear(); }
 
 void MiniMap::toggle_scale() {
 	scalar.modulate(1);
