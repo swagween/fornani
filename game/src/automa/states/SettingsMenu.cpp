@@ -8,7 +8,8 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 	: GameState(svc, player, scene, room_number), toggleables{.autosprint = options.at(static_cast<int>(Toggles::autosprint)).label,
 															  .tutorial = options.at(static_cast<int>(Toggles::tutorial)).label,
 															  .gamepad = options.at(static_cast<int>(Toggles::gamepad)).label,
-															  .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label},
+															  .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label,
+															  .military_time = options.at(static_cast<int>(Toggles::military_time)).label},
 	  music_label{options.at(static_cast<int>(Toggles::music)).label}, toggle_options{.enabled{svc.text.fonts.title}, .disabled{svc.text.fonts.title}}, sliders{.music_volume{svc.text.fonts.title}} {
 	console.set_source(svc.text.basic);
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
@@ -21,6 +22,7 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 	options.at(static_cast<int>(Toggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.controller_map.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(Toggles::music)).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 	options.at(static_cast<int>(Toggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(static_cast<int>(Toggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 }
 
 void SettingsMenu::tick_update(ServiceProvider& svc) {
@@ -61,11 +63,13 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 				svc.toggle_fullscreen();
 				console.load_and_launch("fullscreen");
 				break;
+			case static_cast<int>(Toggles::military_time): svc.world_clock.toggle_military_time(); break;
 			}
 			options.at(static_cast<int>(Toggles::autosprint)).label.setString(toggleables.autosprint.getString() + (svc.controller_map.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(Toggles::tutorial)).label.setString(toggleables.tutorial.getString() + (svc.tutorial() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(Toggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.controller_map.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(Toggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+			options.at(static_cast<int>(Toggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 		}
 	}
 

@@ -31,7 +31,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	if (m_view == InventoryView::focused) {
 		if (!m_dashboard->handle_inputs(controller)) {
 			m_grid_position = {};
-			m_dashboard->set_selection({});
+			// m_dashboard->set_selection({});
 		}
 	}
 
@@ -44,6 +44,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = std::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
 			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = std::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
 			m_view = InventoryView::focused;
+			m_dashboard->select_gizmo();
 		}
 	}
 
@@ -55,6 +56,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	m_dashboard->update(svc, player, map);
 
 	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
+	if (controller.digital_action_status(config::DigitalAction::inventory_close).triggered) { m_view = InventoryView::exit; }
 	if (exit_requested()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 }
 

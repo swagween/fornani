@@ -22,5 +22,29 @@
 				}
 			]
 		}
+	],
+	"minimap": [
+		{
+			"label": "open",
+			"path": [
+				{
+					"position": [ 68, 54 ],
+					"dimensions": [ 45, 45 ]
+				},
+				{
+					"position": [ 88, -104 ],
+					"dimensions": [ 105, 65 ]
+				}
+			]
+		},
+		{
+			"label": "close",
+			"path": [
+				{
+					"position": [ 47, 129 ],
+					"dimensions": [ 385, 122 ]
+				}
+			]
+		}
 	]
 }

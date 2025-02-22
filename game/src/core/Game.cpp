@@ -263,8 +263,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::Separator();
-					ImGui::Text("World Time (military): %s", services.world_clock.get_string().c_str());
-					ImGui::Text("World Time: %s", services.world_clock.get_string(false).c_str());
+					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
 					ImGui::Text("Time of Day: %s", services.world_clock.get_time_of_day() == fornani::TimeOfDay::day ? "Day" : services.world_clock.get_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight" : "Night");
 					ImGui::Text("Previous Time of Day: %s", services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::day		  ? "Day"
 															: services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight"

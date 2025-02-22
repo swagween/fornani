@@ -89,21 +89,14 @@ class AssetManager {
 	sf::Texture t_imp_knife{};
 
 	// gui
-	sf::Texture t_ui{};
 	sf::Texture t_title{};
 	sf::Texture t_title_assets{};
 	sf::Texture t_file_text{};
-	sf::Texture t_blue_console{};
-	sf::Texture t_cream_console{};
 	sf::Texture t_portrait_window{};
 	sf::Texture t_controller_button_icons{};
-	sf::Texture t_clock_hand{};
 
 	// inventory window
-	sf::Texture t_map_screen{};
-	sf::Texture t_map_gizmo{};
 	sf::Texture t_dashboard{};
-	sf::Texture t_clock_gizmo{};
 
 	sf::Texture t_vendor_artwork{};
 	sf::Texture t_vendor_ui{};
@@ -115,7 +108,6 @@ class AssetManager {
 	sf::Texture t_hud_pointer{};
 	sf::Texture t_hud_shield{};
 	sf::Texture t_selector{};
-	sf::Texture t_console_outline{};
 	sf::Texture t_indicator{};
 	sf::Texture t_sticker{};
 

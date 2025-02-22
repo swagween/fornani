@@ -9,8 +9,6 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : m_menu(svc, {"resume", 
 	auto color = svc.styles.colors.ui_black;
 	color.a = 180;
 	m_background.setFillColor(color);
-	m_menu.set_force(1.2f);
-	m_menu.set_fric(0.90f);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
 }
 

@@ -6,11 +6,13 @@
 
 namespace fornani::gui {
 
-Console::Console(automa::ServiceProvider& svc)
+Console::Console(automa::ServiceProvider& svc) : Console(svc, "blue_console") {}
+
+Console::Console(automa::ServiceProvider& svc, std::string const& texture_lookup)
 	: portrait(svc), nani_portrait(svc, false), m_services(&svc), item_widget(svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64},
-	  m_styling{.corner_factor{56}, .edge_factor{2}, .padding_scale{0.8f}}, m_nineslice(svc, m_styling.corner_factor, m_styling.edge_factor), m_mode{ConsoleMode::off} {
+	  m_styling{.corner_factor{56}, .edge_factor{2}, .padding_scale{0.8f}}, m_nineslice(svc, svc.assets.get_texture(texture_lookup), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}),
+	  m_mode{ConsoleMode::off} {
 	text_suite = svc.text.console;
-	set_texture(svc.assets.t_ui);
 }
 
 void Console::begin() {
@@ -31,7 +33,8 @@ void Console::update(automa::ServiceProvider& svc) {
 	if (writer->is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
 	position = m_path.get_position();
 	dimensions = m_path.get_dimensions();
-	m_nineslice.direct_update(svc, m_path.get_position(), m_path.get_dimensions(), m_styling.corner_factor, m_styling.edge_factor);
+	m_nineslice.set_position(m_path.get_position());
+	m_nineslice.set_dimensions(m_path.get_dimensions());
 	writer->set_bounds(sf::FloatRect{position - dimensions * m_styling.padding_scale * 0.5f, dimensions * m_styling.padding_scale});
 	writer->update();
 	portrait.update(svc);
@@ -51,8 +54,6 @@ void Console::render(sf::RenderWindow& win) {
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
-
-void Console::set_texture(sf::Texture& tex) { m_nineslice.set_texture(tex); }
 
 void Console::load_and_launch(std::string_view key, OutputType type) {
 	NANI_LOG_INFO(m_logger, "Loading...");

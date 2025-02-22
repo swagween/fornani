@@ -26,7 +26,10 @@ class RectPath {
 	void reset();
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_current_position; }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return m_current_dimensions; }
+	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return m_current_dimensions * 0.5f; }
+	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return m_current_position + m_current_dimensions * 0.5f; }
 	[[nodiscard]] auto finished() const -> bool;
+
   private:
 	std::vector<PathSection> m_sections{};
 	int m_current_section{};

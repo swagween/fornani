@@ -4,54 +4,57 @@
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/MiniMap.hpp"
 #include "fornani/utils/NineSlice.hpp"
+#include "fornani/utils/RectPath.hpp"
 
 namespace fornani::gui {
 
 class MapGizmo : public Gizmo {
   public:
 	MapGizmo(automa::ServiceProvider& svc, world::Map& map);
-	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
+	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	bool handle_inputs(config::ControllerMap& controller) override;
 
   private:
 	std::unique_ptr<MiniMap> m_minimap{};
 	util::NineSlice m_map_screen;
+	util::NineSlice m_map_shadow;
+	util::RectPath m_path;
 	sf::Sprite m_sprite;
 	struct {
 		bool toggled{};
 	} m_flags{};
 	struct {
 		struct {
-			sf::IntRect top_left;
-			sf::IntRect top_right;
-			sf::IntRect bottom_left;
-			sf::IntRect bottom_right;
+			Constituent top_left;
+			Constituent top_right;
+			Constituent bottom_left;
+			Constituent bottom_right;
 		} gizmo;
 		struct {
-			sf::IntRect left;
-			sf::IntRect right;
-			sf::IntRect top;
-			sf::IntRect bottom;
+			Constituent left;
+			Constituent right;
+			Constituent top;
+			Constituent bottom;
 		} chain;
 		struct {
-			sf::IntRect info;
-			sf::IntRect left_grip;
-			sf::IntRect right_grip;
-			sf::IntRect motherboard;
+			Constituent info;
+			Constituent left_grip;
+			Constituent right_grip;
+			Constituent motherboard;
 		} extras;
 		struct {
-			sf::IntRect player;
-			sf::IntRect chest;
-			sf::IntRect save;
-			sf::IntRect gunsmith;
-			sf::IntRect bed;
-			sf::IntRect gobe;
-			sf::IntRect vendor;
-			sf::IntRect door;
-			sf::IntRect boss;
+			Constituent player;
+			Constituent chest;
+			Constituent save;
+			Constituent gunsmith;
+			Constituent bed;
+			Constituent gobe;
+			Constituent vendor;
+			Constituent door;
+			Constituent boss;
 		} plugins;
-	} m_rects;
+	} m_constituents;
 };
 
 } // namespace fornani::gui

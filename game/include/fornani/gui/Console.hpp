@@ -28,13 +28,13 @@ class Console {
 
   public:
 	explicit Console(automa::ServiceProvider& svc);
+	explicit Console(automa::ServiceProvider& svc, std::string const& texture_lookup);
 
 	void begin();
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 
 	void set_source(dj::Json& json);
-	void set_texture(sf::Texture& tex);
 	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual);
 	void load_single_message(std::string_view message);
 	void display_item(int item_id);

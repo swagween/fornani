@@ -8,7 +8,8 @@ struct Constants {
 	sf::Vector2<int> const tileset_scaled{16, 16};
 	sf::Vector2<int> const i_cell_vec{32, 32};
 	sf::Vector2<float> const f_cell_vec{32.f, 32.f};
-	sf::Vector2<float> const texture_scale{2.f, 2.f};
+	float const f_texture_scale{2.f};
+	sf::Vector2<float> const texture_scale{f_texture_scale, f_texture_scale};
 	uint32_t const u32_cell_size{32};
 	int const i_cell_size{32};
 	float const cell_size{32.0f};

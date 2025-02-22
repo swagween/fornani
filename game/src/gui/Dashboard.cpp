@@ -28,13 +28,14 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f
 	for (auto& i : items.array_view()) {
 		if (i["id"].as<int>() == 16) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map)); }
 	}
-	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map)); // have to stick this in the for loop once we have a clock item
+	auto clock_placement{sf::Vector2f{84.f, 142.f}};
+	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); // have to stick this in the for loop once we have a clock item
 	m_sprite.setScale(svc.constants.texture_scale);
 }
 
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
 	auto& controller = svc.controller_map;
-	for (auto& gizmo : m_gizmos) { gizmo->update(svc, player, map); }
+	for (auto& gizmo : m_gizmos) { gizmo->update(svc, player, map, m_physical.physics.position); }
 	m_physical.physics.simple_update();
 }
 
@@ -58,12 +59,11 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_gizmo = std::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1)); }
 		button.box.setPosition(svc.constants.f_center_screen + pos);
 		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(svc.styles.colors.bright_orange) : button.box.setOutlineColor(svc.styles.colors.dark_fucshia);
-		win.draw(button.box);
+		// win.draw(button.box);
 		++ctr;
 	}
 
 	// real renders
-	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam); }
 	m_sprite.setTextureRect(m_rects.base);
 	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{14, 68} - cam);
 	win.draw(m_sprite);
@@ -76,6 +76,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	m_sprite.setTextureRect(m_rects.bottom);
 	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{52, 218} - cam);
 	win.draw(m_sprite);
+	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam); }
 }
 
 bool Dashboard::handle_inputs(config::ControllerMap& controller) {
@@ -92,6 +93,11 @@ void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 }
 
 void Dashboard::set_selection(sf::Vector2i to_selection) { m_selected_position = to_selection; }
+
+void Dashboard::select_gizmo() {
+	if (m_gizmos.empty() || m_gizmos.size() <= m_current_gizmo) { return; }
+	m_gizmos.at(m_current_gizmo)->select();
+}
 
 void Dashboard::hover(sf::Vector2i direction) {}
 

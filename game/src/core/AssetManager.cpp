@@ -17,6 +17,12 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	// populate texture map
 	m_textures.insert({"clock_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_gizmo.png"}}});
 	m_textures.insert({"clock_hand", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_hand.png"}}});
+	m_textures.insert({"map_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_gizmo.png"}}});
+	m_textures.insert({"map_screen", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_screen.png"}}});
+	m_textures.insert({"map_shadow", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_shadow.png"}}});
+	m_textures.insert({"blue_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"blue_console.png"}}});
+	m_textures.insert({"cream_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"cream_console.png"}}});
+	m_textures.insert({"outline_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"outline_console.png"}}});
 	// all the other map insertions will go here
 
 	/////////////////////// old stuff below here, let's try to destroy it //////////////////////////////////////
@@ -24,8 +30,6 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	// TODO: This manner of loading assets is extremely cumbersome.
 	//		 We honestly should move this into an unordered_map or something.
 
-	if (!t_map_screen.loadFromFile(finder.resource_path() + "/image/gui/map_screen.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/map_screen.png] from file.", finder.resource_path());
-	if (!t_map_gizmo.loadFromFile(finder.resource_path() + "/image/gui/map_gizmo.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/map_gizmo.png] from file.", finder.resource_path());
 	if (!t_dashboard.loadFromFile(finder.resource_path() + "/image/gui/dashboard.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/dashboard.png] from file.", finder.resource_path());
 
 	if (!t_nani.loadFromFile(finder.resource_path() + "/image/character/nani.png")) NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/character/nani.png] from file.", finder.resource_path());
@@ -116,7 +120,6 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	texture_lookup.insert({"meatsquash", t_meatsquash});
 	texture_lookup.insert({"imp", t_fork_imp});
 
-	if (!t_ui.loadFromFile(finder.resource_path() + "/image/gui/blue_console.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/blue_console.png] from file.", finder.resource_path()); }
 	if (!t_hud_orb_font.loadFromFile(finder.resource_path() + "/image/gui/HUD_orb_font.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/HUD_orb_font.png] from file.", finder.resource_path()); }
 	if (!t_hud_hearts.loadFromFile(finder.resource_path() + "/image/gui/HUD_hearts.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/HUD_hearts.png] from file.", finder.resource_path()); }
 	if (!t_hud_ammo.loadFromFile(finder.resource_path() + "/image/gui/HUD_ammo.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/HUD_ammo.png] from file.", finder.resource_path()); }
@@ -124,7 +127,6 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	if (!t_hud_gun.loadFromFile(finder.resource_path() + "/image/gui/HUD_gun.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/HUD_gun.png] from file.", finder.resource_path()); }
 	if (!t_hud_shield.loadFromFile(finder.resource_path() + "/image/gui/HUD_shield.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/HUD_shield.png] from file.", finder.resource_path()); }
 	if (!t_selector.loadFromFile(finder.resource_path() + "/image/gui/selector.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/selector.png] from file.", finder.resource_path()); }
-	if (!t_console_outline.loadFromFile(finder.resource_path() + "/image/gui/console_outline.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/console_outline.png] from file.", finder.resource_path()); }
 	if (!t_sticker.loadFromFile(finder.resource_path() + "/image/gui/sticker.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/sticker.png] from file.", finder.resource_path()); }
 	if (!t_controller_button_icons.loadFromFile(finder.resource_path() + "/image/gui/controller_button_icons.png")) {
 		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/controller_button_icons.png] from file.", finder.resource_path());
@@ -202,8 +204,6 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	particle_textures.insert({"bryns_gun_smoke", t_bg_effect});
 
 	if (!t_alphabet.loadFromFile(finder.resource_path() + "/image/gui/alphabet.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/alphabet.png] from file.", finder.resource_path()); }
-	if (!t_blue_console.loadFromFile(finder.resource_path() + "/image/gui/blue_console.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/blue_console.png] from file.", finder.resource_path()); }
-	if (!t_cream_console.loadFromFile(finder.resource_path() + "/image/gui/cream_console.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/cream_console.png] from file.", finder.resource_path()); }
 	if (!t_portrait_window.loadFromFile(finder.resource_path() + "/image/gui/portrait_window.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/portrait_window.png] from file.", finder.resource_path()); }
 
 	if (!t_platforms.loadFromFile(finder.resource_path() + "/image/tile/platforms.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/tile/platforms.png] from file.", finder.resource_path()); }
