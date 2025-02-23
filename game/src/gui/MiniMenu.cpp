@@ -6,7 +6,7 @@
 namespace fornani::gui {
 
 MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, sf::Vector2f start_position, bool white)
-	: m_nineslice{svc, (white ? svc.assets.get_texture("cream_console") : svc.assets.get_texture("blue_console")), {static_cast<int>(corner), static_cast<int>(corner)}, {static_cast<int>(edge), static_cast<int>(edge)}} {
+	: m_nineslice{svc, (white ? svc.assets.get_texture("cream_console") : svc.assets.get_texture("blue_console")), {28, 28}, {1, 1}} {
 	;
 	auto ctr{0};
 	for (auto& o : opt) {

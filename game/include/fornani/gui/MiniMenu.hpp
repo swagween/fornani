@@ -27,8 +27,6 @@ class MiniMenu {
 	sf::Vector2<float> dimensions{};
 	int maximum{};
 	int index{};
-	float corner{56.f};
-	float edge{2.f};
 	util::NineSlice m_nineslice;
 	util::Circuit selection{1};
 	std::vector<automa::Option> options;
