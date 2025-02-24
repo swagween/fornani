@@ -20,6 +20,9 @@ class NineSlice {
 	void set_offset(sf::Vector2f to_offset) { m_render_offset = to_offset; }
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return m_dimensions * 0.5f; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return m_physics.position + m_dimensions * 0.5f; }
+	[[nodiscard]] auto get_bounds() const -> sf::Vector2f { return get_f_dimensions() + 2.f * get_f_corner_dimensions(); }
+	[[nodiscard]] auto get_f_dimensions() const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(m_dimensions.x), static_cast<float>(m_dimensions.y)}; }
+	[[nodiscard]] auto get_f_corner_dimensions() const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(m_corner_dimensions.x), static_cast<float>(m_corner_dimensions.y)} * m_native_scale.x; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_physics.position; }
 
   private:

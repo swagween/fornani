@@ -29,6 +29,8 @@ class MiniMap {
 	void toggle_scale();
 	void move(sf::Vector2<float> direction);
 	void center();
+	void set_port_position(sf::Vector2f to_position);
+	void set_port_dimensions(sf::Vector2f to_dimensions);
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
 	[[nodiscard]] auto get_extent() const -> sf::FloatRect { return extent; }
 	[[nodiscard]] auto get_center_position() const -> sf::Vector2<float> { return center_position; }
@@ -40,7 +42,8 @@ class MiniMap {
 	float global_ratio{};
 	float ratio{};
 	float speed{1.5f};
-	float window_scale{};
+	sf::Vector2f m_port_position{};
+	sf::Vector2f m_port_dimensions{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> previous_position{};
 	sf::Vector2<float> center_position{};

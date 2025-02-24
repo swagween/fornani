@@ -25,21 +25,30 @@ RectPath::RectPath(data::ResourceFinder& finder, std::filesystem::path source, s
 
 void RectPath::update() {
 	m_interpolation.update();
+	static bool rev{};
+	auto end{static_cast<int>(m_sections.at(m_current_section).path.size()) - 1};
 	auto target_position{m_sections.at(m_current_section).path.at(m_current_step).position};
 	auto target_dimensions{m_sections.at(m_current_section).path.at(m_current_step).size};
-	auto previous_position{m_sections.at(m_current_section).path.at(std::clamp(m_current_step - 1, 0, m_current_step)).position};
-	auto previous_dimensions{m_sections.at(m_current_section).path.at(std::clamp(m_current_step - 1, 0, m_current_step)).size};
-	if (m_current_position == target_position && m_current_dimensions == target_dimensions) {
-		if (m_current_step != m_sections.at(m_current_section).path.size() - 1) { m_interpolation.start(); }
-		m_current_step = std::clamp(m_current_step + 1, 0, static_cast<int>(m_sections.at(m_current_section).path.size()) - 1);
+	auto previous_position{m_sections.at(m_current_section).path.at(std::clamp(m_current_step + (m_reverse ? -1 : -1), 0, end)).position};
+	auto previous_dimensions{m_sections.at(m_current_section).path.at(std::clamp(m_current_step + (m_reverse ? -1 : -1), 0, end)).size};
+	if (m_current_position == (m_reverse ? previous_position : target_position) && m_current_dimensions == (m_reverse ? previous_dimensions : target_dimensions)) {
+		if (rev != m_reverse) { rev = m_reverse; }
+		if (m_current_step != (m_reverse ? 0 : end)) { m_interpolation.start(); }
+		m_current_step = std::clamp(m_current_step + (m_reverse ? -1 : 1), 0, end);
 		return;
 	}
 
-	m_current_position.x = ccm::lerp(previous_position.x, target_position.x, m_interpolation.get_inverse_cubic_normalized());
-	m_current_position.y = ccm::lerp(previous_position.y, target_position.y, m_interpolation.get_inverse_cubic_normalized());
-	m_current_dimensions.x = ccm::lerp(previous_dimensions.x, target_dimensions.x, m_interpolation.get_inverse_cubic_normalized());
-	m_current_dimensions.y = ccm::lerp(previous_dimensions.y, target_dimensions.y, m_interpolation.get_inverse_cubic_normalized());
-	
+	if (m_reverse) {
+		m_current_position.x = ccm::lerp(target_position.x, previous_position.x, m_interpolation.get_cubic_normalized());
+		m_current_position.y = ccm::lerp(target_position.y, previous_position.y, m_interpolation.get_cubic_normalized());
+		m_current_dimensions.x = ccm::lerp(target_dimensions.x, previous_dimensions.x, m_interpolation.get_cubic_normalized());
+		m_current_dimensions.y = ccm::lerp(target_dimensions.y, previous_dimensions.y, m_interpolation.get_cubic_normalized());
+	} else {
+		m_current_position.x = ccm::lerp(previous_position.x, target_position.x, m_interpolation.get_inverse_cubic_normalized());
+		m_current_position.y = ccm::lerp(previous_position.y, target_position.y, m_interpolation.get_inverse_cubic_normalized());
+		m_current_dimensions.x = ccm::lerp(previous_dimensions.x, target_dimensions.x, m_interpolation.get_inverse_cubic_normalized());
+		m_current_dimensions.y = ccm::lerp(previous_dimensions.y, target_dimensions.y, m_interpolation.get_inverse_cubic_normalized());
+	}
 }
 
 void RectPath::set_section(std::string_view to_section) {
@@ -53,6 +62,11 @@ void RectPath::set_section(std::string_view to_section) {
 }
 
 void RectPath::reset() { m_current_step = 0; }
+
+void RectPath::set_reverse(bool to) {
+	if (m_reverse != to) { m_interpolation.invert(); }
+	m_reverse = to;
+}
 
 auto RectPath::finished() const -> bool { return m_current_step == m_sections.at(m_current_section).path.size() - 1; }
 

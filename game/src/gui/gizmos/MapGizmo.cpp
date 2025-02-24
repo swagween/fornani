@@ -24,8 +24,15 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map)
 
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
 	Gizmo::update(svc, player, map, position);
-	if (m_state == GizmoState::selected) { m_path.update(); }
+	if (m_state == GizmoState::selected) {
+		m_path.set_reverse(false);
+	} else {
+		m_path.set_reverse(true);
+	}
+	m_path.update();
 	m_minimap->update(svc, map, player);
+	m_minimap->set_port_position(m_path.get_position() + m_placement - m_map_screen.get_f_corner_dimensions());
+	m_minimap->set_port_dimensions(m_map_screen.get_bounds());
 	m_map_screen.set_position(m_path.get_position() + m_placement);
 	m_map_screen.set_dimensions(m_path.get_dimensions());
 	m_map_shadow.set_position(m_path.get_position() + m_placement);
@@ -40,7 +47,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	Gizmo::render(svc, win, cam);
 	auto render_position{-m_placement + cam};
 	m_map_screen.render(win, cam);
-	m_minimap->render(svc, win, m_physics.position + cam);
+	m_minimap->render(svc, win, cam);
 	m_map_shadow.render(win, cam);
 	m_constituents.gizmo.top_left.render(win, m_sprite, render_position);
 	m_constituents.gizmo.top_right.render(win, m_sprite, render_position);

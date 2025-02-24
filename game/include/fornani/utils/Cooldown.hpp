@@ -15,6 +15,7 @@ class Cooldown {
 	constexpr void reverse() { decrementor = std::clamp(decrementor + 1, 0, native_time); }
 	constexpr void cancel() { decrementor = 0; }
 	constexpr void nullify() { decrementor = -1; }
+	constexpr void invert() { decrementor = native_time - decrementor; }
 	[[nodiscard]] auto started() const -> bool { return decrementor == native_time; }
 	[[nodiscard]] auto just_started() const -> bool { return decrementor == native_time - 1; }
 	[[nodiscard]] auto is_almost_complete() const -> bool { return decrementor == 1; }

@@ -6,7 +6,7 @@
 
 namespace fornani::gui {
 
-MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null}, window_scale{0.67f} {
+MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.assets.t_null} {
 	border.setOutlineColor(svc.styles.colors.pioneer_dark_red);
 	border.setOutlineThickness(-4.f);
 	border.setFillColor(sf::Color::Transparent);
@@ -41,14 +41,14 @@ void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	view = svc.window->get_view();
 	auto port = svc.window->get_viewport();
-	port.size *= window_scale;
+	port.size.x = m_port_dimensions.x / view.getSize().x;
+	port.size.y = m_port_dimensions.y / view.getSize().y;
 
-	// TODO: these mysterious values will be the RectPath position divided by screen dimensions
-	port.position.x = 0.2396f - cam.x / view.getSize().x;
-	port.position.y = 0.18f - cam.y / view.getSize().y;
+	port.position.x = m_port_position.x / view.getSize().x - cam.x / view.getSize().x;
+	port.position.y = m_port_position.y / view.getSize().y - cam.y / view.getSize().y;
 
 	view.setViewport(port);
-	center_position = ((position - view.getCenter()) / ratio);
+	center_position = ((position - view.getCenter()) / ratio).componentWiseDiv(port.size);
 	// render minimap
 	global_ratio = ratio * 0.25f;
 	win.setView(view);
@@ -56,18 +56,18 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	if (svc.ticker.every_x_frames(10)) { player_box.getFillColor() == svc.styles.colors.pioneer_red ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.pioneer_red); }
 	for (auto& room : atlas) {
 		if (room->to_ignore()) { continue; }
-		if (room->is_current()) { player_box.setPosition(((player_position / scale) / window_scale + room->get_position() * ratio + position)); }
+		if (room->is_current()) { player_box.setPosition(((player_position / scale) + room->get_position() * ratio + position).componentWiseDiv(port.size)); }
 		map_sprite.setTexture(room->get().getTexture());
 		map_sprite.setTextureRect(sf::IntRect({0, 0}, static_cast<sf::Vector2<int>>(room->get().getSize())));
-		map_sprite.setScale(sf::Vector2f{global_ratio, global_ratio} / window_scale);
-		map_sprite.setPosition(room->get_position() * ratio + position);
+		map_sprite.setScale(sf::Vector2f{global_ratio, global_ratio}.componentWiseDiv(port.size));
+		map_sprite.setPosition((room->get_position() * ratio + position).componentWiseDiv(port.size));
 		auto outline{sf::Sprite{room->get(true).getTexture()}};
-		outline.setScale(sf::Vector2f{global_ratio, global_ratio} / window_scale);
+		outline.setScale(sf::Vector2f{global_ratio, global_ratio}.componentWiseDiv(port.size));
 		for (auto i{-1}; i < 2; ++i) {
 			for (auto j{-1}; j < 2; ++j) {
 				if ((std::abs(i) % 2 == 0 && std::abs(j) % 2 == 0) || (std::abs(i) % 2 == 1 && std::abs(j) % 2 == 1)) { continue; }
 				auto skew{sf::Vector2f{static_cast<float>(i), static_cast<float>(j)}};
-				outline.setPosition((room->get_position() * ratio + position) + skew * 2.f / window_scale);
+				outline.setPosition((room->get_position() * ratio + position).componentWiseDiv(port.size) + (skew * 2.f).componentWiseDiv(port.size));
 				win.draw(outline);
 			}
 		}
@@ -77,11 +77,12 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		auto pos = view.getCenter();
 		win.draw(player_box);
 	}
+	cursor.vert.setScale({1.f / port.size.x, 1.f / port.size.y});
+	cursor.horiz.setScale({1.f / port.size.x, 1.f / port.size.y});
 	cursor.vert.setPosition(svc.constants.f_center_screen);
 	cursor.horiz.setPosition(svc.constants.f_center_screen);
 	win.draw(cursor.vert);
 	win.draw(cursor.horiz);
-	win.draw(border);
 	svc.window->restore_view();
 }
 
@@ -113,10 +114,14 @@ void MiniMap::move(sf::Vector2<float> direction) {
 void MiniMap::center() {
 	for (auto& room : atlas) {
 		if (room->is_current()) {
-			position = -room->get_position() * ratio + view.getCenter() * window_scale;
+			position = -room->get_position() * ratio + view.getCenter();
 			return;
 		}
 	}
 }
+
+void gui::MiniMap::set_port_position(sf::Vector2f to_position) { m_port_position = to_position; }
+
+void gui::MiniMap::set_port_dimensions(sf::Vector2f to_dimensions) { m_port_dimensions = to_dimensions; }
 
 } // namespace fornani::gui
