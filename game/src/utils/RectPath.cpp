@@ -39,10 +39,10 @@ void RectPath::update() {
 	}
 
 	if (m_reverse) {
-		m_current_position.x = ccm::lerp(target_position.x, previous_position.x, m_interpolation.get_cubic_normalized());
-		m_current_position.y = ccm::lerp(target_position.y, previous_position.y, m_interpolation.get_cubic_normalized());
-		m_current_dimensions.x = ccm::lerp(target_dimensions.x, previous_dimensions.x, m_interpolation.get_cubic_normalized());
-		m_current_dimensions.y = ccm::lerp(target_dimensions.y, previous_dimensions.y, m_interpolation.get_cubic_normalized());
+		m_current_position.x = ccm::lerp(target_position.x, previous_position.x, m_interpolation.get_inverse_cubic_normalized());
+		m_current_position.y = ccm::lerp(target_position.y, previous_position.y, m_interpolation.get_inverse_cubic_normalized());
+		m_current_dimensions.x = ccm::lerp(target_dimensions.x, previous_dimensions.x, m_interpolation.get_inverse_cubic_normalized());
+		m_current_dimensions.y = ccm::lerp(target_dimensions.y, previous_dimensions.y, m_interpolation.get_inverse_cubic_normalized());
 	} else {
 		m_current_position.x = ccm::lerp(previous_position.x, target_position.x, m_interpolation.get_inverse_cubic_normalized());
 		m_current_position.y = ccm::lerp(previous_position.y, target_position.y, m_interpolation.get_inverse_cubic_normalized());
