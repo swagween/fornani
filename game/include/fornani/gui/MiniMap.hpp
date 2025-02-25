@@ -4,6 +4,7 @@
 #include "Console.hpp"
 #include "Selector.hpp"
 #include "fornani/graphics/MapTexture.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/utils/Circuit.hpp"
 #include "fornani/world/Map.hpp"
 
@@ -62,6 +63,7 @@ class MiniMap {
 	sf::Color background_color{};
 	std::vector<std::unique_ptr<MapTexture>> atlas{};
 	util::Circuit scalar{3};
+	io::Logger m_logger{"MiniMap"};
 };
 
 } // namespace fornani::gui

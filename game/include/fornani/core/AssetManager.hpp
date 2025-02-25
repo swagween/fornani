@@ -17,7 +17,7 @@ class AssetManager {
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
 
-	sf::Texture& get_texture(std::string const& label);
+	sf::Texture const& get_texture(std::string const& label);
 
 	// TODO: Dear god we need to clean this up...
 	// working on it :)

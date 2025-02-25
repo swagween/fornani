@@ -32,6 +32,14 @@
 					"dimensions": [ 2, 2 ]
 				},
 				{
+					"position": [ 68, -87 ],
+					"dimensions": [ 2, 2 ]
+				},
+				{
+					"position": [ -29, -87 ],
+					"dimensions": [ 233, 2 ]
+				},
+				{
 					"position": [ -29, -175 ],
 					"dimensions": [ 233, 89 ]
 				}
@@ -40,9 +48,18 @@
 		{
 			"label": "close",
 			"path": [
+
 				{
-					"position": [ 47, 129 ],
-					"dimensions": [ 385, 122 ]
+					"position": [ -29, -175 ],
+					"dimensions": [ 233, 89 ]
+				},
+				{
+					"position": [ 68, -175 ],
+					"dimensions": [ 2, 2 ]
+				},
+				{
+					"position": [ 68, 54 ],
+					"dimensions": [ 2, 2 ]
 				}
 			]
 		}

@@ -3,7 +3,7 @@
 
 namespace fornani::util {
 
-NineSlice::NineSlice(automa::ServiceProvider& svc, sf::Texture& tex, sf::Vector2i corner, sf::Vector2i edge) : m_sprite{tex}, m_corner_dimensions{corner}, m_edge_dimensions{edge}, m_native_scale{svc.constants.texture_scale} {}
+NineSlice::NineSlice(automa::ServiceProvider& svc, sf::Texture const& tex, sf::Vector2i corner, sf::Vector2i edge) : m_sprite{tex}, m_corner_dimensions{corner}, m_edge_dimensions{edge}, m_native_scale{svc.constants.texture_scale} {}
 
 void NineSlice::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	auto half_edge{m_dimensions * 0.5f};

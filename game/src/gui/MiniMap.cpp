@@ -48,9 +48,9 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	port.position.y = m_port_position.y / view.getSize().y - cam.y / view.getSize().y;
 
 	view.setViewport(port);
-	center_position = ((position - view.getCenter()) / ratio).componentWiseDiv(port.size);
-	// render minimap
 	global_ratio = ratio * 0.25f;
+	center_position = position - view.getCenter();
+	// render minimap
 	win.setView(view);
 	// win.draw(background);
 	if (svc.ticker.every_x_frames(10)) { player_box.getFillColor() == svc.styles.colors.pioneer_red ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.pioneer_red); }
@@ -84,11 +84,14 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	win.draw(cursor.vert);
 	win.draw(cursor.horiz);
 	svc.window->restore_view();
+	ImGui::Text("Position x: %f", position.x);
+	ImGui::Text("Position y: %f", position.y);
 }
 
 void MiniMap::clear_atlas() { atlas.clear(); }
 
 void MiniMap::toggle_scale() {
+	auto prev = scale;
 	scalar.modulate(1);
 	scale = std::pow(2.f, static_cast<float>(scalar.get()) + 2.f);
 	ratio = 32.f / scale;
@@ -97,11 +100,14 @@ void MiniMap::toggle_scale() {
 	texture.portal_box.setSize({ratio, ratio});
 	texture.save_box.setSize({ratio, ratio});
 	texture.breakable_box.setSize({ratio, ratio});
-	if (scale == 4.f) {
-		position += center_position * 6.f;
-	} else {
-		position -= center_position * ratio;
-	}
+	NANI_LOG_DEBUG(m_logger, ">>>");
+	NANI_LOG_DEBUG(m_logger, "Scale: {}", scale);
+	NANI_LOG_DEBUG(m_logger, "Ratio: {}", ratio);
+	NANI_LOG_DEBUG(m_logger, "Prev: {}", prev);
+	NANI_LOG_DEBUG(m_logger, "Position: [{}, {}]", position.x, position.y);
+	position -= center_position;
+	NANI_LOG_DEBUG(m_logger, "After Position: [{}, {}]", position.x, position.y);
+	NANI_LOG_DEBUG(m_logger, ">>>");
 }
 
 void MiniMap::move(sf::Vector2<float> direction) {

@@ -20,7 +20,18 @@ bool Gizmo::handle_inputs(config::ControllerMap& controller) {
 	return true;
 }
 
-void Constituent::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam) const {
+void Gizmo::select() {
+	m_state = GizmoState::selected;
+	m_switched = true;
+}
+
+void Gizmo::deselect() {
+	m_state = GizmoState::hovered;
+	m_switched = true;
+}
+
+void Constituent::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) const {
+	sprite.setOrigin(origin);
 	sprite.setPosition(position - cam);
 	sprite.setTextureRect(lookup);
 	win.draw(sprite);

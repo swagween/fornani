@@ -12,7 +12,7 @@ namespace fornani::util {
 
 class NineSlice {
   public:
-	NineSlice(automa::ServiceProvider& svc, sf::Texture& tex, sf::Vector2i corner, sf::Vector2i edge);
+	NineSlice(automa::ServiceProvider& svc, sf::Texture const& tex, sf::Vector2i corner, sf::Vector2i edge);
 	void render(sf::RenderWindow& win, sf::Vector2f cam = {});
 	void target_position(sf::Vector2f to_position, float strength = 0.001f) { m_steering.target(m_physics, to_position, strength); }
 	void set_position(sf::Vector2f to_position) { m_physics.position = to_position; }

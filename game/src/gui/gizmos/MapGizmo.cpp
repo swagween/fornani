@@ -9,7 +9,7 @@ namespace fornani::gui {
 
 MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map)
 	: Gizmo("Minimap"), m_minimap{std::make_unique<MiniMap>(svc)}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}),
-	  m_map_shadow(svc, svc.assets.get_texture("map_shadow"), {45, 45}, {1, 1}), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "minimap", 256},
+	  m_map_shadow(svc, svc.assets.get_texture("map_shadow"), {45, 45}, {1, 1}), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "minimap", 32, util::InterpolationType::quadratic},
 	  m_constituents{.gizmo{.top_left{.lookup{{0, 0}, {67, 55}}},
 							.top_right{.lookup{{67, 0}, {63, 55}}, .position{134.f, 0.f}},
 							.bottom_left{.lookup{{13, 55}, {54, 54}}, .position{26.f, 110.f}},
@@ -18,16 +18,18 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map)
 	for (auto& id : svc.data.discovered_rooms) { m_minimap->bake(svc, map, id, id == svc.current_room); }
 	m_minimap->center();
 	m_sprite.setScale(svc.constants.texture_scale);
-	m_path.set_section("open");
+	m_path.set_section("close");
 	m_placement = {380.f, -22.f};
 }
 
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
 	Gizmo::update(svc, player, map, position);
-	if (m_state == GizmoState::selected) {
-		m_path.set_reverse(false);
-	} else {
-		m_path.set_reverse(true);
+	if (m_state == GizmoState::selected && m_switched) {
+		m_path.set_section("open");
+		m_switched = false;
+	} else if (m_switched) {
+		m_path.set_section("close");
+		m_switched = false;
 	}
 	m_path.update();
 	m_minimap->update(svc, map, player);
@@ -49,10 +51,14 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	m_map_screen.render(win, cam);
 	m_minimap->render(svc, win, cam);
 	m_map_shadow.render(win, cam);
-	m_constituents.gizmo.top_left.render(win, m_sprite, render_position);
-	m_constituents.gizmo.top_right.render(win, m_sprite, render_position);
-	m_constituents.gizmo.bottom_left.render(win, m_sprite, render_position);
-	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position);
+	m_constituents.gizmo.top_left.position = m_path.get_position();
+	m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f});
+	m_constituents.gizmo.top_right.position = m_path.get_position() + sf::Vector2f{m_path.get_dimensions().x, 0.f};
+	m_constituents.gizmo.top_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 54.f});
+	m_constituents.gizmo.bottom_left.position = m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y};
+	m_constituents.gizmo.bottom_left.render(win, m_sprite, render_position, sf::Vector2f{53.f, 1.f});
+	m_constituents.gizmo.bottom_right.position = m_path.get_position() + m_path.get_dimensions();
+	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f});
 }
 
 bool MapGizmo::handle_inputs(config::ControllerMap& controller) {
