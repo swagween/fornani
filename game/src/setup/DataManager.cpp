@@ -9,9 +9,7 @@
 
 namespace fornani::data {
 
-DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) {
-	load_data();
-}
+DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
 	m_services->stopwatch.start();
@@ -30,7 +28,7 @@ void DataManager::load_data(std::string in_room) {
 			auto this_name = this_room.path().filename().string();
 			if (is_duplicate_room(this_id)) { continue; }
 			map_jsons.push_back(MapData{this_id, room_data});
-			
+
 			// cache map layers
 			sf::Vector2<uint32_t> dimensions{};
 			dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
@@ -41,7 +39,7 @@ void DataManager::load_data(std::string in_room) {
 			auto hro{static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool())};
 			uint8_t ctr{0u};
 			for (auto& layer : in_tile["layers"].array_view()) {
-				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], ho, hro));
+				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], m_services->constants.cell_size, ho, hro));
 				++ctr;
 			}
 			map_layers.push_back(next);
@@ -645,4 +643,4 @@ int DataManager::get_npc_location(int npc_id) {
 
 std::vector<world::Layer>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }
 
-} // namespace data
+} // namespace fornani::data

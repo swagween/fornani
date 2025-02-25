@@ -14,6 +14,7 @@ struct Constants {
 	int const i_cell_size{32};
 	float const cell_size{32.0f};
 	float const chunk_size{16.0f};
+	int const i_chunk_size{16};
 	sf::Vector2<int> const aspect_ratio{3840, 2048};
 
 	// TODO: This prob should be in the windowing class.

@@ -23,6 +23,8 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	m_textures.insert({"blue_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"blue_console.png"}}});
 	m_textures.insert({"cream_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"cream_console.png"}}});
 	m_textures.insert({"outline_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"outline_console.png"}}});
+	m_textures.insert({"map_cursor", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_cursor.png"}}});
+	m_textures.insert({"map_chain", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_chain.png"}}});
 	// all the other map insertions will go here
 
 	/////////////////////// old stuff below here, let's try to destroy it //////////////////////////////////////

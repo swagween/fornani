@@ -3,6 +3,7 @@
 
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/MiniMap.hpp"
+#include "fornani/particle/Chain.hpp"
 #include "fornani/utils/NineSlice.hpp"
 #include "fornani/utils/RectPath.hpp"
 
@@ -17,6 +18,7 @@ class MapGizmo : public Gizmo {
 
   private:
 	std::unique_ptr<MiniMap> m_minimap{};
+	std::vector<vfx::Chain> m_chains{};
 	util::NineSlice m_map_screen;
 	util::NineSlice m_map_shadow;
 	util::RectPath m_path;

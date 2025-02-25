@@ -45,6 +45,7 @@ struct ServiceProvider {
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
+	util::Constants constants{}; // TODO: Remove. Make Free-Standing.
 	data::TextManager text;
 	data::DataManager data;
 	Version* version;	   // TODO: Remove. Make Free-Standing.
@@ -57,7 +58,6 @@ struct ServiceProvider {
 	util::BitFlags<StateFlags> state_flags{};
 	util::Ticker ticker{}; // TODO: Remove. Make Free-Standing. This one is gonna be hard to remove as the underlying logic needs to change for many functions.
 	WorldClock world_clock{};
-	util::Constants constants{}; // TODO: Remove. Make Free-Standing.
 	StateController state_controller{};
 	MenuController menu_controller{};
 	audio::Soundboard soundboard{*this}; // TODO: Remove. Make Free-Standing. Maybe?

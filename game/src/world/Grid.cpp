@@ -5,7 +5,7 @@
 
 namespace fornani::world {
 
-Grid::Grid(sf::Vector2<uint32_t> d, dj::Json& source) : dimensions(d) {
+Grid::Grid(sf::Vector2<uint32_t> d, dj::Json& source, float s) : dimensions(d), m_spacing(s) {
 	auto size = static_cast<std::size_t>(dimensions.x * dimensions.y);
 	cells.reserve(size);
 	auto i{0};
@@ -13,7 +13,7 @@ Grid::Grid(sf::Vector2<uint32_t> d, dj::Json& source) : dimensions(d) {
 		auto value = cell.as<int>();
 		auto xidx = static_cast<uint32_t>(std::floor(i % dimensions.x));
 		auto yidx = static_cast<uint32_t>(std::floor(i / dimensions.x));
-		cells.push_back(Tile({xidx, yidx}, {xidx * spacing, yidx * spacing}, value, i));
+		cells.push_back(Tile({xidx, yidx}, {xidx * m_spacing, yidx * m_spacing}, value, i, m_spacing));
 		seed_vertex(i);
 		++i;
 	}
@@ -86,170 +86,170 @@ void Grid::seed_vertex(int index) {
 	switch (tile.value) {
 		// top left long ramp
 	case CEIL_SLANT_INDEX:
-		tile.bounding_box.vertices[2].y -= spacing / 4;
+		tile.bounding_box.vertices[2].y -= m_spacing / 4;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case CEIL_SLANT_INDEX + 1:
-		tile.bounding_box.vertices[2].y -= spacing / 2;
-		tile.bounding_box.vertices[3].y -= spacing / 4;
+		tile.bounding_box.vertices[2].y -= m_spacing / 2;
+		tile.bounding_box.vertices[3].y -= m_spacing / 4;
 		break;
 	case CEIL_SLANT_INDEX + 2:
-		tile.bounding_box.vertices[2].y -= spacing - spacing / 4;
-		tile.bounding_box.vertices[3].y -= spacing / 2;
+		tile.bounding_box.vertices[2].y -= m_spacing - m_spacing / 4;
+		tile.bounding_box.vertices[3].y -= m_spacing / 2;
 		break;
 	case CEIL_SLANT_INDEX + 3:
-		tile.bounding_box.vertices[2].y -= spacing - spacing / 4;
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[2].y -= m_spacing - m_spacing / 4;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		break;
 		// top right long ramp
 	case CEIL_SLANT_INDEX + 7:
-		tile.bounding_box.vertices[3].y -= spacing / 4;
+		tile.bounding_box.vertices[3].y -= m_spacing / 4;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case CEIL_SLANT_INDEX + 6:
-		tile.bounding_box.vertices[3].y -= spacing / 2;
-		tile.bounding_box.vertices[2].y -= spacing / 4;
+		tile.bounding_box.vertices[3].y -= m_spacing / 2;
+		tile.bounding_box.vertices[2].y -= m_spacing / 4;
 		break;
 	case CEIL_SLANT_INDEX + 5:
-		tile.bounding_box.vertices[3].y -= spacing - spacing / 4;
-		tile.bounding_box.vertices[2].y -= spacing / 2;
+		tile.bounding_box.vertices[3].y -= m_spacing - m_spacing / 4;
+		tile.bounding_box.vertices[2].y -= m_spacing / 2;
 		break;
 	case CEIL_SLANT_INDEX + 4:
-		tile.bounding_box.vertices[2].y -= spacing - spacing / 4;
+		tile.bounding_box.vertices[2].y -= m_spacing - m_spacing / 4;
 		break;
 		// top left short ramp 1
 	case CEIL_SLANT_INDEX + 8:
-		tile.bounding_box.vertices[2].y -= spacing / 2;
+		tile.bounding_box.vertices[2].y -= m_spacing / 2;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case CEIL_SLANT_INDEX + 9:
-		tile.bounding_box.vertices[2].y -= spacing / 2;
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[2].y -= m_spacing / 2;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		break;
 		// top right short ramp 1
 	case CEIL_SLANT_INDEX + 11:
-		tile.bounding_box.vertices[3].y -= spacing / 2;
+		tile.bounding_box.vertices[3].y -= m_spacing / 2;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case CEIL_SLANT_INDEX + 10:
-		tile.bounding_box.vertices[2].y -= spacing / 2;
+		tile.bounding_box.vertices[2].y -= m_spacing / 2;
 		break;
 		// top left short ramp 2
 	case CEIL_SLANT_INDEX + 12:
-		tile.bounding_box.vertices[2].y -= spacing / 2;
+		tile.bounding_box.vertices[2].y -= m_spacing / 2;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case CEIL_SLANT_INDEX + 13:
-		tile.bounding_box.vertices[2].y -= spacing / 2;
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[2].y -= m_spacing / 2;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		break;
 		// top right short ramp 2
 	case CEIL_SLANT_INDEX + 15:
-		tile.bounding_box.vertices[3].y -= spacing / 2;
+		tile.bounding_box.vertices[3].y -= m_spacing / 2;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case CEIL_SLANT_INDEX + 14:
-		tile.bounding_box.vertices[2].y -= spacing / 2;
+		tile.bounding_box.vertices[2].y -= m_spacing / 2;
 		break;
 		// bottom left long ramp
 	case FLOOR_SLANT_INDEX:
-		tile.bounding_box.vertices[1].y += spacing / 4;
+		tile.bounding_box.vertices[1].y += m_spacing / 4;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case FLOOR_SLANT_INDEX + 1:
-		tile.bounding_box.vertices[0].y += spacing / 4;
-		tile.bounding_box.vertices[1].y += spacing / 2;
+		tile.bounding_box.vertices[0].y += m_spacing / 4;
+		tile.bounding_box.vertices[1].y += m_spacing / 2;
 		break;
 	case FLOOR_SLANT_INDEX + 2:
-		tile.bounding_box.vertices[0].y += spacing / 2;
-		tile.bounding_box.vertices[1].y += spacing - spacing / 4;
+		tile.bounding_box.vertices[0].y += m_spacing / 2;
+		tile.bounding_box.vertices[1].y += m_spacing - m_spacing / 4;
 		break;
 	case FLOOR_SLANT_INDEX + 3:
-		tile.bounding_box.vertices[0].y += spacing - spacing / 4;
-		tile.bounding_box.vertices[1].y += spacing;
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[0].y += m_spacing - m_spacing / 4;
+		tile.bounding_box.vertices[1].y += m_spacing;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		break;
 		// bottom right long ramp
 	case FLOOR_SLANT_INDEX + 7:
-		tile.bounding_box.vertices[0].y += spacing / 4;
+		tile.bounding_box.vertices[0].y += m_spacing / 4;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case FLOOR_SLANT_INDEX + 6:
-		tile.bounding_box.vertices[1].y += spacing / 4;
-		tile.bounding_box.vertices[0].y += spacing / 2;
+		tile.bounding_box.vertices[1].y += m_spacing / 4;
+		tile.bounding_box.vertices[0].y += m_spacing / 2;
 		break;
 	case FLOOR_SLANT_INDEX + 5:
-		tile.bounding_box.vertices[1].y += spacing / 2;
-		tile.bounding_box.vertices[0].y += spacing - spacing / 4;
+		tile.bounding_box.vertices[1].y += m_spacing / 2;
+		tile.bounding_box.vertices[0].y += m_spacing - m_spacing / 4;
 		break;
 	case FLOOR_SLANT_INDEX + 4:
-		tile.bounding_box.vertices[1].y += spacing - spacing / 4;
-		tile.bounding_box.vertices[0].y += spacing;
+		tile.bounding_box.vertices[1].y += m_spacing - m_spacing / 4;
+		tile.bounding_box.vertices[0].y += m_spacing;
 		break;
 		// bottom left short ramp 1
 	case FLOOR_SLANT_INDEX + 8:
-		tile.bounding_box.vertices[1].y += spacing / 2;
+		tile.bounding_box.vertices[1].y += m_spacing / 2;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case FLOOR_SLANT_INDEX + 9:
-		tile.bounding_box.vertices[0].y += spacing / 2;
-		tile.bounding_box.vertices[1].y += spacing;
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[0].y += m_spacing / 2;
+		tile.bounding_box.vertices[1].y += m_spacing;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		break;
 		// bottom right short ramp 1
 	case FLOOR_SLANT_INDEX + 11:
-		tile.bounding_box.vertices[0].y += spacing / 2;
+		tile.bounding_box.vertices[0].y += m_spacing / 2;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case FLOOR_SLANT_INDEX + 10:
-		tile.bounding_box.vertices[1].y += spacing / 2;
-		tile.bounding_box.vertices[0].y += spacing;
+		tile.bounding_box.vertices[1].y += m_spacing / 2;
+		tile.bounding_box.vertices[0].y += m_spacing;
 		break;
 		// bottom left short ramp 2
 	case FLOOR_SLANT_INDEX + 12:
-		tile.bounding_box.vertices[1].y += spacing / 2;
+		tile.bounding_box.vertices[1].y += m_spacing / 2;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case FLOOR_SLANT_INDEX + 13:
-		tile.bounding_box.vertices[0].y += spacing / 2;
-		tile.bounding_box.vertices[1].y += spacing;
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[0].y += m_spacing / 2;
+		tile.bounding_box.vertices[1].y += m_spacing;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		break;
 		// bottom right short ramp 2
 	case FLOOR_SLANT_INDEX + 15:
-		tile.bounding_box.vertices[0].y += spacing / 2;
+		tile.bounding_box.vertices[0].y += m_spacing / 2;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case FLOOR_SLANT_INDEX + 14:
-		tile.bounding_box.vertices[1].y += spacing / 2;
-		tile.bounding_box.vertices[0].y += spacing;
+		tile.bounding_box.vertices[1].y += m_spacing / 2;
+		tile.bounding_box.vertices[0].y += m_spacing;
 		break;
 	case ceiling_single_ramp:
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case ceiling_single_ramp + 2:
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case ceiling_single_ramp + 1: tile.flags.set(TileState::big_ramp); break;
 	case ceiling_single_ramp + 3: tile.flags.set(TileState::big_ramp); break;
 	case floor_single_ramp:
-		tile.bounding_box.vertices[1].y += spacing;
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[1].y += m_spacing;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case floor_single_ramp + 2:
-		tile.bounding_box.vertices[1].y += spacing;
-		tile.bounding_box.vertices[2].x -= spacing;
+		tile.bounding_box.vertices[1].y += m_spacing;
+		tile.bounding_box.vertices[2].x -= m_spacing;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case floor_single_ramp + 1:
-		tile.bounding_box.vertices[0].y += spacing;
+		tile.bounding_box.vertices[0].y += m_spacing;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	case floor_single_ramp + 3:
-		tile.bounding_box.vertices[0].y += spacing;
+		tile.bounding_box.vertices[0].y += m_spacing;
 		tile.flags.set(TileState::big_ramp);
 		break;
 	default: break;
@@ -261,13 +261,13 @@ void Grid::seed_vertex(int index) {
 }
 
 void Grid::destroy_cell(sf::Vector2<int> pos) {
-	for(auto& cell : cells) {
+	for (auto& cell : cells) {
 		if (cell.scaled_position() == pos) { cell.value = 0; }
 	}
 }
 
 void Grid::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
-	for (auto& cell : cells) { cell.render(win, drawbox, cam); }
+	for (auto& cell : cells) { cell.render(win, m_drawbox, cam); }
 }
 
 void Grid::draw(sf::RenderTexture& tex) {
@@ -284,4 +284,4 @@ std::size_t Grid::get_index_at_position(sf::Vector2<float> position) const {
 
 Tile& Grid::get_cell(std::size_t index) { return cells.at(index); }
 
-} // namespace world
+} // namespace fornani::world

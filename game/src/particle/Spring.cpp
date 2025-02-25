@@ -12,7 +12,7 @@ Spring::Spring(SpringParameters params) : params(params) {
 	sensor.bounds.setOrigin({sensor.bounds.getRadius(), sensor.bounds.getRadius()});
 }
 
-Spring::Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<float> bob) : anchor(anchor), bob(bob) {  }
+Spring::Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<float> bob) : anchor(anchor), bob(bob) {}
 
 void Spring::calculate() { calculate_force(); }
 
@@ -55,6 +55,8 @@ void Spring::calculate_force() {
 	float mag = sqrt(variables.spring_force.x * variables.spring_force.x + variables.spring_force.y * variables.spring_force.y);
 	variables.extension = mag - params.rest_length;
 
+	if (mag == 0.f) { return; }
+
 	variables.spring_force /= mag;
 	variables.spring_force *= -params.spring_constant * variables.extension;
 	variables.spring_force.x = std::clamp(variables.spring_force.x, -spring_max, spring_max);
@@ -95,4 +97,4 @@ sf::Vector2<float> Spring::get_rope(int index) {
 	return ret;
 }
 
-} // namespace vfx
+} // namespace fornani::vfx

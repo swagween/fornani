@@ -28,13 +28,12 @@ struct Tile {
 		if ((val >= special_index_v + 32 && val <= special_index_v + 35) || (val >= special_index_v + 48 && val <= special_index_v + 51)) { ret = 3; }
 		return ret;
 	}
-	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi);
+	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi, float spacing);
 
 	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
 	void render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2<float> cam);
 	void draw(sf::RenderTexture& tex);
 	void set_type();
-	void set_scale(float to_scale) { scale = to_scale; }
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
 	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner() || is_platform(); }
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
@@ -61,13 +60,14 @@ struct Tile {
 	}
 	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2<int> { return sf::Vector2<int>{static_cast<int>(bounding_box.get_position().x), static_cast<int>(bounding_box.get_position().y)}; }
+	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2f { return bounding_box.get_position() / m_spacing; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return bounding_box.get_position() + bounding_box.get_dimensions() * 0.5f; }
 	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounding_box.get_position(); }
 
-	sf::Vector2<uint32_t> index{};
-	uint32_t one_d_index{};
+	sf::Vector2<uint32_t> index;
+	uint32_t one_d_index;
 
-	uint32_t value{};
+	uint32_t value;
 	TileType type{};
 	shape::Shape bounding_box;
 
@@ -78,7 +78,7 @@ struct Tile {
 	util::BitFlags<TileState> flags{};
 
   private:
-	float scale{};
+	float m_spacing;
 };
 
 } // namespace fornani::world

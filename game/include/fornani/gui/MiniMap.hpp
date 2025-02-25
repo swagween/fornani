@@ -29,6 +29,7 @@ class MiniMap {
 	void clear_atlas();
 	void toggle_scale();
 	void move(sf::Vector2<float> direction);
+	void zoom(float amount);
 	void center();
 	void set_port_position(sf::Vector2f to_position);
 	void set_port_dimensions(sf::Vector2f to_dimensions);
@@ -40,8 +41,7 @@ class MiniMap {
 
   private:
 	float scale{8.f};
-	float global_ratio{};
-	float ratio{};
+	float ratio{4.f};
 	float speed{1.5f};
 	sf::Vector2f m_port_position{};
 	sf::Vector2f m_port_dimensions{};
@@ -55,11 +55,8 @@ class MiniMap {
 	sf::RenderTexture minimap_texture{};
 	sf::RectangleShape player_box{};
 	sf::Sprite map_sprite;
+	sf::Sprite m_cursor;
 	sf::RectangleShape border{};
-	struct {
-		sf::RectangleShape vert{};
-		sf::RectangleShape horiz{};
-	} cursor{};
 	sf::Color background_color{};
 	std::vector<std::unique_ptr<MapTexture>> atlas{};
 	util::Circuit scalar{3};
