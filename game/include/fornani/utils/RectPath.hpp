@@ -30,6 +30,8 @@ class RectPath {
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return m_current_dimensions; }
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return m_current_dimensions * 0.5f; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return m_current_position + m_current_dimensions * 0.5f; }
+	[[nodiscard]] auto get_step() const -> int { return m_current_step; }
+	[[nodiscard]] auto get_section() const -> int { return m_current_section; }
 	[[nodiscard]] auto finished() const -> bool;
 
   private:

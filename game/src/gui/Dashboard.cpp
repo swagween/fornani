@@ -67,6 +67,9 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	m_sprite.setTextureRect(m_rects.base);
 	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{14, 68} - cam);
 	win.draw(m_sprite);
+	for (auto& gizmo : m_gizmos) {
+		if (!gizmo->is_foreground()) { gizmo->render(svc, win, cam); }
+	}
 	m_sprite.setTextureRect(m_rects.top_left);
 	m_sprite.setPosition(m_physical.physics.position - cam);
 	win.draw(m_sprite);
@@ -76,7 +79,9 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	m_sprite.setTextureRect(m_rects.bottom);
 	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{52, 218} - cam);
 	win.draw(m_sprite);
-	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam); }
+	for (auto& gizmo : m_gizmos) {
+		if (gizmo->is_foreground()) { gizmo->render(svc, win, cam); }
+	}
 }
 
 bool Dashboard::handle_inputs(config::ControllerMap& controller) {

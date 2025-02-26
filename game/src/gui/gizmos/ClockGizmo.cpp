@@ -11,7 +11,7 @@
 namespace fornani::gui {
 
 ClockGizmo::ClockGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
-	: Gizmo("Minimap"), m_sprites{.clock{sf::Sprite{svc.assets.get_texture("clock_gizmo")}}, .hand{sf::Sprite{svc.assets.get_texture("clock_hand")}}}, m_text{.readout{svc.text.fonts.basic}} {
+	: Gizmo("Minimap", true), m_sprites{.clock{sf::Sprite{svc.assets.get_texture("clock_gizmo")}}, .hand{sf::Sprite{svc.assets.get_texture("clock_hand")}}}, m_text{.readout{svc.text.fonts.basic}} {
 	m_physics.position = sf::Vector2f{334.f, 100.f};
 	m_placement = placement;
 	m_sprites.clock.setScale(svc.constants.texture_scale);

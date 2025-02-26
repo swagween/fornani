@@ -27,7 +27,6 @@ class MiniMap {
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void clear_atlas();
-	void toggle_scale();
 	void move(sf::Vector2<float> direction);
 	void zoom(float amount);
 	void center();

@@ -15,7 +15,6 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.as
 	player_box.setOrigin({8.f, 8.f});
 	m_cursor.setScale(svc.constants.texture_scale);
 	m_cursor.setOrigin({7.f, 7.f});
-	toggle_scale();
 }
 
 void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current, bool undiscovered) {
@@ -46,6 +45,8 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	view.setViewport(port);
 	win.setView(view);
 
+	if (port.size.x == 0.f || port.size.y == 0.f) { return; }
+
 	if (svc.ticker.every_x_frames(10)) { player_box.getFillColor() == svc.styles.colors.pioneer_red ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.pioneer_red); }
 	for (auto& room : atlas) {
 		if (room->to_ignore()) { continue; }
@@ -74,18 +75,6 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 }
 
 void MiniMap::clear_atlas() { atlas.clear(); }
-
-void MiniMap::toggle_scale() {
-	auto prev = scale;
-	scalar.modulate(1);
-	scale = std::pow(2.f, static_cast<float>(scalar.get()) + 2.f);
-	ratio = 32.f / scale;
-	texture.tile_box.setSize({ratio, ratio});
-	texture.plat_box.setSize({ratio, ratio});
-	texture.portal_box.setSize({ratio, ratio});
-	texture.save_box.setSize({ratio, ratio});
-	texture.breakable_box.setSize({ratio, ratio});
-}
 
 void MiniMap::move(sf::Vector2<float> direction) {
 	position -= direction * speed;

@@ -37,16 +37,18 @@ struct Constituent {
 
 class Gizmo {
   public:
-	explicit Gizmo(std::string const& label) : m_label(label) {}
+	explicit Gizmo(std::string const& label, bool foreground) : m_label(label), m_foreground(foreground) {}
 	virtual ~Gizmo() = default;
 	virtual void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	virtual bool handle_inputs(config::ControllerMap& controller);
 	void select();
 	void deselect();
+	[[nodiscard]] auto is_foreground() const -> bool { return m_foreground; }
 
   protected:
 	bool m_switched{};
+	bool m_foreground{};
 	std::string m_label{};
 	GizmoState m_state{};
 	// the actual position of the gizmo, will generally target m_placement

@@ -18,7 +18,7 @@ class MapGizmo : public Gizmo {
 
   private:
 	std::unique_ptr<MiniMap> m_minimap{};
-	std::vector<vfx::Chain> m_chains{};
+	std::vector<std::unique_ptr<vfx::Chain>> m_chains{};
 	util::NineSlice m_map_screen;
 	util::NineSlice m_map_shadow;
 	util::RectPath m_path;
