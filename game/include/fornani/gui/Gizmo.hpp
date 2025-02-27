@@ -40,11 +40,12 @@ class Gizmo {
 	explicit Gizmo(std::string const& label, bool foreground) : m_label(label), m_foreground(foreground) {}
 	virtual ~Gizmo() = default;
 	virtual void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position);
-	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground = false);
 	virtual bool handle_inputs(config::ControllerMap& controller);
 	void select();
 	void deselect();
 	[[nodiscard]] auto is_foreground() const -> bool { return m_foreground; }
+	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 
   protected:
 	bool m_switched{};

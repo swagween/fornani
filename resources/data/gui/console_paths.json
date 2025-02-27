@@ -28,11 +28,11 @@
 			"label": "open",
 			"path": [
 				{
-					"position": [ 68, 54 ],
+					"position": [ 67, 53 ],
 					"dimensions": [ 2, 2 ]
 				},
 				{
-					"position": [ 68, -87 ],
+					"position": [ 67, -87 ],
 					"dimensions": [ 2, 2 ]
 				},
 				{
@@ -54,12 +54,99 @@
 					"dimensions": [ 233, 89 ]
 				},
 				{
-					"position": [ 68, -175 ],
+					"position": [ 65, -175 ],
+					"dimensions": [ 3, 2 ]
+				},
+				{
+					"position": [ 67, -175 ],
 					"dimensions": [ 2, 2 ]
 				},
 				{
-					"position": [ 68, 54 ],
+					"position": [ 67, 59 ],
 					"dimensions": [ 2, 2 ]
+				},
+				{
+					"position": [ 67, 53 ],
+					"dimensions": [ 2, 2 ]
+				}
+			]
+		}
+	],
+	"dashboard_minimap": [
+		{
+
+			"label": "start",
+			"path": [
+				{
+					"position": [ 0, 0 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		},
+		{
+			"label": "open",
+			"path": [
+				{
+					"position": [ 0, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 0, -142 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ -96, -142 ],
+					"dimensions": [ 233, 0 ]
+				}
+			]
+		},
+		{
+			"label": "close",
+			"path": [
+				{
+					"position": [ -96, -142 ],
+					"dimensions": [ 233, 0 ]
+				},
+				{
+					"position": [ 0, -142 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 0, 0 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		}
+	],
+	"minimap_info": [
+		{
+
+			"label": "start",
+			"path": [
+				{
+					"position": [ 105, 22 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		},
+		{
+			"label": "open",
+			"path": [
+				{
+					"position": [ 105, 22 ],
+					"dimensions": [ 0, 1 ]
+				},
+				{
+					"position": [ 105, 22 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ -109, 22 ],
+					"dimensions": [ 337, 0 ]
+				},
+				{
+					"position": [ -107, 22 ],
+					"dimensions": [ 333, 0 ]
 				}
 			]
 		}

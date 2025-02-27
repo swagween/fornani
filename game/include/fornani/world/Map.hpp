@@ -151,6 +151,8 @@ class Map {
 	[[nodiscard]] auto is_minimap() const -> bool { return flags.properties.test(MapProperties::minimap); }
 	[[nodiscard]] auto has_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_obscuring_layer); }
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_reverse_obscuring_layer); }
+	[[nodiscard]] auto get_biome_string() const -> std::string { return m_metadata.biome; }
+	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
 	Tile& get_cell_at_position(sf::Vector2<float> position);
@@ -254,6 +256,10 @@ class Map {
   private:
 	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell);
 	int abyss_distance{400};
+	struct {
+		std::string biome{};
+		std::string room{};
+	} m_metadata{};
 	struct {
 		graphics::ShakeProperties shake_properties{};
 		util::Cooldown cooldown{};

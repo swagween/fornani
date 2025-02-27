@@ -27,6 +27,8 @@ namespace fornani::data {
 struct MapData {
 	int id{};
 	dj::Json metadata{};
+	std::string biome_label{};
+	std::string room_label{};
 };
 
 struct EnemyState {

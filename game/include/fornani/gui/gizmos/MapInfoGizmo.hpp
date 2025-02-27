@@ -1,27 +1,31 @@
 
 #pragma once
 
-#include "fornani/graphics/SpriteRotator.hpp"
 #include "fornani/gui/Gizmo.hpp"
+#include "fornani/utils/RectPath.hpp"
 
 namespace fornani::gui {
 
-class ClockGizmo : public Gizmo {
+class MapInfoGizmo : public Gizmo {
   public:
-	ClockGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement);
+	MapInfoGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(config::ControllerMap& controller) override;
 
   private:
-	vfx::SpriteRotator m_rotator{};
-	sf::Vector2f m_readout_position{};
+	util::RectPath m_clip_path;
 	struct {
-		sf::Sprite clock;
-		sf::Sprite hand;
+		sf::Sprite panel;
+		sf::Sprite clip;
 	} m_sprites;
 	struct {
-		sf::Text readout;
+		Constituent left_clip;
+		Constituent right_clip;
+	} m_constituents;
+	struct {
+		sf::Text biome;
+		sf::Text room;
 	} m_text;
 };
 

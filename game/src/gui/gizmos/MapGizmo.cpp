@@ -1,5 +1,6 @@
 
 #include "fornani/gui/gizmos/MapGizmo.hpp"
+#include "fornani/gui/gizmos/MapInfoGizmo.hpp"
 
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -8,7 +9,7 @@
 namespace fornani::gui {
 
 MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map)
-	: Gizmo("Minimap", true), m_minimap{std::make_unique<MiniMap>(svc)}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}),
+	: Gizmo("Minimap", false), m_minimap{std::make_unique<MiniMap>(svc)}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}),
 	  m_map_shadow(svc, svc.assets.get_texture("map_shadow"), {45, 45}, {1, 1}), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "minimap", 32, util::InterpolationType::quadratic},
 	  m_constituents{.gizmo{.top_left{.lookup{{0, 0}, {67, 55}}},
 							.top_right{.lookup{{67, 0}, {63, 55}}, .position{134.f, 0.f}},
@@ -27,12 +28,16 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	Gizmo::update(svc, player, map, position);
 	if (m_state == GizmoState::selected && m_switched) {
 		m_path.set_section("open");
+		m_gizmos.push_back(std::make_unique<MapInfoGizmo>(svc, map, sf::Vector2f{374.f, -90})); // have to stick this in a conditional once we have an info panel item
 		m_switched = false;
 	} else if (m_switched) {
 		m_path.set_section("close");
+		m_gizmos.clear();
 		m_switched = false;
 	}
 	m_path.update();
+
+	for (auto& gizmo : m_gizmos) { gizmo->update(svc, player, map, m_placement + m_path.get_position()); }
 
 	// create and destroy chain borders
 	// TODO: make the chains less hardcode-y, but it might not be worth it
@@ -46,11 +51,11 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	if (m_path.get_step() == 2 && m_path.get_section() == 0 && m_chains.empty()) {
 		// bottom
 		m_chains.push_back(
-			std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-80.f, offsets.at(0).y}, 14, false, 4.f));
+			std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, offsets.at(0).y}, 14, false, 4.f));
 		m_chains.back()->set_texture_rect(sf::IntRect{{0, 39}, {26, 32}});
 		// top
 		m_chains.push_back(
-			std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-80.f, offsets.at(1).y}, 14, false, 4.f));
+			std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, offsets.at(1).y}, 14, false, 4.f));
 		m_chains.back()->set_texture_rect(sf::IntRect{{0, 27}, {26, 12}});
 	}
 	if (m_path.get_step() == 3 && m_path.get_section() == 0 && m_chains.size() < 4) {
@@ -102,13 +107,15 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
 }
 
-void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground) {
+	if (is_foreground() != foreground) { return; }
 	Gizmo::render(svc, win, cam);
 	auto render_position{-m_placement + cam};
 	m_map_screen.render(win, cam);
 	m_minimap->render(svc, win, cam);
 	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
+	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam, foreground); }
 	m_constituents.gizmo.top_left.position = m_path.get_position();
 	m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f});
 	m_constituents.gizmo.top_right.position = m_path.get_position() + sf::Vector2f{m_path.get_dimensions().x, 0.f};

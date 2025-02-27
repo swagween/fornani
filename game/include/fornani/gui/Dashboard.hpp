@@ -4,6 +4,7 @@
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/gui/Gizmo.hpp"
+#include "fornani/utils/RectPath.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -50,12 +51,20 @@ class Dashboard {
 	int m_current_gizmo{};
 
 	sf::Sprite m_sprite;
+
 	struct {
-		sf::IntRect top_left;
-		sf::IntRect top_right;
-		sf::IntRect bottom;
-		sf::IntRect base;
-	} m_rects;
+		Constituent top_left_frontplate;
+		Constituent top_right_frontplate;
+		Constituent arsenal_frontplate;
+		Constituent top_left_slot;
+		Constituent top_right_slot;
+		Constituent arsenal_slot;
+		Constituent motherboard;
+	} m_constituents{};
+
+	struct {
+		util::RectPath map;
+	} m_paths;
 
 	struct {
 		components::SteeringBehavior steering{};

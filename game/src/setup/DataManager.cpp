@@ -27,7 +27,9 @@ void DataManager::load_data(std::string in_room) {
 			auto this_id = room_data["meta"]["room_id"].as<int>();
 			auto this_name = this_room.path().filename().string();
 			if (is_duplicate_room(this_id)) { continue; }
-			map_jsons.push_back(MapData{this_id, room_data});
+			auto room_str = this_room.path().filename().string();
+			room_str = room_str.substr(0, room_str.find('.'));
+			map_jsons.push_back(MapData{this_id, room_data, this_region.path().filename().string(), room_str});
 
 			// cache map layers
 			sf::Vector2<uint32_t> dimensions{};

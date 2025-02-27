@@ -102,6 +102,13 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		return;
 	}
 
+	svc.world_clock.update(svc);
+	if (inventory_window) {
+		inventory_window.value()->update(svc, *player, map);
+		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
+		return;
+	}
+
 	// TODO: move this somehwere else
 	if (vendor_dialog) {
 		if (open_vendor) {
@@ -117,8 +124,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		}
 		return;
 	}
-
-	svc.world_clock.update(svc);
 
 	if (console.is_complete()) {
 		if (svc.menu_controller.vendor_dialog_opened()) {
@@ -136,11 +141,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		util::Random::set_vendor_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 		player->visit_history.clear();
-	}
-
-	if (inventory_window) {
-		inventory_window.value()->update(svc, *player, map);
-		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
 	}
 
 	// in-game menus
@@ -177,7 +177,10 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
 	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
-	if (inventory_window) (inventory_window.value()->render(svc, win));
+	if (inventory_window) {
+		inventory_window.value()->render(svc, win);
+		return;
+	}
 	map.soft_reset.render(win);
 	map.transition.render(win);
 	if (pause_window) { pause_window.value()->render(svc, win); }

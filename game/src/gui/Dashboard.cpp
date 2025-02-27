@@ -9,7 +9,14 @@
 namespace fornani::gui {
 
 Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f dimensions)
-	: m_physical{.dimensions{dimensions}}, m_sprite{svc.assets.t_dashboard}, m_rects{.top_left{{}, {153, 124}}, .top_right{{153, 0}, {64, 127}}, .bottom{{26, 127}, {184, 137}}, .base{{217, 0}, {222, 212}}} {
+	: m_physical{.dimensions{dimensions}}, m_sprite{svc.assets.t_dashboard}, m_constituents{.top_left_frontplate{{{}, {153, 124}}, {}},
+																							.top_right_frontplate{{{153, 0}, {64, 127}}, {290.f, 0.f}},
+																							.arsenal_frontplate{{{26, 127}, {184, 137}}, {52, 218}},
+																							.top_left_slot{{{217, 0}, {153, 124}}, {}},
+																							.top_right_slot{{{370, 0}, {64, 127}}, {290.f, 0.f}},
+																							.arsenal_slot{{{253, 127}, {184, 137}}, {52, 218}},
+																							.motherboard{{{434, 0}, {222, 212}}, {14.f, 68.f}}},
+	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}} {
 	m_debug.box.setFillColor(sf::Color{180, 150, 20, 50});
 	m_debug.box.setOutlineThickness(-2.f);
 	m_debug.box.setOutlineColor(sf::Color{220, 180, 10, 180});
@@ -22,6 +29,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f
 		m_debug.buttons.back().box.setOutlineThickness(-2.f);
 		m_debug.buttons.back().box.setOrigin({32.f, 32.f});
 	}
+	m_paths.map.set_section("start");
 
 	// populate dashboard depending on the player's inventory
 	auto const& items = svc.data.get_player_items();
@@ -35,7 +43,8 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f
 
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
 	auto& controller = svc.controller_map;
-	for (auto& gizmo : m_gizmos) { gizmo->update(svc, player, map, m_physical.physics.position); }
+	m_paths.map.update();
+	for (auto& gizmo : m_gizmos) { gizmo->update(svc, player, map, m_physical.physics.position + m_paths.map.get_position()); }
 	m_physical.physics.simple_update();
 }
 
@@ -63,30 +72,26 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 		++ctr;
 	}
 
-	// real renders
-	m_sprite.setTextureRect(m_rects.base);
-	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{14, 68} - cam);
-	win.draw(m_sprite);
-	for (auto& gizmo : m_gizmos) {
-		if (!gizmo->is_foreground()) { gizmo->render(svc, win, cam); }
-	}
-	m_sprite.setTextureRect(m_rects.top_left);
-	m_sprite.setPosition(m_physical.physics.position - cam);
-	win.draw(m_sprite);
-	m_sprite.setTextureRect(m_rects.top_right);
-	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{290, 0} - cam);
-	win.draw(m_sprite);
-	m_sprite.setTextureRect(m_rects.bottom);
-	m_sprite.setPosition(m_physical.physics.position + sf::Vector2f{52, 218} - cam);
-	win.draw(m_sprite);
-	for (auto& gizmo : m_gizmos) {
-		if (gizmo->is_foreground()) { gizmo->render(svc, win, cam); }
-	}
+	// dashboard constituents
+	auto render_position{-m_physical.physics.position + cam};
+	m_constituents.motherboard.render(win, m_sprite, render_position, {});
+	m_constituents.top_left_slot.render(win, m_sprite, render_position - m_paths.map.get_position(), {});
+	m_constituents.top_right_slot.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
+	m_constituents.arsenal_slot.render(win, m_sprite, render_position, {});
+	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam, false); }
+	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position(), {});
+	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
+	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position, {});
+	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam, true); }
 }
 
 bool Dashboard::handle_inputs(config::ControllerMap& controller) {
 	if (m_gizmos.empty() || m_gizmos.size() <= m_current_gizmo) { return false; }
-	return m_gizmos.at(m_current_gizmo)->handle_inputs(controller);
+	if (!m_gizmos.at(m_current_gizmo)->handle_inputs(controller)) {
+		m_paths.map.set_section("close");
+		return false;
+	}
+	return true;
 }
 
 void Dashboard::set_position(sf::Vector2f to_position, bool force) {
@@ -102,6 +107,7 @@ void Dashboard::set_selection(sf::Vector2i to_selection) { m_selected_position =
 void Dashboard::select_gizmo() {
 	if (m_gizmos.empty() || m_gizmos.size() <= m_current_gizmo) { return; }
 	m_gizmos.at(m_current_gizmo)->select();
+	if (m_gizmos.at(m_current_gizmo)->get_label() == "Minimap") { m_paths.map.set_section("open"); }
 }
 
 void Dashboard::hover(sf::Vector2i direction) {}

@@ -7,7 +7,6 @@ namespace fornani::gui {
 
 MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, sf::Vector2f start_position, bool white)
 	: m_nineslice{svc, (white ? svc.assets.get_texture("cream_console") : svc.assets.get_texture("blue_console")), {28, 28}, {1, 1}} {
-	;
 	auto ctr{0};
 	for (auto& o : opt) {
 		options.push_back(automa::Option(svc, o, white));
@@ -26,7 +25,8 @@ void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::
 	auto top_buffer = 18.f;
 	auto ctr{0};
 	for (auto& option : options) {
-		option.position = {m_nineslice.get_position().x, m_nineslice.get_position().y + spacing + ctr * (option.label.getLocalBounds().size.y + spacing) - m_nineslice.get_local_center().y + top_buffer};
+		option.position = {m_nineslice.get_global_center().x,
+						   m_nineslice.get_position().y - m_nineslice.get_f_corner_dimensions().y + spacing + ctr * (option.label.getLocalBounds().size.y + spacing) - m_nineslice.get_local_center().y + top_buffer};
 		option.update(svc, selection.get());
 		++ctr;
 	}

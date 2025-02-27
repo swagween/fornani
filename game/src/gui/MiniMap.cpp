@@ -96,7 +96,8 @@ void gui::MiniMap::zoom(float amount) {
 void MiniMap::center() {
 	for (auto& room : atlas) {
 		if (room->is_current()) {
-			position = -room->get_position() * scale + view.getCenter();
+			auto sz{m_port_dimensions.componentWiseDiv(view.getSize())};
+			position = (player_position + room->get_position()) * ratio - view.getCenter().componentWiseMul(sz);
 			return;
 		}
 	}

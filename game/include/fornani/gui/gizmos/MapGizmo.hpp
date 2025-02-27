@@ -13,10 +13,11 @@ class MapGizmo : public Gizmo {
   public:
 	MapGizmo(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(config::ControllerMap& controller) override;
 
   private:
+	std::vector<std::unique_ptr<Gizmo>> m_gizmos{};
 	std::unique_ptr<MiniMap> m_minimap{};
 	std::vector<std::unique_ptr<vfx::Chain>> m_chains{};
 	util::NineSlice m_map_screen;

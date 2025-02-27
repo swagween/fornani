@@ -61,7 +61,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 }
 
 void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
-	m_debug.border.setPosition(-m_camera.physics.position);
+	// m_debug.border.setPosition(-m_camera.physics.position);
 	win.draw(m_background);
 	// win.draw(m_debug.border);
 	for (auto i{-1}; i < 4; i += 2) {
