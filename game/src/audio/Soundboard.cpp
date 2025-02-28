@@ -25,6 +25,9 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 	if (flags.console.test(Console::next)) { play(svc, svc.assets.menu_next_buffer); }
 	if (flags.console.test(Console::shift)) { play(svc, svc.assets.menu_shift_buffer); }
 	if (flags.console.test(Console::menu_open)) { play(svc, svc.assets.menu_open_buffer); }
+	if (flags.console.test(Console::pioneer_back)) { play(svc, svc.sounds.get_buffer("pioneer_back")); }
+	if (flags.console.test(Console::pioneer_click)) { play(svc, svc.sounds.get_buffer("pioneer_click")); }
+	if (flags.console.test(Console::pioneer_select)) { play(svc, svc.sounds.get_buffer("pioneer_select")); }
 	if (flags.console.test(Console::speech)) { play(svc, svc.assets.menu_shift_buffer, 0.2f, 100.f, 16); }
 
 	// transmission
@@ -145,7 +148,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 	proximities = {};
 }
 
-void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2<float> distance, int echo_count, int echo_rate) {
+void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer const& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2<float> distance, int echo_count, int echo_rate) {
 	sound_pool.push_back(Sound(buffer, echo_count, echo_rate));
 	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
 }

@@ -13,7 +13,7 @@ namespace fornani::gui {
 MapInfoGizmo::MapInfoGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
 	: Gizmo("Map Info", false), m_sprites{.panel{sf::Sprite{svc.assets.get_texture("map_gizmo")}}, .clip{sf::Sprite{svc.assets.get_texture("map_gizmo")}}}, m_text{.biome{svc.text.fonts.basic}, .room{svc.text.fonts.basic}},
 	  m_constituents{.left_clip{.lookup{{89, 151}, {97, 11}}, .position{}}, .right_clip{.lookup{{89, 162}, {39, 11}}, .position{}}},
-	  m_clip_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "minimap_info", 86, util::InterpolationType::linear} {
+	  m_clip_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_info", 86, util::InterpolationType::linear} {
 	m_physics.position = sf::Vector2f{374.f, 1600.f};
 	m_placement = placement;
 	m_sprites.panel.setScale(svc.constants.texture_scale);

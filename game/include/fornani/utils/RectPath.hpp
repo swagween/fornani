@@ -33,6 +33,7 @@ class RectPath {
 	[[nodiscard]] auto get_step() const -> int { return m_current_step; }
 	[[nodiscard]] auto get_section() const -> int { return m_current_section; }
 	[[nodiscard]] auto finished() const -> bool;
+	[[nodiscard]] auto completed_step(int step) const -> bool { return m_current_step == step && m_interpolation.is_almost_complete(); }
 
   private:
 	std::vector<PathSection> m_sections{};

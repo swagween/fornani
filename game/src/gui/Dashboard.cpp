@@ -16,7 +16,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f
 																							.top_right_slot{{{370, 0}, {64, 127}}, {290.f, 0.f}},
 																							.arsenal_slot{{{253, 127}, {184, 137}}, {52, 218}},
 																							.motherboard{{{434, 0}, {222, 212}}, {14.f, 68.f}}},
-	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}} {
+	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}} {
 	m_debug.box.setFillColor(sf::Color{180, 150, 20, 50});
 	m_debug.box.setOutlineThickness(-2.f);
 	m_debug.box.setOutlineColor(sf::Color{220, 180, 10, 180});

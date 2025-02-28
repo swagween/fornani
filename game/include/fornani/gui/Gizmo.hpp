@@ -4,6 +4,7 @@
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/io/Logger.hpp"
+#include "fornani/utils/RectPath.hpp"
 
 #include <SFML/Graphics.hpp>
 

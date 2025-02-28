@@ -2,10 +2,10 @@
 #pragma once
 
 #include <SFML/Audio.hpp>
+#include <unordered_map>
+#include "Sound.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include "Sound.hpp"
-#include <unordered_map>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -16,7 +16,7 @@ namespace fornani::audio {
 enum class SoundboardState : uint8_t { on, off };
 
 enum class Menu : uint8_t { select, shift, forward_switch, backward_switch };
-enum class Console : uint8_t { next, done, shift, select, speech, menu_open };
+enum class Console : uint8_t { next, done, shift, select, speech, menu_open, pioneer_select, pioneer_click, pioneer_back };
 enum class World : uint8_t { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable, door_open, door_unlock };
 enum class Item : uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip };
 enum class Player : uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
@@ -71,8 +71,9 @@ class Soundboard {
 		util::BitFlags<Beamstalk> beamstalk{};
 		util::BitFlags<Meatsquash> meatsquash{};
 	} flags{};
-	
-	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {}, int echo_count = 0, int echo_rate = 64);
+
+	void play(automa::ServiceProvider& svc, sf::SoundBuffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {}, int echo_count = 0,
+			  int echo_rate = 64);
 
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
@@ -108,4 +109,4 @@ class Soundboard {
 																			{497, Step::grass}}}};
 };
 
-} // namespace audio
+} // namespace fornani::audio

@@ -11,6 +11,7 @@ struct ServiceProvider;
 }
 
 namespace fornani::gui {
+
 class MiniMenu {
   public:
 	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, sf::Vector2f start_position, bool white = false);

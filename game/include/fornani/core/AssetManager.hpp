@@ -8,7 +8,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
-namespace fornani::asset {
+namespace fornani::core {
 
 class AssetManager {
   public:
@@ -382,4 +382,4 @@ class AssetManager {
 	fornani::io::Logger m_logger{"asset"};
 };
 
-} // namespace fornani::asset
+} // namespace fornani::core

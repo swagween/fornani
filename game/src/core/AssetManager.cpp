@@ -1,6 +1,6 @@
 #include "fornani/core/AssetManager.hpp"
 
-namespace fornani::asset {
+namespace fornani::core {
 
 AssetManager::AssetManager(data::ResourceFinder const& finder) {
 
@@ -476,4 +476,4 @@ sf::Texture& AssetManager::get_scenery(int style) {
 
 sf::Texture const& AssetManager::get_texture(std::string const& label) { return m_textures.contains(label) ? m_textures.at(label) : t_null; }
 
-} // namespace fornani::asset
+} // namespace fornani::core

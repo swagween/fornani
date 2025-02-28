@@ -4,6 +4,7 @@
 #include "fornani/automa/MenuController.hpp"
 #include "fornani/automa/StateController.hpp"
 #include "fornani/core/AssetManager.hpp"
+#include "fornani/core/SoundManager.hpp"
 #include "fornani/graphics/CameraController.hpp"
 #include "fornani/graphics/Style.hpp"
 #include "fornani/io/Logger.hpp"
@@ -40,7 +41,7 @@ struct MapDebug {
  * Here
  */
 struct ServiceProvider {
-	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
+	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder}, sounds{finder} {};
 
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
@@ -50,7 +51,8 @@ struct ServiceProvider {
 	data::DataManager data;
 	Version* version;	   // TODO: Remove. Make Free-Standing.
 	WindowManager* window; // TODO: Move this into the Application class and make it into a MonoInstance
-	asset::AssetManager assets;
+	core::SoundManager sounds;
+	core::AssetManager assets;
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
