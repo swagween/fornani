@@ -139,15 +139,11 @@
 			"label": "open",
 			"path": [
 				{
-					"position": [ 60, -80 ],
-					"dimensions": [ 0, 0 ]
-				},
-				{
 					"position": [ 60, 0 ],
 					"dimensions": [ 0, 0 ]
 				},
 				{
-					"position": [ -8, 0 ],
+					"position": [ 50, 0 ],
 					"dimensions": [ 0, 0 ]
 				},
 				{
@@ -174,7 +170,7 @@
 					"dimensions": [ 0, 0 ]
 				},
 				{
-					"position": [ 45, -173 ],
+					"position": [ 47, -173 ],
 					"dimensions": [ 0, 0 ]
 				},
 				{
@@ -201,7 +197,7 @@
 					"dimensions": [ 0, 0 ]
 				},
 				{
-					"position": [ 33, -188 ],
+					"position": [ 35, -188 ],
 					"dimensions": [ 0, 0 ]
 				},
 				{
@@ -228,7 +224,7 @@
 					"dimensions": [ 0, 0 ]
 				},
 				{
-					"position": [ 16, -142 ],
+					"position": [ 18, -142 ],
 					"dimensions": [ 0, 0 ]
 				},
 				{

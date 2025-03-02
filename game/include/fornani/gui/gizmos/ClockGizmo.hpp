@@ -11,7 +11,7 @@ class ClockGizmo : public Gizmo {
 	ClockGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground = false) override;
-	bool handle_inputs(config::ControllerMap& controller) override;
+	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 
   private:
 	vfx::SpriteRotator m_rotator{};

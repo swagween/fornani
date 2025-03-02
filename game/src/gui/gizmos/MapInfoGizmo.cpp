@@ -49,6 +49,6 @@ void MapInfoGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 	win.draw(m_text.room);
 }
 
-bool MapInfoGizmo::handle_inputs(config::ControllerMap& controller) { return Gizmo::handle_inputs(controller); }
+bool MapInfoGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) { return Gizmo::handle_inputs(controller, soundboard); }
 
 } // namespace fornani::gui

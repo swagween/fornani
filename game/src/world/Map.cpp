@@ -44,6 +44,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
 	if (meta["minimap"].as_bool()) { flags.properties.set(MapProperties::minimap); }
+	NANI_LOG_INFO(m_logger, "Loaded room {}. Minimap: {}", room_number, is_minimap());
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
@@ -236,12 +237,14 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style, mapdim));
 		portals.back().update(svc);
 	}
+	NANI_LOG_DEBUG(m_logger, "Portals loaded: room {} : {}", room_number, portals.size());
 
 	auto const& savept = entities["save_point"];
 	auto save_id = svc.state_controller.save_point_id;
 	save_point.id = savept.contains("position") ? room_id : -1;
 	save_point.scaled_position.x = savept["position"][0].as<int>();
 	save_point.scaled_position.y = savept["position"][1].as<int>();
+	save_point.position = {static_cast<float>(save_point.scaled_position.x), static_cast<float>(save_point.scaled_position.y)};
 
 	for (auto& entry : entities["platforms"].array_view()) {
 		sf::Vector2<float> dim{};

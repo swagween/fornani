@@ -1,3 +1,4 @@
+
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
@@ -25,10 +26,23 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 	if (flags.console.test(Console::next)) { play(svc, svc.assets.menu_next_buffer); }
 	if (flags.console.test(Console::shift)) { play(svc, svc.assets.menu_shift_buffer); }
 	if (flags.console.test(Console::menu_open)) { play(svc, svc.assets.menu_open_buffer); }
-	if (flags.console.test(Console::pioneer_back)) { play(svc, svc.sounds.get_buffer("pioneer_back")); }
-	if (flags.console.test(Console::pioneer_click)) { play(svc, svc.sounds.get_buffer("pioneer_click")); }
-	if (flags.console.test(Console::pioneer_select)) { play(svc, svc.sounds.get_buffer("pioneer_select")); }
 	if (flags.console.test(Console::speech)) { play(svc, svc.assets.menu_shift_buffer, 0.2f, 100.f, 16); }
+
+	// pioneer
+	if (flags.pioneer.test(Pioneer::back)) { play(svc, svc.sounds.get_buffer("pioneer_back")); }
+	if (flags.pioneer.test(Pioneer::click)) { play(svc, svc.sounds.get_buffer("pioneer_click")); }
+	if (flags.pioneer.test(Pioneer::select)) { play(svc, svc.sounds.get_buffer("pioneer_select")); }
+	if (flags.pioneer.test(Pioneer::open)) { play(svc, svc.sounds.get_buffer("pioneer_open")); }
+	if (flags.pioneer.test(Pioneer::close)) { play(svc, svc.sounds.get_buffer("pioneer_close")); }
+	if (flags.pioneer.test(Pioneer::slot)) { play(svc, svc.sounds.get_buffer("pioneer_slot")); }
+	if (flags.pioneer.test(Pioneer::chain)) { play(svc, svc.sounds.get_buffer("pioneer_chain")); }
+	flags.pioneer.test(Pioneer::buzz) ? simple_repeat(svc.sounds.get_buffer("pioneer_buzz"), "pioneer_buzz") : stop("pioneer_buzz");
+	flags.pioneer.test(Pioneer::hum) ? simple_repeat(svc.sounds.get_buffer("pioneer_hum"), "pioneer_hum") : stop("pioneer_hum");
+	flags.pioneer.test(Pioneer::scan) ? simple_repeat(svc.sounds.get_buffer("pioneer_scan"), "pioneer_scan") : stop("pioneer_scan");
+	if (flags.pioneer.test(Pioneer::hard_slot)) { play(svc, svc.sounds.get_buffer("pioneer_hard_slot")); }
+	if (flags.pioneer.test(Pioneer::fast_click)) { play(svc, svc.sounds.get_buffer("pioneer_fast_click")); }
+	if (flags.pioneer.test(Pioneer::sync)) { play(svc, svc.sounds.get_buffer("pioneer_sync"), 0.1f); }
+	if (flags.pioneer.test(Pioneer::boot)) { play(svc, svc.sounds.get_buffer("pioneer_boot"), 0.f, 40.f); }
 
 	// transmission
 	if (flags.transmission.test(Transmission::statics)) { play(svc, svc.assets.b_small_crash); }
@@ -149,20 +163,40 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 }
 
 void Soundboard::play(automa::ServiceProvider& svc, sf::SoundBuffer const& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2<float> distance, int echo_count, int echo_rate) {
-	sound_pool.push_back(Sound(buffer, echo_count, echo_rate));
+	sound_pool.push_back(Sound(buffer, "standard", echo_count, echo_rate));
 	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
 }
 
-void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset, float attenuation, sf::Vector2<float> distance) {
-	if (svc.ticker.every_x_ticks(frequency)) { randomize(svc, sound, random_pitch_offset, 100.f, attenuation, distance); }
+void audio::Soundboard::simple_repeat(sf::SoundBuffer const& buffer, std::string const& label) {
+	bool already_playing{};
+	for (auto& sd : sound_pool) {
+		if (sd.get_label() == label) { already_playing = true; }
+	}
+	if (!already_playing) {
+		sound_pool.push_back(Sound(buffer, label));
+		sound_pool.back().play(true);
+	}
 }
 
-void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2<float> distance) {
+void audio::Soundboard::stop(std::string const& label) {
+	std::erase_if(sound_pool, [label](auto const& s) { return s.get_label() == label; });
+}
+
+void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset, float attenuation, sf::Vector2<float> distance) {
+	if (frequency == -1) {
+		randomize(svc, sound, random_pitch_offset, 100.f, attenuation, distance, true);
+	} else if (svc.ticker.every_x_ticks(frequency)) {
+		randomize(svc, sound, random_pitch_offset, 100.f, attenuation, distance);
+	}
+}
+
+void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2<float> distance, bool wait_until_over) {
 	auto random_pitch = random_pitch_offset == 0.f ? 0.f : util::Random::random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.set_pitch(1.f + random_pitch);
 	sound.set_volume(vol);
 	auto scalar = util::magnitude(distance) / attenuation;
 	sound.set_volume(vol - (scalar > vol ? vol : scalar));
+	if (wait_until_over && sound.is_playing()) { return; }
 	sound.play();
 }
 

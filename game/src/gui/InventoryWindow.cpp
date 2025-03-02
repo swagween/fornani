@@ -2,13 +2,14 @@
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/ColorUtils.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
 namespace fornani::gui {
 
-InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map)
-	: m_cell_dimensions{svc.constants.f_screen_dimensions}, m_dashboard{std::make_unique<Dashboard>(svc, map, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_debug{.sprite{sf::Sprite{svc.assets.t_inv_test}}} {
+InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
+	: m_cell_dimensions{svc.constants.f_screen_dimensions}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_debug{.sprite{sf::Sprite{svc.assets.t_inv_test}}} {
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.constants.f_screen_dimensions);
 	m_debug.border.setOutlineColor(svc.styles.colors.green);
@@ -29,11 +30,10 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	auto& controller = svc.controller_map;
 
 	if (m_view == InventoryView::focused) {
-		if (!m_dashboard->handle_inputs(controller)) {
-			m_grid_position = {};
-			// m_dashboard->set_selection({});
-		}
+		if (!m_dashboard->handle_inputs(controller, svc.soundboard)) { m_grid_position = {}; }
 	}
+
+	m_background.setFillColor(util::ColorUtils::fade_in(svc.styles.colors.pioneer_black));
 
 	if (m_view == InventoryView::dashboard) {
 		if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) { m_dashboard->set_selection({0, -1}); }
@@ -57,13 +57,14 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 
 	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
 	if (controller.digital_action_status(config::DigitalAction::inventory_close).triggered) { m_view = InventoryView::exit; }
-	if (exit_requested()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
+	if (exit_requested()) {
+		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		util::ColorUtils::reset();
+	}
 }
 
 void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
-	// m_debug.border.setPosition(-m_camera.physics.position);
 	win.draw(m_background);
-	// win.draw(m_debug.border);
 	for (auto i{-1}; i < 4; i += 2) {
 		for (auto j{-1}; j < 4; j += 2) {
 			m_debug.center.setPosition(sf::Vector2f{m_cell_dimensions.x * 0.5f * static_cast<float>(i) - m_camera.physics.position.x, m_cell_dimensions.y * 0.5f * static_cast<float>(j) - m_camera.physics.position.y});

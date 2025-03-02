@@ -17,23 +17,38 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.as
 	m_cursor.setOrigin({7.f, 7.f});
 }
 
-void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current, bool undiscovered) {
+void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current, bool undiscovered) {
 	atlas.push_back(std::make_unique<MapTexture>(svc));
+	m_texture_scale = atlas.back()->get_scale();
 	if (current) { atlas.back()->set_current(); }
 	atlas.back()->bake(svc, map, room, 1.f, current, undiscovered);
 	extent.position.x = std::min(atlas.back()->get_position().x, extent.position.x);
 	extent.size.x = std::max(atlas.back()->get_position().x + atlas.back()->get_dimensions().x, extent.size.x);
 	extent.position.y = std::min(atlas.back()->get_position().y, extent.position.y);
 	extent.size.y = std::max(atlas.back()->get_position().y + atlas.back()->get_dimensions().y, extent.size.y);
+
+	// populate entity data for icons
+	if (!map.is_minimap()) { return; } // don't care about test maps
+	auto room_pos{atlas.back()->get_position()};
+	if (map.save_point.id > 0) { m_markers.push_back({MapIconFlags::save, map.save_point.position * m_texture_scale + room_pos, room}); }
+	for (auto& bed : map.beds) { m_markers.push_back({MapIconFlags::bed, bed.bounding_box.get_position() * m_texture_scale / svc.constants.cell_size + room_pos, room}); }
+	for (auto& door : map.portals) {
+		if (!door.activate_on_contact()) { m_markers.push_back({MapIconFlags::door, door.position * m_texture_scale / svc.constants.cell_size + room_pos, room}); }
+	}
+	if (current) { m_markers.push_back({MapIconFlags::nani, player.collider.get_center() * m_texture_scale / svc.constants.cell_size + room_pos, room}); }
+	NANI_LOG_DEBUG(m_logger, "Baked minimap for room..: {}", room);
+	NANI_LOG_DEBUG(m_logger, "Number of markers.......: {}", m_markers.size());
+	map.clear();
 }
 
 void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	border.setSize(svc.constants.f_screen_dimensions);
 	ratio = 32.f / scale;
-	player_position = player.collider.physics.position / svc.constants.cell_size;
 }
 
-void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam, sf::Sprite& icon_sprite) {
+	static auto flash_frame{util::Circuit{2}};
+	if (svc.ticker.every_x_frames(10)) { flash_frame.modulate(1); }
 	view = svc.window->get_view();
 	auto port = svc.window->get_viewport();
 	port.size.x = m_port_dimensions.x / view.getSize().x;
@@ -66,7 +81,14 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 			}
 		}
 		win.draw(map_sprite);
-		win.draw(player_box);
+	}
+	icon_sprite.setScale(svc.constants.texture_scale.componentWiseDiv(port.size));
+	auto icon_lookup{136};
+	auto icon_dim{6};
+	for (auto& element : m_markers) {
+		icon_sprite.setTextureRect(sf::IntRect{{icon_lookup + icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
+		icon_sprite.setPosition((element.position * ratio + position).componentWiseDiv(port.size));
+		win.draw(icon_sprite);
 	}
 	m_cursor.setScale(svc.constants.texture_scale.componentWiseDiv(port.size));
 	m_cursor.setPosition(svc.constants.f_center_screen);
@@ -85,11 +107,11 @@ void MiniMap::move(sf::Vector2<float> direction) {
 
 void gui::MiniMap::zoom(float amount) {
 	auto prev_ratio = ratio;
-	scale = std::clamp(scale + amount, 1.f, 16.f);
+	scale = std::clamp(scale + amount, m_texture_scale, m_texture_scale * 16.f);
 	ratio = 32.f / scale;
 	auto r_delta = ratio - prev_ratio;
 	auto sz{m_port_dimensions.componentWiseDiv(view.getSize())};
-	center_position = (position - view.getCenter().componentWiseMul(sz)) / ratio;
+	center_position = (position - view.getCenter().componentWiseMul(sz)) / prev_ratio;
 	if (std::abs(r_delta) > 0.f) { position += center_position * r_delta; }
 }
 

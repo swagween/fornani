@@ -18,14 +18,22 @@ class Portal;
 
 namespace fornani::gui {
 
+enum class MapIconFlags { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor };
+
+struct MapIcon {
+	MapIconFlags type{};
+	sf::Vector2f position{};
+	int room_id{};
+};
+
 enum class ChunkType : uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 
 class MiniMap {
   public:
 	explicit MiniMap(automa::ServiceProvider& svc);
-	void bake(automa::ServiceProvider& svc, world::Map& map, int room, bool current = false, bool undiscovered = false);
+	void bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current = false, bool undiscovered = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam, sf::Sprite& icon_sprite);
 	void clear_atlas();
 	void move(sf::Vector2<float> direction);
 	void zoom(float amount);
@@ -42,6 +50,7 @@ class MiniMap {
 	float scale{8.f};
 	float ratio{4.f};
 	float speed{1.5f};
+	float m_texture_scale{};
 	sf::Vector2f m_port_position{};
 	sf::Vector2f m_port_dimensions{};
 	sf::Vector2<float> position{};
@@ -58,6 +67,7 @@ class MiniMap {
 	sf::RectangleShape border{};
 	sf::Color background_color{};
 	std::vector<std::unique_ptr<MapTexture>> atlas{};
+	std::vector<MapIcon> m_markers{};
 	util::Circuit scalar{3};
 	io::Logger m_logger{"MiniMap"};
 };

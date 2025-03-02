@@ -1,6 +1,7 @@
 
 #include "fornani/gui/Gizmo.hpp"
 
+#include "fornani/audio/Soundboard.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
@@ -12,12 +13,22 @@ void Gizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player
 
 void Gizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground) {}
 
-bool Gizmo::handle_inputs(config::ControllerMap& controller) {
+bool Gizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 		deselect();
 		return false;
 	}
 	return true;
+}
+
+void Gizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
+	svc.soundboard.flags.pioneer.set(audio::Pioneer::select);
+	m_switched = false;
+}
+
+void Gizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
+	svc.soundboard.flags.pioneer.set(audio::Pioneer::back);
+	m_switched = false;
 }
 
 void Gizmo::select() {

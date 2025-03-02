@@ -30,6 +30,7 @@
 #include "fornani/graphics/Rain.hpp"
 #include "fornani/graphics/Scenery.hpp"
 #include "fornani/graphics/Transition.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/story/CutsceneCatalog.hpp"
 #include "fornani/utils/CircleCollider.hpp"
@@ -275,6 +276,8 @@ class Map {
 		int echo_count{};
 	} sound{};
 	int m_middleground{};
+
+	io::Logger m_logger{"Map"};
 };
 
 } // namespace fornani::world

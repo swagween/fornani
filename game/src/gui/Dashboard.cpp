@@ -8,7 +8,7 @@
 
 namespace fornani::gui {
 
-Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f dimensions)
+Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f dimensions)
 	: m_physical{.dimensions{dimensions}}, m_sprite{svc.assets.t_dashboard}, m_constituents{.top_left_frontplate{{{}, {153, 124}}, {}},
 																							.top_right_frontplate{{{153, 0}, {64, 127}}, {290.f, 0.f}},
 																							.arsenal_frontplate{{{26, 127}, {184, 137}}, {52, 218}},
@@ -34,7 +34,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f
 	// populate dashboard depending on the player's inventory
 	auto const& items = svc.data.get_player_items();
 	for (auto& i : items.array_view()) {
-		if (i["id"].as<int>() == 16) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map)); }
+		if (i["id"].as<int>() == 16) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
 	}
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
 	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); // have to stick this in the for loop once we have a clock item
@@ -85,9 +85,9 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam, true); }
 }
 
-bool Dashboard::handle_inputs(config::ControllerMap& controller) {
+bool Dashboard::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
 	if (m_gizmos.empty() || m_gizmos.size() <= m_current_gizmo) { return false; }
-	if (!m_gizmos.at(m_current_gizmo)->handle_inputs(controller)) {
+	if (!m_gizmos.at(m_current_gizmo)->handle_inputs(controller, soundboard)) {
 		m_paths.map.set_section("close");
 		return false;
 	}

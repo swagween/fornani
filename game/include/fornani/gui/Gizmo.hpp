@@ -26,6 +26,10 @@ namespace fornani::config {
 class ControllerMap;
 }
 
+namespace fornani::audio {
+class Soundboard;
+}
+
 namespace fornani::gui {
 
 enum class GizmoState { neutral, hovered, selected };
@@ -42,13 +46,15 @@ class Gizmo {
 	virtual ~Gizmo() = default;
 	virtual void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground = false);
-	virtual bool handle_inputs(config::ControllerMap& controller);
+	virtual bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);
 	void select();
 	void deselect();
 	[[nodiscard]] auto is_foreground() const -> bool { return m_foreground; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 
   protected:
+	virtual void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map);
+	virtual void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map);
 	bool m_switched{};
 	bool m_foreground{};
 	std::string m_label{};

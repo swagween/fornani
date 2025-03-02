@@ -4,30 +4,33 @@
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/MiniMap.hpp"
 #include "fornani/particle/Chain.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/NineSlice.hpp"
 
 namespace fornani::gui {
 
 class MapPlugin {
   public:
-	MapPlugin(data::ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Console sound);
+	MapPlugin(data::ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound);
 	void update(audio::Soundboard& soundboard);
 	Constituent constituent;
 
   private:
 	util::RectPath m_path;
 	util::Cooldown m_delay;
-	audio::Console m_sound;
+	audio::Pioneer m_sound;
 };
 
 class MapGizmo : public Gizmo {
   public:
-	MapGizmo(automa::ServiceProvider& svc, world::Map& map);
+	MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground = false) override;
-	bool handle_inputs(config::ControllerMap& controller) override;
+	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 
   private:
+	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
+	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	std::vector<MapPlugin> m_plugins;
 	std::unique_ptr<Gizmo> m_info{};
 	std::unique_ptr<MiniMap> m_minimap{};
@@ -39,8 +42,10 @@ class MapGizmo : public Gizmo {
 	std::vector<sf::Vector2f> m_chain_offsets;
 	sf::Sprite m_sprite;
 	sf::Sprite m_plugin_sprite;
+	sf::Sprite m_icon_sprite;
 	struct {
 		bool toggled{};
+		util::BitFlags<MapIconFlags> icon{};
 	} m_flags{};
 	struct {
 		struct {

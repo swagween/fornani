@@ -16,7 +16,8 @@ namespace fornani::audio {
 enum class SoundboardState : uint8_t { on, off };
 
 enum class Menu : uint8_t { select, shift, forward_switch, backward_switch };
-enum class Console : uint8_t { next, done, shift, select, speech, menu_open, pioneer_select, pioneer_click, pioneer_back };
+enum class Pioneer : uint8_t { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan };
+enum class Console : uint8_t { next, done, shift, select, speech, menu_open };
 enum class World : uint8_t { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable, door_open, door_unlock };
 enum class Item : uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip };
 enum class Player : uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
@@ -50,6 +51,7 @@ class Soundboard {
 	struct {
 		util::BitFlags<Menu> menu{};
 		util::BitFlags<Console> console{};
+		util::BitFlags<Pioneer> pioneer{};
 		util::BitFlags<World> world{};
 		util::BitFlags<Item> item{};
 		util::BitFlags<Player> player{};
@@ -77,7 +79,9 @@ class Soundboard {
 
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
-	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
+	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {}, bool wait_until_over = false);
+	void simple_repeat(sf::SoundBuffer const& buffer, std::string const& label);
+	void stop(std::string const& label);
 
 	std::vector<Sound> sound_pool{};
 

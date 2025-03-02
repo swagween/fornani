@@ -26,7 +26,7 @@ enum class InventoryView { dashboard, focused, exit };
 
 class InventoryWindow {
   public:
-	InventoryWindow(automa::ServiceProvider& svc, world::Map& map);
+	InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);
 	[[nodiscard]] auto exit_requested() const -> bool { return m_view == InventoryView::exit; }

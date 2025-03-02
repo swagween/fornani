@@ -9,11 +9,11 @@
 
 namespace fornani::gui {
 
-MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map)
-	: Gizmo("Minimap", false), m_minimap{std::make_unique<MiniMap>(svc)}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")},
+MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
+	: Gizmo("Minimap", false), m_minimap{std::make_unique<MiniMap>(svc)}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("map_gizmo")},
 	  m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}), m_map_shadow(svc, svc.assets.get_texture("map_shadow"), {45, 45}, {1, 1}),
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap", 32, util::InterpolationType::quadratic},
-	  m_motherboard_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_motherboard", 108, util::InterpolationType::quadratic},
+	  m_motherboard_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_motherboard", 108, util::InterpolationType::linear},
 	  m_constituents{.gizmo{.top_left{.lookup{{0, 0}, {67, 55}}},
 							.top_right{.lookup{{67, 0}, {63, 55}}, .position{134.f, 0.f}},
 							.bottom_left{.lookup{{13, 55}, {54, 54}}, .position{26.f, 110.f}},
@@ -27,7 +27,9 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map)
 												  } {
 
 	m_physics.position = sf::Vector2f{0.f, svc.constants.f_screen_dimensions.y};
-	for (auto& id : svc.data.discovered_rooms) { m_minimap->bake(svc, map, id, id == svc.current_room); }
+	m_icon_sprite.setOrigin({3.f, 3.f});
+	m_icon_sprite.setScale(svc.constants.texture_scale);
+	for (auto& id : svc.data.discovered_rooms) { m_minimap->bake(svc, map, player, id, id == svc.current_room); }
 	m_minimap->center();
 	m_sprite.setScale(svc.constants.texture_scale);
 	m_plugin_sprite.setScale(svc.constants.texture_scale);
@@ -39,25 +41,15 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map)
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
 	Gizmo::update(svc, player, map, position);
 	if (m_state == GizmoState::selected && m_switched) {
-		m_path.set_section("open");
-		svc.soundboard.flags.console.set(audio::Console::pioneer_select);
-
-		// TODO: gate plugins based on player's inventory
-		m_info = std::make_unique<MapInfoGizmo>(svc, map, sf::Vector2f{374.f, -90}); // make conditional when info bar is an item
-		m_plugins.push_back(MapPlugin(svc.finder, "plugin_nani", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 49}, {63, 29}}, audio::Console::pioneer_click));
-		m_plugins.push_back(MapPlugin(svc.finder, "plugin_save", sf::IntRect{m_lookups.plugin + sf::Vector2i{27, 0}, {23, 22}}, audio::Console::pioneer_click));
-		m_plugins.push_back(MapPlugin(svc.finder, "plugin_bed", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 27}, {36, 15}}, audio::Console::pioneer_click));
-
-		m_motherboard_path.set_section("open");
-		m_switched = false;
+		on_open(svc, player, map);
 	} else if (m_switched) {
-		m_path.set_section("close");
-		svc.soundboard.flags.console.set(audio::Console::pioneer_back);
-		m_plugins.clear();
-		m_info = {};
-		m_motherboard_path.set_section("start");
-		m_switched = false;
+		on_close(svc, player, map);
 	}
+	svc.soundboard.flags.pioneer.set(audio::Pioneer::hum);
+	if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::chain); }
+	if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::boot); }
+	if (m_path.get_section() == 0 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::open); }
+	if (m_path.get_section() == 1 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::hard_slot); }
 
 	m_path.update();
 	m_motherboard_path.update();
@@ -133,7 +125,8 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	m_constituents.gizmo.motherboard.position = m_path.get_position() + m_motherboard_path.get_position() - m_map_screen.get_f_corner_dimensions();
 	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f});
 	m_map_screen.render(win, cam);
-	m_minimap->render(svc, win, cam);
+	m_minimap->render(svc, win, cam, m_icon_sprite);
+	m_icon_sprite.setScale(svc.constants.texture_scale);
 	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
 	for (auto& plugin : m_plugins) { plugin.constituent.render(win, m_plugin_sprite, cam, {}); }
@@ -148,21 +141,62 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f});
 }
 
-bool MapGizmo::handle_inputs(config::ControllerMap& controller) {
-	if (controller.digital_action_status(config::DigitalAction::menu_up).held) { m_minimap->move({0.f, -1.f}); }
-	if (controller.digital_action_status(config::DigitalAction::menu_down).held) { m_minimap->move({0.f, 1.f}); }
-	if (controller.digital_action_status(config::DigitalAction::menu_left).held) { m_minimap->move({-1.f, 0.f}); }
-	if (controller.digital_action_status(config::DigitalAction::menu_right).held) { m_minimap->move({1.f, 0.f}); }
+bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
+	auto zoom_factor{0.1f};
+	if (controller.digital_action_status(config::DigitalAction::menu_up).held) {
+		m_minimap->move({0.f, -1.f});
+		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_down).held) {
+		m_minimap->move({0.f, 1.f});
+		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_left).held) {
+		m_minimap->move({-1.f, 0.f});
+		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_right).held) {
+		m_minimap->move({1.f, 0.f});
+		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+	}
 	if (controller.digital_action_status(config::DigitalAction::menu_switch_left).held) {
-		m_minimap->zoom(0.05f);
+		m_minimap->zoom(zoom_factor);
+		soundboard.flags.pioneer.set(audio::Pioneer::buzz);
 	} else if (controller.digital_action_status(config::DigitalAction::menu_switch_right).held) {
-		m_minimap->zoom(-0.05f);
+		m_minimap->zoom(-zoom_factor);
+		soundboard.flags.pioneer.set(audio::Pioneer::buzz);
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {}
-	return Gizmo::handle_inputs(controller);
+	return Gizmo::handle_inputs(controller, soundboard);
 }
 
-MapPlugin::MapPlugin(data::ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Console sound)
+void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
+	Gizmo::on_open(svc, player, map);
+	m_path.set_section("open");
+	svc.soundboard.flags.pioneer.set(audio::Pioneer::slot);
+
+	// TODO: gate plugins based on player's inventory
+	m_info = std::make_unique<MapInfoGizmo>(svc, map, sf::Vector2f{374.f, -90}); // make conditional when info bar is an item
+	m_plugins.push_back(MapPlugin(svc.finder, "plugin_nani", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 49}, {63, 29}}, audio::Pioneer::click));
+	m_flags.icon.set(MapIconFlags::nani);
+	m_plugins.push_back(MapPlugin(svc.finder, "plugin_save", sf::IntRect{m_lookups.plugin + sf::Vector2i{27, 0}, {23, 22}}, audio::Pioneer::sync));
+	m_flags.icon.set(MapIconFlags::save);
+	m_plugins.push_back(MapPlugin(svc.finder, "plugin_bed", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 27}, {36, 15}}, audio::Pioneer::sync));
+	m_flags.icon.set(MapIconFlags::bed);
+	//
+
+	m_motherboard_path.set_section("open");
+}
+
+void MapGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
+	Gizmo::on_close(svc, player, map);
+	m_path.set_section("close");
+	m_plugins.clear();
+	m_info = {};
+	m_motherboard_path.set_section("start");
+}
+
+MapPlugin::MapPlugin(data::ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound)
 	: m_path(finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, p, 64, util::InterpolationType::linear), constituent{.lookup{lookup}, .position{}}, m_delay{util::Random::random_range(0, 256)}, m_sound(sound) {
 	m_path.set_section("start");
 	m_delay.start();
@@ -172,7 +206,7 @@ void MapPlugin::update(audio::Soundboard& soundboard) {
 	m_delay.update();
 	constituent.position = m_path.get_position();
 	if (m_delay.is_complete()) { m_path.update(); }
-	if (m_path.completed_step(3)) { soundboard.flags.console.set(m_sound); }
+	if (m_path.completed_step(3)) { soundboard.flags.pioneer.set(m_sound); }
 }
 
 } // namespace fornani::gui
