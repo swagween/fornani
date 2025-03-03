@@ -28,7 +28,7 @@ namespace pi {
 enum class GlobalFlags { shutdown, palette_mode };
 enum class PressedKeys { control, shift, mouse_left, mouse_right, space };
 
-constexpr static uint8_t max_layers_v{32};
+constexpr static std::uint8_t max_layers_v{32};
 
 class Editor {
   public:

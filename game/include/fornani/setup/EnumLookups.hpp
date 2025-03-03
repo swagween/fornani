@@ -14,7 +14,7 @@ inline constexpr int unit_size_i{32};
 inline constexpr float min_hook_length{32.f};
 inline constexpr float max_hook_length{256.f};
 
-enum class Style : uint8_t { firstwind, overturned, base, factory, greatwing, provisional, END };
+enum class Style : std::uint8_t { firstwind, overturned, base, factory, greatwing, provisional, END };
 
 inline std::unordered_map<Style, char const*> get_style_string{{Style::firstwind, "firstwind"}, {Style::overturned, "overturned"}, {Style::base, "base"},
 															   {Style::greatwing, "greatwing"}, {Style::factory, "factory"},	   {Style::provisional, "provisional"}};

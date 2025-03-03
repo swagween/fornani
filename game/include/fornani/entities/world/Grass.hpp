@@ -17,8 +17,8 @@ class Player;
 }
 
 namespace fornani::entity {
-enum class GrassFlags : uint8_t { foreground };
-enum class GrassType : uint8_t { normal, bush };
+enum class GrassFlags : std::uint8_t { foreground };
+enum class GrassType : std::uint8_t { normal, bush };
 class Grass {
   public:
 	Grass(automa::ServiceProvider& svc, sf::Vector2<float> position, int length = 8, int size = 1, bool foreground = true);

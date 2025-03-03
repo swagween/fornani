@@ -129,7 +129,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_icon_sprite.setScale(svc.constants.texture_scale);
 	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
-	for (auto& plugin : m_plugins) { plugin.constituent.render(win, m_plugin_sprite, cam, {}); }
+	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}); }
 	if (m_info) { m_info->render(svc, win, player, cam, foreground); }
 	m_constituents.gizmo.top_left.position = m_path.get_position();
 	m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f});
@@ -210,5 +210,7 @@ void MapPlugin::update(audio::Soundboard& soundboard) {
 	if (m_delay.is_complete()) { m_path.update(); }
 	if (m_path.completed_step(3)) { soundboard.flags.pioneer.set(m_sound); }
 }
+
+void MapPlugin::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) const { constituent.render(win, sprite, cam, origin); }
 
 } // namespace fornani::gui

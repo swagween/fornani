@@ -29,7 +29,7 @@ class Transition {
   private:
 	int duration{};
 	util::Cooldown cooldown{};
-	uint8_t alpha{255};
+	std::uint8_t alpha{255};
 	bool done{};
 	bool fade_out{};
 	bool fade_in{};

@@ -89,7 +89,7 @@ void Grenade::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	float current = (float)detonator.get_cooldown();
 	if (current < start) {
 		float timer = (start - current) / start;
-		auto alpha = static_cast<uint8_t>(std::lerp(0, 255, timer));
+		auto alpha = static_cast<std::uint8_t>(std::lerp(0, 255, timer));
 		blast_indicator.setOutlineColor(sf::Color{254, 252, 216, alpha});
 		win.draw(blast_indicator);
 	}

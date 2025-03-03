@@ -20,10 +20,10 @@ class Transition;
 
 namespace fornani::entity {
 
-enum class PortalAttributes : uint8_t { activate_on_contact, already_open };
-enum class PortalState : uint8_t { activated, ready, locked, unlocked };
-enum class PortalRenderState : uint8_t { closed, open };
-enum class PortalOrientation : uint8_t { top, bottom, left, right, central };
+enum class PortalAttributes : std::uint8_t { activate_on_contact, already_open };
+enum class PortalState : std::uint8_t { activated, ready, locked, unlocked };
+enum class PortalRenderState : std::uint8_t { closed, open };
+enum class PortalOrientation : std::uint8_t { top, bottom, left, right, central };
 
 class Portal {
 

@@ -12,7 +12,7 @@ class Player;
 }
 
 namespace fornani::gui {
-enum class State : uint8_t { added, neutral, taken, gone };
+enum class State : std::uint8_t { added, neutral, taken, gone };
 class Widget {
   public:
 	Widget(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<int> dim, int index);

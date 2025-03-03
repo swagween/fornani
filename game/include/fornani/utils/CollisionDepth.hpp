@@ -10,7 +10,7 @@ class Collider;
 
 namespace fornani::util {
 
-enum class CollisionDirection : uint8_t { none, vertical, horizontal };
+enum class CollisionDirection : std::uint8_t { none, vertical, horizontal };
 
 struct Depth {
 	float left{};

@@ -27,10 +27,10 @@ class Projectile;
 
 namespace fornani::enemy {
 
-enum class GeneralFlags : uint8_t { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
-enum class StateFlags : uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
-enum class Triggers : uint8_t { hostile, alert };
-enum class Variant : uint8_t { beast, soldier, elemental, worker, guardian };
+enum class GeneralFlags : std::uint8_t { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
+enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
+enum class Triggers : std::uint8_t { hostile, alert };
+enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
 struct Attributes {
 	float base_hp{};
 	float base_damage{};

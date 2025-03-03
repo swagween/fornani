@@ -18,7 +18,8 @@ class Portal;
 
 namespace fornani::gui {
 
-enum class MapIconFlags { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor };
+enum class MapIconFlags : std::uint8_t { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor };
+enum class ChunkType : std::uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 
 struct MapIcon {
 	MapIconFlags type{};
@@ -26,47 +27,41 @@ struct MapIcon {
 	int room_id{};
 };
 
-enum class ChunkType : uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
-
 class MiniMap {
   public:
 	explicit MiniMap(automa::ServiceProvider& svc);
 	void bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current = false, bool undiscovered = false);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2<float> cam, sf::Sprite& icon_sprite);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);
 	void clear_atlas();
-	void move(sf::Vector2<float> direction);
+	void move(sf::Vector2f direction);
 	void zoom(float amount);
 	void center();
 	void set_port_position(sf::Vector2f to_position);
 	void set_port_dimensions(sf::Vector2f to_dimensions);
-	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
-	[[nodiscard]] auto get_extent() const -> sf::FloatRect { return extent; }
-	[[nodiscard]] auto get_center_position() const -> sf::Vector2<float> { return center_position; }
-	[[nodiscard]] auto get_scale() const -> float { return scale; }
-	[[nodiscard]] auto get_ratio() const -> float { return 32.f / scale; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position; }
+	[[nodiscard]] auto get_extent() const -> sf::FloatRect { return m_extent; }
+	[[nodiscard]] auto get_center_position() const -> sf::Vector2f { return m_center_position; }
+	[[nodiscard]] auto get_scale() const -> float { return m_scale; }
+	[[nodiscard]] auto get_ratio() const -> float { return 32.f / m_scale; }
 	[[nodiscard]] auto get_ratio_vec2() const -> sf::Vector2f { return sf::Vector2f{get_ratio(), get_ratio()}; }
 
   private:
-	float scale{8.f};
-	float speed{1.5f};
+	float m_scale{8.f};
+	float m_speed{1.5f};
 	float m_texture_scale{};
-	sf::FloatRect extent{};
+	sf::FloatRect m_extent{};
 	sf::Vector2f m_port_position{};
 	sf::Vector2f m_port_dimensions{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> previous_position{};
-	sf::Vector2<float> center_position{};
-	sf::Vector2<float> player_position{};
-	sf::View view{};
-	MapTexture texture;
+	sf::Vector2f m_position{};
+	sf::Vector2f m_center_position{};
+	sf::Vector2f m_player_position{};
+	sf::View m_view{};
+	MapTexture m_texture;
 	sf::Sprite m_cursor;
-	sf::Sprite map_sprite;
-	util::Circuit scalar{3};
-	sf::RectangleShape border{};
-	sf::Color background_color{};
+	sf::Sprite m_map_sprite;
+	sf::RectangleShape m_border{};
 	std::vector<MapIcon> m_markers{};
-	sf::RenderTexture minimap_texture{};
-	std::vector<std::unique_ptr<MapTexture>> atlas{};
+	std::vector<std::unique_ptr<MapTexture>> m_atlas{};
 
 	io::Logger m_logger{"MiniMap"};
 };

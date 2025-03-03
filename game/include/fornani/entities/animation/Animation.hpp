@@ -23,7 +23,7 @@ struct Parameters {
 	bool interruptible{};
 };
 
-enum class State : uint8_t { param_switch, keyframe, oneoff_complete };
+enum class State : std::uint8_t { param_switch, keyframe, oneoff_complete };
 
 struct Animation {
 

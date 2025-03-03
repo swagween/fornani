@@ -62,10 +62,10 @@ class InventoryWindow;
 
 namespace fornani::world {
 
-enum class LevelState : uint8_t { game_over, camera_shake, spawn_enemy };
-enum class MapState : uint8_t { unobscure };
-enum class MapProperties : uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
-enum class LayerType : uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
+enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy };
+enum class MapState : std::uint8_t { unobscure };
+enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
+enum class LayerType : std::uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
 
 struct LayerTexture {
 	sf::RenderTexture day{};
@@ -76,7 +76,7 @@ struct LayerTexture {
 class Layer {
   public:
 	Layer() = default;
-	Layer(uint8_t o, sf::Vector2i partition, sf::Vector2<uint32_t> dim, dj::Json& source, float spacing, bool has_obscuring, bool has_reverse_obscuring)
+	Layer(std::uint8_t o, sf::Vector2i partition, sf::Vector2<uint32_t> dim, dj::Json& source, float spacing, bool has_obscuring, bool has_reverse_obscuring)
 		: render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source, spacing) {
 		auto order = static_cast<int>(o);
 		if (order < partition.x) { type = LayerType::background; }
@@ -90,7 +90,7 @@ class Layer {
 	[[nodiscard]] auto middleground() const -> bool { return type == LayerType::middleground; }
 	[[nodiscard]] auto obscuring() const -> bool { return type == LayerType::obscuring; }
 	[[nodiscard]] auto reverse_obscuring() const -> bool { return type == LayerType::reverse_obscuring; }
-	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
+	[[nodiscard]] auto get_render_order() const -> std::uint8_t { return render_order; }
 	[[nodiscard]] auto get_i_render_order() const -> int { return static_cast<int>(render_order); }
 	[[nodiscard]] auto get_layer_type() const -> LayerType { return type; }
 	Grid grid;
@@ -98,7 +98,7 @@ class Layer {
 	sf::Vector2<uint32_t> dimensions{};
 
   private:
-	uint8_t render_order{};
+	std::uint8_t render_order{};
 	LayerType type{};
 };
 

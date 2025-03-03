@@ -27,8 +27,8 @@ class Player;
 
 namespace fornani::npc {
 
-enum class NPCState : uint8_t { engaged, force_interact, introduced, background, talking, cutscene, piggybacking, hidden };
-enum class NPCTrigger : uint8_t { distant_interact, engaged, cutscene };
+enum class NPCState : std::uint8_t { engaged, force_interact, introduced, background, talking, cutscene, piggybacking, hidden };
+enum class NPCTrigger : std::uint8_t { distant_interact, engaged, cutscene };
 
 class NPC : public entity::Entity {
   public:

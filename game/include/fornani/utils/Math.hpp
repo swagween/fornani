@@ -46,6 +46,6 @@ inline float ease_out_back(float progress) {
 inline float smoothstep(float const x, float const y, float const progress) { return ccm::ext::smoothstep(x, y, progress); }
 inline bool same_parity(float const a, float const b) { return ((static_cast<int>(a) ^ static_cast<int>(b)) & 1) == 0; }
 inline bool same_sign(float const a, float const b) { return a * b >= 0.f; }
-inline uint8_t get_uint8_from_normal(float normal) { return static_cast<uint8_t>(ccm::lerp(0, 255, normal)); } // NOLINT
+inline std::uint8_t get_uint8_from_normal(float normal) { return static_cast<std::uint8_t>(ccm::lerp(0, 255, normal)); } // NOLINT
 
 } // namespace fornani::util

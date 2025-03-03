@@ -22,7 +22,7 @@ class ResourceFinder;
 
 namespace pi {
 
-enum class StyleType : uint8_t { firstwind, overturned, base, factory, greatwing, END };
+enum class StyleType : std::uint8_t { firstwind, overturned, base, factory, greatwing, END };
 
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };

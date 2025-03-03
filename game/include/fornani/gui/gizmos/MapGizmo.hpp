@@ -13,9 +13,10 @@ class MapPlugin {
   public:
 	MapPlugin(data::ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound);
 	void update(audio::Soundboard& soundboard);
-	Constituent constituent;
+	void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) const;
 
   private:
+	Constituent constituent;
 	util::RectPath m_path;
 	util::Cooldown m_delay;
 	audio::Pioneer m_sound;

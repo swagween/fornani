@@ -21,7 +21,7 @@ class ControllerMap;
 namespace fornani::gui {
 
 enum class ConsoleMode { writing, responding, off };
-enum class ConsoleFlags : uint8_t { portrait_included, display_item };
+enum class ConsoleFlags : std::uint8_t { portrait_included, display_item };
 enum class OutputType { instant, gradual };
 
 class Console {

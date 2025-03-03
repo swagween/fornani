@@ -6,7 +6,7 @@
 #include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::components {
-enum class SensorState : uint8_t { active };
+enum class SensorState : std::uint8_t { active };
 class CircleSensor {
   public:
 	CircleSensor();

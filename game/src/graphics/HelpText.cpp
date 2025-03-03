@@ -48,7 +48,7 @@ void HelpText::set_color(sf::Color color) { text_color = color; }
 
 void HelpText::set_string(std::string string) { data.setString(string); }
 
-void HelpText::set_alpha(uint8_t a) { text_color.a = a; }
+void HelpText::set_alpha(std::uint8_t a) { text_color.a = a; }
 
 void HelpText::set_position(sf::Vector2<float> pos) { position = pos; }
 

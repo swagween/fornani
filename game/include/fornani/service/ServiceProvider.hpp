@@ -24,9 +24,9 @@
 #include "fornani/utils/WorldClock.hpp"
 
 namespace fornani::automa {
-enum class DebugFlags : uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
-enum class AppFlags : uint8_t { fullscreen, tutorial, in_game };
-enum class StateFlags : uint8_t { hide_hud, no_menu };
+enum class DebugFlags : std::uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
+enum class AppFlags : std::uint8_t { fullscreen, tutorial, in_game };
+enum class StateFlags : std::uint8_t { hide_hud, no_menu };
 struct PlayerDat {
 	void set_piggy_id(int const id) { piggy_id = id; }
 	void unpiggy() { drop_piggy = true; }
@@ -37,6 +37,7 @@ struct MapDebug {
 	int active_projectiles{};
 };
 // TODO: Honestly the entire ServiceProvider needs to go but it's gonna be a slow process of eliminating it.
+// TODO: Convert ServiceProvider to a MonoInstance
 /*
  * Here
  */

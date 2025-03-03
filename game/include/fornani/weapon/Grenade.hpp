@@ -21,7 +21,7 @@ class Map;
 }
 
 namespace fornani::arms {
-enum class GrenadeFlags : uint8_t { detonated };
+enum class GrenadeFlags : std::uint8_t { detonated };
 constexpr int detonation_time{600};
 class Grenade final : public shape::Collider, public entity::Entity {
   public:
