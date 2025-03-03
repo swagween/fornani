@@ -44,7 +44,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
 	if (meta["minimap"].as_bool()) { flags.properties.set(MapProperties::minimap); }
-	NANI_LOG_INFO(m_logger, "Loaded room {}. Minimap: {}", room_number, is_minimap());
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();

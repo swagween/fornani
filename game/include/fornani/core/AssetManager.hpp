@@ -226,6 +226,8 @@ class AssetManager {
 	sf::Texture t_orb{};
 	sf::Texture t_gem{};
 
+	// TODO: remove below:
+
 	sf::SoundBuffer player_death_buffer{};
 	sf::SoundBuffer enem_hit_buffer{};
 	sf::SoundBuffer enem_death_1_buffer{};
@@ -238,11 +240,7 @@ class AssetManager {
 	sf::SoundBuffer b_upward_get{};
 
 	// sound effects!
-	sf::SoundBuffer click_buffer{};
 	sf::SoundBuffer sharp_click_buffer{};
-	sf::SoundBuffer menu_shift_buffer{};
-	sf::SoundBuffer menu_back_buffer{};
-	sf::SoundBuffer menu_next_buffer{};
 	sf::SoundBuffer menu_open_buffer{};
 
 	sf::SoundBuffer arms_switch_buffer{};
@@ -379,7 +377,7 @@ class AssetManager {
 
   private:
 	std::unordered_map<std::string, sf::Texture> m_textures{};
-	fornani::io::Logger m_logger{"asset"};
+	fornani::io::Logger m_logger{"core"};
 };
 
 } // namespace fornani::core

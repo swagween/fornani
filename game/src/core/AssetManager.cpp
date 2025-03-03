@@ -10,12 +10,22 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	auto p_folder{fs::path{"image"}};
 	auto p_gui{p_folder / fs::path{"gui"}};
 	auto p_app{p_folder / fs::path{"app"}};
+	auto image_dir = fs::path{finder.resource_path()} / "image";
 
 	// null texture for lookup failures
 	if (!t_null.loadFromFile(finder.resource_path() / p_app / fs::path{"null.png"})) { NANI_LOG_WARN(m_logger, "Failed to load texture."); };
 
+	// recursively load textures
+	for (auto const& image_genre : fs::recursive_directory_iterator(image_dir)) {
+		if (!image_genre.is_directory()) { continue; }
+		for (auto const& image : fs::recursive_directory_iterator(image_genre)) {
+			if (image.path().extension() != ".png") { continue; }
+			auto image_str = image.path().filename().string();
+			m_textures.insert({image_str.substr(0, image_str.find('.')), sf::Texture{image.path()}});
+		}
+	}
 	// populate texture map
-	m_textures.insert({"clock_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_gizmo.png"}}});
+	/*m_textures.insert({"clock_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_gizmo.png"}}});
 	m_textures.insert({"clock_hand", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_hand.png"}}});
 	m_textures.insert({"map_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_gizmo.png"}}});
 	m_textures.insert({"map_screen", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_screen.png"}}});
@@ -24,7 +34,7 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	m_textures.insert({"cream_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"cream_console.png"}}});
 	m_textures.insert({"outline_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"outline_console.png"}}});
 	m_textures.insert({"map_cursor", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_cursor.png"}}});
-	m_textures.insert({"map_chain", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_chain.png"}}});
+	m_textures.insert({"map_chain", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_chain.png"}}});*/
 	// all the other map insertions will go here
 
 	/////////////////////// old stuff below here, let's try to destroy it //////////////////////////////////////
@@ -319,12 +329,10 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	if (!savepoint.loadFromFile(finder.resource_path() + "/image/entity/savepoint.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/entity/savepoint.png] from file.", finder.resource_path()); }
 	if (!t_chest.loadFromFile(finder.resource_path() + "/image/entity/chest.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/entity/chest.png] from file.", finder.resource_path()); }
 
-	if (!click_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/heavy_click.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/heavy_click.wav] from file.", finder.resource_path()); }
+	// TODO: everything below here should be moved to SoundManager and refactored
+
 	if (!sharp_click_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/click.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/click.wav] from file.", finder.resource_path()); }
-	if (!menu_shift_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/menu_shift_1.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/menu_shift_1.wav] from file.", finder.resource_path()); }
-	if (!menu_back_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/menu_shift_2.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/menu_shift_2.wav] from file.", finder.resource_path()); }
-	if (!menu_next_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/menu_shift_3.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/menu_shift_3.wav] from file.", finder.resource_path()); }
-	if (!menu_open_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/gui_upward_select.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/gui_upward_select.wav] from file.", finder.resource_path()); }
+
 	if (!arms_switch_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/arms_switch.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/arms_switch.wav] from file.", finder.resource_path()); }
 	if (!bg_shot_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/bg_shot.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/bg_shot.wav] from file.", finder.resource_path()); }
 	if (!b_wasp.loadFromFile(finder.resource_path() + "/audio/sfx/wasp_shot.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/wasp_shot.wav] from file.", finder.resource_path()); }

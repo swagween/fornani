@@ -45,7 +45,7 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	} else if (m_switched) {
 		on_close(svc, player, map);
 	}
-	svc.soundboard.flags.pioneer.set(audio::Pioneer::hum);
+	if (m_state == GizmoState::selected) { svc.soundboard.flags.pioneer.set(audio::Pioneer::hum); }
 	if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::chain); }
 	if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::boot); }
 	if (m_path.get_section() == 0 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::open); }
@@ -173,15 +173,14 @@ bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboar
 void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
 	Gizmo::on_open(svc, player, map);
 	m_path.set_section("open");
-	svc.soundboard.flags.pioneer.set(audio::Pioneer::slot);
 
 	// TODO: gate plugins based on player's inventory
 	m_info = std::make_unique<MapInfoGizmo>(svc, map, sf::Vector2f{374.f, -90}); // make conditional when info bar is an item
-	m_plugins.push_back(MapPlugin(svc.finder, "plugin_nani", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 49}, {63, 29}}, audio::Pioneer::click));
+	m_plugins.push_back(MapPlugin(svc.finder, "plugin_nani", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 49}, {63, 29}}, audio::Pioneer::slot));
 	m_flags.icon.set(MapIconFlags::nani);
 	m_plugins.push_back(MapPlugin(svc.finder, "plugin_save", sf::IntRect{m_lookups.plugin + sf::Vector2i{27, 0}, {23, 22}}, audio::Pioneer::sync));
 	m_flags.icon.set(MapIconFlags::save);
-	m_plugins.push_back(MapPlugin(svc.finder, "plugin_bed", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 27}, {36, 15}}, audio::Pioneer::sync));
+	m_plugins.push_back(MapPlugin(svc.finder, "plugin_bed", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 27}, {36, 15}}, audio::Pioneer::click));
 	m_flags.icon.set(MapIconFlags::bed);
 	//
 

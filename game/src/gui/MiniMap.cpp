@@ -36,8 +36,6 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (!door.activate_on_contact()) { m_markers.push_back({MapIconFlags::door, door.position * m_texture_scale / svc.constants.cell_size + room_pos, room}); }
 	}
 	if (current) { m_markers.push_back({MapIconFlags::nani, player.collider.get_center() * m_texture_scale / svc.constants.cell_size + room_pos, room}); }
-	NANI_LOG_DEBUG(m_logger, "Baked minimap for room..: {}", room);
-	NANI_LOG_DEBUG(m_logger, "Number of markers.......: {}", m_markers.size());
 	map.clear();
 }
 
