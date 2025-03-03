@@ -53,20 +53,9 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (player.collider.wallslider.overlaps(collider.bounding_box) && player.pushing()) {
 		if (player.controller.moving_left() && player.collider.physics.position.x > collider.physics.position.x) { collider.physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.collider.physics.position.x < collider.physics.position.x) { collider.physics.acceleration.x = speed / mass; }
-		if (ccm::abs(collider.physics.acceleration.x) > 0.f) { svc.soundboard.flags.world.set(audio::World::pushable); }
+		if (ccm::abs(collider.physics.acceleration.x) > 0.f) { svc.soundboard.flags.world.set(audio::World::pushable_move); }
 		state.set(PushableState::moved);
 		state.set(PushableState::moving);
-	}
-
-	// debug
-	if (state.test(PushableState::moved)) {
-		/*if (svc.ticker.every_x_ticks(400)) {
-			std::cout << "X: " << collider.physics.position.x << "\n";
-			std::cout << "Y: " << collider.physics.position.y << "\n";
-			std::cout << "Snap X: " << snap.x << "\n";
-			std::cout << "Snap Y: " << snap.y << "\n";
-			std::cout << "---\n";
-		}*/
 	}
 
 	player.collider.handle_collider_collision(collider);
@@ -94,7 +83,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 		collider.handle_collider_collision(other.collider.bounding_box);
 	}
-	// for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }

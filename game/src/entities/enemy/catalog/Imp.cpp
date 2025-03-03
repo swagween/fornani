@@ -228,7 +228,7 @@ fsm::StateFunction Imp::update_dormant() {
 	hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();
-		m_services->soundboard.flags.world.set(audio::World::pushable);
+		m_services->soundboard.flags.world.set(audio::World::pushable_move);
 	}
 	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot)) {
 		cooldowns.awaken.cancel();

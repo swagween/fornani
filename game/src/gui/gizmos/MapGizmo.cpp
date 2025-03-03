@@ -109,28 +109,28 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 		++ctr;
 	}
 
-	m_minimap->update(svc, map, player);
 	m_minimap->set_port_position(m_path.get_position() + m_placement - m_map_screen.get_f_corner_dimensions());
 	m_minimap->set_port_dimensions(m_map_screen.get_bounds());
+	if (m_state != GizmoState::selected || (m_state == GizmoState::selected && !m_path.finished())) { m_minimap->center(); }
 	m_map_screen.set_position(m_path.get_position() + m_placement);
 	m_map_screen.set_dimensions(m_path.get_dimensions());
 	m_map_shadow.set_position(m_path.get_position() + m_placement);
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
 }
 
-void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground) {
+void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, cam);
+	Gizmo::render(svc, win, player, cam);
 	auto render_position{-m_placement + cam};
 	m_constituents.gizmo.motherboard.position = m_path.get_position() + m_motherboard_path.get_position() - m_map_screen.get_f_corner_dimensions();
 	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f});
 	m_map_screen.render(win, cam);
-	m_minimap->render(svc, win, cam, m_icon_sprite);
+	m_minimap->render(svc, win, player, cam, m_icon_sprite);
 	m_icon_sprite.setScale(svc.constants.texture_scale);
 	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
 	for (auto& plugin : m_plugins) { plugin.constituent.render(win, m_plugin_sprite, cam, {}); }
-	if (m_info) { m_info->render(svc, win, cam, foreground); }
+	if (m_info) { m_info->render(svc, win, player, cam, foreground); }
 	m_constituents.gizmo.top_left.position = m_path.get_position();
 	m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f});
 	m_constituents.gizmo.top_right.position = m_path.get_position() + sf::Vector2f{m_path.get_dimensions().x, 0.f};
@@ -166,7 +166,10 @@ bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboar
 		m_minimap->zoom(-zoom_factor);
 		soundboard.flags.pioneer.set(audio::Pioneer::buzz);
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {}
+	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+		m_minimap->center();
+		soundboard.flags.pioneer.set(audio::Pioneer::click);
+	}
 	return Gizmo::handle_inputs(controller, soundboard);
 }
 
@@ -196,7 +199,7 @@ void MapGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::P
 }
 
 MapPlugin::MapPlugin(data::ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound)
-	: m_path(finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, p, 64, util::InterpolationType::linear), constituent{.lookup{lookup}, .position{}}, m_delay{util::Random::random_range(0, 256)}, m_sound(sound) {
+	: m_path(finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, p, 48, util::InterpolationType::linear), constituent{.lookup{lookup}, .position{}}, m_delay{util::Random::random_range(0, 128)}, m_sound(sound) {
 	m_path.set_section("start");
 	m_delay.start();
 }

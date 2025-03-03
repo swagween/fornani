@@ -48,7 +48,7 @@ void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_physical.physics.simple_update();
 }
 
-void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam) {
 
 	// debug stuff
 	m_debug.box.setPosition(m_physical.physics.position - cam);
@@ -78,11 +78,11 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	m_constituents.top_left_slot.render(win, m_sprite, render_position - m_paths.map.get_position(), {});
 	m_constituents.top_right_slot.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
 	m_constituents.arsenal_slot.render(win, m_sprite, render_position, {});
-	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam, false); }
+	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, player, cam, false); }
 	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position(), {});
 	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
 	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position, {});
-	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, cam, true); }
+	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, player, cam, true); }
 }
 
 bool Dashboard::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {

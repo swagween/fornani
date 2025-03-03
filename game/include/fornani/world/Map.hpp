@@ -255,7 +255,7 @@ class Map {
 	util::Cooldown end_demo{500};
 
   private:
-	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell);
+	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell, float scale);
 	int abyss_distance{400};
 	struct {
 		std::string biome{};

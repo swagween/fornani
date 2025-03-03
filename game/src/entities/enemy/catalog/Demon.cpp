@@ -1,8 +1,8 @@
 #include "fornani/entities/enemy/catalog/Demon.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
@@ -203,7 +203,7 @@ fsm::StateFunction Demon::update_jump() {
 
 fsm::StateFunction Demon::update_signal() {
 	animation.label = "signal";
-	if (animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::signal); }
+	if (animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::up_snort); }
 	shake();
 	if (animation.complete()) {
 		if (directions.actual.lr != directions.desired.lr) {
@@ -247,7 +247,7 @@ fsm::StateFunction Demon::update_dormant() {
 	hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();
-		m_services->soundboard.flags.world.set(audio::World::pushable);
+		m_services->soundboard.flags.world.set(audio::World::pushable_move);
 	}
 	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot)) {
 		cooldowns.awaken.cancel();

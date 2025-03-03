@@ -63,7 +63,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	}
 }
 
-void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
+void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player) {
 	win.draw(m_background);
 	for (auto i{-1}; i < 4; i += 2) {
 		for (auto j{-1}; j < 4; j += 2) {
@@ -76,7 +76,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 	m_debug.sprite.setScale({2.f, 2.f});
 	m_debug.sprite.setPosition(m_dashboard->get_position() - m_camera.physics.position);
 	// win.draw(m_debug.sprite);
-	m_dashboard->render(svc, win, m_camera.physics.position);
+	m_dashboard->render(svc, win, player, m_camera.physics.position);
 }
 
 } // namespace fornani::gui

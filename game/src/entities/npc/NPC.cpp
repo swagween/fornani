@@ -73,16 +73,10 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 	if (state_flags.test(NPCState::engaged) || state_flags.test(NPCState::cutscene)) {
 		// voice cues
-		// auto voice_cue = player.transponder.shipments.voice.consume_pulse();
 		// TODO: properly handle voice cues from the console
 		auto voice_cue{1};
 		if (voice_cue != 0) {
-			if (svc.assets.npc_sounds.contains(label)) {
-				auto index = voice_cue - 1;
-				if (index < svc.assets.npc_sounds.at(label).size()) {
-					// voice_sound.setBuffer(svc.assets.npc_sounds.at(label).at(index));
-				}
-			}
+			// do something clever in Soundboard
 		}
 	}
 	if (!console.is_active() && state_flags.test(NPCState::engaged)) { pop_conversation(); }
@@ -92,9 +86,11 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 	if (state_flags.test(NPCState::hidden)) { return; }
 	sprite.setPosition({collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y});
+
+	// TODO: switch to AnimatedSprite
 	if (spritesheet_dimensions.y > 0) {
-		int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-		int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+		auto u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+		auto v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
 		sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
 	}
 	if (svc.greyblock_mode()) {

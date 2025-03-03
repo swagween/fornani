@@ -5,14 +5,17 @@
 namespace fornani::util {
 
 struct Constants {
-	sf::Vector2<int> const tileset_scaled{16, 16};
-	sf::Vector2<int> const i_cell_vec{32, 32};
-	sf::Vector2<float> const f_cell_vec{32.f, 32.f};
+	int const i_texture_scale{2};
 	float const f_texture_scale{2.f};
 	sf::Vector2<float> const texture_scale{f_texture_scale, f_texture_scale};
-	uint32_t const u32_cell_size{32};
-	int const i_cell_size{32};
-	float const cell_size{32.0f};
+	int const i_texture_cell_size{16};
+	float const f_texture_cell_size{16.0f};
+	sf::Vector2<int> const tileset_scaled{i_texture_cell_size, i_texture_cell_size};
+	uint32_t const u32_cell_size{static_cast<uint32_t>(i_texture_cell_size * i_texture_scale)};
+	int const i_cell_size{i_texture_cell_size * i_texture_scale};
+	float const cell_size{f_texture_cell_size * f_texture_scale};
+	sf::Vector2<int> const i_cell_vec{i_cell_size, i_cell_size};
+	sf::Vector2<float> const f_cell_vec{cell_size, cell_size};
 	float const chunk_size{16.0f};
 	int const i_chunk_size{16};
 	sf::Vector2<int> const aspect_ratio{3840, 2048};

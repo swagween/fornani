@@ -13,6 +13,7 @@ SoundManager::SoundManager(data::ResourceFinder const& finder) {
 	// recursively load sound effects
 	for (auto const& sfx_genre : fs::recursive_directory_iterator(sfx_dir)) {
 		if (!sfx_genre.is_directory()) { continue; }
+		if (sfx_genre.path().filename().string() == "unused") { continue; }
 		for (auto const& sfx : fs::recursive_directory_iterator(sfx_genre)) {
 			if (sfx.path().extension() != ".wav") { continue; }
 			auto sfx_str = sfx.path().filename().string();

@@ -206,7 +206,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			enemy_catalog.enemies.back()->set_position_from_scaled({pos * svc.constants.cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
-			std::cout << "Enemy external id: " << enemy_catalog.enemies.back()->get_external_id() << "\n";
 			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
 		}
 		for (auto& entry : entities["destroyers"].array_view()) {
@@ -236,7 +235,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style, mapdim));
 		portals.back().update(svc);
 	}
-	NANI_LOG_DEBUG(m_logger, "Portals loaded: room {} : {}", room_number, portals.size());
 
 	auto const& savept = entities["save_point"];
 	auto save_id = svc.state_controller.save_point_id;
@@ -596,6 +594,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		std::vector<sf::Sprite> sprites{sf::Sprite{textures.foreground.day.getTexture()}, sf::Sprite{textures.foreground.twilight.getTexture()}, sf::Sprite{textures.foreground.night.getTexture()}};
 		auto ctr{0};
 		for (auto& sprite : sprites) {
+			sprite.setScale(svc.constants.texture_scale);
 			sprite.setPosition(-cam - scaled_barrier);
 			m_camera_effects.shifter.render(svc, win, sprite, ctr);
 			++ctr;
@@ -622,6 +621,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 			auto ctr{0};
 			for (auto& sprite : obs_sprites) {
+				sprite.setScale(svc.constants.texture_scale);
 				sprite.setPosition(-cam - scaled_barrier);
 				std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
 				if (alpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, alpha); }
@@ -634,6 +634,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 			auto ctr{0};
 			for (auto& sprite : rev_sprites) {
+				sprite.setScale(svc.constants.texture_scale);
 				sprite.setPosition(-cam - scaled_barrier);
 				std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
 				if (revalpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, revalpha); }
@@ -713,6 +714,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background.day.getTexture()}, sf::Sprite{textures.background.twilight.getTexture()}, sf::Sprite{textures.background.night.getTexture()}};
 		auto ctr{0};
 		for (auto& sprite : sprites) {
+			sprite.setScale(svc.constants.texture_scale);
 			sprite.setPosition(-cam - scaled_barrier);
 			m_camera_effects.shifter.render(svc, win, sprite, ctr);
 			++ctr;
@@ -819,8 +821,8 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 														 : !layer.background()				  ? textures.foreground.night
 																							  : textures.background.night)};
 
-			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size),
-							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size)};
+			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_texture_cell_size),
+							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_texture_cell_size)};
 			if (changed) {
 				if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
 				tex.clear(sf::Color::Transparent);
@@ -835,13 +837,13 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				if (!rev_obs_tex.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
 				rev_obs_tex.clear(sf::Color::Transparent);
 			}
-			sf::Sprite tile{svc.assets.tilesets.at(style_id)};
+			sf::Sprite tile{svc.assets.get_tileset(m_metadata.biome)};
 			for (auto& cell : layer.grid.cells) {
 				if (cell.is_occupied() && !cell.is_special()) {
-					auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size) + (cycle * 512);
-					auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-					tile.setPosition(cell.position() + scaled_barrier);
+					auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_texture_cell_size) + (cycle * svc.constants.tileset_scaled.x * svc.constants.tileset_scaled.y);
+					auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_texture_cell_size);
+					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_texture_cell_size, svc.constants.i_texture_cell_size}));
+					tile.setPosition((cell.position() + scaled_barrier) / svc.constants.f_texture_scale);
 					auto normal{true};
 					if (layer.obscuring()) {
 						auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
@@ -855,8 +857,8 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 						normal = false;
 					}
 					if (normal) { tex.draw(tile); }
-					if (layer.middleground()) { draw_barrier(tex, tile, cell); }
 				}
+				if (layer.middleground()) { draw_barrier(tex, tile, cell, svc.constants.f_texture_scale); }
 			}
 			if (finished) { tex.display(); }
 			if (layer.obscuring()) {
@@ -1024,38 +1026,40 @@ int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_mi
 
 Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground().grid.cells.at(get_index_at_position(position)); }
 
-void world::Map::draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell) {
-	sf::Vector2f offset = 2.f * scaled_barrier;
+void world::Map::draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell, float scale) {
+	auto bar{scaled_barrier / scale};
+	auto pos{cell.position() / scale};
+	auto offset{2.f * bar};
 	if (cell.index.x == 0) {
-		tile.setPosition(cell.position());
+		tile.setPosition(pos);
 		tex.draw(tile);
 	}
 	if (cell.index.y == 0) {
-		tile.setPosition(cell.position());
+		tile.setPosition(pos);
 		tex.draw(tile);
 	}
 	if (cell.index.x == dimensions.x - 1) {
-		tile.setPosition(cell.position() + offset);
+		tile.setPosition(pos + offset);
 		tex.draw(tile);
 	}
 	if (cell.index.y == dimensions.y - 1) {
-		tile.setPosition(cell.position() + offset);
+		tile.setPosition(pos + offset);
 		tex.draw(tile);
 	}
 	if (cell.index.x == 0 && cell.index.y == dimensions.y - 1) {
-		tile.setPosition(cell.position() + sf::Vector2f{0.f, scaled_barrier.y});
+		tile.setPosition(pos + sf::Vector2f{0.f, bar.y});
 		tex.draw(tile);
-		tile.setPosition(cell.position() + sf::Vector2f{0.f, 2.f * scaled_barrier.y});
+		tile.setPosition(pos + sf::Vector2f{0.f, offset.y});
 		tex.draw(tile);
-		tile.setPosition(cell.position() + sf::Vector2f{scaled_barrier.x, 2.f * scaled_barrier.y});
+		tile.setPosition(pos + sf::Vector2f{bar.x, offset.y});
 		tex.draw(tile);
 	}
 	if (cell.index.y == 0 && cell.index.x == dimensions.x - 1) {
-		tile.setPosition(cell.position() + sf::Vector2f{scaled_barrier.x, 0.f});
+		tile.setPosition(pos + sf::Vector2f{bar.x, 0.f});
 		tex.draw(tile);
-		tile.setPosition(cell.position() + sf::Vector2f{2.f * scaled_barrier.x, 0.f});
+		tile.setPosition(pos + sf::Vector2f{offset.x, 0.f});
 		tex.draw(tile);
-		tile.setPosition(cell.position() + sf::Vector2f{2.f * scaled_barrier.x, scaled_barrier.y});
+		tile.setPosition(pos + sf::Vector2f{offset.x, bar.y});
 		tex.draw(tile);
 	}
 }

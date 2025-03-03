@@ -17,6 +17,7 @@ class AssetManager {
 	sf::Texture& get_background(int id);
 	sf::Texture& get_scenery(int style);
 
+	sf::Texture const& get_tileset(std::string const& label);
 	sf::Texture const& get_texture(std::string const& label);
 
 	// TODO: Dear god we need to clean this up...
@@ -112,7 +113,6 @@ class AssetManager {
 	sf::Texture t_sticker{};
 
 	sf::Texture t_alphabet{};
-	std::vector<sf::Sprite> sp_alphabet{};
 
 	// tiles!
 	std::vector<sf::Texture> tilesets{};
@@ -226,138 +226,6 @@ class AssetManager {
 	sf::Texture t_orb{};
 	sf::Texture t_gem{};
 
-	// TODO: remove below:
-
-	sf::SoundBuffer player_death_buffer{};
-	sf::SoundBuffer enem_hit_buffer{};
-	sf::SoundBuffer enem_death_1_buffer{};
-	sf::SoundBuffer heal_buffer{};
-	sf::SoundBuffer orb_1_buffer{};
-	sf::SoundBuffer orb_2_buffer{};
-	sf::SoundBuffer orb_3_buffer{};
-	sf::SoundBuffer orb_4_buffer{};
-	sf::SoundBuffer b_health_increase{};
-	sf::SoundBuffer b_upward_get{};
-
-	// sound effects!
-	sf::SoundBuffer sharp_click_buffer{};
-	sf::SoundBuffer menu_open_buffer{};
-
-	sf::SoundBuffer arms_switch_buffer{};
-	sf::SoundBuffer bg_shot_buffer{};
-	sf::SoundBuffer plasmer_shot_buffer{};
-	sf::SoundBuffer skycorps_ar_buffer{};
-	sf::SoundBuffer b_energy_shot{};
-	sf::SoundBuffer tomahawk_flight_buffer{};
-	sf::SoundBuffer tomahawk_catch_buffer{};
-	sf::SoundBuffer pop_mid_buffer{};
-	sf::SoundBuffer bubble_buffer{};
-	sf::SoundBuffer b_nova{};
-	sf::SoundBuffer b_staple{};
-	sf::SoundBuffer b_gnat{};
-	sf::SoundBuffer b_wasp{};
-
-	sf::SoundBuffer b_reload{};
-
-	sf::SoundBuffer jump_buffer{};
-	sf::SoundBuffer shatter_buffer{};
-	sf::SoundBuffer step_buffer{};
-	sf::SoundBuffer grass_step_buffer{};
-	sf::SoundBuffer landed_buffer{};
-	sf::SoundBuffer landed_grass_buffer{};
-	sf::SoundBuffer hurt_buffer{};
-	sf::SoundBuffer slide_buffer{};
-	sf::SoundBuffer b_walljump{};
-	sf::SoundBuffer b_roll{};
-
-	sf::SoundBuffer tank_alert1_buffer{};
-	sf::SoundBuffer tank_alert2_buffer{};
-	sf::SoundBuffer tank_hurt1_buffer{};
-	sf::SoundBuffer tank_hurt2_buffer{};
-	sf::SoundBuffer tank_death_buffer{};
-	sf::SoundBuffer b_demon_snort{};
-
-	// minigus
-	sf::SoundBuffer b_minigus_invincibility{};
-	sf::SoundBuffer b_minigus_lose_inv{};
-	sf::SoundBuffer b_minigus_build{};
-	sf::SoundBuffer b_minigus_punch{};
-	sf::SoundBuffer b_minigus_jump{};
-	sf::SoundBuffer b_minigus_step{};
-	sf::SoundBuffer b_minigus_land{};
-
-	sf::SoundBuffer b_minigus_laugh{};
-	sf::SoundBuffer b_minigus_laugh_2{};
-	sf::SoundBuffer b_minigus_hurt_1{};
-	sf::SoundBuffer b_minigus_hurt_2{};
-	sf::SoundBuffer b_minigus_hurt_3{};
-	sf::SoundBuffer b_minigus_grunt{};
-	sf::SoundBuffer b_minigus_aww{};
-	sf::SoundBuffer b_minigus_babyimhome{};
-	sf::SoundBuffer b_minigus_deepspeak{};
-	sf::SoundBuffer b_minigus_doge{};
-	sf::SoundBuffer b_minigus_dontlookatme{};
-	sf::SoundBuffer b_minigus_exhale{};
-	sf::SoundBuffer b_minigus_getit{};
-	sf::SoundBuffer b_minigus_greatidea{};
-	sf::SoundBuffer b_minigus_itsagreatday{};
-	sf::SoundBuffer b_minigus_long_death{};
-	sf::SoundBuffer b_minigus_long_moan{};
-	sf::SoundBuffer b_minigus_momma{};
-	sf::SoundBuffer b_minigus_mother{};
-	sf::SoundBuffer b_minigus_ok_1{};
-	sf::SoundBuffer b_minigus_ok_2{};
-	sf::SoundBuffer b_minigus_pizza{};
-	sf::SoundBuffer b_minigus_poh{};
-	sf::SoundBuffer b_minigus_quick_breath{};
-	sf::SoundBuffer b_minigus_thatisverysneeze{};
-	sf::SoundBuffer b_minigus_whatisit{};
-	sf::SoundBuffer b_minigus_woob{};
-
-	sf::SoundBuffer b_mirin_ah{};
-	sf::SoundBuffer b_mirin_oh{};
-	sf::SoundBuffer b_mirin_laugh{};
-
-	sf::SoundBuffer b_carl_huh{};
-	sf::SoundBuffer b_carl_eh{};
-	sf::SoundBuffer b_carl_and{};
-
-	sf::SoundBuffer b_heavy_land{};
-	sf::SoundBuffer b_delay_crash{};
-	sf::SoundBuffer b_small_crash{};
-	sf::SoundBuffer b_delay_high{};
-	sf::SoundBuffer b_laser{};
-	sf::SoundBuffer b_gun_charge{};
-	sf::SoundBuffer b_soda{};
-	sf::SoundBuffer b_breakable_hit{};
-	sf::SoundBuffer b_switch_press{};
-	sf::SoundBuffer b_block_toggle{};
-
-	// minigun
-	sf::SoundBuffer b_minigun_neutral{};
-	sf::SoundBuffer b_minigun_charge{};
-	sf::SoundBuffer b_minigun_reload{};
-	sf::SoundBuffer b_minigun_firing{};
-
-	sf::SoundBuffer b_enemy_hit_low{};
-	sf::SoundBuffer b_enemy_hit_medium{};
-	sf::SoundBuffer b_enemy_hit_high{};
-	sf::SoundBuffer b_enemy_hit_squeak{};
-	sf::SoundBuffer b_enemy_hit_inv{};
-	sf::SoundBuffer b_thud{};
-	sf::SoundBuffer b_wall_hit{};
-	sf::SoundBuffer b_soft_tap{};
-	sf::SoundBuffer b_heavy_move{};
-	sf::SoundBuffer b_door_open{};
-	sf::SoundBuffer b_door_unlock{};
-
-	// save/load
-	sf::SoundBuffer save_buffer{};
-	sf::SoundBuffer load_buffer{};
-	sf::SoundBuffer soft_sparkle_high_buffer{};
-	sf::SoundBuffer soft_sparkle_buffer{};
-	sf::SoundBuffer chest_buffer{};
-
 	// other members
 	int music_vol{24};
 
@@ -370,10 +238,6 @@ class AssetManager {
 	std::unordered_map<std::string_view, sf::Texture&> particle_textures{};
 	std::unordered_map<std::string_view, sf::Texture&> npcs{};
 	std::unordered_map<std::string_view, sf::Texture&> projectile_textures{};
-	std::vector<sf::SoundBuffer> vs_mirin{};
-	std::vector<sf::SoundBuffer> vs_carl{};
-	std::vector<sf::SoundBuffer> vs_hologus{};
-	std::unordered_map<std::string_view, std::vector<sf::SoundBuffer>> npc_sounds{};
 
   private:
 	std::unordered_map<std::string, sf::Texture> m_textures{};

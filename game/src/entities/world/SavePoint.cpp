@@ -1,8 +1,8 @@
 
 #include "fornani/entities/world/SavePoint.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::entity {
 
@@ -43,7 +43,7 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 					activated = true;
 					save(svc, player);
 					svc.state_controller.save_point_id = id;
-					svc.soundboard.flags.world.set(audio::World::soft_sparkle);
+					svc.soundboard.flags.world.set(audio::World::save);
 					console.set_source(svc.text.basic);
 					console.load_and_launch("save");
 				}
@@ -84,4 +84,4 @@ void SavePoint::save(automa::ServiceProvider& svc, player::Player& player) {
 	can_activate = false;
 }
 
-} // namespace entity
+} // namespace fornani::entity

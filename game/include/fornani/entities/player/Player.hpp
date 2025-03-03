@@ -129,6 +129,7 @@ class Player {
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2<float> { return collider.get_center() + camera_offset; }
+	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
 
 	// moves
 	void jump(world::Map& map);

@@ -24,18 +24,6 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 			m_textures.insert({image_str.substr(0, image_str.find('.')), sf::Texture{image.path()}});
 		}
 	}
-	// populate texture map
-	/*m_textures.insert({"clock_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_gizmo.png"}}});
-	m_textures.insert({"clock_hand", sf::Texture{finder.resource_path() / p_gui / fs::path{"clock_hand.png"}}});
-	m_textures.insert({"map_gizmo", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_gizmo.png"}}});
-	m_textures.insert({"map_screen", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_screen.png"}}});
-	m_textures.insert({"map_shadow", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_shadow.png"}}});
-	m_textures.insert({"blue_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"blue_console.png"}}});
-	m_textures.insert({"cream_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"cream_console.png"}}});
-	m_textures.insert({"outline_console", sf::Texture{finder.resource_path() / p_gui / fs::path{"outline_console.png"}}});
-	m_textures.insert({"map_cursor", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_cursor.png"}}});
-	m_textures.insert({"map_chain", sf::Texture{finder.resource_path() / p_gui / fs::path{"map_chain.png"}}});*/
-	// all the other map insertions will go here
 
 	/////////////////////// old stuff below here, let's try to destroy it //////////////////////////////////////
 
@@ -328,148 +316,6 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 
 	if (!savepoint.loadFromFile(finder.resource_path() + "/image/entity/savepoint.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/entity/savepoint.png] from file.", finder.resource_path()); }
 	if (!t_chest.loadFromFile(finder.resource_path() + "/image/entity/chest.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/entity/chest.png] from file.", finder.resource_path()); }
-
-	// TODO: everything below here should be moved to SoundManager and refactored
-
-	if (!sharp_click_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/click.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/click.wav] from file.", finder.resource_path()); }
-
-	if (!arms_switch_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/arms_switch.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/arms_switch.wav] from file.", finder.resource_path()); }
-	if (!bg_shot_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/bg_shot.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/bg_shot.wav] from file.", finder.resource_path()); }
-	if (!b_wasp.loadFromFile(finder.resource_path() + "/audio/sfx/wasp_shot.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/wasp_shot.wav] from file.", finder.resource_path()); }
-	if (!skycorps_ar_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/skycorps_ar_shot.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/skycorps_ar_shot.wav] from file.", finder.resource_path()); }
-	if (!plasmer_shot_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/plasmer_shot.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/plasmer_shot.wav] from file.", finder.resource_path()); }
-	if (!tomahawk_flight_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/tomahawk_flight.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/tomahawk_flight.wav] from file.", finder.resource_path()); }
-	if (!tomahawk_catch_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/tomahawk_catch.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/tomahawk_catch.wav] from file.", finder.resource_path()); }
-	if (!pop_mid_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/clover.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/clover.wav] from file.", finder.resource_path()); }
-	if (!b_nova.loadFromFile(finder.resource_path() + "/audio/sfx/nova_shot.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/nova_shot.wav] from file.", finder.resource_path()); }
-	if (!b_staple.loadFromFile(finder.resource_path() + "/audio/sfx/staple.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/staple.wav] from file.", finder.resource_path()); }
-	if (!b_gnat.loadFromFile(finder.resource_path() + "/audio/sfx/gnat.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/gnat.wav] from file.", finder.resource_path()); }
-	if (!jump_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/jump.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/jump.wav] from file.", finder.resource_path()); }
-	if (!slide_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/slide.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/slide.wav] from file.", finder.resource_path()); }
-	if (!b_walljump.loadFromFile(finder.resource_path() + "/audio/sfx/walljump.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/walljump.wav] from file.", finder.resource_path()); }
-	if (!b_roll.loadFromFile(finder.resource_path() + "/audio/sfx/roll.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/roll.wav] from file.", finder.resource_path()); }
-
-	if (!b_reload.loadFromFile(finder.resource_path() + "/audio/sfx/reload.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/reload.wav] from file.", finder.resource_path()); }
-
-	if (!shatter_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/shatter.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/shatter.wav] from file.", finder.resource_path()); }
-	if (!step_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/steps.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/steps.wav] from file.", finder.resource_path()); }
-	if (!grass_step_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/grass_steps.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/grass_steps.wav] from file.", finder.resource_path()); }
-	if (!landed_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/landed.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/landed.wav] from file.", finder.resource_path()); }
-	if (!landed_grass_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/landed_grass.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/landed_grass.wav] from file.", finder.resource_path()); }
-	if (!hurt_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/hurt.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/hurt.wav] from file.", finder.resource_path()); }
-	if (!player_death_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/player_death.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/player_death.wav] from file.", finder.resource_path()); }
-	if (!enem_hit_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/enemy/hit_medium.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/enemy/hit_medium.wav] from file.", finder.resource_path()); }
-	if (!bubble_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/mid_pop.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/mid_pop.wav] from file.", finder.resource_path()); }
-
-	if (!enem_death_1_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/enemy_death.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/enemy_death.wav] from file.", finder.resource_path()); }
-
-	if (!heal_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/heal.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/heal.wav] from file.", finder.resource_path()); }
-	if (!b_health_increase.loadFromFile(finder.resource_path() + "/audio/sfx/health_increase.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/health_increase.wav] from file.", finder.resource_path()); }
-	if (!orb_1_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/orb_1.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/orb_1.wav] from file.", finder.resource_path()); }
-	if (!orb_2_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/orb_2.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/orb_2.wav] from file.", finder.resource_path()); }
-	if (!orb_3_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/orb_3.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/orb_3.wav] from file.", finder.resource_path()); }
-	if (!orb_4_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/orb_4.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/orb_4.wav] from file.", finder.resource_path()); }
-	if (!b_upward_get.loadFromFile(finder.resource_path() + "/audio/sfx/upward_get.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/upward_get.wav] from file.", finder.resource_path()); }
-
-	if (!tank_alert1_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/tank_alert_1.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/tank_alert_1.wav] from file.", finder.resource_path()); }
-	if (!tank_alert2_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/tank_alert_2.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/tank_alert_2.wav] from file.", finder.resource_path()); }
-	if (!tank_hurt1_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/tank_hurt_1.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/tank_hurt_1.wav] from file.", finder.resource_path()); }
-	if (!tank_hurt2_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/tank_hurt_2.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/tank_hurt_2.wav] from file.", finder.resource_path()); }
-	if (!tank_death_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/tank_death.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/tank_death.wav] from file.", finder.resource_path()); }
-	if (!b_demon_snort.loadFromFile(finder.resource_path() + "/audio/sfx/demon/snort.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/demon/snort.wav] from file.", finder.resource_path()); }
-
-	// minigus
-
-	if (!b_minigus_laugh.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/minigus_laugh.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/minigus_laugh.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_laugh_2.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/minigus_laugh_2.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/minigus_laugh_2.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_hurt_1.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/minigus_hurt.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/minigus_hurt.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_hurt_2.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/minigus_hurt_2.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/minigus_hurt_2.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_hurt_3.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/minigus_hurt_3.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/minigus_hurt_3.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_grunt.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_grunt.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_grunt.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_aww.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_aww.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_aww.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_babyimhome.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_babyimhome.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_babyimhome.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_deepspeak.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_deepspeak.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_deepspeak.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_doge.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_doge.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_doge.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_dontlookatme.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_dontlookatme.wav")) {
-		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_dontlookatme.wav] from file.", finder.resource_path());
-	}
-	if (!b_minigus_exhale.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_exhale.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_exhale.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_getit.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_getit.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_getit.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_greatidea.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_greatidea.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_greatidea.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_itsagreatday.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_itsagreatday.wav")) {
-		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_itsagreatday.wav] from file.", finder.resource_path());
-	}
-	if (!b_minigus_long_death.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_long_death.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_long_death.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_long_moan.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_long_moan.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_long_moan.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_momma.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_momma.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_momma.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_mother.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_mother.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_mother.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_ok_1.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_ok.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_ok.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_ok_2.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_okayyy.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_okayyy.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_pizza.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_pizza.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_pizza.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_poh.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_poh.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_poh.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_quick_breath.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_quick_breath.wav")) {
-		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_quick_breath.wav] from file.", finder.resource_path());
-	}
-	if (!b_minigus_thatisverysneeze.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_thatisverysneeze.wav")) {
-		NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_thatisverysneeze.wav] from file.", finder.resource_path());
-	}
-	if (!b_minigus_whatisit.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_whatisit.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_whatisit.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_woob.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_woob.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_woob.wav] from file.", finder.resource_path()); }
-
-	if (!b_mirin_ah.loadFromFile(finder.resource_path() + "/audio/sfx/mirin/mirin_ah.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/mirin/mirin_ah.wav] from file.", finder.resource_path()); }
-	if (!b_mirin_oh.loadFromFile(finder.resource_path() + "/audio/sfx/mirin/mirin_oh.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/mirin/mirin_oh.wav] from file.", finder.resource_path()); }
-	if (!b_mirin_laugh.loadFromFile(finder.resource_path() + "/audio/sfx/mirin/mirin_laugh.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/mirin/mirin_laugh.wav] from file.", finder.resource_path()); }
-	if (!b_carl_huh.loadFromFile(finder.resource_path() + "/audio/sfx/carl/carl_huh.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/carl/carl_huh.wav] from file.", finder.resource_path()); }
-	if (!b_carl_eh.loadFromFile(finder.resource_path() + "/audio/sfx/carl/carl_eh.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/carl/carl_eh.wav] from file.", finder.resource_path()); }
-	if (!b_carl_and.loadFromFile(finder.resource_path() + "/audio/sfx/carl/carl_and.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/carl/carl_and.wav] from file.", finder.resource_path()); }
-
-	vs_mirin.push_back(b_mirin_ah);
-	vs_mirin.push_back(b_mirin_oh);
-	vs_mirin.push_back(b_mirin_laugh);
-	npc_sounds.insert({"mirin", vs_mirin});
-	vs_hologus.push_back(b_minigus_pizza);
-	vs_hologus.push_back(b_minigus_dontlookatme);
-	vs_hologus.push_back(b_minigus_babyimhome);
-	vs_hologus.push_back(b_minigus_laugh);
-	vs_hologus.push_back(b_minigus_itsagreatday);
-	vs_hologus.push_back(b_minigus_ok_1);
-	npc_sounds.insert({"hologus", vs_hologus});
-	vs_carl.push_back(b_carl_huh);
-	vs_carl.push_back(b_carl_eh);
-	vs_carl.push_back(b_carl_and);
-	npc_sounds.insert({"carl", vs_carl});
-
-	if (!b_heavy_land.loadFromFile(finder.resource_path() + "/audio/sfx/deep/heavy_land.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/deep/heavy_land.wav] from file.", finder.resource_path()); }
-	if (!b_delay_crash.loadFromFile(finder.resource_path() + "/audio/sfx/deep/delay_crash.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/deep/delay_crash.wav] from file.", finder.resource_path()); }
-	if (!b_delay_high.loadFromFile(finder.resource_path() + "/audio/sfx/deep/delay_high.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/deep/delay_high.wav] from file.", finder.resource_path()); }
-	if (!b_laser.loadFromFile(finder.resource_path() + "/audio/sfx/laser1.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/laser1.wav] from file.", finder.resource_path()); }
-	if (!b_energy_shot.loadFromFile(finder.resource_path() + "/audio/sfx/energy_shot.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/energy_shot.wav] from file.", finder.resource_path()); }
-	if (!b_gun_charge.loadFromFile(finder.resource_path() + "/audio/sfx/gun_charge.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/gun_charge.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_build.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_build.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_build.wav] from file.", finder.resource_path()); }
-	if (!b_minigus_invincibility.loadFromFile(finder.resource_path() + "/audio/sfx/minigus/mg_inv.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/minigus/mg_inv.wav] from file.", finder.resource_path()); }
-	if (!b_soda.loadFromFile(finder.resource_path() + "/audio/sfx/soda.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/soda.wav] from file.", finder.resource_path()); }
-	if (!b_breakable_hit.loadFromFile(finder.resource_path() + "/audio/sfx/breakable_hit.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/breakable_hit.wav] from file.", finder.resource_path()); }
-
-	if (!b_enemy_hit_low.loadFromFile(finder.resource_path() + "/audio/sfx/enemy/hit_low.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/enemy/hit_low.wav] from file.", finder.resource_path()); }
-	if (!b_enemy_hit_medium.loadFromFile(finder.resource_path() + "/audio/sfx/enemy/hit_medium.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/enemy/hit_medium.wav] from file.", finder.resource_path()); }
-	if (!b_enemy_hit_high.loadFromFile(finder.resource_path() + "/audio/sfx/enemy/hit_high.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/enemy/hit_high.wav] from file.", finder.resource_path()); }
-	if (!b_enemy_hit_squeak.loadFromFile(finder.resource_path() + "/audio/sfx/enemy/hit_squeak.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/enemy/hit_squeak.wav] from file.", finder.resource_path()); }
-	if (!b_enemy_hit_inv.loadFromFile(finder.resource_path() + "/audio/sfx/enemy/hit_inv.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/enemy/hit_inv.wav] from file.", finder.resource_path()); }
-	if (!b_wall_hit.loadFromFile(finder.resource_path() + "/audio/sfx/wall_hit.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/wall_hit.wav] from file.", finder.resource_path()); }
-	if (!b_soft_tap.loadFromFile(finder.resource_path() + "/audio/sfx/soft_tap.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/soft_tap.wav] from file.", finder.resource_path()); }
-	if (!b_thud.loadFromFile(finder.resource_path() + "/audio/sfx/thud.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/thud.wav] from file.", finder.resource_path()); }
-	if (!b_small_crash.loadFromFile(finder.resource_path() + "/audio/sfx/small_crash.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/small_crash.wav] from file.", finder.resource_path()); }
-	if (!b_heavy_move.loadFromFile(finder.resource_path() + "/audio/sfx/heavy_move.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/heavy_move.wav] from file.", finder.resource_path()); }
-	if (!b_door_open.loadFromFile(finder.resource_path() + "/audio/sfx/door_open.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/door_open.wav] from file.", finder.resource_path()); }
-	if (!b_door_unlock.loadFromFile(finder.resource_path() + "/audio/sfx/door_unlock.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/door_unlock.wav] from file.", finder.resource_path()); }
-
-	if (!save_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/save_point.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/save_point.wav] from file.", finder.resource_path()); }
-	if (!load_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/load_game.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/load_game.wav] from file.", finder.resource_path()); }
-	if (!soft_sparkle_high_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/soft_sparkle_high.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/soft_sparkle_high.wav] from file.", finder.resource_path()); }
-	if (!soft_sparkle_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/soft_sparkle.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/soft_sparkle.wav] from file.", finder.resource_path()); }
-	if (!chest_buffer.loadFromFile(finder.resource_path() + "/audio/sfx/chest.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/chest.wav] from file.", finder.resource_path()); }
-	if (!b_switch_press.loadFromFile(finder.resource_path() + "/audio/sfx/switch_press.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/switch_press.wav] from file.", finder.resource_path()); }
-	if (!b_block_toggle.loadFromFile(finder.resource_path() + "/audio/sfx/block_toggle.wav")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/audio/sfx/block_toggle.wav] from file.", finder.resource_path()); }
 }
 
 sf::Texture& AssetManager::get_background(int id) {
@@ -481,6 +327,8 @@ sf::Texture& AssetManager::get_scenery(int style) {
 	if (!scenery_lookup.contains(style)) { return scenery_lookup.at(1); }
 	return scenery_lookup.at(style);
 }
+
+sf::Texture const& AssetManager::get_tileset(std::string const& label) { return get_texture(label + "_tiles"); }
 
 sf::Texture const& AssetManager::get_texture(std::string const& label) { return m_textures.contains(label) ? m_textures.at(label) : t_null; }
 

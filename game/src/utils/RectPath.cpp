@@ -32,9 +32,10 @@ void RectPath::update() {
 	if (m_current_position == target_position && m_current_dimensions == target_dimensions) {
 		if (m_current_step != end) { m_interpolation.start(); }
 		m_current_step = std::clamp(m_current_step + 1, 0, end);
+		m_step_completed = true;
 		return;
 	}
-
+	m_step_completed = false;
 	float interpolation{};
 	switch (m_interpolation_type) {
 	case util::InterpolationType::linear: interpolation = m_interpolation.get_inverse_normalized(); break;
@@ -61,6 +62,6 @@ void RectPath::set_section(std::string_view to_section) {
 
 void RectPath::reset() { m_current_step = 0; }
 
-auto RectPath::finished() const -> bool { return m_current_step == m_sections.at(m_current_section).path.size() - 1; }
+auto RectPath::finished() const -> bool { return m_current_step == m_sections.at(m_current_section).path.size() - 1 && m_step_completed; }
 
 } // namespace fornani::util

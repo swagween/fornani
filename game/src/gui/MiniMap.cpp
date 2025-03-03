@@ -10,9 +10,7 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : texture(svc), map_sprite{svc.as
 	border.setOutlineColor(svc.styles.colors.pioneer_dark_red);
 	border.setOutlineThickness(-4.f);
 	border.setFillColor(sf::Color::Transparent);
-	player_box.setFillColor(svc.styles.colors.pioneer_red);
-	player_box.setSize({16.f, 16.f});
-	player_box.setOrigin({8.f, 8.f});
+	border.setSize(svc.constants.f_screen_dimensions);
 	m_cursor.setScale(svc.constants.texture_scale);
 	m_cursor.setOrigin({7.f, 7.f});
 }
@@ -35,16 +33,14 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player
 	for (auto& door : map.portals) {
 		if (!door.activate_on_contact()) { m_markers.push_back({MapIconFlags::door, door.position * m_texture_scale / svc.constants.cell_size + room_pos, room}); }
 	}
-	if (current) { m_markers.push_back({MapIconFlags::nani, player.collider.get_center() * m_texture_scale / svc.constants.cell_size + room_pos, room}); }
+	if (current) {
+		player_position = player.collider.get_center() * m_texture_scale / svc.constants.cell_size + room_pos;
+		m_markers.push_back({MapIconFlags::nani, player_position, room});
+	}
 	map.clear();
 }
 
-void MiniMap::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	border.setSize(svc.constants.f_screen_dimensions);
-	ratio = 32.f / scale;
-}
-
-void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam, sf::Sprite& icon_sprite) {
+void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2<float> cam, sf::Sprite& icon_sprite) {
 	static auto flash_frame{util::Circuit{2}};
 	if (svc.ticker.every_x_frames(10)) { flash_frame.modulate(1); }
 	view = svc.window->get_view();
@@ -60,21 +56,19 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 
 	if (port.size.x == 0.f || port.size.y == 0.f) { return; }
 
-	if (svc.ticker.every_x_frames(10)) { player_box.getFillColor() == svc.styles.colors.pioneer_red ? player_box.setFillColor(svc.styles.colors.ui_white) : player_box.setFillColor(svc.styles.colors.pioneer_red); }
 	for (auto& room : atlas) {
 		if (room->to_ignore()) { continue; }
-		if (room->is_current()) { player_box.setPosition(((player_position + room->get_position()) * ratio + position).componentWiseDiv(port.size)); }
 		map_sprite.setTexture(room->get().getTexture());
 		map_sprite.setTextureRect(sf::IntRect({}, static_cast<sf::Vector2<int>>(room->get().getSize())));
-		map_sprite.setScale(sf::Vector2f{ratio, ratio}.componentWiseDiv(port.size));
-		map_sprite.setPosition((room->get_position() * ratio + position).componentWiseDiv(port.size));
+		map_sprite.setScale(get_ratio_vec2().componentWiseDiv(port.size));
+		map_sprite.setPosition((room->get_position() * get_ratio() + position).componentWiseDiv(port.size));
 		auto outline{sf::Sprite{room->get(true).getTexture()}};
-		outline.setScale(sf::Vector2f{ratio, ratio}.componentWiseDiv(port.size));
+		outline.setScale(get_ratio_vec2().componentWiseDiv(port.size));
 		for (auto i{-1}; i < 2; ++i) {
 			for (auto j{-1}; j < 2; ++j) {
 				if ((std::abs(i) % 2 == 0 && std::abs(j) % 2 == 0) || (std::abs(i) % 2 == 1 && std::abs(j) % 2 == 1)) { continue; }
 				auto skew{sf::Vector2f{static_cast<float>(i), static_cast<float>(j)}};
-				outline.setPosition((room->get_position() * ratio + position).componentWiseDiv(port.size) + (skew * 2.f).componentWiseDiv(port.size));
+				outline.setPosition((room->get_position() * get_ratio() + position).componentWiseDiv(port.size) + (skew * 2.f).componentWiseDiv(port.size));
 				win.draw(outline);
 			}
 		}
@@ -85,7 +79,8 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	auto icon_dim{6};
 	for (auto& element : m_markers) {
 		icon_sprite.setTextureRect(sf::IntRect{{icon_lookup + icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
-		icon_sprite.setPosition((element.position * ratio + position).componentWiseDiv(port.size));
+		icon_sprite.setPosition((element.position * get_ratio() + position).componentWiseDiv(port.size));
+		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
 		win.draw(icon_sprite);
 	}
 	m_cursor.setScale(svc.constants.texture_scale.componentWiseDiv(port.size));
@@ -98,29 +93,23 @@ void MiniMap::clear_atlas() { atlas.clear(); }
 
 void MiniMap::move(sf::Vector2<float> direction) {
 	position -= direction * speed;
-	position.x = std::clamp(position.x, -(extent.size.x) * ratio + view.getCenter().x, -(extent.position.x) * ratio + view.getCenter().x);
-	position.y = std::clamp(position.y, -(extent.size.y) * ratio + view.getCenter().y, -(extent.position.y) * ratio + view.getCenter().y);
+	position.x = std::clamp(position.x, -(extent.size.x) * get_ratio() + view.getCenter().x, -(extent.position.x) * get_ratio() + view.getCenter().x);
+	position.y = std::clamp(position.y, -(extent.size.y) * get_ratio() + view.getCenter().y, -(extent.position.y) * get_ratio() + view.getCenter().y);
 	previous_position = position;
 }
 
 void gui::MiniMap::zoom(float amount) {
-	auto prev_ratio = ratio;
+	auto prev_ratio = get_ratio();
 	scale = std::clamp(scale + amount, m_texture_scale, m_texture_scale * 16.f);
-	ratio = 32.f / scale;
-	auto r_delta = ratio - prev_ratio;
+	auto r_delta = get_ratio() - prev_ratio;
 	auto sz{m_port_dimensions.componentWiseDiv(view.getSize())};
 	center_position = (position - view.getCenter().componentWiseMul(sz)) / prev_ratio;
 	if (std::abs(r_delta) > 0.f) { position += center_position * r_delta; }
 }
 
 void MiniMap::center() {
-	for (auto& room : atlas) {
-		if (room->is_current()) {
-			auto sz{m_port_dimensions.componentWiseDiv(view.getSize())};
-			position = (player_position + room->get_position()) * ratio - view.getCenter().componentWiseMul(sz);
-			return;
-		}
-	}
+	auto sz{m_port_dimensions.componentWiseDiv(view.getSize())};
+	position = -player_position * get_ratio() + view.getCenter().componentWiseMul(sz);
 }
 
 void gui::MiniMap::set_port_position(sf::Vector2f to_position) { m_port_position = to_position; }

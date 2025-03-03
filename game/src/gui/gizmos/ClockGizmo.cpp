@@ -30,9 +30,9 @@ void ClockGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::P
 	m_physics.simple_update();
 }
 
-void ClockGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool foreground) {
+void ClockGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, cam);
+	Gizmo::render(svc, win, player, cam);
 	auto current_time{svc.world_clock.get_normalized_time()};
 	auto angle{(util::f_pi * 2.f) * -current_time - util::f_pi * 0.5f}; // start at (0, 1); midnight
 	auto direction{util::get_direction_from_angle(angle)};

@@ -40,6 +40,7 @@ class RectPath {
 	int m_current_section{};
 	int m_current_step{};
 	float m_scale{};
+	bool m_step_completed{};
 	sf::Vector2<float> m_current_position{};
 	sf::Vector2<float> m_current_dimensions{};
 	util::Cooldown m_interpolation;

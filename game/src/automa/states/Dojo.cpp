@@ -178,7 +178,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
 	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
 	if (inventory_window) {
-		inventory_window.value()->render(svc, win);
+		inventory_window.value()->render(svc, win, *player);
 		return;
 	}
 	map.soft_reset.render(win);

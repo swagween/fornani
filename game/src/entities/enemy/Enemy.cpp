@@ -1,8 +1,8 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
@@ -98,7 +98,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	drawbox.setOutlineThickness(-1);
 }
 
-void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) { 
+void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) {
 	// TODO: find a better way to generate unique external IDs
 	metadata.external_id = code.first * 2719 + code.second.x * 13219 + code.second.y * 49037;
 }
@@ -106,14 +106,14 @@ void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) {
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
 	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	
+
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	sound.hurt_sound_cooldown.update();
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
-		svc.soundboard.flags.frdog.set(audio::Frdog::death);
+		svc.soundboard.flags.enemy.set(audio::Enemy::standard_death);
 		map.spawn_counter.update(-1);
 	}
 	flags.triggers = {};

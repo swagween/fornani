@@ -36,7 +36,7 @@ class Dashboard {
   public:
 	Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f dimensions);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam);
 	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);
 	void set_position(sf::Vector2f to_position, bool force = false);
 	void set_selection(sf::Vector2i to_selection);
