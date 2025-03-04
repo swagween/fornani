@@ -1,6 +1,7 @@
 
 #include "editor/tool/Tool.hpp"
 
+#include <ccmath/ext/clamp.hpp>
 
 namespace pi {
 
