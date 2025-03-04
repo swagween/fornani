@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <cctype>
+#include <ranges>
 #include <unordered_map>
 
 namespace fornani::lookup {

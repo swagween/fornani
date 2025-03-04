@@ -180,7 +180,7 @@ void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float ran
 	auto random_pitch = random_pitch_offset == 0.f ? 0.f : util::Random::random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.set_pitch(1.f + random_pitch);
 	sound.set_volume(vol);
-	auto scalar = util::magnitude(distance) / attenuation;
+	auto scalar = distance.length() / attenuation;
 	sound.set_volume(vol - (scalar > vol ? vol : scalar));
 	if (wait_until_over && sound.is_playing()) { return; }
 	sound.play();
