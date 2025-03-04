@@ -5,7 +5,7 @@
 
 namespace fornani::gui {
 
-Selector::Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim) : table_dimensions(dim), current_selection(dim.x * dim.y), m_services(&svc), sprite{svc.assets.t_selector} {
+Selector::Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim) : table_dimensions(dim), current_selection(dim.x * dim.y), m_services(&svc), sprite{svc.assets.get_texture("gui_selector")} {
 	sprite.setTextureRect(sf::IntRect({0, 0}, {52, 52}));
 	sprite.setOrigin({10, 10});
 }

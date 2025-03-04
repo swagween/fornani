@@ -7,7 +7,7 @@
 namespace fornani::entity {
 
 Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, bool already_open, int key_id, int style, sf::Vector2<int> map_dim)
-	: scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}), sprite{svc.assets.t_portals} {
+	: scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}), sprite{svc.assets.get_texture("portals")} {
 	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
 	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
@@ -78,9 +78,7 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 			player.walk();
 		}
 	} else {
-		if (!flags.state.test(PortalState::ready) && flags.attributes.test(PortalAttributes::activate_on_contact)) {
-			player.controller.stop_walking_autonomously();
-		}
+		if (!flags.state.test(PortalState::ready) && flags.attributes.test(PortalAttributes::activate_on_contact)) { player.controller.stop_walking_autonomously(); }
 		flags.state.set(PortalState::ready);
 	}
 	if (flags.state.test(PortalState::activated)) {
@@ -133,4 +131,4 @@ void Portal::change_states(automa::ServiceProvider& svc, int room_id, flfx::Tran
 	}
 }
 
-} // namespace entity
+} // namespace fornani::entity

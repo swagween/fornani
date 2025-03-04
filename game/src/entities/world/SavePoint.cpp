@@ -6,7 +6,7 @@
 
 namespace fornani::entity {
 
-SavePoint::SavePoint(automa::ServiceProvider& svc) : sprite{svc.assets.savepoint} {
+SavePoint::SavePoint(automa::ServiceProvider& svc) : sprite{svc.assets.get_texture("save_point")} {
 	id = -1;
 	dimensions = {32, 32};
 	bounding_box = shape::Shape(dimensions);

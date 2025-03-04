@@ -11,7 +11,7 @@
 namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
-	: m_cell_dimensions{svc.constants.f_screen_dimensions}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_debug{.sprite{sf::Sprite{svc.assets.t_inv_test}}} {
+	: m_cell_dimensions{svc.constants.f_screen_dimensions}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}} {
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.constants.f_screen_dimensions);
 	m_debug.border.setOutlineColor(svc.styles.colors.green);
@@ -73,11 +73,6 @@ void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 			// win.draw(m_debug.center);
 		}
 	}
-
-	m_debug.sprite.setOrigin({582.f, 378.f});
-	m_debug.sprite.setScale({2.f, 2.f});
-	m_debug.sprite.setPosition(m_dashboard->get_position() - m_camera.physics.position);
-	// win.draw(m_debug.sprite);
 	m_dashboard->render(svc, win, player, m_camera.physics.position);
 }
 

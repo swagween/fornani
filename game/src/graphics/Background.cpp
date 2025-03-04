@@ -26,7 +26,7 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "du
 		layers.push_back({index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()});
 		layers.back().physics.set_global_friction(1.f);
 		for (auto i{0}; i < svc.world_clock.num_cycles(); ++i) {
-			layers.back().sprites.push_back(sf::Sprite{svc.assets.get_background(bg_id)});
+			layers.back().sprites.push_back(sf::Sprite{svc.assets.get_texture("background_" + type)});
 			layers.back().sprites.back().setTextureRect(sf::IntRect{{i * dimensions.x, dimensions.y * index}, dimensions});
 		}
 		++index;

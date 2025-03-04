@@ -48,8 +48,6 @@ class InventoryWindow {
 	struct {
 		sf::RectangleShape border{};
 		sf::CircleShape center{};
-
-		sf::Sprite sprite;
 	} m_debug;
 
 	io::Logger m_logger{"gui"};

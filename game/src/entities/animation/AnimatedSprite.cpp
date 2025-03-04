@@ -7,7 +7,7 @@
 
 namespace fornani::anim {
 
-AnimatedSprite::AnimatedSprite(sf::Texture& texture, sf::Vector2<int> dimensions) : sprite(texture), dimensions(dimensions) {}
+AnimatedSprite::AnimatedSprite(sf::Texture const& texture, sf::Vector2<int> dimensions) : sprite(texture), dimensions(dimensions) {}
 
 void AnimatedSprite::update(sf::Vector2<float> pos, int u, int v, bool horiz) {
 	position = pos;

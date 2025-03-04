@@ -3,7 +3,7 @@
 
 namespace fornani::gui {
 
-Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left), sprite{svc.assets.t_portraits}, window{svc.assets.t_portrait_window} {
+Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left), sprite{svc.assets.get_texture("character_portraits")}, window{svc.assets.get_texture("portrait_window")} {
 	dimensions = sf::Vector2<float>{128, 256};
 	end_position = sf::Vector2{pad_x, svc.constants.screen_dimensions.y - pad_y - dimensions.y};
 	bring_in();

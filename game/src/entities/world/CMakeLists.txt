@@ -3,7 +3,6 @@ nani_add_sources(
         Bed.cpp
         Chest.cpp
         Fire.cpp
-        Grass.cpp
         Inspectable.cpp
         Portal.cpp
         SavePoint.cpp

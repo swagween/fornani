@@ -1,11 +1,11 @@
 #include "fornani/entities/world/SpawnablePlatform.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 
 namespace fornani::entity {
 
-SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index) : index(index), sprite(svc.assets.t_spawnable_platform, {64, 64}) {
+SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index) : index(index), sprite(svc.assets.get_texture("spawnable_platform"), {64, 64}) {
 	collider = shape::Collider({64.f, 64.f});
 	collider.flags.general.set(shape::General::top_only_collision);
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
@@ -111,4 +111,4 @@ bool SpawnablePlatform::change_state(SpawnablePlatformState next, std::string_vi
 	return false;
 }
 
-} // namespace entity
+} // namespace fornani::entity

@@ -10,14 +10,14 @@
 namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: vendor_id(vendor_id), portrait(svc), info(svc, "outline_console"), selectors{.buy{svc, {2, 1}}, .sell{svc, {2, 1}}}, orb{.sprite{anim::AnimatedSprite(svc.assets.t_orb, {24, 24})}}, artwork{svc.assets.t_vendor_artwork},
-	  ui{svc.assets.t_vendor_ui}, text{.vendor_name{svc.text.fonts.title},
-									   .buy_tab{svc.text.fonts.title},
-									   .sell_tab{svc.text.fonts.title},
-									   .orb_count{svc.text.fonts.title},
-									   .price{svc.text.fonts.title},
-									   .price_number{svc.text.fonts.title},
-									   .item_label{svc.text.fonts.title}} {
+	: vendor_id(vendor_id), portrait(svc), info(svc, "outline_console"), selectors{.buy{svc, {2, 1}}, .sell{svc, {2, 1}}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
+	  artwork{svc.assets.get_texture("vendor_background")}, ui{svc.assets.get_texture("vendor_ui")}, text{.vendor_name{svc.text.fonts.title},
+																										  .buy_tab{svc.text.fonts.title},
+																										  .sell_tab{svc.text.fonts.title},
+																										  .orb_count{svc.text.fonts.title},
+																										  .price{svc.text.fonts.title},
+																										  .price_number{svc.text.fonts.title},
+																										  .item_label{svc.text.fonts.title}} {
 	flags.set(VendorDialogStatus::opened);
 	artwork.setTextureRect(sf::IntRect{{0, (vendor_id - 1) * svc.constants.screen_dimensions.y}, {svc.constants.screen_dimensions}});
 	artwork.setOrigin(svc.constants.f_center_screen);

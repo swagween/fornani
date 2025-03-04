@@ -1,13 +1,13 @@
 
 #include "fornani/entities/world/Chest.hpp"
-#include "fornani/gui/Console.hpp"
-#include "fornani/world/Map.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::entity {
 
-Chest::Chest(automa::ServiceProvider& svc, int id) : id(id), sprite{svc.assets.t_chest} {
+Chest::Chest(automa::ServiceProvider& svc, int id) : id(id), sprite{svc.assets.get_texture("chest")} {
 	dimensions = {28, 28};
 	sprite_dimensions = {32, 28};
 	spritesheet_dimensions = {224, 28};
@@ -36,7 +36,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 		if (svc.ticker.every_x_ticks(1200)) { animation.set_params(shine); }
 		if (animation.complete() && !state.test(ChestState::activated)) { animation.set_params(unopened); }
 	} else {
-		animation.set_params(opened); 
+		animation.set_params(opened);
 	}
 	sparkler.update(svc);
 
@@ -99,7 +99,7 @@ void Chest::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		collider.render(win, campos);
 	} else {
 		win.draw(sprite);
-		//sparkler.render(svc, win, campos);
+		// sparkler.render(svc, win, campos);
 	}
 }
 
@@ -117,4 +117,4 @@ void Chest::set_rarity(float to_rarity) { loot.rarity = to_rarity; }
 
 void Chest::set_type(ChestType to_type) { type = to_type; }
 
-} // namespace entity
+} // namespace fornani::entity

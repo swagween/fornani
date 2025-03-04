@@ -3,7 +3,7 @@
 
 namespace fornani::gui {
 
-ItemWidget::ItemWidget(automa::ServiceProvider& svc) : sprites{.item = sf::Sprite{svc.assets.t_items}, .gun = sf::Sprite{svc.assets.t_guns}} {
+ItemWidget::ItemWidget(automa::ServiceProvider& svc) : sprites{.item = sf::Sprite{svc.assets.get_texture("inventory_items")}, .gun = sf::Sprite{svc.assets.get_texture("inventory_guns")}} {
 	dimensions = sf::Vector2<float>{32.f, 32.f};
 	gun_dimensions = sf::Vector2<float>{48.f, 48.f};
 	pad.x = svc.constants.screen_dimensions.x * 0.5f;
@@ -73,4 +73,4 @@ void ItemWidget::set_id(int new_id, bool is_gun) {
 	sprites.gun.setTextureRect(sf::IntRect({id * (int)gun_dimensions.x, 0}, {(int)gun_dimensions.x, (int)gun_dimensions.y}));
 }
 
-} // namespace gui
+} // namespace fornani::gui
