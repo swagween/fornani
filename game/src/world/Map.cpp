@@ -253,7 +253,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		pos *= svc.constants.cell_size;
 		dim *= svc.constants.cell_size;
 		auto start = entry["start"].as<float>();
-		start = std::clamp(start, 0.f, 1.f);
+		start = ccm::ext::clamp(start, 0.f, 1.f);
 		auto type = entry["type"].as_string();
 		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
 	}
@@ -883,7 +883,7 @@ bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
 	auto right = get_index_at_position(collider.vicinity.vertices.at(1)) - top;
-	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;
@@ -902,8 +902,8 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
-	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+	auto right = static_cast<std::size_t>(collider.boundary_width() / m_services->constants.cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;
@@ -922,8 +922,8 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	auto& grid = get_middleground().grid;
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
-	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+	auto right = static_cast<std::size_t>(collider.boundary_width() / m_services->constants.cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;

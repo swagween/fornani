@@ -307,7 +307,7 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 	if (!t_title.loadFromFile(finder.resource_path() + "/image/gui/title.png")) { NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/gui/title.png] from file.", finder.resource_path()); }
 
 	// load all the other textures...
-	for (int i = 0; i < static_cast<size_t>(lookup::Style::END); ++i) {
+	for (int i = 0; i < static_cast<std::size_t>(lookup::Style::END); ++i) {
 		tilesets.emplace_back();
 		if (std::string style = lookup::get_style_string.at(static_cast<lookup::Style>(i)); !tilesets.back().loadFromFile(finder.resource_path() + "/image/tile/" + style + "_tiles.png")) {
 			NANI_LOG_WARN(m_logger, "Failed to load asset [{}/image/til/{}_tiles.png] from file.", finder.resource_path(), style);

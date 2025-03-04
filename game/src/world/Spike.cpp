@@ -1,5 +1,5 @@
 #include "fornani/world/Spike.hpp"
-#include <algorithm>
+
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"

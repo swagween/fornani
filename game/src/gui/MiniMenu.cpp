@@ -1,5 +1,5 @@
 #include "fornani/gui/MiniMenu.hpp"
-#include <algorithm>
+
 #include "fornani/automa/GameState.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 

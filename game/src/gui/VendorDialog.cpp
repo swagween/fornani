@@ -7,8 +7,6 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
-#include <algorithm>
-
 namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)

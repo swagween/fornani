@@ -204,7 +204,7 @@ void Collider::detect_map_collision(world::Map& map) {
 	auto top = map.get_index_at_position(vicinity.vertices.at(0));
 	auto bottom = map.get_index_at_position(vicinity.vertices.at(3));
 	auto right = map.get_index_at_position(vicinity.vertices.at(1)) - top;
-	for (auto i{top}; i <= bottom; i += static_cast<size_t>(map.dimensions.x)) {
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(map.dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;

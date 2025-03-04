@@ -59,8 +59,8 @@ void Spring::calculate_force() {
 
 	variables.spring_force /= mag;
 	variables.spring_force *= -params.spring_constant * variables.extension;
-	variables.spring_force.x = std::clamp(variables.spring_force.x, -spring_max, spring_max);
-	variables.spring_force.y = std::clamp(variables.spring_force.y, -spring_max, spring_max);
+	variables.spring_force.x = ccm::ext::clamp(variables.spring_force.x, -spring_max, spring_max);
+	variables.spring_force.y = ccm::ext::clamp(variables.spring_force.y, -spring_max, spring_max);
 	variables.bob_physics.acceleration = variables.spring_force;
 	variables.anchor_physics.acceleration = -variables.spring_force;
 }

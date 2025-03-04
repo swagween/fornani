@@ -1,6 +1,6 @@
 
 #include "fornani/automa/states/ControlsMenu.hpp"
-#include <algorithm>
+
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::automa {
@@ -110,7 +110,7 @@ void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
-	size_t ctr{0};
+	std::size_t ctr{0};
 	for (auto& option : options) {
 		if (ctr > 0 && ctr < options.size() - 2) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));

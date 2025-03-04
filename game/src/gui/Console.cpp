@@ -1,6 +1,6 @@
 
 #include "fornani/gui/Console.hpp"
-#include <algorithm>
+
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 

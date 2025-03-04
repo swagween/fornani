@@ -83,8 +83,8 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 	}
 	if (adjust_mode()) {
 		auto const update_volume = svc.ticker.every_x_ticks(16);
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held && update_volume) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held && update_volume) { svc.music.volume.multiplier = std::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held && update_volume) { svc.music.volume.multiplier = ccm::ext::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held && update_volume) { svc.music.volume.multiplier = ccm::ext::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
 	}
 	console.update(svc);
 	svc.soundboard.play_sounds(svc);

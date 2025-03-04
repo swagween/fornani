@@ -41,8 +41,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) { m_dashboard->set_selection({-1, 0}); }
 		if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) { m_dashboard->set_selection({1, 0}); }
 		if (controller.digital_action_status(config::DigitalAction::menu_select).triggered && m_dashboard->get_selected_position() != sf::Vector2i{0, 0}) {
-			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = std::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
-			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = std::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
+			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
+			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = ccm::ext::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
 			m_view = InventoryView::focused;
 			m_dashboard->select_gizmo();
 		}

@@ -32,8 +32,8 @@ void HelpText::render(sf::RenderWindow& win) {
 	alpha_counter.update();
 	auto alpha = static_cast<unsigned>(-128 * cos(0.06f * alpha_counter.get_count()) + 128);
 	if (flags.test(HelpTextFlags::no_blink)) { alpha = 255u; }
-	text_color.a = std::clamp(alpha, 0u, 255u);
-	bg_color.a = std::clamp(alpha, 0u, 255u);
+	text_color.a = ccm::ext::clamp(alpha, 0u, 255u);
+	bg_color.a = ccm::ext::clamp(alpha, 0u, 255u);
 	if (background) {
 		data.setPosition(position + bg_offset);
 		data.setFillColor(bg_color);

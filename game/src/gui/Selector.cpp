@@ -1,6 +1,6 @@
 #include "fornani/gui/Selector.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <algorithm>
+
 
 namespace fornani::gui {
 
@@ -11,7 +11,7 @@ Selector::Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim) : table_d
 
 void Selector::update() {
 	sprite.setPosition(position);
-	current_selection.set(std::clamp(current_selection.get(), 0, current_selection.get_order() - 1));
+	current_selection.set(ccm::ext::clamp(current_selection.get(), 0, current_selection.get_order() - 1));
 }
 
 void Selector::render(sf::RenderWindow& win) const { win.draw(sprite); }

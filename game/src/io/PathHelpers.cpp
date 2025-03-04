@@ -30,7 +30,7 @@ auto abs_exe_path() -> std::filesystem::path {
 
 #elif defined(__linux__)
 	std::array<char, FILENAME_MAX> path;
-	ssize_t count = readlink("/proc/self/exe", path.data(), FILENAME_MAX);
+	sstd::size_t count = readlink("/proc/self/exe", path.data(), FILENAME_MAX);
 	if (count == -1) { throw std::runtime_error("Failed to get executable path on Linux."); }
 	return std::filesystem::canonical(std::filesystem::path(std::string(path.data(), count)));
 

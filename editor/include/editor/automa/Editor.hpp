@@ -1,23 +1,23 @@
 
 #pragma once
 
+#include <imgui.h>
 #include <SFML/Graphics.hpp>
-#include "editor/canvas/Canvas.hpp"
-#include "editor/util/BitFlags.hpp"
-#include "editor/canvas/Clipboard.hpp"
-#include "editor/tool/Tool.hpp"
-#include "editor/setup/WindowManager.hpp"
-#include "editor/gui/Console.hpp"
-#include "editor/automa/PopupHandler.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include <imgui-SFML.h>
+#include <chrono>
+#include <cstdio>
+#include <filesystem>
+#include <memory>
 #include <sstream>
 #include <string_view>
-#include <filesystem>
-#include <cstdio>
-#include <memory>
-#include <chrono>
-#include <imgui.h>
+#include "editor/automa/PopupHandler.hpp"
+#include "editor/canvas/Canvas.hpp"
+#include "editor/canvas/Clipboard.hpp"
+#include "editor/gui/Console.hpp"
+#include "editor/setup/WindowManager.hpp"
+#include "editor/tool/Tool.hpp"
+#include "editor/util/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include <imgui-SFML.h>
 
 namespace fornani::data {
 class ResourceFinder;
@@ -25,8 +25,8 @@ class ResourceFinder;
 
 namespace pi {
 
-enum class GlobalFlags { shutdown, palette_mode };
-enum class PressedKeys { control, shift, mouse_left, mouse_right, space };
+enum class GlobalFlags : std::uint8_t { shutdown, palette_mode };
+enum class PressedKeys : std::uint8_t { control, shift, mouse_left, mouse_right, space };
 
 constexpr static std::uint8_t max_layers_v{32};
 
@@ -113,11 +113,11 @@ class Editor {
 		std::vector<BackgroundType> backdrops{};
 	} m_themes{};
 	struct {
-		std::string style_str[static_cast<size_t>(StyleType::END)];
-		std::string bg_str[static_cast<size_t>(StyleType::END)];
+		std::string style_str[static_cast<std::size_t>(StyleType::END)];
+		std::string bg_str[static_cast<std::size_t>(StyleType::END)];
 		std::string layer_str[max_layers_v];
-		char const* styles[static_cast<size_t>(StyleType::END)];
-		char const* backdrops[static_cast<size_t>(Backdrop::END)];
+		char const* styles[static_cast<std::size_t>(StyleType::END)];
+		char const* backdrops[static_cast<std::size_t>(Backdrop::END)];
 		char const* layers[max_layers_v];
 	} m_labels{};
 	struct {

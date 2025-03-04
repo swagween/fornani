@@ -1,6 +1,6 @@
 
 #include "editor/canvas/Map.hpp"
-#include <algorithm>
+
 
 namespace pi {
 
@@ -18,7 +18,7 @@ void Map::set_labels() {
 
 void Map::set_middleground(int to_middleground) {
 	if (layers.empty()) { return; }
-	to_middleground = std::clamp(to_middleground, 0, static_cast<int>(layers.size()) - 1);
+	to_middleground = ccm::ext::clamp(to_middleground, 0, static_cast<int>(layers.size()) - 1);
 	m_middleground = to_middleground;
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <algorithm>
+
 #include <random>
 #include "fornani/utils/Cooldown.hpp"
 

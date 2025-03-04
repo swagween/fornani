@@ -2,7 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <algorithm>
+
 #include <cctype>
 #include <unordered_map>
 

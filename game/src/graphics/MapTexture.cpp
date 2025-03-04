@@ -3,8 +3,6 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
 
-#include <algorithm>
-
 namespace fornani::gui {
 
 MapTexture::MapTexture(automa::ServiceProvider& svc) : m_border_color{svc.styles.colors.pioneer_red}, m_tile_color{svc.styles.colors.pioneer_dark_red}, m_scale{4.f} {

@@ -1,5 +1,5 @@
 #include "fornani/world/Spawner.hpp"
-#include <algorithm>
+
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/world/Map.hpp"

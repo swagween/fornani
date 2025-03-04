@@ -1,7 +1,7 @@
 
 #include "editor/canvas/Background.hpp"
 #include <imgui.h>
-#include <algorithm>
+
 #include "editor/canvas/Canvas.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 

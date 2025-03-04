@@ -47,7 +47,7 @@ class Soundboard {
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);
-	[[nodiscard]] auto sound_pool_size() const -> size_t { return sound_pool.size(); }
+	[[nodiscard]] auto sound_pool_size() const -> std::size_t { return sound_pool.size(); }
 	[[nodiscard]] auto number_of_playng_sounds() -> int;
 	struct {
 		util::BitFlags<Menu> menu{};

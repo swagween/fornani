@@ -27,11 +27,11 @@ void RectPath::update() {
 	auto end{static_cast<int>(m_sections.at(m_current_section).path.size()) - 1};
 	auto target_position{m_sections.at(m_current_section).path.at(m_current_step).position};
 	auto target_dimensions{m_sections.at(m_current_section).path.at(m_current_step).size};
-	auto previous_position{m_sections.at(m_current_section).path.at(std::clamp(m_current_step + -1, 0, end)).position};
-	auto previous_dimensions{m_sections.at(m_current_section).path.at(std::clamp(m_current_step + -1, 0, end)).size};
+	auto previous_position{m_sections.at(m_current_section).path.at(ccm::ext::clamp(m_current_step + -1, 0, end)).position};
+	auto previous_dimensions{m_sections.at(m_current_section).path.at(ccm::ext::clamp(m_current_step + -1, 0, end)).size};
 	if (m_current_position == target_position && m_current_dimensions == target_dimensions) {
 		if (m_current_step != end) { m_interpolation.start(); }
-		m_current_step = std::clamp(m_current_step + 1, 0, end);
+		m_current_step = ccm::ext::clamp(m_current_step + 1, 0, end);
 		m_step_completed = true;
 		return;
 	}

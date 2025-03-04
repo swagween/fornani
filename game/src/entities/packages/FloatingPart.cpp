@@ -4,7 +4,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/world/Map.hpp"
 #include "fornani/utils/Random.hpp"
-#include <algorithm>
+
 #include <numbers>
 
 #include "fornani/utils/Random.hpp"

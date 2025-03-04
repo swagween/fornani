@@ -1,6 +1,6 @@
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <algorithm>
+
 
 namespace fornani::entity {
 
@@ -14,7 +14,7 @@ void Health::set_hp(float amount) { hp = amount; }
 void Health::set_invincibility(float amount) { invincibility_time = static_cast<int>(amount); }
 
 void Health::update() {
-	hp = std::clamp(hp, 0.f, max_hp);
+	hp = ccm::ext::clamp(hp, 0.f, max_hp);
 	invincibility.update();
 	taken.update();
 	restored.update();

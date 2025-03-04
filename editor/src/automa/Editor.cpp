@@ -11,7 +11,6 @@
 #include <Windows.h>
 #endif
 
-#include <algorithm>
 #include <filesystem>
 
 namespace pi {
@@ -140,8 +139,8 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Tab) { map.flags.show_grid = !map.flags.show_grid; }
 		}
 		if (shift_pressed() && !control_pressed()) {
-			if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { active_layer = std::clamp(active_layer - 1, 0, static_cast<int>(map.get_layers().layers.size())); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { active_layer = std::clamp(active_layer + 1, 0, static_cast<int>(map.get_layers().layers.size())); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { active_layer = ccm::ext::clamp(active_layer - 1, 0, static_cast<int>(map.get_layers().layers.size())); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { active_layer = ccm::ext::clamp(active_layer + 1, 0, static_cast<int>(map.get_layers().layers.size())); }
 		}
 		if (control_pressed()) {
 			if (key_pressed->scancode == sf::Keyboard::Scancode::X) {
@@ -500,8 +499,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			static int metagrid_x{};
 			static int metagrid_y{};
 
-			width = std::clamp(width, 1, std::numeric_limits<int>::max());
-			height = std::clamp(height, 1, std::numeric_limits<int>::max());
+			width = ccm::ext::clamp(width, 1, std::numeric_limits<int>::max());
+			height = ccm::ext::clamp(height, 1, std::numeric_limits<int>::max());
 
 			ImGui::InputInt("Width", &width);
 			ImGui::NewLine();
@@ -909,7 +908,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ImGui::Text("Middleground: ");
 				ImGui::SameLine();
 				if (ImGui::InputInt("##smg", &m_middleground)) {
-					m_middleground = std::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
+					m_middleground = ccm::ext::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
 					map.get_layers().set_middleground(m_middleground);
 				}
 				auto ho{map.get_layers().m_flags.has_obscuring_layer};
@@ -1067,7 +1066,7 @@ void Editor::delete_current_layer() {
 	map.get_layers().delete_layer_at(active_layer);
 	reset_layers();
 	if (layers.size() <= 1) { return; }
-	active_layer = std::clamp(active_layer, 0, static_cast<int>(layers.size()) - 1);
+	active_layer = ccm::ext::clamp(active_layer, 0, static_cast<int>(layers.size()) - 1);
 }
 
 } // namespace pi

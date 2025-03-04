@@ -1,12 +1,10 @@
 #include "fornani/world/Breakable.hpp"
-#include <algorithm>
-#include <cmath>
+
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/world/Map.hpp"
-
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::world {
 
@@ -19,7 +17,7 @@ Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, 
 
 void Breakable::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (destroyed()) { return; }
-	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
 	handle_collision(player.collider);

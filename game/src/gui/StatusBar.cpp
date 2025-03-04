@@ -1,5 +1,5 @@
 #include "fornani/gui/StatusBar.hpp"
-#include <algorithm>
+
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {

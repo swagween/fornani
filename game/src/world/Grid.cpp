@@ -1,7 +1,7 @@
 
 #include "fornani/world/Grid.hpp"
 
-#include <cmath>
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::world {
 
@@ -256,7 +256,7 @@ void Grid::seed_vertex(int index) {
 	}
 	auto above = static_cast<int>(index - dimensions.x);
 	if (above >= 0) {
-		if (cells.at(static_cast<size_t>(above)).is_occupied()) { tile.flags.set(TileState::covered); }
+		if (cells.at(static_cast<std::size_t>(above)).is_occupied()) { tile.flags.set(TileState::covered); }
 	}
 }
 
@@ -279,7 +279,7 @@ void Grid::draw(sf::RenderTexture& tex) {
 std::size_t Grid::get_index_at_position(sf::Vector2<float> position) const {
 	auto start_index = sf::Vector2<std::size_t>(static_cast<std::size_t>((position.x / 32)), static_cast<std::size_t>((position.y / 32)));
 	auto ret = static_cast<std::size_t>(dimensions.x) * start_index.y + start_index.x;
-	return std::clamp(ret, std::size_t{0}, cells.size() - 1);
+	return ccm::ext::clamp(ret, std::size_t{0}, cells.size() - 1);
 }
 
 Tile& Grid::get_cell(std::size_t index) { return cells.at(index); }

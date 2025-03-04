@@ -1,7 +1,7 @@
 
 #include "editor/tool/Tool.hpp"
 
-#include <algorithm>
+
 
 namespace pi {
 
@@ -49,8 +49,8 @@ void Marquee::update(Canvas& canvas) {
 	}
 	selection.value().adjust(adjustment);
 
-	selection.value().dimensions.x = std::clamp(selection.value().dimensions.x, 0u, canvas.dimensions.x - selection.value().position.x);
-	selection.value().dimensions.y = std::clamp(selection.value().dimensions.y, 0u, canvas.dimensions.y - selection.value().position.y);
+	selection.value().dimensions.x = ccm::ext::clamp(selection.value().dimensions.x, 0u, canvas.dimensions.x - selection.value().position.x);
+	selection.value().dimensions.y = ccm::ext::clamp(selection.value().dimensions.y, 0u, canvas.dimensions.y - selection.value().position.y);
 
 	has_palette_selection = selection.value().get_type() == SelectionType::palette;
 }

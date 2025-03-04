@@ -293,11 +293,11 @@ void Canvas::resize(sf::Vector2i adjustment) {
 void Canvas::center(sf::Vector2<float> point) { set_position(point - real_dimensions * 0.5f); }
 
 void Canvas::constrain(sf::Vector2<float> bounds) {
-	position.x = std::clamp(position.x, -get_real_dimensions().x, bounds.x);
-	position.y = std::clamp(position.y, -get_real_dimensions().y, bounds.y);
+	position.x = ccm::ext::clamp(position.x, -get_real_dimensions().x, bounds.x);
+	position.y = ccm::ext::clamp(position.y, -get_real_dimensions().y, bounds.y);
 }
 
-void Canvas::zoom(float amount) { scale = std::clamp(scale + amount, min_scale, max_scale); }
+void Canvas::zoom(float amount) { scale = ccm::ext::clamp(scale + amount, min_scale, max_scale); }
 
 void Canvas::set_backdrop_color(sf::Color color) { border.setFillColor(color); }
 

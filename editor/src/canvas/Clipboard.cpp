@@ -7,21 +7,21 @@ namespace pi {
 
 Clipboard::Clipboard(sf::Vector2<std::uint32_t> dimensions) : m_dimensions(dimensions) {}
 
-void Clipboard::write_to_clipboard(std::uint32_t value, size_t i, size_t j, size_t layer) {
+void Clipboard::write_to_clipboard(std::uint32_t value, std::size_t i, std::size_t j, std::size_t layer) {
 	while (layer >= m_cell_values.size()) { m_cell_values.push_back(std::vector<std::uint32_t>{}); }
 	for (auto u{0}; u < m_dimensions.x; ++u) {
 		for (auto v{0}; v < m_dimensions.y; ++v) { m_cell_values.at(layer).push_back(0); }
 	}
-	auto index = i + j * static_cast<size_t>(m_dimensions.x);
+	auto index = i + j * static_cast<std::size_t>(m_dimensions.x);
 	m_cell_values.at(layer).at(index) = value;
 }
 
 
 void Clipboard::clear_clipboard() { m_cell_values.clear(); }
 
-std::uint32_t Clipboard::get_value_at(size_t i, size_t j) { return m_cell_values.back().at(i + j * m_dimensions.x); }
+std::uint32_t Clipboard::get_value_at(std::size_t i, std::size_t j) { return m_cell_values.back().at(i + j * m_dimensions.x); }
 
-std::uint32_t Clipboard::get_value_at(size_t i, size_t j, size_t layer) {
+std::uint32_t Clipboard::get_value_at(std::size_t i, std::size_t j, std::size_t layer) {
 	if (layer >= m_cell_values.size()) { return 0u; }
 	return m_cell_values.at(layer).at(i + j * m_dimensions.x);
 }

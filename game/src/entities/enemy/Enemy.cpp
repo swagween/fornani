@@ -127,7 +127,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		return;
 	}
 	// shake
-	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
 	if (hitstun.running()) {

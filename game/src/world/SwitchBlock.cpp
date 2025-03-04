@@ -5,7 +5,7 @@
 #include "fornani/world/Map.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/world/SwitchBlock.hpp"
-#include <algorithm>
+
 
 namespace fornani::world {
 

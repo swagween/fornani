@@ -20,14 +20,14 @@ class Clipboard {
 
   public:
 	Clipboard(sf::Vector2<std::uint32_t> dimensions);
-	void write_to_clipboard(std::uint32_t value, size_t i, size_t j, size_t layer);
+	void write_to_clipboard(std::uint32_t value, std::size_t i, std::size_t j, std::size_t layer);
 	void clear_clipboard();
 	void cut(Canvas& canvas, Tool& tool);
 	void copy(Canvas& canvas, Tool& tool);
 	void paste(Canvas& canvas, Tool& tool);
 	void render(Canvas& canvas, Tool& tool, sf::RenderWindow& win, sf::Vector2<float> offset);
-	std::uint32_t get_value_at(size_t i, size_t j);
-	std::uint32_t get_value_at(size_t i, size_t j, size_t layer);
+	std::uint32_t get_value_at(std::size_t i, std::size_t j);
+	std::uint32_t get_value_at(std::size_t i, std::size_t j, std::size_t layer);
 	[[nodiscard]] auto empty() const -> bool { return m_cell_values.empty(); }
 	[[nodiscard]] auto real_dimensions() const -> sf::Vector2<float> { return {static_cast<float>(m_dimensions.x), static_cast<float>(m_dimensions.y)}; }
 	[[nodiscard]] auto scaled_dimensions() const -> sf::Vector2<std::uint32_t> { return m_dimensions; }

@@ -94,17 +94,17 @@ void MiniMap::clear_atlas() { m_atlas.clear(); }
 
 void MiniMap::move(sf::Vector2f direction) {
 	m_position -= direction * m_speed;
-	m_position.x = std::clamp(m_position.x, -(m_extent.size.x) * get_ratio() + m_view.getCenter().x, -(m_extent.position.x) * get_ratio() + m_view.getCenter().x);
-	m_position.y = std::clamp(m_position.y, -(m_extent.size.y) * get_ratio() + m_view.getCenter().y, -(m_extent.position.y) * get_ratio() + m_view.getCenter().y);
+	m_position.x = ccm::ext::clamp(m_position.x, -(m_extent.size.x) * get_ratio() + m_view.getCenter().x, -(m_extent.position.x) * get_ratio() + m_view.getCenter().x);
+	m_position.y = ccm::ext::clamp(m_position.y, -(m_extent.size.y) * get_ratio() + m_view.getCenter().y, -(m_extent.position.y) * get_ratio() + m_view.getCenter().y);
 }
 
-void gui::MiniMap::zoom(float amount) {
+void MiniMap::zoom(float amount) {
 	auto prev_ratio = get_ratio();
-	m_scale = std::clamp(m_scale + amount, m_texture_scale, m_texture_scale * 16.f);
+	m_scale = ccm::ext::clamp(m_scale + amount, m_texture_scale, m_texture_scale * 16.f);
 	auto r_delta = get_ratio() - prev_ratio;
 	auto sz{m_port_dimensions.componentWiseDiv(m_view.getSize())};
 	m_center_position = (m_position - m_view.getCenter().componentWiseMul(sz)) / prev_ratio;
-	if (std::abs(r_delta) > 0.f) { m_position += m_center_position * r_delta; }
+	if (ccm::abs(r_delta) > 0.f) { m_position += m_center_position * r_delta; }
 }
 
 void MiniMap::center() {
@@ -112,8 +112,8 @@ void MiniMap::center() {
 	m_position = -m_player_position * get_ratio() + m_view.getCenter().componentWiseMul(sz);
 }
 
-void gui::MiniMap::set_port_position(sf::Vector2f to_position) { m_port_position = to_position; }
+void MiniMap::set_port_position(sf::Vector2f to_position) { m_port_position = to_position; }
 
-void gui::MiniMap::set_port_dimensions(sf::Vector2f to_dimensions) { m_port_dimensions = to_dimensions; }
+void MiniMap::set_port_dimensions(sf::Vector2f to_dimensions) { m_port_dimensions = to_dimensions; }
 
 } // namespace fornani::gui

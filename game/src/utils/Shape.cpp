@@ -317,7 +317,7 @@ std::vector<sf::Vector2<float>> Shape::get_normals() const {
 
 std::vector<sf::Vector2<float>> Shape::get_edges() const {
 	std::vector<sf::Vector2<float>> ret{};
-	for (auto i{0}; i < vertices.size(); ++i) { ret.push_back({vertices[static_cast<size_t>(i + 1) % vertices.size()].x - vertices[i].x, vertices[static_cast<size_t>(i + 1) % vertices.size()].y - vertices[i].y}); }
+	for (auto i{0}; i < vertices.size(); ++i) { ret.push_back({vertices[static_cast<std::size_t>(i + 1) % vertices.size()].x - vertices[i].x, vertices[static_cast<std::size_t>(i + 1) % vertices.size()].y - vertices[i].y}); }
 	return ret;
 }
 

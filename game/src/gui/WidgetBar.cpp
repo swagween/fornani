@@ -1,5 +1,5 @@
 #include "fornani/gui/WidgetBar.hpp"
-#include <algorithm>
+
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
