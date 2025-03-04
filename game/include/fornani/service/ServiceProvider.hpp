@@ -4,6 +4,7 @@
 #include "fornani/automa/MenuController.hpp"
 #include "fornani/automa/StateController.hpp"
 #include "fornani/core/AssetManager.hpp"
+#include "fornani/core/SoundManager.hpp"
 #include "fornani/graphics/CameraController.hpp"
 #include "fornani/graphics/Style.hpp"
 #include "fornani/io/Logger.hpp"
@@ -22,10 +23,12 @@
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
 
+#include <ranges>
+
 namespace fornani::automa {
-enum class DebugFlags : uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
-enum class AppFlags : uint8_t { fullscreen, tutorial, in_game };
-enum class StateFlags : uint8_t { hide_hud, no_menu };
+enum class DebugFlags : std::uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
+enum class AppFlags : std::uint8_t { fullscreen, tutorial, in_game };
+enum class StateFlags : std::uint8_t { hide_hud, no_menu };
 struct PlayerDat {
 	void set_piggy_id(int const id) { piggy_id = id; }
 	void unpiggy() { drop_piggy = true; }
@@ -36,11 +39,12 @@ struct MapDebug {
 	int active_projectiles{};
 };
 // TODO: Honestly the entire ServiceProvider needs to go but it's gonna be a slow process of eliminating it.
+// TODO: Convert ServiceProvider to a MonoInstance
 /*
  * Here
  */
 struct ServiceProvider {
-	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder} {};
+	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder}, sounds{finder} {};
 
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
@@ -49,7 +53,8 @@ struct ServiceProvider {
 	data::DataManager data;
 	Version* version;	   // TODO: Remove. Make Free-Standing.
 	WindowManager* window; // TODO: Move this into the Application class and make it into a MonoInstance
-	asset::AssetManager assets;
+	core::SoundManager sounds;
+	core::AssetManager assets;
 	config::ControllerMap controller_map{*this};
 	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
@@ -57,7 +62,6 @@ struct ServiceProvider {
 	util::BitFlags<StateFlags> state_flags{};
 	util::Ticker ticker{}; // TODO: Remove. Make Free-Standing. This one is gonna be hard to remove as the underlying logic needs to change for many functions.
 	WorldClock world_clock{};
-	util::Constants constants{}; // TODO: Remove. Make Free-Standing.
 	StateController state_controller{};
 	MenuController menu_controller{};
 	audio::Soundboard soundboard{*this}; // TODO: Remove. Make Free-Standing. Maybe?

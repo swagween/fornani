@@ -10,8 +10,8 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class InventorySection : uint8_t { item, gun, END };
-enum class SelectorFlags : uint8_t { switched, went_up };
+enum class InventorySection : std::uint8_t { item, gun, END };
+enum class SelectorFlags : std::uint8_t { switched, went_up };
 
 class Selector {
   public:

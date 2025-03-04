@@ -7,9 +7,9 @@
 namespace fornani::entity {
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key, int room_id, int alternates, int native, bool aoc)
-	: scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates), sprite(svc.assets.t_inspectable) {
-	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
-	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
+	: scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates), sprite(svc.assets.get_texture("inspectable_indicator")) {
+	dimensions = static_cast<Vec>(dim * util::constants::u32_cell_size);
+	position = static_cast<Vec>(pos * util::constants::u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
 	bounding_box.set_position(position);
 	animation.end();
@@ -19,8 +19,8 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, s
 }
 
 void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set) {
-	position = static_cast<Vec>(scaled_position * svc.constants.u32_cell_size);
-	dimensions = static_cast<Vec>(scaled_dimensions * svc.constants.u32_cell_size);
+	position = static_cast<Vec>(scaled_position * util::constants::u32_cell_size);
+	dimensions = static_cast<Vec>(scaled_dimensions * util::constants::u32_cell_size);
 	bounding_box.set_position(position);
 	flags.reset(InspectableFlags::activated);
 	animation.update();

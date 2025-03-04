@@ -8,7 +8,7 @@
 namespace fornani::world {
 
 Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point, int style)
-	: shape::Collider(dimensions, position), path_position(start_point), sprite{svc.assets.platform_lookup.at(style)} {
+	: shape::Collider(dimensions, position), path_position(start_point), sprite{svc.assets.get_texture("platforms")} {
 
 	auto const& in_data = svc.data.platform[specifications];
 	if (in_data["sticky"].as_bool()) { flags.attributes.set(PlatformAttributes::sticky); }
@@ -49,7 +49,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 
 	// set visuals
 	animation.set_params({0, 4, 16, -1});
-	auto scaled_dim = dimensions / svc.constants.cell_size;
+	auto scaled_dim = dimensions / util::constants::f_cell_size;
 	if (scaled_dim.x == 1) { offset = {0, 0}; }
 	if (scaled_dim.x == 2) { offset = {32, 0}; }
 	if (scaled_dim.x == 3) { offset = {0, 32}; }
@@ -184,7 +184,7 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 	if (proj.transcendent()) { return; }
 	if (proj.get_bounding_box().overlaps(bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), physics.velocity * 10.f, proj.effect_type(), 2));
+			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), physics.velocity * 10.f, proj.effect_type(), 2));
 			if (proj.get_direction().lr == dir::LR::neutral) { map.effects.back().rotate(); }
 			svc.soundboard.flags.world.set(audio::World::wall_hit);
 		}

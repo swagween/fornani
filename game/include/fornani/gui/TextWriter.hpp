@@ -28,7 +28,7 @@ struct Message {
 	int target{};
 };
 
-enum class Codes : uint8_t { prompt, quest, item, voice, emotion, hash };
+enum class Codes : std::uint8_t { prompt, quest, item, voice, emotion, hash };
 enum class WriterMode { write, wait, close, stall, respond };
 static constexpr int default_writing_speed_v{8};
 static constexpr int fast_writing_speed_v{1};

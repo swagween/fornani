@@ -21,12 +21,12 @@ constexpr static int dash_time{32};
 constexpr static int quick_turn_sample_size{24};
 constexpr static float backwards_dampen{0.5f};
 
-enum class ControllerInput : uint8_t { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
-enum class MovementState : uint8_t { restricted, grounded, walking_autonomously, walljumping };
-enum class HardState : uint8_t { no_move, has_arsenal };
+enum class ControllerInput : std::uint8_t { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
+enum class MovementState : std::uint8_t { restricted, grounded, walking_autonomously, walljumping };
+enum class HardState : std::uint8_t { no_move, has_arsenal };
 
-enum class Hook : uint8_t { hook_released, hook_held };
-enum class Sprint : uint8_t { released };
+enum class Hook : std::uint8_t { hook_released, hook_held };
+enum class Sprint : std::uint8_t { released };
 
 class PlayerController {
 

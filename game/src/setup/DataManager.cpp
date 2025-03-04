@@ -9,9 +9,7 @@
 
 namespace fornani::data {
 
-DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) {
-	load_data();
-}
+DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
 	m_services->stopwatch.start();
@@ -28,20 +26,23 @@ void DataManager::load_data(std::string in_room) {
 			if (room_data.is_null()) { continue; }
 			auto this_id = room_data["meta"]["room_id"].as<int>();
 			auto this_name = this_room.path().filename().string();
+			auto this_biome = room_data["meta"]["biome"].is_string() ? room_data["meta"]["biome"].as_string().data() : this_region.path().filename().string();
 			if (is_duplicate_room(this_id)) { continue; }
-			map_jsons.push_back(MapData{this_id, room_data});
-			
+			auto room_str = this_room.path().filename().string();
+			room_str = room_str.substr(0, room_str.find('.'));
+			map_jsons.push_back(MapData{this_id, room_data, this_biome, room_str});
+
 			// cache map layers
-			sf::Vector2<uint32_t> dimensions{};
+			sf::Vector2<std::uint32_t> dimensions{};
 			dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
 			dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
 			std::vector<world::Layer> next{};
 			auto& in_tile = map_jsons.back().metadata["tile"];
 			auto ho{static_cast<bool>(in_tile["flags"]["obscuring"].as_bool())};
 			auto hro{static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool())};
-			uint8_t ctr{0u};
+			std::uint8_t ctr{0u};
 			for (auto& layer : in_tile["layers"].array_view()) {
-				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], ho, hro));
+				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], util::constants::f_cell_size, ho, hro));
 				++ctr;
 			}
 			map_layers.push_back(next);
@@ -645,4 +646,4 @@ int DataManager::get_npc_location(int npc_id) {
 
 std::vector<world::Layer>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }
 
-} // namespace data
+} // namespace fornani::data

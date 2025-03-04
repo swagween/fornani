@@ -11,7 +11,7 @@
 namespace fornani::vfx {
 
 Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction)
-	: position(pos), dimensions(dim), sprite_dimensions(dim), collider(dim.x), sprite{svc.assets.particle_textures.contains(type) ? svc.assets.particle_textures.at(type) : svc.assets.t_null} {
+	: position(pos), dimensions(dim), sprite_dimensions(dim), collider(dim.x), sprite{svc.assets.get_texture("particle_" + std::string{type})} {
 	box.setFillColor(color);
 	box.setSize(dimensions);
 	box.setOrigin(dimensions * 0.5f);

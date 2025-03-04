@@ -7,10 +7,10 @@ namespace fornani::dir {
 
 // the exclusion of "N" in the class name is purposeful; there is no "neutral" direction between L and R.
 // the neutral state is used for setting the und state in specific use cases, like weapon direction.
-enum class LR : uint8_t { left, neutral, right };
-enum class UND : uint8_t { up, neutral, down };
+enum class LR : std::uint8_t { left, neutral, right };
+enum class UND : std::uint8_t { up, neutral, down };
 // intermediate direction, used for special cases like grappling hook
-enum class Inter : uint8_t { north, south, east, west, northeast, northwest, southeast, southwest };
+enum class Inter : std::uint8_t { north, south, east, west, northeast, northwest, southeast, southwest };
 
 struct Direction {
 	Direction(UND und_preset = UND::neutral, LR lr_preset = LR::neutral) : und(und_preset), lr(lr_preset) {}

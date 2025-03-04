@@ -6,7 +6,7 @@
 
 namespace fornani::enemy {
 
-enum class MeatsquashState : uint8_t { idle, chomp, swallow, open };
+enum class MeatsquashState : std::uint8_t { idle, chomp, swallow, open };
 
 class Meatsquash final : public Enemy {
 

@@ -43,10 +43,10 @@ class Tool {
 	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_tooltip() const -> std::string { return tooltip; }
 	[[nodiscard]] auto f_position() const -> sf::Vector2<float> { return position; }
-	[[nodiscard]] auto scaled_position() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::floor(position.x / 32.f)), static_cast<uint32_t>(std::floor(position.y / 32.f))}; }
-	[[nodiscard]] auto scaled_position_ceiling() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::ceil(position.x / 32.f)), static_cast<uint32_t>(std::ceil(position.y / 32.f))}; }
+	[[nodiscard]] auto scaled_position() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::floor(position.x / 32.f)), static_cast<std::uint32_t>(std::floor(position.y / 32.f))}; }
+	[[nodiscard]] auto scaled_position_ceiling() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::ceil(position.x / 32.f)), static_cast<std::uint32_t>(std::ceil(position.y / 32.f))}; }
 	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2<float> { return {static_cast<float>(scaled_position().x), static_cast<float>(scaled_position().y)}; }
-	[[nodiscard]] auto scaled_clicked_position() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::floor(clicked_position.x / 32.f)), static_cast<uint32_t>(std::floor(clicked_position.y / 32.f))}; }
+	[[nodiscard]] auto scaled_clicked_position() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::floor(clicked_position.x / 32.f)), static_cast<std::uint32_t>(std::floor(clicked_position.y / 32.f))}; }
 	[[nodiscard]] auto get_window_position() const -> sf::Vector2<float> { return window_position; }
 	[[nodiscard]] auto get_window_position_scaled() const -> sf::Vector2<float> { return window_position / 32.f; }
 	[[nodiscard]] auto palette_interactable() const -> bool { return type == ToolType::marquee || type == ToolType::eyedropper; }
@@ -59,7 +59,7 @@ class Tool {
 	[[nodiscard]] auto highlight_canvas() const -> bool { return (is_paintable() || type == ToolType::erase) && !disable_highlight; }
 	[[nodiscard]] auto is_paintable() const -> bool { return type == ToolType::brush || type == ToolType::fill; };
 
-	bool in_bounds(sf::Vector2<uint32_t>& bounds) const;
+	bool in_bounds(sf::Vector2<std::uint32_t>& bounds) const;
 
 	bool pervasive{};
 	bool contiguous{};
@@ -77,7 +77,7 @@ class Tool {
 
 	bool primary{};
 	bool trigger_switch{false};
-	uint32_t tile{};
+	std::uint32_t tile{};
 	std::optional<std::unique_ptr<Entity>> current_entity{};
 	std::optional<SelectBox> selection{};
 
@@ -145,8 +145,8 @@ class Fill : public Tool {
 	void store_tile(int index) override;
 	void clear() override;
 
-	void fill_section(uint32_t prev_val, uint32_t new_val, uint32_t i, uint32_t j, Canvas& canvas);
-	void replace_all(uint32_t prev_val, uint32_t new_val, uint32_t i, uint32_t j, Canvas& canvas);
+	void fill_section(std::uint32_t prev_val, std::uint32_t new_val, std::uint32_t i, std::uint32_t j, Canvas& canvas);
+	void replace_all(std::uint32_t prev_val, std::uint32_t new_val, std::uint32_t i, std::uint32_t j, Canvas& canvas);
 };
 
 class EntityEditor : public Tool {

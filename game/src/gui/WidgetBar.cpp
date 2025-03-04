@@ -1,5 +1,5 @@
 #include "fornani/gui/WidgetBar.hpp"
-#include <algorithm>
+
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -9,7 +9,7 @@
 
 namespace fornani::gui {
 
-void WidgetBar::set(automa::ServiceProvider& svc, int amount, sf::Vector2<int> dimensions, sf::Texture& texture, sf::Vector2<float> origin, float pad) {
+void WidgetBar::set(automa::ServiceProvider& svc, int amount, sf::Vector2<int> dimensions, sf::Texture const& texture, sf::Vector2<float> origin, float pad) {
 	widgets.clear();
 	for (auto i{0}; i < amount; ++i) {
 		widgets.push_back(Widget(svc, texture, dimensions, i));

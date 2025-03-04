@@ -7,6 +7,7 @@ nani_add_headers(
         CollisionDepth.hpp
         Constants.hpp
         Cooldown.hpp
+        ColorUtils.hpp
         Counter.hpp
         Cycle.hpp
         Decoder.hpp

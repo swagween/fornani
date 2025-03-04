@@ -6,12 +6,13 @@
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 #ifdef _WIN32
 // TODO: debloat include
 #include <Windows.h>
 #endif
 
-#include <algorithm>
 #include <filesystem>
 
 namespace pi {
@@ -140,8 +141,8 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Tab) { map.flags.show_grid = !map.flags.show_grid; }
 		}
 		if (shift_pressed() && !control_pressed()) {
-			if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { active_layer = std::clamp(active_layer - 1, 0, static_cast<int>(map.get_layers().layers.size())); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { active_layer = std::clamp(active_layer + 1, 0, static_cast<int>(map.get_layers().layers.size())); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { active_layer = ccm::ext::clamp(active_layer - 1, 0, static_cast<int>(map.get_layers().layers.size())); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { active_layer = ccm::ext::clamp(active_layer + 1, 0, static_cast<int>(map.get_layers().layers.size())); }
 		}
 		if (control_pressed()) {
 			if (key_pressed->scancode == sf::Keyboard::Scancode::X) {
@@ -315,13 +316,13 @@ void Editor::render(sf::RenderWindow& win) {
 	auto soft_palette_mode = m_options.palette && available() && palette.hovered();
 	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() && current_tool->highlight_canvas() && !soft_palette_mode) {
 		auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
-		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
+		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), fornani::util::constants::i_resolution_vec}));
 		for (int i = 0; i < current_tool->size; i++) {
 			for (int j = 0; j < current_tool->size; j++) {
 				target_shape.setPosition({(current_tool->f_scaled_position().x - i) * map.f_cell_size() + map.get_position().x, (current_tool->f_scaled_position().y - j) * map.f_cell_size() + map.get_position().y});
 				target_shape.setSize({map.f_cell_size(), map.f_cell_size()});
 				tileset.setPosition(target_shape.getPosition());
-				tileset.setScale({map.get_scale(), map.get_scale()});
+				tileset.setScale(map.get_scale_vec());
 				if (current_tool->is_paintable()) { win.draw(tileset); }
 				win.draw(target_shape);
 			}
@@ -500,8 +501,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			static int metagrid_x{};
 			static int metagrid_y{};
 
-			width = std::clamp(width, 1, std::numeric_limits<int>::max());
-			height = std::clamp(height, 1, std::numeric_limits<int>::max());
+			width = ccm::ext::clamp(width, 1, std::numeric_limits<int>::max());
+			height = ccm::ext::clamp(height, 1, std::numeric_limits<int>::max());
 
 			ImGui::InputInt("Width", &width);
 			ImGui::NewLine();
@@ -529,7 +530,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				static int style_current = static_cast<int>(map.styles.tile.get_type());
 				static int bg_current = static_cast<int>(map.background->type.get_type());
 
-				map = Canvas(*finder, {static_cast<uint32_t>(width * chunk_size_v), static_cast<uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
+				map = Canvas(*finder, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
 				finder->paths.region = regbuffer;
 				finder->paths.room_name = std::string{roombuffer} + ".json";
@@ -879,9 +880,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ImGui::NewLine();
 			}
 			ImGui::Separator();
-			ImGui::Text("Current Block:");
+			ImGui::Text("Current Tile:");
 			auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
-			tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
+			tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), fornani::util::constants::i_resolution_vec}));
+			tileset.setScale(fornani::util::constants::f_scale_vec);
 			ImGui::Image(tileset);
 			if (current_tool->type == ToolType::entity_editor) {
 				if (current_tool->current_entity) {
@@ -909,7 +911,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ImGui::Text("Middleground: ");
 				ImGui::SameLine();
 				if (ImGui::InputInt("##smg", &m_middleground)) {
-					m_middleground = std::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
+					m_middleground = ccm::ext::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
 					map.get_layers().set_middleground(m_middleground);
 				}
 				auto ho{map.get_layers().m_flags.has_obscuring_layer};
@@ -1067,7 +1069,7 @@ void Editor::delete_current_layer() {
 	map.get_layers().delete_layer_at(active_layer);
 	reset_layers();
 	if (layers.size() <= 1) { return; }
-	active_layer = std::clamp(active_layer, 0, static_cast<int>(layers.size()) - 1);
+	active_layer = ccm::ext::clamp(active_layer, 0, static_cast<int>(layers.size()) - 1);
 }
 
 } // namespace pi

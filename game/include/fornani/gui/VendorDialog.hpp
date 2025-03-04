@@ -26,8 +26,8 @@ class Transition;
 }
 
 namespace fornani::gui {
-enum class VendorDialogStatus : uint8_t { opened, made_sale };
-enum class VendorState : uint8_t { sell, buy };
+enum class VendorDialogStatus : std::uint8_t { opened, made_sale };
+enum class VendorState : std::uint8_t { sell, buy };
 class VendorDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);

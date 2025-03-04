@@ -1,5 +1,5 @@
 #include "fornani/world/SwitchButton.hpp"
-#include <algorithm>
+
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
@@ -9,7 +9,7 @@
 
 namespace fornani::world {
 
-SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> position, int id, int type, Map& map) : sprite(svc.assets.t_switches, {32, 16}), id(id), type(static_cast<SwitchType>(type)) {
+SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> position, int id, int type, Map& map) : sprite(svc.assets.get_texture("switch_buttons"), {32, 16}), id(id), type(static_cast<SwitchType>(type)) {
 	collider = shape::Collider({32.f, 14.f});
 	collider.physics.position = position;
 	collider.physics.position.y += 18.f;

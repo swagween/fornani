@@ -1,9 +1,10 @@
+
 #include "fornani/audio/Sound.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::audio {
 
-Sound::Sound(const sf::SoundBuffer& buffer, int echo_count, int echo_rate) {
+Sound::Sound(sf::SoundBuffer const& buffer, std::string const& label, int echo_count, int echo_rate) : m_label(label) {
 	sounds.clear();
 	echo.rate = echo_rate;
 	echo.count = util::Cooldown{echo_count};
@@ -24,10 +25,10 @@ void Sound::update(automa::ServiceProvider& /*svc*/) {
 	}
 }
 
-void Sound::play() { 
+void Sound::play(bool repeat) {
 	auto& sound = sounds.back();
+	sound.setLooping(repeat);
 	sound.play();
-	//sound.setEffectProcessor(sf::SoundSource::EffectProcessor)
 }
 
 void Sound::set_volume(float volume) {
@@ -39,4 +40,4 @@ void Sound::set_pitch(float pitch) {
 	for (auto& s : sounds) { s.setPitch(pitch); }
 }
 
-} // namespace fornani
+} // namespace fornani::audio

@@ -5,4 +5,5 @@ nani_add_headers(
         AssetManager.hpp
         Game.hpp
         CrashHandler.hpp
+        SoundManager.hpp
 )

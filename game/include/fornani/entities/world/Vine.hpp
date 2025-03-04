@@ -1,13 +1,13 @@
 #pragma once
 
-#include "fornani/utils/Shape.hpp"
-#include "fornani/particle/Chain.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "TreasureContainer.hpp"
-#include "SpawnablePlatform.hpp"
+#include <memory>
 #include <optional>
 #include <vector>
-#include <memory>
+#include "SpawnablePlatform.hpp"
+#include "TreasureContainer.hpp"
+#include "fornani/particle/Chain.hpp"
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Shape.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -22,7 +22,7 @@ class Player;
 }
 
 namespace fornani::entity {
-enum class VineFlags : uint8_t { foreground, reverse };
+enum class VineFlags : std::uint8_t { foreground, reverse };
 class Vine {
   public:
 	Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length = 5, int size = 1, bool foreground = true, bool reversed = false);
@@ -52,4 +52,4 @@ class Vine {
 	} constants{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

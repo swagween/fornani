@@ -3,12 +3,12 @@
 
 namespace fornani::gui {
 
-Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left), sprite{svc.assets.t_portraits}, window{svc.assets.t_portrait_window} {
+Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left), sprite{svc.assets.get_texture("character_portraits")}, window{svc.assets.get_texture("portrait_window")} {
 	dimensions = sf::Vector2<float>{128, 256};
-	end_position = sf::Vector2{pad_x, svc.constants.screen_dimensions.y - pad_y - dimensions.y};
+	end_position = sf::Vector2{pad_x, svc.window->i_screen_dimensions().y - pad_y - dimensions.y};
 	bring_in();
 	if (is_nani) {
-		end_position.x = svc.constants.screen_dimensions.x - pad_x - dimensions.x;
+		end_position.x = svc.window->i_screen_dimensions().x - pad_x - dimensions.x;
 		id = 5; // nani :)
 	}
 	float constexpr fric{0.85f};
@@ -39,7 +39,7 @@ void Portrait::render(sf::RenderWindow& win) {
 
 void Portrait::reset(automa::ServiceProvider& svc) {
 	start_position = {-128.f, position.y};
-	if (is_nani) { start_position.x = svc.constants.screen_dimensions.x + 132.f; }
+	if (is_nani) { start_position.x = svc.window->i_screen_dimensions().x + 132.f; }
 	set_position(start_position);
 	emotion = 1;
 }

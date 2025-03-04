@@ -19,13 +19,13 @@ class Console;
 
 namespace fornani::entity {
 
-enum class InspectableAttributes : uint8_t { activate_on_contact };
-enum class InspectableFlags : uint8_t { hovered, hovered_trigger, activated, destroy, engaged };
+enum class InspectableAttributes : std::uint8_t { activate_on_contact };
+enum class InspectableFlags : std::uint8_t { hovered, hovered_trigger, activated, destroy, engaged };
 
 class Inspectable {
   public:
 	using Vec = sf::Vector2<float>;
-	using Vecu32 = sf::Vector2<uint32_t>;
+	using Vecu32 = sf::Vector2<std::uint32_t>;
 
 	Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key = "", int room_id = 0, int alternates = 0, int native = 0, bool aoc = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set);

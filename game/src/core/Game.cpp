@@ -17,7 +17,6 @@ namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player, automa::MenuType::main) {
 	NANI_ZoneScopedN("Game::Game");
-	services.constants.screen_dimensions = window.screen_dimensions;
 	if (!ImGui::SFML::Init(services.window->get())) {
 		std::cout << "ImGui-SFML failed to initialize the window.\n";
 		shutdown();
@@ -32,7 +31,7 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	// player
 	player.init(services);
 
-	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
+	background.setSize(services.window->f_screen_dimensions());
 	background.setFillColor(services.styles.colors.ui_black);
 }
 
@@ -187,8 +186,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		{
 			NANI_ZoneScopedN("Rendering");
+#if defined(FORNANI_PRODUCTION)
 			if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
-
+#endif
 			flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 
 			services.window->get().clear();
@@ -263,8 +263,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::Separator();
-					ImGui::Text("World Time (military): %s", services.world_clock.get_string().c_str());
-					ImGui::Text("World Time: %s", services.world_clock.get_string(false).c_str());
+					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
 					ImGui::Text("Time of Day: %s", services.world_clock.get_time_of_day() == fornani::TimeOfDay::day ? "Day" : services.world_clock.get_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight" : "Night");
 					ImGui::Text("Previous Time of Day: %s", services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::day		  ? "Day"
 															: services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight"
@@ -318,9 +317,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				if (ImGui::BeginTabItem("Tests")) {
 
 					ImGui::Text("Angle");
-					ImGui::Text("{-1.f, 1.f} ; down-left: %.2f", util::direction({-1.f, 1.f}));
-					ImGui::Text("{1.f, -1.f} ; top-right: %.2f", util::direction({1.f, -1.f}));
-					ImGui::Text("{1.f, 0.f} ; horiz-right: %.2f", util::direction({1.f, 0.f}));
+					ImGui::Text("{-1.f, 1.f} ; down-left: %.2f", util::get_angle_from_direction({-1.f, 1.f}));
+					ImGui::Text("{1.f, -1.f} ; top-right: %.2f", util::get_angle_from_direction({1.f, -1.f}));
+					ImGui::Text("{1.f, 0.f} ; horiz-right: %.2f", util::get_angle_from_direction({1.f, 0.f}));
 					ImGui::Separator();
 					ImGui::Text("Parity");
 					ImGui::Text("-1 and 2: %s", util::same_parity(-1.f, 2.f) ? "Yes" : "No");

@@ -1,13 +1,13 @@
 #include "fornani/entities/atmosphere/Firefly.hpp"
 #include <numbers>
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::vfx {
 
-Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_firefly, {9, 9}) {
+Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.get_texture("firefly"), {9, 9}) {
 	physics.set_global_friction(0.99f);
 	physics.position = start;
 	physics.velocity = util::Random::random_vector_float(-1.f, 1.f);

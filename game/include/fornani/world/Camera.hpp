@@ -22,7 +22,7 @@ constexpr int CY_OFFSET = 60;
 
 constexpr int border_buffer{32};
 
-enum class CamFlags : uint8_t { shake };
+enum class CamFlags : std::uint8_t { shake };
 
 class Camera {
   public:

@@ -7,7 +7,7 @@ struct ServiceProvider;
 }
 
 namespace fornani::gui {
-enum class BarState : uint8_t { full, empty };
+enum class BarState : std::uint8_t { full, empty };
 class StatusBar {
   public:
 	StatusBar() = default;

@@ -12,10 +12,10 @@ class Player;
 }
 
 namespace fornani::gui {
-enum class State : uint8_t { added, neutral, taken, gone };
+enum class State : std::uint8_t { added, neutral, taken, gone };
 class Widget {
   public:
-	Widget(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<int> dim, int index);
+	Widget(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2<int> dim, int index);
 	void update(automa::ServiceProvider& svc, int max);
 	void render(sf::RenderWindow& win);
 	void shake() { shaking.start(); }

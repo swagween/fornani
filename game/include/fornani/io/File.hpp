@@ -6,7 +6,7 @@
 
 namespace fornani::io {
 
-enum class FileFlags : uint8_t { new_file };
+enum class FileFlags : std::uint8_t { new_file };
 
 class File {
   public:

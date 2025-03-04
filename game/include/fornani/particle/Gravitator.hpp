@@ -14,7 +14,7 @@ class Gravitator {
 
   public:
 	using Vec = sf::Vector2<float>;
-	using Vecu16 = sf::Vector2<uint32_t>;
+	using Vecu16 = sf::Vector2<std::uint32_t>;
 
 	Gravitator() = default;
 	Gravitator(Vec pos, sf::Color col, float agf, Vec size = {4.f, 4.f});

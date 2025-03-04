@@ -10,7 +10,8 @@
 
 namespace fornani::player {
 
-Player::Player(automa::ServiceProvider& svc) : arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.t_nani}, camera_offset{32.f, -64.f} {}
+Player::Player(automa::ServiceProvider& svc)
+	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f} {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -42,9 +43,9 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	sprite_dimensions = {48.f, 48.f};
 
-	texture_updater.load_base_texture(svc.assets.t_nani);
-	texture_updater.load_pixel_map(svc.assets.t_palette_nani);
-	catalog.categories.wardrobe.set_palette(svc.assets.t_palette_nani);
+	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
+	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
+	catalog.categories.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_default"));
 }
 
 void Player::update(world::Map& map) {
@@ -377,7 +378,7 @@ void Player::jump(world::Map& map) {
 			collider.physics.velocity.y = 0.f;
 			controller.get_jump().doublejump();
 			m_services->soundboard.flags.player.set(audio::Player::jump);
-			map.effects.push_back(entity::Effect(*m_services, sprite_position, sf::Vector2<float>{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
+			map.effects.push_back(entity::Effect(*m_services, "doublejump", sprite_position, sf::Vector2<float>{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
 		}
 		if (controller.get_jump().is_doublejump()) { animation.state = AnimState::backflip; }
 	}
@@ -607,7 +608,7 @@ void Player::start_over() {
 		a.collider.physics.gravity = 0.f;
 	}
 	sync_antennae();
-	catalog.categories.wardrobe.set_palette(m_services->assets.t_palette_nani);
+	catalog.categories.wardrobe.set_palette(m_services->assets.get_texture_modifiable("nani_palette_default"));
 	catalog.categories.wardrobe.update(texture_updater);
 }
 

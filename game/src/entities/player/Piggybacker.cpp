@@ -4,7 +4,7 @@
 
 namespace fornani::player {
 
-Piggybacker::Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2<float> position) : sprite{svc.assets.npcs.at(label)} {
+Piggybacker::Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2<float> position) : sprite{svc.assets.get_npc_texture(std::string{label})} {
 	auto const& in_data = svc.data.npc[label];
 	auto dimensions = sf::Vector2<int>{in_data["sprite_dimensions"][0].as<int>(), in_data["sprite_dimensions"][1].as<int>()};
 	sprite.setTextureRect(sf::IntRect{{}, dimensions});
@@ -26,4 +26,4 @@ void Piggybacker::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 	sprite.setPosition(gravitator.position() - cam);
 	win.draw(sprite);
 }
-} // namespace player
+} // namespace fornani::player

@@ -1,10 +1,11 @@
 #include "fornani/weapon/Hotbar.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <algorithm>
+
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::arms {
 
-Hotbar::Hotbar(int size) : selection{std::clamp(size, 1, 3)} {}
+Hotbar::Hotbar(int size) : selection{ccm::ext::clamp(size, 1, 3)} {}
 
 void Hotbar::switch_weapon(automa::ServiceProvider& svc, int next) {
 	if (next == 0 || ids.size() == 0) { return; }
@@ -15,7 +16,7 @@ void Hotbar::switch_weapon(automa::ServiceProvider& svc, int next) {
 
 void Hotbar::set_selection(int id) {
 	auto ctr{0};
-	for(auto& i : ids) {
+	for (auto& i : ids) {
 		if (i == id) { selection.set(ctr); }
 		++ctr;
 	}
@@ -45,4 +46,4 @@ void Hotbar::remove(int id) {
 	previous = -1;
 }
 
-} // namespace arms
+} // namespace fornani::arms

@@ -12,11 +12,12 @@ namespace fornani::audio {
 
 class Sound {
   public:
-	explicit Sound(const sf::SoundBuffer& buffer, int echo_count = 0, int echo_rate = 16);
+	explicit Sound(sf::SoundBuffer const& buffer, std::string const& label, int echo_count = 0, int echo_rate = 16);
 	void update(automa::ServiceProvider& svc);
-	void play();
+	void play(bool repeat = false);
 	void set_volume(float volume);
 	void set_pitch(float pitch);
+	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_status() const -> sf::Sound::Status {
 		return std::ranges::find_if(sounds, [](auto& s) { return s.getStatus() == sf::Sound::Status::Playing; }) == std::ranges::end(sounds) ? sf::Sound::Status::Stopped : sf::Sound::Status::Playing;
 	}
@@ -25,6 +26,7 @@ class Sound {
 	[[nodiscard]] auto is_running() const -> bool { return is_playing() || is_echoing(); }
 
   private:
+	std::string m_label;
 	float native_volume{100.f};
 	std::vector<sf::Sound> sounds{};
 	struct {
@@ -34,4 +36,4 @@ class Sound {
 	} echo{};
 };
 
-} // namespace audio
+} // namespace fornani::audio

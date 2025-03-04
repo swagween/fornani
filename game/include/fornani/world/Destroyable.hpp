@@ -18,7 +18,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class DestroyerState : uint8_t { detonated };
+enum class DestroyerState : std::uint8_t { detonated };
 
 class Destroyable {
   public:

@@ -86,7 +86,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::platform;
-			tool->current_entity = std::make_unique<Platform>(sf::Vector2<uint32_t>{static_cast<uint32_t>(x), static_cast<uint32_t>(y)}, extent, type, start);
+			tool->current_entity = std::make_unique<Platform>(sf::Vector2<std::uint32_t>{static_cast<std::uint32_t>(x), static_cast<std::uint32_t>(y)}, extent, type, start);
 			console.add_log(std::string{"Initialized platform with type " + type}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
@@ -139,7 +139,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		if (ImGui::Button("Create")) {
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Portal>(sf::Vector2u{static_cast<uint32_t>(width), static_cast<uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
+			tool->current_entity = std::make_unique<Portal>(sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
 			console.add_log(std::string{"Room ID: " + std::to_string(room_id)}.c_str());
 			ImGui::CloseCurrentPopup();
 		}

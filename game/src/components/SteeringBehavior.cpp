@@ -1,5 +1,5 @@
 #include "fornani/components/SteeringBehavior.hpp"
-#include <algorithm>
+
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
@@ -40,7 +40,7 @@ void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2<
 	auto mag = util::magnitude(distance);
 	mag = std::max(0.0001f, mag);
 	auto str = strength / (mag * mag);
-	str = std::clamp(str, 0.f, max_force);
+	str = ccm::ext::clamp(str, 0.f, max_force);
 	physics.apply_force(distance * str * -1.f);
 }
 

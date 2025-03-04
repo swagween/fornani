@@ -8,7 +8,7 @@ namespace fornani::flfx {
 Transition::Transition(automa::ServiceProvider& svc, int d) : duration(d) {
 	cooldown = util::Cooldown{d};
 	color = svc.styles.colors.ui_black;
-	box.setSize(sf::Vector2<float>(static_cast<float>(svc.constants.screen_dimensions.x), static_cast<float>(svc.constants.screen_dimensions.y)));
+	box.setSize(sf::Vector2<float>(static_cast<float>(svc.window->i_screen_dimensions().x), static_cast<float>(svc.window->i_screen_dimensions().y)));
 }
 
 void Transition::update(player::Player& player) {
@@ -16,14 +16,14 @@ void Transition::update(player::Player& player) {
 	if ((fade_in || fade_out) && !player.controller.walking_autonomously()) { player.controller.restrict_movement(); }
 	if (fade_out) {
 		auto timer = (tt - static_cast<float>(cooldown.get_cooldown())) / tt;
-		alpha = static_cast<uint8_t>(std::lerp(0, 255, timer));
+		alpha = static_cast<std::uint8_t>(std::lerp(0, 255, timer));
 		if (cooldown.is_complete()) {
 			fade_out = false;
 			done = true;
 		}
 	} else if (fade_in) {
 		auto timer = static_cast<float>(cooldown.get_cooldown()) / tt;
-		alpha = static_cast<uint8_t>(std::lerp(0, 255, timer));
+		alpha = static_cast<std::uint8_t>(std::lerp(0, 255, timer));
 		if (cooldown.is_complete()) { fade_in = false; }
 	}
 	if (done) {

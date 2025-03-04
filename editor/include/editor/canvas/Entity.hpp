@@ -9,7 +9,7 @@ namespace pi {
 
 class Entity {
   public:
-	explicit Entity(std::string const& label, int const id = 0, sf::Vector2<uint32_t> dimensions = {}) : id(id), label(label), dimensions(dimensions) {};
+	explicit Entity(std::string const& label, int const id = 0, sf::Vector2<std::uint32_t> dimensions = {}) : id(id), label(label), dimensions(dimensions) {};
 	virtual ~Entity() = default;
 	virtual std::unique_ptr<Entity> clone() const;
 	virtual void serialize(dj::Json& out);
@@ -42,8 +42,8 @@ class Entity {
   private:
 	int id{};
 	std::string label{};
-	sf::Vector2<uint32_t> position{};
-	sf::Vector2<uint32_t> dimensions{};
+	sf::Vector2<std::uint32_t> position{};
+	sf::Vector2<std::uint32_t> dimensions{};
 };
 
 } // namespace pi

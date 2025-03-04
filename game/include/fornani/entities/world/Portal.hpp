@@ -20,16 +20,16 @@ class Transition;
 
 namespace fornani::entity {
 
-enum class PortalAttributes : uint8_t { activate_on_contact, already_open };
-enum class PortalState : uint8_t { activated, ready, locked, unlocked };
-enum class PortalRenderState : uint8_t { closed, open };
-enum class PortalOrientation : uint8_t { top, bottom, left, right, central };
+enum class PortalAttributes : std::uint8_t { activate_on_contact, already_open };
+enum class PortalState : std::uint8_t { activated, ready, locked, unlocked };
+enum class PortalRenderState : std::uint8_t { closed, open };
+enum class PortalOrientation : std::uint8_t { top, bottom, left, right, central };
 
 class Portal {
 
   public:
 	using Vec = sf::Vector2<float>;
-	using Vecu32 = sf::Vector2<uint32_t>;
+	using Vecu32 = sf::Vector2<std::uint32_t>;
 
 	Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked = false, bool already_open = false, int key_id = 0, int style = 0, sf::Vector2<int> map_dim = {});
 	void update(automa::ServiceProvider& svc);

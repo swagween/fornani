@@ -1,107 +1,108 @@
 {
-  "options": {
-    "main": [
-      "play",
-      "options",
-      "quit"
-    ],
-    "file": [
-      "file 1",
-      "file 2",
-      "file 3"
-    ],
-    "stat": [
-      "save screenshot",
-      "exit to menu"
-    ],
-    "options": [
-      "controls",
-      "settings"
-    ],
-    "controls_platformer": [
-      "< platformer >",
-      "left",
-      "right",
-      "up",
-      "down",
-      "jump",
-      "shoot",
-      "sprint",
-      "shield",
-      "inspect",
-      "arms_switch_left",
-      "arms_switch_right",
-      "open_inventory",
-      "open_map",
-      "gamepad settings",
-      "reset to default"
-    ],
-    "controls_inventory": [
-      "< inventory >",
-      "open_map",
-      "close",
-      "gamepad settings",
-      "reset to default"
-    ],
-    "controls_map": [
-      "< map >",
-      "open_inventory",
-      "close",
-      "gamepad settings",
-      "reset to default"
-    ],
-    "controls_menu": [
-      "< menu >",
-      "left",
-      "right",
-      "up",
-      "down",
-      "select",
-      "cancel",
-      "gamepad settings",
-      "reset to default"
-    ],
-    "settings": [
-      "auto-sprint: ",
-      "tutorial: ",
-      "gamepad input: ",
-      "music volume: ",
-      "fullscreen: "
-    ],
-    "credits": [
-      ""
-    ]
-  },
-  "config": {
-    "main": {
-      "top_buffer": 296
-    },
-    "file": {
-      "top_buffer": 186
-    },
-    "options": {
-      "top_buffer": 186
-    },
-    "controls_platformer": {
-      "top_buffer": 30
-    },
-    "controls_inventory": {
-      "top_buffer": 30
-    },
-    "controls_map": {
-      "top_buffer": 30
-    },
-    "controls_menu": {
-      "top_buffer": 30
-    },
-    "settings": {
-      "top_buffer": 60
-    },
-    "credits": {
-      "top_buffer": 60
-    },
-    "stat": {
-      "top_buffer": 450
-    }
-  }
+	"options": {
+		"main": [
+			"play",
+			"options",
+			"quit"
+		],
+		"file": [
+			"file 1",
+			"file 2",
+			"file 3"
+		],
+		"stat": [
+			"save screenshot",
+			"exit to menu"
+		],
+		"options": [
+			"controls",
+			"settings"
+		],
+		"controls_platformer": [
+			"< platformer >",
+			"left",
+			"right",
+			"up",
+			"down",
+			"jump",
+			"shoot",
+			"sprint",
+			"shield",
+			"inspect",
+			"arms_switch_left",
+			"arms_switch_right",
+			"open_inventory",
+			"open_map",
+			"gamepad settings",
+			"reset to default"
+		],
+		"controls_inventory": [
+			"< inventory >",
+			"open_map",
+			"close",
+			"gamepad settings",
+			"reset to default"
+		],
+		"controls_map": [
+			"< map >",
+			"open_inventory",
+			"close",
+			"gamepad settings",
+			"reset to default"
+		],
+		"controls_menu": [
+			"< menu >",
+			"left",
+			"right",
+			"up",
+			"down",
+			"select",
+			"cancel",
+			"gamepad settings",
+			"reset to default"
+		],
+		"settings": [
+			"auto-sprint: ",
+			"tutorial: ",
+			"gamepad input: ",
+			"music volume: ",
+			"fullscreen: ",
+			"military time: "
+		],
+		"credits": [
+			""
+		]
+	},
+	"config": {
+		"main": {
+			"top_buffer": 296
+		},
+		"file": {
+			"top_buffer": 186
+		},
+		"options": {
+			"top_buffer": 186
+		},
+		"controls_platformer": {
+			"top_buffer": 30
+		},
+		"controls_inventory": {
+			"top_buffer": 30
+		},
+		"controls_map": {
+			"top_buffer": 30
+		},
+		"controls_menu": {
+			"top_buffer": 30
+		},
+		"settings": {
+			"top_buffer": 60
+		},
+		"credits": {
+			"top_buffer": 60
+		},
+		"stat": {
+			"top_buffer": 450
+		}
+	}
 }

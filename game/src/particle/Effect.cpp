@@ -4,7 +4,7 @@
 
 namespace fornani::entity {
 
-Effect::Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type, int index, sf::Vector2i reflections) : type(type), sprite{svc.assets.effect_lookup.at(index)} {
+Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2<float> pos, sf::Vector2<float> vel, int type, int index, sf::Vector2i reflections) : type(type), sprite{svc.assets.get_texture("effect_" + label)} {
 	auto framerate{16};
 	switch (index) {
 	case 0:

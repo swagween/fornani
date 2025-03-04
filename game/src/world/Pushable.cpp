@@ -1,17 +1,20 @@
 #include "fornani/world/Pushable.hpp"
-#include <algorithm>
+
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Constants.hpp"
 #include "fornani/world/Map.hpp"
 
 #include "fornani/utils/Random.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::world {
 
-Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.t_pushables} {
-	collider = shape::Collider({svc.constants.cell_size * static_cast<float>(size) - 4.f, svc.constants.cell_size * static_cast<float>(size) - 1.f});
+Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.get_texture("pushables")} {
+	collider = shape::Collider({util::constants::f_cell_size * static_cast<float>(size) - 4.f, util::constants::f_cell_size * static_cast<float>(size) - 1.f});
 	collider.physics.position = position;
 	start_position = position;
 	collider.physics.set_constant_friction({0.95f, 0.98f});
@@ -22,12 +25,12 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, in
 	auto lock = collider.snap_to_grid(static_cast<float>(size));
 	collider.physics.position = lock;
 	start_box = collider.bounding_box;
-	sf::IntRect lookup = size == 1 ? sf::IntRect{{style * 2 * svc.constants.i_cell_size, 0}, svc.constants.i_cell_vec} : sf::IntRect{{style * 2 * svc.constants.i_cell_size, svc.constants.i_cell_size}, 2 * svc.constants.i_cell_vec};
-	sprite.setTextureRect(lookup);
+	sprite.setTextureRect(sf::IntRect{{style * 2 * util::constants::i_cell_resolution, (size - 1) * util::constants::i_cell_resolution}, util::constants::i_resolution_vec * size});
+	sprite.setScale(util::constants::f_scale_vec);
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
-	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
 	weakened.update();
@@ -53,20 +56,9 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (player.collider.wallslider.overlaps(collider.bounding_box) && player.pushing()) {
 		if (player.controller.moving_left() && player.collider.physics.position.x > collider.physics.position.x) { collider.physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.collider.physics.position.x < collider.physics.position.x) { collider.physics.acceleration.x = speed / mass; }
-		if (ccm::abs(collider.physics.acceleration.x) > 0.f) { svc.soundboard.flags.world.set(audio::World::pushable); }
+		if (ccm::abs(collider.physics.acceleration.x) > 0.f) { svc.soundboard.flags.world.set(audio::World::pushable_move); }
 		state.set(PushableState::moved);
 		state.set(PushableState::moving);
-	}
-
-	// debug
-	if (state.test(PushableState::moved)) {
-		/*if (svc.ticker.every_x_ticks(400)) {
-			std::cout << "X: " << collider.physics.position.x << "\n";
-			std::cout << "Y: " << collider.physics.position.y << "\n";
-			std::cout << "Snap X: " << snap.x << "\n";
-			std::cout << "Snap Y: " << snap.y << "\n";
-			std::cout << "---\n";
-		}*/
 	}
 
 	player.collider.handle_collider_collision(collider);
@@ -94,7 +86,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 		collider.handle_collider_collision(other.collider.bounding_box);
 	}
-	// for (auto& spike : map.spikes) { collider.handle_collider_collision(spike.get_bounding_box()); }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
@@ -104,7 +95,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (platform.bounding_box.overlaps(collider.jumpbox)) { collider.handle_collider_collision(platform.bounding_box); }
 	}
 	if (collider.flags.state.test(shape::State::just_landed)) {
-		map.effects.push_back(entity::Effect(svc, {collider.physics.position.x + 32.f * (size / 2.f), collider.physics.position.y + (size - 1) * 32.f}, {}, 0, 10));
+		map.effects.push_back(entity::Effect(svc, "dust", {collider.physics.position.x + util::constants::f_cell_size * (size / 2.f), collider.physics.position.y + (size - 1) * util::constants::f_cell_size}, {}, 0, 10));
 		svc.soundboard.flags.world.set(audio::World::thud);
 	}
 	collider.reset();
@@ -151,9 +142,10 @@ void Pushable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
 	auto index = size == 1 ? 0 : 1;
 	auto offset = size == 1 ? sf::Vector2<float>{} : sf::Vector2<float>{5.f, 5.f};
-	map.effects.push_back(entity::Effect(svc, collider.physics.position + offset, {}, 0, index));
+	auto label = size == 1 ? "small_explosion" : "large_explosion";
+	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset, {}, 0, index));
 	collider.physics.position = start_position;
-	map.effects.push_back(entity::Effect(svc, collider.physics.position + offset, {}, 0, index));
+	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset, {}, 0, index));
 }
 
 } // namespace fornani::world

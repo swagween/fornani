@@ -26,15 +26,16 @@ enum class InventoryView { dashboard, focused, exit };
 
 class InventoryWindow {
   public:
-	InventoryWindow(automa::ServiceProvider& svc, world::Map& map);
+	InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player);
 	[[nodiscard]] auto exit_requested() const -> bool { return m_view == InventoryView::exit; }
 
   private:
 	sf::FloatRect boundary{};
 	sf::Vector2f m_grid_position{};
 	sf::Vector2f m_cell_dimensions{};
+	sf::RectangleShape m_background{};
 	std::unique_ptr<Dashboard> m_dashboard{};
 	InventoryView m_view{};
 
@@ -46,10 +47,7 @@ class InventoryWindow {
 
 	struct {
 		sf::RectangleShape border{};
-		sf::RectangleShape boundary{};
 		sf::CircleShape center{};
-
-		sf::Sprite sprite;
 	} m_debug;
 
 	io::Logger m_logger{"gui"};

@@ -4,7 +4,7 @@
 
 namespace fornani::entity {
 
-TreasureContainer::TreasureContainer(automa::ServiceProvider& svc, item::Rarity rarity, sf::Vector2<float> position, int index) : rarity(rarity), index(index), sprite{svc.assets.t_treasure_ball} {
+TreasureContainer::TreasureContainer(automa::ServiceProvider& svc, item::Rarity rarity, sf::Vector2<float> position, int index) : rarity(rarity), index(index), sprite{svc.assets.get_texture("treasure_container")} {
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 1.0f);
 	gravitator.set_position(position);
@@ -33,7 +33,7 @@ void TreasureContainer::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 			if (health.is_dead()) {
 				map.active_loot.push_back(item::Loot(svc, {2, 3}, loot_multiplier, gravitator.position(), 0, rarity == item::Rarity::priceless, 0));
 				svc.soundboard.flags.world.set(audio::World::block_toggle);
-				map.effects.push_back(entity::Effect(svc, sensor.bounds.getPosition() - sf::Vector2<float>{8.f, 8.f}, {}, 0, 0));
+				map.effects.push_back(entity::Effect(svc, "small_explosion", sensor.bounds.getPosition() - sf::Vector2<float>{8.f, 8.f}, {}, 0, 0));
 			}
 		}
 		proj.destroy(false);

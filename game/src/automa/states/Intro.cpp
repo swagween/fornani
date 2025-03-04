@@ -5,7 +5,7 @@
 namespace fornani::automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number) {
-	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
+	title.setSize(static_cast<sf::Vector2f>(svc.window->i_screen_dimensions()));
 	title.setFillColor(svc.styles.colors.ui_black);
 	console = gui::Console(svc);
 	svc.music.load(svc.finder, "respite");

@@ -5,23 +5,23 @@
 
 namespace pi {
 
-Clipboard::Clipboard(sf::Vector2<uint32_t> dimensions) : m_dimensions(dimensions) {}
+Clipboard::Clipboard(sf::Vector2<std::uint32_t> dimensions) : m_dimensions(dimensions) {}
 
-void Clipboard::write_to_clipboard(uint32_t value, size_t i, size_t j, size_t layer) {
-	while (layer >= m_cell_values.size()) { m_cell_values.push_back(std::vector<uint32_t>{}); }
+void Clipboard::write_to_clipboard(std::uint32_t value, std::size_t i, std::size_t j, std::size_t layer) {
+	while (layer >= m_cell_values.size()) { m_cell_values.push_back(std::vector<std::uint32_t>{}); }
 	for (auto u{0}; u < m_dimensions.x; ++u) {
 		for (auto v{0}; v < m_dimensions.y; ++v) { m_cell_values.at(layer).push_back(0); }
 	}
-	auto index = i + j * static_cast<size_t>(m_dimensions.x);
+	auto index = i + j * static_cast<std::size_t>(m_dimensions.x);
 	m_cell_values.at(layer).at(index) = value;
 }
 
 
 void Clipboard::clear_clipboard() { m_cell_values.clear(); }
 
-uint32_t Clipboard::get_value_at(size_t i, size_t j) { return m_cell_values.back().at(i + j * m_dimensions.x); }
+std::uint32_t Clipboard::get_value_at(std::size_t i, std::size_t j) { return m_cell_values.back().at(i + j * m_dimensions.x); }
 
-uint32_t Clipboard::get_value_at(size_t i, size_t j, size_t layer) {
+std::uint32_t Clipboard::get_value_at(std::size_t i, std::size_t j, std::size_t layer) {
 	if (layer >= m_cell_values.size()) { return 0u; }
 	return m_cell_values.at(layer).at(i + j * m_dimensions.x);
 }
@@ -32,8 +32,8 @@ void Clipboard::cut(Canvas& canvas, Tool& tool) {
 	source = canvas.get_selection_type();
 	m_dimensions = tool.selection.value().dimensions;
 	canvas.save_state(tool, true);
-	for (uint32_t i = 0; i < tool.selection.value().dimensions.x; ++i) {
-		for (uint32_t j = 0; j < tool.selection.value().dimensions.y; ++j) {
+	for (std::uint32_t i = 0; i < tool.selection.value().dimensions.x; ++i) {
+		for (std::uint32_t j = 0; j < tool.selection.value().dimensions.y; ++j) {
 			for (auto k{0}; k < canvas.get_layers().layers.size(); ++k) {
 				if (!tool.pervasive && k != canvas.active_layer) { continue; }
 				write_to_clipboard(canvas.tile_val_at(tool.selection.value().position.x + i, tool.selection.value().position.y + j, k), i, j, k);
@@ -48,8 +48,8 @@ void Clipboard::copy(Canvas& canvas, Tool& tool) {
 	m_mode = SelectMode::clipboard;
 	source = canvas.get_selection_type();
 	m_dimensions = tool.selection.value().dimensions;
-	for (uint32_t i = 0; i < tool.selection.value().dimensions.x; ++i) {
-		for (uint32_t j = 0; j < tool.selection.value().dimensions.y; ++j) {
+	for (std::uint32_t i = 0; i < tool.selection.value().dimensions.x; ++i) {
+		for (std::uint32_t j = 0; j < tool.selection.value().dimensions.y; ++j) {
 			for (auto k{0}; k < canvas.get_layers().layers.size(); ++k) {
 				if (!tool.pervasive && k != canvas.active_layer) { continue; }
 				write_to_clipboard(canvas.tile_val_at(tool.selection.value().position.x + i, tool.selection.value().position.y + j, k), i, j, k);
@@ -61,8 +61,8 @@ void Clipboard::copy(Canvas& canvas, Tool& tool) {
 void Clipboard::paste(Canvas& canvas, Tool& tool) {
 	if (!canvas.editable()) { return; }
 	canvas.save_state(tool, true);
-	for (uint32_t i = 0; i < scaled_dimensions().x; ++i) {
-		for (uint32_t j = 0; j < scaled_dimensions().y; ++j) {
+	for (std::uint32_t i = 0; i < scaled_dimensions().x; ++i) {
+		for (std::uint32_t j = 0; j < scaled_dimensions().y; ++j) {
 			auto edit_x = tool.scaled_position().x + i - scaled_dimensions().x + 1;
 			auto edit_y = tool.scaled_position().y + j - scaled_dimensions().y + 1;
 			if (edit_x < canvas.dimensions.x && edit_y < canvas.dimensions.y) {

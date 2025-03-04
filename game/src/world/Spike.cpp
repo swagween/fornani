@@ -1,5 +1,5 @@
 #include "fornani/world/Spike.hpp"
-#include <algorithm>
+
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
@@ -10,7 +10,7 @@
 
 namespace fornani::world {
 
-Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size)
+Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size)
 	: size(size), hitbox(i_size().x == 1 ? size * 32.f : size * 24.f), sprite{texture}, grid_position(position + sf::Vector2<float>{16.f, 16.f}) {
 	direction.x = direction.y != 0 ? 0 : direction.x;
 	i_size().x == 1 ? sprite.setTextureRect(sf::IntRect{{480, 480}, {32, 32}}) : sprite.setTextureRect(sf::IntRect{{0, 0}, {192, 128}});

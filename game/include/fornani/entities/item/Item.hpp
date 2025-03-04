@@ -20,9 +20,9 @@ enum class ApparelType;
 
 namespace fornani::item {
 
-enum class ItemFlags : uint8_t { unique, revealed, usable, equippable, sellable };
-enum class UIFlags : uint8_t { selected };
-enum class ItemState : uint8_t { equipped };
+enum class ItemFlags : std::uint8_t { unique, revealed, usable, equippable, sellable };
+enum class UIFlags : std::uint8_t { selected };
+enum class ItemState : std::uint8_t { equipped };
 
 class Item final : public entity::Entity {
   public:

@@ -1,12 +1,13 @@
 #include "fornani/entities/item/Item.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/gui/Console.hpp"
 #include "fornani/entities/player/Wardrobe.hpp"
-#include <algorithm>
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::item {
 
-Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label), sprite(svc.assets.t_items), ui{.rarity{svc.text.fonts.title}, .quantity{svc.text.fonts.basic}} {
+Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label), sprite(svc.assets.get_texture("inventory_items")), ui{.rarity{svc.text.fonts.title}, .quantity{svc.text.fonts.basic}} {
 	auto const& in_data = svc.data.item[label];
 	metadata.id = in_data["index"].as<int>();
 	metadata.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string() : metadata.naive_title = in_data["title"].as_string();
@@ -54,7 +55,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label),
 	auto v = static_cast<int>(std::floor((static_cast<float>(metadata.id - 1) / 16.f)) * dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
 
-	//for debug
+	// for debug
 	drawbox.setSize(dimensions);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(svc.styles.colors.blue);
@@ -67,7 +68,7 @@ void Item::update(automa::ServiceProvider& svc, int index, int items_per_row, sf
 	auto x_pos = ui.pad.x + static_cast<float>(index % items_per_row) * ui.spacing;
 	auto inv_pos = sf::Vector2<float>{x_pos, y_pos} + ui.offset - sf::Vector2<float>{8.f, 8.f} + offset;
 	if (flags.test(ItemFlags::unique)) {
-		variables.quantity = std::clamp(variables.quantity, 0, 1);
+		variables.quantity = ccm::ext::clamp(variables.quantity, 0, 1);
 	} else {
 		ui.quantity.setString(std::format("x{}", variables.quantity));
 		ui.quantity.setPosition(inv_pos + dimensions);
@@ -104,4 +105,4 @@ void Item::set_rarity_position(sf::Vector2<float> position) { ui.rarity.setPosit
 
 void Item::set_offset(sf::Vector2<float> offset) { ui.offset = offset; }
 
-} // namespace player
+} // namespace fornani::item

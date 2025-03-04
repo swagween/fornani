@@ -1,13 +1,13 @@
 
 #pragma once
 
-#include "fornani/utils/Collider.hpp"
-#include "fornani/entities/Entity.hpp"
-#include "NPCAnimation.hpp"
-#include "Vendor.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
 #include <deque>
 #include <string_view>
+#include "NPCAnimation.hpp"
+#include "Vendor.hpp"
+#include "fornani/entities/Entity.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/utils/Collider.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -27,12 +27,12 @@ class Player;
 
 namespace fornani::npc {
 
-enum class NPCState : uint8_t { engaged, force_interact, introduced, background, talking, cutscene, piggybacking, hidden };
-enum class NPCTrigger : uint8_t { distant_interact, engaged, cutscene };
+enum class NPCState : std::uint8_t { engaged, force_interact, introduced, background, talking, cutscene, piggybacking, hidden };
+enum class NPCTrigger : std::uint8_t { distant_interact, engaged, cutscene };
 
 class NPC : public entity::Entity {
   public:
-	NPC(automa::ServiceProvider& svc, int id);
+	NPC(automa::ServiceProvider& svc, std::string_view label, int id);
 	void update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) override;
 	void force_engage();
@@ -54,9 +54,8 @@ class NPC : public entity::Entity {
 	[[nodiscard]] auto is_vendor() const -> bool { return static_cast<bool>(vendor); }
 	[[nodiscard]] auto piggybacking() const -> bool { return state_flags.test(NPCState::piggybacking); }
 	[[nodiscard]] auto hidden() const -> bool { return state_flags.test(NPCState::hidden); }
+	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	Vendor& get_vendor() const { return *vendor.value(); }
-
-	std::string_view label{};
 
   protected:
 	util::BitFlags<NPCState> state_flags{};
@@ -64,10 +63,12 @@ class NPC : public entity::Entity {
 	std::deque<std::string_view> conversations{};
 	shape::Collider collider{};
 	std::optional<Vendor*> vendor;
-	sf::Sprite sprite;
+	sf::Sprite m_sprite;
+	std::string m_label{};
+
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};
-	anim::AnimatedSprite indicator;
+	anim::AnimatedSprite m_indicator;
 	int id{};
 	int current_location{};
 
@@ -76,4 +77,4 @@ class NPC : public entity::Entity {
 	} physical{};
 };
 
-} // namespace fornani::entity
+} // namespace fornani::npc

@@ -2,10 +2,10 @@
 #pragma once
 
 #include <SFML/Audio.hpp>
+#include <unordered_map>
+#include "Sound.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
-#include "Sound.hpp"
-#include <unordered_map>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -13,30 +13,32 @@ struct ServiceProvider;
 
 namespace fornani::audio {
 
-enum class SoundboardState : uint8_t { on, off };
+enum class SoundboardState : std::uint8_t { on, off };
 
-enum class Menu : uint8_t { select, shift, forward_switch, backward_switch };
-enum class Console : uint8_t { next, done, shift, select, speech, menu_open };
-enum class World : uint8_t { load, save, soft_sparkle, soft_sparkle_high, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable, door_open, door_unlock };
-enum class Item : uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip };
-enum class Player : uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
-enum class Weapon : uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710 };
-enum class Arms : uint8_t { reload };
-enum class Transmission : uint8_t { statics };
-enum class Step : uint8_t { basic, grass };
+enum class Menu : std::uint8_t { select, shift, forward_switch, backward_switch };
+enum class Pioneer : std::uint8_t { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag };
+enum class Console : std::uint8_t { next, done, shift, select, speech, menu_open };
+enum class World : std::uint8_t { load, save, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable_move, door_open, door_unlock };
+enum class Item : std::uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale };
+enum class Player : std::uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
+enum class Weapon : std::uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710 };
+enum class Arms : std::uint8_t { reload };
+enum class Transmission : std::uint8_t { statics };
+enum class Step : std::uint8_t { basic, grass };
 
 // critters
-enum class Enemy : uint8_t { hit_squeak, hit_high, hit_medium, hit_low };
-enum class Frdog : uint8_t { hurt, death };
-enum class Hulmet : uint8_t { hurt };
-enum class Tank : uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
-enum class Thug : uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
-enum class Minigus : uint8_t { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost, ok };
-enum class Minigun : uint8_t { charge, reload, neutral, firing };
-enum class Demon : uint8_t { hurt, signal, death, snort };
-enum class Archer : uint8_t { hurt, flee, death };
-enum class Beamstalk : uint8_t { hurt, death };
-enum class Meatsquash : uint8_t { hurt, death, chomp, whip, swallow };
+enum class Enemy : std::uint8_t { hit_squeak, hit_high, hit_medium, hit_low, standard_death };
+
+enum class Frdog : std::uint8_t { hurt, death };
+enum class Hulmet : std::uint8_t { hurt };
+enum class Tank : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
+enum class Thug : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
+enum class Minigus : std::uint8_t { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost, ok };
+enum class Minigun : std::uint8_t { charge, reload, neutral, firing };
+enum class Demon : std::uint8_t { hurt, alert, death, snort, up_snort };
+enum class Archer : std::uint8_t { hurt, flee, death };
+enum class Beamstalk : std::uint8_t { hurt, death };
+enum class Meatsquash : std::uint8_t { hurt, death, chomp, whip, swallow };
 
 class Soundboard {
   public:
@@ -45,11 +47,12 @@ class Soundboard {
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);
-	[[nodiscard]] auto sound_pool_size() const -> size_t { return sound_pool.size(); }
+	[[nodiscard]] auto sound_pool_size() const -> std::size_t { return sound_pool.size(); }
 	[[nodiscard]] auto number_of_playng_sounds() -> int;
 	struct {
 		util::BitFlags<Menu> menu{};
 		util::BitFlags<Console> console{};
+		util::BitFlags<Pioneer> pioneer{};
 		util::BitFlags<World> world{};
 		util::BitFlags<Item> item{};
 		util::BitFlags<Player> player{};
@@ -71,12 +74,15 @@ class Soundboard {
 		util::BitFlags<Beamstalk> beamstalk{};
 		util::BitFlags<Meatsquash> meatsquash{};
 	} flags{};
-	
-	void play(automa::ServiceProvider& svc, sf::SoundBuffer& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {}, int echo_count = 0, int echo_rate = 64);
+
+	void play(automa::ServiceProvider& svc, sf::SoundBuffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {}, int echo_count = 0,
+			  int echo_rate = 64);
 
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
-	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
+	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {}, bool wait_until_over = false);
+	void simple_repeat(sf::SoundBuffer const& buffer, std::string const& label);
+	void stop(std::string const& label);
 
 	std::vector<Sound> sound_pool{};
 
@@ -85,10 +91,6 @@ class Soundboard {
 	struct {
 		float save{};
 	} proximities{};
-
-	struct {
-		util::Cooldown hard_hit{18};
-	} cooldowns{};
 
 	std::unordered_map<int, std::unordered_map<int, Step>> get_step_sound{{1,
 																		   {{96, Step::grass},
@@ -108,4 +110,4 @@ class Soundboard {
 																			{497, Step::grass}}}};
 };
 
-} // namespace audio
+} // namespace fornani::audio

@@ -5,11 +5,11 @@
 			"path": [
 				{
 					"position": [ 240, 257 ],
-					"dimensions": [ 58, 60 ]
+					"dimensions": [ 64, 24 ]
 				},
 				{
 					"position": [ 240, 190 ],
-					"dimensions": [ 312, 85 ]
+					"dimensions": [ 256, 40 ]
 				}
 			]
 		},
@@ -17,8 +17,8 @@
 			"label": "close",
 			"path": [
 				{
-					"position": [ 47, 129 ],
-					"dimensions": [ 385, 122 ]
+					"position": [ 240, 190 ],
+					"dimensions": [ 256, 40 ]
 				}
 			]
 		}

@@ -18,10 +18,10 @@ class Map;
 
 namespace fornani::item {
 
-enum class DropType : uint8_t { heart, orb, gem };
-enum Rarity : uint8_t { common, uncommon, rare, priceless };
-enum class GemType : uint8_t { rhenite, sapphire };
-enum class DropFlags : uint8_t { neutral, shining };
+enum class DropType : std::uint8_t { heart, orb, gem };
+enum Rarity : std::uint8_t { common, uncommon, rare, priceless };
+enum class GemType : std::uint8_t { rhenite, sapphire };
+enum class DropFlags : std::uint8_t { neutral, shining };
 
 class Drop {
 

@@ -1,6 +1,7 @@
 
 #include "fornani/automa/states/FileMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Constants.hpp"
 
 namespace fornani::automa {
 
@@ -11,14 +12,14 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	console.set_source(svc.text.basic);
 	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
-	player.set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(0).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
-	player.antennae.at(1).set_position({(float)(svc.constants.screen_dimensions.x / 2) + 80, 360});
+	player.set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	player.antennae.at(1).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.hurt_cooldown.cancel();
 
 	loading.start(4);
 
-	title.setSize(static_cast<sf::Vector2f>(svc.constants.screen_dimensions));
+	title.setSize(svc.window->f_screen_dimensions());
 	title.setFillColor(svc.styles.colors.ui_black);
 
 	refresh(svc);
@@ -81,6 +82,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 					break;
 				}
 			} else {
+				// TODO: pull option strings from a .json to make localization easier in the future
 				m_file_select_menu = gui::MiniMenu(svc, {"play", "stats", "delete"}, options.at(current_selection.get()).position);
 				svc.soundboard.flags.console.set(audio::Console::menu_open);
 			}
@@ -97,8 +99,8 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	}
 
 	auto& opt = options.at(current_selection.get());
-	auto minimenu_dim = sf::Vector2<float>{128.f, 128.f};
-	auto minimenu_pos = opt.position + sf::Vector2<float>(opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f);
+	auto minimenu_dim{sf::Vector2f{8.f, 8.f}}; // defines the width of the nineslice, which does not include corner and edge dimensions. 8.f is enough to comfortably hold all the file options.
+	auto minimenu_pos{opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f}};
 	if (m_file_select_menu) { m_file_select_menu->update(svc, minimenu_dim, minimenu_pos); }
 
 	left_dot.update(svc);
@@ -114,7 +116,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.autonomous_walk();
 	player->collider.flags.state.set(shape::State::grounded);
 
-	player->set_position({svc.constants.screen_dimensions.x * 0.5f + 80, 360});
+	player->set_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
 	player->update(map);
 	player->controller.direction.lr = dir::LR::left;
 

@@ -21,10 +21,14 @@ out/*
 CMakeSettings.json
 compile_commands.json
 /CMakeUserPresets.json
+*.ini
 
 ### C++ specific
 # Prerequisites
 *.d
+
+# Log files
+*.log
 
 # Compiled Object files
 *.slo

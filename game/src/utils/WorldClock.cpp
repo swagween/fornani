@@ -1,3 +1,4 @@
+
 #include "fornani/utils/WorldClock.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
@@ -30,17 +31,17 @@ void WorldClock::set_speed(int to_rate, int to_transition) {
 	if (to_transition != 4096) { transition = util::Cooldown(to_transition); }
 }
 
-std::string WorldClock::get_string(bool military) {
+void WorldClock::toggle_military_time() { m_mode = m_mode == ClockMode::standard ? ClockMode::military : ClockMode::standard; }
+
+std::string WorldClock::get_hours_string() {
 	std::string ret{};
-	std::string leading_zero = increments.minutes.get() < 10 ? "0" : "";
 	std::string twelve_hour = increments.hours.get() % 12 == 0 ? "12" : std::to_string(increments.hours.get() % 12);
-	std::string qualifier = increments.hours.get() >= 12 ? "pm" : "am";
-	if (military) {
-		ret = std::to_string(increments.hours.get()) + ":" + leading_zero + std::to_string(increments.minutes.get());
-	} else {
-		ret = twelve_hour + ":" + leading_zero + std::to_string(increments.minutes.get()) + qualifier;
-	}
+	ret = is_military() ? std::to_string(increments.hours.get()) : twelve_hour;
 	return ret;
 }
+
+std::string WorldClock::get_minutes_string() { return (increments.minutes.get() < 10 ? "0" : "") + std::to_string(increments.minutes.get()); }
+
+std::string WorldClock::get_string() { return get_hours_string() + ":" + get_minutes_string() + (is_military() ? "" : increments.hours.get() >= 12 ? "pm" : "am"); }
 
 } // namespace fornani

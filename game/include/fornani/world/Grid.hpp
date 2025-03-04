@@ -16,10 +16,9 @@ constexpr int floor_single_ramp = 496;
 
 class Grid {
   public:
-	Grid() = default;
-	Grid(sf::Vector2<uint32_t> d, dj::Json& source);
+	Grid(sf::Vector2<std::uint32_t> d, dj::Json& source, float s);
 
-	sf::Vector2<uint32_t> dimensions{};
+	sf::Vector2<std::uint32_t> dimensions{};
 
 	void check_neighbors(int i);
 	sf::Vector2<int> get_solid_neighbors(int index);
@@ -33,8 +32,8 @@ class Grid {
 	std::vector<Tile> cells{};
 
   private:
-	float spacing{32.f};
-	sf::RectangleShape drawbox{};
+	float m_spacing{};
+	sf::RectangleShape m_drawbox{};
 };
 
-} // namespace squid
+} // namespace fornani::world

@@ -15,7 +15,7 @@ enum class DigitalAction;
 
 namespace fornani::graphics {
 
-enum class HelpTextFlags : uint8_t { no_blink, time_limit };
+enum class HelpTextFlags : std::uint8_t { no_blink, time_limit };
 
 class HelpText {
   public:
@@ -24,7 +24,7 @@ class HelpText {
 	void render(sf::RenderWindow& win);
 	void set_color(sf::Color color);
 	void set_string(std::string string);
-	void set_alpha(uint8_t a);
+	void set_alpha(std::uint8_t a);
 	void set_position(sf::Vector2<float> pos);
 	void start(int time = 195) { delay.start(time); }
 	void reset();

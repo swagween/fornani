@@ -1,5 +1,5 @@
 #include "fornani/gui/StatusBar.hpp"
-#include <algorithm>
+
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
@@ -10,13 +10,13 @@ StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim, float s
 	debug_rects.filled.setFillColor(svc.styles.colors.red);
 	debug_rects.taken.setFillColor(svc.styles.colors.goldenrod);
 	debug_rects.gone.setFillColor(svc.styles.colors.navy_blue);
-	debug_rects.filled.setPosition({svc.constants.screen_dimensions.x * 0.5f, 60.f});
+	debug_rects.filled.setPosition({svc.window->i_screen_dimensions().x * 0.5f, 60.f});
 	debug_rects.filled.setSize({200.f, 20.f});
 	debug_rects.filled.setOrigin(debug_rects.filled.getSize() * 0.5f);
-	debug_rects.taken.setPosition({svc.constants.screen_dimensions.x * 0.5f, 60.f});
+	debug_rects.taken.setPosition({svc.window->i_screen_dimensions().x * 0.5f, 60.f});
 	debug_rects.taken.setSize({200.f, 20.f});
 	debug_rects.taken.setOrigin(debug_rects.filled.getSize() * 0.5f);
-	debug_rects.gone.setPosition({svc.constants.screen_dimensions.x * 0.5f, 60.f});
+	debug_rects.gone.setPosition({svc.window->i_screen_dimensions().x * 0.5f, 60.f});
 	debug_rects.gone.setSize({200.f, 20.f});
 	debug_rects.gone.setOrigin(debug_rects.filled.getSize() * 0.5f);
 	current_state = BarState::full;

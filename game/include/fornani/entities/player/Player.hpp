@@ -117,7 +117,7 @@ class Player {
 	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
-	[[nodiscard]] auto arsenal_size() const -> size_t { return arsenal ? arsenal.value().size() : 0; }
+	[[nodiscard]] auto arsenal_size() const -> std::size_t { return arsenal ? arsenal.value().size() : 0; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
 	[[nodiscard]] auto pushing() const -> bool { return animation.state == AnimState::push || animation.state == AnimState::between_push; }
@@ -129,6 +129,7 @@ class Player {
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2<float> { return collider.get_center() + camera_offset; }
+	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
 
 	// moves
 	void jump(world::Map& map);

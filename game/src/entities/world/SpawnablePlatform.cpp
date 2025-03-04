@@ -1,11 +1,11 @@
 #include "fornani/entities/world/SpawnablePlatform.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 
 namespace fornani::entity {
 
-SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index) : index(index), sprite(svc.assets.t_spawnable_platform, {64, 64}) {
+SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index) : index(index), sprite(svc.assets.get_texture("spawnable_platform"), {64, 64}) {
 	collider = shape::Collider({64.f, 64.f});
 	collider.flags.general.set(shape::General::top_only_collision);
 	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
@@ -44,7 +44,7 @@ void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 			if (health.is_dead()) {
 				svc.soundboard.flags.world.set(audio::World::block_toggle);
-				map.effects.push_back(entity::Effect(svc, sensor.bounds.getPosition() - sf::Vector2<float>{32.f, 32.f}, {}, 0, 0));
+				map.effects.push_back(entity::Effect(svc, "smoke", sensor.bounds.getPosition() - sf::Vector2<float>{32.f, 32.f}, {}, 0, 0));
 				state = SpawnablePlatformState::opening;
 			}
 		}
@@ -111,4 +111,4 @@ bool SpawnablePlatform::change_state(SpawnablePlatformState next, std::string_vi
 	return false;
 }
 
-} // namespace entity
+} // namespace fornani::entity

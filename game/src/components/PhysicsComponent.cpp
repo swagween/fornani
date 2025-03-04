@@ -1,6 +1,7 @@
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <algorithm>
+
+#include <ccmath/ext/clamp.hpp>
 
 #include <cmath>
 
@@ -42,8 +43,8 @@ void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 	sf::Vector2<float> friction = flags.test(State::grounded) ? ground_friction : air_friction;
 	velocity.x = (velocity.x + (acceleration.x / mass) * dt) * friction.x;
 	velocity.y = (velocity.y + (acceleration.y / mass) * dt) * friction.y;
-	velocity.x = std::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
-	velocity.y = std::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
+	velocity.x = ccm::ext::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
+	velocity.y = ccm::ext::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
 	position = position + velocity * dt;
 	real_velocity = velocity * dt;
 }
@@ -72,9 +73,7 @@ void PhysicsComponent::hard_stop_x() {
 	real_velocity.x = 0.f;
 }
 
-void PhysicsComponent::stop_x() {
-	acceleration.x = 0.f;
-}
+void PhysicsComponent::stop_x() { acceleration.x = 0.f; }
 
 void PhysicsComponent::zero() {
 	acceleration = {};
@@ -106,4 +105,4 @@ void PhysicsComponent::set_global_friction(float fric) {
 	air_friction = {fric, fric};
 }
 
-} // namespace components
+} // namespace fornani::components
