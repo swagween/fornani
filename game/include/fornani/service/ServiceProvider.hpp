@@ -49,7 +49,6 @@ struct ServiceProvider {
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
 	lookup::Tables tables{};
-	util::Constants constants{}; // TODO: Remove. Make Free-Standing.
 	data::TextManager text;
 	data::DataManager data;
 	Version* version;	   // TODO: Remove. Make Free-Standing.

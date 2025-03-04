@@ -18,11 +18,11 @@ namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
 	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}}, barrier{1.f, 1.f},
-	  scaled_barrier{barrier * svc.constants.cell_size} {}
+	  scaled_barrier{barrier * util::constants::f_cell_size} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	// for debugging
-	center_box.setSize(svc.constants.f_screen_dimensions * 0.5f);
+	center_box.setSize(svc.window->f_screen_dimensions() * 0.5f);
 	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
 	spawn_counter.start();
@@ -49,7 +49,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
-	real_dimensions = {static_cast<float>(dimensions.x) * svc.constants.cell_size, static_cast<float>(dimensions.y) * svc.constants.cell_size};
+	real_dimensions = {static_cast<float>(dimensions.x) * util::constants::f_cell_size, static_cast<float>(dimensions.y) * util::constants::f_cell_size};
 	auto style_value = meta["style"].as<int>();
 	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
 	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
@@ -149,14 +149,14 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		}
 		for (auto& entry : entities["beds"].array_view()) {
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
-			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
+			pos.x = entry["position"][0].as<float>() * util::constants::f_cell_size;
+			pos.y = entry["position"][1].as<float>() * util::constants::f_cell_size;
 			beds.push_back(entity::Bed(svc, pos, room_lookup));
 		}
 		for (auto& entry : entities["scenery"]["basic"].array_view()) {
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
-			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
+			pos.x = entry["position"][0].as<float>() * util::constants::f_cell_size;
+			pos.y = entry["position"][1].as<float>() * util::constants::f_cell_size;
 			auto var = entry["variant"].as<int>();
 			auto lyr = entry["layer"].as<int>();
 			auto parallax = entry["parallax"].as<float>();
@@ -164,8 +164,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		}
 		for (auto& entry : entities["scenery"]["vines"].array_view()) {
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
-			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
+			pos.x = entry["position"][0].as<float>() * util::constants::f_cell_size;
+			pos.y = entry["position"][1].as<float>() * util::constants::f_cell_size;
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
 			auto rev = static_cast<bool>(entry["reversed"].as_bool());
 			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
@@ -198,7 +198,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			start.y = entry["start_direction"][1].as<int>();
 			auto variant = entry["variant"].as<int>();
 			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>(), false, variant, start);
-			enemy_catalog.enemies.back()->set_position_from_scaled({pos * svc.constants.cell_size});
+			enemy_catalog.enemies.back()->set_position_from_scaled({pos * util::constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
 			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
@@ -245,8 +245,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		pos.y = entry["position"][1].as<float>();
 		dim.x = entry["dimensions"][0].as<float>();
 		dim.y = entry["dimensions"][1].as<float>();
-		pos *= svc.constants.cell_size;
-		dim *= svc.constants.cell_size;
+		pos *= util::constants::f_cell_size;
+		dim *= util::constants::f_cell_size;
 		auto start = entry["start"].as<float>();
 		start = ccm::ext::clamp(start, 0.f, 1.f);
 		auto type = entry["type"].as_string();
@@ -256,7 +256,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		sf::Vector2<float> pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
-		pos *= svc.constants.cell_size;
+		pos *= util::constants::f_cell_size;
 		auto type = entry["type"].as<int>();
 		auto button_id = entry["button_id"].as<int>();
 		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
@@ -265,7 +265,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		sf::Vector2<float> pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
-		pos *= svc.constants.cell_size;
+		pos *= util::constants::f_cell_size;
 		auto type = entry["type"].as<int>();
 		auto button_id = entry["button_id"].as<int>();
 		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
@@ -550,7 +550,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		std::vector<sf::Sprite> sprites{sf::Sprite{textures.foreground.day.getTexture()}, sf::Sprite{textures.foreground.twilight.getTexture()}, sf::Sprite{textures.foreground.night.getTexture()}};
 		auto ctr{0};
 		for (auto& sprite : sprites) {
-			sprite.setScale(svc.constants.texture_scale);
+			sprite.setScale(util::constants::f_scale_vec);
 			sprite.setPosition(-cam - scaled_barrier);
 			m_camera_effects.shifter.render(svc, win, sprite, ctr);
 			++ctr;
@@ -577,7 +577,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 			auto ctr{0};
 			for (auto& sprite : obs_sprites) {
-				sprite.setScale(svc.constants.texture_scale);
+				sprite.setScale(util::constants::f_scale_vec);
 				sprite.setPosition(-cam - scaled_barrier);
 				std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
 				if (alpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, alpha); }
@@ -590,7 +590,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 			auto ctr{0};
 			for (auto& sprite : rev_sprites) {
-				sprite.setScale(svc.constants.texture_scale);
+				sprite.setScale(util::constants::f_scale_vec);
 				sprite.setPosition(-cam - scaled_barrier);
 				std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
 				if (revalpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, revalpha); }
@@ -606,20 +606,20 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	player->render_indicators(svc, win, cam);
 
-	if (real_dimensions.y < svc.constants.f_screen_dimensions.y) {
-		auto ydiff = (svc.constants.f_screen_dimensions.y - real_dimensions.y) * 0.5f;
+	if (real_dimensions.y < svc.window->f_screen_dimensions().y) {
+		auto ydiff = (svc.window->f_screen_dimensions().y - real_dimensions.y) * 0.5f;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({svc.constants.f_screen_dimensions.x, ydiff});
+		borderbox.setSize({svc.window->f_screen_dimensions().x, ydiff});
 		borderbox.setPosition({});
 		win.draw(borderbox);
 
 		borderbox.setPosition({0.0f, real_dimensions.y + ydiff});
 		win.draw(borderbox);
 	}
-	if (real_dimensions.x < svc.constants.f_screen_dimensions.x) {
-		auto xdiff = (svc.constants.f_screen_dimensions.x - real_dimensions.x) * 0.5f;
+	if (real_dimensions.x < svc.window->f_screen_dimensions().x) {
+		auto xdiff = (svc.window->f_screen_dimensions().x - real_dimensions.x) * 0.5f;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({xdiff, svc.constants.f_screen_dimensions.y});
+		borderbox.setSize({xdiff, svc.window->f_screen_dimensions().y});
 		borderbox.setPosition({});
 		win.draw(borderbox);
 
@@ -646,12 +646,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		center_box.setPosition({});
 		center_box.setFillColor(sf::Color(80, 80, 80, 60));
 		win.draw(center_box);
-		center_box.setPosition(svc.constants.f_screen_dimensions * 0.5f);
+		center_box.setPosition(svc.window->f_screen_dimensions() * 0.5f);
 		win.draw(center_box);
 		center_box.setFillColor(sf::Color(100, 100, 100, 60));
-		center_box.setPosition({svc.constants.f_screen_dimensions.x * 0.5f, 0.f});
+		center_box.setPosition({svc.window->f_screen_dimensions().x * 0.5f, 0.f});
 		win.draw(center_box);
-		center_box.setPosition({0.f, svc.constants.f_screen_dimensions.y * 0.5f});
+		center_box.setPosition({0.f, svc.window->f_screen_dimensions().y * 0.5f});
 		win.draw(center_box);
 		sf::Sprite greyblock{textures.greyblock.getTexture()};
 		greyblock.setPosition(-cam);
@@ -670,7 +670,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background.day.getTexture()}, sf::Sprite{textures.background.twilight.getTexture()}, sf::Sprite{textures.background.night.getTexture()}};
 		auto ctr{0};
 		for (auto& sprite : sprites) {
-			sprite.setScale(svc.constants.texture_scale);
+			sprite.setScale(util::constants::f_scale_vec);
 			sprite.setPosition(-cam - scaled_barrier);
 			m_camera_effects.shifter.render(svc, win, sprite, ctr);
 			++ctr;
@@ -682,7 +682,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	} else {
 		sf::RectangleShape box{};
 		box.setFillColor(svc.styles.colors.black);
-		box.setSize(svc.constants.f_screen_dimensions);
+		box.setSize(svc.window->f_screen_dimensions());
 		win.draw(box);
 	}
 
@@ -774,8 +774,8 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 														 : !layer.background()				  ? textures.foreground.night
 																							  : textures.background.night)};
 
-			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_texture_cell_size),
-							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_texture_cell_size)};
+			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(util::constants::i_cell_resolution),
+							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(util::constants::i_cell_resolution)};
 			if (changed) {
 				if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
 				tex.clear(sf::Color::Transparent);
@@ -793,10 +793,10 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 			sf::Sprite tile{svc.assets.get_tileset(m_metadata.biome)};
 			for (auto& cell : layer.grid.cells) {
 				if (cell.is_occupied() && !cell.is_special()) {
-					auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_texture_cell_size) + (cycle * svc.constants.tileset_scaled.x * svc.constants.tileset_scaled.y);
-					auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_texture_cell_size);
-					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_texture_cell_size, svc.constants.i_texture_cell_size}));
-					tile.setPosition((cell.position() + scaled_barrier) / svc.constants.f_texture_scale);
+					auto x_coord = static_cast<int>((cell.value % util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution) + (cycle * util::constants::tileset_dimensions.x * util::constants::tileset_dimensions.y);
+					auto y_coord = static_cast<int>(std::floor(cell.value / util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
+					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {util::constants::i_cell_resolution, util::constants::i_cell_resolution}));
+					tile.setPosition((cell.position() + scaled_barrier) / util::constants::f_scale_factor);
 					auto normal{true};
 					if (layer.obscuring()) {
 						auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
@@ -811,7 +811,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 					}
 					if (normal) { tex.draw(tile); }
 				}
-				if (layer.middleground()) { draw_barrier(tex, tile, cell, svc.constants.f_texture_scale); }
+				if (layer.middleground()) { draw_barrier(tex, tile, cell, util::constants::f_scale_factor); }
 			}
 			if (finished) { tex.display(); }
 			if (layer.obscuring()) {
@@ -855,7 +855,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<std::size_t>(collider.boundary_width() / m_services->constants.cell_size);
+	auto right = static_cast<std::size_t>(collider.boundary_width() / util::constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
@@ -875,7 +875,7 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	auto& grid = get_middleground().grid;
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<std::size_t>(collider.boundary_width() / m_services->constants.cell_size);
+	auto right = static_cast<std::size_t>(collider.boundary_width() / util::constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {

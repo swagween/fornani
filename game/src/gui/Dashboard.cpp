@@ -40,7 +40,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	}
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
 	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); // have to stick this in the for loop once we have a clock item
-	m_sprite.setScale(svc.constants.texture_scale);
+	m_sprite.setScale(util::constants::f_scale_vec);
 }
 
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
@@ -68,7 +68,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 		}
 		button.state = button.position == m_selected_position ? GizmoButtonState::hovered : GizmoButtonState::off;
 		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_gizmo = ccm::ext::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1)); }
-		button.box.setPosition(svc.constants.f_center_screen + pos);
+		button.box.setPosition(svc.window->f_center_screen() + pos);
 		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(svc.styles.colors.bright_orange) : button.box.setOutlineColor(svc.styles.colors.dark_fucshia);
 		// win.draw(button.box);
 		++ctr;

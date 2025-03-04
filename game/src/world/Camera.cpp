@@ -18,7 +18,7 @@ void Camera::update(automa::ServiceProvider& svc) {
 		begin_shake();
 		svc.camera_controller.cancel();
 	}
-	screen_dimensions = svc.constants.screen_dimensions;
+	screen_dimensions = svc.window->i_screen_dimensions();
 	auto const screen_dimensions_f = sf::Vector2<float>(screen_dimensions);
 	bounding_box.setSize(screen_dimensions_f);
 	gravitator.update(svc);

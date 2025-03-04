@@ -17,7 +17,6 @@ namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player, automa::MenuType::main) {
 	NANI_ZoneScopedN("Game::Game");
-	services.constants.screen_dimensions = window.screen_dimensions;
 	if (!ImGui::SFML::Init(services.window->get())) {
 		std::cout << "ImGui-SFML failed to initialize the window.\n";
 		shutdown();
@@ -32,7 +31,7 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	// player
 	player.init(services);
 
-	background.setSize(static_cast<sf::Vector2<float>>(services.constants.screen_dimensions));
+	background.setSize(services.window->f_screen_dimensions());
 	background.setFillColor(services.styles.colors.ui_black);
 }
 

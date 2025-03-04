@@ -8,7 +8,7 @@ namespace fornani::flfx {
 Transition::Transition(automa::ServiceProvider& svc, int d) : duration(d) {
 	cooldown = util::Cooldown{d};
 	color = svc.styles.colors.ui_black;
-	box.setSize(sf::Vector2<float>(static_cast<float>(svc.constants.screen_dimensions.x), static_cast<float>(svc.constants.screen_dimensions.y)));
+	box.setSize(sf::Vector2<float>(static_cast<float>(svc.window->i_screen_dimensions().x), static_cast<float>(svc.window->i_screen_dimensions().y)));
 }
 
 void Transition::update(player::Player& player) {

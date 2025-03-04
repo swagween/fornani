@@ -49,7 +49,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 
 	// set visuals
 	animation.set_params({0, 4, 16, -1});
-	auto scaled_dim = dimensions / svc.constants.cell_size;
+	auto scaled_dim = dimensions / util::constants::f_cell_size;
 	if (scaled_dim.x == 1) { offset = {0, 0}; }
 	if (scaled_dim.x == 2) { offset = {32, 0}; }
 	if (scaled_dim.x == 3) { offset = {0, 32}; }

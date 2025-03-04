@@ -26,10 +26,11 @@ void DataManager::load_data(std::string in_room) {
 			if (room_data.is_null()) { continue; }
 			auto this_id = room_data["meta"]["room_id"].as<int>();
 			auto this_name = this_room.path().filename().string();
+			auto this_biome = room_data["meta"]["biome"].is_string() ? room_data["meta"]["biome"].as_string().data() : this_region.path().filename().string();
 			if (is_duplicate_room(this_id)) { continue; }
 			auto room_str = this_room.path().filename().string();
 			room_str = room_str.substr(0, room_str.find('.'));
-			map_jsons.push_back(MapData{this_id, room_data, this_region.path().filename().string(), room_str});
+			map_jsons.push_back(MapData{this_id, room_data, this_biome, room_str});
 
 			// cache map layers
 			sf::Vector2<std::uint32_t> dimensions{};
@@ -41,7 +42,7 @@ void DataManager::load_data(std::string in_room) {
 			auto hro{static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool())};
 			std::uint8_t ctr{0u};
 			for (auto& layer : in_tile["layers"].array_view()) {
-				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], m_services->constants.cell_size, ho, hro));
+				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], util::constants::f_cell_size, ho, hro));
 				++ctr;
 			}
 			map_layers.push_back(next);

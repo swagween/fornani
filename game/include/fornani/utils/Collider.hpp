@@ -100,9 +100,7 @@ class Collider {
 	bool vertical_squish() const;
 	bool pushes(Collider& other) const;
 
-	sf::Vector2<float> get_average_tick_position();
 	sf::Vector2<float> snap_to_grid(float size = 1.f, float scale = 32.f, float factor = 2.f);
-
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
 	[[nodiscard]] auto jumping() const -> bool { return flags.movement.test(Movement::jumping); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
@@ -111,6 +109,7 @@ class Collider {
 	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return physics.position + dimensions * 0.5f; }
+	[[nodiscard]] auto get_average_tick_position() const -> sf::Vector2f { return physics.previous_position; }
 	[[nodiscard]] auto get_below_point(int side = 0) const -> sf::Vector2<float> {
 		return side == 0 ? jumpbox.get_position() + jumpbox.get_dimensions() * 0.5f : side == -1 ? jumpbox.get_position() + sf::Vector2<float>{0.f, 4.f} : jumpbox.get_position() + jumpbox.get_dimensions() - sf::Vector2<float>{0.f, 4.f};
 	}

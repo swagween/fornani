@@ -4,6 +4,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Constants.hpp"
 #include "fornani/world/Map.hpp"
 
 #include "fornani/utils/Random.hpp"
@@ -13,7 +14,7 @@
 namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.get_texture("pushables")} {
-	collider = shape::Collider({svc.constants.cell_size * static_cast<float>(size) - 4.f, svc.constants.cell_size * static_cast<float>(size) - 1.f});
+	collider = shape::Collider({util::constants::f_cell_size * static_cast<float>(size) - 4.f, util::constants::f_cell_size * static_cast<float>(size) - 1.f});
 	collider.physics.position = position;
 	start_position = position;
 	collider.physics.set_constant_friction({0.95f, 0.98f});
@@ -24,8 +25,8 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, in
 	auto lock = collider.snap_to_grid(static_cast<float>(size));
 	collider.physics.position = lock;
 	start_box = collider.bounding_box;
-	sf::IntRect lookup = size == 1 ? sf::IntRect{{style * 2 * svc.constants.i_cell_size, 0}, svc.constants.i_cell_vec} : sf::IntRect{{style * 2 * svc.constants.i_cell_size, svc.constants.i_cell_size}, 2 * svc.constants.i_cell_vec};
-	sprite.setTextureRect(lookup);
+	sprite.setTextureRect(sf::IntRect{{style * 2 * util::constants::i_cell_resolution, (size - 1) * util::constants::i_cell_resolution}, util::constants::i_resolution_vec * size});
+	sprite.setScale(util::constants::f_scale_vec);
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -94,7 +95,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (platform.bounding_box.overlaps(collider.jumpbox)) { collider.handle_collider_collision(platform.bounding_box); }
 	}
 	if (collider.flags.state.test(shape::State::just_landed)) {
-		map.effects.push_back(entity::Effect(svc, "dust", {collider.physics.position.x + 32.f * (size / 2.f), collider.physics.position.y + (size - 1) * 32.f}, {}, 0, 10));
+		map.effects.push_back(entity::Effect(svc, "dust", {collider.physics.position.x + util::constants::f_cell_size * (size / 2.f), collider.physics.position.y + (size - 1) * util::constants::f_cell_size}, {}, 0, 10));
 		svc.soundboard.flags.world.set(audio::World::thud);
 	}
 	collider.reset();

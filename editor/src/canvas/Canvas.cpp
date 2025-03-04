@@ -63,8 +63,8 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 				if (cell.value == 0) { continue; }
 				if (layer.render_order == active_layer || flags.show_all_layers) {
 					auto squared = scale == 1.f ? 1.f : 1.01f;
-					tileset.setTextureRect(sf::IntRect{get_tile_coord(cell.value), m_constants.i_cell_vec});
-					tileset.setScale(sf::Vector2f{scale * squared, scale * squared} * m_constants.texture_scale_factor);
+					tileset.setTextureRect(sf::IntRect{get_tile_coord(cell.value), fornani::util::constants::i_resolution_vec});
+					tileset.setScale(sf::Vector2f{scale * squared, scale * squared} * fornani::util::constants::f_scale_factor);
 					tileset.setOrigin(get_origin());
 					tileset.setPosition(cell.scaled_position() + position);
 					if (layer.render_order == get_layers().layers.size() - 1) {
@@ -127,7 +127,7 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
-	real_dimensions = {static_cast<float>(dimensions.x) * m_constants.cell_size, static_cast<float>(dimensions.y) * m_constants.cell_size};
+	real_dimensions = {static_cast<float>(dimensions.x) * fornani::util::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::util::constants::f_cell_size};
 	auto style_value = meta["style"].as<int>();
 	styles.tile = Style(static_cast<StyleType>(style_value));
 	m_theme.music = meta["music"].as_string();
@@ -187,6 +187,7 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	data.meta["meta"]["dimensions"][0] = dimensions.x;
 	data.meta["meta"]["dimensions"][1] = dimensions.y;
 	data.meta["meta"]["style"] = static_cast<int>(styles.tile.get_type());
+	data.meta["meta"]["biome"] = styles.tile.get_label();
 	data.meta["meta"]["background"] = static_cast<int>(background->type.get_type());
 	data.meta["meta"]["music"] = m_theme.music;
 	for (auto& entry : m_theme.atmosphere) { data.meta["meta"]["atmosphere"].push_back(entry); }
@@ -335,9 +336,9 @@ Map& Canvas::get_layers() { return map_states.back(); }
 
 sf::Vector2<int> Canvas::get_tile_coord(int lookup) {
 	sf::Vector2<int> ret{};
-	ret.x = static_cast<int>(lookup % 16);
-	ret.y = static_cast<int>(std::floor(lookup / 16));
-	return ret * m_constants.i_cell_size;
+	ret.x = static_cast<int>(lookup % fornani::util::constants::i_cell_resolution);
+	ret.y = static_cast<int>(std::floor(lookup / fornani::util::constants::i_cell_resolution));
+	return ret * fornani::util::constants::i_cell_resolution;
 }
 
 void Canvas::replace_tile(std::uint32_t from, std::uint32_t to, int layer_index) {

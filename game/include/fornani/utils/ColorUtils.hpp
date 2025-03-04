@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <ccmath/math/misc/lerp.hpp>
 #include <random>
 #include "fornani/utils/Cooldown.hpp"
 
@@ -14,7 +15,7 @@ struct ColorUtils {
 		if (m_fader.is_almost_complete()) { return color; }
 		if (!m_fader.running()) { m_fader.start(rate); }
 		auto ret{color};
-		ret.a = std::lerp(0u, 255u, m_fader.get_inverse_normalized());
+		ret.a = ccm::lerp(0u, 255u, m_fader.get_inverse_normalized());
 		m_fader.update();
 		return ret;
 	}

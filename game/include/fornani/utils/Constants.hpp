@@ -2,34 +2,32 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-namespace fornani::util {
+namespace fornani::util::constants {
 
-struct Constants {
-	int const i_texture_scale{2};
-	float const f_texture_scale{2.f};
-	sf::Vector2<float> const texture_scale{f_texture_scale, f_texture_scale};
-	int const i_texture_cell_size{16};
-	float const f_texture_cell_size{16.0f};
-	sf::Vector2<int> const tileset_scaled{i_texture_cell_size, i_texture_cell_size};
-	std::uint32_t const u32_cell_size{static_cast<std::uint32_t>(i_texture_cell_size * i_texture_scale)};
-	int const i_cell_size{i_texture_cell_size * i_texture_scale};
-	float const cell_size{f_texture_cell_size * f_texture_scale};
-	sf::Vector2<int> const i_cell_vec{i_cell_size, i_cell_size};
-	sf::Vector2<float> const f_cell_vec{cell_size, cell_size};
-	float const chunk_size{16.0f};
-	int const i_chunk_size{16};
-	sf::Vector2<int> const aspect_ratio{3840, 2048};
+constexpr std::uint8_t u_scale_factor{2u};
+constexpr int i_scale_factor{static_cast<int>(u_scale_factor)};
+constexpr float f_scale_factor{static_cast<float>(u_scale_factor)};
 
-	// TODO: This prob should be in the windowing class.
-	// screen constants (non-const because they must be set after window creation)
-	sf::Vector2<int> screen_dimensions{aspect_ratio.x / 4, aspect_ratio.y / 4};
-	sf::Vector2<float> f_screen_dimensions{static_cast<float>(aspect_ratio.x) / 4.f, static_cast<float>(aspect_ratio.y) / 4.f};
-	sf::Vector2<float> f_center_screen{f_screen_dimensions * 0.5f};
-	void set_screen_constants(sf::Vector2<int> dimensions) {
-		screen_dimensions = dimensions;
-		f_screen_dimensions = {static_cast<float>(dimensions.x), static_cast<float>(dimensions.y)};
-		f_center_screen = {f_screen_dimensions * 0.5f};
-	}
-};
+constexpr std::uint8_t u_cell_resolution{16};
+constexpr int i_cell_resolution{static_cast<int>(u_cell_resolution)};
+constexpr float f_cell_resolution{static_cast<float>(i_cell_resolution)};
 
-} // namespace fornani::util
+constexpr std::uint8_t u8_cell_size{u_cell_resolution * u_scale_factor};
+constexpr std::uint32_t u32_cell_size{static_cast<std::uint32_t>(u8_cell_size)};
+constexpr int i_cell_size{static_cast<int>(u32_cell_size)};
+constexpr float f_cell_size{static_cast<float>(u32_cell_size)};
+
+constexpr sf::Vector2i i_cell_vec{i_cell_size, i_cell_size};
+constexpr sf::Vector2f f_cell_vec{f_cell_size, f_cell_size};
+
+constexpr sf::Vector2i i_resolution_vec{i_cell_resolution, i_cell_resolution};
+constexpr sf::Vector2f f_resolution_vec{f_cell_resolution, f_cell_resolution};
+constexpr sf::Vector2i i_scale_vec{i_scale_factor, i_scale_factor};
+constexpr sf::Vector2f f_scale_vec{f_scale_factor, f_scale_factor};
+
+constexpr sf::Vector2i tileset_dimensions{16, 32};
+
+constexpr int i_chunk_size{16};
+constexpr float f_chunk_size{static_cast<float>(i_chunk_size)};
+
+} // namespace fornani::util::constants

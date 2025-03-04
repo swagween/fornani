@@ -14,7 +14,7 @@ ClockGizmo::ClockGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector
 	: Gizmo("Clock", true), m_sprites{.clock{sf::Sprite{svc.assets.get_texture("clock_gizmo")}}, .hand{sf::Sprite{svc.assets.get_texture("clock_hand")}}}, m_text{.readout{svc.text.fonts.basic}} {
 	m_physics.position = sf::Vector2f{334.f, 100.f};
 	m_placement = placement;
-	m_sprites.clock.setScale(svc.constants.texture_scale);
+	m_sprites.clock.setScale(util::constants::f_scale_vec);
 	m_sprites.hand.setOrigin({4.f, 4.f});
 	m_sprites.clock.setOrigin(m_sprites.clock.getLocalBounds().getCenter());
 	m_text.readout.setFillColor(svc.styles.colors.pioneer_red);
@@ -38,7 +38,7 @@ void ClockGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[m
 	auto direction{util::get_direction_from_angle(angle)};
 	m_sprites.clock.setPosition(m_physics.position - cam);
 	m_rotator.handle_rotation(m_sprites.hand, direction, 4);
-	m_sprites.hand.setScale(svc.constants.texture_scale);
+	m_sprites.hand.setScale(util::constants::f_scale_vec);
 	m_sprites.hand.setTextureRect(sf::IntRect{{0, m_rotator.get_sprite_angle_index() * 8}, {8, 8}});
 	m_sprites.hand.setPosition(m_sprites.clock.getPosition() + direction * 32.f);
 	win.draw(m_sprites.clock);

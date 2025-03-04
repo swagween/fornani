@@ -1,8 +1,8 @@
 #include "fornani/utils/Collider.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/world/Map.hpp"
 #include <ccmath/math/power/sqrt.hpp>
+#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::shape {
 
@@ -122,8 +122,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			if (is_ground_ramp) {
 				flags.external_state.set(ExternalState::on_ramp);
 				physics.position.y -= ccm::abs(mtvs.actual.y);
-				//flags.state.set(State::on_flat_surface);
-				// still zero this because of gravity
+				// flags.state.set(State::on_flat_surface);
+				//  still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping) && bounding_box.bottom() <= cell.bottom()) {
 					if (physics.apparent_velocity().y > vert_threshold) {
 						flags.state.set(State::just_landed);
@@ -132,7 +132,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 					physics.zero_y();
 				}
 				// std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
-				//if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
+				// if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
 			}
 			if (is_ceiling_ramp) {
 				tile.debug_flag = true;
@@ -168,7 +168,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
 			flags.external_state.set(ExternalState::world_grounded);
-			flags.perma_state.set(PermaFlags::world_grounded); 
+			flags.perma_state.set(PermaFlags::world_grounded);
 			flags.state.set(State::is_any_jump_collision);
 			flags.external_state.set(ExternalState::grounded);
 		} else {
@@ -181,7 +181,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
 			flags.external_state.set(ExternalState::world_grounded);
-			flags.perma_state.set(PermaFlags::world_grounded); 
+			flags.perma_state.set(PermaFlags::world_grounded);
 			flags.state.set(State::is_any_jump_collision);
 			flags.external_state.set(ExternalState::grounded);
 		} else {
@@ -258,12 +258,12 @@ void Collider::correct_corner(sf::Vector2<float> mtv) {
 	if (ccm::abs(mtv.x) >= ccm::abs(mtv.y)) {
 		physics.position.x = predictive_combined.get_position().x + mtv.x;
 		physics.zero_x();
-		//std::cout << "X Corner correction: " << mtv.x << "\n";
+		// std::cout << "X Corner correction: " << mtv.x << "\n";
 	} else {
 		auto ydist = predictive_combined.get_position().y - physics.position.y;
 		physics.position.y = predictive_combined.get_position().y + mtv.y;
 		physics.zero_y();
-		//std::cout << "Y Corner correction: " << correction << "\n";
+		// std::cout << "Y Corner correction: " << correction << "\n";
 	}
 }
 
@@ -428,7 +428,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	// draw hurtbox
 	draw_hurtbox.setSize(sf::Vector2<float>{(float)hurtbox.get_dimensions().x, (float)hurtbox.get_dimensions().y});
 	draw_hurtbox.setPosition(hurtbox.get_position() - cam);
-	//win.draw(draw_hurtbox);
+	// win.draw(draw_hurtbox);
 
 	// draw vicinity
 	box.setSize(sf::Vector2<float>{(float)vicinity.get_dimensions().x, (float)vicinity.get_dimensions().y});
@@ -452,16 +452,15 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 		box.setPosition(vertical.get_position() - cam);
 		collision_depths.value().vertical_squish() ? box.setFillColor(sf::Color::Green) : box.setFillColor(sf::Color::Red);
 		box.setOutlineThickness(0);
-		//win.draw(box); // draw physics position
+		// win.draw(box); // draw physics position
 		box.setSize(horizontal.get_dimensions());
 		box.setPosition(horizontal.get_position() - cam);
 		collision_depths.value().horizontal_squish() ? box.setFillColor(sf::Color::Green) : box.setFillColor(sf::Color::Red);
 		box.setOutlineThickness(0);
-		//win.draw(box);
+		// win.draw(box);
 	}
 
 	if (collision_depths) { collision_depths.value().render(bounding_box, win, cam); }
-
 }
 void Collider::set_position(sf::Vector2<float> pos) {
 	physics.position = pos;
@@ -504,17 +503,12 @@ bool Collider::horizontal_squish() const { return collision_depths ? collision_d
 
 bool Collider::vertical_squish() const { return collision_depths ? collision_depths.value().vertical_squish() : false; }
 
-bool Collider::pushes(Collider& other) const {
-	return (physics.position.x < other.physics.position.x && physics.apparent_velocity().x > 0.f) || (physics.position.x > other.physics.position.x && physics.apparent_velocity().x < 0.f);
-}
-
-sf::Vector2<float> Collider::get_average_tick_position() { return physics.previous_position; }
+bool Collider::pushes(Collider& other) const { return (physics.position.x < other.physics.position.x && physics.apparent_velocity().x > 0.f) || (physics.position.x > other.physics.position.x && physics.apparent_velocity().x < 0.f); }
 
 sf::Vector2<float> Collider::snap_to_grid(float size, float scale, float factor) {
-	return sf::Vector2<float>{std::round((physics.position.x * size / factor) / (size * (scale / factor))), std::round((physics.position.y * size / factor) / (size * (scale / factor)))} *
-		   scale;
+	return sf::Vector2<float>{std::round((physics.position.x * size / factor) / (size * (scale / factor))), std::round((physics.position.y * size / factor) / (size * (scale / factor)))} * scale;
 }
 
 float Collider::compute_length(sf::Vector2<float> const v) { return ccm::sqrt(v.x * v.x + v.y * v.y); }
 
-} // namespace shape
+} // namespace fornani::shape

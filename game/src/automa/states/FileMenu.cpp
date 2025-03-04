@@ -1,6 +1,7 @@
 
 #include "fornani/automa/states/FileMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Constants.hpp"
 
 namespace fornani::automa {
 
@@ -11,14 +12,14 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	console.set_source(svc.text.basic);
 	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
-	player.set_position({svc.constants.f_screen_dimensions.x / 2 + 80, 360});
-	player.antennae.at(0).set_position({svc.constants.f_screen_dimensions.x / 2 + 80, 360});
-	player.antennae.at(1).set_position({svc.constants.f_screen_dimensions.x / 2 + 80, 360});
+	player.set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	player.antennae.at(1).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.hurt_cooldown.cancel();
 
 	loading.start(4);
 
-	title.setSize(svc.constants.f_screen_dimensions);
+	title.setSize(svc.window->f_screen_dimensions());
 	title.setFillColor(svc.styles.colors.ui_black);
 
 	refresh(svc);
@@ -115,7 +116,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.autonomous_walk();
 	player->collider.flags.state.set(shape::State::grounded);
 
-	player->set_position({svc.constants.screen_dimensions.x * 0.5f + 80, 360});
+	player->set_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
 	player->update(map);
 	player->controller.direction.lr = dir::LR::left;
 

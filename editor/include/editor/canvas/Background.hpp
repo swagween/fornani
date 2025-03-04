@@ -2,11 +2,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 #include "fornani/io/Logger.hpp"
-
 
 namespace fornani::data {
 class ResourceFinder;
@@ -27,7 +26,7 @@ class BackgroundType {
 		default: label = "<none>"; break;
 		}
 	}
-	[[nodiscard]] auto get_label_char() const -> const char* { return label.c_str(); };
+	[[nodiscard]] auto get_label_char() const -> char const* { return label.c_str(); };
 	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_type() const -> Backdrop { return type; };
 	[[nodiscard]] auto get_i_type() const -> int { return static_cast<int>(type); };
@@ -40,7 +39,7 @@ class BackgroundType {
 class Canvas;
 
 struct BackgroundLayer {
-	BackgroundLayer(sf::Texture& texture, int index, float speed, float parallax);
+	BackgroundLayer(sf::Texture const& texture, int index, float speed, float parallax);
 	int render_layer{};
 	float scroll_speed{};
 	float parallax{};

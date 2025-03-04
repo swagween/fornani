@@ -16,8 +16,8 @@ MapInfoGizmo::MapInfoGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Ve
 	  m_clip_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_info", 86, util::InterpolationType::linear} {
 	m_physics.position = sf::Vector2f{374.f, 1600.f};
 	m_placement = placement;
-	m_sprites.panel.setScale(svc.constants.texture_scale);
-	m_sprites.clip.setScale(svc.constants.texture_scale);
+	m_sprites.panel.setScale(util::constants::f_scale_vec);
+	m_sprites.clip.setScale(util::constants::f_scale_vec);
 	m_sprites.panel.setTextureRect(sf::IntRect{{0, 110}, {219, 41}});
 	m_text.biome.setFillColor(svc.styles.colors.pioneer_red);
 	m_text.biome.setCharacterSize(16);
