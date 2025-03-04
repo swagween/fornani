@@ -124,10 +124,10 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	auto render_position{-m_placement + cam};
 	m_constituents.gizmo.motherboard.position = m_path.get_position() + m_motherboard_path.get_position() - m_map_screen.get_f_corner_dimensions();
 	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f});
-	m_map_screen.render(win, cam);
 	m_minimap->render(svc, win, player, cam, m_icon_sprite);
 	m_icon_sprite.setScale(util::constants::f_scale_vec);
 	m_map_shadow.render(win, cam);
+	m_map_screen.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
 	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}); }
 	if (m_info) { m_info->render(svc, win, player, cam, foreground); }
