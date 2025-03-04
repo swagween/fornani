@@ -23,6 +23,8 @@
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
 
+#include <ranges>
+
 namespace fornani::automa {
 enum class DebugFlags : std::uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
 enum class AppFlags : std::uint8_t { fullscreen, tutorial, in_game };
