@@ -11,7 +11,7 @@ struct Constants {
 	int const i_texture_cell_size{16};
 	float const f_texture_cell_size{16.0f};
 	sf::Vector2<int> const tileset_scaled{i_texture_cell_size, i_texture_cell_size};
-	uint32_t const u32_cell_size{static_cast<uint32_t>(i_texture_cell_size * i_texture_scale)};
+	std::uint32_t const u32_cell_size{static_cast<std::uint32_t>(i_texture_cell_size * i_texture_scale)};
 	int const i_cell_size{i_texture_cell_size * i_texture_scale};
 	float const cell_size{f_texture_cell_size * f_texture_scale};
 	sf::Vector2<int> const i_cell_vec{i_cell_size, i_cell_size};

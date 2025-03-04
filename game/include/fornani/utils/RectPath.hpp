@@ -45,7 +45,7 @@ class RectPath {
 	sf::Vector2<float> m_current_dimensions{};
 	util::Cooldown m_interpolation;
 	util::InterpolationType m_interpolation_type{};
-	io::Logger m_logger{"RectPath"};
+	io::Logger m_logger{"util"};
 };
 
 } // namespace fornani::util

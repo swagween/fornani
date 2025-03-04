@@ -97,7 +97,7 @@ bool EntitySet::save(fornani::data::ResourceFinder& finder, dj::Json& metadata, 
 
 void EntitySet::clear() { variables = {}; }
 
-bool EntitySet::has_entity_at(sf::Vector2<uint32_t> pos, bool highlighted_only) const {
+bool EntitySet::has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_only) const {
 	for (auto& s : variables.entities) {
 		if (s->contains_position(pos)) { return highlighted_only ? s->highlighted : true; }
 	}

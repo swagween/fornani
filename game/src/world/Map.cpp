@@ -179,8 +179,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			grass.push_back(std::make_unique<entity::Grass>(svc, pos, 8, entry["size"].as<int>(), fg));
 		}
 		for (auto& entry : entities["inspectables"].array_view()) {
-			sf::Vector2<uint32_t> dim{};
-			sf::Vector2<uint32_t> pos{};
+			sf::Vector2<std::uint32_t> dim{};
+			sf::Vector2<std::uint32_t> pos{};
 			auto key = entry["key"].as_string();
 			pos.x = entry["position"][0].as<int>();
 			pos.y = entry["position"][1].as<int>();
@@ -218,8 +218,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	}
 
 	for (auto& entry : entities["portals"].array_view()) {
-		sf::Vector2<uint32_t> pos{};
-		sf::Vector2<uint32_t> dim{};
+		sf::Vector2<std::uint32_t> pos{};
+		sf::Vector2<std::uint32_t> dim{};
 		pos.x = entry["position"][0].as<int>();
 		pos.y = entry["position"][1].as<int>();
 		dim.x = entry["dimensions"][0].as<int>();
@@ -1003,8 +1003,10 @@ sf::Vector2<float> Map::last_checkpoint() {
 }
 
 void Map::debug() {
+#if defined(FORNANI_PRODUCTION)
 	background->debug();
 	// for (auto& atm : atmosphere) { atm.debug(); }
+#endif
 }
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {

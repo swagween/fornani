@@ -1,20 +1,21 @@
 
 #include "editor/canvas/Canvas.hpp"
-#include "editor/util/Lookup.hpp"
-#include "editor/tool/Tool.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
 #include <cassert>
+#include "editor/tool/Tool.hpp"
+#include "editor/util/Lookup.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
 
 namespace pi {
 
 Canvas::Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
 
-Canvas::Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
+Canvas::Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers)
+	: type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
 	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
-    dimensions = dim;
+	dimensions = dim;
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
-    clear();
-    map_states.push_back(Map());
+	clear();
+	map_states.push_back(Map());
 
 	for (auto i{0}; i < num_layers; ++i) { map_states.back().layers.push_back(Layer(i, i == default_middleground_v, dim)); }
 	map_states.back().set_middleground(default_middleground_v);
@@ -145,15 +146,15 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	}
 	if (meta["background"]) { background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>())); }
 
-    // tiles
+	// tiles
 	auto counter{0};
 	for (auto& layer : data.meta["tile"]["layers"].array_view()) {
 		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions));
-        int cell_counter{};
-        for (auto& cell : layer.array_view()) {
-            map_states.back().layers.back().grid.cells.at(cell_counter).value = cell.as<int>();
-            ++cell_counter;
-        }
+		int cell_counter{};
+		for (auto& cell : layer.array_view()) {
+			map_states.back().layers.back().grid.cells.at(cell_counter).value = cell.as<int>();
+			++cell_counter;
+		}
 		++counter;
 	}
 	map_states.back().set_middleground(data.meta["tile"]["middleground"].as<int>());
@@ -221,35 +222,35 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 }
 
 void Canvas::clear() {
-    if (!map_states.empty()) {
+	if (!map_states.empty()) {
 		for (auto& layer : map_states.back().layers) { layer.erase(); }
-        map_states.back().layers.clear();
-    }
+		map_states.back().layers.clear();
+	}
 	m_theme.atmosphere.clear();
 }
 
 void Canvas::save_state(Tool& tool, bool force) {
-    auto const& type = tool.type;
-    auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;
+	auto const& type = tool.type;
+	auto undoable_tool = type == ToolType::brush || type == ToolType::fill || type == ToolType::marquee || type == ToolType::erase;
 	if ((undoable_tool && tool.clicked() && editable()) || force) {
 		map_states.emplace_back(Map{map_states.back()});
 		if (map_states.size() > max_undo_states_v) { map_states.pop_front(); }
-        clear_redo_states();
-    }
+		clear_redo_states();
+	}
 }
 
 void Canvas::undo() {
-    if (map_states.size() > 1) {
-        redo_states.push_back(map_states.back());
-        map_states.pop_back();
+	if (map_states.size() > 1) {
+		redo_states.push_back(map_states.back());
+		map_states.pop_back();
 		dimensions = map_states.back().layers.back().dimensions;
 	}
 	set_grid_texture();
 }
 
 void Canvas::redo() {
-    if (redo_states.size() > 0) {
-        map_states.push_back(redo_states.back());
+	if (redo_states.size() > 0) {
+		map_states.push_back(redo_states.back());
 		redo_states.pop_back();
 		dimensions = map_states.back().layers.back().dimensions;
 	}
@@ -302,7 +303,7 @@ void Canvas::set_backdrop_color(sf::Color color) { border.setFillColor(color); }
 
 void Canvas::set_grid_texture() {
 	if (get_layers().layers.empty()) { return; }
-	if (!grid_texture.resize(sf::Vector2u{static_cast<uint32_t>(dimensions.x * f_native_cell_size()), static_cast<uint32_t>(dimensions.y * f_native_cell_size())})) {
+	if (!grid_texture.resize(sf::Vector2u{static_cast<std::uint32_t>(dimensions.x * f_native_cell_size()), static_cast<std::uint32_t>(dimensions.y * f_native_cell_size())})) {
 		NANI_LOG_WARN(m_logger, "Failed to resize grid texture.");
 		return;
 	}
@@ -337,7 +338,7 @@ sf::Vector2<int> Canvas::get_tile_coord(int lookup) {
 	return ret * 32;
 }
 
-void Canvas::replace_tile(uint32_t from, uint32_t to, int layer_index) {
+void Canvas::replace_tile(std::uint32_t from, std::uint32_t to, int layer_index) {
 	if (layer_index >= map_states.back().layers.size()) { return; }
 	for (auto& tile : map_states.back().layers.at(layer_index).grid.cells) {
 		if (tile.value == from) { tile.value = to; }
@@ -345,9 +346,9 @@ void Canvas::replace_tile(uint32_t from, uint32_t to, int layer_index) {
 }
 
 void Canvas::edit_tile_at(int i, int j, int new_val, int layer_index) {
-    if(layer_index >= map_states.back().layers.size()) { return; }
-    if((i + j * dimensions.x) >= map_states.back().layers.at(layer_index).grid.cells.size()) { return; };
-    map_states.back().layers.at(layer_index).grid.cells.at(i + j * dimensions.x).value = new_val;
+	if (layer_index >= map_states.back().layers.size()) { return; }
+	if ((i + j * dimensions.x) >= map_states.back().layers.at(layer_index).grid.cells.size()) { return; };
+	map_states.back().layers.at(layer_index).grid.cells.at(i + j * dimensions.x).value = new_val;
 }
 
 void Canvas::erase_at(int i, int j, int layer_index) { edit_tile_at(i, j, 0, layer_index); }
@@ -378,4 +379,4 @@ Tile& Canvas::get_tile_at(int i, int j, int layer) {
 	return map_states.back().layers.at(layer).grid.cells.at(idx);
 }
 
-}
+} // namespace pi

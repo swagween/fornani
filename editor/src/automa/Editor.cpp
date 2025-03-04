@@ -529,7 +529,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				static int style_current = static_cast<int>(map.styles.tile.get_type());
 				static int bg_current = static_cast<int>(map.background->type.get_type());
 
-				map = Canvas(*finder, {static_cast<uint32_t>(width * chunk_size_v), static_cast<uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
+				map = Canvas(*finder, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
 				finder->paths.region = regbuffer;
 				finder->paths.room_name = std::string{roombuffer} + ".json";

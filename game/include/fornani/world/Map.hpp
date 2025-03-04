@@ -76,7 +76,7 @@ struct LayerTexture {
 class Layer {
   public:
 	Layer() = default;
-	Layer(std::uint8_t o, sf::Vector2i partition, sf::Vector2<uint32_t> dim, dj::Json& source, float spacing, bool has_obscuring, bool has_reverse_obscuring)
+	Layer(std::uint8_t o, sf::Vector2i partition, sf::Vector2<std::uint32_t> dim, dj::Json& source, float spacing, bool has_obscuring, bool has_reverse_obscuring)
 		: render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source, spacing) {
 		auto order = static_cast<int>(o);
 		if (order < partition.x) { type = LayerType::background; }
@@ -95,7 +95,7 @@ class Layer {
 	[[nodiscard]] auto get_layer_type() const -> LayerType { return type; }
 	Grid grid;
 	bool collidable{};
-	sf::Vector2<uint32_t> dimensions{};
+	sf::Vector2<std::uint32_t> dimensions{};
 
   private:
 	std::uint8_t render_order{};

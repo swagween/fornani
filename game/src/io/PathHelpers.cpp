@@ -24,7 +24,7 @@ auto abs_exe_path() -> std::filesystem::path {
 
 #elif defined(__APPLE__)
 	std::array<char, FILENAME_MAX> path;
-	uint32_t size = static_cast<uint32_t>(path.size());
+	std::uint32_t size = static_cast<std::uint32_t>(path.size());
 	if (_NSGetExecutablePath(path.data(), &size) != 0) { throw std::runtime_error("Executable path is too long on macOS."); }
 	return std::filesystem::canonical(std::filesystem::path(path.data()));
 

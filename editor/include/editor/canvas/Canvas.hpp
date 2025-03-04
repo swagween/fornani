@@ -69,7 +69,7 @@ class Canvas {
 
   public:
 	Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
-	Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
+	Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
 	void update(Tool& tool);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
 	bool load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
@@ -100,7 +100,7 @@ class Canvas {
 	[[nodiscard]] auto is_palette() const -> bool { return type == SelectionType::palette; }
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
-	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<uint32_t> { return dimensions / u_native_chunk_size(); }
+	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<std::uint32_t> { return dimensions / u_native_chunk_size(); }
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
 	[[nodiscard]] auto get_scaled_position() const -> sf::Vector2<float> { return position / scale; }
 	[[nodiscard]] auto get_real_dimensions() const -> sf::Vector2<float> { return real_dimensions * scale; }
@@ -111,7 +111,7 @@ class Canvas {
 	[[nodiscard]] auto u_native_chunk_size() const -> std::uint32_t { return static_cast<std::uint32_t>(chunk_size_v); }
 	[[nodiscard]] auto i_native_chunk_size() const -> int { return chunk_size_v; }
 	[[nodiscard]] auto f_native_chunk_size() const -> float { return static_cast<float>(chunk_size_v); }
-	[[nodiscard]] auto u_cell_size() const -> std::uint32_t { return static_cast<uint32_t>(i_cell_size()); }
+	[[nodiscard]] auto u_cell_size() const -> std::uint32_t { return static_cast<std::uint32_t>(i_cell_size()); }
 	[[nodiscard]] auto i_cell_size() const -> int { return static_cast<int>(f_cell_size()); }
 	[[nodiscard]] auto f_cell_size() const -> float { return f_native_cell_size() * scale; }
 	[[nodiscard]] auto f_chunk_size() const -> float { return f_native_chunk_size() * scale; }
@@ -125,7 +125,7 @@ class Canvas {
 	[[nodiscard]] auto middleground() const -> int { return map_states.back().get_middleground(); }
 	[[nodiscard]] auto last_layer() const -> int { return static_cast<int>(map_states.back().layers.size() - 1); }
 
-	void replace_tile(uint32_t from, uint32_t to, int layer_index);
+	void replace_tile(std::uint32_t from, std::uint32_t to, int layer_index);
 	void edit_tile_at(int i, int j, int new_val, int layer_index);
 	void erase_at(int i, int j, int layer_index);
 	int tile_val_at(int i, int j, int layer);
@@ -134,7 +134,7 @@ class Canvas {
 	Tile& get_tile_at(int i, int j, int layer = 0);
 
 	// layers
-	sf::Vector2<uint32_t> dimensions{};
+	sf::Vector2<std::uint32_t> dimensions{};
 	sf::Vector2<int> metagrid_coordinates{};
 
 	struct {
@@ -180,7 +180,7 @@ class Canvas {
 	sf::Vector2u player_start{};
 	int active_layer{};
 
-	uint32_t room_id{};
+	std::uint32_t room_id{};
 
 	bool minimap{};
 

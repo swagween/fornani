@@ -31,7 +31,7 @@ void WindowManager::create(std::string const& title, bool const fullscreen) {
 	is_fullscreen = fullscreen;
 	// set window constants
 	screen_dimensions = {aspects.x / 4, aspects.y / 4};
-	u_screen_dimensions = {static_cast<uint16_t>(screen_dimensions.x), static_cast<uint16_t>(screen_dimensions.y)};
+	u_screen_dimensions = {static_cast<std::uint16_t>(screen_dimensions.x), static_cast<std::uint16_t>(screen_dimensions.y)};
 	display_dimensions = {static_cast<unsigned>(sf::VideoMode::getDesktopMode().size.x), static_cast<unsigned>(sf::VideoMode::getDesktopMode().size.y)};
 	mode = fullscreen ? sf::VideoMode(display_dimensions) : sf::VideoMode(u_screen_dimensions);
 	if (!mode.isValid() && fullscreen) {

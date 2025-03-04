@@ -124,12 +124,12 @@ class EntitySet {
 	void load(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	bool save(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void clear();
-	bool has_entity_at(sf::Vector2<uint32_t> pos, bool highlighted_only = false) const;
+	bool has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_only = false) const;
 	bool overlaps(Entity& other) const;
 
 	struct {
-		sf::Vector2<uint32_t> player_start{};
-		sf::Vector2<uint32_t> player_hot_start{};
+		sf::Vector2<std::uint32_t> player_start{};
+		sf::Vector2<std::uint32_t> player_hot_start{};
 		std::vector<std::unique_ptr<Entity>> entities{};
 	} variables{};
 

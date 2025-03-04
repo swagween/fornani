@@ -85,7 +85,7 @@ class Editor {
 	bool menu_hovered{};
 	bool popup_open{};
 	int active_layer{};
-	uint32_t selected_block{};
+	std::uint32_t selected_block{};
 
   private:
 	WindowManager* window;

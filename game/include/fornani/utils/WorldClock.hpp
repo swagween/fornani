@@ -14,7 +14,7 @@ struct ServiceProvider;
 namespace fornani {
 
 enum class TimeOfDay : std::uint8_t { day, twilight, night, END };
-enum class ClockMode { standard, military };
+enum class ClockMode : std::uint8_t { standard, military };
 
 class WorldClock {
   public:

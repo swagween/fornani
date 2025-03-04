@@ -20,7 +20,7 @@ enum class LootState { heart_dropped };
 class Loot {
 
 	using Vec = sf::Vector2<float>;
-	using Vecu16 = sf::Vector2<uint32_t>;
+	using Vecu16 = sf::Vector2<std::uint32_t>;
 
   public:
 	Loot() = default;

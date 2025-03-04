@@ -21,14 +21,14 @@ constexpr static int special_index_v{448};
 struct Tile {
 
 	Tile() = default;
-	constexpr static int evaluate(uint32_t val) {
+	constexpr static int evaluate(std::uint32_t val) {
 		auto ret{4};
 		if (val == special_index_v + 3 || val == special_index_v + 4 || val == special_index_v + 9 || val == special_index_v + 10 || val == special_index_v + 13 || val == special_index_v + 14) { ret = 3; }
 		if (val == special_index_v + 19 || val == special_index_v + 20 || val == special_index_v + 25 || val == special_index_v + 26 || val == special_index_v + 29 || val == special_index_v + 30) { ret = 3; }
 		if ((val >= special_index_v + 32 && val <= special_index_v + 35) || (val >= special_index_v + 48 && val <= special_index_v + 51)) { ret = 3; }
 		return ret;
 	}
-	Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi, float spacing);
+	Tile(sf::Vector2<std::uint32_t> i, sf::Vector2<float> p, std::uint32_t val, std::uint32_t odi, float spacing);
 
 	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
 	void render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2<float> cam);
@@ -64,10 +64,10 @@ struct Tile {
 	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return bounding_box.get_position() + bounding_box.get_dimensions() * 0.5f; }
 	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounding_box.get_position(); }
 
-	sf::Vector2<uint32_t> index;
-	uint32_t one_d_index;
+	sf::Vector2<std::uint32_t> index;
+	std::uint32_t one_d_index;
 
-	uint32_t value;
+	std::uint32_t value;
 	TileType type{};
 	shape::Shape bounding_box;
 

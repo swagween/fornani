@@ -5,14 +5,14 @@
 
 namespace fornani::world {
 
-Grid::Grid(sf::Vector2<uint32_t> d, dj::Json& source, float s) : dimensions(d), m_spacing(s) {
+Grid::Grid(sf::Vector2<std::uint32_t> d, dj::Json& source, float s) : dimensions(d), m_spacing(s) {
 	auto size = static_cast<std::size_t>(dimensions.x * dimensions.y);
 	cells.reserve(size);
 	auto i{0};
 	for (auto& cell : source.array_view()) {
 		auto value = cell.as<int>();
-		auto xidx = static_cast<uint32_t>(std::floor(i % dimensions.x));
-		auto yidx = static_cast<uint32_t>(std::floor(i / dimensions.x));
+		auto xidx = static_cast<std::uint32_t>(std::floor(i % dimensions.x));
+		auto yidx = static_cast<std::uint32_t>(std::floor(i / dimensions.x));
 		cells.push_back(Tile({xidx, yidx}, {xidx * m_spacing, yidx * m_spacing}, value, i, m_spacing));
 		seed_vertex(i);
 		++i;
@@ -26,7 +26,7 @@ void Grid::check_neighbors(int i) {
 	auto down = static_cast<std::size_t>(i + dimensions.x);
 	bool surrounded{true};
 	bool exposed{};
-	auto ui = static_cast<uint32_t>(i);
+	auto ui = static_cast<std::uint32_t>(i);
 	// right neighbor
 	if (i != cells.size() - 1 && i % dimensions.x != dimensions.x - 1) {
 		if (!cells.at(right).is_solid()) { surrounded = false; }
@@ -59,7 +59,7 @@ sf::Vector2<int> Grid::get_solid_neighbors(int index) {
 	auto left = static_cast<std::size_t>(index - 1);
 	auto up = static_cast<std::size_t>(index - dimensions.x);
 	auto down = static_cast<std::size_t>(index + dimensions.x);
-	auto ui = static_cast<uint32_t>(index);
+	auto ui = static_cast<std::uint32_t>(index);
 	// left neighbor
 	if (index != 0 && index % dimensions.x != 0) {
 		if (cells.at(left).is_solid()) { ret.x = -1; }

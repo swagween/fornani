@@ -89,9 +89,9 @@ void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	// TODO: switch to AnimatedSprite
 	if (spritesheet_dimensions.y > 0) {
-		auto u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-		auto v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
-		sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
+		auto u = static_cast<int>(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+		auto v = static_cast<int>(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+		sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)}));
 	}
 	if (svc.greyblock_mode()) {
 		collider.render(win, campos);

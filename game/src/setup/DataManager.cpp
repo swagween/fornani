@@ -32,7 +32,7 @@ void DataManager::load_data(std::string in_room) {
 			map_jsons.push_back(MapData{this_id, room_data, this_region.path().filename().string(), room_str});
 
 			// cache map layers
-			sf::Vector2<uint32_t> dimensions{};
+			sf::Vector2<std::uint32_t> dimensions{};
 			dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
 			dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
 			std::vector<world::Layer> next{};
