@@ -1,6 +1,7 @@
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
+#include <ccmath/ext/clamp.hpp>
 
 #include <cmath>
 
@@ -72,9 +73,7 @@ void PhysicsComponent::hard_stop_x() {
 	real_velocity.x = 0.f;
 }
 
-void PhysicsComponent::stop_x() {
-	acceleration.x = 0.f;
-}
+void PhysicsComponent::stop_x() { acceleration.x = 0.f; }
 
 void PhysicsComponent::zero() {
 	acceleration = {};
@@ -106,4 +105,4 @@ void PhysicsComponent::set_global_friction(float fric) {
 	air_friction = {fric, fric};
 }
 
-} // namespace components
+} // namespace fornani::components

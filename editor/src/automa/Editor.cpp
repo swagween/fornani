@@ -6,6 +6,8 @@
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 #ifdef _WIN32
 // TODO: debloat include
 #include <Windows.h>

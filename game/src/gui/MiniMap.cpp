@@ -4,6 +4,8 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::gui {
 
 MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_map_sprite{svc.assets.t_null}, m_cursor{svc.assets.get_texture("map_cursor")} {

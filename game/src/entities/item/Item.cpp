@@ -1,8 +1,9 @@
 #include "fornani/entities/item/Item.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/gui/Console.hpp"
 #include "fornani/entities/player/Wardrobe.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::item {
 
@@ -54,7 +55,7 @@ Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label),
 	auto v = static_cast<int>(std::floor((static_cast<float>(metadata.id - 1) / 16.f)) * dimensions.y);
 	sprite.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
 
-	//for debug
+	// for debug
 	drawbox.setSize(dimensions);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(svc.styles.colors.blue);
@@ -104,4 +105,4 @@ void Item::set_rarity_position(sf::Vector2<float> position) { ui.rarity.setPosit
 
 void Item::set_offset(sf::Vector2<float> offset) { ui.offset = offset; }
 
-} // namespace player
+} // namespace fornani::item

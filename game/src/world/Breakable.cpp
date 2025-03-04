@@ -6,6 +6,8 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::world {
 
 Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int state) : style(style), state(state), sprite(svc.assets.t_breakables) {

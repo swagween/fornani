@@ -8,6 +8,8 @@
 
 #include "fornani/utils/Random.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.t_pushables} {

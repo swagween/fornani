@@ -2,6 +2,8 @@
 #include "fornani/particle/Spring.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::vfx {
 
 Spring::Spring(SpringParameters params) : params(params) {

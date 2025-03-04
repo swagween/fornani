@@ -2,7 +2,7 @@
 #pragma once
 #include <limits>
 
-#include "ccmath/ext/normalize.hpp"
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::util {
 

@@ -1,7 +1,7 @@
 
 #include "editor/tool/Tool.hpp"
 
-
+#include <ccmath/ext/clamp.hpp>
 
 namespace pi {
 
@@ -61,8 +61,7 @@ void Marquee::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> o
 	sf::RectangleShape box{};
 	switch (mode) {
 	case SelectMode::none: break;
-	case SelectMode::clipboard:
-		[[fallthrough]];
+	case SelectMode::clipboard: [[fallthrough]];
 	case SelectMode::select:
 		if (!selection) { break; }
 		if (canvas.get_selection_type() != selection.value().get_type()) { break; } // don't render if the types don't match
@@ -81,8 +80,7 @@ void Marquee::store_tile(int index) {}
 
 void Marquee::clear() {
 	if (!selection) { return; }
-	if (!selection.value().empty()) {
-	}
+	if (!selection.value().empty()) {}
 }
 
 } // namespace pi

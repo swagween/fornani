@@ -1,8 +1,9 @@
 #include "fornani/world/Camera.hpp"
 
 #include "fornani/service/ServiceProvider.hpp"
-
 #include "fornani/utils/Random.hpp"
+
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani {
 

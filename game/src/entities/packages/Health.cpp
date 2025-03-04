@@ -1,6 +1,7 @@
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::entity {
 
@@ -57,4 +58,4 @@ void Health::increase_max_hp(float amount) { set_max(max_hp + amount); }
 
 void Health::reset() { hp = max_hp; }
 
-} // namespace entity
+} // namespace fornani::entity

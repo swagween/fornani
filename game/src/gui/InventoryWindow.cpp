@@ -6,6 +6,8 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)

@@ -6,6 +6,8 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::gui {
 
 Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f dimensions)

@@ -4,6 +4,8 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)

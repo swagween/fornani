@@ -1,6 +1,7 @@
 #include "fornani/gui/Selector.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::gui {
 
@@ -81,4 +82,4 @@ void Selector::set_dimensions(sf::Vector2<int> dim) {
 
 bool Selector::last_row() const { return current_selection.get() / table_dimensions.x == table_dimensions.y - 1; }
 
-} // namespace gui
+} // namespace fornani::gui

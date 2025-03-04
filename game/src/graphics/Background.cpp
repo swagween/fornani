@@ -6,6 +6,7 @@
 #include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Math.hpp"
 
+#include <ccmath/ext/clamp.hpp>
 #include <tracy/Tracy.hpp>
 
 namespace fornani::bg {

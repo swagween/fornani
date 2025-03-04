@@ -5,6 +5,8 @@
 #include "editor/util/Lookup.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace pi {
 
 Canvas::Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}

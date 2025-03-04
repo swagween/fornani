@@ -1,6 +1,8 @@
 #include "fornani/graphics/HelpText.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
+#include <ccmath/ext/clamp.hpp>
+
 namespace fornani::graphics {
 
 HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title) {}
@@ -57,4 +59,4 @@ void HelpText::reset() {
 	alpha_counter.start();
 }
 
-} // namespace text
+} // namespace fornani::graphics
