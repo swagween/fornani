@@ -2,6 +2,7 @@
 #include "fornani/world/Grid.hpp"
 
 #include <ccmath/ext/clamp.hpp>
+#include <cmath>
 
 namespace fornani::world {
 
