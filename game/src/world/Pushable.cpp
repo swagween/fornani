@@ -12,7 +12,7 @@
 
 namespace fornani::world {
 
-Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.t_pushables} {
+Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.get_texture("pushables")} {
 	collider = shape::Collider({svc.constants.cell_size * static_cast<float>(size) - 4.f, svc.constants.cell_size * static_cast<float>(size) - 1.f});
 	collider.physics.position = position;
 	start_position = position;
@@ -94,7 +94,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (platform.bounding_box.overlaps(collider.jumpbox)) { collider.handle_collider_collision(platform.bounding_box); }
 	}
 	if (collider.flags.state.test(shape::State::just_landed)) {
-		map.effects.push_back(entity::Effect(svc, {collider.physics.position.x + 32.f * (size / 2.f), collider.physics.position.y + (size - 1) * 32.f}, {}, 0, 10));
+		map.effects.push_back(entity::Effect(svc, "dust", {collider.physics.position.x + 32.f * (size / 2.f), collider.physics.position.y + (size - 1) * 32.f}, {}, 0, 10));
 		svc.soundboard.flags.world.set(audio::World::thud);
 	}
 	collider.reset();
@@ -141,9 +141,10 @@ void Pushable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
 	auto index = size == 1 ? 0 : 1;
 	auto offset = size == 1 ? sf::Vector2<float>{} : sf::Vector2<float>{5.f, 5.f};
-	map.effects.push_back(entity::Effect(svc, collider.physics.position + offset, {}, 0, index));
+	auto label = size == 1 ? "small_explosion" : "large_explosion";
+	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset, {}, 0, index));
 	collider.physics.position = start_position;
-	map.effects.push_back(entity::Effect(svc, collider.physics.position + offset, {}, 0, index));
+	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset, {}, 0, index));
 }
 
 } // namespace fornani::world

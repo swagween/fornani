@@ -11,13 +11,13 @@
 namespace fornani::gui {
 
 Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f dimensions)
-	: m_physical{.dimensions{dimensions}}, m_sprite{svc.assets.t_dashboard}, m_constituents{.top_left_frontplate{{{}, {153, 124}}, {}},
-																							.top_right_frontplate{{{153, 0}, {64, 127}}, {290.f, 0.f}},
-																							.arsenal_frontplate{{{26, 127}, {184, 137}}, {52, 218}},
-																							.top_left_slot{{{217, 0}, {153, 124}}, {}},
-																							.top_right_slot{{{370, 0}, {64, 127}}, {290.f, 0.f}},
-																							.arsenal_slot{{{253, 127}, {184, 137}}, {52, 218}},
-																							.motherboard{{{434, 0}, {222, 212}}, {14.f, 68.f}}},
+	: m_physical{.dimensions{dimensions}}, m_sprite{svc.assets.get_texture("pioneer_dashboard")}, m_constituents{.top_left_frontplate{{{}, {153, 124}}, {}},
+																												 .top_right_frontplate{{{153, 0}, {64, 127}}, {290.f, 0.f}},
+																												 .arsenal_frontplate{{{26, 127}, {184, 137}}, {52, 218}},
+																												 .top_left_slot{{{217, 0}, {153, 124}}, {}},
+																												 .top_right_slot{{{370, 0}, {64, 127}}, {290.f, 0.f}},
+																												 .arsenal_slot{{{253, 127}, {184, 137}}, {52, 218}},
+																												 .motherboard{{{434, 0}, {222, 212}}, {14.f, 68.f}}},
 	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}} {
 	m_debug.box.setFillColor(sf::Color{180, 150, 20, 50});
 	m_debug.box.setOutlineThickness(-2.f);

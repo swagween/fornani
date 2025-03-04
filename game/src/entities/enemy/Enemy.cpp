@@ -9,7 +9,7 @@
 namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
-	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.texture_lookup.at(label))} {
+	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.get_texture("enemy_" + std::string{label}))} {
 
 	direction = dir::Direction{start_direction};
 
@@ -122,7 +122,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (map.off_the_bottom(collider.physics.position)) {
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4.f); }
 	}
-	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
+	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, "large_explosion", collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();
@@ -258,11 +258,11 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			health.inflict(proj.get_damage());
 			health_indicator.add(-proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
-			map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 11, {1, 1}));
+			map.effects.push_back(entity::Effect(svc, "hit_flash", proj.get_position(), {}, 0, 11, {1, 1}));
 			hitstun.start(64);
 		}
 	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
-		map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 6));
+		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position(), {}, 0, 6));
 		svc.soundboard.flags.world.set(audio::World::hard_hit);
 	}
 	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }

@@ -37,7 +37,7 @@ void AnimatedSprite::set_scale(sf::Vector2<float> scale) { sprite.setScale(scale
 
 void AnimatedSprite::set_origin(sf::Vector2<float> origin) { sprite.setOrigin(origin); }
 
-void AnimatedSprite::set_texture(sf::Texture& texture) { sprite.setTexture(texture); }
+void AnimatedSprite::set_texture(sf::Texture const& texture) { sprite.setTexture(texture); }
 
 void AnimatedSprite::random_start() {
 	if (animation.params.duration > 1) { animation.frame.set(util::Random::random_range(0, animation.params.duration - 1)); }

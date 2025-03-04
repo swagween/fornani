@@ -1,9 +1,9 @@
 
 #include "fornani/entities/packages/FloatingPart.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 #include <numbers>
 
@@ -11,7 +11,7 @@
 
 namespace fornani::entity {
 
-FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset, int id) : sprite{tex}, textured{true}, init{true}, m_id{id} {
+FloatingPart::FloatingPart(sf::Texture const& tex, float force, float friction, sf::Vector2<float> offset, int id) : sprite{tex}, textured{true}, init{true}, m_id{id} {
 	sprite->setOrigin(sprite->getLocalBounds().getCenter());
 	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
 	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
@@ -24,7 +24,7 @@ FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Ve
 	debugbox.setOutlineThickness(-1);
 }
 
-FloatingPart::FloatingPart(sf::Texture& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2<float> offset, int id)
+FloatingPart::FloatingPart(sf::Texture const& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2<float> offset, int id)
 	: textured{true}, init{true}, m_id{id} {
 	animated_sprite = anim::AnimatedSprite(tex, dimensions);
 	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
@@ -79,7 +79,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 		for (auto& proj : map.active_projectiles) {
 			if (proj.get_bounding_box().overlaps(shieldbox.value())) {
 				if (!proj.destruction_initiated()) {
-					map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), {}, 0, 6));
+					map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), {}, 0, 6));
 					if (proj.get_direction().up_or_down()) { map.effects.back().rotate(); }
 					svc.soundboard.flags.world.set(audio::World::hard_hit);
 				}

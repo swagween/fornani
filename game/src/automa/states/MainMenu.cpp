@@ -5,7 +5,7 @@
 namespace fornani::automa {
 
 MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
-	: GameState(svc, player, scene, room_number), subtitle{svc.text.fonts.basic}, instruction(svc.text.fonts.basic), title(svc.assets.t_title) {
+	: GameState(svc, player, scene, room_number), subtitle{svc.text.fonts.basic}, instruction(svc.text.fonts.basic), title(svc.assets.get_texture("menu_title")) {
 	subtitle.setFont(svc.text.fonts.basic);
 	// playtester edition
 	flags.set(GameStateFlags::playtest);
@@ -90,4 +90,4 @@ void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	right_dot.render(svc, win, {0, 0});
 }
 
-} // namespace automa
+} // namespace fornani::automa

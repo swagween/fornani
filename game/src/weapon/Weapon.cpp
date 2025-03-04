@@ -5,8 +5,8 @@ namespace fornani::arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	: metadata{.id = id, .label = enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()},
-	  projectile(svc, enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string(), id, *this, enemy),
-	  visual{.sprite = sf::Sprite{svc.assets.t_gun}, .ui = sf::Sprite{svc.assets.t_guns}} {
+	  projectile(svc, enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["tag"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["tag"].as_string(), id, *this, enemy),
+	  visual{.sprite{sf::Sprite{svc.assets.get_texture("guns")}}, .ui{sf::Sprite{svc.assets.get_texture("inventory_guns")}}} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id] : svc.data.weapon["weapons"][id];
 
@@ -45,7 +45,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
 
-	//audio
+	// audio
 	audio.shoot = in_data["audio"]["shoot"].as<int>();
 }
 
@@ -78,7 +78,7 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setFillColor(svc.styles.colors.goldenrod);
 		win.draw(box);
 	} else {
-		//visual.sprite.render(svc, win, cam);
+		// visual.sprite.render(svc, win, cam);
 	}
 }
 
@@ -171,4 +171,4 @@ void Weapon::set_firing_direction(dir::Direction to_direction) { firing_directio
 
 void Weapon::reset() { active_projectiles.start(); }
 
-} // namespace arms
+} // namespace fornani::arms

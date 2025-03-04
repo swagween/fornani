@@ -44,7 +44,7 @@ void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 			if (health.is_dead()) {
 				svc.soundboard.flags.world.set(audio::World::block_toggle);
-				map.effects.push_back(entity::Effect(svc, sensor.bounds.getPosition() - sf::Vector2<float>{32.f, 32.f}, {}, 0, 0));
+				map.effects.push_back(entity::Effect(svc, "smoke", sensor.bounds.getPosition() - sf::Vector2<float>{32.f, 32.f}, {}, 0, 0));
 				state = SpawnablePlatformState::opening;
 			}
 		}

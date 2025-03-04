@@ -378,7 +378,7 @@ void Player::jump(world::Map& map) {
 			collider.physics.velocity.y = 0.f;
 			controller.get_jump().doublejump();
 			m_services->soundboard.flags.player.set(audio::Player::jump);
-			map.effects.push_back(entity::Effect(*m_services, sprite_position, sf::Vector2<float>{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
+			map.effects.push_back(entity::Effect(*m_services, "doublejump", sprite_position, sf::Vector2<float>{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
 		}
 		if (controller.get_jump().is_doublejump()) { animation.state = AnimState::backflip; }
 	}

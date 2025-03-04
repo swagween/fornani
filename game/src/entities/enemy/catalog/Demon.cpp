@@ -8,7 +8,7 @@ namespace fornani::enemy {
 
 Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "demon"), m_services(&svc), m_map(&map),
-	  parts{.spear{svc.assets.t_demon_spear, 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.t_demon_sword, 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.t_demon_shield, 2.0f, 0.85f, {-28.f, 8.f}}} {
+	  parts{.spear{svc.assets.get_texture("demon_spear"), 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.get_texture("demon_sword"), 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.get_texture("demon_shield"), 2.0f, 0.85f, {-28.f, 8.f}}} {
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
@@ -252,7 +252,7 @@ fsm::StateFunction Demon::update_dormant() {
 	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot)) {
 		cooldowns.awaken.cancel();
 		flags.state.set(StateFlags::vulnerable);
-		m_map->effects.push_back(entity::Effect(*m_services, collider.physics.position, {}, 2, 0));
+		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", collider.physics.position, {}, 2, 0));
 		m_services->soundboard.flags.world.set(audio::World::block_toggle);
 		m_services->soundboard.flags.demon.set(audio::Demon::snort);
 		state = DemonState::jump;

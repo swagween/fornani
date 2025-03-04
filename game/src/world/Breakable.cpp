@@ -10,7 +10,7 @@
 
 namespace fornani::world {
 
-Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int state) : style(style), state(state), sprite(svc.assets.t_breakables) {
+Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int state) : style(style), state(state), sprite(svc.assets.get_texture("breakables")) {
 	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();
@@ -52,7 +52,7 @@ void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile&
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 		}
 		if (destroyed()) {
-			map.effects.push_back(entity::Effect(svc, collider.physics.position, {}, 0, 0));
+			map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position, {}, 0, 0));
 			svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 		}
 		proj.destroy(false);
@@ -65,7 +65,7 @@ void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, int powe
 	energy = hit_energy;
 	svc.soundboard.flags.world.set(audio::World::breakable_hit);
 	if (destroyed()) {
-		map.effects.push_back(entity::Effect(svc, collider.physics.position, {}, 0, 0));
+		map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position, {}, 0, 0));
 		svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 	}
 }

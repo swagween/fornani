@@ -1,16 +1,14 @@
 #include "fornani/world/SwitchBlock.hpp"
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
-#include "fornani/particle/Effect.hpp"
 #include "fornani/world/SwitchBlock.hpp"
-
 
 namespace fornani::world {
 
-SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id), sprite{svc.assets.t_switch_blocks}
-{
+SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id), sprite{svc.assets.get_texture("switch_blocks")} {
 	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();
@@ -21,7 +19,7 @@ SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> positi
 void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (state != SwitchBlockState::empty) { handle_collision(player.collider); }
 	if (switched()) {
-		map.effects.push_back(entity::Effect(svc, collider.physics.position, {}, 0, 0));
+		map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position, {}, 0, 0));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);
 	}
 	previous_state = state;
@@ -45,11 +43,11 @@ void SwitchBlock::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Pr
 	if (state == SwitchBlockState::empty) { return; }
 	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 6));
+			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position(), {}, 0, 6));
 			svc.soundboard.flags.world.set(audio::World::hard_hit);
 		}
 		proj.destroy(false);
 	}
 }
 
-} // namespace world
+} // namespace fornani::world

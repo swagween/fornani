@@ -8,7 +8,8 @@
 
 namespace fornani::arms {
 
-Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy) : metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.projectile_textures.at(label)}} {
+Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy)
+	: metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.get_texture("projectile_" + std::string{label})}} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id]["class_package"]["projectile"] : svc.data.weapon["weapons"][id]["class_package"]["projectile"];
 
@@ -121,7 +122,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	physical.collider.set_position(physical.physics.position);
 	if (map.check_cell_collision_circle(physical.collider, false)) {
 		if (!destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, variables.destruction_point + physical.physics.position, {}, effect_type(), 2));
+			map.effects.push_back(entity::Effect(svc, "bullet_hit", variables.destruction_point + physical.physics.position, {}, effect_type(), 2));
 			if (physical.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
 			auto listener_position = sf::Vector2<float>{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
 			svc.soundboard.play(svc, svc.sounds.get_buffer("wall_hit"), 0.1f, 100.f, 0, 10.f, listener_position - physical.bounding_box.get_center());

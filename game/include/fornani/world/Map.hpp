@@ -19,7 +19,6 @@
 #include "fornani/entities/world/Bed.hpp"
 #include "fornani/entities/world/Chest.hpp"
 #include "fornani/entities/world/Fire.hpp"
-#include "fornani/entities/world/Grass.hpp"
 #include "fornani/entities/world/Inspectable.hpp"
 #include "fornani/entities/world/Portal.hpp"
 #include "fornani/entities/world/SavePoint.hpp"
@@ -167,7 +166,6 @@ class Map {
 
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
-	std::vector<arms::Grenade> active_grenades{};
 	std::vector<vfx::Emitter> active_emitters{};
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
@@ -175,7 +173,6 @@ class Map {
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
 	std::vector<std::unique_ptr<entity::Vine>> vines{};
-	std::vector<std::unique_ptr<entity::Grass>> grass{};
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};

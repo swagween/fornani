@@ -20,7 +20,7 @@ enum class SpikeAttributes : std::uint8_t { no_collision };
 
 class Spike {
   public:
-	Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size);
+	Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);

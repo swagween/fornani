@@ -7,7 +7,7 @@
 
 namespace fornani::item {
 
-Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label), sprite(svc.assets.t_items), ui{.rarity{svc.text.fonts.title}, .quantity{svc.text.fonts.basic}} {
+Item::Item(automa::ServiceProvider& svc, std::string_view label) : label(label), sprite(svc.assets.get_texture("inventory_items")), ui{.rarity{svc.text.fonts.title}, .quantity{svc.text.fonts.basic}} {
 	auto const& in_data = svc.data.item[label];
 	metadata.id = in_data["index"].as<int>();
 	metadata.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string() : metadata.naive_title = in_data["title"].as_string();

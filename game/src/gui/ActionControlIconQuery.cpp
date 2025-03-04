@@ -50,7 +50,7 @@ auto get_action_control_icon(automa::ServiceProvider& svc, config::DigitalAction
 		lookup = get_controller_button_coordinates(source.controller_origin);
 	}
 
-	sf::Sprite sprite{svc.assets.t_controller_button_icons};
+	sf::Sprite sprite{svc.assets.get_texture("controller_button_icons")};
 	auto dimensions = sf::Vector2<int>{36, 36};
 	sprite.setTextureRect(sf::IntRect{lookup * 36, dimensions});
 	sprite.setOrigin(sf::Vector2<float>{0.f, 8.f});
@@ -58,4 +58,4 @@ auto get_action_control_icon(automa::ServiceProvider& svc, config::DigitalAction
 	return sprite;
 }
 
-} // namespace gui
+} // namespace fornani::gui

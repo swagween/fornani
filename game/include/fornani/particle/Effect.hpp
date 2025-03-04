@@ -14,7 +14,7 @@ namespace fornani::entity {
 
 class Effect final : public Entity {
   public:
-	Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type = 0, int index = 0, sf::Vector2i reflections = {});
+	Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2<float> pos, sf::Vector2<float> vel, int type = 0, int index = 0, sf::Vector2i reflections = {});
 	void update(automa::ServiceProvider& svc, world::Map& map) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void rotate();

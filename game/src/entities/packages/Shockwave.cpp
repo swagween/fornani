@@ -1,8 +1,7 @@
 #include "fornani/entities/packages/Shockwave.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-
+#include "fornani/world/Map.hpp"
 
 namespace fornani::entity {
 
@@ -22,7 +21,7 @@ void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 	if (lifetime.is_complete()) { return; }
 	position = position + speed;
 	if (svc.ticker.every_x_ticks(50)) {
-		map.effects.push_back(entity::Effect(svc, position - hit.bounds.getOrigin(), {0.f, -1.f}, 3, 0));
+		map.effects.push_back(entity::Effect(svc, "small_explosion", position - hit.bounds.getOrigin(), {0.f, -1.f}, 3, 0));
 		hit.bounds.setPosition(position);
 	}
 }
@@ -33,4 +32,4 @@ void Shockwave::handle_player(player::Player& player) { hit.within_bounds(player
 
 void Shockwave::render(sf::RenderWindow& win, sf::Vector2<float> cam) { hit.render(win, cam); }
 
-} // namespace entity
+} // namespace fornani::entity

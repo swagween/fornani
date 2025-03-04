@@ -1,4 +1,4 @@
 {
-  "region": "firstwind",
-  "room": "atrium.json"
+  "region": "config",
+  "room": "test_chamber.json"
 }

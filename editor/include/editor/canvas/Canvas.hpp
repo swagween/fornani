@@ -33,6 +33,15 @@ struct Theme {
 	std::vector<int> atmosphere{};
 };
 
+// TODO: remove this once we refactor Constants to be a MonoInstance
+struct Constants {
+	float texture_scale_factor{2.f};
+	float cell_size{32.f};
+	int i_cell_size{16};
+	sf::Vector2i i_cell_vec{i_cell_size, i_cell_size};
+	sf::Vector2f texture_scale{texture_scale_factor, texture_scale_factor};
+};
+
 constexpr inline int chunk_size_v{16};
 constexpr inline int default_num_layers_v{8};
 constexpr inline int default_middleground_v{4};
@@ -117,6 +126,7 @@ class Canvas {
 	[[nodiscard]] auto f_chunk_size() const -> float { return f_native_chunk_size() * scale; }
 	[[nodiscard]] auto f_native_cell_size() const -> float { return 32.f; }
 	[[nodiscard]] auto get_scale() const -> float { return scale; }
+	[[nodiscard]] auto get_scale_vec() const -> sf::Vector2f { return m_constants.texture_scale * scale; }
 	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(styles.tile.get_type()); }
 	[[nodiscard]] auto within_zoom_limits(float delta) const -> bool { return get_scale() + delta >= min_scale && get_scale() + delta <= max_scale; }
 	[[nodiscard]] auto within_bounds(sf::Vector2<float> const& point) const -> bool { return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y; }
@@ -154,9 +164,7 @@ class Canvas {
 		dj::Json meta{};
 	} data{};
 
-	struct {
-		float cell_size{32.f};
-	} constants{};
+	Constants m_constants{};
 
 	struct {
 		Style tile;

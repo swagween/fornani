@@ -1,11 +1,12 @@
 #include "fornani/entities/item/Drop.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id) : sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop"), special_id(special_id), sprite{svc.assets.t_heart} {
+Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id)
+	: sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop"), special_id(special_id), sprite{svc.assets.get_texture("hearts")} {
 
 	collider.physics.elasticity = 0.5f;
 
@@ -91,9 +92,9 @@ void Drop::set_value() {
 
 void Drop::set_texture(automa::ServiceProvider& svc) {
 	switch (type) {
-	case DropType::heart: sprite.set_texture(svc.assets.t_heart); break;
-	case DropType::orb: sprite.set_texture(svc.assets.t_orb); break;
-	case DropType::gem: sprite.set_texture(svc.assets.t_gem); break;
+	case DropType::heart: sprite.set_texture(svc.assets.get_texture("hearts")); break;
+	case DropType::orb: sprite.set_texture(svc.assets.get_texture("orbs")); break;
+	case DropType::gem: sprite.set_texture(svc.assets.get_texture("gems")); break;
 	}
 }
 

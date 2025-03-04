@@ -316,13 +316,13 @@ void Editor::render(sf::RenderWindow& win) {
 	auto soft_palette_mode = m_options.palette && available() && palette.hovered();
 	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() && current_tool->highlight_canvas() && !soft_palette_mode) {
 		auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
-		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
+		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), map.m_constants.i_cell_vec}));
 		for (int i = 0; i < current_tool->size; i++) {
 			for (int j = 0; j < current_tool->size; j++) {
 				target_shape.setPosition({(current_tool->f_scaled_position().x - i) * map.f_cell_size() + map.get_position().x, (current_tool->f_scaled_position().y - j) * map.f_cell_size() + map.get_position().y});
 				target_shape.setSize({map.f_cell_size(), map.f_cell_size()});
 				tileset.setPosition(target_shape.getPosition());
-				tileset.setScale({map.get_scale(), map.get_scale()});
+				tileset.setScale(map.get_scale_vec());
 				if (current_tool->is_paintable()) { win.draw(tileset); }
 				win.draw(target_shape);
 			}
@@ -880,9 +880,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ImGui::NewLine();
 			}
 			ImGui::Separator();
-			ImGui::Text("Current Block:");
+			ImGui::Text("Current Tile:");
 			auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
-			tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), {32, 32}}));
+			tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), map.m_constants.i_cell_vec}));
+			tileset.setScale(map.m_constants.texture_scale);
 			ImGui::Image(tileset);
 			if (current_tool->type == ToolType::entity_editor) {
 				if (current_tool->current_entity) {

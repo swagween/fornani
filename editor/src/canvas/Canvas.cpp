@@ -63,8 +63,8 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 				if (cell.value == 0) { continue; }
 				if (layer.render_order == active_layer || flags.show_all_layers) {
 					auto squared = scale == 1.f ? 1.f : 1.01f;
-					tileset.setTextureRect(sf::IntRect{get_tile_coord(cell.value), {32, 32}});
-					tileset.setScale({scale * squared, scale * squared});
+					tileset.setTextureRect(sf::IntRect{get_tile_coord(cell.value), m_constants.i_cell_vec});
+					tileset.setScale(sf::Vector2f{scale * squared, scale * squared} * m_constants.texture_scale_factor);
 					tileset.setOrigin(get_origin());
 					tileset.setPosition(cell.scaled_position() + position);
 					if (layer.render_order == get_layers().layers.size() - 1) {
@@ -127,7 +127,7 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
-	real_dimensions = {static_cast<float>(dimensions.x) * constants.cell_size, static_cast<float>(dimensions.y) * constants.cell_size};
+	real_dimensions = {static_cast<float>(dimensions.x) * m_constants.cell_size, static_cast<float>(dimensions.y) * m_constants.cell_size};
 	auto style_value = meta["style"].as<int>();
 	styles.tile = Style(static_cast<StyleType>(style_value));
 	m_theme.music = meta["music"].as_string();
@@ -337,7 +337,7 @@ sf::Vector2<int> Canvas::get_tile_coord(int lookup) {
 	sf::Vector2<int> ret{};
 	ret.x = static_cast<int>(lookup % 16);
 	ret.y = static_cast<int>(std::floor(lookup / 16));
-	return ret * 32;
+	return ret * m_constants.i_cell_size;
 }
 
 void Canvas::replace_tile(std::uint32_t from, std::uint32_t to, int layer_index) {
