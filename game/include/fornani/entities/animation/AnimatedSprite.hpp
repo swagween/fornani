@@ -1,11 +1,14 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <string_view>
-#include <unordered_map>
 #include "Animation.hpp"
 #include "fornani/graphics/SpriteRotator.hpp"
+#include "fornani/io/Logger.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <string_view>
+#include <unordered_map>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -19,6 +22,7 @@ class AnimatedSprite {
 	AnimatedSprite(sf::Texture const& texture, sf::Vector2<int> dimensions = {32, 32});
 	void update(sf::Vector2<float> pos, int u = 0, int v = 0, bool horiz = false);
 	void push_params(std::string_view label, Parameters in_params);
+	void push_params(std::string_view label, Parameters in_params, std::string_view target_animation);
 	void set_params(std::string_view label, bool force = false);
 	void set_dimensions(sf::Vector2<int> dim);
 	void set_position(sf::Vector2<float> pos);
@@ -48,6 +52,8 @@ class AnimatedSprite {
 	Animation animation{};
 	std::unordered_map<std::string_view, Parameters> params{};
 	vfx::SpriteRotator rotator{};
+
+	io::Logger m_logger{"anim"};
 };
 
 } // namespace fornani::anim

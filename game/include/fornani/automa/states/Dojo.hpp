@@ -25,7 +25,7 @@ class Dojo final : public GameState {
 	bool open_vendor{};
 	util::Cooldown enter_room{};
 	util::Cooldown loading{32};
-	std::optional<gui::VendorDialog> vendor_dialog{};
+	std::optional<std::unique_ptr<gui::VendorDialog>> vendor_dialog{};
 	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};
 };

@@ -11,11 +11,8 @@ gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
 				.pants{sf::Sprite{svc.assets.get_texture("wardrobe_green_pants")}},
 				.hairstyle{sf::Sprite{svc.assets.get_texture("wardrobe_default_hair")}}},
 	  out_nani{sf::Sprite{svc.assets.get_texture("null")}} {
-	background.setFillColor(svc.styles.colors.ui_black);
-	background.setOutlineColor(svc.styles.colors.ui_white);
-	background.setOutlineThickness(2.f);
+	background.setFillColor(svc.styles.colors.pioneer_black);
 	background.setSize(dimensions);
-	background.setOrigin(dimensions * 0.5f);
 	if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize() failed!"); }
 }
 
@@ -52,10 +49,9 @@ void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player
 }
 
 void WardrobeWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	background.setPosition(position);
+	background.setPosition(position - cam);
 	win.draw(background);
-	out_nani.setPosition(position);
-	out_nani.setOrigin(dimensions * 0.5f);
+	out_nani.setPosition(position - cam);
 	win.draw(out_nani);
 }
 

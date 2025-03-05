@@ -17,15 +17,23 @@ void AnimatedSprite::update(sf::Vector2<float> pos, int u, int v, bool horiz) {
 	drawbox.setOutlineColor(sf::Color::Blue);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize(static_cast<sf::Vector2<float>>(dimensions));
-}
+	if (animation.params.target) {
+		if (animation.totally_complete()) { set_params(*animation.params.target); }
+	}
+};
 
 void AnimatedSprite::push_params(std::string_view label, Parameters in_params) { params.insert({label, in_params}); }
+
+void AnimatedSprite::push_params(std::string_view label, Parameters in_params, std::string_view target_animation) {
+	in_params.target = target_animation;
+	params.insert({label, in_params});
+}
 
 void AnimatedSprite::set_params(std::string_view label, bool force) {
 	if (params.contains(label)) {
 		animation.set_params(params.at(label), force);
 	} else {
-		std::cout << "Invalid animation parameterization request in AnimatedSprite.cpp with label <" + std::string{label} + ">\n";
+		NANI_LOG_WARN(m_logger, "Undefined parameters set for animation {}", label.data());
 	}
 }
 

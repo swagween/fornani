@@ -6,7 +6,7 @@
 namespace fornani::npc {
 
 NPC::NPC(automa::ServiceProvider& svc, std::string_view label, int id)
-	: id(id), m_label(label), animation_machine(std::make_unique<NPCAnimation>(svc, id)), m_indicator(svc.assets.get_texture("arrow_indicator"), {32, 32}), m_sprite{svc.assets.get_npc_texture(m_label)} {
+	: id(id), m_label(label), animation_machine(std::make_unique<NPCAnimation>(svc, id)), m_indicator(svc.assets.get_texture("arrow_indicator"), {32, 32}), m_sprite{svc.assets.get_npc_texture(label.data())} {
 	m_indicator.set_origin({0.f, 48.f});
 	m_indicator.push_params("neutral", {0, 15, 16, 0, true});
 	m_indicator.end();

@@ -233,5 +233,28 @@
 				}
 			]
 		}
+	],
+	"wardrobe": [
+		{
+			"label": "start",
+			"path": [
+				{
+					"position": [ 64, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 63, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ -159, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ -158, 0 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		}
 	]
 }

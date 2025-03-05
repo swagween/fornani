@@ -10,9 +10,9 @@
       32,
       32
     ],
-    "style": 0,
-    "biome": "firstwind",
-    "background": 3,
+    "style": 2,
+    "biome": "base",
+    "background": 4,
     "music": "",
     "ambience": "",
     "camera_effects": {

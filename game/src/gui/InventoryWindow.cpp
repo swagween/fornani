@@ -51,7 +51,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	}
 
 	auto offset = m_view == InventoryView::dashboard ? sf::Vector2f{m_dashboard->get_selected_position()} * 128.f : sf::Vector2f{};
-	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x, m_cell_dimensions.y * m_grid_position.y} + offset};
+	auto horizontal_dampen{0.7f}; // we want to display the gizmo's connection to the dashboard for wardrobe and inventory gizmos
+	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x * horizontal_dampen, m_cell_dimensions.y * m_grid_position.y} + offset};
 	m_camera.steering.seek(m_camera.physics, target, 0.003f);
 	m_camera.physics.simple_update();
 	m_dashboard->set_position({250.f, 0.f});

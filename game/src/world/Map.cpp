@@ -90,6 +90,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
 			m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
 			m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
+			m_camera_effects.cooldown.start();
 		}
 
 		sound.echo_count = meta["sound"]["echo_count"].as<int>();
@@ -108,12 +109,12 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
 			auto id = entry["id"].as<int>();
-			auto npc_label{entry["id"].as_string()};
+			auto npc_label{entry["label"].as_string()};
 			npcs.push_back(npc::NPC(svc, npc_label, id));
 			auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, id);
 			for (auto& convo : entry["suites"][npc_state].array_view()) { npcs.back().push_conversation(convo.as_string()); }
 			npcs.back().set_position_from_scaled(pos);
-			if ((bool)entry["background"].as_bool()) { npcs.back().push_to_background(); }
+			if (static_cast<bool>(entry["background"].as_bool())) { npcs.back().push_to_background(); }
 			if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back().hide(); }
 			if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
 			npcs.back().set_current_location(room_id);
