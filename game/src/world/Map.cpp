@@ -90,6 +90,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
 			m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
 			m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
+			m_camera_effects.cooldown.start();
 		}
 
 		sound.echo_count = meta["sound"]["echo_count"].as<int>();

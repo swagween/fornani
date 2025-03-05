@@ -186,10 +186,10 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		{
 			NANI_ZoneScopedN("Rendering");
-#if defined(FORNANI_PRODUCTION)
+#if not defined(FORNANI_PRODUCTION)
 			if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
-#endif
 			flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
+#endif
 
 			services.window->get().clear();
 			services.window->get().draw(background);

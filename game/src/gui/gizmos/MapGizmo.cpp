@@ -126,8 +126,8 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f});
 	m_minimap->render(svc, win, player, cam, m_icon_sprite);
 	m_icon_sprite.setScale(util::constants::f_scale_vec);
-	m_map_shadow.render(win, cam);
 	m_map_screen.render(win, cam);
+	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
 	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}); }
 	if (m_info) { m_info->render(svc, win, player, cam, foreground); }

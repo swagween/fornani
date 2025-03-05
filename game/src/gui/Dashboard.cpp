@@ -3,6 +3,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/gizmos/ClockGizmo.hpp"
 #include "fornani/gui/gizmos/MapGizmo.hpp"
+#include "fornani/gui/gizmos/WardrobeGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 
@@ -39,7 +40,9 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 		if (i["id"].as<int>() == 16) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
 	}
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
-	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); // have to stick this in the for loop once we have a clock item
+	auto wardrobe_placement{sf::Vector2f{svc.window->f_screen_dimensions().x + 26, 0.f}};
+	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement));	   // have to stick this in the for loop once we have a clock item
+	m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); // have to stick this in the for loop once we have a clock item
 	m_sprite.setScale(util::constants::f_scale_vec);
 }
 
@@ -90,7 +93,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 bool Dashboard::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
 	if (m_gizmos.empty() || m_gizmos.size() <= m_current_gizmo) { return false; }
 	if (!m_gizmos.at(m_current_gizmo)->handle_inputs(controller, soundboard)) {
-		m_paths.map.set_section("close");
+		if (m_current_gizmo == 0) { m_paths.map.set_section("close"); } // only adjust dashboard art for map gizmo
 		return false;
 	}
 	return true;

@@ -233,5 +233,24 @@
 				}
 			]
 		}
+	],
+	"wardrobe": [
+		{
+			"label": "start",
+			"path": [
+				{
+					"position": [ 64, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ -157, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ -152, 0 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		}
 	]
 }

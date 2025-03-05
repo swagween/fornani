@@ -166,7 +166,7 @@ void Player::update(world::Map& map) {
 	}
 }
 
-void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
+void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	ZoneScopedN("Player::render");
 	calculate_sprite_offset();
 	if (flags.state.test(State::crushed)) { return; }
@@ -174,44 +174,54 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.green;
 
 	// piggybacker
-	if (piggybacker) { piggybacker.value().render(svc, win, campos); }
+	if (piggybacker) { piggybacker.value().render(svc, win, cam); }
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
 	if (svc.ticker.every_x_frames(8) && animation.state == AnimState::dash) { sprite_history.update(sprite, collider.physics.position); }
 	if (svc.ticker.every_x_frames(8) && !(animation.state == AnimState::dash)) { sprite_history.flush(); }
-	sprite_history.drag(win, campos);
+	sprite_history.drag(win, cam);
 
 	// get UV coords
 	auto u = (animation.get_frame() / 10) * 48;
 	auto v = (animation.get_frame() % 10) * 48;
 	sprite.setTextureRect(sf::IntRect({u, v}, {48, 48}));
 	sprite.setOrigin(sprite.getLocalBounds().getCenter());
-	sprite.setPosition(sprite_position - campos);
+	sprite.setPosition(sprite_position - cam);
 
 	if (arsenal && hotbar) { collider.flags.general.set(shape::General::complex); }
 
 	if (svc.greyblock_mode()) {
 		win.draw(sprite);
-		collider.render(win, campos);
+		collider.render(win, cam);
 		sf::RectangleShape box{};
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(svc.styles.colors.green);
 		box.setOutlineThickness(-1);
-		box.setPosition(hurtbox.get_position() - campos);
+		box.setPosition(hurtbox.get_position() - cam);
 		box.setSize(hurtbox.get_dimensions());
 		win.draw(box);
 	} else {
-		antennae[1].render(svc, win, campos, 1);
+		antennae[1].render(svc, win, cam, 1);
 		win.draw(sprite);
-		antennae[0].render(svc, win, campos, 1);
+		antennae[0].render(svc, win, cam, 1);
 	}
 
 	if (arsenal && hotbar) {
-		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, cam); }
 	}
 
-	if (controller.get_shield().active() && catalog.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
+	if (controller.get_shield().active() && catalog.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, cam); }
+}
+
+void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {
+	ZoneScopedN("Player::render");
+	auto u = (animation.get_frame() / 10) * 48;
+	auto v = (animation.get_frame() % 10) * 48;
+	sprite.setTextureRect(sf::IntRect({u, v}, {48, 48}));
+	sprite.setOrigin(sprite.getLocalBounds().getCenter());
+	sprite.setPosition(forced_position - cam);
+	win.draw(sprite);
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
