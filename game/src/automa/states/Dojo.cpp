@@ -102,12 +102,13 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		return;
 	}
 
-	svc.world_clock.update(svc);
 	if (inventory_window) {
 		inventory_window.value()->update(svc, *player, map);
 		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
 		return;
 	}
+
+	svc.world_clock.update(svc);
 
 	// TODO: move this somehwere else
 	if (vendor_dialog) {
@@ -116,9 +117,9 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			open_vendor = false;
 		}
 		map.transition.update(*player);
-		vendor_dialog.value().update(svc, map, *player);
-		if (!vendor_dialog.value().is_open()) {
-			if (vendor_dialog.value().made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
+		vendor_dialog.value()->update(svc, map, *player);
+		if (!vendor_dialog.value()->is_open()) {
+			if (vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
 			vendor_dialog = {};
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
@@ -131,7 +132,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			open_vendor = true;
 		}
 		if (open_vendor && map.transition.is_done()) {
-			vendor_dialog = gui::VendorDialog(svc, map, *player, svc.menu_controller.get_menu_id());
+			vendor_dialog = std::make_unique<gui::VendorDialog>(svc, map, *player, svc.menu_controller.get_menu_id());
 			svc.controller_map.set_action_set(config::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
 		}
@@ -176,7 +177,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.render(svc, win, camera.get_position());
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
-	if (vendor_dialog) { vendor_dialog.value().render(svc, win, *player, map); }
+	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }
 	if (inventory_window) {
 		inventory_window.value()->render(svc, win, *player);
 		return;
@@ -194,11 +195,6 @@ void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
 	for (auto const& id : ids) {
 		if (id == 0) { continue; } // intro
 		gui_map.clear();
-		if (svc.data.room_discovered(id)) {
-			// inventory_window.minimap.bake(svc, gui_map, id, current);
-		} else {
-			// inventory_window.minimap.bake(svc, gui_map, id, current, true);
-		}
 	}
 }
 

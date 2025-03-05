@@ -27,6 +27,14 @@
     {
       "room_id": 102,
       "label": "vent.json"
+    },
+    {
+      "room_id": 4200,
+      "label": "hub.json"
+    },
+    {
+      "room_id": 4201,
+      "label": "shop.json"
     }
   ]
 }

@@ -1,11 +1,12 @@
 
 #pragma once
 
-#include <chrono>
+#include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Counter.hpp"
-#include "fornani/io/Logger.hpp"
+
+#include <optional>
 
 namespace fornani::anim {
 
@@ -21,6 +22,7 @@ struct Parameters {
 	int num_loops{};
 	bool repeat_last_frame{};
 	bool interruptible{};
+	std::optional<std::string> target{};
 };
 
 enum class State : std::uint8_t { param_switch, keyframe, oneoff_complete };
@@ -60,8 +62,7 @@ struct Animation {
 	util::Counter frame{};
 
 	util::BitFlags<State> flags{};
-	io::Logger m_logger{"Animation"};
-
+	io::Logger m_logger{"anim"};
 };
 
 } // namespace fornani::anim

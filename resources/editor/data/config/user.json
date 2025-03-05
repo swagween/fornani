@@ -1,4 +1,4 @@
 {
-  "region": "config",
-  "room": "test_chamber.json"
+  "region": "test",
+  "room": "shop.json"
 }

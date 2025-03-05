@@ -103,7 +103,7 @@ void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 	if (force) {
 		m_physical.physics.position = to_position;
 	} else {
-		m_physical.steering.seek(m_physical.physics, to_position, 0.002f);
+		m_physical.steering.seek(m_physical.physics, to_position, 0.004f);
 	}
 }
 
