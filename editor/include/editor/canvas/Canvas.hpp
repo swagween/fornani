@@ -119,7 +119,7 @@ class Canvas {
 	[[nodiscard]] auto f_native_cell_size() const -> float { return 32.f; }
 	[[nodiscard]] auto get_scale() const -> float { return scale; }
 	[[nodiscard]] auto get_scale_vec() const -> sf::Vector2f { return fornani::util::constants::f_scale_vec * scale; }
-	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(styles.tile.get_type()); }
+	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(tile_style.get_type()); }
 	[[nodiscard]] auto within_zoom_limits(float delta) const -> bool { return get_scale() + delta >= min_scale && get_scale() + delta <= max_scale; }
 	[[nodiscard]] auto within_bounds(sf::Vector2<float> const& point) const -> bool { return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y; }
 	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
@@ -151,14 +151,8 @@ class Canvas {
 	} flags{};
 
 	EntitySet entities;
-
-	struct {
-		dj::Json meta{};
-	} data{};
-
-	struct {
-		Style tile;
-	} styles;
+	dj::Json metadata{};
+	Style tile_style;
 
 	Theme m_theme{};
 	std::unique_ptr<Background> background{};

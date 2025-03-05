@@ -12,7 +12,7 @@ namespace pi {
 Canvas::Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
 
 Canvas::Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers)
-	: type(type), styles{.tile{style}}, background{std::make_unique<Background>(finder, backdrop)} {
+	: type(type), tile_style{style}, background{std::make_unique<Background>(finder, backdrop)} {
 	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
 	dimensions = dim;
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
@@ -108,19 +108,19 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 
 	std::string metapath = (source / std::filesystem::path{region} / std::filesystem::path{room_name}).string();
 
-	data.meta = dj::Json::from_file((metapath).c_str());
-	if (data.meta.is_null()) {
+	metadata = dj::Json::from_file((metapath).c_str());
+	if (metadata.is_null()) {
 		finder.paths.region = "config";
 		finder.paths.room_name = "new_file.json";
 		metapath = (source / finder.paths.region / finder.paths.room_name).string();
-		data.meta = dj::Json::from_file((metapath).c_str());
+		metadata = dj::Json::from_file((metapath).c_str());
 		success = false;
 	}
-	assert(!data.meta.is_null());
+	assert(!metadata.is_null());
 
-	if (!local) { entities = EntitySet{finder, data.meta["entities"], room_name}; }
+	if (!local) { entities = EntitySet{finder, metadata["entities"], room_name}; }
 
-	auto const& meta = data.meta["meta"];
+	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
 	minimap = static_cast<bool>(meta["minimap"].as_bool());
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
@@ -129,7 +129,7 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	dimensions.y = meta["dimensions"][1].as<int>();
 	real_dimensions = {static_cast<float>(dimensions.x) * fornani::util::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::util::constants::f_cell_size};
 	auto style_value = meta["style"].as<int>();
-	styles.tile = Style(static_cast<StyleType>(style_value));
+	tile_style = Style(static_cast<StyleType>(style_value));
 	m_theme.music = meta["music"].as_string();
 	m_theme.ambience = meta["ambience"].as_string();
 	for (auto& in : meta["atmosphere"].array_view()) { m_theme.atmosphere.push_back(in.as<int>()); };
@@ -150,7 +150,7 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 
 	// tiles
 	auto counter{0};
-	for (auto& layer : data.meta["tile"]["layers"].array_view()) {
+	for (auto& layer : metadata["tile"]["layers"].array_view()) {
 		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions));
 		int cell_counter{};
 		for (auto& cell : layer.array_view()) {
@@ -159,9 +159,9 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 		}
 		++counter;
 	}
-	map_states.back().set_middleground(data.meta["tile"]["middleground"].as<int>());
-	map_states.back().m_flags.has_obscuring_layer = static_cast<bool>(data.meta["tile"]["flags"]["obscuring"].as_bool());
-	map_states.back().m_flags.has_reverse_obscuring_layer = static_cast<bool>(data.meta["tile"]["flags"]["reverse_obscuring"].as_bool());
+	map_states.back().set_middleground(metadata["tile"]["middleground"].as<int>());
+	map_states.back().m_flags.has_obscuring_layer = static_cast<bool>(metadata["tile"]["flags"]["obscuring"].as_bool());
+	map_states.back().m_flags.has_reverse_obscuring_layer = static_cast<bool>(metadata["tile"]["flags"]["reverse_obscuring"].as_bool());
 	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
 	map_states.back().set_labels();
 	set_grid_texture();
@@ -173,54 +173,54 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	std::filesystem::create_directory(finder.paths.levels / std::filesystem::path{region});
 
 	// clean jsons
-	data = {};
+	metadata = {};
 
 	// empty json array
 	constexpr auto empty_array = R"([])";
 	auto const wipe = dj::Json::parse(empty_array);
 
-	// data.meta
-	data.meta["meta"]["room_id"] = room_id;
-	data.meta["meta"]["minimap"] = dj::Boolean{minimap};
-	data.meta["meta"]["metagrid"][0] = metagrid_coordinates.x;
-	data.meta["meta"]["metagrid"][1] = metagrid_coordinates.y;
-	data.meta["meta"]["dimensions"][0] = dimensions.x;
-	data.meta["meta"]["dimensions"][1] = dimensions.y;
-	data.meta["meta"]["style"] = static_cast<int>(styles.tile.get_type());
-	data.meta["meta"]["biome"] = styles.tile.get_label();
-	data.meta["meta"]["background"] = static_cast<int>(background->type.get_type());
-	data.meta["meta"]["music"] = m_theme.music;
-	for (auto& entry : m_theme.atmosphere) { data.meta["meta"]["atmosphere"].push_back(entry); }
-	data.meta["meta"]["ambience"] = m_theme.ambience;
-	data.meta["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;
-	data.meta["meta"]["camera_effects"]["shake"]["energy"] = m_camera_effects.shake_properties.energy;
-	data.meta["meta"]["camera_effects"]["shake"]["start_time"] = m_camera_effects.shake_properties.start_time;
-	data.meta["meta"]["camera_effects"]["shake"]["dampen_factor"] = m_camera_effects.shake_properties.dampen_factor;
-	data.meta["meta"]["camera_effects"]["shake"]["frequency_in_seconds"] = m_camera_effects.frequency_in_seconds;
-	data.meta["meta"]["cutscene_on_entry"]["flag"] = dj::Boolean{cutscene.flag};
-	data.meta["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
-	data.meta["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
-	data.meta["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
+	// metadata
+	metadata["meta"]["room_id"] = room_id;
+	metadata["meta"]["minimap"] = dj::Boolean{minimap};
+	metadata["meta"]["metagrid"][0] = metagrid_coordinates.x;
+	metadata["meta"]["metagrid"][1] = metagrid_coordinates.y;
+	metadata["meta"]["dimensions"][0] = dimensions.x;
+	metadata["meta"]["dimensions"][1] = dimensions.y;
+	metadata["meta"]["style"] = static_cast<int>(tile_style.get_type());
+	metadata["meta"]["biome"] = tile_style.get_label();
+	metadata["meta"]["background"] = static_cast<int>(background->type.get_type());
+	metadata["meta"]["music"] = m_theme.music;
+	for (auto& entry : m_theme.atmosphere) { metadata["meta"]["atmosphere"].push_back(entry); }
+	metadata["meta"]["ambience"] = m_theme.ambience;
+	metadata["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;
+	metadata["meta"]["camera_effects"]["shake"]["energy"] = m_camera_effects.shake_properties.energy;
+	metadata["meta"]["camera_effects"]["shake"]["start_time"] = m_camera_effects.shake_properties.start_time;
+	metadata["meta"]["camera_effects"]["shake"]["dampen_factor"] = m_camera_effects.shake_properties.dampen_factor;
+	metadata["meta"]["camera_effects"]["shake"]["frequency_in_seconds"] = m_camera_effects.frequency_in_seconds;
+	metadata["meta"]["cutscene_on_entry"]["flag"] = dj::Boolean{cutscene.flag};
+	metadata["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
+	metadata["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
+	metadata["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
 
-	data.meta["tile"]["layers"] = wipe;
-	for (auto i{0}; i < last_layer(); ++i) { data.meta["tile"]["layers"].push_back(wipe); }
+	metadata["tile"]["layers"] = wipe;
+	for (auto i{0}; i < last_layer(); ++i) { metadata["tile"]["layers"].push_back(wipe); }
 	// push layer data
 	int current_layer{};
-	data.meta["tile"]["flags"]["obscuring"] = dj::Boolean{map_states.back().m_flags.has_obscuring_layer};
-	data.meta["tile"]["flags"]["reverse_obscuring"] = dj::Boolean{map_states.back().m_flags.has_reverse_obscuring_layer};
+	metadata["tile"]["flags"]["obscuring"] = dj::Boolean{map_states.back().m_flags.has_obscuring_layer};
+	metadata["tile"]["flags"]["reverse_obscuring"] = dj::Boolean{map_states.back().m_flags.has_reverse_obscuring_layer};
 	for (auto& layer : map_states.back().layers) {
-		if (map_states.back().get_middleground() == current_layer) { data.meta["tile"]["middleground"] = current_layer; }
+		if (map_states.back().get_middleground() == current_layer) { metadata["tile"]["middleground"] = current_layer; }
 		int current_cell{};
 		for ([[maybe_unused]] auto& cell : layer.grid.cells) {
-			data.meta["tile"]["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);
+			metadata["tile"]["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);
 			++current_cell;
 		}
 		++current_layer;
 	}
 
 	auto success{true};
-	if (!entities.save(finder, data.meta["entities"], room_name)) { success = false; }
-	if (!data.meta.to_file((finder.paths.levels / region / room_name).string().c_str())) { success = false; }
+	if (!entities.save(finder, metadata["entities"], room_name)) { success = false; }
+	if (!metadata.to_file((finder.paths.levels / region / room_name).string().c_str())) { success = false; }
 	return success;
 }
 

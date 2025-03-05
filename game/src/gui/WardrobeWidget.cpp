@@ -20,26 +20,26 @@ gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
 }
 
 void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player) {
-	switch (player.catalog.categories.wardrobe.get_variant(player::ApparelType::pants)) {
-	case 0: m_sprites.pants.setTexture(svc.assets.get_texture("wardrobe_green_pants")); break;
-	case 1: m_sprites.pants.setTexture(svc.assets.get_texture("wardrobe_red_jeans")); break;
-	case 3: m_sprites.pants.setTexture(svc.assets.get_texture("wardrobe_chalcedony_skirt")); break;
-	case 6: m_sprites.pants.setTexture(svc.assets.get_texture("wardrobe_punk_pants")); break;
+	switch (player.catalog.wardrobe.get_variant(player::ApparelType::pants)) {
+	case player::ClothingVariant::standard: m_sprites.pants.setTexture(svc.assets.get_texture("wardrobe_green_pants")); break;
+	case player::ClothingVariant::red_jeans: m_sprites.pants.setTexture(svc.assets.get_texture("wardrobe_red_jeans")); break;
+	case player::ClothingVariant::chalcedony_skirt: m_sprites.pants.setTexture(svc.assets.get_texture("wardrobe_chalcedony_skirt")); break;
+	case player::ClothingVariant::punk_pants: m_sprites.pants.setTexture(svc.assets.get_texture("wardrobe_punk_pants")); break;
 	default: break; ;
 	}
-	switch (player.catalog.categories.wardrobe.get_variant(player::ApparelType::hairstyle)) {
-	case 0: m_sprites.hairstyle.setTexture(svc.assets.get_texture("wardrobe_default_hair")); break;
-	case 4: m_sprites.hairstyle.setTexture(svc.assets.get_texture("wardrobe_punk_hair")); break;
-	case 7: m_sprites.hairstyle.setTexture(svc.assets.get_texture("wardrobe_ponytail")); break;
+	switch (player.catalog.wardrobe.get_variant(player::ApparelType::hairstyle)) {
+	case player::ClothingVariant::standard: m_sprites.hairstyle.setTexture(svc.assets.get_texture("wardrobe_default_hair")); break;
+	case player::ClothingVariant::punk_hair: m_sprites.hairstyle.setTexture(svc.assets.get_texture("wardrobe_punk_hair")); break;
+	case player::ClothingVariant::ponytail: m_sprites.hairstyle.setTexture(svc.assets.get_texture("wardrobe_ponytail")); break;
 	default: break; ;
 	}
-	switch (player.catalog.categories.wardrobe.get_variant(player::ApparelType::shirt)) {
-	case 0: m_sprites.shirt.setTexture(svc.assets.get_texture("wardrobe_blue_shirt")); break;
-	case 2: m_sprites.shirt.setTexture(svc.assets.get_texture("wardrobe_chalcedony_tee")); break;
-	case 5: m_sprites.shirt.setTexture(svc.assets.get_texture("wardrobe_punk_shirt")); break;
+	switch (player.catalog.wardrobe.get_variant(player::ApparelType::shirt)) {
+	case player::ClothingVariant::standard: m_sprites.shirt.setTexture(svc.assets.get_texture("wardrobe_blue_shirt")); break;
+	case player::ClothingVariant::chalcedony_tee: m_sprites.shirt.setTexture(svc.assets.get_texture("wardrobe_chalcedony_tee")); break;
+	case player::ClothingVariant::punk_shirt: m_sprites.shirt.setTexture(svc.assets.get_texture("wardrobe_punk_shirt")); break;
 	default: break; ;
 	}
-	player.catalog.categories.wardrobe.update(player.texture_updater);
+	player.catalog.wardrobe.update(player.texture_updater);
 
 	// set out_texture for updating console portrait
 	nani.clear(sf::Color::Transparent);

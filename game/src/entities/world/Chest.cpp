@@ -76,7 +76,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 					player.give_item(item_id, 1);
 					console.display_item(item_id);
 					console.load_and_launch("chest");
-					console.append(player.catalog.categories.inventory.get_item(item_id).get_label());
+					console.append(player.catalog.inventory.get_item(item_id).get_label());
 				}
 			} else {
 				console.load_and_launch("open_chest");

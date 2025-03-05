@@ -121,10 +121,10 @@ class Player {
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
 	[[nodiscard]] auto pushing() const -> bool { return animation.state == AnimState::push || animation.state == AnimState::between_push; }
-	[[nodiscard]] auto has_shield() const -> bool { return catalog.categories.abilities.has_ability(Abilities::shield); }
-	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.categories.inventory.has_item(id); }
+	[[nodiscard]] auto has_shield() const -> bool { return catalog.abilities.has_ability(Abilities::shield); }
+	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
-	[[nodiscard]] auto has_map() const -> bool { return catalog.categories.inventory.has_item(16); }
+	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }

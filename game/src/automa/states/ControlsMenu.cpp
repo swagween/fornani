@@ -23,7 +23,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	loading.start(2);
 
 	debug.setFillColor(sf::Color::Transparent);
-	debug.setSize({2.f, (float)svc.window->i_screen_dimensions().y});
+	debug.setSize({2.f, svc.window->f_screen_dimensions().y});
 	debug.setOutlineColor(svc.styles.colors.blue);
 	debug.setOutlineThickness(-1);
 }

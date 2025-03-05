@@ -45,7 +45,7 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
-	catalog.categories.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_default"));
+	catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_default"));
 }
 
 void Player::update(world::Map& map) {
@@ -66,7 +66,7 @@ void Player::update(world::Map& map) {
 	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
 
 	collider.flags.general.set(shape::General::complex);
-	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { controller.nullify_dash(); }
+	if (!catalog.abilities.has_ability(Abilities::dash)) { controller.nullify_dash(); }
 
 	collider.physics.gravity = physics_stats.grav;
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
@@ -77,7 +77,7 @@ void Player::update(world::Map& map) {
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
 
-	if (!catalog.categories.abilities.has_ability(Abilities::double_jump)) { controller.get_jump().jump_counter.cancel(); }
+	if (!catalog.abilities.has_ability(Abilities::double_jump)) { controller.get_jump().jump_counter.cancel(); }
 	controller.update(*m_services);
 	if (collider.hit_ceiling_ramp()) { controller.get_jump().cancel(); }
 
@@ -138,7 +138,7 @@ void Player::update(world::Map& map) {
 	update_weapon();
 	catalog.update(*m_services);
 
-	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
+	if (catalog.abilities.has_ability(Abilities::dash)) {
 		if (!(animation.state == AnimState::dash) && !controller.dash_requested()) {
 			controller.stop_dashing();
 			controller.cancel_dash_request();
@@ -211,7 +211,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
 	}
 
-	if (controller.get_shield().active() && catalog.categories.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
+	if (controller.get_shield().active() && catalog.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -246,14 +246,14 @@ void Player::update_animation() {
 
 	if (collider.physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.state = AnimState::fall; }
 
-	if (catalog.categories.abilities.has_ability(Abilities::dash)) {
+	if (catalog.abilities.has_ability(Abilities::dash)) {
 		if (controller.dashing() && controller.can_dash()) { animation.state = AnimState::dash; }
 		if (controller.dash_requested()) {
 			animation.state = AnimState::dash;
 			flags.state.reset(State::show_weapon);
 		}
 	}
-	if (catalog.categories.abilities.has_ability(Abilities::wall_slide)) {
+	if (catalog.abilities.has_ability(Abilities::wall_slide)) {
 		if (controller.get_wallslide().is_wallsliding()) { animation.state = AnimState::wallslide; }
 	}
 	if (controller.moving() && grounded() && controller.can_jump()) {
@@ -261,7 +261,7 @@ void Player::update_animation() {
 		if (collider.has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
 		if (cooldowns.push.is_complete() && (collider.has_right_wallslide_collision() || collider.has_left_wallslide_collision())) { animation.state = AnimState::push; }
 	}
-	if (catalog.categories.abilities.has_ability(Abilities::shield)) {
+	if (catalog.abilities.has_ability(Abilities::shield)) {
 		if (controller.get_shield().is_shielding() && grounded() && !(animation.state == AnimState::land) && !(animation.state == AnimState::fall)) {
 			animation.state = AnimState::shield;
 			controller.prevent_movement();
@@ -373,7 +373,7 @@ void Player::jump(world::Map& map) {
 		controller.get_jump().reset();
 	}
 	if (collider.flags.state.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
-	if (catalog.categories.abilities.has_ability(Abilities::double_jump)) {
+	if (catalog.abilities.has_ability(Abilities::double_jump)) {
 		if (controller.get_jump().just_doublejumped()) {
 			collider.physics.velocity.y = 0.f;
 			controller.get_jump().doublejump();
@@ -385,7 +385,7 @@ void Player::jump(world::Map& map) {
 }
 
 void Player::dash() {
-	if (!catalog.categories.abilities.has_ability(Abilities::dash)) { return; }
+	if (!catalog.abilities.has_ability(Abilities::dash)) { return; }
 	if (animation.state == AnimState::dash || controller.dash_requested()) {
 		collider.flags.movement.set(shape::Movement::dashing);
 		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
@@ -400,7 +400,7 @@ void Player::dash() {
 }
 
 void Player::wallslide() {
-	if (!catalog.categories.abilities.has_ability(Abilities::wall_slide)) { return; }
+	if (!catalog.abilities.has_ability(Abilities::wall_slide)) { return; }
 	controller.get_wallslide().end();
 	if (!grounded() && collider.physics.velocity.y > thresholds.wallslide) {
 		if ((collider.has_left_wallslide_collision() && controller.moving_left()) || (collider.has_right_wallslide_collision() && controller.moving_right())) {
@@ -411,7 +411,7 @@ void Player::wallslide() {
 }
 
 void Player::shield() {
-	if (!catalog.categories.abilities.has_ability(Abilities::shield)) {
+	if (!catalog.abilities.has_ability(Abilities::shield)) {
 		controller.get_shield().flags = {};
 		return;
 	}
@@ -608,8 +608,8 @@ void Player::start_over() {
 		a.collider.physics.gravity = 0.f;
 	}
 	sync_antennae();
-	catalog.categories.wardrobe.set_palette(m_services->assets.get_texture_modifiable("nani_palette_default"));
-	catalog.categories.wardrobe.update(texture_updater);
+	catalog.wardrobe.set_palette(m_services->assets.get_texture_modifiable("nani_palette_default"));
+	catalog.wardrobe.update(texture_updater);
 }
 
 void Player::give_drop(item::DropType type, float value) {
@@ -632,13 +632,13 @@ void Player::take_item(int item_id, int amount) { catalog.remove_item(*m_service
 void Player::equip_item(ApparelType type, int item_id) {
 	if (item_id < 1) { return; }
 	catalog.equip_item(*m_services, type, item_id);
-	catalog.categories.inventory.get_item(item_id).toggle_equip();
+	catalog.inventory.get_item(item_id).toggle_equip();
 }
 
 void Player::unequip_item(ApparelType type, int item_id) {
 	if (item_id < 1) { return; }
 	catalog.unequip_item(type);
-	catalog.categories.inventory.get_item(item_id).toggle_equip();
+	catalog.inventory.get_item(item_id).toggle_equip();
 }
 
 void Player::add_to_hotbar(int id) {
@@ -659,7 +659,7 @@ void Player::remove_from_hotbar(int id) {
 
 void Player::give_item(int item_id, int amount) {
 	catalog.add_item(*m_services, item_id, 1);
-	if (catalog.categories.inventory.items.size() == 1) {
+	if (catalog.inventory.items.size() == 1) {
 		tutorial.current_state = text::TutorialFlags::inventory;
 		tutorial.trigger();
 		tutorial.turn_on();

@@ -113,8 +113,8 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	text.orb_count.setString(player.wallet.get_balance_string());
 	if (opening()) { return; }
 
-	auto& sellable_items = player.catalog.categories.inventory.sellable_items;
-	auto& player_inventory = player.catalog.categories.inventory;
+	auto& sellable_items = player.catalog.inventory.sellable_items;
+	auto& player_inventory = player.catalog.inventory;
 	auto& vendor = map.get_npc(npc_id).get_vendor();
 	auto& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
 
@@ -258,8 +258,8 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 }
 
 void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map) {
-	auto const& sellable_items = player.catalog.categories.inventory.sellable_items;
-	auto& player_inventory = player.catalog.categories.inventory;
+	auto const& sellable_items = player.catalog.inventory.sellable_items;
+	auto& player_inventory = player.catalog.inventory;
 	auto& vendor = map.get_npc(npc_id).get_vendor();
 	auto const& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
 
@@ -291,7 +291,7 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 		}
 		break;
 	case VendorState::sell:
-		if (player.catalog.categories.inventory.sellable_items.empty()) { break; }
+		if (player.catalog.inventory.sellable_items.empty()) { break; }
 		if (!opening()) { selector.render(win); }
 		for (auto const& idx : sellable_items) {
 			auto& item = player_inventory.get_item_at_index(idx);
@@ -312,7 +312,7 @@ void VendorDialog::close() { flags.reset(VendorDialogStatus::opened); }
 void VendorDialog::update_table(player::Player& player, world::Map& map, bool new_dim) {
 	auto const& vendor = map.get_npc(npc_id).get_vendor();
 	auto& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
-	auto const num_items = (state == VendorState::sell) ? player.catalog.categories.inventory.sellable_items.size() : vendor.inventory.items.size();
+	auto const num_items = (state == VendorState::sell) ? player.catalog.inventory.sellable_items.size() : vendor.inventory.items.size();
 	auto const ipr = ui_constants.items_per_row;
 	auto const dim = sf::Vector2{std::min(static_cast<int>(num_items), ipr), static_cast<int>(std::ceil(static_cast<float>(num_items) / static_cast<float>(ipr)))};
 	if (new_dim) { selector.set_size(static_cast<int>(num_items)); }
@@ -321,8 +321,8 @@ void VendorDialog::update_table(player::Player& player, world::Map& map, bool ne
 }
 
 void VendorDialog::refresh(player::Player& player, world::Map& map) const {
-	auto const& sellable_items = player.catalog.categories.inventory.sellable_items;
-	auto& player_inventory = player.catalog.categories.inventory;
+	auto const& sellable_items = player.catalog.inventory.sellable_items;
+	auto& player_inventory = player.catalog.inventory;
 	auto& vendor = map.get_npc(npc_id).get_vendor();
 	for (auto& idx : sellable_items) {
 		auto& item = player_inventory.get_item_at_index(idx);

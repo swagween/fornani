@@ -218,17 +218,17 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 
 	// wardrobe
-	save["player_data"]["wardrobe"]["hairstyle"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::hairstyle);
-	save["player_data"]["wardrobe"]["shirt"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::shirt);
-	save["player_data"]["wardrobe"]["pants"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::pants);
+	save["player_data"]["wardrobe"]["hairstyle"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::hairstyle));
+	save["player_data"]["wardrobe"]["shirt"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::shirt));
+	save["player_data"]["wardrobe"]["pants"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::pants));
 
 	// items and abilities
 	save["player_data"]["abilities"] = wipe;
 	save["player_data"]["items"] = wipe;
-	if (player.catalog.categories.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
-	if (player.catalog.categories.abilities.has_ability(player::Abilities::wall_slide)) { save["player_data"]["abilities"].push_back("wallslide"); }
-	if (player.catalog.categories.abilities.has_ability(player::Abilities::double_jump)) { save["player_data"]["abilities"].push_back("doublejump"); }
-	for (auto& item : player.catalog.categories.inventory.items) {
+	if (player.catalog.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
+	if (player.catalog.abilities.has_ability(player::Abilities::wall_slide)) { save["player_data"]["abilities"].push_back("wallslide"); }
+	if (player.catalog.abilities.has_ability(player::Abilities::double_jump)) { save["player_data"]["abilities"].push_back("doublejump"); }
+	for (auto& item : player.catalog.inventory.items) {
 		dj::Json this_item{};
 		this_item["id"] = item.get_id();
 		this_item["quantity"] = item.get_quantity();
@@ -346,20 +346,20 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	}
 
 	// load items and abilities
-	player.catalog.categories.abilities.clear();
-	player.catalog.categories.inventory.clear();
-	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as<int>()); }
-	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
+	player.catalog.abilities.clear();
+	player.catalog.inventory.clear();
+	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.abilities.give_ability(ability.as<int>()); }
+	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
 	// wardrobe
-	auto& wardrobe = player.catalog.categories.wardrobe;
+	auto& wardrobe = player.catalog.wardrobe;
 	auto hairstyle = save["player_data"]["wardrobe"]["hairstyle"].as<int>();
 	auto shirt = save["player_data"]["wardrobe"]["shirt"].as<int>();
 	auto pants = save["player_data"]["wardrobe"]["pants"].as<int>();
 	hairstyle > 0 ? player.equip_item(player::ApparelType::hairstyle, hairstyle + 80) : wardrobe.unequip(player::ApparelType::hairstyle);
 	shirt > 0 ? player.equip_item(player::ApparelType::shirt, shirt + 80) : wardrobe.unequip(player::ApparelType::shirt);
 	pants > 0 ? player.equip_item(player::ApparelType::pants, pants + 80) : wardrobe.unequip(player::ApparelType::pants);
-	player.catalog.categories.wardrobe.update(player.texture_updater);
+	player.catalog.wardrobe.update(player.texture_updater);
 
 	// stat tracker
 	auto& s = m_services->stats;

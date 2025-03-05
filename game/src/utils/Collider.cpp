@@ -84,7 +84,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 				flags.state.set(State::just_landed);
 				flags.animation.set(Animation::just_landed);
-			} // for landing sound
+			}
 			flags.external_state.set(ExternalState::world_collision);
 			flags.external_state.set(ExternalState::vert_world_collision);
 			if (physics.apparent_velocity().y < 0.f && predictive_vertical.top() < cell.top()) {
@@ -122,7 +122,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			if (is_ground_ramp) {
 				flags.external_state.set(ExternalState::on_ramp);
 				physics.position.y -= ccm::abs(mtvs.actual.y);
-				// flags.state.set(State::on_flat_surface);
 				//  still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping) && bounding_box.bottom() <= cell.bottom()) {
 					if (physics.apparent_velocity().y > vert_threshold) {
@@ -131,8 +130,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 					}
 					physics.zero_y();
 				}
-				// std::cout << "\nGround ramp collision with MTV y of: " << mtvs.actual.y;
-				// if (mtvs.actual.y > 4.f) { physics.position.y -= mtvs.actual.y; } // player gets stuck in a thin ramp
 			}
 			if (is_ceiling_ramp) {
 				tile.debug_flag = true;
@@ -233,7 +230,6 @@ void Collider::correct_y(sf::Vector2<float> mtv) {
 	if (ccm::abs(mtv.x) > 12.f || ccm::abs(mtv.y) > 12.f) {
 		mtv.x = ccm::abs(mtv.y) > 0 ? mtv.y : mtv.x;
 		mtv.y = ccm::abs(mtv.x) > 0 ? mtv.x : mtv.y;
-		// std::cout << "large MTV!\n";
 	}
 	auto ydist = predictive_vertical.get_position().y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
@@ -258,12 +254,10 @@ void Collider::correct_corner(sf::Vector2<float> mtv) {
 	if (ccm::abs(mtv.x) >= ccm::abs(mtv.y)) {
 		physics.position.x = predictive_combined.get_position().x + mtv.x;
 		physics.zero_x();
-		// std::cout << "X Corner correction: " << mtv.x << "\n";
 	} else {
 		auto ydist = predictive_combined.get_position().y - physics.position.y;
 		physics.position.y = predictive_combined.get_position().y + mtv.y;
 		physics.zero_y();
-		// std::cout << "Y Corner correction: " << correction << "\n";
 	}
 }
 
@@ -311,11 +305,10 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	bool corner_collision{true};
 	if (predictive_vertical.SAT(collider)) {
 		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
-		// if (ccm::abs(mtvs.vertical.y > 0.001f)) { std::cout << "Vertical MTV reading: " << mtvs.vertical.y << "\n"; }
 		if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 			flags.state.set(State::just_landed);
 			flags.animation.set(Animation::just_landed);
-		} // for landing sound
+		}
 		corner_collision = false;
 		flags.external_state.set(ExternalState::collider_collision);
 		flags.external_state.set(ExternalState::vert_collider_collision);

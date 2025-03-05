@@ -1,19 +1,11 @@
 
 #pragma once
-#include "fornani/utils/BitFlags.hpp"
 #include <SFML/Graphics.hpp>
-#include <unordered_map>
 #include <string_view>
+#include <unordered_map>
+#include "fornani/utils/BitFlags.hpp"
 
 #include "fornani/io/Logger.hpp"
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::gui {
-class Console;
-}
 
 namespace fornani::flfx {
 class TextureUpdater;
@@ -21,7 +13,8 @@ class TextureUpdater;
 
 namespace fornani::player {
 
-enum class ApparelType { shirt, pants, hairstyle, jacket, headgear, END };
+enum class ApparelType : std::uint8_t { shirt, pants, hairstyle, jacket, headgear, END };
+enum class ClothingVariant : std::uint8_t { standard, red_jeans, chalcedony_tee, chalcedony_skirt, punk_hair, punk_shirt, punk_pants, ponytail };
 
 class Wardrobe {
   public:
@@ -29,14 +22,15 @@ class Wardrobe {
 	void set_palette(sf::Texture& tex);
 	void change_outfit(std::vector<std::pair<sf::Vector2<unsigned int>, sf::Color>> replacement);
 	void update(flfx::TextureUpdater& updater);
-	void equip(ApparelType type, int variant);
+	void equip(ApparelType type, ClothingVariant variant);
 	void unequip(ApparelType type);
-	int get_variant(ApparelType type);
-  private:
-	std::unordered_map<ApparelType, int> apparel{};
-	sf::Texture palette{};
+	ClothingVariant get_variant(ApparelType type);
 
-	io::Logger m_logger { "entities" };
+  private:
+	std::unordered_map<ApparelType, ClothingVariant> m_apparel{};
+	sf::Texture m_palette{};
+
+	io::Logger m_logger{"entities"};
 };
 
 } // namespace fornani::player
