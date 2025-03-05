@@ -527,7 +527,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::SameLine();
 			if (ImGui::Button("Create")) {
 
-				static int style_current = static_cast<int>(map.styles.tile.get_type());
+				static int style_current = static_cast<int>(map.tile_style.get_type());
 				static int bg_current = static_cast<int>(map.background->type.get_type());
 
 				map = Canvas(*finder, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
@@ -603,7 +603,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::BeginMenu("Style")) {
 				auto i{0};
 				for (auto& choice : m_labels.styles) {
-					if (ImGui::MenuItem(choice)) { map.styles.tile = Style{static_cast<StyleType>(i)}; }
+					if (ImGui::MenuItem(choice)) { map.tile_style = Style{static_cast<StyleType>(i)}; }
 					++i;
 				}
 				ImGui::EndMenu();
@@ -776,7 +776,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 						ImGui::Text("Tile Value at Mouse Pos: <invalid>");
 					}
 					ImGui::Separator();
-					ImGui::Text("Current Style: %s", map.styles.tile.get_label().c_str());
+					ImGui::Text("Current Style: %s", map.tile_style.get_label().c_str());
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tool")) {
@@ -1002,7 +1002,7 @@ void Editor::export_layer_texture() {
 			if (cell.value > 0) {
 				auto x_coord = (cell.value % 16) * TILE_WIDTH;
 				auto y_coord = std::floor(cell.value / 16) * TILE_WIDTH;
-				auto tile_sprite = sf::Sprite{tileset_textures.at(static_cast<int>(map.styles.tile.get_type()))};
+				auto tile_sprite = sf::Sprite{tileset_textures.at(static_cast<int>(map.tile_style.get_type()))};
 				tile_sprite.setTextureRect(sf::IntRect({static_cast<int>(x_coord), static_cast<int>(y_coord)}, {32, 32}));
 				tile_sprite.setPosition(cell.scaled_position());
 				screencap.draw(tile_sprite);
