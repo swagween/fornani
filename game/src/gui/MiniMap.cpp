@@ -54,6 +54,8 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	port.position.x = m_port_position.x / m_view.getSize().x - cam.x / m_view.getSize().x;
 	port.position.y = m_port_position.y / m_view.getSize().y - cam.y / m_view.getSize().y;
 
+	m_view.setScissor(svc.window->get_viewport());
+
 	m_view.setViewport(port);
 	win.setView(m_view);
 
