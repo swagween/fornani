@@ -16,10 +16,10 @@ void Entity::serialize(dj::Json& out) {
 
 void Entity::unserialize(dj::Json& in) {
 	id = in["id"].as<int>();
-	position.x = in["position"][0].as<uint32_t>();
-	position.y = in["position"][1].as<uint32_t>();
-	dimensions.x = in["dimensions"][0].as<uint32_t>();
-	dimensions.y = in["dimensions"][1].as<uint32_t>();
+	position.x = in["position"][0].as<std::uint32_t>();
+	position.y = in["position"][1].as<std::uint32_t>();
+	dimensions.x = in["dimensions"][0].as<std::uint32_t>();
+	dimensions.y = in["dimensions"][1].as<std::uint32_t>();
 }
 
 void Entity::expose() {

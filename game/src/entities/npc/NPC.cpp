@@ -5,13 +5,12 @@
 
 namespace fornani::npc {
 
-NPC::NPC(automa::ServiceProvider& svc, int id)
-	: id(id), label(svc.tables.npc_label.at(id)), animation_machine(std::make_unique<NPCAnimation>(svc, id)), indicator(svc.assets.t_indicator, {32, 32}),
-	  sprite(svc.assets.npcs.contains(label) ? svc.assets.npcs.at(label) : svc.assets.t_null) {
-	indicator.set_origin({0.f, 48.f});
-	indicator.push_params("neutral", {0, 15, 16, 0, true});
-	indicator.end();
-	auto const& in_data = svc.data.npc[label];
+NPC::NPC(automa::ServiceProvider& svc, std::string_view label, int id)
+	: id(id), m_label(label), animation_machine(std::make_unique<NPCAnimation>(svc, id)), m_indicator(svc.assets.get_texture("arrow_indicator"), {32, 32}), m_sprite{svc.assets.get_npc_texture(m_label)} {
+	m_indicator.set_origin({0.f, 48.f});
+	m_indicator.push_params("neutral", {0, 15, 16, 0, true});
+	m_indicator.end();
+	auto const& in_data = svc.data.npc[m_label];
 	dimensions.x = in_data["dimensions"][0].as<float>();
 	dimensions.y = in_data["dimensions"][1].as<float>();
 	sprite_dimensions.x = in_data["sprite_dimensions"][0].as<int>();
@@ -21,7 +20,7 @@ NPC::NPC(automa::ServiceProvider& svc, int id)
 	sprite_offset.x = in_data["sprite_offset"][0].as<float>();
 	sprite_offset.y = in_data["sprite_offset"][1].as<float>();
 
-	sprite.setOrigin({in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>()});
+	m_sprite.setOrigin({in_data["sprite_origin"][0].as<float>(), in_data["sprite_origin"][1].as<float>()});
 
 	if (in_data["vendor"] && svc.data.marketplace.contains(id)) { vendor = &svc.data.marketplace.at(id); }
 
@@ -50,11 +49,11 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	animation_machine->update();
 
 	if (animation_machine->communication_flags.test(NPCCommunication::sprite_flip)) {
-		sprite.scale({-1.f, 1.f});
+		m_sprite.scale({-1.f, 1.f});
 		animation_machine->communication_flags.reset(NPCCommunication::sprite_flip);
 	}
 
-	indicator.update(collider.physics.position);
+	m_indicator.update(collider.physics.position);
 
 	collider.update(svc);
 	collider.detect_map_collision(map);
@@ -69,20 +68,14 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	} else {
 		state_flags.reset(NPCState::engaged);
 	}
-	if (state_flags.test(NPCState::engaged) && triggers.consume(NPCTrigger::engaged) && indicator.complete()) { indicator.set_params("neutral", true); }
+	if (state_flags.test(NPCState::engaged) && triggers.consume(NPCTrigger::engaged) && m_indicator.complete()) { m_indicator.set_params("neutral", true); }
 
 	if (state_flags.test(NPCState::engaged) || state_flags.test(NPCState::cutscene)) {
 		// voice cues
-		// auto voice_cue = player.transponder.shipments.voice.consume_pulse();
 		// TODO: properly handle voice cues from the console
 		auto voice_cue{1};
 		if (voice_cue != 0) {
-			if (svc.assets.npc_sounds.contains(label)) {
-				auto index = voice_cue - 1;
-				if (index < svc.assets.npc_sounds.at(label).size()) {
-					// voice_sound.setBuffer(svc.assets.npc_sounds.at(label).at(index));
-				}
-			}
+			// do something clever in Soundboard
 		}
 	}
 	if (!console.is_active() && state_flags.test(NPCState::engaged)) { pop_conversation(); }
@@ -91,11 +84,13 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
 	if (state_flags.test(NPCState::hidden)) { return; }
-	sprite.setPosition({collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y});
+	m_sprite.setPosition({collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y});
+
+	// TODO: switch to AnimatedSprite
 	if (spritesheet_dimensions.y > 0) {
-		int u = (int)(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
-		int v = (int)(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
-		sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
+		auto u = static_cast<int>(animation_machine->animation.get_frame() / spritesheet_dimensions.y) * sprite_dimensions.x;
+		auto v = static_cast<int>(animation_machine->animation.get_frame() % spritesheet_dimensions.y) * sprite_dimensions.y;
+		m_sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)}));
 	}
 	if (svc.greyblock_mode()) {
 		collider.render(win, campos);
@@ -103,9 +98,9 @@ void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		state_flags.test(NPCState::engaged) ? drawbox.setFillColor(svc.styles.colors.green) : drawbox.setFillColor(svc.styles.colors.dark_orange);
 		win.draw(drawbox);
 	} else {
-		win.draw(sprite);
+		win.draw(m_sprite);
 	}
-	indicator.render(svc, win, campos);
+	m_indicator.render(svc, win, campos);
 }
 
 void NPC::force_engage() {
@@ -129,7 +124,7 @@ void NPC::set_id(int new_id) { id = new_id; }
 void NPC::start_conversation(automa::ServiceProvider& svc, gui::Console& console) {
 	state_flags.set(NPCState::introduced);
 	console.set_source(svc.text.npc);
-	std::string name = std::string(label);
+	std::string name = std::string(m_label);
 	std::string convo = std::string(conversations.front());
 	std::string target = name + convo;
 	console.load_and_launch(target);

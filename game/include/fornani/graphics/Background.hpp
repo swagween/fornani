@@ -2,8 +2,8 @@
 #pragma once
 
 #include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/graphics/DayNightShifter.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 #include <unordered_map>
 
@@ -15,7 +15,7 @@ struct ServiceProvider;
 
 namespace fornani::bg {
 
-enum class BackgroundAttributes : uint8_t { lock };
+enum class BackgroundAttributes : std::uint8_t { lock };
 
 struct BackgroundLayer {
 	int render_layer{};
@@ -47,7 +47,7 @@ class Background {
 	sf::Vector2<int> dimensions{};
 	sf::Vector2<int> start_offset{};
 	bool* b_debug{};
-	std::unordered_map<int, std::string_view> labels{};
+	std::unordered_map<int, std::string> labels{};
 	struct {
 		util::BitFlags<BackgroundAttributes> vertical{};
 		util::BitFlags<BackgroundAttributes> horizontal{};
@@ -55,4 +55,4 @@ class Background {
 	graphics::DayNightShifter shifter{};
 };
 
-} // namespace bg
+} // namespace fornani::bg

@@ -3,7 +3,7 @@
 
 namespace fornani::player {
 
-Shield::Shield(automa::ServiceProvider& svc) : sprite{svc.assets.t_shield} {
+Shield::Shield(automa::ServiceProvider& svc) : sprite{svc.assets.get_texture("player_shield")} {
 	sensor.bounds.setRadius(28);
 	sensor.bounds.setOrigin({28, 28});
 	animation.set_params(neutral);
@@ -66,9 +66,7 @@ void Shield::update(automa::ServiceProvider& svc) {
 		flags.state.reset(ShieldState::shielding);
 		flags.triggers.reset(ShieldTrigger::shield_down);
 	}
-	if (flags.state.test(ShieldState::recovery)) {
-		hud_animation.set_params(hud_animations.recovering);
-	}
+	if (flags.state.test(ShieldState::recovery)) { hud_animation.set_params(hud_animations.recovering); }
 }
 
 void Shield::damage(float amount) { health.inflict(amount); }
@@ -93,4 +91,4 @@ void Shield::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 }
 
-} // namespace player
+} // namespace fornani::player

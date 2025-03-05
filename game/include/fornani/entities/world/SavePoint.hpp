@@ -25,7 +25,7 @@ class SavePoint {
 
   public:
 	using Vec = sf::Vector2<float>;
-	using Vecu16 = sf::Vector2<uint32_t>;
+	using Vecu16 = sf::Vector2<std::uint32_t>;
 
 	explicit SavePoint(automa::ServiceProvider& svc);
 

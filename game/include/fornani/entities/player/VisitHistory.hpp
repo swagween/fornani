@@ -26,6 +26,6 @@ class VisitHistory {
 	std::deque<int> room_deque{};
   private:
 	int far_distance{6};
-	size_t max_size{64};
+	std::size_t max_size{64};
 };
 } // namespace fornani::player

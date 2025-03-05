@@ -8,7 +8,7 @@
 namespace fornani {
 
 void WindowManager::set() {
-	game_view = sf::View(sf::FloatRect({}, {static_cast<float>(screen_dimensions.x), static_cast<float>(screen_dimensions.y)}));
+	game_view = sf::View(sf::FloatRect({}, {static_cast<float>(m_screen_dimensions.x), static_cast<float>(m_screen_dimensions.y)}));
 	// set view and viewport for fullscreen mode
 	auto const aspect_ratio = static_cast<float>(aspects.x) / static_cast<float>(aspects.y);
 	auto const display_ratio = static_cast<float>(display_dimensions.x) / static_cast<float>(display_dimensions.y);
@@ -30,8 +30,8 @@ void WindowManager::set() {
 void WindowManager::create(std::string const& title, bool const fullscreen) {
 	is_fullscreen = fullscreen;
 	// set window constants
-	screen_dimensions = {aspects.x / 4, aspects.y / 4};
-	u_screen_dimensions = {static_cast<uint16_t>(screen_dimensions.x), static_cast<uint16_t>(screen_dimensions.y)};
+	m_screen_dimensions = {aspects.x / 4, aspects.y / 4};
+	u_screen_dimensions = {static_cast<std::uint16_t>(m_screen_dimensions.x), static_cast<std::uint16_t>(m_screen_dimensions.y)};
 	display_dimensions = {static_cast<unsigned>(sf::VideoMode::getDesktopMode().size.x), static_cast<unsigned>(sf::VideoMode::getDesktopMode().size.y)};
 	mode = fullscreen ? sf::VideoMode(display_dimensions) : sf::VideoMode(u_screen_dimensions);
 	if (!mode.isValid() && fullscreen) {

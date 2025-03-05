@@ -21,9 +21,9 @@ class Player;
 
 namespace fornani::automa {
 
-enum class GameStateFlags : uint8_t { playtest, settings_request, controls_request, ready };
+enum class GameStateFlags : std::uint8_t { playtest, settings_request, controls_request, ready };
 
-enum class MenuSelection : uint8_t { play, options, quit, controls, tutorial, credits, settings };
+enum class MenuSelection : std::uint8_t { play, options, quit, controls, tutorial, credits, settings };
 
 constexpr inline float dot_force{0.9f};
 constexpr inline float dot_fric{0.86f};

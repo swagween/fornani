@@ -9,7 +9,7 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class WidgetFlags : uint8_t { gun };
+enum class WidgetFlags : std::uint8_t { gun };
 
 class ItemWidget {
   public:

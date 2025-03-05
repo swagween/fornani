@@ -1,7 +1,7 @@
 
 #include "editor/canvas/Background.hpp"
 #include <imgui.h>
-#include <algorithm>
+
 #include "editor/canvas/Canvas.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
@@ -9,7 +9,7 @@ namespace pi {
 
 Background::Background(fornani::data::ResourceFinder& finder, Backdrop backdrop) : type{backdrop} {
 	std::string bg_type = type.get_label();
-	std::string doc = bg_type + ".png";
+	std::string doc = "background_" + bg_type + ".png";
 	auto bg = dj::Json::from_file((finder.paths.resources / "data/level/background_behaviors.json").string().c_str());
 	assert(!bg.is_null());
 	if (!texture.loadFromFile((finder.paths.resources / "image/background" / doc).string())) { NANI_LOG_WARN(m_logger, "Failed to load background {} ", type.get_label()); }
@@ -69,6 +69,6 @@ void Background::debug() {
 	ImGui::End();
 }
 
-BackgroundLayer::BackgroundLayer(sf::Texture& texture, int index, float speed, float parallax) : sprite(texture), render_layer(index), scroll_speed(speed), parallax(parallax) {}
+BackgroundLayer::BackgroundLayer(sf::Texture const& texture, int index, float speed, float parallax) : sprite(texture), render_layer(index), scroll_speed(speed), parallax(parallax) {}
 
 } // namespace pi

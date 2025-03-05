@@ -1,7 +1,7 @@
 
 #include "fornani/weapon/Arsenal.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <algorithm>
+
 
 namespace fornani::arms {
 

@@ -14,7 +14,7 @@ namespace fornani::vfx {
 
 Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, int type) {
 	auto density{32};
-	auto const chunks = (span.x / (svc.constants.cell_size * 16.f)) * (span.y / (svc.constants.cell_size * 16.f));
+	auto const chunks = (span.x / (util::constants::f_cell_size * 16.f)) * (span.y / (util::constants::f_cell_size * 16.f));
 	for (auto i{0}; i < density * chunks; ++i) {
 		auto const startx = util::Random::random_range_float(0.f, span.x);
 		auto const starty = util::Random::random_range_float(0.f, span.y);

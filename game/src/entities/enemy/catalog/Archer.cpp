@@ -1,12 +1,12 @@
 #include "fornani/entities/enemy/catalog/Archer.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
-Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "archer"), m_services(&svc), m_map(&map), parts{.bow{svc.assets.t_archer_bow, 0.8f, 0.85f, {-42.f, -34.f}}} {
+Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "archer"), m_services(&svc), m_map(&map), parts{.bow{svc.assets.get_texture("archer_bow"), 0.8f, 0.85f, {-42.f, -34.f}}} {
 	animation.set_params(idle);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};

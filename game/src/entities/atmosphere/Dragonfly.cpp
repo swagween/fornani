@@ -1,15 +1,15 @@
 #include "fornani/entities/atmosphere/Dragonfly.hpp"
 #include <numbers>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
+#include "fornani/world/Map.hpp"
 
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::vfx {
 
-Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_dragonfly, {16, 16}) {
+Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.get_texture("dragonfly"), {16, 16}) {
 	physics.set_global_friction(0.97f);
 	physics.position = start;
 	physics.velocity = util::Random::random_vector_float(-1.f, 1.f);

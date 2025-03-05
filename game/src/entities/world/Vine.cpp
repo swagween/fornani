@@ -1,14 +1,15 @@
 #include "fornani/entities/world/Vine.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::entity {
 
 Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground, bool reversed)
-	: position(position), length(length), size(size), chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, position, length, reversed), sprite{size == 1 ? svc.assets.t_vine : svc.assets.t_vine_large} {
+	: position(position), length(length), size(size), chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, position, length, reversed),
+	  sprite{size == 1 ? svc.assets.get_texture("vine_small") : svc.assets.get_texture("vine_large")} {
 	drawbox.setOutlineColor(svc.styles.colors.blue);
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);

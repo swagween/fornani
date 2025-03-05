@@ -18,7 +18,7 @@ class Hotbar {
 	[[nodiscard]] auto get_selection() const -> int { return selection.get(); }
 	[[nodiscard]] auto get_id() const -> int { return ids.at(selection.get()); }
 	[[nodiscard]] auto get_id(int i) const -> int { return ids.at(i); }
-	[[nodiscard]] auto size() const -> size_t { return ids.size(); }
+	[[nodiscard]] auto size() const -> std::size_t { return ids.size(); }
 	[[nodiscard]] auto switched() const -> bool { return selection.get() != previous; }
 
 	// for debug

@@ -7,9 +7,9 @@
 namespace fornani::entity {
 
 Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, bool already_open, int key_id, int style, sf::Vector2<int> map_dim)
-	: scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}), sprite{svc.assets.t_portals} {
-	dimensions = static_cast<Vec>(dim * svc.constants.u32_cell_size);
-	position = static_cast<Vec>(pos * svc.constants.u32_cell_size);
+	: scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}), sprite{svc.assets.get_texture("portals")} {
+	dimensions = static_cast<Vec>(dim * util::constants::u32_cell_size);
+	position = static_cast<Vec>(pos * util::constants::u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
 	bounding_box.set_position(position);
 	meta.orientation = PortalOrientation::central;
@@ -21,7 +21,7 @@ Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, in
 		state = PortalRenderState::open;
 		flags.attributes.set(PortalAttributes::already_open);
 	}
-	lookup = sf::IntRect({static_cast<int>(state) * svc.constants.i_cell_size, style * svc.constants.i_cell_size * 2}, {svc.constants.i_cell_size, svc.constants.i_cell_size * 2});
+	lookup = sf::IntRect({static_cast<int>(state) * util::constants::i_cell_size, style * util::constants::i_cell_size * 2}, {util::constants::i_cell_size, util::constants::i_cell_size * 2});
 	sprite.setTextureRect(lookup);
 	if (activate_on_contact) { flags.attributes.set(PortalAttributes::activate_on_contact); }
 	if (locked) { flags.state.set(PortalState::locked); }
@@ -29,11 +29,11 @@ Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, in
 }
 
 void Portal::update(automa::ServiceProvider& svc) {
-	position = static_cast<Vec>(scaled_position * svc.constants.u32_cell_size);
-	dimensions = static_cast<Vec>(scaled_dimensions * svc.constants.u32_cell_size);
+	position = static_cast<Vec>(scaled_position * util::constants::u32_cell_size);
+	dimensions = static_cast<Vec>(scaled_dimensions * util::constants::u32_cell_size);
 	bounding_box.set_position(position);
 	bounding_box.set_dimensions(dimensions);
-	lookup.position.x = static_cast<int>(state) * svc.constants.i_cell_size;
+	lookup.position.x = static_cast<int>(state) * util::constants::i_cell_size;
 }
 
 void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
@@ -78,9 +78,7 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 			player.walk();
 		}
 	} else {
-		if (!flags.state.test(PortalState::ready) && flags.attributes.test(PortalAttributes::activate_on_contact)) {
-			player.controller.stop_walking_autonomously();
-		}
+		if (!flags.state.test(PortalState::ready) && flags.attributes.test(PortalAttributes::activate_on_contact)) { player.controller.stop_walking_autonomously(); }
 		flags.state.set(PortalState::ready);
 	}
 	if (flags.state.test(PortalState::activated)) {
@@ -98,7 +96,7 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 				flags.state.set(PortalState::unlocked);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
 				console.load_and_launch("unlocked_door");
-				console.append(player.catalog.categories.inventory.get_item(meta.key_id).get_label());
+				console.append(player.catalog.inventory.get_item(meta.key_id).get_label());
 				console.display_item(meta.key_id);
 				svc.data.unlock_door(meta.key_id);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
@@ -133,4 +131,4 @@ void Portal::change_states(automa::ServiceProvider& svc, int room_id, flfx::Tran
 	}
 }
 
-} // namespace entity
+} // namespace fornani::entity

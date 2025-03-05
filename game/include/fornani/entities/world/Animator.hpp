@@ -1,51 +1,25 @@
 
 #pragma once
 
-#include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/Shape.hpp"
-#include "fornani/entities/Entity.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
 }
-
-namespace fornani::player {
-class Player;
-}
-
 namespace fornani::entity {
 
-constexpr sf::Vector2 large_animator_offset{16.f, 16.f};
-enum class AnimatorAttributes{large, automatic, foreground};
-
-class Animator : public Entity {
+class Animator {
 
   public:
+	Animator(automa::ServiceProvider& svc, std::string label, sf::Vector2i pos, bool foreground = false);
+	void update(automa::ServiceProvider& svc);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	[[nodiscard]] auto is_foreground() const -> bool { return m_foreground; }
 
-	Animator(automa::ServiceProvider& svc, sf::Vector2<int> pos, int id, bool large, bool automatic = false, bool foreground = false, int style = 0);
-	void update(automa::ServiceProvider& svc, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
-	int get_frame() const;
-	[[nodiscard]] auto foreground() const -> bool { return attributes.test(AnimatorAttributes::foreground); }
-
-	sf::Vector2<float> position{};
-	sf::Vector2<int> scaled_position{};
-	shape::Shape bounding_box{};
-	anim::Animation animation{};
-
-	bool activated{};
-
-	int current_frame{};
-
-	sf::Vector2<int> sprite_dimensions{}; // hardcoding for now
-
-	private:
-	int id{};
-	anim::Parameters automate{0, 6, 28, -1};
-	anim::Parameters moving{1, 4, 28, 0};
-	anim::Parameters still{0, 1, 28, -1};
-	util::BitFlags<AnimatorAttributes> attributes{};
-	sf::Sprite sprite;
+  private:
+	sf::Vector2f m_position{};
+	anim::AnimatedSprite m_sprite;
+	bool m_foreground{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

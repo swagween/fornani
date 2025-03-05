@@ -19,7 +19,6 @@
 #include "fornani/entities/world/Bed.hpp"
 #include "fornani/entities/world/Chest.hpp"
 #include "fornani/entities/world/Fire.hpp"
-#include "fornani/entities/world/Grass.hpp"
 #include "fornani/entities/world/Inspectable.hpp"
 #include "fornani/entities/world/Portal.hpp"
 #include "fornani/entities/world/SavePoint.hpp"
@@ -30,6 +29,7 @@
 #include "fornani/graphics/Rain.hpp"
 #include "fornani/graphics/Scenery.hpp"
 #include "fornani/graphics/Transition.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/story/CutsceneCatalog.hpp"
 #include "fornani/utils/CircleCollider.hpp"
@@ -61,10 +61,10 @@ class InventoryWindow;
 
 namespace fornani::world {
 
-enum class LevelState : uint8_t { game_over, camera_shake, spawn_enemy };
-enum class MapState : uint8_t { unobscure };
-enum class MapProperties : uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
-enum class LayerType : uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
+enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy };
+enum class MapState : std::uint8_t { unobscure };
+enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
+enum class LayerType : std::uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
 
 struct LayerTexture {
 	sf::RenderTexture day{};
@@ -75,7 +75,8 @@ struct LayerTexture {
 class Layer {
   public:
 	Layer() = default;
-	Layer(uint8_t o, sf::Vector2i partition, sf::Vector2<uint32_t> dim, dj::Json& source, bool has_obscuring, bool has_reverse_obscuring) : render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source) {
+	Layer(std::uint8_t o, sf::Vector2i partition, sf::Vector2<std::uint32_t> dim, dj::Json& source, float spacing, bool has_obscuring, bool has_reverse_obscuring)
+		: render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source, spacing) {
 		auto order = static_cast<int>(o);
 		if (order < partition.x) { type = LayerType::background; }
 		if (order == partition.x) { type = LayerType::middleground; }
@@ -88,15 +89,15 @@ class Layer {
 	[[nodiscard]] auto middleground() const -> bool { return type == LayerType::middleground; }
 	[[nodiscard]] auto obscuring() const -> bool { return type == LayerType::obscuring; }
 	[[nodiscard]] auto reverse_obscuring() const -> bool { return type == LayerType::reverse_obscuring; }
-	[[nodiscard]] auto get_render_order() const -> uint8_t { return render_order; }
+	[[nodiscard]] auto get_render_order() const -> std::uint8_t { return render_order; }
 	[[nodiscard]] auto get_i_render_order() const -> int { return static_cast<int>(render_order); }
 	[[nodiscard]] auto get_layer_type() const -> LayerType { return type; }
-	Grid grid{};
+	Grid grid;
 	bool collidable{};
-	sf::Vector2<uint32_t> dimensions{};
+	sf::Vector2<std::uint32_t> dimensions{};
 
   private:
-	uint8_t render_order{};
+	std::uint8_t render_order{};
 	LayerType type{};
 };
 
@@ -150,6 +151,8 @@ class Map {
 	[[nodiscard]] auto is_minimap() const -> bool { return flags.properties.test(MapProperties::minimap); }
 	[[nodiscard]] auto has_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_obscuring_layer); }
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_reverse_obscuring_layer); }
+	[[nodiscard]] auto get_biome_string() const -> std::string { return m_metadata.biome; }
+	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	std::size_t get_index_at_position(sf::Vector2<float> position);
 	int get_tile_value_at_position(sf::Vector2<float> position);
 	Tile& get_cell_at_position(sf::Vector2<float> position);
@@ -163,7 +166,6 @@ class Map {
 
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
-	std::vector<arms::Grenade> active_grenades{};
 	std::vector<vfx::Emitter> active_emitters{};
 	std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
@@ -171,7 +173,6 @@ class Map {
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
 	std::vector<std::unique_ptr<entity::Vine>> vines{};
-	std::vector<std::unique_ptr<entity::Grass>> grass{};
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
@@ -251,8 +252,12 @@ class Map {
 	util::Cooldown end_demo{500};
 
   private:
-	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell);
+	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell, float scale);
 	int abyss_distance{400};
+	struct {
+		std::string biome{};
+		std::string room{};
+	} m_metadata{};
 	struct {
 		graphics::ShakeProperties shake_properties{};
 		util::Cooldown cooldown{};
@@ -268,6 +273,8 @@ class Map {
 		int echo_count{};
 	} sound{};
 	int m_middleground{};
+
+	io::Logger m_logger{"Map"};
 };
 
 } // namespace fornani::world

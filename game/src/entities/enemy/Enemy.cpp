@@ -1,13 +1,15 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
+
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
-	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.texture_lookup.at(label))} {
+	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.get_texture("enemy_" + std::string{label}))} {
 
 	direction = dir::Direction{start_direction};
 
@@ -98,7 +100,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	drawbox.setOutlineThickness(-1);
 }
 
-void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) { 
+void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) {
 	// TODO: find a better way to generate unique external IDs
 	metadata.external_id = code.first * 2719 + code.second.x * 13219 + code.second.y * 49037;
 }
@@ -106,28 +108,28 @@ void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) {
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
 	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	
+
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	sound.hurt_sound_cooldown.update();
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
-		svc.soundboard.flags.frdog.set(audio::Frdog::death);
+		svc.soundboard.flags.enemy.set(audio::Enemy::standard_death);
 		map.spawn_counter.update(-1);
 	}
 	flags.triggers = {};
 	if (map.off_the_bottom(collider.physics.position)) {
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4.f); }
 	}
-	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
+	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, "large_explosion", collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();
 		return;
 	}
 	// shake
-	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
 	if (hitstun.running()) {
@@ -256,11 +258,11 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			health.inflict(proj.get_damage());
 			health_indicator.add(-proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
-			map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 11, {1, 1}));
+			map.effects.push_back(entity::Effect(svc, "hit_flash", proj.get_position(), {}, 0, 11, {1, 1}));
 			hitstun.start(64);
 		}
 	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
-		map.effects.push_back(entity::Effect(svc, proj.get_position(), {}, 0, 6));
+		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position(), {}, 0, 6));
 		svc.soundboard.flags.world.set(audio::World::hard_hit);
 	}
 	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }

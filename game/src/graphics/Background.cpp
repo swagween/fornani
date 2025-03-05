@@ -1,11 +1,12 @@
 
 #include "fornani/graphics/Background.hpp"
+#include <imgui.h>
+
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Math.hpp"
-#include <algorithm>
-#include <imgui.h>
 
+#include <ccmath/ext/clamp.hpp>
 #include <tracy/Tracy.hpp>
 
 namespace fornani::bg {
@@ -25,7 +26,7 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "du
 		layers.push_back({index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()});
 		layers.back().physics.set_global_friction(1.f);
 		for (auto i{0}; i < svc.world_clock.num_cycles(); ++i) {
-			layers.back().sprites.push_back(sf::Sprite{svc.assets.get_background(bg_id)});
+			layers.back().sprites.push_back(sf::Sprite{svc.assets.get_texture("background_" + type)});
 			layers.back().sprites.back().setTextureRect(sf::IntRect{{i * dimensions.x, dimensions.y * index}, dimensions});
 		}
 		++index;
@@ -42,20 +43,18 @@ void Background::update(automa::ServiceProvider& svc) {
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	ZoneScopedN("Background::render");
 	auto epsilon = 0.99999f;
-	
+
 	for (auto& layer : layers) {
 		// backtrack sprites for infinite scroll effect
 		if (layer.physics.position.x < -scroll_pane.x && !locked_horizontally()) { layer.physics.position.x = 0.f; }
 		if (layer.physics.position.x > 0.f && !locked_horizontally()) { layer.physics.position.x = static_cast<float>(-scroll_pane.x); }
-		if (layer.physics.position.y < -scroll_pane.y && !locked_vertically()) { layer.physics.position.y = layer.physics.position.y + static_cast<float>(scroll_pane.y);
-		}
-		if (layer.physics.position.y > 0.f && !locked_vertically()) { layer.physics.position.y = static_cast<float>(-scroll_pane.y) + layer.physics.position.y;
-		}
+		if (layer.physics.position.y < -scroll_pane.y && !locked_vertically()) { layer.physics.position.y = layer.physics.position.y + static_cast<float>(scroll_pane.y); }
+		if (layer.physics.position.y > 0.f && !locked_vertically()) { layer.physics.position.y = static_cast<float>(-scroll_pane.y) + layer.physics.position.y; }
 
 		layer.final_position = layer.physics.position - cam * layer.parallax;
 
-		if (locked_vertically()) { layer.final_position.y = std::clamp(layer.final_position.y, std::min(static_cast<float>(-scroll_pane.y + svc.window->screen_dimensions.y), -1 + epsilon), 0.f); }
-		if (locked_horizontally()) { layer.final_position.x = std::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->screen_dimensions.x), -1 + epsilon), 0.f); }
+		if (locked_vertically()) { layer.final_position.y = ccm::ext::clamp(layer.final_position.y, std::min(static_cast<float>(-scroll_pane.y + svc.window->i_screen_dimensions().y), -1 + epsilon), 0.f); }
+		if (locked_horizontally()) { layer.final_position.x = ccm::ext::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->i_screen_dimensions().x), -1 + epsilon), 0.f); }
 		auto ctr{0};
 		for (auto& sprite : layer.sprites) {
 			for (auto i{0}; i < 2; ++i) {
@@ -104,4 +103,4 @@ void Background::debug() {
 	ImGui::End();
 }
 
-} // namespace bg
+} // namespace fornani::bg

@@ -10,7 +10,7 @@ class Collider;
 
 namespace fornani::util {
 
-enum class CollisionDirection : uint8_t { none, vertical, horizontal };
+enum class CollisionDirection : std::uint8_t { none, vertical, horizontal };
 
 struct Depth {
 	float left{};
@@ -47,7 +47,7 @@ class CollisionDepth {
 	Depth candidate{};
 	Depth out_depth{};
 	std::deque<Depth> stream{};
-	size_t stream_size{16};
+	std::size_t stream_size{16};
 	float crush_threshold{8.0f};
 	float depth_throwaway{12.0f};
 	float depth_maximum{12.0f};

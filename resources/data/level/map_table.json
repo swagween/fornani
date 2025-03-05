@@ -1,32 +1,20 @@
 {
   "rooms": [
     {
-      "room_id": 300,
-      "label": "test.json"
+      "room_id": 1,
+      "label": "new_file.json"
     },
     {
-      "room_id": 299,
-      "label": "dojo.json"
+      "room_id": 99,
+      "label": "placeholder.json"
     },
     {
-      "room_id": 20099,
-      "label": "enemy_debug.json"
+      "room_id": 98,
+      "label": "placeholder_2.json"
     },
     {
-      "room_id": 2665,
-      "label": "arena.json"
-    },
-    {
-      "room_id": 295,
-      "label": "brick.json"
-    },
-    {
-      "room_id": 298,
-      "label": "resize_test.json"
-    },
-    {
-      "room_id": 201,
-      "label": "ibo_rests.json"
+      "room_id": 90,
+      "label": "test_chamber.json"
     },
     {
       "room_id": 103,
@@ -39,22 +27,6 @@
     {
       "room_id": 102,
       "label": "vent.json"
-    },
-    {
-      "room_id": 2,
-      "label": "test_chamber.json"
-    },
-    {
-      "room_id": 1,
-      "label": "new_file.json"
-    },
-    {
-      "room_id": 99,
-      "label": "placeholder.json"
-    },
-    {
-      "room_id": 98,
-      "label": "placeholder_2.json"
     }
   ]
 }

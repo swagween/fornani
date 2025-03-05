@@ -9,9 +9,7 @@
 
 namespace fornani::data {
 
-DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) {
-	load_data();
-}
+DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
 	m_services->stopwatch.start();
@@ -28,20 +26,23 @@ void DataManager::load_data(std::string in_room) {
 			if (room_data.is_null()) { continue; }
 			auto this_id = room_data["meta"]["room_id"].as<int>();
 			auto this_name = this_room.path().filename().string();
+			auto this_biome = room_data["meta"]["biome"].is_string() ? room_data["meta"]["biome"].as_string().data() : this_region.path().filename().string();
 			if (is_duplicate_room(this_id)) { continue; }
-			map_jsons.push_back(MapData{this_id, room_data});
-			
+			auto room_str = this_room.path().filename().string();
+			room_str = room_str.substr(0, room_str.find('.'));
+			map_jsons.push_back(MapData{this_id, room_data, this_biome, room_str});
+
 			// cache map layers
-			sf::Vector2<uint32_t> dimensions{};
+			sf::Vector2<std::uint32_t> dimensions{};
 			dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
 			dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
 			std::vector<world::Layer> next{};
 			auto& in_tile = map_jsons.back().metadata["tile"];
 			auto ho{static_cast<bool>(in_tile["flags"]["obscuring"].as_bool())};
 			auto hro{static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool())};
-			uint8_t ctr{0u};
+			std::uint8_t ctr{0u};
 			for (auto& layer : in_tile["layers"].array_view()) {
-				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], ho, hro));
+				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], util::constants::f_cell_size, ho, hro));
 				++ctr;
 			}
 			map_layers.push_back(next);
@@ -217,17 +218,17 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 
 	// wardrobe
-	save["player_data"]["wardrobe"]["hairstyle"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::hairstyle);
-	save["player_data"]["wardrobe"]["shirt"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::shirt);
-	save["player_data"]["wardrobe"]["pants"] = player.catalog.categories.wardrobe.get_variant(player::ApparelType::pants);
+	save["player_data"]["wardrobe"]["hairstyle"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::hairstyle));
+	save["player_data"]["wardrobe"]["shirt"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::shirt));
+	save["player_data"]["wardrobe"]["pants"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::pants));
 
 	// items and abilities
 	save["player_data"]["abilities"] = wipe;
 	save["player_data"]["items"] = wipe;
-	if (player.catalog.categories.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
-	if (player.catalog.categories.abilities.has_ability(player::Abilities::wall_slide)) { save["player_data"]["abilities"].push_back("wallslide"); }
-	if (player.catalog.categories.abilities.has_ability(player::Abilities::double_jump)) { save["player_data"]["abilities"].push_back("doublejump"); }
-	for (auto& item : player.catalog.categories.inventory.items) {
+	if (player.catalog.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
+	if (player.catalog.abilities.has_ability(player::Abilities::wall_slide)) { save["player_data"]["abilities"].push_back("wallslide"); }
+	if (player.catalog.abilities.has_ability(player::Abilities::double_jump)) { save["player_data"]["abilities"].push_back("doublejump"); }
+	for (auto& item : player.catalog.inventory.items) {
 		dj::Json this_item{};
 		this_item["id"] = item.get_id();
 		this_item["quantity"] = item.get_quantity();
@@ -345,20 +346,20 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	}
 
 	// load items and abilities
-	player.catalog.categories.abilities.clear();
-	player.catalog.categories.inventory.clear();
-	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.categories.abilities.give_ability(ability.as<int>()); }
-	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.categories.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
+	player.catalog.abilities.clear();
+	player.catalog.inventory.clear();
+	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.abilities.give_ability(ability.as<int>()); }
+	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
 
 	// wardrobe
-	auto& wardrobe = player.catalog.categories.wardrobe;
+	auto& wardrobe = player.catalog.wardrobe;
 	auto hairstyle = save["player_data"]["wardrobe"]["hairstyle"].as<int>();
 	auto shirt = save["player_data"]["wardrobe"]["shirt"].as<int>();
 	auto pants = save["player_data"]["wardrobe"]["pants"].as<int>();
 	hairstyle > 0 ? player.equip_item(player::ApparelType::hairstyle, hairstyle + 80) : wardrobe.unequip(player::ApparelType::hairstyle);
 	shirt > 0 ? player.equip_item(player::ApparelType::shirt, shirt + 80) : wardrobe.unequip(player::ApparelType::shirt);
 	pants > 0 ? player.equip_item(player::ApparelType::pants, pants + 80) : wardrobe.unequip(player::ApparelType::pants);
-	player.catalog.categories.wardrobe.update(player.texture_updater);
+	player.catalog.wardrobe.update(player.texture_updater);
 
 	// stat tracker
 	auto& s = m_services->stats;
@@ -645,4 +646,4 @@ int DataManager::get_npc_location(int npc_id) {
 
 std::vector<world::Layer>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }
 
-} // namespace data
+} // namespace fornani::data

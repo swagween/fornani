@@ -6,7 +6,7 @@
 
 namespace fornani::enemy {
 
-	enum class HaulerState : uint8_t { idle, turn, run, haul, alert, jump, hurt };
+	enum class HaulerState : std::uint8_t { idle, turn, run, haul, alert, jump, hurt };
 
 class Hauler final : public Enemy {
 

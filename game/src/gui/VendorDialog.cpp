@@ -7,29 +7,26 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
-#include <algorithm>
-
 namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: vendor_id(vendor_id), portrait(svc), info(svc), selectors{.buy{svc, {2, 1}}, .sell{svc, {2, 1}}}, orb{.sprite{anim::AnimatedSprite(svc.assets.t_orb, {24, 24})}}, artwork{svc.assets.t_vendor_artwork}, ui{svc.assets.t_vendor_ui},
-	  text{.vendor_name{svc.text.fonts.title},
-		   .buy_tab{svc.text.fonts.title},
-		   .sell_tab{svc.text.fonts.title},
-		   .orb_count{svc.text.fonts.title},
-		   .price{svc.text.fonts.title},
-		   .price_number{svc.text.fonts.title},
-		   .item_label{svc.text.fonts.title}} {
+	: vendor_id(vendor_id), portrait(svc), info(svc, "outline_console"), selectors{.buy{svc, {2, 1}}, .sell{svc, {2, 1}}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
+	  artwork{svc.assets.get_texture("vendor_background")}, ui{svc.assets.get_texture("vendor_ui")}, text{.vendor_name{svc.text.fonts.title},
+																										  .buy_tab{svc.text.fonts.title},
+																										  .sell_tab{svc.text.fonts.title},
+																										  .orb_count{svc.text.fonts.title},
+																										  .price{svc.text.fonts.title},
+																										  .price_number{svc.text.fonts.title},
+																										  .item_label{svc.text.fonts.title}} {
 	flags.set(VendorDialogStatus::opened);
-	artwork.setTextureRect(sf::IntRect{{0, (vendor_id - 1) * svc.constants.screen_dimensions.y}, {svc.constants.screen_dimensions}});
-	artwork.setOrigin(svc.constants.f_center_screen);
-	artwork.setPosition(svc.constants.f_center_screen);
+	artwork.setTextureRect(sf::IntRect{{0, (vendor_id - 1) * svc.window->i_screen_dimensions().y}, {svc.window->i_screen_dimensions()}});
+	artwork.setOrigin(svc.window->f_center_screen());
+	artwork.setPosition(svc.window->f_center_screen());
 	state = VendorState::buy;
-	ui.setTextureRect(sf::IntRect{{0, static_cast<int>(state) * svc.constants.screen_dimensions.y}, {svc.constants.screen_dimensions}});
+	ui.setTextureRect(sf::IntRect{{0, static_cast<int>(state) * svc.window->i_screen_dimensions().y}, {svc.window->i_screen_dimensions()}});
 	get_npc_id.insert({1, 3});
 	npc_id = get_npc_id.at(vendor_id);
 	portrait.set_id(npc_id);
-	info.set_texture(svc.assets.t_console_outline);
 
 	info.flags.reset(ConsoleFlags::portrait_included);
 	info.begin();
@@ -80,7 +77,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	intro.update();
 	if (intro.is_almost_complete()) {
-		bring_in = {svc.constants.f_screen_dimensions.x, 0.f};
+		bring_in = {svc.window->f_screen_dimensions().x, 0.f};
 		bring_in_cooldown.start();
 	}
 	if (intro.running()) {
@@ -90,7 +87,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	bring_in_cooldown.update();
 	if (bring_in_cooldown.running()) {
-		auto dest = svc.constants.f_screen_dimensions.x;
+		auto dest = svc.window->f_screen_dimensions().x;
 		bring_in.x = util::ease_in_out(dest, 0.f, 1.f - bring_in_cooldown.get_normalized());
 	} else {
 		bring_in = {};
@@ -107,17 +104,17 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	text.price_number.setPosition(sf::Vector2<float>{text.price.getPosition().x + text.price.getLocalBounds().size.x, text.price.getPosition().y} + bring_in);
 	ui.setPosition(bring_in);
 	portrait.set_position(portrait_position + bring_in);
-	text.orb_count.setPosition(sf::Vector2<float>{svc.constants.f_screen_dimensions.x - 72.f, 36.f} + bring_in);
+	text.orb_count.setPosition(sf::Vector2<float>{svc.window->f_screen_dimensions().x - 72.f, 36.f} + bring_in);
 
 	state == VendorState::buy ? text.buy_tab.setFillColor(svc.styles.colors.red) : text.buy_tab.setFillColor(svc.styles.colors.blue);
 	state == VendorState::sell ? text.sell_tab.setFillColor(svc.styles.colors.red) : text.sell_tab.setFillColor(svc.styles.colors.blue);
 	bool exchanged{};
-	orb.sprite.update(sf::Vector2<float>{svc.constants.f_screen_dimensions.x - 60.f, 32.f} + bring_in, 0, 0, true);
+	orb.sprite.update(sf::Vector2<float>{svc.window->f_screen_dimensions().x - 60.f, 32.f} + bring_in, 0, 0, true);
 	text.orb_count.setString(player.wallet.get_balance_string());
 	if (opening()) { return; }
 
-	auto& sellable_items = player.catalog.categories.inventory.sellable_items;
-	auto& player_inventory = player.catalog.categories.inventory;
+	auto& sellable_items = player.catalog.inventory.sellable_items;
+	auto& player_inventory = player.catalog.inventory;
 	auto& vendor = map.get_npc(npc_id).get_vendor();
 	auto& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
 
@@ -136,7 +133,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		state = state == VendorState::buy ? VendorState::sell : VendorState::buy;
 		selector.switch_sections({1, 0});
 		update_table(player, map, true);
-		ui.setTextureRect(sf::IntRect{{0, static_cast<int>(state) * svc.constants.screen_dimensions.y}, {svc.constants.screen_dimensions}});
+		ui.setTextureRect(sf::IntRect{{0, static_cast<int>(state) * svc.window->i_screen_dimensions().y}, {svc.window->i_screen_dimensions()}});
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		refresh(player, map);
 	}
@@ -181,7 +178,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						player.give_drop(item::DropType::orb, -sale_price);
 						balance -= sale_price;
 						vendor.inventory.remove_item(svc, item_id, 1);
-						svc.soundboard.flags.world.set(audio::World::soft_sparkle_high);
+						svc.soundboard.flags.item.set(audio::Item::vendor_sale);
 						exchanged = true;
 					}
 					m_item_menu = {};
@@ -232,7 +229,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						player.take_item(item.get_id());
 						player.give_drop(item::DropType::orb, sale_price);
 						balance += sale_price;
-						svc.soundboard.flags.world.set(audio::World::soft_sparkle_high);
+						svc.soundboard.flags.item.set(audio::Item::vendor_sale);
 						flags.set(VendorDialogStatus::made_sale);
 						exchanged = true;
 					}
@@ -261,8 +258,8 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 }
 
 void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map) {
-	auto const& sellable_items = player.catalog.categories.inventory.sellable_items;
-	auto& player_inventory = player.catalog.categories.inventory;
+	auto const& sellable_items = player.catalog.inventory.sellable_items;
+	auto& player_inventory = player.catalog.inventory;
 	auto& vendor = map.get_npc(npc_id).get_vendor();
 	auto const& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
 
@@ -294,7 +291,7 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 		}
 		break;
 	case VendorState::sell:
-		if (player.catalog.categories.inventory.sellable_items.empty()) { break; }
+		if (player.catalog.inventory.sellable_items.empty()) { break; }
 		if (!opening()) { selector.render(win); }
 		for (auto const& idx : sellable_items) {
 			auto& item = player_inventory.get_item_at_index(idx);
@@ -315,7 +312,7 @@ void VendorDialog::close() { flags.reset(VendorDialogStatus::opened); }
 void VendorDialog::update_table(player::Player& player, world::Map& map, bool new_dim) {
 	auto const& vendor = map.get_npc(npc_id).get_vendor();
 	auto& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
-	auto const num_items = (state == VendorState::sell) ? player.catalog.categories.inventory.sellable_items.size() : vendor.inventory.items.size();
+	auto const num_items = (state == VendorState::sell) ? player.catalog.inventory.sellable_items.size() : vendor.inventory.items.size();
 	auto const ipr = ui_constants.items_per_row;
 	auto const dim = sf::Vector2{std::min(static_cast<int>(num_items), ipr), static_cast<int>(std::ceil(static_cast<float>(num_items) / static_cast<float>(ipr)))};
 	if (new_dim) { selector.set_size(static_cast<int>(num_items)); }
@@ -324,8 +321,8 @@ void VendorDialog::update_table(player::Player& player, world::Map& map, bool ne
 }
 
 void VendorDialog::refresh(player::Player& player, world::Map& map) const {
-	auto const& sellable_items = player.catalog.categories.inventory.sellable_items;
-	auto& player_inventory = player.catalog.categories.inventory;
+	auto const& sellable_items = player.catalog.inventory.sellable_items;
+	auto& player_inventory = player.catalog.inventory;
 	auto& vendor = map.get_npc(npc_id).get_vendor();
 	for (auto& idx : sellable_items) {
 		auto& item = player_inventory.get_item_at_index(idx);

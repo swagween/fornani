@@ -38,7 +38,7 @@ class Ticker {
 		if (!flags.test(TickerFlags::forced_slowdown)) {
 			if (slowdown.running()) { dt_scalar -= 0.05f; }
 			if (slowdown.is_complete()) { dt_scalar += 0.05f; }
-			dt_scalar = std::clamp(dt_scalar, slowdown_rate, 1.f);
+			dt_scalar = ccm::ext::clamp(dt_scalar, slowdown_rate, 1.f);
 			if (freezeframe.running()) { dt_scalar = 0.1f; }
 		}
 

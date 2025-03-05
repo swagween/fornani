@@ -6,12 +6,13 @@
 
 namespace fornani::world {
 
-Destroyable::Destroyable(automa::ServiceProvider& svc, sf::Vector2<int> pos, int quest_id, int style_id) : position(pos), quest_id(quest_id), sprite{svc.assets.tilesets.at(style_id)} {
-	collider = shape::Collider({32.f, 32.f});
-	auto f_pos = sf::Vector2<float>{static_cast<float>(position.x * svc.constants.cell_size), static_cast<float>(position.y * svc.constants.cell_size)};
+Destroyable::Destroyable(automa::ServiceProvider& svc, sf::Vector2<int> pos, int quest_id, int style_id) : position(pos), quest_id(quest_id), sprite{svc.assets.get_texture("destroyables")} {
+	collider = shape::Collider(util::constants::f_cell_vec);
+	auto f_pos = sf::Vector2<float>{static_cast<float>(position.x * util::constants::f_cell_size), static_cast<float>(position.y * util::constants::f_cell_size)};
 	collider.physics.position = f_pos;
 	collider.sync_components();
-	sprite.setTextureRect(sf::IntRect{{6 * 32, 14 * 32}, {32, 32}});
+	sprite.setScale(util::constants::f_scale_vec);
+	sprite.setTextureRect(sf::IntRect{{style_id * util::constants::i_cell_size, 0}, util::constants::i_cell_vec});
 }
 
 void Destroyable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -19,7 +20,7 @@ void Destroyable::update(automa::ServiceProvider& svc, Map& map, player::Player&
 	if (svc.quest.get_progression(fornani::QuestType::destroyers, quest_id) > 0) { flags.set(DestroyerState::detonated); }
 	if (flags.test(DestroyerState::detonated)) {
 		svc.data.destroy_block(quest_id);
-		map.effects.push_back(entity::Effect(svc, static_cast<sf::Vector2<float>>(position) * svc.constants.cell_size, {}, 0, 0));
+		map.effects.push_back(entity::Effect(svc, "small_explosion", static_cast<sf::Vector2<float>>(position) * util::constants::f_cell_size, {}, 0, 0));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);
 	}
 	player.collider.handle_collider_collision(collider);
@@ -42,7 +43,7 @@ void Destroyable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Pr
 	if (proj.transcendent()) { return; }
 	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type(), 2));
+			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type(), 2));
 			if (proj.get_direction().lr == dir::LR::neutral) { map.effects.back().rotate(); }
 			svc.soundboard.flags.world.set(audio::World::wall_hit);
 		}

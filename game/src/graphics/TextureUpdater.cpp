@@ -14,10 +14,10 @@ void TextureUpdater::load_pixel_map(sf::Texture& map_texture) {
 	for (int i = 0; i < total_array_size; ++i) {
 		sf::Color current_pixel{};
 		if (i % 4 == 0) {
-			uint8_t r = map_image_data[i];
-			uint8_t g = map_image_data[i + 1];
-			uint8_t b = map_image_data[i + 2];
-			uint8_t a = map_image_data[i + 3];
+			std::uint8_t r = map_image_data[i];
+			std::uint8_t g = map_image_data[i + 1];
+			std::uint8_t b = map_image_data[i + 2];
+			std::uint8_t a = map_image_data[i + 3];
 			current_pixel = sf::Color{r, g, b, a};
 			map_colors.push_back(current_pixel);
 		}
@@ -46,10 +46,10 @@ void TextureUpdater::load_palette(sf::Texture& palette_texture) {
 	for (int i = 0; i < total_array_size; ++i) {
 		sf::Color current_pixel{};
 		if (i % 4 == 0) {
-			uint8_t r = palette_image_data[i];
-			uint8_t g = palette_image_data[i + 1];
-			uint8_t b = palette_image_data[i + 2];
-			uint8_t a = palette_image_data[i + 3];
+			std::uint8_t r = palette_image_data[i];
+			std::uint8_t g = palette_image_data[i + 1];
+			std::uint8_t b = palette_image_data[i + 2];
+			std::uint8_t a = palette_image_data[i + 3];
 			current_pixel = sf::Color{r, g, b, a};
 			palette_colors.push_back(current_pixel);
 		}

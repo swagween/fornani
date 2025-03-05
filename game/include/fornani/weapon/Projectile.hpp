@@ -24,11 +24,11 @@ class Player;
 namespace fornani::arms {
 
 class Weapon;
-enum class Team : uint8_t { nani, skycorps, guardian, pioneer, beast };
-enum class ProjectileType : uint8_t { bullet, missile, melee };
-enum class RenderType : uint8_t { animated, single_sprite, multi_sprite };
+enum class Team : std::uint8_t { nani, skycorps, guardian, pioneer, beast };
+enum class ProjectileType : std::uint8_t { bullet, missile, melee };
+enum class RenderType : std::uint8_t { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes : uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip };
+enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip };
 struct ProjectileSpecifications {
 	float base_damage{};
 	int power{};
@@ -46,7 +46,7 @@ struct ProjectileSpecifications {
 	float elasticty{};
 };
 
-enum class ProjectileState : uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
+enum class ProjectileState : std::uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
 
 class Projectile {
   public:

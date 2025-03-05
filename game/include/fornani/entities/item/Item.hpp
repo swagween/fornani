@@ -1,10 +1,10 @@
 
 #pragma once
 #include <optional>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/entities/Entity.hpp"
 #include "Drop.hpp"
+#include "fornani/entities/Entity.hpp"
 #include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -15,14 +15,14 @@ class Console;
 }
 
 namespace fornani::player {
-enum class ApparelType;
+enum class ApparelType : std::uint8_t;
 }
 
 namespace fornani::item {
 
-enum class ItemFlags : uint8_t { unique, revealed, usable, equippable, sellable };
-enum class UIFlags : uint8_t { selected };
-enum class ItemState : uint8_t { equipped };
+enum class ItemFlags : std::uint8_t { unique, revealed, usable, equippable, sellable };
+enum class UIFlags : std::uint8_t { selected };
+enum class ItemState : std::uint8_t { equipped };
 
 class Item final : public entity::Entity {
   public:
@@ -88,4 +88,4 @@ class Item final : public entity::Entity {
 	} ui;
 };
 
-} // namespace fornani::player
+} // namespace fornani::item

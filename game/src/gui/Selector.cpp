@@ -1,17 +1,18 @@
 #include "fornani/gui/Selector.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include <algorithm>
+
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::gui {
 
-Selector::Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim) : table_dimensions(dim), current_selection(dim.x * dim.y), m_services(&svc), sprite{svc.assets.t_selector} {
+Selector::Selector(automa::ServiceProvider& svc, sf::Vector2<int> dim) : table_dimensions(dim), current_selection(dim.x * dim.y), m_services(&svc), sprite{svc.assets.get_texture("gui_selector")} {
 	sprite.setTextureRect(sf::IntRect({0, 0}, {52, 52}));
 	sprite.setOrigin({10, 10});
 }
 
 void Selector::update() {
 	sprite.setPosition(position);
-	current_selection.set(std::clamp(current_selection.get(), 0, current_selection.get_order() - 1));
+	current_selection.set(ccm::ext::clamp(current_selection.get(), 0, current_selection.get_order() - 1));
 }
 
 void Selector::render(sf::RenderWindow& win) const { win.draw(sprite); }
@@ -81,4 +82,4 @@ void Selector::set_dimensions(sf::Vector2<int> dim) {
 
 bool Selector::last_row() const { return current_selection.get() / table_dimensions.x == table_dimensions.y - 1; }
 
-} // namespace gui
+} // namespace fornani::gui

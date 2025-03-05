@@ -1,6 +1,7 @@
 
 #pragma once
-#include <algorithm>
+
+#include <ccmath/ext/clamp.hpp>
 #include <limits>
 
 namespace fornani::util {
@@ -11,10 +12,11 @@ class Cooldown {
 	explicit Cooldown(int const time) : native_time(time) {}
 	constexpr void start() { decrementor = native_time; }
 	constexpr void start(int const time) { decrementor = time; }
-	constexpr void update() { decrementor = std::clamp(decrementor - 1, 0, std::numeric_limits<int>::max()); }
-	constexpr void reverse() { decrementor = std::clamp(decrementor + 1, 0, native_time); }
+	constexpr void update() { decrementor = ccm::ext::clamp(decrementor - 1, 0, std::numeric_limits<int>::max()); }
+	constexpr void reverse() { decrementor = ccm::ext::clamp(decrementor + 1, 0, native_time); }
 	constexpr void cancel() { decrementor = 0; }
 	constexpr void nullify() { decrementor = -1; }
+	constexpr void invert() { decrementor = native_time - decrementor; }
 	[[nodiscard]] auto started() const -> bool { return decrementor == native_time; }
 	[[nodiscard]] auto just_started() const -> bool { return decrementor == native_time - 1; }
 	[[nodiscard]] auto is_almost_complete() const -> bool { return decrementor == 1; }

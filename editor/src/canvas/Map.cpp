@@ -1,24 +1,25 @@
 
 #include "editor/canvas/Map.hpp"
-#include <algorithm>
+
+#include <ccmath/ext/clamp.hpp>
 
 namespace pi {
 
 void Map::set_labels() {
 	auto ctr{0};
 	for (auto& layer : layers) {
-		layer.label = ctr < m_middleground		 ? "background " + std::to_string(ctr)
-					  : ctr == m_middleground	 ? "middleground / collidable"
-					  : ctr == layers.size() - 1 && m_flags.has_obscuring_layer ? "obscuring"
+		layer.label = ctr < m_middleground												? "background " + std::to_string(ctr)
+					  : ctr == m_middleground											? "middleground / collidable"
+					  : ctr == layers.size() - 1 && m_flags.has_obscuring_layer			? "obscuring"
 					  : ctr == layers.size() - 2 && m_flags.has_reverse_obscuring_layer ? "reverse obscuring"
-												 : "foreground " + std::to_string(ctr - m_middleground);
+																						: "foreground " + std::to_string(ctr - m_middleground);
 		++ctr;
 	}
 }
 
 void Map::set_middleground(int to_middleground) {
 	if (layers.empty()) { return; }
-	to_middleground = std::clamp(to_middleground, 0, static_cast<int>(layers.size()) - 1);
+	to_middleground = ccm::ext::clamp(to_middleground, 0, static_cast<int>(layers.size()) - 1);
 	m_middleground = to_middleground;
 }
 
@@ -45,4 +46,4 @@ void Map::reorder() {
 	}
 }
 
-}
+} // namespace pi

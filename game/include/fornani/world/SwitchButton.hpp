@@ -21,8 +21,8 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SwitchType : uint8_t { toggler, permanent, movable, alternator };
-enum class SwitchButtonState : uint8_t { unpressed, pressed };
+enum class SwitchType : std::uint8_t { toggler, permanent, movable, alternator };
+enum class SwitchButtonState : std::uint8_t { unpressed, pressed };
 
 class SwitchButton {
   public:

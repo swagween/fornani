@@ -21,11 +21,10 @@ class Catalog {
 	void remove_item(automa::ServiceProvider& svc, int item_id, int amount);
 	void equip_item(automa::ServiceProvider& svc, ApparelType type, int item_id);
 	void unequip_item(ApparelType type);
-	struct {
-		Inventory inventory{};
-		AbilityManager abilities{};
-		Wardrobe wardrobe{};
-	} categories{};
+	Inventory inventory{};
+	AbilityManager abilities{};
+	Wardrobe wardrobe{};
+	int m_apparel_index{80};
 };
 
 } // namespace fornani::player
