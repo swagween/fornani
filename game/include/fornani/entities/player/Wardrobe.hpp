@@ -13,7 +13,7 @@ class TextureUpdater;
 
 namespace fornani::player {
 
-enum class ApparelType : std::uint8_t { shirt, pants, hairstyle, jacket, headgear, END };
+enum class ApparelType : std::uint8_t { pants, shirt, headgear, hairstyle, END };
 enum class ClothingVariant : std::uint8_t { standard, red_jeans, chalcedony_tee, chalcedony_skirt, punk_hair, punk_shirt, punk_pants, ponytail };
 
 class Wardrobe {

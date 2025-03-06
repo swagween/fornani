@@ -256,5 +256,37 @@
 				}
 			]
 		}
+	],
+	"wardrobe_outfitter": [
+		{
+			"label": "start",
+			"path": [
+				{
+					"position": [ 256, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 0, 0 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		},
+		{
+			"label": "close",
+			"path": [
+				{
+					"position": [ 0, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 4, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 256, 0 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		}
 	]
 }

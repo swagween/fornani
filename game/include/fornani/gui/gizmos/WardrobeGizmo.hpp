@@ -4,6 +4,7 @@
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/WardrobeWidget.hpp"
+#include "fornani/gui/gizmos/OutfitterGizmo.hpp"
 
 namespace fornani::gui {
 
@@ -22,6 +23,9 @@ class WardrobeGizmo : public Gizmo {
 	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 
   private:
+	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
+	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
+	std::unique_ptr<OutfitterGizmo> m_outfitter{};
 	WardrobeWidget m_nani;
 	util::RectPath m_path;
 	bool m_wardrobe_update{};
@@ -30,7 +34,6 @@ class WardrobeGizmo : public Gizmo {
 	sf::Vector2f m_light_offset{};
 
 	anim::AnimatedSprite m_core;
-	anim::AnimatedSprite m_wires;
 	anim::AnimatedSprite m_light;
 	sf::Sprite m_scanline;
 	sf::Sprite m_sprite;
