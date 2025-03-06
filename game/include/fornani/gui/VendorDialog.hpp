@@ -3,9 +3,9 @@
 
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/gui/Console.hpp"
+#include "fornani/gui/InventorySelector.hpp"
 #include "fornani/gui/MiniMenu.hpp"
 #include "fornani/gui/Portrait.hpp"
-#include "fornani/gui/Selector.hpp"
 #include "fornani/particle/Gravitator.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -42,10 +42,8 @@ class VendorDialog {
 	[[nodiscard]] auto opening() const -> bool { return intro.running() || bring_in_cooldown.running(); }
 
   private:
-	struct {
-		Selector buy;
-		Selector sell;
-	} selectors;
+	InventorySelector m_buy_selector;
+	InventorySelector m_sell_selector;
 	Console info;
 	std::optional<MiniMenu> m_item_menu{};
 	util::Cooldown intro{200};

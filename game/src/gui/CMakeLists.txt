@@ -11,7 +11,7 @@ nani_add_sources(
         MiniMenu.cpp
         PauseWindow.cpp
         Portrait.cpp
-        Selector.cpp
+        InventorySelector.cpp
         StatusBar.cpp
         TextWriter.cpp
         VendorDialog.cpp

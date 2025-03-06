@@ -2,7 +2,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Console.hpp"
-#include "Selector.hpp"
 #include "fornani/graphics/MapTexture.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/Circuit.hpp"

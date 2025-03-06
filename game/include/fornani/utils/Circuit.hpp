@@ -17,6 +17,10 @@ class Circuit {
 	[[nodiscard]] constexpr auto get_order() const -> int { return order; }
 	[[nodiscard]] constexpr auto get() const -> int { return selection; }
 	[[nodiscard]] constexpr auto cycled() const -> bool { return selection == 0; }
+	template <typename T>
+	T as() const {
+		return static_cast<T>(selection);
+	}
 
   private:
 	int order{};

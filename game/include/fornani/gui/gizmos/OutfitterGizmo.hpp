@@ -4,8 +4,14 @@
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/entities/player/Wardrobe.hpp"
 #include "fornani/gui/Gizmo.hpp"
+#include "fornani/gui/InventorySelector.hpp"
 
 namespace fornani::gui {
+
+struct Slider {
+	FreeConstituent body{};
+	int selection{};
+};
 
 class OutfitterGizmo : public Gizmo {
   public:
@@ -17,13 +23,18 @@ class OutfitterGizmo : public Gizmo {
 	void close();
 
   private:
+	void init_sliders();
+	void update_sliders(player::Player& player);
+	void debug();
+	int m_max_slots{};
 	sf::Sprite m_sprite;
-	std::array<Constituent, static_cast<int>(player::ApparelType::END)> m_sliders;
-	Constituent m_selector;
+	std::array<Slider, static_cast<int>(player::ApparelType::END)> m_sliders;
+	InventorySelector m_selector;
 	Constituent m_row;
 	util::RectPath m_path;
 	anim::AnimatedSprite m_wires;
-	int m_max_slots{};
+	sf::Vector2f m_grid_offset{};
+	bool m_init{};
 };
 
 } // namespace fornani::gui

@@ -16,7 +16,7 @@ namespace fornani::audio {
 enum class SoundboardState : std::uint8_t { on, off };
 
 enum class Menu : std::uint8_t { select, shift, forward_switch, backward_switch };
-enum class Pioneer : std::uint8_t { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag };
+enum class Pioneer : std::uint8_t { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag, wires };
 enum class Console : std::uint8_t { next, done, shift, select, speech, menu_open };
 enum class World : std::uint8_t { load, save, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable_move, door_open, door_unlock };
 enum class Item : std::uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale };

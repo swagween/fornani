@@ -48,4 +48,9 @@ void Constituent::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f
 	win.draw(sprite);
 }
 
+void FreeConstituent::update() {
+	constituent.position = physics.position;
+	physics.simple_update();
+}
+
 } // namespace fornani::gui

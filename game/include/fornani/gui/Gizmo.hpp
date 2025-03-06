@@ -40,6 +40,14 @@ struct Constituent {
 	void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) const;
 };
 
+// essentially a non-selectable gizmo
+struct FreeConstituent {
+	Constituent constituent{};
+	components::PhysicsComponent physics{};
+	components::SteeringBehavior steering{};
+	void update();
+};
+
 class Gizmo {
   public:
 	explicit Gizmo(std::string const& label, bool foreground) : m_label(label), m_foreground(foreground) {}
@@ -51,6 +59,9 @@ class Gizmo {
 	void deselect();
 	[[nodiscard]] auto is_foreground() const -> bool { return m_foreground; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
+	[[nodiscard]] auto is_neutral() const -> bool { return m_state == GizmoState::neutral; }
+	[[nodiscard]] auto is_hovered() const -> bool { return m_state == GizmoState::hovered; }
+	[[nodiscard]] auto is_selected() const -> bool { return m_state == GizmoState::selected; }
 
   protected:
 	virtual void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map);

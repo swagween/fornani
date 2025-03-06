@@ -10,7 +10,7 @@
 namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: vendor_id(vendor_id), portrait(svc), info(svc, "outline_console"), selectors{.buy{svc, {2, 1}}, .sell{svc, {2, 1}}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
+	: vendor_id(vendor_id), portrait(svc), info(svc, "outline_console"), m_buy_selector{{2, 1}}, m_sell_selector{{2, 1}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
 	  artwork{svc.assets.get_texture("vendor_background")}, ui{svc.assets.get_texture("vendor_ui")}, text{.vendor_name{svc.text.fonts.title},
 																										  .buy_tab{svc.text.fonts.title},
 																										  .sell_tab{svc.text.fonts.title},
@@ -116,13 +116,18 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	auto& sellable_items = player.catalog.inventory.sellable_items;
 	auto& player_inventory = player.catalog.inventory;
 	auto& vendor = map.get_npc(npc_id).get_vendor();
-	auto& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
+	auto& selector = state == VendorState::sell ? m_sell_selector : m_buy_selector;
 
 	if (!m_item_menu) {
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered) { selector.go_left(); }
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered) { selector.go_right(); }
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { selector.go_up(); }
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { selector.go_down(); }
+		// TODO: refactor input handling in VendorDialog
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered) { /*selector.go_left();*/
+		}
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered) { /*selector.go_right();*/
+		}
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { /* selector.go_up();*/
+		}
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { /*selector.go_down();*/
+		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) { close(); }
 	} else {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { m_item_menu->down(svc); }
@@ -131,7 +136,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	if (!m_item_menu && (svc.controller_map.digital_action_status(config::DigitalAction::menu_switch_left).triggered || svc.controller_map.digital_action_status(config::DigitalAction::menu_switch_right).triggered)) {
 		state = state == VendorState::buy ? VendorState::sell : VendorState::buy;
-		selector.switch_sections({1, 0});
+		/*selector.switch_sections({1, 0});*/
 		update_table(player, map, true);
 		ui.setTextureRect(sf::IntRect{{0, static_cast<int>(state) * svc.window->i_screen_dimensions().y}, {svc.window->i_screen_dimensions()}});
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
@@ -148,14 +153,16 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		if (vendor.inventory.items.empty()) { break; }
 		ctr = 0;
 		m_item_menu = MiniMenu(svc, {"buy", "cancel"}, selector.get_menu_position(), true);
-		selector.update();
-		selector.set_size(static_cast<int>(vendor.inventory.items.size()));
+		// TODO: refactor selector dimension updates
+		/*selector.update();
+		selector.set_size(static_cast<int>(vendor.inventory.items.size()));*/
 		if (vendor.inventory.items.size() < 1) { text.price_number.setString("..."); }
 		for (auto& item : vendor.inventory.items) {
 			item.update(svc, ctr, ui_constants.items_per_row, {});
 			ctr == selector.get_current_selection() ? item.select() : item.deselect();
 			if (item.selected()) {
-				selector.set_position(item.get_position());
+				// TODO: refactor selector dimension updates
+				/*selector.set_position(item.get_position());*/
 				info.load_single_message(item.get_description());
 				auto f_value = static_cast<float>(item.get_value());
 				sale_price = f_value + f_value * vendor.get_upcharge();
@@ -202,15 +209,17 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		if (sellable_items.empty()) { break; }
 		ctr = 0;
 		m_item_menu = MiniMenu(svc, {"sell", "cancel"}, selector.get_menu_position(), true);
-		selector.set_size(static_cast<int>(sellable_items.size()));
-		selector.update();
+		// TODO: refactor selector dimension updates
+		/*selector.set_size(static_cast<int>(sellable_items.size()));
+		selector.update();*/
 		if (sellable_items.size() < 1) { text.price_number.setString("..."); }
 		for (auto const& idx : sellable_items) {
 			auto& item = player_inventory.get_item_at_index(idx);
 			item.update(svc, ctr, ui_constants.items_per_row, {});
 			ctr == selector.get_current_selection() ? item.select() : item.deselect();
 			if (item.selected()) {
-				selector.set_position(item.get_position());
+				// TODO: refactor selector dimension updates
+				/*selector.set_position(item.get_position());*/
 				info.load_single_message(item.get_description());
 				auto const f_value = static_cast<float>(item.get_value());
 				sale_price = f_value - f_value * vendor.get_upcharge();
@@ -261,7 +270,7 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	auto const& sellable_items = player.catalog.inventory.sellable_items;
 	auto& player_inventory = player.catalog.inventory;
 	auto& vendor = map.get_npc(npc_id).get_vendor();
-	auto const& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
+	auto const& selector = state == VendorState::sell ? m_sell_selector : m_buy_selector;
 
 	text.orb_count.setOrigin(sf::Vector2{text.orb_count.getLocalBounds().size.x, 0.f});
 	win.draw(artwork);
@@ -278,10 +287,12 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 		info.render(win);
 		info.write(win, true);
 	}
+	// TODO: update with new Selector rendering
 	switch (state) {
 	case VendorState::buy:
 		if (vendor.inventory.items.empty()) { break; }
-		if (!opening()) { selector.render(win); }
+		if (!opening()) { /*selector.render(win);*/
+		}
 		for (auto& item : vendor.inventory.items) {
 			if (!opening()) { item.render(svc, win, {0.f, 0.f}); }
 			if (item.selected()) {
@@ -292,7 +303,8 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 		break;
 	case VendorState::sell:
 		if (player.catalog.inventory.sellable_items.empty()) { break; }
-		if (!opening()) { selector.render(win); }
+		if (!opening()) { /*selector.render(win);*/
+		}
 		for (auto const& idx : sellable_items) {
 			auto& item = player_inventory.get_item_at_index(idx);
 			if (!opening()) { item.render(svc, win, {0.f, 0.f}); }
@@ -311,13 +323,14 @@ void VendorDialog::close() { flags.reset(VendorDialogStatus::opened); }
 
 void VendorDialog::update_table(player::Player& player, world::Map& map, bool new_dim) {
 	auto const& vendor = map.get_npc(npc_id).get_vendor();
-	auto& selector = state == VendorState::sell ? selectors.sell : selectors.buy;
+	auto& selector = state == VendorState::sell ? m_sell_selector : m_buy_selector;
 	auto const num_items = (state == VendorState::sell) ? player.catalog.inventory.sellable_items.size() : vendor.inventory.items.size();
 	auto const ipr = ui_constants.items_per_row;
 	auto const dim = sf::Vector2{std::min(static_cast<int>(num_items), ipr), static_cast<int>(std::ceil(static_cast<float>(num_items) / static_cast<float>(ipr)))};
-	if (new_dim) { selector.set_size(static_cast<int>(num_items)); }
+	// TODO: refactor selection changes in ui elements
+	/*if (new_dim) { selector.set_size(static_cast<int>(num_items)); }
 	selector.set_dimensions(dim);
-	selector.update();
+	selector.update();*/
 }
 
 void VendorDialog::refresh(player::Player& player, world::Map& map) const {

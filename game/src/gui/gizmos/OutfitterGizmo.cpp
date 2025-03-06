@@ -12,7 +12,7 @@ namespace fornani::gui {
 
 OutfitterGizmo::OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
 	: Gizmo("Outfitter", false), m_sprite{sf::Sprite{svc.assets.get_texture("wardrobe_gizmo")}}, m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "wardrobe_outfitter", 108, util::InterpolationType::quadratic},
-	  m_wires(svc.assets.get_texture("wardrobe_wires"), {88, 118}), m_max_slots{10} {
+	  m_wires(svc.assets.get_texture("wardrobe_wires"), {88, 118}), m_max_slots{9}, m_selector({m_max_slots, 4}, {38.f, 50.f}), m_init{true}, m_grid_offset{144.f, 10.f}, m_row{{{76, 0}, {170, 18}}, {}} {
 	m_placement = placement;
 	m_sprite.setScale(util::constants::f_scale_vec);
 	m_wires.set_scale(util::constants::f_scale_vec);
@@ -23,27 +23,35 @@ OutfitterGizmo::OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 	m_wires.set_params("idle");
 	auto row{0};
 	for (auto& slider : m_sliders) {
-		slider.lookup = sf::IntRect{{304, 26 * row}, {26, 26}};
+		slider.body.constituent.lookup = sf::IntRect{{304, 26 * row}, {26, 26}};
 		++row;
 	}
+	m_selector.set_lookup({{307, 104}, {20, 20}}); // selector lookup on texture atlas
 }
 
 void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
 	Gizmo::update(svc, player, map, position);
 	m_path.update();
+	static util::Cooldown wire_sound{140};
 	m_physics.position = m_path.get_position() + position;
+	if (m_init) {
+		init_sliders();
+		m_selector.set_position(m_physics.position + m_placement + m_grid_offset, true);
+		m_init = false;
+		wire_sound.start();
+	}
+
+	// play the wire plug sound at the exact right moment
+	wire_sound.update();
+	if (wire_sound.is_almost_complete() && is_selected()) { svc.soundboard.flags.pioneer.set(audio::Pioneer::wires); }
 
 	// set slider positions
-	auto slider_offset{sf::Vector2f{144.f, 10.f}};
-	auto grid_offset{sf::Vector2f{38.f, 50.f}};
-	auto row{0.f};
-	auto equipped{static_cast<float>(m_max_slots) - 1.f};
-	for (auto& slider : m_sliders) {
-		auto current_apparel{player.catalog.wardrobe.get_variant(static_cast<player::ApparelType>(row))};
-		if (current_apparel != player::ClothingVariant::standard) { equipped = static_cast<int>(current_apparel); }
-		slider.position = m_physics.position + m_placement + slider_offset + grid_offset.componentWiseMul(sf::Vector2f{equipped, row});
-		++row;
-	}
+	update_sliders(player);
+
+	m_selector.set_position(m_physics.position + m_placement + m_grid_offset);
+	m_selector.update();
+	m_row.position = m_physics.position + m_placement + m_grid_offset + sf::Vector2f{0.f, m_selector.get_menu_position().y};
+
 	auto wire_offset{sf::Vector2f{-42.f, 26.f}};
 	m_wires.update(m_physics.position + m_placement + wire_offset);
 	if (m_path.completed_step(1)) { m_wires.set_params("plug"); }
@@ -55,12 +63,77 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	m_sprite.setTextureRect(sf::IntRect{{0, 18}, {304, 116}});
 	m_sprite.setPosition(m_physics.position + m_placement - cam);
 	win.draw(m_sprite);
-	for (auto& slider : m_sliders) { slider.render(win, m_sprite, cam, {}); }
+	if (is_selected()) {
+		auto selection_origin{sf::Vector2f{-3.f, -3.f}};
+		m_row.render(win, m_sprite, cam, selection_origin - sf::Vector2f{1.f, 1.f});
+		m_selector.render(win, m_sprite, cam, selection_origin);
+		for (auto& slider : m_sliders) { slider.body.constituent.render(win, m_sprite, cam, {}); }
+	}
 	m_wires.render(svc, win, cam);
+	// debug();
 }
 
-bool OutfitterGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) { return Gizmo::handle_inputs(controller, soundboard); }
+bool OutfitterGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
+	if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
+		m_selector.move({0, -1});
+		soundboard.flags.pioneer.set(audio::Pioneer::click);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
+		m_selector.move({0, 1});
+		soundboard.flags.pioneer.set(audio::Pioneer::click);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) {
+		m_selector.move({-1, 0});
+		soundboard.flags.pioneer.set(audio::Pioneer::click);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) {
+		m_selector.move({1, 0});
+		soundboard.flags.pioneer.set(audio::Pioneer::click);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+		m_sliders[m_selector.get_vertical_index()].selection = m_selector.get_horizonal_index();
+		soundboard.flags.pioneer.set(audio::Pioneer::slot);
+	}
+	return Gizmo::handle_inputs(controller, soundboard);
+}
 
-void OutfitterGizmo::close() { m_path.set_section("close"); }
+void OutfitterGizmo::close() {
+	m_path.set_section("close");
+	m_init = true;
+}
+
+void OutfitterGizmo::init_sliders() {
+	auto row{0.f};
+	auto equipped{static_cast<float>(m_max_slots)};
+	for (auto& slider : m_sliders) {
+		slider.selection = equipped;
+		slider.body.physics.position = m_physics.position + m_placement + m_grid_offset + m_selector.get_spacing().componentWiseMul(sf::Vector2f{equipped, row});
+		slider.body.update();
+		++row;
+	}
+}
+
+void OutfitterGizmo::update_sliders(player::Player& player) {
+	auto row{0.f};
+	auto equipped{static_cast<float>(m_max_slots)};
+	for (auto& slider : m_sliders) {
+		auto current_apparel{player.catalog.wardrobe.get_variant(static_cast<player::ApparelType>(row))};
+		if (current_apparel != player::ClothingVariant::standard) { equipped = static_cast<int>(current_apparel); }
+		auto target = m_physics.position + m_placement + m_grid_offset + m_selector.get_spacing().componentWiseMul(sf::Vector2f{static_cast<float>(slider.selection), row});
+		slider.body.steering.target(slider.body.physics, target, 0.008f);
+		slider.body.update();
+		++row;
+	}
+}
+void OutfitterGizmo::debug() {
+	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
+	if (ImGui::Begin("Outfitter Debug")) {
+		ImGui::Text("Selection: %i", m_selector.get_current_selection());
+		ImGui::Text("Selector Menu Pos: %.0f", m_selector.get_menu_position().x);
+		ImGui::SameLine();
+		ImGui::Text(", %.0f", m_selector.get_menu_position().y);
+		ImGui::End();
+	}
+}
 
 } // namespace fornani::gui
