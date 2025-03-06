@@ -38,6 +38,9 @@ class MiniMap {
 	void center();
 	void set_port_position(sf::Vector2f to_position);
 	void set_port_dimensions(sf::Vector2f to_dimensions);
+	[[nodiscard]] auto hit_zoom_limit() const -> bool { return m_zoom_limit; }
+	[[nodiscard]] auto hit_horiz_pan_limit() const -> bool { return m_pan_limit_x; }
+	[[nodiscard]] auto hit_vert_pan_limit() const -> bool { return m_pan_limit_y; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position; }
 	[[nodiscard]] auto get_extent() const -> sf::FloatRect { return m_extent; }
 	[[nodiscard]] auto get_center_position() const -> sf::Vector2f { return m_center_position; }
@@ -46,6 +49,9 @@ class MiniMap {
 	[[nodiscard]] auto get_ratio_vec2() const -> sf::Vector2f { return sf::Vector2f{get_ratio(), get_ratio()}; }
 
   private:
+	bool m_zoom_limit{};
+	bool m_pan_limit_x{};
+	bool m_pan_limit_y{};
 	float m_scale{8.f};
 	float m_speed{1.5f};
 	float m_texture_scale{};

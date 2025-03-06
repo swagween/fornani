@@ -119,6 +119,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
 			npcs.back().set_current_location(room_id);
 		}
+
 		for (auto& entry : entities["chests"].array_view()) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>();

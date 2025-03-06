@@ -145,26 +145,26 @@ bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboar
 	auto zoom_factor{0.1f};
 	if (controller.digital_action_status(config::DigitalAction::menu_up).held) {
 		m_minimap->move({0.f, -1.f});
-		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_down).held) {
 		m_minimap->move({0.f, 1.f});
-		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_left).held) {
 		m_minimap->move({-1.f, 0.f});
-		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_right).held) {
 		m_minimap->move({1.f, 0.f});
-		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_switch_left).held) {
 		m_minimap->zoom(zoom_factor);
-		soundboard.flags.pioneer.set(audio::Pioneer::buzz);
+		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
 	} else if (controller.digital_action_status(config::DigitalAction::menu_switch_right).held) {
 		m_minimap->zoom(-zoom_factor);
-		soundboard.flags.pioneer.set(audio::Pioneer::buzz);
+		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		m_minimap->center();

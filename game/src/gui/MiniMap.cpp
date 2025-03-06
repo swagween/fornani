@@ -98,13 +98,19 @@ void MiniMap::clear_atlas() { m_atlas.clear(); }
 
 void MiniMap::move(sf::Vector2f direction) {
 	m_position -= direction * m_speed;
-	m_position.x = ccm::ext::clamp(m_position.x, -(m_extent.size.x) * get_ratio() + m_view.getCenter().x, -(m_extent.position.x) * get_ratio() + m_view.getCenter().x);
-	m_position.y = ccm::ext::clamp(m_position.y, -(m_extent.size.y) * get_ratio() + m_view.getCenter().y, -(m_extent.position.y) * get_ratio() + m_view.getCenter().y);
+	auto bounds{sf::FloatRect{{-(m_extent.size.x) * get_ratio() + m_view.getCenter().x, -(m_extent.size.y) * get_ratio() + m_view.getCenter().y},
+							  {-(m_extent.position.x) * get_ratio() + m_view.getCenter().x, -(m_extent.position.y) * get_ratio() + m_view.getCenter().y}}};
+	m_position.x = ccm::ext::clamp(m_position.x, bounds.position.x, bounds.size.x);
+	m_position.y = ccm::ext::clamp(m_position.y, bounds.position.y, bounds.size.y);
+	m_pan_limit_x = m_position.x == bounds.position.x || m_position.x == bounds.size.x;
+	m_pan_limit_y = m_position.y == bounds.position.y || m_position.y == bounds.size.y;
 }
 
 void MiniMap::zoom(float amount) {
 	auto prev_ratio = get_ratio();
-	m_scale = ccm::ext::clamp(m_scale + amount, m_texture_scale, m_texture_scale * 16.f);
+	auto max_scale{16.f};
+	m_scale = ccm::ext::clamp(m_scale + amount, m_texture_scale, m_texture_scale * max_scale);
+	m_zoom_limit = m_scale == m_texture_scale || m_scale == m_texture_scale * max_scale;
 	auto r_delta = get_ratio() - prev_ratio;
 	auto sz{m_port_dimensions.componentWiseDiv(m_view.getSize())};
 	m_center_position = (m_position - m_view.getCenter().componentWiseMul(sz)) / prev_ratio;
