@@ -39,7 +39,12 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	} else if (m_switched) {
 		on_close(svc, player, map);
 	}
-	if (m_outfitter) { m_outfitter->update(svc, player, map, m_placement + m_path.get_position()); }
+
+	if (m_outfitter) {
+		// check for outfit change
+		if (m_outfitter->has_changed()) { m_wardrobe_update = true; }
+		m_outfitter->update(svc, player, map, m_placement + m_path.get_position());
+	}
 	if (svc.ticker.every_x_ticks(600)) { m_core.set_params("beat"); }
 	m_path.update();
 	m_nani.set_position(m_placement + m_path.get_position() + m_nani_offset);

@@ -11,11 +11,13 @@
 namespace fornani::gui {
 
 OutfitterGizmo::OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
-	: Gizmo("Outfitter", false), m_sprite{sf::Sprite{svc.assets.get_texture("wardrobe_gizmo")}}, m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "wardrobe_outfitter", 108, util::InterpolationType::quadratic},
-	  m_wires(svc.assets.get_texture("wardrobe_wires"), {88, 118}), m_max_slots{9}, m_selector({m_max_slots, 4}, {38.f, 50.f}), m_init{true}, m_grid_offset{144.f, 10.f}, m_row{{{76, 0}, {170, 18}}, {}} {
+	: Gizmo("Outfitter", false), m_sprite{sf::Sprite{svc.assets.get_texture("wardrobe_gizmo")}}, m_apparel_sprite{sf::Sprite{svc.assets.get_texture("inventory_items")}},
+	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "wardrobe_outfitter", 108, util::InterpolationType::quadratic}, m_wires(svc.assets.get_texture("wardrobe_wires"), {88, 118}), m_max_slots{9},
+	  m_selector({m_max_slots, 4}, {38.f, 50.f}), m_init{true}, m_grid_offset{144.f, 10.f}, m_row{{{76, 0}, {170, 18}}, {}} {
 	m_placement = placement;
 	m_sprite.setScale(util::constants::f_scale_vec);
 	m_wires.set_scale(util::constants::f_scale_vec);
+	m_apparel_sprite.setScale(util::constants::f_scale_vec);
 	m_path.set_section("start");
 	m_wires.push_params("idle", {0, 1, 128, -1});
 	m_wires.push_params("plug", {1, 6, 20, 0}, "set");
@@ -35,10 +37,17 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	static util::Cooldown wire_sound{140};
 	m_physics.position = m_path.get_position() + position;
 	if (m_init) {
-		init_sliders();
 		m_selector.set_position(m_physics.position + m_placement + m_grid_offset, true);
-		m_init = false;
+		m_outfit = player.get_outfit();
+		init_sliders();
 		wire_sound.start();
+		m_init = false;
+	}
+
+	if (m_changed) {
+		player.set_outfit(m_outfit);
+		m_outfit = player.get_outfit();
+		m_changed = false;
 	}
 
 	// play the wire plug sound at the exact right moment
@@ -66,6 +75,9 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	if (is_selected()) {
 		auto selection_origin{sf::Vector2f{-3.f, -3.f}};
 		m_row.render(win, m_sprite, cam, selection_origin - sf::Vector2f{1.f, 1.f});
+
+		// draw item sprites
+
 		m_selector.render(win, m_sprite, cam, selection_origin);
 		for (auto& slider : m_sliders) { slider.body.constituent.render(win, m_sprite, cam, {}); }
 	}
@@ -92,6 +104,8 @@ bool OutfitterGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_un
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		m_sliders[m_selector.get_vertical_index()].selection = m_selector.get_horizonal_index();
+		m_outfit.at(m_selector.get_vertical_index()) = m_selector.get_horizonal_index();
+		m_changed = true;
 		soundboard.flags.pioneer.set(audio::Pioneer::slot);
 	}
 	return Gizmo::handle_inputs(controller, soundboard);
@@ -107,6 +121,11 @@ void OutfitterGizmo::init_sliders() {
 	auto equipped{static_cast<float>(m_max_slots)};
 	for (auto& slider : m_sliders) {
 		slider.selection = equipped;
+		auto current_apparel{m_outfit.at(static_cast<int>(row))};
+		if (current_apparel != 0) {
+			equipped = current_apparel;
+			slider.selection = equipped;
+		}
 		slider.body.physics.position = m_physics.position + m_placement + m_grid_offset + m_selector.get_spacing().componentWiseMul(sf::Vector2f{equipped, row});
 		slider.body.update();
 		++row;
@@ -117,8 +136,8 @@ void OutfitterGizmo::update_sliders(player::Player& player) {
 	auto row{0.f};
 	auto equipped{static_cast<float>(m_max_slots)};
 	for (auto& slider : m_sliders) {
-		auto current_apparel{player.catalog.wardrobe.get_variant(static_cast<player::ApparelType>(row))};
-		if (current_apparel != player::ClothingVariant::standard) { equipped = static_cast<int>(current_apparel); }
+		auto current_apparel{m_outfit.at(static_cast<int>(row))};
+		if (current_apparel != 0) { equipped = current_apparel; }
 		auto target = m_physics.position + m_placement + m_grid_offset + m_selector.get_spacing().componentWiseMul(sf::Vector2f{static_cast<float>(slider.selection), row});
 		slider.body.steering.target(slider.body.physics, target, 0.008f);
 		slider.body.update();
@@ -132,6 +151,7 @@ void OutfitterGizmo::debug() {
 		ImGui::Text("Selector Menu Pos: %.0f", m_selector.get_menu_position().x);
 		ImGui::SameLine();
 		ImGui::Text(", %.0f", m_selector.get_menu_position().y);
+		for (auto& i : m_outfit) { ImGui::Text("Outfit: %i", i); }
 		ImGui::End();
 	}
 }

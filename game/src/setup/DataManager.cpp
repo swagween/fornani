@@ -354,11 +354,10 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	// wardrobe
 	auto& wardrobe = player.catalog.wardrobe;
 	auto hairstyle = save["player_data"]["wardrobe"]["hairstyle"].as<int>();
+	auto headgear = save["player_data"]["wardrobe"]["headgear"].as<int>();
 	auto shirt = save["player_data"]["wardrobe"]["shirt"].as<int>();
 	auto pants = save["player_data"]["wardrobe"]["pants"].as<int>();
-	hairstyle > 0 ? player.equip_item(player::ApparelType::hairstyle, hairstyle + 80) : wardrobe.unequip(player::ApparelType::hairstyle);
-	shirt > 0 ? player.equip_item(player::ApparelType::shirt, shirt + 80) : wardrobe.unequip(player::ApparelType::shirt);
-	pants > 0 ? player.equip_item(player::ApparelType::pants, pants + 80) : wardrobe.unequip(player::ApparelType::pants);
+	player.set_outfit({hairstyle, headgear, shirt, pants});
 	player.catalog.wardrobe.update(player.texture_updater);
 
 	// stat tracker

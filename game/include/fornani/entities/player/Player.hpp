@@ -162,6 +162,8 @@ class Player {
 	void unequip_item(ApparelType type, int item_id);
 	void add_to_hotbar(int id);
 	void remove_from_hotbar(int id);
+	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);
+	[[nodiscard]] auto get_outfit() -> std::array<int, static_cast<int>(ApparelType::END)> { return catalog.wardrobe.get(); }
 
 	void reset_flags();
 	void total_reset();

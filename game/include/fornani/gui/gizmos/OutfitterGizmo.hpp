@@ -19,6 +19,8 @@ class OutfitterGizmo : public Gizmo {
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
+	[[nodiscard]] auto get_outfit() const -> std::array<int, static_cast<int>(player::ApparelType::END)> { return m_outfit; }
+	[[nodiscard]] auto has_changed() const -> bool { return m_changed; }
 
 	void close();
 
@@ -28,13 +30,17 @@ class OutfitterGizmo : public Gizmo {
 	void debug();
 	int m_max_slots{};
 	sf::Sprite m_sprite;
+	sf::Sprite m_apparel_sprite;
 	std::array<Slider, static_cast<int>(player::ApparelType::END)> m_sliders;
 	InventorySelector m_selector;
 	Constituent m_row;
 	util::RectPath m_path;
 	anim::AnimatedSprite m_wires;
 	sf::Vector2f m_grid_offset{};
+	std::array<int, static_cast<int>(player::ApparelType::END)> m_outfit{};
+	sf::Vector2i m_outfit_delta{};
 	bool m_init{};
+	bool m_changed{};
 };
 
 } // namespace fornani::gui

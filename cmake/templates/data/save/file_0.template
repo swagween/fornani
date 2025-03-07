@@ -21,8 +21,9 @@
 		],
 		"wardrobe": {
 			"hairstyle": 0,
+			"headgear": 0,
 			"shirt": 0,
-			"pants": 0
+			"pants": 1
 		},
 		"items": [
 			{
@@ -46,7 +47,7 @@
 				"quantity": 1
 			},
 			{
-				"id": 81,
+				"id": 129,
 				"quantity": 1
 			}
 		],

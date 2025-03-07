@@ -13,7 +13,7 @@ void Catalog::add_item(automa::ServiceProvider& svc, int item_id, int amount) { 
 void Catalog::remove_item(automa::ServiceProvider& svc, int item_id, int amount) { inventory.remove_item(svc, item_id, amount); }
 
 void Catalog::equip_item(automa::ServiceProvider& svc, ApparelType type, int item_id) {
-	auto variant = static_cast<ClothingVariant>(item_id - m_apparel_index);
+	auto variant = item_id - m_apparel_indeces.at(static_cast<int>(type));
 	for (auto& item : inventory.items) {
 		if (!item.equippable()) { continue; }
 		if (item.is_equipped() && item.get_apparel_type() == type) {

@@ -24,7 +24,7 @@ class Catalog {
 	Inventory inventory{};
 	AbilityManager abilities{};
 	Wardrobe wardrobe{};
-	int m_apparel_index{80};
+	std::array<int, 4> m_apparel_indeces{128, 144, 160, 176};
 };
 
 } // namespace fornani::player

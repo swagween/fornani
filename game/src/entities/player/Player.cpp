@@ -1,3 +1,4 @@
+
 #include "fornani/entities/player/Player.hpp"
 
 #include <tracy/Tracy.hpp>
@@ -665,6 +666,10 @@ void Player::remove_from_hotbar(int id) {
 		hotbar.value().remove(id);
 		if (hotbar.value().size() < 1) { hotbar = {}; }
 	}
+}
+
+void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit) {
+	for (auto i{0}; i < to_outfit.size(); ++i) { catalog.wardrobe.equip(static_cast<ApparelType>(i), to_outfit[i]); }
 }
 
 void Player::give_item(int item_id, int amount) {
