@@ -5,6 +5,7 @@ nani_add_sources(
         Decoder.cpp
         Fader.cpp
         NineSlice.cpp
+        Random.cpp
         RectPath.cpp
         Shape.cpp
         Ticker.cpp
