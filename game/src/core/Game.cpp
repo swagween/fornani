@@ -427,7 +427,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Actual Y Velocity: %.2f", player.collider.physics.actual_velocity().y);
 								ImGui::Text("Actual Speed: %.2f", player.collider.physics.actual_speed());
 								ImGui::Separator();
-								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.items.size()));
+								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.key_items_view().size()));
 								ImGui::Text("Visit History: ");
 								for (auto& room : player.visit_history.rooms_visited) {
 									ImGui::Text("%i, ", room);
@@ -517,10 +517,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							if (ImGui::BeginTabItem("Catalog")) {
 								ImGui::Separator();
 								ImGui::Text("Inventory");
-								for (auto& item : player.catalog.inventory.items) {
-									ImGui::Text(item.label.data());
+								for (auto& item : player.catalog.inventory.key_items_view()) {
+									ImGui::Text(item->get_label().data());
 									ImGui::SameLine();
-									ImGui::Text(" : %i", item.get_quantity());
 								}
 								ImGui::Separator();
 

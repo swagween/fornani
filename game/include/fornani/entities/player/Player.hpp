@@ -152,14 +152,10 @@ class Player {
 	bool grounded() const;
 	bool fire_weapon();
 
-	// level events
 	void update_invincibility();
 	void start_over();
 	void give_drop(item::DropType type, float value);
-	void give_item(int item_id, int amount);
-	void take_item(int item_id, int amount = 1);
-	void equip_item(ApparelType type, int item_id);
-	void unequip_item(ApparelType type, int item_id);
+	void give_item(std::string_view label, item::ItemType type, int amount);
 	void add_to_hotbar(int id);
 	void remove_from_hotbar(int id);
 	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);

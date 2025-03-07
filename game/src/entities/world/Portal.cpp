@@ -96,7 +96,7 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 				flags.state.set(PortalState::unlocked);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
 				console.load_and_launch("unlocked_door");
-				console.append(player.catalog.inventory.get_item(meta.key_id).get_label());
+				console.append(player.catalog.inventory.item_view(meta.key_id).get_label());
 				console.display_item(meta.key_id);
 				svc.data.unlock_door(meta.key_id);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);

@@ -18,7 +18,6 @@ enum class Abilities : std::uint8_t { wall_slide, dash, double_jump, respiration
 
 class AbilityManager {
   public:
-	void update(automa::ServiceProvider& svc);
 	void give_ability(Abilities ability);
 	void give_ability(int ability);
 	void remove_ability(Abilities ability);

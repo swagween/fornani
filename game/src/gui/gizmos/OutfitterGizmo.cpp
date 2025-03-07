@@ -77,6 +77,13 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		m_row.render(win, m_sprite, cam, selection_origin - sf::Vector2f{1.f, 1.f});
 
 		// draw item sprites
+		auto column{0.f};
+		auto row{0.f};
+		for (auto& item : player.catalog.inventory.apparel_view()) {
+			m_apparel_sprite.setTextureRect(item->get_lookup());
+			m_apparel_sprite.setOrigin({-6.f, -18.f}); // center sprite in window
+			item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item->get_table_position().componentWiseMul(m_selector.get_spacing()) - cam);
+		}
 
 		m_selector.render(win, m_sprite, cam, selection_origin);
 		for (auto& slider : m_sliders) { slider.body.constituent.render(win, m_sprite, cam, {}); }

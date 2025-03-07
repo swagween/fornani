@@ -30,7 +30,6 @@ Chest::Chest(automa::ServiceProvider& svc, int id) : id(id), sprite{svc.assets.g
 }
 
 void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
-
 	animation.update();
 	if (!state.test(ChestState::open)) {
 		if (svc.ticker.every_x_ticks(1200)) { animation.set_params(shine); }
@@ -73,10 +72,10 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 				}
 				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.get_position(), 100)); }
 				if (type == ChestType::item) {
-					player.give_item(item_id, 1);
+					player.give_item(m_item, item::ItemType::key, 1);
 					console.display_item(item_id);
 					console.load_and_launch("chest");
-					console.append(player.catalog.inventory.get_item(item_id).get_label());
+					console.append(player.catalog.inventory.item_view(item_id).get_label());
 				}
 			} else {
 				console.load_and_launch("open_chest");
@@ -90,7 +89,7 @@ void Chest::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	// get UV coords (only one row of sprites is supported)
 	int u = (int)(animation.get_frame() * sprite_dimensions.x);
 	int v = 0;
-	sprite.setTextureRect(sf::IntRect({u, v}, {(int)sprite_dimensions.x, (int)sprite_dimensions.y}));
+	sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)}));
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		drawbox.setPosition(collider.physics.position - campos);

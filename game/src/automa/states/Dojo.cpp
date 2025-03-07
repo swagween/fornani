@@ -138,7 +138,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		}
 	}
 
-	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items.empty()) {
+	if (player->visit_history.traveled_far()) {
 		util::Random::set_vendor_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 		player->visit_history.clear();

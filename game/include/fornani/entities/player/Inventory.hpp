@@ -1,6 +1,9 @@
 
 #pragma once
-#include "fornani/entities/item/Item.hpp"
+#include "fornani/entities/item/types/ApparelItem.hpp"
+#include "fornani/entities/item/types/KeyItem.hpp"
+
+#include <memory>
 #include <vector>
 
 namespace fornani::automa {
@@ -15,20 +18,17 @@ namespace fornani::player {
 
 class Inventory {
   public:
-	Inventory();
-	void update(automa::ServiceProvider& svc);
-	void add_item(automa::ServiceProvider& svc, int item_id, int amount);
-	void remove_item(automa::ServiceProvider& svc, int item_id, int amount);
+	int add_item(dj::Json& source, std::string_view label, item::ItemType type); // returns item id
+	void remove_item(int item_id, int amount);
 	void reveal_item(int item_id);
-	void push_sellables();
-	item::Item& get_item(int id);
-	item::Item& get_item_at_index(int index);
-	void clear();
 	[[nodiscard]] bool has_item(int id) const;
-	std::vector<item::Item> items{};
-	std::vector<int> sellable_items{};
-	int items_per_row{12};
-	sf::Vector2<float> ui_offset{};
+	std::vector<std::unique_ptr<item::ApparelItem>> const& apparel_view() const { return m_apparel; };
+	std::vector<std::unique_ptr<item::KeyItem>> const& key_items_view() const { return m_key_items; };
+	item::Item& item_view(int id) const&;
+
+  private:
+	std::vector<std::unique_ptr<item::ApparelItem>> m_apparel{};
+	std::vector<std::unique_ptr<item::KeyItem>> m_key_items{};
 };
 
 } // namespace fornani::player

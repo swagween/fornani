@@ -3,3 +3,4 @@ nani_add_sources(
         Item.cpp
         Loot.cpp
 )
+add_subdirectory(types)

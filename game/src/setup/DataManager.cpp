@@ -110,7 +110,7 @@ void DataManager::load_data(std::string in_room) {
 	assert(!background.is_null());
 
 	// load item labels
-	for (auto const& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first}); }
+	for (auto const& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first.data()}); }
 
 	// load marketplace
 	for (auto const& entry : npc.object_view()) {
@@ -118,9 +118,9 @@ void DataManager::load_data(std::string in_room) {
 		marketplace.insert({entry.second["vendor"]["id"].as<int>(), npc::Vendor()});
 		auto& vendor = marketplace.at(entry.second["vendor"]["id"].as<int>());
 		vendor.set_upcharge(entry.second["vendor"]["upcharge"].as<float>());
-		for (auto& item : entry.second["vendor"]["common_items"].array_view()) { vendor.common_items.push_back(item.as<int>()); }
-		for (auto& item : entry.second["vendor"]["uncommon_items"].array_view()) { vendor.uncommon_items.push_back(item.as<int>()); }
-		for (auto& item : entry.second["vendor"]["rare_items"].array_view()) { vendor.rare_items.push_back(item.as<int>()); }
+		/*for (auto& item : entry.second["vendor"]["common_items"].array_view()) { vendor.common_items.push_back(item.as_string().data()); }
+		for (auto& item : entry.second["vendor"]["uncommon_items"].array_view()) { vendor.uncommon_items.push_back(item.as_string().data()); }
+		for (auto& item : entry.second["vendor"]["rare_items"].array_view()) { vendor.rare_items.push_back(item.as_string().data()); }*/
 	}
 	m_services->stopwatch.stop();
 	m_services->stopwatch.print_time();
@@ -145,7 +145,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["marketplace"] = wipe;
 	for (auto& vendor : marketplace) {
 		auto out_vendor = wipe;
-		for (auto& item : vendor.second.inventory.items) { out_vendor.push_back(item.get_id()); }
+		// TODO: redo this once I add collectible items
+		// for (auto& item : vendor.second.inventory.key_items_view()) { out_vendor.push_back(item.get_id()); }
 		save["marketplace"].push_back(out_vendor);
 	}
 
@@ -228,10 +229,16 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	if (player.catalog.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
 	if (player.catalog.abilities.has_ability(player::Abilities::wall_slide)) { save["player_data"]["abilities"].push_back("wallslide"); }
 	if (player.catalog.abilities.has_ability(player::Abilities::double_jump)) { save["player_data"]["abilities"].push_back("doublejump"); }
-	for (auto& item : player.catalog.inventory.items) {
+	for (auto& item : player.catalog.inventory.key_items_view()) {
 		dj::Json this_item{};
-		this_item["id"] = item.get_id();
-		this_item["quantity"] = item.get_quantity();
+		this_item["label"] = item->get_label();
+		this_item["type"] = static_cast<int>(item->get_type());
+		save["player_data"]["items"].push_back(this_item);
+	}
+	for (auto& item : player.catalog.inventory.apparel_view()) {
+		dj::Json this_item{};
+		this_item["label"] = item->get_label();
+		this_item["type"] = static_cast<int>(item->get_type());
 		save["player_data"]["items"].push_back(this_item);
 	}
 
@@ -272,9 +279,9 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 
 	// marketplace
 	for (auto& vendor : marketplace) {
-		vendor.second.inventory.items.clear();
+		vendor.second.inventory = {};
 		for (auto& v : save["marketplace"].array_view()) {
-			for (auto& id : v.array_view()) { vendor.second.inventory.add_item(*m_services, id.as<int>(), 1); }
+			for (auto& id : v.array_view()) { vendor.second.inventory.add_item(item, item["label"].as_string(), static_cast<item::ItemType>(item["type"].as<int>())); }
 		}
 	}
 
@@ -347,9 +354,9 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 
 	// load items and abilities
 	player.catalog.abilities.clear();
-	player.catalog.inventory.clear();
+	player.catalog.inventory = {};
 	for (auto& ability : save["player_data"]["abilities"].array_view()) { player.catalog.abilities.give_ability(ability.as<int>()); }
-	for (auto& item : save["player_data"]["items"].array_view()) { player.catalog.inventory.add_item(*m_services, item["id"].as<int>(), item["quantity"].as<int>()); }
+	for (auto& item : save["player_data"]["items"].array_view()) { player.give_item(item["label"].as_string(), static_cast<item::ItemType>(item["type"].as<int>()), item["quantity"].as<int>()); }
 
 	// wardrobe
 	auto& wardrobe = player.catalog.wardrobe;

@@ -137,7 +137,6 @@ void Player::update(world::Map& map) {
 	if (orb_indicator.active()) { health_indicator.shift(); }
 	update_invincibility();
 	update_weapon();
-	catalog.update(*m_services);
 
 	if (catalog.abilities.has_ability(Abilities::dash)) {
 		if (!(animation.state == AnimState::dash) && !controller.dash_requested()) {
@@ -635,21 +634,13 @@ void Player::give_drop(item::DropType type, float value) {
 		if (value == 100) { m_services->stats.treasure.blue_orbs.update(); }
 		if (orb_indicator.get_amount() > m_services->stats.treasure.highest_indicator_amount.get_count()) { m_services->stats.treasure.highest_indicator_amount.set(static_cast<int>(orb_indicator.get_amount())); }
 	}
-	if (type == item::DropType::gem) { give_item(static_cast<int>(value) + 97, 1); }
-}
-
-void Player::take_item(int item_id, int amount) { catalog.remove_item(*m_services, item_id, amount); }
-
-void Player::equip_item(ApparelType type, int item_id) {
-	if (item_id < 1) { return; }
-	catalog.equip_item(*m_services, type, item_id);
-	catalog.inventory.get_item(item_id).toggle_equip();
-}
-
-void Player::unequip_item(ApparelType type, int item_id) {
-	if (item_id < 1) { return; }
-	catalog.unequip_item(type);
-	catalog.inventory.get_item(item_id).toggle_equip();
+	if (type == item::DropType::gem) {
+		switch (static_cast<int>(value)) {
+		case 0: give_item("rhenite", item::ItemType::collectible, 1); break;
+		case 1: give_item("sapphire", item::ItemType::collectible, 1); break;
+		case 2: give_item("chalcedony", item::ItemType::collectible, 1); break;
+		}
+	}
 }
 
 void Player::add_to_hotbar(int id) {
@@ -672,19 +663,10 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 	for (auto i{0}; i < to_outfit.size(); ++i) { catalog.wardrobe.equip(static_cast<ApparelType>(i), to_outfit[i]); }
 }
 
-void Player::give_item(int item_id, int amount) {
-	catalog.add_item(*m_services, item_id, 1);
-	if (catalog.inventory.items.size() == 1) {
-		tutorial.current_state = text::TutorialFlags::inventory;
-		tutorial.trigger();
-		tutorial.turn_on();
-	}
-	if (item_id == 16) {
-		tutorial.current_state = text::TutorialFlags::map;
-		tutorial.trigger();
-		tutorial.turn_on();
-	}
-	if (item_id == 29) {
+void Player::give_item(std::string_view label, item::ItemType type, int amount) {
+	auto id{0};
+	for (auto i{0}; i < amount; ++i) { id = catalog.inventory.add_item(m_services->data.item, label, type); }
+	if (id == 29) {
 		health.increase_max_hp(1.f);
 		m_services->soundboard.flags.item.set(audio::Item::health_increase);
 	}

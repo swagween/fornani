@@ -7,6 +7,7 @@
 #include "fornani/entities/packages/Shockwave.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
 #include "fornani/gui/StatusBar.hpp"
+#include "fornani/particle/Sparkler.hpp"
 #define MINIGUS_BIND(f) std::bind(&Minigus::f, this)
 
 namespace fornani::enemy {
@@ -154,9 +155,9 @@ class Minigus : public Enemy, public npc::NPC {
 		sf::Sound pizza;
 		sf::Sound poh;
 		sf::Sound quick_breath;
-		sf::Sound thatisverysneeze; //dash cue
+		sf::Sound thatisverysneeze; // dash cue
 		sf::Sound whatisit;
-		sf::Sound woob; //jumping
+		sf::Sound woob; // jumping
 	} voice;
 
 	util::Cycle hurt_color{2};
