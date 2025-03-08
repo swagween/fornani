@@ -40,7 +40,7 @@ void AnimatedSprite::set_origin(sf::Vector2<float> origin) { sprite.setOrigin(or
 void AnimatedSprite::set_texture(sf::Texture const& texture) { sprite.setTexture(texture); }
 
 void AnimatedSprite::random_start() {
-	if (animation.params.duration > 1) { animation.frame.set(util::Random::random_range(0, animation.params.duration - 1)); }
+	if (animation.params.duration > 1) { animation.frame.set(util::random::random_range(0, animation.params.duration - 1)); }
 }
 
 void AnimatedSprite::handle_rotation(sf::Vector2<float> direction, int num_angles, bool radial) { rotator.handle_rotation(sprite, direction, num_angles, radial); }

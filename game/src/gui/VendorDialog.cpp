@@ -326,13 +326,13 @@ void VendorDialog::refresh(player::Player& player, world::Map& map) const {
 	auto& vendor = map.get_npc(npc_id).get_vendor();
 	for (auto& idx : sellable_items) {
 		auto& item = player_inventory.get_item_at_index(idx);
-		auto const randv = util::Random::random_vector_float(-16.f, 16.f);
+		auto const randv = util::random::random_vector_float(-16.f, 16.f);
 		auto const startpos = item.get_position() + randv;
 		item.gravitator.set_position(startpos);
 		item.set_offset(sf::Vector2{214.f - 24.f, 62.f - 24.f});
 	}
 	for (auto& item : vendor.inventory.items) {
-		auto const randv = util::Random::random_vector_float(-16.f, 16.f);
+		auto const randv = util::random::random_vector_float(-16.f, 16.f);
 		auto const startpos = item.get_position() + randv;
 		item.gravitator.set_position(startpos);
 		item.set_offset(sf::Vector2{214.f - 24.f, 62.f - 24.f});

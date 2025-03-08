@@ -41,11 +41,11 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 	player.collider.handle_collider_collision(secondary_collider);
 	if (svc.ticker.every_x_ticks(20)) {
-		if (util::Random::percent_chance(8) && !caution.danger()) { state = TankState::run; }
+		if (util::random::percent_chance(8) && !caution.danger()) { state = TankState::run; }
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
-		if (util::Random::percent_chance(50)) {
+		if (util::random::percent_chance(50)) {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_1);
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_2);
@@ -59,7 +59,7 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 	if (hostility_triggered()) { state = TankState::alert; }
 	if (hostile() && !hostility_triggered()) {
-		if (util::Random::percent_chance(fire_chance) || caution.danger()) {
+		if (util::random::percent_chance(fire_chance) || caution.danger()) {
 			state = TankState::shoot;
 		} else {
 			state = TankState::run;
@@ -132,7 +132,7 @@ fsm::StateFunction Tank::update_shoot() {
 fsm::StateFunction Tank::update_alert() {
 	animation.label = "alert";
 	if (animation.just_started()) {
-		if (util::Random::percent_chance(50)) {
+		if (util::random::percent_chance(50)) {
 			m_services->soundboard.flags.tank.set(audio::Tank::alert_1);
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::alert_2);
