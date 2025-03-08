@@ -23,7 +23,7 @@ void WidgetBar::update(automa::ServiceProvider& svc, entity::Health& health, boo
 	int i{};
 	for (auto& widget : widgets) {
 		if (shake) {
-			auto const randv = util::Random::random_vector_float(-16.f, 16.f);
+			auto const randv = util::random::random_vector_float(-16.f, 16.f);
 			widget.gravitator.set_position(widget.position + randv);
 			widget.shake();
 		}

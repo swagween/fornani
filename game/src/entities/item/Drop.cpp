@@ -41,8 +41,8 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	// randomly seed the animation start frame so drops in the same loot animate out of sync
 	sprite.random_start();
 
-	auto rand_cooldown_offset = util::Random::random_range(0, 50);
-	auto const rand_shine_offset = util::Random::random_range(0, 600);
+	auto rand_cooldown_offset = util::random::random_range(0, 50);
+	auto const rand_shine_offset = util::random::random_range(0, 600);
 	if (type == DropType::gem) { rand_cooldown_offset += 2000; }
 	lifespan.start(4500 + rand_cooldown_offset);
 	shine_cooldown.start(shine_cooldown.get_native_time() + rand_shine_offset);
@@ -55,7 +55,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 }
 
 void Drop::seed(float probability) {
-	if (auto const random_sample = util::Random::random_range_float(0.0f, 1.0f); random_sample < probability * constants.priceless) {
+	if (auto const random_sample = util::random::random_range_float(0.0f, 1.0f); random_sample < probability * constants.priceless) {
 		rarity = priceless;
 	} else if (random_sample < probability * constants.rare) {
 		rarity = rare;

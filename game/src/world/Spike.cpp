@@ -20,7 +20,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<flo
 	facing.lr = (direction.x == 1) ? dir::LR::left : facing.lr;
 	facing.lr = (direction.x == -1) ? dir::LR::right : facing.lr;
 	sprite.setOrigin(size * 16.f);
-	if (util::Random::percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
+	if (util::random::percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
 	if (facing.lr == dir::LR::left) { sprite.setRotation(sf::degrees(-90)); }
 	if (facing.lr == dir::LR::right) { sprite.setRotation(sf::degrees(90)); }
 	if (facing.und == dir::UND::down) { sprite.setRotation(sf::degrees(180)); }

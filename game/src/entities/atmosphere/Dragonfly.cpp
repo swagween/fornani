@@ -12,12 +12,12 @@ namespace fornani::vfx {
 Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_dragonfly, {16, 16}) {
 	physics.set_global_friction(0.97f);
 	physics.position = start;
-	physics.velocity = util::Random::random_vector_float(-1.f, 1.f);
+	physics.velocity = util::random::random_vector_float(-1.f, 1.f);
 	sprite.push_params("neutral", {0, 3, 16, -1});
 	sprite.set_params("neutral");
 	sprite.random_start();
 	sprite.set_origin({12.f, 12.f});
-	variant = util::Random::percent_chance(60) ? 0 : util::Random::percent_chance(50) ? 1 : util::Random::percent_chance(50) ? 2 : 3;
+	variant = util::random::percent_chance(60) ? 0 : util::random::percent_chance(50) ? 1 : util::random::percent_chance(50) ? 2 : 3;
 	forces.seek = 0.000052f;
 	forces.walk = 0.0113f;
 	forces.evade = 0.873f;

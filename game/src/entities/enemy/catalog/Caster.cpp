@@ -22,7 +22,7 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	target.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.96f, 0.98f}, 1.0f);
 	target.collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
 
-	variant = util::Random::percent_chance(15) ? CasterVariant::tyrant : CasterVariant::apprentice;
+	variant = util::random::percent_chance(15) ? CasterVariant::tyrant : CasterVariant::apprentice;
 	if (variant == CasterVariant::apprentice) { flags.general.reset(GeneralFlags::rare_drops); }
 
 	cooldowns.awaken.start();
@@ -47,7 +47,7 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 				idle_distance.y = -120.f;
 			}
 			if (directions.actual.lr == dir::LR::right) { idle_distance.x *= -1; }
-			if (util::Random::percent_chance(12) && svc.ticker.every_x_ticks(10)) { idle_distance.x *= -1; }
+			if (util::random::percent_chance(12) && svc.ticker.every_x_ticks(10)) { idle_distance.x *= -1; }
 			target.set_target_position(player.collider.get_center() + idle_distance);
 		}
 		if (state == CasterState::signal) {
@@ -138,7 +138,7 @@ void Caster::teleport() {
 	bool done{};
 	int ctr{};
 	while (!done && ctr < 32) {
-		auto attempt = util::Random::random_vector_float(-300.f, 300.f);
+		auto attempt = util::random::random_vector_float(-300.f, 300.f);
 		collider.physics.position += attempt;
 		collider.sync_components();
 		if (m_map->overlaps_middleground(collider.bounding_box)) {

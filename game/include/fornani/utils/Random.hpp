@@ -6,7 +6,7 @@
 
 namespace fornani::util {
 
-namespace Random {
+namespace random {
 	int random_range(int lo, int hi);
 
 	// Generates a random integer in the range [lo, hi] using a provided seed

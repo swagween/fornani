@@ -296,7 +296,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		if (m_camera_effects.cooldown.is_complete()) {
 			svc.camera_controller.shake(m_camera_effects.shake_properties);
 			auto shake_time = m_camera_effects.cooldown.get_native_time();
-			auto diff = util::Random::random_range(-shake_time / 2, shake_time / 2);
+			auto diff = util::random::random_range(-shake_time / 2, shake_time / 2);
 			m_camera_effects.cooldown.start(shake_time + diff);
 		}
 	}

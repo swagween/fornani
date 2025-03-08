@@ -20,7 +20,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
 	metadata.specifications.speed = in_data["attributes"]["speed"].as<float>();
 	metadata.specifications.speed_variance = in_data["attributes"]["speed_variance"].as<float>();
-	metadata.specifications.speed += util::Random::random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
+	metadata.specifications.speed += util::random::random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
 	metadata.specifications.variance = in_data["attributes"]["variance"].as<float>();
 	metadata.specifications.stun_time = in_data["attributes"]["stun_time"].as<float>();
 	metadata.specifications.knockback = in_data["attributes"]["knockback"].as<float>();
@@ -47,14 +47,14 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	metadata.specifications.lifespan = in_data["attributes"]["lifespan"].as<int>();
 	metadata.specifications.lifespan_variance = in_data["attributes"]["lifespan_variance"].as<int>();
-	auto var = util::Random::random_range(-metadata.specifications.lifespan_variance, metadata.specifications.lifespan_variance);
+	auto var = util::random::random_range(-metadata.specifications.lifespan_variance, metadata.specifications.lifespan_variance);
 	lifetime = util::Cooldown{metadata.specifications.lifespan + var};
 	damage_timer = util::Cooldown{in_data["attributes"]["damage_rate"].as<int>()};
 
 	physical.physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physical.physics.velocity.x = metadata.specifications.speed;
 	if (metadata.specifications.dampen_factor != 0.f) {
-		auto var = util::Random::random_range_float(-metadata.specifications.dampen_variance, metadata.specifications.dampen_variance);
+		auto var = util::random::random_range_float(-metadata.specifications.dampen_variance, metadata.specifications.dampen_variance);
 		physical.physics.set_global_friction(metadata.specifications.dampen_factor + var);
 	}
 
@@ -184,7 +184,7 @@ void Projectile::destroy(bool completely, bool whiffed) {
 }
 
 void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
-	float var = util::Random::random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
+	float var = util::random::random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
 	if (omnidirectional()) {
 		physical.physics.velocity = util::unit(target) * metadata.specifications.speed;
 		return;
@@ -203,7 +203,7 @@ void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
 	}
 	if (sprite_flip()) {
 		auto scale = physical.direction.left_or_right() ? sf::Vector2<float>{1.f, -1.f} : sf::Vector2<float>{-1.f, 1.f};
-		if (util::Random::percent_chance(50)) { visual.sprite.set_scale(scale); }
+		if (util::random::percent_chance(50)) { visual.sprite.set_scale(scale); }
 	}
 }
 

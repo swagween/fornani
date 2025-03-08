@@ -2,9 +2,12 @@
 
 namespace fornani::util {
 
-namespace Random {
-  inline std::default_random_engine engine{std::random_device{}()};
-	inline std::default_random_engine seeded_engine{std::random_device{}()};
+
+namespace random {
+namespace {
+  std::default_random_engine engine{std::random_device{}()};
+  std::default_random_engine seeded_engine{std::random_device{}()};
+}
 
 	inline struct {
 		int vendor;

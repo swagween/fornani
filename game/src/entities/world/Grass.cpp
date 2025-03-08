@@ -14,8 +14,8 @@ Grass::Grass(automa::ServiceProvider& svc, sf::Vector2<float> position, int leng
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize({8.f, 8.f});
-	auto const index = util::Random::random_range(0, 3);
-	auto const sign = util::Random::percent_chance(50) ? -1 : 1;
+	auto const index = util::random::random_range(0, 3);
+	auto const sign = util::random::percent_chance(50) ? -1 : 1;
 	for (auto& link : chain.links) { encodings.push_back({index, sign}); }
 	sprite.setOrigin({16.f * static_cast<float>(size), constants.f_height * 0.5f * static_cast<float>(size)});
 	if (foreground) { flags.set(GrassFlags::foreground); }

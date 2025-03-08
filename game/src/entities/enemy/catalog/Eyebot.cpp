@@ -15,8 +15,8 @@ void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	if (just_died()) {
 		for (int i{0}; i < 3; ++i) {
-			auto const randx = util::Random::random_range_float(-60.f, 60.f);
-			auto const randy = util::Random::random_range_float(-60.f, 60.f);
+			auto const randx = util::random::random_range_float(-60.f, 60.f);
+			auto const randy = util::random::random_range_float(-60.f, 60.f);
 			sf::Vector2 const rand_vec{randx, randy};
 			sf::Vector2<float> const spawn = collider.physics.position + rand_vec;
 			map.spawn_enemy(5, spawn);

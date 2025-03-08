@@ -26,20 +26,20 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	if ((dj::Boolean)in_data["animated"].as_bool()) { flags.set(ParticleType::animated); }
 	if ((dj::Boolean)in_data["colliding"].as_bool()) { flags.set(ParticleType::colliding); }
 
-	auto angle = util::Random::random_range_float(-angle_range, angle_range);
+	auto angle = util::random::random_range_float(-angle_range, angle_range);
 	auto f_pi = static_cast<float>(std::numbers::pi);
 	if (direction.lr == dir::LR::left) { angle += f_pi; }
 	if (direction.und == dir::UND::up) { angle += f_pi * 1.5f; }
 	if (direction.und == dir::UND::down) { angle += f_pi * 0.5f; }
 
-	expulsion += util::Random::random_range_float(-expulsion_variance, expulsion_variance);
+	expulsion += util::random::random_range_float(-expulsion_variance, expulsion_variance);
 
 	collider.physics.apply_force_at_angle(expulsion, angle);
 	collider.physics.position = position;
 
 	auto lifespan_time = in_data["lifespan"].as<int>();
 	auto lifespan_variance = in_data["lifespan_variance"].as<int>();
-	int rand_diff = util::Random::random_range(-lifespan_variance, lifespan_variance);
+	int rand_diff = util::random::random_range(-lifespan_variance, lifespan_variance);
 	lifespan.start(lifespan_time + rand_diff);
 
 	// for animated particles
@@ -49,7 +49,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	auto framerate = in_animation["framerate"].as<int>();
 	auto loop = in_animation["loop"].as<int>();
 	animation.set_params({lookup, duration, framerate, loop});
-	if (util::Random::percent_chance(50)) { sprite.scale({-1.f, 1.f}); }
+	if (util::random::percent_chance(50)) { sprite.scale({-1.f, 1.f}); }
 	sprite.setOrigin(dimensions * 0.5f);
 
 	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get_cooldown(), in_data["color"].as_string()); }
