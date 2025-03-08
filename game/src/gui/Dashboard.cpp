@@ -37,13 +37,14 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	// populate dashboard depending on the player's inventory
 	auto const& items = svc.data.get_player_items();
 	for (auto& i : items.array_view()) {
-		if (i["id"].as<int>() == 16) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
+		// if (i["label"].as_string() == "radar_device") { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
 	}
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
 	auto wardrobe_placement{sf::Vector2f{svc.window->f_screen_dimensions().x + 26, 0.f}};
 	// push gizmos in clockwise order so selection setting will work
 	m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); // have to stick this in the for loop once we have a clock item
 	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement));	   // have to stick this in the for loop once we have a clock item
+
 	m_sprite.setScale(util::constants::f_scale_vec);
 }
 
@@ -71,7 +72,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 		case 3: button.position = {-1, 0}; break;
 		}
 		button.state = button.position == m_selected_position ? GizmoButtonState::hovered : GizmoButtonState::off;
-		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_gizmo = ccm::ext::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1)); }
+		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_port = static_cast<DashboardPort>(ccm::ext::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1))); }
 		button.box.setPosition(svc.window->f_center_screen() + pos);
 		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(svc.styles.colors.bright_orange) : button.box.setOutlineColor(svc.styles.colors.dark_fucshia);
 		// win.draw(button.box);
@@ -92,10 +93,13 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 }
 
 bool Dashboard::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
-	if (m_gizmos.empty() || m_gizmos.size() <= m_current_gizmo) { return false; }
-	if (!m_gizmos.at(m_current_gizmo)->handle_inputs(controller, soundboard)) {
-		if (m_current_gizmo == 0) { m_paths.map.set_section("close"); } // only adjust dashboard art for map gizmo
-		return false;
+	for (auto& gizmo : m_gizmos) {
+		if (m_current_port == gizmo->get_dashboard_port()) {
+			if (!gizmo->handle_inputs(controller, soundboard)) {
+				if (gizmo->get_dashboard_port() == DashboardPort::minimap) { m_paths.map.set_section("close"); } // only adjust dashboard art for map gizmo
+				return false;
+			}
+		}
 	}
 	return true;
 }
@@ -110,10 +114,15 @@ void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 
 void Dashboard::set_selection(sf::Vector2i to_selection) { m_selected_position = to_selection; }
 
-void Dashboard::select_gizmo() {
-	if (m_gizmos.empty() || m_gizmos.size() <= m_current_gizmo) { return; }
-	m_gizmos.at(m_current_gizmo)->select();
-	if (m_gizmos.at(m_current_gizmo)->get_label() == "Minimap") { m_paths.map.set_section("open"); }
+bool Dashboard::select_gizmo() {
+	for (auto& gizmo : m_gizmos) {
+		if (m_current_port == gizmo->get_dashboard_port()) {
+			gizmo->select();
+			if (gizmo->get_label() == "Minimap") { m_paths.map.set_section("open"); } // uniquely, the minimap affects the Dashboard's constituents
+			return true;
+		}
+	}
+	return false;
 }
 
 void Dashboard::hover(sf::Vector2i direction) {}

@@ -25,7 +25,7 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 													  sf::Vector2f{-100.f, -20.f},
 													  sf::Vector2f{80.f, -20.f},
 												  } {
-
+	m_dashboard_port = DashboardPort::minimap;
 	m_physics.position = sf::Vector2f{0.f, svc.window->f_screen_dimensions().y};
 	m_icon_sprite.setOrigin({3.f, 3.f});
 	m_icon_sprite.setScale(util::constants::f_scale_vec);

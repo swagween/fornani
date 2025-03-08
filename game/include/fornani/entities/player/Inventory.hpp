@@ -6,14 +6,6 @@
 #include <memory>
 #include <vector>
 
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::gui {
-class Console;
-}
-
 namespace fornani::player {
 
 class Inventory {

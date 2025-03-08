@@ -27,27 +27,13 @@
 		},
 		"items": [
 			{
-				"id": 22,
+				"label": "radar_device",
+				"type": 0,
 				"quantity": 1
 			},
 			{
-				"id": 20,
-				"quantity": 1
-			},
-			{
-				"id": 1,
-				"quantity": 1
-			},
-			{
-				"id": 16,
-				"quantity": 1
-			},
-			{
-				"id": 97,
-				"quantity": 1
-			},
-			{
-				"id": 129,
+				"label": "red_jeans",
+				"type": 1,
 				"quantity": 1
 			}
 		],

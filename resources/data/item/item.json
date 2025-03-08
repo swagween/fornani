@@ -184,7 +184,8 @@
 	},
 	"red_jeans": {
 		"id": 209,
-		"lookup": [ 13, 0 ],
+		"lookup": [ 0, 13 ],
+		"origin": [ 0, 10 ],
 		"actual_title": "Red Jeans",
 		"actual_description": "A pair of red jeans. If you wear them, you will appear fashionable.",
 		"unique": true,

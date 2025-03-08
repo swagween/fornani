@@ -32,7 +32,8 @@ class Soundboard;
 
 namespace fornani::gui {
 
-enum class GizmoState { neutral, hovered, selected };
+enum class GizmoState : std::uint8_t { neutral, hovered, selected };
+enum class DashboardPort : std::uint8_t { minimap, wardrobe, arsenal, inventory, invalid };
 
 struct Constituent {
 	sf::IntRect lookup{};
@@ -62,6 +63,7 @@ class Gizmo {
 	[[nodiscard]] auto is_neutral() const -> bool { return m_state == GizmoState::neutral; }
 	[[nodiscard]] auto is_hovered() const -> bool { return m_state == GizmoState::hovered; }
 	[[nodiscard]] auto is_selected() const -> bool { return m_state == GizmoState::selected; }
+	[[nodiscard]] auto get_dashboard_port() const -> DashboardPort { return m_dashboard_port ? *m_dashboard_port : DashboardPort::invalid; }
 
   protected:
 	virtual void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map);
@@ -70,6 +72,7 @@ class Gizmo {
 	bool m_foreground{};
 	std::string m_label{};
 	GizmoState m_state{};
+	std::optional<DashboardPort> m_dashboard_port{}; // determines the index in the dashboard's gizmo vector
 	// the actual position of the gizmo, will generally target m_placement
 	components::PhysicsComponent m_physics{};
 	components::SteeringBehavior m_steering{};

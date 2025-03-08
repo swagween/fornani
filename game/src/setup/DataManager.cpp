@@ -110,7 +110,7 @@ void DataManager::load_data(std::string in_room) {
 	assert(!background.is_null());
 
 	// load item labels
-	for (auto const& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first.data()}); }
+	// for (auto const& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first.data()}); }
 
 	// load marketplace
 	for (auto const& entry : npc.object_view()) {
@@ -118,9 +118,9 @@ void DataManager::load_data(std::string in_room) {
 		marketplace.insert({entry.second["vendor"]["id"].as<int>(), npc::Vendor()});
 		auto& vendor = marketplace.at(entry.second["vendor"]["id"].as<int>());
 		vendor.set_upcharge(entry.second["vendor"]["upcharge"].as<float>());
-		/*for (auto& item : entry.second["vendor"]["common_items"].array_view()) { vendor.common_items.push_back(item.as_string().data()); }
+		for (auto& item : entry.second["vendor"]["common_items"].array_view()) { vendor.common_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["uncommon_items"].array_view()) { vendor.uncommon_items.push_back(item.as_string().data()); }
-		for (auto& item : entry.second["vendor"]["rare_items"].array_view()) { vendor.rare_items.push_back(item.as_string().data()); }*/
+		for (auto& item : entry.second["vendor"]["rare_items"].array_view()) { vendor.rare_items.push_back(item.as_string().data()); }
 	}
 	m_services->stopwatch.stop();
 	m_services->stopwatch.print_time();

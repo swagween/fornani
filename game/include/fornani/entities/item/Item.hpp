@@ -18,7 +18,7 @@ struct ItemInformation {
 	std::string actual_description{};
 };
 
-enum class ItemType : std::uint8_t { key, collectible, apparel };
+enum class ItemType : std::uint8_t { key, apparel, collectible };
 enum class ItemFlags : std::uint8_t { sellable, vendor_spawnable, gizmo, ability };
 
 class Item {
@@ -31,10 +31,12 @@ class Item {
 	[[nodiscard]] auto get_type() const -> ItemType { return m_type; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_lookup() const -> sf::IntRect { return m_lookup; }
-	[[nodiscard]] auto get_table_position() const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(m_lookup.position.x), static_cast<float>(m_lookup.position.y)}; }
+	[[nodiscard]] auto get_table_position() const -> sf::Vector2f { return m_table_position; }
 
   protected:
 	int m_id{};
+	sf::Vector2i m_table_origin{};
+	sf::Vector2f m_table_position{};
 	std::string m_label;
 	ItemInformation m_info{};
 	ItemType m_type;

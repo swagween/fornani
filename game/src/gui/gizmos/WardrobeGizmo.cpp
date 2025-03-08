@@ -16,6 +16,7 @@ WardrobeGizmo::WardrobeGizmo(automa::ServiceProvider& svc, world::Map& map, sf::
 	  m_light(svc.assets.get_texture("red_light"), {5, 4}), m_nani_offset{38.f, 38.f}, m_pawn_offset{106.f, 332.f}, m_light_offset{12.f, 272.f}, m_scanline{sf::Sprite{svc.assets.get_texture("portrait_scanline")}},
 	  m_sprite{sf::Sprite{svc.assets.get_texture("wardrobe_gizmo")}},
 	  m_health_display{.hearts{sf::Sprite{svc.assets.get_texture("pioneer_hearts")}}, .sockets{sf::Sprite{svc.assets.get_texture("pioneer_heart_sockets")}}, .position{16.f, 374}} {
+	m_dashboard_port = DashboardPort::wardrobe;
 	m_placement = placement;
 	m_wardrobe_update = true;
 	m_path.set_section("start");
