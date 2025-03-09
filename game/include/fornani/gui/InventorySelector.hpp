@@ -18,6 +18,7 @@ class InventorySelector {
 	void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin);
 
 	[[nodiscard]] auto get_current_selection() const -> int { return m_selection[0].get() + m_selection[1].get() * m_table_dimensions.x; }
+	[[nodiscard]] auto get_current_selection(int dim) const -> int { return m_selection[0].get() + m_selection[1].get() * dim; }
 	[[nodiscard]] auto get_index() const -> sf::Vector2i { return sf::Vector2i{m_selection[0].get(), m_selection[1].get()}; }
 	[[nodiscard]] auto get_horizonal_index() const -> int { return m_selection[0].get(); }
 	[[nodiscard]] auto get_vertical_index() const -> int { return m_selection[1].get(); }

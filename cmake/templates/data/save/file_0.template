@@ -35,6 +35,16 @@
 				"label": "red_jeans",
 				"type": 1,
 				"quantity": 1
+			},
+			{
+				"label": "chalcedony_tee",
+				"type": 1,
+				"quantity": 1
+			},
+			{
+				"label": "chalcedony_skirt",
+				"type": 1,
+				"quantity": 1
 			}
 		],
 		"stats": {

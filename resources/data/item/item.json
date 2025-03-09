@@ -248,8 +248,9 @@
 		"value": 12000
 	},
 	"chalcedony_tee": {
-		"index": 146,
-		"start_index": 160,
+		"id": 194,
+		"lookup": [ 1, 12 ],
+		"origin": [ 0, 10 ],
 		"title": "Chalcedony Tee",
 		"naive_description": "An elegant tee with a rhenite pendant.",
 		"unique": true,
@@ -258,8 +259,9 @@
 		"value": 3000
 	},
 	"chalcedony_skirt": {
-		"index": 130,
-		"start_index": 160,
+		"id": 210,
+		"lookup": [ 1, 13 ],
+		"origin": [ 0, 10 ],
 		"title": "Chalcedony Skirt",
 		"naive_description": "An elegant skirt.",
 		"unique": true,

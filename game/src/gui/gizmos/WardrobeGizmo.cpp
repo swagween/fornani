@@ -60,7 +60,7 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	// gate wardrobe updates because they're expensive
 	// and don't need to be called tickwise
 	if (m_wardrobe_update) {
-		m_nani.update(svc, player);
+		m_nani.update(player);
 		m_wardrobe_update = false;
 	}
 }
@@ -79,7 +79,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	if (m_outfitter) { m_outfitter->render(svc, win, player, cam, foreground); }
 
 	// player portrait + scanline + health display
-	m_nani.render(svc, win, cam);
+	m_nani.render(win, cam);
 	static auto movement{util::Circuit{4}};
 	if (svc.ticker.every_x_frames(8)) { movement.modulate(1); }
 	auto movement_vec{sf::Vector2f{-2.f, -4.f + static_cast<float>(movement.get())}};

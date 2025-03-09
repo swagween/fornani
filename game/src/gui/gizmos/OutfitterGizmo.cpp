@@ -13,7 +13,7 @@ namespace fornani::gui {
 OutfitterGizmo::OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
 	: Gizmo("Outfitter", false), m_sprite{sf::Sprite{svc.assets.get_texture("wardrobe_gizmo")}}, m_apparel_sprite{sf::Sprite{svc.assets.get_texture("inventory_items")}},
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "wardrobe_outfitter", 108, util::InterpolationType::quadratic}, m_wires(svc.assets.get_texture("wardrobe_wires"), {88, 118}), m_max_slots{10},
-	  m_selector({m_max_slots, 4}, {38.f, 50.f}), m_init{true}, m_grid_offset{144.f, 10.f}, m_row{{{76, 0}, {170, 18}}, {}} {
+	  m_selector({m_max_slots, 4}, {38.f, 50.f}), m_init{true}, m_grid_offset{144.f, 10.f}, m_row{{{76, 0}, {170, 18}}, {}}, wardrobe_index{160} {
 	m_placement = placement;
 	m_sprite.setScale(util::constants::f_scale_vec);
 	m_wires.set_scale(util::constants::f_scale_vec);
@@ -49,6 +49,10 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 		m_outfit = player.get_outfit();
 		m_changed = false;
 	}
+
+	// check to see if player has hovered item
+	auto check = m_selector.get_current_selection(16) + wardrobe_index + 1;
+	m_available = player.has_item(check);
 
 	// play the wire plug sound at the exact right moment
 	wire_sound.update();
@@ -95,26 +99,30 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 bool OutfitterGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
 		m_selector.move({0, -1});
-		soundboard.flags.pioneer.set(audio::Pioneer::click);
+		soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
 		m_selector.move({0, 1});
-		soundboard.flags.pioneer.set(audio::Pioneer::click);
+		soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) {
 		m_selector.move({-1, 0});
-		soundboard.flags.pioneer.set(audio::Pioneer::click);
+		soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) {
 		m_selector.move({1, 0});
-		soundboard.flags.pioneer.set(audio::Pioneer::click);
+		soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		auto index{m_selector.get_horizonal_index() + 1};
-		m_sliders[m_selector.get_vertical_index()].selection = index;
-		m_outfit.at(m_selector.get_vertical_index()) = index;
-		m_changed = true;
-		soundboard.flags.pioneer.set(audio::Pioneer::slot);
+		if (m_available || index >= m_max_slots) {
+			m_sliders[m_selector.get_vertical_index()].selection = index;
+			m_outfit.at(m_selector.get_vertical_index()) = index >= m_max_slots ? 0 : index;
+			m_changed = true;
+			soundboard.flags.pioneer.set(audio::Pioneer::slot);
+		} else {
+			soundboard.flags.menu.set(audio::Menu::backward_switch);
+		}
 	}
 	return Gizmo::handle_inputs(controller, soundboard);
 }

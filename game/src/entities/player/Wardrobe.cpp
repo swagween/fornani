@@ -49,7 +49,6 @@ void Wardrobe::equip(ApparelType type, int variant) {
 		return;
 	}
 	m_outfit.at(type)->set(variant);
-	NANI_LOG_DEBUG(m_logger, "Equipped variant {}", variant);
 }
 
 void Wardrobe::unequip(ApparelType type) {

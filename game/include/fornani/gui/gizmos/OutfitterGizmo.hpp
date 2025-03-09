@@ -29,6 +29,7 @@ class OutfitterGizmo : public Gizmo {
 	void update_sliders(player::Player& player);
 	void debug();
 	int m_max_slots{};
+	int wardrobe_index;
 	sf::Sprite m_sprite;
 	sf::Sprite m_apparel_sprite;
 	std::array<Slider, static_cast<int>(player::ApparelType::END)> m_sliders;
@@ -41,6 +42,7 @@ class OutfitterGizmo : public Gizmo {
 	sf::Vector2i m_outfit_delta{};
 	bool m_init{};
 	bool m_changed{};
+	bool m_available{};
 };
 
 } // namespace fornani::gui
