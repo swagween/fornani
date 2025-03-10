@@ -23,9 +23,9 @@ Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::
 void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 	cooldown.update();
 	if (cooldown.is_complete()) { deactivate(); }
-	if (active && (util::Random::percent_chance(variables.rate) || particles.empty())) {
-		auto x = util::Random::random_range_float(0.f, dimensions.x);
-		auto y = util::Random::random_range_float(0.f, dimensions.y);
+	if (active && (util::random::percent_chance(variables.rate) || particles.empty())) {
+		auto x = util::random::random_range_float(0.f, dimensions.x);
+		auto y = util::random::random_range_float(0.f, dimensions.y);
 		sf::Vector2<float> point{position.x + x, position.y + y};
 		particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
 	}

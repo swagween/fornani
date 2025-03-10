@@ -75,10 +75,10 @@ Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vecto
 		break;
 	}
 	if (reflections.x == 1) {
-		if (util::Random::percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
+		if (util::random::percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
 	}
 	if (reflections.y == 1) {
-		if (util::Random::percent_chance(50)) { sprite.setScale({1.f, -1.f}); }
+		if (util::random::percent_chance(50)) { sprite.setScale({1.f, -1.f}); }
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
 	drawbox.setFillColor(sf::Color::Transparent);

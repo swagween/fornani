@@ -71,7 +71,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		NANI_ZoneScopedN("Game Loop");
 
-		auto smp = util::Random::percent_chance(10) ? 1 : 0;
+		auto smp = util::random::percent_chance(10) ? 1 : 0;
 		rng_test.sample += smp;
 		++rng_test.total;
 

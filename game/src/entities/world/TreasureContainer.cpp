@@ -14,7 +14,7 @@ TreasureContainer::TreasureContainer(automa::ServiceProvider& svc, item::Rarity 
 	sensor.bounds.setRadius(8.f);
 	sensor.bounds.setOrigin({8.f, 8.f});
 	loot_multiplier = 1.f + static_cast<float>(rarity) * 4.f;
-	root = util::Random::random_vector_float(-16.f, 16.f);
+	root = util::random::random_vector_float(-16.f, 16.f);
 }
 
 void TreasureContainer::update(automa::ServiceProvider& svc, sf::Vector2<float> target) {
