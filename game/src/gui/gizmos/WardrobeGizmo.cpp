@@ -88,7 +88,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	m_core.render(svc, win, cam);
 	player.render(svc, win, cam, m_placement + m_path.get_position() + m_pawn_offset);
 	m_light.render(svc, win, cam);
-	auto offset{sf::Vector2f{8.f, 4.f}};
+	auto offset{sf::Vector2f{10.f, 4.f}};
 	m_health_display.hearts.setPosition(m_placement + m_path.get_position() + m_health_display.position + offset - cam);
 	m_health_display.sockets.setPosition(m_placement + m_path.get_position() + m_health_display.position - cam);
 	win.draw(m_health_display.sockets);

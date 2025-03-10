@@ -10,7 +10,9 @@ namespace fornani::player {
 
 class Inventory {
   public:
-	int add_item(dj::Json& source, std::string_view label, item::ItemType type); // returns item id
+	/// @brief Adds item to inventory.
+	/// @returns the item's integer ID.
+	int add_item(dj::Json& source, std::string_view label, item::ItemType type);
 	void remove_item(int item_id, int amount);
 	void reveal_item(int item_id);
 	[[nodiscard]] bool has_item(int id) const;

@@ -267,7 +267,7 @@
 				},
 				{
 					"position": [ 0, 0 ],
-					"dimensions": [ 0, 0 ]
+					"dimensions": [ 5, 122 ]
 				}
 			]
 		},
@@ -276,7 +276,7 @@
 			"path": [
 				{
 					"position": [ 0, 0 ],
-					"dimensions": [ 0, 0 ]
+					"dimensions": [ 5, 122 ]
 				},
 				{
 					"position": [ 4, 0 ],

@@ -42,6 +42,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
 	auto wardrobe_placement{sf::Vector2f{svc.window->f_screen_dimensions().x + 26, 0.f}};
 	// push gizmos in clockwise order so selection setting will work
+	m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player));
 	m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); // have to stick this in the for loop once we have a clock item
 	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement));	   // have to stick this in the for loop once we have a clock item
 
@@ -57,7 +58,6 @@ void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 
 void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam) {
 
-	// debug stuff
 	m_debug.box.setPosition(m_physical.physics.position - cam);
 	auto pos{sf::Vector2f{}};
 	auto ctr{0};
@@ -112,7 +112,10 @@ void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 	}
 }
 
-void Dashboard::set_selection(sf::Vector2i to_selection) { m_selected_position = to_selection; }
+void Dashboard::set_selection(sf::Vector2i to_selection) {
+	m_selected_position = to_selection;
+	m_state = (to_selection.x == 0 && to_selection.y == 0) ? DashboardState::home : DashboardState::hovering;
+}
 
 bool Dashboard::select_gizmo() {
 	for (auto& gizmo : m_gizmos) {

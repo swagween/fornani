@@ -27,4 +27,6 @@ void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f positi
 	win.draw(sprite);
 }
 
+void Item::reveal() { m_state.set(ItemState::revealed); }
+
 } // namespace fornani::item

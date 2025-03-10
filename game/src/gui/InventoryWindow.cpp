@@ -38,11 +38,17 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	m_background.setFillColor(util::ColorUtils::fade_in(svc.styles.colors.pioneer_black));
 
 	if (m_view == InventoryView::dashboard) {
-		if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) { m_dashboard->set_selection({0, -1}); }
-		if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) { m_dashboard->set_selection({0, 1}); }
-		if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) { m_dashboard->set_selection({-1, 0}); }
-		if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) { m_dashboard->set_selection({1, 0}); }
-		if (controller.digital_action_status(config::DigitalAction::menu_select).triggered && m_dashboard->get_selected_position() != sf::Vector2i{0, 0}) {
+		auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).held;
+		auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).held;
+		auto const& left = controller.digital_action_status(config::DigitalAction::menu_left).held;
+		auto const& right = controller.digital_action_status(config::DigitalAction::menu_right).held;
+		auto const& selected = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
+		m_dashboard->set_selection({0, 0});
+		if (up && m_dashboard->is_home()) { m_dashboard->set_selection({0, -1}); }
+		if (down && m_dashboard->is_home()) { m_dashboard->set_selection({0, 1}); }
+		if (left && m_dashboard->is_home()) { m_dashboard->set_selection({-1, 0}); }
+		if (right && m_dashboard->is_home()) { m_dashboard->set_selection({1, 0}); }
+		if (selected && m_dashboard->is_hovering()) {
 			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
 			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = ccm::ext::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
 			if (m_dashboard->select_gizmo()) {
