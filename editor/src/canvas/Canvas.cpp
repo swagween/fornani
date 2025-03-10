@@ -280,7 +280,7 @@ void Canvas::resize(sf::Vector2i adjustment) {
 	// map dimensions can't be 0
 	if (adjustment.x < 0 && chunk_dimensions().x == 1) { return; }
 	if (adjustment.y < 0 && chunk_dimensions().y == 1) { return; }
-	auto current = Map{map_states.back()};
+	auto current = map_states.back();
 	dimensions.x += adjustment.x * static_cast<int>(f_native_chunk_size());
 	dimensions.y += adjustment.y * static_cast<int>(f_native_chunk_size());
 	auto num_layers = map_states.back().layers.size();
@@ -288,6 +288,7 @@ void Canvas::resize(sf::Vector2i adjustment) {
 	for (auto i{0}; i < num_layers; ++i) {
 		map_states.back().layers.push_back(Layer(i, i == current.get_middleground(), dimensions));
 		map_states.back().layers.back().grid.match(current.layers.at(i).grid);
+		if (i == current.get_middleground()) { map_states.back().set_middleground(i); }
 	}
 	clear_redo_states();
 	set_grid_texture();
