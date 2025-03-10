@@ -258,12 +258,34 @@
 		"apparel_type": 1,
 		"value": 3000
 	},
+	"navy_top": {
+		"id": 202,
+		"lookup": [ 9, 12 ],
+		"origin": [ 0, 10 ],
+		"actual_title": "Navy Top",
+		"naive_description": "A traditional Kariba garment with a gold trim.",
+		"unique": true,
+		"equippable": true,
+		"apparel_type": 1,
+		"value": 3000
+	},
 	"chalcedony_skirt": {
 		"id": 210,
 		"lookup": [ 1, 13 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Chalcedony Skirt",
 		"naive_description": "An elegant skirt.",
+		"unique": true,
+		"equippable": true,
+		"apparel_type": 0,
+		"value": 2000
+	},
+	"green_pants": {
+		"id": 218,
+		"lookup": [ 9, 13 ],
+		"origin": [ 0, 10 ],
+		"actual_title": "Green Pants",
+		"naive_description": "Your favorite pair of pants from back home.",
 		"unique": true,
 		"equippable": true,
 		"apparel_type": 0,

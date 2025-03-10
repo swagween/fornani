@@ -97,6 +97,7 @@ bool Dashboard::handle_inputs(config::ControllerMap& controller, audio::Soundboa
 		if (m_current_port == gizmo->get_dashboard_port()) {
 			if (!gizmo->handle_inputs(controller, soundboard)) {
 				if (gizmo->get_dashboard_port() == DashboardPort::minimap) { m_paths.map.set_section("close"); } // only adjust dashboard art for map gizmo
+				m_state = DashboardState::home;
 				return false;
 			}
 		}
@@ -121,6 +122,7 @@ bool Dashboard::select_gizmo() {
 	for (auto& gizmo : m_gizmos) {
 		if (m_current_port == gizmo->get_dashboard_port()) {
 			gizmo->select();
+			m_state = DashboardState::gizmo;
 			if (gizmo->get_label() == "Minimap") { m_paths.map.set_section("open"); } // uniquely, the minimap affects the Dashboard's constituents
 			return true;
 		}

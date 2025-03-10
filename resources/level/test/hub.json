@@ -2147,7 +2147,7 @@
         "activate_on_contact": false,
         "already_open": false,
         "source_id": 4200,
-        "destination_id": 4202,
+        "destination_id": 42009,
         "locked": false,
         "key_id": 0
       },
@@ -2201,6 +2201,50 @@
         "destination_id": 4205,
         "locked": false,
         "key_id": 0
+      }
+    ],
+    "inspectables": [
+      {
+        "id": 0,
+        "position": [
+          4,
+          10
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "key": "gobe",
+        "alternates": 0,
+        "gobe0": {
+          "suite": [
+            [
+              "Gobe"
+            ]
+          ]
+        }
+      },
+      {
+        "id": 0,
+        "position": [
+          6,
+          10
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "activate_on_contact": false,
+        "key": "challenge",
+        "alternates": 0,
+        "challenge0": {
+          "suite": [
+            [
+              "Challenge"
+            ]
+          ]
+        }
       }
     ]
   }

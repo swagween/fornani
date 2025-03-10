@@ -1,70 +1,80 @@
 {
-  "status": {
-    "new": true
-  },
-  "player_data": {
-    "max_hp": 3,
-    "hp": 3,
-    "orbs": 0,
-    "position": {
-      "x": 102.0,
-      "y": 327.0
-    },
-    "arsenal": [
-    ],
-    "equipped_gun": 0,
-    "abilities": [
+	"status": {
+		"new": true
+	},
+	"player_data": {
+		"max_hp": 3,
+		"hp": 3,
+		"orbs": 0,
+		"position": {
+			"x": 102.0,
+			"y": 327.0
+		},
+		"arsenal": [
+		],
+		"equipped_gun": 0,
+		"abilities": [
 
-    ],
-    "wardrobe": {
-      "hairstyle": 0,
-      "shirt": 0,
-      "pants": 0
-    },
-    "items": [
-    ],
-    "stats": {
-      "death_count": 0,
-      "bullets_fired": 0,
-      "guns_collected": 0,
-      "items_collected": 0,
-      "orbs_collected": 0,
-      "blue_orbs": 0,
-      "highest_indicator_amount": 0,
-      "enemies_killed": 0,
-      "rooms_discovered": 0,
-      "seconds_played": 0.0,
-      "time_trials": {
-        "bryns_gun": 0.0
-      }
-    },
-    "hotbar": [
-    ]
-  },
-  "save_point_id": 100,
-  "unlocked_doors": [
-  ],
-  "opened_chests": [
-  ],
-  "activated_switches": [
-  ],
-  "destroyed_blocks": [
-  ],
-  "quest_progressions": [
-  ],
-  "destroyed_inspectables": [
-  ],
-  "tutorial": {
-    "state": 0,
-    "closed": true,
-    "on": false,
-    "jump": true,
-    "shoot": true,
-    "sprint": true,
-    "map": false,
-    "inventory": true
-  },
-  "discovered_rooms": [
-  ],
-  "piggybacker": 0
+		],
+		"wardrobe": {
+			"hairstyle": 0,
+			"shirt": 0,
+			"pants": 0
+		},
+		"items": [
+			{
+				"label": "navy_top",
+				"type": 1,
+				"quantity": 1
+			},
+			{
+				"label": "green_pants",
+				"type": 1,
+				"quantity": 1
+			}
+		],
+		"stats": {
+			"death_count": 0,
+			"bullets_fired": 0,
+			"guns_collected": 0,
+			"items_collected": 0,
+			"orbs_collected": 0,
+			"blue_orbs": 0,
+			"highest_indicator_amount": 0,
+			"enemies_killed": 0,
+			"rooms_discovered": 0,
+			"seconds_played": 0.0,
+			"time_trials": {
+				"bryns_gun": 0.0
+			}
+		},
+		"hotbar": [
+		]
+	},
+	"save_point_id": 100,
+	"unlocked_doors": [
+	],
+	"opened_chests": [
+	],
+	"activated_switches": [
+	],
+	"destroyed_blocks": [
+	],
+	"quest_progressions": [
+	],
+	"destroyed_inspectables": [
+	],
+	"tutorial": {
+		"state": 0,
+		"closed": true,
+		"on": false,
+		"jump": true,
+		"shoot": true,
+		"sprint": true,
+		"map": false,
+		"inventory": true
+	},
+	"discovered_rooms": [
+	],
+	"piggybacker": 0
 }

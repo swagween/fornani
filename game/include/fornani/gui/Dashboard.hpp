@@ -41,7 +41,8 @@ class Dashboard {
 	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);
 	void set_position(sf::Vector2f to_position, bool force = false);
 	void set_selection(sf::Vector2i to_selection);
-	bool select_gizmo(); // returns false if gizmo does not exist
+	///@returns false if gizmo does not exist
+	bool select_gizmo();
 	void hover(sf::Vector2i direction);
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_physical.physics.position; }
 	[[nodiscard]] auto get_selected_position() const -> sf::Vector2i { return m_selected_position; }
