@@ -37,6 +37,7 @@ class WardrobeGizmo : public Gizmo {
 	anim::AnimatedSprite m_light;
 	sf::Sprite m_scanline;
 	sf::Sprite m_sprite;
+	sf::Sprite m_apparel_sprite;
 	HealthDisplay m_health_display;
 };
 

@@ -6,13 +6,10 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Math.hpp"
+#include "fornani/utils/Random.hpp"
 
 #include <ccmath/ext/clamp.hpp>
 #include <tracy/Tracy.hpp>
-
-#include <iostream>
-
-#include "fornani/utils/Random.hpp"
 
 namespace fornani::world {
 
@@ -69,7 +66,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto csource = meta["cutscene_on_entry"]["source"].as<int>();
 			auto cutscene = util::QuestKey{ctype, cid, csource};
 			svc.quest.process(svc, cutscene);
-			if (svc.quest.get_progression(fornani::QuestType::cutscene, 6001) > 0) { std::cout << "cutscene requested!\n"; }
 			cutscene_catalog.push_cutscene(svc, *this, *m_console, cid);
 		}
 		if (meta["music"].is_string()) {
@@ -589,7 +585,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		if (textures.reverse_obscuring) {
 			std::vector<sf::Sprite> rev_sprites{sf::Sprite{textures.reverse_obscuring.value().day.getTexture()}, sf::Sprite{textures.reverse_obscuring.value().twilight.getTexture()},
 												sf::Sprite{textures.reverse_obscuring.value().night.getTexture()}};
-
 			auto ctr{0};
 			for (auto& sprite : rev_sprites) {
 				sprite.setScale(util::constants::f_scale_vec);
@@ -618,6 +613,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		borderbox.setPosition({0.0f, real_dimensions.y + ydiff});
 		win.draw(borderbox);
 	}
+
 	if (real_dimensions.x < svc.window->f_screen_dimensions().x) {
 		auto xdiff = (svc.window->f_screen_dimensions().x - real_dimensions.x) * 0.5f;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
@@ -779,26 +775,26 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(util::constants::i_cell_resolution),
 							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(util::constants::i_cell_resolution)};
 			if (changed) {
-				if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
+				if (!tex.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
 				tex.clear(sf::Color::Transparent);
 			}
 			if (layer.obscuring()) {
 				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
-				if (!obs_tex.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
+				if (!obs_tex.resize(size)) { NANI_LOG_ERROR(m_logger, "Obscuring layer texture not created."); }
 				obs_tex.clear(sf::Color::Transparent);
 			}
 			if (layer.reverse_obscuring()) {
 				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
-				if (!rev_obs_tex.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
+				if (!rev_obs_tex.resize(size)) { NANI_LOG_ERROR(m_logger, "Reverse layer texture not created."); }
 				rev_obs_tex.clear(sf::Color::Transparent);
 			}
 			sf::Sprite tile{svc.assets.get_tileset(m_metadata.biome)};
 			for (auto& cell : layer.grid.cells) {
+				auto x_coord = static_cast<int>((cell.value % util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution) + (cycle * util::constants::tileset_dimensions.x * util::constants::tileset_dimensions.y);
+				auto y_coord = static_cast<int>(std::floor(cell.value / util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
+				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, util::constants::i_resolution_vec));
+				tile.setPosition((cell.position() + scaled_barrier) / util::constants::f_scale_factor);
 				if (cell.is_occupied() && !cell.is_special()) {
-					auto x_coord = static_cast<int>((cell.value % util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution) + (cycle * util::constants::tileset_dimensions.x * util::constants::tileset_dimensions.y);
-					auto y_coord = static_cast<int>(std::floor(cell.value / util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
-					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {util::constants::i_cell_resolution, util::constants::i_cell_resolution}));
-					tile.setPosition((cell.position() + scaled_barrier) / util::constants::f_scale_factor);
 					auto normal{true};
 					if (layer.obscuring()) {
 						auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
@@ -825,7 +821,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				rev_obs_tex.display();
 			}
 			if (layer.middleground()) {
-				if (!textures.greyblock.resize(size)) { std::cout << "Layer texture not created.\n"; }
+				if (!textures.greyblock.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
 				get_middleground().grid.draw(textures.greyblock);
 			}
 		}
@@ -925,8 +921,7 @@ npc::NPC& Map::get_npc(int id) {
 	for (auto& npc : npcs) {
 		if (npc.get_id() == id) { return npc; }
 	}
-
-	std::cerr << "Tried to get NPC that didn't exist! ID: " << id << std::endl;
+	NANI_LOG_ERROR(m_logger, "Tried to get NPC that didn't exist! ID: {}", id);
 	std::exit(1);
 }
 
