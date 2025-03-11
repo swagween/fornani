@@ -10,7 +10,7 @@ namespace fornani::gui {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc)
 	: m_services(&svc), help_marker(svc), working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{32}},
-	  m_writing_speed{default_writing_speed_v}, m_delta_threshold{8.f} {
+	  m_writing_speed{default_writing_speed_v}, m_delta_threshold{8.f}, m_text_size{16} {
 	special_characters.insert({Codes::prompt, '%'});
 	special_characters.insert({Codes::quest, '$'});
 	special_characters.insert({Codes::item, '^'});
@@ -166,7 +166,7 @@ void TextWriter::append(std::string_view content) {
 }
 
 void TextWriter::stylize(sf::Text& msg) const {
-	msg.setCharacterSize(text_size);
+	msg.setCharacterSize(m_text_size);
 	msg.setFillColor(m_services->styles.colors.ui_white);
 	msg.setFont(*m_font);
 	msg.setLineSpacing(1.5f);

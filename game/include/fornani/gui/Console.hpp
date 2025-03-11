@@ -20,9 +20,17 @@ class ControllerMap;
 
 namespace fornani::gui {
 
-enum class ConsoleMode { writing, responding, off };
+enum class ConsoleMode : std::uint8_t { writing, responding, off };
 enum class ConsoleFlags : std::uint8_t { portrait_included, display_item };
-enum class OutputType { instant, gradual };
+enum class OutputType : std::uint8_t { instant, gradual };
+
+enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion };
+
+struct MessageCode {
+	int index{};
+	MessageCodeType type{};
+	int value{};
+};
 
 class Console {
 
@@ -50,6 +58,7 @@ class Console {
 	[[nodiscard]] auto is_active() const -> bool { return m_mode == ConsoleMode::writing || m_mode == ConsoleMode::responding; }
 	[[nodiscard]] auto is_complete() const -> bool { return !is_active(); }
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
+	[[nodiscard]] auto get_message_code() const -> MessageCode { return m_code; }
 
 	util::BitFlags<ConsoleFlags> flags{};
 	util::RectPath m_path;
@@ -73,6 +82,8 @@ class Console {
 
   protected:
 	void handle_inputs(config::ControllerMap& controller);
+
+	MessageCode m_code{};
 
 	sf::Vector2<float> position{};
 	sf::Vector2<float> dimensions{};

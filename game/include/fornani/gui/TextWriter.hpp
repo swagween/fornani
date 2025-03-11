@@ -65,7 +65,6 @@ class TextWriter {
 	int get_current_suite_set() const;
 
 	// public for debugging
-	int text_size{16};
 
 	struct {
 		util::Shipment out_item{};
@@ -114,6 +113,7 @@ class TextWriter {
 	sf::FloatRect m_previous_bounds{};
 	float m_delta_threshold{};
 	float pad{30};
+	int m_text_size{};
 
 	sf::RectangleShape indicator{};
 	sf::RectangleShape cursor{};
