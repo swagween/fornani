@@ -77,11 +77,11 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	player.collider.handle_collider_collision(secondary_collider);
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (util::Random::percent_chance(20) && !caution.danger()) { state = ThugState::run; }
+		if (util::random::percent_chance(20) && !caution.danger()) { state = ThugState::run; }
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
-		if (util::Random::percent_chance(50)) {
+		if (util::random::percent_chance(50)) {
 			m_services->soundboard.flags.thug.set(audio::Thug::hurt_1);
 		} else {
 			m_services->soundboard.flags.thug.set(audio::Thug::hurt_2);
@@ -164,7 +164,7 @@ fsm::StateFunction Thug::update_jump() {
 fsm::StateFunction Thug::update_alert() {
 	animation.label = "alert";
 	if (animation.just_started()) {
-		if (util::Random::percent_chance(50)) {
+		if (util::random::percent_chance(50)) {
 			m_services->soundboard.flags.thug.set(audio::Thug::alert_1);
 		} else {
 			m_services->soundboard.flags.thug.set(audio::Thug::alert_2);

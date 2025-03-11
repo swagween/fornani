@@ -39,8 +39,8 @@ void Camera::update(automa::ServiceProvider& svc) {
 			shake.timer.cancel();
 			diff = 0.f;
 		}
-		auto randx = util::Random::random_range_float(-diff, diff);
-		auto randy = util::Random::random_range_float(-diff, diff);
+		auto randx = util::random::random_range_float(-diff, diff);
+		auto randy = util::random::random_range_float(-diff, diff);
 		display_position = bounding_box.getPosition() + sf::Vector2<float>{randx, randy} + map_bounds_offset;
 	}
 }

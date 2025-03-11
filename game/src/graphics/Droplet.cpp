@@ -32,7 +32,7 @@ void Droplet::update(automa::ServiceProvider& svc, world::Map& map, bool collisi
 		decay();
 		collider.physics.velocity.x *= 0.9f;
 	} else {
-		auto const offset = util::Random::random_range_float(0.f, static_cast<float>(std::numbers::pi));
+		auto const offset = util::random::random_range_float(0.f, static_cast<float>(std::numbers::pi));
 		collider.physics.position.x += sin(counter.get_count() * 0.01f + offset) * params.sway;
 	}
 }

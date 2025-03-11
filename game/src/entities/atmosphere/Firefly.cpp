@@ -10,17 +10,17 @@ namespace fornani::vfx {
 Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.get_texture("firefly"), {9, 9}) {
 	physics.set_global_friction(0.99f);
 	physics.position = start;
-	physics.velocity = util::Random::random_vector_float(-1.f, 1.f);
+	physics.velocity = util::random::random_vector_float(-1.f, 1.f);
 	sprite.push_params("invisible", {10, 1, 32, -1});
 	sprite.push_params("glowing", {0, 10, 24, 0});
 	sprite.set_params("invisible");
-	auto rand_time = util::Random::random_range(100, 500);
+	auto rand_time = util::random::random_range(100, 500);
 	light = util::Cooldown(rand_time);
-	auto offset = util::Random::random_range(0, light.get_native_time());
+	auto offset = util::random::random_range(0, light.get_native_time());
 	light.start(offset);
 	sprite.set_origin({4.5f, 4.5f});
-	variant = util::Random::percent_chance(60) ? 0 : util::Random::percent_chance(50) ? 1 : util::Random::percent_chance(50) ? 2 : 3;
-	if (variant == 0 && util::Random::percent_chance(30)) {
+	variant = util::random::percent_chance(60) ? 0 : util::random::percent_chance(50) ? 1 : util::random::percent_chance(50) ? 2 : 3;
+	if (variant == 0 && util::random::percent_chance(30)) {
 		trail = std::make_unique<flfx::SpriteHistory>();
 		trail.value()->set_sample_size(12);
 	}

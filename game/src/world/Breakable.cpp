@@ -21,7 +21,7 @@ void Breakable::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (destroyed()) { return; }
 	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = util::Random::random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(20)) { random_offset = util::random::random_vector_float(-energy, energy); }
 	handle_collision(player.collider);
 }
 
