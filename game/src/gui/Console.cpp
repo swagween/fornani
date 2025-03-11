@@ -54,6 +54,7 @@ void Console::render(sf::RenderWindow& win) {
 		// writer->responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
 		nani_portrait.render(win);
 	}
+	debug();
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
@@ -62,6 +63,17 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 	NANI_LOG_INFO(m_logger, "Loading...");
 	writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
 	NANI_LOG_INFO(m_logger, "Writer created...");
+	// load message codes
+	auto& in_data = text_suite[key]["codes"];
+	if (in_data) {
+		if (in_data.array_view().size() < 4) { NANI_LOG_ERROR(m_logger, "Invalid Text Json data, too few codes were read!"); }
+		for (auto& code : in_data.array_view()) {
+			auto in_ints = std::vector<int>{};
+			for (auto& input : code.array_view()) { in_ints.push_back(input.as<int>()); }
+			auto in_code = MessageCode{static_cast<CodeSource>(in_ints[0]), in_ints[1], static_cast<MessageCodeType>(in_ints[2]), in_ints[3]};
+			m_codes.push_back(in_code);
+		}
+	}
 	m_output_type = type;
 	native_key = key;
 	portrait.reset(*m_services);
@@ -130,6 +142,23 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			writer->shutdown();
 			end();
 		}
+	}
+}
+
+void Console::debug() {
+	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
+	if (ImGui::Begin("Console Debug")) {
+		for (auto& code : m_codes) {
+			ImGui::Text("Source: %s", code.source == CodeSource::suite ? "suite" : "response");
+			ImGui::Text("Index: %i", code.index);
+			ImGui::Text("Type: %i", static_cast<int>(code.type));
+			ImGui::Text("Value: %i", code.value);
+			if (code.extras) {
+				for (auto& extra : *code.extras) { ImGui::Text("Extra: %i", extra); }
+			}
+			ImGui::Separator();
+		}
+		ImGui::End();
 	}
 }
 
