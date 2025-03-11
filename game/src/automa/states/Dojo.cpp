@@ -138,7 +138,8 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		}
 	}
 
-	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items.empty()) {
+	// TODO: re-do this once I reimplement regular inventory + collectible items. we will check collectible_items_view, or something else.
+	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.key_items_view().empty()) {
 		util::random::set_vendor_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 		player->visit_history.clear();
