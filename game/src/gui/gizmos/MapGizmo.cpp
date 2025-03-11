@@ -53,6 +53,7 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 
 	m_path.update();
 	m_motherboard_path.update();
+	m_minimap->update();
 
 	if (m_info) { m_info->update(svc, player, map, m_placement + m_path.get_position()); }
 	for (auto& plugin : m_plugins) { plugin.update(svc.soundboard); }

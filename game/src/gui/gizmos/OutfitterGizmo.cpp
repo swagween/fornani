@@ -26,6 +26,7 @@ OutfitterGizmo::OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 	auto row{0};
 	for (auto& slider : m_sliders) {
 		slider.body.constituent.lookup = sf::IntRect{{304, 26 * row}, {26, 26}};
+		slider.body.physics.set_global_friction(0.8f);
 		++row;
 	}
 	m_selector.set_lookup({{307, 104}, {20, 20}}); // selector lookup on texture atlas
