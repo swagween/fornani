@@ -56,7 +56,7 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 				found = true;
 			}
 		}
-		if (!found) { m_description->write(svc, "---"); }
+		if (!found) { m_description->write(svc, "--- "); }
 	}
 
 	// change outfit if player has selected item
