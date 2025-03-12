@@ -148,7 +148,9 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 		can_skip = false;
 	}
 	if (released) { can_skip = true; }
+	if (writer->is_stalling()) { can_skip = false; }
 	(skip && can_skip) ? writer->speed_up() : writer->slow_down();
+
 	if (finished) {
 		if (writer->exit_requested()) {
 			end();
