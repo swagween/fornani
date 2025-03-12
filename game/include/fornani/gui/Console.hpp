@@ -29,6 +29,7 @@ enum class CodeSource : std::uint8_t { suite, response };
 
 struct MessageCode {
 	CodeSource source{};
+	int set{};
 	int index{};
 	MessageCodeType type{};
 	int value{};
@@ -36,7 +37,6 @@ struct MessageCode {
 };
 
 class Console {
-
   public:
 	explicit Console(automa::ServiceProvider& svc);
 	explicit Console(automa::ServiceProvider& svc, std::string const& texture_lookup);
@@ -56,12 +56,12 @@ class Console {
 	void end();
 	void include_portrait(int id);
 
-	std::string get_key();
+	std::string get_key() const;
 
 	[[nodiscard]] auto is_active() const -> bool { return m_mode == ConsoleMode::writing || m_mode == ConsoleMode::responding; }
 	[[nodiscard]] auto is_complete() const -> bool { return !is_active(); }
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
-	// [[nodiscard]] auto get_message_code() const -> MessageCode { return m_codes.back(); }
+	[[nodiscard]] auto get_message_code() const -> MessageCode;
 
 	util::BitFlags<ConsoleFlags> flags{};
 	util::RectPath m_path;
@@ -78,11 +78,6 @@ class Console {
 	std::unique_ptr<TextWriter> writer;
 	std::string native_key{};
 
-	struct {
-		int out_voice{};
-		int out_emotion{};
-	} communicators{};
-
   protected:
 	void handle_inputs(config::ControllerMap& controller);
 	void debug();
@@ -93,7 +88,7 @@ class Console {
 	sf::Vector2<float> dimensions{};
 	OutputType m_output_type{};
 	ConsoleMode m_mode{};
-	io::Logger m_logger{"Console"};
+	io::Logger m_logger{"gui"};
 	struct {
 		int corner_factor{};
 		int edge_factor{};

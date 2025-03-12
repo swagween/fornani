@@ -86,8 +86,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	if (inventory_window) { svc.controller_map.set_action_set(config::ActionSet::Inventory); }
 	if (console.is_active()) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
 
-	console.update(svc);
-
 	if (pause_window) {
 		pause_window.value()->update(svc, console);
 		if (pause_window.value()->settings_requested()) {
@@ -99,8 +97,11 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			pause_window.value()->reset();
 		}
 		if (pause_window.value()->exit_requested()) { pause_window = {}; }
+		console.update(svc);
 		return;
 	}
+
+	console.update(svc);
 
 	if (inventory_window) {
 		inventory_window.value()->update(svc, *player, map);

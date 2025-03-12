@@ -43,6 +43,14 @@ void Console::update(automa::ServiceProvider& svc) {
 	portrait.update(svc);
 	nani_portrait.update(svc);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
+	// help_marker = graphics::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
+
+	// check for response
+	for (auto& code : m_codes) {
+		if (code.set == writer->get_current_suite_set() && code.index == writer->get_index()) {
+			if (code.type == MessageCodeType::response && !writer->is_writing()) { writer->respond(); }
+		}
+	}
 }
 
 void Console::render(sf::RenderWindow& win) {
@@ -55,22 +63,22 @@ void Console::render(sf::RenderWindow& win) {
 		nani_portrait.render(win);
 	}
 	debug();
+	writer->debug();
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
 
 void Console::load_and_launch(std::string_view key, OutputType type) {
-	NANI_LOG_INFO(m_logger, "Loading...");
 	writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
-	NANI_LOG_INFO(m_logger, "Writer created...");
+	NANI_LOG_INFO(m_logger, "Writer created.");
 	// load message codes
 	auto& in_data = text_suite[key]["codes"];
 	if (in_data) {
-		if (in_data.array_view().size() < 4) { NANI_LOG_ERROR(m_logger, "Invalid Text Json data, too few codes were read!"); }
 		for (auto& code : in_data.array_view()) {
+			if (code.array_view().size() < 5) { NANI_LOG_ERROR(m_logger, "Invalid Text Json data, too few codes were read!"); }
 			auto in_ints = std::vector<int>{};
 			for (auto& input : code.array_view()) { in_ints.push_back(input.as<int>()); }
-			auto in_code = MessageCode{static_cast<CodeSource>(in_ints[0]), in_ints[1], static_cast<MessageCodeType>(in_ints[2]), in_ints[3]};
+			auto in_code = MessageCode{static_cast<CodeSource>(in_ints[0]), in_ints[1], in_ints[2], static_cast<MessageCodeType>(in_ints[3]), in_ints[4]};
 			m_codes.push_back(in_code);
 		}
 	}
@@ -105,10 +113,10 @@ void Console::write(sf::RenderWindow& win) { write(win, m_output_type == OutputT
 void Console::append(std::string_view key) { writer->append(key); }
 
 void Console::end() {
-	writer->flush();
 	m_mode = ConsoleMode::off;
 	m_path.reset();
 	writer = {};
+	m_services->soundboard.flags.console.set(audio::Console::done);
 	NANI_LOG_INFO(m_logger, "Console ended.");
 }
 
@@ -117,7 +125,7 @@ void Console::include_portrait(int id) {
 	portrait.set_id(id);
 }
 
-std::string Console::get_key() { return native_key; }
+std::string Console::get_key() const { return native_key; }
 
 void Console::handle_inputs(config::ControllerMap& controller) {
 	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
@@ -125,41 +133,57 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	auto const& canceled = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered;
 	auto const& next = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
 	auto const& exit = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered;
-	auto const& skip = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
-	auto const& skip_released = controller.digital_action_status(config::DigitalAction::menu_select).released;
+	auto const& skip = controller.digital_action_status(config::DigitalAction::menu_select).held;
+	auto const& released = controller.digital_action_status(config::DigitalAction::menu_select).released;
 	static bool finished{};
+	static bool can_skip{};
 
-	if (skip && writer->is_ready()) { writer->speed_up(); }
-	if (skip_released) { writer->slow_down(); }
+	if (next && writer->is_responding()) {
+		// create a response dialog, feed it inputs, and await its closure before resuming writer
+	}
+
 	if (next && writer->is_ready()) {
 		m_services->soundboard.flags.console.set(audio::Console::next);
 		finished = writer->request_next();
-		NANI_LOG_INFO(m_logger, "Requested next: {}", finished);
+		can_skip = false;
 	}
-	if (exit || finished) {
+	if (released) { can_skip = true; }
+	(skip && can_skip) ? writer->speed_up() : writer->slow_down();
+	if (finished) {
 		if (writer->exit_requested()) {
-			m_services->soundboard.flags.console.set(audio::Console::done);
-			writer->shutdown();
 			end();
+			NANI_LOG_INFO(m_logger, "Writer shut down...");
 		}
 	}
+	if (exit) { end(); }
 }
 
 void Console::debug() {
 	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
 	if (ImGui::Begin("Console Debug")) {
 		for (auto& code : m_codes) {
-			ImGui::Text("Source: %s", code.source == CodeSource::suite ? "suite" : "response");
-			ImGui::Text("Index: %i", code.index);
-			ImGui::Text("Type: %i", static_cast<int>(code.type));
-			ImGui::Text("Value: %i", code.value);
-			if (code.extras) {
-				for (auto& extra : *code.extras) { ImGui::Text("Extra: %i", extra); }
+			if (code.set == writer->get_current_suite_set()) {
+				if (code.index == writer->get_index()) {
+					ImGui::Text("Source: %s", code.source == CodeSource::suite ? "suite" : "response");
+					ImGui::Text("Index: %i", code.index);
+					ImGui::Text("Type: %i", static_cast<int>(code.type));
+					ImGui::Text("Value: %i", code.value);
+					if (code.extras) {
+						for (auto& extra : *code.extras) { ImGui::Text("Extra: %i", extra); }
+					}
+					ImGui::Separator();
+				}
 			}
-			ImGui::Separator();
 		}
 		ImGui::End();
 	}
+}
+
+auto Console::get_message_code() const -> MessageCode {
+	for (auto& code : m_codes) {
+		if (code.index == writer->get_index()) { return code; }
+	}
+	return m_codes.back();
 }
 
 } // namespace fornani::gui

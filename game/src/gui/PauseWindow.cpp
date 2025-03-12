@@ -14,6 +14,7 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : m_menu(svc, {"resume", 
 
 void PauseWindow::update(automa::ServiceProvider& svc, Console& console) {
 	m_menu.update(svc, m_dimensions, svc.window->f_center_screen());
+	if (console.is_active()) { return; }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { m_menu.down(svc); }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { m_menu.up(svc); }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {

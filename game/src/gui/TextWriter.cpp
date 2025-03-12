@@ -9,16 +9,8 @@
 namespace fornani::gui {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc)
-	: m_services(&svc), help_marker(svc), working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{32}},
-	  m_writing_speed{default_writing_speed_v}, m_delta_threshold{8.f}, m_text_size{16} {
-	special_characters.insert({Codes::prompt, '%'});
-	special_characters.insert({Codes::quest, '$'});
-	special_characters.insert({Codes::item, '^'});
-	special_characters.insert({Codes::voice, '&'});
-	special_characters.insert({Codes::emotion, '@'});
-	special_characters.insert({Codes::hash, '#'});
-	help_marker.set_color(svc.styles.colors.ui_white);
-	help_marker.set_alpha(0);
+	: m_services(&svc), working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{32}}, m_writing_speed{default_writing_speed_v},
+	  m_delta_threshold{8.f}, m_text_size{16} {
 	bounds_box.setFillColor(sf::Color(200, 200, 10, 10));
 	bounds_box.setOutlineColor(sf::Color(255, 80, 80, 180));
 	bounds_box.setOutlineThickness(-1);
@@ -42,14 +34,15 @@ void TextWriter::start() {
 	indicator.setOrigin({2.f, 2.f});
 	indicator.setFillColor(m_services->styles.colors.bright_orange);
 
-	if (iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(iterators.current_suite_set).empty()) { return; }
+	if (m_iterators.current_suite_set >= suite.size()) { return; }
+	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 
-	working_message = suite.at(iterators.current_suite_set).front().data;
+	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	constrain();
 
 	m_mode = WriterMode::write;
 	m_delay.start();
+	NANI_LOG_DEBUG(m_logger, "Writer started.");
 }
 
 void TextWriter::update() {
@@ -62,23 +55,23 @@ void TextWriter::update() {
 	if (is_writing() && !m_delay.running()) { m_delay.start(); }
 
 	// escape if bounds are invalid
-	if (iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(iterators.current_suite_set).empty()) { shutdown(); }
-
+	if (m_iterators.current_suite_set >= suite.size()) { return; }
+	if (suite.at(m_iterators.current_suite_set).empty()) { shutdown(); }
+	if (is_responding()) {
+		working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+		return;
+	}
 	if (!is_writing()) { return; }
 
 	// append next character to working string
 	if (m_counters.tick.get_count() % m_writing_speed == 0) {
-		char const next_char = static_cast<char>(suite.at(iterators.current_suite_set).front().data.getString().getData()[m_counters.glyph.get_count()]);
+		char const next_char = static_cast<char>(suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getData()[m_counters.glyph.get_count()]);
 		working_str += next_char;
 		working_message.setString(working_str);
 		m_counters.glyph.update();
-		m_counters.tick.cancel();
+		m_counters.tick.start();
 	}
-	if (m_counters.glyph.get_count() >= suite.at(iterators.current_suite_set).front().data.getString().getSize()) {
-		m_mode = WriterMode::wait;
-		reset();
-	}
+	if (m_counters.glyph.get_count() >= suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getSize()) { m_mode = WriterMode::wait; }
 	m_counters.tick.update();
 }
 
@@ -86,6 +79,21 @@ void TextWriter::flush() {
 	suite.clear();
 	working_message.setString("");
 	working_str = {};
+}
+
+void TextWriter::respond() { m_mode = WriterMode::respond; }
+
+void TextWriter::stall() { m_mode = WriterMode::stall; }
+
+void TextWriter::debug() {
+	ImGui::SetNextWindowPos(ImVec2{20.f, 128.f});
+	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
+	if (ImGui::Begin("Writer Debug")) {
+		ImGui::Text("Mode %s", m_mode == WriterMode::write ? "write" : m_mode == WriterMode::wait ? "wait" : m_mode == WriterMode::respond ? "respond" : m_mode == WriterMode::stall ? "stall" : "close");
+		ImGui::Text("Set: %i", m_iterators.current_suite_set);
+		ImGui::Text("Index: %i", m_iterators.index);
+		ImGui::End();
+	}
 }
 
 void TextWriter::set_bounds(sf::FloatRect to_bounds, bool wrap) {
@@ -99,9 +107,9 @@ void TextWriter::set_bounds(sf::FloatRect to_bounds, bool wrap) {
 }
 
 void TextWriter::wrap() {
-	if (iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(iterators.current_suite_set).empty()) { return; }
-	auto& current_message = suite.at(iterators.current_suite_set).front().data;
+	if (m_iterators.current_suite_set >= suite.size()) { return; }
+	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
+	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	int last_space_index{};
 	for (auto i{0}; i < current_message.getString().getSize() - 1; ++i) {
 		char const current_char = static_cast<char>(current_message.getString().getData()[i]);
@@ -121,10 +129,10 @@ void TextWriter::wrap() {
 }
 
 void TextWriter::constrain() {
-	if (iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(iterators.current_suite_set).empty()) { return; }
+	if (m_iterators.current_suite_set >= suite.size()) { return; }
+	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 	if (m_bounds.size.x < 64.f) { return; }
-	auto& current_message{suite.at(iterators.current_suite_set).front().data};
+	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 
 	// strip out new line characters
 	auto new_str{std::string{current_message.getString()}};
@@ -154,8 +162,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 		}
 		suite.push_back(this_set);
 	}
-	working_message = suite.at(iterators.current_suite_set).front().data;
-	help_marker = graphics::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
+	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 }
 
 void TextWriter::append(std::string_view content) {
@@ -175,14 +182,14 @@ void TextWriter::stylize(sf::Text& msg) const {
 
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);
-	if (iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(iterators.current_suite_set).empty()) { return; }
+	if (m_iterators.current_suite_set >= suite.size()) { return; }
+	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 	bounds_box.setOutlineColor(sf::Color{0, 255, 80});
-	bounds_box.setSize(suite.at(iterators.current_suite_set).front().data.getLocalBounds().size);
+	bounds_box.setSize(suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getLocalBounds().size);
 	// win.draw(bounds_box);
 	bounds_box.setOutlineColor(sf::Color(255, 80, 80, 180));
 	m_mode = WriterMode::wait;
-	auto& current_message{suite.at(iterators.current_suite_set).front().data};
+	auto& current_message{suite.at(m_iterators.current_suite_set).at(m_iterators.index).data};
 	working_message = current_message;
 	write_gradual_message(win);
 }
@@ -191,9 +198,9 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);
 	static bool show_cursor;
 	auto cursor_offset{sf::Vector2f{8.f, 0.f}};
-	if (iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(iterators.current_suite_set).empty()) { return; }
-	auto& current_message{suite.at(iterators.current_suite_set).front().data};
+	if (m_iterators.current_suite_set >= suite.size()) { return; }
+	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
+	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	current_message.setPosition(m_bounds.position);
 	if (!is_writing()) {
 		win.draw(current_message);
@@ -204,7 +211,6 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 		return;
 	}
 	show_cursor = true;
-	help_marker.start();
 	working_message.setFillColor(m_services->styles.colors.ui_white);
 	working_message.setPosition(m_bounds.position);
 	auto last_glyph_position = working_message.findCharacterPos(working_message.getString().getSize() - 1);
@@ -220,12 +226,11 @@ void TextWriter::set_font_color(sf::Color to_color) {
 }
 
 void TextWriter::reset() {
-	m_writing_speed = default_writing_speed_v;
-	help_marker.reset();
-	m_counters = {};
-	working_message.setString("");
+	slow_down();
+	m_counters.glyph.start();
 	working_str = {};
-	iterators.current_selection = 0;
+	m_mode = WriterMode::write;
+	NANI_LOG_DEBUG(m_logger, "Writer reset.");
 }
 
 void TextWriter::speed_up() { m_writing_speed = fast_writing_speed_v; }
@@ -233,42 +238,20 @@ void TextWriter::speed_up() { m_writing_speed = fast_writing_speed_v; }
 void TextWriter::slow_down() { m_writing_speed = default_writing_speed_v; }
 
 bool TextWriter::request_next() {
-	// return true when we are able to progress in the writer
-	// return false if inputs should do nothing
-
 	// writer is writing, not ready
 	if (is_writing()) { return false; }
-
-	// done writing and no more text suites to write
-	if (suite.empty() || iterators.current_suite_set >= suite.size()) {
-		shutdown();
-		return true;
-	}
-	if (suite.at(iterators.current_suite_set).empty()) {
-		reset();
-		return true;
-	}
-	suite.at(iterators.current_suite_set).pop_front();
-	if (suite.at(iterators.current_suite_set).empty()) {
-		shutdown();
-		return true;
-	}
+	++m_iterators.index;
 	reset();
-	start();
-
+	if (m_iterators.index >= suite.at(m_iterators.current_suite_set).size()) { shutdown(); }
 	return true;
 }
 
 void TextWriter::shutdown() { m_mode = WriterMode::close; }
 
 Message& TextWriter::current_message() {
-	if (iterators.current_suite_set >= suite.size()) { return zero_option; }
-	if (suite.at(iterators.current_suite_set).empty()) { return zero_option; }
-	return suite.at(iterators.current_suite_set).front();
+	if (m_iterators.current_suite_set >= suite.size()) { return zero_option; }
+	if (suite.at(m_iterators.current_suite_set).empty()) { return zero_option; }
+	return suite.at(m_iterators.current_suite_set).at(m_iterators.index);
 }
-
-int TextWriter::get_current_selection() const { return iterators.current_selection; }
-
-int TextWriter::get_current_suite_set() const { return iterators.current_suite_set; }
 
 } // namespace fornani::gui

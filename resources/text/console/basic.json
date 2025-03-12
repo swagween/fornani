@@ -44,11 +44,16 @@
 	},
 	"menu_return": {
 		"codes": [
-			[ 0, 1, 0, 0 ],
-			[ 1, 0, 3, 89 ],
-			[ 1, 1, 3, 1 ]
+			[ 0, 0, 2, 1, 0 ],
+			[ 1, 0, 0, 3, 89 ],
+			[ 1, 0, 1, 3, 1 ]
 		],
 		"suite": [
+			[
+				"This is suite one.",
+				"Here is a second message.",
+				"Here is a third that should trigger a response."
+			],
 			[ "You will lose unsaved progress. Are you sure?" ]
 		],
 		"responses": [ [ "Yes$89#1#1#", "No%1" ] ]
