@@ -3,6 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <ccmath/ext/clamp.hpp>
 
 #include <string>
 
@@ -81,12 +82,14 @@ void TextWriter::flush() {
 	working_str = {};
 }
 
+void TextWriter::wait() { m_mode = WriterMode::wait; }
+
 void TextWriter::respond() { m_mode = WriterMode::respond; }
 
 void TextWriter::stall() { m_mode = WriterMode::stall; }
 
 void TextWriter::debug() {
-	ImGui::SetNextWindowPos(ImVec2{20.f, 128.f});
+	ImGui::SetNextWindowPos(ImVec2{20.f, 256.f});
 	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
 	if (ImGui::Begin("Writer Debug")) {
 		ImGui::Text("Mode %s", m_mode == WriterMode::write ? "write" : m_mode == WriterMode::wait ? "wait" : m_mode == WriterMode::respond ? "respond" : m_mode == WriterMode::stall ? "stall" : "close");
@@ -178,6 +181,12 @@ void TextWriter::stylize(sf::Text& msg) const {
 	msg.setFont(*m_font);
 	msg.setLineSpacing(1.5f);
 	msg.setPosition(m_bounds.position);
+}
+
+void TextWriter::set_suite(int to_suite) {
+	m_iterators.current_suite_set = ccm::ext::clamp(to_suite, 0, static_cast<int>(suite.size() - 1));
+	m_iterators.index = 0;
+	reset();
 }
 
 void TextWriter::write_instant_message(sf::RenderWindow& win) {

@@ -270,10 +270,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 															: services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight"
 																																			  : "Night");
 					static int clock_speed{services.world_clock.get_rate()};
-					if (ImGui::Button("Dawn")) { services.world_clock.set_time(6, 59); }
-					if (ImGui::Button("Morning")) { services.world_clock.set_time(7, 59); }
-					if (ImGui::Button("Twilight")) { services.world_clock.set_time(18, 59); }
-					if (ImGui::Button("Night")) { services.world_clock.set_time(19, 59); }
+					if (ImGui::Button("Dawn")) { services.world_clock.set_time(5, 59); }
+					if (ImGui::Button("Morning")) { services.world_clock.set_time(6, 59); }
+					if (ImGui::Button("Twilight")) { services.world_clock.set_time(17, 59); }
+					if (ImGui::Button("Night")) { services.world_clock.set_time(18, 59); }
 					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
 					services.world_clock.set_speed(clock_speed);
 					ImGui::Separator();

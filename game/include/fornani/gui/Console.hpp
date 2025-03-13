@@ -35,6 +35,9 @@ struct MessageCode {
 	MessageCodeType type{};
 	int value{};
 	std::optional<std::vector<int>> extras{};
+	void debug();
+	[[nodiscard]] auto is_response() const -> bool { return source == CodeSource::suite && type == MessageCodeType::response; }
+	[[nodiscard]] auto is_suite_return() const -> bool { return source == CodeSource::response && type == MessageCodeType::response; }
 };
 
 class Console {
@@ -63,6 +66,7 @@ class Console {
 	[[nodiscard]] auto is_complete() const -> bool { return !is_active(); }
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
 	[[nodiscard]] auto get_message_code() const -> MessageCode;
+	[[nodiscard]] auto get_response_code(int which) const -> MessageCode;
 
 	util::BitFlags<ConsoleFlags> flags{};
 	util::RectPath m_path;

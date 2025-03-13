@@ -43,14 +43,13 @@ void Console::update(automa::ServiceProvider& svc) {
 	portrait.update(svc);
 	nani_portrait.update(svc);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
-	// help_marker = graphics::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
-
 	// check for response
 	for (auto& code : m_codes) {
 		if (code.set == writer->get_current_suite_set() && code.index == writer->get_index()) {
-			if (code.type == MessageCodeType::response && !writer->is_writing()) { writer->respond(); }
+			if (code.is_response() && !writer->is_writing()) { writer->respond(); }
 		}
 	}
+	// help_marker = graphics::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
 }
 
 void Console::render(sf::RenderWindow& win) {
@@ -62,6 +61,7 @@ void Console::render(sf::RenderWindow& win) {
 		// writer->responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
 		nani_portrait.render(win);
 	}
+	if (m_response) { m_response->render(win); }
 	debug();
 	writer->debug();
 }
@@ -130,25 +130,50 @@ std::string Console::get_key() const { return native_key; }
 void Console::handle_inputs(config::ControllerMap& controller) {
 	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
 	auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).triggered;
-	auto const& canceled = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered;
 	auto const& next = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
 	auto const& exit = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered;
 	auto const& skip = controller.digital_action_status(config::DigitalAction::menu_select).held;
 	auto const& released = controller.digital_action_status(config::DigitalAction::menu_select).released;
 	static bool finished{};
 	static bool can_skip{};
+	bool responded{};
 
-	if (next && writer->is_responding()) {
-		// create a response dialog, feed it inputs, and await its closure before resuming writer
-		m_response = ResponseDialog(m_services->text, text_suite, native_key);
-		NANI_LOG_INFO(m_logger, "ResponseDialog created.");
+	// check for exit
+	if (exit) { end(); }
+
+	// in response mode
+	if (m_response) {
+		if (m_response->handle_inputs(controller)) {
+			return;
+		} else {
+			// do something with response selection
+			// set target suite if response code demands it
+			if (get_response_code(m_response->get_selection()).is_suite_return()) { writer->set_suite(get_response_code(m_response->get_selection()).value); }
+			m_response = {};
+			responded = true;
+			NANI_LOG_DEBUG(m_logger, "ResponseDialog destroyed.");
+		}
 	}
 
-	if (next && writer->is_ready()) {
+	// create response dialog
+	if (next && writer->is_responding() && !responded) {
+		// create a response dialog, feed it inputs, and await its closure before resuming writer
+		m_response = ResponseDialog(m_services->text, text_suite, native_key);
+		m_mode = ConsoleMode::responding;
+		writer->wait();
+		NANI_LOG_DEBUG(m_logger, "ResponseDialog created.");
+		return;
+	}
+
+	// go to next message or exit
+	if ((next && writer->is_ready()) || responded) {
 		m_services->soundboard.flags.console.set(audio::Console::next);
 		finished = writer->request_next();
 		can_skip = false;
+		NANI_LOG_DEBUG(m_logger, "Requested Next.");
 	}
+
+	// speed up text
 	if (released) { can_skip = true; }
 	if (writer->is_stalling()) { can_skip = false; }
 	(skip && can_skip) ? writer->speed_up() : writer->slow_down();
@@ -159,35 +184,45 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			NANI_LOG_INFO(m_logger, "Writer shut down...");
 		}
 	}
-	if (exit) { end(); }
 }
 
 void Console::debug() {
 	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
 	if (ImGui::Begin("Console Debug")) {
-		for (auto& code : m_codes) {
-			if (code.set == writer->get_current_suite_set()) {
-				if (code.index == writer->get_index()) {
-					ImGui::Text("Source: %s", code.source == CodeSource::suite ? "suite" : "response");
-					ImGui::Text("Index: %i", code.index);
-					ImGui::Text("Type: %i", static_cast<int>(code.type));
-					ImGui::Text("Value: %i", code.value);
-					if (code.extras) {
-						for (auto& extra : *code.extras) { ImGui::Text("Extra: %i", extra); }
-					}
-					ImGui::Separator();
-				}
-			}
+		if (m_response) {
+			ImGui::Text("Response Selection: %i", m_response->get_selection());
+			get_response_code(m_response->get_selection()).debug();
+			ImGui::Separator();
 		}
+		auto code = get_message_code();
+		if (code.set == writer->get_current_suite_set()) { code.debug(); }
 		ImGui::End();
 	}
 }
 
 auto Console::get_message_code() const -> MessageCode {
 	for (auto& code : m_codes) {
-		if (code.index == writer->get_index()) { return code; }
+		if (code.index == writer->get_index() && code.source == CodeSource::suite) { return code; }
 	}
 	return m_codes.back();
+}
+
+auto Console::get_response_code(int which) const -> MessageCode {
+	for (auto& code : m_codes) {
+		if (code.index == which && code.source == CodeSource::response) { return code; }
+	}
+	return m_codes.back();
+}
+
+void MessageCode::debug() {
+	ImGui::Text("Source: %s", source == CodeSource::suite ? "suite" : "response");
+	ImGui::Text("Index: %i", index);
+	ImGui::Text("Type: %i", static_cast<int>(type));
+	ImGui::Text("Value: %i", value);
+	if (extras) {
+		for (auto& extra : *extras) { ImGui::Text("Extra: %i", extra); }
+	}
+	ImGui::Separator();
 }
 
 } // namespace fornani::gui

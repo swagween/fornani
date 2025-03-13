@@ -69,11 +69,13 @@ class TextWriter {
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);
 	void stylize(sf::Text& msg) const;
+	void set_suite(int to_suite);
 	void wrap();
 	void constrain();
 	void shutdown();
 	void reset();
 	void flush();
+	void wait();
 	void respond();
 	void stall();
 
