@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Animation.hpp"
+#include "fornani/entities/animation/Animation.hpp"
 #include "fornani/graphics/SpriteRotator.hpp"
 #include "fornani/io/Logger.hpp"
 
