@@ -37,29 +37,52 @@
 		"responses": [ [] ]
 	},
 	"death": {
-		"suite": [
-			[ "You died.", "Would you like to retry?%0" ]
-		],
-		"responses": [ [ "Yes$27#1#1#", "No%1" ] ]
-	},
-	"menu_return": {
 		"codes": [
-			[ 0, 0, 2, 1, 0 ],
-			[ 0, 2, 0, 6, 0, 2 ],
-			[ 1, 0, 0, 1, 1 ],
-			[ 1, 0, 1, 1, 2 ]
+			[ 0, 0, 1, 1, 0 ],
+			[ 1, 0, 0, 7, 2 ],
+			[ 1, 0, 1, 7, 1 ]
+		],
+		"suite": [
+			[ "You died.", "Would you like to retry?" ]
+		],
+		"responses": [ [ "Yes", "No" ] ]
+	},
+	"test": {
+		"codes": [
+			[ 0, 0, 1, 1, 0 ],
+			[ 0, 1, 0, 1, 1 ],
+			[ 1, 0, 0, 1, 1, 0 ],
+			[ 1, 0, 1, 1, 2, 0 ],
+			[ 1, 1, 0, 1, 3, 0 ],
+			[ 1, 1, 1, 1, 4, 0 ]
 		],
 		"suite": [
 			[
-				"This is suite one.",
-				"Here is a second message.",
-				"Here is a third that should trigger a response."
+				"Hello.",
+				"Do you want to chat?"
 			],
-			[ "You chose choice 1." ],
-			[ "You chose choice 2. Let's go back to the main suite." ],
-			[ "You will lose unsaved progress. Are you sure?" ]
+			[ "Great. What's your favorite color?" ],
+			[ "Alright, see ya later." ],
+			[ "Just like sunflowers." ],
+			[ "Like the sky!", "I respect that." ]
 		],
-		"responses": [ [ "Choice 1", "Choice 2" ] ]
+		"responses": [
+			[ "Sure", "No" ],
+			[ "Yellow", "Blue" ]
+		]
+	},
+	"menu_return": {
+		"codes": [
+			[ 0, 0, 0, 1, 0 ],
+			[ 1, 0, 0, 7, 1 ],
+			[ 1, 0, 1, 0, 0 ]
+		],
+		"suite": [
+			[
+				"You will lose any unsaved progress. Are you sure?"
+			]
+		],
+		"responses": [ [ "Yes", "No" ] ]
 	},
 	"intro": {
 		"suite": [
@@ -67,28 +90,19 @@
 		],
 		"responses": [ [] ]
 	},
-	"end_demo": {
-		"suite": [
-			[ "Congratulations on completing the playtester edition of Fornani!", "Printing results...$69#1#1#" ]
-		],
-		"responses": [ [] ]
-	},
 	"delete_file": {
 		"codes": [
-			[ 0, 0, 1, 0 ],
-			[ 1, 0, 2, 97 ],
-			[ 1, 1, 0, 1 ]
+			[ 0, 0, 0, 1, 0 ],
+			[ 1, 0, 0, 7, 3 ],
+			[ 1, 0, 1, 8, 0 ]
 		],
 		"suite": [
-			[ "This action cannot be undone. Are you sure you want to delete this file?%0" ],
-			[ "File deleted." ]
+			[
+				"This action cannot be undone. Are you sure you want to delete this file?",
+				"File deleted."
+			]
 		],
-		"responses": [
-			{
-
-				"messages": [ "Yes$97#1#1#", "No%1" ]
-			}
-		]
+		"responses": [ [ "Yes", "No" ] ]
 	},
 	"fullscreen": {
 		"suite": [

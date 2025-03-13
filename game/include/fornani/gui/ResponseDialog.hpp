@@ -25,11 +25,13 @@ class ResponseDialog {
 	bool handle_inputs(config::ControllerMap& controller);
 	void render(sf::RenderWindow& win);
 	[[nodiscard]] auto get_selection() const -> int { return m_selection.get(); }
+	[[nodiscard]] auto get_index() const -> int { return m_index; }
 
   private:
 	void stylize(sf::Text& message) const;
 	std::vector<sf::Text> m_responses{};
 	int m_text_size;
+	int m_index{};
 	bool m_ready{};
 	util::Circuit m_selection;
 };

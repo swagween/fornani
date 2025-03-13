@@ -53,6 +53,7 @@ void Console::update(automa::ServiceProvider& svc) {
 }
 
 void Console::render(sf::RenderWindow& win) {
+	debug();
 	if (!writer || !is_active()) { return; }
 	m_nineslice.render(win);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.render(*m_services, win); }
@@ -62,11 +63,23 @@ void Console::render(sf::RenderWindow& win) {
 		nani_portrait.render(win);
 	}
 	if (m_response) { m_response->render(win); }
-	debug();
-	writer->debug();
+	// writer->debug();
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
+
+void Console::handle_actions(int value) {
+	switch (value) {
+	case 1: // return to main menu
+		m_services->state_controller.actions.set(automa::Actions::main_menu);
+		m_services->state_controller.actions.set(automa::Actions::trigger);
+		break;
+	case 2: // restart save
+		m_services->state_controller.actions.set(automa::Actions::retry);
+		break;
+	case 3: m_services->state_controller.actions.set(automa::Actions::delete_file); break;
+	}
+}
 
 void Console::load_and_launch(std::string_view key, OutputType type) {
 	writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
@@ -120,6 +133,7 @@ void Console::append(std::string_view key) { writer->append(key); }
 void Console::end() {
 	m_mode = ConsoleMode::off;
 	m_path.reset();
+	m_response = {};
 	writer = {};
 	m_services->soundboard.flags.console.set(audio::Console::done);
 	NANI_LOG_INFO(m_logger, "Console ended.");
@@ -157,6 +171,11 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			// do something with response selection
 			// set target suite if response code demands it
 			if (get_response_code(m_response->get_selection()).is_suite_return()) { writer->set_suite(get_response_code(m_response->get_selection()).value); }
+			if (get_response_code(m_response->get_selection()).is_action()) { handle_actions(get_response_code(m_response->get_selection()).value); }
+			if (get_response_code(m_response->get_selection()).is_exit()) {
+				end();
+				return;
+			}
 			m_response = {};
 			responded = true;
 			NANI_LOG_DEBUG(m_logger, "ResponseDialog destroyed.");
@@ -166,7 +185,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	// create response dialog
 	if (next && writer->is_responding() && !responded) {
 		// create a response dialog, feed it inputs, and await its closure before resuming writer
-		m_response = ResponseDialog(m_services->text, text_suite, native_key);
+		m_response = ResponseDialog(m_services->text, text_suite, native_key, get_message_code().value);
 		m_mode = ConsoleMode::responding;
 		writer->wait();
 		NANI_LOG_DEBUG(m_logger, "ResponseDialog created.");
@@ -202,13 +221,13 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 void Console::debug() {
 	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
 	if (ImGui::Begin("Console Debug")) {
+		if (ImGui::Button("Console Test")) { load_and_launch("test"); }
 		if (m_response) {
 			ImGui::Text("Response Selection: %i", m_response->get_selection());
 			get_response_code(m_response->get_selection()).debug();
 			ImGui::Separator();
 		}
-		auto code = get_message_code();
-		if (code.set == writer->get_current_suite_set()) { code.debug(); }
+		if (writer) { get_message_code().debug(); }
 		ImGui::End();
 	}
 }
@@ -217,14 +236,15 @@ auto Console::get_message_code() const -> MessageCode {
 	for (auto& code : m_codes) {
 		if (code.index == writer->get_index() && code.source == CodeSource::suite && code.set == writer->get_current_suite_set()) { return code; }
 	}
-	return m_codes.back();
+	return MessageCode();
 }
 
 auto Console::get_response_code(int which) const -> MessageCode {
+	if (!m_response) { return m_codes.back(); }
 	for (auto& code : m_codes) {
-		if (code.index == which && code.source == CodeSource::response) { return code; }
+		if (code.index == which && code.source == CodeSource::response && code.set == m_response->get_index()) { return code; }
 	}
-	return m_codes.back();
+	return MessageCode();
 }
 
 void MessageCode::debug() {
