@@ -189,6 +189,8 @@ void TextWriter::set_suite(int to_suite) {
 	reset();
 }
 
+void TextWriter::set_index(int to_index) { m_iterators.index = ccm::ext::clamp(to_index, 0, static_cast<int>(suite.at(m_iterators.current_suite_set).size() - 1)); }
+
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);
 	if (m_iterators.current_suite_set >= suite.size()) { return; }

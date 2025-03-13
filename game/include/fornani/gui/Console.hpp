@@ -25,7 +25,7 @@ enum class ConsoleMode : std::uint8_t { writing, responding, off };
 enum class ConsoleFlags : std::uint8_t { portrait_included, display_item };
 enum class OutputType : std::uint8_t { instant, gradual };
 
-enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion };
+enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect };
 enum class CodeSource : std::uint8_t { suite, response };
 
 struct MessageCode {
@@ -37,6 +37,7 @@ struct MessageCode {
 	std::optional<std::vector<int>> extras{};
 	void debug();
 	[[nodiscard]] auto is_response() const -> bool { return source == CodeSource::suite && type == MessageCodeType::response; }
+	[[nodiscard]] auto is_redirect() const -> bool { return source == CodeSource::suite && type == MessageCodeType::redirect; }
 	[[nodiscard]] auto is_suite_return() const -> bool { return source == CodeSource::response && type == MessageCodeType::response; }
 };
 

@@ -70,6 +70,7 @@ class TextWriter {
 	void write_gradual_message(sf::RenderWindow& win);
 	void stylize(sf::Text& msg) const;
 	void set_suite(int to_suite);
+	void set_index(int to_index);
 	void wrap();
 	void constrain();
 	void shutdown();

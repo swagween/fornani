@@ -79,6 +79,11 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 			auto in_ints = std::vector<int>{};
 			for (auto& input : code.array_view()) { in_ints.push_back(input.as<int>()); }
 			auto in_code = MessageCode{static_cast<CodeSource>(in_ints[0]), in_ints[1], in_ints[2], static_cast<MessageCodeType>(in_ints[3]), in_ints[4]};
+			// read extra values, if they exist
+			if (code.array_view().size() > 5) {
+				in_code.extras = std::vector<int>{};
+				for (auto i{5}; i < code.array_view().size(); ++i) { in_code.extras->push_back(in_ints[i]); }
+			}
 			m_codes.push_back(in_code);
 		}
 	}
@@ -139,7 +144,10 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	bool responded{};
 
 	// check for exit
-	if (exit) { end(); }
+	if (exit) {
+		end();
+		return;
+	}
 
 	// in response mode
 	if (m_response) {
@@ -167,6 +175,11 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 
 	// go to next message or exit
 	if ((next && writer->is_ready()) || responded) {
+		auto code = get_message_code();
+		if (code.is_redirect() && !responded) {
+			writer->set_suite(code.value);
+			if (code.extras) { writer->set_index(code.extras.value()[0]); }
+		}
 		m_services->soundboard.flags.console.set(audio::Console::next);
 		finished = writer->request_next();
 		can_skip = false;
@@ -202,7 +215,7 @@ void Console::debug() {
 
 auto Console::get_message_code() const -> MessageCode {
 	for (auto& code : m_codes) {
-		if (code.index == writer->get_index() && code.source == CodeSource::suite) { return code; }
+		if (code.index == writer->get_index() && code.source == CodeSource::suite && code.set == writer->get_current_suite_set()) { return code; }
 	}
 	return m_codes.back();
 }

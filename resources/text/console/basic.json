@@ -45,8 +45,9 @@
 	"menu_return": {
 		"codes": [
 			[ 0, 0, 2, 1, 0 ],
-			[ 1, 0, 1, 1, 2 ],
-			[ 1, 0, 0, 1, 1 ]
+			[ 0, 2, 0, 6, 0, 2 ],
+			[ 1, 0, 0, 1, 1 ],
+			[ 1, 0, 1, 1, 2 ]
 		],
 		"suite": [
 			[
@@ -55,7 +56,7 @@
 				"Here is a third that should trigger a response."
 			],
 			[ "You chose choice 1." ],
-			[ "You chose choice 2." ],
+			[ "You chose choice 2. Let's go back to the main suite." ],
 			[ "You will lose unsaved progress. Are you sure?" ]
 		],
 		"responses": [ [ "Choice 1", "Choice 2" ] ]
