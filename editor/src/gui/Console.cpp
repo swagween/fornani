@@ -2,7 +2,6 @@
 #include <imgui.h>
 
 #include <string>
-#include "Console.hpp"
 
 namespace pi {
 
