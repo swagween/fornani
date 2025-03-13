@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include "ItemWidget.hpp"
-#include "Portrait.hpp"
+#include "fornani/gui/ItemWidget.hpp"
+#include "fornani/gui/Portrait.hpp"
+#include "fornani/gui/ResponseDialog.hpp"
 #include "fornani/gui/TextWriter.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
@@ -82,6 +83,7 @@ class Console {
 	void handle_inputs(config::ControllerMap& controller);
 	void debug();
 
+	std::optional<ResponseDialog> m_response{};
 	std::vector<MessageCode> m_codes{};
 
 	sf::Vector2<float> position{};

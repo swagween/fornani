@@ -140,6 +140,8 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 
 	if (next && writer->is_responding()) {
 		// create a response dialog, feed it inputs, and await its closure before resuming writer
+		m_response = ResponseDialog(m_services->text, text_suite, native_key);
+		NANI_LOG_INFO(m_logger, "ResponseDialog created.");
 	}
 
 	if (next && writer->is_ready()) {

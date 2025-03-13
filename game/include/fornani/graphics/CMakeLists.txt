@@ -2,6 +2,7 @@ nani_add_headers(
         Background.hpp
         CameraController.hpp
         ColorFade.hpp
+        Colors.hpp
         DayNightShifter.hpp
         Droplet.hpp
         HelpText.hpp
