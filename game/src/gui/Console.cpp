@@ -11,7 +11,7 @@ Console::Console(automa::ServiceProvider& svc) : Console(svc, "blue_console") {}
 Console::Console(automa::ServiceProvider& svc, std::string const& texture_lookup)
 	: portrait(svc), nani_portrait(svc, false), m_services(&svc), item_widget(svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64},
 	  m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}}, m_nineslice(svc, svc.assets.get_texture(texture_lookup), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}),
-	  m_mode{ConsoleMode::off} {
+	  m_mode{ConsoleMode::off}, m_response_offset{-48.f, 16.f} {
 	text_suite = svc.text.console;
 }
 
@@ -23,30 +23,34 @@ void Console::begin() {
 
 void Console::update(automa::ServiceProvider& svc) {
 	if (!is_active()) { return; }
-	if (!writer) { return; }
+	if (!m_writer) { return; }
 	handle_inputs(svc.controller_map);
 	if (is_active()) { m_path.update(); }
-	if (m_path.finished() && writer) {
-		if (writer->is_stalling()) { writer->start(); }
+	if (m_path.finished() && m_writer) {
+		if (m_writer->is_stalling()) { m_writer->start(); }
 	}
-	if (!writer) { return; }
-	if (writer->is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
-	position = m_path.get_position();
-	dimensions = m_path.get_dimensions();
+	if (!m_writer) { return; }
+	if (m_writer->is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
+	m_position = m_path.get_position();
+	m_dimensions = m_path.get_dimensions();
 	m_nineslice.set_offset(-m_path.get_local_center());
 	m_nineslice.set_position(m_path.get_position());
 	m_nineslice.set_dimensions(m_path.get_dimensions());
 	auto vert_factor{1.5f};
-	auto to_dim{dimensions.componentWiseMul({m_styling.padding_scale, m_styling.padding_scale * vert_factor})};
-	writer->set_bounds(sf::FloatRect{position - to_dim * 0.5f, to_dim});
-	writer->update();
+	auto to_dim{m_dimensions.componentWiseMul({m_styling.padding_scale, m_styling.padding_scale * vert_factor})};
+	m_writer->set_bounds(sf::FloatRect{m_position - to_dim * 0.5f, to_dim});
+	m_writer->update();
+	if (m_response) {
+		m_response->set_position(m_position + m_response_offset);
+		m_response->update();
+	}
 	portrait.update(svc);
 	nani_portrait.update(svc);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
 	// check for response
 	for (auto& code : m_codes) {
-		if (code.set == writer->get_current_suite_set() && code.index == writer->get_index()) {
-			if (code.is_response() && !writer->is_writing()) { writer->respond(); }
+		if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index()) {
+			if (code.is_response() && !m_writer->is_writing()) { m_writer->respond(); }
 		}
 	}
 	// help_marker = graphics::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
@@ -54,16 +58,16 @@ void Console::update(automa::ServiceProvider& svc) {
 
 void Console::render(sf::RenderWindow& win) {
 	debug();
-	if (!writer || !is_active()) { return; }
+	if (!m_writer || !is_active()) { return; }
 	m_nineslice.render(win);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.render(*m_services, win); }
 	if (flags.test(ConsoleFlags::portrait_included)) {
 		portrait.render(win);
-		// writer->responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
+		// m_writer->responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
 		nani_portrait.render(win);
 	}
 	if (m_response) { m_response->render(win); }
-	// writer->debug();
+	// m_writer->debug();
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
@@ -82,7 +86,7 @@ void Console::handle_actions(int value) {
 }
 
 void Console::load_and_launch(std::string_view key, OutputType type) {
-	writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
+	m_writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
 	NANI_LOG_INFO(m_logger, "Writer created.");
 	// load message codes
 	auto& in_data = text_suite[key]["codes"];
@@ -108,7 +112,7 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 	begin();
 }
 
-void Console::load_single_message(std::string_view message) { writer = std::make_unique<TextWriter>(*m_services, message); }
+void Console::load_single_message(std::string_view message) { m_writer = std::make_unique<TextWriter>(*m_services, message); }
 
 void Console::display_item(int item_id) {
 	flags.set(ConsoleFlags::display_item);
@@ -122,19 +126,19 @@ void Console::display_gun(int gun_id) {
 
 void Console::write(sf::RenderWindow& win, bool instant) {
 	if (!is_active()) { return; }
-	if (!writer) { return; }
-	instant ? writer->write_instant_message(win) : writer->write_gradual_message(win);
+	if (!m_writer) { return; }
+	instant ? m_writer->write_instant_message(win) : m_writer->write_gradual_message(win);
 }
 
 void Console::write(sf::RenderWindow& win) { write(win, m_output_type == OutputType::instant); }
 
-void Console::append(std::string_view key) { writer->append(key); }
+void Console::append(std::string_view key) { m_writer->append(key); }
 
 void Console::end() {
 	m_mode = ConsoleMode::off;
 	m_path.reset();
 	m_response = {};
-	writer = {};
+	m_writer = {};
 	m_services->soundboard.flags.console.set(audio::Console::done);
 	NANI_LOG_INFO(m_logger, "Console ended.");
 }
@@ -165,12 +169,12 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 
 	// in response mode
 	if (m_response) {
-		if (m_response->handle_inputs(controller)) {
+		if (m_response->handle_inputs(controller, m_services->soundboard)) {
 			return;
 		} else {
 			// do something with response selection
 			// set target suite if response code demands it
-			if (get_response_code(m_response->get_selection()).is_suite_return()) { writer->set_suite(get_response_code(m_response->get_selection()).value); }
+			if (get_response_code(m_response->get_selection()).is_suite_return()) { m_writer->set_suite(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_action()) { handle_actions(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_exit()) {
 				end();
@@ -183,35 +187,36 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	}
 
 	// create response dialog
-	if (next && writer->is_responding() && !responded) {
-		// create a response dialog, feed it inputs, and await its closure before resuming writer
-		m_response = ResponseDialog(m_services->text, text_suite, native_key, get_message_code().value);
+	if (next && m_writer->is_responding() && !responded) {
+		// create a response dialog, feed it inputs, and await its closure before resuming m_writer
+		m_response = ResponseDialog(m_services->text, text_suite, native_key, get_message_code().value, m_position + m_response_offset);
 		m_mode = ConsoleMode::responding;
-		writer->wait();
+		m_writer->wait();
+		m_services->soundboard.flags.console.set(audio::Console::next);
 		NANI_LOG_DEBUG(m_logger, "ResponseDialog created.");
 		return;
 	}
 
 	// go to next message or exit
-	if ((next && writer->is_ready()) || responded) {
+	if ((next && m_writer->is_ready()) || responded) {
 		auto code = get_message_code();
 		if (code.is_redirect() && !responded) {
-			writer->set_suite(code.value);
-			if (code.extras) { writer->set_index(code.extras.value()[0]); }
+			m_writer->set_suite(code.value);
+			if (code.extras) { m_writer->set_index(code.extras.value()[0]); }
 		}
 		m_services->soundboard.flags.console.set(audio::Console::next);
-		finished = writer->request_next();
+		finished = m_writer->request_next();
 		can_skip = false;
 		NANI_LOG_DEBUG(m_logger, "Requested Next.");
 	}
 
 	// speed up text
 	if (released) { can_skip = true; }
-	if (writer->is_stalling()) { can_skip = false; }
-	(skip && can_skip) ? writer->speed_up() : writer->slow_down();
+	if (m_writer->is_stalling()) { can_skip = false; }
+	(skip && can_skip) ? m_writer->speed_up() : m_writer->slow_down();
 
 	if (finished) {
-		if (writer->exit_requested()) {
+		if (m_writer->exit_requested()) {
 			end();
 			NANI_LOG_INFO(m_logger, "Writer shut down...");
 		}
@@ -227,14 +232,14 @@ void Console::debug() {
 			get_response_code(m_response->get_selection()).debug();
 			ImGui::Separator();
 		}
-		if (writer) { get_message_code().debug(); }
+		if (m_writer) { get_message_code().debug(); }
 		ImGui::End();
 	}
 }
 
 auto Console::get_message_code() const -> MessageCode {
 	for (auto& code : m_codes) {
-		if (code.index == writer->get_index() && code.source == CodeSource::suite && code.set == writer->get_current_suite_set()) { return code; }
+		if (code.index == m_writer->get_index() && code.source == CodeSource::suite && code.set == m_writer->get_current_suite_set()) { return code; }
 	}
 	return MessageCode();
 }

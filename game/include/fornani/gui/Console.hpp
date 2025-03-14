@@ -84,18 +84,19 @@ class Console {
 
 	automa::ServiceProvider* m_services;
 
-	std::unique_ptr<TextWriter> writer;
 	std::string native_key{};
 
   protected:
 	void handle_inputs(config::ControllerMap& controller);
 	void debug();
 
+	std::unique_ptr<TextWriter> m_writer;
 	std::optional<ResponseDialog> m_response{};
 	std::vector<MessageCode> m_codes{};
 
-	sf::Vector2<float> position{};
-	sf::Vector2<float> dimensions{};
+	sf::Vector2f m_position{};
+	sf::Vector2f m_dimensions{};
+	sf::Vector2f m_response_offset;
 	OutputType m_output_type{};
 	ConsoleMode m_mode{};
 	io::Logger m_logger{"gui"};

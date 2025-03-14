@@ -66,6 +66,7 @@ void TextWriter::update() {
 
 	// append next character to working string
 	if (m_counters.tick.get_count() % m_writing_speed == 0) {
+		constrain();
 		char const next_char = static_cast<char>(suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getData()[m_counters.glyph.get_count()]);
 		working_str += next_char;
 		working_message.setString(working_str);

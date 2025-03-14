@@ -77,6 +77,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 		if (voice_cue != 0) {
 			// do something clever in Soundboard
 		}
+		player.camera_offset.y = 64.f;
 	}
 	if (!console.is_active() && state_flags.test(NPCState::engaged)) { pop_conversation(); }
 	triggers = {};
