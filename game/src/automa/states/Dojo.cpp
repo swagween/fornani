@@ -29,6 +29,10 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	hud.orient(svc, player); // reset hud position to corner
 	svc.soundboard.turn_on();
 
+	camera.set_bounds(map.real_dimensions);
+	camera.update(svc);
+	camera.force_center(player.get_camera_focus_point());
+
 	// TODO: refactor player initialization
 	player.collider.physics.zero();
 
@@ -40,7 +44,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 				found_one = true;
 				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player.height()};
 				player.set_position(spawn_position, true);
-				camera.force_center(player.anchor_point);
+				camera.force_center(player.get_camera_focus_point());
 				if (portal.activate_on_contact() && portal.is_left_or_right()) {
 					enter_room.start(90);
 				} else {
@@ -160,7 +164,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 	camera.center(player->get_camera_focus_point());
 	camera.update(svc);
-	camera.restrict_movement(map.real_dimensions);
 
 	map.debug_mode = debug_mode;
 

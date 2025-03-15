@@ -1,7 +1,11 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace fornani::graphics {
+
+enum class CameraState : std::uint8_t { restricted, free };
 
 struct ShakeProperties {
 	bool shaking{};
@@ -16,6 +20,8 @@ class CameraController {
 	void shake(ShakeProperties properties);
 	void shake(int frequency = 10, float energy = 0.4f, int start_time = 400, int dampen_factor = 30);
 	void cancel();
+	void free();
+	void restrict();
 	[[nodiscard]] auto is_shaking() const -> bool { return shake_properties.shaking; }
 	[[nodiscard]] auto get_frequency() const -> int { return shake_properties.frequency; }
 	[[nodiscard]] auto get_energy() const -> float { return shake_properties.energy; }
@@ -24,8 +30,11 @@ class CameraController {
 
 	[[nodiscard]] auto get_shake_properties() const -> ShakeProperties { return shake_properties; }
 
+	[[nodiscard]] auto get_state() const -> CameraState { return m_state; }
+
   private:
 	ShakeProperties shake_properties{};
+	CameraState m_state{};
 };
 
 } // namespace fornani::graphics

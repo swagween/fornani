@@ -60,15 +60,15 @@
 	"gobe4": {
 		"codes": [
 			[ 0, 0, 0, 1, 0 ],
-			[ 0, 2, 1, 6, 0 ],
-			[ 0, 3, 1, 6, 0 ],
+			[ 0, 2, 1, 1, 0 ],
+			[ 0, 3, 1, 1, 0 ],
 			[ 1, 0, 0, 1, 1 ],
 			[ 1, 0, 1, 1, 2 ],
 			[ 1, 0, 2, 1, 3 ]
 		],
 		"suite": [
 			[ "Yes?" ],
-			[ "Sure thing! Here's what I've picked up over the last few weeks...$70#1#1#" ],
+			[ "Sure thing! Here's what I've picked up over the last few weeks..." ],
 			[ "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember.", "Justin and I tend to find stuff along the way and pick it up, so if you're ever in the market for random junk, I'm your guy!" ],
 			[ "Well, the Overturned Forest, if ya ain't talkin' specifics. At least, that's what we Grand-Islanders call it.", " But shouldn't you know, anyhow? You're a Kariba after all, and, last I checked, all your kind come from here." ]
 		],
