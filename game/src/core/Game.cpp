@@ -31,7 +31,7 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	// player
 	player.init(services);
 
-	background.setSize(services.window->f_screen_dimensions());
+	background.setSize(sf::Vector2f{services.window->get().getSize()});
 	background.setFillColor(services.styles.colors.ui_black);
 }
 
@@ -42,6 +42,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 	measurements.win_size.x = services.window->get().getSize().x;
 	measurements.win_size.y = services.window->get().getSize().y;
+	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
 
 	{
 		NANI_ZoneScopedN("Demo Mode Setup");
@@ -192,7 +193,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 #endif
 
 			services.window->get().clear();
+			services.window->get().setView(entire_window);
 			services.window->get().draw(background);
+			services.window->restore_view();
 
 			if (m_game_menu) {
 				m_game_menu.value()->get_current_state().render(services, services.window->get());
@@ -251,6 +254,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
+					ImGui::Separator();
+					ImGui::Text("Camera");
+					if (ImGui::Button("Toggle Freedom")) { services.camera_controller.is_free() ? services.camera_controller.constrain() : services.camera_controller.free(); }
 					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());

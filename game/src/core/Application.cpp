@@ -1,5 +1,6 @@
 
 #include "fornani/core/Application.hpp"
+#include "fornani/graphics/Colors.hpp"
 
 #include <iostream>
 
@@ -20,7 +21,14 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 	m_window.create(m_metadata.long_title(), fullscreen);
 	m_window.set();
 
+	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
+	auto background = sf::RectangleShape{sf::Vector2f{sf::VideoMode::getDesktopMode().size}};
+	background.setFillColor(colors::ui_black);
+
 	m_window.get().clear();
+	if (m_window.fullscreen()) { m_window.get().setView(entire_window); }
+	m_window.get().draw(background);
+	m_window.restore_view();
 	m_window.get().draw(m_loading);
 	m_window.get().display();
 }

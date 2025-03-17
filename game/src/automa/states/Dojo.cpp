@@ -105,15 +105,19 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		return;
 	}
 
+	if (console.just_began()) {
+		player->wardrobe_widget.update(*player);
+		console.set_nani_sprite(player->wardrobe_widget.get_sprite());
+	}
 	console.update(svc);
+
+	svc.world_clock.update(svc);
 
 	if (inventory_window) {
 		inventory_window.value()->update(svc, *player, map);
 		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
 		return;
 	}
-
-	svc.world_clock.update(svc);
 
 	// TODO: move this somehwere else
 	if (vendor_dialog) {

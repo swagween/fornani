@@ -11,6 +11,6 @@ void CameraController::cancel() { shake_properties = {}; }
 
 void CameraController::free() { m_state = CameraState::free; }
 
-void CameraController::restrict() { m_state = CameraState::restricted; }
+void CameraController::constrain() { m_state = CameraState::constrained; }
 
 } // namespace fornani::graphics

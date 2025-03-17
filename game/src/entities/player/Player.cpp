@@ -12,7 +12,7 @@
 namespace fornani::player {
 
 Player::Player(automa::ServiceProvider& svc)
-	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f} {}
+	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc) {}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -60,7 +60,7 @@ void Player::update(world::Map& map) {
 	if (controller.sprinting()) { controller.reset_vertical_movement(); }
 	m_camera.physics.set_global_friction(0.88f);
 	auto skew{controller.vertical_movement() < 0.f ? 120.f : 160.f};
-	m_camera.target.seek(m_camera.physics, sf::Vector2f{0.f, skew} * controller.vertical_movement(), 0.001f);
+	m_camera.target.seek(m_camera.physics, sf::Vector2f{0.f, skew} * controller.vertical_movement(), 0.002f);
 	m_camera.physics.simple_update();
 	camera_offset.y = -64.f + m_camera.physics.position.y;
 

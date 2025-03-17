@@ -53,6 +53,7 @@ class Console {
 	void render(sf::RenderWindow& win);
 
 	void set_source(dj::Json& json);
+	void set_nani_sprite(sf::Sprite const& sprite);
 	void handle_actions(int value);
 	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual);
 	void load_single_message(std::string_view message);
@@ -69,6 +70,7 @@ class Console {
 	[[nodiscard]] auto is_active() const -> bool { return m_mode == ConsoleMode::writing || m_mode == ConsoleMode::responding; }
 	[[nodiscard]] auto is_complete() const -> bool { return !is_active(); }
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
+	[[nodiscard]] auto just_began() const -> bool { return m_began; }
 	[[nodiscard]] auto get_message_code() const -> MessageCode;
 	[[nodiscard]] auto get_response_code(int which) const -> MessageCode;
 
@@ -77,9 +79,6 @@ class Console {
 
 	dj::Json text_suite{};
 
-	Portrait portrait;
-	Portrait nani_portrait;
-	sf::Texture nani_texture{};
 	ItemWidget item_widget;
 
 	automa::ServiceProvider* m_services;
@@ -94,6 +93,9 @@ class Console {
 	std::optional<ResponseDialog> m_response{};
 	std::vector<MessageCode> m_codes{};
 
+	Portrait m_npc_portrait;
+	Portrait m_nani_portrait;
+
 	sf::Vector2f m_position{};
 	sf::Vector2f m_dimensions{};
 	sf::Vector2f m_response_offset;
@@ -106,6 +108,7 @@ class Console {
 		float padding_scale{};
 	} m_styling{};
 	util::NineSlice m_nineslice;
+	bool m_began{};
 };
 
 } // namespace fornani::gui

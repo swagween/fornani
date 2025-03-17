@@ -1,6 +1,8 @@
 
 #pragma once
-#include "fornani/particle/Gravitator.hpp"
+
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::automa {
@@ -8,9 +10,12 @@ struct ServiceProvider;
 }
 
 namespace fornani::gui {
+
 enum class PortraitFlags : std::uint8_t { custom };
+
 constexpr float pad_x{20.f};
 constexpr float pad_y{20.f};
+
 class Portrait {
   public:
 	explicit Portrait(automa::ServiceProvider& svc, bool left = true);
@@ -19,6 +24,7 @@ class Portrait {
 	void render(sf::RenderWindow& win);
 	void reset(automa::ServiceProvider& svc);
 	void set_position(sf::Vector2<float> pos);
+	void set_texture(sf::Texture const& texture);
 	void bring_in();
 	void send_out();
 	void set_emotion(int new_emotion);
@@ -38,7 +44,8 @@ class Portrait {
 	sf::Vector2<float> start_position{};
 	sf::Vector2<float> end_position{};
 
-	vfx::Gravitator gravitator{};
+	components::PhysicsComponent m_physics{};
+	components::SteeringBehavior m_steering{};
 };
 
 } // namespace fornani::gui

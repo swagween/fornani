@@ -83,7 +83,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 		player.camera_offset.y = 32.f;
 		svc.camera_controller.free();
 	} else {
-		svc.camera_controller.restrict();
+		svc.camera_controller.constrain();
 	}
 	triggers = {};
 }

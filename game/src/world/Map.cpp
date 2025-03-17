@@ -14,8 +14,7 @@
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}}, barrier{1.f, 1.f},
-	  scaled_barrier{barrier * util::constants::f_cell_size} {}
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	// for debugging
@@ -549,7 +548,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		auto ctr{0};
 		for (auto& sprite : sprites) {
 			sprite.setScale(util::constants::f_scale_vec);
-			sprite.setPosition(-cam - scaled_barrier);
+			sprite.setPosition(-cam);
 			m_camera_effects.shifter.render(svc, win, sprite, ctr);
 			++ctr;
 		}
@@ -576,7 +575,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 			auto ctr{0};
 			for (auto& sprite : obs_sprites) {
 				sprite.setScale(util::constants::f_scale_vec);
-				sprite.setPosition(-cam - scaled_barrier);
+				sprite.setPosition(-cam);
 				std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
 				if (alpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, alpha); }
 				++ctr;
@@ -588,7 +587,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 			auto ctr{0};
 			for (auto& sprite : rev_sprites) {
 				sprite.setScale(util::constants::f_scale_vec);
-				sprite.setPosition(-cam - scaled_barrier);
+				sprite.setPosition(-cam);
 				std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
 				if (revalpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, revalpha); }
 				++ctr;
@@ -665,11 +664,19 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
+		// draw barrier
+		auto spr = sf::Sprite{textures.barrier.getTexture()};
+		auto border = sf::Vector2i{512, 512};
+		spr.setTextureRect(sf::IntRect{-border, {sf::Vector2i{textures.barrier.getSize()} + 2 * border}});
+		spr.setScale(util::constants::f_scale_vec);
+		spr.setPosition(-cam - sf::Vector2f{2 * border});
+		win.draw(spr);
+
 		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background.day.getTexture()}, sf::Sprite{textures.background.twilight.getTexture()}, sf::Sprite{textures.background.night.getTexture()}};
 		auto ctr{0};
 		for (auto& sprite : sprites) {
 			sprite.setScale(util::constants::f_scale_vec);
-			sprite.setPosition(-cam - scaled_barrier);
+			sprite.setPosition(-cam);
 			m_camera_effects.shifter.render(svc, win, sprite, ctr);
 			++ctr;
 		}
@@ -762,6 +769,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto& layers = svc.data.get_layers(room_id);
 	if (has_obscuring_layer()) { textures.obscuring = LayerTexture(); }
 	if (has_reverse_obscuring_layer()) { textures.reverse_obscuring = LayerTexture(); }
+	if (!textures.barrier.resize(sf::Vector2u{get_middleground().dimensions * static_cast<unsigned int>(util::constants::u_cell_resolution)})) { NANI_LOG_ERROR(m_logger, "Barrier texture not created."); }
 	for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
 		for (auto& layer : layers) {
 			auto changed{layer.get_i_render_order() == 0 || layer.middleground()};
@@ -772,8 +780,8 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 														 : !layer.background()				  ? textures.foreground.night
 																							  : textures.background.night)};
 
-			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(util::constants::i_cell_resolution),
-							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(util::constants::i_cell_resolution)};
+			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x) * static_cast<unsigned int>(util::constants::i_cell_resolution),
+							  static_cast<unsigned int>(layer.grid.dimensions.y) * static_cast<unsigned int>(util::constants::i_cell_resolution)};
 			if (changed) {
 				if (!tex.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
 				tex.clear(sf::Color::Transparent);
@@ -790,10 +798,10 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 			}
 			sf::Sprite tile{svc.assets.get_tileset(m_metadata.biome)};
 			for (auto& cell : layer.grid.cells) {
-				auto x_coord = static_cast<int>((cell.value % util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution) + (cycle * util::constants::tileset_dimensions.x * util::constants::tileset_dimensions.y);
+				auto x_coord = static_cast<int>((cell.value % util::constants::tileset_dimensions.x + cycle * util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
 				auto y_coord = static_cast<int>(std::floor(cell.value / util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
 				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, util::constants::i_resolution_vec));
-				tile.setPosition((cell.position() + scaled_barrier) / util::constants::f_scale_factor);
+				tile.setPosition(cell.position() / util::constants::f_scale_factor);
 				if (cell.is_occupied() && !cell.is_special()) {
 					auto normal{true};
 					if (layer.obscuring()) {
@@ -809,7 +817,10 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 					}
 					if (normal) { tex.draw(tile); }
 				}
-				if (layer.middleground()) { draw_barrier(tex, tile, cell, util::constants::f_scale_factor); }
+				if (layer.middleground() && cycle == 0) {
+					textures.barrier.draw(tile);
+					// draw_barrier(tex, tile, cell, util::constants::f_scale_factor);
+				}
 			}
 			if (finished) { tex.display(); }
 			if (layer.obscuring()) {
@@ -824,6 +835,7 @@ void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 				if (!textures.greyblock.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
 				get_middleground().grid.draw(textures.greyblock);
 			}
+			if (layer.middleground() && cycle == 0) { textures.barrier.display(); }
 		}
 	}
 }
@@ -977,43 +989,5 @@ std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get
 int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_cell(get_index_at_position(position)).value; }
 
 Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground().grid.cells.at(get_index_at_position(position)); }
-
-void world::Map::draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell, float scale) {
-	auto bar{scaled_barrier / scale};
-	auto pos{cell.position() / scale};
-	auto offset{2.f * bar};
-	if (cell.index.x == 0) {
-		tile.setPosition(pos);
-		tex.draw(tile);
-	}
-	if (cell.index.y == 0) {
-		tile.setPosition(pos);
-		tex.draw(tile);
-	}
-	if (cell.index.x == dimensions.x - 1) {
-		tile.setPosition(pos + offset);
-		tex.draw(tile);
-	}
-	if (cell.index.y == dimensions.y - 1) {
-		tile.setPosition(pos + offset);
-		tex.draw(tile);
-	}
-	if (cell.index.x == 0 && cell.index.y == dimensions.y - 1) {
-		tile.setPosition(pos + sf::Vector2f{0.f, bar.y});
-		tex.draw(tile);
-		tile.setPosition(pos + sf::Vector2f{0.f, offset.y});
-		tex.draw(tile);
-		tile.setPosition(pos + sf::Vector2f{bar.x, offset.y});
-		tex.draw(tile);
-	}
-	if (cell.index.y == 0 && cell.index.x == dimensions.x - 1) {
-		tile.setPosition(pos + sf::Vector2f{bar.x, 0.f});
-		tex.draw(tile);
-		tile.setPosition(pos + sf::Vector2f{offset.x, 0.f});
-		tex.draw(tile);
-		tile.setPosition(pos + sf::Vector2f{offset.x, bar.y});
-		tex.draw(tile);
-	}
-}
 
 } // namespace fornani::world

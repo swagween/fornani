@@ -207,12 +207,11 @@ class Map {
 
 	sf::RectangleShape borderbox{};
 	sf::RectangleShape center_box{};
-	sf::Vector2f barrier;
-	sf::Vector2f scaled_barrier;
 
 	// layers
 	struct {
 		sf::RenderTexture greyblock{};
+		sf::RenderTexture barrier{};
 		LayerTexture foreground{};
 		LayerTexture background{};
 		std::optional<LayerTexture> obscuring{};
@@ -252,7 +251,6 @@ class Map {
 	util::Cooldown end_demo{500};
 
   private:
-	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell, float scale);
 	int abyss_distance{400};
 	struct {
 		std::string biome{};

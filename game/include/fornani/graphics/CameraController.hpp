@@ -5,7 +5,7 @@
 
 namespace fornani::graphics {
 
-enum class CameraState : std::uint8_t { restricted, free };
+enum class CameraState : std::uint8_t { constrained, free };
 
 struct ShakeProperties {
 	bool shaking{};
@@ -21,7 +21,7 @@ class CameraController {
 	void shake(int frequency = 10, float energy = 0.4f, int start_time = 400, int dampen_factor = 30);
 	void cancel();
 	void free();
-	void restrict();
+	void constrain();
 	[[nodiscard]] auto is_shaking() const -> bool { return shake_properties.shaking; }
 	[[nodiscard]] auto get_frequency() const -> int { return shake_properties.frequency; }
 	[[nodiscard]] auto get_energy() const -> float { return shake_properties.energy; }
@@ -31,6 +31,7 @@ class CameraController {
 	[[nodiscard]] auto get_shake_properties() const -> ShakeProperties { return shake_properties; }
 
 	[[nodiscard]] auto get_state() const -> CameraState { return m_state; }
+	[[nodiscard]] auto is_free() const -> bool { return m_state == CameraState::free; }
 
   private:
 	ShakeProperties shake_properties{};

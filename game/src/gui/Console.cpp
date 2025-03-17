@@ -9,7 +9,7 @@ namespace fornani::gui {
 Console::Console(automa::ServiceProvider& svc) : Console(svc, "blue_console") {}
 
 Console::Console(automa::ServiceProvider& svc, std::string const& texture_lookup)
-	: portrait(svc), nani_portrait(svc, false), m_services(&svc), item_widget(svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64},
+	: m_npc_portrait(svc), m_nani_portrait(svc, false), m_services(&svc), item_widget(svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64},
 	  m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}}, m_nineslice(svc, svc.assets.get_texture(texture_lookup), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}),
 	  m_mode{ConsoleMode::off}, m_response_offset{-48.f, 16.f} {
 	text_suite = svc.text.console;
@@ -18,10 +18,12 @@ Console::Console(automa::ServiceProvider& svc, std::string const& texture_lookup
 void Console::begin() {
 	m_mode = ConsoleMode::writing;
 	m_path.set_section("open");
+	m_began = true;
 	NANI_LOG_INFO(m_logger, "Console began.");
 }
 
 void Console::update(automa::ServiceProvider& svc) {
+	m_began = false;
 	if (!is_active()) { return; }
 	if (!m_writer) { return; }
 	handle_inputs(svc.controller_map);
@@ -44,8 +46,8 @@ void Console::update(automa::ServiceProvider& svc) {
 		m_response->set_position(m_position + m_response_offset);
 		m_response->update();
 	}
-	portrait.update(svc);
-	nani_portrait.update(svc);
+	m_npc_portrait.update(svc);
+	m_nani_portrait.update(svc);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
 	// check for response
 	for (auto& code : m_codes) {
@@ -57,20 +59,22 @@ void Console::update(automa::ServiceProvider& svc) {
 }
 
 void Console::render(sf::RenderWindow& win) {
-	debug();
+	// debug();
 	if (!m_writer || !is_active()) { return; }
 	m_nineslice.render(win);
 	if (flags.test(ConsoleFlags::display_item)) { item_widget.render(*m_services, win); }
 	if (flags.test(ConsoleFlags::portrait_included)) {
-		portrait.render(win);
-		// m_writer->responding() ? nani_portrait.bring_in() : nani_portrait.send_out();
-		nani_portrait.render(win);
+		m_npc_portrait.render(win);
+		m_mode == ConsoleMode::responding ? m_nani_portrait.bring_in() : m_nani_portrait.send_out();
+		m_nani_portrait.render(win);
 	}
 	if (m_response) { m_response->render(win); }
 	// m_writer->debug();
 }
 
 void Console::set_source(dj::Json& json) { text_suite = json; }
+
+void Console::set_nani_sprite(sf::Sprite const& sprite) { m_nani_portrait.set_texture(sprite.getTexture()); }
 
 void Console::handle_actions(int value) {
 	switch (value) {
@@ -106,8 +110,8 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 	}
 	m_output_type = type;
 	native_key = key;
-	portrait.reset(*m_services);
-	nani_portrait.reset(*m_services);
+	m_npc_portrait.reset(*m_services);
+	m_nani_portrait.reset(*m_services);
 	item_widget.reset(*m_services);
 	begin();
 }
@@ -145,7 +149,7 @@ void Console::end() {
 
 void Console::include_portrait(int id) {
 	flags.set(ConsoleFlags::portrait_included);
-	portrait.set_id(id);
+	m_npc_portrait.set_id(id);
 }
 
 std::string Console::get_key() const { return native_key; }
