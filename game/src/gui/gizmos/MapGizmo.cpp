@@ -25,7 +25,7 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 													  sf::Vector2f{-100.f, -20.f},
 													  sf::Vector2f{80.f, -20.f},
 												  } {
-
+	m_dashboard_port = DashboardPort::minimap;
 	m_physics.position = sf::Vector2f{0.f, svc.window->f_screen_dimensions().y};
 	m_icon_sprite.setOrigin({3.f, 3.f});
 	m_icon_sprite.setScale(util::constants::f_scale_vec);
@@ -53,6 +53,7 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 
 	m_path.update();
 	m_motherboard_path.update();
+	m_minimap->update();
 
 	if (m_info) { m_info->update(svc, player, map, m_placement + m_path.get_position()); }
 	for (auto& plugin : m_plugins) { plugin.update(svc.soundboard); }
@@ -126,8 +127,8 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f});
 	m_minimap->render(svc, win, player, cam, m_icon_sprite);
 	m_icon_sprite.setScale(util::constants::f_scale_vec);
-	m_map_shadow.render(win, cam);
 	m_map_screen.render(win, cam);
+	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
 	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}); }
 	if (m_info) { m_info->render(svc, win, player, cam, foreground); }
@@ -145,26 +146,26 @@ bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboar
 	auto zoom_factor{0.1f};
 	if (controller.digital_action_status(config::DigitalAction::menu_up).held) {
 		m_minimap->move({0.f, -1.f});
-		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_down).held) {
 		m_minimap->move({0.f, 1.f});
-		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_left).held) {
 		m_minimap->move({-1.f, 0.f});
-		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_right).held) {
 		m_minimap->move({1.f, 0.f});
-		soundboard.flags.pioneer.set(audio::Pioneer::scan);
+		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_switch_left).held) {
 		m_minimap->zoom(zoom_factor);
-		soundboard.flags.pioneer.set(audio::Pioneer::buzz);
+		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
 	} else if (controller.digital_action_status(config::DigitalAction::menu_switch_right).held) {
 		m_minimap->zoom(-zoom_factor);
-		soundboard.flags.pioneer.set(audio::Pioneer::buzz);
+		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		m_minimap->center();

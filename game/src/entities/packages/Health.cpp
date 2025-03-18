@@ -1,3 +1,4 @@
+
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
@@ -57,5 +58,10 @@ void Health::inflict(float amount, bool force) {
 void Health::increase_max_hp(float amount) { set_max(max_hp + amount); }
 
 void Health::reset() { hp = max_hp; }
+
+void Health::debug() {
+	ImGui::SliderFloat("hp", &hp, 1.f, max_hp);
+	ImGui::SliderFloat("max", &max_hp, 3.f, 20.f);
+}
 
 } // namespace fornani::entity

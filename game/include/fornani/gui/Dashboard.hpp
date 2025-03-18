@@ -24,7 +24,8 @@ class ControllerMap;
 
 namespace fornani::gui {
 
-enum class GizmoButtonState { off, hovered, clicked };
+enum class DashboardState : std::uint8_t { home, hovering, gizmo };
+enum class GizmoButtonState : std::uint8_t { off, hovered, clicked };
 
 struct GizmoButton {
 	sf::RectangleShape box{};
@@ -40,15 +41,19 @@ class Dashboard {
 	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);
 	void set_position(sf::Vector2f to_position, bool force = false);
 	void set_selection(sf::Vector2i to_selection);
-	void select_gizmo();
+	///@returns false if gizmo does not exist
+	bool select_gizmo();
 	void hover(sf::Vector2i direction);
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_physical.physics.position; }
 	[[nodiscard]] auto get_selected_position() const -> sf::Vector2i { return m_selected_position; }
+	[[nodiscard]] auto is_hovering() const -> bool { return m_state == DashboardState::hovering; }
+	[[nodiscard]] auto is_home() const -> bool { return m_state == DashboardState::home; }
 
   private:
 	std::vector<std::unique_ptr<Gizmo>> m_gizmos{};
 	sf::Vector2i m_selected_position{};
-	int m_current_gizmo{};
+	DashboardPort m_current_port{};
+	DashboardState m_state{};
 
 	sf::Sprite m_sprite;
 

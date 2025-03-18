@@ -16,6 +16,9 @@ namespace fornani {
 enum class TimeOfDay : std::uint8_t { day, twilight, night, END };
 enum class ClockMode : std::uint8_t { standard, military };
 
+constexpr int dawn_time{6};
+constexpr int dusk_time{18};
+
 class WorldClock {
   public:
 	WorldClock();
@@ -25,8 +28,8 @@ class WorldClock {
 	void toggle_military_time();
 	[[nodiscard]] auto is_military() const -> bool { return m_mode == ClockMode::military; }
 	[[nodiscard]] auto get_normalized_time() const -> float { return static_cast<float>(get_hours() * 60 + get_minutes()) / 1440.f; }
-	[[nodiscard]] auto is_daytime() const -> bool { return increments.hours.get() >= 8 && increments.hours.get() < 19; }
-	[[nodiscard]] auto is_nighttime() const -> bool { return increments.hours.get() >= 20 || increments.hours.get() < 7; }
+	[[nodiscard]] auto is_daytime() const -> bool { return increments.hours.get() >= dawn_time + 1 && increments.hours.get() < dusk_time; }
+	[[nodiscard]] auto is_nighttime() const -> bool { return increments.hours.get() >= dusk_time + 1 || increments.hours.get() < dawn_time; }
 	[[nodiscard]] auto is_twilight() const -> bool { return !is_daytime() && !is_nighttime(); }
 	[[nodiscard]] auto is_transitioning() const -> bool { return transition.running(); }
 	[[nodiscard]] static auto num_cycles() -> int { return static_cast<int>(TimeOfDay::END); }

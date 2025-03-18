@@ -35,6 +35,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 	if (flags.pioneer.test(Pioneer::slot)) { play(svc, svc.sounds.get_buffer("pioneer_slot")); }
 	if (flags.pioneer.test(Pioneer::chain)) { play(svc, svc.sounds.get_buffer("pioneer_chain")); }
 	if (flags.pioneer.test(Pioneer::drag)) { play(svc, svc.sounds.get_buffer("pioneer_drag")); }
+	if (flags.pioneer.test(Pioneer::wires)) { play(svc, svc.sounds.get_buffer("pioneer_wires")); }
 	flags.pioneer.test(Pioneer::buzz) ? simple_repeat(svc.sounds.get_buffer("pioneer_buzz"), "pioneer_buzz") : stop("pioneer_buzz");
 	flags.pioneer.test(Pioneer::hum) ? simple_repeat(svc.sounds.get_buffer("pioneer_hum"), "pioneer_hum") : stop("pioneer_hum");
 	flags.pioneer.test(Pioneer::scan) ? simple_repeat(svc.sounds.get_buffer("pioneer_scan"), "pioneer_scan") : stop("pioneer_scan");

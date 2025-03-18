@@ -7,8 +7,8 @@
 		"hp": 3.000000,
 		"orbs": 495,
 		"position": {
-			"x": 352.256104,
-			"y": 320.000000
+			"x": 120.256104,
+			"y": 180.000001
 		},
 		"arsenal": [
 			0,
@@ -21,32 +21,39 @@
 		],
 		"wardrobe": {
 			"hairstyle": 0,
+			"headgear": 0,
 			"shirt": 0,
-			"pants": 0
+			"pants": 1
 		},
 		"items": [
 			{
-				"id": 22,
+				"label": "navy_top",
+				"type": 1,
 				"quantity": 1
 			},
 			{
-				"id": 20,
+				"label": "green_pants",
+				"type": 1,
 				"quantity": 1
 			},
 			{
-				"id": 1,
+				"label": "radar_device",
+				"type": 0,
 				"quantity": 1
 			},
 			{
-				"id": 16,
+				"label": "red_jeans",
+				"type": 1,
 				"quantity": 1
 			},
 			{
-				"id": 97,
+				"label": "chalcedony_tee",
+				"type": 1,
 				"quantity": 1
 			},
 			{
-				"id": 81,
+				"label": "chalcedony_skirt",
+				"type": 1,
 				"quantity": 1
 			}
 		],
@@ -71,7 +78,7 @@
 			2
 		]
 	},
-	"save_point_id": 100,
+	"save_point_id": 4200,
 	"unlocked_doors": [
 
 	],

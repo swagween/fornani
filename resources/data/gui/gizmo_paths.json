@@ -233,5 +233,60 @@
 				}
 			]
 		}
+	],
+	"wardrobe": [
+		{
+			"label": "start",
+			"path": [
+				{
+					"position": [ 64, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 63, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ -159, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ -158, 0 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		}
+	],
+	"wardrobe_outfitter": [
+		{
+			"label": "start",
+			"path": [
+				{
+					"position": [ 256, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 0, 0 ],
+					"dimensions": [ 5, 122 ]
+				}
+			]
+		},
+		{
+			"label": "close",
+			"path": [
+				{
+					"position": [ 0, 0 ],
+					"dimensions": [ 5, 122 ]
+				},
+				{
+					"position": [ 4, 0 ],
+					"dimensions": [ 0, 0 ]
+				},
+				{
+					"position": [ 256, 0 ],
+					"dimensions": [ 0, 0 ]
+				}
+			]
+		}
 	]
 }

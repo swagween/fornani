@@ -99,7 +99,8 @@ class Player {
 	void init(automa::ServiceProvider& svc);
 	// member functions
 	void update(world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position);
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void assign_texture(sf::Texture& tex);
 	void update_animation();
@@ -151,16 +152,14 @@ class Player {
 	bool grounded() const;
 	bool fire_weapon();
 
-	// level events
 	void update_invincibility();
 	void start_over();
 	void give_drop(item::DropType type, float value);
-	void give_item(int item_id, int amount);
-	void take_item(int item_id, int amount = 1);
-	void equip_item(ApparelType type, int item_id);
-	void unequip_item(ApparelType type, int item_id);
+	void give_item(std::string_view label, item::ItemType type, int amount);
 	void add_to_hotbar(int id);
 	void remove_from_hotbar(int id);
+	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);
+	[[nodiscard]] auto get_outfit() -> std::array<int, static_cast<int>(ApparelType::END)> { return catalog.wardrobe.get(); }
 
 	void reset_flags();
 	void total_reset();

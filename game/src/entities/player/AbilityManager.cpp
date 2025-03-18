@@ -1,10 +1,8 @@
 #include "fornani/entities/player/AbilityManager.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {
-
-void AbilityManager::update(automa::ServiceProvider& svc) {}
 
 void AbilityManager::give_ability(Abilities ability) { ability_flags.set(ability); }
 
@@ -14,4 +12,4 @@ void AbilityManager::remove_ability(Abilities ability) { ability_flags.reset(abi
 
 void AbilityManager::clear() { ability_flags = {}; }
 
-} // namespace player
+} // namespace fornani::player

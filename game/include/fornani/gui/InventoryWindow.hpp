@@ -4,8 +4,8 @@
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/gui/Dashboard.hpp"
+#include "fornani/gui/InventorySelector.hpp"
 #include "fornani/gui/MiniMenu.hpp"
-#include "fornani/gui/Selector.hpp"
 #include "fornani/io/Logger.hpp"
 
 namespace fornani::player {

@@ -35,15 +35,18 @@ static constexpr int fast_writing_speed_v{1};
 
 class TextWriter {
   public:
+	friend class DescriptionGizmo;
 	explicit TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key);
 	explicit TextWriter(automa::ServiceProvider& svc, std::string_view message);
+	explicit TextWriter(automa::ServiceProvider& svc, std::string_view message, sf::FloatRect bounds);
 	void start();
 	void update();
 	void flush();
-	void set_bounds(sf::FloatRect to_bounds);
+	void set_bounds(sf::FloatRect to_bounds, bool wrap = false);
 	void append(std::string_view content);
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);
+	void set_font_color(sf::Color to_color);
 	bool request_next();
 	void shutdown();
 

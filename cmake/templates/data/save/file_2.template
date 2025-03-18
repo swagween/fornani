@@ -26,27 +26,13 @@
 		},
 		"items": [
 			{
-				"id": 22,
+				"label": "navy_top",
+				"type": 1,
 				"quantity": 1
 			},
 			{
-				"id": 20,
-				"quantity": 1
-			},
-			{
-				"id": 1,
-				"quantity": 1
-			},
-			{
-				"id": 16,
-				"quantity": 1
-			},
-			{
-				"id": 97,
-				"quantity": 1
-			},
-			{
-				"id": 81,
+				"label": "green_pants",
+				"type": 1,
 				"quantity": 1
 			}
 		],

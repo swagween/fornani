@@ -1,7 +1,6 @@
 #pragma once
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/MiniMenu.hpp"
-#include "fornani/gui/Selector.hpp"
 
 namespace fornani::player {
 class Player;

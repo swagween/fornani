@@ -1,3 +1,4 @@
+
 #include "fornani/entities/player/Player.hpp"
 
 #include <tracy/Tracy.hpp>
@@ -136,7 +137,6 @@ void Player::update(world::Map& map) {
 	if (orb_indicator.active()) { health_indicator.shift(); }
 	update_invincibility();
 	update_weapon();
-	catalog.update(*m_services);
 
 	if (catalog.abilities.has_ability(Abilities::dash)) {
 		if (!(animation.state == AnimState::dash) && !controller.dash_requested()) {
@@ -166,7 +166,7 @@ void Player::update(world::Map& map) {
 	}
 }
 
-void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
+void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	ZoneScopedN("Player::render");
 	calculate_sprite_offset();
 	if (flags.state.test(State::crushed)) { return; }
@@ -174,44 +174,54 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.green;
 
 	// piggybacker
-	if (piggybacker) { piggybacker.value().render(svc, win, campos); }
+	if (piggybacker) { piggybacker.value().render(svc, win, cam); }
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
 	if (svc.ticker.every_x_frames(8) && animation.state == AnimState::dash) { sprite_history.update(sprite, collider.physics.position); }
 	if (svc.ticker.every_x_frames(8) && !(animation.state == AnimState::dash)) { sprite_history.flush(); }
-	sprite_history.drag(win, campos);
+	sprite_history.drag(win, cam);
 
 	// get UV coords
 	auto u = (animation.get_frame() / 10) * 48;
 	auto v = (animation.get_frame() % 10) * 48;
 	sprite.setTextureRect(sf::IntRect({u, v}, {48, 48}));
 	sprite.setOrigin(sprite.getLocalBounds().getCenter());
-	sprite.setPosition(sprite_position - campos);
+	sprite.setPosition(sprite_position - cam);
 
 	if (arsenal && hotbar) { collider.flags.general.set(shape::General::complex); }
 
 	if (svc.greyblock_mode()) {
 		win.draw(sprite);
-		collider.render(win, campos);
+		collider.render(win, cam);
 		sf::RectangleShape box{};
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(svc.styles.colors.green);
 		box.setOutlineThickness(-1);
-		box.setPosition(hurtbox.get_position() - campos);
+		box.setPosition(hurtbox.get_position() - cam);
 		box.setSize(hurtbox.get_dimensions());
 		win.draw(box);
 	} else {
-		antennae[1].render(svc, win, campos, 1);
+		antennae[1].render(svc, win, cam, 1);
 		win.draw(sprite);
-		antennae[0].render(svc, win, campos, 1);
+		antennae[0].render(svc, win, cam, 1);
 	}
 
 	if (arsenal && hotbar) {
-		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, campos); }
+		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, cam); }
 	}
 
-	if (controller.get_shield().active() && catalog.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, campos); }
+	if (controller.get_shield().active() && catalog.abilities.has_ability(Abilities::shield)) { controller.get_shield().render(*m_services, win, cam); }
+}
+
+void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {
+	ZoneScopedN("Player::render");
+	auto u = (animation.get_frame() / 10) * 48;
+	auto v = (animation.get_frame() % 10) * 48;
+	sprite.setTextureRect(sf::IntRect({u, v}, {48, 48}));
+	sprite.setOrigin(sprite.getLocalBounds().getCenter());
+	sprite.setPosition(forced_position - cam);
+	win.draw(sprite);
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -624,21 +634,13 @@ void Player::give_drop(item::DropType type, float value) {
 		if (value == 100) { m_services->stats.treasure.blue_orbs.update(); }
 		if (orb_indicator.get_amount() > m_services->stats.treasure.highest_indicator_amount.get_count()) { m_services->stats.treasure.highest_indicator_amount.set(static_cast<int>(orb_indicator.get_amount())); }
 	}
-	if (type == item::DropType::gem) { give_item(static_cast<int>(value) + 97, 1); }
-}
-
-void Player::take_item(int item_id, int amount) { catalog.remove_item(*m_services, item_id, amount); }
-
-void Player::equip_item(ApparelType type, int item_id) {
-	if (item_id < 1) { return; }
-	catalog.equip_item(*m_services, type, item_id);
-	catalog.inventory.get_item(item_id).toggle_equip();
-}
-
-void Player::unequip_item(ApparelType type, int item_id) {
-	if (item_id < 1) { return; }
-	catalog.unequip_item(type);
-	catalog.inventory.get_item(item_id).toggle_equip();
+	if (type == item::DropType::gem) {
+		switch (static_cast<int>(value)) {
+		case 0: give_item("rhenite", item::ItemType::collectible, 1); break;
+		case 1: give_item("sapphire", item::ItemType::collectible, 1); break;
+		case 2: give_item("chalcedony", item::ItemType::collectible, 1); break;
+		}
+	}
 }
 
 void Player::add_to_hotbar(int id) {
@@ -657,19 +659,14 @@ void Player::remove_from_hotbar(int id) {
 	}
 }
 
-void Player::give_item(int item_id, int amount) {
-	catalog.add_item(*m_services, item_id, 1);
-	if (catalog.inventory.items.size() == 1) {
-		tutorial.current_state = text::TutorialFlags::inventory;
-		tutorial.trigger();
-		tutorial.turn_on();
-	}
-	if (item_id == 16) {
-		tutorial.current_state = text::TutorialFlags::map;
-		tutorial.trigger();
-		tutorial.turn_on();
-	}
-	if (item_id == 29) {
+void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit) {
+	for (auto i{0}; i < to_outfit.size(); ++i) { catalog.wardrobe.equip(static_cast<ApparelType>(i), to_outfit[i]); }
+}
+
+void Player::give_item(std::string_view label, item::ItemType type, int amount) {
+	auto id{0};
+	for (auto i{0}; i < amount; ++i) { id = catalog.inventory.add_item(m_services->data.item, label, type); }
+	if (id == 29) {
 		health.increase_max_hp(1.f);
 		m_services->soundboard.flags.item.set(audio::Item::health_increase);
 	}

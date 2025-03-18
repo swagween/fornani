@@ -186,10 +186,10 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		{
 			NANI_ZoneScopedN("Rendering");
-#if defined(FORNANI_PRODUCTION)
+#if not defined(FORNANI_PRODUCTION)
 			if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
-#endif
 			flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
+#endif
 
 			services.window->get().clear();
 			services.window->get().draw(background);
@@ -241,6 +241,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
+					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
 					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
@@ -278,39 +279,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Separator();
 					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
 					ImGui::Separator();
-					ImGui::Text("Player");
-					ImGui::Separator();
-					ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
-					ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
-					ImGui::Text("Coyote Time: %i", player.controller.get_jump().get_coyote());
-					ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
-					ImGui::Separator();
-					ImGui::Text("Jump");
-					ImGui::Separator();
-					ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
-					ImGui::Text("Can Jump? %s", player.controller.can_jump() ? "Yes" : "No");
-					ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
-					ImGui::Text("Jump Request: %i", player.controller.get_jump().get_request());
-					ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
-					ImGui::Text("Wallsliding? %s", player.controller.get_wallslide().is_wallsliding() ? "Yes" : "No");
-					ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");
-					ImGui::Separator();
-					ImGui::Text("X Position: %.2f", player.collider.physics.position.x / 32.f);
-					ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / 32.f);
-					ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
-					ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
-					ImGui::Text("Apparent X Velocity: %.2f", player.collider.physics.apparent_velocity().x);
-					ImGui::Text("Apparent Y Velocity: %.2f", player.collider.physics.apparent_velocity().y);
-					ImGui::Text("Actual X Velocity: %.2f", player.collider.physics.actual_velocity().x);
-					ImGui::Text("Actual Y Velocity: %.2f", player.collider.physics.actual_velocity().y);
-					ImGui::Text("Actual Speed: %.2f", player.collider.physics.actual_speed());
-					ImGui::Separator();
-					ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.items.size()));
-					ImGui::Text("Visit History: ");
-					for (auto& room : player.visit_history.rooms_visited) {
-						ImGui::Text("%i, ", room);
-						ImGui::SameLine();
-					}
 
 					ImGui::EndTabItem();
 				}
@@ -428,9 +396,46 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (flags.test(GameFlags::in_game)) {
-
+					static float player_hp{};
 					if (ImGui::BeginTabItem("Player")) {
+						player.health.debug();
 						if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
+							if (ImGui::BeginTabItem("General")) {
+								ImGui::Text("Player");
+								ImGui::Separator();
+								ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
+								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
+								ImGui::Text("Coyote Time: %i", player.controller.get_jump().get_coyote());
+								ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
+								ImGui::Separator();
+								ImGui::Text("Jump");
+								ImGui::Separator();
+								ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
+								ImGui::Text("Can Jump? %s", player.controller.can_jump() ? "Yes" : "No");
+								ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
+								ImGui::Text("Jump Request: %i", player.controller.get_jump().get_request());
+								ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
+								ImGui::Text("Wallsliding? %s", player.controller.get_wallslide().is_wallsliding() ? "Yes" : "No");
+								ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");
+								ImGui::Separator();
+								ImGui::Text("X Position: %.2f", player.collider.physics.position.x / util::constants::f_cell_size);
+								ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / util::constants::f_cell_size);
+								ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
+								ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
+								ImGui::Text("Apparent X Velocity: %.2f", player.collider.physics.apparent_velocity().x);
+								ImGui::Text("Apparent Y Velocity: %.2f", player.collider.physics.apparent_velocity().y);
+								ImGui::Text("Actual X Velocity: %.2f", player.collider.physics.actual_velocity().x);
+								ImGui::Text("Actual Y Velocity: %.2f", player.collider.physics.actual_velocity().y);
+								ImGui::Text("Actual Speed: %.2f", player.collider.physics.actual_speed());
+								ImGui::Separator();
+								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.key_items_view().size()));
+								ImGui::Text("Visit History: ");
+								for (auto& room : player.visit_history.rooms_visited) {
+									ImGui::Text("%i, ", room);
+									ImGui::SameLine();
+								}
+								ImGui::EndTabItem();
+							}
 							if (ImGui::BeginTabItem("Animation")) {
 								ImGui::Text("Animation: %s", player.animation.animation.label.data());
 								ImGui::Separator();
@@ -513,10 +518,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							if (ImGui::BeginTabItem("Catalog")) {
 								ImGui::Separator();
 								ImGui::Text("Inventory");
-								for (auto& item : player.catalog.inventory.items) {
-									ImGui::Text(item.label.data());
+								for (auto& item : player.catalog.inventory.key_items_view()) {
+									ImGui::Text(item->get_label().data());
 									ImGui::SameLine();
-									ImGui::Text(" : %i", item.get_quantity());
 								}
 								ImGui::Separator();
 

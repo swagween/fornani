@@ -7,6 +7,7 @@
 #include "Vendor.hpp"
 #include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/utils/Collider.hpp"
 
 namespace fornani::automa {
@@ -65,6 +66,8 @@ class NPC : public entity::Entity {
 	std::optional<Vendor*> vendor;
 	sf::Sprite m_sprite;
 	std::string m_label{};
+
+	io::Logger m_logger{"npc"};
 
   private:
 	std::unique_ptr<NPCAnimation> animation_machine{};

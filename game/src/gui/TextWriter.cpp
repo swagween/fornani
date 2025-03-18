@@ -30,6 +30,11 @@ TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::stri
 
 TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message) : TextWriter(svc) { load_single_message(message); }
 
+TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message, sf::FloatRect bounds) : TextWriter(svc) {
+	load_single_message(message);
+	set_bounds(bounds, true);
+}
+
 void TextWriter::start() {
 
 	// to be replaced with something prettier later (maybe)
@@ -83,33 +88,33 @@ void TextWriter::flush() {
 	working_str = {};
 }
 
-void TextWriter::set_bounds(sf::FloatRect to_bounds) {
+void TextWriter::set_bounds(sf::FloatRect to_bounds, bool wrap) {
 	m_bounds = to_bounds;
-	if (ccm::abs(m_bounds.size.x - m_previous_bounds.size.x) > m_delta_threshold) {
+	if (ccm::abs(m_bounds.size.x - m_previous_bounds.size.x) > m_delta_threshold || wrap) {
 		constrain();
 		m_previous_bounds = m_bounds;
 	}
+	bounds_box.setPosition(m_bounds.position);
+	bounds_box.setSize(m_bounds.size);
 }
 
 void TextWriter::wrap() {
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	auto& current_message = suite.at(iterators.current_suite_set).front().data;
-
-	// get index of last in-bounds space
 	int last_space_index{};
 	for (auto i{0}; i < current_message.getString().getSize() - 1; ++i) {
 		char const current_char = static_cast<char>(current_message.getString().getData()[i]);
 		if (current_char == ' ') {
-			if (current_message.findCharacterPos(static_cast<std::size_t>(i + 1)).x > (m_bounds.size.x + m_bounds.position.x)) {
+			last_space_index = i;
+			std::string left = current_message.getString().substring(0, static_cast<std::size_t>(last_space_index + 1));
+			std::string right = current_message.getString().substring(static_cast<std::size_t>(last_space_index + 1));
+			auto next_space{std::distance(right.begin(), std::find_if(right.begin(), right.end(), [](auto const& c) { return c == ' '; }))};
+			auto next_word = current_message.findCharacterPos(static_cast<std::size_t>(i + next_space));
+			if (next_word.x > m_bounds.position.x + m_bounds.size.x) {
 				// splice!
-				std::string left = current_message.getString().substring(0, static_cast<std::size_t>(last_space_index + 1));
-				std::string right = current_message.getString().substring(static_cast<std::size_t>(last_space_index + 1));
 				left += '\n';
-
 				current_message.setString(left + right);
-			} else {
-				last_space_index = i;
 			}
 		}
 	}
@@ -139,7 +144,6 @@ void TextWriter::load_single_message(std::string_view message) {
 
 void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	flush();
-
 	// suite
 	for (auto& set : source[key]["suite"].array_view()) {
 		auto this_set = std::deque<Message>{};
@@ -170,22 +174,21 @@ void TextWriter::stylize(sf::Text& msg) const {
 }
 
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
-	win.draw(bounds_box);
+	// win.draw(bounds_box);
 	if (iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(iterators.current_suite_set).empty()) { return; }
 	bounds_box.setOutlineColor(sf::Color{0, 255, 80});
 	bounds_box.setSize(suite.at(iterators.current_suite_set).front().data.getLocalBounds().size);
-	win.draw(bounds_box);
+	// win.draw(bounds_box);
 	bounds_box.setOutlineColor(sf::Color(255, 80, 80, 180));
 	m_mode = WriterMode::wait;
-	static bool show_cursor;
 	auto& current_message{suite.at(iterators.current_suite_set).front().data};
 	working_message = current_message;
 	write_gradual_message(win);
 }
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
-	win.draw(bounds_box);
+	// win.draw(bounds_box);
 	static bool show_cursor;
 	auto cursor_offset{sf::Vector2f{8.f, 0.f}};
 	if (iterators.current_suite_set >= suite.size()) { return; }
@@ -208,6 +211,12 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	cursor.setPosition(last_glyph_position + cursor_offset);
 	win.draw(working_message);
 	win.draw(cursor);
+}
+
+void TextWriter::set_font_color(sf::Color to_color) {
+	if (suite.empty()) { return; }
+	for (auto& msg : suite.back()) { msg.data.setFillColor(to_color); }
+	cursor.setFillColor(to_color);
 }
 
 void TextWriter::reset() {

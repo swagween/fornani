@@ -17,9 +17,10 @@ class Vendor {
 	void set_upcharge(float to_upcharge) { upcharge = to_upcharge; }
 	[[nodiscard]] auto get_upcharge() const -> float { return upcharge; }
 	player::Inventory inventory{};
-	std::vector<int> common_items{};
-	std::vector<int> uncommon_items{};
-	std::vector<int> rare_items{};
+	std::vector<std::string> common_items{};
+	std::vector<std::string> uncommon_items{};
+	std::vector<std::string> rare_items{};
+
   private:
 	float upcharge{0.2f};
 	int stock_size{6};

@@ -7,11 +7,14 @@
 namespace fornani::entity {
 enum class HPState : std::uint8_t { hit };
 class Health final : public Entity {
-	const float default_max{8.f};
+	float const default_max{8.f};
+
   public:
 	void update();
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	[[nodiscard]] auto get_i_hp() const -> int { return static_cast<int>(hp); }
 	[[nodiscard]] auto get_hp() const -> float { return hp; }
+	[[nodiscard]] auto get_i_max() const -> float { return static_cast<int>(max_hp); }
 	[[nodiscard]] auto get_max() const -> float { return max_hp; }
 	[[nodiscard]] auto get_limit() const -> float { return hp_limit; }
 	[[nodiscard]] auto get_taken_point() const -> float { return static_cast<float>(taken_point); }
@@ -28,6 +31,8 @@ class Health final : public Entity {
 	void inflict(float amount, bool force = false);
 	void increase_max_hp(float amount);
 	void reset();
+
+	void debug();
 
 	util::BitFlags<HPState> flags{};
 	util::Cooldown invincibility{};

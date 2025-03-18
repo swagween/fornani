@@ -3,3 +3,4 @@ nani_add_headers(
         Item.hpp
         Loot.hpp
 )
+add_subdirectory(types)

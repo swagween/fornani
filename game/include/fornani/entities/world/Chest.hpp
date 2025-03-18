@@ -1,11 +1,11 @@
 
 #pragma once
 
-#include "fornani/particle/Sparkler.hpp"
-#include "fornani/utils/Collider.hpp"
 #include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/entities/item/Item.hpp"
+#include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/Collider.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -31,8 +31,8 @@ static inline anim::Parameters unopened{0, 1, 80, -1};
 static inline anim::Parameters shine{1, 5, 24, 0};
 static inline anim::Parameters opened{6, 1, 8, -1};
 
-enum class ChestState {activated, open};
-enum class ChestType {gun, orbs, item};
+enum class ChestState { activated, open };
+enum class ChestType { gun, orbs, item };
 
 class Chest final : public Entity {
   public:
@@ -60,6 +60,7 @@ class Chest final : public Entity {
 
 	int id{};
 	int item_id{};
+	std::string m_item{};
 
 	struct {
 		int amount{};

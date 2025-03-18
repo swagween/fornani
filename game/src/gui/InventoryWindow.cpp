@@ -38,20 +38,31 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	m_background.setFillColor(util::ColorUtils::fade_in(svc.styles.colors.pioneer_black));
 
 	if (m_view == InventoryView::dashboard) {
-		if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) { m_dashboard->set_selection({0, -1}); }
-		if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) { m_dashboard->set_selection({0, 1}); }
-		if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) { m_dashboard->set_selection({-1, 0}); }
-		if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) { m_dashboard->set_selection({1, 0}); }
-		if (controller.digital_action_status(config::DigitalAction::menu_select).triggered && m_dashboard->get_selected_position() != sf::Vector2i{0, 0}) {
+		auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).held;
+		auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).held;
+		auto const& left = controller.digital_action_status(config::DigitalAction::menu_left).held;
+		auto const& right = controller.digital_action_status(config::DigitalAction::menu_right).held;
+		auto const& selected = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
+		m_dashboard->set_selection({0, 0});
+		if (up) { m_dashboard->set_selection({0, -1}); }
+		if (down) { m_dashboard->set_selection({0, 1}); }
+		if (left) { m_dashboard->set_selection({-1, 0}); }
+		if (right) { m_dashboard->set_selection({1, 0}); }
+		if (selected && m_dashboard->is_hovering()) {
 			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
 			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = ccm::ext::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
-			m_view = InventoryView::focused;
-			m_dashboard->select_gizmo();
+			if (m_dashboard->select_gizmo()) {
+				m_view = InventoryView::focused;
+			} else {
+				m_view = InventoryView::dashboard;
+				m_grid_position = {};
+			}
 		}
 	}
 
 	auto offset = m_view == InventoryView::dashboard ? sf::Vector2f{m_dashboard->get_selected_position()} * 128.f : sf::Vector2f{};
-	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x, m_cell_dimensions.y * m_grid_position.y} + offset};
+	auto horizontal_dampen{0.7f}; // we want to display the gizmo's connection to the dashboard for wardrobe and inventory gizmos
+	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x * horizontal_dampen, m_cell_dimensions.y * m_grid_position.y} + offset};
 	m_camera.steering.seek(m_camera.physics, target, 0.003f);
 	m_camera.physics.simple_update();
 	m_dashboard->set_position({250.f, 0.f});
