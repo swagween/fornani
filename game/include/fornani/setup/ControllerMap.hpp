@@ -1,12 +1,15 @@
 
 #pragma once
 
+#include "fornani/io/Logger.hpp"
+#include "fornani/utils/BitFlags.hpp"
+
 #include <steam/isteaminput.h>
 #include <SFML/Graphics.hpp>
+
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
-#include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -186,6 +189,8 @@ class ControllerMap {
 	/// @brief Sets up the values of `digital_actions` and `analog_actions` via the Steam Input API.
 	/// @details Since the Steam Input API returns invalid handles if no gamepad is connected (bug?), this needs to be recalled every time a controller is connected.
 	void setup_action_handles();
+
+	io::Logger m_logger{"config"};
 
 	STEAM_CALLBACK(ControllerMap, handle_gamepad_connection, SteamInputDeviceConnected_t);
 

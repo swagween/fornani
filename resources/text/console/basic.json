@@ -2,8 +2,7 @@
 	"save": {
 		"suite": [
 			[ "Game saved." ]
-		],
-		"responses": [ [] ]
+		]
 	},
 	"bed": {
 		"suite": [
@@ -15,26 +14,22 @@
 	"chest": {
 		"suite": [
 			[ "Obtained " ]
-		],
-		"responses": [ [] ]
+		]
 	},
 	"open_chest": {
 		"suite": [
 			[ "It's already been opened." ]
-		],
-		"responses": [ [] ]
+		]
 	},
 	"locked_door": {
 		"suite": [
 			[ "It's locked." ]
-		],
-		"responses": [ [] ]
+		]
 	},
 	"unlocked_door": {
 		"suite": [
 			[ "Used $200#1#1" ]
-		],
-		"responses": [ [] ]
+		]
 	},
 	"death": {
 		"codes": [
@@ -87,8 +82,7 @@
 	"intro": {
 		"suite": [
 			[ "You are lost and you are cold.", "There is not much you remember from the last days, but you know well that they were filled with anguish.", "You awaken now after a slumber of unknown length. The world shakes around you.", "...", "You are looking for your brother." ]
-		],
-		"responses": [ [] ]
+		]
 	},
 	"delete_file": {
 		"codes": [
@@ -107,13 +101,6 @@
 	"fullscreen": {
 		"suite": [
 			[ "Fullscreen settings will take effect the next time the game is opened." ]
-		],
-		"responses": [ [] ]
-	},
-	"out_of_bounds": {
-		"suite": [
-			[ "You cannot go that way." ]
-		],
-		"responses": [ [] ]
+		]
 	}
 }

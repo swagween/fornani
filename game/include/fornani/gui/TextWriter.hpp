@@ -106,8 +106,8 @@ class TextWriter {
 	float m_delta_threshold{};
 	int m_writing_speed{};
 	int m_text_size{};
+	bool m_hide_cursor{};
 
-	sf::RectangleShape indicator{};
 	sf::RectangleShape cursor{};
 
 	automa::ServiceProvider* m_services;

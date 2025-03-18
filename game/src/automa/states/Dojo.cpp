@@ -9,7 +9,7 @@
 
 namespace fornani::automa {
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player, console), gui_map(svc, player, console) {
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player) {
 	svc.menu_controller.reset_vendor_dialog();
 	open_vendor = false;
 	if (!svc.data.room_discovered(room_number)) {
@@ -77,6 +77,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 }
 
 void Dojo::tick_update(ServiceProvider& svc) {
+	GameState::tick_update(svc);
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
 	loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
@@ -88,10 +89,10 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	svc.controller_map.set_action_set(config::ActionSet::Platformer);
 	if (pause_window) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
 	if (inventory_window) { svc.controller_map.set_action_set(config::ActionSet::Inventory); }
-	if (console.is_active()) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
+	if (m_console) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
 
 	if (pause_window) {
-		pause_window.value()->update(svc, console);
+		pause_window.value()->update(svc, m_console);
 		if (pause_window.value()->settings_requested()) {
 			flags.set(GameStateFlags::settings_request);
 			pause_window.value()->reset();
@@ -101,15 +102,17 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			pause_window.value()->reset();
 		}
 		if (pause_window.value()->exit_requested()) { pause_window = {}; }
-		console.update(svc);
+		if (m_console) { m_console.value()->update(svc); }
 		return;
 	}
 
-	if (console.just_began()) {
-		player->wardrobe_widget.update(*player);
-		console.set_nani_sprite(player->wardrobe_widget.get_sprite());
+	if (m_console) {
+		if (m_console.value()->just_began()) {
+			player->wardrobe_widget.update(*player);
+			m_console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
+		}
+		m_console.value()->update(svc);
 	}
-	console.update(svc);
 
 	svc.world_clock.update(svc);
 
@@ -135,7 +138,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 		return;
 	}
 
-	if (console.is_complete()) {
+	if (!m_console) {
 		if (svc.menu_controller.vendor_dialog_opened()) {
 			map.transition.start();
 			open_vendor = true;
@@ -160,11 +163,11 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
 
 	enter_room.update();
-	if (console.is_complete() && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
+	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 	if (enter_room.running()) { player->controller.autonomous_walk(); }
 
 	player->update(map);
-	map.update(svc, console);
+	map.update(svc, m_console);
 
 	camera.center(player->get_camera_focus_point());
 	camera.update(svc);
@@ -194,8 +197,10 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.soft_reset.render(win);
 	map.transition.render(win);
 	if (pause_window) { pause_window.value()->render(svc, win); }
-	console.render(win);
-	console.write(win);
+	if (m_console) {
+		m_console.value()->render(win);
+		m_console.value()->write(win);
+	}
 	player->tutorial.render(win);
 	if (svc.debug_mode()) { map.debug(); }
 }

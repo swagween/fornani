@@ -1,8 +1,8 @@
 #include "fornani/entities/world/Bed.hpp"
-#include "fornani/gui/Console.hpp"
-#include "fornani/world/Map.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::entity {
 
@@ -13,7 +13,7 @@ Bed::Bed(automa::ServiceProvider& svc, sf::Vector2<float> position, int room) : 
 	bounding_box.set_position(position);
 }
 
-void Bed::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player, flfx::Transition& transition) {
+void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player, flfx::Transition& transition) {
 	fadeout.update();
 	sparkler.update(svc);
 	sparkler.set_position(bounding_box.get_position());
@@ -22,8 +22,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 		sparkler.activate();
 		fadeout.start();
 		if (player.controller.inspecting()) {
-			console.set_source(svc.text.basic);
-			console.load_and_launch("bed");
+			console = std::make_unique<gui::Console>(svc, svc.text.basic, "bed", gui::OutputType::gradual);
 			flags.set(BedFlags::engaged);
 		}
 	} else {
@@ -35,7 +34,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 		svc.music.play_looped(10);
 		transition.start();
 		svc.data.respawn_all();
-		if (transition.is_done() && console.is_complete()) {
+		if (transition.is_done() && !console) {
 			player.health.heal(64.f);
 			player.health.update();
 			svc.soundboard.flags.item.set(audio::Item::heal);
@@ -53,4 +52,4 @@ void Bed::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	sparkler.render(svc, win, cam);
 }
 
-} // namespace entity
+} // namespace fornani::entity

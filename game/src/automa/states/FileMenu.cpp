@@ -5,11 +5,9 @@
 
 namespace fornani::automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player, console) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player) {
 	current_selection = util::Circuit(num_files);
 	svc.data.load_blank_save(player);
-	console = gui::Console(svc);
-	console.set_source(svc.text.basic);
 	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
 	player.set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
@@ -29,8 +27,9 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 }
 
 void FileMenu::tick_update(ServiceProvider& svc) {
+	GameState::tick_update(svc);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	if (!console.is_active()) {
+	if (!m_console) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			if (m_file_select_menu) {
 				m_file_select_menu->down(svc);
@@ -77,7 +76,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 					svc.soundboard.flags.menu.set(audio::Menu::select);
 					break;
 				case 2:
-					console.load_and_launch("delete_file");
+					m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "delete_file", gui::OutputType::gradual);
 					m_file_select_menu = {};
 					break;
 				}
@@ -120,7 +119,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->update(map);
 	player->controller.direction.lr = dir::LR::left;
 
-	console.update(svc);
+	if (m_console) { m_console.value()->update(svc); }
 	hud.update(svc, *player);
 
 	loading.update();
@@ -143,8 +142,10 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		hud.render(*player, win);
 		if (m_file_select_menu) { m_file_select_menu->render(win); }
 	}
-	console.render(win);
-	console.write(win, false);
+	if (m_console) {
+		m_console.value()->render(win);
+		m_console.value()->write(win, false);
+	}
 }
 
 void FileMenu::refresh(ServiceProvider& svc) {

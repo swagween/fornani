@@ -53,9 +53,9 @@ class GameState {
 	GameState& operator=(GameState&&) = delete;
 	virtual ~GameState() {}
 
-	virtual void tick_update([[maybe_unused]] ServiceProvider& svc) {};
-	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {};
-	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {};
+	virtual void tick_update([[maybe_unused]] ServiceProvider& svc);
+	virtual void frame_update([[maybe_unused]] ServiceProvider& svc){};
+	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win){};
 
 	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }
 
@@ -63,7 +63,6 @@ class GameState {
 	util::BitFlags<GameStateFlags> flags{};
 
 	std::string_view scene{};
-	gui::Console console;
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
@@ -79,6 +78,7 @@ class GameState {
 	float top_buffer{80.f};
 
   protected:
+	std::optional<std::unique_ptr<gui::Console>> m_console;
 	io::Logger m_logger{"GameState"};
 };
 

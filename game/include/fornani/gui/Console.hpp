@@ -46,17 +46,26 @@ struct MessageCode {
 class Console {
   public:
 	explicit Console(automa::ServiceProvider& svc);
-	explicit Console(automa::ServiceProvider& svc, std::string const& texture_lookup);
+	/// <summary>
+	/// @brief for standard loading and launching, data-driven text
+	/// </summary>
+	/// <param name="svc"></param>
+	/// <param name="key"></param>
+	/// <param name="type"></param>
+	explicit Console(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, OutputType type);
+	/// <summary>
+	/// @brief used for loading single messages (signs, inspectables, etc.)
+	/// </summary>
+	/// <param name="svc"></param>
+	/// <param name="message"></param>
+	explicit Console(automa::ServiceProvider& svc, std::string_view message);
 
-	void begin();
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 
 	void set_source(dj::Json& json);
 	void set_nani_sprite(sf::Sprite const& sprite);
 	void handle_actions(int value);
-	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual);
-	void load_single_message(std::string_view message);
 	void display_item(int item_id);
 	void display_gun(int gun_id);
 	void write(sf::RenderWindow& win, bool instant);
@@ -74,7 +83,6 @@ class Console {
 	[[nodiscard]] auto get_message_code() const -> MessageCode;
 	[[nodiscard]] auto get_response_code(int which) const -> MessageCode;
 
-	util::BitFlags<ConsoleFlags> flags{};
 	util::RectPath m_path;
 
 	dj::Json text_suite{};
@@ -86,12 +94,16 @@ class Console {
 	std::string native_key{};
 
   protected:
+	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual);
+	void load_single_message(std::string_view message);
 	void handle_inputs(config::ControllerMap& controller);
 	void debug();
 
 	std::unique_ptr<TextWriter> m_writer;
 	std::optional<ResponseDialog> m_response{};
 	std::vector<MessageCode> m_codes{};
+
+	util::BitFlags<ConsoleFlags> m_flags{};
 
 	Portrait m_npc_portrait;
 	Portrait m_nani_portrait;

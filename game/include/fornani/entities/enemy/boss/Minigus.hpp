@@ -20,7 +20,7 @@ enum class MinigunFlags { exhausted, charging };
 class Minigus : public Enemy, public npc::NPC {
 
   public:
-	Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console);
+	Minigus(automa::ServiceProvider& svc, world::Map& map);
 	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
@@ -50,6 +50,7 @@ class Minigus : public Enemy, public npc::NPC {
 
   private:
 	bool anim_debug{};
+	bool console_complete{};
 	MinigusState state{};
 	util::BitFlags<MinigusFlags> status{};
 	gui::StatusBar health_bar;
@@ -185,7 +186,6 @@ class Minigus : public Enemy, public npc::NPC {
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
-	gui::Console* m_console;
 
 	bool change_state(MinigusState next, anim::Parameters params);
 };

@@ -10,6 +10,7 @@ CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::stri
 }
 
 void CreditsMenu::tick_update(ServiceProvider& svc) {
+	GameState::tick_update(svc);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
@@ -43,4 +44,4 @@ void CreditsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	right_dot.render(svc, win, {0, 0});
 }
 
-} // namespace automa
+} // namespace fornani::automa

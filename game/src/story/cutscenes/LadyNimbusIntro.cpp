@@ -1,18 +1,15 @@
 
 #include "fornani/story/cutscene/LadyNimbusIntro.hpp"
-#include "fornani/gui/Console.hpp"
-#include "fornani/world/Map.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include <iostream>
+#include "fornani/gui/Console.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani {
 
-LadyNimbusIntro::LadyNimbusIntro(automa::ServiceProvider& svc) : Cutscene(svc, 6001, "lady_nimbus_intro") {
-	cooldowns.beginning.start();
-}
+LadyNimbusIntro::LadyNimbusIntro(automa::ServiceProvider& svc) : Cutscene(svc, 6001, "lady_nimbus_intro") { cooldowns.beginning.start(); }
 
-void LadyNimbusIntro::update(automa::ServiceProvider& svc, gui::Console& console, world::Map& map, player::Player& player) {
+void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
 	if (complete()) {
 		map.transition.start();
 		svc.state_controller.switch_rooms(122, metadata.target_state_on_end, map.transition);
@@ -33,19 +30,11 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, gui::Console& console
 		player.collider.physics.zero_y();
 	}
 
-	if (debug) {
-		if (svc.ticker.every_x_ticks(100)) { std::cout << "progress: " << progress << " / " << total_conversations << "\n"; }
-		if (cooldowns.pause.get_cooldown() == 15) { std::cout << "Pause: "; }
-		if (cooldowns.pause.running()) { std::cout << "."; }
-		if (cooldowns.pause.get_cooldown() == 1) { std::cout << ". done.\n"; }
-	}
-
 	auto total_suites{0};
 	for (auto& npc : map.npcs) { total_suites += npc.num_suites(); }
 	total_conversations = std::max(total_conversations, total_suites);
 	if (cooldowns.end.get_cooldown() == 1) {
 		flags.set(CutsceneFlags::complete);
-		std::cout << "done!\n";
 		return;
 	}
 	if (map.npcs.size() < 2) { return; }
@@ -55,10 +44,10 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, gui::Console& console
 	auto& nimbus = *std::ranges::find_if(map.npcs, [](auto& n) { return n.get_id() == 22; });
 	auto& hologus = *std::ranges::find_if(map.npcs, [](auto& n) { return n.get_id() == 23; });
 
-	//dialog
+	// dialog
 	switch (progress) {
 	case 0:
-		if (console.is_complete()) {
+		if (!console) {
 			nimbus.force_engage();
 			++progress;
 			return;
@@ -66,110 +55,108 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, gui::Console& console
 		break;
 	case 1:
 		if (cooldowns.long_pause.get_cooldown() == 256) { svc.soundboard.flags.transmission.set(audio::Transmission::statics); }
-		if (console.is_complete() && !cooldowns.long_pause.running()) {
+		if (!console && !cooldowns.long_pause.running()) {
 			cooldowns.long_pause.start();
 			nimbus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.long_pause.get_cooldown() == 1) {
+		if (!console && cooldowns.long_pause.get_cooldown() == 1) {
 			hologus.force_engage();
 			++progress;
 			return;
 		}
 		break;
 	case 2:
-		if (console.is_complete() && !cooldowns.pause.running()) {
+		if (!console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			hologus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get_cooldown() == 1) {
 			nimbus.force_engage();
 			++progress;
 			return;
 		}
 		break;
 	case 3:
-		if (console.is_complete() && !cooldowns.pause.running()) {
+		if (!console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			nimbus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get_cooldown() == 1) {
 			hologus.force_engage();
 			++progress;
 			return;
 		}
 		break;
 	case 4:
-		if (console.is_complete() && !cooldowns.pause.running()) {
+		if (!console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			hologus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get_cooldown() == 1) {
 			nimbus.force_engage();
 			++progress;
 			return;
 		}
 		break;
 	case 5:
-		if (console.is_complete() && !cooldowns.pause.running()) {
+		if (!console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			nimbus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get_cooldown() == 1) {
 			hologus.force_engage();
 			++progress;
 			return;
 		}
 		break;
 	case 6:
-		if (console.is_complete() && !cooldowns.pause.running()) {
+		if (!console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			hologus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get_cooldown() == 1) {
 			nimbus.force_engage();
 			++progress;
 			return;
 		}
 		break;
 	case 7:
-		if (console.is_complete() && !cooldowns.pause.running()) {
+		if (!console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			nimbus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get_cooldown() == 1) {
 			hologus.force_engage();
 			++progress;
 			return;
 		}
 		break;
 	case 8:
-		if (console.is_complete() && !cooldowns.pause.running()) {
+		if (!console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			hologus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get_cooldown() == 1) {
 			nimbus.force_engage();
 			++progress;
 			return;
 		}
 		break;
-	case 9: 
-		if (console.is_complete() && !cooldowns.end.running()) {
+	case 9:
+		if (!console && !cooldowns.end.running()) {
 			cooldowns.end.start();
 			nimbus.pop_conversation();
 			return;
 		}
-		if (console.is_complete() && cooldowns.end.get_cooldown() == 1) {
-			return;
-		}
+		if (!console && cooldowns.end.get_cooldown() == 1) { return; }
 		break;
 	default: break;
 	}

@@ -3,7 +3,6 @@
 
 #include <tracy/Tracy.hpp>
 
-#include <iostream>
 #include "fornani/service/ServiceProvider.hpp"
 
 #ifdef _MSC_VER
@@ -67,18 +66,18 @@ bool parent_action_set(ActionSet set, ActionSet* parent) {
 }
 
 ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
-	std::cout << "Initializing Steam Input" << std::endl;
+	NANI_LOG_INFO(m_logger, "Initializing Steam Input");
 	if (!SteamInput()->Init(true)) {
-		std::cout << "Could not initialize Steam Input!" << std::endl;
+		NANI_LOG_WARN(m_logger, "Could not initialize Steam Input!");
 	} else {
-		std::cout << "Steam Input initialized" << std::endl;
+		NANI_LOG_INFO(m_logger, "Steam Input initialized");
 	}
 	// TODO When we have a proper Steam App ID assigned, upload the steam input manifest into the game's depot.
 	std::string input_action_manifest_path = svc.finder.resource_path() + "\\text\\input\\steam_input_manifest.vdf";
 	if (!SteamInput()->SetInputActionManifestFilePath(input_action_manifest_path.c_str())) {
 		// uh oh
-		std::cout << "Could not set Action Manifest file path!" << std::endl;
-		std::cout << "Path: " << input_action_manifest_path << std::endl;
+		NANI_LOG_ERROR(m_logger, "Could not set Action Manifest file path!");
+		NANI_LOG_ERROR(m_logger, "Path: {}", input_action_manifest_path);
 	}
 	SteamInput()->EnableDeviceCallbacks();
 
@@ -238,7 +237,7 @@ void ControllerMap::update() {
 
 void ControllerMap::set_action_set(ActionSet set) {
 	if (controller_handle && set != active_action_set) {
-		std::cout << "Set action set to " << (int)set << std::endl;
+		NANI_LOG_DEBUG(m_logger, "Set action set to {}", static_cast<int>(set));
 		SteamInput()->DeactivateAllActionSetLayers(controller_handle);
 		switch (set) {
 		case ActionSet::Inventory:
@@ -307,7 +306,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 }
 
 void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
-	std::cout << "Connected controller with handle = " << data->m_ulConnectedDeviceHandle << std::endl;
+	NANI_LOG_INFO(m_logger, "Connected controller with handle [{}]", data->m_ulConnectedDeviceHandle);
 	controller_handle = data->m_ulConnectedDeviceHandle;
 	last_controller_ty_used = ControllerType::gamepad; // Quickly switch to gamepad input
 	setup_action_handles();
@@ -315,7 +314,7 @@ void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data)
 }
 
 void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
-	std::cout << "Disconnected controller with handle = " << data->m_ulDisconnectedDeviceHandle << std::endl;
+	NANI_LOG_INFO(m_logger, "Disconnected controller with handle [{}] ", data->m_ulDisconnectedDeviceHandle);
 	if (controller_handle != 0) { out.gamepad_disconnected = true; }
 	controller_handle = 0;
 	last_controller_ty_used = ControllerType::keyboard; // Quickly switch to keyboard input

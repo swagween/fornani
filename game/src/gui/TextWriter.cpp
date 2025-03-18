@@ -30,11 +30,6 @@ TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message, s
 
 void TextWriter::start() {
 
-	// to be replaced with something prettier later (maybe)
-	indicator.setSize({4.f, 4.f});
-	indicator.setOrigin({2.f, 2.f});
-	indicator.setFillColor(m_services->styles.colors.bright_orange);
-
 	if (m_iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 
@@ -43,7 +38,6 @@ void TextWriter::start() {
 
 	m_mode = WriterMode::write;
 	m_delay.start();
-	NANI_LOG_DEBUG(m_logger, "Writer started.");
 }
 
 void TextWriter::update() {
@@ -203,6 +197,7 @@ void TextWriter::write_instant_message(sf::RenderWindow& win) {
 	m_mode = WriterMode::wait;
 	auto& current_message{suite.at(m_iterators.current_suite_set).at(m_iterators.index).data};
 	working_message = current_message;
+	m_hide_cursor = true;
 	write_gradual_message(win);
 }
 
@@ -219,7 +214,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 		if (m_services->ticker.every_x_frames(24)) { show_cursor = !show_cursor; }
 		auto last_glyph_position = current_message.findCharacterPos(working_message.getString().getSize() - 1);
 		cursor.setPosition(last_glyph_position + cursor_offset);
-		if (show_cursor) { win.draw(cursor); }
+		if (show_cursor && !m_hide_cursor) { win.draw(cursor); }
 		return;
 	}
 	show_cursor = true;
@@ -228,7 +223,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	auto last_glyph_position = working_message.findCharacterPos(working_message.getString().getSize() - 1);
 	cursor.setPosition(last_glyph_position + cursor_offset);
 	win.draw(working_message);
-	win.draw(cursor);
+	if (!m_hide_cursor) { win.draw(cursor); }
 }
 
 void TextWriter::set_font_color(sf::Color to_color) {
@@ -242,7 +237,6 @@ void TextWriter::reset() {
 	m_counters.glyph.start();
 	working_str = {};
 	m_mode = WriterMode::write;
-	NANI_LOG_DEBUG(m_logger, "Writer reset.");
 }
 
 void TextWriter::speed_up() { m_writing_speed = fast_writing_speed_v; }

@@ -1,19 +1,23 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/Shape.hpp"
+#include "fornani/entities/world/Inspectable.hpp"
 #include "fornani/particle/Sparkler.hpp"
-#include "Inspectable.hpp"
+#include "fornani/utils/Shape.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <optional>
 
 namespace fornani::world {
 class Map;
 class Fire {
   public:
 	Fire(automa::ServiceProvider& svc, sf::Vector2<float> position, int lookup);
-	void update(automa::ServiceProvider& svc, player::Player& player, Map& map, gui::Console& console, dj::Json& set);
+	void update(automa::ServiceProvider& svc, player::Player& player, Map& map, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json& set);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	private:
+
+  private:
 	int size{};
 	shape::Shape bounding_box{};
 	anim::AnimatedSprite sprite;
@@ -22,4 +26,4 @@ class Fire {
 	sf::Vector2<float> sprite_offset{};
 };
 
-}
+} // namespace fornani::world

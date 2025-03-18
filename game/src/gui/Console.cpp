@@ -6,20 +6,21 @@
 
 namespace fornani::gui {
 
-Console::Console(automa::ServiceProvider& svc) : Console(svc, "blue_console") {}
-
-Console::Console(automa::ServiceProvider& svc, std::string const& texture_lookup)
+Console::Console(automa::ServiceProvider& svc)
 	: m_npc_portrait(svc), m_nani_portrait(svc, false), m_services(&svc), item_widget(svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64},
-	  m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}}, m_nineslice(svc, svc.assets.get_texture(texture_lookup), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}),
-	  m_mode{ConsoleMode::off}, m_response_offset{-48.f, 16.f} {
+	  m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}}, m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}),
+	  m_mode{ConsoleMode::writing}, m_response_offset{-48.f, 16.f} {
 	text_suite = svc.text.console;
-}
-
-void Console::begin() {
-	m_mode = ConsoleMode::writing;
 	m_path.set_section("open");
 	m_began = true;
-	NANI_LOG_INFO(m_logger, "Console began.");
+	NANI_LOG_INFO(m_logger, "/// Console began ///.");
+}
+
+Console::Console(automa::ServiceProvider& svc, std::string_view message) : Console(svc) { load_single_message(message); }
+
+Console::Console(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, OutputType type) : Console(svc) {
+	set_source(source);
+	load_and_launch(key, type);
 }
 
 void Console::update(automa::ServiceProvider& svc) {
@@ -48,7 +49,7 @@ void Console::update(automa::ServiceProvider& svc) {
 	}
 	m_npc_portrait.update(svc);
 	m_nani_portrait.update(svc);
-	if (flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
+	if (m_flags.test(ConsoleFlags::display_item)) { item_widget.update(svc); }
 	// check for response
 	for (auto& code : m_codes) {
 		if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index()) {
@@ -62,8 +63,8 @@ void Console::render(sf::RenderWindow& win) {
 	// debug();
 	if (!m_writer || !is_active()) { return; }
 	m_nineslice.render(win);
-	if (flags.test(ConsoleFlags::display_item)) { item_widget.render(*m_services, win); }
-	if (flags.test(ConsoleFlags::portrait_included)) {
+	if (m_flags.test(ConsoleFlags::display_item)) { item_widget.render(*m_services, win); }
+	if (m_flags.test(ConsoleFlags::portrait_included)) {
 		m_npc_portrait.render(win);
 		m_mode == ConsoleMode::responding ? m_nani_portrait.bring_in() : m_nani_portrait.send_out();
 		m_nani_portrait.render(win);
@@ -91,7 +92,6 @@ void Console::handle_actions(int value) {
 
 void Console::load_and_launch(std::string_view key, OutputType type) {
 	m_writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
-	NANI_LOG_INFO(m_logger, "Writer created.");
 	// load message codes
 	auto& in_data = text_suite[key]["codes"];
 	if (in_data) {
@@ -113,18 +113,17 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 	m_npc_portrait.reset(*m_services);
 	m_nani_portrait.reset(*m_services);
 	item_widget.reset(*m_services);
-	begin();
 }
 
 void Console::load_single_message(std::string_view message) { m_writer = std::make_unique<TextWriter>(*m_services, message); }
 
 void Console::display_item(int item_id) {
-	flags.set(ConsoleFlags::display_item);
+	m_flags.set(ConsoleFlags::display_item);
 	item_widget.set_id(item_id);
 }
 
 void Console::display_gun(int gun_id) {
-	flags.set(ConsoleFlags::display_item);
+	m_flags.set(ConsoleFlags::display_item);
 	item_widget.set_id(gun_id, true);
 }
 
@@ -139,16 +138,13 @@ void Console::write(sf::RenderWindow& win) { write(win, m_output_type == OutputT
 void Console::append(std::string_view key) { m_writer->append(key); }
 
 void Console::end() {
-	m_mode = ConsoleMode::off;
-	m_path.reset();
-	m_response = {};
-	m_writer = {};
 	m_services->soundboard.flags.console.set(audio::Console::done);
-	NANI_LOG_INFO(m_logger, "Console ended.");
+	m_mode = ConsoleMode::off;
+	NANI_LOG_INFO(m_logger, "/// Console ended ///\n.");
 }
 
 void Console::include_portrait(int id) {
-	flags.set(ConsoleFlags::portrait_included);
+	m_flags.set(ConsoleFlags::portrait_included);
 	m_npc_portrait.set_id(id);
 }
 
@@ -211,7 +207,6 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 		m_services->soundboard.flags.console.set(audio::Console::next);
 		finished = m_writer->request_next();
 		can_skip = false;
-		NANI_LOG_DEBUG(m_logger, "Requested Next.");
 	}
 
 	// speed up text
@@ -220,17 +215,14 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	(skip && can_skip) ? m_writer->speed_up() : m_writer->slow_down();
 
 	if (finished) {
-		if (m_writer->exit_requested()) {
-			end();
-			NANI_LOG_INFO(m_logger, "Writer shut down...");
-		}
+		if (m_writer->exit_requested()) { end(); }
 	}
 }
 
 void Console::debug() {
 	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
 	if (ImGui::Begin("Console Debug")) {
-		if (ImGui::Button("Console Test")) { load_and_launch("test"); }
+		// if (ImGui::Button("Console Test")) { load_and_launch("test"); }
 		if (m_response) {
 			ImGui::Text("Response Selection: %i", m_response->get_selection());
 			get_response_code(m_response->get_selection()).debug();

@@ -13,8 +13,8 @@
 
 namespace fornani::world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player)
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	// for debugging
@@ -65,7 +65,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			auto csource = meta["cutscene_on_entry"]["source"].as<int>();
 			auto cutscene = util::QuestKey{ctype, cid, csource};
 			svc.quest.process(svc, cutscene);
-			cutscene_catalog.push_cutscene(svc, *this, *m_console, cid);
+			cutscene_catalog.push_cutscene(svc, *this, cid);
 		}
 		if (meta["music"].is_string()) {
 			svc.music.load(svc.finder, meta["music"].as_string());
@@ -194,7 +194,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			start.x = entry["start_direction"][0].as<int>();
 			start.y = entry["start_direction"][1].as<int>();
 			auto variant = entry["variant"].as<int>();
-			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>(), false, variant, start);
+			enemy_catalog.push_enemy(svc, *this, entry["id"].as<int>(), false, variant, start);
 			enemy_catalog.enemies.back()->set_position_from_scaled({pos * util::constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
@@ -279,7 +279,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	}
 }
 
-void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
+void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
 	cooldowns.loading.update();
@@ -299,7 +299,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
-			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id, true);
+			enemy_catalog.push_enemy(*m_services, *this, spawn.id, true);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			effects.push_back(entity::Effect(*m_services, "small_flash", spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0, 4));
@@ -408,8 +408,7 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && cooldowns.loading.is_complete()) {
 		svc.app_flags.reset(automa::AppFlags::in_game);
-		console.set_source(svc.text.basic);
-		console.load_and_launch("death");
+		console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::gradual);
 		flags.state.set(LevelState::game_over);
 		svc.music.load(svc.finder, "mortem");
 		svc.music.play_looped(10);
@@ -420,15 +419,12 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	// demo only
 	if (svc.state_controller.actions.consume(automa::Actions::end_demo)) { end_demo.start(); }
 	end_demo.update();
-	if (end_demo.get_cooldown() == 1) {
-		m_console->set_source(svc.text.basic);
-		m_console->load_and_launch("end_demo");
-	}
-	if (svc.state_controller.actions.test(automa::Actions::print_stats) && console.is_complete()) { svc.state_controller.actions.set(automa::Actions::trigger); }
+	if (end_demo.get_cooldown() == 1) { console = std::make_unique<gui::Console>(svc, svc.text.basic, "end_demo", gui::OutputType::gradual); }
+	if (svc.state_controller.actions.test(automa::Actions::print_stats) && !console) { svc.state_controller.actions.set(automa::Actions::trigger); }
 	// demo only
 
 	if (svc.state_controller.actions.test(automa::Actions::retry)) { flags.state.set(LevelState::game_over); }
-	if (console.is_complete() && flags.state.test(LevelState::game_over)) {
+	if (!console && flags.state.test(LevelState::game_over)) {
 		transition.start();
 		if (transition.is_done()) {
 			player->start_over();

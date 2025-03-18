@@ -1,8 +1,10 @@
 #pragma once
 
+#include "fornani/entities/Entity.hpp"
 #include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/Collider.hpp"
-#include "fornani/entities/Entity.hpp"
+
+#include <optional>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -29,9 +31,10 @@ enum class BedFlags : std::uint8_t { active, engaged };
 class Bed {
   public:
 	Bed(automa::ServiceProvider& svc, sf::Vector2<float> position, int room);
-	void update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player, flfx::Transition& transition);
+	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player, flfx::Transition& transition);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	shape::Shape bounding_box{};
+
   private:
 	vfx::Sparkler sparkler{};
 	util::BitFlags<BedFlags> flags{};

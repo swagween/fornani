@@ -37,7 +37,7 @@ NPC::NPC(automa::ServiceProvider& svc, std::string_view label, int id)
 	direction.lr = dir::LR::left;
 }
 
-void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
+void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player) {
 	if (piggybacking()) { current_location = -1; }
 	svc.data.set_npc_location(id, current_location);
 	if (state_flags.test(NPCState::hidden)) { return; }
@@ -60,7 +60,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 	collider.reset();
 	collider.physics.acceleration = {};
 
-	console.is_active() ? state_flags.set(NPCState::talking) : state_flags.reset(NPCState::talking);
+	console ? state_flags.set(NPCState::talking) : state_flags.reset(NPCState::talking);
 	if (player.collider.bounding_box.overlaps(collider.bounding_box) || (triggers.test(NPCTrigger::distant_interact) && state_flags.test(NPCState::force_interact))) {
 		if (!state_flags.test(NPCState::engaged)) { triggers.set(NPCTrigger::engaged); }
 		state_flags.set(NPCState::engaged);
@@ -78,7 +78,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& co
 			// do something clever in Soundboard
 		}
 	}
-	if (!console.is_active() && state_flags.test(NPCState::engaged)) { pop_conversation(); }
+	if (!console && state_flags.test(NPCState::engaged)) { pop_conversation(); }
 	if (state_flags.test(NPCState::talking)) {
 		player.camera_offset.y = 32.f;
 		svc.camera_controller.free();
@@ -127,14 +127,13 @@ void NPC::set_position_from_scaled(sf::Vector2<float> scaled_pos) {
 
 void NPC::set_id(int new_id) { id = new_id; }
 
-void NPC::start_conversation(automa::ServiceProvider& svc, gui::Console& console) {
+void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
 	state_flags.set(NPCState::introduced);
-	console.set_source(svc.text.npc);
 	std::string name = std::string(m_label);
 	std::string convo = std::string(conversations.front());
 	std::string target = name + convo;
-	console.load_and_launch(target);
-	console.include_portrait(id);
+	console = std::make_unique<gui::Console>(svc, svc.text.npc, target, gui::OutputType::gradual);
+	console.value()->include_portrait(id);
 }
 
 void NPC::push_conversation(std::string_view convo) { conversations.push_back(convo); }

@@ -1,9 +1,13 @@
+
 #pragma once
 
-#include <djson/json.hpp>
-#include <string>
-#include "fornani/utils/Shape.hpp"
 #include "fornani/entities/animation/Animation.hpp"
+#include "fornani/utils/Shape.hpp"
+
+#include <djson/json.hpp>
+
+#include <optional>
+#include <string>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -28,9 +32,9 @@ class Inspectable {
 	using Vecu32 = sf::Vector2<std::uint32_t>;
 
 	Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key = "", int room_id = 0, int alternates = 0, int native = 0, bool aoc = false);
-	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set);
+	void update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json& set);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
-	void destroy() { flags.set(InspectableFlags::destroy); } 
+	void destroy() { flags.set(InspectableFlags::destroy); }
 	[[nodiscard]] auto destroyed() const -> bool { return flags.test(InspectableFlags::destroy); }
 	[[nodiscard]] auto get_id() const -> std::string { return id; }
 

@@ -29,6 +29,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 }
 
 void ControlsMenu::tick_update(ServiceProvider& svc) {
+	GameState::tick_update(svc);
 	binding_mode ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 

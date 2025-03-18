@@ -1,8 +1,10 @@
 
 #pragma once
 
-#include "fornani/utils/Shape.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Shape.hpp"
+
+#include <optional>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -33,8 +35,8 @@ class Portal {
 
 	Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked = false, bool already_open = false, int key_id = 0, int style = 0, sf::Vector2<int> map_dim = {});
 	void update(automa::ServiceProvider& svc);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos); // for debugging
-	void handle_activation(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, int room_id, flfx::Transition& transition);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
+	void handle_activation(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, int room_id, flfx::Transition& transition);
 	void change_states(automa::ServiceProvider& svc, int room_id, flfx::Transition& transition);
 	void close() { state = PortalRenderState::closed; }
 	[[nodiscard]] auto get_source() const -> int { return meta.source_map_id; }
@@ -74,4 +76,4 @@ class Portal {
 	sf::IntRect lookup{};
 };
 
-} // namespace entity
+} // namespace fornani::entity
