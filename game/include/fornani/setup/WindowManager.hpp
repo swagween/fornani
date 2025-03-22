@@ -35,7 +35,6 @@ class WindowManager {
 	sf::View game_view{};
 	sf::VideoMode mode{};
 	sf::FloatRect game_port{};
-	sf::Vector2<int> aspects{3840, 2048};
 	sf::Vector2<int> m_screen_dimensions{};
 	bool is_fullscreen{};
 

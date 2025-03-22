@@ -21,6 +21,7 @@ enum class ApparelHairstyle : std::uint8_t { standard, bob_cut, ponytail, punk_h
 
 class Apparel {
   public:
+	virtual ~Apparel() = default;
 	virtual int get_variant() const { return 0; };
 	virtual void set(int to) {}
 };

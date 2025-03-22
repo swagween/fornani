@@ -6,7 +6,7 @@ namespace launcher {
 
 class LauncherApplication : public fornani::Application {
   public:
-	LauncherApplication(char** argv, char const* loading_screen = "/image/gui/loading.png") : Application(argv, loading_screen){};
+	LauncherApplication(char** argv) : Application(argv){};
 };
 
-} // namespace game
+} // namespace launcher

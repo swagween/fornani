@@ -6,6 +6,8 @@
 
 namespace fornani {
 
+constexpr sf::Vector2i aspects{3840, 2048};
+
 void WindowManager::set() {
 	game_view = sf::View(sf::FloatRect({}, {static_cast<float>(m_screen_dimensions.x), static_cast<float>(m_screen_dimensions.y)}));
 	// set view and viewport for fullscreen mode
@@ -45,11 +47,9 @@ void WindowManager::create(std::string const& title, bool const fullscreen) {
 	sf::Image icon;
 	if (!icon.loadFromMemory(generated::icon_png.data(), generated::icon_png.size())) { NANI_LOG_WARN(m_logger, "Failed to load application icon.\n"); };
 
-	sf::RenderWindow window(mode, title, is_fullscreen ? sf::Style::Default : sf::Style::Default & ~sf::Style::Resize, is_fullscreen ? sf::State::Fullscreen : sf::State::Windowed);
+	m_window = sf::RenderWindow(mode, title, is_fullscreen ? sf::Style::Default : sf::Style::Default & ~sf::Style::Resize, is_fullscreen ? sf::State::Fullscreen : sf::State::Windowed);
 
-	window.setIcon(icon.getSize(), icon.getPixelsPtr());
-
-	m_window = std::move(window);
+	m_window.setIcon(icon.getSize(), icon.getPixelsPtr());
 }
 
 void WindowManager::restore_view() { m_window.setView(game_view); }
