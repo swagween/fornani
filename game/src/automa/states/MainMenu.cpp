@@ -37,6 +37,7 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 }
 
 void MainMenu::tick_update(ServiceProvider& svc) {
+	GameState::tick_update(svc);
 	svc.a11y.set_action_ctx_bar_enabled(true);
 
 	if (loading.is_almost_complete()) {

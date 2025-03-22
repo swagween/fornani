@@ -29,7 +29,7 @@ Chest::Chest(automa::ServiceProvider& svc, int id) : id(id), sprite{svc.assets.g
 	if (svc.data.chest_is_open(id)) { state.set(ChestState::open); }
 }
 
-void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player) {
+void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player) {
 	animation.update();
 	if (!state.test(ChestState::open)) {
 		if (svc.ticker.every_x_ticks(1200)) { animation.set_params(shine); }
@@ -58,7 +58,6 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 	if (player.collider.bounding_box.overlaps(collider.bounding_box)) {
 		if (player.controller.inspecting()) {
 			state.set(ChestState::activated);
-			console.set_source(svc.text.basic);
 			if (!state.test(ChestState::open)) {
 				svc.soundboard.flags.world.set(audio::World::chest);
 				state.set(ChestState::open);
@@ -66,19 +65,19 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, gui::Console& 
 				svc.data.open_chest(id);
 				if (type == ChestType::gun) {
 					player.push_to_loadout(item_id);
-					console.display_gun(item_id);
-					console.load_and_launch("chest");
-					console.append(player.arsenal.value().get_weapon_at(item_id).get_label());
+					console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::instant);
+					console.value()->display_gun(item_id);
+					console.value()->append(player.arsenal.value().get_weapon_at(item_id).get_label());
 				}
 				if (type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {loot.amount, loot.amount}, loot.rarity, collider.bounding_box.get_position(), 100)); }
 				if (type == ChestType::item) {
 					player.give_item(m_item, item::ItemType::key, 1);
-					console.display_item(item_id);
-					console.load_and_launch("chest");
-					console.append(player.catalog.inventory.item_view(item_id).get_label());
+					console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::instant);
+					console.value()->display_item(item_id);
+					console.value()->append(player.catalog.inventory.item_view(item_id).get_label());
 				}
 			} else {
-				console.load_and_launch("open_chest");
+				console = std::make_unique<gui::Console>(svc, svc.text.basic, "open_chest", gui::OutputType::instant);
 			}
 		}
 	}

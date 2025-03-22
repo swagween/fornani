@@ -12,6 +12,7 @@ nani_add_headers(
         PauseWindow.hpp
         Portrait.hpp
         InventorySelector.hpp
+        ResponseDialog.hpp
         StatusBar.hpp
         TextWriter.hpp
         VendorDialog.hpp

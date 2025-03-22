@@ -111,12 +111,12 @@ class Map {
   public:
 	using Vec = sf::Vector2<float>;
 
-	Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
+	Map(automa::ServiceProvider& svc, player::Player& player);
 	~Map() {}
 
 	// methods
 	void load(automa::ServiceProvider& svc, int room_number, bool soft = false);
-	void update(automa::ServiceProvider& svc, gui::Console& console);
+	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target = {});
@@ -207,12 +207,11 @@ class Map {
 
 	sf::RectangleShape borderbox{};
 	sf::RectangleShape center_box{};
-	sf::Vector2f barrier;
-	sf::Vector2f scaled_barrier;
 
 	// layers
 	struct {
 		sf::RenderTexture greyblock{};
+		sf::RenderTexture barrier{};
 		LayerTexture foreground{};
 		LayerTexture background{};
 		std::optional<LayerTexture> obscuring{};
@@ -238,7 +237,6 @@ class Map {
 
 	player::Player* player;
 	automa::ServiceProvider* m_services;
-	gui::Console* m_console;
 
 	util::Cooldown spawning{2};
 	util::Counter spawn_counter{};
@@ -252,7 +250,6 @@ class Map {
 	util::Cooldown end_demo{500};
 
   private:
-	void draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell, float scale);
 	int abyss_distance{400};
 	struct {
 		std::string biome{};

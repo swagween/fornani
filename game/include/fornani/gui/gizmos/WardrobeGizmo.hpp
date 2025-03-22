@@ -26,7 +26,6 @@ class WardrobeGizmo : public Gizmo {
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	std::unique_ptr<OutfitterGizmo> m_outfitter{};
-	WardrobeWidget m_nani;
 	util::RectPath m_path;
 	bool m_wardrobe_update{};
 	sf::Vector2f m_nani_offset{};

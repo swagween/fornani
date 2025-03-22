@@ -9,7 +9,6 @@
 
 #include <steam/steam_api.h>
 #include <ctime>
-#include <iostream>
 
 #include "fornani/utils/Random.hpp"
 
@@ -18,7 +17,7 @@ namespace fornani {
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player, automa::MenuType::main) {
 	NANI_ZoneScopedN("Game::Game");
 	if (!ImGui::SFML::Init(services.window->get())) {
-		std::cout << "ImGui-SFML failed to initialize the window.\n";
+		NANI_LOG_ERROR(m_logger, "ImGui-SFML failed to initialize the window.");
 		shutdown();
 		return;
 	}
@@ -31,7 +30,7 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	// player
 	player.init(services);
 
-	background.setSize(services.window->f_screen_dimensions());
+	background.setSize(sf::Vector2f{services.window->get().getSize()});
 	background.setFillColor(services.styles.colors.ui_black);
 }
 
@@ -42,6 +41,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 	measurements.win_size.x = services.window->get().getSize().x;
 	measurements.win_size.y = services.window->get().getSize().y;
+	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
 
 	{
 		NANI_ZoneScopedN("Demo Mode Setup");
@@ -61,7 +61,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 	gui::ActionContextBar ctx_bar(services);
 
-	NANI_LOG_INFO(m_logger, "> Success");
+	NANI_LOG_INFO(m_logger, "Success");
 	services.stopwatch.stop();
 	services.stopwatch.print_time();
 
@@ -78,7 +78,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		{
 			NANI_ZoneScopedN("Check Shutdown Condition");
 			if (services.state_controller.actions.test(automa::Actions::shutdown)) {
-				std::cout << "Shutdown.\n";
+				NANI_LOG_INFO(m_logger, "Shutdown");
 				break;
 			}
 			if (services.death_mode()) { flags.reset(GameFlags::in_game); }
@@ -192,7 +192,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 #endif
 
 			services.window->get().clear();
+			if (services.window->fullscreen()) { services.window->get().setView(entire_window); }
 			services.window->get().draw(background);
+			services.window->restore_view();
 
 			if (m_game_menu) {
 				m_game_menu.value()->get_current_state().render(services, services.window->get());
@@ -252,6 +254,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
 					ImGui::Separator();
+					ImGui::Text("Camera");
+					if (ImGui::Button("Toggle Freedom")) { services.camera_controller.is_free() ? services.camera_controller.constrain() : services.camera_controller.free(); }
+					ImGui::Separator();
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());
 					ImGui::Separator();
@@ -270,10 +275,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 															: services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight"
 																																			  : "Night");
 					static int clock_speed{services.world_clock.get_rate()};
-					if (ImGui::Button("Dawn")) { services.world_clock.set_time(6, 59); }
-					if (ImGui::Button("Morning")) { services.world_clock.set_time(7, 59); }
-					if (ImGui::Button("Twilight")) { services.world_clock.set_time(18, 59); }
-					if (ImGui::Button("Night")) { services.world_clock.set_time(19, 59); }
+					if (ImGui::Button("Dawn")) { services.world_clock.set_time(5, 59); }
+					if (ImGui::Button("Morning")) { services.world_clock.set_time(6, 59); }
+					if (ImGui::Button("Twilight")) { services.world_clock.set_time(17, 59); }
+					if (ImGui::Button("Night")) { services.world_clock.set_time(18, 59); }
 					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
 					services.world_clock.set_speed(clock_speed);
 					ImGui::Separator();
@@ -589,7 +594,7 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	auto destination = std::filesystem::path{services.finder.paths.screenshots.string()};
 	auto filename = std::filesystem::path{"screenshot_" + time_str + ".png"};
 	auto target = destination / filename;
-	if (screencap.copyToImage().saveToFile(target.string())) { std::cout << "screenshot " + filename.string() + " saved to " << destination.string() << std::endl; }
+	if (screencap.copyToImage().saveToFile(target.string())) { NANI_LOG_INFO(m_logger, "screenshot {} saved to {}", filename.string(), destination.string()); }
 }
 
 void Game::playtest_sync() {

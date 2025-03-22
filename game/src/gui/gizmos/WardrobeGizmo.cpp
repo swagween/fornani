@@ -12,7 +12,7 @@
 namespace fornani::gui {
 
 WardrobeGizmo::WardrobeGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
-	: Gizmo("Wardrobe", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "wardrobe", 48, util::InterpolationType::cubic}, m_nani(svc), m_core(svc.assets.get_texture("wardrobe_gizmo_core"), {139, 255}),
+	: Gizmo("Wardrobe", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "wardrobe", 48, util::InterpolationType::cubic}, m_core(svc.assets.get_texture("wardrobe_gizmo_core"), {139, 255}),
 	  m_apparel_sprite{sf::Sprite{svc.assets.get_texture("inventory_items")}}, m_light(svc.assets.get_texture("red_light"), {5, 4}), m_nani_offset{38.f, 38.f}, m_pawn_offset{106.f, 332.f}, m_light_offset{12.f, 272.f},
 	  m_scanline{sf::Sprite{svc.assets.get_texture("portrait_scanline")}}, m_sprite{sf::Sprite{svc.assets.get_texture("wardrobe_gizmo")}},
 	  m_health_display{.hearts{sf::Sprite{svc.assets.get_texture("pioneer_hearts")}}, .sockets{sf::Sprite{svc.assets.get_texture("pioneer_heart_sockets")}}, .position{16.f, 374}} {
@@ -49,7 +49,7 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	}
 	if (svc.ticker.every_x_ticks(600)) { m_core.set_params("beat"); }
 	m_path.update();
-	m_nani.set_position(m_placement + m_path.get_position() + m_nani_offset);
+	player.wardrobe_widget.set_position(m_placement + m_path.get_position() + m_nani_offset);
 	m_core.update(m_placement + m_path.get_position());
 	m_light.update(m_placement + m_path.get_position() + m_light_offset);
 
@@ -61,7 +61,7 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	// gate wardrobe updates because they're expensive
 	// and don't need to be called tickwise
 	if (m_wardrobe_update) {
-		m_nani.update(player);
+		player.wardrobe_widget.update(player);
 		m_wardrobe_update = false;
 	}
 }
@@ -80,7 +80,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	if (m_outfitter) { m_outfitter->render(svc, win, player, cam, foreground); }
 
 	// player portrait + scanline
-	m_nani.render(win, cam);
+	player.wardrobe_widget.render(win, cam);
 	static auto movement{util::Circuit{4}};
 	if (svc.ticker.every_x_frames(8)) { movement.modulate(1); }
 	auto movement_vec{sf::Vector2f{-2.f, -4.f + static_cast<float>(movement.get())}};

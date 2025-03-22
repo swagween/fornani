@@ -9,4 +9,8 @@ void CameraController::shake(int frequency, float energy, int start_time, int da
 
 void CameraController::cancel() { shake_properties = {}; }
 
+void CameraController::free() { m_state = CameraState::free; }
+
+void CameraController::constrain() { m_state = CameraState::constrained; }
+
 } // namespace fornani::graphics

@@ -29,12 +29,20 @@
       "label": "vent.json"
     },
     {
+      "room_id": 4204,
+      "label": "border_test.json"
+    },
+    {
       "room_id": 42009,
       "label": "challenge.json"
     },
     {
       "room_id": 4203,
       "label": "dojo.json"
+    },
+    {
+      "room_id": 4205,
+      "label": "farm.json"
     },
     {
       "room_id": 4200,

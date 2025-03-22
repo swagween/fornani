@@ -11,7 +11,6 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 															  .fullscreen = options.at(static_cast<int>(Toggles::fullscreen)).label,
 															  .military_time = options.at(static_cast<int>(Toggles::military_time)).label},
 	  music_label{options.at(static_cast<int>(Toggles::music)).label}, toggle_options{.enabled{svc.text.fonts.title}, .disabled{svc.text.fonts.title}}, sliders{.music_volume{svc.text.fonts.title}} {
-	console.set_source(svc.text.basic);
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 	toggle_options.enabled.setString("enabled");
@@ -26,9 +25,10 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, std::st
 }
 
 void SettingsMenu::tick_update(ServiceProvider& svc) {
+	GameState::tick_update(svc);
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
-	if (!console.is_active()) {
+	if (!m_console) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			current_selection.modulate(1);
 			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
@@ -61,7 +61,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 			case static_cast<int>(Toggles::music): m_mode = adjust_mode() ? MenuMode::ready : MenuMode ::adjust; break;
 			case static_cast<int>(Toggles::fullscreen):
 				svc.toggle_fullscreen();
-				console.load_and_launch("fullscreen");
+				m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "fullscreen", gui::OutputType::gradual);
 				break;
 			case static_cast<int>(Toggles::military_time): svc.world_clock.toggle_military_time(); break;
 			}
@@ -86,7 +86,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held && update_volume) { svc.music.volume.multiplier = ccm::ext::clamp(svc.music.volume.multiplier - 0.01f, 0.f, 1.f); }
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held && update_volume) { svc.music.volume.multiplier = ccm::ext::clamp(svc.music.volume.multiplier + 0.01f, 0.f, 1.f); }
 	}
-	console.update(svc);
+	if (m_console) { m_console.value()->update(svc); }
 	svc.soundboard.play_sounds(svc);
 }
 
@@ -102,8 +102,10 @@ void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	left_dot.render(svc, win, {0, 0});
 	right_dot.render(svc, win, {0, 0});
-	console.render(win);
-	console.write(win, true);
+	if (m_console) {
+		m_console.value()->render(win);
+		m_console.value()->write(win, true);
+	}
 }
 
 } // namespace fornani::automa

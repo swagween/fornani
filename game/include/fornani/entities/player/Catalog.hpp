@@ -1,8 +1,8 @@
 
 #pragma once
-#include "AbilityManager.hpp"
-#include "Inventory.hpp"
-#include "Wardrobe.hpp"
+#include "fornani/entities/player/AbilityManager.hpp"
+#include "fornani/entities/player/Inventory.hpp"
+#include "fornani/entities/player/Wardrobe.hpp"
 
 namespace fornani::player {
 

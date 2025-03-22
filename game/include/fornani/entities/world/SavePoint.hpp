@@ -1,9 +1,11 @@
 
 #pragma once
 
-#include "fornani/utils/Shape.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/Shape.hpp"
+
+#include <optional>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -19,7 +21,7 @@ class Console;
 
 namespace fornani::entity {
 
-	inline anim::Parameters anim_params{0, 12, 24, -1};
+inline anim::Parameters anim_params{0, 12, 24, -1};
 
 class SavePoint {
 
@@ -29,7 +31,7 @@ class SavePoint {
 
 	explicit SavePoint(automa::ServiceProvider& svc);
 
-	void update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console);
+	void update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
 
 	void save(automa::ServiceProvider& svc, player::Player& player); // talk to SaveDataManager to write current progress to save.json
@@ -53,4 +55,4 @@ class SavePoint {
 	int intensity{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

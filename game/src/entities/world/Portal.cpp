@@ -56,7 +56,7 @@ void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec cam
 	}
 }
 
-void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, int room_id, flfx::Transition& transition) {
+void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, int room_id, flfx::Transition& transition) {
 	update(svc);
 	if (bounding_box.overlaps(player.collider.bounding_box)) {
 		if (flags.attributes.test(PortalAttributes::activate_on_contact) && flags.state.test(PortalState::ready)) {
@@ -83,25 +83,24 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 	}
 	if (flags.state.test(PortalState::activated)) {
 		player.controller.prevent_movement();
-		if (console.is_complete()) {
+		if (!console) {
 			if (flags.state.test(PortalState::unlocked)) {
 				change_states(svc, room_id, transition);
 				flags.state.reset(PortalState::unlocked);
 			}
 		}
 		if (flags.state.test(PortalState::locked)) {
-			console.set_source(svc.text.basic);
 			if (player.has_item(meta.key_id)) {
 				flags.state.reset(PortalState::locked);
 				flags.state.set(PortalState::unlocked);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
-				console.load_and_launch("unlocked_door");
-				console.append(player.catalog.inventory.item_view(meta.key_id).get_label());
-				console.display_item(meta.key_id);
+				console = std::make_unique<gui::Console>(svc, svc.text.basic, "unlocked_door", gui::OutputType::gradual);
+				console.value()->append(player.catalog.inventory.item_view(meta.key_id).get_label());
+				console.value()->display_item(meta.key_id);
 				svc.data.unlock_door(meta.key_id);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
 			} else {
-				console.load_and_launch("locked_door");
+				console = std::make_unique<gui::Console>(svc, svc.text.basic, "locked_door", gui::OutputType::gradual);
 				flags.state.reset(PortalState::activated);
 			}
 			return;

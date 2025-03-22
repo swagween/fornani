@@ -1,5 +1,4 @@
 #include "fornani/setup/WindowManager.hpp"
-#include <iostream>
 
 #include "app/app_icon_data.hpp" // embedded icon data
 
@@ -44,7 +43,7 @@ void WindowManager::create(std::string const& title, bool const fullscreen) {
 	}
 	// set app icon
 	sf::Image icon;
-	if (!icon.loadFromMemory(generated::icon_png.data(), generated::icon_png.size())) { std::cout << "Failed to load application icon.\n"; };
+	if (!icon.loadFromMemory(generated::icon_png.data(), generated::icon_png.size())) { NANI_LOG_WARN(m_logger, "Failed to load application icon.\n"); };
 
 	sf::RenderWindow window(mode, title, is_fullscreen ? sf::Style::Default : sf::Style::Default & ~sf::Style::Resize, is_fullscreen ? sf::State::Fullscreen : sf::State::Windowed);
 

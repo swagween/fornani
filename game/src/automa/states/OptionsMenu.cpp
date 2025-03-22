@@ -10,6 +10,7 @@ OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, std::stri
 }
 
 void OptionsMenu::tick_update(ServiceProvider& svc) {
+	GameState::tick_update(svc);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {

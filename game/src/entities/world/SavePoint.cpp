@@ -21,7 +21,7 @@ SavePoint::SavePoint(automa::ServiceProvider& svc) : sprite{svc.assets.get_textu
 	sparkler.set_position(position);
 }
 
-void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console) {
+void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console) {
 
 	animation.update();
 	sparkler.update(svc);
@@ -44,8 +44,7 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, gui
 					save(svc, player);
 					svc.state_controller.save_point_id = id;
 					svc.soundboard.flags.world.set(audio::World::save);
-					console.set_source(svc.text.basic);
-					console.load_and_launch("save");
+					console = std::make_unique<gui::Console>(svc, svc.text.basic, "save", gui::OutputType::gradual);
 				}
 			}
 		} else {

@@ -28,9 +28,6 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	npc_id = get_npc_id.at(vendor_id);
 	portrait.set_id(npc_id);
 
-	info.flags.reset(ConsoleFlags::portrait_included);
-	info.begin();
-
 	for (auto& in_anim = svc.data.drop["orb"]["animation"]; auto& param : in_anim["params"].array_view()) {
 		anim::Parameters a{};
 		a.duration = param["duration"].as<int>();

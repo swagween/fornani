@@ -17,7 +17,7 @@ Fire::Fire(automa::ServiceProvider& svc, sf::Vector2<float> position, int lookup
 	inspectable.position = bounding_box.get_position();
 }
 
-void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map, gui::Console& console, dj::Json& set) {
+void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json& set) {
 	inspectable.update(svc, player, console, set);
 	sparkler.update(svc);
 	sprite.update(bounding_box.get_position() + sprite_offset);

@@ -16,6 +16,7 @@
 #include "fornani/graphics/SpriteHistory.hpp"
 #include "fornani/graphics/TextureUpdater.hpp"
 #include "fornani/graphics/Tutorial.hpp"
+#include "fornani/gui/WardrobeWidget.hpp"
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Collider.hpp"
@@ -235,6 +236,7 @@ class Player {
 	int ledge_height{}; // temp for testing
 
 	Catalog catalog{};
+	gui::WardrobeWidget wardrobe_widget;
 	VisitHistory visit_history{};
 
   private:

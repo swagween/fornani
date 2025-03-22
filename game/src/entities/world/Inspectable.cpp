@@ -18,7 +18,7 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, s
 	if (aoc) { attributes.set(InspectableAttributes::activate_on_contact); }
 }
 
-void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, gui::Console& console, dj::Json& set) {
+void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json& set) {
 	position = static_cast<Vec>(scaled_position * util::constants::u32_cell_size);
 	dimensions = static_cast<Vec>(scaled_dimensions * util::constants::u32_cell_size);
 	bounding_box.set_position(position);
@@ -38,14 +38,13 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 	}
 	if (flags.test(InspectableFlags::activated)) {
 		for (auto& choice : set.array_view()) {
-			if (choice["key"].as_string() == std::string{key}) {
-				console.set_source(choice);
-				console.load_and_launch(std::string{key + std::to_string(current_alt)}, gui::OutputType::instant);
-			}
+			if (choice["key"].as_string() == std::string{key}) { console = std::make_unique<gui::Console>(svc, choice, std::string{key + std::to_string(current_alt)}, gui::OutputType::instant); }
 		}
 	}
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) { animation.set_params(params); }
-	if (console.get_key() == key) { flags.set(InspectableFlags::engaged); }
+	if (console) {
+		if (console.value()->get_key() == key) { flags.set(InspectableFlags::engaged); }
+	}
 	if (flags.test(InspectableFlags::engaged)) {
 		// if (player.transponder.shipments.quest.get_residue() == 9) {
 		//  TODO: properly handle inspectable codes from console
@@ -54,7 +53,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, g
 			svc.data.destroy_inspectable(id);
 		}
 	}
-	if (console.is_complete()) { flags.reset(InspectableFlags::engaged); }
+	if (!console) { flags.reset(InspectableFlags::engaged); }
 }
 
 void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {

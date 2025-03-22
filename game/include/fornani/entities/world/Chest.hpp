@@ -7,6 +7,8 @@
 #include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/Collider.hpp"
 
+#include <optional>
+
 namespace fornani::automa {
 struct ServiceProvider;
 }
@@ -37,7 +39,7 @@ enum class ChestType { gun, orbs, item };
 class Chest final : public Entity {
   public:
 	Chest(automa::ServiceProvider& svc, int id);
-	void update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player);
+	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) override;
 	void set_position(sf::Vector2<float> pos);
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);

@@ -1,5 +1,7 @@
+
 #pragma once
 
+#include <ccmath/math/basic.hpp>
 #include <cassert>
 
 namespace fornani::util {
@@ -12,7 +14,7 @@ class Circuit {
 	constexpr void set(int const to_selection) { selection = to_selection % order; }
 	constexpr void set_order(int const to_order) {
 		order = to_order;
-		selection = std::min(selection, order - 1);
+		selection = ccm::min(selection, order - 1);
 	}
 	[[nodiscard]] constexpr auto get_order() const -> int { return order; }
 	[[nodiscard]] constexpr auto get() const -> int { return selection; }
