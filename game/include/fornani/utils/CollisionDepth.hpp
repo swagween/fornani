@@ -1,7 +1,11 @@
+
 #pragma once
+
+#include "fornani/io/Logger.hpp"
+#include "fornani/utils/Counter.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <deque>
-#include "Counter.hpp"
 
 namespace fornani::shape {
 class Shape;
@@ -52,6 +56,8 @@ class CollisionDepth {
 	float depth_throwaway{12.0f};
 	float depth_maximum{12.0f};
 	sf::RectangleShape collision_ray{};
+
+	io::Logger m_logger{"collision"};
 };
 
 } // namespace fornani::util

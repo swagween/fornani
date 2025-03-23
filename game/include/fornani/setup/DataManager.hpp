@@ -7,6 +7,7 @@
 #include <array>
 #include <string>
 #include "fornani/io/File.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/world/Map.hpp"
 
@@ -145,6 +146,8 @@ class DataManager {
 	std::vector<int> destroyed_blocks{};
 	std::vector<std::string> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
+
+	io::Logger m_logger{"data"};
 };
 
 } // namespace fornani::data
