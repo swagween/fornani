@@ -16,6 +16,7 @@ class ControlsMenu final : public GameState {
 
   private:
 	void change_scene(ServiceProvider& svc, std::string_view scene); // FIXME this is a hack to work with GameState; eliminate options from GameState
+	std::string selection{};
 
 	float center_offset{320.f};
 	std::vector<sf::Text> control_list{};

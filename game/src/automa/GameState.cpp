@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : player(&player), hud(svc, player), scene(scene) {
+GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : player(&player), hud(svc, player) {
 	auto const& in_data = svc.data.menu["options"];
 	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }

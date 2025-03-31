@@ -26,7 +26,6 @@ class WindowManager {
 		return true;
 	}
 
-	sf::Texture screencap{};
 	sf::Vector2u u_screen_dimensions{};
 	sf::Vector2u display_dimensions{};
 
@@ -39,6 +38,9 @@ class WindowManager {
 	bool is_fullscreen{};
 
 	io::Logger m_logger{"windowing"};
+
+  public:
+	sf::Texture screencap{};
 };
 
 } // namespace fornani

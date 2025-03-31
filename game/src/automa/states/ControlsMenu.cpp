@@ -42,13 +42,13 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered && option_is_selected && current_selection.get() == 0) {
-		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
+		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), selection));
 		if (current_tab == 0) { current_tab = 4; }
 		auto tab_to_switch_to = current_tab - 1;
 		change_scene(svc, tabs[tab_to_switch_to]);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered && option_is_selected && current_selection.get() == 0) {
-		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
+		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), selection));
 		auto tab_to_switch_to = (current_tab + 1) % 4;
 		change_scene(svc, tabs[tab_to_switch_to]);
 	}
@@ -115,7 +115,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 	std::size_t ctr{0};
 	for (auto& option : options) {
 		if (ctr > 0 && ctr < options.size() - 2) {
-			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
+			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), selection));
 			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(option.label.getString());
 			auto action = svc.controller_map.get_action_by_identifier(id.data());
 
@@ -141,14 +141,14 @@ void ControlsMenu::restore_defaults(ServiceProvider& svc) {
 }
 
 void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change_to) {
-	scene = to_change_to;
+	selection = to_change_to;
 
 	options.clear();
 	control_list.clear();
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string())); }
+	for (auto& entry : in_data[selection].array_view()) { options.push_back(Option(svc, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
-	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
+	top_buffer = svc.data.menu["config"][selection]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {
 		if (ctr == 0 || ctr >= options.size() - 2) {

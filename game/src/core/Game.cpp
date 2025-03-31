@@ -48,7 +48,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		if (demo) {
 			services.debug_flags.set(automa::DebugFlags::demo_mode);
 			flags.set(GameFlags::in_game);
-			game_state.get_current_state().target_folder.paths.scene = levelpath;
 			services.music.turn_off();
 			services.data.load_progress(player, 0);
 			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
@@ -245,8 +244,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				if (ImGui::BeginTabItem("General")) {
 					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
-					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
-					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
 					if (ImGui::Button("Toggle Demo Mode")) { services.debug_flags.test(automa::DebugFlags::demo_mode) ? services.debug_flags.reset(automa::DebugFlags::demo_mode) : services.debug_flags.set(automa::DebugFlags::demo_mode); }
 					if (ImGui::Button("Toggle Greyblock Mode")) {

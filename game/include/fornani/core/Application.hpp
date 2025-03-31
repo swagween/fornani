@@ -4,15 +4,15 @@
 #include "fornani/setup/ResourceFinder.hpp"
 #include "fornani/setup/Version.hpp"
 #include "fornani/setup/WindowManager.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 
 #include <utility>
 
 namespace fornani {
 
-class Application {
+class Application : public Polymorphic {
   public:
 	explicit Application(char** argv) : m_finder(argv), m_metadata(m_game_info, m_finder){};
-	virtual ~Application() = default;
 	virtual void init(char** argv, std::pair<bool, bool> demo_fullscreen = {});
 
 	virtual void launch(char** argv, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});

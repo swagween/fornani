@@ -32,17 +32,6 @@ constexpr inline float title_letter_spacing{1.0f};
 
 struct ServiceProvider;
 
-struct Scene {
-	struct {
-		std::filesystem::path scene{};
-		std::filesystem::path region{};
-		std::filesystem::path room{};
-		std::filesystem::path next_region{};
-		std::filesystem::path next_room{};
-	} paths{};
-	std::string_view label{};
-};
-
 class GameState {
 
   public:
@@ -62,8 +51,6 @@ class GameState {
 	bool debug_mode{false};
 	util::BitFlags<GameStateFlags> flags{};
 
-	std::string_view scene{};
-
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
 	sf::Vector2<float> dot_pad{24.f, 8.f};
@@ -71,7 +58,6 @@ class GameState {
 	player::Player* player;
 	gui::HUD hud;
 
-	Scene target_folder{};
 	std::vector<Option> options{};
 	util::Circuit current_selection{1};
 	float spacing{24.f};

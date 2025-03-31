@@ -4,6 +4,7 @@
 #include <string_view>
 #include <unordered_map>
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 
 #include "fornani/io/Logger.hpp"
 
@@ -19,9 +20,8 @@ enum class ApparelShirt : std::uint8_t { standard, skycorps_tee, chalcedony_shir
 enum class ApparelHeadgear : std::uint8_t { standard, head_lamp, gas_mask, sporty_cap };
 enum class ApparelHairstyle : std::uint8_t { standard, bob_cut, ponytail, punk_hair };
 
-class Apparel {
+class Apparel : public Polymorphic {
   public:
-	virtual ~Apparel() = default;
 	virtual int get_variant() const { return 0; };
 	virtual void set(int to) {}
 };

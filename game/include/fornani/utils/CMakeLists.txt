@@ -15,6 +15,7 @@ nani_add_headers(
         Fader.hpp
         Math.hpp
         NineSlice.hpp
+        Polymorphic.hpp
         QuestCode.hpp
         Random.hpp
         RichText.hpp
