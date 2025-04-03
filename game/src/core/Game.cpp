@@ -35,6 +35,19 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 }
 
 void Game::run(WindowManager& window, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+	// BAMBO simplified window
+	while (window.get().isOpen()) {
+		while (std::optional const event = window.get().pollEvent()) {
+			if (event->is<sf::Event::Closed>()) {
+				window.get().close();
+				return;
+			}
+		}
+
+		window.get().clear();
+		window.get().display();
+	}
+	return;
 	NANI_ZoneScopedN("Game::run");
 
 	if (window.is_fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
