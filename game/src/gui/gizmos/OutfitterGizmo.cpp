@@ -89,13 +89,15 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	if (m_path.completed_step(1)) { m_wires.set_params("plug"); }
 }
 
-void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void OutfitterGizmo::render(automa::ServiceProvider& svc, WindowManager& window, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
+	Gizmo::render(svc, window, player, cam);
+	auto& win = window.get();
+
 	m_sprite.setTextureRect(sf::IntRect{{0, 18}, {304, 116}});
 	m_sprite.setPosition(m_physics.position + m_placement - cam);
 
-	if (m_description) { m_description->render(svc, win, player, cam); }
+	if (m_description) { m_description->render(svc, window, player, cam); }
 	win.draw(m_sprite);
 	if (is_selected()) {
 		auto selection_origin{sf::Vector2f{-3.f, -3.f}};

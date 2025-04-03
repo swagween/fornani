@@ -16,7 +16,7 @@ namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player, automa::MenuType::main) {
 	NANI_ZoneScopedN("Game::Game");
-	if (!ImGui::SFML::Init(services.window->get())) {
+	if (!ImGui::SFML::Init(window.get())) {
 		NANI_LOG_ERROR(m_logger, "ImGui-SFML failed to initialize the window.");
 		shutdown();
 		return;
@@ -30,17 +30,17 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	// player
 	player.init(services);
 
-	background.setSize(sf::Vector2f{services.window->get().getSize()});
+	background.setSize(sf::Vector2f{window.get().getSize()});
 	background.setFillColor(services.styles.colors.ui_black);
 }
 
-void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+void Game::run(WindowManager& window, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 	NANI_ZoneScopedN("Game::run");
 
-	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
+	if (window.is_fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 
-	measurements.win_size.x = services.window->get().getSize().x;
-	measurements.win_size.y = services.window->get().getSize().y;
+	measurements.win_size.x = window.get().getSize().x;
+	measurements.win_size.y = window.get().getSize().y;
 	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
 
 	{
@@ -66,7 +66,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 	sf::Clock delta_clock{};
 
-	while (services.window->get().isOpen()) {
+	while (window.get().isOpen()) {
 
 		NANI_ZoneScopedN("Game Loop");
 
@@ -89,7 +89,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			NANI_ZoneScopedN("Handle Window Events");
 			bool valid_event{true};
 
-			while (std::optional const event = services.window->get().pollEvent()) {
+			while (std::optional const event = window.get().pollEvent()) {
 				NANI_ZoneScopedN("Event Polling");
 				player.animation.state = {};
 				if (event->is<sf::Event::Closed>()) {
@@ -110,7 +110,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 							services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 						}
 					}
-					if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
+					if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { window.take_screenshot(services.finder); }
 					if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
 				}
 
@@ -120,7 +120,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				}
 
 				services.controller_map.handle_event(*event);
-				if (valid_event) { ImGui::SFML::ProcessEvent(services.window->get(), *event); }
+				if (valid_event) { ImGui::SFML::ProcessEvent(window.get(), *event); }
 				valid_event = true;
 			}
 		}
@@ -133,7 +133,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		{
 			NANI_ZoneScopedN("Update");
 			services.music.update();
-			bool has_focus = services.window->get().hasFocus();
+			bool has_focus = window.get().hasFocus();
 			services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
 				NANI_ZoneScopedN("Update->Tick");
 				services.controller_map.update();
@@ -168,7 +168,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					game_state.process_state(services, player, *this);
 				}
 			}
-			if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
+			if (services.state_controller.actions.consume(automa::Actions::screenshot)) { window.take_screenshot(services.finder); }
 
 			{
 				NANI_ZoneScopedN("Update->ImGUI");
@@ -177,8 +177,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				io.IniFilename = NULL;
 				io.LogFilename = NULL;
 				io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
-				services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
-				ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
+				window.get().setMouseCursorVisible(io.MouseDrawCursor);
+				ImGui::SFML::Update(window.get(), delta_clock.getElapsedTime());
 				delta_clock.restart();
 			}
 		}
@@ -186,25 +186,25 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 		{
 			NANI_ZoneScopedN("Rendering");
 #if not defined(FORNANI_PRODUCTION)
-			if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
+			if (flags.test(GameFlags::playtest)) { playtester_portal(window.get()); }
 			flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 #endif
 
-			services.window->get().clear();
-			if (services.window->fullscreen()) { services.window->get().setView(entire_window); }
-			services.window->get().draw(background);
-			services.window->restore_view();
+			window.get().clear();
+			if (window.metadata.is_fullscreen()) { window.get().setView(entire_window); }
+			window.get().draw(background);
+			window.restore_view();
 
 			if (m_game_menu) {
-				m_game_menu.value()->get_current_state().render(services, services.window->get());
+				m_game_menu.value()->get_current_state().render(services, window);
 			} else {
-				game_state.get_current_state().render(services, services.window->get());
+				game_state.get_current_state().render(services, window);
 			}
 
-			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(services.window->get()); }
+			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(window.get()); }
 
-			ImGui::SFML::Render(services.window->get());
-			services.window->get().display();
+			ImGui::SFML::Render(window.get());
+			window.get().display();
 		}
 		services.ticker.end_frame();
 	}
@@ -576,22 +576,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 		ImVec2 prev_size = ImGui::GetWindowSize();
 		ImGui::End();
 	}
-}
-
-void Game::take_screenshot(sf::Texture& screencap) {
-	services.window->screencap.update(services.window->get());
-	std::time_t const now = std::time(nullptr);
-
-	std::time_t const time = std::time({});
-	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
-	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
-	auto time_str = std::string{time_string};
-
-	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
-	auto destination = std::filesystem::path{services.finder.paths.screenshots.string()};
-	auto filename = std::filesystem::path{"screenshot_" + time_str + ".png"};
-	auto target = destination / filename;
-	if (screencap.copyToImage().saveToFile(target.string())) { NANI_LOG_INFO(m_logger, "screenshot {} saved to {}", filename.string(), destination.string()); }
 }
 
 void Game::playtest_sync() {

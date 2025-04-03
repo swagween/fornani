@@ -148,7 +148,7 @@ target_link_libraries(fornani-dependencies INTERFACE
         libassert::assert
 )
 
-if (WIN32 AND NOT FORNANI_PRODUCTION_BUILD AND NOT DEFINED FORNANI_DISABLE_DBGHELP)
+if (WIN32 AND NOT FORNANI_ENABLE_PRODUCTION_BUILD AND NOT DEFINED FORNANI_DISABLE_DBGHELP)
     target_link_libraries(fornani-dependencies INTERFACE
             Dbghelp
     )

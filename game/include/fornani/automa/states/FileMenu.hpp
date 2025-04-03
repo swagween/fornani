@@ -6,7 +6,9 @@
 
 #include <optional>
 
-namespace fornani::automa {
+namespace fornani {
+class WindowManager;
+namespace automa {
 
 class FileMenu final : public GameState {
 
@@ -16,7 +18,7 @@ class FileMenu final : public GameState {
 	FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc) override;
 	void frame_update(ServiceProvider& svc) override;
-	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
+	void render(ServiceProvider& svc, WindowManager& win) override;
 	void refresh(ServiceProvider& svc);
 
 	sf::RectangleShape title{};
@@ -26,5 +28,5 @@ class FileMenu final : public GameState {
 	world::Map map;
 	std::optional<gui::MiniMenu> m_file_select_menu{};
 };
-
-} // namespace fornani::automa
+} // namespace automa
+} // namespace fornani

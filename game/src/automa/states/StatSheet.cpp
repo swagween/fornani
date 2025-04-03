@@ -1,6 +1,7 @@
 
 #include "fornani/automa/states/StatSheet.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Constants.hpp"
 
 namespace fornani::automa {
@@ -11,7 +12,7 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 	for (auto& option : options) {
 		option.update(svc, current_selection.get());
 		option.label.setLetterSpacing(1.4f);
-		option.position = {svc.window->f_center_screen().x, svc.window->f_screen_dimensions().y - 60.f - ctr * 28.f};
+		option.position = {svc.window.f_center_screen().x, svc.window.f_screen_dimensions().y - 60.f - ctr * 28.f};
 		++ctr;
 	}
 	left_dot.set_position(options.at(0).left_offset);
@@ -56,11 +57,11 @@ void StatSheet::tick_update(ServiceProvider& svc) {
 	for (auto& option : options) {
 		option.update(svc, current_selection.get());
 		option.label.setLetterSpacing(1.4f);
-		option.position = {svc.window->f_center_screen().x, svc.window->f_screen_dimensions().y - 60.f - ctr * 28.f};
+		option.position = {svc.window.f_center_screen().x, svc.window.f_screen_dimensions().y - 60.f - ctr * 28.f};
 		++ctr;
 	}
 	stats.setPosition({200.f, 120.f});
-	title.setPosition({svc.window->f_screen_dimensions().x * 0.5f, 60.f});
+	title.setPosition({svc.window.f_screen_dimensions().x * 0.5f, 60.f});
 	left_dot.update(svc);
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
@@ -70,13 +71,13 @@ void StatSheet::tick_update(ServiceProvider& svc) {
 
 void StatSheet::frame_update(ServiceProvider& svc) {}
 
-void StatSheet::render(ServiceProvider& svc, sf::RenderWindow& win) {
+void StatSheet::render(ServiceProvider& svc, [[maybe_unused]] WindowManager& win) {
 	if (!loading.is_complete()) { return; }
-	for (auto& option : options) { win.draw(option.label); }
-	win.draw(stats);
-	win.draw(title);
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	for (auto& option : options) { win.get().draw(option.label); }
+	win.get().draw(stats);
+	win.get().draw(title);
+	left_dot.render(svc, win.get(), {0, 0});
+	right_dot.render(svc, win.get(), {0, 0});
 }
 
 } // namespace fornani::automa

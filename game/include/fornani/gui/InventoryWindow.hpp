@@ -8,6 +8,10 @@
 #include "fornani/gui/MiniMenu.hpp"
 #include "fornani/io/Logger.hpp"
 
+namespace fornani {
+class WindowManager;
+}
+
 namespace fornani::player {
 class Player;
 }
@@ -28,7 +32,7 @@ class InventoryWindow {
   public:
 	InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player);
+	void render(automa::ServiceProvider& svc, WindowManager& win, player::Player& player);
 	[[nodiscard]] auto exit_requested() const -> bool { return m_view == InventoryView::exit; }
 
   private:

@@ -1,11 +1,12 @@
 
 #include "fornani/automa/states/Intro.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/WindowManager.hpp"
 
 namespace fornani::automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number) {
-	title.setSize(static_cast<sf::Vector2f>(svc.window->i_screen_dimensions()));
+	title.setSize(static_cast<sf::Vector2f>(svc.window.i_screen_dimensions()));
 	title.setFillColor(svc.styles.colors.ui_black);
 	svc.music.load(svc.finder, "respite");
 	svc.music.play_looped(20);
@@ -40,7 +41,7 @@ void Intro::tick_update(ServiceProvider& svc) {
 
 void Intro::frame_update(ServiceProvider& svc) { hud.update(svc, *player); }
 
-void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) { win.draw(title); }
+void Intro::render(ServiceProvider& svc, WindowManager& win) { win.get().draw(title); }
 
 void Intro::toggle_pause_menu(ServiceProvider& svc) { svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause(); }
 

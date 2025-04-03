@@ -1,6 +1,7 @@
 
 #include "fornani/automa/states/FileMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Constants.hpp"
 
 namespace fornani::automa {
@@ -10,14 +11,14 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	svc.data.load_blank_save(player);
 	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
-	player.set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
-	player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
-	player.antennae.at(1).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	player.set_position({svc.window.f_screen_dimensions().x / 2 + 80, 360});
+	player.antennae.at(0).set_position({svc.window.f_screen_dimensions().x / 2 + 80, 360});
+	player.antennae.at(1).set_position({svc.window.f_screen_dimensions().x / 2 + 80, 360});
 	player.hurt_cooldown.cancel();
 
 	loading.start(4);
 
-	title.setSize(svc.window->f_screen_dimensions());
+	title.setSize(svc.window.f_screen_dimensions());
 	title.setFillColor(svc.styles.colors.ui_black);
 
 	refresh(svc);
@@ -115,7 +116,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	player->controller.autonomous_walk();
 	player->collider.flags.state.set(shape::State::grounded);
 
-	player->set_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
+	player->set_position({svc.window.i_screen_dimensions().x * 0.5f + 80, 360});
 	player->update(map);
 	player->controller.direction.lr = dir::LR::left;
 
@@ -131,20 +132,20 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 
 void FileMenu::frame_update(ServiceProvider& svc) {}
 
-void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
+void FileMenu::render(ServiceProvider& svc, WindowManager& win) {
 	if (!loading.is_complete()) { return; }
-	win.draw(title);
-	for (auto& option : options) { win.draw(option.label); }
-	player->render(svc, win, {});
+	win.get().draw(title);
+	for (auto& option : options) { win.get().draw(option.label); }
+	player->render(svc, win.get(), {});
 	if (loading.is_complete()) {
-		left_dot.render(svc, win, {});
-		right_dot.render(svc, win, {});
-		hud.render(*player, win);
-		if (m_file_select_menu) { m_file_select_menu->render(win); }
+		left_dot.render(svc, win.get(), {});
+		right_dot.render(svc, win.get(), {});
+		hud.render(*player, win.get());
+		if (m_file_select_menu) { m_file_select_menu->render(win.get()); }
 	}
 	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win, false);
+		m_console.value()->render(win.get());
+		m_console.value()->write(win.get(), false);
 	}
 }
 

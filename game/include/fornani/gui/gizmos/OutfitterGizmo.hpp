@@ -18,7 +18,7 @@ class OutfitterGizmo : public Gizmo {
   public:
 	OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false) override;
+	void render(automa::ServiceProvider& svc, WindowManager& window, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 	[[nodiscard]] auto get_outfit() const -> std::array<int, static_cast<int>(player::ApparelType::END)> { return m_outfit; }
 	[[nodiscard]] auto has_changed() const -> bool { return m_change_outfit; }

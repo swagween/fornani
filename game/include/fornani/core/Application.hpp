@@ -10,12 +10,11 @@
 
 namespace fornani {
 
-class Application : public Polymorphic {
+class Application : public UniquePolymorphic {
   public:
 	explicit Application(char** argv) : m_finder(argv), m_metadata(m_game_info, m_finder){};
-	virtual void init(char** argv, std::pair<bool, bool> demo_fullscreen = {});
-
-	virtual void launch(char** argv, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+	void init(char** argv, std::pair<bool, bool> demo_fullscreen = {});
+	void launch(char** argv, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
 
   protected:
 	data::ResourceFinder m_finder;

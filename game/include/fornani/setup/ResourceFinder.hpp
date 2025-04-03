@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <string>
 
+#include "fornani/io/Logger.hpp"
+
 namespace fornani::data {
 
 namespace fs = std::filesystem;
@@ -13,6 +15,7 @@ namespace fs = std::filesystem;
 class ResourceFinder {
   public:
 	explicit ResourceFinder(char** argv);
+	~ResourceFinder() { NANI_LOG_DEBUG(m_logger, "ResourceFinder destroyed"); }
 	fs::path region_and_room() const;
 	fs::path find_directory(fs::path const& exe, fs::path const& target);
 
@@ -27,6 +30,8 @@ class ResourceFinder {
 		std::string region{};
 		std::string room_name{};
 	} paths{};
+
+	io::Logger m_logger{"data"};
 };
 
 } // namespace fornani::data

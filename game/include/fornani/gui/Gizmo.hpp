@@ -10,6 +10,10 @@
 
 #include <string>
 
+namespace fornani {
+class WindowManager;
+}
+
 namespace fornani::automa {
 struct ServiceProvider;
 }
@@ -54,7 +58,7 @@ class Gizmo {
 	explicit Gizmo(std::string const& label, bool foreground) : m_label(label), m_foreground(foreground) {}
 	virtual ~Gizmo() = default;
 	virtual void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position);
-	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false);
+	virtual void render(automa::ServiceProvider& svc, WindowManager& window, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false);
 	virtual bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);
 	void select();
 	void deselect();

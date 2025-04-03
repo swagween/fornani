@@ -2,6 +2,7 @@
 #include "fornani/automa/states/ControlsMenu.hpp"
 
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Constants.hpp"
 
 namespace fornani::automa {
@@ -15,7 +16,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	instruction.setLineSpacing(1.5f);
 	instruction.setLetterSpacing(title_letter_spacing);
 	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	instruction.setPosition({svc.window->i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 120.f});
+	instruction.setPosition({svc.window.i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window.i_screen_dimensions().y - 120.f});
 	instruction.setFillColor(svc.styles.colors.dark_grey);
 
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
@@ -23,7 +24,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	loading.start(2);
 
 	debug.setFillColor(sf::Color::Transparent);
-	debug.setSize({2.f, svc.window->f_screen_dimensions().y});
+	debug.setSize({2.f, svc.window.f_screen_dimensions().y});
 	debug.setOutlineColor(svc.styles.colors.blue);
 	debug.setOutlineThickness(-1);
 }
@@ -101,14 +102,14 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 
 void ControlsMenu::frame_update(ServiceProvider& svc) {}
 
-void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
+void ControlsMenu::render(ServiceProvider& svc, WindowManager& win) {
 	if (loading.is_complete()) {
-		for (auto& option : options) { win.draw(option.label); }
-		for (auto& control : control_list) { win.draw(control); }
-		win.draw(instruction);
+		for (auto& option : options) { win.get().draw(option.label); }
+		for (auto& control : control_list) { win.get().draw(control); }
+		win.get().draw(instruction);
 	}
-	left_dot.render(svc, win, {});
-	right_dot.render(svc, win, {});
+	left_dot.render(svc, win.get(), {});
+	right_dot.render(svc, win.get(), {});
 }
 
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
@@ -122,7 +123,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 			auto& control = control_list.at(ctr);
 			control.setString(std::string(svc.controller_map.key_to_string(svc.controller_map.get_primary_keyboard_binding(action))));
 			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
-			control.setPosition({svc.window->i_screen_dimensions().x * 0.5f + center_offset, option.position.y});
+			control.setPosition({svc.window.i_screen_dimensions().x * 0.5f + center_offset, option.position.y});
 			control.setCharacterSize(16);
 			control.setLetterSpacing(title_letter_spacing);
 			control.setFillColor(svc.styles.colors.dark_grey);
@@ -153,9 +154,9 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	for (auto& option : options) {
 		if (ctr == 0 || ctr >= options.size() - 2) {
 			// Show tab selector, gamepad settings & reset to default in middle of screen
-			option.position.x = svc.window->i_screen_dimensions().x * 0.5f;
+			option.position.x = svc.window.i_screen_dimensions().x * 0.5f;
 		} else {
-			option.position.x = svc.window->i_screen_dimensions().x * 0.5f - center_offset + option.label.getLocalBounds().getCenter().x;
+			option.position.x = svc.window.i_screen_dimensions().x * 0.5f - center_offset + option.label.getLocalBounds().getCenter().x;
 		}
 		// FIXME Spacing is broken in other menus. getLocalBounds().height is returning 0 because the font isn't set when the function is called
 		// 	     To make up for it we don't add the getLocalBounds().height factor here, but keep it in mind when it is fixed!

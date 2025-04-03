@@ -2,6 +2,7 @@
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/ColorUtils.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
@@ -11,18 +12,18 @@
 namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
-	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}} {
+	: m_cell_dimensions{svc.window.f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}} {
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
-	m_debug.border.setSize(svc.window->f_screen_dimensions());
+	m_debug.border.setSize(svc.window.f_screen_dimensions());
 	m_debug.border.setOutlineColor(svc.styles.colors.green);
 	m_debug.border.setOutlineThickness(-2.f);
 	m_debug.center.setFillColor(svc.styles.colors.red);
 	m_debug.center.setRadius(32.f);
 	m_debug.center.setOrigin({32.f, 32.f});
-	boundary.size = svc.window->f_screen_dimensions() * 3.f;
-	boundary.position = -1.f * svc.window->f_screen_dimensions();
+	boundary.size = svc.window.f_screen_dimensions() * 3.f;
+	boundary.position = -1.f * svc.window.f_screen_dimensions();
 	m_background.setFillColor(svc.styles.colors.pioneer_black);
-	m_background.setSize(svc.window->f_screen_dimensions());
+	m_background.setSize(svc.window.f_screen_dimensions());
 	m_dashboard->set_position(sf::Vector2f{250.f, 32.f}, true);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
 }
@@ -76,8 +77,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	}
 }
 
-void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player) {
-	win.draw(m_background);
+void InventoryWindow::render(automa::ServiceProvider& svc, WindowManager& win, player::Player& player) {
+	win.get().draw(m_background);
 	for (auto i{-1}; i < 4; i += 2) {
 		for (auto j{-1}; j < 4; j += 2) {
 			m_debug.center.setPosition(sf::Vector2f{m_cell_dimensions.x * 0.5f * static_cast<float>(i) - m_camera.physics.position.x, m_cell_dimensions.y * 0.5f * static_cast<float>(j) - m_camera.physics.position.y});

@@ -14,4 +14,15 @@ class Polymorphic {
 	auto operator=(Polymorphic&&) -> Polymorphic& = default;
 };
 
+class UniquePolymorphic {
+  public:
+	UniquePolymorphic(UniquePolymorphic const&) = delete;
+	UniquePolymorphic(UniquePolymorphic&&) = delete;
+	auto operator=(UniquePolymorphic const&) -> UniquePolymorphic& = delete;
+	auto operator=(UniquePolymorphic&&) -> UniquePolymorphic& = delete;
+
+	UniquePolymorphic() = default;
+	virtual ~UniquePolymorphic() = default;
+};
+
 } // namespace fornani

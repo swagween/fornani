@@ -183,25 +183,25 @@ void Dojo::tick_update(ServiceProvider& svc) {
 
 void Dojo::frame_update(ServiceProvider& svc) { ZoneScopedN("Dojo::frame_update"); }
 
-void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
+void Dojo::render(ServiceProvider& svc, WindowManager& win) {
 	ZoneScopedN("Dojo::render");
-	map.render_background(svc, win, camera.get_position());
-	map.render(svc, win, camera.get_position());
+	map.render_background(svc, win.get(), camera.get_position());
+	map.render(svc, win.get(), camera.get_position());
 
-	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
-	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }
+	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win.get()); }
+	if (vendor_dialog) { vendor_dialog.value()->render(svc, win.get(), *player, map); }
 	if (inventory_window) {
 		inventory_window.value()->render(svc, win, *player);
 		return;
 	}
-	map.soft_reset.render(win);
-	map.transition.render(win);
-	if (pause_window) { pause_window.value()->render(svc, win); }
+	map.soft_reset.render(win.get());
+	map.transition.render(win.get());
+	if (pause_window) { pause_window.value()->render(svc, win.get()); }
 	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win);
+		m_console.value()->render(win.get());
+		m_console.value()->write(win.get());
 	}
-	player->tutorial.render(win);
+	player->tutorial.render(win.get());
 	if (svc.debug_mode()) { map.debug(); }
 }
 

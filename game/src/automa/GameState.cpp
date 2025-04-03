@@ -12,7 +12,7 @@ GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_v
 	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {
-		option.position = {svc.window->i_screen_dimensions().x * 0.5f, top_buffer + ctr * spacing};
+		option.position = {svc.window.i_screen_dimensions().x * 0.5f, top_buffer + ctr * spacing};
 		option.index = ctr;
 		option.update(svc, current_selection.get());
 		++ctr;

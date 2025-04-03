@@ -9,15 +9,19 @@
 #include "fornani/utils/Circuit.hpp"
 #include "fornani/world/Map.hpp"
 
-namespace fornani::player {
+namespace fornani {
+
+class WindowManager;
+
+namespace player {
 class Player;
 }
 
-namespace fornani::entity {
+namespace entity {
 class Portal;
 }
 
-namespace fornani::gui {
+namespace gui {
 
 enum class MapIconFlags : std::uint8_t { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor };
 enum class ChunkType : std::uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
@@ -32,7 +36,7 @@ class MiniMap {
   public:
 	explicit MiniMap(automa::ServiceProvider& svc);
 	void bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current = false, bool undiscovered = false);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);
+	void render(automa::ServiceProvider& svc, WindowManager& window, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);
 	void update();
 	void clear_atlas();
 	void move(sf::Vector2f direction);
@@ -75,4 +79,6 @@ class MiniMap {
 	io::Logger m_logger{"MiniMap"};
 };
 
-} // namespace fornani::gui
+} // namespace gui
+
+} // namespace fornani

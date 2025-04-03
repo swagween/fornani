@@ -26,7 +26,7 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 													  sf::Vector2f{80.f, -20.f},
 												  } {
 	m_dashboard_port = DashboardPort::minimap;
-	m_physics.position = sf::Vector2f{0.f, svc.window->f_screen_dimensions().y};
+	m_physics.position = sf::Vector2f{0.f, svc.window.f_screen_dimensions().y};
 	m_icon_sprite.setOrigin({3.f, 3.f});
 	m_icon_sprite.setScale(util::constants::f_scale_vec);
 	for (auto& id : svc.data.discovered_rooms) { m_minimap->bake(svc, map, player, id, id == svc.current_room); }
@@ -119,19 +119,21 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
 }
 
-void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void MapGizmo::render(automa::ServiceProvider& svc, WindowManager& window, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
+	Gizmo::render(svc, window, player, cam);
+	auto& win = window.get();
+
 	auto render_position{-m_placement + cam};
 	m_constituents.gizmo.motherboard.position = m_path.get_position() + m_motherboard_path.get_position() - m_map_screen.get_f_corner_dimensions();
 	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f});
-	m_minimap->render(svc, win, player, cam, m_icon_sprite);
+	m_minimap->render(svc, window, player, cam, m_icon_sprite);
 	m_icon_sprite.setScale(util::constants::f_scale_vec);
 	m_map_screen.render(win, cam);
 	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
 	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}); }
-	if (m_info) { m_info->render(svc, win, player, cam, foreground); }
+	if (m_info) { m_info->render(svc, window, player, cam, foreground); }
 	m_constituents.gizmo.top_left.position = m_path.get_position();
 	m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f});
 	m_constituents.gizmo.top_right.position = m_path.get_position() + sf::Vector2f{m_path.get_dimensions().x, 0.f};

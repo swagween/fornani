@@ -18,7 +18,7 @@ Map::Map(automa::ServiceProvider& svc, player::Player& player)
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	// for debugging
-	center_box.setSize(svc.window->f_screen_dimensions() * 0.5f);
+	center_box.setSize(svc.window.f_screen_dimensions() * 0.5f);
 	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
 	spawn_counter.start();
@@ -598,10 +598,10 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	player->render_indicators(svc, win, cam);
 
-	if (real_dimensions.y < svc.window->f_screen_dimensions().y) {
-		auto ydiff = (svc.window->f_screen_dimensions().y - real_dimensions.y) * 0.5f;
+	if (real_dimensions.y < svc.window.f_screen_dimensions().y) {
+		auto ydiff = (svc.window.f_screen_dimensions().y - real_dimensions.y) * 0.5f;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({svc.window->f_screen_dimensions().x, ydiff});
+		borderbox.setSize({svc.window.f_screen_dimensions().x, ydiff});
 		borderbox.setPosition({});
 		win.draw(borderbox);
 
@@ -609,10 +609,10 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		win.draw(borderbox);
 	}
 
-	if (real_dimensions.x < svc.window->f_screen_dimensions().x) {
-		auto xdiff = (svc.window->f_screen_dimensions().x - real_dimensions.x) * 0.5f;
+	if (real_dimensions.x < svc.window.f_screen_dimensions().x) {
+		auto xdiff = (svc.window.f_screen_dimensions().x - real_dimensions.x) * 0.5f;
 		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({xdiff, svc.window->f_screen_dimensions().y});
+		borderbox.setSize({xdiff, svc.window.f_screen_dimensions().y});
 		borderbox.setPosition({});
 		win.draw(borderbox);
 
@@ -639,12 +639,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		center_box.setPosition({});
 		center_box.setFillColor(sf::Color(80, 80, 80, 60));
 		win.draw(center_box);
-		center_box.setPosition(svc.window->f_screen_dimensions() * 0.5f);
+		center_box.setPosition(svc.window.f_screen_dimensions() * 0.5f);
 		win.draw(center_box);
 		center_box.setFillColor(sf::Color(100, 100, 100, 60));
-		center_box.setPosition({svc.window->f_screen_dimensions().x * 0.5f, 0.f});
+		center_box.setPosition({svc.window.f_screen_dimensions().x * 0.5f, 0.f});
 		win.draw(center_box);
-		center_box.setPosition({0.f, svc.window->f_screen_dimensions().y * 0.5f});
+		center_box.setPosition({0.f, svc.window.f_screen_dimensions().y * 0.5f});
 		win.draw(center_box);
 		sf::Sprite greyblock{textures.greyblock.getTexture()};
 		greyblock.setPosition(-cam);
@@ -683,7 +683,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	} else {
 		sf::RectangleShape box{};
 		box.setFillColor(svc.styles.colors.black);
-		box.setSize(svc.window->f_screen_dimensions());
+		box.setSize(svc.window.f_screen_dimensions());
 		win.draw(box);
 	}
 

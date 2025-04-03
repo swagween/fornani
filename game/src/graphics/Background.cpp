@@ -53,8 +53,8 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 
 		layer.final_position = layer.physics.position - cam * layer.parallax;
 
-		if (locked_vertically()) { layer.final_position.y = ccm::ext::clamp(layer.final_position.y, std::min(static_cast<float>(-scroll_pane.y + svc.window->i_screen_dimensions().y), -1 + epsilon), 0.f); }
-		if (locked_horizontally()) { layer.final_position.x = ccm::ext::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->i_screen_dimensions().x), -1 + epsilon), 0.f); }
+		if (locked_vertically()) { layer.final_position.y = ccm::ext::clamp(layer.final_position.y, std::min(static_cast<float>(-scroll_pane.y + svc.window.i_screen_dimensions().y), -1 + epsilon), 0.f); }
+		if (locked_horizontally()) { layer.final_position.x = ccm::ext::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window.i_screen_dimensions().x), -1 + epsilon), 0.f); }
 		auto ctr{0};
 		for (auto& sprite : layer.sprites) {
 			for (auto i{0}; i < 2; ++i) {

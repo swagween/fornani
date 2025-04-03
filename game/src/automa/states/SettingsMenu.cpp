@@ -1,6 +1,7 @@
 
 #include "fornani/automa/states/SettingsMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/WindowManager.hpp"
 
 namespace fornani::automa {
 
@@ -92,19 +93,19 @@ void SettingsMenu::tick_update(ServiceProvider& svc) {
 
 void SettingsMenu::frame_update(ServiceProvider& svc) {}
 
-void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
+void SettingsMenu::render(ServiceProvider& svc, WindowManager& win) {
 	auto index = static_cast<int>(Toggles::music);
 
 	adjust_mode() ? options.at(index).label.setFillColor(svc.styles.colors.red) : options.at(index).label.setFillColor(options.at(index).label.getFillColor());
 	options.at(index).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 
-	for (auto& option : options) { win.draw(option.label); }
+	for (auto& option : options) { win.get().draw(option.label); }
 
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	left_dot.render(svc, win.get(), {0, 0});
+	right_dot.render(svc, win.get(), {0, 0});
 	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win, true);
+		m_console.value()->render(win.get());
+		m_console.value()->write(win.get(), true);
 	}
 }
 

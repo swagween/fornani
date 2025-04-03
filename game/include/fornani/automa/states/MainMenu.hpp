@@ -10,7 +10,7 @@ class MainMenu final : public GameState {
 	MainMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc) override;
 	void frame_update(ServiceProvider& svc) override;
-	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
+	void render(ServiceProvider& svc, WindowManager& win) override;
 
 	sf::Sprite title;
 	sf::Text subtitle;
@@ -18,4 +18,4 @@ class MainMenu final : public GameState {
 	util::Cooldown loading{16};
 };
 
-} // namespace automa
+} // namespace fornani::automa

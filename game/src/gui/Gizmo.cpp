@@ -5,13 +5,14 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
+#include "fornani/setup/WindowManager.hpp"
 #include "fornani/world/Map.hpp"
 
 namespace fornani::gui {
 
 void Gizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {}
 
-void Gizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {}
+void Gizmo::render(automa::ServiceProvider& svc, WindowManager& window, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {}
 
 bool Gizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) {

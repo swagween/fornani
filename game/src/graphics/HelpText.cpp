@@ -18,7 +18,7 @@ HelpText::HelpText(automa::ServiceProvider& svc, std::string start, config::Digi
 	data.setString(marker);
 	data.setCharacterSize(text_size);
 	data.setOrigin(data.getLocalBounds().getCenter());
-	position = {static_cast<float>(svc.window->i_screen_dimensions().x) * 0.5f, static_cast<float>(svc.window->i_screen_dimensions().y) - 2.f * pad};
+	position = {static_cast<float>(svc.window.i_screen_dimensions().x) * 0.5f, static_cast<float>(svc.window.i_screen_dimensions().y) - 2.f * pad};
 	data.setPosition(position);
 	delay.start(delay_time);
 	background = include_background;

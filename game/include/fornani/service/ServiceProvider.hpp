@@ -44,7 +44,8 @@ struct MapDebug {
  * Here
  */
 struct ServiceProvider {
-	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder}, sounds{finder} {};
+	ServiceProvider(char** argv, Version& version, WindowManager& w) : finder(argv), text{finder}, data(*this, argv), version(&version), window(w.metadata), assets{finder}, sounds{finder} {};
+	~ServiceProvider() { NANI_LOG_DEBUG(m_logger, "ServiceProvider destroyed"); }
 
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
@@ -52,7 +53,7 @@ struct ServiceProvider {
 	data::TextManager text;
 	data::DataManager data;
 	Version* version;	   // TODO: Remove. Make Free-Standing.
-	WindowManager* window; // TODO: Move this into the Application class and make it into a MonoInstance
+	WindowMetadata window; // TODO: Move this into the Application class and make it into a MonoInstance
 	core::SoundManager sounds;
 	core::AssetManager assets;
 	config::ControllerMap controller_map{*this};
@@ -94,6 +95,8 @@ struct ServiceProvider {
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 	[[nodiscard]] auto debug_mode() const -> bool { return debug_flags.test(DebugFlags::debug_mode); }
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
-	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool { return window->in_window(point, dimensions); }
+	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool { return window.in_window(point, dimensions); }
+
+	io::Logger m_logger{"service"};
 };
 } // namespace fornani::automa

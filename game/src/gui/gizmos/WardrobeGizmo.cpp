@@ -66,9 +66,10 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	}
 }
 
-void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void WardrobeGizmo::render(automa::ServiceProvider& svc, WindowManager& window, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
+	Gizmo::render(svc, window, player, cam);
+	auto& win = window.get();
 
 	// insertion pins
 	m_sprite.setTextureRect(sf::IntRect{{330, 10}, {7, 80}});
@@ -77,7 +78,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	win.draw(m_sprite);
 
 	// outfitter
-	if (m_outfitter) { m_outfitter->render(svc, win, player, cam, foreground); }
+	if (m_outfitter) { m_outfitter->render(svc, window, player, cam, foreground); }
 
 	// player portrait + scanline
 	player.wardrobe_widget.render(win, cam);

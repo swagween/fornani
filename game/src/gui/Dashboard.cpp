@@ -6,6 +6,7 @@
 #include "fornani/gui/gizmos/WardrobeGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
+#include "fornani/setup/WindowManager.hpp"
 
 #include <ccmath/ext/clamp.hpp>
 
@@ -40,7 +41,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 		// if (i["label"].as_string() == "radar_device") { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
 	}
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
-	auto wardrobe_placement{sf::Vector2f{svc.window->f_screen_dimensions().x + 26, 0.f}};
+	auto wardrobe_placement{sf::Vector2f{svc.window.f_screen_dimensions().x + 26, 0.f}};
 	// push gizmos in clockwise order so selection setting will work
 	m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player));
 	m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); // have to stick this in the for loop once we have a clock item
@@ -56,7 +57,7 @@ void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_physical.physics.simple_update();
 }
 
-void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam) {
+void Dashboard::render(automa::ServiceProvider& svc, WindowManager& win, player::Player& player, sf::Vector2f cam) {
 
 	m_debug.box.setPosition(m_physical.physics.position - cam);
 	auto pos{sf::Vector2f{}};
@@ -73,7 +74,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 		}
 		button.state = button.position == m_selected_position ? GizmoButtonState::hovered : GizmoButtonState::off;
 		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_port = static_cast<DashboardPort>(ccm::ext::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1))); }
-		button.box.setPosition(svc.window->f_center_screen() + pos);
+		button.box.setPosition(svc.window.f_center_screen() + pos);
 		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(svc.styles.colors.bright_orange) : button.box.setOutlineColor(svc.styles.colors.dark_fucshia);
 		// win.draw(button.box);
 		++ctr;
@@ -81,14 +82,14 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 
 	// dashboard constituents
 	auto render_position{-m_physical.physics.position + cam};
-	m_constituents.motherboard.render(win, m_sprite, render_position, {});
-	m_constituents.top_left_slot.render(win, m_sprite, render_position - m_paths.map.get_position(), {});
-	m_constituents.top_right_slot.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
-	m_constituents.arsenal_slot.render(win, m_sprite, render_position, {});
+	m_constituents.motherboard.render(win.get(), m_sprite, render_position, {});
+	m_constituents.top_left_slot.render(win.get(), m_sprite, render_position - m_paths.map.get_position(), {});
+	m_constituents.top_right_slot.render(win.get(), m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
+	m_constituents.arsenal_slot.render(win.get(), m_sprite, render_position, {});
 	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, player, cam, false); }
-	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position(), {});
-	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
-	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position, {});
+	m_constituents.top_left_frontplate.render(win.get(), m_sprite, render_position - m_paths.map.get_position(), {});
+	m_constituents.top_right_frontplate.render(win.get(), m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
+	m_constituents.arsenal_frontplate.render(win.get(), m_sprite, render_position, {});
 	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, player, cam, true); }
 }
 

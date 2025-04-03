@@ -21,18 +21,18 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	subtitle.setLineSpacing(1.5f);
 	subtitle.setLetterSpacing(1.2f);
 	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	subtitle.setPosition({svc.window->f_center_screen().x - subtitle.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 300.f});
+	subtitle.setPosition({svc.window.f_center_screen().x - subtitle.getLocalBounds().getCenter().x, svc.window.i_screen_dimensions().y - 300.f});
 	subtitle.setFillColor(svc.styles.colors.red);
 	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
 	instruction.setLineSpacing(1.5f);
 	instruction.setLetterSpacing(1.2f);
 	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	instruction.setPosition({svc.window->i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 36.f});
+	instruction.setPosition({svc.window.i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window.i_screen_dimensions().y - 36.f});
 	instruction.setFillColor(svc.styles.colors.dark_grey);
 
 	svc.data.load_blank_save(player);
 	player.controller.autonomous_walk();
-	player.set_position({svc.window->f_center_screen().x + 80.f, 360.f});
+	player.set_position({svc.window.f_center_screen().x + 80.f, 360.f});
 	loading.start();
 }
 
@@ -82,14 +82,13 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 
 void MainMenu::frame_update(ServiceProvider& svc) {}
 
-void MainMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	win.draw(title);
-	win.draw(subtitle);
-	// win.draw(instruction);
-	for (auto& option : options) { win.draw(option.label); }
+void MainMenu::render(ServiceProvider& svc, WindowManager& win) {
+	win.get().draw(title);
+	win.get().draw(subtitle);
+	for (auto& option : options) { win.get().draw(option.label); }
 
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	left_dot.render(svc, win.get(), {0, 0});
+	right_dot.render(svc, win.get(), {0, 0});
 }
 
 } // namespace fornani::automa

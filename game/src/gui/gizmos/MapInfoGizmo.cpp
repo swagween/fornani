@@ -37,9 +37,11 @@ void MapInfoGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player:
 	auto small_distance{16.f};
 }
 
-void MapInfoGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void MapInfoGizmo::render(automa::ServiceProvider& svc, WindowManager& window, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
+	Gizmo::render(svc, window, player, cam);
+	auto& win = window.get();
+
 	m_sprites.panel.setPosition(m_physics.position - cam);
 	m_constituents.left_clip.render(win, m_sprites.clip, cam - m_physics.position - m_clip_path.get_position(), {});
 	m_constituents.right_clip.render(win, m_sprites.clip, cam - m_physics.position - m_clip_path.get_position() - m_clip_path.get_dimensions(), {});

@@ -9,6 +9,7 @@ namespace pi {
 
 class WindowManager {
   public:
+	~WindowManager() { NANI_LOG_DEBUG(m_logger, "WindowManager destroyed"); }
 	sf::RenderWindow& get() { return window; }
 	sf::View get_view() const { return game_view; }
 	sf::FloatRect get_viewport() const { return game_port; }
@@ -35,7 +36,7 @@ class WindowManager {
 		sf::Vector2u current{};
 	} dimensions{};
 
-	fornani::io::Logger m_logger{ "pioneer" };
+	fornani::io::Logger m_logger{"pioneer"};
 };
 
 } // namespace pi

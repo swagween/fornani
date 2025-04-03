@@ -1,6 +1,7 @@
 
 #include "fornani/automa/states/CreditsMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/WindowManager.hpp"
 
 namespace fornani::automa {
 
@@ -36,12 +37,12 @@ void CreditsMenu::tick_update(ServiceProvider& svc) {
 
 void CreditsMenu::frame_update(ServiceProvider& svc) {}
 
-void CreditsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
+void CreditsMenu::render(ServiceProvider& svc, WindowManager& win) {
 
-	for (auto& option : options) { win.draw(option.label); }
+	for (auto& option : options) { win.get().draw(option.label); }
 
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	left_dot.render(svc, win.get(), {0, 0});
+	right_dot.render(svc, win.get(), {0, 0});
 }
 
 } // namespace fornani::automa

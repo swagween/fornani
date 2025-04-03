@@ -7,6 +7,8 @@ namespace launcher {
 class LauncherApplication : public fornani::Application {
   public:
 	LauncherApplication(char** argv) : Application(argv){};
+
+  private:
 };
 
 } // namespace launcher

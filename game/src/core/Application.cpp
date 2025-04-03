@@ -24,7 +24,7 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 	background.setFillColor(colors::ui_black);
 
 	m_window.get().clear();
-	if (m_window.fullscreen()) { m_window.get().setView(entire_window); }
+	if (m_window.is_fullscreen()) { m_window.get().setView(entire_window); }
 	m_window.get().draw(background);
 	m_window.restore_view();
 	char const* loading_screen = "/image/gui/loading.png";
@@ -37,7 +37,8 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 
 void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata);
-	game->run(demo, room_id, levelpath, player_position);
+	game->run(m_window, demo, room_id, levelpath, player_position);
+	m_window.get().close();
 }
 
 } // namespace fornani

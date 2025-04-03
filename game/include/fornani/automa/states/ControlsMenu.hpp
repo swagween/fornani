@@ -10,7 +10,7 @@ class ControlsMenu final : public GameState {
 	ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc) override;
 	void frame_update(ServiceProvider& svc) override;
-	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
+	void render(ServiceProvider& svc, WindowManager& win) override;
 	void refresh_controls(ServiceProvider& svc);
 	void restore_defaults(ServiceProvider& svc);
 

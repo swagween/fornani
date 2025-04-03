@@ -16,7 +16,7 @@ class Game {
   public:
 	Game(char** argv, WindowManager& window, Version& version);
 	~Game() = default;
-	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+	void run(WindowManager& window, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
 	void shutdown();
 
 	void playtest_sync();
@@ -26,7 +26,6 @@ class Game {
 
   private:
 	void playtester_portal(sf::RenderWindow& window);
-	void take_screenshot(sf::Texture& screencap);
 
 	automa::ServiceProvider services;
 

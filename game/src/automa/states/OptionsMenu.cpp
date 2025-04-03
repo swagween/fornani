@@ -1,6 +1,7 @@
 
 #include "fornani/automa/states/OptionsMenu.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/setup/WindowManager.hpp"
 
 namespace fornani::automa {
 
@@ -61,12 +62,12 @@ void OptionsMenu::tick_update(ServiceProvider& svc) {
 
 void OptionsMenu::frame_update(ServiceProvider& svc) {}
 
-void OptionsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
+void OptionsMenu::render(ServiceProvider& svc, WindowManager& win) {
 
-	for (auto& option : options) { win.draw(option.label); }
+	for (auto& option : options) { win.get().draw(option.label); }
 
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	left_dot.render(svc, win.get(), {0, 0});
+	right_dot.render(svc, win.get(), {0, 0});
 }
 
 } // namespace fornani::automa

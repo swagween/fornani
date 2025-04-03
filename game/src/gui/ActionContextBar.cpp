@@ -9,7 +9,7 @@
 
 namespace fornani::gui {
 
-ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) { text.setPosition(sf::Vector2f{8.f, svc.window->f_screen_dimensions().y - 32.f}); }
+ActionContextBar::ActionContextBar(automa::ServiceProvider& svc) { text.setPosition(sf::Vector2f{8.f, svc.window.f_screen_dimensions().y - 32.f}); }
 
 void ActionContextBar::update(automa::ServiceProvider& svc) {
 	ZoneScopedN("ActionContextBar::update");

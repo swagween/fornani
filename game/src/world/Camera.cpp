@@ -10,7 +10,7 @@ namespace fornani {
 Camera::Camera() { m_physics.set_global_friction(0.89f); }
 
 void Camera::update(automa::ServiceProvider& svc) {
-	m_view.size = svc.window->f_screen_dimensions();
+	m_view.size = svc.window.f_screen_dimensions();
 	m_state = svc.camera_controller.get_state();
 	if (svc.camera_controller.is_shaking()) {
 		m_shake.properties = svc.camera_controller.get_shake_properties();
