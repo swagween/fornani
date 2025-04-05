@@ -37,6 +37,7 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 
 void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata);
+	// BAMBO this line below is what causes the crash
 	game->run(m_window, demo, room_id, levelpath, player_position);
 	m_window.get().close();
 }

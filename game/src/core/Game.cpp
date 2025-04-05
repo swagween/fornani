@@ -36,17 +36,23 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 
 void Game::run(WindowManager& window, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 	// BAMBO simplified window
+	sf::Clock delta_clock{};
 	while (window.get().isOpen()) {
-		while (std::optional const event = window.get().pollEvent()) {
-			if (event->is<sf::Event::Closed>()) {
-				window.get().close();
-				return;
+		while (auto const event = window.get().pollEvent()) {
+			if (event->is<sf::Event::Closed>()) { window.get().close(); }
+			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { window.get().close(); }
 			}
+			ImGui::SFML::ProcessEvent(window.get(), *event);
 		}
+		ImGui::SFML::Update(window.get(), delta_clock.getElapsedTime());
+		delta_clock.restart();
 
 		window.get().clear();
+		ImGui::SFML::Render(window.get());
 		window.get().display();
 	}
+	ImGui::SFML::Shutdown();
 	return;
 	NANI_ZoneScopedN("Game::run");
 
@@ -76,8 +82,6 @@ void Game::run(WindowManager& window, bool demo, int room_id, std::filesystem::p
 	NANI_LOG_INFO(m_logger, "Success");
 	services.stopwatch.stop();
 	services.stopwatch.print_time();
-
-	sf::Clock delta_clock{};
 
 	while (window.get().isOpen()) {
 
