@@ -39,22 +39,22 @@ include(cmake/GenerateDataTemplates.cmake)
 
 add_subdirectory(dependencies)
 add_subdirectory(game)
-if (FORNANI_BUILD_EDITOR AND NOT DEFINED FORNANI_PRODUCTION_BUILD)
+if (FORNANI_BUILD_EDITOR AND NOT FORNANI_PRODUCTION_BUILD)
     add_subdirectory(editor)
 endif ()
 add_subdirectory(launcher)
 
 
-if (FORNANI_ENABLE_PROFILER AND NOT DEFINED FORNANI_PRODUCTION_BUILD)
+if (FORNANI_ENABLE_PROFILER AND NOT FORNANI_PRODUCTION_BUILD)
     target_compile_definitions(fornani PRIVATE TRACY_ENABLE)
     target_compile_definitions(fornani PRIVATE FORNANI_PROFILE)
 endif ()
 
-if (DEFINED FORNANI_DISABLE_DBGHELP)
+if (FORNANI_DISABLE_DBGHELP)
     target_compile_definitions(fornani PRIVATE NANI_DISABLE_ADVANCED_CRASH_REPORTING)
 endif ()
 
-if (DEFINED FORNANI_PRODUCTION_BUILD)
+if (FORNANI_PRODUCTION_BUILD)
     target_compile_definitions(fornani PRIVATE FORNANI_PRODUCTION)
 endif ()
 

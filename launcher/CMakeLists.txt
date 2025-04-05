@@ -26,7 +26,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     add_compile_options(fornani-launcher INTERFACE /W4056 /W4146 /W4018 /W4056)
 endif ()
 
-if (FORNANI_STEAM_APP_ID OR FORNANI_ENABLE_DEV_ID AND NOT DEFINED FORNANI_PRODUCTION_BUILD)
+if ((FORNANI_STEAM_APP_ID OR FORNANI_ENABLE_DEV_ID) AND NOT FORNANI_PRODUCTION_BUILD)
     if (NOT DEFINED FORNANI_STEAM_APP_ID)
         set(FORNANI_STEAM_APP_ID 480 CACHE STRING "Developer Steam App ID: 480")
     endif ()
@@ -51,7 +51,7 @@ endif ()
 
 copy_steamworks_dll(fornani-launcher)
 
-if (FORNANI_DEV_BUILD AND NOT DEFINED FORNANI_PRODUCTION_BUILD)
+if (FORNANI_DEV_BUILD AND NOT FORNANI_PRODUCTION_BUILD)
     add_custom_command(
             TARGET fornani-launcher
             COMMENT "Write steam_appid.txt"
