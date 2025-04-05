@@ -12,7 +12,8 @@ project(fornani
         VERSION 1.0
 )
 
-set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The Steam app ID assigned to the game, leave to 480 for testing")
+set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The default Steam app ID")
+set(FORNANI_STEAM_APP_ID_DEV 480 CACHE STRING "The developer Steam app ID (Spacewar)")
 
 option(FORNANI_PRODUCTION_BUILD "If enabled, will build the game in production mode" OFF)
 option(
@@ -22,7 +23,7 @@ option(
         ON
 )
 option(FORNANI_BUILD_EDITOR "Build the editor. This should never be enabled in production!" ON)
-option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam. This should never be enabled in production!" OFF)
+option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam. This should never be enabled in production!" ON)
 option(FORNANI_ENABLE_PROFILER "Enables tracy profiling. This should never be enabled in production!" OFF)
 option(
         FORNANI_ENABLE_VERBOSE_LOGGING
