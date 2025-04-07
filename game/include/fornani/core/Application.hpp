@@ -11,12 +11,11 @@ namespace fornani {
 
 class Application {
   public:
-	explicit Application(char** argv, const char * loading_screen = "/image/gui/loading.png")  : m_finder(argv), m_metadata(m_game_info, m_finder), m_t_loading(m_finder.resource_path() + loading_screen), m_loading(m_t_loading) {};
+	explicit Application(char** argv, char const* loading_screen = "/image/gui/loading.png") : m_finder(argv), m_metadata(m_game_info, m_finder){};
 	virtual ~Application() = default;
 	virtual void init(char** argv, std::pair<bool, bool> demo_fullscreen = {});
 
 	virtual void launch(char** argv, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
-
 
   protected:
 	data::ResourceFinder m_finder;
@@ -24,8 +23,6 @@ class Application {
 	dj::Json m_app_settings{};
 	Version m_metadata;
 	WindowManager m_window{};
-	sf::Texture m_t_loading{};
-	sf::Sprite m_loading;
 	io::Logger m_logger{"Application"};
 };
 

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 #include "fornani/io/Logger.hpp"
 
@@ -9,7 +10,7 @@ namespace fornani {
 
 class WindowManager {
   public:
-	sf::RenderWindow& get() { return m_window; }
+	sf::RenderWindow& get() { return *m_window.get(); }
 	sf::View get_view() const { return game_view; }
 	sf::FloatRect get_viewport() const { return game_port; }
 	void set();
@@ -31,7 +32,8 @@ class WindowManager {
 	sf::Vector2u display_dimensions{};
 
   private:
-	sf::RenderWindow m_window;
+	std::unique_ptr<sf::RenderWindow> m_window{};
+	sf::Image m_icon;
 	sf::View game_view{};
 	sf::VideoMode mode{};
 	sf::FloatRect game_port{};

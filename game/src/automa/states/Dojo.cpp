@@ -86,10 +86,13 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	svc.soundboard.play_sounds(svc, map.get_echo_count(), map.get_echo_rate());
 
 	// set action set
-	svc.controller_map.set_action_set(config::ActionSet::Platformer);
-	if (pause_window) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
-	if (inventory_window) { svc.controller_map.set_action_set(config::ActionSet::Inventory); }
-	if (m_console) { svc.controller_map.set_action_set(config::ActionSet::Menu); }
+	if (pause_window || m_console) {
+		svc.controller_map.set_action_set(config::ActionSet::Menu);
+	} else if (inventory_window) {
+		svc.controller_map.set_action_set(config::ActionSet::Inventory);
+	} else {
+		svc.controller_map.set_action_set(config::ActionSet::Platformer);
+	}
 
 	if (pause_window) {
 		pause_window.value()->update(svc, m_console);
